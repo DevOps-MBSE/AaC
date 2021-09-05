@@ -1,0 +1,25 @@
+data: 
+  name: message
+  fields:
+  - name: body
+    type: string
+
+model:
+  name: Echo
+  actions:
+    - name: onReceive
+      type: receive
+      refs:
+      - name: DOORS
+        id: ["123", "345", "456"]
+      behavior: ./cucumber/receive.feature
+      inputs:
+      - name: inbound
+        type: message
+      outputs:
+      - name: outbound
+        type: message
+    
+
+  
+

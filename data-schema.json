@@ -1,0 +1,116 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "$id": "aac-data.json",
+    "description": "basic schema from z-schema benchmark (https://github.com/zaggino/z-schema)",
+    "title": "Model",
+    "type": "object",
+    "properties": {
+            
+        "uses":{
+            "type":"array",
+            "items":{
+                "properties":{
+                "name":{
+                    "type":"string"
+                },
+                "path":{
+                    "type":"string"
+                }
+                },
+                "required":["name", "path"],
+                "additionalProperties":false
+            }
+        },
+
+        "data": {
+            "type": "object",
+            "properties": {
+                "name": { "type": "string"},
+                "fields": {
+                    "type":"array",
+                    "items":{
+                        "properties":{
+                            "name":{
+                                "type":"string"
+                            },
+                            "type":{
+                                "type":"string"
+                            }
+                        },
+                        "required":["name", "type"],
+                        "additionalProperties":false
+                    }
+                }
+            }
+        },
+
+        "model": {
+            "type": "object",
+            "properties": {
+                "name": { "type": "string"},
+                "actions": {
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "name": { "type": "string" },
+                            "type": { "type": "string" },
+                            "refs": {
+                                "type": "array",
+                                "items": {
+                                    "properties": {
+                                        "name": { "type": "string" },
+                                        "id": { "type": "array", "items": { "type": "string" } }
+                                    },
+                                    "required":["name"],
+                                    "additionalProperties":false
+                                }
+                            },
+                            "behavior": { "type": "string" },
+                            "inputs": {
+                                "type": "array",
+                                "items": {
+                                    "properties": {
+                                        "name": { "type": "string" },
+                                        "type": { "type": "string" }
+                                    },
+                                    "required":["name", "type"],
+                                    "additionalProperties":false
+                                }
+                            },
+                            "outputs": {
+                                "type": "array",
+                                "items": {
+                                    "properties": {
+                                        "name": { "type": "string" },
+                                        "type": { "type": "string" }
+                                    },
+                                    "required":["name", "type"],
+                                    "additionalProperties":false
+                                }
+                            }
+                        },
+                        "required":["name", "type", "behavior", "inputs", "outputs"],
+                        "additionalProperties":false
+                    }
+                }
+            }
+        }
+    },
+    "additionalProperties": false,
+    "$defs": {
+        "ref": {
+          "type": "object",
+          "required": [ "name", "id" ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": ""
+            },
+            "datatype": {
+              "type": "string",
+              "description": ""
+            }
+          }
+        }
+    }
+}

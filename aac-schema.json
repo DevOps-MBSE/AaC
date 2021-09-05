@@ -1,0 +1,203 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "$id": "schema.json",
+    "description": "Validation schema for Architecture-as-Code",
+    "title": "Architecture-as-Code Model-Based System Engineering (MBSE)",
+    "type": "array",
+    "items": {
+        "title": "Architecture-as-Code",
+        "type": "object",
+        
+        "properties": {
+            "model": {
+                "description": "The unique identifier for a product",
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "description": "",
+                        "type": "string"
+                    },
+                    "uses": {
+                        "description": "",
+                        "type": "array",
+                        "items": {
+                            "name" : {
+                                "description": "",
+                                "type": "string"
+                            },
+                            "path": {
+                                "description": "",
+                                "type": "string"
+                            }
+                        },
+                        "miniItems": 1,
+                        "uniqueItems": true
+                    },
+                    "behaviors": {
+                        "description": "",
+                        "type": "array",
+                        "items": {
+                            "name": {
+                                "description": "",
+                                "type": "string"
+                            },
+                            "refs": {
+                                "description": "",
+                                "type": "array",
+                                "items": {
+                                    "name" : {
+                                        "description": "",
+                                        "type": "string"
+                                    },
+                                    "ids": {
+                                        "description": "",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "minItems": 1,
+                                        "uniqueItems": true
+                                    }
+                                },
+                                "miniItems": 1,
+                                "uniqueItems": true
+                            },
+                            "action": {
+                                "description": "",
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "description": "",
+                                        "type": "string",
+                                        "required": true
+                                    },
+                                    "type": {
+                                        "description": "",
+                                        "type": "string",
+                                        "required": true
+                                    },
+                                    "args": {
+                                        "description": "",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "minItems": 1,
+                                        "uniqueItems": false,
+                                        "required": false
+                                    },
+                                    "bdd": {
+                                        "description": "",
+                                        "type": "string",
+                                        "required": true
+                                    },
+                                    "input": {
+                                        "description": "",
+                                        "type": "array",
+                                        "items": {
+                                            "name" : {
+                                                "description": "",
+                                                "type": "string"
+                                            },
+                                            "type": {
+                                                "description": "",
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "output": {
+                                        "description": "",
+                                        "type": "array",
+                                        "items": {
+                                            "name" : {
+                                                "description": "",
+                                                "type": "string"
+                                            },
+                                            "type": {
+                                                "description": "",
+                                                "type": "string"
+                                            }
+                                        }
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "required": ["name"]
+            },
+            "data": {
+                "description": "",
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "description": "",
+                        "type": "string"
+                    },
+                    "uses": {
+                        "description": "",
+                        "type": "array",
+                        "items": {
+                            "name" : {
+                                "description": "",
+                                "type": "string"
+                            },
+                            "path": {
+                                "description": "",
+                                "type": "string"
+                            }
+                        },
+                        "miniItems": 0,
+                        "uniqueItems": true
+                    },
+                    "refs": {
+                        "description": "",
+                        "type": "array",
+                        "items": {
+                            "name" : {
+                                "description": "",
+                                "type": "string"
+                            },
+                            "ids": {
+                                "description": "",
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "minItems": 0,
+                                "uniqueItems": true
+                            }
+                        },
+                        "miniItems": 1,
+                        "uniqueItems": true
+                    },
+                    "fields": {
+                        "description": "",
+                        "type": "array",
+                        "items": {"items": { "$ref": "#/$defs/field" }},
+                        "minItems": 1,
+                        "uniqueItems": true
+                    }
+                }
+            }
+        
+        }
+    },
+    "$defs": {
+        "field": {
+          "type": "object",
+          "required": [ "name", "type" ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": ""
+            },
+            "datatype": {
+              "type": "string",
+              "description": ""
+            }
+          }
+        }
+    }
+}
