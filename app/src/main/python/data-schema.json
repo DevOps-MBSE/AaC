@@ -1,5 +1,5 @@
 {
-    "$schema": "http://json-schema.org/draft-06/schema#",
+    "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "aac-data.json",
     "description": "basic schema from z-schema benchmark (https://github.com/zaggino/z-schema)",
     "title": "Model",
@@ -54,16 +54,11 @@
                         "properties": {
                             "name": { "type": "string" },
                             "type": { "type": "string" },
-                            "refs": {
+                            "traces": {
+                                "description": "",
                                 "type": "array",
-                                "items": {
-                                    "properties": {
-                                        "name": { "type": "string" },
-                                        "id": { "type": "array", "items": { "type": "string" } }
-                                    },
-                                    "required":["name"],
-                                    "additionalProperties":false
-                                }
+                                "items": { "$ref": "#/$defs/trace" },
+                                "uniqueItems": true
                             },
                             "behavior": { "type": "string" },
                             "inputs": {
@@ -98,7 +93,7 @@
     },
     "additionalProperties": false,
     "$defs": {
-        "ref": {
+        "trace": {
           "type": "object",
           "required": [ "name", "id" ],
           "properties": {
@@ -106,7 +101,7 @@
               "type": "string",
               "description": ""
             },
-            "datatype": {
+            "id": {
               "type": "string",
               "description": ""
             }

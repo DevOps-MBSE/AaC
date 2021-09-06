@@ -1,5 +1,5 @@
 from flask import Flask, json, request
-from echoService import echo
+from echoService import onReceive
 from Message import Message, fromJSON, toJSON
 
 #companies = [{"id": 1, "name": "Company One"}, {"id": 2, "name": "Company Two"}]
@@ -12,7 +12,7 @@ def post_echo():
 
   message_obj = fromJSON(message_json)
 
-  echo_return = echo(message_obj)
+  echo_return = onReceive(message_obj)
   
   return_json = toJSON(echo_return)
 

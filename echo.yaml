@@ -3,15 +3,17 @@ data:
   fields:
   - name: body
     type: string
+  - name: sender
+    type: string
 
 model:
   name: Echo
   actions:
     - name: onReceive
       type: receive
-      refs:
+      traces:
       - name: DOORS
-        id: ["123", "345", "456"]
+        id: "123"
       behavior: ./cucumber/receive.feature
       inputs:
       - name: inbound
