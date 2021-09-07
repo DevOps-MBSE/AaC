@@ -2,10 +2,10 @@ import sys
 import os
 import json
 import yaml
-from jsonschema import validate
+import argparse
+import jsonschema
 
-
-def validateArch(model_file: str) -> bool:
+def validate_arch(model_file: str) -> bool:
 
     print("Processing Model: ", model_file)
 
@@ -19,17 +19,42 @@ def validateArch(model_file: str) -> bool:
     with open(schema_file, 'r') as file:
         schema = json.load(file)
 
-    validate(model, schema)
+    jsonschema.validate(model, schema)
     return model
 
-def process(model):
+def print_json(model):
     print(model)
 
 
 
 
 if __name__ == '__main__':
-    model = validateArch(sys.argv[1])
+
+    parser = argparse.ArgumentParser()
+    command_parser = parser.add_subparsers(dest='command')
+    validate_cmd = command_parser.add_parser('validate', help="ensures the yaml is valid per teh AaC schema")
+    json_cmd = command_parser.add_parser('json', help="prints the json version of the yaml model")
     
-    process(model)
+    parser.add_argument("yaml", type=str, help="the path to your architecture yaml")
+
+    args = parser.parse_args()
+
+    print("command = ", args.command)
+    print("yaml = ", args.yaml)
+
+    if (args.command == "validate"):
+        yaml_file = args.yaml
+        model = validate_arch(yaml_file)
+        if (model == None):
+            print(args.yaml, " is not valid.")
+        else:
+            print(args.yaml, " is valid.")
+    
+    elif (args.command == "json"):
+        yaml_file = args.yaml
+        model = validate_arch(yaml_file)
+        print_json(model)
+
+    else:
+        parser.print_help()
     
