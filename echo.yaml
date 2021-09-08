@@ -7,7 +7,7 @@ data:
     type: string
 
 model:
-  name: Echo
+  name: EchoService
   actions:
     - name: onReceive
       type: receive
