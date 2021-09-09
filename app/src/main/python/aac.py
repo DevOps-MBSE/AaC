@@ -11,7 +11,7 @@ def validate_arch(model_file: str) -> bool:
         contents = file.read()
         model = yaml.load(contents, Loader=yaml.FullLoader)
 
-    schema_file = file_path = os.path.realpath(__file__).replace('aac.py', 'data-schema.json')
+    schema_file = file_path = os.path.realpath(__file__).replace('aac.py', 'aac-schema.json')
     schema = ''
     with open(schema_file, 'r') as file:
         schema = json.load(file)
