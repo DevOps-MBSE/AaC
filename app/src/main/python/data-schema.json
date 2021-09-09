@@ -41,7 +41,9 @@
                         "additionalProperties":false
                     }
                 }
-            }
+            },
+            "required":["name", "fields"],
+            "additionalProperties":false
         },
 
         "model": {

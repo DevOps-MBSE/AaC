@@ -1,11 +1,6 @@
-data: 
-  name: message
-  fields:
-  - name: body
-    type: string
-  - name: sender
-    type: string
-
+uses:
+  - name: Message
+    path: ./Message.yaml
 model:
   name: EchoService
   actions:
@@ -17,10 +12,10 @@ model:
       behavior: ./cucumber/receive.feature
       inputs:
       - name: inbound
-        type: message
+        type: Message
       outputs:
       - name: outbound
-        type: message
+        type: Message
     
 
   

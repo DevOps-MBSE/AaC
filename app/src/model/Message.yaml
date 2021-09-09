@@ -1,0 +1,7 @@
+data: 
+  name: Message
+  fields:
+  - name: body
+    type: string
+  - name: sender
+    type: string

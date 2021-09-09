@@ -16,8 +16,56 @@ def validate_arch(model_file: str) -> bool:
     with open(schema_file, 'r') as file:
         schema = json.load(file)
 
-    jsonschema.validate(model, schema)   
-    return model
+    # validate against schema
+    try:
+        jsonschema.validate(model, schema)
+    except jsonschema.exceptions.ValidationError as err:
+        print(err)
+        err = model_file + " failed schema validation"
+        return False, err
+
+    type_name_list = ["string", "int", "number", "bool"]
+    # validate uses statements
+    if "uses" in model.keys():
+        for use in model["uses"]:
+            uses_path = use["path"]
+            uses_name = use["name"]
+            type_name_list.append(uses_name)
+            f = open(model_file)
+            base = os.path.dirname(f.name)
+            check_me = base + "/" + uses_path
+
+            # ensure uses path exists
+            if (not os.path.exists(check_me)):
+                return False, model_file + "- uses path does not exist [" + uses_path + "]"
+
+            # ensure uses path is valid arch file
+            is_valid, msg = validate_arch(check_me)
+            if (not is_valid):
+                return False, msg
+            else: 
+                # ensure uses name is defined in path
+                if (msg["data"]["name"] != uses_name):
+                    return False, "use path [" + uses_path + "] does not define [" + uses_name + "]"
+
+    # validate named types
+    if "model" in model.keys():
+        for action in model["model"]["actions"]:
+            #inputs
+            for input in action["inputs"]:
+                if (not input["type"] in type_name_list):
+                    return False, "model [" + model_file + "] action input contains unknown type [" + input["type"] + "]"
+            #outputs
+            for output in action["outputs"]:
+                if (not output["type"] in type_name_list):
+                    return False, "model [" + model_file + "] action output contains unknown type [" + output["type"] + "]"
+    if "data" in model.keys():
+        for field in model["data"]["fields"]:
+            
+            if (not field["type"] in type_name_list):
+                return False, "data [" + model_file + "] field [" + field["name"] + "] contains unknown type [" + field["type"] + "]"
+
+    return True, model
 
 def print_json(model):
     print(model)
@@ -55,9 +103,10 @@ if __name__ == '__main__':
 
     if (args.command == "validate"):
         yaml_file = args.yaml
-        model = validate_arch(yaml_file)
-        if (model == None):
+        is_valid, model = validate_arch(yaml_file)
+        if (not is_valid):
             print(args.yaml, " is not valid.")
+            print("Issue: ", model)
         else:
             print(args.yaml, " is valid.")
     
