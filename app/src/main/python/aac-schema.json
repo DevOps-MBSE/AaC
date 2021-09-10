@@ -50,6 +50,39 @@
             "type": "object",
             "properties": {
                 "name": { "type": "string"},
+                "includes": {
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "name": { "type": "string" },
+                            "type": { "type": "string" }
+                        },
+                        "required":["name", "type"],
+                        "additionalProperties":false
+                    }
+                },
+                "inputs": {
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "name": { "type": "string" },
+                            "type": { "type": "string" }
+                        },
+                        "required":["name", "type"],
+                        "additionalProperties":false
+                    }
+                },
+                "outputs": {
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "name": { "type": "string" },
+                            "type": { "type": "string" }
+                        },
+                        "required":["name", "type"],
+                        "additionalProperties":false
+                    }
+                },
                 "actions": {
                     "type": "array",
                     "items": {
@@ -62,31 +95,9 @@
                                 "items": { "$ref": "#/$defs/trace" },
                                 "uniqueItems": true
                             },
-                            "behavior": { "type": "string" },
-                            "inputs": {
-                                "type": "array",
-                                "items": {
-                                    "properties": {
-                                        "name": { "type": "string" },
-                                        "type": { "type": "string" }
-                                    },
-                                    "required":["name", "type"],
-                                    "additionalProperties":false
-                                }
-                            },
-                            "outputs": {
-                                "type": "array",
-                                "items": {
-                                    "properties": {
-                                        "name": { "type": "string" },
-                                        "type": { "type": "string" }
-                                    },
-                                    "required":["name", "type"],
-                                    "additionalProperties":false
-                                }
-                            }
+                            "behavior": { "type": "string" }
                         },
-                        "required":["name", "type", "behavior", "inputs", "outputs"],
+                        "required":["name", "type", "behavior"],
                         "additionalProperties":false
                     }
                 }

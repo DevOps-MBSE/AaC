@@ -1,0 +1,5 @@
+data: 
+  name: DataB
+  fields:
+  - name: msg
+    type: string

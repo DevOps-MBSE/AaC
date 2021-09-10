@@ -1,0 +1,30 @@
+uses:
+  - name: DataA
+    path: ./DataA.yaml
+  - name: DataD
+    path: ./DataD.yaml
+  - name: ServiceOne
+    path: ./ServiceOne.yaml
+  - name: Subsystem
+    path: ./Subsystem.yaml
+  - name: ServiceThree
+    path: ./ServiceThree.yaml
+model:
+  name: System
+  includes:
+    - name: svc1
+      type: ServiceOne
+    - name: sub
+      type: Subsystem
+    - name: svc3
+      type: ServiceThree
+  inputs:
+    - name: in
+      type: DataA
+  outputs:
+    - name: out
+      type: DataD
+  actions:
+    - name: go
+      type: asynch
+      behavior: ./cucumber/go.feature

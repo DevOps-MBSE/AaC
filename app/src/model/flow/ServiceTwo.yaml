@@ -1,0 +1,17 @@
+uses:
+  - name: DataB
+    path: ./DataB.yaml
+  - name: DataC
+    path: ./DataC.yaml
+model:
+  name: ServiceTwo
+  inputs:
+    - name: in
+      type: DataB
+  outputs:
+    - name: out
+      type: DataC
+  actions:
+    - name: go
+      type: asynch
+      behavior: ./cucumber/go.feature

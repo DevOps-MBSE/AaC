@@ -1,0 +1,17 @@
+uses:
+  - name: DataC
+    path: ./DataC.yaml
+  - name: DataD
+    path: ./DataD.yaml
+model:
+  name: ServiceThree
+  inputs:
+    - name: in
+      type: DataC
+  outputs:
+    - name: out
+      type: DataD
+  actions:
+    - name: go
+      type: asynch
+      behavior: ./cucumber/go.feature

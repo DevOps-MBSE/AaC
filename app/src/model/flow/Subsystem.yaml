@@ -1,0 +1,22 @@
+uses:
+  - name: DataB
+    path: ./DataB.yaml
+  - name: DataC
+    path: ./DataC.yaml
+  - name: ServiceTwo
+    path: ./ServiceTwo.yaml
+model:
+  name: Subsystem
+  includes:
+    - name: svc2
+      type: ServiceTwo
+  inputs:
+    - name: in
+      type: DataB
+  outputs:
+    - name: out
+      type: DataC
+  actions:
+    - name: go
+      type: asynch
+      behavior: ./cucumber/go.feature

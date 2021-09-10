@@ -3,6 +3,12 @@ uses:
     path: ./Message.yaml
 model:
   name: EchoService
+  inputs:
+    - name: inbound
+      type: Message
+  outputs:
+    - name: outbound
+      type: Message
   actions:
     - name: onReceive
       type: synch
@@ -10,12 +16,7 @@ model:
       - name: DOORS
         id: "123"
       behavior: ./cucumber/receive.feature
-      inputs:
-      - name: inbound
-        type: Message
-      outputs:
-      - name: outbound
-        type: Message
+      
     
 
   
