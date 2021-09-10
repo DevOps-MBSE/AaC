@@ -28,7 +28,6 @@ if __name__ == '__main__':
     
     elif (args.command == "json"):
         yaml_file = args.yaml
-        is_valid, model = validate_arch(yaml_file)
         print_json(yaml_file)
 
     elif (args.command == "puml"):
