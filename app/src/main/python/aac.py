@@ -112,12 +112,12 @@ if __name__ == '__main__':
     
     elif (args.command == "json"):
         yaml_file = args.yaml
-        model = validate_arch(yaml_file)
+        is_valid, model = validate_arch(yaml_file)
         print_json(model)
 
     elif (args.command == "puml"):
         yaml_file = args.yaml
-        model = validate_arch(yaml_file)
+        is_valid, model = validate_arch(yaml_file)
         print_plant_uml(model)
 
     else:

@@ -5,7 +5,7 @@ model:
   name: EchoService
   actions:
     - name: onReceive
-      type: receive
+      type: synch
       traces:
       - name: DOORS
         id: "123"
