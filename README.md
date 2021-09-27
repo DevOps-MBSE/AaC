@@ -63,3 +63,7 @@ See ./point-of-sale.yaml
 
 
 
+## Python setup
+pip install pyyaml
+pip install jsonschema
+pip install nose2  (this is a unit test runner)

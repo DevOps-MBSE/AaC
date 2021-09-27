@@ -4,15 +4,38 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
         {
-            "name": "Python: Current File",
+            "name": "Python: Validate Flow",
             "type": "python",
             "request": "launch",
-            "program": "${file}",
+            "program": "./app/src/main/python/aac.py",
             "console": "integratedTerminal",
             "args": [
                 "validate",
-                "./app/src/model/echo/EchoService.yaml"
+                "./app/src/model/flow/System.yaml"
+            ]
+        },
+        {
+            "name": "Python: Json Flow",
+            "type": "python",
+            "request": "launch",
+            "program": "./app/src/main/python/aac.py",
+            "console": "integratedTerminal",
+            "args": [
+                "json",
+                "./app/src/model/flow/System.yaml"
+            ]
+        },
+        {
+            "name": "Python: Puml Flow",
+            "type": "python",
+            "request": "launch",
+            "program": "./app/src/main/python/aac.py",
+            "console": "integratedTerminal",
+            "args": [
+                "puml",
+                "./app/src/model/flow/System.yaml"
             ]
         }
     ]

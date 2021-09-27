@@ -2,6 +2,7 @@ import os
 import json
 import yaml
 import jsonschema
+from sys import platform 
 
 def validate_arch(model_file: str):
     is_schema_valid, root = validate_against_schema(model_file)
@@ -68,7 +69,12 @@ def validate_against_schema(model_file):
         contents = file.read()
         root = yaml.load(contents, Loader=yaml.FullLoader)
 
-    schema_file = file_path = os.path.realpath(__file__).replace('cmd/validate.py', '/aac-schema.json')
+    file_path = str(os.path.realpath(__file__))
+    # this is is an attempt to correct OS specific behavior (TODO: test on linux)
+    if platform == "win32":
+        schema_file = file_path.replace('cmd\\validate.py', 'aac-schema.json')
+    else:
+        schema_file = file_path.replace('cmd/validate.py', 'aac-schema.json')
     schema = ''
     with open(schema_file, 'r') as file:
         schema = json.load(file)
