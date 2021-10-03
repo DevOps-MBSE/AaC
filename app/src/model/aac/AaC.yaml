@@ -1,186 +1,123 @@
 ---
+# root is a special case representing the root of the architecture model and 
+# not explicitly included in a model file
 data:
-  - name: imports
-    fields:
-      - name: use
-        type: Import[]
-
+  name: root
+  fields:
+    - name: import
+      type: string[]
+    - name: enum
+      type: enum
+    - name: data
+      type: data
+    - name: model
+      type: model
 ---
 data:
-  - name: Import
-    fields:
-      - name: name
-        type: string
-      - name: path
-        type: file
-        
+  name: enum
+  fields:
+    - name: name
+      type: string
+    - name: values
+      type: string[]
+  required:
+    - name
+    - values
 ---
 data:
-  - name: Field
-    fields:
-      - name: name
-        type: string
-      - name: type
-        type: string
+  name: Scenario
+  fields:
+    - name: scenario
+      type: string
+    - name: tags
+      type: string[]
+    - name: given
+      type: string[]
+    - name: when
+      type: string[]
+    - name: then
+      type: string[]
+  required:
+    - scenario
+    - when
+    - then
+---
+enum:
+  name: BehaviorType
+  values:
+    - pub-sub
+    - request-response
+    - command
+    - startup
+---
+enum:
+  name: Primitives
+  values:
+    - string
+    - int
+    - number
+    - bool
+    - date
+    - file
+---  
+data:
+  name: Field
+  fields:
+    - name: name
+      type: string
+    - name: type
+      type: string
+  required:
+    - name
+    - type
 ---
 data:
-  - name: data
-    fields:
-      - name: name
-        type: string
-      - name: fields
-        type: Field[]
+  name: data
+  fields:
+    - name: name
+      type: string
+    - name: fields
+      type: Field[]
+    - name: required
+      type: string[]
+  required:
+    - name
+    - fields
 ---
 data:
-  - name: Scenario
-    fields:
-      - name: given
-        type: string[]
-      - name: when
-        type: string[]
-      - name: then
-        type: string[]
----
-data:
-  - name: Acceptance
-    fields:
-      - name: scenario
-        type: Scenario[]
----
-data:
-  - name: Behavior
-    fields:
-      - name: name
-        type: string
-      - name: type
-        type: string
-      - name: description
-        type: string
-      - name: tags
-        type: string[]
-      - name: input
-        type: Field[]
-      - name: output
-        type: Field[]
-      - name: acceptance
-        type: Acceptance
+  name: Behavior
+  fields:
+    - name: name
+      type: string
+    - name: type
+      type: BehaviorType
+    - name: description
+      type: string
+    - name: tags
+      type: string[]
+    - name: input
+      type: Field[]
+    - name: output
+      type: Field[]
+    - name: acceptance
+      type: Scenario[]
+  required:
+    - name
+    - type
+    - acceptance
       
 ---
 data:
-  - name: model
-    fields:
-      - name: name
-        type: string
-      - name: uses
-        type: Field[]
-      - name: behavior
-        type: Behavior
-
----
-model:
-  - name: aac
-    behavior:
-    - name: validate
-      type: command
-      description:  ''' 
-      The validate command reads a yaml file containing an architecture specification and ensures it is properly formed.
-      If the model is properly formed the validate method returns true.
-      If the model is improperly formed the validate method returns false and an error message.
-      '''
-      input: 
-        - name: archFile
-          type: file
-      output:
-        - name: isValid
-          type: bool
-        - name: errorMsg
-          type: string
-      acceptance:
-        - scenario: Validate a correct architecture.
-          given:
-            - The validate command is selected.
-            - The input.archFile contains a valid architecture specification.
-          when:
-            - Validation is performed.
-          then:
-            - The output.isValid output is true.
-            - The output.errorMsg output is empty.
-        - scenario: Validate an incorrect architecture.
-          tags:
-            - 'off-nominal'
-          given:
-            - The validate command is selected.
-            - the input.archFile contains an invalid architecture specification.
-          when:
-            - Validation is performed.
-          then:
-            - The output.isValid output is false.
-            - The output.errorMsg output contains details of the error.
-    - name: json
-      type: command
-      description: '''
-      The json command reads a yaml file containing an architecture specification, validates it using the validate command, 
-      and if valid outputs a corresponding json representation.  If the input yaml is invlid, an error message is provided.
-      '''
-      input:
-        - name: archFile
-          type: file
-      output:
-        - name: json
-          type: string
-        - name: errorMsg
-          type: string
-      acceptance:
-        - scenario: Output JSON for valid architecture.
-          given:
-            - The json command is selected.
-            - The input.archFile contains a valid architecture specification.
-          when:
-            - JSON conversion is performed.
-          then:
-            - The output.json contains a JSON representation of the architecture specification.
-            - The output.errorMsg is empty.
-        - scenario: Output error for invalid architecture.
-          tags: ["off-nominal"]
-          given:
-            - The json command is selected.
-            - The input.archFile contains an invalid architecture specification.
-          when:
-            - JSON conversion is performed.
-          then:
-            - The output.json is empty.
-            - The output.errorMsg contains details of the error.
-    - name: puml
-      type: command
-      description: '''
-      The puml command reads a yaml file containing an architecture specification, validates it using the validate command, 
-      and if valid outputs a corresponding PlantUML representation.  If the input yaml is invlid, an error message is provided.
-      '''
-      input:
-        - name: archFile
-          type: file
-      output:
-        - name: puml
-          type: string
-        - name: errorMsg
-          type: string
-      acceptance:
-        - scenario: Output PlantUML for valid architecture.
-          given:
-            - The puml command is selected.
-            - The input.archFile contains a valid architecture specification.
-          when:
-            - PlantUML conversion is performed.
-          then:
-            - The output.puml contains a PlantUML representation of the architecture specification.
-            - The output.errorMsg is empty.
-        - scenario: Output error for invalid architecture.
-          tags: ["off-nominal"]
-          given:
-            - The puml command is selected.
-            - The input.archFile contains an invalid architecture specification.
-          when:
-            - PlantUML conversion is performed.
-          then:
-            - The output.puml is empty.
-            - The output.errorMsg contains details of the error.
+  name: model
+  fields:
+    - name: name
+      type: string
+    - name: description
+      type: string
+    - name: uses
+      type: Field[]
+    - name: behavior
+      type: Behavior[]
+  required:
+    - name
+    - behavior

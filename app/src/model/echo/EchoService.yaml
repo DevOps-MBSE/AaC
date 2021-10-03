@@ -1,23 +1,23 @@
-uses:
-  - name: Message
-    path: ./Message.yaml
+import:
+  - ./Message.yaml
 model:
   name: EchoService
-  inputs:
-    - name: inbound
-      type: Message
-  outputs:
-    - name: outbound
-      type: Message
-  actions:
-    - name: onReceive
-      type: synch
-      traces:
-      - name: DOORS
-        id: "123"
-      behavior: ./cucumber/receive.feature
-      
-    
-
-  
-
+  description: This is a message mirror.
+  behavior:
+    - name: echo
+      type: requestResponse
+      description: This is the one thing it does.
+      input:
+        - name: inbound
+          type: Message
+      output:
+        - name: outbound
+          type: Message
+      acceptance:
+        - scenario: onReceive
+          given:
+           - The EchoService is running.
+          when:
+            - The user sends a message to EchoService.
+          then:
+            - The user receives the same message from EchoService.

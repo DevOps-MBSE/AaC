@@ -1,30 +1,34 @@
-uses:
-  - name: DataA
-    path: ./DataA.yaml
-  - name: DataD
-    path: ./DataD.yaml
-  - name: ServiceOne
-    path: ./ServiceOne.yaml
-  - name: Subsystem
-    path: ./Subsystem.yaml
-  - name: ServiceThree
-    path: ./ServiceThree.yaml
+import:
+  - ./DataA.yaml
+  - ./DataD.yaml
+  - ./ServiceOne.yaml
+  - ./Subsystem.yaml
+  - ./ServiceThree.yaml
 model:
   name: System
-  includes:
-    - name: svc1
+  description: A simple distributed system model
+  uses:
+    - name: svc1 
       type: ServiceOne
     - name: sub
       type: Subsystem
     - name: svc3
       type: ServiceThree
-  inputs:
-    - name: in
-      type: DataA
-  outputs:
-    - name: out
-      type: DataD
-  actions:
-    - name: go
-      type: asynch
-      behavior: ./cucumber/go.feature
+  behavior:
+    - name: Do flow
+      type: requestResponse
+      description:  process DataA and respond with DataD
+      input:
+        - name: in
+          type: DataA
+      output:
+        - name: out
+          type: DataD
+      acceptance:
+        - scenario: go
+          given:
+            - The System is running.
+          when:
+            - The System receives input.in
+          then:
+            - The System responds with output.out

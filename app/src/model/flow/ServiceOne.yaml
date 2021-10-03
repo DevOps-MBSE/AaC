@@ -1,17 +1,22 @@
-uses:
-  - name: DataA
-    path: ./DataA.yaml
-  - name: DataB
-    path: ./DataB.yaml
+import:
+  - ./DataA.yaml
+  - ./DataB.yaml
 model:
   name: ServiceOne
-  inputs:
-    - name: in
-      type: DataA
-  outputs:
-    - name: out
-      type: DataB
-  actions:
-    - name: go
-      type: asynch
-      behavior: ./cucumber/go.feature
+  behavior:
+    - name: Process DataA
+      type: requestResponse
+      input:
+        - name: in
+          type: DataA
+      output:
+        - name: out
+          type: DataB
+      acceptance:
+        - scenario: go
+          given:
+            - ServiceOne is running.
+          when:
+            - The user sends a DataA request 
+          then:
+            - The user receives a DataB response

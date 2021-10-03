@@ -1,17 +1,23 @@
-uses:
-  - name: DataB
-    path: ./DataB.yaml
-  - name: DataC
-    path: ./DataC.yaml
+import:
+  - ./DataB.yaml
+  - ./DataC.yaml
 model:
   name: ServiceTwo
-  inputs:
-    - name: in
-      type: DataB
-  outputs:
-    - name: out
-      type: DataC
-  actions:
-    - name: go
-      type: asynch
-      behavior: ./cucumber/go.feature
+  behavior:
+    - name: Process DataB
+      type: requestResponse
+      input:
+        - name: in
+          type: DataB
+      output:
+        - name: out
+          type: DataC
+      acceptance:
+        - scenario: go
+          given:
+            - The ServiceTwo is running
+          when:
+            - The user makes a request with DataB
+          then:
+            - The user receives a response with DataC
+          

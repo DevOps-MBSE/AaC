@@ -1,22 +1,26 @@
-uses:
-  - name: DataB
-    path: ./DataB.yaml
-  - name: DataC
-    path: ./DataC.yaml
-  - name: ServiceTwo
-    path: ./ServiceTwo.yaml
+import:
+  - ./DataB.yaml
+  - ./DataC.yaml
+  - ./ServiceTwo.yaml
 model:
   name: Subsystem
-  includes:
+  uses:
     - name: svc2
       type: ServiceTwo
-  inputs:
-    - name: in
-      type: DataB
-  outputs:
-    - name: out
-      type: DataC
-  actions:
-    - name: go
-      type: asynch
-      behavior: ./cucumber/go.feature
+  behavior:
+    - name: process DataB
+      type: requestResponse
+      input:
+        - name: in
+          type: DataB
+      output:
+        - name: out
+          type: DataC
+      acceptance:
+        - scenario: go
+          given:
+            - The Sybsystem is running.
+          when:
+            - The user issues a request with DataB
+          then:
+            - The user receives a response with DataC

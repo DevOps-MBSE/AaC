@@ -1,17 +1,22 @@
-uses:
-  - name: DataC
-    path: ./DataC.yaml
-  - name: DataD
-    path: ./DataD.yaml
+import:
+  - ./DataC.yaml
+  - ./DataD.yaml
 model:
   name: ServiceThree
-  inputs:
-    - name: in
-      type: DataC
-  outputs:
-    - name: out
-      type: DataD
-  actions:
-    - name: go
-      type: asynch
-      behavior: ./cucumber/go.feature
+  behavior:
+    - name: Process DataC
+      type: requestResponse
+      input:
+        - name: in
+          type: DataC
+      output:
+        - name: out
+          type: DataD
+      acceptance:
+        - scenario: go
+          given:
+            - The ServiceThree is running
+          when:
+            - The user makes a request with DataC
+          then:
+            - The user gets a response with DataD
