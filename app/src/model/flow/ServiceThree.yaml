@@ -5,7 +5,7 @@ model:
   name: ServiceThree
   behavior:
     - name: Process DataC
-      type: requestResponse
+      type: request-response
       input:
         - name: in
           type: DataC

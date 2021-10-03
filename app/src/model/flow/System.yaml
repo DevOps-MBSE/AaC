@@ -16,7 +16,7 @@ model:
       type: ServiceThree
   behavior:
     - name: Do flow
-      type: requestResponse
+      type: request-response
       description:  process DataA and respond with DataD
       input:
         - name: in

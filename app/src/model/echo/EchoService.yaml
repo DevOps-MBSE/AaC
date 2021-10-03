@@ -5,7 +5,7 @@ model:
   description: This is a message mirror.
   behavior:
     - name: echo
-      type: requestResponse
+      type: request-response
       description: This is the one thing it does.
       input:
         - name: inbound

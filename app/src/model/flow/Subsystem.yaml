@@ -9,7 +9,7 @@ model:
       type: ServiceTwo
   behavior:
     - name: process DataB
-      type: requestResponse
+      type: request-response
       input:
         - name: in
           type: DataB
