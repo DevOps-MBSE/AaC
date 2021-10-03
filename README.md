@@ -29,38 +29,37 @@ Potential Use Cases:
     - User defines the trigger to be onReceive and references the data type from the data model
 
 
-## Example System Model (Point of Sale)
-The CONOPS starts with the product scanner identifying a barcode and publishing the scan result.  The product catalog 
-subscribes to this, looks up the product info, and publishes it.
-
-See ./point-of-sale.yaml
-
-
-
-
-"uses": {
-                "description": "",
-                "type": "array",
-                "items": {"items": { "$ref": "#/$defs/use" }},
-                "minItems": 0,
-                "uniqueItems": true
-            },
-
-            "prefixItems": [
-              { "type": "string" },
-              { "type": "string" }
-            ],
-            "items": false
-
-
-            "refs": {
-                        "description": "",
-                        "type": "array",
-                        "items": {"items": { "$ref": "#/$defs/ref" }},
-                        "minItems": 0,
-                        "uniqueItems": true
-                    },
-
+## Updates done over the weekend
+I've spent some time exploring ideas and made some significant changes.  I've pretty much rewritten the whole thing, but I have preserved the original code in the orig folder.
+1) Changed to a (mostly) self defining modeling capabiliy.
+    - Initially I was validating YAML models using a JSON schema.  This worked pretty well, but required learning of JSON schemas to extent the capability.
+    - Now there is a YAML definition of the AaC modelling language, using the AaC modeling language.
+    - There are some "hard coded" core concepts now baked into the validation.
+        - The representation of import, data, and model (top level) are hard coded and cannot be changed.
+        - The existance of a model item is hard coded, but the content is validated using the YAML model in AaC.yaml
+        - All data types within model are dynamic...although I'm sure certain things will break if changes are made.
+        - Nothing is hardened...or resiliently designed.
+        - There are no real tests...just sample models that can be ran.
+2) I've modeled the AaC CLI...but it's just a model, not used for anything.
+    - I've found this useful to reason about the design of the AaC model structure and tool implementation.
+    - I have hand built the AaC CLI based on the AaC CLI model as best I could.
+    - Hopefully this will allow me to experiment with code generation in the future.  I'd like to generate the CLI base applicaiton if possible.
+3) Not really a change, but I've stuck with Python
+    - I am not a Python developer.  Any Pythonistas out there will have plenty of opportunity to make fun of what I've done here.
+    - I have enjoyed learning Python as I went through this.  
+4) There's a lot of things I've considered doing but haven't
+    - Create a built-in representation of hashmaps for use in modeling (but maybe I'm just too reliant on Python dict types now)
+    - Attempt to only use the root data type as the sole "hard coded" item and truely make the model dog food itself
+    - Refactor and build real unit tests / acceptance tests
+    - Auto-generate Cucumber feature files from a scenario.
+    - Auto-generate PlantUML sequence diagrams.
+    - Auto-generate RESTful service infrastructure for request-response behaviors
+    - Create an extension solution in the model to modify built-in data types and enums
+    - Create a XOR validation for fields in a data model (not convinced this is a good idea)
+    - Create a way to reference other definitions within the model for additional validation (i.e. data.required value must be in data.fields.name)
+    - Auto-generate documentation (probably need alot more description fields in the model definition to capture content)
+    - Create a way to reference external items (ex: requirement, story, spec, etc)
+    - Implement a use case at the root that can be used to generate sequence diagrams
 
 
 ## Python setup

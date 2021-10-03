@@ -12,6 +12,8 @@ data:
       type: data
     - name: model
       type: model
+    - name: usecase
+      type: usecase
 ---
 data:
   name: enum
@@ -121,3 +123,48 @@ data:
   required:
     - name
     - behavior
+---
+data:
+  name: usecase
+  fields:
+    - name: title
+      type: string
+    - name: description
+      type: string
+    - name: participants
+      type: Field[]
+    - name: steps
+      type: Step[]
+  required:
+    - title
+    - participants
+    - steps
+---
+data:
+  name: Step
+  fields:
+    - name: description  # this is the human readable narrative suitable for document generation
+      type: string
+    - name: source  # this should be a name of a participant (i.e. modelled system component)
+      type: string
+    - name: target  # this should be a name of a participant (i.e. modelled system component)
+      type: string
+    - name: action  # this as a behavior reference on the target or a subordinate use case definition
+      type: string  
+    - name: if      # would create an alt in a sequence diagram
+      type: Branch
+    - name: else    # would create the "lower cell" in an alt in a sequence diagram
+      type: Branch
+    - name: loop    # would create a loop in a sequence diagram
+      type: Branch
+---
+data:
+  name: Branch
+  fields:
+    - name: condition
+      type: string
+    - name: steps
+      type: Step[]
+  required:
+    - condition
+    - steps
