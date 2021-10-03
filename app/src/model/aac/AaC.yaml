@@ -114,7 +114,7 @@ data:
       type: string
     - name: description
       type: string
-    - name: uses
+    - name: components
       type: Field[]
     - name: behavior
       type: Behavior[]

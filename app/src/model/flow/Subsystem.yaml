@@ -4,7 +4,7 @@ import:
   - ./ServiceTwo.yaml
 model:
   name: Subsystem
-  uses:
+  components:
     - name: svc2
       type: ServiceTwo
   behavior:

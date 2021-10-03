@@ -1,5 +1,6 @@
 from typing import Tuple
 import ArchParser
+import ArchUtil
 import os
 
 primitive_types = ["string", "int", "number", "bool", "date", "file"]  #TODO fix this cut-and-paste from ArchParser
@@ -183,8 +184,8 @@ def validate_cross_references(models, data, enums):
     
     for model_name in data.keys():
         data_entry = data[model_name]
-        data_fields = search(data_entry, ["data", "fields"])
-        data_model_types = search(data_entry, ["data", "fields", "type"])
+        data_fields = ArchUtil.search(data_entry, ["data", "fields"])
+        data_model_types = ArchUtil.search(data_entry, ["data", "fields", "type"])
         # print("processing {} - data_model_types: {}".format(model_name, data_model_types))
         for data_model_type in data_model_types:
             isList, baseTypeName = getBaseTypeName(data_model_type)
@@ -194,9 +195,9 @@ def validate_cross_references(models, data, enums):
 
     for model_name in models.keys():
         model_entry = models[model_name]
-        model_entry_types = search(model_entry, ["model", "uses", "type"])
-        model_entry_types.extend(search(model_entry, ["model", "behavior", "input", "type"]))
-        model_entry_types.extend(search(model_entry, ["model", "behavior", "output", "type"]))
+        model_entry_types = ArchUtil.search(model_entry, ["model", "components", "type"])
+        model_entry_types.extend(ArchUtil.search(model_entry, ["model", "behavior", "input", "type"]))
+        model_entry_types.extend(ArchUtil.search(model_entry, ["model", "behavior", "output", "type"]))
         # print("processing {} - model_entry_types: {}".format(model_name, model_entry_types))
         for model_entry_type in model_entry_types:
             isList, baseTypeName = getBaseTypeName(model_entry_type)
@@ -216,7 +217,7 @@ def validate_enum_values(models, data, enums):
     enum_fields = {}  #key: type name  value: field
     for data_name in data:
         data_model = data[data_name]
-        fields = search(data_model, ["data", "fields"])
+        fields = ArchUtil.search(data_model, ["data", "fields"])
         for field in fields:
             field_type = getBaseTypeName(field["type"])
             if field_type in enums.keys():
@@ -243,12 +244,12 @@ def validate_enum_values(models, data, enums):
             # skip primitives
             continue
         paths = enum_validation_paths[enum_name]
-        valid_values = search(enums[enum_name], ["enum", "values"])
+        valid_values = ArchUtil.search(enums[enum_name], ["enum", "values"])
         # print("Enum {} valid values: {}".format(enum_name, valid_values))
 
         for model_name in models:
             for path in found_paths:
-                for result in search(models[model_name], path):
+                for result in ArchUtil.search(models[model_name], path):
                     # print("Model {} entry {} has a value {} being validated by the enumeration {}: {}".format(model_name, path, result, enum_name, valid_values))
                     if not result in valid_values:
                         foundInvalid = True
@@ -262,7 +263,7 @@ def validate_enum_values(models, data, enums):
 def findEnumFieldPaths(find_enum, data_name, data_type, data, enums) -> list:
     # print("findEnumFieldPaths: {}, {}, {}".format(find_enum, data_name, data_type))
     data_model = data[data_type]
-    fields = search(data_model, ["data", "fields"])
+    fields = ArchUtil.search(data_model, ["data", "fields"])
     enum_fields = []
     for field in fields:
         isList, field_type = getBaseTypeName(field["type"])
@@ -286,55 +287,14 @@ def findEnumFieldPaths(find_enum, data_name, data_type, data, enums) -> list:
         retVal.append(entry)
     return retVal
 
-def search(model, input_keys):
-    """
-    searches a dict for the contents given a set of keys
-    """
-    # print("searching for keys: {}",format(keys))
-    keys = input_keys.copy()
-    if len(keys) == 0:
-        print("search error - empty keys")
-        return []
-    search_key = keys.pop(0)
-    final_key = len(keys) == 0
-    if not isinstance(model, dict):
-        print("search error - model is not a dict")
-        return []
-    else:
-        if search_key in model:
-            model_value = model[search_key]
-            if final_key:
-                if isinstance(model_value, list):
-                    return model_value
-                else:
-                    retVal = []
-                    retVal.append(model_value)
-                    return retVal
 
-            if isinstance(model_value, dict):    
-                return search(model[search_key], keys)
-            elif isinstance(model_value, list):
-                retVal = []
-                for model_item in model_value:
-                    # print(model_item)
-                    if isinstance(model_item, dict):
-                        retVal.extend(search(model_item, keys))
-                    else:
-                        print("serach error - lists can only contain dicts")
-                return retVal
-            else:
-                print("search error - keys not found")
-                return []
-        else:
-            # not an error, just zero search results
-            return []
 
 def getSpecRequiredFields(spec_model, name):
-    return search(spec_model, [name, "data", "required"])
+    return ArchUtil.search(spec_model, [name, "data", "required"])
 
 def getSpecFieldNames(spec_model, name):
     retVal = []
-    fields = search(spec_model, [name, "data", "fields"])
+    fields = ArchUtil.search(spec_model, [name, "data", "fields"])
     for field in fields:
         retVal.append(field["name"])
     return retVal
@@ -347,7 +307,7 @@ def getBaseTypeName(type_declaration):
 
 def getModelObjectFields(spec_model, enum_spec, name):
     retVal = {}
-    fields = search(spec_model, [name, "data", "fields"])
+    fields = ArchUtil.search(spec_model, [name, "data", "fields"])
     for field in fields:
         isList, field_type_name = getBaseTypeName(field["type"])
         isEnum = field_type_name in enum_spec.keys()
@@ -373,24 +333,11 @@ def validate_model_entry(name, model_type, model, data_spec, enum_spec):
     :param model: The model to be validated.
     :param data_specs: The data definitions of the modelled system (including AaC base types). 
     """
-    # print("Validating model: {} of type {}".format(name, model_type))
-    # print("model ==")
-    # print(model)
-    # print("spec ==")
-    # print(data_spec)
     
     # make sure the model fields are correct per the spec
     model_spec_fields = getSpecFieldNames(data_spec, model_type)
     model_spec_required_fields = getSpecRequiredFields(data_spec, model_type)
     model_fields = list(model.keys())
-
-    # print("")
-    # print("# model_fields: {}".format(len(model_fields)))
-    # print(model_fields)
-    # print("")
-    # print("# model_spec_fields: {}".format(len(model_spec_fields)))
-    # print(model_spec_fields)
-    # print(model_spec_required_fields)
 
     # check that required fields are present
     for required_field in model_spec_required_fields:

@@ -18,6 +18,18 @@
             "cwd": "c:\\Users\\black\\Documents\\repo\\AaC"
         },
         {
+            "name": "Python: json Self",
+            "type": "python",
+            "request": "launch",
+            "program": "./app/src/main/python/aac/aac.py",
+            "console": "integratedTerminal",
+            "args": [
+                "json",
+                "./app/src/model/aac/AaC.yaml"
+            ],
+            "cwd": "c:\\Users\\black\\Documents\\repo\\AaC"
+        },
+        {
             "name": "Python: Validate CLI",
             "type": "python",
             "request": "launch",
@@ -25,6 +37,30 @@
             "console": "integratedTerminal",
             "args": [
                 "validate",
+                "./app/src/model/aac/AaC_CLI.yaml"
+            ],
+            "cwd": "c:\\Users\\black\\Documents\\repo\\AaC"
+        },
+        {
+            "name": "Python: json CLI",
+            "type": "python",
+            "request": "launch",
+            "program": "./app/src/main/python/aac/aac.py",
+            "console": "integratedTerminal",
+            "args": [
+                "json",
+                "./app/src/model/aac/AaC_CLI.yaml"
+            ],
+            "cwd": "c:\\Users\\black\\Documents\\repo\\AaC"
+        },
+        {
+            "name": "Python: puml CLI",
+            "type": "python",
+            "request": "launch",
+            "program": "./app/src/main/python/aac/aac.py",
+            "console": "integratedTerminal",
+            "args": [
+                "puml",
                 "./app/src/model/aac/AaC_CLI.yaml"
             ],
             "cwd": "c:\\Users\\black\\Documents\\repo\\AaC"
@@ -42,6 +78,30 @@
             "cwd": "c:\\Users\\black\\Documents\\repo\\AaC"
         },
         {
+            "name": "Python: json echo",
+            "type": "python",
+            "request": "launch",
+            "program": "./app/src/main/python/aac/aac.py",
+            "console": "integratedTerminal",
+            "args": [
+                "json",
+                "./app/src/model/echo/EchoService.yaml"
+            ],
+            "cwd": "c:\\Users\\black\\Documents\\repo\\AaC"
+        },
+        {
+            "name": "Python: puml echo",
+            "type": "python",
+            "request": "launch",
+            "program": "./app/src/main/python/aac/aac.py",
+            "console": "integratedTerminal",
+            "args": [
+                "puml",
+                "./app/src/model/echo/EchoService.yaml"
+            ],
+            "cwd": "c:\\Users\\black\\Documents\\repo\\AaC"
+        },
+        {
             "name": "Python: Validate flow",
             "type": "python",
             "request": "launch",
@@ -54,26 +114,28 @@
             "cwd": "c:\\Users\\black\\Documents\\repo\\AaC"
         },
         {
-            "name": "Python: Json Flow",
+            "name": "Python: json flow",
             "type": "python",
             "request": "launch",
-            "program": "./app/src/main/python/aac.py",
+            "program": "./app/src/main/python/aac/aac.py",
             "console": "integratedTerminal",
             "args": [
                 "json",
                 "./app/src/model/flow/System.yaml"
-            ]
+            ],
+            "cwd": "c:\\Users\\black\\Documents\\repo\\AaC"
         },
         {
-            "name": "Python: Puml Flow",
+            "name": "Python: puml flow",
             "type": "python",
             "request": "launch",
-            "program": "./app/src/main/python/aac.py",
+            "program": "./app/src/main/python/aac/aac.py",
             "console": "integratedTerminal",
             "args": [
                 "puml",
                 "./app/src/model/flow/System.yaml"
-            ]
+            ],
+            "cwd": "c:\\Users\\black\\Documents\\repo\\AaC"
         }
     ]
 }

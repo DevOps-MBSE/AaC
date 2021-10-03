@@ -1,5 +1,7 @@
 import argparse
 import ArchValidator
+import ArchJson
+import ArchPuml
 import yaml
 
 list_suffix = "[]"
@@ -23,7 +25,12 @@ if __name__ == '__main__':
     model_file = args.yaml
     # print(model_file)
 
-    validation_result = ArchValidator.validate(model_file)
-    print(yaml.dump(validation_result))
-    # print(json.dumps(data_types))
-    # print(json.dumps(model_types))
+    if (args.command == "validate"):
+        validation_result = ArchValidator.validate(model_file)
+        print(yaml.dump(validation_result))
+    
+    if (args.command == "json"):
+        print(ArchJson.toJson(model_file))
+
+    if (args.command == "puml"):
+        print(ArchPuml.toPuml(model_file))
