@@ -381,7 +381,39 @@ def validate_model_entry(name, model_type, model, data_spec, enum_spec):
     return True, [""]
 
 def validate_usecase(usecase, data_spec, enum_spec):
+
+    foundInvalid = False
+    errMsgList = []
+
     # a usecase item has a key of 'usecase', and no other keys   TODO:  import is also a valid root...need to make sure this is handled correctly
     if not "usecase" in usecase.keys():
+        # nothing to validate so return immediately
         return False, ["the root type for usecase must be 'usecase'"]
-    return validate_model_entry("usecase", "usecase", usecase["usecase"], data_spec, enum_spec)
+
+    # validate against the aac spec
+    isValid, errMsg =  validate_model_entry("usecase", "usecase", usecase["usecase"], data_spec, enum_spec)
+    if not isValid:
+        foundInvalid = True
+        errMsgList = errMsgList + errMsg
+
+    # make sure source and target are known participants
+    use_case_title = usecase["usecase"]["title"]
+    participant_names = ArchUtil.search(usecase, ["usecase", "participants", "name"])
+    steps = ArchUtil.search(usecase, ["usecase", "steps"])
+    for step in steps:
+        source = step["source"]
+        target = step["target"]
+
+        if not source in participant_names:
+            foundInvalid = True
+            errMsgList.append("Use Case [{}] validation error: source {} not found in participants {}".format(use_case_title, source, participant_names))
+
+        if not target in participant_names:
+            foundInvalid = True
+            errMsgList.append("Use Case [{}] validation error: target {} not found in participants {}".format(use_case_title, target, participant_names))
+
+    if not foundInvalid:
+        return True, [""]
+    else:
+        return False, errMsgList
+    

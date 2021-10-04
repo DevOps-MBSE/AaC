@@ -100,6 +100,9 @@ def umlSequence(archFile):
         for use_case_title in find_root_names(use_case_types):
             # start the uml
             puml_lines.append("@startuml")
+
+            # add the title
+            puml_lines.append("title {}".format(use_case_title))
             
             # declare participants
             participants = ArchUtil.search(use_case_types[use_case_title], ["usecase", "participants"])
