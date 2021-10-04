@@ -46,7 +46,11 @@ I've spent some time exploring ideas and made some significant changes.  I've pr
     - Hopefully this will allow me to experiment with code generation in the future.  I'd like to generate the CLI base applicaiton if possible.
 3) Not really a change, but I've stuck with Python
     - I am not a Python developer.  Any Pythonistas out there will have plenty of opportunity to make fun of what I've done here.
-    - I have enjoyed learning Python as I went through this.  
+    - I have enjoyed learning Python as I went through this.
+4) Added use cases
+    - There is a new root type called usecase
+    - Parsing and validation works (good enough for now anyway)
+    - Changed puml to include two commands:  puml-component generates component diagram from a model, puml-sequence generates sequence diagram from a usecase
 4) There's a lot of things I've considered doing but haven't
     - Create a built-in representation of hashmaps for use in modeling (but maybe I'm just too reliant on Python dict types now)
     - Attempt to only use the root data type as the sole "hard coded" item and truely make the model dog food itself
