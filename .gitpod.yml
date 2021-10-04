@@ -1,0 +1,9 @@
+tasks:
+  - init: pip install pyyaml jsonschema nose2
+
+vscode:
+  extensions:
+    - eamodio.gitlens
+    - redhat.vscode-yaml
+    - editorconfig.editorconfig
+    - ms-python.python
