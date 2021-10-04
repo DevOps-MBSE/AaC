@@ -4,7 +4,7 @@ import:
 model:
   name: ServiceThree
   behavior:
-    - name: Process DataC
+    - name: ProcessDataC
       type: request-response
       input:
         - name: in

@@ -4,7 +4,7 @@ import:
 model:
   name: ServiceOne
   behavior:
-    - name: Process DataA
+    - name: ProcessDataA
       type: request-response
       input:
         - name: in

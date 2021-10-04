@@ -9,7 +9,7 @@ def validate(archFile):
 
     aac_models, aac_data, aac_enums = getAaCSpec()
 
-    model_types, data_types, enum_types = ArchParser.parse(archFile)
+    model_types, data_types, enum_types, use_case_types = ArchParser.parse(archFile)
 
     # combine parsed types and AaC built-in types
     all_data_types = aac_data | data_types
@@ -36,6 +36,12 @@ def validate(archFile):
         isValid, errMsg = validate_model(model, all_data_types, all_enum_types)
         if not isValid:
             # print("Model Validation Failed: {}".format(errMsg))
+            foundInvalid = True
+            errMsgList = errMsgList + errMsg
+    
+    for usecase in use_case_types.values():
+        isValid, errMsg = validate_usecase(usecase, all_data_types, all_enum_types)
+        if not isValid:
             foundInvalid = True
             errMsgList = errMsgList + errMsg
 
@@ -70,7 +76,7 @@ def getAaCSpec():
     relpath_to_aac_yaml = "../../../model/aac/AaC.yaml"
     aac_model_file = parse_path = os.path.join(this_file_path, relpath_to_aac_yaml) 
     
-    model_types, data_types, enum_types = ArchParser.parse(aac_model_file)
+    model_types, data_types, enum_types, use_case_types = ArchParser.parse(aac_model_file)
 
     return model_types, data_types, enum_types
 
@@ -373,3 +379,9 @@ def validate_model_entry(name, model_type, model, data_spec, enum_spec):
                 return isValid, errMsg
         
     return True, [""]
+
+def validate_usecase(usecase, data_spec, enum_spec):
+    # a usecase item has a key of 'usecase', and no other keys   TODO:  import is also a valid root...need to make sure this is handled correctly
+    if not "usecase" in usecase.keys():
+        return False, ["the root type for usecase must be 'usecase'"]
+    return validate_model_entry("usecase", "usecase", usecase["usecase"], data_spec, enum_spec)

@@ -6,6 +6,7 @@ def parse(archFile: str):
     enum_types = {}
     data_types = {}
     model_types = {}
+    use_case_types = {}
 
     arch_file_path = os.path.dirname(os.path.realpath(archFile))
     # print("parsing {} in directory {}".format(archFile, arch_file_path))
@@ -37,5 +38,7 @@ def parse(archFile: str):
                 data_types[root["data"]["name"]] = root
             if "model" in root.keys():
                 model_types[root["model"]["name"]] = root
+            if "usecase" in root.keys():
+                use_case_types[root["usecase"]["title"]] = root
    
-    return model_types, data_types, enum_types
+    return model_types, data_types, enum_types, use_case_types

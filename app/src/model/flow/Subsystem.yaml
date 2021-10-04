@@ -8,7 +8,7 @@ model:
     - name: svc2
       type: ServiceTwo
   behavior:
-    - name: process DataB
+    - name: processDataB
       type: request-response
       input:
         - name: in

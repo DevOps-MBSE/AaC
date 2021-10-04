@@ -54,13 +54,13 @@
             "cwd": "c:\\Users\\black\\Documents\\repo\\AaC"
         },
         {
-            "name": "Python: puml CLI",
+            "name": "Python: puml-component CLI",
             "type": "python",
             "request": "launch",
             "program": "./app/src/main/python/aac/aac.py",
             "console": "integratedTerminal",
             "args": [
-                "puml",
+                "puml-component",
                 "./app/src/model/aac/AaC_CLI.yaml"
             ],
             "cwd": "c:\\Users\\black\\Documents\\repo\\AaC"
@@ -90,13 +90,13 @@
             "cwd": "c:\\Users\\black\\Documents\\repo\\AaC"
         },
         {
-            "name": "Python: puml echo",
+            "name": "Python: puml-component echo",
             "type": "python",
             "request": "launch",
             "program": "./app/src/main/python/aac/aac.py",
             "console": "integratedTerminal",
             "args": [
-                "puml",
+                "puml-component",
                 "./app/src/model/echo/EchoService.yaml"
             ],
             "cwd": "c:\\Users\\black\\Documents\\repo\\AaC"
@@ -126,14 +126,26 @@
             "cwd": "c:\\Users\\black\\Documents\\repo\\AaC"
         },
         {
-            "name": "Python: puml flow",
+            "name": "Python: puml-component flow",
             "type": "python",
             "request": "launch",
             "program": "./app/src/main/python/aac/aac.py",
             "console": "integratedTerminal",
             "args": [
-                "puml",
+                "puml-component",
                 "./app/src/model/flow/System.yaml"
+            ],
+            "cwd": "c:\\Users\\black\\Documents\\repo\\AaC"
+        },
+        {
+            "name": "Python: puml-seuence flow",
+            "type": "python",
+            "request": "launch",
+            "program": "./app/src/main/python/aac/aac.py",
+            "console": "integratedTerminal",
+            "args": [
+                "puml-sequence",
+                "./app/src/model/flow/flow.yaml"
             ],
             "cwd": "c:\\Users\\black\\Documents\\repo\\AaC"
         }

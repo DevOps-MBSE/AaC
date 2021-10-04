@@ -1,0 +1,47 @@
+usecase:
+  title: Nominal flow of data through the system.
+  description:
+  participants:
+    - name: user
+      type: User
+    - name: system
+      type: System
+  steps:
+    - step:  The user invokes doFlow on system.
+      source: user
+      target: system
+      action: doFlow
+    - step:  The system performs flow and responds to the user.
+      source: system
+      target: user
+      action: response
+---
+usecase:
+  title: Nominal flow within the system.
+  description:
+  participants:
+    - name: system
+      type: System
+    - name: svc1
+      type: ServiceOne
+    - name: subsystem
+      type: Subsystem
+    - name: svc3
+      type: ServiceThree
+  steps:
+    - step:  The system has been invoked to doFlow which triggers scv1
+      source: system
+      target: svc1
+      action: ProcessDataA
+    - step:  svc1 completes and calls subsystem to continue the flow
+      source: svc1
+      target: subsystem
+      action: processDataB
+    - step: subsystem completes and calls svc3 to continue the flow
+      source: subsystem
+      target: svc3
+      action: processDataC
+    - step: svc3 completes and provides the result back to system
+      source: svc3
+      target: system
+      action: response

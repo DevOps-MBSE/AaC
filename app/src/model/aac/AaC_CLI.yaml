@@ -31,24 +31,22 @@ model:
       acceptance:
         - scenario: Validate a correct architecture.
           given:
-            - The validate command is selected.
-            - The input.archFile contains a valid architecture specification.
+            - The {{validate.input.archFile}} contains a valid architecture specification.
           when:
-            - Validation is performed.
+            - The aac application is run with the validate command.
           then:
-            - The output.isValid output is true.
-            - The output.errorMsg output is empty.
+            - The {{validate.output.result.isValid}} output is true.
+            - The {{validate.output.result.errorMsg}} output is empty.
         - scenario: Validate an incorrect architecture.
           tags:
             - 'off-nominal'
           given:
-            - The validate command is selected.
-            - the input.archFile contains an invalid architecture specification.
+            - The {{validate.input.archFile}} contains an invalid architecture specification.
           when:
-            - Validation is performed.
+            - The aac application is run with the validate command.
           then:
-            - The output.isValid output is false.
-            - The output.errorMsg output contains details of the error.
+            - The {{validate.output.result.isValid}} output is false.
+            - The {{validate.output.result.errorMsg}} output contains details of the error.
     - name: json
       type: command
       description: '''
@@ -64,28 +62,24 @@ model:
       acceptance:
         - scenario: Output JSON for valid architecture.
           given:
-            - The json command is selected.
-            - The input.archFile contains a valid architecture specification.
+            - The {{json.input.archFile}} contains a valid architecture specification.
           when:
-            - JSON conversion is performed.
+            - The aac app is run with the json command.
           then:
-            - The output.json contains a JSON representation of the architecture specification.
-            - The output.errorMsg is empty.
+            - The {{json.output.json}} contains a JSON representation of the architecture specification.
         - scenario: Output error for invalid architecture.
           tags: ["off-nominal"]
           given:
-            - The json command is selected.
-            - The input.archFile contains an invalid architecture specification.
+            - The {{json.input.archFile}} contains an invalid architecture specification.
           when:
-            - JSON conversion is performed.
+            - The aac app is run with the json command.
           then:
-            - The output.json is empty.
-            - The output.errorMsg contains details of the error.
-    - name: puml
+            - The application raises an exception.
+    - name: puml-component
       type: command
       description: '''
-      The puml command reads a yaml file containing an architecture specification, validates it using the validate command, 
-      and if valid outputs a corresponding PlantUML representation.  If the input yaml is invlid, an error message is provided.
+      The puml-component command reads a yaml file containing an architecture specification, validates it using the validate command, 
+      and if valid outputs a corresponding PlantUML representation.  If the input yaml is invlid, an exception is thrown.
       '''
       input:
         - name: archFile
@@ -94,23 +88,49 @@ model:
         - name: puml
           type: string
       acceptance:
-        - scenario: Output PlantUML for valid architecture.
+        - scenario: Output PlantUML component diagram for valid architecture.
           given:
-            - The puml command is selected.
-            - The input.archFile contains a valid architecture specification.
+            - The {{puml.input.archFile}} contains a valid architecture specification.
           when:
-            - PlantUML conversion is performed.
+            - The aac app is run with the puml-component command.
           then:
-            - The output.puml contains a PlantUML representation of the architecture specification.
+            - The {{puml.output.puml}} contains a PlantUML representation of the architecture specification.
         - scenario: Output error for invalid architecture.
           tags: ["off-nominal"]
           given:
-            - The puml command is selected.
-            - The input.archFile contains an invalid architecture specification.
+            - The {{puml.input.archFile}} contains an invalid architecture specification.
           when:
-            - PlantUML conversion is performed.
+            - The aac app is run with the puml command.
           then:
-            - The output.puml is empty.
+            - The application raises an exception.
+    - name: puml-sequence
+      type: command
+      description: '''
+      The puml-sequence command reads a yaml file containing an use case specification, validates it using the validate command, 
+      and if valid outputs a corresponding PlantUML sequence diagram representation.  If the input yaml is invlid, an exception is thrown.
+      '''
+      input:
+        - name: archFile
+          type: file
+      output:
+        - name: puml
+          type: string
+      acceptance:
+        - scenario: Output PlantUML sequence diagram for valid use case.
+          given:
+            - The {{puml.input.archFile}} contains a valid use case specification.
+          when:
+            - The aac app is run with the puml-sequence command.
+          then:
+            - The {{puml.output.puml}} contains a PlantUML sequence diagram of the use case specification.
+        - scenario: Output error for invalid architecture.
+          tags: ["off-nominal"]
+          given:
+            - The {{puml.input.archFile}} contains an invalid specification.
+          when:
+            - The aac app is run with the puml-sequence command.
+          then:
+            - The application raises an exception.
 ---
 data:
   name: ParserResult
@@ -121,6 +141,8 @@ data:
       type: DataMap[]
     - name: enums
       type: EnumMap[]
+    - name: errorMsg
+      type: string[]
 ---
 data:
   name: ModelMap
@@ -164,72 +186,79 @@ model:
       acceptance:
         - scenario: Parse a valid YAML model.
           given:
-            - The input.archFile is a valid YAML file containing a single model.
+            - The {{parse.input.archFile}} is a valid YAML file containing a single model.
           when:
             - The parser is run.
           then:
-            - The output.result.models is not empty.
-            - The output.result.models contains a single entry.
-            - The output.result.data is empty.
+            - The {{parse.output.result.models}} is not empty.
+            - The {{parse.output.result.models contains}} a single entry.
+            - The {{parse.output.result.data}} is empty.
+            - The {{parse.output.enums}} is empty.
+            - The {{parse.output.errorMsg}} is empty.
         - scenario: Parse invalid YAML model.
           given:
-            - The input.archFile is an invalid YAML file containing a single model.
+            - The {{parse.input.archFile}} is an invalid YAML file containing a single model.
           when:
             - The parser is run.
           then:
-            - The output.model is empty.
-            - The output.data is empty.
-            - The output.errorMsg contains information about the error.
+            - The {{parse.output.models}} is empty.
+            - The {{parse.output.data}} is empty.
+            - The {{parse.output.enums}} is empty.
+            - The {{parse.output.errorMsg}} contains information about the error.
         - scenario: Parse a valid YAML data.
           given:
-            - The input.archFile is a valid YAML file containing a single data.
+            - The {{parse.input.archFile}} is a valid YAML file containing a single data.
           when:
             - The parser is run.
           then:
-            - The output.model is empty.
-            - The output.data is not empty.
-            - The output.data contains a single entry.
-            - The output.errorMsg is empty.
+            - The {{parse.output.models}} is empty.
+            - The {{parse.output.data}} is not empty.
+            - The {{parse.output.data}} contains a single entry.
+            - The {{parse.output.enums}} is empty.
+            - The {{parse.output.errorMsg}} is empty.
         - scenario: Parse invalid YAML data.
           given:
-            - The input.archFile is an invalid YAML file containing a single data.
+            - The {{parse.input.archFile}} is an invalid YAML file containing a single data.
           when:
             - The parser is run.
           then:
-            - The output.model is empty.
-            - The output.data is empty.
-            - The output.errorMsg contains information about the error.
+            - The {{parse.output.models}} is empty.
+            - The {{parse.output.data}} is empty.
+            - The {{parse.output.enums}} is empty.
+            - The {{parse.output.errorMsg} contains information about the error.
         - scenario: Parse a valid YAML multi-entry model.
           given:
-            - The input.archFile is a valid YAML file containing two models.
+            - The {{parse.input.archFile}} is a valid YAML file containing two models.
           when:
             - The parser is run.
           then:
-            - The output.model is not empty.
-            - The output.model contains two entries.
-            - The output.data is empty.
-            - The output.errorMsg is empty.
+            - The {{parse.output.models}} is not empty.
+            - The {{parse.output.models}} contains two entries.
+            - The {{parse.output.data}} is empty.
+            - The {{parse.output.enums}} is empty.
+            - The {{parse.output.errorMsg}} is empty.
         - scenario: Parse a valid YAML multi-entry data.
           given:
-             - The input.archFile is a valid YAML file containing two data.
+             - The {{parse.input.archFile}} is a valid YAML file containing two data.
           when:
             - The parser is run.
           then:
-            - The output.model is empty.
-            - The output.data contains two entries.
-            - The output.data is empty.
-            - The output.errorMsg is empty.
+            - The {{parse.output.models}} is empty.
+            - The {{parse.output.data}} contains two entries.
+            - The {{parse.output.enums}} is empty.
+            - The {{parse.output.errorMsg}} is empty.
         - scenario: Parse a valid YAML multi-entry model and data.
           given:
-            - The input.archFile is a valid YAML file containing one model and one data.
+            - The {{parse.input.archFile}} is a valid YAML file containing one model and one data.
           when:
             - The parser is run.
           then:
-            - The output.model is not empty.
-            - The output.model contains one entry.
-            - The output.data is not empty.
-            - The output.data contains one entry.
-            - The output.errorMsg is empty.
+            - The {{parse.output.models}} is not empty.
+            - The {{parse.output.models}} contains one entry.
+            - The {{parse.output.data}} is not empty.
+            - The {{parse.output.data}} contains one entry.
+            - The {{parse.output.enums}}  is empty.
+            - The {{parse.output.errorMsg}} is empty.
 ---
 data:
   name: ValidationResult
@@ -256,20 +285,20 @@ model:
       acceptance:
         - scenario: Validate a good model.
           given:
-            - The input.model is correct in form and content.
+            - The {{validate.input.archFile}} is correct in form and content.
           when:
             - The validator is run.
           then:
-            - The output.result.isValid is true.
-            - The output.result.errorMsg is empty.
+            - The {{validate.output.result.isValid}} is true.
+            - The {{validate.output.result.errorMsg}} is empty.
         - scenario: Validate a bad model.
           given:
-            - The input.model is an invalid.
+            - The {{validate.input.archFile}} is an invalid.
           when:
             - The validator is run.
           then:
-            - The output.result.isValid is false.
-            - The output.result.errorMsg contains information about the error.
+            - The {{validate.output.result.isValid}} is false.
+            - The {{validate.output.result.errorMsg}} contains information about the error.
 ---
 model: 
   name: JsonConverter
@@ -288,11 +317,11 @@ model:
       acceptance:
         - scenario: Convert a good model.
           given:
-            - The input.model is correct in form and content.
+            - The {{convertJson.input.archFile}} is correct in form and content.
           when:
             - The JsonConverter is run.
           then:
-            - The output.json is not empty.
+            - The {{convertJson.output.json}} is not empty.
 ---
 model: 
   name: PlantUmlGenerator
@@ -311,9 +340,26 @@ model:
       acceptance:
         - scenario: Convert a good model.
           given:
-            - The input.model is correct in form and content.
+            - The {{umlComponent.input.archFile}} is correct in form and content.
           when:
-            - The PlantUmlConverter is run.
+            - The PlantUmlConverter component generator is run.
           then:
-            - The output.umlComponentModel is not empty.      
+            - The {{umlComponent.output.umlComponentModel}} is not empty.  
+    behavior:
+    - name: umlSequence
+      type: request-response
+      input:
+        - name: archFile
+          type: file
+      output:
+        - name: umlSequenceModel
+          type: string
+      acceptance:
+        - scenario: Convert a good model.
+          given:
+            - The {{umlComponent.input.archFile}} is correct in form and content.
+          when:
+            - The PlantUmlConverter sequence generator is run.
+          then:
+            - The {{umlComponent.output.umlSequenceModel}} is not empty.    
           

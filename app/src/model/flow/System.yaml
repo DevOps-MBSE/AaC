@@ -15,7 +15,7 @@ model:
     - name: svc3
       type: ServiceThree
   behavior:
-    - name: Do flow
+    - name: doFlow
       type: request-response
       description:  process DataA and respond with DataD
       input:
