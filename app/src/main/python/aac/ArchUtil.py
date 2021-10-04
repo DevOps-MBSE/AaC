@@ -2,6 +2,8 @@ import ArchParser
 import os
 
 primitives = []
+aac_data = {}
+aac_enums = {}
 
 def search(model, input_keys):
     """
@@ -50,6 +52,12 @@ def getAaCSpec():
     """
     Gets the specification for Architecture-as-Code iteself.  The AaC model specification is defined as an AaC model and is needed for model validation. 
     """
+
+    global aac_data
+    global aac_enums
+    if len(aac_data.keys()) > 0:
+        # already parsed, just return cached values
+        return aac_data, aac_enums
     # get the AaC.yaml spec for architecture modeling
     file_path = str(os.path.realpath(__file__))
 
@@ -57,17 +65,20 @@ def getAaCSpec():
     relpath_to_aac_yaml = "../../../model/aac/AaC.yaml"
     aac_model_file = parse_path = os.path.join(this_file_path, relpath_to_aac_yaml) 
     
-    model_types, data_types, enum_types, use_case_types = ArchParser.parse(aac_model_file)
+    model_types, aac_data, aac_enums, use_case_types, ext_types = ArchParser.parse(aac_model_file, False)
 
-    return model_types, data_types, enum_types
+    # simple optimization, set primitives if not already set
+    global primitives
+    if len(primitives) == 0:
+        primitives = search(aac_enums["Primitives"], ["enum", "values"])
+
+    return aac_data, aac_enums
 
 def getPrimitives():
 
     global primitives
 
     if len(primitives) == 0:
-        
-        model_types, data_types, enum_types = getAaCSpec()
-        primitives = search(enum_types["Primitives"], ["enum", "values"])
+        data_types, enum_types = getAaCSpec()
     
     return primitives

@@ -4,24 +4,19 @@ import ArchUtil
 
 def umlComponent(archFile) -> str:
 
-    validation = ArchValidator.validate(archFile)
-    if validation["result"]["isValid"]:
-        model_types, data_types, enum_types, use_case_types = ArchParser.parse(archFile)
-        
-        puml_lines = []
-        puml_lines.append("@startuml")
-        for root_model_name in find_root_names(model_types):
-            print_component_content(model_types[root_model_name], [], puml_lines, model_types)
-        puml_lines.append("@enduml")
-
-        retVal = ""
-        for line in puml_lines:
-            retVal = retVal + line + "\n"
-        return retVal
-    else:
-        raise RuntimeError("Failed to validate {}".format(archFile), validation)
-
     
+    model_types, data_types, enum_types, use_case_types, ext_types = ArchParser.parse(archFile)
+    
+    puml_lines = []
+    puml_lines.append("@startuml")
+    for root_model_name in find_root_names(model_types):
+        print_component_content(model_types[root_model_name], [], puml_lines, model_types)
+    puml_lines.append("@enduml")
+
+    retVal = ""
+    for line in puml_lines:
+        retVal = retVal + line + "\n"
+    return retVal
 
 def find_root_names(models):
     root = ""
@@ -93,7 +88,7 @@ def umlSequence(archFile):
 
     validation = ArchValidator.validate(archFile)
     if validation["result"]["isValid"]:
-        model_types, data_types, enum_types, use_case_types = ArchParser.parse(archFile)
+        model_types, data_types, enum_types, use_case_types, ext_types = ArchParser.parse(archFile)
         
         puml_lines = []
         

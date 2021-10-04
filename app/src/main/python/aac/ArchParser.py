@@ -1,12 +1,14 @@
+import ArchValidator
 import os
 import yaml
 
-def parse(archFile: str):
+def parse(archFile: str, validate = True):
 
     enum_types = {}
     data_types = {}
     model_types = {}
     use_case_types = {}
+    ext_types = {}
 
     arch_file_path = os.path.dirname(os.path.realpath(archFile))
     # print("parsing {} in directory {}".format(archFile, arch_file_path))
@@ -25,12 +27,13 @@ def parse(archFile: str):
                         parse_path = os.path.join(arch_file_path, imp)
                     else:
                         parse_path = imp
-                    imp_models, imp_data, imp_enum, imp_usecase = parse(parse_path)
+                    imp_models, imp_data, imp_enum, imp_usecase, imp_ext = parse(parse_path)
 
                     #add imports to the return dicts
                     enum_types = enum_types | imp_enum
                     data_types = data_types | imp_data
                     model_types = model_types | imp_models
+                    ext_types = ext_types | imp_ext
                         
             if "enum" in root.keys():
                 enum_types[root["enum"]["name"]] = root
@@ -40,5 +43,12 @@ def parse(archFile: str):
                 model_types[root["model"]["name"]] = root
             if "usecase" in root.keys():
                 use_case_types[root["usecase"]["title"]] = root
-   
-    return model_types, data_types, enum_types, use_case_types
+            if "extension" in root.keys():
+                ext_types[root["extension"]["name"]] = root
+    if validate:
+        isValid, errMsg = ArchValidator.validate(model_types, data_types, enum_types, use_case_types, ext_types)
+    
+        if not isValid:
+            raise RuntimeError("Failed to validate {}".format(archFile), errMsg)
+
+    return model_types, data_types, enum_types, use_case_types, ext_types

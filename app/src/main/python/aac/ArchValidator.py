@@ -1,13 +1,10 @@
-from typing import Tuple
-import ArchParser
 import ArchUtil
-import os
 
-def validate(archFile):
+def validate(model_types, data_types, enum_types, use_case_types, ext_types):
 
-    aac_models, aac_data, aac_enums = ArchUtil.getAaCSpec()
+    aac_data, aac_enums = ArchUtil.getAaCSpec()
 
-    model_types, data_types, enum_types, use_case_types = ArchParser.parse(archFile)
+    #model_types, data_types, enum_types, use_case_types, ext_types = ArchParser.parse(archFile)
 
     # combine parsed types and AaC built-in types
     all_data_types = aac_data | data_types
@@ -43,6 +40,12 @@ def validate(archFile):
             foundInvalid = True
             errMsgList = errMsgList + errMsg
 
+    for ext in ext_types.values():
+        isValid, errMsg = validate_extension(ext, all_data_types, all_enum_types)
+        if not isValid:
+            foundInvalid = True
+            errMsgList = errMsgList + errMsg
+
     isValid, errMsg = validate_cross_references(model_types, all_data_types, all_enum_types)
     if not isValid:
         foundInvalid = True
@@ -52,6 +55,17 @@ def validate(archFile):
     if not isValid:
         foundInvalid = True
         errMsgList = errMsgList + errMsg
+    
+    for ext in ext_types:
+        type_to_extend = ext_types[ext]["extension"]["type"]
+        if type_to_extend in aac_enums:
+            apply_extension(ext_types[ext], aac_data, aac_enums)
+        if type_to_extend in enum_types:
+            apply_extension(ext_types[ext], data_types, enum_types)
+        if type_to_extend in aac_data:
+            apply_extension(ext_types[ext], aac_data, aac_enums)
+        if type_to_extend in data_types:
+            apply_extension(ext_types[ext], data_types, enum_types)
 
     # if foundInvalid:
     #     print("Model validation failed")
@@ -61,7 +75,7 @@ def validate(archFile):
     #     print("Model is Valid")
 
     # create output
-    return {"result" : {"isValid" : not foundInvalid, "errors" : errMsgList}}
+    return not foundInvalid, errMsgList
 
 def validate_enum(model) -> tuple[bool, list]: 
     """
@@ -400,3 +414,50 @@ def validate_usecase(usecase, data_spec, enum_spec):
     else:
         return False, errMsgList
     
+def validate_extension(extension, data_spec, enum_spec):
+
+    foundInvalid = False
+    errMsgList = []
+
+    # an extension item has a key of 'extension', and no other keys   TODO:  import is also a valid root...need to make sure this is handled correctly
+    if not "extension" in extension.keys():
+        # nothing to validate so return immediately
+        return False, ["the root type for extension must be 'extension'"]
+
+    # validate against the aac spec
+    isValid, errMsg =  validate_model_entry("extension", "extension", extension["extension"], data_spec, enum_spec)
+    if not isValid:
+        foundInvalid = True
+        errMsgList = errMsgList + errMsg
+
+    # make sure the extension is extending something that exists in the model
+    type_to_extend = extension["extension"]["type"]
+    if "enumExt" in extension["extension"]:
+        if not type_to_extend in enum_spec:
+            foundInvalid = True
+            errMsgList.append("Enum Extension [{}] validation error:  cannot extend enum {} because it does not exist".format(extension["name"], type_to_extend))
+            
+    else:
+        if not type_to_extend in data_spec:
+            foundInvalid = True
+            errMsgList.append("Data Extension [{}] validation error:  cannot extend data {} because it does not exist".format(extension["name"], type_to_extend))
+
+    if not foundInvalid:
+        return True, [""]
+    else:
+        return False, errMsgList
+
+def apply_extension(extension, data, enums):
+    type_to_extend = extension["extension"]["type"]
+    if "enumExt" in extension["extension"]:
+        # apply the enum extension
+        updated_values = enums[type_to_extend]["enum"]["values"] + extension["extension"]["enumExt"]["add"]
+        enums[type_to_extend]["enum"]["values"] = updated_values
+    else:
+        # apply the data extension
+        updated_fields = data[type_to_extend]["data"]["fields"] + extension["extension"]["dataExt"]["add"]
+        data[type_to_extend]["data"]["fields"] = updated_fields
+
+        if "required" in extension["extension"]["dataExt"]:
+            updated_required = data[type_to_extend]["data"]["required"] + extension["extension"]["dataExt"]["required"]
+            data[type_to_extend]["data"]["fields"] = updated_required

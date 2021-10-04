@@ -1,5 +1,5 @@
 import argparse
-import ArchValidator
+import ArchParser
 import ArchJson
 import ArchPuml
 import yaml
@@ -27,8 +27,12 @@ if __name__ == '__main__':
     # print(model_file)
 
     if (args.command == "validate"):
-        validation_result = ArchValidator.validate(model_file)
-        print(yaml.dump(validation_result))
+        try:
+            ArchParser.parse(model_file)
+            print("Model [{}] is valid".format(model_file))
+        except RuntimeError:
+            print("Model [{}] is invalid".format(model_file))
+
     
     if (args.command == "json"):
         print(ArchJson.toJson(model_file))

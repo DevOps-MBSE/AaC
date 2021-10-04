@@ -14,6 +14,8 @@ data:
       type: model
     - name: usecase
       type: usecase
+    - name: ext
+      type: extension
 ---
 data:
   name: enum
@@ -25,6 +27,39 @@ data:
   required:
     - name
     - values
+---
+data:
+  name: extension
+  fields:
+    - name: name
+      type: string
+    - name: type
+      type: string
+    - name: enumExt
+      type: EnumExtension
+    - name: dataExt
+      type: DataExtension
+  required:
+    - name
+    - type
+---
+data:
+  name: EnumExtension
+  fields:
+    - name: add
+      type: string[]
+  required:
+    - add
+---      
+data:
+  name: DataExtension
+  fields:
+    - name: add
+      type: Field[]
+    - name: required
+      type: string[]
+  required:
+    - add
 ---
 data:
   name: Scenario
