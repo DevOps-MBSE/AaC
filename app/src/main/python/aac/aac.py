@@ -2,7 +2,6 @@ import argparse
 import ArchParser
 import ArchJson
 import ArchPuml
-import yaml
 
 list_suffix = "[]"
 enum_types = {}

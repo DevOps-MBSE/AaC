@@ -49,6 +49,7 @@ def parse(archFile: str, validate = True):
         isValid, errMsg = ArchValidator.validate(model_types, data_types, enum_types, use_case_types, ext_types)
     
         if not isValid:
+            print("Failed to validate {}: {}".format(archFile, errMsg))
             raise RuntimeError("Failed to validate {}".format(archFile), errMsg)
 
     return model_types, data_types, enum_types, use_case_types, ext_types

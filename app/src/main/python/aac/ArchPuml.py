@@ -84,40 +84,36 @@ def print_component_content(root, existing, puml_lines, model_types):
             puml_lines.append("[{}] -> {} : {}".format(model_name, output["type"], output["name"]))
 
 
-def umlSequence(archFile):
+def umlSequence(archFile: str) -> str:
 
-    validation = ArchValidator.validate(archFile)
-    if validation["result"]["isValid"]:
-        model_types, data_types, enum_types, use_case_types, ext_types = ArchParser.parse(archFile)
-        
-        puml_lines = []
-        
-        for use_case_title in find_root_names(use_case_types):
-            # start the uml
-            puml_lines.append("@startuml")
-
-            # add the title
-            puml_lines.append("title {}".format(use_case_title))
-            
-            # declare participants
-            participants = ArchUtil.search(use_case_types[use_case_title], ["usecase", "participants"])
-            for participant in participants:  # each participant is a field type
-                puml_lines.append("participant {} as {}".format(participant["type"], participant["name"]))
-
-            # process steps
-            steps = ArchUtil.search(use_case_types[use_case_title], ["usecase", "steps"])
-            for step in steps:  # each step of a step type
-                puml_lines.append("{} -> {} : {}".format(step["source"], step["target"], step["action"]))
-
-            # end the uml 
-            puml_lines.append("@enduml")
-            puml_lines.append("")  # just put a blank line in between sequence diagrams for now  TODO revisit this decision later
-
-        retVal = ""
-        for line in puml_lines:
-            retVal = retVal + line + "\n"
-        return retVal
-    else:
+    model_types, data_types, enum_types, use_case_types, ext_types = ArchParser.parse(archFile)
     
-        raise RuntimeError("Failed to validate {}".format(archFile), validation)
+    puml_lines = []
+    
+    for use_case_title in find_root_names(use_case_types):
+        # start the uml
+        puml_lines.append("@startuml")
+
+        # add the title
+        puml_lines.append("title {}".format(use_case_title))
+        
+        # declare participants
+        participants = ArchUtil.search(use_case_types[use_case_title], ["usecase", "participants"])
+        for participant in participants:  # each participant is a field type
+            puml_lines.append("participant {} as {}".format(participant["type"], participant["name"]))
+
+        # process steps
+        steps = ArchUtil.search(use_case_types[use_case_title], ["usecase", "steps"])
+        for step in steps:  # each step of a step type
+            puml_lines.append("{} -> {} : {}".format(step["source"], step["target"], step["action"]))
+
+        # end the uml 
+        puml_lines.append("@enduml")
+        puml_lines.append("")  # just put a blank line in between sequence diagrams for now  TODO revisit this decision later
+
+    retVal = ""
+    for line in puml_lines:
+        retVal = retVal + line + "\n"
+    return retVal
+    
 
