@@ -1,6 +1,6 @@
 usecase:
   title: Nominal flow of data through the system.
-  description:
+  description:  Something happens.
   participants:
     - name: user
       type: User
@@ -30,6 +30,10 @@ usecase:
       type: ServiceThree
   steps:
     - step:  The system has been invoked to doFlow which triggers scv1
+      source: system
+      target: svc1
+      action: ProcessDataA
+    - step:  The system has been invoked a second time to doFlow which triggers scv1
       source: system
       target: svc1
       action: ProcessDataA

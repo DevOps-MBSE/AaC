@@ -25,7 +25,7 @@ def parse(archFile: str):
                         parse_path = os.path.join(arch_file_path, imp)
                     else:
                         parse_path = imp
-                    imp_models, imp_data, imp_enum = parse(parse_path)
+                    imp_models, imp_data, imp_enum, imp_usecase = parse(parse_path)
 
                     #add imports to the return dicts
                     enum_types = enum_types | imp_enum

@@ -1,3 +1,8 @@
+import ArchParser
+import os
+
+primitives = []
+
 def search(model, input_keys):
     """
     searches a dict for the contents given a set of keys
@@ -40,3 +45,29 @@ def search(model, input_keys):
         else:
             # not an error, just zero search results
             return []
+
+def getAaCSpec():
+    """
+    Gets the specification for Architecture-as-Code iteself.  The AaC model specification is defined as an AaC model and is needed for model validation. 
+    """
+    # get the AaC.yaml spec for architecture modeling
+    file_path = str(os.path.realpath(__file__))
+
+    this_file_path = os.path.dirname(os.path.realpath(__file__))
+    relpath_to_aac_yaml = "../../../model/aac/AaC.yaml"
+    aac_model_file = parse_path = os.path.join(this_file_path, relpath_to_aac_yaml) 
+    
+    model_types, data_types, enum_types, use_case_types = ArchParser.parse(aac_model_file)
+
+    return model_types, data_types, enum_types
+
+def getPrimitives():
+
+    global primitives
+
+    if len(primitives) == 0:
+        
+        model_types, data_types, enum_types = getAaCSpec()
+        primitives = search(enum_types["Primitives"], ["enum", "values"])
+    
+    return primitives

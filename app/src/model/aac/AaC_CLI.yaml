@@ -345,7 +345,6 @@ model:
             - The PlantUmlConverter component generator is run.
           then:
             - The {{umlComponent.output.umlComponentModel}} is not empty.  
-    behavior:
     - name: umlSequence
       type: request-response
       input:

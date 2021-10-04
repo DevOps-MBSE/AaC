@@ -51,6 +51,7 @@ enum:
     - request-response
     - command
     - startup
+    - timer
 ---
 enum:
   name: Primitives

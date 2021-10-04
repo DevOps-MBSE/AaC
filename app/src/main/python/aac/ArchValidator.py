@@ -3,11 +3,9 @@ import ArchParser
 import ArchUtil
 import os
 
-primitive_types = ["string", "int", "number", "bool", "date", "file"]  #TODO fix this cut-and-paste from ArchParser
-
 def validate(archFile):
 
-    aac_models, aac_data, aac_enums = getAaCSpec()
+    aac_models, aac_data, aac_enums = ArchUtil.getAaCSpec()
 
     model_types, data_types, enum_types, use_case_types = ArchParser.parse(archFile)
 
@@ -64,21 +62,6 @@ def validate(archFile):
 
     # create output
     return {"result" : {"isValid" : not foundInvalid, "errors" : errMsgList}}
-
-def getAaCSpec():
-    """
-    Gets the specification for Architecture-as-Code iteself.  The AaC model specification is defined as an AaC model and is needed for model validation. 
-    """
-    # get the AaC.yaml spec for architecture modeling
-    file_path = str(os.path.realpath(__file__))
-
-    this_file_path = os.path.dirname(os.path.realpath(__file__))
-    relpath_to_aac_yaml = "../../../model/aac/AaC.yaml"
-    aac_model_file = parse_path = os.path.join(this_file_path, relpath_to_aac_yaml) 
-    
-    model_types, data_types, enum_types, use_case_types = ArchParser.parse(aac_model_file)
-
-    return model_types, data_types, enum_types
 
 def validate_enum(model) -> tuple[bool, list]: 
     """
@@ -183,7 +166,7 @@ def validate_cross_references(models, data, enums):
     all_types.extend(models.keys())
     all_types.extend(data.keys())
     all_types.extend(enums.keys())
-    all_types.extend(primitive_types)
+    all_types.extend(ArchUtil.getPrimitives())
 
     foundInvalid = False
     errMsgs = []
@@ -279,7 +262,7 @@ def findEnumFieldPaths(find_enum, data_name, data_type, data, enums) -> list:
                 enum_fields.append([field["name"]])
             else:
                 continue
-        elif not field_type in primitive_types:
+        elif not field_type in ArchUtil.getPrimitives():
             found_paths = findEnumFieldPaths(find_enum, field["name"], field_type, data, enums)
             for found in found_paths:
                 entry = found.copy()
@@ -317,7 +300,7 @@ def getModelObjectFields(spec_model, enum_spec, name):
     for field in fields:
         isList, field_type_name = getBaseTypeName(field["type"])
         isEnum = field_type_name in enum_spec.keys()
-        isPrimitive = field_type_name in primitive_types
+        isPrimitive = field_type_name in ArchUtil.getPrimitives()
         if not isEnum and not isPrimitive:
             retVal[field["name"]] = field["type"]
 
