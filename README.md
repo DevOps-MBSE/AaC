@@ -63,7 +63,6 @@ I've spent some time exploring ideas and made some significant changes.  I've pr
     - Create a way to reference other definitions within the model for additional validation (i.e. data.required value must be in data.fields.name)
     - Auto-generate documentation (probably need alot more description fields in the model definition to capture content)
     - Create a way to reference external items (ex: requirement, story, spec, etc)
-    - Implement a use case at the root that can be used to generate sequence diagrams
 
 
 ## Python setup
