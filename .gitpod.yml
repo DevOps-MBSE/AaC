@@ -7,3 +7,6 @@ vscode:
     - redhat.vscode-yaml
     - editorconfig.editorconfig
     - ms-python.python
+
+image:
+  file: .gitpod.Dockerfile
