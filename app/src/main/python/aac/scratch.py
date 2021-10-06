@@ -1,12 +1,12 @@
 class Data:
-    spec = {"data": 
-        [{"name" : "string"},
-        {"fields" : "Field[]"},
-        {"required" : "string[]"}],
-        "Field":
-        [{"name" : "string"},
-        {"type" : "string"},
-        {"required" : "string[]"}]}
+    spec = {"data":
+            [{"name": "string"},
+                {"fields": "Field[]"},
+                {"required": "string[]"}],
+            "Field":
+                [{"name": "string"},
+                    {"type": "string"},
+                    {"required": "string[]"}]}
 
     def __init__(self, data_type_name, data):
         '''
@@ -18,7 +18,7 @@ class Data:
         # if len(keys) > 1:
         #     raise RuntimeError("data must be len 1")
 
-        if not data_type_name in Data.spec:
+        if data_type_name not in Data.spec:
             raise RuntimeError("unknown data type {}".format(data_type_name))
 
         data_spec = Data.spec[data_type_name]
@@ -40,10 +40,10 @@ class Data:
                 if field_type in ["string"]:
                     # this should work for single values and lists
                     field_value = data[spec_field_name]
-                
+
                 # else complex type
                 else:
-                    # if list of complex types  
+                    # if list of complex types
                     if isList:
                         field_value = []
                         for entry in data[spec_field_name]:
@@ -64,29 +64,26 @@ class Data:
         print("Data set: {}, {}".format(key, value))
         self.__dict__[key] = value
 
-# my_dict = [{"name" : "import", "import" : ["imp1", "imp2", "imp3"]}, 
-#             {"name" : "enum", "values" : {"name" : "primitives", "values" : ["int", "number", "string", "date"]}},
-#             {"name" : "data", "fields" : [{"name" : "val1", "type" : "string"}, {{"name" : "val2", "type" : "string"}}], "required" : ["val1"]}]
 
-spec = {"data": 
-        [{"name" : "string"},
-        {"fields" : "Field[]"},
-        {"required" : "string[]"}],
+spec = {"data":
+        [{"name": "string"},
+            {"fields": "Field[]"},
+            {"required": "string[]"}],
         "Field":
-        [{"name" : "string"},
-        {"type" : "string"},
-        {"required" : "string[]"}]}
+        [{"name": "string"},
+            {"type": "string"},
+            {"required": "string[]"}]}
 
-data = {"data" : 
+data = {"data":
         {"name": "model",
-        "fields": [
-            {"name": "name",
-            "type": "string"},
-            {"name": "description",
-            "type": "string"},
-            {"name": "components",
-            "type": "Field[]"}],
-        "required": ["name"] }}
+            "fields": [
+                {"name": "name",
+                    "type": "string"},
+                {"name": "description",
+                    "type": "string"},
+                {"name": "components",
+                    "type": "Field[]"}],
+            "required": ["name"]}}
 
 d = Data("data", data["data"])
 

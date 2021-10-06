@@ -1,6 +1,7 @@
 import ArchParser
 import json
 
+
 def toJson(archFile) -> str:
 
     model_types, data_types, enum_types, use_case_types, ext_types = ArchParser.parse(archFile)
@@ -9,4 +10,3 @@ def toJson(archFile) -> str:
     for name in complete_dict:
         return_dicts.append(complete_dict[name])
     return json.dumps(return_dicts)
-    
