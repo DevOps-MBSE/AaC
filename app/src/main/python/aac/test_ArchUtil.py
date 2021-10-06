@@ -1,5 +1,5 @@
 import unittest
-from aac import ArchUtil
+import ArchUtil
 
 
 class TestArchUtil(unittest.TestCase):
