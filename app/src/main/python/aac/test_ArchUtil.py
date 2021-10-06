@@ -1,6 +1,7 @@
 import unittest
 from aac import ArchUtil
 
+
 class TestArchUtil(unittest.TestCase):
 
     def test_get_primitive(self):
@@ -9,6 +10,7 @@ class TestArchUtil(unittest.TestCase):
         result = ArchUtil.getPrimitives()
 
         self.assertCountEqual(result, expected_results)
+
 
 if __name__ == '__main__':
     unittest.main()
