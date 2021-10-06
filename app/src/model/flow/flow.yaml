@@ -1,9 +1,12 @@
+import:
+  - ./System.yaml
+
 usecase:
   title: Nominal flow of data through the system.
   description:  Something happens.
   participants:
     - name: user
-      type: User
+      type: ~User
     - name: system
       type: System
   steps:
@@ -16,6 +19,12 @@ usecase:
       target: user
       action: response
 ---
+import:
+  - ./System.yaml
+  - ./ServiceOne.yaml
+  - ./Subsystem.yaml
+  - ./ServiceThree.yaml
+
 usecase:
   title: Nominal flow within the system.
   description:
@@ -44,8 +53,8 @@ usecase:
     - step: subsystem completes and calls svc3 to continue the flow
       source: subsystem
       target: svc3
-      action: processDataC
+      action: ProcessDataC
     - step: svc3 completes and provides the result back to system
       source: svc3
       target: system
-      action: response
+      action: doFlow

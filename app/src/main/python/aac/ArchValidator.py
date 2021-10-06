@@ -34,7 +34,7 @@ def validate(model_types, data_types, enum_types, use_case_types, ext_types):
             errMsgList = errMsgList + errMsg
 
     for usecase in use_case_types.values():
-        isValid, errMsg = validate_usecase(usecase, all_data_types, all_enum_types)
+        isValid, errMsg = validate_usecase(usecase, model_types, all_data_types, all_enum_types)
         if not isValid:
             foundInvalid = True
             errMsgList = errMsgList + errMsg
@@ -374,7 +374,7 @@ def validate_model_entry(name, model_type, model, data_spec, enum_spec):
     return True, [""]
 
 
-def validate_usecase(usecase, data_spec, enum_spec):
+def validate_usecase(usecase, model_spec, data_spec, enum_spec):
 
     foundInvalid = False
     errMsgList = []
@@ -390,13 +390,27 @@ def validate_usecase(usecase, data_spec, enum_spec):
         foundInvalid = True
         errMsgList = errMsgList + errMsg
 
-    # make sure source and target are known participants
     use_case_title = usecase["usecase"]["title"]
+    # get a map of participant name to type
+    participant_map = {}
+    for participant in ArchUtil.search(usecase, ["usecase", "participants"]):
+        participant_map[participant["name"]] = participant["type"]
+
+    # validate usecase participant types
+    participant_types = ArchUtil.search(usecase, ["usecase", "participants", "type"])
+    for part_type in participant_types:
+        # the character ~ at the begenning of the type suppresses type validation
+        if (not part_type.startswith("~")) and (part_type not in model_spec):
+            foundInvalid = True
+            errMsgList.append("usecase [{}] participant type [{}] is not defined".format(use_case_title, part_type))
+
+    # make sure source and target are known participants and the action exists on the target
     participant_names = ArchUtil.search(usecase, ["usecase", "participants", "name"])
     steps = ArchUtil.search(usecase, ["usecase", "steps"])
     for step in steps:
         source = step["source"]
         target = step["target"]
+        action = step["action"]
 
         if source not in participant_names:
             foundInvalid = True
@@ -405,6 +419,12 @@ def validate_usecase(usecase, data_spec, enum_spec):
         if target not in participant_names:
             foundInvalid = True
             errMsgList.append("Use Case [{}] validation error: target {} not found in participants {}".format(use_case_title, target, participant_names))
+
+        # suppress action validation if target type starts with ~ character
+        if not participant_map[target].startswith("~"):
+            if action not in ArchUtil.search(model_spec[participant_map[target]], ["model", "behavior", "name"]):
+                foundInvalid = True
+                errMsgList.append("Use Case [{}] validation error: target {} does not define action {}".format(use_case_title, target, action))
 
     if not foundInvalid:
         return True, [""]
