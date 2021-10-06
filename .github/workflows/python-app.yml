@@ -34,5 +34,4 @@ jobs:
     - name: Test with pytest
       run: |
         cd ./app/src/main/python/aac
-        pwd
-        pytest
+        python -m pytest
