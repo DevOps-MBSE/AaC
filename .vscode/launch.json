@@ -102,6 +102,18 @@
             "cwd": "c:\\Users\\black\\Documents\\repo\\AaC"
         },
         {
+            "name": "Python: puml-object echo",
+            "type": "python",
+            "request": "launch",
+            "program": "./app/src/main/python/aac/aac.py",
+            "console": "integratedTerminal",
+            "args": [
+                "puml-object",
+                "./app/src/model/echo/EchoService.yaml"
+            ],
+            "cwd": "c:\\Users\\black\\Documents\\repo\\AaC"
+        },
+        {
             "name": "Python: Validate flow",
             "type": "python",
             "request": "launch",
@@ -133,6 +145,18 @@
             "console": "integratedTerminal",
             "args": [
                 "puml-component",
+                "./app/src/model/flow/System.yaml"
+            ],
+            "cwd": "c:\\Users\\black\\Documents\\repo\\AaC"
+        },
+        {
+            "name": "Python: puml-object flow",
+            "type": "python",
+            "request": "launch",
+            "program": "./app/src/main/python/aac/aac.py",
+            "console": "integratedTerminal",
+            "args": [
+                "puml-object",
                 "./app/src/model/flow/System.yaml"
             ],
             "cwd": "c:\\Users\\black\\Documents\\repo\\AaC"

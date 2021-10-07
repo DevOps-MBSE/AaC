@@ -115,3 +115,35 @@ def umlSequence(archFile: str) -> str:
     for line in puml_lines:
         retVal = retVal + line + "\n"
     return retVal
+
+
+def umlObject(archFile: str) -> str:
+
+    model_types, data_types, enum_types, use_case_types, ext_types = ArchParser.parse(archFile)
+
+    object_declarations = []
+    object_compositions = {}
+    for model_name in model_types.keys():
+        object_declarations.append(model_name)
+
+        for component in ArchUtil.search(model_types[model_name], ["model", "components", "type"]):
+            if model_name not in object_compositions:
+                object_compositions[model_name] = set()
+
+            object_compositions[model_name].add(component)
+
+    puml_lines = []
+    puml_lines.append("@startuml")
+    for obj in object_declarations:
+        puml_lines.append("object {}".format(obj))
+
+    for parent in object_compositions:
+        for child in object_compositions[parent]:
+            puml_lines.append("{} *-- {}".format(parent, child))
+
+    puml_lines.append("@enduml")
+
+    retVal = ""
+    for line in puml_lines:
+        retVal = retVal + line + "\n"
+    return retVal
