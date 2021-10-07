@@ -1,9 +1,8 @@
-from unittest import TestCase, skip
+from unittest import TestCase
 
 from arch import parser
 
 
-@skip("temporarily skip")
 class TestArchParser(TestCase):
     # TODO  For now I'm just going to test those items that don't require file system manipulation.  Expand later.
 
