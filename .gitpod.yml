@@ -1,5 +1,6 @@
 tasks:
-  - init: pip install pyyaml jsonschema nose2
+  - init: source venv/bin/activate #Put the user into the virtual environment automatically.
+    command: pip install -e .[all] #Install all of the dependencies defined in the setup.py file
 
 vscode:
   extensions:
