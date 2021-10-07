@@ -1,6 +1,6 @@
 import json
 
-from arch import parser
+from jellyfish import parser
 
 
 def toJson(archFile) -> str:

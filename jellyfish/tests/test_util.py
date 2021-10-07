@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from arch import util
+from jellyfish import util
 
 
 class TestArchUtil(TestCase):

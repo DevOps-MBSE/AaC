@@ -93,3 +93,14 @@ To run tests, make sure you've set up your dependencies using `dev-requirements.
 ```bash
 $ nose2
 ```
+
+## Running
+
+To run the command, execute the script (from within your virtual environment) as follows:
+
+```bash
+$ python -m jellyfish.aac ...
+
+# For example, to validate the AaC.yaml file
+$ python -m jellyfish.aac validate model/aac/AaC.yaml
+```

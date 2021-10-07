@@ -2,7 +2,7 @@ import os
 
 import yaml
 
-from arch import validator
+from jellyfish import validator
 
 
 def parse(archFile: str, validate=True):

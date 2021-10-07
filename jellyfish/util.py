@@ -1,6 +1,6 @@
 import os
 
-from arch import parser
+from jellyfish import parser
 
 primitives = []
 aac_data = {}
