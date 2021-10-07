@@ -1,5 +1,6 @@
-import ArchParser
 import os
+
+from jellyfish import parser
 
 primitives = []
 aac_data = {}
@@ -66,10 +67,12 @@ def getAaCSpec():
 
     # get the AaC.yaml spec for architecture modeling
     this_file_path = os.path.dirname(os.path.realpath(__file__))
-    relpath_to_aac_yaml = "../../../model/aac/AaC.yaml"
+    relpath_to_aac_yaml = "../model/aac/AaC.yaml"
     aac_model_file = os.path.join(this_file_path, relpath_to_aac_yaml)
 
-    model_types, aac_data, aac_enums, use_case_types, ext_types = ArchParser.parse(aac_model_file, False)
+    model_types, aac_data, aac_enums, use_case_types, ext_types = parser.parse(
+        aac_model_file, False
+    )
 
     # simple optimization, set primitives if not already set
     global primitives

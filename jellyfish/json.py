@@ -1,10 +1,10 @@
-import ArchParser
 import json
+
+from jellyfish import parser
 
 
 def toJson(archFile) -> str:
-
-    model_types, data_types, enum_types, use_case_types, ext_types = ArchParser.parse(archFile)
+    model_types, data_types, enum_types, use_case_types, ext_types = parser.parse(archFile)
     complete_dict = model_types | data_types | enum_types | use_case_types
     return_dicts = []
     for name in complete_dict:
