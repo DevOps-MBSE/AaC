@@ -1,0 +1,7 @@
+attrs==21.2.0
+coverage==6.0
+jsonschema==4.0.1
+nose2==0.10.0
+pyrsistent==0.18.0
+PyYAML==5.4.1
+six==1.16.0
