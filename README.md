@@ -15,7 +15,7 @@ Potential Use Cases:
     - User gets an error if attempting to model a further nested portion of a concrete model element
 3) Model simple data for a system
     - User has defined a model of a system or portion of a system
-    - User creates a data model 
+    - User creates a data model
     - User creates data elements as a list of primitives (int, float, string, bool)
     - User specifies the cardinality of each data element (standard (0-1), required (1), list(0-N))
 4) Model complex data for a system
@@ -66,6 +66,22 @@ I've spent some time exploring ideas and made some significant changes.  I've pr
 
 
 ## Python setup
-pip install pyyaml
-pip install jsonschema
-pip install nose2  (this is a unit test runner)
+
+Set up your virtual environment:
+
+```bash
+$ python3.9 -m venv .env
+$ source .env/bin/activate
+```
+
+To install project and development dependencies, run this:
+
+```bash
+$ pip install -r dev-requirements.txt
+```
+
+To install only project dependencies, run this:
+
+```bash
+$ pip install -r requirements.txt
+```
