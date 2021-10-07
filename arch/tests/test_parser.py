@@ -1,9 +1,8 @@
+import parser
 import unittest
-import ArchParser
 
 
 class TestArchParser(unittest.TestCase):
-
     # TODO  For now I'm just going to test those items that don't require file system manipulation.  Expand later.
 
     def test_process_data_root(self):
@@ -18,17 +17,14 @@ class TestArchParser(unittest.TestCase):
                 "fields": [
                     {"type": "string", "name": "name"},
                     {"type": "Field[]", "name": "fields"},
-                    {"type": "string[]", "name": "required"}
+                    {"type": "string[]", "name": "required"},
                 ],
-                "required": [
-                    "name",
-                    "fields"
-                ],
-                "name": "data"
+                "required": ["name", "fields"],
+                "name": "data",
             }
         }
 
-        ArchParser._process_root(root, model_types, data_types, enum_types, use_case_types, ext_types)
+        parser._process_root(root, model_types, data_types, enum_types, use_case_types, ext_types)
         self.assertEqual(len(data_types), 1)
 
     def test_process_model_root(self):
@@ -42,26 +38,27 @@ class TestArchParser(unittest.TestCase):
             "model": {
                 "name": "EchoService",
                 "behavior": [
-                    {"name": "echo",
-                        "input": [
-                            {"type": "Message", "name": "inbound"}
-                        ],
-                        "output": [
-                            {"type": "Message", "name": "outbound"}
-                        ],
+                    {
+                        "name": "echo",
+                        "input": [{"type": "Message", "name": "inbound"}],
+                        "output": [{"type": "Message", "name": "outbound"}],
                         "acceptance": [
-                            {"then": ["The user receives the same message from EchoService."],
+                            {
+                                "then": ["The user receives the same message from EchoService."],
                                 "given": ["The EchoService is running."],
                                 "when": ["The user sends a message to EchoService."],
-                                "scenario": "onReceive"}
+                                "scenario": "onReceive",
+                            }
                         ],
                         "type": "request-response",
-                        "description": "This is the one thing it does."}
+                        "description": "This is the one thing it does.",
+                    }
                 ],
-                "description": "This is a message mirror."
-            }}
+                "description": "This is a message mirror.",
+            }
+        }
 
-        ArchParser._process_root(root, model_types, data_types, enum_types, use_case_types, ext_types)
+        parser._process_root(root, model_types, data_types, enum_types, use_case_types, ext_types)
         self.assertEqual(len(model_types), 1)
 
     def test_process_enum_root(self):
@@ -73,19 +70,12 @@ class TestArchParser(unittest.TestCase):
 
         root = {
             "enum": {
-                "values": [
-                    "string",
-                    "int",
-                    "number",
-                    "bool",
-                    "date",
-                    "file"
-                ],
-                "name": "Primitives"
+                "values": ["string", "int", "number", "bool", "date", "file"],
+                "name": "Primitives",
             }
         }
 
-        ArchParser._process_root(root, model_types, data_types, enum_types, use_case_types, ext_types)
+        parser._process_root(root, model_types, data_types, enum_types, use_case_types, ext_types)
         self.assertEqual(len(enum_types), 1)
 
     def test_process_use_case_root(self):
@@ -99,27 +89,28 @@ class TestArchParser(unittest.TestCase):
             "usecase": {
                 "participants": [
                     {"type": "~User", "name": "user"},
-                    {"type": "System", "name": "system"}
+                    {"type": "System", "name": "system"},
                 ],
                 "steps": [
                     {
                         "action": "doFlow",
                         "source": "user",
                         "step": "The user invokes doFlow on system.",
-                        "target": "system"
+                        "target": "system",
                     },
                     {
                         "action": "response",
                         "source": "system",
                         "step": "The system performs flow and responds to the user.",
-                        "target": "user"
-                    }
+                        "target": "user",
+                    },
                 ],
                 "description": "Something happens.",
-                "title": "Nominal flow of data through the system."
-            }}
+                "title": "Nominal flow of data through the system.",
+            }
+        }
 
-        ArchParser._process_root(root, model_types, data_types, enum_types, use_case_types, ext_types)
+        parser._process_root(root, model_types, data_types, enum_types, use_case_types, ext_types)
         self.assertEqual(len(use_case_types), 1)
 
     def test_process_ext_enum_root(self):
@@ -133,10 +124,11 @@ class TestArchParser(unittest.TestCase):
             "extension": {
                 "enumExt": {"add": ["rest"]},
                 "type": "BehaviorType",
-                "name": "restActionType"
-            }}
+                "name": "restActionType",
+            }
+        }
 
-        ArchParser._process_root(root, model_types, data_types, enum_types, use_case_types, ext_types)
+        parser._process_root(root, model_types, data_types, enum_types, use_case_types, ext_types)
         self.assertEqual(len(ext_types), 1)
 
     def test_process_ext_data_root(self):
@@ -146,9 +138,13 @@ class TestArchParser(unittest.TestCase):
         use_case_types = {}
         ext_types = {}
 
-        root = {'extension': {
-            'dataExt': {'add': [{'name': 'errCount', 'type': 'int'}]},
-            'name': 'addCountToValidationResult', 'type': 'ValidationResult'}}
+        root = {
+            "extension": {
+                "dataExt": {"add": [{"name": "errCount", "type": "int"}]},
+                "name": "addCountToValidationResult",
+                "type": "ValidationResult",
+            }
+        }
 
-        ArchParser._process_root(root, model_types, data_types, enum_types, use_case_types, ext_types)
+        parser._process_root(root, model_types, data_types, enum_types, use_case_types, ext_types)
         self.assertEqual(len(ext_types), 1)
