@@ -1,4 +1,4 @@
-from arch import parser, util
+import parser, util
 
 
 def umlComponent(archFile) -> str:

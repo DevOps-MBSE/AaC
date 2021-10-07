@@ -1,7 +1,6 @@
 import argparse
 
-
-from arch import json, parser, puml
+import json, parser, puml
 
 list_suffix = "[]"
 enum_types = {}
