@@ -1,0 +1,13 @@
+tasks:
+  - init: source venv/bin/activate #Put the user into the virtual environment automatically.
+    command: pip install -e .[all] #Install all of the dependencies defined in the setup.py file
+
+vscode:
+  extensions:
+    - eamodio.gitlens
+    - redhat.vscode-yaml
+    - editorconfig.editorconfig
+    - ms-python.python
+
+image:
+  file: .gitpod.Dockerfile
