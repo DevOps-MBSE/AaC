@@ -1,6 +1,6 @@
 import json
 
-import parser
+from arch import parser
 
 
 def toJson(archFile) -> str:

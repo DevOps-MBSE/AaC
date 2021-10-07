@@ -1,4 +1,4 @@
-import util
+from arch import util
 
 
 def validate(model_types, data_types, enum_types, use_case_types, ext_types):

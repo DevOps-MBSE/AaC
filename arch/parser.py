@@ -2,7 +2,7 @@ import os
 
 import yaml
 
-import validator
+from arch import validator
 
 
 def parse(archFile: str, validate=True):

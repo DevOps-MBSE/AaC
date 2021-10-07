@@ -1,6 +1,6 @@
 import os
 
-import parser
+from arch import parser
 
 primitives = []
 aac_data = {}
