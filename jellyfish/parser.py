@@ -1,6 +1,8 @@
-import ArchValidator
 import os
+
 import yaml
+
+from jellyfish import validator
 
 
 def parse(archFile: str, validate=True):
@@ -28,7 +30,9 @@ def parse(archFile: str, validate=True):
             _process_root(root, model_types, data_types, enum_types, use_case_types, ext_types)
 
     if validate:
-        isValid, errMsg = ArchValidator.validate(model_types, data_types, enum_types, use_case_types, ext_types)
+        isValid, errMsg = validator.validate(
+            model_types, data_types, enum_types, use_case_types, ext_types
+        )
 
         if not isValid:
             print("Failed to validate {}: {}".format(archFile, errMsg))
@@ -45,7 +49,7 @@ def _read_file_content(archFile):
     # arch_file_path = os.path.dirname(os.path.realpath(archFile))
     arch_file_path = archFile
     content = ""
-    with open(arch_file_path, 'r') as file:
+    with open(arch_file_path, "r") as file:
         content = file.read()
     return content
 

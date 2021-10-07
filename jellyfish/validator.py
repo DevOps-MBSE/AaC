@@ -1,9 +1,9 @@
-import ArchUtil
+from jellyfish import util
 
 
 def validate(model_types, data_types, enum_types, use_case_types, ext_types):
 
-    aac_data, aac_enums = ArchUtil.getAaCSpec()
+    aac_data, aac_enums = util.getAaCSpec()
 
     # combine parsed types and AaC built-in types
     all_data_types = aac_data | data_types
@@ -87,10 +87,12 @@ def validate_enum(model) -> tuple[bool, list]:
     :returns: boolean, errorMessage if boolean is False
     """
     # an enum item has a key of 'enum', and no other keys
-    if(len(list(model.keys())) > 1):
-        return False, ["yaml file has more than one root type, cannot validate (programming error)"]
+    if len(list(model.keys())) > 1:
+        return False, [
+            "yaml file has more than one root type, cannot validate (programming error)"
+        ]
 
-    if 'enum' not in model.keys():
+    if "enum" not in model.keys():
         return False, ["the root type for enum must be 'enum'"]
 
     enum = model["enum"]
@@ -122,9 +124,11 @@ def validate_data(model, spec, enums):
     :returns: boolean, errorMessage if boolean is False
     """
     # a data item has a key of 'data', and no other keys  TODO:  import is also a valid root...need to make sure this is handled correctly
-    if(len(list(model.keys())) > 1):
-        return False, ["yaml file has more than one root type, cannot validate (programming error)"]
-    if 'data' not in model.keys():
+    if len(list(model.keys())) > 1:
+        return False, [
+            "yaml file has more than one root type, cannot validate (programming error)"
+        ]
+    if "data" not in model.keys():
         return False, ["the root type for data must be 'data'"]
 
     data = model["data"]
@@ -161,7 +165,11 @@ def validate_data(model, spec, enums):
     if "required" in data:  # if required isn't present then all fields are optional
         for required_field in data["required"]:
             if required_field not in field_names:
-                return False, ["validate_data: required field {} is not defined in {}".format(required_field, name)]
+                return False, [
+                    "validate_data: required field {} is not defined in {}".format(
+                        required_field, name
+                    )
+                ]
 
     return True, ""
 
@@ -172,32 +180,40 @@ def validate_cross_references(models, data, enums):
     all_types.extend(models.keys())
     all_types.extend(data.keys())
     all_types.extend(enums.keys())
-    all_types.extend(ArchUtil.getPrimitives())
+    all_types.extend(util.getPrimitives())
 
     foundInvalid = False
     errMsgs = []
 
     for model_name in data.keys():
         data_entry = data[model_name]
-        data_model_types = ArchUtil.search(data_entry, ["data", "fields", "type"])
+        data_model_types = util.search(data_entry, ["data", "fields", "type"])
         # print("processing {} - data_model_types: {}".format(model_name, data_model_types))
         for data_model_type in data_model_types:
             isList, baseTypeName = getBaseTypeName(data_model_type)
             if baseTypeName not in all_types:
                 foundInvalid = True
-                errMsgs.append("Data model [{}] uses undefined data type [{}]".format(model_name, baseTypeName))
+                errMsgs.append(
+                    "Data model [{}] uses undefined data type [{}]".format(
+                        model_name, baseTypeName
+                    )
+                )
 
     for model_name in models.keys():
         model_entry = models[model_name]
-        model_entry_types = ArchUtil.search(model_entry, ["model", "components", "type"])
-        model_entry_types.extend(ArchUtil.search(model_entry, ["model", "behavior", "input", "type"]))
-        model_entry_types.extend(ArchUtil.search(model_entry, ["model", "behavior", "output", "type"]))
+        model_entry_types = util.search(model_entry, ["model", "components", "type"])
+        model_entry_types.extend(util.search(model_entry, ["model", "behavior", "input", "type"]))
+        model_entry_types.extend(util.search(model_entry, ["model", "behavior", "output", "type"]))
         # print("processing {} - model_entry_types: {}".format(model_name, model_entry_types))
         for model_entry_type in model_entry_types:
             isList, baseTypeName = getBaseTypeName(model_entry_type)
             if baseTypeName not in all_types:
                 foundInvalid = True
-                errMsgs.append("Model model [{}] uses undefined data type [{}]".format(model_name, baseTypeName))
+                errMsgs.append(
+                    "Model model [{}] uses undefined data type [{}]".format(
+                        model_name, baseTypeName
+                    )
+                )
 
     if not foundInvalid:
         return True, ""
@@ -211,7 +227,7 @@ def validate_enum_values(models, data, enums):
     enum_fields = {}  # key: type name  value: field
     for data_name in data:
         data_model = data[data_name]
-        fields = ArchUtil.search(data_model, ["data", "fields"])
+        fields = util.search(data_model, ["data", "fields"])
         for field in fields:
             field_type = getBaseTypeName(field["type"])
             if field_type in enums.keys():
@@ -238,16 +254,20 @@ def validate_enum_values(models, data, enums):
             # skip primitives
             continue
 
-        valid_values = ArchUtil.search(enums[enum_name], ["enum", "values"])
+        valid_values = util.search(enums[enum_name], ["enum", "values"])
         # print("Enum {} valid values: {}".format(enum_name, valid_values))
 
         for model_name in models:
             for path in found_paths:
-                for result in ArchUtil.search(models[model_name], path):
+                for result in util.search(models[model_name], path):
                     # print("Model {} entry {} has a value {} being validated by the enumeration {}: {}".format(model_name, path, result, enum_name, valid_values))
                     if result not in valid_values:
                         foundInvalid = True
-                        errMsgList.append("Model {} entry {} has a value {} not allowed in the enumeration {}: {}".format(model_name, path, result, enum_name, valid_values))
+                        errMsgList.append(
+                            "Model {} entry {} has a value {} not allowed in the enumeration {}: {}".format(
+                                model_name, path, result, enum_name, valid_values
+                            )
+                        )
 
     if not foundInvalid:
         return True, [""]
@@ -258,7 +278,7 @@ def validate_enum_values(models, data, enums):
 def findEnumFieldPaths(find_enum, data_name, data_type, data, enums) -> list:
     # print("findEnumFieldPaths: {}, {}, {}".format(find_enum, data_name, data_type))
     data_model = data[data_type]
-    fields = ArchUtil.search(data_model, ["data", "fields"])
+    fields = util.search(data_model, ["data", "fields"])
     enum_fields = []
     for field in fields:
         isList, field_type = getBaseTypeName(field["type"])
@@ -268,7 +288,7 @@ def findEnumFieldPaths(find_enum, data_name, data_type, data, enums) -> list:
                 enum_fields.append([field["name"]])
             else:
                 continue
-        elif field_type not in ArchUtil.getPrimitives():
+        elif field_type not in util.getPrimitives():
             found_paths = findEnumFieldPaths(find_enum, field["name"], field_type, data, enums)
             for found in found_paths:
                 entry = found.copy()
@@ -284,12 +304,12 @@ def findEnumFieldPaths(find_enum, data_name, data_type, data, enums) -> list:
 
 
 def getSpecRequiredFields(spec_model, name):
-    return ArchUtil.search(spec_model, [name, "data", "required"])
+    return util.search(spec_model, [name, "data", "required"])
 
 
 def getSpecFieldNames(spec_model, name):
     retVal = []
-    fields = ArchUtil.search(spec_model, [name, "data", "fields"])
+    fields = util.search(spec_model, [name, "data", "fields"])
     for field in fields:
         retVal.append(field["name"])
     return retVal
@@ -304,11 +324,11 @@ def getBaseTypeName(type_declaration):
 
 def getModelObjectFields(spec_model, enum_spec, name):
     retVal = {}
-    fields = ArchUtil.search(spec_model, [name, "data", "fields"])
+    fields = util.search(spec_model, [name, "data", "fields"])
     for field in fields:
         isList, field_type_name = getBaseTypeName(field["type"])
         isEnum = field_type_name in enum_spec.keys()
-        isPrimitive = field_type_name in ArchUtil.getPrimitives()
+        isPrimitive = field_type_name in util.getPrimitives()
         if not isEnum and not isPrimitive:
             retVal[field["name"]] = field["type"]
 
@@ -363,11 +383,15 @@ def validate_model_entry(name, model_type, model, data_spec, enum_spec):
         isList, field_type_name = getBaseTypeName(field_type)
         if isList:
             for sub_model_item in sub_model:
-                isValid, errMsg = validate_model_entry(field_name, field_type_name, sub_model_item, data_spec, enum_spec)
+                isValid, errMsg = validate_model_entry(
+                    field_name, field_type_name, sub_model_item, data_spec, enum_spec
+                )
                 if not isValid:
                     return isValid, errMsg
         else:
-            isValid, errMsg = validate_model_entry(field_name, field_type_name, sub_model, data_spec, enum_spec)
+            isValid, errMsg = validate_model_entry(
+                field_name, field_type_name, sub_model, data_spec, enum_spec
+            )
             if not isValid:
                 return isValid, errMsg
 
@@ -385,7 +409,9 @@ def validate_usecase(usecase, model_spec, data_spec, enum_spec):
         return False, ["the root type for usecase must be 'usecase'"]
 
     # validate against the aac spec
-    isValid, errMsg = validate_model_entry("usecase", "usecase", usecase["usecase"], data_spec, enum_spec)
+    isValid, errMsg = validate_model_entry(
+        "usecase", "usecase", usecase["usecase"], data_spec, enum_spec
+    )
     if not isValid:
         foundInvalid = True
         errMsgList = errMsgList + errMsg
@@ -393,20 +419,24 @@ def validate_usecase(usecase, model_spec, data_spec, enum_spec):
     use_case_title = usecase["usecase"]["title"]
     # get a map of participant name to type
     participant_map = {}
-    for participant in ArchUtil.search(usecase, ["usecase", "participants"]):
+    for participant in util.search(usecase, ["usecase", "participants"]):
         participant_map[participant["name"]] = participant["type"]
 
     # validate usecase participant types
-    participant_types = ArchUtil.search(usecase, ["usecase", "participants", "type"])
+    participant_types = util.search(usecase, ["usecase", "participants", "type"])
     for part_type in participant_types:
         # the character ~ at the begenning of the type suppresses type validation
         if (not part_type.startswith("~")) and (part_type not in model_spec):
             foundInvalid = True
-            errMsgList.append("usecase [{}] participant type [{}] is not defined".format(use_case_title, part_type))
+            errMsgList.append(
+                "usecase [{}] participant type [{}] is not defined".format(
+                    use_case_title, part_type
+                )
+            )
 
     # make sure source and target are known participants and the action exists on the target
-    participant_names = ArchUtil.search(usecase, ["usecase", "participants", "name"])
-    steps = ArchUtil.search(usecase, ["usecase", "steps"])
+    participant_names = util.search(usecase, ["usecase", "participants", "name"])
+    steps = util.search(usecase, ["usecase", "steps"])
     for step in steps:
         source = step["source"]
         target = step["target"]
@@ -414,17 +444,31 @@ def validate_usecase(usecase, model_spec, data_spec, enum_spec):
 
         if source not in participant_names:
             foundInvalid = True
-            errMsgList.append("Use Case [{}] validation error: source {} not found in participants {}".format(use_case_title, source, participant_names))
+            errMsgList.append(
+                "Use Case [{}] validation error: source {} not found in participants {}".format(
+                    use_case_title, source, participant_names
+                )
+            )
 
         if target not in participant_names:
             foundInvalid = True
-            errMsgList.append("Use Case [{}] validation error: target {} not found in participants {}".format(use_case_title, target, participant_names))
+            errMsgList.append(
+                "Use Case [{}] validation error: target {} not found in participants {}".format(
+                    use_case_title, target, participant_names
+                )
+            )
 
         # suppress action validation if target type starts with ~ character
         if not participant_map[target].startswith("~"):
-            if action not in ArchUtil.search(model_spec[participant_map[target]], ["model", "behavior", "name"]):
+            if action not in util.search(
+                model_spec[participant_map[target]], ["model", "behavior", "name"]
+            ):
                 foundInvalid = True
-                errMsgList.append("Use Case [{}] validation error: target {} does not define action {}".format(use_case_title, target, action))
+                errMsgList.append(
+                    "Use Case [{}] validation error: target {} does not define action {}".format(
+                        use_case_title, target, action
+                    )
+                )
 
     if not foundInvalid:
         return True, [""]
@@ -443,7 +487,9 @@ def validate_extension(extension, data_spec, enum_spec):
         return False, ["the root type for extension must be 'extension'"]
 
     # validate against the aac spec
-    isValid, errMsg = validate_model_entry("extension", "extension", extension["extension"], data_spec, enum_spec)
+    isValid, errMsg = validate_model_entry(
+        "extension", "extension", extension["extension"], data_spec, enum_spec
+    )
     if not isValid:
         foundInvalid = True
         errMsgList = errMsgList + errMsg
@@ -453,11 +499,19 @@ def validate_extension(extension, data_spec, enum_spec):
     if "enumExt" in extension["extension"]:
         if type_to_extend not in enum_spec:
             foundInvalid = True
-            errMsgList.append("Enum Extension [{}] validation error:  cannot extend enum {} because it does not exist".format(extension["name"], type_to_extend))
+            errMsgList.append(
+                "Enum Extension [{}] validation error:  cannot extend enum {} because it does not exist".format(
+                    extension["name"], type_to_extend
+                )
+            )
     else:
         if type_to_extend not in data_spec:
             foundInvalid = True
-            errMsgList.append("Data Extension [{}] validation error:  cannot extend data {} because it does not exist".format(extension["name"], type_to_extend))
+            errMsgList.append(
+                "Data Extension [{}] validation error:  cannot extend data {} because it does not exist".format(
+                    extension["name"], type_to_extend
+                )
+            )
 
     if not foundInvalid:
         return True, [""]
@@ -469,13 +523,20 @@ def apply_extension(extension, data, enums):
     type_to_extend = extension["extension"]["type"]
     if "enumExt" in extension["extension"]:
         # apply the enum extension
-        updated_values = enums[type_to_extend]["enum"]["values"] + extension["extension"]["enumExt"]["add"]
+        updated_values = (
+            enums[type_to_extend]["enum"]["values"] + extension["extension"]["enumExt"]["add"]
+        )
         enums[type_to_extend]["enum"]["values"] = updated_values
     else:
         # apply the data extension
-        updated_fields = data[type_to_extend]["data"]["fields"] + extension["extension"]["dataExt"]["add"]
+        updated_fields = (
+            data[type_to_extend]["data"]["fields"] + extension["extension"]["dataExt"]["add"]
+        )
         data[type_to_extend]["data"]["fields"] = updated_fields
 
         if "required" in extension["extension"]["dataExt"]:
-            updated_required = data[type_to_extend]["data"]["required"] + extension["extension"]["dataExt"]["required"]
+            updated_required = (
+                data[type_to_extend]["data"]["required"]
+                + extension["extension"]["dataExt"]["required"]
+            )
             data[type_to_extend]["data"]["fields"] = updated_required

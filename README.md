@@ -15,7 +15,7 @@ Potential Use Cases:
     - User gets an error if attempting to model a further nested portion of a concrete model element
 3) Model simple data for a system
     - User has defined a model of a system or portion of a system
-    - User creates a data model 
+    - User creates a data model
     - User creates data elements as a list of primitives (int, float, string, bool)
     - User specifies the cardinality of each data element (standard (0-1), required (1), list(0-N))
 4) Model complex data for a system
@@ -66,7 +66,41 @@ I've spent some time exploring ideas and made some significant changes.  I've pr
 
 
 ## Python setup
-1. Activate the virtual environment
-`source venv/bin/activate`
-2. Install the project dependencies
-`pip install -e .[all]`
+
+Set up your virtual environment:
+
+```bash
+$ python3.9 -m venv .env
+$ source .env/bin/activate
+```
+
+To install project and development dependencies, run this:
+
+```bash
+$ pip install -r dev-requirements.txt
+```
+
+To install only project dependencies, run this:
+
+```bash
+$ pip install -r requirements.txt
+```
+
+## Testing
+
+To run tests, make sure you've set up your dependencies using `dev-requirements.txt` (see above). Then, from the project root directory, run the following command (from within your virtual environment).
+
+```bash
+$ nose2
+```
+
+## Running
+
+To run the command, execute the script (from within your virtual environment) as follows:
+
+```bash
+$ python -m jellyfish.aac ...
+
+# For example, to validate the AaC.yaml file
+$ python -m jellyfish.aac validate model/aac/AaC.yaml
+```
