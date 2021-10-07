@@ -85,3 +85,11 @@ To install only project dependencies, run this:
 ```bash
 $ pip install -r requirements.txt
 ```
+
+## Testing
+
+To run tests, make sure you've set up your dependencies using `dev-requirements.txt` (see above). Then, from the project root directory, run the following command (from within your virtual environment).
+
+```bash
+$ nose2
+```
