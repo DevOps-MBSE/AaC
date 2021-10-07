@@ -8,7 +8,9 @@ aac_enums = {}
 
 def search(model, input_keys):
     """
-    searches a dict for the contents given a set of keys
+    Searches a dict for the contents given a set of keys. Search returns a list of
+    the entries in the model that correcpond to those keys.  This search will
+    traverse the full dict tree, including embeded lists.
     """
     # print("searching for keys: {}",format(keys))
     keys = input_keys.copy()
@@ -78,6 +80,9 @@ def getAaCSpec():
 
 
 def getPrimitives():
+    """
+    Gets the list of primitives as defined in the Arch-As-Code spec.
+    """
 
     global primitives
 
