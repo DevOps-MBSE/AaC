@@ -66,6 +66,7 @@ I've spent some time exploring ideas and made some significant changes.  I've pr
 
 
 ## Python setup
-pip install pyyaml
-pip install jsonschema
-pip install nose2  (this is a unit test runner)
+1. Activate the virtual environment
+`source venv/bin/activate`
+2. Install the project dependencies
+`pip install -e .[all]`
