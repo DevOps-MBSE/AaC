@@ -19,6 +19,8 @@ if __name__ == '__main__':
         'puml-component', help="generates plant UML component diagram from the YAML model")
     puml_sequence_cmd = command_parser.add_parser(
         'puml-sequence', help="generates plant UML sequience diagram from the YAML use case")
+    puml_object_cmd = command_parser.add_parser(
+        'puml-object', help="generates plant UML object diagram from the YAML model")
     json_cmd = command_parser.add_parser(
         'json', help="prints the json version of the yaml model")
 
@@ -44,3 +46,6 @@ if __name__ == '__main__':
 
     if (args.command == "puml-sequence"):
         print(ArchPuml.umlSequence(model_file))
+
+    if (args.command == "puml-object"):
+        print(ArchPuml.umlObject(model_file))
