@@ -7,5 +7,4 @@ setup(
     entry_points={
         "jellyfish": ["jellyfish-echo-simple=simple"],
     },
-    py_modules=["echo"],
 )

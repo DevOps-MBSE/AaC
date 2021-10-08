@@ -7,5 +7,4 @@ setup(
     entry_points={
         "jellyfish": ["jellyfish-flair-echo=flair"],
     },
-    py_modules=["flair"],
 )
