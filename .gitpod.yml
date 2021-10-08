@@ -1,5 +1,8 @@
 tasks:
-  - init: source venv/bin/activate #Put the user into the virtual environment automatically.
+  - name: Setup Python Virtual Environment
+    init: |
+      python3.9 -m venv venv --system-site-packages
+      source venv/bin/activate 
     command: pip install -e .[all] #Install all of the dependencies defined in the setup.py file
 
 vscode:

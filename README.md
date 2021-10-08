@@ -74,21 +74,36 @@ $ python3.9 -m venv .env
 $ source .env/bin/activate
 ```
 
-To install project and development dependencies, run this:
+The dependencies are structured into 3 sections: 
+- runtime - the dependencies required to run the project
+- test - the dependencies required to run the project's automated tests
+- dev - the dependencies required to run development tools like linting and quality checks
 
+To install only runtime dependencies simply use pip to install the dependencies:
 ```bash
-$ pip install -r dev-requirements.txt
+$ pip install -e .
 ```
 
-To install only project dependencies, run this:
+If you'd like to install the additional dependencies (test and dev), then you can specify that pip include those dependencies like such:
 
+To install test dependencies (test), run this:
 ```bash
-$ pip install -r requirements.txt
+$ pip install -e .[test]
+```
+
+To install development dependencies (dev), run this:
+```bash
+$ pip install -e .[dev]
+```
+
+To install all dependencies (runtime, dev, and test), run this:
+```bash
+$ pip install -e .[all]
 ```
 
 ## Testing
 
-To run tests, make sure you've set up your dependencies using `dev-requirements.txt` (see above). Then, from the project root directory, run the following command (from within your virtual environment).
+To run tests, make sure you've set up your dependencies using `pip install -e .[test]` (see above). Then, from the project root directory, run the following command (from within your virtual environment).
 
 ```bash
 $ nose2
