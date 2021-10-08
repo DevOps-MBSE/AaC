@@ -1,7 +1,7 @@
 # Plugins
 
 ## Registering Plugins
-Currently, plugins are loaded by checking for packages with `setup.py` entrypoints that match the group name defined in the Jellyfish package, "jellyfish". 
+Currently, plugins are loaded by checking for packages with `setup.py` entrypoints that match the group name defined in the Jellyfish package ("jellyfish"). 
 
 Example `setup.py`
 ```python
@@ -24,15 +24,15 @@ In the above example, the `entry_points` can be broken down into the following s
     },
 ```
 
-Currently, the _only_ requirement is that the plugin specify a value in the `<group>` that matches the group identifier defined in the plugin_manager ("jellyfish").
+Currently, the _only_ requirement is that the plugin specify a value in the `<group>` that matches the group identifier defined in the plugin manager ("jellyfish").
 
 ## Local Development
-If you're developing plugins locally in the top-level plugins directory then the easiet way to run the plugins is to install them locally with pip and with the `--editable,-e` flag: 
+If you're developing plugins locally in the top-level plugins directory then you will need to locally install them with pip and with the `--editable,-e` flag: 
 ```bash 
 cd plugins/jellyfish-my-plugin/ #Or whatever your plugin directory is
 pip install -e . # -e for editable
 ```
-Once the plugin packages have been installed,  then the plugin manager in Jellyfish will be able to pick them up and import them.
+Once the plugin packages have been installed, then the plugin manager in Jellyfish will be able to pick them up and import them.
 
 ## Pitfalls
 Some pitfalls experienced when implementing the example echo plugins.
