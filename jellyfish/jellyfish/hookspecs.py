@@ -1,4 +1,4 @@
-from jellyfish._plugin import hookspec
+from jellyfish import hookspec
 
 
 @hookspec

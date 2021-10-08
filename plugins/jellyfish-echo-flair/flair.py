@@ -1,6 +1,6 @@
 import jellyfish
 
 
-@jellyfish._plugin.hookimpl
+@jellyfish.hookimpl
 def echo(content: str):
     return f"~~ {content} ~~"

@@ -35,5 +35,4 @@ jobs:
       - name: Test with nose2
         run: |
           source venv/bin/activate
-          cd jellyfish
           nose2

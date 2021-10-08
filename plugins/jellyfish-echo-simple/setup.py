@@ -2,10 +2,10 @@ from setuptools import setup
 
 setup(
     version="0.0.1",
-    name="jellyfish-flair-echo",
+    name="jellyfish-echo-simple",
     install_requires=["jellyfish"],
     entry_points={
-        "jellyfish": ["jellyfish-flair-echo=flair"],
+        "jellyfish": ["jellyfish-echo-simple=simple"],
     },
-    py_modules=["flair"],
+    py_modules=["echo"],
 )
