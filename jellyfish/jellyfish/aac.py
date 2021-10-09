@@ -1,6 +1,6 @@
 import argparse
 
-from jellyfish import json, parser, puml
+from jellyfish import json, parser, puml, echo
 
 list_suffix = "[]"
 enum_types = {}
@@ -26,6 +26,8 @@ if __name__ == "__main__":
     puml_object_cmd = command_parser.add_parser(
         "puml-object", help="generates plant UML object diagram from the YAML model"
     )
+    echo_plugin_cmd = command_parser.add_parser("echo", help="Runs the echo plugin example")
+
     json_cmd = command_parser.add_parser("json", help="prints the json version of the yaml model")
 
     argParser.add_argument("yaml", type=str, help="the path to your architecture yaml")
@@ -53,3 +55,6 @@ if __name__ == "__main__":
 
     if args.command == "puml-object":
         print(puml.umlObject(model_file))
+
+    if args.command == "echo":
+        echo.demonstrate_echo("Hello World!")

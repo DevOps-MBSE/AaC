@@ -1,0 +1,17 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Run Echo Jellyfish",
+            "type": "python",
+            "request": "launch",
+            "program": "jellyfish/jellyfish/aac.py",
+            "args": [
+                "echo",
+                "yaml"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        }
+    ]
+}

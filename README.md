@@ -29,7 +29,7 @@ Potential Use Cases:
     - User defines the trigger to be onReceive and references the data type from the data model
 
 
-## Updates done over the weekend
+### Updates done over the weekend
 I've spent some time exploring ideas and made some significant changes.  I've pretty much rewritten the whole thing, but I have preserved the original code in the orig folder.
 1) Changed to a (mostly) self defining modeling capabiliy.
     - Initially I was validating YAML models using a JSON schema.  This worked pretty well, but required learning of JSON schemas to extent the capability.
@@ -65,7 +65,7 @@ I've spent some time exploring ideas and made some significant changes.  I've pr
     - Create a way to reference external items (ex: requirement, story, spec, etc)
 
 
-## Python setup
+## Project Setup
 
 Set up your virtual environment:
 
@@ -101,7 +101,7 @@ To install all dependencies (runtime, dev, and test), run this:
 $ pip install -e .[all]
 ```
 
-## Testing
+### Testing
 
 To run tests, make sure you've set up your dependencies using `pip install -e .[test]` (see above). Then, from the project root directory, run the following command (from within your virtual environment).
 
@@ -109,7 +109,7 @@ To run tests, make sure you've set up your dependencies using `pip install -e .[
 $ nose2
 ```
 
-## Running
+### Running
 
 To run the command, execute the script (from within your virtual environment) as follows:
 
@@ -119,3 +119,6 @@ $ python -m jellyfish.aac ...
 # For example, to validate the AaC.yaml file
 $ python -m jellyfish.aac validate model/aac/AaC.yaml
 ```
+
+## Plugins
+Plugins development and notes can be found in the [docs](./docs/Plugins.md).
