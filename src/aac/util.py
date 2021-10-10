@@ -71,9 +71,9 @@ def getAaCSpec():
     relpath_to_aac_yaml = "../../model/aac/AaC.yaml"
     aac_model_file = os.path.join(this_file_path, relpath_to_aac_yaml)
 
-    model_types, aac_data, aac_enums, use_case_types, ext_types = parser.parse(
-        aac_model_file, False
-    )
+    all_models = parser.parse(aac_model_file, False)
+    aac_data = getModelsByType(all_models, "data")
+    aac_enums = getModelsByType(all_models, "enum")
 
     return aac_data, aac_enums
 
@@ -104,3 +104,12 @@ def getRoots(reload=False):
         root_names = search(aac_data["root"], ["data", "fields", "name"])
 
     return root_names
+
+
+def getModelsByType(models, type_name):
+    ret_val = {}
+    for key, value in models.items():
+        if type_name in value.keys():
+            ret_val[key] = value
+
+    return ret_val

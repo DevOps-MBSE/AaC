@@ -1,8 +1,8 @@
-from aac import parser, util
+from aac import util
 
 
-def umlComponent(archFile) -> str:
-    model_types, data_types, enum_types, use_case_types, ext_types = parser.parse(archFile)
+def umlComponent(all_models) -> str:
+    model_types = util.getModelsByType(all_models, "model")
 
     puml_lines = []
     puml_lines.append("@startuml")
@@ -10,10 +10,10 @@ def umlComponent(archFile) -> str:
         print_component_content(model_types[root_model_name], [], puml_lines, model_types)
     puml_lines.append("@enduml")
 
-    retVal = ""
+    model_text = ""
     for line in puml_lines:
-        retVal = retVal + line + "\n"
-    return retVal
+        model_text = model_text + line + "\n"
+    print(model_text)
 
 
 def find_root_names(models):
@@ -82,9 +82,9 @@ def print_component_content(root, existing, puml_lines, model_types):
             puml_lines.append("[{}] -> {} : {}".format(model_name, output["type"], output["name"]))
 
 
-def umlSequence(archFile: str) -> str:
+def umlSequence(all_models) -> str:
 
-    model_types, data_types, enum_types, use_case_types, ext_types = parser.parse(archFile)
+    use_case_types = util.getModelsByType(all_models, "usecase")
 
     puml_lines = []
 
@@ -115,15 +115,15 @@ def umlSequence(archFile: str) -> str:
             ""
         )  # just put a blank line in between sequence diagrams for now  TODO revisit this decision later
 
-    retVal = ""
+    model_text = ""
     for line in puml_lines:
-        retVal = retVal + line + "\n"
-    return retVal
+        model_text = model_text + line + "\n"
+    print(model_text)
 
 
-def umlObject(archFile: str) -> str:
+def umlObject(all_models) -> str:
 
-    model_types, data_types, enum_types, use_case_types, ext_types = parser.parse(archFile)
+    model_types = util.getModelsByType(all_models, "model")
 
     object_declarations = []
     object_compositions = {}
@@ -147,7 +147,7 @@ def umlObject(archFile: str) -> str:
 
     puml_lines.append("@enduml")
 
-    retVal = ""
+    model_text = ""
     for line in puml_lines:
-        retVal = retVal + line + "\n"
-    return retVal
+        model_text = model_text + line + "\n"
+    print(model_text)

@@ -163,7 +163,7 @@ data:
 data:
   name: usecase
   fields:
-    - name: title
+    - name: name
       type: string
     - name: description
       type: string
@@ -172,7 +172,7 @@ data:
     - name: steps
       type: Step[]
   required:
-    - title
+    - name
     - participants
     - steps
 ---

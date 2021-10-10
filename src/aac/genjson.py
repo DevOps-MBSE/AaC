@@ -1,12 +1,9 @@
 import json
 
-from aac import parser
 
-
-def toJson(archFile) -> str:
-    model_types, data_types, enum_types, use_case_types, ext_types = parser.parse(archFile)
-    complete_dict = model_types | data_types | enum_types | use_case_types
-    return_dicts = []
-    for name in complete_dict:
-        return_dicts.append(complete_dict[name])
-    return json.dumps(return_dicts)
+def toJson(parsed_models) -> str:
+    just_dicts = []
+    for name in parsed_models:
+        just_dicts.append(parsed_models[name])
+    print(json.dumps(just_dicts))
+    return 

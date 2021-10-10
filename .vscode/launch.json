@@ -8,7 +8,7 @@
             "program": "src/aac/__main__.py",
             "args": [
                 "echo",
-                "yaml"
+                "./model/aac/AaC.yaml"
             ],
             "console": "integratedTerminal",
             "justMyCode": false
@@ -45,6 +45,78 @@
             "args": [
                 "validate",
                 "./model/flow/System.yaml"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "Python: Json AaC",
+            "type": "python",
+            "request": "launch",
+            "program": "src/aac/__main__.py",
+            "args": [
+                "json",
+                "./model/aac/AaC.yaml"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "Python: Json EchoService",
+            "type": "python",
+            "request": "launch",
+            "program": "src/aac/__main__.py",
+            "args": [
+                "json",
+                "./model/echo/EchoService.yaml"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "Python: Json Flow",
+            "type": "python",
+            "request": "launch",
+            "program": "src/aac/__main__.py",
+            "args": [
+                "json",
+                "./model/flow/System.yaml"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "Python: Puml-component Flow",
+            "type": "python",
+            "request": "launch",
+            "program": "src/aac/__main__.py",
+            "args": [
+                "puml-component",
+                "./model/flow/System.yaml"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "Python: Puml-object Flow",
+            "type": "python",
+            "request": "launch",
+            "program": "src/aac/__main__.py",
+            "args": [
+                "puml-object",
+                "./model/flow/System.yaml"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "Python: Puml-sequence Flow",
+            "type": "python",
+            "request": "launch",
+            "program": "src/aac/__main__.py",
+            "args": [
+                "puml-object",
+                "./model/flow/flow.yaml"
             ],
             "console": "integratedTerminal",
             "justMyCode": false

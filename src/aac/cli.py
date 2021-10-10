@@ -44,24 +44,26 @@ def runCLI():
     model_file = args.yaml
     # print(model_file)
 
+    parsed_models = {}
+    try:
+        parsed_models = parser.parse(model_file)
+    except RuntimeError:
+        print(f"Model [{model_file}] is invalid")
+
     if args.command == "validate":
-        try:
-            parser.parse(model_file)
-            print("Model [{}] is valid".format(model_file))
-        except RuntimeError:
-            print("Model [{}] is invalid".format(model_file))
+        print(f"Model [{model_file}] is valid")
 
     if args.command == "json":
-        print(genjson.toJson(model_file))
+        genjson.toJson(parsed_models)
 
     if args.command == "puml-component":
-        print(puml.umlComponent(model_file))
+        puml.umlComponent(parsed_models)
 
     if args.command == "puml-sequence":
-        print(puml.umlSequence(model_file))
+        puml.umlSequence(parsed_models)
 
     if args.command == "puml-object":
-        print(puml.umlObject(model_file))
+        puml.umlObject(parsed_models)
 
     if args.command == "echo":
         echo.demonstrate_echo("Hello World!")

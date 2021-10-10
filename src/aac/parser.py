@@ -15,29 +15,27 @@ def parse(archFile: str, validate=True):
     If an invalid YAML file is provided and validation is performed, an error message
     and an exception being thrown.
     """
-
-    enum_types = {}
-    data_types = {}
-    model_types = {}
-    use_case_types = {}
-    ext_types = {}
+    parsed_models = {}
 
     files = _get_files_to_process(archFile)
     for f in files:
         contents = _read_file_content(f)
         roots = yaml.load_all(contents, Loader=yaml.FullLoader)
         for root in roots:
-            _process_root(root, model_types, data_types, enum_types, use_case_types, ext_types)
+            if "import" in root:
+                del root["import"]
+            root_name = list(root.keys())[0]
+            parsed_models[root[root_name]["name"]] = root
+            # _process_root(root, model_types, data_types, enum_types, use_case_types, ext_types)
 
     if validate:
-        validate_me = model_types | data_types | enum_types | use_case_types | ext_types
-        isValid, errMsg = validator.validate(validate_me)
+        isValid, errMsg = validator.validate(parsed_models)
 
         if not isValid:
             print("Failed to validate {}: {}".format(archFile, errMsg))
             raise RuntimeError("Failed to validate {}".format(archFile), errMsg)
 
-    return model_types, data_types, enum_types, use_case_types, ext_types
+    return parsed_models
 
 
 def _read_file_content(archFile):
