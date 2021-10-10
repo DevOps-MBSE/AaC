@@ -1,6 +1,6 @@
 import argparse
 
-from jellyfish import json, parser, puml, echo
+from aac import genjson, parser, puml, echo
 
 list_suffix = "[]"
 enum_types = {}
@@ -45,7 +45,7 @@ if __name__ == "__main__":
             print("Model [{}] is invalid".format(model_file))
 
     if args.command == "json":
-        print(json.toJson(model_file))
+        print(genjson.toJson(model_file))
 
     if args.command == "puml-component":
         print(puml.umlComponent(model_file))

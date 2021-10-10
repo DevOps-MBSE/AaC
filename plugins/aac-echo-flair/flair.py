@@ -1,6 +1,6 @@
-import jellyfish
+import aac
 
 
-@jellyfish.hookimpl
+@aac.hookimpl
 def echo(content: str):
     return f"~~ {content} ~~"

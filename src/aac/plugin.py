@@ -1,4 +1,4 @@
-from jellyfish import hookspecs, PLUGIN_PROJECT_NAME
+from aac import hookspecs, PLUGIN_PROJECT_NAME
 from pluggy import PluginManager
 
 

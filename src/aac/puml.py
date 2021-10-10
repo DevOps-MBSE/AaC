@@ -1,4 +1,4 @@
-from jellyfish import parser, util
+from aac import parser, util
 
 
 def umlComponent(archFile) -> str:

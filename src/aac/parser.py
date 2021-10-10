@@ -2,7 +2,7 @@ import os
 
 import yaml
 
-from jellyfish import validator
+from aac import validator
 
 
 def parse(archFile: str, validate=True):

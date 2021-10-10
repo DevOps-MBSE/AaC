@@ -28,10 +28,10 @@ development_dependencies = [
 test_dependencies = ["nose2 == 0.10.0", "coverage == 6.0"]
 
 setup(
-    name="jellyfish",
+    name="aac",
     version="3.0.0",
-    packages=find_packages(where="jellyfish", exclude="tests"),
-    package_dir={"": "jellyfish"},
+    packages=find_packages(where="aac", exclude="tests"),
+    package_dir={"": "src"},
     install_requires=runtime_dependencies,
     setup_requires=development_dependencies,
     tests_require=test_dependencies,

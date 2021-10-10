@@ -1,4 +1,4 @@
-from jellyfish import hookspec
+from aac import hookspec
 
 
 @hookspec

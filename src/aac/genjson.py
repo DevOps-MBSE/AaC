@@ -1,6 +1,6 @@
 import json
 
-from jellyfish import parser
+from aac import parser
 
 
 def toJson(archFile) -> str:
