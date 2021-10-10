@@ -1,6 +1,6 @@
 model:
   name: aac-plantuml
-  description: puml is a Architecture-as-Code plugin that enables Plant UML content to be generated from Arch-as-Code models.
+  description: aac-plantuml is a Architecture-as-Code plugin that enables Plant UML content to be generated from Arch-as-Code models.
   behavior:
     - name: puml-component
       type: command

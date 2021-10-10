@@ -1,71 +1,173 @@
-# Architecture-as-Code
+# Architecture-as-Code (AaC)
 
-This is a scratch space to explore concepts and is not intended to create anything useful at this time.
+AaC is a distinctly different take on Model-Based System Engineering (MBSE) that allows a
+system modeller to define a system in simple yaml.  This approach allows engineers to
+apply rigorous configuration management to their baselines (unlike other "boxes and lines" approaches).
+Our team has spent many years engineering, building, testing, and delivering complex systems. In 
+that time we've seen an enormous amount of effort and money put into system modelling. Unfortunately,
+it is almost always the case that the system model is either never used by the teams building and
+delivering product, or it adds complexity to those team's workflow and becomes an impediment. The
+creators of AaC have spent many years working to adopt and tailor the principles of DevOps within
+our professional workplaces.  We've seen the amazing efficiencies that can be achieved by knocking down
+the "wall of confusion" between developers and operations and optimizing around system thinking, flow,
+and continuous improvement through learning and experimentation. We believe the critical tipping point
+that allowed this to occur was the creation of Infrastructure-as-Code and the adoption of new practices
+like GitOps that embrace automated quality assurance, automated deployment, and continuous monitoring.
+Our objective is to knock down the "wall of confusion" that exists between systems engineering and 
+development, optimizing the total system delivery value stream from concept/requirement through to
+operations with complete traceability and configuration management throughout.  We believe we can
+discover new ways to define, deliver, and evolve complex systems using Architecture-as-Code.
 
-Potential Use Cases:
-1) Model the logical decomposition of a system
-    - User creates a model representing the entire system
-    - User creates a model for a nested portion of the system
-    - User specifies the nested system portion is contained within the system model
-    - User creates another level of nexted models using the same mechanism
-2) Model abstract and concrete portions of a system
-    - User creates a model representing the entire system
-    - User creates multiple models of nested portions of the system
-    - User specifies the nested portions as concrete representations (i.e. not to be further decomosed)
-    - User gets an error if attempting to model a further nested portion of a concrete model element
-3) Model simple data for a system
-    - User has defined a model of a system or portion of a system
-    - User creates a data model
-    - User creates data elements as a list of primitives (int, float, string, bool)
-    - User specifies the cardinality of each data element (standard (0-1), required (1), list(0-N))
-4) Model complex data for a system
-    - User has defined a data model using primitive types
-    - User creates a new data model
-    - User creates a data element of the named type from the previously defined data model
-    - User specifies the cardinality of each data element (standard (0-1), required (1), list(0-N))
-5) Model an interface for a system
-    - User has a defined system model and data model
-    - User adds a trigger to the system model
-    - User defines the trigger to be onReceive and references the data type from the data model
+AaC is a self-defining solution. At the heart of the AaC application is a definition of AaC itself.
+This model is used in validation of itself.  Core data types are purposefully simple and can be 
+extended by a user.
 
+AaC is designed with extensibility in mind.  The built-in functionallity is intentionally minimized.
+AaC uses a plug-in system to extend the base capability.  To further simplify this, AaC includes a
+built-in command to generate new plugins from an AaC model.  There is an example of this for
+Plant UML in the plugins folder of the repository and more info below.
 
-### Updates done over the weekend
-I've spent some time exploring ideas and made some significant changes.  I've pretty much rewritten the whole thing, but I have preserved the original code in the orig folder.
-1) Changed to a (mostly) self defining modeling capabiliy.
-    - Initially I was validating YAML models using a JSON schema.  This worked pretty well, but required learning of JSON schemas to extent the capability.
-    - Now there is a YAML definition of the AaC modelling language, using the AaC modeling language.
-    - There are some "hard coded" core concepts now baked into the validation.
-        - The representation of import, data, and model (top level) are hard coded and cannot be changed.
-        - The existance of a model item is hard coded, but the content is validated using the YAML model in AaC.yaml
-        - All data types within model are dynamic...although I'm sure certain things will break if changes are made.
-        - Nothing is hardened...or resiliently designed.
-        - There are no real tests...just sample models that can be ran.
-2) I've modeled the AaC CLI...but it's just a model, not used for anything.
-    - I've found this useful to reason about the design of the AaC model structure and tool implementation.
-    - I have hand built the AaC CLI based on the AaC CLI model as best I could.
-    - Hopefully this will allow me to experiment with code generation in the future.  I'd like to generate the CLI base applicaiton if possible.
-3) Not really a change, but I've stuck with Python
-    - I am not a Python developer.  Any Pythonistas out there will have plenty of opportunity to make fun of what I've done here.
-    - I have enjoyed learning Python as I went through this.
-4) Added use cases
-    - There is a new root type called usecase
-    - Parsing and validation works (good enough for now anyway)
-    - Changed puml to include two commands:  puml-component generates component diagram from a model, puml-sequence generates sequence diagram from a usecase
-4) There's a lot of things I've considered doing but haven't
-    - Create a built-in representation of hashmaps for use in modeling (but maybe I'm just too reliant on Python dict types now)
-    - Attempt to only use the root data type as the sole "hard coded" item and truely make the model dog food itself
-    - Refactor and build real unit tests / acceptance tests
-    - Auto-generate Cucumber feature files from a scenario.
-    - Auto-generate PlantUML sequence diagrams.
-    - Auto-generate RESTful service infrastructure for request-response behaviors
-    - Create an extension solution in the model to modify built-in data types and enums
-    - Create a XOR validation for fields in a data model (not convinced this is a good idea)
-    - Create a way to reference other definitions within the model for additional validation (i.e. data.required value must be in data.fields.name)
-    - Auto-generate documentation (probably need alot more description fields in the model definition to capture content)
-    - Create a way to reference external items (ex: requirement, story, spec, etc)
+## Using AaC to Model Your System
+AaC is written in python to help make it more approachable for casual users and easily extensible for
+power users.  You will need Python 3.9 or later to run AaC.
 
+To install AaC on Linux or Windows:
+```
+pip install aac
+```
 
-## Project Setup
+To use AaC you first define a model of your system in yaml.  Refer to the documentation for more details.
+A simple model for an EchoService is provided here for reference.  Cut and paste the below model into a 
+file called EchoService.yaml.  
+*Note: This is using a little yaml trick to concatenate the content of two yaml files into a single file.*
+'''
+data: 
+  name: Message
+  fields:
+  - name: body
+    type: string
+  - name: sender
+    type: string
+---
+model:
+  name: EchoService
+  description: This is a message mirror.
+  behavior:
+    - name: echo
+      type: request-response
+      description: This is the one thing it does.
+      input:
+        - name: inbound
+          type: Message
+      output:
+        - name: outbound
+          type: Message
+      acceptance:
+        - scenario: onReceive
+          given:
+           - The EchoService is running.
+          when:
+            - The user sends a message to EchoService.
+          then:
+            - The user receives the same message from EchoService.
+'''
+
+Now you can run AaC against your model.
+'''
+aac validate EchoService.yaml
+'''
+
+AaC has some core "root types" for you to work with.  You can see the root types of **data** and **model** used in the example above.
+The AaC core root types are:
+- data: Allows you to model data types used within your system as named types with fields.
+- enum: Allows you to model enumerated types (types with only specific values allowed).
+- model: Allows you to model the behavioral elements of your system.  These can be abstract or concrete.
+- usecase: Allows you to model the sequence of interactions between your models.
+- ext: Allows you to easily extend the AaC model itself and tailor things to your needs.
+
+Although you can use the yaml trick above when modelling your system, it would be better to keep things more 
+structured and organized.  To help with this AaC allows you to define each item you model in a separate file and
+then import it as needed.  To do this just put an **import** at the root of your model file.  
+
+Here's an example of the EchoService broken into two files:
+- Message.yaml
+    '''
+    data: 
+    name: Message
+    fields:
+    - name: body
+        type: string
+    - name: sender
+        type: string
+    '''
+- EchoService.yaml
+    '''
+    import:
+    - ./Message.yaml
+    model:
+    name: EchoService
+    description: This is a message mirror.
+    behavior:
+        - name: echo
+        type: request-response
+        description: This is the one thing it does.
+        input:
+            - name: inbound
+            type: Message
+        output:
+            - name: outbound
+            type: Message
+        acceptance:
+            - scenario: onReceive
+            given:
+            - The EchoService is running.
+            when:
+                - The user sends a message to EchoService.
+            then:
+                - The user receives the same message from EchoService.
+
+    '''
+Ok, so that's interesting, but what can you do with the AaC model once you've built it?
+AaC is designed and built on years of experimentation, experience, and learning.  But this version
+is a brand new implementation rewritten entirely in Python in an attempt to make AaC more user friendly
+to both the casual user and the power user. Right now AaC doesn't have a lot of additional features.
+But new plugins are being created to deliver more functionallity.  Over time there will be plugins
+available to use the AaC model to auto-generate content for reviews, documentation, and even system
+devleopment and deployment.
+
+## AaC Plugins
+A simple example of one of the plugins mentioned above is the Plant UML plugin in the /plugins/aac-plantuml directory
+of this repository.  This plugin allows you to generate component diagrams, object diagrams, and sequence
+diagrams from the AaC model of your system.  You can test this yourself by using the models in the /model
+director of this repository.
+
+To build the Plant UML plugin, first we modeled the plugin behavior we wanted using AaC.  I'll walk you through building
+that plugin so you can build your own plugin for your own need.
+1) Model the Plugin behavior using AaC
+    - The /plugins/aac-plantuml/aac-plantuml.yaml file contains the specification of 3 desired behaviors.
+1) Generate the plugin boiler-plate code.
+    - Run aac gen-plugin aac-plantuml.yaml
+    - When prompted if you want to write files type "y" and hit enter.
+    - Everything you need for a plugin to work in the AaC tool has been generated except the business logic.
+    - Note:  Plugins have a pre-defined interface.  They have 2 arguments: path to the file being processes, and the
+       parsed_model which is a dict.  This key is the type name and the value is the model content for that type.
+1) Write the business logic for your plug-in.
+    - You can see the business logic in /plugins/aac-plantuml/aac_plantuml_impl.py.
+    - Note:  The other files in the directory are auto-generated and will be overwritten if you rerun gen-plugin.  Your
+       plugin impl file will not be overwritten, so keep your business logic here or in other non-generated files.
+1) Build your plugin.
+    - From your plugin directory run '''pip install -e .''' and your plugin will be built and installed locally.
+1) Test your plugin
+    - Run '''aac plugin-behavior-name model_file''' to see your plugin in action.
+1) If you wish you can now package and publish your plugin to PyPI for other AaC users to download and use.
+    - From your plugin directory run '''python -m build'''
+    - From your plugin directory run '''python -m twine upload dist/*'''
+
+We're working on other functionallity so keep an eye out for new updates.
+
+## Project Setup for Developers
+
+If you want to work on the Core AaC capability in this repository, follow these instructions.
 
 Set up your virtual environment:
 
@@ -114,11 +216,9 @@ $ nose2
 To run the command, execute the script (from within your virtual environment) as follows:
 
 ```bash
-$ python -m aac ...
+# For usage information
+$ aac --help
 
 # For example, to validate the AaC.yaml file
-$ python -m aac validate model/aac/AaC.yaml
+$ aac validate model/aac/AaC.yaml
 ```
-
-## Plugins
-Plugins development and notes can be found in the [docs](./docs/Plugins.md).
