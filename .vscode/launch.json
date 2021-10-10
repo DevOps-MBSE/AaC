@@ -2,14 +2,58 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Run Echo Jellyfish",
+            "name": "Python: Run Echo Plugin",
             "type": "python",
             "request": "launch",
-            "program": "jellyfish/jellyfish/aac.py",
+            "program": "src/aac/__main__.py",
             "args": [
                 "echo",
                 "yaml"
             ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "Python: Validate AaC",
+            "type": "python",
+            "request": "launch",
+            "program": "src/aac/__main__.py",
+            "args": [
+                "validate",
+                "./model/aac/AaC.yaml"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "Python: Validate EchoService",
+            "type": "python",
+            "request": "launch",
+            "program": "src/aac/__main__.py",
+            "args": [
+                "validate",
+                "./model/echo/EchoService.yaml"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "Python: Validate Flow",
+            "type": "python",
+            "request": "launch",
+            "program": "src/aac/__main__.py",
+            "args": [
+                "validate",
+                "./model/flow/System.yaml"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "Python: Unit Tests",
+            "type": "python",
+            "request": "launch",
+            "program": "nose2",
             "console": "integratedTerminal",
             "justMyCode": false
         }

@@ -1,181 +1,182 @@
 from aac import util
 
 
-def validate(model_types, data_types, enum_types, use_case_types, ext_types):
-
-    aac_data, aac_enums = util.getAaCSpec()
-
-    # combine parsed types and AaC built-in types
-    all_data_types = aac_data | data_types
-    all_enum_types = aac_enums | enum_types
+def validate(validate_me):
 
     foundInvalid = False
     errMsgList = []
 
-    for enum in enum_types.values():
-        isValid, errMsg = validate_enum(enum)
+    for model in validate_me.values():
+        isValid, errMsg = validate_general(model)
         if not isValid:
             # print("Enum Validation Failed: {}".format(errMsg))
             foundInvalid = True
             errMsgList = errMsgList + errMsg
 
-    for data in data_types.values():
-        isValid, errMsg = validate_data(data, all_data_types, all_enum_types)
-        if not isValid:
-            # print("Data Validation Failed: {}".format(errMsg))
-            foundInvalid = True
-            errMsgList = errMsgList + errMsg
+    # combine parsed types and AaC built-in types
+    aac_data, aac_enums = util.getAaCSpec()
+    # ext_types = {}
 
-    for model in model_types.values():
-        isValid, errMsg = validate_model(model, all_data_types, all_enum_types)
-        if not isValid:
-            # print("Model Validation Failed: {}".format(errMsg))
-            foundInvalid = True
-            errMsgList = errMsgList + errMsg
-
-    for usecase in use_case_types.values():
-        isValid, errMsg = validate_usecase(usecase, model_types, all_data_types, all_enum_types)
-        if not isValid:
-            foundInvalid = True
-            errMsgList = errMsgList + errMsg
-
-    for ext in ext_types.values():
-        isValid, errMsg = validate_extension(ext, all_data_types, all_enum_types)
-        if not isValid:
-            foundInvalid = True
-            errMsgList = errMsgList + errMsg
-
-    isValid, errMsg = validate_cross_references(model_types, all_data_types, all_enum_types)
+    isValid, errMsg = validate_cross_references(validate_me)
     if not isValid:
         foundInvalid = True
         errMsgList = errMsgList + errMsg
 
-    isValid, errMsg = validate_enum_values(model_types, all_data_types, all_enum_types)
+    isValid, errMsg = validate_enum_values(validate_me)
     if not isValid:
         foundInvalid = True
         errMsgList = errMsgList + errMsg
 
-    for ext in ext_types:
-        type_to_extend = ext_types[ext]["extension"]["type"]
-        if type_to_extend in aac_enums:
-            apply_extension(ext_types[ext], aac_data, aac_enums)
-        if type_to_extend in enum_types:
-            apply_extension(ext_types[ext], data_types, enum_types)
-        if type_to_extend in aac_data:
-            apply_extension(ext_types[ext], aac_data, aac_enums)
-        if type_to_extend in data_types:
-            apply_extension(ext_types[ext], data_types, enum_types)
+    for ext in getByType(validate_me, "ext"):
+        type_to_extend = validate_me[ext]["extension"]["type"]
+        if type_to_extend in aac_data or type_to_extend in aac_enums:
+            apply_extension(validate_me[ext], aac_data, aac_enums)
+        else:
+            apply_extension(validate_me[ext], getByType(validate_me, "data"), getByType(validate_me, "enum"))
 
-    # if foundInvalid:
-    #     print("Model validation failed")
-    #     for msg in errMsgList:
-    #         print("    - {}".format(msg))
-    # else:
-    #     print("Model is Valid")
-
-    # create output
     return not foundInvalid, errMsgList
 
 
-def validate_enum(model) -> tuple[bool, list]:
-    """
-    Validates an Architecture-as-Code enum type.
-    An enum is a core type of AaC and not driven by the AaC yaml spec.
-    An enum contains a list of enumerated type definitions. Each enumerated type must have a name and a list of values.
+def validate_general(validate_me: dict) -> tuple[bool, list]:
 
-    :prarm model: the enum definition to be validated
-    :returns: boolean, errorMessage if boolean is False
-    """
-    # an enum item has a key of 'enum', and no other keys
+    model = validate_me.copy()
+    # remove any imports before validation
+    if "import" in model:
+        del model["import"]
+
+    # any model can only have a single root
     if len(list(model.keys())) > 1:
-        return False, [
-            "yaml file has more than one root type, cannot validate (programming error)"
-        ]
+        return False, ["AaC Validation Error: yaml file has more than one root defined"]
 
-    if "enum" not in model.keys():
-        return False, ["the root type for enum must be 'enum'"]
+    # ensure the model has a known root
+    root_name = list(model.keys())[0]
+    if root_name not in util.getRoots():
+        return False, [f"AaC Validation Error: yaml file has an unrecognized root {root_name}.  Known roots {util.getRoots()}"]
 
-    enum = model["enum"]
+    # get the root type to validate against
+    root_type = ""
+    aac_data, aac_enums = util.getAaCSpec()
+    for field in util.search(aac_data["root"], ["data", "fields"]):
+        if field["name"] == root_name:
+            root_type = field["type"]
+            break
 
-    # an enum must have a name
-    if "name" not in enum:
-        return False, ["data item missing name"]
-
-    # an enum must have a lit of values
-    if "values" not in enum:
-        return False, ["enum item missing values"]
-    values = enum["values"]
-
-    if not isinstance(values, list):
-        return False, ["enum item values should be a list"]
-
-    return True, [""]
+    return validate_model_entry(root_name, root_type, model[root_name], aac_data, aac_enums)
 
 
-def validate_data(model, spec, enums):
-    """
-    Validates an Architecture-as-Code data type.
-    A data is a core type of AaC and not driven by the AaC yaml spec.
-    The data definition contains a list of type definitions. Each type definition must have a name and a list of fields.
-    Optionally, a type definition may specify required fields - all fields not required in the type definition are optional (just like a JSON schema).
+# def validate_enum(model) -> tuple[bool, list]:
+#     """
+#     Validates an Architecture-as-Code enum type.
+#     An enum is a core type of AaC and not driven by the AaC yaml spec.
+#     An enum contains a list of enumerated type definitions. Each enumerated type must have a name and a list of values.
 
-    :prarm model: the data definition to be validated
-    :param spec: the specification of all data types - dict[data name, data model] (this is just used to ensure a named type is known, aka has been parsed) (this includes AaC base types)
-    :returns: boolean, errorMessage if boolean is False
-    """
-    # a data item has a key of 'data', and no other keys  TODO:  import is also a valid root...need to make sure this is handled correctly
-    if len(list(model.keys())) > 1:
-        return False, [
-            "yaml file has more than one root type, cannot validate (programming error)"
-        ]
-    if "data" not in model.keys():
-        return False, ["the root type for data must be 'data'"]
+#     :prarm model: the enum definition to be validated
+#     :returns: boolean, errorMessage if boolean is False
+#     """
+#     # an enum item has a key of 'enum', and no other keys
+#     if len(list(model.keys())) > 1:
+#         return False, [
+#             "yaml file has more than one root type, cannot validate (programming error)"
+#         ]
 
-    data = model["data"]
-    # a data item has a name - this may be considered the type name - this is a list type so data has multiple data items
+#     if "enum" not in model.keys():
+#         return False, ["the root type for enum must be 'enum'"]
 
-    if "name" not in data:
-        return False, ["data missing name"]
-    name = data["name"]
+#     enum = model["enum"]
 
-    # a data items has fields - this should be a list of dicts
-    if "fields" not in data:
-        return False, ["validate_data: data item missing fields"]
-    fields = data["fields"]
-    field_names = []
-    if not isinstance(fields, list):
-        return False, ["validate_data: data items fields should be a list"]
+#     # an enum must have a name
+#     if "name" not in enum:
+#         return False, ["data item missing name"]
 
-    # validate fields
-    for field in fields:
-        if not isinstance(field, dict):
-            return False, ["valadate_data: data field definition must be a dict"]
-        # each field has a name
-        if "name" not in field:
-            return False, ["validate_data: field is missing name"]
-        field_name = field["name"]
-        field_names.append(field_name)
-        # print("field_name = {}".format(field_name))
+#     # an enum must have a lit of values
+#     if "values" not in enum:
+#         return False, ["enum item missing values"]
 
-        # each field has a type - the type should be known in the spec
-        if "type" not in field:
-            return False, ["validate_data: field {} is missing type".format(field_name)]
+#     values = enum["values"]
 
-    # a data item may define required fields - ensure each required field is present in fields
-    if "required" in data:  # if required isn't present then all fields are optional
-        for required_field in data["required"]:
-            if required_field not in field_names:
-                return False, [
-                    "validate_data: required field {} is not defined in {}".format(
-                        required_field, name
-                    )
-                ]
+#     if not isinstance(values, list):
+#         return False, ["enum item values should be a list"]
 
-    return True, ""
+#     return True, [""]
 
 
-def validate_cross_references(models, data, enums):
+# def validate_data(model, spec, enums):
+#     """
+#     Validates an Architecture-as-Code data type.
+#     A data is a core type of AaC and not driven by the AaC yaml spec.
+#     The data definition contains a list of type definitions. Each type definition must have a name and a list of fields.
+#     Optionally, a type definition may specify required fields - all fields not required in the type definition are optional (just like a JSON schema).
+
+#     :prarm model: the data definition to be validated
+#     :param spec: the specification of all data types - dict[data name, data model] (this is just used to ensure a named type is known, aka has been parsed) (this includes AaC base types)
+#     :returns: boolean, errorMessage if boolean is False
+#     """
+#     # a data item has a key of 'data', and no other keys  TODO:  import is also a valid root...need to make sure this is handled correctly
+#     if len(list(model.keys())) > 1:
+#         return False, [
+#             "yaml file has more than one root type, cannot validate (programming error)"
+#         ]
+#     if "data" not in model.keys():
+#         return False, ["the root type for data must be 'data'"]
+
+#     data = model["data"]
+#     # a data item has a name - this may be considered the type name - this is a list type so data has multiple data items
+
+#     if "name" not in data:
+#         return False, ["data missing name"]
+#     name = data["name"]
+
+#     # a data items has fields - this should be a list of dicts
+#     if "fields" not in data:
+#         return False, ["validate_data: data item missing fields"]
+#     fields = data["fields"]
+#     field_names = []
+#     if not isinstance(fields, list):
+#         return False, ["validate_data: data items fields should be a list"]
+
+#     # validate fields
+#     for field in fields:
+#         if not isinstance(field, dict):
+#             return False, ["valadate_data: data field definition must be a dict"]
+#         # each field has a name
+#         if "name" not in field:
+#             return False, ["validate_data: field is missing name"]
+#         field_name = field["name"]
+#         field_names.append(field_name)
+#         # print("field_name = {}".format(field_name))
+
+#         # each field has a type - the type should be known in the spec
+#         if "type" not in field:
+#             return False, ["validate_data: field {} is missing type".format(field_name)]
+
+#     # a data item may define required fields - ensure each required field is present in fields
+#     if "required" in data:  # if required isn't present then all fields are optional
+#         for required_field in data["required"]:
+#             if required_field not in field_names:
+#                 return False, [
+#                     "validate_data: required field {} is not defined in {}".format(
+#                         required_field, name
+#                     )
+#                 ]
+
+#     return True, ""
+
+
+def getByType(models, type_name):
+    ret_val = {}
+    for key, value in models.items():
+        if type_name in value.keys():
+            ret_val[key] = value
+
+    return ret_val
+
+
+def validate_cross_references(all_models):
     all_types = []
+
+    models = getByType(all_models, "model")
+    data = getByType(all_models, "data")
+    enums = getByType(all_models, "enum")
 
     all_types.extend(models.keys())
     all_types.extend(data.keys())
@@ -221,7 +222,12 @@ def validate_cross_references(models, data, enums):
         return False, errMsgs
 
 
-def validate_enum_values(models, data, enums):
+def validate_enum_values(all_models):
+
+    models = getByType(all_models, "model")
+    data = getByType(all_models, "data")
+    enums = getByType(all_models, "enum")
+
     # at least for now, only models use actual enum values (rather than just types) in their definitions
     # first find the enum usage in the model definition
     enum_fields = {}  # key: type name  value: field
@@ -335,12 +341,12 @@ def getModelObjectFields(spec_model, enum_spec, name):
     return retVal
 
 
-def validate_model(model, data_spec, enum_spec):
-    # a model item has a key of 'model', and no other keys   TODO:  import is also a valid root...need to make sure this is handled correctly
-    if "model" not in model.keys():
-        return False, ["the root type for model must be 'model'"]
+# def validate_model(model, data_spec, enum_spec):
+#     # a model item has a key of 'model', and no other keys   TODO:  import is also a valid root...need to make sure this is handled correctly
+#     if "model" not in model.keys():
+#         return False, ["the root type for model must be 'model'"]
 
-    return validate_model_entry("model", "model", model["model"], data_spec, enum_spec)
+#     return validate_model_entry("model", "model", model["model"], data_spec, enum_spec)
 
 
 def validate_model_entry(name, model_type, model, data_spec, enum_spec):
@@ -398,125 +404,125 @@ def validate_model_entry(name, model_type, model, data_spec, enum_spec):
     return True, [""]
 
 
-def validate_usecase(usecase, model_spec, data_spec, enum_spec):
+# def validate_usecase(usecase, model_spec, data_spec, enum_spec):
 
-    foundInvalid = False
-    errMsgList = []
+#     foundInvalid = False
+#     errMsgList = []
 
-    # a usecase item has a key of 'usecase', and no other keys   TODO:  import is also a valid root...need to make sure this is handled correctly
-    if "usecase" not in usecase.keys():
-        # nothing to validate so return immediately
-        return False, ["the root type for usecase must be 'usecase'"]
+#     # a usecase item has a key of 'usecase', and no other keys   TODO:  import is also a valid root...need to make sure this is handled correctly
+#     if "usecase" not in usecase.keys():
+#         # nothing to validate so return immediately
+#         return False, ["the root type for usecase must be 'usecase'"]
 
-    # validate against the aac spec
-    isValid, errMsg = validate_model_entry(
-        "usecase", "usecase", usecase["usecase"], data_spec, enum_spec
-    )
-    if not isValid:
-        foundInvalid = True
-        errMsgList = errMsgList + errMsg
+#     # validate against the aac spec
+#     isValid, errMsg = validate_model_entry(
+#         "usecase", "usecase", usecase["usecase"], data_spec, enum_spec
+#     )
+#     if not isValid:
+#         foundInvalid = True
+#         errMsgList = errMsgList + errMsg
 
-    use_case_title = usecase["usecase"]["title"]
-    # get a map of participant name to type
-    participant_map = {}
-    for participant in util.search(usecase, ["usecase", "participants"]):
-        participant_map[participant["name"]] = participant["type"]
+#     use_case_title = usecase["usecase"]["title"]
+#     # get a map of participant name to type
+#     participant_map = {}
+#     for participant in util.search(usecase, ["usecase", "participants"]):
+#         participant_map[participant["name"]] = participant["type"]
 
-    # validate usecase participant types
-    participant_types = util.search(usecase, ["usecase", "participants", "type"])
-    for part_type in participant_types:
-        # the character ~ at the begenning of the type suppresses type validation
-        if (not part_type.startswith("~")) and (part_type not in model_spec):
-            foundInvalid = True
-            errMsgList.append(
-                "usecase [{}] participant type [{}] is not defined".format(
-                    use_case_title, part_type
-                )
-            )
+#     # validate usecase participant types
+#     participant_types = util.search(usecase, ["usecase", "participants", "type"])
+#     for part_type in participant_types:
+#         # the character ~ at the begenning of the type suppresses type validation
+#         if (not part_type.startswith("~")) and (part_type not in model_spec):
+#             foundInvalid = True
+#             errMsgList.append(
+#                 "usecase [{}] participant type [{}] is not defined".format(
+#                     use_case_title, part_type
+#                 )
+#             )
 
-    # make sure source and target are known participants and the action exists on the target
-    participant_names = util.search(usecase, ["usecase", "participants", "name"])
-    steps = util.search(usecase, ["usecase", "steps"])
-    for step in steps:
-        source = step["source"]
-        target = step["target"]
-        action = step["action"]
+#     # make sure source and target are known participants and the action exists on the target
+#     participant_names = util.search(usecase, ["usecase", "participants", "name"])
+#     steps = util.search(usecase, ["usecase", "steps"])
+#     for step in steps:
+#         source = step["source"]
+#         target = step["target"]
+#         action = step["action"]
 
-        if source not in participant_names:
-            foundInvalid = True
-            errMsgList.append(
-                "Use Case [{}] validation error: source {} not found in participants {}".format(
-                    use_case_title, source, participant_names
-                )
-            )
+#         if source not in participant_names:
+#             foundInvalid = True
+#             errMsgList.append(
+#                 "Use Case [{}] validation error: source {} not found in participants {}".format(
+#                     use_case_title, source, participant_names
+#                 )
+#             )
 
-        if target not in participant_names:
-            foundInvalid = True
-            errMsgList.append(
-                "Use Case [{}] validation error: target {} not found in participants {}".format(
-                    use_case_title, target, participant_names
-                )
-            )
+#         if target not in participant_names:
+#             foundInvalid = True
+#             errMsgList.append(
+#                 "Use Case [{}] validation error: target {} not found in participants {}".format(
+#                     use_case_title, target, participant_names
+#                 )
+#             )
 
-        # suppress action validation if target type starts with ~ character
-        if not participant_map[target].startswith("~"):
-            if action not in util.search(
-                model_spec[participant_map[target]], ["model", "behavior", "name"]
-            ):
-                foundInvalid = True
-                errMsgList.append(
-                    "Use Case [{}] validation error: target {} does not define action {}".format(
-                        use_case_title, target, action
-                    )
-                )
+#         # suppress action validation if target type starts with ~ character
+#         if not participant_map[target].startswith("~"):
+#             if action not in util.search(
+#                 model_spec[participant_map[target]], ["model", "behavior", "name"]
+#             ):
+#                 foundInvalid = True
+#                 errMsgList.append(
+#                     "Use Case [{}] validation error: target {} does not define action {}".format(
+#                         use_case_title, target, action
+#                     )
+#                 )
 
-    if not foundInvalid:
-        return True, [""]
-    else:
-        return False, errMsgList
+#     if not foundInvalid:
+#         return True, [""]
+#     else:
+#         return False, errMsgList
 
 
-def validate_extension(extension, data_spec, enum_spec):
+# def validate_extension(extension, data_spec, enum_spec):
 
-    foundInvalid = False
-    errMsgList = []
+#     foundInvalid = False
+#     errMsgList = []
 
-    # an extension item has a key of 'extension', and no other keys   TODO:  import is also a valid root...need to make sure this is handled correctly
-    if "extension" not in extension.keys():
-        # nothing to validate so return immediately
-        return False, ["the root type for extension must be 'extension'"]
+#     # an extension item has a key of 'extension', and no other keys   TODO:  import is also a valid root...need to make sure this is handled correctly
+#     if "extension" not in extension.keys():
+#         # nothing to validate so return immediately
+#         return False, ["the root type for extension must be 'extension'"]
 
-    # validate against the aac spec
-    isValid, errMsg = validate_model_entry(
-        "extension", "extension", extension["extension"], data_spec, enum_spec
-    )
-    if not isValid:
-        foundInvalid = True
-        errMsgList = errMsgList + errMsg
+#     # validate against the aac spec
+#     isValid, errMsg = validate_model_entry(
+#         "extension", "extension", extension["extension"], data_spec, enum_spec
+#     )
+#     if not isValid:
+#         foundInvalid = True
+#         errMsgList = errMsgList + errMsg
 
-    # make sure the extension is extending something that exists in the model
-    type_to_extend = extension["extension"]["type"]
-    if "enumExt" in extension["extension"]:
-        if type_to_extend not in enum_spec:
-            foundInvalid = True
-            errMsgList.append(
-                "Enum Extension [{}] validation error:  cannot extend enum {} because it does not exist".format(
-                    extension["name"], type_to_extend
-                )
-            )
-    else:
-        if type_to_extend not in data_spec:
-            foundInvalid = True
-            errMsgList.append(
-                "Data Extension [{}] validation error:  cannot extend data {} because it does not exist".format(
-                    extension["name"], type_to_extend
-                )
-            )
+#     # make sure the extension is extending something that exists in the model
+#     type_to_extend = extension["extension"]["type"]
+#     if "enumExt" in extension["extension"]:
+#         if type_to_extend not in enum_spec:
+#             foundInvalid = True
+#             errMsgList.append(
+#                 "Enum Extension [{}] validation error:  cannot extend enum {} because it does not exist".format(
+#                     extension["name"], type_to_extend
+#                 )
+#             )
+#     else:
+#         if type_to_extend not in data_spec:
+#             foundInvalid = True
+#             errMsgList.append(
+#                 "Data Extension [{}] validation error:  cannot extend data {} because it does not exist".format(
+#                     extension["name"], type_to_extend
+#                 )
+#             )
 
-    if not foundInvalid:
-        return True, [""]
-    else:
-        return False, errMsgList
+#     if not foundInvalid:
+#         return True, [""]
+#     else:
+#         return False, errMsgList
 
 
 def apply_extension(extension, data, enums):

@@ -30,9 +30,8 @@ def parse(archFile: str, validate=True):
             _process_root(root, model_types, data_types, enum_types, use_case_types, ext_types)
 
     if validate:
-        isValid, errMsg = validator.validate(
-            model_types, data_types, enum_types, use_case_types, ext_types
-        )
+        validate_me = model_types | data_types | enum_types | use_case_types | ext_types
+        isValid, errMsg = validator.validate(validate_me)
 
         if not isValid:
             print("Failed to validate {}: {}".format(archFile, errMsg))

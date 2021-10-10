@@ -11,6 +11,13 @@ class TestArchUtil(TestCase):
 
         self.assertCountEqual(result, expected_results)
 
+    def test_get_root_names(self):
+        expected_results = ["import", "enum", "data", "model", "usecase", "ext"]
+
+        result = util.getRoots()
+
+        self.assertCountEqual(result, expected_results)
+
     def test_getAaCSpec(self):
 
         aac_data, aac_enums = util.getAaCSpec()

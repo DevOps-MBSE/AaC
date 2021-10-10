@@ -1,5 +1,8 @@
 from setuptools import setup, find_packages
 
+with open("README.md", "r") as fh:
+    readme_description = fh.read()
+
 runtime_dependencies = [
     "attrs == 21.2.0",
     "coverage == 6.0",
@@ -29,7 +32,9 @@ test_dependencies = ["nose2 == 0.10.0", "coverage == 6.0"]
 
 setup(
     name="aac",
-    version="0.0.1",
+    version="0.0.2",
+    long_description=readme_description,
+    long_description_content_type="text/markdown",
     packages=find_packages(where="aac", exclude="tests"),
     package_dir={"": "src"},
     install_requires=runtime_dependencies,

@@ -3,6 +3,7 @@ import os
 from aac import parser
 
 primitives = []
+root_names = []
 aac_data = {}
 aac_enums = {}
 
@@ -74,22 +75,32 @@ def getAaCSpec():
         aac_model_file, False
     )
 
-    # simple optimization, set primitives if not already set
-    global primitives
-    if len(primitives) == 0:
-        primitives = search(aac_enums["Primitives"], ["enum", "values"])
-
     return aac_data, aac_enums
 
 
-def getPrimitives():
+def getPrimitives(reload=False):
     """
     Gets the list of primitives as defined in the Arch-As-Code spec.
     """
 
     global primitives
 
-    if len(primitives) == 0:
-        data_types, enum_types = getAaCSpec()
+    if len(primitives) == 0 or reload:
+        aac_data, aac_enums = getAaCSpec()
+        primitives = search(aac_enums["Primitives"], ["enum", "values"])
 
     return primitives
+
+
+def getRoots(reload=False):
+    """
+    Gets the list of defined model roots as defined in the Arch-As-Code spec.
+    """
+
+    global root_names
+
+    if len(root_names) == 0 or reload:
+        aac_data, aac_enums = getAaCSpec()
+        root_names = search(aac_data["root"], ["data", "fields", "name"])
+
+    return root_names
