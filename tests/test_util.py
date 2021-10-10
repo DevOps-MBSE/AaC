@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from jellyfish import util
+from aac import util
 
 
 class TestArchUtil(TestCase):
