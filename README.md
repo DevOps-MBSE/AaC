@@ -114,10 +114,10 @@ $ nose2
 To run the command, execute the script (from within your virtual environment) as follows:
 
 ```bash
-$ python -m jellyfish.aac ...
+$ python -m aac ...
 
 # For example, to validate the AaC.yaml file
-$ python -m jellyfish.aac validate model/aac/AaC.yaml
+$ python -m aac validate model/aac/AaC.yaml
 ```
 
 ## Plugins

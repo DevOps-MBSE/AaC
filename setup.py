@@ -29,15 +29,27 @@ test_dependencies = ["nose2 == 0.10.0", "coverage == 6.0"]
 
 setup(
     name="aac",
-    version="3.0.0",
+    version="0.0.1",
     packages=find_packages(where="aac", exclude="tests"),
     package_dir={"": "src"},
     install_requires=runtime_dependencies,
     setup_requires=development_dependencies,
     tests_require=test_dependencies,
+    entry_points={
+        "console_scripts": [
+            "aac = aac:runCLI",
+        ]
+    },
     extras_require={
         "test": test_dependencies,
         "dev": development_dependencies,
         "all": test_dependencies + development_dependencies,
     },
+    classifiers=[
+        "Programming Language :: Python :: 3.9",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+        "Topic :: Scientific/Engineering",
+    ],
+    keywords=["MBSE"],
 )
