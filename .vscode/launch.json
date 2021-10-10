@@ -2,18 +2,6 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Run Echo Plugin",
-            "type": "python",
-            "request": "launch",
-            "program": "src/aac/__main__.py",
-            "args": [
-                "echo",
-                "./model/aac/AaC.yaml"
-            ],
-            "console": "integratedTerminal",
-            "justMyCode": false
-        },
-        {
             "name": "Python: Validate AaC",
             "type": "python",
             "request": "launch",

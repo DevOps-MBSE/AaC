@@ -47,7 +47,7 @@ def search(model, input_keys):
                         print("serach error - lists can only contain dicts")
                 return retVal
             else:
-                print("search error - keys not found")
+                print(f"search warning - keys[{input_keys}] not found in model")
                 return []
         else:
             # not an error, just zero search results

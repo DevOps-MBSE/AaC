@@ -182,7 +182,7 @@ def validate_cross_references(all_models):
         data_model_types = util.search(data_entry, ["data", "fields", "type"])
         # print("processing {} - data_model_types: {}".format(model_name, data_model_types))
         for data_model_type in data_model_types:
-            isList, baseTypeName = getBaseTypeName(data_model_type)
+            isList, baseTypeName = getSimpleBaseTypeName(data_model_type)
             if baseTypeName not in all_types:
                 foundInvalid = True
                 errMsgs.append(
@@ -198,7 +198,7 @@ def validate_cross_references(all_models):
         model_entry_types.extend(util.search(model_entry, ["model", "behavior", "output", "type"]))
         # print("processing {} - model_entry_types: {}".format(model_name, model_entry_types))
         for model_entry_type in model_entry_types:
-            isList, baseTypeName = getBaseTypeName(model_entry_type)
+            isList, baseTypeName = getSimpleBaseTypeName(model_entry_type)
             if baseTypeName not in all_types:
                 foundInvalid = True
                 errMsgs.append(
@@ -226,7 +226,7 @@ def validate_enum_values(all_models):
         data_model = data[data_name]
         fields = util.search(data_model, ["data", "fields"])
         for field in fields:
-            field_type = getBaseTypeName(field["type"])
+            field_type = getSimpleBaseTypeName(field["type"])
             if field_type in enums.keys():
                 enum_fields[data_name] = field
     # print("validate_enum_values: enum fields = {}".format(enum_fields))
@@ -278,7 +278,7 @@ def findEnumFieldPaths(find_enum, data_name, data_type, data, enums) -> list:
     fields = util.search(data_model, ["data", "fields"])
     enum_fields = []
     for field in fields:
-        isList, field_type = getBaseTypeName(field["type"])
+        isList, field_type = getSimpleBaseTypeName(field["type"])
         if field_type in enums.keys():
             # only report the enum being serached for
             if field_type == find_enum:
@@ -312,7 +312,7 @@ def getSpecFieldNames(spec_model, name):
     return retVal
 
 
-def getBaseTypeName(type_declaration):
+def getSimpleBaseTypeName(type_declaration):
     if type_declaration.endswith("[]"):
         return True, type_declaration[0:-2]
     else:
@@ -323,7 +323,7 @@ def getModelObjectFields(spec_model, enum_spec, name):
     retVal = {}
     fields = util.search(spec_model, [name, "data", "fields"])
     for field in fields:
-        isList, field_type_name = getBaseTypeName(field["type"])
+        isList, field_type_name = getSimpleBaseTypeName(field["type"])
         isEnum = field_type_name in enum_spec.keys()
         isPrimitive = field_type_name in util.getPrimitives()
         if not isEnum and not isPrimitive:
@@ -377,14 +377,17 @@ def validate_model_entry(name, model_type, model, data_spec, enum_spec):
             continue
         field_type = object_fields[field_name]
         sub_model = model[field_name]
-        isList, field_type_name = getBaseTypeName(field_type)
+        isList, field_type_name = getSimpleBaseTypeName(field_type)
         if isList:
-            for sub_model_item in sub_model:
-                isValid, errMsg = validate_model_entry(
-                    field_name, field_type_name, sub_model_item, data_spec, enum_spec
-                )
-                if not isValid:
-                    return isValid, errMsg
+            if not sub_model:  # list is empty
+                pass
+            else:
+                for sub_model_item in sub_model:
+                    isValid, errMsg = validate_model_entry(
+                        field_name, field_type_name, sub_model_item, data_spec, enum_spec
+                    )
+                    if not isValid:
+                        return isValid, errMsg
         else:
             isValid, errMsg = validate_model_entry(
                 field_name, field_type_name, sub_model, data_spec, enum_spec

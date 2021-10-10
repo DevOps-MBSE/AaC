@@ -97,6 +97,7 @@ enum:
     - bool
     - date
     - file
+    - map
 ---  
 data:
   name: Field

@@ -5,7 +5,7 @@ from aac import util
 
 class TestArchUtil(TestCase):
     def test_get_primitive(self):
-        expected_results = ["int", "number", "string", "bool", "file", "date"]
+        expected_results = ["int", "number", "string", "bool", "file", "date", "map"]
 
         result = util.getPrimitives()
 

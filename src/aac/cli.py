@@ -1,6 +1,9 @@
 import argparse
-
-from aac import genjson, parser, puml, echo
+import sys
+import os
+import itertools
+from pluggy import PluginManager
+from aac import genjson, genplug, parser, hookspecs, PLUGIN_PROJECT_NAME
 
 list_suffix = "[]"
 enum_types = {}
@@ -11,59 +14,54 @@ model_types = {}
 def runCLI():
     # print ("AaC is running")
 
+    pm = get_plugin_manager()
+
+    # register "built-in" plugins
+    pm.register(genjson)
+    pm.register(genplug)
+
     argParser = argparse.ArgumentParser()
     command_parser = argParser.add_subparsers(dest="command")
-    # validate_cmd =
+    # the validate command is built-in
     command_parser.add_parser(
         "validate", help="ensures the yaml is valid per teh AaC schema"
     )
-    # puml_component_cmd =
-    command_parser.add_parser(
-        "puml-component",
-        help="generates plant UML component diagram from the YAML model",
-    )
-    # puml_sequence_cmd =
-    command_parser.add_parser(
-        "puml-sequence",
-        help="generates plant UML sequience diagram from the YAML use case",
-    )
-    # puml_object_cmd =
-    command_parser.add_parser(
-        "puml-object", help="generates plant UML object diagram from the YAML model"
-    )
-    # echo_plugin_cmd =
-    command_parser.add_parser("echo", help="Runs the echo plugin example")
-
-    # json_cmd =
-    command_parser.add_parser("json", help="prints the json version of the yaml model")
+    results = pm.hook.get_commands()
+    aac_plugin_commands = list(itertools.chain(*results))
+    for cmd in aac_plugin_commands:
+        command_parser.add_parser(
+            cmd.command_name, help=cmd.command_description
+        )
 
     argParser.add_argument("yaml", type=str, help="the path to your architecture yaml")
 
     args = argParser.parse_args()
 
     model_file = args.yaml
-    # print(model_file)
+    if not os.path.isfile(model_file):
+        print(f"{model_file} does not exist")
+        argParser.print_usage()
+        sys.exit()
 
     parsed_models = {}
     try:
         parsed_models = parser.parse(model_file)
     except RuntimeError:
         print(f"Model [{model_file}] is invalid")
+        sys.exit("validation error")
 
+    # validate is a built-in command - when called just print that the input model is valid
     if args.command == "validate":
         print(f"Model [{model_file}] is valid")
 
-    if args.command == "json":
-        genjson.toJson(parsed_models)
+    for cmd in aac_plugin_commands:
+        if args.command == cmd.command_name:
+            cmd.callback(model_file, parsed_models)
 
-    if args.command == "puml-component":
-        puml.umlComponent(parsed_models)
 
-    if args.command == "puml-sequence":
-        puml.umlSequence(parsed_models)
+def get_plugin_manager():
+    plugin_manager = PluginManager(PLUGIN_PROJECT_NAME)
+    plugin_manager.add_hookspecs(hookspecs)
+    plugin_manager.load_setuptools_entrypoints(PLUGIN_PROJECT_NAME)
 
-    if args.command == "puml-object":
-        puml.umlObject(parsed_models)
-
-    if args.command == "echo":
-        echo.demonstrate_echo("Hello World!")
+    return plugin_manager
