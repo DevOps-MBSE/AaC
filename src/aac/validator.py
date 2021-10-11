@@ -15,9 +15,8 @@ def validate(validate_me):
 
     # combine parsed types and AaC built-in types
     aac_data, aac_enums = util.getAaCSpec()
-    # ext_types = {}
-
-    isValid, errMsg = validate_cross_references(validate_me)
+    all_types = validate_me | aac_data | aac_enums
+    isValid, errMsg = validate_cross_references(all_types)
     if not isValid:
         foundInvalid = True
         errMsgList = errMsgList + errMsg
@@ -51,7 +50,7 @@ def validate_general(validate_me: dict) -> tuple[bool, list]:
     # ensure the model has a known root
     root_name = list(model.keys())[0]
     if root_name not in util.getRoots():
-        return False, [f"AaC Validation Error: yaml file has an unrecognized root {root_name}.  Known roots {util.getRoots()}"]
+        return False, [f"AaC Validation Error: yaml file has an unrecognized root [{root_name}].  Known roots {util.getRoots()}"]
 
     # get the root type to validate against
     root_type = ""
@@ -65,16 +64,11 @@ def validate_general(validate_me: dict) -> tuple[bool, list]:
 
 
 def validate_cross_references(all_models):
-    all_types = []
+    all_types = list(all_models.keys())
+    all_types.extend(util.getPrimitives())
 
     models = util.getModelsByType(all_models, "model")
     data = util.getModelsByType(all_models, "data")
-    enums = util.getModelsByType(all_models, "enum")
-
-    all_types.extend(models.keys())
-    all_types.extend(data.keys())
-    all_types.extend(enums.keys())
-    all_types.extend(util.getPrimitives())
 
     foundInvalid = False
     errMsgs = []
@@ -307,7 +301,7 @@ def apply_extension(extension, data, enums):
         )
         data[type_to_extend]["data"]["fields"] = updated_fields
 
-        if "required" in extension["extension"]["dataExt"]:
+        if "required" in extension["ext"]["dataExt"]:
             updated_required = (
                 data[type_to_extend]["data"]["required"] + extension["ext"]["dataExt"]["required"]
             )
