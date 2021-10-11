@@ -37,9 +37,9 @@ jobs:
         run: |
           source venv/bin/activate
           nose2
-      # - name: Build distribution package
-      #   run: |
-      #     python3.9 -m build --sdist --wheel --outdir dist/ .
+      - name: Build distribution package
+        run: |
+          python3.9 -m build --sdist --wheel --outdir dist/ .
       # - name: Publish distribution to PyPI
       #   if: startsWith(github.ref, 'refs/tags')
       #   uses: pypa/gh-action-pypi-publish@master
