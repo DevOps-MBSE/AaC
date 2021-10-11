@@ -32,7 +32,7 @@ AaC is written in python to help make it more approachable for casual users and 
 power users.  You will need Python 3.9 or later to run AaC.
 
 To install AaC on Linux or Windows:
-```
+```bash
 pip install aac
 ```
 
@@ -40,7 +40,7 @@ To use AaC you first define a model of your system in yaml.  Refer to the docume
 A simple model for an EchoService is provided here for reference.  Cut and paste the below model into a 
 file called EchoService.yaml.  
 *Note: This is using a little yaml trick to concatenate the content of two yaml files into a single file.*
-'''
+'''yaml
 data: 
   name: Message
   fields:
@@ -73,7 +73,7 @@ model:
 '''
 
 Now you can run AaC against your model.
-'''
+'''bash
 aac validate EchoService.yaml
 '''
 
@@ -91,7 +91,7 @@ then import it as needed.  To do this just put an **import** at the root of your
 
 Here's an example of the EchoService broken into two files:
 - Message.yaml
-    '''
+    '''yaml
     data: 
     name: Message
     fields:
@@ -101,7 +101,7 @@ Here's an example of the EchoService broken into two files:
         type: string
     '''
 - EchoService.yaml
-    '''
+    '''yaml
     import:
     - ./Message.yaml
     model:
