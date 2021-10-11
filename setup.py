@@ -26,6 +26,8 @@ development_dependencies = [
     "mypy-extensions == 0.4.3",
     "pycodestyle == 2.7.0",
     "pyflakes == 2.3.1",
+    "build==0.7.0",
+    "twine==3.4.2",
 ]
 
 test_dependencies = [
@@ -35,7 +37,7 @@ test_dependencies = [
 
 setup(
     name="aac",
-    version="0.0.3",
+    version="0.0.4",
     long_description=readme_description,
     long_description_content_type="text/markdown",
     packages=find_packages(where="aac", exclude="tests"),
