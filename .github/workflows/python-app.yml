@@ -24,7 +24,7 @@ jobs:
           python3.9 -m venv venv --system-site-packages
           source venv/bin/activate
           pip install --upgrade pip
-          py -m pip install --upgrade build
+          python3.9 -m pip install --upgrade build
           pip install -e .[all]
       - name: Lint with flake8
         run: |
