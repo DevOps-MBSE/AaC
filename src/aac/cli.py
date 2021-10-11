@@ -3,7 +3,7 @@ import sys
 import os
 import itertools
 from pluggy import PluginManager
-from aac import genjson, genplug, parser, hookspecs, PLUGIN_PROJECT_NAME
+from aac import genjson, genplug, parser, util, hookspecs, PLUGIN_PROJECT_NAME
 
 list_suffix = "[]"
 enum_types = {}
@@ -24,7 +24,11 @@ def runCLI():
     command_parser = argParser.add_subparsers(dest="command")
     # the validate command is built-in
     command_parser.add_parser(
-        "validate", help="ensures the yaml is valid per teh AaC schema"
+        "validate", help="Ensures the AaC yaml is valid per the AaC core spec"
+    )
+    # the print-spec command is built-in
+    command_parser.add_parser(
+        "aac-core-spec", help="Prints the AaC model describing core AaC data types and enumerations"
     )
     results = pm.hook.get_commands()
     aac_plugin_commands = list(itertools.chain(*results))
@@ -33,9 +37,23 @@ def runCLI():
             cmd.command_name, help=cmd.command_description
         )
 
-    argParser.add_argument("yaml", type=str, help="the path to your architecture yaml")
+    # apply plugin extensions
+    results = pm.hook.get_base_model_extensions()
+    # print(results)
+    # aac_plugin_exts = list(itertools.chain(*results))
+    for plugin_ext in results:
+        if len(plugin_ext) > 0:
+            parsed = parser.parseStr(plugin_ext, "Plugin Manager Addition", True)
+            util.extendAaCSpec(parsed)
+
+    argParser.add_argument("yaml", type=str, help="The path to your AaC yaml")
 
     args = argParser.parse_args()
+
+    # this command is special, it shouldn't need any additional inputs
+    if args.command == "aac-core-spec":
+        print(util.getAacSpecAsYaml())
+        return
 
     model_file = args.yaml
     if not os.path.isfile(model_file):
@@ -45,7 +63,7 @@ def runCLI():
 
     parsed_models = {}
     try:
-        parsed_models = parser.parse(model_file)
+        parsed_models = parser.parseFile(model_file)
     except RuntimeError:
         print(f"Model [{model_file}] is invalid")
         sys.exit("validation error")

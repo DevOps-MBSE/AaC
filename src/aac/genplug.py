@@ -11,6 +11,18 @@ def get_commands():
     return [my_cmd]
 
 
+@aac.hookimpl
+def get_base_model_extensions():
+    return '''
+ext:
+   name: CommandBehaviorType
+   type: BehaviorType
+   enumExt:
+      add:
+         - command
+'''
+
+
 def genPlugin(arch_file, parsed_model):
 
     # ask the user a few questions about their new plugin
@@ -43,7 +55,7 @@ def genPlugin(arch_file, parsed_model):
         # 3) write [name].py
         file_name = plugin_name.replace("-", "_")
         write_file(plug_dir, f"{file_name}.py", True, generate_plugin_py(
-            plugin_name, impl_names, plugin_add_command_lines, process_extensions(util.getModelsByType(parsed_model, "ext"))))
+            plugin_name, impl_names, plugin_add_command_lines, process_extensions(parsed_model)))
         # 4) write [name]_impl.py
         plugin_impl_header = ["# NOTE: It is safe to edit this file.  It will not be overritten by AaC gen-plugin", ""]
         write_file(plug_dir, f"{file_name}_impl.py", False, plugin_impl_header + plugin_impl_lines)
@@ -164,23 +176,30 @@ def {impl_name}(archFile, parsed_model):
     return plugin_add_command_lines, plugin_impl_lines, impl_names
 
 
-def process_extensions(ext_types):
-    plugin_get_extension_lines = []
-    if len(ext_types.keys()) != 0:
-        ext_yaml_content = []
-        for ext_name in ext_types:
-            ext_dict = ext_types[ext_name]
-            ext_yaml_content.append(yaml.dump(ext_dict))
+def process_extensions(parsed_models):
 
-        # assemble get extension lines
-        plugin_get_extension_lines.append("@aac.hookimpl")
-        plugin_get_extension_lines.append("def get_extensions() -> list:")
-        plugin_get_extension_lines.append("   extensions = []")
-        for yaml_entry in ext_yaml_content:
-            plugin_get_extension_lines.append(f"   extensions.append({yaml_entry})")
-        plugin_get_extension_lines.append("   return extensions")
+    plugin_ext_lines = []
+    plugin_ext_lines.append("\n")
+    plugin_ext_lines.append("\n")
+    plugin_ext_lines.append("@aac.hookimpl\n")
+    plugin_ext_lines.append("def get_base_model_extensions() -> str:\n")
+    isFirst = True
+    for model_type in parsed_models.keys():
+        if "data" in parsed_models[model_type] or "ext" in parsed_models[model_type]:  # only include data and ext (exclude others)
+            if isFirst:
+                isFirst = False
+                plugin_ext_lines.append("    return \'''\n")
+            else:
+                plugin_ext_lines.append("---\n")
+            plugin_ext_lines.append(yaml.dump(parsed_models[model_type]))
+            plugin_ext_lines.append("\n")
 
-    return plugin_get_extension_lines
+    if isFirst:  # this means there were no extensions in the plugin model
+        plugin_ext_lines.append("    return None\n")
+    else:
+        plugin_ext_lines.append("\'''")
+
+    return plugin_ext_lines
 
 
 def write_file(path, file_name, overwrite, content):

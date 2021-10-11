@@ -9,6 +9,11 @@ def get_commands():
     return [my_cmd]
 
 
+@aac.hookimpl
+def get_base_model_extensions():
+    return None
+
+
 def toJson(arch_file, parsed_models) -> str:
     just_dicts = []
     for name in parsed_models:

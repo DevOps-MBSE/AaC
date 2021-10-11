@@ -5,7 +5,7 @@ import yaml
 from aac import validator
 
 
-def parse(archFile: str, validate=True):
+def parseFile(archFile: str, validate=True):
     """
     The parse method takes a path to an Arch-as-Code YAML file, parses it,
     and optionally validates it (default is to perform validation).
@@ -20,13 +20,7 @@ def parse(archFile: str, validate=True):
     files = _get_files_to_process(archFile)
     for f in files:
         contents = _read_file_content(f)
-        roots = yaml.load_all(contents, Loader=yaml.FullLoader)
-        for root in roots:
-            if "import" in root:
-                del root["import"]
-            root_name = list(root.keys())[0]
-            parsed_models[root[root_name]["name"]] = root
-            # _process_root(root, model_types, data_types, enum_types, use_case_types, ext_types)
+        parsed_models = parsed_models | parseStr(contents, archFile, False)
 
     if validate:
         isValid, errMsg = validator.validate(parsed_models)
@@ -34,6 +28,26 @@ def parse(archFile: str, validate=True):
         if not isValid:
             print("Failed to validate {}: {}".format(archFile, errMsg))
             raise RuntimeError("Failed to validate {}".format(archFile), errMsg)
+
+    return parsed_models
+
+
+def parseStr(model_content: str, source: str, validate=True):
+    parsed_models = {}
+
+    roots = yaml.load_all(model_content, Loader=yaml.FullLoader)
+    for root in roots:
+        if "import" in root:
+            del root["import"]
+        root_name = list(root.keys())[0]
+        parsed_models[root[root_name]["name"]] = root
+
+    if validate:
+        isValid, errMsg = validator.validate(parsed_models)
+
+        if not isValid:
+            print("Failed to validate {}: {}".format(source, errMsg))
+            raise RuntimeError("Failed to validate {}".format(source), errMsg)
 
     return parsed_models
 

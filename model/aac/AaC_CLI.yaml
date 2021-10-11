@@ -268,14 +268,14 @@ data:
     - name: errors
       type: string[]
 ---
-extension:
+ext:
   name: restActionType
   type: BehaviorType
   enumExt:
     add:
       - rest
 ---
-extension:
+ext:
   name: addCountToValidationResult
   type: ValidationResult
   dataExt:
