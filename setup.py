@@ -26,8 +26,8 @@ development_dependencies = [
     "mypy-extensions == 0.4.3",
     "pycodestyle == 2.7.0",
     "pyflakes == 2.3.1",
-    "build==0.7.0",
-    "twine==3.4.2",
+    "build == 0.7.0",
+    "twine == 3.4.2",
 ]
 
 test_dependencies = [
