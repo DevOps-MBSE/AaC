@@ -1,13 +1,20 @@
 from unittest import TestCase
 
-from jellyfish import util
+from aac import util
 
 
 class TestArchUtil(TestCase):
     def test_get_primitive(self):
-        expected_results = ["int", "number", "string", "bool", "file", "date"]
+        expected_results = ["int", "number", "string", "bool", "file", "date", "map"]
 
         result = util.getPrimitives()
+
+        self.assertCountEqual(result, expected_results)
+
+    def test_get_root_names(self):
+        expected_results = ["import", "enum", "data", "model", "usecase", "ext"]
+
+        result = util.getRoots()
 
         self.assertCountEqual(result, expected_results)
 

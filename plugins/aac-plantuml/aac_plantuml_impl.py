@@ -1,8 +1,12 @@
-from jellyfish import parser, util
+# NOTE: It is safe to edit this file.  It will not be overritten by AaC gen-plugin
+from aac import util
+
+plugin_version = "0.0.2"
 
 
-def umlComponent(archFile) -> str:
-    model_types, data_types, enum_types, use_case_types, ext_types = parser.parse(archFile)
+def puml_component(archFile, parsed_model):
+
+    model_types = util.getModelsByType(parsed_model, "model")
 
     puml_lines = []
     puml_lines.append("@startuml")
@@ -10,10 +14,81 @@ def umlComponent(archFile) -> str:
         print_component_content(model_types[root_model_name], [], puml_lines, model_types)
     puml_lines.append("@enduml")
 
-    retVal = ""
+    model_text = ""
     for line in puml_lines:
-        retVal = retVal + line + "\n"
-    return retVal
+        model_text = model_text + line + "\n"
+    print(model_text)
+
+
+def puml_sequence(archFile, parsed_model):
+
+    use_case_types = util.getModelsByType(parsed_model, "usecase")
+
+    puml_lines = []
+
+    for use_case_title in find_root_names(use_case_types):
+        # start the uml
+        puml_lines.append("@startuml")
+
+        # add the title
+        puml_lines.append("title {}".format(use_case_title))
+
+        # declare participants
+        participants = util.search(use_case_types[use_case_title], ["usecase", "participants"])
+        for participant in participants:  # each participant is a field type
+            puml_lines.append(
+                "participant {} as {}".format(participant["type"], participant["name"])
+            )
+
+        # process steps
+        steps = util.search(use_case_types[use_case_title], ["usecase", "steps"])
+        for step in steps:  # each step of a step type
+            puml_lines.append(
+                "{} -> {} : {}".format(step["source"], step["target"], step["action"])
+            )
+
+        # end the uml
+        puml_lines.append("@enduml")
+        puml_lines.append(
+            ""
+        )  # just put a blank line in between sequence diagrams for now  TODO revisit this decision later
+
+    model_text = ""
+    for line in puml_lines:
+        model_text = model_text + line + "\n"
+    print(model_text)
+
+
+def puml_object(archFile, parsed_model):
+
+    model_types = util.getModelsByType(parsed_model, "model")
+
+    object_declarations = []
+    object_compositions = {}
+    for model_name in model_types.keys():
+        object_declarations.append(model_name)
+
+        for component in util.search(model_types[model_name], ["model", "components", "type"]):
+            if model_name not in object_compositions:
+                object_compositions[model_name] = set()
+
+            object_compositions[model_name].add(component)
+
+    puml_lines = []
+    puml_lines.append("@startuml")
+    for obj in object_declarations:
+        puml_lines.append("object {}".format(obj))
+
+    for parent in object_compositions:
+        for child in object_compositions[parent]:
+            puml_lines.append("{} *-- {}".format(parent, child))
+
+    puml_lines.append("@enduml")
+
+    model_text = ""
+    for line in puml_lines:
+        model_text = model_text + line + "\n"
+    print(model_text)
 
 
 def find_root_names(models):
@@ -80,74 +155,3 @@ def print_component_content(root, existing, puml_lines, model_types):
         outputs = util.search(root, ["model", "behavior", "output"])
         for output in outputs:
             puml_lines.append("[{}] -> {} : {}".format(model_name, output["type"], output["name"]))
-
-
-def umlSequence(archFile: str) -> str:
-
-    model_types, data_types, enum_types, use_case_types, ext_types = parser.parse(archFile)
-
-    puml_lines = []
-
-    for use_case_title in find_root_names(use_case_types):
-        # start the uml
-        puml_lines.append("@startuml")
-
-        # add the title
-        puml_lines.append("title {}".format(use_case_title))
-
-        # declare participants
-        participants = util.search(use_case_types[use_case_title], ["usecase", "participants"])
-        for participant in participants:  # each participant is a field type
-            puml_lines.append(
-                "participant {} as {}".format(participant["type"], participant["name"])
-            )
-
-        # process steps
-        steps = util.search(use_case_types[use_case_title], ["usecase", "steps"])
-        for step in steps:  # each step of a step type
-            puml_lines.append(
-                "{} -> {} : {}".format(step["source"], step["target"], step["action"])
-            )
-
-        # end the uml
-        puml_lines.append("@enduml")
-        puml_lines.append(
-            ""
-        )  # just put a blank line in between sequence diagrams for now  TODO revisit this decision later
-
-    retVal = ""
-    for line in puml_lines:
-        retVal = retVal + line + "\n"
-    return retVal
-
-
-def umlObject(archFile: str) -> str:
-
-    model_types, data_types, enum_types, use_case_types, ext_types = parser.parse(archFile)
-
-    object_declarations = []
-    object_compositions = {}
-    for model_name in model_types.keys():
-        object_declarations.append(model_name)
-
-        for component in util.search(model_types[model_name], ["model", "components", "type"]):
-            if model_name not in object_compositions:
-                object_compositions[model_name] = set()
-
-            object_compositions[model_name].add(component)
-
-    puml_lines = []
-    puml_lines.append("@startuml")
-    for obj in object_declarations:
-        puml_lines.append("object {}".format(obj))
-
-    for parent in object_compositions:
-        for child in object_compositions[parent]:
-            puml_lines.append("{} *-- {}".format(parent, child))
-
-    puml_lines.append("@enduml")
-
-    retVal = ""
-    for line in puml_lines:
-        retVal = retVal + line + "\n"
-    return retVal

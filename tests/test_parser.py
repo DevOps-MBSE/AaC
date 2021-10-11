@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from jellyfish import parser
+from aac import parser
 
 
 class TestArchParser(TestCase):

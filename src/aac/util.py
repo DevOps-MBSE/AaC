@@ -1,8 +1,9 @@
 import os
 
-from jellyfish import parser
+from aac import parser
 
 primitives = []
+root_names = []
 aac_data = {}
 aac_enums = {}
 
@@ -46,7 +47,7 @@ def search(model, input_keys):
                         print("serach error - lists can only contain dicts")
                 return retVal
             else:
-                print("search error - keys not found")
+                print(f"search warning - keys[{input_keys}] not found in model")
                 return []
         else:
             # not an error, just zero search results
@@ -70,26 +71,45 @@ def getAaCSpec():
     relpath_to_aac_yaml = "../../model/aac/AaC.yaml"
     aac_model_file = os.path.join(this_file_path, relpath_to_aac_yaml)
 
-    model_types, aac_data, aac_enums, use_case_types, ext_types = parser.parse(
-        aac_model_file, False
-    )
-
-    # simple optimization, set primitives if not already set
-    global primitives
-    if len(primitives) == 0:
-        primitives = search(aac_enums["Primitives"], ["enum", "values"])
+    all_models = parser.parse(aac_model_file, False)
+    aac_data = getModelsByType(all_models, "data")
+    aac_enums = getModelsByType(all_models, "enum")
 
     return aac_data, aac_enums
 
 
-def getPrimitives():
+def getPrimitives(reload=False):
     """
     Gets the list of primitives as defined in the Arch-As-Code spec.
     """
 
     global primitives
 
-    if len(primitives) == 0:
-        data_types, enum_types = getAaCSpec()
+    if len(primitives) == 0 or reload:
+        aac_data, aac_enums = getAaCSpec()
+        primitives = search(aac_enums["Primitives"], ["enum", "values"])
 
     return primitives
+
+
+def getRoots(reload=False):
+    """
+    Gets the list of defined model roots as defined in the Arch-As-Code spec.
+    """
+
+    global root_names
+
+    if len(root_names) == 0 or reload:
+        aac_data, aac_enums = getAaCSpec()
+        root_names = search(aac_data["root"], ["data", "fields", "name"])
+
+    return root_names
+
+
+def getModelsByType(models, type_name):
+    ret_val = {}
+    for key, value in models.items():
+        if type_name in value.keys():
+            ret_val[key] = value
+
+    return ret_val

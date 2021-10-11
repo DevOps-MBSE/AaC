@@ -2,14 +2,118 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Run Echo Jellyfish",
+            "name": "Python: Validate AaC",
             "type": "python",
             "request": "launch",
-            "program": "jellyfish/jellyfish/aac.py",
+            "program": "src/aac/__main__.py",
             "args": [
-                "echo",
-                "yaml"
+                "validate",
+                "./model/aac/AaC.yaml"
             ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "Python: Validate EchoService",
+            "type": "python",
+            "request": "launch",
+            "program": "src/aac/__main__.py",
+            "args": [
+                "validate",
+                "./model/echo/EchoService.yaml"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "Python: Validate Flow",
+            "type": "python",
+            "request": "launch",
+            "program": "src/aac/__main__.py",
+            "args": [
+                "validate",
+                "./model/flow/System.yaml"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "Python: Json AaC",
+            "type": "python",
+            "request": "launch",
+            "program": "src/aac/__main__.py",
+            "args": [
+                "json",
+                "./model/aac/AaC.yaml"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "Python: Json EchoService",
+            "type": "python",
+            "request": "launch",
+            "program": "src/aac/__main__.py",
+            "args": [
+                "json",
+                "./model/echo/EchoService.yaml"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "Python: Json Flow",
+            "type": "python",
+            "request": "launch",
+            "program": "src/aac/__main__.py",
+            "args": [
+                "json",
+                "./model/flow/System.yaml"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "Python: Puml-component Flow",
+            "type": "python",
+            "request": "launch",
+            "program": "src/aac/__main__.py",
+            "args": [
+                "puml-component",
+                "./model/flow/System.yaml"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "Python: Puml-object Flow",
+            "type": "python",
+            "request": "launch",
+            "program": "src/aac/__main__.py",
+            "args": [
+                "puml-object",
+                "./model/flow/System.yaml"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "Python: Puml-sequence Flow",
+            "type": "python",
+            "request": "launch",
+            "program": "src/aac/__main__.py",
+            "args": [
+                "puml-object",
+                "./model/flow/flow.yaml"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "Python: Unit Tests",
+            "type": "python",
+            "request": "launch",
+            "program": "nose2",
             "console": "integratedTerminal",
             "justMyCode": false
         }
