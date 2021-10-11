@@ -84,7 +84,6 @@ enum:
   values:
     - pub-sub
     - request-response
-    - command
     - startup
     - timer
 ---

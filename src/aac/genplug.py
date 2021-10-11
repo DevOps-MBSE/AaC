@@ -11,6 +11,18 @@ def get_commands():
     return [my_cmd]
 
 
+@aac.hookimpl
+def get_base_model_extensions():
+    return '''
+ext:
+   name: CommandBehaviorType
+   type: BehaviorType
+   enumExt:
+      add:
+         - command
+'''
+
+
 def genPlugin(arch_file, parsed_model):
 
     # ask the user a few questions about their new plugin

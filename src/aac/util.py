@@ -1,11 +1,10 @@
 import os
-
+import yaml
 from aac import parser
 
 primitives = []
 root_names = []
-aac_data = {}
-aac_enums = {}
+aac_model = {}
 
 
 def search(model, input_keys):
@@ -60,10 +59,11 @@ def getAaCSpec():
     defined as an AaC model and is needed for model validation.
     """
 
-    global aac_data
-    global aac_enums
-    if len(aac_data.keys()) > 0:
+    global aac_model
+    if len(aac_model.keys()) > 0:
         # already parsed, just return cached values
+        aac_data = getModelsByType(aac_model, "data")
+        aac_enums = getModelsByType(aac_model, "enum")
         return aac_data, aac_enums
 
     # get the AaC.yaml spec for architecture modeling
@@ -71,11 +71,35 @@ def getAaCSpec():
     relpath_to_aac_yaml = "../../model/aac/AaC.yaml"
     aac_model_file = os.path.join(this_file_path, relpath_to_aac_yaml)
 
-    all_models = parser.parse(aac_model_file, False)
-    aac_data = getModelsByType(all_models, "data")
-    aac_enums = getModelsByType(all_models, "enum")
+    aac_model = parser.parseFile(aac_model_file, False)
+    aac_data = getModelsByType(aac_model, "data")
+    aac_enums = getModelsByType(aac_model, "enum")
 
     return aac_data, aac_enums
+
+
+def getAacSpecAsYaml() -> str:
+    global aac_model
+    aac_yaml = ""
+    isFirst = True
+    for aac_name in aac_model.keys():
+        # put in the separator for all but the first
+        if isFirst:
+            isFirst = False
+        else:
+            aac_yaml = aac_yaml + "---\n"
+
+        aac_yaml = aac_yaml + yaml.dump(aac_model[aac_name]) + "\n"
+    return aac_yaml
+
+
+def extendAaCSpec(parsed_model):
+    global aac_model
+    apply_me = parsed_model.copy()
+    exts = getModelsByType(apply_me, "ext")
+    for ext_type in exts.keys():
+        del apply_me[ext_type]
+    aac_model = aac_model | apply_me
 
 
 def getPrimitives(reload=False):
