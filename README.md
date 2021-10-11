@@ -40,7 +40,7 @@ To use AaC you first define a model of your system in yaml.  Refer to the docume
 A simple model for an EchoService is provided here for reference.  Cut and paste the below model into a 
 file called EchoService.yaml.  
 *Note: This is using a little yaml trick to concatenate the content of two yaml files into a single file.*
-'''yaml
+```yaml
 data: 
   name: Message
   fields:
@@ -70,12 +70,12 @@ model:
             - The user sends a message to EchoService.
           then:
             - The user receives the same message from EchoService.
-'''
+```
 
 Now you can run AaC against your model.
-'''bash
+```bash
 aac validate EchoService.yaml
-'''
+```
 
 AaC has some core "root types" for you to work with.  You can see the root types of **data** and **model** used in the example above.
 The AaC core root types are:
@@ -91,7 +91,7 @@ then import it as needed.  To do this just put an **import** at the root of your
 
 Here's an example of the EchoService broken into two files:
 - Message.yaml
-    '''yaml
+    ```yaml
     data: 
     name: Message
     fields:
@@ -99,9 +99,9 @@ Here's an example of the EchoService broken into two files:
         type: string
     - name: sender
         type: string
-    '''
+    ```
 - EchoService.yaml
-    '''yaml
+    ```yaml
     import:
     - ./Message.yaml
     model:
@@ -126,7 +126,7 @@ Here's an example of the EchoService broken into two files:
             then:
                 - The user receives the same message from EchoService.
 
-    '''
+    ```
 Ok, so that's interesting, but what can you do with the AaC model once you've built it?
 AaC is designed and built on years of experimentation, experience, and learning.  But this version
 is a brand new implementation rewritten entirely in Python in an attempt to make AaC more user friendly
