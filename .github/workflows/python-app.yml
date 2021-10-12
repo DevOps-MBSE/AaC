@@ -21,8 +21,8 @@ jobs:
           python-version: 3.9
       - name: Install dependencies
         run: |
-          python3.9 -m pip install --upgrade pip --upgrade build
-          python3.9 -m pip install -e .[all]
+          python -m pip install --upgrade pip --upgrade build
+          python -m pip install -e .[all]
       - name: Lint with flake8
         run: |
           # stop the build if there are Python syntax errors or undefined names
@@ -34,7 +34,7 @@ jobs:
           tox
       - name: Build distribution package
         run: |
-          python3.9 setup.py bdist_wheel
+          python setup.py bdist_wheel
       #     python3.9 -m build --sdist --wheel --outdir dist/ .
       # - name: Publish distribution to PyPI
       #   if: startsWith(github.ref, 'refs/tags')
