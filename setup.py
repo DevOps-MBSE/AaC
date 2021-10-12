@@ -31,9 +31,10 @@ development_dependencies = [
 ]
 
 test_dependencies = [
-    "nose2 == 0.10.0",
-    "coverage == 6.0",
-    "flake8 == 3.9.2",
+    "tox >= 3.24",
+    "nose2 >= 0.10.0",
+    "coverage >= 6.0",
+    "flake8 >= 3.9",
     "flake8-docstrings == 1.6.0",
     "flake8-fixme == 1.1.1",
     "flake8-eradicate == 1.1.0",
