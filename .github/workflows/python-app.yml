@@ -24,7 +24,6 @@ jobs:
           python -m venv venv --system-site-packages
           source venv/bin/activate
           pip install --upgrade pip 
-          pip install setuptools
           pip install -e .[all]
       - name: Lint with flake8
         run: |
