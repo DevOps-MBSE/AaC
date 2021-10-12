@@ -20,7 +20,7 @@ runtime_dependencies = [
 ]
 
 development_dependencies = [
-    "flake8 == 3.9.2",
+    "wheel == 0.37.0",
     "black == 21.9b0",
     "mccabe == 0.6.1",
     "mypy-extensions == 0.4.3",
@@ -33,6 +33,12 @@ development_dependencies = [
 test_dependencies = [
     "nose2 == 0.10.0",
     "coverage == 6.0",
+    "flake8 == 3.9.2",
+    "flake8-docstrings == 1.6.0",
+    "flake8-fixme == 1.1.1",
+    "flake8-eradicate == 1.1.0",
+    "flake8-assertive == 1.3.0",
+    "eradicate<3.0,>=2.0",
 ]
 
 setup(
