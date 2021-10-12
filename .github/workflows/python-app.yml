@@ -5,7 +5,7 @@ name: Python application
 
 on:
   push:
-    branches: [main]
+    branches: [main, additional-flake8-plugins]
   pull_request:
     branches: [main]
 
@@ -21,28 +21,23 @@ jobs:
           python-version: 3.9
       - name: Install dependencies
         run: |
-          python3.9 -m venv venv --system-site-packages
-          source venv/bin/activate
-          pip install --upgrade pip
-          python3.9 -m pip install --upgrade build
-          pip install -e .[all]
+          python3.9 -m pip install --upgrade pip --upgrade build
+          python3.9 -m pip install -e .[all]
       - name: Lint with flake8
         run: |
-          source venv/bin/activate
           # stop the build if there are Python syntax errors or undefined names
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude venv
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude venv
-      - name: Test with nose2
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --show-source
+      - name: Test with Tox
         run: |
-          source venv/bin/activate
-          nose2
-      # - name: Build distribution package
-      #   run: |
+          tox
+      - name: Build distribution package
+        run: |
+          python3.9 setup.py bdist_wheel
       #     python3.9 -m build --sdist --wheel --outdir dist/ .
       # - name: Publish distribution to PyPI
       #   if: startsWith(github.ref, 'refs/tags')
       #   uses: pypa/gh-action-pypi-publish@master
       #   with:
       #     password: ${{ secrets.PYPI_API_TOKEN }}
-
