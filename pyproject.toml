@@ -2,6 +2,9 @@
 line-length = 99
 target-version = ['py39']
 
+[tool.nose2.coverage]
+always-on = true
+
 [build-system]
 requires = [
     "setuptools>=42",
