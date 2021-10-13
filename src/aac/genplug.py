@@ -41,7 +41,7 @@ def genPlugin(arch_file, parsed_model):
         plugin_add_command_lines = []
 
         # ensure model is present and valid, get the plugin name
-        model_types = util.getModelsByType(parsed_model, "model")
+        model_types = util.get_models_by_type(parsed_model, "model")
         plugin_name = get_plugin_name(model_types, arch_file)
 
         plugin_add_command_lines, plugin_impl_lines, impl_names = process_behaviors(

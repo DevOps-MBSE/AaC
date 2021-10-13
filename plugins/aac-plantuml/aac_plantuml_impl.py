@@ -6,7 +6,7 @@ plugin_version = "0.0.2"
 
 def puml_component(archFile, parsed_model):
 
-    model_types = util.getModelsByType(parsed_model, "model")
+    model_types = util.get_models_by_type(parsed_model, "model")
 
     puml_lines = []
     puml_lines.append("@startuml")
@@ -22,7 +22,7 @@ def puml_component(archFile, parsed_model):
 
 def puml_sequence(archFile, parsed_model):
 
-    use_case_types = util.getModelsByType(parsed_model, "usecase")
+    use_case_types = util.get_models_by_type(parsed_model, "usecase")
 
     puml_lines = []
 
@@ -61,7 +61,7 @@ def puml_sequence(archFile, parsed_model):
 
 def puml_object(archFile, parsed_model):
 
-    model_types = util.getModelsByType(parsed_model, "model")
+    model_types = util.get_models_by_type(parsed_model, "model")
 
     object_declarations = []
     object_compositions = {}

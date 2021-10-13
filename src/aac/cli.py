@@ -44,7 +44,7 @@ def runCLI():
     for plugin_ext in results:
         if len(plugin_ext) > 0:
             parsed = parser.parseStr(plugin_ext, "Plugin Manager Addition", True)
-            util.extendAaCSpec(parsed)
+            util.extend_aac_spec(parsed)
 
     argParser.add_argument("yaml", type=str, help="The path to your AaC yaml")
 
@@ -52,7 +52,7 @@ def runCLI():
 
     # this command is special, it shouldn't need any additional inputs
     if args.command == "aac-core-spec":
-        print(util.getAacSpecAsYaml())
+        print(util.get_aac_spec_as_yaml())
         return
 
     model_file = args.yaml

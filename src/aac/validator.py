@@ -14,7 +14,7 @@ def validate(validate_me):
             errMsgList = errMsgList + errMsg
 
     # combine parsed types and AaC built-in types
-    aac_data, aac_enums = util.getAaCSpec()
+    aac_data, aac_enums = util.get_aac_spec()
     all_types = validate_me | aac_data | aac_enums
     isValid, errMsg = validate_cross_references(all_types)
     if not isValid:
@@ -26,12 +26,12 @@ def validate(validate_me):
         foundInvalid = True
         errMsgList = errMsgList + errMsg
 
-    for ext in util.getModelsByType(validate_me, "ext"):
+    for ext in util.get_models_by_type(validate_me, "ext"):
         type_to_extend = validate_me[ext]["ext"]["type"]
         if type_to_extend in aac_data or type_to_extend in aac_enums:
             apply_extension(validate_me[ext], aac_data, aac_enums)
         else:
-            apply_extension(validate_me[ext], util.getModelsByType(validate_me, "data"), util.getModelsByType(validate_me, "enum"))
+            apply_extension(validate_me[ext], util.get_models_by_type(validate_me, "data"), util.get_models_by_type(validate_me, "enum"))
 
     return not foundInvalid, errMsgList
 
@@ -49,12 +49,12 @@ def validate_general(validate_me: dict) -> tuple[bool, list]:
 
     # ensure the model has a known root
     root_name = list(model.keys())[0]
-    if root_name not in util.getRoots():
-        return False, [f"AaC Validation Error: yaml file has an unrecognized root [{root_name}].  Known roots {util.getRoots()}"]
+    if root_name not in util.get_roots():
+        return False, [f"AaC Validation Error: yaml file has an unrecognized root [{root_name}].  Known roots {util.get_roots()}"]
 
     # get the root type to validate against
     root_type = ""
-    aac_data, aac_enums = util.getAaCSpec()
+    aac_data, aac_enums = util.get_aac_spec()
     for field in util.search(aac_data["root"], ["data", "fields"]):
         if field["name"] == root_name:
             root_type = field["type"]
@@ -65,10 +65,10 @@ def validate_general(validate_me: dict) -> tuple[bool, list]:
 
 def validate_cross_references(all_models):
     all_types = list(all_models.keys())
-    all_types.extend(util.getPrimitives())
+    all_types.extend(util.get_primitives())
 
-    models = util.getModelsByType(all_models, "model")
-    data = util.getModelsByType(all_models, "data")
+    models = util.get_models_by_type(all_models, "model")
+    data = util.get_models_by_type(all_models, "data")
 
     foundInvalid = False
     errMsgs = []
@@ -111,9 +111,9 @@ def validate_cross_references(all_models):
 
 def validate_enum_values(all_models):
 
-    models = util.getModelsByType(all_models, "model")
-    data = util.getModelsByType(all_models, "data")
-    enums = util.getModelsByType(all_models, "enum")
+    models = util.get_models_by_type(all_models, "model")
+    data = util.get_models_by_type(all_models, "data")
+    enums = util.get_models_by_type(all_models, "enum")
 
     # at least for now, only models use actual enum values (rather than just types) in their definitions
     # first find the enum usage in the model definition
@@ -181,7 +181,7 @@ def findEnumFieldPaths(find_enum, data_name, data_type, data, enums) -> list:
                 enum_fields.append([field["name"]])
             else:
                 continue
-        elif field_type not in util.getPrimitives():
+        elif field_type not in util.get_primitives():
             found_paths = findEnumFieldPaths(find_enum, field["name"], field_type, data, enums)
             for found in found_paths:
                 entry = found.copy()
@@ -221,7 +221,7 @@ def getModelObjectFields(spec_model, enum_spec, name):
     for field in fields:
         isList, field_type_name = getSimpleBaseTypeName(field["type"])
         isEnum = field_type_name in enum_spec.keys()
-        isPrimitive = field_type_name in util.getPrimitives()
+        isPrimitive = field_type_name in util.get_primitives()
         if not isEnum and not isPrimitive:
             retVal[field["name"]] = field["type"]
 
