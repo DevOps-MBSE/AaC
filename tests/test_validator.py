@@ -8,14 +8,17 @@ assert_status_is_true = lambda status: assert_status_is(status, True)
 
 
 def assert_status_is(status, expected_status):
+    """Assert STATUS is EXPECTED_STATUS."""
     assert status is expected_status
 
 
 def assert_errors_exist(errors):
+    """Assert that ERRORS is a non-empty collection."""
     assert len(errors) > 0
 
 
 def assert_errors_contain(errors, pattern):
+    """Assert that at least one error in ERRORS matches PATTERN."""
     for e in errors:
         assert re.search(pattern, e)
 
