@@ -1,3 +1,6 @@
+"""
+The command line processor for aac.
+"""
 import argparse
 import sys
 import os
@@ -11,17 +14,20 @@ data_types = {}
 model_types = {}
 
 
-def runCLI():
-    # print ("AaC is running")
+def run_CLI():
+    """
+    The main entry point for aac.  This method parses the command line and
+    performs the requested user command...or outputs usage.
+    """
 
-    pm = get_plugin_manager()
+    pm = _get_plugin_manager()
 
     # register "built-in" plugins
     pm.register(genjson)
     pm.register(genplug)
 
-    argParser = argparse.ArgumentParser()
-    command_parser = argParser.add_subparsers(dest="command")
+    arg_parser = argparse.ArgumentParser()
+    command_parser = arg_parser.add_subparsers(dest="command")
     # the validate command is built-in
     command_parser.add_parser(
         "validate", help="Ensures the AaC yaml is valid per the AaC core spec"
@@ -39,16 +45,14 @@ def runCLI():
 
     # apply plugin extensions
     results = pm.hook.get_base_model_extensions()
-    # print(results)
-    # aac_plugin_exts = list(itertools.chain(*results))
     for plugin_ext in results:
         if len(plugin_ext) > 0:
             parsed = parser.parseStr(plugin_ext, "Plugin Manager Addition", True)
             util.extend_aac_spec(parsed)
 
-    argParser.add_argument("yaml", type=str, help="The path to your AaC yaml")
+    arg_parser.add_argument("yaml", type=str, help="The path to your AaC yaml")
 
-    args = argParser.parse_args()
+    args = arg_parser.parse_args()
 
     # this command is special, it shouldn't need any additional inputs
     if args.command == "aac-core-spec":
@@ -58,7 +62,7 @@ def runCLI():
     model_file = args.yaml
     if not os.path.isfile(model_file):
         print(f"{model_file} does not exist")
-        argParser.print_usage()
+        arg_parser.print_usage()
         sys.exit()
 
     parsed_models = {}
@@ -77,7 +81,7 @@ def runCLI():
             cmd.callback(model_file, parsed_models)
 
 
-def get_plugin_manager():
+def _get_plugin_manager():
     plugin_manager = PluginManager(PLUGIN_PROJECT_NAME)
     plugin_manager.add_hookspecs(hookspecs)
     plugin_manager.load_setuptools_entrypoints(PLUGIN_PROJECT_NAME)
