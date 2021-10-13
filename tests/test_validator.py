@@ -17,6 +17,11 @@ def assert_errors_exist(errors):
     assert len(errors) > 0
 
 
+def assert_no_errors(errors):
+    """Assert that ERRORS is an empty collection."""
+    assert len(errors) == 1 and len(errors[0]) == 0
+
+
 def assert_errors_contain(errors, pattern):
     """Assert that at least one error in ERRORS matches PATTERN."""
     for e in errors:
@@ -24,6 +29,28 @@ def assert_errors_contain(errors, pattern):
 
 
 class ValidatorTest(TestCase):
+    def test_validation_succeeds_for_valid_enum(self):
+        status, errors = validator.validate_general(
+            {"enum": {"name": "test", "values": ["a", "b"]}}
+        )
+
+        assert_status_is_true(status)
+        assert_no_errors(errors)
+
+    def test_validation_succeeds_for_valid_data(self):
+        status, errors = validator.validate_general(
+            {"data": {"name": "test", "fields": [{"name": "a", "type": "number"}]}}
+        )
+
+        assert_status_is_true(status)
+        assert_no_errors(errors)
+
+    def test_validation_succeeds_for_minimal_valid_model(self):
+        status, errors = validator.validate_general({"model": {"name": "test", "behavior": []}})
+
+        assert_status_is_true(status)
+        assert_no_errors(errors)
+
     def test_validation_fails_when_model_has_unrecognized_fields(self):
         status, errors = validator.validate_model_entry(
             "data",
