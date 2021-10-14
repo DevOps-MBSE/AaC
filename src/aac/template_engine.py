@@ -5,7 +5,13 @@ from jinja2 import Template, FileSystemLoader, Environment, PackageLoader
 
 
 def load_templates(group_dir_name: str) -> list[Template]:
-    """ """
+    """
+    Load default templates based on group-name
+
+    :param:group_dir_name name of the templates sub-directory to load templates from.
+    :type:str
+    return: list of loaded templates
+    """
     # env = Environment(
     #     loader=PackageLoader(__package__, "templates"),
     #     autoescape=True,
@@ -25,7 +31,15 @@ def load_templates(group_dir_name: str) -> list[Template]:
 
 
 def generate_templates(templates: list[Template], properties: dict[str, str]) -> dict[str, str]:
-    """ """
+    """
+    Compile a list of Jinja2 Template objects to a list of strings.
+
+    :param:templates list of Jinja2 templates to compile.
+    :type:list[Template]
+    :param:properties Dict of properties to use when compiling the templates
+    :type:dict
+    :return: Compiled/Rendered template as a string
+    """
     generated_templates = {}
     for template in templates:
         template_id = template.name
@@ -35,7 +49,15 @@ def generate_templates(templates: list[Template], properties: dict[str, str]) ->
 
 
 def generate_template(template: Template, properties: dict[str, str]) -> str:
-    """ """
+    """
+    Compile a Jinja2 Template object to a string.
+
+    :param:template Jinja2 template to compile.
+    :type:Template
+    :param:properties Dict of properties to use when compiling the template
+    :type:dict
+    :return: Compiled/Rendered template as a string
+    """
     return template.render(properties)
 
 
