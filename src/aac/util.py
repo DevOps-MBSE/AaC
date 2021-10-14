@@ -180,7 +180,7 @@ def extend_aac_spec(parsed_model: dict[str, dict]):
     AAC_MODEL = AAC_MODEL | apply_me
 
 
-def get_primitives(reload: bool=False) -> list[str]:
+def get_primitives(reload: bool = False) -> list[str]:
     """Gets the list of primitives as defined in the AaC model specifictaion.
 
     Args:
@@ -200,7 +200,7 @@ def get_primitives(reload: bool=False) -> list[str]:
     return PRIMITIVES
 
 
-def get_roots(reload: bool=False) -> list[str]:
+def get_roots(reload: bool = False) -> list[str]:
     """Gets the list of root names as defined in the AaC model specifictaion.
 
     Args:

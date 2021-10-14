@@ -3,6 +3,7 @@ A simple data class to collect AaC command info from plugins.
 """
 from typing import Callable
 
+
 class AacCommand:
     """
     A class used as a struct to hold a command name, command description, and callback.

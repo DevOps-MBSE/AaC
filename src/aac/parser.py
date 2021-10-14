@@ -8,7 +8,7 @@ import yaml
 from aac import validator
 
 
-def parse_file(arch_file: str, validate: bool=True) -> dict[str, dict]:
+def parse_file(arch_file: str, validate: bool = True) -> dict[str, dict]:
     """
     The parse method takes a path to an Arch-as-Code YAML file, parses it,
     and optionally validates it (default is to perform validation).
@@ -35,7 +35,7 @@ def parse_file(arch_file: str, validate: bool=True) -> dict[str, dict]:
     return parsed_models
 
 
-def parse_str(model_content: str, source: str, validate:bool=True) -> dict[str, dict]:
+def parse_str(model_content: str, source: str, validate: bool = True) -> dict[str, dict]:
     """
     Parse a string containing one or more yaml model definitions.
 

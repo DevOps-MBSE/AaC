@@ -5,6 +5,7 @@ import argparse
 import sys
 import os
 import itertools
+from typing import Callable
 from pluggy import PluginManager
 from aac import genjson, genplug, parser, util, hookspecs, PLUGIN_PROJECT_NAME
 
@@ -17,26 +18,7 @@ def run_cli():
 
     plug_mgr = _get_plugin_manager()
 
-    # register "built-in" plugins
-    plug_mgr.register(genjson)
-    plug_mgr.register(genplug)
-
-    arg_parser = argparse.ArgumentParser()
-    command_parser = arg_parser.add_subparsers(dest="command")
-    # the validate command is built-in
-    command_parser.add_parser(
-        "validate", help="Ensures the AaC yaml is valid per the AaC core spec"
-    )
-    # the print-spec command is built-in
-    command_parser.add_parser(
-        "aac-core-spec", help="Prints the AaC model describing core AaC data types and enumerations"
-    )
-    results = plug_mgr.hook.get_commands()
-    aac_plugin_commands = list(itertools.chain(*results))
-    for cmd in aac_plugin_commands:
-        command_parser.add_parser(
-            cmd.command_name, help=cmd.command_description
-        )
+    arg_parser, aac_plugin_commands = _setup_arg_parser(plug_mgr)
 
     # apply plugin extensions
     results = plug_mgr.hook.get_base_model_extensions()
@@ -76,9 +58,33 @@ def run_cli():
             cmd.callback(model_file, parsed_models)
 
 
+def _setup_arg_parser(plug_mgr: PluginManager) -> tuple[argparse.ArgumentParser, list[Callable]]:
+    arg_parser = argparse.ArgumentParser()
+    command_parser = arg_parser.add_subparsers(dest="command")
+    # the validate command is built-in
+    command_parser.add_parser(
+        "validate", help="Ensures the AaC yaml is valid per the AaC core spec"
+    )
+    # the print-spec command is built-in
+    command_parser.add_parser(
+        "aac-core-spec", help="Prints the AaC model describing core AaC data types and enumerations"
+    )
+    results = plug_mgr.hook.get_commands()
+    aac_plugin_commands = list(itertools.chain(*results))
+    for cmd in aac_plugin_commands:
+        command_parser.add_parser(
+            cmd.command_name, help=cmd.command_description
+        )
+    return arg_parser, aac_plugin_commands
+
+
 def _get_plugin_manager():
     plugin_manager = PluginManager(PLUGIN_PROJECT_NAME)
     plugin_manager.add_hookspecs(hookspecs)
     plugin_manager.load_setuptools_entrypoints(PLUGIN_PROJECT_NAME)
+
+    # register "built-in" plugins
+    plugin_manager.register(genjson)
+    plugin_manager.register(genplug)
 
     return plugin_manager

@@ -1,3 +1,6 @@
+"""
+The AaC validation module.  Validates a model against the model spec.
+"""
 from aac import util
 
 
@@ -35,8 +38,8 @@ def validate(validate_me: dict[str, dict]) -> tuple[bool, list[str]]:
             apply_extension(validate_me[ext], aac_data, aac_enums)
         else:
             apply_extension(validate_me[ext],
-                util.get_models_by_type(validate_me, "data"),
-                util.get_models_by_type(validate_me, "enum"))
+                            util.get_models_by_type(validate_me, "data"),
+                            util.get_models_by_type(validate_me, "enum"))
 
     return not found_invalid, err_msg_list
 
@@ -68,7 +71,7 @@ def _validate_general(validate_me: dict) -> tuple[bool, list]:
             root_type = field["type"]
             break
 
-    return validate_model_entry(root_name, root_type, model[root_name], aac_data, aac_enums)
+    return _validate_model_entry(root_name, root_type, model[root_name], aac_data, aac_enums)
 
 
 def _validate_cross_references(all_models: dict[str, dict]):
@@ -127,17 +130,6 @@ def _validate_enum_values(all_models: dict[str, dict]):
     data = util.get_models_by_type(all_models, "data")
     enums = util.get_models_by_type(all_models, "enum")
 
-    # at least for now, only models use actual enum values (rather than just types) in their definitions
-    # first find the enum usage in the model definition
-    enum_fields = {}  # key: type name  value: field
-    for data_name, data_model in data.items():
-        fields = util.search(data_model, ["data", "fields"])
-        for field in fields:
-            field_type = _get_simple_base_type_name(field["type"])
-            if field_type in enums:
-                enum_fields[data_name] = field
-    # print("validate_enum_values: enum fields = {}".format(enum_fields))
-
     # find serach paths to the usage
     enum_validation_paths = {}
     for enum_name in enums:
@@ -171,7 +163,7 @@ def _validate_enum_values(all_models: dict[str, dict]):
 
     if not found_invalid:
         return True, [""]
-    
+
     return False, err_msg_list
 
 
@@ -218,11 +210,11 @@ def _get_spec_field_names(spec_model, name):
 def _get_simple_base_type_name(type_declaration):
     if type_declaration.endswith("[]"):
         return True, type_declaration[0:-2]
-    
+
     return False, type_declaration
 
 
-def getModelObjectFields(spec_model, enum_spec, name):
+def _get_model_object_fields(spec_model, enum_spec, name):
     retVal = {}
     fields = util.search(spec_model, [name, "data", "fields"])
     for field in fields:
@@ -235,7 +227,7 @@ def getModelObjectFields(spec_model, enum_spec, name):
     return retVal
 
 
-def validate_model_entry(name, model_type, model, data_spec, enum_spec):
+def _validate_model_entry(name: str, model_type: str, model: dict, data_spec: dict[str, dict], enum_spec: dict[str, dict]):
     """
     Validate an Architecture-as-Code model.  A model item is a root of the AaC approach.
     Unlike enum and data, the content and structure of a model is not "hard coded", but specified in the data definition of a model in the yaml file that models AaC itself.
@@ -251,17 +243,13 @@ def validate_model_entry(name, model_type, model, data_spec, enum_spec):
     model_fields = list(model.keys())
 
     # check that required fields are present
-    for required_field in model_spec_required_fields:
-        if required_field not in model_fields:
-            return False, ["model {} is missing required field {}".format(name, required_field)]
+    _check_required_fields(name, model_fields, model_spec_required_fields)
 
     # check that model fields are recognized per the spec
-    for model_field in model_fields:
-        if model_field not in model_spec_fields:
-            return False, ["model {} contains unrecognized field {}".format(name, model_field)]
+    _check_fields_known(name, model_fields, model_spec_fields)
 
     # look for any field that is not a primitive type and validate the contents
-    object_fields = getModelObjectFields(data_spec, enum_spec, model_type)
+    object_fields = _get_model_object_fields(data_spec, enum_spec, model_type)
     if len(object_fields) == 0:
         # there are only primitives, validation successful
         return True, [""]
@@ -278,13 +266,13 @@ def validate_model_entry(name, model_type, model, data_spec, enum_spec):
                 pass
             else:
                 for sub_model_item in sub_model:
-                    isValid, errMsg = validate_model_entry(
+                    isValid, errMsg = _validate_model_entry(
                         field_name, field_type_name, sub_model_item, data_spec, enum_spec
                     )
                     if not isValid:
                         return isValid, errMsg
         else:
-            isValid, errMsg = validate_model_entry(
+            isValid, errMsg = _validate_model_entry(
                 field_name, field_type_name, sub_model, data_spec, enum_spec
             )
             if not isValid:
@@ -293,7 +281,23 @@ def validate_model_entry(name, model_type, model, data_spec, enum_spec):
     return True, [""]
 
 
-def apply_extension(extension, data, enums):
+def _check_required_fields(name: str, model_fields: list[str], model_spec_required_fields: list[str]) -> tuple[bool, list[str]]:
+    for required_field in model_spec_required_fields:
+        if required_field not in model_fields:
+            return False, [f"model {name} is missing required field {required_field}"]
+
+
+def _check_fields_known(name: str, model_fields: list[str], model_spec_fields: list[str]) -> tuple[bool, list[str]]:
+    for model_field in model_fields:
+        if model_field not in model_spec_fields:
+            return False, [f"model {name} contains unrecognized field {model_field}"]
+
+
+def apply_extension(extension: dict, data: dict[str, dict], enums: dict[str, dict]):
+    """
+    Uses the provided extension to update data and enum definitions in the provided
+    specification sets.
+    """
     type_to_extend = extension["ext"]["type"]
     if "enumExt" in extension["ext"]:
         # apply the enum extension

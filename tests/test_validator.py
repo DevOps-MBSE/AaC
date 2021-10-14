@@ -52,7 +52,7 @@ class ValidatorTest(TestCase):
         assert_no_errors(errors)
 
     def test_validation_fails_when_model_has_unrecognized_fields(self):
-        status, errors = validator.validate_model_entry(
+        status, errors = validator._validate_model_entry(
             "data",
             "data",
             {"name": "test", "fields": {}, "unrecognized": "key"},
