@@ -8,23 +8,18 @@ import itertools
 from pluggy import PluginManager
 from aac import genjson, genplug, parser, util, hookspecs, PLUGIN_PROJECT_NAME
 
-list_suffix = "[]"
-enum_types = {}
-data_types = {}
-model_types = {}
 
-
-def run_CLI():
+def run_cli():
     """
     The main entry point for aac.  This method parses the command line and
     performs the requested user command...or outputs usage.
     """
 
-    pm = _get_plugin_manager()
+    plug_mgr = _get_plugin_manager()
 
     # register "built-in" plugins
-    pm.register(genjson)
-    pm.register(genplug)
+    plug_mgr.register(genjson)
+    plug_mgr.register(genplug)
 
     arg_parser = argparse.ArgumentParser()
     command_parser = arg_parser.add_subparsers(dest="command")
@@ -36,7 +31,7 @@ def run_CLI():
     command_parser.add_parser(
         "aac-core-spec", help="Prints the AaC model describing core AaC data types and enumerations"
     )
-    results = pm.hook.get_commands()
+    results = plug_mgr.hook.get_commands()
     aac_plugin_commands = list(itertools.chain(*results))
     for cmd in aac_plugin_commands:
         command_parser.add_parser(
@@ -44,7 +39,7 @@ def run_CLI():
         )
 
     # apply plugin extensions
-    results = pm.hook.get_base_model_extensions()
+    results = plug_mgr.hook.get_base_model_extensions()
     for plugin_ext in results:
         if len(plugin_ext) > 0:
             parsed = parser.parseStr(plugin_ext, "Plugin Manager Addition", True)
