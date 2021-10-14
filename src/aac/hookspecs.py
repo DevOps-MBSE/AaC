@@ -1,8 +1,12 @@
+"""
+Defines the AaC plugin interface
+"""
 from aac import hookspec
+from aac.AacCommand import AacCommand
 
 
 @hookspec
-def get_commands() -> list:
+def get_commands() -> list[AacCommand]:
     '''
     Gets a list of AacCommand to register for use
     '''

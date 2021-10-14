@@ -129,7 +129,7 @@ def get_aac_spec() -> tuple[dict[str, dict], dict[str, dict]]:
     relpath_to_aac_yaml = "../../model/aac/AaC.yaml"
     aac_model_file = os.path.join(this_file_path, relpath_to_aac_yaml)
 
-    AAC_MODEL = parser.parseFile(aac_model_file, False)
+    AAC_MODEL = parser.parse_file(aac_model_file, False)
     aac_data = get_models_by_type(AAC_MODEL, "data")
     aac_enums = get_models_by_type(AAC_MODEL, "enum")
 

@@ -42,7 +42,7 @@ def run_cli():
     results = plug_mgr.hook.get_base_model_extensions()
     for plugin_ext in results:
         if len(plugin_ext) > 0:
-            parsed = parser.parseStr(plugin_ext, "Plugin Manager Addition", True)
+            parsed = parser.parse_str(plugin_ext, "Plugin Manager Addition", True)
             util.extend_aac_spec(parsed)
 
     arg_parser.add_argument("yaml", type=str, help="The path to your AaC yaml")
@@ -62,7 +62,7 @@ def run_cli():
 
     parsed_models = {}
     try:
-        parsed_models = parser.parseFile(model_file)
+        parsed_models = parser.parse_file(model_file)
     except RuntimeError:
         print(f"Model [{model_file}] is invalid")
         sys.exit("validation error")

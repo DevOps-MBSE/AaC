@@ -30,7 +30,7 @@ def assert_errors_contain(errors, pattern):
 
 class ValidatorTest(TestCase):
     def test_validation_succeeds_for_valid_enum(self):
-        status, errors = validator.validate_general(
+        status, errors = validator._validate_general(
             {"enum": {"name": "test", "values": ["a", "b"]}}
         )
 
@@ -38,7 +38,7 @@ class ValidatorTest(TestCase):
         assert_no_errors(errors)
 
     def test_validation_succeeds_for_valid_data(self):
-        status, errors = validator.validate_general(
+        status, errors = validator._validate_general(
             {"data": {"name": "test", "fields": [{"name": "a", "type": "number"}]}}
         )
 
@@ -46,7 +46,7 @@ class ValidatorTest(TestCase):
         assert_no_errors(errors)
 
     def test_validation_succeeds_for_minimal_valid_model(self):
-        status, errors = validator.validate_general({"model": {"name": "test", "behavior": []}})
+        status, errors = validator._validate_general({"model": {"name": "test", "behavior": []}})
 
         assert_status_is_true(status)
         assert_no_errors(errors)
@@ -56,7 +56,7 @@ class ValidatorTest(TestCase):
             "data",
             "data",
             {"name": "test", "fields": {}, "unrecognized": "key"},
-            *util.getAaCSpec(),
+            *util.get_aac_spec(),
         )
 
         assert_status_is_false(status)
@@ -64,14 +64,14 @@ class ValidatorTest(TestCase):
         assert_errors_contain(errors, "unrecognized.*field.*unrecognized")
 
     def test_validation_fails_when_model_has_more_than_one_root_item(self):
-        status, errors = validator.validate_general({"a": 1, "b": 2})
+        status, errors = validator._validate_general({"a": 1, "b": 2})
 
         assert_status_is_false(status)
         assert_errors_exist(errors)
         assert_errors_contain(errors, "more.*one.*root")
 
     def test_validation_fails_when_model_has_unknown_root(self):
-        status, errors = validator.validate_general({"a": 1})
+        status, errors = validator._validate_general({"a": 1})
 
         assert_status_is_false(status)
         assert_errors_exist(errors)
