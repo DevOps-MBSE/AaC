@@ -109,11 +109,7 @@ def _validate_cross_references(all_models: dict[str, dict]):
             _, base_type_name = _get_simple_base_type_name(model_entry_type)
             if base_type_name not in all_types:
                 found_invalid = True
-                err_msgs.append(
-                    "Model model [{}] uses undefined data type [{}]".format(
-                        model_name, base_type_name
-                    )
-                )
+                err_msgs.append(f"Model model [{model_name}] uses undefined data type [{base_type_name}]")
 
     if not found_invalid:
         return True, ""
@@ -162,7 +158,7 @@ def _validate_enum_values(all_models: dict[str, dict]):
                         err_msg_list.append(f"Model {model_name} entry {path} has a value {result} not allowed in the enumeration {enum_name}: {valid_values}")
 
     if not found_invalid:
-        return True, [""]
+        return True, []
 
     return False, err_msg_list
 
@@ -243,16 +239,20 @@ def _validate_model_entry(name: str, model_type: str, model: dict, data_spec: di
     model_fields = list(model.keys())
 
     # check that required fields are present
-    _check_required_fields(name, model_fields, model_spec_required_fields)
+    is_valid, err_msg_list = _check_required_fields(name, model_fields, model_spec_required_fields)
+    if not is_valid:
+        return is_valid, err_msg_list
 
     # check that model fields are recognized per the spec
-    _check_fields_known(name, model_fields, model_spec_fields)
+    is_valid, err_msg_list = _check_fields_known(name, model_fields, model_spec_fields)
+    if not is_valid:
+        return is_valid, err_msg_list
 
     # look for any field that is not a primitive type and validate the contents
     object_fields = _get_model_object_fields(data_spec, enum_spec, model_type)
     if len(object_fields) == 0:
         # there are only primitives, validation successful
-        return True, [""]
+        return True, []
 
     for field_name in object_fields:
         if field_name not in model.keys():
@@ -278,19 +278,21 @@ def _validate_model_entry(name: str, model_type: str, model: dict, data_spec: di
             if not isValid:
                 return isValid, errMsg
 
-    return True, [""]
+    return True, []
 
 
 def _check_required_fields(name: str, model_fields: list[str], model_spec_required_fields: list[str]) -> tuple[bool, list[str]]:
     for required_field in model_spec_required_fields:
         if required_field not in model_fields:
             return False, [f"model {name} is missing required field {required_field}"]
+    return True, []
 
 
 def _check_fields_known(name: str, model_fields: list[str], model_spec_fields: list[str]) -> tuple[bool, list[str]]:
     for model_field in model_fields:
         if model_field not in model_spec_fields:
             return False, [f"model {name} contains unrecognized field {model_field}"]
+    return True, []
 
 
 def apply_extension(extension: dict, data: dict[str, dict], enums: dict[str, dict]):

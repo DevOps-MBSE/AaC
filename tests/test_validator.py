@@ -1,7 +1,7 @@
 import re
 from unittest import TestCase
 
-from aac import util, validator
+from aac import util, validator, parser
 
 assert_status_is_false = lambda status: assert_status_is(status, False)
 assert_status_is_true = lambda status: assert_status_is(status, True)
@@ -19,7 +19,7 @@ def assert_errors_exist(errors):
 
 def assert_no_errors(errors):
     """Assert that ERRORS is an empty collection."""
-    assert len(errors) == 1 and len(errors[0]) == 0
+    assert len(errors) == 0
 
 
 def assert_errors_contain(errors, pattern):
@@ -76,3 +76,23 @@ class ValidatorTest(TestCase):
         assert_status_is_false(status)
         assert_errors_exist(errors)
         assert_errors_contain(errors, "unrecognized.*root.*[a]")
+
+    def test_data_validation(self):
+
+        valid_data = """
+        data:
+            name: MyTestFieldType
+            fields:
+                - name: name
+                  type: string
+                - name: type
+                  type: string
+            required:
+                - name
+                - type
+        """
+        validate_me = parser.parse_str(valid_data, "test_validator.test_datavalidation", False)
+        status, errors = validator.validate(validate_me)
+        assert_status_is_true(status)
+        assert_no_errors(errors)
+
