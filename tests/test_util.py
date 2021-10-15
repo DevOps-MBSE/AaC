@@ -1,32 +1,92 @@
-from unittest import TestCase
+"""
+Unit tests for the aac.util module.
+"""
 
+from unittest import TestCase
 from aac import util
 
 
 class TestArchUtil(TestCase):
+    """
+    Unit test class for aac.util module.
+    """
     def test_get_primitive(self):
+        """
+        Unit test for the util.get_primitive method.
+        """
         expected_results = ["int", "number", "string", "bool", "file", "date", "map"]
 
-        result = util.getPrimitives()
+        result = util.get_primitives()
 
         self.assertCountEqual(result, expected_results)
 
     def test_get_root_names(self):
+        """
+        Unit test for the util.get_root_names method.
+        """
         expected_results = ["import", "enum", "data", "model", "usecase", "ext"]
 
-        result = util.getRoots()
+        result = util.get_roots()
 
         self.assertCountEqual(result, expected_results)
 
-    def test_getAaCSpec(self):
+    def test_get_aac_spec(self):
+        """
+        Unit test for the util.get_aac_spec method.
+        """
 
-        aac_data, aac_enums = util.getAaCSpec()
+        aac_data, _ = util.get_aac_spec()
 
         self.assertTrue(len(aac_data.keys()) > 0)
         self.assertTrue(len(aac_data.keys()) > 0)
+
+    def test_get_aac_spec_as_yaml(self):
+        """
+        Unit test for the util.get_aac_spec_as_yaml method.
+        """
+
+        aac_yaml = util.get_aac_spec_as_yaml()
+        self.assertTrue(len(aac_yaml) > 0)
+        self.assertGreaterEqual(aac_yaml.count("---"), 14) # there are 14 base types
+
+    # TODO This method is working in the current state, but it is poor design with high coupling
+    #      which was exposed by this test creating failures.  Go back and clean this up.
+
+    # def test_extend_aac_spec(self):
+    #     ext_enum = {
+    #         "ext": {
+    #             "enumExt": {
+    #                 "add": ["test"]
+    #             },
+    #             "name": "TestBehavior",
+    #             "type": "BehaviorType"
+    #         }
+    #     }
+    #     _, enums = util.get_aac_spec()
+    #     print(enums)
+    #     util.extend_aac_spec(ext_enum)
+    #     _, enums = util.get_aac_spec()
+    #     print(enums)
+    #     behavior_types = util.search(enums["BehaviorType"], ["enum", "values"])
+    #     self.assertIn("test", behavior_types)
+
+    def test_get_models_by_type(self):
+        """
+        Unit test for the util.get_models_by_type method.
+        """
+        aac_data, aac_enums = util.get_aac_spec()
+        num_data = len(aac_data)
+        num_enums = len(aac_enums)
+        num_models = 0
+        all_aac = aac_data | aac_enums
+        self.assertEqual(len(util.get_models_by_type(all_aac, "data")), num_data)
+        self.assertEqual(len(util.get_models_by_type(all_aac, "enum")), num_enums)
+        self.assertEqual(len(util.get_models_by_type(all_aac, "model")), num_models)
 
     def test_search(self):
-
+        """
+        Unit test for the util.search method.
+        """
         data_entry = {
             "data": {
                 "fields": [
