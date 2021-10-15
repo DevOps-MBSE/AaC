@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 with open("README.md", "r") as fh:
     readme_description = fh.read()
@@ -17,6 +17,7 @@ runtime_dependencies = [
     "regex == 2021.9.30",
     "typing-extensions == 3.10.0.2",
     "pluggy == 1.0.0",
+    "iteration_utilities == 0.11.0",
 ]
 
 development_dependencies = [
