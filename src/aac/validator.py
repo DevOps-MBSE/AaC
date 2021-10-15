@@ -232,7 +232,6 @@ def _validate_model_entry(name: str, model_type: str, model: dict, data_spec: di
     :param model: The model to be validated.
     :param data_specs: The data definitions of the modelled system (including AaC base types).
     """
-
     # make sure the model fields are correct per the spec
     model_spec_fields = _get_spec_field_names(data_spec, model_type)
     model_spec_required_fields = _get_spec_required_fields(data_spec, model_type)
@@ -261,7 +260,8 @@ def _validate_model_entry(name: str, model_type: str, model: dict, data_spec: di
         field_type = object_fields[field_name]
         sub_model = model[field_name]
         isList, field_type_name = _get_simple_base_type_name(field_type)
-        if isList and not sub_model:
+        err_msg_list
+        if isList:
             for sub_model_item in sub_model:
                 isValid, errMsg = _validate_model_entry(
                     field_name, field_type_name, sub_model_item, data_spec, enum_spec
