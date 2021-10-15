@@ -58,6 +58,7 @@ def get_error_if_missing_required_property(model: dict, key: str) -> str:
 
 
 def get_error_if_property_has_wrong_type(model: dict, key: str, instance: type) -> str:
+    """Return an error message if the model property is of the wrong type."""
     if key in model.keys() and not isinstance(model[key], instance):
         return 'wrong type for field property: "{}"'.format(key)
     return ""
@@ -69,6 +70,11 @@ def filter_out_empty_strings(*xs: list) -> list:
 
 
 def get_all_data_errors(model: dict) -> list:
+    """Return all validation errors for the data MODEL.
+
+    :return: Return a list of all the validation errors found for the data MODEL. If the data MODEL
+    is valid, return an empty list.
+    """
     if not is_data_model(model):
         return []
 
