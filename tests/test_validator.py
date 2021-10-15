@@ -46,13 +46,20 @@ def assert_model_is_invalid(model, error_pattern):
 
 class ValidatorTest(TestCase):
     def test_can_validate_enums(self):
-        assert_model_is_valid({"enum": {"name": "test", "values": []}})
-        assert_model_is_valid({"enum": {"name": "test", "values": ["a"]}})
-        assert_model_is_valid({"enum": {"name": "test", "values": ["a", "b", "c"]}})
+        def enum(name=None, values=None):
+            enum = {}
+            if name is not None:
+                enum["name"] = name
+            if values is not None:
+                enum["values"] = values
+            return {"enum": enum}
 
-        assert_model_is_invalid({"enum": {}}, ".*missing.*required.*(name|values).*")
-        assert_model_is_invalid({"enum": {"name": "test"}}, ".*missing.*required.*values.*")
-        assert_model_is_invalid({"enum": {"values": []}}, ".*missing.*required.*name.*")
-        assert_model_is_invalid(
-            {"enum": {"name": 1, "values": 2}}, ".*wrong.*type.*(name|values).*"
+        assert_model_is_valid(enum(name="test", values=[]))
+        assert_model_is_valid(enum(name="test", values=["a"]))
+        assert_model_is_valid(enum(name="test", values=["a", "b"]))
+
+        assert_model_is_invalid(enum(), ".*missing.*required.*(name|values).*")
+        assert_model_is_invalid(enum(name="test"), ".*missing.*required.*values.*")
+        assert_model_is_invalid(enum(values=[]), ".*missing.*required.*name.*")
+        assert_model_is_invalid(enum(name=1, values=2), ".*wrong.*type.*(name|values).*")
         )
