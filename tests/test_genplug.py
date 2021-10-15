@@ -2,18 +2,37 @@ import yaml
 from unittest import TestCase
 from jinja2 import Template
 
-from aac.genplug import compile_templates
+from aac.genplug import compile_templates, convert_template_name_to_file_name
 from aac.parser import parseStr
 
 
 class TestGenPlug(TestCase):
+    def test_convert_template_name_to_file_name(self):
+        plugin_name = "aac-test"
+        template_names = ["__init__.py.jinja2", "plugin.py.jinja2", "plugin_impl.py.jinja2"]
+        expected_filenames = ["__init__.py", f"{plugin_name}.py", f"{plugin_name}_impl.py"]
+
+        for i in range(len(template_names)):
+            expected_filename = expected_filenames[i]
+            actual_filename = convert_template_name_to_file_name(template_names[i], plugin_name)
+            self.assertEqual(expected_filename, actual_filename)
+
     def test_compile_templates(self):
         parsed_model = parseStr(TEST_PLUGIN_YAML_STRING, "", True)
-        print()
+        plugin_name = "aac_spec"
+
         generated_templates = compile_templates(parsed_model)
+
+        # Check that the files don't have "-" in the name
         for template_name in generated_templates:
-            print(f"----- {template_name} -----")
-            print(generated_templates.get(template_name))
+            self.assertNotIn("-", template_name)
+
+        # Check that the expected files were created and named correctly
+        self.assertEqual(len(generated_templates), 4)
+        self.assertIn("__init__.py", generated_templates)
+        self.assertIn("setup.py", generated_templates)
+        self.assertIn(f"{plugin_name}.py", generated_templates)
+        self.assertIn(f"{plugin_name}_impl.py", generated_templates)
 
 
 TEST_PLUGIN_YAML_STRING = """

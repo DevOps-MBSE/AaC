@@ -54,7 +54,7 @@ def compile_templates(parsed_models: dict[str, dict]) -> dict[str, str]:
     """
     Parse the model and generate the plugin template accordingly.
 
-    :return: Dict of template name to the rendered template
+    :return: Dict of file name to the rendered template
     """
 
     # ensure model is present and valid, get the plugin name
@@ -66,6 +66,7 @@ def compile_templates(parsed_models: dict[str, dict]) -> dict[str, str]:
 
     plugin_model = list(plugin_models.values())[0].get("model")
     plugin_name = plugin_model.get("name")
+    plugin_implementation_name = get_implementation_name(plugin_name)
 
     # Ensure that the plugin name has package name prepended to it
     if not plugin_name.startswith(__package__):
@@ -78,7 +79,7 @@ def compile_templates(parsed_models: dict[str, dict]) -> dict[str, str]:
 
     plugin = {
         "name": plugin_model.get("name"),
-        "implementation_name": get_implementation_name(plugin_model.get("name")),
+        "implementation_name": plugin_implementation_name,
     }
 
     extensions = [
@@ -86,7 +87,16 @@ def compile_templates(parsed_models: dict[str, dict]) -> dict[str, str]:
     ]
 
     template_properties = {"plugin": plugin, "commands": commands, "extensions": extensions}
-    return generate_templates(plugin_templates, template_properties)
+    generated_templates = generate_templates(plugin_templates, template_properties)
+
+    # Combine the generated templates into a map of file_name: file_contents
+    files_to_write = {}
+    for template_name, template_content in generated_templates.items():
+        files_to_write[
+            convert_template_name_to_file_name(template_name, plugin_implementation_name)
+        ] = template_content
+
+    return files_to_write
 
 
 def write_generated_templates_to_file(templates: list[str, str], plug_dir: str) -> None:
@@ -95,6 +105,21 @@ def write_generated_templates_to_file(templates: list[str, str], plug_dir: str) 
     # for template_name, template_content in templates:
     # print(template_content)
     # write_file(plug_dir, file_name, overwrite, template_content)
+
+
+def convert_template_name_to_file_name(template_name: str, plugin_name: str) -> str:
+    """ """
+    #  we're using that genplug will only ever generate python templates
+    assumed_file_extension = ".py"
+
+    #  Strip anything after the .py ending
+    strip_index = template_name.index(assumed_file_extension) + len(assumed_file_extension)
+    filename = template_name[:strip_index]
+
+    # Replace "plugin" with the plugin name
+    filename = filename.replace("plugin", plugin_name)
+
+    return filename
 
 
 def is_user_desired_output_directory(arch_file: str, plug_dir: str) -> bool:
