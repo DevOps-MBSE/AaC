@@ -95,4 +95,3 @@ class ValidatorTest(TestCase):
         status, errors = validator.validate(validate_me)
         assert_status_is_true(status)
         assert_no_errors(errors)
-

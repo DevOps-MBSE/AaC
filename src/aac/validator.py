@@ -261,16 +261,13 @@ def _validate_model_entry(name: str, model_type: str, model: dict, data_spec: di
         field_type = object_fields[field_name]
         sub_model = model[field_name]
         isList, field_type_name = _get_simple_base_type_name(field_type)
-        if isList:
-            if not sub_model:  # list is empty
-                pass
-            else:
-                for sub_model_item in sub_model:
-                    isValid, errMsg = _validate_model_entry(
-                        field_name, field_type_name, sub_model_item, data_spec, enum_spec
-                    )
-                    if not isValid:
-                        return isValid, errMsg
+        if isList and not sub_model:
+            for sub_model_item in sub_model:
+                isValid, errMsg = _validate_model_entry(
+                    field_name, field_type_name, sub_model_item, data_spec, enum_spec
+                )
+                if not isValid:
+                    return isValid, errMsg
         else:
             isValid, errMsg = _validate_model_entry(
                 field_name, field_type_name, sub_model, data_spec, enum_spec
