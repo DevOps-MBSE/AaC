@@ -19,60 +19,40 @@ def assert_errors_exist(errors):
 
 def assert_no_errors(errors):
     """Assert that ERRORS is an empty collection."""
-    assert len(errors) == 1 and len(errors[0]) == 0
+    assert len(errors) == 0
 
 
 def assert_errors_contain(errors, pattern):
     """Assert that at least one error in ERRORS matches PATTERN."""
+    print(errors)
     for e in errors:
         assert re.search(pattern, e)
 
 
+def assert_model_is_valid(model):
+    "Assert that the provided MODEL is valid."
+    assert_status_is_true(validator.is_valid(model))
+    assert_no_errors(validator.get_all_errors(model))
+
+
+def assert_model_is_invalid(model, error_pattern):
+    "Assert that the provided MODEL is valid."
+    assert_status_is_false(validator.is_valid(model))
+
+    errors = validator.get_all_errors(model)
+    assert_errors_exist(errors)
+    assert_errors_contain(errors, error_pattern)
+
+
 class ValidatorTest(TestCase):
-    def test_validation_succeeds_for_valid_enum(self):
-        status, errors = validator.validate_general(
-            {"enum": {"name": "test", "values": ["a", "b"]}}
+    def test_can_validate_enums(self):
+        assert_model_is_valid({"enum": {"name": "test", "values": []}})
+        assert_model_is_valid({"enum": {"name": "test", "values": ["a"]}})
+        assert_model_is_valid({"enum": {"name": "test", "values": ["a", "b", "c"]}})
+
+        assert_model_is_invalid({"enum": {}}, ".*missing.*required.*(name|values).*")
+        assert_model_is_invalid({"enum": {"name": "test"}}, ".*missing.*required.*values.*")
+        assert_model_is_invalid({"enum": {"values": []}}, ".*missing.*required.*name.*")
+        assert_model_is_invalid(
+            {"enum": {"name": 1, "values": 2}}, ".*wrong.*type.*(name|values).*"
         )
-
-        assert_status_is_true(status)
-        assert_no_errors(errors)
-
-    def test_validation_succeeds_for_valid_data(self):
-        status, errors = validator.validate_general(
-            {"data": {"name": "test", "fields": [{"name": "a", "type": "number"}]}}
-        )
-
-        assert_status_is_true(status)
-        assert_no_errors(errors)
-
-    def test_validation_succeeds_for_minimal_valid_model(self):
-        status, errors = validator.validate_general({"model": {"name": "test", "behavior": []}})
-
-        assert_status_is_true(status)
-        assert_no_errors(errors)
-
-    def test_validation_fails_when_model_has_unrecognized_fields(self):
-        status, errors = validator.validate_model_entry(
-            "data",
-            "data",
-            {"name": "test", "fields": {}, "unrecognized": "key"},
-            *util.getAaCSpec(),
-        )
-
-        assert_status_is_false(status)
-        assert_errors_exist(errors)
-        assert_errors_contain(errors, "unrecognized.*field.*unrecognized")
-
-    def test_validation_fails_when_model_has_more_than_one_root_item(self):
-        status, errors = validator.validate_general({"a": 1, "b": 2})
-
-        assert_status_is_false(status)
-        assert_errors_exist(errors)
-        assert_errors_contain(errors, "more.*one.*root")
-
-    def test_validation_fails_when_model_has_unknown_root(self):
-        status, errors = validator.validate_general({"a": 1})
-
-        assert_status_is_false(status)
-        assert_errors_exist(errors)
-        assert_errors_contain(errors, "unrecognized.*root.*[a]")
