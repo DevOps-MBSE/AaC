@@ -148,3 +148,4 @@ cython_debug/
 .settings/
 .dir-locals.el
 
+html_code_coverage
