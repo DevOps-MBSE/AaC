@@ -18,27 +18,12 @@ def run_cli():
     requested user command...or outputs usage.
     """
 
-    pm = _get_plugin_manager()
+    plugin_manager = _get_plugin_manager()
 
-    arg_parser = argparse.ArgumentParser()
-    command_parser = arg_parser.add_subparsers(dest="command")
-    # the validate command is built-in
-    command_parser.add_parser(
-        "validate", help="Ensures the AaC yaml is valid per the AaC core spec"
-    )
-    # the print-spec command is built-in
-    command_parser.add_parser(
-        "aac-core-spec",
-        help="Prints the AaC model describing core AaC data types and enumerations",
-    )
-    results = pm.hook.get_commands()
-    aac_plugin_commands = list(itertools.chain(*results))
-    for cmd in aac_plugin_commands:
-        command_parser.add_parser(cmd.command_name, help=cmd.command_description)
+    arg_parser, aac_plugin_commands = _setup_arg_parser(plugin_manager)
 
     # apply plugin extensions
-    results = pm.hook.get_base_model_extensions()
-
+    results = plugin_manager.hook.get_base_model_extensions()
     for plugin_ext in results:
         if len(plugin_ext) > 0:
             parsed = parser.parse_str(plugin_ext, "Plugin Manager Addition", True)
@@ -75,7 +60,9 @@ def run_cli():
             cmd.callback(model_file, parsed_models)
 
 
-def _setup_arg_parser(plug_mgr: PluginManager) -> tuple[argparse.ArgumentParser, list[Callable]]:
+def _setup_arg_parser(
+    plugin_manager: PluginManager,
+) -> tuple[argparse.ArgumentParser, list[Callable]]:
     _arg_parser = argparse.ArgumentParser()
     command_parser = _arg_parser.add_subparsers(dest="command")
     # the validate command is built-in
@@ -87,7 +74,7 @@ def _setup_arg_parser(plug_mgr: PluginManager) -> tuple[argparse.ArgumentParser,
         "aac-core-spec",
         help="Prints the AaC model describing core AaC data types and enumerations",
     )
-    results = plug_mgr.hook.get_commands()
+    results = plugin_manager.hook.get_commands()
     aac_plugin_commands = list(itertools.chain(*results))
     for cmd in aac_plugin_commands:
         command_parser.add_parser(cmd.command_name, help=cmd.command_description)
