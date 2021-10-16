@@ -6,8 +6,6 @@ model:
       type: command
       description: Converts an AaC model to Plant ULM component diagram
       input:
-        - name: architecture_file
-          type: file
         - name: parsed_model
           type: map
       acceptance:
@@ -23,8 +21,6 @@ model:
       type: command
       description: Converts an AaC usecase to Plant ULM sequence diagram
       input:
-        - name: architecture_file
-          type: file
         - name: parsed_model
           type: map
       acceptance:
@@ -40,8 +36,6 @@ model:
       type: command
       description: Converts an AaC model to Plant ULM object diagram
       input:
-        - name: architecture_file
-          type: file
         - name: parsed_model
           type: map
       acceptance:
