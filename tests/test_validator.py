@@ -93,5 +93,9 @@ class ValidatorTest(TestCase):
         """
         validate_me = parser.parse_str(valid_data, "test_validator.test_datavalidation", False)
         status, errors = validator.validate(validate_me)
+
+        if not status:
+            print(f"Failed to validate with errors: {errors}")
+
         assert_status_is_true(status)
         assert_no_errors(errors)
