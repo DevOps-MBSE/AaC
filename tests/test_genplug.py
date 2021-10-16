@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from aac.genplug import compile_templates, convert_template_name_to_file_name
+from aac.genplug import compile_templates, _convert_template_name_to_file_name
 from aac.parser import parse_str
 
 
@@ -12,7 +12,7 @@ class TestGenPlug(TestCase):
 
         for i in range(len(template_names)):
             expected_filename = expected_filenames[i]
-            actual_filename = convert_template_name_to_file_name(template_names[i], plugin_name)
+            actual_filename = _convert_template_name_to_file_name(template_names[i], plugin_name)
             self.assertEqual(expected_filename, actual_filename)
 
     def test_compile_templates(self):
@@ -107,7 +107,7 @@ model:
   behavior:
     - name: spec-validate
       type: command
-      description: Validates spec traces within the AaC model
+      description: 'Validates spec traces within the AaC model'
       input:
         - name: archFile
           type: file
@@ -122,5 +122,14 @@ model:
             - The aac app is run with the spec-validate command.
           then:
             - A message saying spec validation was successful is printed to the console.
+    - name: non-cmd-behavior
+      type: startup
+      description: You shouldn't see me
+      acceptance:
+        - scenario: Pretend to do something on startup.
+          when:
+          - when
+          then:
+          - then
   
 """

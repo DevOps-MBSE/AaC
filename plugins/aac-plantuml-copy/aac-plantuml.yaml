@@ -1,0 +1,49 @@
+model:
+  name: aac-plantuml
+  description: aac-plantuml is a Architecture-as-Code plugin that enables Plant UML content to be generated from Arch-as-Code models.
+  behavior:
+    - name: puml-component
+      type: command
+      description: Converts an AaC model to Plant ULM component diagram
+      input:
+        - name: parsed_model
+          type: map
+      acceptance:
+        - scenario: Output PlantUML component diagram for valid architecture.
+          given:
+            - The {{puml.input.architecture_file}} contains a valid architecture specification.
+            - The {{puml.input.parsed_model}} contains the parsed content from architecture_file.
+          when:
+            - The aac app is run with the puml-component command.
+          then:
+            - A PlantUML component diagram of the model is printed to the console.
+    - name: puml-sequence
+      type: command
+      description: Converts an AaC usecase to Plant ULM sequence diagram
+      input:
+        - name: parsed_model
+          type: map
+      acceptance:
+        - scenario: Output PlantUML sequence diagram for valid use case.
+          given:
+            - The {{puml.input.architecture_file}} contains a valid use case specification.
+            - The {{puml.input.parsed_model}} contains the parsed content from architecture_file.
+          when:
+            - The aac app is run with the puml-sequence command.
+          then:
+            - A PlantUML sequence diagram of the use case is printed to the console.
+    - name: puml-object
+      type: command
+      description: Converts an AaC model to Plant ULM object diagram
+      input:
+        - name: parsed_model
+          type: map
+      acceptance:
+        - scenario: Output PlantUML object diagram for valid model.
+          given:
+            - The {{puml.input.architecture_file}} contains a valid model specification.
+            - The {{puml.input.parsed_model}} contains the parsed content from architecture_file.
+          when:
+            - The aac app is run with the puml-object command.
+          then:
+            - A PlantUML object diagram of the model is printed to the console.

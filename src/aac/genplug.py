@@ -252,27 +252,6 @@ def _add_extensions_yaml_string(extension_model: dict) -> dict:
     return extension_model
 
 
-def _process_extensions(parsed_models: dict[str, dict]) -> list[str]:
-    """
-    Extract data and extensions from the plugin model.
-
-    Args:
-        parsed_models <dict>: the yaml-parsed plugin models
-
-    Returns:
-        list of extensions and data definitions
-    """
-    plugin_ext_lines = []
-
-    for model_data in parsed_models.value():
-        if (
-            "data" in model_data or "ext" in model_data
-        ):  # only include data and ext (exclude others)
-            plugin_ext_lines.append(yaml.dump(model_data))
-
-    return plugin_ext_lines
-
-
 def _write_file(path: str, file_name: str, overwrite: bool, content: str) -> None:
     """
     Write string content to a file.
