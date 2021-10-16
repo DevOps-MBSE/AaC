@@ -11,7 +11,6 @@ model:
       acceptance:
         - scenario: Output PlantUML component diagram for valid architecture.
           given:
-            - The {{puml.input.architecture_file}} contains a valid architecture specification.
             - The {{puml.input.parsed_model}} contains the parsed content from architecture_file.
           when:
             - The aac app is run with the puml-component command.
@@ -26,7 +25,6 @@ model:
       acceptance:
         - scenario: Output PlantUML sequence diagram for valid use case.
           given:
-            - The {{puml.input.architecture_file}} contains a valid use case specification.
             - The {{puml.input.parsed_model}} contains the parsed content from architecture_file.
           when:
             - The aac app is run with the puml-sequence command.
@@ -41,7 +39,6 @@ model:
       acceptance:
         - scenario: Output PlantUML object diagram for valid model.
           given:
-            - The {{puml.input.architecture_file}} contains a valid model specification.
             - The {{puml.input.parsed_model}} contains the parsed content from architecture_file.
           when:
             - The aac app is run with the puml-object command.
