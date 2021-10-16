@@ -147,7 +147,7 @@ def _write_generated_templates_to_file(
     """
 
     for generated_file in generated_files:
-        write_file(
+        _write_file(
             plug_dir,
             generated_file.file_name,
             generated_file.overwrite,
@@ -252,7 +252,7 @@ def _add_extensions_yaml_string(extension_model: dict) -> dict:
     return extension_model
 
 
-def process_extensions(parsed_models: dict[str, dict]) -> list[str]:
+def _process_extensions(parsed_models: dict[str, dict]) -> list[str]:
     """
     Extract data and extensions from the plugin model.
 
@@ -273,7 +273,7 @@ def process_extensions(parsed_models: dict[str, dict]) -> list[str]:
     return plugin_ext_lines
 
 
-def write_file(path: str, file_name: str, overwrite: bool, content: str) -> None:
+def _write_file(path: str, file_name: str, overwrite: bool, content: str) -> None:
     """
     Write string content to a file.
 
