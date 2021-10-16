@@ -119,9 +119,40 @@ def get_all_data_errors(model: dict) -> list:
         get_all_errors_if_properties_have_wrong_type(
             data, required + ["required"], types + [list]
         ),
+        get_all_field_errors(data),
     )
 
 
 def is_data_model(model: dict) -> bool:
     """Determine if the MODEL represents a data model."""
     return "data" in model
+
+
+def get_all_field_errors(model: dict) -> list:
+    """Return all validation errors for the field MODEL.
+
+    Return a list of all the validation errors found for the field MODEL. If the
+    field MODEL is valid, return an empty list.
+    """
+
+    if not has_fields(model):
+        return []
+
+    def get_field_error(field):
+        required = ["name", "type"]
+        types = [str, str]
+
+        # TODO: Clean this up
+        return filter_out_empty_strings(
+            list(get_all_errors_if_missing_required_properties(field, required)),
+            list(get_all_errors_if_properties_have_wrong_type(field, required, types)),
+        )
+
+    return flatten(map(get_field_error, model["fields"]))
+
+
+def has_fields(model: dict) -> bool:
+    """Determine if the MODEL represents a field."""
+    return "fields" in model and isinstance(model["fields"], list)
+
+
