@@ -23,4 +23,3 @@ def get_commands() -> list[AacCommand]:
     ]
 
     return plugin_commands
-

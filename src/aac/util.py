@@ -24,7 +24,7 @@ def search(model: dict[str, Any], search_keys: list[str]) -> list:
 
     Searches a dict for the contents given a set of keys. Search returns a list of
     the entries in the model that correcpond to those keys.  This search will
-    traverse the full dict tree, including embeded lists.
+    traverse the full dict tree, including embedded lists.
 
         Typical usage example:
         Let's say you have a dict structure parsed from the following AaC yaml.
@@ -72,10 +72,12 @@ def search(model: dict[str, Any], search_keys: list[str]) -> list:
 
     search_key = keys.pop(0)
     final_key = len(keys) == 0
-    model_value = model[search_key]
+    model_value = None
 
     # see if the key exists in the dict
     if search_key in model:
+        model_value = model[search_key]
+
         if final_key:
             if isinstance(model_value, list):
                 ret_val = model_value

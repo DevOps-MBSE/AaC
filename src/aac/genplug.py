@@ -1,13 +1,9 @@
-<<<<<<< HEAD
 """
 A plugin to generate new plugins based on a specifically structured AaC model file.
 The plugin AaC model must define behaviors using the command BehaviorType.  Each
 defined behavior becomes a new command for the aac CLI.
 """
-=======
-"""Built-in plugin used to provide plugin generation commands and capabilities."""
 import attr
->>>>>>> f8cfab6 (Cleaned up the templates a little)
 import os
 import yaml
 
@@ -77,7 +73,7 @@ def compile_templates(parsed_models: dict[str, dict]) -> list[TemplateOutputFile
     """
 
     # ensure model is present and valid, get the plugin name
-    plugin_models = util.getModelsByType(parsed_models, "model")
+    plugin_models = util.get_models_by_type(parsed_models, "model")
     if len(plugin_models.keys()) != 1:
         raise GeneratePluginException(
             "Plugin Arch-as-Code yaml must contain one and only one model."
@@ -201,8 +197,8 @@ def gather_commands(behaviors: dict) -> list[dict]:
 
 def gather_extensions(parsed_models: dict[str, dict]) -> list[dict]:
     """ """
-    extension_definitions = list(util.getModelsByType(parsed_models, "ext").values())
-    data_definitions = list(util.getModelsByType(parsed_models, "data").values())
+    extension_definitions = list(util.get_models_by_type(parsed_models, "ext").values())
+    data_definitions = list(util.get_models_by_type(parsed_models, "data").values())
 
     return extension_definitions + data_definitions
 

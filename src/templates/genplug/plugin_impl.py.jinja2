@@ -9,16 +9,23 @@ plugin_version = "0.0.1"
 
 def {{ command.implementation_name }}({% for command_input in command.input -%}{{ comma_joiner() }}{{ command_input.name }}: {{ command_input.type }}{%- endfor %}):
     """
-    {% if command.description -%}
+    {% if command.description is defined -%}
     {{command.description}}
     {%- else -%}
     TODO: Write a description
     {%- endif %}
     {%- if command.input is defined %}
 
-    {% for command_input in command.input -%}
-    :param {{command_input.name}}: TODO add a helpful parameter description
-    :type  {{command_input.name}}: {{command_input.type}}
+    Args:
+    {%- for command_input in command.input %}
+        {{command_input.name}} <{{command_input.type}}>: TODO add a helpful parameter description
+    {%- endfor %}
+    {%- endif %}
+    {%- if command.output is defined %}
+
+    Returns:
+    {%- for command_output in command.output %}
+        {{command_output.name}} <{{command_output.type}}>: TODO add a helpful parameter description
     {% endfor -%}
     {%- endif -%}
     """

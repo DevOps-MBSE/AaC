@@ -20,12 +20,8 @@ def run_cli():
 
     pm = _get_plugin_manager()
 
-    # register "built-in" plugins
-    pm.register(genjson)
-    pm.register(genplug)
-
-    argParser = argparse.ArgumentParser()
-    command_parser = argParser.add_subparsers(dest="command")
+    arg_parser = argparse.ArgumentParser()
+    command_parser = arg_parser.add_subparsers(dest="command")
     # the validate command is built-in
     command_parser.add_parser(
         "validate", help="Ensures the AaC yaml is valid per the AaC core spec"
@@ -48,9 +44,9 @@ def run_cli():
             parsed = parser.parse_str(plugin_ext, "Plugin Manager Addition", True)
             util.extend_aac_spec(parsed)
 
-    argparse.add_argument("yaml", type=str, help="The path to your AaC yaml")
+    arg_parser.add_argument("yaml", type=str, help="The path to your AaC yaml")
 
-    args = argparse.parse_args()
+    args = arg_parser.parse_args()
 
     # this command is special, it shouldn't need any additional inputs
     if args.command == "aac-core-spec":
@@ -60,7 +56,7 @@ def run_cli():
     model_file = args.yaml
     if not os.path.isfile(model_file):
         print(f"{model_file} does not exist")
-        argparse.print_usage()
+        arg_parser.print_usage()
         sys.exit()
 
     parsed_models = {}
