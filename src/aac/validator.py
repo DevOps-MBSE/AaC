@@ -25,12 +25,12 @@ def get_all_errors(model: dict) -> list:
 
 
 def get_all_parsing_errors(model: dict) -> list:
-    errors = []
+    """Return all parsing errors for the MODEL.
 
-    if len(model.keys()) > 1:
-        errors.append("YAML file has multiple roots defined")
-
-    return errors
+    :return: Return a list of general parsing errors for the MODEL. If the MODEL is valid, return
+    an empty list.
+    """
+    return []
 
 
 def get_all_enum_errors(model: dict) -> list:

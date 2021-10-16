@@ -44,9 +44,6 @@ def assert_model_is_invalid(model, error_pattern):
 
 
 class ValidatorTest(TestCase):
-    def test_general_validation_errors(self):
-        assert_model_is_invalid({"a": 1, "b": 2}, ".*multiple.*roots.*")
-
     def test_can_validate_enums(self):
         def enum(name=None, values=None):
             enum = {}
