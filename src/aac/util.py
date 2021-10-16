@@ -95,7 +95,7 @@ def search(model: dict[str, Any], search_keys: list[str]) -> list:
     # it isn't the final key and the value is a list, so search each value
     if not done and isinstance(model_value, list):
         for model_item in model_value:
-            # print(model_item)
+
             if isinstance(model_item, dict):
                 ret_val = ret_val + (search(model_item, keys))
             else:
