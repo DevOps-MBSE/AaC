@@ -24,10 +24,11 @@ def get_commands() -> list[AacCommand]:
     ]
 
     return plugin_commands
-
-{% if extensions | length > 0 %}
+{%- if extensions | length > 0 -%}
 {# Leave a blank line here since we want 2 space if the expression is true and one if it's false#}
-{%- set yaml_file_joiner = joiner("\n---\n") -%}
+{%- set yaml_file_joiner = joiner("\n---\n") %}
+
+
 @aac.hookimpl
 def get_base_model_extensions() -> str:
     """
@@ -43,4 +44,5 @@ PLUGIN_EXTENSION_YAML = """
 {{yaml_file_joiner()}}{{extension.yaml}}
 {%- endfor %}
 """
-{% endif %}
+{%- endif %}
+
