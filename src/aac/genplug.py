@@ -98,7 +98,7 @@ def compile_templates(parsed_models: dict[str, dict]) -> list[TemplateOutputFile
 
     plugin_model = list(plugin_models.values())[0].get("model")
     plugin_name = plugin_model.get("name")
-    plugin_implementation_name = get_implementation_name(plugin_name)
+    plugin_implementation_name = _convert_to_implementation_name(plugin_name)
 
     # Ensure that the plugin name has package name prepended to it
     if not plugin_name.startswith(__package__):
@@ -234,7 +234,7 @@ def _gather_commands(behaviors: dict) -> list[dict]:
             behavior_description = f"{behavior_description}."
 
         behavior["description"] = behavior_description
-        behavior["implementation_name"] = get_implementation_name(behavior_name)
+        behavior["implementation_name"] = _convert_to_implementation_name(behavior_name)
         commands.append(behavior)
 
     return commands
@@ -292,5 +292,5 @@ def write_file(path: str, file_name: str, overwrite: bool, content: str) -> None
         file.close()
 
 
-def get_implementation_name(original_name: str) -> str:
+def _convert_to_implementation_name(original_name: str) -> str:
     return original_name.replace("-", "_")
