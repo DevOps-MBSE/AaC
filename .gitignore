@@ -149,3 +149,4 @@ cython_debug/
 .dir-locals.el
 
 html_code_coverage
+*.tmp
