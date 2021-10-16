@@ -10,7 +10,7 @@ from aac import util
 def is_valid(model: dict) -> bool:
     """Check if MODEL is valid per the AaC DSL.
 
-    :return: Return True if MODEL is valid; False, otherwise.
+    Return True if MODEL is valid; False, otherwise.
     """
     return len(get_all_errors(model)) == 0
 
@@ -18,8 +18,8 @@ def is_valid(model: dict) -> bool:
 def get_all_errors(model: dict) -> list:
     """Return all validation errors for MODEL.
 
-    :return: Return a list of all the validation errors found for MODEL. If the MODEL is valid,
-    return an empty list.
+    Return a list of all the validation errors found for MODEL. If the MODEL is
+    valid, return an empty list.
     """
     return get_all_parsing_errors(model) + get_all_enum_errors(model) + get_all_data_errors(model)
 
@@ -27,8 +27,8 @@ def get_all_errors(model: dict) -> list:
 def get_all_parsing_errors(model: dict) -> list:
     """Return all parsing errors for the MODEL.
 
-    :return: Return a list of general parsing errors for the MODEL. If the MODEL is valid, return
-    an empty list.
+    Return a list of general parsing errors for the MODEL. If the MODEL is valid,
+    return an empty list.
     """
     return []
 
@@ -36,8 +36,8 @@ def get_all_parsing_errors(model: dict) -> list:
 def get_all_enum_errors(model: dict) -> list:
     """Return all validation errors for the enumeration MODEL.
 
-    :return: Return a list of all the validation errors found for the enumeration MODEL. If the
-    enumeration MODEL is valid, return an empty list.
+    Return a list of all the validation errors found for the enumeration MODEL.
+    If the enumeration MODEL is valid, return an empty list.
     """
     if not is_enum_model(model):
         return []
@@ -58,11 +58,11 @@ def is_enum_model(model: dict) -> bool:
 
 
 def get_all_errors_if_missing_required_properties(model: dict, required: list) -> iter:
-    """Get error messages if the model is missing any of the specifed required properties.
+    """Get error messages if the model is missing required properties.
 
-    Return an iterable object containing any error messages for all REQUIRED properties that are
-    not present in the MODEL. If the MODEL has all of the required properties, the returned
-    collection will be empty.
+    Return an iterable object containing any error messages for all REQUIRED
+    properties that are not present in the MODEL. If the MODEL has all of the
+    required properties, the returned collection will be empty.
     """
 
     def get_error(model, key):
@@ -77,11 +77,12 @@ def get_all_errors_if_missing_required_properties(model: dict, required: list) -
 
 
 def get_all_errors_if_properties_have_wrong_type(model: dict, required: list, types: list) -> iter:
-    """Get error messages if the model defines required properties of the wrong type.
+    """Get error messages if the model has required properties of the wrong type.
 
-    Return an iterable object containing any error messages for all REQUIRED properties that are
-    not the permitted type in the MODEL. If the MODEL's required properties are all of the correct
-    type, the returned collection will be empty.
+    Return an iterable object containing any error messages for all REQUIRED
+    properties that are not the permitted type in the MODEL. If the MODEL's
+    required properties are all of the correct type, the returned collection
+    will be empty.
     """
 
     def get_error(model, key, instance):
@@ -103,8 +104,8 @@ def filter_out_empty_strings(*xs: list) -> list:
 def get_all_data_errors(model: dict) -> list:
     """Return all validation errors for the data MODEL.
 
-    Return a list of all the validation errors found for the data MODEL. If the data MODEL is
-    valid, return an empty list.
+    Return a list of all the validation errors found for the data MODEL. If the
+    data MODEL is valid, return an empty list.
     """
     if not is_data_model(model):
         return []
