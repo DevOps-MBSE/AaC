@@ -1,11 +1,15 @@
+<<<<<<< HEAD
 """
 A plugin to generate new plugins based on a specifically structured AaC model file.
 The plugin AaC model must define behaviors using the command BehaviorType.  Each
 defined behavior becomes a new command for the aac CLI.
 """
+=======
+"""Built-in plugin used to provide plugin generation commands and capabilities."""
+import attr
+>>>>>>> f8cfab6 (Cleaned up the templates a little)
 import os
 import yaml
-from jinja2 import Template
 
 from aac import util, hookimpl
 from aac.AacCommand import AacCommand
@@ -38,6 +42,21 @@ ext:
 """
 
 
+class GeneratePluginException(Exception):
+    """Exceptions specifically concerning plugin generation."""
+
+    pass
+
+
+@attr.s
+class TemplateOutputFile:
+    """Class containing all of the relevant information necessary to handle writing templates to files."""
+
+    file_name = attr.ib()
+    template = attr.ib()
+    overwrite = attr.ib()
+
+
 def generate_plugin(arch_file: str, parsed_model: dict) -> None:
     """Entrypoint command to generate the plugin."""
     plug_dir = os.path.dirname(os.path.realpath(arch_file))
@@ -50,7 +69,7 @@ def generate_plugin(arch_file: str, parsed_model: dict) -> None:
         print(f"gen-plugin error [{arch_file}]:  {exception}.")
 
 
-def compile_templates(parsed_models: dict[str, dict]) -> dict[str, str]:
+def compile_templates(parsed_models: dict[str, dict]) -> list[TemplateOutputFile]:
     """
     Parse the model and generate the plugin template accordingly.
 
@@ -89,22 +108,30 @@ def compile_templates(parsed_models: dict[str, dict]) -> dict[str, str]:
     template_properties = {"plugin": plugin, "commands": commands, "extensions": extensions}
     generated_templates = generate_templates(plugin_templates, template_properties)
 
+    # Define which templates we want to overwrite.
+    templates_to_overwrite = ["plugin.py.jinja2", "setup.py.jinja2"]
+
     # Combine the generated templates into a map of file_name: file_contents
-    files_to_write = {}
+    files_to_write = []
     for template_name, template_content in generated_templates.items():
-        files_to_write[
-            convert_template_name_to_file_name(template_name, plugin_implementation_name)
-        ] = template_content
+        file_name = convert_template_name_to_file_name(template_name, plugin_implementation_name)
+        overwrite = template_name in templates_to_overwrite
+
+        files_to_write.append(TemplateOutputFile(file_name, template_content, overwrite))
 
     return files_to_write
 
 
-def write_generated_templates_to_file(templates: list[str, str], plug_dir: str) -> None:
+def write_generated_templates_to_file(templates: list[TemplateOutputFile], plug_dir: str) -> None:
     """ """
-    pass
-    # for template_name, template_content in templates:
-    # print(template_content)
-    # write_file(plug_dir, file_name, overwrite, template_content)
+
+    for template_output_file in templates:
+        write_file(
+            plug_dir,
+            template_output_file.file_name,
+            template_output_file.overwrite,
+            template_output_file.template,
+        )
 
 
 def convert_template_name_to_file_name(template_name: str, plugin_name: str) -> str:
@@ -114,12 +141,12 @@ def convert_template_name_to_file_name(template_name: str, plugin_name: str) -> 
 
     #  Strip anything after the .py ending
     strip_index = template_name.index(assumed_file_extension) + len(assumed_file_extension)
-    filename = template_name[:strip_index]
+    file_name = template_name[:strip_index]
 
     # Replace "plugin" with the plugin name
-    filename = filename.replace("plugin", plugin_name)
+    file_name = file_name.replace("plugin", plugin_name)
 
-    return filename
+    return file_name
 
 
 def is_user_desired_output_directory(arch_file: str, plug_dir: str) -> bool:
@@ -219,9 +246,3 @@ def write_file(path: str, file_name: str, overwrite: bool, content: str):
 
 def get_implementation_name(original_name: str) -> str:
     return original_name.replace("-", "_")
-
-
-class GeneratePluginException(Exception):
-    """Exceptions specifically concerning plugin generation"""
-
-    pass
