@@ -12,5 +12,7 @@ vscode:
     - editorconfig.editorconfig
     - ms-python.python
 
+    - samuelcolvin.jinjahtml
+
 image:
   file: .gitpod.Dockerfile

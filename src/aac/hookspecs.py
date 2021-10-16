@@ -1,19 +1,21 @@
-"""
-Defines the AaC plugin interface
-"""
-from aac import hookspec
-from aac.AacCommand import AacCommand
+"""Defines the AaC plugin interface via Pluggy Hookspecs."""
+
+from aac import hookspec, AacCommand
 
 
 @hookspec
 def get_commands() -> list[AacCommand]:
-    '''
-    Gets a list of AacCommand to register for use
-    '''
+    """
+    Return a list of AacCommands provided by the plugin to register for use.
+
+    :returns: list of AacCommands
+    """
 
 
 @hookspec
 def get_base_model_extensions() -> str:
-    '''
-    Gets data and ext definitions to apply to the AaC base.
-    '''
+    """
+    Return data and ext definitions to apply to the AaC base.
+
+    :returns: string representing yaml extensions and data definitions employed by the plugin
+    """
