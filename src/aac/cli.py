@@ -63,8 +63,8 @@ def run_cli():
 def _setup_arg_parser(
     plugin_manager: PluginManager,
 ) -> tuple[argparse.ArgumentParser, list[Callable]]:
-    _arg_parser = argparse.ArgumentParser()
-    command_parser = _arg_parser.add_subparsers(dest="command")
+    arg_parser = argparse.ArgumentParser()
+    command_parser = arg_parser.add_subparsers(dest="command")
     # the validate command is built-in
     command_parser.add_parser(
         "validate", help="Ensures the AaC yaml is valid per the AaC core spec"
@@ -78,7 +78,7 @@ def _setup_arg_parser(
     aac_plugin_commands = list(itertools.chain(*results))
     for cmd in aac_plugin_commands:
         command_parser.add_parser(cmd.command_name, help=cmd.command_description)
-    return _arg_parser, aac_plugin_commands
+    return arg_parser, aac_plugin_commands
 
 
 def _get_plugin_manager():
