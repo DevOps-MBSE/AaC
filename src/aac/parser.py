@@ -4,7 +4,9 @@ the caller with a dictionary of the content keyed by the named type.  This allow
 to find a certain type in a model by just looking for that key.
 """
 import os
+
 import yaml
+
 from aac import validator
 
 
@@ -26,11 +28,11 @@ def parse_file(arch_file: str, validate: bool = True) -> dict[str, dict]:
         parsed_models = parsed_models | parse_str(contents, arch_file, False)
 
     if validate:
-        isValid, errMsg = validator.validate(parsed_models)
+        error_messages = validator.get_all_errors(parsed_models)
 
-        if not isValid:
-            print("Failed to validate {}: {}".format(arch_file, errMsg))
-            raise RuntimeError("Failed to validate {}".format(arch_file), errMsg)
+        if error_messages:
+            print("Failed to validate {}: {}".format(arch_file, error_messages))
+            raise RuntimeError("Failed to validate {}".format(arch_file), error_messages)
 
     return parsed_models
 
@@ -58,11 +60,11 @@ def parse_str(model_content: str, source: str, validate: bool = True) -> dict[st
         parsed_models[root[root_name]["name"]] = root
 
     if validate:
-        isValid, errMsg = validator.validate(parsed_models)
+        error_messages = validator.get_all_errors(parsed_models)
 
-        if not isValid:
-            print("Failed to validate {}: {}".format(source, errMsg))
-            raise RuntimeError("Failed to validate {}".format(source), errMsg)
+        if error_messages:
+            print("Failed to validate {}: {}".format(source, error_messages))
+            raise RuntimeError("Failed to validate {}".format(source), error_messages)
 
     return parsed_models
 
