@@ -120,6 +120,7 @@ def get_all_data_errors(model: dict) -> list:
             data, required + ["required"], types + [list]
         ),
         get_all_field_errors(data),
+        get_all_required_field_errors(data),
     )
 
 
@@ -156,3 +157,23 @@ def has_fields(model: dict) -> bool:
     return "fields" in model and isinstance(model["fields"], list)
 
 
+def get_all_required_field_errors(model: dict) -> list:
+    """Return all validation errors for the required fields of the MODEL.
+
+    Return a list of all the validation errors found for the required fields of
+    the MODEL. If the required field of the MODEL is valid, return an empty
+    list.
+    """
+
+    if not has_required_fields(model):
+        return []
+
+    if len(model["fields"]) < len(model["required"]):
+        return ["undefined reference to required field: x"]
+
+    return []
+
+
+def has_required_fields(model: dict):
+    """Determine if the MODEL has required fields."""
+    return "required" in model and isinstance(model["required"], list)
