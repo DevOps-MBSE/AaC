@@ -1,3 +1,7 @@
+"""
+Validate a model per the AaC DSL.
+"""
+
 from iteration_utilities import flatten
 
 from aac import util
