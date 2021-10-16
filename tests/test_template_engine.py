@@ -18,20 +18,23 @@ class TestTemplateEngine(TestCase):
 
         self.assertEqual(expected_string, actual_string)
 
-    def test_generate_template(self):
-        templates = template_engine.load_templates("genplug")
-        properties = {
-            "plugin": {"name": "test"},
-            "commands": [
-                {
-                    "name": "test-command",
-                    "description": "Some long test command description for my test function.",
-                    "input": [{"name": "input1", "type": "str"}],
-                }
-            ],
-        }
-        templatesStr = template_engine.generate_templates(templates, properties)
-        for stri in templatesStr:
-            print(f"----- {stri} -----")
-            print(templatesStr.get(stri))
-            print()
+    def test_generate_templates(self):
+        expected_strings = [
+            "my first name is John and my last name is Doe",
+            "my last name is Doe and my first name is John",
+        ]
+
+        templates = [
+            Template("my first name is {{name.first}} and my last name is {{name.last}}"),
+            Template("my last name is {{name.last}} and my first name is {{name.first}}"),
+        ]
+
+        for i in range(len(templates)):
+            templates[i].name = f"template{i}"
+
+        properties = {"name": {"first": "John", "last": "Doe"}}
+
+        actual_strings = template_engine.generate_templates(templates, properties)
+
+        self.assertEqual(expected_strings[0], actual_strings.get(templates[0].name))
+        self.assertEqual(expected_strings[1], actual_strings.get(templates[1].name))

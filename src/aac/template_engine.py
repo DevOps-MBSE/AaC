@@ -26,17 +26,16 @@ def load_templates(group_dir_name: str) -> list[Template]:
 
 def generate_templates(templates: list[Template], properties: dict[str, str]) -> dict[str, str]:
     """ """
-    rendered_tempates = {}
-
+    generated_templates = {}
     for template in templates:
-        rendered_tempates[template.name] = generate_template(template, properties)
+        template_id = template.name
+        generated_templates[template_id] = generate_template(template, properties)
 
-    return rendered_tempates
+    return generated_templates
 
 
 def generate_template(template: Template, properties: dict[str, str]) -> str:
     """ """
-
     return template.render(properties)
 
 

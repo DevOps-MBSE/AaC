@@ -9,18 +9,21 @@ from aac_spec_impl import spec_validate
 @aac.hookimpl
 def get_commands():
     ret_val = []
-    ret_val.append(AacCommand(
-        "spec-validate",
-        '''
+    ret_val.append(
+        AacCommand(
+            "spec-validate",
+            """
         Validates spec traces within the AaC model
-        ''', spec_validate)
+        """,
+            spec_validate,
+        )
     )
     return ret_val
 
 
 @aac.hookimpl
 def get_base_model_extensions() -> str:
-    return '''
+    return """
 data:
   fields:
   - name: name
@@ -86,5 +89,4 @@ ext:
       type: Specification
   name: addSpecificationToRoot
   type: root
-
-'''
+"""
