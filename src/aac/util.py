@@ -1,6 +1,6 @@
 """Arch-as-Code helper utilities to simplify development.
 
-The aac.util module provides some functionallity discovered to be valuable
+The aac.util module provides some functionality discovered to be valuable
 during the development of aac.  By placing this behavior in a utility
 module we prevent code duplication and simplify maintenance.
 
@@ -113,7 +113,9 @@ def search(model: dict[str, Any], search_keys: list[str]) -> list:
 
 def get_aac_spec() -> tuple[dict[str, dict], dict[str, dict]]:
     """
-    Gets the specification for Architecture-as-Code itself.  The AaC model specification is
+    Get the specification for Architecture-as-Code itself.
+
+    The AaC model specification is
     defined as an AaC model and is needed for model validation.
 
     Returns:
@@ -181,8 +183,8 @@ def extend_aac_spec(parsed_model: dict[str, dict]):
     global AAC_MODEL
 
     apply_me = parsed_model.copy()
-    exts = get_models_by_type(apply_me, "ext")
-    for ext_type in exts:
+    extensions = get_models_by_type(apply_me, "ext")
+    for ext_type in extensions:
         del apply_me[ext_type]
     AAC_MODEL = AAC_MODEL | apply_me
 

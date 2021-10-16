@@ -14,7 +14,8 @@ def get_commands() -> list[AacCommand]:
 
     This function is automatically generated. Do not edit.
 
-    :returns: list of AacCommands
+    Returns:
+        list of AacCommands
     """
     plugin_commands = [
         AacCommand("spec-validate", "Validates spec traces within the AaC model.", spec_validate),
@@ -28,7 +29,8 @@ def get_base_model_extensions() -> str:
     """
     Return data and ext definitions to apply to the AaC base.
 
-    :returns: string representing yaml extensions and data definitions employed by the plugin
+    Returns:
+        string representing yaml extensions and data definitions employed by the plugin
     """
     return PLUGIN_EXTENSION_YAML
 

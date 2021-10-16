@@ -14,7 +14,8 @@ def get_commands() -> list[AacCommand]:
 
     This function is automatically generated. Do not edit.
 
-    :returns: list of AacCommands
+    Returns:
+        list of AacCommands
     """
     plugin_commands = [
         AacCommand("puml-component", "Converts an AaC model to Plant ULM component diagram.", puml_component),
