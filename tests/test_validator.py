@@ -51,16 +51,16 @@ class ValidatorTest(TestCase):
                 enum["name"] = name
             if values is not None:
                 enum["values"] = values
-            return {"enum": enum}
+            return {(name or "root"): {"enum": enum}}
 
         assert_model_is_valid(enum(name="test", values=[]))
         assert_model_is_valid(enum(name="test", values=["a"]))
         assert_model_is_valid(enum(name="test", values=["a", "b"]))
 
-        assert_model_is_invalid(enum(), ".*missing.*required.*(name|values).*")
-        assert_model_is_invalid(enum(name="test"), ".*missing.*required.*values.*")
-        assert_model_is_invalid(enum(values=[]), ".*missing.*required.*name.*")
-        assert_model_is_invalid(enum(name=1, values=2), ".*wrong.*type.*(name|values).*")
+        assert_model_is_invalid(enum(), "missing.*required.*(name|values)")
+        assert_model_is_invalid(enum(name="test"), "missing.*required.*values")
+        assert_model_is_invalid(enum(values=[]), "missing.*required.*name")
+        assert_model_is_invalid(enum(name=1, values=2), "wrong.*type.*(name|values)")
 
     def test_can_validate_data(self):
         def field(name=None, type=None):
@@ -79,7 +79,7 @@ class ValidatorTest(TestCase):
                 data["fields"] = fields
             if required is not None:
                 data["required"] = required
-            return {"data": data}
+            return {(name or "root"): {"data": data}}
 
         one_field = [field(name="x", type="int")]
         two_fields = one_field + [field(name="y", type="int")]
@@ -93,11 +93,11 @@ class ValidatorTest(TestCase):
         assert_model_is_valid(data(name="test", fields=two_fields, required=["x"]))
         assert_model_is_valid(data(name="test", fields=two_fields, required=["x", "y"]))
 
-        assert_model_is_invalid(data(), ".*missing.*required.*(name|fields).*")
-        assert_model_is_invalid(data(name="test"), ".*missing.*required.*fields.*")
-        assert_model_is_invalid(data(fields=[]), ".*missing.*required.*name.*")
+        assert_model_is_invalid(data(), "missing.*required.*(name|fields)")
+        assert_model_is_invalid(data(name="test"), "missing.*required.*fields")
+        assert_model_is_invalid(data(fields=[]), "missing.*required.*name")
 
-        assert_model_is_invalid(data(name=1, fields=2), ".*wrong.*type.*(name|fields).*")
+        assert_model_is_invalid(data(name=1, fields=2), "wrong.*type.*(name|fields)")
         assert_model_is_invalid(
-            data(name=1, fields=2, required=3), ".*wrong.*type.*(name|fields|required).*"
+            data(name=1, fields=2, required=3), "wrong.*type.*(name|fields|required)"
         )

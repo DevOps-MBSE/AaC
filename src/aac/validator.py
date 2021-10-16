@@ -43,19 +43,13 @@ def get_all_enum_errors(model: dict) -> list:
         return []
 
     enum = model["enum"]
-    required_properties = ["name", "values"]
-    property_types = [str, list]
+    required = ["name", "values"]
+    types = [str, list]
 
-    property_errors = map(
-        lambda p: get_error_if_missing_required_property(enum, p), required_properties
+    return filter_out_empty_strings(
+        get_all_errors_if_missing_required_properties(enum, required),
+        get_all_errors_if_properties_have_wrong_type(enum, required, types),
     )
-    type_errors = map(
-        lambda p, t: get_error_if_property_has_wrong_type(enum, p, t),
-        required_properties,
-        property_types,
-    )
-
-    return filter_out_empty_strings(property_errors, type_errors)
 
 
 def is_enum_model(model: dict) -> bool:
@@ -63,18 +57,42 @@ def is_enum_model(model: dict) -> bool:
     return "enum" in model
 
 
-def get_error_if_missing_required_property(model: dict, key: str) -> str:
-    """Return an error message if the model is missing the specifed property."""
-    if key not in model.keys():
-        return 'missing required field property: "{}"'.format(key)
-    return ""
+def get_all_errors_if_missing_required_properties(model: dict, required: list) -> iter:
+    """Get error messages if the model is missing any of the specifed required properties.
+
+    Return an iterable object containing any error messages for all REQUIRED properties that are
+    not present in the MODEL. If the MODEL has all of the required properties, the returned
+    collection will be empty.
+    """
+
+    def get_error(model, key):
+        if key not in model.keys():
+            return 'missing required field property: "{}"'.format(key)
+        return ""
+
+    def get_error_if_missing_required_property(key):
+        return get_error(model, key)
+
+    return map(get_error_if_missing_required_property, required)
 
 
-def get_error_if_property_has_wrong_type(model: dict, key: str, instance: type) -> str:
-    """Return an error message if the model property is of the wrong type."""
-    if key in model.keys() and not isinstance(model[key], instance):
-        return 'wrong type for field property: "{}"'.format(key)
-    return ""
+def get_all_errors_if_properties_have_wrong_type(model: dict, required: list, types: list) -> iter:
+    """Get error messages if the model defines required properties of the wrong type.
+
+    Return an iterable object containing any error messages for all REQUIRED properties that are
+    not the permitted type in the MODEL. If the MODEL's required properties are all of the correct
+    type, the returned collection will be empty.
+    """
+
+    def get_error(model, key, instance):
+        if key in model.keys() and not isinstance(model[key], instance):
+            return 'wrong type for field property: "{}"'.format(key)
+        return ""
+
+    def get_error_if_property_has_wrong_type(key, instance):
+        return get_error(model, key, instance)
+
+    return map(get_error_if_property_has_wrong_type, required, types)
 
 
 def filter_out_empty_strings(*xs: list) -> list:
@@ -85,26 +103,22 @@ def filter_out_empty_strings(*xs: list) -> list:
 def get_all_data_errors(model: dict) -> list:
     """Return all validation errors for the data MODEL.
 
-    :return: Return a list of all the validation errors found for the data MODEL. If the data MODEL
-    is valid, return an empty list.
+    Return a list of all the validation errors found for the data MODEL. If the data MODEL is
+    valid, return an empty list.
     """
     if not is_data_model(model):
         return []
 
     data = model["data"]
-    required_properties = ["name", "fields"]
-    property_types = [str, list]
+    required = ["name", "fields"]
+    types = [str, list]
 
-    property_errors = map(
-        lambda p: get_error_if_missing_required_property(data, p), required_properties
+    return filter_out_empty_strings(
+        get_all_errors_if_missing_required_properties(data, required),
+        get_all_errors_if_properties_have_wrong_type(
+            data, required + ["required"], types + [list]
+        ),
     )
-    type_errors = map(
-        lambda p, t: get_error_if_property_has_wrong_type(data, p, t),
-        required_properties + ["required"],
-        property_types + [list],
-    )
-
-    return filter_out_empty_strings(property_errors, type_errors)
 
 
 def is_data_model(model: dict) -> bool:
