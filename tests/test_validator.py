@@ -106,3 +106,6 @@ class ValidatorTest(TestCase):
         )
 
         assert_model_is_invalid(data(name="test", fields=[], required=["x"]), "reference.*x")
+        assert_model_is_invalid(
+            data(name="test", fields=one_field, required=["y"]), "reference.*y"
+        )

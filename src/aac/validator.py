@@ -168,10 +168,12 @@ def get_all_required_field_errors(model: dict) -> list:
     if not has_required_fields(model):
         return []
 
-    if len(model["fields"]) < len(model["required"]):
-        return ["undefined reference to required field: x"]
+    def get_required_field_error(required):
+        if required not in map(lambda f: f["name"], model["fields"]):
+            return "reference to undefined required field: {}".format(required)
+        return ""
 
-    return []
+    return filter_out_empty_strings(map(get_required_field_error, model["required"]))
 
 
 def has_required_fields(model: dict):
