@@ -31,8 +31,7 @@ def parse_file(arch_file: str, validate: bool = True) -> dict[str, dict]:
         error_messages = validator.get_all_errors(parsed_models)
 
         if error_messages:
-            print("Failed to validate {}: {}".format(arch_file, error_messages))
-            raise RuntimeError("Failed to validate {}".format(arch_file), error_messages)
+            raise RuntimeError(arch_file, error_messages)
 
     return parsed_models
 
@@ -63,8 +62,7 @@ def parse_str(model_content: str, source: str, validate: bool = True) -> dict[st
         error_messages = validator.get_all_errors(parsed_models)
 
         if error_messages:
-            print("Failed to validate {}: {}".format(source, error_messages))
-            raise RuntimeError("Failed to validate {}".format(source), error_messages)
+            raise RuntimeError(source, error_messages)
 
     return parsed_models
 
