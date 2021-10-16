@@ -178,12 +178,21 @@ def gather_commands(behaviors: dict) -> list[dict]:
         behavior_name = behavior["name"]
         behavior_description = behavior["description"]
         behavior_type = behavior["type"]
+
         if behavior_type != "command":
             continue
+
         if behavior_description.startswith("'"):
             behavior_description = behavior_description[1:]
+
         if behavior_description.endswith("'"):
             behavior_description = behavior_description[:-1]
+
+        # First line should end with a period. flake8(D400)
+        if not behavior_description.endswith("."):
+            behavior_description = f"{behavior_description}."
+
+        behavior["description"] = behavior_description
         behavior["implementation_name"] = get_implementation_name(behavior_name)
         commands.append(behavior)
 
