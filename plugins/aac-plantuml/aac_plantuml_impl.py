@@ -10,16 +10,16 @@ def puml_component(parsed_model: dict):
     """
     Converts an AaC model to Plant ULM component diagram.
 
-    :param parsed_model: Dict obj representing a yaml plugin model
-    :type  parsed_model: dict
+    Args:
+        parsed_model <dict>: Dict obj representing a yaml plugin model
     """
 
     model_types = util.get_models_by_type(parsed_model, "model")
 
     puml_lines = []
     puml_lines.append("@startuml")
-    for root_model_name in find_root_names(model_types):
-        print_component_content(model_types[root_model_name], [], puml_lines, model_types)
+    for root_model_name in _find_root_names(model_types):
+        _print_component_content(model_types[root_model_name], [], puml_lines, model_types)
     puml_lines.append("@enduml")
 
     model_text = ""
@@ -32,15 +32,15 @@ def puml_sequence(parsed_model: dict):
     """
     Converts an AaC usecase to Plant ULM sequence diagram.
 
-    :param parsed_model: Dict obj representing a yaml plugin model
-    :type  parsed_model: dict
+    Args:
+        parsed_model <dict>: Dict obj representing a yaml plugin model
     """
 
     use_case_types = util.get_models_by_type(parsed_model, "usecase")
 
     puml_lines = []
 
-    for use_case_title in find_root_names(use_case_types):
+    for use_case_title in _find_root_names(use_case_types):
         # start the uml
         puml_lines.append("@startuml")
 
@@ -77,8 +77,8 @@ def puml_object(parsed_model: dict):
     """
     Converts an AaC model to Plant ULM object diagram.
 
-    :param parsed_model: Dict obj representing a yaml plugin model
-    :type  parsed_model: dict
+    Args:
+        parsed_model <dict>: Dict obj representing a yaml plugin model
     """
 
     model_types = util.get_models_by_type(parsed_model, "model")
@@ -111,7 +111,7 @@ def puml_object(parsed_model: dict):
     print(model_text)
 
 
-def find_root_names(models):
+def _find_root_names(models):
 
     model_names = list(models.keys())
 
@@ -119,7 +119,7 @@ def find_root_names(models):
         return model_names
 
     # there are multiple models, so we have to look through them
-    subs = []  # names of subconponent models
+    subs = []  # names of subcomponent models
     for name in model_names:
         model = models[name]
         components = util.search(model, ["model", "components"])
@@ -136,7 +136,7 @@ def find_root_names(models):
     return res
 
 
-def print_component_content(root, existing, puml_lines, model_types):
+def _print_component_content(root, existing, puml_lines, model_types):
 
     model_name = root["model"]["name"]
 
@@ -164,7 +164,9 @@ def print_component_content(root, existing, puml_lines, model_types):
         for component in components:
             # component is a Field type
             component_type = component["type"]
-            print_component_content(model_types[component_type], existing, puml_lines, model_types)
+            _print_component_content(
+                model_types[component_type], existing, puml_lines, model_types
+            )
 
         puml_lines.append("}")
     else:

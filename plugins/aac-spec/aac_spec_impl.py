@@ -9,10 +9,9 @@ def spec_validate(architecture_file: str, parsed_model: dict):
     """
     Validates spec traces within the AaC model.
 
-    :param architecture_file: Path to the architecture_file
-    :type  architecture_file: str
-    :param parsed_model: Dict obj representing a yaml plugin model
-    :type  parsed_model: map
+    Args:
+        architecture_file <str>: Path to the architecture_file
+        parsed_model <dict>: Dict obj representing a yaml plugin model
     """
 
     # TODO add implementation here
