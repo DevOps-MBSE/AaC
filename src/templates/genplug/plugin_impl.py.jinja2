@@ -17,10 +17,10 @@ def {{ command.implementation_name }}({% for command_input in command.input -%}{
     {%- if command.input is defined %}
 
     {% for command_input in command.input -%}
-    :param {{command_input.name}} TODO add a helpful parameter description
-    :type {{command_input.type}}
-    {%- endfor %}
-    {%- endif %}
+    :param {{command_input.name}}: TODO add a helpful parameter description
+    :type  {{command_input.name}}: {{command_input.type}}
+    {% endfor -%}
+    {%- endif -%}
     """
 
     # TODO add implementation here
