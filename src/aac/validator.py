@@ -177,10 +177,10 @@ def get_all_required_field_errors(model: dict) -> list:
 
 
 def get_all_usecase_errors(model: dict) -> list:
-    """Return all parsing errors for the MODEL.
+    """Return all validation errors for the usecase MODEL.
 
-    Return a list of general parsing errors for the MODEL. If the MODEL is valid,
-    return an empty list.
+    Return a list of all the validation errors found for the usecase MODEL. If
+    the usecase MODEL is valid, return an empty list.
     """
 
     def is_usecase(model):
