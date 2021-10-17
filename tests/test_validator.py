@@ -151,12 +151,23 @@ class ValidatorTest(TestCase):
             usecase(name="test", participants=[kw(name=1, type=2)], steps=[]),
             "wrong.*type.*field.*(name|type)",
         )
-        # Note: `if' and `else' are not included in this test since they are python keywords
         assert_model_is_invalid(
             usecase(
                 name="test",
                 participants=[],
-                steps=[kw(step=1, source=2, target=3, action=4, loop=7)],
+                steps=[
+                    kw(
+                        **{
+                            "step": 1,
+                            "source": 2,
+                            "target": 3,
+                            "action": 4,
+                            "if": 5,
+                            "else": 6,
+                            "loop": 7,
+                        }
+                    )
+                ],
             ),
-            "wrong.*type.*field.*(step|source|target|action|loop)",
+            "wrong.*type.*field.*(step|source|target|action|if|else|loop)",
         )
