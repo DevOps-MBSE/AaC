@@ -98,3 +98,24 @@ class ValidatorTest(TestCase):
         assert_model_is_invalid(
             data(name="test", fields=two_fields, required=["z"]), "reference.*undefined.*z"
         )
+
+    def test_can_validate_usecase(self):
+        one = [kw(name="x", type="X")]
+        two = one + [kw(name="y", type="Y")]
+
+        usecase = lambda **kwargs: o("usecase", **kwargs)
+        assert_model_is_valid(usecase(name="test", participants=[], steps=[]))
+        assert_model_is_valid(usecase(name="test", participants=one, steps=[]))
+        assert_model_is_valid(usecase(name="test", participants=two, steps=[]))
+        assert_model_is_valid(usecase(name="test", participants=[], steps=one))
+        assert_model_is_valid(usecase(name="test", participants=[], steps=two))
+        assert_model_is_valid(usecase(name="test", participants=one, steps=one))
+
+        assert_model_is_invalid(usecase(), "missing.*required.*(name|participants|steps)")
+        assert_model_is_invalid(
+            usecase(name=1, participants=2, steps=3), "wrong.*type.*(name|participants|steps)"
+        )
+        assert_model_is_invalid(
+            usecase(name=1, participants=2, steps=3, description=4),
+            "wrong.*type.*(name|participants|steps|description)",
+        )
