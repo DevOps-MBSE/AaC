@@ -2,7 +2,7 @@
 layout: default
 title: Extending AaC Modeling Language
 parent: AaC Extensions
-nav_order: 2
+nav_order: 1
 ---
 
 # Extending the AaC Modeling Language

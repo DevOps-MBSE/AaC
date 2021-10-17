@@ -12,6 +12,15 @@ permalink: /
 
 ## What is Architecture-as-Code (AaC)?
 
+Architecture-as-Code is under major construction at the moment, including this documentation.  We're doing a major design and implementation overhaul
+to address 3 primary objectives:
+- Adoptability / Approachability - If AaC is going to provide any value, the intended stakeholders must be willing to use it and get value from it.
+- Extensibility - The domains we work in are complex and require tailoring of any solution.  Ensure AaC provides an approachable solution for extension.
+- Productivity / Efficiency - Embrace the DevOps principle of Flow by providing key automations to bridge MBSE and product development / delivery.
+
+The contributors embrace open source, so you may see us "making sausage" for a bit as we establish a first stable release.  We'll update this
+documentation when we believe AaC is production ready.  Until then, feel free to experiment and explore with us.
+
 ### The AaC Modeling Language
       
 AaC is a distinctly different take on Model-Based System Engineering (MBSE) that allows a
@@ -22,7 +31,7 @@ System Engineering to Development.
 
 The AaC model enables system modelers to maintain collection of machine and human readable plain-text YAML files that will enable new
 constructs for maintaining vertical (i.e., its top-down structure) and horizontal (i.e., how components interact
-with one another) traceability, quality assessment of architecture and design, and automation system acceptance
+with one another) traceability, quality assessment of architecture and design, and automation of system acceptance
 tests. This is all to increase predictability and reduce risk within small-batch Agile program execution
 environments.
 
