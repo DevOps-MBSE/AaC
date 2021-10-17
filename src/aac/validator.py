@@ -1,10 +1,6 @@
-"""
-Validate a model per the AaC DSL.
-"""
+"""Validate a model per the AaC DSL."""
 
 from iteration_utilities import flatten
-
-from aac import util
 
 
 def is_valid(model: dict) -> bool:
@@ -130,7 +126,6 @@ def get_all_field_errors(model: dict) -> list:
     Return a list of all the validation errors found for the field MODEL. If the
     field MODEL is valid, return an empty list.
     """
-
     if not has_fields(model):
         return []
 
@@ -159,7 +154,6 @@ def get_all_required_field_errors(model: dict) -> list:
     the MODEL. If the required field of the MODEL is valid, return an empty
     list.
     """
-
     if not has_required_fields(model):
         return []
 
@@ -197,4 +191,5 @@ def get_all_usecase_errors(model: dict) -> list:
 
 
 def is_usecase(model):
+    """Determine if the MODEL represents a usecase."""
     return "usecase" in model

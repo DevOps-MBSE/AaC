@@ -3,8 +3,13 @@ from unittest import TestCase
 
 from aac import util, validator
 
-assert_status_is_false = lambda status: assert_status_is(status, False)
-assert_status_is_true = lambda status: assert_status_is(status, True)
+
+def assert_status_is_false(status):
+    assert_status_is(status, False)
+
+
+def assert_status_is_true(status):
+    assert_status_is(status, True)
 
 
 def assert_status_is(status, expected_status):
@@ -29,13 +34,16 @@ def assert_errors_contain(errors, pattern):
 
 
 def assert_model_is_valid(model):
-    "Assert that the provided MODEL is valid."
+    """Assert that the provided MODEL is valid."""
+    if validator.is_usecase(model["test"]):
+        print("\n", model["test"], "\n", validator.get_all_errors(model))
+
     assert_status_is_true(validator.is_valid(model))
     assert_no_errors(validator.get_all_errors(model))
 
 
 def assert_model_is_invalid(model, error_pattern):
-    "Assert that the provided MODEL is valid."
+    """Assert that the provided MODEL is invalid."""
     assert_status_is_false(validator.is_valid(model))
 
     errors = validator.get_all_errors(model)
@@ -56,7 +64,9 @@ def o(model: str, **kwargs):
 
 class ValidatorTest(TestCase):
     def test_can_validate_enums(self):
-        enum = lambda **kwargs: o("enum", **kwargs)
+        def enum(**kwargs):
+            o("enum", **kwargs)
+
         assert_model_is_valid(enum(name="test", values=[]))
         assert_model_is_valid(enum(name="test", values=["a"]))
         assert_model_is_valid(enum(name="test", values=["a", "b"]))
@@ -67,10 +77,12 @@ class ValidatorTest(TestCase):
         assert_model_is_invalid(enum(name=1, values=2), "wrong.*type.*(name|values)")
 
     def test_can_validate_data(self):
+        def data(**kwargs):
+            o("data", **kwargs)
+
         one_field = [kw(name="x", type="int")]
         two_fields = one_field + [kw(name="y", type="int")]
 
-        data = lambda **kwargs: o("data", **kwargs)
         assert_model_is_valid(data(name="test", fields=[]))
         assert_model_is_valid(data(name="test", fields=one_field))
         assert_model_is_valid(data(name="test", fields=two_fields))
@@ -100,10 +112,12 @@ class ValidatorTest(TestCase):
         )
 
     def test_can_validate_usecase(self):
+        def usecase(**kwargs):
+            o("usecase", **kwargs)
+
         one = [kw(name="x", type="X")]
         two = one + [kw(name="y", type="Y")]
 
-        usecase = lambda **kwargs: o("usecase", **kwargs)
         assert_model_is_valid(usecase(name="test", participants=[], steps=[]))
         assert_model_is_valid(usecase(name="test", participants=one, steps=[]))
         assert_model_is_valid(usecase(name="test", participants=two, steps=[]))
