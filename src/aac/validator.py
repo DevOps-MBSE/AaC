@@ -38,12 +38,12 @@ def get_all_enum_errors(model: dict) -> list:
         return "enum" in model
 
     if is_enum_model(model):
-        return get_all_model_errors(model, kind="enum", items=ENUM_ITEMS)
+        return get_all_errors_for(model, kind="enum", items=ENUM_ITEMS)
 
     return []
 
 
-def get_all_model_errors(model: dict, **properties) -> list:
+def get_all_errors_for(model: dict, **properties) -> list:
     """Get all model errors for the specified kind of model."""
     m = model[properties["kind"]] if "kind" in properties else model
     items = [dict(i.items()) for i in properties["items"]]
@@ -126,7 +126,7 @@ def get_all_data_errors(model: dict) -> list:
     if is_data_model(model):
         data = model["data"]
         return filter_out_empty_strings(
-            get_all_model_errors(model, kind="data", items=DATA_ITEMS),
+            get_all_errors_for(model, kind="data", items=DATA_ITEMS),
             get_all_non_root_element_errors(data, "fields", FIELD_ITEMS),
             get_all_required_field_errors(data),
         )
@@ -146,7 +146,7 @@ def get_all_non_root_element_errors(model: dict, element: str, items: list) -> l
         return element in model and isinstance(model[element], list)
 
     def get_field_error(field):
-        return get_all_model_errors(field, items=items)
+        return get_all_errors_for(field, items=items)
 
     if has_element(model):
         return flatten(map(get_field_error, model[element]))
@@ -189,7 +189,7 @@ def get_all_usecase_errors(model: dict) -> list:
     if is_usecase(model):
         usecase = model["usecase"]
         return filter_out_empty_strings(
-            get_all_model_errors(model, kind="usecase", items=USECASE_ITEMS),
+            get_all_errors_for(model, kind="usecase", items=USECASE_ITEMS),
             get_all_non_root_element_errors(usecase, "participants", FIELD_ITEMS),
             get_all_non_root_element_errors(usecase, "steps", STEP_ITEMS),
         )
