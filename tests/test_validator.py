@@ -65,7 +65,7 @@ def o(model: str, **kwargs):
 class ValidatorTest(TestCase):
     def test_can_validate_enums(self):
         def enum(**kwargs):
-            o("enum", **kwargs)
+            return o("enum", **kwargs)
 
         assert_model_is_valid(enum(name="test", values=[]))
         assert_model_is_valid(enum(name="test", values=["a"]))
@@ -78,7 +78,7 @@ class ValidatorTest(TestCase):
 
     def test_can_validate_data(self):
         def data(**kwargs):
-            o("data", **kwargs)
+            return o("data", **kwargs)
 
         one_field = [kw(name="x", type="int")]
         two_fields = one_field + [kw(name="y", type="int")]
@@ -113,7 +113,7 @@ class ValidatorTest(TestCase):
 
     def test_can_validate_usecase(self):
         def usecase(**kwargs):
-            o("usecase", **kwargs)
+            return o("usecase", **kwargs)
 
         one = [kw(name="x", type="X")]
         two = one + [kw(name="y", type="Y")]
