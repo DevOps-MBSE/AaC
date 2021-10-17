@@ -56,43 +56,45 @@ def o(model: str, **kwargs):
 
 class ValidatorTest(TestCase):
     def test_can_validate_enums(self):
-        assert_model_is_valid(o("enum", name="test", values=[]))
-        assert_model_is_valid(o("enum", name="test", values=["a"]))
-        assert_model_is_valid(o("enum", name="test", values=["a", "b"]))
+        enum = lambda **kwargs: o("enum", **kwargs)
+        assert_model_is_valid(enum(name="test", values=[]))
+        assert_model_is_valid(enum(name="test", values=["a"]))
+        assert_model_is_valid(enum(name="test", values=["a", "b"]))
 
-        assert_model_is_invalid(o("enum"), "missing.*required.*(name|values)")
-        assert_model_is_invalid(o("enum", name="test"), "missing.*required.*values")
-        assert_model_is_invalid(o("enum", values=[]), "missing.*required.*name")
-        assert_model_is_invalid(o("enum", name=1, values=2), "wrong.*type.*(name|values)")
+        assert_model_is_invalid(enum(), "missing.*required.*(name|values)")
+        assert_model_is_invalid(enum(name="test"), "missing.*required.*values")
+        assert_model_is_invalid(enum(values=[]), "missing.*required.*name")
+        assert_model_is_invalid(enum(name=1, values=2), "wrong.*type.*(name|values)")
 
     def test_can_validate_data(self):
         one_field = [kw(name="x", type="int")]
         two_fields = one_field + [kw(name="y", type="int")]
 
-        assert_model_is_valid(o("data", name="test", fields=[]))
-        assert_model_is_valid(o("data", name="test", fields=one_field))
-        assert_model_is_valid(o("data", name="test", fields=two_fields))
+        data = lambda **kwargs: o("data", **kwargs)
+        assert_model_is_valid(data(name="test", fields=[]))
+        assert_model_is_valid(data(name="test", fields=one_field))
+        assert_model_is_valid(data(name="test", fields=two_fields))
 
-        assert_model_is_valid(o("data", name="test", fields=[], required=[]))
-        assert_model_is_valid(o("data", name="test", fields=one_field, required=["x"]))
-        assert_model_is_valid(o("data", name="test", fields=two_fields, required=["x"]))
-        assert_model_is_valid(o("data", name="test", fields=two_fields, required=["x", "y"]))
+        assert_model_is_valid(data(name="test", fields=[], required=[]))
+        assert_model_is_valid(data(name="test", fields=one_field, required=["x"]))
+        assert_model_is_valid(data(name="test", fields=two_fields, required=["x"]))
+        assert_model_is_valid(data(name="test", fields=two_fields, required=["x", "y"]))
 
-        assert_model_is_invalid(o("data"), "missing.*required.*(name|fields)")
-        assert_model_is_invalid(o("data", name="test"), "missing.*required.*fields")
-        assert_model_is_invalid(o("data", fields=[]), "missing.*required.*name")
+        assert_model_is_invalid(data(), "missing.*required.*(name|fields)")
+        assert_model_is_invalid(data(name="test"), "missing.*required.*fields")
+        assert_model_is_invalid(data(fields=[]), "missing.*required.*name")
 
-        assert_model_is_invalid(o("data", name=1, fields=2), "wrong.*type.*(name|fields)")
+        assert_model_is_invalid(data(name=1, fields=2), "wrong.*type.*(name|fields)")
         assert_model_is_invalid(
-            o("data", name=1, fields=2, required=3), "wrong.*type.*(name|fields|required)"
+            data(name=1, fields=2, required=3), "wrong.*type.*(name|fields|required)"
         )
         assert_model_is_invalid(
-            o("data", name="test", fields=[kw(name=1, type=2)]), "wrong.*type.*field.*(name|type)"
+            data(name="test", fields=[kw(name=1, type=2)]), "wrong.*type.*field.*(name|type)"
         )
 
         assert_model_is_invalid(
-            o("data", name="test", fields=[], required=["x"]), "reference.*undefined.*x"
+            data(name="test", fields=[], required=["x"]), "reference.*undefined.*x"
         )
         assert_model_is_invalid(
-            o("data", name="test", fields=two_fields, required=["z"]), "reference.*undefined.*z"
+            data(name="test", fields=two_fields, required=["z"]), "reference.*undefined.*z"
         )
