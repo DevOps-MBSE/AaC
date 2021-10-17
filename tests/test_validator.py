@@ -31,8 +31,11 @@ def assert_no_errors(errors):
 
 def assert_errors_contain(errors, pattern):
     """Assert that at least one error in ERRORS matches PATTERN."""
-    for e in errors:
-        assert re.search(pattern, e)
+
+    def assertion(e):
+        return re.search(pattern, e)
+
+    assert filter(lambda x: x is not None, map(assertion, errors))
 
 
 def assert_model_is_valid(model):
@@ -74,6 +77,7 @@ class ValidatorTest(TestCase):
         assert_model_is_invalid(enum(name="test"), "missing.*required.*values")
         assert_model_is_invalid(enum(values=[]), "missing.*required.*name")
         assert_model_is_invalid(enum(name=1, values=2), "wrong.*type.*(name|values)")
+        assert_model_is_invalid(enum(invalid="item"), "unrecognized.*property.*invalid")
 
     def test_can_validate_data(self):
         def data(**kwargs):
@@ -94,6 +98,7 @@ class ValidatorTest(TestCase):
         assert_model_is_invalid(data(), "missing.*required.*(name|fields)")
         assert_model_is_invalid(data(name="test"), "missing.*required.*fields")
         assert_model_is_invalid(data(fields=[]), "missing.*required.*name")
+        assert_model_is_invalid(data(invalid="item"), "unrecognized.*property.*invalid")
 
         assert_model_is_invalid(data(name=1, fields=2), "wrong.*type.*(name|fields)")
         assert_model_is_invalid(
@@ -125,6 +130,7 @@ class ValidatorTest(TestCase):
         assert_model_is_valid(usecase(name="test", participants=one, steps=one))
 
         assert_model_is_invalid(usecase(), "missing.*required.*(name|participants|steps)")
+        assert_model_is_invalid(usecase(invalid="item"), "unrecognized.*property.*invalid")
         assert_model_is_invalid(
             usecase(name=1, participants=2, steps=3), "wrong.*type.*(name|participants|steps)"
         )

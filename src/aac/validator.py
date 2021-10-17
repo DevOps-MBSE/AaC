@@ -30,22 +30,41 @@ def get_all_enum_errors(model: dict) -> list:
     Return a list of all the validation errors found for the enumeration MODEL.
     If the enumeration MODEL is valid, return an empty list.
     """
-    if not is_enum_model(model):
-        return []
 
-    enum = model["enum"]
-    required = ["name", "values"]
-    types = [str, list]
+    def is_enum_model(model):
+        return "enum" in model
+
+    if is_enum_model(model):
+        return get_all_model_errors(
+            model,
+            kind="enum",
+            items=[
+                {"name": "name", "type": str, "required": True},
+                {"name": "values", "type": list, "required": True},
+            ],
+        )
+
+    return []
+
+
+def get_all_model_errors(model: dict, kind: str, **properties) -> list:
+    """Get all model errors for the specified kind of model."""
+    items = [dict(i.items()) for i in properties["items"]]
+
+    props = [i["name"] for i in items]
+    types = [i["type"] for i in items]
+    required = [i["name"] for i in items if i["required"]]
 
     return filter_out_empty_strings(
-        get_all_errors_if_missing_required_properties(enum, required),
-        get_all_errors_if_properties_have_wrong_type(enum, required, types),
+        get_all_errors_if_missing_required_properties(model[kind], required),
+        get_all_errors_if_properties_have_wrong_type(model[kind], props, types),
+        get_all_errors_if_unrecognized_properties(model[kind], props),
     )
 
 
-def is_enum_model(model: dict) -> bool:
-    """Determine if the MODEL represents an enumeration model."""
-    return "enum" in model
+def filter_out_empty_strings(*xs: list) -> list:
+    """Return XS with all empty strings removed."""
+    return list(filter(lambda x: x != "", flatten(xs)))
 
 
 def get_all_errors_if_missing_required_properties(model: dict, required: list) -> iter:
@@ -56,40 +75,45 @@ def get_all_errors_if_missing_required_properties(model: dict, required: list) -
     required properties, the returned collection will be empty.
     """
 
-    def get_error(model, key):
+    def get_error_if_missing_required_property(key):
         if key not in model.keys():
             return 'missing required field property: "{}"'.format(key)
         return ""
 
-    def get_error_if_missing_required_property(key):
-        return get_error(model, key)
-
     return map(get_error_if_missing_required_property, required)
 
 
-def get_all_errors_if_properties_have_wrong_type(model: dict, required: list, types: list) -> iter:
+def get_all_errors_if_properties_have_wrong_type(model: dict, props: list, types: list) -> iter:
     """Get error messages if the model has required properties of the wrong type.
 
-    Return an iterable object containing any error messages for all REQUIRED
-    properties that are not the permitted type in the MODEL. If the MODEL's
-    required properties are all of the correct type, the returned collection
-    will be empty.
+    Return an iterable object containing any error messages for all PROPS that
+    are not the permitted type in the MODEL. If the MODEL's required properties
+    are all of the correct type, the returned collection will be empty.
     """
 
-    def get_error(model, key, instance):
+    def get_error_if_property_has_wrong_type(key, instance):
         if key in model.keys() and not isinstance(model[key], instance):
             return 'wrong type for field property: "{}"'.format(key)
         return ""
 
-    def get_error_if_property_has_wrong_type(key, instance):
-        return get_error(model, key, instance)
-
-    return map(get_error_if_property_has_wrong_type, required, types)
+    return map(get_error_if_property_has_wrong_type, props, types)
 
 
-def filter_out_empty_strings(*xs: list) -> list:
-    """Return XS with all empty strings removed."""
-    return list(filter(lambda x: x != "", flatten(xs)))
+def get_all_errors_if_unrecognized_properties(model: dict, props: list) -> iter:
+    """Get error messages if the model has unrecognized properties.
+
+    Return an iterable object containing any error messages for all properties
+    found in the MODEL that are not recognized as valid for the specified model.
+    If the MODEL's has no unrecognized properties, the returned collection will
+    be empty.
+    """
+
+    def get_error_if_property_is_unrecognized(key):
+        if key not in props:
+            return 'unrecognized property: "{}"'.format(key)
+        return ""
+
+    return map(get_error_if_property_is_unrecognized, model.keys())
 
 
 def get_all_data_errors(model: dict) -> list:
