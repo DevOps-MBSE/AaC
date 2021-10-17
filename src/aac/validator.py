@@ -1,5 +1,8 @@
 """Validate a model per the AaC DSL."""
 
+# TODO: Replace "magic strings" with a more maintainable solution
+# TODO: Generalize get_all_errors to handle all (or at least most of) the cases
+
 from iteration_utilities import flatten
 
 
