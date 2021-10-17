@@ -119,15 +119,23 @@ class ValidatorTest(TestCase):
         def usecase(**kwargs):
             return o("usecase", **kwargs)
 
-        one = [kw(name="x", type="X")]
-        two = one + [kw(name="y", type="Y")]
+        one_part = [kw(name="x", type="X")]
+        two_parts = one_part + [kw(name="y", type="Y")]
+
+        one_step = [kw(step="alpha", source="x", target="y", action="b")]
+        two_steps = one_step + [kw(step="beta", source="y", target="x", action="b")]
 
         assert_model_is_valid(usecase(name="test", participants=[], steps=[]))
-        assert_model_is_valid(usecase(name="test", participants=one, steps=[]))
-        assert_model_is_valid(usecase(name="test", participants=two, steps=[]))
-        assert_model_is_valid(usecase(name="test", participants=[], steps=one))
-        assert_model_is_valid(usecase(name="test", participants=[], steps=two))
-        assert_model_is_valid(usecase(name="test", participants=one, steps=one))
+        assert_model_is_valid(usecase(name="test", participants=one_part, steps=[]))
+        assert_model_is_valid(usecase(name="test", participants=two_parts, steps=[]))
+        assert_model_is_valid(usecase(name="test", participants=[], steps=one_step))
+        assert_model_is_valid(usecase(name="test", participants=[], steps=two_steps))
+        assert_model_is_valid(usecase(name="test", participants=one_part, steps=one_step))
+        assert_model_is_valid(
+            usecase(
+                name="test", participants=one_part, steps=one_step, description="test description"
+            )
+        )
 
         assert_model_is_invalid(usecase(), "missing.*required.*(name|participants|steps)")
         assert_model_is_invalid(usecase(invalid="item"), "unrecognized.*property.*invalid")
@@ -137,4 +145,18 @@ class ValidatorTest(TestCase):
         assert_model_is_invalid(
             usecase(name=1, participants=2, steps=3, description=4),
             "wrong.*type.*(name|participants|steps|description)",
+        )
+
+        assert_model_is_invalid(
+            usecase(name="test", participants=[kw(name=1, type=2)], steps=[]),
+            "wrong.*type.*field.*(name|type)",
+        )
+        # Note: `if' and `else' are not included in this test since they are python keywords
+        assert_model_is_invalid(
+            usecase(
+                name="test",
+                participants=[],
+                steps=[kw(step=1, source=2, target=3, action=4, loop=7)],
+            ),
+            "wrong.*type.*field.*(step|source|target|action|loop)",
         )
