@@ -125,26 +125,27 @@ def get_all_data_errors(model: dict) -> list:
     Return a list of all the validation errors found for the data MODEL. If the
     data MODEL is valid, return an empty list.
     """
-    if not is_data_model(model):
-        return []
 
-    data = model["data"]
-    required = ["name", "fields"]
-    types = [str, list]
+    def is_data_model(model):
+        return "data" in model
 
-    return filter_out_empty_strings(
-        get_all_errors_if_missing_required_properties(data, required),
-        get_all_errors_if_properties_have_wrong_type(
-            data, required + ["required"], types + [list]
-        ),
-        get_all_field_errors(data),
-        get_all_required_field_errors(data),
-    )
+    if is_data_model(model):
+        data = model["data"]
+        return filter_out_empty_strings(
+            get_all_model_errors(
+                model,
+                kind="data",
+                items=[
+                    {"name": "name", "type": str, "required": True},
+                    {"name": "fields", "type": list, "required": True},
+                    {"name": "required", "type": list, "required": False},
+                ],
+            ),
+            get_all_field_errors(data),
+            get_all_required_field_errors(data),
+        )
 
-
-def is_data_model(model: dict) -> bool:
-    """Determine if the MODEL represents a data model."""
-    return "data" in model
+    return []
 
 
 def get_all_field_errors(model: dict) -> list:
