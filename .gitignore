@@ -148,3 +148,12 @@ cython_debug/
 .settings/
 .dir-locals.el
 
+# jekyll / GitHub Pages
+*.gem
+.bundle
+.ruby-version
+.jekyll-cache
+.sass-cache
+_site
+Gemfile.lock
+node_modules
