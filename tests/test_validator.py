@@ -1,14 +1,16 @@
 import re
 from unittest import TestCase
 
-from aac import util, validator
+from aac import validator
 
 
 def assert_status_is_false(status):
+    """Assert STATUS is False."""
     assert_status_is(status, False)
 
 
 def assert_status_is_true(status):
+    """Assert STATUS is True."""
     assert_status_is(status, True)
 
 
