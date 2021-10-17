@@ -21,7 +21,11 @@ def get_all_errors(model: dict) -> list:
     Return a list of all the validation errors found for MODEL. If the MODEL is
     valid, return an empty list.
     """
-    return get_all_parsing_errors(model) + get_all_enum_errors(model) + get_all_data_errors(model)
+
+    def collect_errors(m):
+        return get_all_parsing_errors(m) + get_all_enum_errors(m) + get_all_data_errors(m)
+
+    return list(flatten(map(collect_errors, model.values())))
 
 
 def get_all_parsing_errors(model: dict) -> list:
