@@ -35,9 +35,6 @@ def assert_errors_contain(errors, pattern):
 
 def assert_model_is_valid(model):
     """Assert that the provided MODEL is valid."""
-    if validator.is_usecase(model["test"]):
-        print("\n", model["test"], "\n", validator.get_all_errors(model))
-
     assert_status_is_true(validator.is_valid(model))
     assert_no_errors(validator.get_all_errors(model))
 
