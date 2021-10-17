@@ -43,71 +43,56 @@ def assert_model_is_invalid(model, error_pattern):
     assert_errors_contain(errors, error_pattern)
 
 
+def kw(**kwargs):
+    """Return a dictionary of the provided keyword arguments."""
+    return kwargs
+
+
+def o(model: str, **kwargs):
+    """Return a simulated model after being parsed."""
+    root = ("name" in kwargs and kwargs["name"]) or "root"
+    return {root: {model: kwargs}}
+
+
 class ValidatorTest(TestCase):
     def test_can_validate_enums(self):
-        def enum(name=None, values=None):
-            enum = {}
-            if name is not None:
-                enum["name"] = name
-            if values is not None:
-                enum["values"] = values
-            return {(name or "root"): {"enum": enum}}
+        assert_model_is_valid(o("enum", name="test", values=[]))
+        assert_model_is_valid(o("enum", name="test", values=["a"]))
+        assert_model_is_valid(o("enum", name="test", values=["a", "b"]))
 
-        assert_model_is_valid(enum(name="test", values=[]))
-        assert_model_is_valid(enum(name="test", values=["a"]))
-        assert_model_is_valid(enum(name="test", values=["a", "b"]))
-
-        assert_model_is_invalid(enum(), "missing.*required.*(name|values)")
-        assert_model_is_invalid(enum(name="test"), "missing.*required.*values")
-        assert_model_is_invalid(enum(values=[]), "missing.*required.*name")
-        assert_model_is_invalid(enum(name=1, values=2), "wrong.*type.*(name|values)")
+        assert_model_is_invalid(o("enum"), "missing.*required.*(name|values)")
+        assert_model_is_invalid(o("enum", name="test"), "missing.*required.*values")
+        assert_model_is_invalid(o("enum", values=[]), "missing.*required.*name")
+        assert_model_is_invalid(o("enum", name=1, values=2), "wrong.*type.*(name|values)")
 
     def test_can_validate_data(self):
-        def field(name=None, type=None):
-            field = {}
-            if name is not None:
-                field["name"] = name
-            if type is not None:
-                field["type"] = type
-            return field
+        one_field = [kw(name="x", type="int")]
+        two_fields = one_field + [kw(name="y", type="int")]
 
-        def data(name=None, fields=None, required=None):
-            data = {}
-            if name is not None:
-                data["name"] = name
-            if fields is not None:
-                data["fields"] = fields
-            if required is not None:
-                data["required"] = required
-            return {(name or "root"): {"data": data}}
+        assert_model_is_valid(o("data", name="test", fields=[]))
+        assert_model_is_valid(o("data", name="test", fields=one_field))
+        assert_model_is_valid(o("data", name="test", fields=two_fields))
 
-        one_field = [field(name="x", type="int")]
-        two_fields = one_field + [field(name="y", type="int")]
+        assert_model_is_valid(o("data", name="test", fields=[], required=[]))
+        assert_model_is_valid(o("data", name="test", fields=one_field, required=["x"]))
+        assert_model_is_valid(o("data", name="test", fields=two_fields, required=["x"]))
+        assert_model_is_valid(o("data", name="test", fields=two_fields, required=["x", "y"]))
 
-        assert_model_is_valid(data(name="test", fields=[]))
-        assert_model_is_valid(data(name="test", fields=one_field))
-        assert_model_is_valid(data(name="test", fields=two_fields))
+        assert_model_is_invalid(o("data"), "missing.*required.*(name|fields)")
+        assert_model_is_invalid(o("data", name="test"), "missing.*required.*fields")
+        assert_model_is_invalid(o("data", fields=[]), "missing.*required.*name")
 
-        assert_model_is_valid(data(name="test", fields=[], required=[]))
-        assert_model_is_valid(data(name="test", fields=one_field, required=["x"]))
-        assert_model_is_valid(data(name="test", fields=two_fields, required=["x"]))
-        assert_model_is_valid(data(name="test", fields=two_fields, required=["x", "y"]))
-
-        assert_model_is_invalid(data(), "missing.*required.*(name|fields)")
-        assert_model_is_invalid(data(name="test"), "missing.*required.*fields")
-        assert_model_is_invalid(data(fields=[]), "missing.*required.*name")
-
-        assert_model_is_invalid(data(name=1, fields=2), "wrong.*type.*(name|fields)")
+        assert_model_is_invalid(o("data", name=1, fields=2), "wrong.*type.*(name|fields)")
         assert_model_is_invalid(
-            data(name=1, fields=2, required=3), "wrong.*type.*(name|fields|required)"
+            o("data", name=1, fields=2, required=3), "wrong.*type.*(name|fields|required)"
         )
         assert_model_is_invalid(
-            data(name="test", fields=[field(1, 2)]), "wrong.*type.*field.*(name|type)"
+            o("data", name="test", fields=[kw(name=1, type=2)]), "wrong.*type.*field.*(name|type)"
         )
 
         assert_model_is_invalid(
-            data(name="test", fields=[], required=["x"]), "reference.*undefined.*x"
+            o("data", name="test", fields=[], required=["x"]), "reference.*undefined.*x"
         )
         assert_model_is_invalid(
-            data(name="test", fields=two_fields, required=["z"]), "reference.*undefined.*z"
+            o("data", name="test", fields=two_fields, required=["z"]), "reference.*undefined.*z"
         )
