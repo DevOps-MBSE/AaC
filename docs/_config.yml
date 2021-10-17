@@ -15,8 +15,8 @@
 # in the templates via {{ site.myvariable }}.
 title: AaC
 description: Enabling DevOps for Model-Based System Engineering
-baseurl: "/aac" # the subpath of your site, e.g. /blog
-url: "https://google.com" # the base hostname & protocol for your site, e.g. http://example.com
+baseurl: "/" # the subpath of your site, e.g. /blog
+url: "https://jondavid-black.github.io/AaC/" # the base hostname & protocol for your site, e.g. http://example.com
 
 permalink: pretty
 exclude: ["node_modules/", "*.gemspec", "*.gem", "Gemfile", "Gemfile.lock", "package.json", "package-lock.json",  "script/", "LICENSE.txt", "lib/", "bin/", "README.md", "Rakefile"
