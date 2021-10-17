@@ -204,20 +204,22 @@ def get_all_usecase_errors(model: dict) -> list:
     Return a list of general parsing errors for the MODEL. If the MODEL is valid,
     return an empty list.
     """
-    if not is_usecase(model):
-        return []
 
-    usecase = model["usecase"]
-    required = ["name", "participants", "steps"]
-    types = [str, list, list]
-    return filter_out_empty_strings(
-        get_all_errors_if_missing_required_properties(usecase, required),
-        get_all_errors_if_properties_have_wrong_type(
-            usecase, required + ["description"], types + [str]
-        ),
-    )
+    def is_usecase(model):
+        return "usecase" in model
 
+    if is_usecase(model):
+        return filter_out_empty_strings(
+            get_all_model_errors(
+                model,
+                kind="usecase",
+                items=[
+                    {"name": "name", "type": str, "required": True},
+                    {"name": "description", "type": str, "required": False},
+                    {"name": "participants", "type": list, "required": True},
+                    {"name": "steps", "type": list, "required": True},
+                ],
+            ),
+        )
 
-def is_usecase(model):
-    """Determine if the MODEL represents a usecase."""
-    return "usecase" in model
+    return []
