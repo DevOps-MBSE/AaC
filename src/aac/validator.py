@@ -23,18 +23,9 @@ def get_all_errors(model: dict) -> list:
     """
 
     def collect_errors(m):
-        return get_all_parsing_errors(m) + get_all_enum_errors(m) + get_all_data_errors(m)
+        return get_all_enum_errors(m) + get_all_data_errors(m) + get_all_usecase_errors(m)
 
     return list(flatten(map(collect_errors, model.values())))
-
-
-def get_all_parsing_errors(model: dict) -> list:
-    """Return all parsing errors for the MODEL.
-
-    Return a list of general parsing errors for the MODEL. If the MODEL is valid,
-    return an empty list.
-    """
-    return []
 
 
 def get_all_enum_errors(model: dict) -> list:
@@ -183,3 +174,12 @@ def get_all_required_field_errors(model: dict) -> list:
 def has_required_fields(model: dict):
     """Determine if the MODEL has required fields."""
     return "required" in model and isinstance(model["required"], list)
+
+
+def get_all_usecase_errors(model: dict) -> list:
+    """Return all parsing errors for the MODEL.
+
+    Return a list of general parsing errors for the MODEL. If the MODEL is valid,
+    return an empty list.
+    """
+    return []
