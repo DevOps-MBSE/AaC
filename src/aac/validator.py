@@ -4,6 +4,7 @@
 # TODO: Generalize get_all_errors to handle all (or at least most of) the cases
 
 from enum import Enum
+from typing import Union
 
 from iteration_utilities import flatten
 
@@ -143,7 +144,7 @@ def get_all_data_errors(model: dict) -> list:
 
 
 # TODO: items is a horrible name, here, find a better one
-def get_all_non_root_element_errors(model: dict, element: str, items: list) -> list:
+def get_all_non_root_element_errors(model: Union[dict, list], element: str, items: list) -> list:
     """Return all validation errors for the non-root element MODELs.
 
     Return a list of all the validation errors found for non-root element
@@ -153,19 +154,14 @@ def get_all_non_root_element_errors(model: dict, element: str, items: list) -> l
     def has_element(model):
         return element in model and isinstance(model[element], list)
 
-    def get_field_error(field):
-        return get_all_errors_for(field, items=items)
-
-    def get_field_errors_per_element(model):
+    def get_field_errors(model):
         if has_element(model):
-            return flatten(map(get_field_error, model[element]))
+            return flatten(map(lambda x: get_all_errors_for(x, items=items), model[element]))
 
         return []
 
-    if isinstance(model, list):
-        return flatten(map(get_field_errors_per_element, model))
-    else:
-        return get_field_errors_per_element(model)
+    model = model if isinstance(model, list) else [model]
+    return flatten(map(get_field_errors, model))
 
 
 def get_all_required_field_errors(model: dict) -> list:
