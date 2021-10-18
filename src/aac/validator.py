@@ -144,10 +144,10 @@ def get_all_data_errors(model: dict) -> list:
 
 # TODO: items is a horrible name, here, find a better one
 def get_all_non_root_element_errors(model: dict, element: str, items: list) -> list:
-    """Return all validation errors for the field MODEL.
+    """Return all validation errors for the non-root element MODELs.
 
-    Return a list of all the validation errors found for the field MODEL. If the
-    field MODEL is valid, return an empty list.
+    Return a list of all the validation errors found for non-root element
+    MODELs. If the non-root element MODELs are valid, return an empty list.
     """
 
     def has_element(model):
