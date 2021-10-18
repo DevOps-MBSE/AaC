@@ -136,7 +136,7 @@ def get_all_data_errors(model: dict) -> list:
         data = model["data"]
         return filter_out_empty_strings(
             get_all_errors_for(model, kind="data", items=DATA_ITEMS),
-            get_all_non_root_element_errors(data, "fields", FIELD_ITEMS),
+            get_all_non_root_element_errors(data, "fields", list, FIELD_ITEMS),
             get_all_required_field_errors(data),
         )
 
@@ -144,7 +144,9 @@ def get_all_data_errors(model: dict) -> list:
 
 
 # TODO: items is a horrible name, here, find a better one
-def get_all_non_root_element_errors(model: Union[dict, list], element: str, items: list) -> list:
+def get_all_non_root_element_errors(
+    model: Union[dict, list], element: str, instance: type, items: list
+) -> list:
     """Return all validation errors for the non-root element MODELs.
 
     Return a list of all the validation errors found for non-root element
@@ -152,12 +154,12 @@ def get_all_non_root_element_errors(model: Union[dict, list], element: str, item
     """
 
     def has_element(model):
-        return element in model and isinstance(model[element], list)
+        return element in model and isinstance(model[element], instance)
 
     def get_field_errors(model):
         if has_element(model):
-            return flatten(map(lambda x: get_all_errors_for(x, items=items), model[element]))
-
+            model = [model[element]] if isinstance(model[element], dict) else model[element]
+            return flatten(map(lambda x: get_all_errors_for(x, items=items), model))
         return []
 
     model = model if isinstance(model, list) else [model]
@@ -200,8 +202,8 @@ def get_all_usecase_errors(model: dict) -> list:
         usecase = model["usecase"]
         return filter_out_empty_strings(
             get_all_errors_for(model, kind="usecase", items=USECASE_ITEMS),
-            get_all_non_root_element_errors(usecase, "participants", FIELD_ITEMS),
-            get_all_non_root_element_errors(usecase, "steps", STEP_ITEMS),
+            get_all_non_root_element_errors(usecase, "participants", list, FIELD_ITEMS),
+            get_all_non_root_element_errors(usecase, "steps", list, STEP_ITEMS),
         )
 
     return []
@@ -225,11 +227,11 @@ def get_all_model_errors(model: dict) -> list:
         behaviors = m["behavior"] if has_behaviors(m) else []
         return filter_out_empty_strings(
             get_all_errors_for(model, kind="model", items=MODEL_ITEMS),
-            get_all_non_root_element_errors(m, "behavior", BEHAVIOR_ITEMS),
-            get_all_non_root_element_errors(m, "components", FIELD_ITEMS),
-            get_all_non_root_element_errors(behaviors, "acceptance", SCENARIO_ITEMS),
-            get_all_non_root_element_errors(behaviors, "input", FIELD_ITEMS),
-            get_all_non_root_element_errors(behaviors, "output", FIELD_ITEMS),
+            get_all_non_root_element_errors(m, "behavior", list, BEHAVIOR_ITEMS),
+            get_all_non_root_element_errors(m, "components", list, FIELD_ITEMS),
+            get_all_non_root_element_errors(behaviors, "acceptance", list, SCENARIO_ITEMS),
+            get_all_non_root_element_errors(behaviors, "input", list, FIELD_ITEMS),
+            get_all_non_root_element_errors(behaviors, "output", list, FIELD_ITEMS),
         )
 
     return []
@@ -251,17 +253,6 @@ def get_all_extension_errors(model: dict) -> list:
     def is_enum_ext(model):
         return "enumExt" in model and isinstance(model["enumExt"], dict)
 
-    def has_added_fields(model):
-        return model and "add" in model and isinstance(model["add"], list)
-
-    def added_fields(model):
-        ext = None
-        if is_data_ext(model):
-            ext = model["dataExt"]
-        elif is_enum_ext(model):
-            ext = model["enumExt"]
-        return ext["add"] if has_added_fields(ext) else []
-
     def get_all_errors_if_data_and_enum_extension_combined(model):
         if is_data_ext(model) and is_enum_ext(model):
             return ["cannot combine enumExt and dataExt in the same extension"]
@@ -269,15 +260,19 @@ def get_all_extension_errors(model: dict) -> list:
 
     if is_ext(model):
         ext = model["ext"]
-        args = (
-            ("dataExt", DATA_EXTENSION_ITEMS)
+        kind, type, items = (
+            ("dataExt", dict, DATA_EXTENSION_ITEMS)
             if is_data_ext(ext)
-            else ("enumExt", ENUM_EXTENSION_ITEMS)
+            else ("enumExt", dict, ENUM_EXTENSION_ITEMS)
         )
         return filter_out_empty_strings(
             get_all_errors_for(model, kind="ext", items=EXTENSION_ITEMS),
             get_all_errors_if_data_and_enum_extension_combined(ext),
-            get_all_non_root_element_errors(ext, *args),
+            get_all_non_root_element_errors(ext, kind, type, items),
+            # TODO: Not generic enough
+            get_all_non_root_element_errors(ext[kind], "add", list, FIELD_ITEMS)
+            if is_data_ext(ext)
+            else [],
         )
 
     return []

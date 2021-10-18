@@ -296,3 +296,10 @@ class ValidatorTest(TestCase):
         assert_model_is_invalid(
             ext(name="", type="", enumExt=kw(), dataExt=kw()), "cannot.*combine.*enumExt.*dataExt"
         )
+        assert_model_is_invalid(
+            ext(name="", type="", dataExt=kw(add=[kw()])), "missing.*required.*field.*(name|type)"
+        )
+        assert_model_is_invalid(
+            ext(name="", type="", dataExt=kw(add=[kw(name=1, type=2)])),
+            "wrong.*type.*field.*(name|type)",
+        )
