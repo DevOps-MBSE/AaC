@@ -234,3 +234,35 @@ class ValidatorTest(TestCase):
             ),
             "wrong.*type.*field.*(scenario|tags|given|when|then)",
         )
+        assert_model_is_invalid(
+            model(
+                name="test",
+                behavior=[kw(name="test", type=TestEnum.ONE, acceptance=[], input=[kw()])],
+            ),
+            "missing.*required.*(name|type)",
+        )
+        assert_model_is_invalid(
+            model(
+                name="test",
+                behavior=[
+                    kw(name="test", type=TestEnum.ONE, acceptance=[], input=[kw(name=1, type=2)])
+                ],
+            ),
+            "wrong.*type.*field.*(name|type)",
+        )
+        assert_model_is_invalid(
+            model(
+                name="test",
+                behavior=[kw(name="test", type=TestEnum.ONE, acceptance=[], output=[kw()])],
+            ),
+            "missing.*required.*(name|type)",
+        )
+        assert_model_is_invalid(
+            model(
+                name="test",
+                behavior=[
+                    kw(name="test", type=TestEnum.ONE, acceptance=[], output=[kw(name=1, type=2)])
+                ],
+            ),
+            "wrong.*type.*field.*(name|type)",
+        )
