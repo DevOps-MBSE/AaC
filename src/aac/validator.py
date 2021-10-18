@@ -53,17 +53,17 @@ def get_all_enum_errors(model: dict) -> list:
 
 def get_all_errors_for(model: dict, **properties) -> list:
     """Get all model errors for the specified kind of model."""
-    m = model[properties["kind"]] if "kind" in properties else model
-    items = [dict(i.items()) for i in properties["items"]]
+    model = model[properties["kind"]] if "kind" in properties else model
+    items = properties["items"]
 
     props = [i["name"] for i in items]
     types = [i["type"] for i in items]
     required = [i["name"] for i in items if i["required"]]
 
     return filter_out_empty_strings(
-        get_all_errors_if_missing_required_properties(m, required),
-        get_all_errors_if_properties_have_wrong_type(m, props, types),
-        get_all_errors_if_unrecognized_properties(m, props),
+        get_all_errors_if_missing_required_properties(model, required),
+        get_all_errors_if_properties_have_wrong_type(model, props, types),
+        get_all_errors_if_unrecognized_properties(model, props),
     )
 
 
