@@ -3,6 +3,8 @@
 # TODO: Replace "magic strings" with a more maintainable solution
 # TODO: Generalize get_all_errors to handle all (or at least most of) the cases
 
+from enum import Enum
+
 from iteration_utilities import flatten
 
 
@@ -22,7 +24,12 @@ def get_all_errors(model: dict) -> list:
     """
 
     def collect_errors(m):
-        return get_all_enum_errors(m) + get_all_data_errors(m) + get_all_usecase_errors(m)
+        return (
+            get_all_enum_errors(m)
+            + get_all_data_errors(m)
+            + get_all_usecase_errors(m)
+            + get_all_model_errors(m)
+        )
 
     return list(flatten(map(collect_errors, model.values())))
 
@@ -197,6 +204,38 @@ def get_all_usecase_errors(model: dict) -> list:
     return []
 
 
+def get_all_model_errors(model: dict) -> list:
+    """Return all validation errors for the system MODEL.
+
+    Return a list of all the validation errors found for the system MODEL. If
+    the system MODEL is valid, return an empty list.
+    """
+
+    def is_model(model):
+        return "model" in model
+
+    def has_behaviors(model):
+        return "behavior" in model and isinstance(model["behavior"], list)
+
+    if is_model(model):
+        m = model["model"]
+        behaviors = m["behavior"] if has_behaviors(m) else [{"acceptance": []}]
+        return filter_out_empty_strings(
+            get_all_errors_for(model, kind="model", items=MODEL_ITEMS),
+            get_all_non_root_element_errors(m, "behavior", BEHAVIOR_ITEMS),
+            get_all_non_root_element_errors(m, "components", FIELD_ITEMS),
+            # TODO Need to work on this so it can be generalized easily later.
+            flatten(
+                map(
+                    lambda b: get_all_non_root_element_errors(b, "acceptance", SCENARIO_ITEMS),
+                    behaviors,
+                )
+            ),
+        )
+
+    return []
+
+
 # TODO: Eventually, this should come from the AaC.yaml file
 
 ENUM_ITEMS = [
@@ -230,4 +269,29 @@ STEP_ITEMS = [
     {"name": "if", "type": dict, "required": False},
     {"name": "else", "type": dict, "required": False},
     {"name": "loop", "type": dict, "required": False},
+]
+
+MODEL_ITEMS = [
+    {"name": "name", "type": str, "required": True},
+    {"name": "description", "type": str, "required": False},
+    {"name": "components", "type": list, "required": False},
+    {"name": "behavior", "type": list, "required": True},
+]
+
+BEHAVIOR_ITEMS = [
+    {"name": "name", "type": str, "required": True},
+    {"name": "type", "type": Enum, "required": True},
+    {"name": "description", "type": str, "required": False},
+    {"name": "tags", "type": list, "required": False},
+    {"name": "input", "type": list, "required": False},
+    {"name": "output", "type": list, "required": False},
+    {"name": "acceptance", "type": list, "required": True},
+]
+
+SCENARIO_ITEMS = [
+    {"name": "scenario", "type": str, "required": True},
+    {"name": "tags", "type": list, "required": False},
+    {"name": "given", "type": list, "required": False},
+    {"name": "when", "type": list, "required": True},
+    {"name": "then", "type": list, "required": True},
 ]

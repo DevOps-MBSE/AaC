@@ -1,4 +1,5 @@
 import re
+from enum import Enum
 from unittest import TestCase
 
 from aac import validator
@@ -170,4 +171,66 @@ class ValidatorTest(TestCase):
                 ],
             ),
             "wrong.*type.*field.*(step|source|target|action|if|else|loop)",
+        )
+
+    def test_can_validate_models(self):
+        def model(**kwargs):
+            return o("model", **kwargs)
+
+        class TestEnum(Enum):
+            ONE = 1
+            TWO = 2
+
+        one_behavior = [kw(name="test", type=TestEnum.ONE, acceptance=[])]
+        two_behaviors = one_behavior + [kw(name="test", type=TestEnum.TWO, acceptance=[])]
+
+        assert_model_is_valid(model(name="test", behavior=[]))
+        assert_model_is_valid(model(name="test", behavior=one_behavior))
+        assert_model_is_valid(model(name="test", behavior=two_behaviors))
+        assert_model_is_valid(model(name="test", behavior=one_behavior, description="description"))
+        assert_model_is_valid(model(name="test", behavior=one_behavior, components=[]))
+        assert_model_is_valid(
+            model(name="test", behavior=one_behavior, components=[kw(name="a", type="b")])
+        )
+        assert_model_is_valid(
+            model(name="test", behavior=one_behavior, description="description", components=[])
+        )
+        assert_model_is_valid(
+            model(
+                name="test",
+                behavior=one_behavior,
+                description="description",
+                components=[kw(name="a", type="b")],
+            )
+        )
+
+        assert_model_is_invalid(model(), "missing.*required.*(name|behavior)")
+        assert_model_is_invalid(
+            model(name=1, behavior=2, components=3, description=4),
+            "wrong.*type.*(name|behavior|components|description)",
+        )
+        assert_model_is_invalid(
+            model(name="test", behavior=[kw(name=1, type=2, acceptance=3)]),
+            "wrong.*type.*field.*(name|type|acceptance)",
+        )
+        assert_model_is_invalid(
+            model(name="test", behavior=[], components=[kw(name=1, type=2)]),
+            "wrong.*type.*field.*(name|type)",
+        )
+        assert_model_is_invalid(
+            model(name="test", behavior=[kw(name="test", type=TestEnum.ONE, acceptance=[kw()])]),
+            "missing.*required.*(scenario|when|then)",
+        )
+        assert_model_is_invalid(
+            model(
+                name="test",
+                behavior=[
+                    kw(
+                        name="test",
+                        type=TestEnum.ONE,
+                        acceptance=[kw(scenario=1, tags=2, given=3, when=4, then=5)],
+                    )
+                ],
+            ),
+            "wrong.*type.*field.*(scenario|tags|given|when|then)",
         )
