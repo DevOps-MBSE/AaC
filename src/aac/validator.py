@@ -233,13 +233,13 @@ def get_all_model_errors(model: dict) -> list:
             ),
             flatten(
                 map(
-                    lambda b: get_all_non_root_element_errors(b, "input", SCENARIO_ITEMS),
+                    lambda b: get_all_non_root_element_errors(b, "input", FIELD_ITEMS),
                     behaviors,
                 )
             ),
             flatten(
                 map(
-                    lambda b: get_all_non_root_element_errors(b, "output", SCENARIO_ITEMS),
+                    lambda b: get_all_non_root_element_errors(b, "output", FIELD_ITEMS),
                     behaviors,
                 )
             ),
