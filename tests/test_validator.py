@@ -205,6 +205,7 @@ class ValidatorTest(TestCase):
         )
 
         assert_model_is_invalid(model(), "missing.*required.*(name|behavior)")
+        assert_model_is_invalid(model(invalid="item"), "unrecognized.*property.*invalid")
         assert_model_is_invalid(
             model(name=1, behavior=2, components=3, description=4),
             "wrong.*type.*(name|behavior|components|description)",
@@ -288,6 +289,7 @@ class ValidatorTest(TestCase):
         )
 
         assert_model_is_invalid(ext(), "missing.*required.*(name|type)")
+        assert_model_is_invalid(ext(invalid="item"), "unrecognized.*property.*invalid")
         assert_model_is_invalid(
             ext(name=1, type=2, enumExt=3, dataExt=4), "wrong.*type.*(name|type|enumExt|dataExt)"
         )
