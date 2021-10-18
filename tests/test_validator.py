@@ -1,5 +1,5 @@
 import re
-from unittest import TestCase
+from unittest import TestCase, skip
 
 from aac import util, validator, parser
 
@@ -77,8 +77,7 @@ class ValidatorTest(TestCase):
         assert_errors_exist(errors)
         assert_errors_contain(errors, "unrecognized.*root.*[a]")
 
-    # Disabling this test for now -- it's failing due to pollution from other tests and the aac_spec plugin.
-    '''
+    @skip("This is failing due to pollution from other tests and the aac_spec plugin")
     def test_data_validation(self):
 
         valid_data = """
@@ -101,4 +100,3 @@ class ValidatorTest(TestCase):
 
         assert_status_is_true(status)
         assert_no_errors(errors)
-        '''
