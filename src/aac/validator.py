@@ -226,27 +226,26 @@ def get_all_model_errors(model: dict) -> list:
             get_all_non_root_element_errors(m, "behavior", BEHAVIOR_ITEMS),
             get_all_non_root_element_errors(m, "components", FIELD_ITEMS),
             # TODO Need to work on this so it can be generalized easily later.
-            flatten(
-                map(
-                    lambda b: get_all_non_root_element_errors(b, "acceptance", SCENARIO_ITEMS),
-                    behaviors,
-                )
-            ),
-            flatten(
-                map(
-                    lambda b: get_all_non_root_element_errors(b, "input", FIELD_ITEMS),
-                    behaviors,
-                )
-            ),
-            flatten(
-                map(
-                    lambda b: get_all_non_root_element_errors(b, "output", FIELD_ITEMS),
-                    behaviors,
-                )
-            ),
+            rec_get_all_non_root_element_errors(behaviors, "acceptance", SCENARIO_ITEMS),
+            rec_get_all_non_root_element_errors(behaviors, "input", FIELD_ITEMS),
+            rec_get_all_non_root_element_errors(behaviors, "output", FIELD_ITEMS),
         )
 
     return []
+
+
+def rec_get_all_non_root_element_errors(models: list, element: str, items: list) -> list:
+    """Return all validation errors for the non-root elements of each model in MODELs.
+
+    Return a list of all the validation errors found for non-root elements
+    of each model in MODELs. If the non-root element MODELs are valid, return an
+    empty list.
+    """
+
+    def get_non_root_errors(m):
+        return get_all_non_root_element_errors(m, element, items)
+
+    return flatten(map(get_non_root_errors, models))
 
 
 def get_all_extension_errors(model: dict) -> list:
