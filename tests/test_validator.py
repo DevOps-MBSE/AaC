@@ -266,3 +266,33 @@ class ValidatorTest(TestCase):
             ),
             "wrong.*type.*field.*(name|type)",
         )
+
+    def test_can_validate_extensions(self):
+        def ext(**kwargs):
+            return o("ext", **kwargs)
+
+        assert_model_is_valid(ext(name="test", type="int"))
+        assert_model_is_valid(ext(name="test", type="int", enumExt=kw(add=[])))
+        assert_model_is_valid(ext(name="test", type="int", enumExt=kw(add=["a"])))
+        assert_model_is_valid(ext(name="test", type="int", enumExt=kw(add=["a", "b"])))
+        assert_model_is_valid(ext(name="test", type="int", dataExt=kw(add=[])))
+        assert_model_is_valid(
+            ext(name="test", type="int", dataExt=kw(add=[kw(name="a", type="int")]))
+        )
+        assert_model_is_valid(
+            ext(
+                name="test",
+                type="int",
+                dataExt=kw(add=[kw(name="a", type="int"), kw(name="b", type="int")]),
+            )
+        )
+
+        assert_model_is_invalid(ext(), "missing.*required.*(name|type)")
+        assert_model_is_invalid(
+            ext(name=1, type=2, enumExt=3, dataExt=4), "wrong.*type.*(name|type|enumExt|dataExt)"
+        )
+        assert_model_is_invalid(ext(name=1, type=2, enumExt=kw(add=1)), "wrong.*type.*field.*add")
+        assert_model_is_invalid(ext(name=1, type=2, dataExt=kw(add=1)), "wrong.*type.*field.*add")
+        assert_model_is_invalid(
+            ext(name="", type="", enumExt=kw(), dataExt=kw()), "cannot.*combine.*enumExt.*dataExt"
+        )

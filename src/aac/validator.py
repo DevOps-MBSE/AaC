@@ -29,6 +29,7 @@ def get_all_errors(model: dict) -> list:
             + get_all_data_errors(m)
             + get_all_usecase_errors(m)
             + get_all_model_errors(m)
+            + get_all_extension_errors(m)
         )
 
     return list(flatten(map(collect_errors, model.values())))
@@ -248,6 +249,61 @@ def get_all_model_errors(model: dict) -> list:
     return []
 
 
+def get_all_extension_errors(model: dict) -> list:
+    """Return all validation errors for the system MODEL.
+
+    Return a list of all the validation errors found for the system MODEL. If
+    the system MODEL is valid, return an empty list.
+    """
+
+    def is_ext(model):
+        return "ext" in model
+
+    def is_data_ext(model):
+        return "dataExt" in model and isinstance(model["dataExt"], dict)
+
+    def is_enum_ext(model):
+        return "enumExt" in model and isinstance(model["enumExt"], dict)
+
+    def has_added_fields(model):
+        return model and "add" in model and isinstance(model["add"], list)
+
+    def added_fields(model):
+        ext = None
+        if is_data_ext(model):
+            ext = model["dataExt"]
+        elif is_enum_ext(model):
+            ext = model["enumExt"]
+        return ext["add"] if has_added_fields(ext) else []
+
+    def get_all_errors_if_data_and_enum_extension_combined(model):
+        if is_data_ext(model) and is_enum_ext(model):
+            return ["cannot combine enumExt and dataExt in the same extension"]
+        return []
+
+    if is_ext(model):
+        ext = model["ext"]
+        args = (
+            ("dataExt", DATA_EXTENSION_ITEMS)
+            if is_data_ext(ext)
+            else ("enumExt", ENUM_EXTENSION_ITEMS)
+        )
+        return filter_out_empty_strings(
+            get_all_errors_for(model, kind="ext", items=EXTENSION_ITEMS),
+            get_all_errors_if_data_and_enum_extension_combined(ext),
+            get_all_non_root_element_errors(ext, *args),
+            # TODO Need to work on this so it can be generalized easily later.
+            flatten(
+                map(
+                    lambda a: get_all_non_root_element_errors(a, "add", FIELD_ITEMS),
+                    added_fields(ext),
+                )
+            ),
+        )
+
+    return []
+
+
 # TODO: Eventually, this should come from the AaC.yaml file
 
 ENUM_ITEMS = [
@@ -306,4 +362,20 @@ SCENARIO_ITEMS = [
     {"name": "given", "type": list, "required": False},
     {"name": "when", "type": list, "required": True},
     {"name": "then", "type": list, "required": True},
+]
+
+EXTENSION_ITEMS = [
+    {"name": "name", "type": str, "required": True},
+    {"name": "type", "type": str, "required": True},
+    {"name": "enumExt", "type": dict, "required": False},
+    {"name": "dataExt", "type": dict, "required": False},
+]
+
+DATA_EXTENSION_ITEMS = [
+    {"name": "add", "type": list, "required": True},
+    {"name": "required", "type": list, "required": False},
+]
+
+ENUM_EXTENSION_ITEMS = [
+    {"name": "add", "type": list, "required": True},
 ]
