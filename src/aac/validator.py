@@ -292,13 +292,6 @@ def get_all_extension_errors(model: dict) -> list:
             get_all_errors_for(model, kind="ext", items=EXTENSION_ITEMS),
             get_all_errors_if_data_and_enum_extension_combined(ext),
             get_all_non_root_element_errors(ext, *args),
-            # TODO Need to work on this so it can be generalized easily later.
-            flatten(
-                map(
-                    lambda a: get_all_non_root_element_errors(a, "add", FIELD_ITEMS),
-                    added_fields(ext),
-                )
-            ),
         )
 
     return []
