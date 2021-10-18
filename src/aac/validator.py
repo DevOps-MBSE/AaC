@@ -219,7 +219,7 @@ def get_all_model_errors(model: dict) -> list:
 
     if is_model(model):
         m = model["model"]
-        behaviors = m["behavior"] if has_behaviors(m) else [{"acceptance": []}]
+        behaviors = m["behavior"] if has_behaviors(m) else []
         return filter_out_empty_strings(
             get_all_errors_for(model, kind="model", items=MODEL_ITEMS),
             get_all_non_root_element_errors(m, "behavior", BEHAVIOR_ITEMS),
