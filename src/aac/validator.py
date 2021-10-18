@@ -156,10 +156,16 @@ def get_all_non_root_element_errors(model: dict, element: str, items: list) -> l
     def get_field_error(field):
         return get_all_errors_for(field, items=items)
 
-    if has_element(model):
-        return flatten(map(get_field_error, model[element]))
+    def get_field_errors_per_element(model):
+        if has_element(model):
+            return flatten(map(get_field_error, model[element]))
 
-    return []
+        return []
+
+    if isinstance(model, list):
+        return flatten(map(get_field_errors_per_element, model))
+    else:
+        return get_field_errors_per_element(model)
 
 
 def get_all_required_field_errors(model: dict) -> list:
@@ -225,27 +231,12 @@ def get_all_model_errors(model: dict) -> list:
             get_all_errors_for(model, kind="model", items=MODEL_ITEMS),
             get_all_non_root_element_errors(m, "behavior", BEHAVIOR_ITEMS),
             get_all_non_root_element_errors(m, "components", FIELD_ITEMS),
-            # TODO Need to work on this so it can be generalized easily later.
-            rec_get_all_non_root_element_errors(behaviors, "acceptance", SCENARIO_ITEMS),
-            rec_get_all_non_root_element_errors(behaviors, "input", FIELD_ITEMS),
-            rec_get_all_non_root_element_errors(behaviors, "output", FIELD_ITEMS),
+            get_all_non_root_element_errors(behaviors, "acceptance", SCENARIO_ITEMS),
+            get_all_non_root_element_errors(behaviors, "input", FIELD_ITEMS),
+            get_all_non_root_element_errors(behaviors, "output", FIELD_ITEMS),
         )
 
     return []
-
-
-def rec_get_all_non_root_element_errors(models: list, element: str, items: list) -> list:
-    """Return all validation errors for the non-root elements of each model in MODELs.
-
-    Return a list of all the validation errors found for non-root elements
-    of each model in MODELs. If the non-root element MODELs are valid, return an
-    empty list.
-    """
-
-    def get_non_root_errors(m):
-        return get_all_non_root_element_errors(m, element, items)
-
-    return flatten(map(get_non_root_errors, models))
 
 
 def get_all_extension_errors(model: dict) -> list:
