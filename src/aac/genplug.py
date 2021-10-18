@@ -83,7 +83,7 @@ def compile_templates(parsed_models: dict[str, dict]) -> list[TemplateOutputFile
     Parse the model and generate the plugin template accordingly.
 
     Args:
-        parsed_models <dict>: Dict representing the plugin models
+        parsed_models: Dict representing the plugin models
 
     Returns:
         List of TemplateOutputFile objects that contain the compiled templates
@@ -104,10 +104,9 @@ def compile_templates(parsed_models: dict[str, dict]) -> list[TemplateOutputFile
     if not plugin_name.startswith(__package__):
         plugin_name = "{__package__}-{plugin_name}"
 
+    # Prepare template variables/properties
     behaviors = util.search(plugin_model, ["behavior"])
     commands = _gather_commands(behaviors)
-
-    plugin_templates = load_templates("genplug")
 
     plugin = {
         "name": plugin_model.get("name"),
@@ -119,12 +118,12 @@ def compile_templates(parsed_models: dict[str, dict]) -> list[TemplateOutputFile
     ]
 
     template_properties = {"plugin": plugin, "commands": commands, "extensions": extensions}
-    generated_templates = generate_templates(plugin_templates, template_properties)
+    generated_templates = generate_templates(load_templates("genplug"), template_properties)
 
     # Define which templates we want to overwrite.
     templates_to_overwrite = ["plugin.py.jinja2", "setup.py.jinja2"]
 
-    # Combine the generated templates into a map of file_name: file_contents
+    # Compile the files to write in to a list.
     files_to_write = []
     for template_name, template_content in generated_templates.items():
         file_name = _convert_template_name_to_file_name(template_name, plugin_implementation_name)
@@ -142,8 +141,8 @@ def _write_generated_templates_to_file(
     Write a list of generated files to the target directory.
 
     Args:
-        generated_files <list>: list of generated files to write to the filesystem
-        plug_dir <str>: the directory to write the generated files to.
+        generated_files: list of generated files to write to the filesystem
+        plug_dir: the directory to write the generated files to.
     """
 
     for generated_file in generated_files:
@@ -160,8 +159,8 @@ def _convert_template_name_to_file_name(template_name: str, plugin_name: str) ->
     Convert template names to pythonic file names.
 
     Args:
-        template_name <str>: The template's name
-        plugin_name <str>: The plugin's name
+        template_name: The template's name
+        plugin_name: The plugin's name
     Returns:
         A string containing the personalized/pythonic file name.
     """
@@ -184,8 +183,8 @@ def _is_user_desired_output_directory(arch_file: str, output_dir: str) -> bool:
     Ask the user if they're comfortable with the target generation directory.
 
     Args:
-        arch_file <str>: Name of the architecture file
-        output_dir <str>: The path to the target output directory
+        arch_file: Name of the architecture file
+        output_dir: The path to the target output directory
     Returns:
         boolean True if the user wishes to write to <output_dir>
     """
@@ -209,7 +208,7 @@ def _gather_commands(behaviors: dict) -> list[dict]:
     Parses the plugin model's behaviors and returns a list of commands derived from the plugin's behavior.
 
     Args:
-        behaviors <dict>: The plugin's modeled behaviors
+        behaviors: The plugin's modeled behaviors
     Returns:
         list of command-type behaviors dicts
     """
@@ -257,10 +256,10 @@ def _write_file(path: str, file_name: str, overwrite: bool, content: str) -> Non
     Write string content to a file.
 
     Args:
-        path <str>: the path to the directory that the file will be written to
-        file_name <str>: the name of the file to be written
-        overwrite <bool>: whether to overwrite an existing file, if false the file will not be altered.
-        content <str>: contents of the file to write
+        path: the path to the directory that the file will be written to
+        file_name: the name of the file to be written
+        overwrite: whether to overwrite an existing file, if false the file will not be altered.
+        content: contents of the file to write
     """
     file_to_write = os.path.join(path, file_name)
     if not overwrite and os.path.exists(file_to_write):

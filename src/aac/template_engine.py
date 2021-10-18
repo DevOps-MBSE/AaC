@@ -6,11 +6,13 @@ from jinja2 import Template, FileSystemLoader, Environment
 
 def load_templates(group_dir_name: str) -> list[Template]:
     """
-    Load default templates based on group-name
+    Load default templates based on group-name.
 
-    :param:group_dir_name name of the templates sub-directory to load templates from.
-    :type:str
-    return: list of loaded templates
+    Args:
+        group_dir_name: name of the templates sub-directory to load templates from.
+
+    Returns:
+        list of loaded templates
     """
     path = os.path.realpath(f"{TEMPLATES_DIR_PATH}/{group_dir_name}")
 
@@ -32,11 +34,9 @@ def generate_templates(templates: list[Template], properties: dict[str, str]) ->
     """
     Compile a list of Jinja2 Template objects to a list of strings.
 
-    :param:templates list of Jinja2 templates to compile.
-    :type:list[Template]
-    :param:properties Dict of properties to use when compiling the templates
-    :type:dict
-    :return: Compiled/Rendered template as a string
+    Args:
+        templates: list of Jinja2 templates to compile.
+        properties: Dict of properties to use when compiling the templates
     """
     generated_templates = {}
     for template in templates:
@@ -50,11 +50,12 @@ def generate_template(template: Template, properties: dict[str, str]) -> str:
     """
     Compile a Jinja2 Template object to a string.
 
-    :param:template Jinja2 template to compile.
-    :type:Template
-    :param:properties Dict of properties to use when compiling the template
-    :type:dict
-    :return: Compiled/Rendered template as a string
+    Args:
+        template: Jinja2 template to compile.
+        properties: Dict of properties to use when compiling the template
+
+    Returns:
+        Compiled/Rendered template as a string
     """
     return template.render(properties)
 
