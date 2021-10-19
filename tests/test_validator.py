@@ -308,3 +308,18 @@ class ValidatorTest(TestCase):
 
     def test_can_detect_cross_referencing_errors(self):
         assert_model_is_invalid(o("invalid", name="test"), "invalid.*not.*recognized.*root")
+
+    def test_can_load_aac_data(self):
+        enum_items = [
+            {"name": "name", "type": "string", "required": True},
+            {"name": "values", "type": "string[]", "required": True},
+        ]
+
+        data_items = [
+            {"name": "name", "type": "string", "required": True},
+            {"name": "fields", "type": "Field[]", "required": True},
+            {"name": "required", "type": "string[]", "required": False},
+        ]
+
+        self.assertListEqual(validator.load_aac_fields_for("enum"), enum_items)
+        self.assertListEqual(validator.load_aac_fields_for("data"), data_items)

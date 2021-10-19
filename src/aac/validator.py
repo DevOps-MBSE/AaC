@@ -2,6 +2,8 @@
 
 # TODO: Replace "magic strings" with a more maintainable solution
 # TODO: Generalize get_all_errors to handle all (or at least most of) the cases
+# TODO: Switch from using isinstance(...) for type checking to something that can handle
+#       AaC-defined types.
 
 from enum import Enum
 from typing import Union
@@ -40,6 +42,7 @@ def get_all_errors(model: dict) -> list:
 
 
 def get_all_parsing_errors(model: dict) -> list:
+    """Return all parsing errors."""
     # TODO: Make sure there is only one key in the model.
     # => Not sure if we really need this check, to be honest.
 
@@ -302,6 +305,29 @@ def get_all_extension_errors(model: dict) -> list:
         )
 
     return []
+
+
+# TODO: Fix this ugly first pass
+def load_aac_fields_for(kind: str) -> list:
+    """Get the AaC fields and their properties for the specified KIND of item."""
+    data, enums = util.get_aac_spec()
+    fields = []
+    if kind in data:
+        print(list(data[kind].values())[0])
+        fields = list(data[kind].values())[0]["fields"]
+    elif kind in enums:
+        print(list(enums[kind].values())[0])
+        fields = list(enums[kind].values())[0]["values"]
+    else:
+        print(f"unrecognized kind: {kind}")
+
+    def tmp(field):
+        field.update({"required": field["name"] in list(data[kind].values())[0]["required"]})
+        return field
+
+    fields = list(map(tmp, fields))
+
+    return fields
 
 
 # TODO: Eventually, this should come from the AaC.yaml file
