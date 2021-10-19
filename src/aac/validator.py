@@ -313,10 +313,8 @@ def load_aac_fields_for(kind: str) -> list:
     data, enums = util.get_aac_spec()
     fields = []
     if kind in data:
-        print(list(data[kind].values())[0])
         fields = list(data[kind].values())[0]["fields"]
     elif kind in enums:
-        print(list(enums[kind].values())[0])
         fields = list(enums[kind].values())[0]["values"]
     else:
         print(f"unrecognized kind: {kind}")
