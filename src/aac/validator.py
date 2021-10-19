@@ -26,7 +26,8 @@ def get_all_errors(model: dict) -> list:
 
     def collect_errors(m):
         return (
-            get_all_enum_errors(m)
+            get_all_parsing_errors(m)
+            + get_all_enum_errors(m)
             + get_all_data_errors(m)
             + get_all_usecase_errors(m)
             + get_all_model_errors(m)
@@ -34,6 +35,24 @@ def get_all_errors(model: dict) -> list:
         )
 
     return list(flatten(map(collect_errors, model.values())))
+
+
+def get_all_parsing_errors(model: dict) -> list:
+    # TODO: Make sure there is only one key in the model.
+    # Not sure if we really need this check, to be honest.
+
+    # TODO: Make sure the root name is a valid root name based on the spec.
+
+    # TODO: Make sure the model is valid per it's spec type.
+    # That is, if we're trying to validate a data model, then make sure we
+    # validate against the data model spec.
+
+    # TODO: Make sure all types are defined somewhere in the model.
+    # TODO: -> validate references to primitive types
+    # TODO: -> validate references to enum values
+    # TODO: -> validate references to other models
+
+    return []
 
 
 def get_all_enum_errors(model: dict) -> list:
