@@ -3,8 +3,13 @@ from unittest import TestCase, skip
 
 from aac import util, validator, parser
 
-assert_status_is_false = lambda status: assert_status_is(status, False)
-assert_status_is_true = lambda status: assert_status_is(status, True)
+
+def assert_status_is_false(status):
+    return assert_status_is(status, False)
+
+
+def assert_status_is_true(status):
+    return assert_status_is(status, True)
 
 
 def assert_status_is(status, expected_status):

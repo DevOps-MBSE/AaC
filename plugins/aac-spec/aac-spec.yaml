@@ -52,6 +52,17 @@ data:
     - name
     - value
 ---
+data: 
+  name: RequirementReference
+  fields:
+    - name: spec
+      type: string
+    - name: ids
+      type: string[]
+  required:
+    - spec
+    - ids
+---
 ext:
   name: addSpecificationToRoot
   type: root
@@ -59,6 +70,22 @@ ext:
     add:
       - name: spec
         type: Specification
+---
+ext:
+  name: addSpecTraceToBehavior
+  type: Behavior
+  dataExt:
+    add:
+      - name: requirements
+        type: RequirementReference[]
+        ---
+ext:
+  name: addSpecTraceToData
+  type: data
+  dataExt:
+    add:
+      - name: requirements
+        type: RequirementReference[]
 ---
 model:
   name: aac-spec
