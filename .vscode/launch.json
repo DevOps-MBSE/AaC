@@ -110,6 +110,18 @@
             "justMyCode": false
         },
         {
+            "name": "Python: Gen-Plugin PlantUML",
+            "type": "python",
+            "request": "launch",
+            "program": "src/aac/__main__.py",
+            "args": [
+                "gen-plugin",
+                "./plugins/aac-plantuml/aac-plantuml.yaml"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
             "name": "Python: Unit Tests",
             "type": "python",
             "request": "launch",

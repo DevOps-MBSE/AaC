@@ -1,226 +1,274 @@
 """
 A plugin to generate new plugins based on a specifically structured AaC model file.
+
 The plugin AaC model must define behaviors using the command BehaviorType.  Each
 defined behavior becomes a new command for the aac CLI.
 """
+import attr
 import os
 import yaml
-import aac
-from aac import util
+
+from aac import util, hookimpl
 from aac.AacCommand import AacCommand
+from aac.template_engine import load_templates, generate_templates
 
 
-@aac.hookimpl
+@hookimpl
 def get_commands() -> list[AacCommand]:
     """
     Returns the gen-plugin command type to the plugin infrastructure.
+
+    Returns:
+        A list of AacCommands
     """
-    my_cmd = AacCommand("gen-plugin", "Generates an AaC plugin from an AaC model of the plugin", genPlugin)
+    my_cmd = AacCommand(
+        "gen-plugin", "Generates an AaC plugin from an AaC model of the plugin", generate_plugin
+    )
     return [my_cmd]
 
 
-@aac.hookimpl
+@hookimpl
 def get_base_model_extensions() -> str:
     """
     Returns the CommandBehaviorType modeling language extension to the plugin infrastructure.
+
+    Returns:
+        string representing yaml extensions and data definitions employed by the plugin
     """
-    return '''
+    return """
 ext:
    name: CommandBehaviorType
    type: BehaviorType
    enumExt:
       add:
          - command
-'''
+"""
 
 
-def genPlugin(arch_file: str, parsed_model: dict[str, dict]):
+class GeneratePluginException(Exception):
+    """Exceptions specifically concerning plugin generation."""
+
+    pass
+
+
+@attr.s
+class TemplateOutputFile:
+    """Class containing all of the relevant information necessary to handle writing templates to files."""
+
+    file_name = attr.ib()
+    template = attr.ib()
+    overwrite = attr.ib()
+
+
+def generate_plugin(arch_file: str, parsed_model: dict) -> None:
     """
-    Generates the AaC plug-in boilerplate code based on the provided model.
-    """
+    Entrypoint command to generate the plugin.
 
-    # ask the user a few questions about their new plugin
+    Args:
+        arch_file <str>: filepath to the architecture file
+        parsed_model <dict>: Dict representing the plugin model
+    """
     plug_dir = os.path.dirname(os.path.realpath(arch_file))
-    confirmation = ""
+
+    try:
+        if _is_user_desired_output_directory(arch_file, plug_dir):
+            templates = compile_templates(parsed_model)
+            _write_generated_templates_to_file(templates, plug_dir)
+    except GeneratePluginException as exception:
+        print(f"gen-plugin error [{arch_file}]:  {exception}.")
+
+
+def compile_templates(parsed_models: dict[str, dict]) -> list[TemplateOutputFile]:
+    """
+    Parse the model and generate the plugin template accordingly.
+
+    Args:
+        parsed_models: Dict representing the plugin models
+
+    Returns:
+        List of TemplateOutputFile objects that contain the compiled templates
+    """
+
+    # ensure model is present and valid, get the plugin name
+    plugin_models = util.get_models_by_type(parsed_models, "model")
+    if len(plugin_models.keys()) != 1:
+        raise GeneratePluginException(
+            "Plugin Arch-as-Code yaml must contain one and only one model."
+        )
+
+    plugin_model = list(plugin_models.values())[0].get("model")
+    plugin_name = plugin_model.get("name")
+    plugin_implementation_name = _convert_to_implementation_name(plugin_name)
+
+    # Ensure that the plugin name has package name prepended to it
+    if not plugin_name.startswith(__package__):
+        plugin_name = "{__package__}-{plugin_name}"
+
+    # Prepare template variables/properties
+    behaviors = util.search(plugin_model, ["behavior"])
+    commands = _gather_commands(behaviors)
+
+    plugin = {
+        "name": plugin_model.get("name"),
+        "implementation_name": plugin_implementation_name,
+    }
+
+    extensions = [
+        _add_extensions_yaml_string(definition) for definition in _gather_extensions(parsed_models)
+    ]
+
+    template_properties = {"plugin": plugin, "commands": commands, "extensions": extensions}
+    generated_templates = generate_templates(load_templates("genplug"), template_properties)
+
+    # Define which templates we want to overwrite.
+    templates_to_overwrite = ["plugin.py.jinja2", "setup.py.jinja2"]
+
+    # Compile the files to write in to a list.
+    files_to_write = []
+    for template_name, template_content in generated_templates.items():
+        file_name = _convert_template_name_to_file_name(template_name, plugin_implementation_name)
+        overwrite = template_name in templates_to_overwrite
+
+        files_to_write.append(TemplateOutputFile(file_name, template_content, overwrite))
+
+    return files_to_write
+
+
+def _write_generated_templates_to_file(
+    generated_files: list[TemplateOutputFile], plug_dir: str
+) -> None:
+    """
+    Write a list of generated files to the target directory.
+
+    Args:
+        generated_files: list of generated files to write to the filesystem
+        plug_dir: the directory to write the generated files to.
+    """
+
+    for generated_file in generated_files:
+        _write_file(
+            plug_dir,
+            generated_file.file_name,
+            generated_file.overwrite,
+            generated_file.template,
+        )
+
+
+def _convert_template_name_to_file_name(template_name: str, plugin_name: str) -> str:
+    """
+    Convert template names to pythonic file names.
+
+    Args:
+        template_name: The template's name
+        plugin_name: The plugin's name
+    Returns:
+        A string containing the personalized/pythonic file name.
+    """
+
+    #  we're using that genplug will only ever generate python templates
+    assumed_file_extension = ".py"
+
+    #  Strip anything after the .py ending
+    strip_index = template_name.index(assumed_file_extension) + len(assumed_file_extension)
+    file_name = template_name[:strip_index]
+
+    # Replace "plugin" with the plugin name
+    file_name = file_name.replace("plugin", plugin_name)
+
+    return file_name
+
+
+def _is_user_desired_output_directory(arch_file: str, output_dir: str) -> bool:
+    """
+    Ask the user if they're comfortable with the target generation directory.
+
+    Args:
+        arch_file: Name of the architecture file
+        output_dir: The path to the target output directory
+    Returns:
+        boolean True if the user wishes to write to <output_dir>
+    """
     first = True
+    confirmation = ""
     while confirmation not in ["y", "n", "Y", "N"]:
         if not first:
             print(f"Unrecognized input {confirmation}:  please enter 'y' or 'n'.")
-        confirmation = input(f"Do you want to generate an AaC plugin in the directory {plug_dir}? [y/n]")
+        confirmation = input(
+            f"Do you want to generate an AaC plugin in the directory {output_dir}? [y/n]"
+        )
 
     if confirmation in ["n", "N"]:
         print(f"Canceled: Please move {arch_file} to the desired directory and rerun the command.")
-        return
-    else:
-        plugin_add_command_lines = []
 
-        # ensure model is present and valid, get the plugin name
-        model_types = util.get_models_by_type(parsed_model, "model")
-        plugin_name = _get_plugin_name(model_types, arch_file)
-
-        plugin_add_command_lines, plugin_impl_lines, impl_names = _process_behaviors(
-            plugin_name, util.search(model_types[plugin_name], ["model", "behavior"]))
-
-        # write files
-        # 1) create empty __init__.py
-        _write_file(plug_dir, "__init__.py", True, ["# WARNIG - Do not edit this file.  Changes may be overwritten by AaC gen-plugin."])
-        # 2) write setup.py
-        _write_file(plug_dir, "setup.py", True, _generate_setup_py(plugin_name))
-        # 3) write [name].py
-        file_name = plugin_name.replace("-", "_")
-        _write_file(plug_dir, f"{file_name}.py", True, _generate_plugin_py(
-            plugin_name, impl_names, plugin_add_command_lines, _process_extensions(parsed_model)))
-        # 4) write [name]_impl.py
-        plugin_impl_header = ["# NOTE: It is safe to edit this file.  It will not be overritten by AaC gen-plugin", ""]
-        _write_file(plug_dir, f"{file_name}_impl.py", False, plugin_impl_header + plugin_impl_lines)
+    return confirmation in ["y", "Y"]
 
 
-def _get_plugin_name(models: dict[str, dict], arch_file: str):
-    # the plugin must have a model to be valid
-    # the model doesn't have to define behavior, but it does have to be named
-    # since the model is where we get the name from, we'll process that first
-    # see if there's a behavior component to this plugin
-    if len(models.keys()) != 1:
-        print(f"gen-plugin error [{arch_file}]:  Plugin Arch-as-Code yaml must contain a single model.")
-        raise RuntimeError
-    for plugin_name in models:
-        # the plugin name is the name of the first (and only) model
-        return plugin_name
+def _gather_commands(behaviors: dict) -> list[dict]:
+    """
+    Parses the plugin model's behaviors and returns a list of commands derived from the plugin's behavior.
 
-
-def _generate_setup_py(plugin_name: str):
-    setup_py_lines = []
-    setup_py_lines.append("# WARNIG - DO NOT EDIT - YOUR CHANGES WILL NOT BE PROTECTED\n")
-    setup_py_lines.append("# This file is auto-generated by aac gen-plugin and may be overwritten.\n")
-    setup_py_lines.append("\n")
-    setup_py_lines.append("from setuptools import setup")
-    setup_py_lines.append("\n")
-    from_name = plugin_name.replace("-", "_") + "_impl"
-    setup_py_lines.append(f"from {from_name} import plugin_version")
-    setup_py_lines.append("\n")
-    setup_py_content = f'''
-setup(
-    version=plugin_version,
-    name="{plugin_name}",
-    install_requires=["aac"],
-    entry_points={{
-        "aac": ["{plugin_name}={plugin_name.replace("-", "_")}"],
-    }},
-)
-'''
-    setup_py_lines.append(setup_py_content)
-    return setup_py_lines
-
-
-def _generate_plugin_py(plugin_name: str, impl_names: list[str], plugin_add_command_lines: list[str], plugin_get_extension_lines: list[str]):
-    plugin_lines = []
-    plugin_lines.append("# WARNIG - DO NOT EDIT - YOUR CHANGES WILL NOT BE PROTECTED\n")
-    plugin_lines.append("# This file is auto-generated by aac gen-plugin and may be overwritten.\n")
-    plugin_lines.append("\n")
-    plugin_lines.append("import aac\n")
-    plugin_lines.append("from aac.AacCommand import AacCommand\n")
-    import_name = plugin_name.replace("-", "_")
-    import_str = f"from {import_name}_impl import "
-    is_first = True
-    for name in impl_names:
-        if is_first:
-            is_first = False
-            import_str += name
-        else:
-            import_str = f"{import_str}, {name}"
-
-    plugin_lines.append(f"{import_str}\n")
-    plugin_lines.append("\n")
-    plugin_lines.append("\n")
-    if len(plugin_add_command_lines) > 0:
-        plugin_lines = plugin_lines + plugin_add_command_lines
-        plugin_lines.append("\n")
-    if len(plugin_get_extension_lines) > 0:
-        plugin_lines = plugin_lines + plugin_get_extension_lines
-        plugin_lines.append("\n")
-    return plugin_lines
-
-
-def _process_behaviors(behaviors: dict):
-    add_entries = []
-    plugin_impl_lines = []
-    impl_names = []
-    plugin_impl_lines.append("\n")
-    plugin_impl_lines.append("plugin_version = \"0.0.1\"")
-    plugin_impl_lines.append("\n")
+    Args:
+        behaviors: The plugin's modeled behaviors
+    Returns:
+        list of command-type behaviors dicts
+    """
+    commands = []
 
     for behavior in behaviors:
-
         behavior_name = behavior["name"]
         behavior_description = behavior["description"]
+        behavior_type = behavior["type"]
+
+        if behavior_type != "command":
+            continue
+
         if behavior_description.startswith("'"):
             behavior_description = behavior_description[1:]
+
         if behavior_description.endswith("'"):
             behavior_description = behavior_description[:-1]
-        impl_name = behavior_name.replace("-", "_")
-        impl_names.append(impl_name)
 
-        # add command for behavior
-        add_entries.append(f'''
-    ret_val.append(AacCommand(
-        \"{behavior_name}\",
-        \'''
-        {behavior_description}
-        \''', {impl_name})
-    )''')
+        # First line should end with a period. flake8(D400)
+        if not behavior_description.endswith("."):
+            behavior_description = f"{behavior_description}."
 
-        # assemble impl lines
-        plugin_impl_lines.append("\n")
-        plugin_impl_lines.append(f'''
-def {impl_name}(archFile, parsed_model):
-    # TODO add implementation here
-    print("{impl_name} is not implemented")''')
-        plugin_impl_lines.append("\n")
+        behavior["description"] = behavior_description
+        behavior["implementation_name"] = _convert_to_implementation_name(behavior_name)
+        commands.append(behavior)
 
-    # assemble behavior info for adding commands
-    plugin_add_command_lines = []
-    plugin_add_command_lines.append("@aac.hookimpl\n")
-    plugin_add_command_lines.append("def get_commands():\n")
-    plugin_add_command_lines.append("    ret_val = []")
-    for add_command_entry in add_entries:
-        plugin_add_command_lines.append(add_command_entry)
-        plugin_add_command_lines.append("\n")
-    plugin_add_command_lines.append("    return ret_val")
-
-    return plugin_add_command_lines, plugin_impl_lines, impl_names
+    return commands
 
 
-def _process_extensions(parsed_models: dict[str, dict]):
+def _gather_extensions(parsed_models: dict[str, dict]) -> list[dict]:
+    extension_definitions = list(util.get_models_by_type(parsed_models, "ext").values())
+    data_definitions = list(util.get_models_by_type(parsed_models, "data").values())
 
-    plugin_ext_lines = []
-    plugin_ext_lines.append("\n")
-    plugin_ext_lines.append("\n")
-    plugin_ext_lines.append("@aac.hookimpl\n")
-    plugin_ext_lines.append("def get_base_model_extensions() -> str:\n")
-    is_first = True
-    for model_type in parsed_models.keys():
-        if "data" in parsed_models[model_type] or "ext" in parsed_models[model_type]:  # only include data and ext (exclude others)
-            if is_first:
-                is_first = False
-                plugin_ext_lines.append("    return \'''\n")
-            else:
-                plugin_ext_lines.append("---\n")
-            plugin_ext_lines.append(yaml.dump(parsed_models[model_type]))
-            plugin_ext_lines.append("\n")
-
-    if is_first:  # this means there were no extensions in the plugin model
-        plugin_ext_lines.append("    return None\n")
-    else:
-        plugin_ext_lines.append("\'''")
-
-    return plugin_ext_lines
+    return extension_definitions + data_definitions
 
 
-def _write_file(path: str, file_name: str, overwrite: bool, content: list[str]):
+def _add_extensions_yaml_string(extension_model: dict) -> dict:
+    extension_model["yaml"] = yaml.dump(extension_model)
+    return extension_model
+
+
+def _write_file(path: str, file_name: str, overwrite: bool, content: str) -> None:
+    """
+    Write string content to a file.
+
+    Args:
+        path: the path to the directory that the file will be written to
+        file_name: the name of the file to be written
+        overwrite: whether to overwrite an existing file, if false the file will not be altered.
+        content: contents of the file to write
+    """
     file_to_write = os.path.join(path, file_name)
     if not overwrite and os.path.exists(file_to_write):
         print(f"{file_to_write} already exists, skipping write")
     else:
-        file = open(file_to_write, 'w')
+        file = open(file_to_write, "w")
         file.writelines(content)
         file.close()
+
+
+def _convert_to_implementation_name(original_name: str) -> str:
+    return original_name.replace("-", "_")

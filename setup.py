@@ -17,6 +17,8 @@ runtime_dependencies = [
     "regex == 2021.9.30",
     "typing-extensions == 3.10.0.2",
     "pluggy == 1.0.0",
+    "Jinja2 >= 3.0.2",
+    "MarkupSafe >= 2.0",
 ]
 
 development_dependencies = [
@@ -54,7 +56,7 @@ setup(
     tests_require=test_dependencies,
     entry_points={
         "console_scripts": [
-            "aac = aac:run_cli",
+            "aac = aac.cli:run_cli",
         ]
     },
     extras_require={

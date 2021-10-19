@@ -1,9 +1,12 @@
 """Arch-as-Code helper utilities to simplify development.
 
-The aac.util module provides some functionallity discovered to be valuable
+The aac.util module provides some functionality discovered to be valuable
 during the development of aac.  By placing this behavior in a utility
 module we prevent code duplication and simplify maintenance.
+
+Avoid adding to this module, always look for ways move these functions into modules with similar functionality.
 """
+
 import os
 import logging
 from typing import Any
@@ -16,11 +19,12 @@ AAC_MODEL: dict[str, dict] = {}
 
 
 def search(model: dict[str, Any], search_keys: list[str]) -> list:
-    """Search an AaC model structure by key(s).
+    """
+    Search an AaC model structure by key(s).
 
     Searches a dict for the contents given a set of keys. Search returns a list of
     the entries in the model that correcpond to those keys.  This search will
-    traverse the full dict tree, including embeded lists.
+    traverse the full dict tree, including embedded lists.
 
         Typical usage example:
         Let's say you have a dict structure parsed from the following AaC yaml.
@@ -44,13 +48,13 @@ def search(model: dict[str, Any], search_keys: list[str]) -> list:
         The above example demonstrates a complex type being returned as a dict.  Search will also
         provide direct access to simple types in the model.
 
-            for field_name in util.serach(my_model, ["data", "fields", "name"]):
+            for field_name in util.search(my_model, ["data", "fields", "name"]):
                 print(f"field_name: {field_name}")
 
     Args:
         model: The model to search.  This is often the value taken from the dict returned
             by aac.parser.parse(<aac_file>).
-        search_keys: A list of strings representing keys in the model dict heirarchy.
+        search_keys: A list of strings representing keys in the model dict hierarchy.
 
     Returns:
         Returns a list of found data items based on the search keys.
@@ -68,10 +72,12 @@ def search(model: dict[str, Any], search_keys: list[str]) -> list:
 
     search_key = keys.pop(0)
     final_key = len(keys) == 0
-    model_value = model[search_key]
+    model_value = None
 
     # see if the key exists in the dict
     if search_key in model:
+        model_value = model[search_key]
+
         if final_key:
             if isinstance(model_value, list):
                 ret_val = model_value
@@ -89,7 +95,7 @@ def search(model: dict[str, Any], search_keys: list[str]) -> list:
     # it isn't the final key and the value is a list, so search each value
     if not done and isinstance(model_value, list):
         for model_item in model_value:
-            # print(model_item)
+
             if isinstance(model_item, dict):
                 ret_val = ret_val + (search(model_item, keys))
             else:
@@ -107,7 +113,9 @@ def search(model: dict[str, Any], search_keys: list[str]) -> list:
 
 def get_aac_spec() -> tuple[dict[str, dict], dict[str, dict]]:
     """
-    Gets the specification for Architecture-as-Code iteself.  The AaC model specification is
+    Get the specification for Architecture-as-Code itself.
+
+    The AaC model specification is
     defined as an AaC model and is needed for model validation.
 
     Returns:
@@ -149,6 +157,7 @@ def get_aac_spec_as_yaml() -> str:
     aac_data, aac_enums = get_aac_spec()
     aac_model = aac_data | aac_enums
     aac_yaml = ""
+
     is_first = True
     for aac_name in aac_model.keys():
         # put in the separator for all but the first
@@ -174,14 +183,14 @@ def extend_aac_spec(parsed_model: dict[str, dict]):
     global AAC_MODEL
 
     apply_me = parsed_model.copy()
-    exts = get_models_by_type(apply_me, "ext")
-    for ext_type in exts:
+    extensions = get_models_by_type(apply_me, "ext")
+    for ext_type in extensions:
         del apply_me[ext_type]
     AAC_MODEL = AAC_MODEL | apply_me
 
 
 def get_primitives(reload: bool = False) -> list[str]:
-    """Gets the list of primitives as defined in the AaC model specifictaion.
+    """Gets the list of primitives as defined in the AaC model specification.
 
     Args:
         reload: If True the cached primitive values will be reloaded.
@@ -201,7 +210,7 @@ def get_primitives(reload: bool = False) -> list[str]:
 
 
 def get_roots(reload: bool = False) -> list[str]:
-    """Gets the list of root names as defined in the AaC model specifictaion.
+    """Gets the list of root names as defined in the AaC model specification.
 
     Args:
         reload: If True the cached root name values will be reloaded.

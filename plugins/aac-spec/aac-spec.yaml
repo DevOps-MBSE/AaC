@@ -41,7 +41,7 @@ data:
     - id
     - shall
 ---
-data: 
+data:
   name: RequirementAttribute
   fields:
     - name: name
@@ -95,17 +95,16 @@ model:
       type: command
       description: Validates spec traces within the AaC model
       input:
-        - name: archFile
+        - name: architecture_file
           type: file
         - name: parsed_model
           type: map
       acceptance:
         - scenario: Valid spec traces are modeled.
           given:
-            - The {{spec-validate.input.archFile}} contains a valid architecture specification.
-            - The {{spec-validate.input.parsed_model}} contains the parsed content from archFile.
+            - The {{spec-validate.input.architecture_file}} contains a valid architecture specification.
+            - The {{spec-validate.input.parsed_model}} contains the parsed content from architecture_file.
           when:
             - The aac app is run with the spec-validate command.
           then:
             - A message saying spec validation was successful is printed to the console.
-  
