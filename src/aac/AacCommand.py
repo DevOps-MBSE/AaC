@@ -13,10 +13,12 @@ class AacCommandArgument:
         name: A string with the name of the command argument
         description: a string with the command argument description -- will provide a description
                         about this argument when the help command is invoked.
+        number_of_arguments: Number of entries that the argument can take. Defaults to 1.
     """
 
     name = attr.ib()
     description = attr.ib()
+    number_of_arguments = attr.ib(default=1)
 
 
 @attr.s
@@ -30,10 +32,10 @@ class AacCommand:
         command_name: A string with the name of the command_description
         command_description: a string with the command description -- will be provided with the help command
         callback: A Callable function that's executed when the user runs the AaC command
-        arguments: A List of AacCommandArgument containing argument information about the command
+        arguments: A List of AacCommandArgument containing argument information about the command. Defaults to an empty list.
     """
 
-    command_name = attr.ib()
-    command_description = attr.ib()
+    name = attr.ib()
+    description = attr.ib()
     callback = attr.ib()
     arguments = attr.ib(default=[])
