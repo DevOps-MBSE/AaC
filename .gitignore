@@ -148,6 +148,12 @@ cython_debug/
 .settings/
 .dir-locals.el
 
+# Custom python code coverage html report directory name
+html_code_coverage
+
+#Occasionally created gitpod .tmp files
+*.tmp
+
 # jekyll / GitHub Pages
 *.gem
 .bundle
