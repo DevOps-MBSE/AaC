@@ -8,6 +8,8 @@ from typing import Union
 
 from iteration_utilities import flatten
 
+from aac import util
+
 
 def is_valid(model: dict) -> bool:
     """Check if MODEL is valid per the AaC DSL.
@@ -39,20 +41,25 @@ def get_all_errors(model: dict) -> list:
 
 def get_all_parsing_errors(model: dict) -> list:
     # TODO: Make sure there is only one key in the model.
-    # Not sure if we really need this check, to be honest.
+    # => Not sure if we really need this check, to be honest.
 
     # TODO: Make sure the root name is a valid root name based on the spec.
+    def get_unrecognized_root_errors(root):
+        if root not in util.get_roots():
+            return "{} is not a recognized AaC root type".format(root)
+        return ""
 
     # TODO: Make sure the model is valid per it's spec type.
     # That is, if we're trying to validate a data model, then make sure we
     # validate against the data model spec.
+    # => I think, we're basically doing this with each of the get_all_*_errors functions.
 
     # TODO: Make sure all types are defined somewhere in the model.
     # TODO: -> validate references to primitive types
     # TODO: -> validate references to enum values
     # TODO: -> validate references to other models
 
-    return []
+    return filter_out_empty_strings(map(get_unrecognized_root_errors, model.keys()))
 
 
 def get_all_enum_errors(model: dict) -> list:
@@ -164,7 +171,7 @@ def get_all_data_errors(model: dict) -> list:
 
 # TODO: items is a horrible name, here, find a better one
 def get_all_non_root_element_errors(
-    model: Union[dict, list], element: str, instance: type, items: list
+    model: Union[dict, list], element: str, type: type, items: list
 ) -> list:
     """Return all validation errors for the non-root element MODELs.
 
@@ -173,7 +180,7 @@ def get_all_non_root_element_errors(
     """
 
     def has_element(model):
-        return element in model and isinstance(model[element], instance)
+        return element in model and isinstance(model[element], type)
 
     def get_field_errors(model):
         if has_element(model):

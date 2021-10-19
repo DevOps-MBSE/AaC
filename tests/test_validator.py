@@ -305,3 +305,6 @@ class ValidatorTest(TestCase):
             ext(name="", type="", dataExt=kw(add=[kw(name=1, type=2)])),
             "wrong.*type.*field.*(name|type)",
         )
+
+    def test_can_detect_cross_referencing_errors(self):
+        assert_model_is_invalid(o("invalid", name="test"), "invalid.*not.*recognized.*root")
