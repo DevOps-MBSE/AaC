@@ -8,8 +8,8 @@ import attr
 import os
 import yaml
 
-from aac import util, hookimpl
-from aac.AacCommand import AacCommand
+from aac import util, hookimpl, parser
+from aac.AacCommand import AacCommand, AacCommandArgument
 from aac.template_engine import load_templates, generate_templates
 
 
@@ -21,10 +21,23 @@ def get_commands() -> list[AacCommand]:
     Returns:
         A list of AacCommands
     """
-    my_cmd = AacCommand(
-        "gen-plugin", "Generates an AaC plugin from an AaC model of the plugin", generate_plugin
-    )
-    return [my_cmd]
+    command_arguments = [
+        AacCommandArgument(
+            "architecture_file",
+            "The yaml file containing the AaC DSL of the plugin architecture.",
+        )
+    ]
+
+    plugin_commands = [
+        AacCommand(
+            "gen-plugin",
+            "Generates an AaC plugin from an AaC model of the plugin",
+            generate_plugin,
+            command_arguments,
+        )
+    ]
+
+    return plugin_commands
 
 
 @hookimpl
@@ -60,22 +73,23 @@ class TemplateOutputFile:
     overwrite = attr.ib()
 
 
-def generate_plugin(arch_file: str, parsed_model: dict) -> None:
+def generate_plugin(architecture_file: str) -> None:
     """
     Entrypoint command to generate the plugin.
 
     Args:
-        arch_file <str>: filepath to the architecture file
-        parsed_model <dict>: Dict representing the plugin model
+        architecture_file (str): filepath to the architecture file.
     """
-    plug_dir = os.path.dirname(os.path.realpath(arch_file))
+    print(f"!{architecture_file}")
+    plug_dir = os.path.dirname(os.path.abspath(architecture_file))
 
     try:
-        if _is_user_desired_output_directory(arch_file, plug_dir):
+        if _is_user_desired_output_directory(architecture_file, plug_dir):
+            parsed_model = parser.parse_file(architecture_file, True)
             templates = compile_templates(parsed_model)
             _write_generated_templates_to_file(templates, plug_dir)
     except GeneratePluginException as exception:
-        print(f"gen-plugin error [{arch_file}]:  {exception}.")
+        print(f"gen-plugin error [{architecture_file}]:  {exception}.")
 
 
 def compile_templates(parsed_models: dict[str, dict]) -> list[TemplateOutputFile]:

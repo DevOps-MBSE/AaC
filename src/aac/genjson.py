@@ -1,31 +1,48 @@
+"""A plugin to print JSON schema of AaC model files."""
 import json
 import aac
-from aac.AacCommand import AacCommand
+from aac.AacCommand import AacCommand, AacCommandArgument
 
 
 @aac.hookimpl
 def get_commands() -> list[AacCommand]:
     """
     Provides the json command for integration into the CLI.
+
+    Returns:
+        list of AacCommands to register.
     """
-    my_cmd = AacCommand("json", "Converts an AaC model to JSON", toJson)
-    return [my_cmd]
+    command_arguments = [
+        AacCommandArgument(
+            "architecture_files",
+            "Space delimited list of one or more file paths to yaml file(s) containing models to parse and print as JSON.",
+            number_of_arguments="+",
+        )
+    ]
+
+    plugin_commands = [
+        AacCommand("json", "Converts an AaC model to JSON", toJson, command_arguments)
+    ]
+    return plugin_commands
 
 
 @aac.hookimpl
-def get_base_model_extensions() -> str:
+def get_base_model_extensions() -> None:
     """
     This plugin doesn't define any extensions, so returns None.
     """
-    return None
 
 
-def toJson(_, parsed_models: dict[str, dict]):
+def toJson(architecture_files: list[str]) -> None:
     """
-    Prints the parsed_models parameter values in JSON format.
+    Prints the parsed_models from the parsed architecture_files values in JSON format.
     """
-    just_dicts = []
-    for name in parsed_models:
-        just_dicts.append(parsed_models[name])
-    print(json.dumps(just_dicts))
-    return
+
+    for architecture_file in architecture_files:
+        print(f"File: {architecture_file}")
+        parsed_model = aac.parser.parse_file(architecture_file, True)
+        _print_parsed_model(parsed_model)
+
+
+def _print_parsed_model(parsed_model: dict[str, any]) -> None:
+    print(json.dumps(parsed_model))
