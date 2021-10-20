@@ -122,6 +122,18 @@
             "justMyCode": false
         },
         {
+            "name": "Python: Gen-Plugin Protobuf",
+            "type": "python",
+            "request": "launch",
+            "program": "src/aac/__main__.py",
+            "args": [
+                "gen-plugin",
+                "./plugins/aac-gen-protobuf/aac-gen-protobuf.yaml"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
             "name": "Python: Unit Tests",
             "type": "python",
             "request": "launch",
