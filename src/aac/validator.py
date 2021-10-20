@@ -129,15 +129,13 @@ def get_all_cross_reference_errors(kind: str, model: dict) -> iter:
         return list(map(get_error_message_if_invalid_type, data.keys(), data.values()))
 
     def validate_model_references(models):
-        errors = []
-        for name, spec in models.items():
-            spec_types = util.search(spec, ["model", "components", "type"])
-            spec_types.extend(util.search(spec, ["model", "behavior", "input", "type"]))
-            spec_types.extend(util.search(spec, ["model", "behavior", "output", "type"]))
-            for spec_type in spec_types:
-                if is_valid_type(spec_type):
-                    errors.append(f"unrecognized type {spec_type} used in {name}")
-        return errors
+        def get_error_message_if_invalid_type(name, spec):
+            types = util.search(spec, ["model", "components", "type"])
+            types.extend(util.search(spec, ["model", "behavior", "input", "type"]))
+            types.extend(util.search(spec, ["model", "behavior", "output", "type"]))
+            return [f"unrecognized type {t} used in {name}" for t in types if is_valid_type(t)]
+
+        return list(map(get_error_message_if_invalid_type, data.keys(), data.values()))
 
     def validate_enum_references(models, data, enums):
         enum_paths = {}
