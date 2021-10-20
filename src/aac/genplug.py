@@ -55,6 +55,14 @@ ext:
    enumExt:
       add:
          - command
+---
+ext:
+   name: CommandBehaviorInput
+   type: Behavior
+   dataExt:
+      add:
+        - name: description
+          type: string
 """
 
 
@@ -80,7 +88,6 @@ def generate_plugin(architecture_file: str) -> None:
     Args:
         architecture_file (str): filepath to the architecture file.
     """
-
     plug_dir = os.path.dirname(os.path.abspath(architecture_file))
 
     try:
