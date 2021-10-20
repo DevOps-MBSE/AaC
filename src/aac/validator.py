@@ -51,11 +51,6 @@ def get_all_parsing_errors(model: dict) -> list:
         if root not in util.get_roots():
             return "{} is not a recognized AaC root type".format(root)
 
-    # TODO: Make sure the model is valid per it's spec type.
-    # That is, if we're trying to validate a data model, then make sure we
-    # validate against the data model spec.
-    # => I think, we're basically doing this with each of the get_all_*_errors functions.
-
     return filter_none_values(map(get_unrecognized_root_errors, model.keys()))
 
 
