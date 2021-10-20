@@ -23,7 +23,7 @@ def search(model: dict[str, Any], search_keys: list[str]) -> list:
     Search an AaC model structure by key(s).
 
     Searches a dict for the contents given a set of keys. Search returns a list of
-    the entries in the model that correcpond to those keys.  This search will
+    the entries in the model that correspond to those keys.  This search will
     traverse the full dict tree, including embedded lists.
 
         Typical usage example:
