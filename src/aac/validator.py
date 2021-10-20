@@ -28,14 +28,17 @@ def get_all_errors(model: dict) -> list:
     valid, return an empty list.
     """
 
-    def collect_errors(m):
+    def collect_errors(model):
+        x = dict(list(model.values())[0])
+        kind = x["name"] if "name" in x else ""
         return (
-            get_all_parsing_errors(m)
-            + get_all_enum_errors(m)
-            + get_all_data_errors(m)
-            + get_all_usecase_errors(m)
-            + get_all_model_errors(m)
-            + get_all_extension_errors(m)
+            get_all_parsing_errors(model)
+            + get_all_cross_reference_errors(kind, model)
+            + get_all_enum_errors(model)
+            + get_all_data_errors(model)
+            + get_all_usecase_errors(model)
+            + get_all_model_errors(model)
+            + get_all_extension_errors(model)
         )
 
     return list(flatten(map(collect_errors, model.values())))
@@ -43,10 +46,7 @@ def get_all_errors(model: dict) -> list:
 
 def get_all_parsing_errors(model: dict) -> list:
     """Return all parsing errors."""
-    # TODO: Make sure there is only one key in the model.
-    # => Not sure if we really need this check, to be honest.
 
-    # TODO: Make sure the root name is a valid root name based on the spec.
     def get_unrecognized_root_errors(root):
         if root not in util.get_roots():
             return "{} is not a recognized AaC root type".format(root)
@@ -56,11 +56,6 @@ def get_all_parsing_errors(model: dict) -> list:
     # That is, if we're trying to validate a data model, then make sure we
     # validate against the data model spec.
     # => I think, we're basically doing this with each of the get_all_*_errors functions.
-
-    # TODO: Make sure all types are defined somewhere in the model.
-    # TODO: -> validate references to primitive types
-    # TODO: -> validate references to enum values
-    # TODO: -> validate references to other models
 
     return filter_out_empty_strings(map(get_unrecognized_root_errors, model.keys()))
 
@@ -73,10 +68,11 @@ def get_all_enum_errors(model: dict) -> list:
     """
 
     def is_enum_model(model):
-        return "enum" in model
+        return kind in model
 
+    kind = "enum"
     if is_enum_model(model):
-        return get_all_errors_for(model, kind="enum", items=ENUM_ITEMS)
+        return get_all_errors_for(model, kind=kind, items=load_aac_fields_for(kind))
 
     return []
 
@@ -92,7 +88,6 @@ def get_all_errors_for(model: dict, **properties) -> list:
 
     return filter_out_empty_strings(
         get_all_errors_if_missing_required_properties(model, required),
-        get_all_errors_if_properties_have_wrong_type(model, props, types),
         get_all_errors_if_unrecognized_properties(model, props),
     )
 
@@ -118,20 +113,104 @@ def get_all_errors_if_missing_required_properties(model: dict, required: list) -
     return map(get_error_if_missing_required_property, required)
 
 
-def get_all_errors_if_properties_have_wrong_type(model: dict, names: list, types: list) -> iter:
-    """Get error messages if the model has required fields of the wrong type.
+# TODO: Refactor
+def get_all_cross_reference_errors(kind: str, model: dict) -> iter:
+    """Validate all cross references.
 
-    Return an iterable object containing any error messages for all PROPS that
-    are not the permitted type in the MODEL. If the MODEL's required fields are
-    all of the correct type, the returned collection will be empty.
+    Returns:
+      Returns an iterable object that contains all error messages related to
+      unrecognized cross-references in a model.
     """
+    # TODO: Make sure all types are defined somewhere in the model.
+    # TODO: -> validate references to primitive types
+    # TODO: -> validate references to enum values
+    # TODO: -> validate references to other models
 
-    def get_error_if_property_has_wrong_type(key, instance):
-        if key in model.keys() and not isinstance(model[key], instance):
-            return f"unrecognized type for field '{key}' in model '{model}'"
-        return ""
+    data, enums = util.get_aac_spec()
+    models = {kind: model} | data | enums
+    valid_types = list(models.keys()) + util.get_primitives()
 
-    return map(get_error_if_property_has_wrong_type, names, types)
+    def validate_data_references(data):
+        errors = []
+        for name, spec in data.items():
+            for spec_type in util.search(spec, ["data", "fields", "type"]):
+                if spec_type.strip("[]") not in valid_types:
+                    errors.append(f"unrecognized type {spec_type} used in {name}")
+        return errors
+
+    def validate_model_references(models):
+        errors = []
+        for name, spec in models.items():
+            spec_types = util.search(spec, ["model", "components", "type"])
+            spec_types.extend(util.search(spec, ["model", "behavior", "input", "type"]))
+            spec_types.extend(util.search(spec, ["model", "behavior", "output", "type"]))
+            for spec_type in spec_types:
+                if spec_type.strip("[]") not in valid_types:
+                    errors.append(f"unrecognized type {spec_type} used in {name}")
+        return errors
+
+    def validate_enum_references(models, data, enums):
+        enum_paths = {}
+        for enum_name in enums:
+            if enum_name == "Primitives":
+                continue
+            found_paths = _find_enum_field_paths(enum_name, "model", "model", data, enums)
+            enum_paths[enum_name] = found_paths
+
+        # then ensure the value provided in the model is defined in the enum
+        errors = []
+
+        valid_values = []
+        for enum_name in enum_paths:
+            if enum_name == "Primitives":
+                continue
+
+            valid_values = util.search(enums[enum_name], ["enum", "values"])
+
+            for model_name in models:
+                for path in found_paths:
+                    for result in util.search(models[model_name], path):
+                        if result not in valid_values:
+                            errors.append(
+                                f"Model {model_name} entry {path} has a value {result} not allowed in the enumeration {enum_name}: {valid_values}"
+                            )
+        return errors
+
+    data = util.get_models_by_type(models, "data")
+    enums = util.get_models_by_type(models, "enum")
+    models = util.get_models_by_type(models, "model")
+    return (
+        validate_data_references(data)
+        + validate_model_references(models)
+        + validate_enum_references(models, data, enums)
+    )
+
+
+def _find_enum_field_paths(find_enum, data_name, data_type, data, enums) -> list:
+    data_model = data[data_type]
+    fields = util.search(data_model, ["data", "fields"])
+    enum_fields = []
+    for field in fields:
+        field_type = field["type"].strip("[]")
+        if field_type in enums.keys():
+            # only report the enum being serached for
+            if field_type == find_enum:
+                enum_fields.append([field["name"]])
+            else:
+                continue
+        elif field_type not in util.get_primitives():
+            found_paths = _find_enum_field_paths(find_enum, field["name"], field_type, data, enums)
+            for found in found_paths:
+                entry = found.copy()
+                # entry.insert(0, field["name"])
+                enum_fields.append(entry)
+
+    ret_val = []
+    for enum_entry in enum_fields:
+        entry = enum_entry.copy()
+        entry.insert(0, data_name)
+        ret_val.append(entry)
+    return ret_val
 
 
 def get_all_errors_if_unrecognized_properties(model: dict, props: list) -> iter:
