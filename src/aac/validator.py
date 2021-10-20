@@ -147,10 +147,10 @@ def get_all_cross_reference_errors(kind: str, model: dict) -> iter:
                 continue
             found_paths = _find_enum_field_paths(enum_name, "model", "model", data, enums)
             paths[enum_name] = found_paths
-        return paths, found_paths
+        return paths
 
     def validate_enum_references(models, data, enums):
-        enum_paths, found_paths = get_enum_paths(data, enums)
+        enum_paths = get_enum_paths(data, enums)
         # then ensure the value provided in the model is defined in the enum
         errors = []
 
@@ -162,7 +162,7 @@ def get_all_cross_reference_errors(kind: str, model: dict) -> iter:
             valid_values = util.search(enums[enum_name], ["enum", "values"])
 
             for model_name in models:
-                for path in found_paths:
+                for path in list(enum_paths.values())[0]:
                     for result in util.search(models[model_name], path):
                         if result not in valid_values:
                             errors.append(
