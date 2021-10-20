@@ -18,7 +18,7 @@ class AacCommandArgument:
 
     name = attr.ib()
     description = attr.ib()
-    number_of_arguments = attr.ib(default=1)
+    number_of_arguments = attr.ib(default=None)
 
 
 @attr.s
