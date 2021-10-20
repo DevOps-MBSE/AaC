@@ -112,13 +112,13 @@ def get_all_errors_if_missing_required_properties(model: dict, required: list) -
 
     def get_error_if_missing_required_property(key):
         if key not in model.keys():
-            return f"missing required field '{key}' in '{model}'"
+            return f"missing required field '{key}' in model '{model}'"
         return ""
 
     return map(get_error_if_missing_required_property, required)
 
 
-def get_all_errors_if_properties_have_wrong_type(model: dict, props: list, types: list) -> iter:
+def get_all_errors_if_properties_have_wrong_type(model: dict, names: list, types: list) -> iter:
     """Get error messages if the model has required fields of the wrong type.
 
     Return an iterable object containing any error messages for all PROPS that
@@ -128,10 +128,10 @@ def get_all_errors_if_properties_have_wrong_type(model: dict, props: list, types
 
     def get_error_if_property_has_wrong_type(key, instance):
         if key in model.keys() and not isinstance(model[key], instance):
-            return f"unrecognized type for field '{key}' in '{model}'"
+            return f"unrecognized type for field '{key}' in model '{model}'"
         return ""
 
-    return map(get_error_if_property_has_wrong_type, props, types)
+    return map(get_error_if_property_has_wrong_type, names, types)
 
 
 def get_all_errors_if_unrecognized_properties(model: dict, props: list) -> iter:
@@ -145,7 +145,7 @@ def get_all_errors_if_unrecognized_properties(model: dict, props: list) -> iter:
 
     def get_error_if_property_is_unrecognized(key):
         if key not in props:
-            return f"unrecognized field named '{key}' found in '{model}'"
+            return f"unrecognized field named '{key}' found in model '{model}'"
         return ""
 
     return map(get_error_if_property_is_unrecognized, model.keys())
