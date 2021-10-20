@@ -255,5 +255,13 @@ class ValidatorTest(TestCase):
             {"name": "required", "type": "string[]", "required": False},
         ]
 
+        extension_items = [
+            {"name": "name", "type": "string", "required": True},
+            {"name": "type", "type": "string", "required": True},
+            {"name": "enumExt", "type": "EnumExtension", "required": False},
+            {"name": "dataExt", "type": "DataExtension", "required": False},
+        ]
+
         self.assertListEqual(validator.load_aac_fields_for("enum"), enum_items)
         self.assertListEqual(validator.load_aac_fields_for("data"), data_items)
+        self.assertListEqual(validator.load_aac_fields_for("extension"), extension_items)

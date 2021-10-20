@@ -238,13 +238,14 @@ def get_all_data_errors(model: dict) -> list:
     """
 
     def is_data_model(model):
-        return "data" in model
+        return kind in model
 
+    kind = "data"
     if is_data_model(model):
-        data = model["data"]
+        data = model[kind]
         return filter_out_empty_strings(
-            get_all_errors_for(model, kind="data", items=DATA_ITEMS),
-            get_all_non_root_element_errors(data, "fields", list, FIELD_ITEMS),
+            get_all_errors_for(model, kind=kind, items=load_aac_fields_for(kind)),
+            get_all_non_root_element_errors(data, "fields", list, load_aac_fields_for("Field")),
             get_all_required_field_errors(data),
         )
 
@@ -309,9 +310,11 @@ def get_all_usecase_errors(model: dict) -> list:
     if is_usecase(model):
         usecase = model["usecase"]
         return filter_out_empty_strings(
-            get_all_errors_for(model, kind="usecase", items=USECASE_ITEMS),
-            get_all_non_root_element_errors(usecase, "participants", list, FIELD_ITEMS),
-            get_all_non_root_element_errors(usecase, "steps", list, STEP_ITEMS),
+            get_all_errors_for(model, kind="usecase", items=load_aac_fields_for("usecase")),
+            get_all_non_root_element_errors(
+                usecase, "participants", list, load_aac_fields_for("Field")
+            ),
+            get_all_non_root_element_errors(usecase, "steps", list, load_aac_fields_for("Step")),
         )
 
     return []
@@ -334,12 +337,18 @@ def get_all_model_errors(model: dict) -> list:
         m = model["model"]
         behaviors = m["behavior"] if has_behaviors(m) else []
         return filter_out_empty_strings(
-            get_all_errors_for(model, kind="model", items=MODEL_ITEMS),
-            get_all_non_root_element_errors(m, "behavior", list, BEHAVIOR_ITEMS),
-            get_all_non_root_element_errors(m, "components", list, FIELD_ITEMS),
-            get_all_non_root_element_errors(behaviors, "acceptance", list, SCENARIO_ITEMS),
-            get_all_non_root_element_errors(behaviors, "input", list, FIELD_ITEMS),
-            get_all_non_root_element_errors(behaviors, "output", list, FIELD_ITEMS),
+            get_all_errors_for(model, kind="model", items=load_aac_fields_for("model")),
+            get_all_non_root_element_errors(m, "behavior", list, load_aac_fields_for("Behavior")),
+            get_all_non_root_element_errors(m, "components", list, load_aac_fields_for("Field")),
+            get_all_non_root_element_errors(
+                behaviors, "acceptance", list, load_aac_fields_for("Scenario")
+            ),
+            get_all_non_root_element_errors(
+                behaviors, "input", list, load_aac_fields_for("Field")
+            ),
+            get_all_non_root_element_errors(
+                behaviors, "output", list, load_aac_fields_for("Field")
+            ),
         )
 
     return []
@@ -369,16 +378,16 @@ def get_all_extension_errors(model: dict) -> list:
     if is_ext(model):
         ext = model["ext"]
         kind, type, items = (
-            ("dataExt", dict, DATA_EXTENSION_ITEMS)
+            ("dataExt", dict, load_aac_fields_for("DataExtension"))
             if is_data_ext(ext)
-            else ("enumExt", dict, ENUM_EXTENSION_ITEMS)
+            else ("enumExt", dict, load_aac_fields_for("EnumExtension"))
         )
         return filter_out_empty_strings(
-            get_all_errors_for(model, kind="ext", items=EXTENSION_ITEMS),
+            get_all_errors_for(model, kind="ext", items=load_aac_fields_for("extension")),
             get_all_errors_if_data_and_enum_extension_combined(ext),
             get_all_non_root_element_errors(ext, kind, type, items),
             # TODO: Not generic enough
-            get_all_non_root_element_errors(ext[kind], "add", list, FIELD_ITEMS)
+            get_all_non_root_element_errors(ext[kind], "add", list, load_aac_fields_for("Field"))
             if is_data_ext(ext)
             else [],
         )
@@ -393,86 +402,9 @@ def load_aac_fields_for(kind: str) -> list:
     fields = values["fields"]
 
     def is_required_field(field):
-        return field["name"] in values["required"]
+        return "required" in values and field["name"] in values["required"]
 
     def add_required_value_to_field(field):
         return field | {"required": is_required_field(field)}
 
     return list(map(add_required_value_to_field, fields))
-
-
-# TODO: Eventually, this should come from the AaC.yaml file
-
-ENUM_ITEMS = [
-    {"name": "name", "type": str, "required": True},
-    {"name": "values", "type": list, "required": True},
-]
-
-DATA_ITEMS = [
-    {"name": "name", "type": str, "required": True},
-    {"name": "fields", "type": list, "required": True},
-    {"name": "required", "type": list, "required": False},
-]
-
-FIELD_ITEMS = [
-    {"name": "name", "type": str, "required": True},
-    {"name": "type", "type": str, "required": True},
-]
-
-USECASE_ITEMS = [
-    {"name": "name", "type": str, "required": True},
-    {"name": "description", "type": str, "required": False},
-    {"name": "participants", "type": list, "required": True},
-    {"name": "steps", "type": list, "required": True},
-]
-
-STEP_ITEMS = [
-    {"name": "step", "type": str, "required": False},
-    {"name": "source", "type": str, "required": False},
-    {"name": "target", "type": str, "required": False},
-    {"name": "action", "type": str, "required": False},
-    {"name": "if", "type": dict, "required": False},
-    {"name": "else", "type": dict, "required": False},
-    {"name": "loop", "type": dict, "required": False},
-]
-
-MODEL_ITEMS = [
-    {"name": "name", "type": str, "required": True},
-    {"name": "description", "type": str, "required": False},
-    {"name": "components", "type": list, "required": False},
-    {"name": "behavior", "type": list, "required": True},
-]
-
-BEHAVIOR_ITEMS = [
-    {"name": "name", "type": str, "required": True},
-    {"name": "type", "type": Enum, "required": True},
-    {"name": "description", "type": str, "required": False},
-    {"name": "tags", "type": list, "required": False},
-    {"name": "input", "type": list, "required": False},
-    {"name": "output", "type": list, "required": False},
-    {"name": "acceptance", "type": list, "required": True},
-]
-
-SCENARIO_ITEMS = [
-    {"name": "scenario", "type": str, "required": True},
-    {"name": "tags", "type": list, "required": False},
-    {"name": "given", "type": list, "required": False},
-    {"name": "when", "type": list, "required": True},
-    {"name": "then", "type": list, "required": True},
-]
-
-EXTENSION_ITEMS = [
-    {"name": "name", "type": str, "required": True},
-    {"name": "type", "type": str, "required": True},
-    {"name": "enumExt", "type": dict, "required": False},
-    {"name": "dataExt", "type": dict, "required": False},
-]
-
-DATA_EXTENSION_ITEMS = [
-    {"name": "add", "type": list, "required": True},
-    {"name": "required", "type": list, "required": False},
-]
-
-ENUM_EXTENSION_ITEMS = [
-    {"name": "add", "type": list, "required": True},
-]
