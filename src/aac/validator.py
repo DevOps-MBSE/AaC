@@ -121,20 +121,18 @@ def get_all_cross_reference_errors(kind: str, model: dict) -> iter:
       Returns an iterable object that contains all error messages related to
       unrecognized cross-references in a model.
     """
-    # TODO: Make sure all types are defined somewhere in the model.
-    # TODO: -> validate references to primitive types
-    # TODO: -> validate references to enum values
-    # TODO: -> validate references to other models
-
     data, enums = util.get_aac_spec()
     models = {kind: model} | data | enums
     valid_types = list(models.keys()) + util.get_primitives()
+
+    def is_valid_type(type):
+        return type.strip("[]") not in valid_types
 
     def validate_data_references(data):
         errors = []
         for name, spec in data.items():
             for spec_type in util.search(spec, ["data", "fields", "type"]):
-                if spec_type.strip("[]") not in valid_types:
+                if is_valid_type(spec_type):
                     errors.append(f"unrecognized type {spec_type} used in {name}")
         return errors
 
@@ -145,7 +143,7 @@ def get_all_cross_reference_errors(kind: str, model: dict) -> iter:
             spec_types.extend(util.search(spec, ["model", "behavior", "input", "type"]))
             spec_types.extend(util.search(spec, ["model", "behavior", "output", "type"]))
             for spec_type in spec_types:
-                if spec_type.strip("[]") not in valid_types:
+                if is_valid_type(spec_type):
                     errors.append(f"unrecognized type {spec_type} used in {name}")
         return errors
 
@@ -176,39 +174,38 @@ def get_all_cross_reference_errors(kind: str, model: dict) -> iter:
                             )
         return errors
 
+    def _find_enum_field_paths(find_enum, data_name, data_type, data, enums) -> list:
+        data_model = data[data_type]
+        fields = util.search(data_model, ["data", "fields"])
+        enum_fields = []
+        for field in fields:
+            field_type = field["type"].strip("[]")
+            if field_type in enums.keys():
+                if field_type == find_enum:
+                    enum_fields.append([field["name"]])
+            elif field_type not in util.get_primitives():
+                found_paths = _find_enum_field_paths(
+                    find_enum, field["name"], field_type, data, enums
+                )
+                for found in found_paths:
+                    entry = found.copy()
+                    enum_fields.append(entry)
+
+        ret_val = []
+        for enum_entry in enum_fields:
+            entry = enum_entry.copy()
+            entry.insert(0, data_name)
+            ret_val.append(entry)
+        return ret_val
+
     data = util.get_models_by_type(models, "data")
     enums = util.get_models_by_type(models, "enum")
     models = util.get_models_by_type(models, "model")
-    return (
-        validate_data_references(data)
-        + validate_model_references(models)
-        + validate_enum_references(models, data, enums)
+    return filter_out_empty_strings(
+        validate_data_references(data),
+        validate_model_references(models),
+        validate_enum_references(models, data, enums),
     )
-
-
-def _find_enum_field_paths(find_enum, data_name, data_type, data, enums) -> list:
-    data_model = data[data_type]
-    fields = util.search(data_model, ["data", "fields"])
-    enum_fields = []
-    for field in fields:
-        field_type = field["type"].strip("[]")
-        if field_type in enums.keys():
-            # only report the enum being serached for
-            if field_type == find_enum:
-                enum_fields.append([field["name"]])
-        elif field_type not in util.get_primitives():
-            found_paths = _find_enum_field_paths(find_enum, field["name"], field_type, data, enums)
-            for found in found_paths:
-                entry = found.copy()
-                # entry.insert(0, field["name"])
-                enum_fields.append(entry)
-
-    ret_val = []
-    for enum_entry in enum_fields:
-        entry = enum_entry.copy()
-        entry.insert(0, data_name)
-        ret_val.append(entry)
-    return ret_val
 
 
 def get_all_errors_if_unrecognized_properties(model: dict, props: list) -> iter:
