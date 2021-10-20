@@ -50,14 +50,13 @@ def get_all_parsing_errors(model: dict) -> list:
     def get_unrecognized_root_errors(root):
         if root not in util.get_roots():
             return "{} is not a recognized AaC root type".format(root)
-        return ""
 
     # TODO: Make sure the model is valid per it's spec type.
     # That is, if we're trying to validate a data model, then make sure we
     # validate against the data model spec.
     # => I think, we're basically doing this with each of the get_all_*_errors functions.
 
-    return filter_out_empty_strings(map(get_unrecognized_root_errors, model.keys()))
+    return filter_none_values(map(get_unrecognized_root_errors, model.keys()))
 
 
 def get_all_enum_errors(model: dict) -> list:
@@ -86,15 +85,15 @@ def get_all_errors_for(model: dict, **properties) -> list:
     types = [i["type"] for i in items]
     required = [i["name"] for i in items if i["required"]]
 
-    return filter_out_empty_strings(
+    return filter_none_values(
         get_all_errors_if_missing_required_properties(model, required),
         get_all_errors_if_unrecognized_properties(model, props),
     )
 
 
-def filter_out_empty_strings(*xs: list) -> list:
-    """Return XS with all empty strings removed."""
-    return list(filter(lambda x: x != "", flatten(xs)))
+def filter_none_values(*xs: list) -> list:
+    """Return XS without None values."""
+    return list(filter(lambda x: x, flatten(xs)))
 
 
 def get_all_errors_if_missing_required_properties(model: dict, required: list) -> iter:
@@ -108,7 +107,6 @@ def get_all_errors_if_missing_required_properties(model: dict, required: list) -
     def get_error_if_missing_required_property(key):
         if key not in model.keys():
             return f"missing required field '{key}' in model '{model}'"
-        return ""
 
     return map(get_error_if_missing_required_property, required)
 
@@ -201,7 +199,7 @@ def get_all_cross_reference_errors(kind: str, model: dict) -> iter:
     data = util.get_models_by_type(models, "data")
     enums = util.get_models_by_type(models, "enum")
     models = util.get_models_by_type(models, "model")
-    return filter_out_empty_strings(
+    return filter_none_values(
         validate_data_references(data),
         validate_model_references(models),
         validate_enum_references(models, data, enums),
@@ -220,7 +218,6 @@ def get_all_errors_if_unrecognized_properties(model: dict, props: list) -> iter:
     def get_error_if_property_is_unrecognized(key):
         if key not in props:
             return f"unrecognized field named '{key}' found in model '{model}'"
-        return ""
 
     return map(get_error_if_property_is_unrecognized, model.keys())
 
@@ -238,7 +235,7 @@ def get_all_data_errors(model: dict) -> list:
     kind = "data"
     if is_data_model(model):
         data = model[kind]
-        return filter_out_empty_strings(
+        return filter_none_values(
             get_all_errors_for(model, kind=kind, items=load_aac_fields_for(kind)),
             get_all_non_root_element_errors(data, "fields", list, load_aac_fields_for("Field")),
             get_all_required_field_errors(data),
@@ -284,10 +281,9 @@ def get_all_required_field_errors(model: dict) -> list:
     def get_required_field_error(required):
         if required not in map(lambda f: f["name"], model["fields"]):
             return "reference to undefined required field: {}".format(required)
-        return ""
 
     if has_required_fields(model):
-        return filter_out_empty_strings(map(get_required_field_error, model["required"]))
+        return filter_none_values(map(get_required_field_error, model["required"]))
 
     return []
 
@@ -304,7 +300,7 @@ def get_all_usecase_errors(model: dict) -> list:
 
     if is_usecase(model):
         usecase = model["usecase"]
-        return filter_out_empty_strings(
+        return filter_none_values(
             get_all_errors_for(model, kind="usecase", items=load_aac_fields_for("usecase")),
             get_all_non_root_element_errors(
                 usecase, "participants", list, load_aac_fields_for("Field")
@@ -331,7 +327,7 @@ def get_all_model_errors(model: dict) -> list:
     if is_model(model):
         m = model["model"]
         behaviors = m["behavior"] if has_behaviors(m) else []
-        return filter_out_empty_strings(
+        return filter_none_values(
             get_all_errors_for(model, kind="model", items=load_aac_fields_for("model")),
             get_all_non_root_element_errors(m, "behavior", list, load_aac_fields_for("Behavior")),
             get_all_non_root_element_errors(m, "components", list, load_aac_fields_for("Field")),
@@ -377,7 +373,7 @@ def get_all_extension_errors(model: dict) -> list:
             if is_data_ext(ext)
             else ("enumExt", dict, load_aac_fields_for("EnumExtension"))
         )
-        return filter_out_empty_strings(
+        return filter_none_values(
             get_all_errors_for(model, kind="ext", items=load_aac_fields_for("extension")),
             get_all_errors_if_data_and_enum_extension_combined(ext),
             get_all_non_root_element_errors(ext, kind, type, items),
