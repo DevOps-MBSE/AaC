@@ -119,11 +119,11 @@ def get_all_errors_if_missing_required_properties(model: dict, required: list) -
 
 
 def get_all_errors_if_properties_have_wrong_type(model: dict, props: list, types: list) -> iter:
-    """Get error messages if the model has required properties of the wrong type.
+    """Get error messages if the model has required fields of the wrong type.
 
     Return an iterable object containing any error messages for all PROPS that
-    are not the permitted type in the MODEL. If the MODEL's required properties
-    are all of the correct type, the returned collection will be empty.
+    are not the permitted type in the MODEL. If the MODEL's required fields are
+    all of the correct type, the returned collection will be empty.
     """
 
     def get_error_if_property_has_wrong_type(key, instance):
