@@ -141,13 +141,12 @@ def get_all_cross_reference_errors(kind: str, model: dict) -> iter:
         return list(map(fn, data.keys(), data.values()))
 
     def get_enum_paths(data, enums):
-        paths = {}
-        for enum_name in enums:
-            if enum_name == "Primitives":
-                continue
-            found_paths = _find_enum_field_paths(enum_name, "model", "model", data, enums)
-            paths[enum_name] = found_paths
-        return paths
+        paths = [
+            (e, _find_enum_field_paths(e, "model", "model", data, enums))
+            for e in enums
+            if e != "Primitives"
+        ]
+        return dict(paths)
 
     def validate_enum_references(models, data, enums):
         enum_paths = get_enum_paths(data, enums)
