@@ -65,11 +65,33 @@ def o(model: str, **kwargs):
     return {root: {model: kwargs}}
 
 
+def enum(**kwargs):
+    """Return a simulated enum model."""
+    return o("enum", **kwargs)
+
+
+def data(**kwargs):
+    """Return a simulated data model."""
+    return o("data", **kwargs)
+
+
+def usecase(**kwargs):
+    """Return a simulated usecase model."""
+    return o("usecase", **kwargs)
+
+
+def model(**kwargs):
+    """Return a simulated system model."""
+    return o("model", **kwargs)
+
+
+def ext(**kwargs):
+    """Return a simulated ext model."""
+    return o("ext", **kwargs)
+
+
 class ValidatorTest(TestCase):
     def test_can_validate_enums(self):
-        def enum(**kwargs):
-            return o("enum", **kwargs)
-
         assert_model_is_valid(enum(name="test", values=[]))
         assert_model_is_valid(enum(name="test", values=["a"]))
         assert_model_is_valid(enum(name="test", values=["a", "b"]))
@@ -81,9 +103,6 @@ class ValidatorTest(TestCase):
         assert_model_is_invalid(enum(invalid="item"), "unrecognized.*property.*invalid")
 
     def test_can_validate_data(self):
-        def data(**kwargs):
-            return o("data", **kwargs)
-
         one_field = [kw(name="x", type="int")]
         two_fields = one_field + [kw(name="y", type="int")]
 
@@ -117,9 +136,6 @@ class ValidatorTest(TestCase):
         )
 
     def test_can_validate_usecase(self):
-        def usecase(**kwargs):
-            return o("usecase", **kwargs)
-
         one_part = [kw(name="x", type="X")]
         two_parts = one_part + [kw(name="y", type="Y")]
 
@@ -174,9 +190,6 @@ class ValidatorTest(TestCase):
         )
 
     def test_can_validate_models(self):
-        def model(**kwargs):
-            return o("model", **kwargs)
-
         class TestEnum(Enum):
             ONE = 1
             TWO = 2
@@ -269,9 +282,6 @@ class ValidatorTest(TestCase):
         )
 
     def test_can_validate_extensions(self):
-        def ext(**kwargs):
-            return o("ext", **kwargs)
-
         assert_model_is_valid(ext(name="test", type="int"))
         assert_model_is_valid(ext(name="test", type="int", enumExt=kw(add=[])))
         assert_model_is_valid(ext(name="test", type="int", enumExt=kw(add=["a"])))
