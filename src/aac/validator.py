@@ -196,8 +196,6 @@ def _find_enum_field_paths(find_enum, data_name, data_type, data, enums) -> list
             # only report the enum being serached for
             if field_type == find_enum:
                 enum_fields.append([field["name"]])
-            else:
-                continue
         elif field_type not in util.get_primitives():
             found_paths = _find_enum_field_paths(find_enum, field["name"], field_type, data, enums)
             for found in found_paths:
