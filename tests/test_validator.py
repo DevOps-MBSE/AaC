@@ -99,7 +99,7 @@ class ValidatorTest(TestCase):
         assert_model_is_invalid(enum(), "missing.*required.*(name|values)")
         assert_model_is_invalid(enum(name="test"), "missing.*required.*values")
         assert_model_is_invalid(enum(values=[]), "missing.*required.*name")
-        assert_model_is_invalid(enum(name=1, values=2), "wrong.*type.*(name|values)")
+        assert_model_is_invalid(enum(name=1, values=2), "unrecognized.*type.*(name|values)")
         assert_model_is_invalid(enum(invalid="item"), "unrecognized.*property.*invalid")
 
     def test_can_validate_data(self):
@@ -120,12 +120,13 @@ class ValidatorTest(TestCase):
         assert_model_is_invalid(data(fields=[]), "missing.*required.*name")
         assert_model_is_invalid(data(invalid="item"), "unrecognized.*property.*invalid")
 
-        assert_model_is_invalid(data(name=1, fields=2), "wrong.*type.*(name|fields)")
+        assert_model_is_invalid(data(name=1, fields=2), "unrecognized.*type.*(name|fields)")
         assert_model_is_invalid(
-            data(name=1, fields=2, required=3), "wrong.*type.*(name|fields|required)"
+            data(name=1, fields=2, required=3), "unrecognized.*type.*(name|fields|required)"
         )
         assert_model_is_invalid(
-            data(name="test", fields=[kw(name=1, type=2)]), "wrong.*type.*field.*(name|type)"
+            data(name="test", fields=[kw(name=1, type=2)]),
+            "unrecognized.*type.*field.*(name|type)",
         )
 
         assert_model_is_invalid(
@@ -157,16 +158,17 @@ class ValidatorTest(TestCase):
         assert_model_is_invalid(usecase(), "missing.*required.*(name|participants|steps)")
         assert_model_is_invalid(usecase(invalid="item"), "unrecognized.*property.*invalid")
         assert_model_is_invalid(
-            usecase(name=1, participants=2, steps=3), "wrong.*type.*(name|participants|steps)"
+            usecase(name=1, participants=2, steps=3),
+            "unrecognized.*type.*(name|participants|steps)",
         )
         assert_model_is_invalid(
             usecase(name=1, participants=2, steps=3, description=4),
-            "wrong.*type.*(name|participants|steps|description)",
+            "unrecognized.*type.*(name|participants|steps|description)",
         )
 
         assert_model_is_invalid(
             usecase(name="test", participants=[kw(name=1, type=2)], steps=[]),
-            "wrong.*type.*field.*(name|type)",
+            "unrecognized.*type.*field.*(name|type)",
         )
         assert_model_is_invalid(
             usecase(
@@ -186,7 +188,7 @@ class ValidatorTest(TestCase):
                     )
                 ],
             ),
-            "wrong.*type.*field.*(step|source|target|action|if|else|loop)",
+            "unrecognized.*type.*field.*(step|source|target|action|if|else|loop)",
         )
 
     def test_can_validate_models(self):
@@ -221,15 +223,15 @@ class ValidatorTest(TestCase):
         assert_model_is_invalid(model(invalid="item"), "unrecognized.*property.*invalid")
         assert_model_is_invalid(
             model(name=1, behavior=2, components=3, description=4),
-            "wrong.*type.*(name|behavior|components|description)",
+            "unrecognized.*type.*(name|behavior|components|description)",
         )
         assert_model_is_invalid(
             model(name="test", behavior=[kw(name=1, type=2, acceptance=3)]),
-            "wrong.*type.*field.*(name|type|acceptance)",
+            "unrecognized.*type.*field.*(name|type|acceptance)",
         )
         assert_model_is_invalid(
             model(name="test", behavior=[], components=[kw(name=1, type=2)]),
-            "wrong.*type.*field.*(name|type)",
+            "unrecognized.*type.*field.*(name|type)",
         )
         assert_model_is_invalid(
             model(name="test", behavior=[kw(name="test", type=TestEnum.ONE, acceptance=[kw()])]),
@@ -246,7 +248,7 @@ class ValidatorTest(TestCase):
                     )
                 ],
             ),
-            "wrong.*type.*field.*(scenario|tags|given|when|then)",
+            "unrecognized.*type.*field.*(scenario|tags|given|when|then)",
         )
         assert_model_is_invalid(
             model(
@@ -262,7 +264,7 @@ class ValidatorTest(TestCase):
                     kw(name="test", type=TestEnum.ONE, acceptance=[], input=[kw(name=1, type=2)])
                 ],
             ),
-            "wrong.*type.*field.*(name|type)",
+            "unrecognized.*type.*field.*(name|type)",
         )
         assert_model_is_invalid(
             model(
@@ -278,7 +280,7 @@ class ValidatorTest(TestCase):
                     kw(name="test", type=TestEnum.ONE, acceptance=[], output=[kw(name=1, type=2)])
                 ],
             ),
-            "wrong.*type.*field.*(name|type)",
+            "unrecognized.*type.*field.*(name|type)",
         )
 
     def test_can_validate_extensions(self):
@@ -301,10 +303,15 @@ class ValidatorTest(TestCase):
         assert_model_is_invalid(ext(), "missing.*required.*(name|type)")
         assert_model_is_invalid(ext(invalid="item"), "unrecognized.*property.*invalid")
         assert_model_is_invalid(
-            ext(name=1, type=2, enumExt=3, dataExt=4), "wrong.*type.*(name|type|enumExt|dataExt)"
+            ext(name=1, type=2, enumExt=3, dataExt=4),
+            "unrecognized.*type.*(name|type|enumExt|dataExt)",
         )
-        assert_model_is_invalid(ext(name=1, type=2, enumExt=kw(add=1)), "wrong.*type.*field.*add")
-        assert_model_is_invalid(ext(name=1, type=2, dataExt=kw(add=1)), "wrong.*type.*field.*add")
+        assert_model_is_invalid(
+            ext(name=1, type=2, enumExt=kw(add=1)), "unrecognized.*type.*field.*add"
+        )
+        assert_model_is_invalid(
+            ext(name=1, type=2, dataExt=kw(add=1)), "unrecognized.*type.*field.*add"
+        )
         assert_model_is_invalid(
             ext(name="", type="", enumExt=kw(), dataExt=kw()), "cannot.*combine.*enumExt.*dataExt"
         )
@@ -313,7 +320,7 @@ class ValidatorTest(TestCase):
         )
         assert_model_is_invalid(
             ext(name="", type="", dataExt=kw(add=[kw(name=1, type=2)])),
-            "wrong.*type.*field.*(name|type)",
+            "unrecognized.*type.*field.*(name|type)",
         )
 
     def test_can_detect_cross_referencing_errors(self):

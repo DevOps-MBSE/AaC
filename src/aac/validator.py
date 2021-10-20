@@ -112,7 +112,7 @@ def get_all_errors_if_missing_required_properties(model: dict, required: list) -
 
     def get_error_if_missing_required_property(key):
         if key not in model.keys():
-            return 'missing required field property: "{}"'.format(key)
+            return f"missing required field '{key}' in '{model}'"
         return ""
 
     return map(get_error_if_missing_required_property, required)
@@ -128,7 +128,7 @@ def get_all_errors_if_properties_have_wrong_type(model: dict, props: list, types
 
     def get_error_if_property_has_wrong_type(key, instance):
         if key in model.keys() and not isinstance(model[key], instance):
-            return 'wrong type for field property: "{}"'.format(key)
+            return f"unrecognized type for field '{key}' in '{model}'"
         return ""
 
     return map(get_error_if_property_has_wrong_type, props, types)
@@ -145,7 +145,7 @@ def get_all_errors_if_unrecognized_properties(model: dict, props: list) -> iter:
 
     def get_error_if_property_is_unrecognized(key):
         if key not in props:
-            return 'unrecognized property: "{}"'.format(key)
+            return f"unrecognized field named '{key}' found in '{model}'"
         return ""
 
     return map(get_error_if_property_is_unrecognized, model.keys())
