@@ -307,18 +307,19 @@ def get_all_extension_errors(model: dict) -> list:
     return []
 
 
-# TODO: Fix this ugly first pass
 def load_aac_fields_for(kind: str) -> list:
     """Get the AaC fields and their properties for the specified KIND of item."""
     data, _ = util.get_aac_spec()
+    values = data[kind]["data"]
+    fields = values["fields"]
 
-    fields = list(data[kind].values())[0]["fields"]
+    def is_required_field(field):
+        return field["name"] in values["required"]
 
-    def tmp(field):
-        field.update({"required": field["name"] in list(data[kind].values())[0]["required"]})
-        return field
+    def add_required_value_to_field(field):
+        return field | {"required": is_required_field(field)}
 
-    return list(map(tmp, fields))
+    return list(map(add_required_value_to_field, fields))
 
 
 # TODO: Eventually, this should come from the AaC.yaml file
