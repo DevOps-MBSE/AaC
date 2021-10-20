@@ -122,12 +122,11 @@ def get_all_cross_reference_errors(kind: str, model: dict) -> iter:
         return type.strip("[]") not in valid_types
 
     def validate_data_references(data):
-        errors = []
-        for name, spec in data.items():
-            for spec_type in util.search(spec, ["data", "fields", "type"]):
-                if is_valid_type(spec_type):
-                    errors.append(f"unrecognized type {spec_type} used in {name}")
-        return errors
+        def get_error_message_if_invalid_type(name, spec):
+            types = util.search(spec, ["data", "fields", "type"])
+            return [f"unrecognized type {t} used in {name}" for t in types if is_valid_type(t)]
+
+        return list(map(get_error_message_if_invalid_type, data.keys(), data.values()))
 
     def validate_model_references(models):
         errors = []
