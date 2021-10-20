@@ -69,7 +69,7 @@ class TemplateOutputFile:
     """Class containing all of the relevant information necessary to handle writing templates to files."""
 
     file_name = attr.ib()
-    template = attr.ib()
+    content = attr.ib()
     overwrite = attr.ib()
 
 
@@ -80,19 +80,19 @@ def generate_plugin(architecture_file: str) -> None:
     Args:
         architecture_file (str): filepath to the architecture file.
     """
-    print(f"!{architecture_file}")
+
     plug_dir = os.path.dirname(os.path.abspath(architecture_file))
 
     try:
         if _is_user_desired_output_directory(architecture_file, plug_dir):
             parsed_model = parser.parse_file(architecture_file, True)
-            templates = compile_templates(parsed_model)
+            templates = _compile_templates(parsed_model)
             _write_generated_templates_to_file(templates, plug_dir)
     except GeneratePluginException as exception:
         print(f"gen-plugin error [{architecture_file}]:  {exception}.")
 
 
-def compile_templates(parsed_models: dict[str, dict]) -> list[TemplateOutputFile]:
+def _compile_templates(parsed_models: dict[str, dict]) -> list[TemplateOutputFile]:
     """
     Parse the model and generate the plugin template accordingly.
 
@@ -101,6 +101,9 @@ def compile_templates(parsed_models: dict[str, dict]) -> list[TemplateOutputFile
 
     Returns:
         List of TemplateOutputFile objects that contain the compiled templates
+
+    Raises:
+        GeneratePluginException: An error encountered during the plugin generation process.
     """
 
     # ensure model is present and valid, get the plugin name
@@ -112,18 +115,19 @@ def compile_templates(parsed_models: dict[str, dict]) -> list[TemplateOutputFile
 
     plugin_model = list(plugin_models.values())[0].get("model")
     plugin_name = plugin_model.get("name")
-    plugin_implementation_name = _convert_to_implementation_name(plugin_name)
 
     # Ensure that the plugin name has package name prepended to it
     if not plugin_name.startswith(__package__):
-        plugin_name = "{__package__}-{plugin_name}"
+        plugin_name = f"{__package__}-{plugin_name}"
+
+    plugin_implementation_name = _convert_to_implementation_name(plugin_name)
 
     # Prepare template variables/properties
     behaviors = util.search(plugin_model, ["behavior"])
     commands = _gather_commands(behaviors)
 
     plugin = {
-        "name": plugin_model.get("name"),
+        "name": plugin_name,
         "implementation_name": plugin_implementation_name,
     }
 
@@ -164,7 +168,7 @@ def _write_generated_templates_to_file(
             plug_dir,
             generated_file.file_name,
             generated_file.overwrite,
-            generated_file.template,
+            generated_file.content,
         )
 
 
