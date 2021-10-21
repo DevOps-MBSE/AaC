@@ -148,6 +148,17 @@ def get_all_cross_reference_errors(kind: str, model: dict) -> iter:
         ]
         return dict(paths)
 
+    def fn(models, enum_name, enum_paths, valid_values):
+        errors = []
+        for model_name in models:
+            for path in list(enum_paths.values())[0]:
+                for result in util.search(models[model_name], path):
+                    if result not in valid_values:
+                        errors.append(
+                            f"Model {model_name} entry {path} has a value {result} not allowed in the enumeration {enum_name}: {valid_values}"
+                        )
+        return errors
+
     def validate_enum_references(models, data, enums):
         enum_paths = get_enum_paths(data, enums)
         # then ensure the value provided in the model is defined in the enum
@@ -158,15 +169,9 @@ def get_all_cross_reference_errors(kind: str, model: dict) -> iter:
             if enum_name == "Primitives":
                 continue
 
-            valid_values = util.search(enums[enum_name], ["enum", "values"])
-
-            for model_name in models:
-                for path in list(enum_paths.values())[0]:
-                    for result in util.search(models[model_name], path):
-                        if result not in valid_values:
-                            errors.append(
-                                f"Model {model_name} entry {path} has a value {result} not allowed in the enumeration {enum_name}: {valid_values}"
-                            )
+            errors += fn(
+                models, enum_name, enum_paths, util.search(enums[enum_name], ["enum", "values"])
+            )
         return errors
 
     def _find_enum_field_paths(find_enum, data_name, data_type, data, enums) -> list:
