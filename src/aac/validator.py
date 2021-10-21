@@ -52,11 +52,13 @@ def validate_and_get_errors(model: dict) -> list:
 
 
 def _apply_extensions(model):
+    errors = []
     aac_data, aac_enums = util.get_aac_spec()
     for ext in util.get_models_by_type(model, "ext"):
         extension = model[ext]
         if not _can_apply_extension(extension):
-            return [f"unrecognized extension type {extension}"]
+            errors.append(f"unrecognized extension type {extension}")
+            continue
 
         ext = extension["ext"]
         type_to_extend = ext["type"]
@@ -69,7 +71,7 @@ def _apply_extensions(model):
                 util.get_models_by_type(model, "enum"),
             )
 
-    return []
+    return errors
 
 
 def _can_apply_extension(extension):
