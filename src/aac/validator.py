@@ -20,9 +20,16 @@ def is_valid(model: dict) -> bool:
 def get_all_errors(model: dict) -> list:
     """Return all validation errors for MODEL."""
 
+    def can_apply_extension(extension):
+        return "ext" in extension and "type" in extension["ext"] and extension["ext"]["type"] != ""
+
     def apply_extensions(model):
         aac_data, aac_enums = util.get_aac_spec()
         for ext in util.get_models_by_type(model, "ext"):
+            extension = model[ext]
+            if not can_apply_extension(extension):
+                return [f"unrecognized extension type {extension}"]
+
             type_to_extend = model[ext]["ext"]["type"]
             if type_to_extend in aac_data or type_to_extend in aac_enums:
                 apply_extension(model[ext], aac_data, aac_enums)
@@ -33,6 +40,8 @@ def get_all_errors(model: dict) -> list:
                     util.get_models_by_type(model, "enum"),
                 )
 
+        return []
+
     def apply_extension(extension, data, enums):
         type_to_extend = extension["ext"]["type"]
         if "enumExt" in extension["ext"]:
@@ -41,7 +50,7 @@ def get_all_errors(model: dict) -> list:
                 enums[type_to_extend]["enum"]["values"] + extension["ext"]["enumExt"]["add"]
             )
             enums[type_to_extend]["enum"]["values"] = updated_values
-        else:
+        elif "dataExt" in extension["ext"]:
             # apply the data extension
             updated_fields = (
                 data[type_to_extend]["data"]["fields"] + extension["ext"]["dataExt"]["add"]
@@ -68,10 +77,7 @@ def get_all_errors(model: dict) -> list:
             + get_all_cross_reference_errors(kind, model)
         )
 
-    apply_extensions(model)
-
-    fn = lambda m: list(flatten(map(collect_errors, m.values())))
-    return list(flatten(map(fn, model))) if isinstance(model, list) else fn(model)
+    return apply_extensions(model) + list(flatten(map(collect_errors, model.values())))
 
 
 def get_all_parsing_errors(model: dict) -> list:

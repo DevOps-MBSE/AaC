@@ -199,19 +199,21 @@ class ValidatorTest(TestCase):
         )
 
     def test_can_validate_extensions(self):
-        assert_model_is_valid(self, ext(name="test", type="int"))
-        assert_model_is_valid(self, ext(name="test", type="int", enumExt=kw(add=[])))
-        assert_model_is_valid(self, ext(name="test", type="int", enumExt=kw(add=["a"])))
-        assert_model_is_valid(self, ext(name="test", type="int", enumExt=kw(add=["a", "b"])))
-        assert_model_is_valid(self, ext(name="test", type="int", dataExt=kw(add=[])))
+        assert_model_is_valid(self, ext(name="test", type="Primitives"))
+        assert_model_is_valid(self, ext(name="test", type="Primitives", enumExt=kw(add=[])))
+        assert_model_is_valid(self, ext(name="test", type="Primitives", enumExt=kw(add=["a"])))
         assert_model_is_valid(
-            self, ext(name="test", type="int", dataExt=kw(add=[kw(name="a", type="int")]))
+            self, ext(name="test", type="Primitives", enumExt=kw(add=["a", "b"]))
+        )
+        assert_model_is_valid(self, ext(name="test", type="model", dataExt=kw(add=[])))
+        assert_model_is_valid(
+            self, ext(name="test", type="model", dataExt=kw(add=[kw(name="a", type="int")]))
         )
         assert_model_is_valid(
             self,
             ext(
                 name="test",
-                type="int",
+                type="model",
                 dataExt=kw(add=[kw(name="a", type="int"), kw(name="b", type="int")]),
             ),
         )
@@ -228,19 +230,11 @@ class ValidatorTest(TestCase):
             ext(name="", type="", dataExt=kw(add=[kw()])),
             "missing.*required.*field.*(name|type)",
         )
-
-    def test_can_detect_cross_referencing_errors(self):
-        models = [
-            data(name="TestData1", fields=[kw(name="one", type="string")]),
-            data(name="TestData2", fields=[kw(name="two", type="string")]),
-            data(
-                name="TestData3",
-                fields=[kw(name="a", type="TestData1"), kw(name="b", type="TestData2")],
-            ),
-        ]
-        # assert_model_is_valid(self, models)
-
-        assert_model_is_invalid(self, o("invalid", name="test"), "invalid.*not.*recognized.*root")
+        assert_model_is_invalid(
+            self,
+            o("bad", name=""),
+            "bad.*not.*AaC.*root",
+        )
 
     def test_can_load_aac_data(self):
         enum_items = [
@@ -357,6 +351,5 @@ model:
             - will say good-morning
 """,
             "validation-test",
-            False,
         )
         assert_model_is_valid(self, model)
