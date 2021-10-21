@@ -213,14 +213,14 @@ class ValidatorTest(TestCase):
 
     def test_can_detect_cross_referencing_errors(self):
         models = [
-            data(name="TestData1", fields=[kw(name="one", value="string")]),
-            data(name="TestData2", fields=[kw(name="two", value="string")]),
+            data(name="TestData1", fields=[kw(name="one", type="string")]),
+            data(name="TestData2", fields=[kw(name="two", type="string")]),
             data(
                 name="TestData3",
                 fields=[kw(name="a", type="TestData1"), kw(name="b", type="TestData2")],
             ),
         ]
-        map(self.assert_model_is_valid, models)
+        self.assert_model_is_valid(models)
 
         self.assert_model_is_invalid(o("invalid", name="test"), "invalid.*not.*recognized.*root")
 

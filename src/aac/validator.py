@@ -40,7 +40,8 @@ def get_all_errors(model: dict) -> list:
             + get_all_extension_errors(model)
         )
 
-    return list(flatten(map(collect_errors, model.values())))
+    fn = lambda m: list(flatten(map(collect_errors, m.values())))
+    return list(flatten(map(fn, model))) if isinstance(model, list) else fn(model)
 
 
 def get_all_parsing_errors(model: dict) -> list:
