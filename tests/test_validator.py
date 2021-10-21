@@ -41,56 +41,60 @@ def ext(**kwargs):
     return o("ext", **kwargs)
 
 
+def assert_errors_contain(self, errors, pattern):
+    """Assert that at least one error in ERRORS matches PATTERN."""
+
+    def assertion(e):
+        return re.search(pattern, e) is not None
+
+    self.failIf(not any(map(assertion, errors)), f"did not find '{pattern}' in {errors}")
+
+
+def assert_model_is_valid(self, model):
+    """Assert that the provided MODEL is valid."""
+    self.assertEquals(validator.get_all_errors(model), [])
+
+
+def assert_model_is_invalid(self, model, error_pattern):
+    """Assert that the provided MODEL is invalid."""
+    errors = validator.get_all_errors(model)
+    self.assertNotEquals(errors, [])
+    assert_errors_contain(self, errors, error_pattern)
+
+
 class ValidatorTest(TestCase):
-    def assert_errors_contain(self, errors, pattern):
-        """Assert that at least one error in ERRORS matches PATTERN."""
-
-        def assertion(e):
-            return re.search(pattern, e) is not None
-
-        self.failIf(not any(map(assertion, errors)), f"did not find '{pattern}' in {errors}")
-
-    def assert_model_is_valid(self, model):
-        """Assert that the provided MODEL is valid."""
-        self.assertEquals(validator.get_all_errors(model), [])
-
-    def assert_model_is_invalid(self, model, error_pattern):
-        """Assert that the provided MODEL is invalid."""
-        errors = validator.get_all_errors(model)
-        self.assertNotEquals(errors, [])
-        self.assert_errors_contain(errors, error_pattern)
-
     def test_is_valid(self):
-        self.assertTrue(validator.is_valid(data(name="test", values=[kw(name="a", type="int")])))
+        self.assertTrue(validator.is_valid(data(name="test", fields=[kw(name="a", type="int")])))
         self.assertFalse(validator.is_valid(data()))
 
     def test_can_validate_enums(self):
-        self.assert_model_is_valid(enum(name="test", values=[]))
-        self.assert_model_is_valid(enum(name="test", values=["a"]))
-        self.assert_model_is_valid(enum(name="test", values=["a", "b"]))
+        assert_model_is_valid(self, enum(name="test", values=[]))
+        assert_model_is_valid(self, enum(name="test", values=["a"]))
+        assert_model_is_valid(self, enum(name="test", values=["a", "b"]))
 
-        self.assert_model_is_invalid(enum(), "missing.*required.*(name|values)")
-        self.assert_model_is_invalid(enum(name="test"), "missing.*required.*values")
-        self.assert_model_is_invalid(enum(values=[]), "missing.*required.*name")
-        self.assert_model_is_invalid(enum(invalid="item"), "unrecognized.*field.*invalid")
+        assert_model_is_invalid(self, enum(), "missing.*required.*(name|values)")
+        assert_model_is_invalid(self, enum(name="test"), "missing.*required.*values")
+        assert_model_is_invalid(self, enum(values=[]), "missing.*required.*name")
+        assert_model_is_invalid(self, enum(invalid="item"), "unrecognized.*field.*invalid")
 
     def test_can_validate_data(self):
         one_field = [kw(name="x", type="int")]
         two_fields = one_field + [kw(name="y", type="int")]
 
-        self.assert_model_is_valid(data(name="test", fields=[]))
-        self.assert_model_is_valid(data(name="test", fields=one_field))
-        self.assert_model_is_valid(data(name="test", fields=two_fields))
+        assert_model_is_valid(self, data(name="test", fields=[]))
+        assert_model_is_valid(self, data(name="test", fields=one_field))
+        assert_model_is_valid(self, data(name="test", fields=two_fields))
 
-        self.assert_model_is_valid(data(name="test", fields=[], required=[]))
-        self.assert_model_is_valid(data(name="test", fields=one_field, required=["x"]))
-        self.assert_model_is_valid(data(name="test", fields=two_fields, required=["x"]))
-        self.assert_model_is_valid(data(name="test", fields=two_fields, required=["x", "y"]))
+        assert_model_is_valid(self, data(name="test", fields=[], required=[]))
+        assert_model_is_valid(self, data(name="test", fields=one_field, required=["x"]))
+        assert_model_is_valid(self, data(name="test", fields=two_fields, required=["x"]))
+        assert_model_is_valid(self, data(name="test", fields=two_fields, required=["x", "y"]))
 
-        self.assert_model_is_invalid(data(), "missing.*required.*(name|fields)")
-        self.assert_model_is_invalid(data(name="test"), "missing.*required.*fields")
-        self.assert_model_is_invalid(data(fields=[]), "missing.*required.*name")
-        self.assert_model_is_invalid(
+        assert_model_is_invalid(self, data(), "missing.*required.*(name|fields)")
+        assert_model_is_invalid(self, data(name="test"), "missing.*required.*fields")
+        assert_model_is_invalid(self, data(fields=[]), "missing.*required.*name")
+        assert_model_is_invalid(
+            self,
             data(
                 name="Message",
                 fields=[
@@ -101,13 +105,13 @@ class ValidatorTest(TestCase):
             "unrecognized.*type.*EmailAddress(\\[\\])?.*Message",
         )
 
-        self.assert_model_is_invalid(data(invalid="item"), "unrecognized.*field.*invalid")
+        assert_model_is_invalid(self, data(invalid="item"), "unrecognized.*field.*invalid")
 
-        self.assert_model_is_invalid(
-            data(name="test", fields=[], required=["x"]), "reference.*undefined.*x"
+        assert_model_is_invalid(
+            self, data(name="test", fields=[], required=["x"]), "reference.*undefined.*x"
         )
-        self.assert_model_is_invalid(
-            data(name="test", fields=two_fields, required=["z"]), "reference.*undefined.*z"
+        assert_model_is_invalid(
+            self, data(name="test", fields=two_fields, required=["z"]), "reference.*undefined.*z"
         )
 
     def test_can_validate_usecase(self):
@@ -117,68 +121,76 @@ class ValidatorTest(TestCase):
         one_step = [kw(step="alpha", source="x", target="y", action="b")]
         two_steps = one_step + [kw(step="beta", source="y", target="x", action="b")]
 
-        self.assert_model_is_valid(usecase(name="test", participants=[], steps=[]))
-        self.assert_model_is_valid(usecase(name="test", participants=one_part, steps=[]))
-        self.assert_model_is_valid(usecase(name="test", participants=two_parts, steps=[]))
-        self.assert_model_is_valid(usecase(name="test", participants=[], steps=one_step))
-        self.assert_model_is_valid(usecase(name="test", participants=[], steps=two_steps))
-        self.assert_model_is_valid(usecase(name="test", participants=one_part, steps=one_step))
-        self.assert_model_is_valid(
+        assert_model_is_valid(self, usecase(name="test", participants=[], steps=[]))
+        assert_model_is_valid(self, usecase(name="test", participants=one_part, steps=[]))
+        assert_model_is_valid(self, usecase(name="test", participants=two_parts, steps=[]))
+        assert_model_is_valid(self, usecase(name="test", participants=[], steps=one_step))
+        assert_model_is_valid(self, usecase(name="test", participants=[], steps=two_steps))
+        assert_model_is_valid(self, usecase(name="test", participants=one_part, steps=one_step))
+        assert_model_is_valid(
+            self,
             usecase(
                 name="test", participants=one_part, steps=one_step, description="test description"
-            )
+            ),
         )
 
-        self.assert_model_is_invalid(usecase(), "missing.*required.*(name|participants|steps)")
-        self.assert_model_is_invalid(usecase(invalid="item"), "unrecognized.*field.*invalid")
+        assert_model_is_invalid(self, usecase(), "missing.*required.*(name|participants|steps)")
+        assert_model_is_invalid(self, usecase(invalid="item"), "unrecognized.*field.*invalid")
 
     def test_can_validate_models(self):
         one_behavior = [kw(name="test", type="pub-sub", acceptance=[])]
         two_behaviors = one_behavior + [kw(name="test", type="pub-sub", acceptance=[])]
 
-        self.assert_model_is_valid(model(name="test", behavior=[]))
-        self.assert_model_is_valid(model(name="test", behavior=one_behavior))
-        self.assert_model_is_valid(model(name="test", behavior=two_behaviors))
-        self.assert_model_is_valid(
-            model(name="test", behavior=one_behavior, description="description")
+        assert_model_is_valid(self, model(name="test", behavior=[]))
+        assert_model_is_valid(self, model(name="test", behavior=one_behavior))
+        assert_model_is_valid(self, model(name="test", behavior=two_behaviors))
+        assert_model_is_valid(
+            self, model(name="test", behavior=one_behavior, description="description")
         )
-        self.assert_model_is_valid(model(name="test", behavior=one_behavior, components=[]))
-        self.assert_model_is_valid(
-            model(name="test", behavior=one_behavior, components=[kw(name="a", type="string")])
+        assert_model_is_valid(self, model(name="test", behavior=one_behavior, components=[]))
+        assert_model_is_valid(
+            self,
+            model(name="test", behavior=one_behavior, components=[kw(name="a", type="string")]),
         )
-        self.assert_model_is_valid(
-            model(name="test", behavior=one_behavior, description="description", components=[])
+        assert_model_is_valid(
+            self,
+            model(name="test", behavior=one_behavior, description="description", components=[]),
         )
-        self.assert_model_is_valid(
+        assert_model_is_valid(
+            self,
             model(
                 name="test",
                 behavior=one_behavior,
                 description="description",
                 components=[kw(name="a", type="string[]")],
-            )
+            ),
         )
 
-        self.assert_model_is_invalid(model(), "missing.*required.*(name|behavior)")
-        self.assert_model_is_invalid(model(invalid="item"), "unrecognized.*field.*invalid")
-        self.assert_model_is_invalid(
+        assert_model_is_invalid(self, model(), "missing.*required.*(name|behavior)")
+        assert_model_is_invalid(self, model(invalid="item"), "unrecognized.*field.*invalid")
+        assert_model_is_invalid(
+            self,
             model(name="test", behavior=[kw(name="test", type="Nothing", acceptance=[kw()])]),
             "missing.*required.*(scenario|when|then)",
         )
-        self.assert_model_is_invalid(
+        assert_model_is_invalid(
+            self,
             model(
                 name="test",
                 behavior=[kw(name="test", type="pub-sub", acceptance=[], input=[kw()])],
             ),
             "missing.*required.*(name|type)",
         )
-        self.assert_model_is_invalid(
+        assert_model_is_invalid(
+            self,
             model(
                 name="test",
                 behavior=[kw(name="test", type="pub-sub", acceptance=[], output=[kw()])],
             ),
             "missing.*required.*(name|type)",
         )
-        self.assert_model_is_invalid(
+        assert_model_is_invalid(
+            self,
             model(
                 name="test",
                 behavior=[kw(name="test", type="bad", acceptance=[], output=[kw()])],
@@ -187,29 +199,34 @@ class ValidatorTest(TestCase):
         )
 
     def test_can_validate_extensions(self):
-        self.assert_model_is_valid(ext(name="test", type="int"))
-        self.assert_model_is_valid(ext(name="test", type="int", enumExt=kw(add=[])))
-        self.assert_model_is_valid(ext(name="test", type="int", enumExt=kw(add=["a"])))
-        self.assert_model_is_valid(ext(name="test", type="int", enumExt=kw(add=["a", "b"])))
-        self.assert_model_is_valid(ext(name="test", type="int", dataExt=kw(add=[])))
-        self.assert_model_is_valid(
-            ext(name="test", type="int", dataExt=kw(add=[kw(name="a", type="int")]))
+        assert_model_is_valid(self, ext(name="test", type="int"))
+        assert_model_is_valid(self, ext(name="test", type="int", enumExt=kw(add=[])))
+        assert_model_is_valid(self, ext(name="test", type="int", enumExt=kw(add=["a"])))
+        assert_model_is_valid(self, ext(name="test", type="int", enumExt=kw(add=["a", "b"])))
+        assert_model_is_valid(self, ext(name="test", type="int", dataExt=kw(add=[])))
+        assert_model_is_valid(
+            self, ext(name="test", type="int", dataExt=kw(add=[kw(name="a", type="int")]))
         )
-        self.assert_model_is_valid(
+        assert_model_is_valid(
+            self,
             ext(
                 name="test",
                 type="int",
                 dataExt=kw(add=[kw(name="a", type="int"), kw(name="b", type="int")]),
-            )
+            ),
         )
 
-        self.assert_model_is_invalid(ext(), "missing.*required.*(name|type)")
-        self.assert_model_is_invalid(ext(invalid="item"), "unrecognized.*field.*invalid")
-        self.assert_model_is_invalid(
-            ext(name="", type="", enumExt=kw(), dataExt=kw()), "cannot.*combine.*enumExt.*dataExt"
+        assert_model_is_invalid(self, ext(), "missing.*required.*(name|type)")
+        assert_model_is_invalid(self, ext(invalid="item"), "unrecognized.*field.*invalid")
+        assert_model_is_invalid(
+            self,
+            ext(name="", type="", enumExt=kw(), dataExt=kw()),
+            "cannot.*combine.*enumExt.*dataExt",
         )
-        self.assert_model_is_invalid(
-            ext(name="", type="", dataExt=kw(add=[kw()])), "missing.*required.*field.*(name|type)"
+        assert_model_is_invalid(
+            self,
+            ext(name="", type="", dataExt=kw(add=[kw()])),
+            "missing.*required.*field.*(name|type)",
         )
 
     def test_can_detect_cross_referencing_errors(self):
@@ -221,9 +238,9 @@ class ValidatorTest(TestCase):
                 fields=[kw(name="a", type="TestData1"), kw(name="b", type="TestData2")],
             ),
         ]
-        self.assert_model_is_valid(models)
+        # assert_model_is_valid(self, models)
 
-        self.assert_model_is_invalid(o("invalid", name="test"), "invalid.*not.*recognized.*root")
+        assert_model_is_invalid(self, o("invalid", name="test"), "invalid.*not.*recognized.*root")
 
     def test_can_load_aac_data(self):
         enum_items = [
@@ -247,3 +264,59 @@ class ValidatorTest(TestCase):
         self.assertListEqual(validator.load_aac_fields_for("enum"), enum_items)
         self.assertListEqual(validator.load_aac_fields_for("data"), data_items)
         self.assertListEqual(validator.load_aac_fields_for("extension"), extension_items)
+
+
+class ValidatorFunctionalTest(TestCase):
+    def test_full(self):
+        from aac import parser
+
+        model = parser.parse_str(
+            """
+enum:
+  name: time-zone
+  values:
+    - est
+    - cst
+    - mst
+    - pst
+---
+data:
+  name: time
+  fields:
+    - name: hours
+      type: int
+    - name: minutes
+      type: int
+    - name: seconds
+      type: int
+---
+ext:
+  name: zoned-time
+  type: time
+  dataExt:
+    add:
+      - name: tzone
+        type: time-zone
+---
+model:
+  name: clock
+  behavior:
+    - name: publish current time
+      type: pub-sub
+      input:
+        - name: time-to-set
+          type: zoned-time
+      output:
+        - name: current-time
+          type: zoned-time
+      acceptance:
+        - scenario: publish current time
+          when:
+            - waiting 1 second
+          then:
+            - will publish current-time
+            - will be completed within 5 milliseconds
+        """,
+            "validation-test",
+        )
+        assert_model_is_valid(self, model)
