@@ -137,31 +137,35 @@ def get_all_cross_reference_errors(kind: str, model: dict) -> iter:
 
 
 def set_valid_types(model: dict) -> None:
+    """Initialize the list of valid types."""
     global VALID_TYPES
 
     data, enums = util.get_aac_spec()
     VALID_TYPES = list((model | data | enums).keys()) + util.get_primitives()
 
 
-def get_error_message_if_invalid_type(name, spec, types):
+def get_error_messages_if_invalid_type(name: str, types: list) -> list:
+    """Get a list of error messages if any types are unrecognized."""
     return [f"unrecognized type {t} used in {name}" for t in types if is_valid_type(t)]
 
 
-def is_valid_type(type):
+def is_valid_type(type: str) -> bool:
+    """Determine whether the type is valid, or not."""
     return type.strip("[]") not in VALID_TYPES
 
 
-def validate_data_references(data):
-    fn = lambda name, spec: get_error_message_if_invalid_type(
-        name, spec, util.search(spec, ["data", "fields", "type"])
+def validate_data_references(data: dict) -> list:
+    """Ensure all references in data models are valid."""
+    fn = lambda name, spec: get_error_messages_if_invalid_type(
+        name, util.search(spec, ["data", "fields", "type"])
     )
     return list(map(fn, data.keys(), data.values()))
 
 
-def validate_model_references(models, data):
-    fn = lambda name, spec: get_error_message_if_invalid_type(
+def validate_model_references(models: list, data: dict) -> list:
+    """Ensure all references in sysetm models are valid."""
+    fn = lambda name, spec: get_error_messages_if_invalid_type(
         name,
-        spec,
         util.search(spec, ["model", "components", "type"])
         + util.search(spec, ["model", "behavior", "input", "type"])
         + util.search(spec, ["model", "behavior", "output", "type"]),
@@ -169,7 +173,8 @@ def validate_model_references(models, data):
     return list(map(fn, data.keys(), data.values()))
 
 
-def get_enum_paths(data, enums):
+def get_enum_paths(data: dict, enums: dict) -> dict:
+    """Get the paths to enum values in models."""
     paths = [
         (e, find_paths_to_enum_fields(e, "model", "model", data, enums))
         for e in enums
@@ -178,21 +183,26 @@ def get_enum_paths(data, enums):
     return dict(paths)
 
 
-def get_errors_if_model_references_bad_enum_value(models, enum_name, paths, valid_values):
+def get_errors_if_model_references_bad_enum_value(
+    models: list, enum: str, paths: list, valid: list
+) -> list:
+    """Return error messages for any enum value that is referenced but not recognized."""
+
     def get_errors_for_bad_enum_in_model(model, paths):
         errors = []
         for path in paths:
             errors += [
-                f"Model {model} entry {path} has a value {result} not allowed in the enumeration {enum_name}: {valid_values}"
+                f"Model {model} entry {path} has a value {result} not allowed in the enumeration {enum}: {valid}"
                 for result in util.search(models[model], path)
-                if result not in valid_values
+                if result not in valid
             ]
         return errors
 
     return list(flatten(map(lambda m: get_errors_for_bad_enum_in_model(m, paths), models)))
 
 
-def validate_enum_references(models, data, enums):
+def validate_enum_references(models: list, data: dict, enums: dict) -> list:
+    """Validate all references to enum fields in all models."""
     valid_values = []
     enum_paths = get_enum_paths(data, enums)
     paths = list(enum_paths.values())[0]
@@ -204,17 +214,16 @@ def validate_enum_references(models, data, enums):
     ]
 
 
-def get_enum_fields(find_enum, fields, data, enums):
+def get_enum_fields(enum: str, fields: list, data: dict, enums: dict) -> list:
+    """Get all fields in models that are of the desired type."""
     enum_fields = []
     for field in fields:
         field_type = field["type"].strip("[]")
         if field_type in enums.keys():
-            if field_type == find_enum:
+            if field_type == enum:
                 enum_fields.append([field["name"]])
         elif field_type not in util.get_primitives():
-            found_paths = find_paths_to_enum_fields(
-                find_enum, field["name"], field_type, data, enums
-            )
+            found_paths = find_paths_to_enum_fields(enum, field["name"], field_type, data, enums)
             for found in found_paths:
                 entry = found.copy()
                 enum_fields.append(entry)
@@ -222,6 +231,7 @@ def get_enum_fields(find_enum, fields, data, enums):
 
 
 def find_paths_to_enum_fields(find_enum, data_name, data_type, data, enums):
+    """Return the paths to any references to enum fields in models."""
     fields = util.search(data[data_type], ["data", "fields"])
     return map(
         lambda enum: [data_name] + enum,
