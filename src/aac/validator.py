@@ -13,19 +13,12 @@ VALID_TYPES = []
 
 
 def is_valid(model: dict) -> bool:
-    """Check if MODEL is valid per the AaC DSL.
-
-    Return True if MODEL is valid; False, otherwise.
-    """
+    """Check if MODEL is valid per the AaC DSL."""
     return len(get_all_errors(model)) == 0
 
 
 def get_all_errors(model: dict) -> list:
-    """Return all validation errors for MODEL.
-
-    Return a list of all the validation errors found for MODEL. If the MODEL is
-    valid, return an empty list.
-    """
+    """Return all validation errors for MODEL."""
 
     def collect_errors(model):
         x = dict(list(model.values())[0])
@@ -55,11 +48,7 @@ def get_all_parsing_errors(model: dict) -> list:
 
 
 def get_all_enum_errors(model: dict) -> list:
-    """Return all validation errors for the enumeration MODEL.
-
-    Return a list of all the validation errors found for the enumeration MODEL.
-    If the enumeration MODEL is valid, return an empty list.
-    """
+    """Return all validation errors for the enumeration MODEL."""
 
     def is_enum_model(model):
         return kind in model
@@ -92,12 +81,7 @@ def filter_none_values(*xs: list) -> list:
 
 
 def get_all_errors_if_missing_required_properties(model: dict, required: list) -> iter:
-    """Get error messages if the model is missing required properties.
-
-    Return an iterable object containing any error messages for all REQUIRED
-    properties that are not present in the MODEL. If the MODEL has all of the
-    required properties, the returned collection will be empty.
-    """
+    """Get error messages if the model is missing required properties."""
 
     def get_error_if_missing_required_property(key):
         if key not in model.keys():
@@ -107,12 +91,7 @@ def get_all_errors_if_missing_required_properties(model: dict, required: list) -
 
 
 def get_all_cross_reference_errors(kind: str, model: dict) -> iter:
-    """Validate all cross references.
-
-    Returns:
-      Returns an iterable object that contains all error messages related to
-      unrecognized cross-references in a model.
-    """
+    """Validate all cross references."""
 
     set_valid_types({kind: model})
 
@@ -237,13 +216,7 @@ def find_paths_to_enum_fields(find_enum, data_name, data_type, data, enums):
 
 
 def get_all_errors_if_unrecognized_properties(model: dict, props: list) -> iter:
-    """Get error messages if the model has unrecognized properties.
-
-    Return an iterable object containing any error messages for all properties
-    found in the MODEL that are not recognized as valid for the specified model.
-    If the MODEL's has no unrecognized properties, the returned collection will
-    be empty.
-    """
+    """Get error messages if the model has unrecognized properties."""
 
     def get_error_if_property_is_unrecognized(key):
         if key not in props:
@@ -253,11 +226,7 @@ def get_all_errors_if_unrecognized_properties(model: dict, props: list) -> iter:
 
 
 def get_all_data_errors(model: dict) -> list:
-    """Return all validation errors for the data MODEL.
-
-    Return a list of all the validation errors found for the data MODEL. If the
-    data MODEL is valid, return an empty list.
-    """
+    """Return all validation errors for the data MODEL."""
 
     def is_data_model(model):
         return kind in model
@@ -277,11 +246,7 @@ def get_all_data_errors(model: dict) -> list:
 def get_all_non_root_element_errors(
     model: Union[dict, list], element: str, type: type, fields: list
 ) -> list:
-    """Return all validation errors for the non-root element MODELs.
-
-    Return a list of all the validation errors found for non-root element
-    MODELs. If the non-root element MODELs are valid, return an empty list.
-    """
+    """Return all validation errors for the non-root element MODELs."""
 
     def has_element(model):
         return element in model and isinstance(model[element], type)
@@ -297,12 +262,7 @@ def get_all_non_root_element_errors(
 
 
 def get_all_required_field_errors(model: dict) -> list:
-    """Return all validation errors for the required fields of the MODEL.
-
-    Return a list of all the validation errors found for the required fields of
-    the MODEL. If the required field of the MODEL is valid, return an empty
-    list.
-    """
+    """Return all validation errors for the required fields of the MODEL."""
 
     def has_required_fields(model: dict):
         return "required" in model and isinstance(model["required"], list)
@@ -318,11 +278,7 @@ def get_all_required_field_errors(model: dict) -> list:
 
 
 def get_all_usecase_errors(model: dict) -> list:
-    """Return all validation errors for the usecase MODEL.
-
-    Return a list of all the validation errors found for the usecase MODEL. If
-    the usecase MODEL is valid, return an empty list.
-    """
+    """Return all validation errors for the usecase MODEL."""
 
     def is_usecase(model):
         return "usecase" in model
@@ -341,11 +297,7 @@ def get_all_usecase_errors(model: dict) -> list:
 
 
 def get_all_model_errors(model: dict) -> list:
-    """Return all validation errors for the system MODEL.
-
-    Return a list of all the validation errors found for the system MODEL. If
-    the system MODEL is valid, return an empty list.
-    """
+    """Return all validation errors for the system MODEL."""
 
     def is_model(model):
         return "model" in model
@@ -375,11 +327,7 @@ def get_all_model_errors(model: dict) -> list:
 
 
 def get_all_extension_errors(model: dict) -> list:
-    """Return all validation errors for the system MODEL.
-
-    Return a list of all the validation errors found for the system MODEL. If
-    the system MODEL is valid, return an empty list.
-    """
+    """Return all validation errors for the system MODEL."""
 
     def is_ext(model):
         return "ext" in model
