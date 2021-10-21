@@ -1,6 +1,5 @@
 import re
-from enum import Enum
-from unittest import TestCase
+from unittest import TestCase, skip
 
 from aac import validator
 
@@ -318,5 +317,47 @@ model:
             - will be completed within 5 milliseconds
         """,
             "validation-test",
+        )
+        assert_model_is_valid(self, model)
+
+    @skip("FIXME: extended data type is not being recognized")
+    def test_extension(self):
+        model = parser.parse_str(
+            """
+ext:
+   name: CommandBehaviorType
+   type: BehaviorType
+   enumExt:
+      add:
+         - command
+---
+ext:
+   name: CommandBehaviorInput
+   type: Behavior
+   dataExt:
+      add:
+        - name: description
+          type: string
+---
+model:
+  name: clock
+  behavior:
+    - name: say goodmorning
+      type: command
+      input:
+        - name: name
+          type: string
+      output:
+        - name: good-morning
+          type: string
+      acceptance:
+        - scenario: time to wake up
+          when:
+            - waiting 1 second
+          then:
+            - will say good-morning
+""",
+            "validation-test",
+            False,
         )
         assert_model_is_valid(self, model)
