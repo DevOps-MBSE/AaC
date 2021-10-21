@@ -3,7 +3,6 @@
 # TODO: Replace "magic strings" with a more maintainable solution
 # TODO: Generalize get_all_errors to handle all (or at least most of) the cases
 
-from enum import Enum
 from typing import Union
 
 from iteration_utilities import flatten
