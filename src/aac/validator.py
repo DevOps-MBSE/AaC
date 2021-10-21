@@ -63,15 +63,17 @@ def _apply_extensions(model):
         ext = extension["ext"]
         type_to_extend = ext["type"]
         if type_to_extend in aac_data or type_to_extend in aac_enums:
-            _apply_extension(ext, aac_data, aac_enums)
+            errors.append(_apply_extension(ext, aac_data, aac_enums))
         else:
-            _apply_extension(
-                ext,
-                util.get_models_by_type(model, "data"),
-                util.get_models_by_type(model, "enum"),
+            errors.append(
+                _apply_extension(
+                    ext,
+                    util.get_models_by_type(model, "data"),
+                    util.get_models_by_type(model, "enum"),
+                )
             )
 
-    return errors
+    return _filter_none_values(errors)
 
 
 def _can_apply_extension(extension):
