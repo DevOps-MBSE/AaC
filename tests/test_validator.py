@@ -1,7 +1,7 @@
 import re
 from unittest import TestCase, skip
 
-from aac import validator
+from aac import parser, validator
 
 
 def kw(**kwargs):
