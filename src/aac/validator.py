@@ -148,7 +148,7 @@ def get_all_cross_reference_errors(kind: str, model: dict) -> iter:
         ]
         return dict(paths)
 
-    def fn(models, enum_name, paths, valid_values):
+    def get_errors_if_model_references_bad_enum_value(models, enum_name, paths, valid_values):
         errors = []
         for model_name in models:
             for path in paths:
@@ -164,7 +164,9 @@ def get_all_cross_reference_errors(kind: str, model: dict) -> iter:
         enum_paths = get_enum_paths(data, enums)
         paths = list(enum_paths.values())[0]
         return [
-            fn(models, e, paths, util.search(enums[e], ["enum", "values"]))
+            get_errors_if_model_references_bad_enum_value(
+                models, e, paths, util.search(enums[e], ["enum", "values"])
+            )
             for e in enum_paths
             if e != "Primitives"
         ]
