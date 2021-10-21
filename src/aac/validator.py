@@ -106,7 +106,7 @@ def get_all_errors_if_missing_required_properties(model: dict, required: list) -
     return map(get_error_if_missing_required_property, required)
 
 
-# TODO: Refactor
+# TODO: Refactor!
 def get_all_cross_reference_errors(kind: str, model: dict) -> iter:
     """Validate all cross references.
 
@@ -149,15 +149,17 @@ def get_all_cross_reference_errors(kind: str, model: dict) -> iter:
         return dict(paths)
 
     def get_errors_if_model_references_bad_enum_value(models, enum_name, paths, valid_values):
-        errors = []
-        for model_name in models:
+        def get_errors_for_model(model, paths):
+            errors = []
             for path in paths:
                 errors += [
-                    f"Model {model_name} entry {path} has a value {result} not allowed in the enumeration {enum_name}: {valid_values}"
-                    for result in util.search(models[model_name], path)
+                    f"Model {model} entry {path} has a value {result} not allowed in the enumeration {enum_name}: {valid_values}"
+                    for result in util.search(models[model], path)
                     if result not in valid_values
                 ]
-        return errors
+            return errors
+
+        return list(flatten(map(lambda m: get_errors_for_model(m, paths), models)))
 
     def validate_enum_references(models, data, enums):
         valid_values = []
