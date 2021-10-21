@@ -168,7 +168,6 @@ def get_all_cross_reference_errors(kind: str, model: dict) -> iter:
                 models, e, paths, util.search(enums[e], ["enum", "values"])
             )
             for e in enum_paths
-            if e != "Primitives"
         ]
 
     def find_paths_to_enum_fields(find_enum, data_name, data_type, data, enums) -> list:
