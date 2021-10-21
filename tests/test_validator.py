@@ -195,7 +195,7 @@ class ValidatorTest(TestCase):
                 name="test",
                 behavior=[kw(name="test", type="bad", acceptance=[], output=[kw()])],
             ),
-            "entry.*value.*bad.*not.*allowed",
+            "unrecognized.*BehaviorType.*bad.*test",
         )
 
     def test_can_validate_extensions(self):

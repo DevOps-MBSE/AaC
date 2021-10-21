@@ -189,7 +189,7 @@ def get_errors_if_model_references_bad_enum_value(
         errors = []
         for path in paths:
             errors += [
-                f"Model {model} entry {path} has a value {result} not allowed in the enumeration {enum}: {valid}"
+                f"unrecognized '{enum}' value '{result}' in '{model}' at '{' -> '.join(path)}': {valid}"
                 for result in util.search(models[model], path)
                 if result not in valid
             ]
