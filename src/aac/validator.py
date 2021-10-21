@@ -68,7 +68,7 @@ def get_all_enum_errors(model: dict) -> list:
 
     kind = "enum"
     if is_enum_model(model):
-        return get_all_errors_for(model, kind=kind, items=load_aac_fields_for(kind))
+        return get_all_errors_for(model, kind=kind, fields=load_aac_fields_for(kind))
 
     return []
 
@@ -76,11 +76,11 @@ def get_all_enum_errors(model: dict) -> list:
 def get_all_errors_for(model: dict, **properties) -> list:
     """Get all model errors for the specified kind of model."""
     model = model[properties["kind"]] if "kind" in properties else model
-    items = properties["items"]
+    fields = properties["fields"]
 
-    props = [i["name"] for i in items]
-    types = [i["type"] for i in items]
-    required = [i["name"] for i in items if i["required"]]
+    props = [f["name"] for f in fields]
+    types = [f["type"] for f in fields]
+    required = [f["name"] for f in fields if f["required"]]
 
     return filter_none_values(
         get_all_errors_if_missing_required_properties(model, required),
@@ -269,7 +269,7 @@ def get_all_data_errors(model: dict) -> list:
     if is_data_model(model):
         data = model[kind]
         return filter_none_values(
-            get_all_errors_for(model, kind=kind, items=load_aac_fields_for(kind)),
+            get_all_errors_for(model, kind=kind, fields=load_aac_fields_for(kind)),
             get_all_non_root_element_errors(data, "fields", list, load_aac_fields_for("Field")),
             get_all_required_field_errors(data),
         )
@@ -277,9 +277,8 @@ def get_all_data_errors(model: dict) -> list:
     return []
 
 
-# TODO: items is a horrible name, here, find a better one
 def get_all_non_root_element_errors(
-    model: Union[dict, list], element: str, type: type, items: list
+    model: Union[dict, list], element: str, type: type, fields: list
 ) -> list:
     """Return all validation errors for the non-root element MODELs.
 
@@ -293,7 +292,7 @@ def get_all_non_root_element_errors(
     def get_field_errors(model):
         if has_element(model):
             model = [model[element]] if isinstance(model[element], dict) else model[element]
-            return flatten(map(lambda x: get_all_errors_for(x, items=items), model))
+            return flatten(map(lambda x: get_all_errors_for(x, fields=fields), model))
         return []
 
     model = model if isinstance(model, list) else [model]
@@ -334,7 +333,7 @@ def get_all_usecase_errors(model: dict) -> list:
     if is_usecase(model):
         usecase = model["usecase"]
         return filter_none_values(
-            get_all_errors_for(model, kind="usecase", items=load_aac_fields_for("usecase")),
+            get_all_errors_for(model, kind="usecase", fields=load_aac_fields_for("usecase")),
             get_all_non_root_element_errors(
                 usecase, "participants", list, load_aac_fields_for("Field")
             ),
@@ -361,7 +360,7 @@ def get_all_model_errors(model: dict) -> list:
         m = model["model"]
         behaviors = m["behavior"] if has_behaviors(m) else []
         return filter_none_values(
-            get_all_errors_for(model, kind="model", items=load_aac_fields_for("model")),
+            get_all_errors_for(model, kind="model", fields=load_aac_fields_for("model")),
             get_all_non_root_element_errors(m, "behavior", list, load_aac_fields_for("Behavior")),
             get_all_non_root_element_errors(m, "components", list, load_aac_fields_for("Field")),
             get_all_non_root_element_errors(
@@ -407,7 +406,7 @@ def get_all_extension_errors(model: dict) -> list:
             else ("enumExt", dict, load_aac_fields_for("EnumExtension"))
         )
         return filter_none_values(
-            get_all_errors_for(model, kind="ext", items=load_aac_fields_for("extension")),
+            get_all_errors_for(model, kind="ext", fields=load_aac_fields_for("extension")),
             get_all_errors_if_data_and_enum_extension_combined(ext),
             get_all_non_root_element_errors(ext, kind, type, items),
             # TODO: Not generic enough
