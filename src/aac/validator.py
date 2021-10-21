@@ -21,10 +21,10 @@ def is_valid(model: dict) -> bool:
     Returns:
         Returns True if the model is valid per the AaC spec; false otherwise.
     """
-    return len(get_all_errors(model)) == 0
+    return len(validate_and_get_errors(model)) == 0
 
 
-def get_all_errors(model: dict) -> list:
+def validate_and_get_errors(model: dict) -> list:
     """Return all validation errors for MODEL.
 
     Args:

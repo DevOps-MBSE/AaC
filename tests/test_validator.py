@@ -2,7 +2,7 @@ import re
 from unittest import TestCase, skip
 
 from aac.parser import parse_str
-from aac.validator import get_all_errors, is_valid
+from aac.validator import is_valid, validate_and_get_errors
 
 
 def kw(**kwargs):
@@ -52,12 +52,12 @@ def assert_errors_contain(self, errors, pattern):
 
 def assert_model_is_valid(self, model):
     """Assert that the provided MODEL is valid."""
-    self.assertEquals(get_all_errors(model), [])
+    self.assertEquals(validate_and_get_errors(model), [])
 
 
 def assert_model_is_invalid(self, model, error_pattern):
     """Assert that the provided MODEL is invalid."""
-    errors = get_all_errors(model)
+    errors = validate_and_get_errors(model)
     self.assertNotEquals(errors, [])
     assert_errors_contain(self, errors, error_pattern)
 
