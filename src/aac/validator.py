@@ -142,7 +142,7 @@ def get_all_cross_reference_errors(kind: str, model: dict) -> iter:
 
     def get_enum_paths(data, enums):
         paths = [
-            (e, _find_enum_field_paths(e, "model", "model", data, enums))
+            (e, find_paths_to_enum_fields(e, "model", "model", data, enums))
             for e in enums
             if e != "Primitives"
         ]
@@ -168,7 +168,7 @@ def get_all_cross_reference_errors(kind: str, model: dict) -> iter:
             if e != "Primitives"
         ]
 
-    def _find_enum_field_paths(find_enum, data_name, data_type, data, enums) -> list:
+    def find_paths_to_enum_fields(find_enum, data_name, data_type, data, enums) -> list:
         data_model = data[data_type]
         fields = util.search(data_model, ["data", "fields"])
         enum_fields = []
@@ -178,7 +178,7 @@ def get_all_cross_reference_errors(kind: str, model: dict) -> iter:
                 if field_type == find_enum:
                     enum_fields.append([field["name"]])
             elif field_type not in util.get_primitives():
-                found_paths = _find_enum_field_paths(
+                found_paths = find_paths_to_enum_fields(
                     find_enum, field["name"], field_type, data, enums
                 )
                 for found in found_paths:
