@@ -51,10 +51,6 @@ def validate_and_get_errors(model: dict) -> list:
     return _apply_extensions(model) + list(flatten(map(collect_errors, model.values())))
 
 
-def _can_apply_extension(extension):
-    return "ext" in extension and "type" in extension["ext"] and extension["ext"]["type"] != ""
-
-
 def _apply_extensions(model):
     aac_data, aac_enums = util.get_aac_spec()
     for ext in util.get_models_by_type(model, "ext"):
@@ -76,14 +72,16 @@ def _apply_extensions(model):
     return []
 
 
+def _can_apply_extension(extension):
+    return "ext" in extension and "type" in extension["ext"] and extension["ext"]["type"] != ""
+
+
 def _apply_extension(extension, data, enums):
     type_to_extend = extension["type"]
-    if "enumExt" in extension:
-        # apply the enum extension
+    if _is_enum_ext(extension):
         updated_values = enums[type_to_extend]["enum"]["values"] + extension["enumExt"]["add"]
         enums[type_to_extend]["enum"]["values"] = updated_values
-    elif "dataExt" in extension:
-        # apply the data extension
+    elif _is_data_ext(extension):
         updated_fields = data[type_to_extend]["data"]["fields"] + extension["dataExt"]["add"]
         data[type_to_extend]["data"]["fields"] = updated_fields
 
@@ -92,6 +90,14 @@ def _apply_extension(extension, data, enums):
                 data[type_to_extend]["data"]["required"] + extension["dataExt"]["required"]
             )
             data[type_to_extend]["data"]["fields"] = updated_required
+
+
+def _is_data_ext(model):
+    return "dataExt" in model and isinstance(model["dataExt"], dict)
+
+
+def _is_enum_ext(model):
+    return "enumExt" in model and isinstance(model["enumExt"], dict)
 
 
 def _get_all_parsing_errors(model: dict) -> list:
@@ -389,14 +395,8 @@ def _get_all_extension_errors(model: dict) -> list:
     def is_ext(model):
         return "ext" in model
 
-    def is_data_ext(model):
-        return "dataExt" in model and isinstance(model["dataExt"], dict)
-
-    def is_enum_ext(model):
-        return "enumExt" in model and isinstance(model["enumExt"], dict)
-
     def get_all_errors_if_data_and_enum_extension_combined(model):
-        if is_data_ext(model) and is_enum_ext(model):
+        if _is_data_ext(model) and _is_enum_ext(model):
             return ["cannot combine enumExt and dataExt in the same extension"]
         return []
 
@@ -404,7 +404,7 @@ def _get_all_extension_errors(model: dict) -> list:
         ext = model["ext"]
         kind, type, items = (
             ("dataExt", dict, _load_aac_fields_for("DataExtension"))
-            if is_data_ext(ext)
+            if _is_data_ext(ext)
             else ("enumExt", dict, _load_aac_fields_for("EnumExtension"))
         )
         return _filter_none_values(
@@ -413,7 +413,7 @@ def _get_all_extension_errors(model: dict) -> list:
             _get_all_non_root_element_errors(ext, kind, type, items),
             # TODO: Not generic enough
             _get_all_non_root_element_errors(ext[kind], "add", list, _load_aac_fields_for("Field"))
-            if is_data_ext(ext)
+            if _is_data_ext(ext)
             else [],
         )
 
