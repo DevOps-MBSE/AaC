@@ -42,7 +42,7 @@ def get_all_parsing_errors(model: dict) -> list:
 
     def get_unrecognized_root_errors(root):
         if root not in util.get_roots():
-            return "{} is not a recognized AaC root type".format(root)
+            return f"{root} is not a recognized AaC root type"
 
     return filter_none_values(map(get_unrecognized_root_errors, model.keys()))
 
@@ -269,7 +269,7 @@ def get_all_required_field_errors(model: dict) -> list:
 
     def get_required_field_error(required):
         if required not in map(lambda f: f["name"], model["fields"]):
-            return "reference to undefined required field: {}".format(required)
+            return f"reference to undefined required field: {required}"
 
     if has_required_fields(model):
         return filter_none_values(map(get_required_field_error, model["required"]))
