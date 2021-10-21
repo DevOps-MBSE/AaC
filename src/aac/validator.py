@@ -32,12 +32,12 @@ def get_all_errors(model: dict) -> list:
         kind = x["name"] if "name" in x else ""
         return (
             get_all_parsing_errors(model)
-            + get_all_cross_reference_errors(kind, model)
             + get_all_enum_errors(model)
             + get_all_data_errors(model)
             + get_all_usecase_errors(model)
             + get_all_model_errors(model)
             + get_all_extension_errors(model)
+            + get_all_cross_reference_errors(kind, model)
         )
 
     fn = lambda m: list(flatten(map(collect_errors, m.values())))
