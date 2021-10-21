@@ -13,12 +13,27 @@ VALID_TYPES = []
 
 
 def is_valid(model: dict) -> bool:
-    """Check if MODEL is valid per the AaC DSL."""
+    """Check if MODEL is valid per the AaC spec.
+
+    Args:
+        model: The model to validate.
+
+    Returns:
+        Returns True if the model is valid per the AaC spec; false otherwise.
+    """
     return len(get_all_errors(model)) == 0
 
 
 def get_all_errors(model: dict) -> list:
-    """Return all validation errors for MODEL."""
+    """Return all validation errors for MODEL.
+
+    Args:
+        model: The model to validate.
+
+    Returns:
+        Returns a list of all errors found when validating the model. If the
+        model is valid (i.e. there are no errors) an empty list is returned.
+    """
 
     def can_apply_extension(extension):
         return "ext" in extension and "type" in extension["ext"] and extension["ext"]["type"] != ""
