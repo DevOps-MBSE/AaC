@@ -199,7 +199,6 @@ class ValidatorTest(TestCase):
         )
 
     def test_can_validate_extensions(self):
-        assert_model_is_valid(self, ext(name="test", type="Primitives"))
         assert_model_is_valid(self, ext(name="test", type="Primitives", enumExt=kw(add=[])))
         assert_model_is_valid(self, ext(name="test", type="Primitives", enumExt=kw(add=["a"])))
         assert_model_is_valid(
@@ -218,6 +217,14 @@ class ValidatorTest(TestCase):
             ),
         )
 
+        assert_model_is_invalid(
+            self, ext(name="test", type="Primitives"), "unrecognized.*extension.*type"
+        )
+        assert_model_is_invalid(
+            self,
+            ext(name="test", type="invalid"),
+            "unrecognized.*extension.*type.*invalid",
+        )
         assert_model_is_invalid(self, ext(), "missing.*required.*(name|type)")
         assert_model_is_invalid(self, ext(invalid="item"), "unrecognized.*field.*invalid")
         assert_model_is_invalid(

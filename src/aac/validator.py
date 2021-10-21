@@ -82,6 +82,9 @@ def _can_apply_extension(extension):
 
 def _apply_extension(extension, data, enums):
     type_to_extend = extension["type"]
+    if not _is_enum_ext(extension) and not _is_data_ext(extension):
+        return f"unrecognized extension type {type_to_extend}"
+
     if _is_enum_ext(extension):
         updated_values = enums[type_to_extend]["enum"]["values"] + extension["enumExt"]["add"]
         enums[type_to_extend]["enum"]["values"] = updated_values
