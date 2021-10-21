@@ -1,7 +1,8 @@
 import re
 from unittest import TestCase, skip
 
-from aac import parser, validator
+from aac.parser import parse_str
+from aac.validator import get_all_errors, is_valid, load_aac_fields_for
 
 
 def kw(**kwargs):
@@ -51,20 +52,20 @@ def assert_errors_contain(self, errors, pattern):
 
 def assert_model_is_valid(self, model):
     """Assert that the provided MODEL is valid."""
-    self.assertEquals(validator.get_all_errors(model), [])
+    self.assertEquals(get_all_errors(model), [])
 
 
 def assert_model_is_invalid(self, model, error_pattern):
     """Assert that the provided MODEL is invalid."""
-    errors = validator.get_all_errors(model)
+    errors = get_all_errors(model)
     self.assertNotEquals(errors, [])
     assert_errors_contain(self, errors, error_pattern)
 
 
 class ValidatorTest(TestCase):
     def test_is_valid(self):
-        self.assertTrue(validator.is_valid(data(name="test", fields=[kw(name="a", type="int")])))
-        self.assertFalse(validator.is_valid(data()))
+        self.assertTrue(is_valid(data(name="test", fields=[kw(name="a", type="int")])))
+        self.assertFalse(is_valid(data()))
 
     def test_can_validate_enums(self):
         assert_model_is_valid(self, enum(name="test", values=[]))
@@ -260,9 +261,9 @@ class ValidatorTest(TestCase):
             {"name": "dataExt", "type": "DataExtension", "required": False},
         ]
 
-        self.assertListEqual(validator.load_aac_fields_for("enum"), enum_items)
-        self.assertListEqual(validator.load_aac_fields_for("data"), data_items)
-        self.assertListEqual(validator.load_aac_fields_for("extension"), extension_items)
+        self.assertListEqual(load_aac_fields_for("enum"), enum_items)
+        self.assertListEqual(load_aac_fields_for("data"), data_items)
+        self.assertListEqual(load_aac_fields_for("extension"), extension_items)
 
 
 class ValidatorFunctionalTest(TestCase):
