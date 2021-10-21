@@ -2,7 +2,7 @@ import re
 from unittest import TestCase, skip
 
 from aac.parser import parse_str
-from aac.validator import get_all_errors, is_valid, load_aac_fields_for
+from aac.validator import _load_aac_fields_for, get_all_errors, is_valid
 
 
 def kw(**kwargs):
@@ -255,9 +255,9 @@ class ValidatorTest(TestCase):
             {"name": "dataExt", "type": "DataExtension", "required": False},
         ]
 
-        self.assertListEqual(load_aac_fields_for("enum"), enum_items)
-        self.assertListEqual(load_aac_fields_for("data"), data_items)
-        self.assertListEqual(load_aac_fields_for("extension"), extension_items)
+        self.assertListEqual(_load_aac_fields_for("enum"), enum_items)
+        self.assertListEqual(_load_aac_fields_for("data"), data_items)
+        self.assertListEqual(_load_aac_fields_for("extension"), extension_items)
 
 
 class ValidatorFunctionalTest(TestCase):
