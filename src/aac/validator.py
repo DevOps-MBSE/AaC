@@ -35,50 +35,6 @@ def validate_and_get_errors(model: dict) -> list:
         model is valid (i.e. there are no errors) an empty list is returned.
     """
 
-    def can_apply_extension(extension):
-        return "ext" in extension and "type" in extension["ext"] and extension["ext"]["type"] != ""
-
-    def apply_extensions(model):
-        aac_data, aac_enums = util.get_aac_spec()
-        for ext in util.get_models_by_type(model, "ext"):
-            extension = model[ext]
-            if not can_apply_extension(extension):
-                return [f"unrecognized extension type {extension}"]
-
-            type_to_extend = model[ext]["ext"]["type"]
-            if type_to_extend in aac_data or type_to_extend in aac_enums:
-                apply_extension(model[ext], aac_data, aac_enums)
-            else:
-                apply_extension(
-                    model[ext],
-                    util.get_models_by_type(model, "data"),
-                    util.get_models_by_type(model, "enum"),
-                )
-
-        return []
-
-    def apply_extension(extension, data, enums):
-        type_to_extend = extension["ext"]["type"]
-        if "enumExt" in extension["ext"]:
-            # apply the enum extension
-            updated_values = (
-                enums[type_to_extend]["enum"]["values"] + extension["ext"]["enumExt"]["add"]
-            )
-            enums[type_to_extend]["enum"]["values"] = updated_values
-        elif "dataExt" in extension["ext"]:
-            # apply the data extension
-            updated_fields = (
-                data[type_to_extend]["data"]["fields"] + extension["ext"]["dataExt"]["add"]
-            )
-            data[type_to_extend]["data"]["fields"] = updated_fields
-
-            if "required" in extension["ext"]["dataExt"]:
-                updated_required = (
-                    data[type_to_extend]["data"]["required"]
-                    + extension["ext"]["dataExt"]["required"]
-                )
-                data[type_to_extend]["data"]["fields"] = updated_required
-
     def collect_errors(model):
         x = dict(list(model.values())[0])
         kind = x["name"] if "name" in x else ""
@@ -92,7 +48,53 @@ def validate_and_get_errors(model: dict) -> list:
             + _get_all_cross_reference_errors(kind, model)
         )
 
-    return apply_extensions(model) + list(flatten(map(collect_errors, model.values())))
+    return _apply_extensions(model) + list(flatten(map(collect_errors, model.values())))
+
+
+def _can_apply_extension(extension):
+    return "ext" in extension and "type" in extension["ext"] and extension["ext"]["type"] != ""
+
+
+def _apply_extensions(model):
+    aac_data, aac_enums = util.get_aac_spec()
+    for ext in util.get_models_by_type(model, "ext"):
+        extension = model[ext]
+        if not _can_apply_extension(extension):
+            return [f"unrecognized extension type {extension}"]
+
+        type_to_extend = model[ext]["ext"]["type"]
+        if type_to_extend in aac_data or type_to_extend in aac_enums:
+            _apply_extension(model[ext], aac_data, aac_enums)
+        else:
+            _apply_extension(
+                model[ext],
+                util.get_models_by_type(model, "data"),
+                util.get_models_by_type(model, "enum"),
+            )
+
+    return []
+
+
+def _apply_extension(extension, data, enums):
+    type_to_extend = extension["ext"]["type"]
+    if "enumExt" in extension["ext"]:
+        # apply the enum extension
+        updated_values = (
+            enums[type_to_extend]["enum"]["values"] + extension["ext"]["enumExt"]["add"]
+        )
+        enums[type_to_extend]["enum"]["values"] = updated_values
+    elif "dataExt" in extension["ext"]:
+        # apply the data extension
+        updated_fields = (
+            data[type_to_extend]["data"]["fields"] + extension["ext"]["dataExt"]["add"]
+        )
+        data[type_to_extend]["data"]["fields"] = updated_fields
+
+        if "required" in extension["ext"]["dataExt"]:
+            updated_required = (
+                data[type_to_extend]["data"]["required"] + extension["ext"]["dataExt"]["required"]
+            )
+            data[type_to_extend]["data"]["fields"] = updated_required
 
 
 def _get_all_parsing_errors(model: dict) -> list:
