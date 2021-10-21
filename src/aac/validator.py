@@ -21,6 +21,7 @@ def get_all_errors(model: dict) -> list:
     """Return all validation errors for MODEL."""
 
     def apply_extensions(model):
+        aac_data, aac_enums = util.get_aac_spec()
         for ext in util.get_models_by_type(model, "ext"):
             type_to_extend = model[ext]["ext"]["type"]
             if type_to_extend in aac_data or type_to_extend in aac_enums:
@@ -57,7 +58,6 @@ def get_all_errors(model: dict) -> list:
     def collect_errors(model):
         x = dict(list(model.values())[0])
         kind = x["name"] if "name" in x else ""
-        apply_extensions(model)
         return (
             get_all_parsing_errors(model)
             + get_all_enum_errors(model)
@@ -67,6 +67,8 @@ def get_all_errors(model: dict) -> list:
             + get_all_extension_errors(model)
             + get_all_cross_reference_errors(kind, model)
         )
+
+    apply_extensions(model)
 
     fn = lambda m: list(flatten(map(collect_errors, m.values())))
     return list(flatten(map(fn, model))) if isinstance(model, list) else fn(model)
