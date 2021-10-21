@@ -2,7 +2,7 @@ import re
 from unittest import TestCase, skip
 
 from aac.parser import parse_str
-from aac.validator import _load_aac_fields_for, get_all_errors, is_valid
+from aac.validator import get_all_errors, is_valid
 
 
 def kw(**kwargs):
@@ -235,29 +235,6 @@ class ValidatorTest(TestCase):
             o("bad", name=""),
             "bad.*not.*AaC.*root",
         )
-
-    def test_can_load_aac_data(self):
-        enum_items = [
-            {"name": "name", "type": "string", "required": True},
-            {"name": "values", "type": "string[]", "required": True},
-        ]
-
-        data_items = [
-            {"name": "name", "type": "string", "required": True},
-            {"name": "fields", "type": "Field[]", "required": True},
-            {"name": "required", "type": "string[]", "required": False},
-        ]
-
-        extension_items = [
-            {"name": "name", "type": "string", "required": True},
-            {"name": "type", "type": "string", "required": True},
-            {"name": "enumExt", "type": "EnumExtension", "required": False},
-            {"name": "dataExt", "type": "DataExtension", "required": False},
-        ]
-
-        self.assertListEqual(_load_aac_fields_for("enum"), enum_items)
-        self.assertListEqual(_load_aac_fields_for("data"), data_items)
-        self.assertListEqual(_load_aac_fields_for("extension"), extension_items)
 
 
 class ValidatorFunctionalTest(TestCase):
