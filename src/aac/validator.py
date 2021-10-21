@@ -188,17 +188,12 @@ def get_all_cross_reference_errors(kind: str, model: dict) -> iter:
                     enum_fields.append(entry)
         return enum_fields
 
-    def add_name_to_enum_path(enum_fields, data_name):
-        ret_val = []
-        for enum in enum_fields:
-            entry = enum.copy()
-            entry.insert(0, data_name)
-            ret_val.append(entry)
-        return ret_val
-
     def find_paths_to_enum_fields(find_enum, data_name, data_type, data, enums) -> list:
         fields = util.search(data[data_type], ["data", "fields"])
-        return add_name_to_enum_path(get_enum_fields(find_enum, fields, data, enums), data_name)
+        return map(
+            lambda enum: [data_name] + enum,
+            get_enum_fields(find_enum, fields, data, enums),
+        )
 
     data = util.get_models_by_type(models, "data")
     enums = util.get_models_by_type(models, "enum")
