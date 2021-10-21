@@ -85,17 +85,14 @@ def _apply_extension(extension, data, enums):
     if not _is_enum_ext(extension) and not _is_data_ext(extension):
         return f"unrecognized extension type {type_to_extend}"
 
-    d, name, items, ext_type = (
-        (enums, "enum", "values", "enumExt")
-        if _is_enum_ext(extension)
-        else (data, "data", "fields", "dataExt")
-    )
-    updated_values = d[type_to_extend][name][items] + extension[ext_type]["add"]
-    d[type_to_extend][name][items] = updated_values
+    def add_values_to_model(model, name, items, thing="add"):
+        ext_type = f"{name}Ext"
+        model[type_to_extend][name][items] += extension[ext_type][thing]
+        if "required" in extension[ext_type]:
+            add_values_to_model(model, name, items, "required")
 
-    if _is_data_ext(extension) and "required" in extension["dataExt"]:
-        updated_required = d[type_to_extend][name]["required"] + extension[ext_type]["required"]
-        d[type_to_extend][name][items] = updated_required
+    args = (enums, "enum", "values") if _is_enum_ext(extension) else (data, "data", "fields")
+    add_values_to_model(*args)
 
 
 def _is_data_ext(model):
