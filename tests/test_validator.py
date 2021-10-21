@@ -268,9 +268,7 @@ class ValidatorTest(TestCase):
 
 class ValidatorFunctionalTest(TestCase):
     def test_full(self):
-        from aac import parser
-
-        model = parser.parse_str(
+        model = parse_str(
             """
 enum:
   name: time-zone
@@ -323,7 +321,7 @@ model:
 
     @skip("FIXME: extended data type is not being recognized")
     def test_extension(self):
-        model = parser.parse_str(
+        model = parse_str(
             """
 ext:
    name: CommandBehaviorType
