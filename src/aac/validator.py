@@ -149,7 +149,7 @@ def get_all_cross_reference_errors(kind: str, model: dict) -> iter:
         return dict(paths)
 
     def get_errors_if_model_references_bad_enum_value(models, enum_name, paths, valid_values):
-        def get_errors_for_model(model, paths):
+        def get_errors_for_bad_enum_in_model(model, paths):
             errors = []
             for path in paths:
                 errors += [
@@ -159,7 +159,7 @@ def get_all_cross_reference_errors(kind: str, model: dict) -> iter:
                 ]
             return errors
 
-        return list(flatten(map(lambda m: get_errors_for_model(m, paths), models)))
+        return list(flatten(map(lambda m: get_errors_for_bad_enum_in_model(m, paths), models)))
 
     def validate_enum_references(models, data, enums):
         valid_values = []
