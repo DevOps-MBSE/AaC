@@ -52,16 +52,17 @@ class ValidatorTest(TestCase):
 
     def assert_model_is_valid(self, model):
         """Assert that the provided MODEL is valid."""
-        self.assertTrue(validator.is_valid(model))
         self.assertEquals(validator.get_all_errors(model), [])
 
     def assert_model_is_invalid(self, model, error_pattern):
         """Assert that the provided MODEL is invalid."""
-        self.assertFalse(validator.is_valid(model))
-
         errors = validator.get_all_errors(model)
         self.assertNotEquals(errors, [])
         self.assert_errors_contain(errors, error_pattern)
+
+    def test_is_valid(self):
+        self.assertTrue(validator.is_valid(data(name="test", values=[kw(name="a", type="int")])))
+        self.assertFalse(validator.is_valid(data()))
 
     def test_can_validate_enums(self):
         self.assert_model_is_valid(enum(name="test", values=[]))
