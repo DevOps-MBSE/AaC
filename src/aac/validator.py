@@ -197,10 +197,14 @@ def get_all_cross_reference_errors(kind: str, model: dict) -> iter:
     data = util.get_models_by_type(models, "data")
     enums = util.get_models_by_type(models, "enum")
     models = util.get_models_by_type(models, "model")
-    return filter_none_values(
-        validate_data_references(data),
-        validate_model_references(models),
-        validate_enum_references(models, data, enums),
+    return list(
+        flatten(
+            filter_none_values(
+                validate_data_references(data),
+                validate_model_references(models),
+                validate_enum_references(models, data, enums),
+            )
+        )
     )
 
 
