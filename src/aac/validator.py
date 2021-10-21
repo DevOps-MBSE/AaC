@@ -36,8 +36,8 @@ def validate_and_get_errors(model: dict) -> list:
     """
 
     def collect_errors(model):
-        x = dict(list(model.values())[0])
-        kind = x["name"] if "name" in x else ""
+        actual_model = dict(list(model.values())[0])
+        kind = actual_model["name"] if "name" in actual_model else ""
         return (
             _get_all_parsing_errors(model)
             + _get_all_enum_errors(model)
