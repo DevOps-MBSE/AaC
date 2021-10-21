@@ -2,8 +2,6 @@
 
 # TODO: Replace "magic strings" with a more maintainable solution
 # TODO: Generalize get_all_errors to handle all (or at least most of) the cases
-# TODO: Switch from using isinstance(...) for type checking to something that can handle
-#       AaC-defined types.
 
 from enum import Enum
 from typing import Union
@@ -108,7 +106,6 @@ def get_all_errors_if_missing_required_properties(model: dict, required: list) -
     return map(get_error_if_missing_required_property, required)
 
 
-# TODO: Refactor!
 def get_all_cross_reference_errors(kind: str, model: dict) -> iter:
     """Validate all cross references.
 
