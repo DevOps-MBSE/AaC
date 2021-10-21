@@ -66,7 +66,6 @@ def get_all_errors_for(model: dict, **properties) -> list:
     fields = properties["fields"]
 
     props = [f["name"] for f in fields]
-    types = [f["type"] for f in fields]
     required = [f["name"] for f in fields if f["required"]]
 
     return filter_none_values(
@@ -179,7 +178,6 @@ def get_errors_if_model_references_bad_enum_value(
 
 def validate_enum_references(models: list, data: dict, enums: dict) -> list:
     """Validate all references to enum fields in all models."""
-    valid_values = []
     enum_paths = get_enum_paths(data, enums)
     paths = list(enum_paths.values())[0]
     return [
