@@ -152,11 +152,11 @@ def get_all_cross_reference_errors(kind: str, model: dict) -> iter:
         errors = []
         for model_name in models:
             for path in paths:
-                for result in util.search(models[model_name], path):
-                    if result not in valid_values:
-                        errors.append(
-                            f"Model {model_name} entry {path} has a value {result} not allowed in the enumeration {enum_name}: {valid_values}"
-                        )
+                errors += [
+                    f"Model {model_name} entry {path} has a value {result} not allowed in the enumeration {enum_name}: {valid_values}"
+                    for result in util.search(models[model_name], path)
+                    if result not in valid_values
+                ]
         return errors
 
     def validate_enum_references(models, data, enums):
