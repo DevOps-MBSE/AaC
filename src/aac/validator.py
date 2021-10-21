@@ -62,12 +62,13 @@ def _apply_extensions(model):
         if not _can_apply_extension(extension):
             return [f"unrecognized extension type {extension}"]
 
-        type_to_extend = model[ext]["ext"]["type"]
+        ext = extension["ext"]
+        type_to_extend = ext["type"]
         if type_to_extend in aac_data or type_to_extend in aac_enums:
-            _apply_extension(model[ext], aac_data, aac_enums)
+            _apply_extension(ext, aac_data, aac_enums)
         else:
             _apply_extension(
-                model[ext],
+                ext,
                 util.get_models_by_type(model, "data"),
                 util.get_models_by_type(model, "enum"),
             )
@@ -76,23 +77,19 @@ def _apply_extensions(model):
 
 
 def _apply_extension(extension, data, enums):
-    type_to_extend = extension["ext"]["type"]
-    if "enumExt" in extension["ext"]:
+    type_to_extend = extension["type"]
+    if "enumExt" in extension:
         # apply the enum extension
-        updated_values = (
-            enums[type_to_extend]["enum"]["values"] + extension["ext"]["enumExt"]["add"]
-        )
+        updated_values = enums[type_to_extend]["enum"]["values"] + extension["enumExt"]["add"]
         enums[type_to_extend]["enum"]["values"] = updated_values
-    elif "dataExt" in extension["ext"]:
+    elif "dataExt" in extension:
         # apply the data extension
-        updated_fields = (
-            data[type_to_extend]["data"]["fields"] + extension["ext"]["dataExt"]["add"]
-        )
+        updated_fields = data[type_to_extend]["data"]["fields"] + extension["dataExt"]["add"]
         data[type_to_extend]["data"]["fields"] = updated_fields
 
-        if "required" in extension["ext"]["dataExt"]:
+        if "required" in extension["dataExt"]:
             updated_required = (
-                data[type_to_extend]["data"]["required"] + extension["ext"]["dataExt"]["required"]
+                data[type_to_extend]["data"]["required"] + extension["dataExt"]["required"]
             )
             data[type_to_extend]["data"]["fields"] = updated_required
 
