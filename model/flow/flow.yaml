@@ -3,18 +3,18 @@ import:
 
 usecase:
   name: Nominal flow of data through the system.
-  description:  Something happens.
+  description: Something happens.
   participants:
     - name: user
-      type: ~User
+      type: User
     - name: system
       type: System
   steps:
-    - step:  The user invokes doFlow on system.
+    - step: The user invokes doFlow on system.
       source: user
       target: system
       action: doFlow
-    - step:  The system performs flow and responds to the user.
+    - step: The system performs flow and responds to the user.
       source: system
       target: user
       action: response
@@ -38,15 +38,11 @@ usecase:
     - name: svc3
       type: ServiceThree
   steps:
-    - step:  The system has been invoked to doFlow which triggers scv1
+    - step: The system has been invoked to doFlow which triggers scv1
       source: system
       target: svc1
       action: ProcessDataA
-    - step:  The system has been invoked a second time to doFlow which triggers scv1
-      source: system
-      target: svc1
-      action: ProcessDataA
-    - step:  svc1 completes and calls subsystem to continue the flow
+    - step: svc1 completes and calls subsystem to continue the flow
       source: svc1
       target: subsystem
       action: processDataB
