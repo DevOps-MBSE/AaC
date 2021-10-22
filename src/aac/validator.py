@@ -198,20 +198,26 @@ def _is_valid_type(type: str) -> bool:
 
 def _validate_data_references(data: dict) -> list:
     """Ensure all references in data models are valid."""
-    fn = lambda name, spec: _get_error_messages_if_invalid_type(
-        name, util.search(spec, ["data", "fields", "type"])
-    )
+
+    def fn(name, spec):
+        return _get_error_messages_if_invalid_type(
+            name, util.search(spec, ["data", "fields", "type"])
+        )
+
     return list(map(fn, data.keys(), data.values()))
 
 
 def _validate_model_references(models: list, data: dict) -> list:
     """Ensure all references in sysetm models are valid."""
-    fn = lambda name, spec: _get_error_messages_if_invalid_type(
-        name,
-        util.search(spec, ["model", "components", "type"])
-        + util.search(spec, ["model", "behavior", "input", "type"])
-        + util.search(spec, ["model", "behavior", "output", "type"]),
-    )
+
+    def fn(name, spec):
+        return _get_error_messages_if_invalid_type(
+            name,
+            util.search(spec, ["model", "components", "type"])
+            + util.search(spec, ["model", "behavior", "input", "type"])
+            + util.search(spec, ["model", "behavior", "output", "type"]),
+        )
+
     return list(map(fn, data.keys(), data.values()))
 
 
