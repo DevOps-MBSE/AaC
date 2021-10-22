@@ -52,13 +52,13 @@ def assert_errors_contain(self, errors, pattern):
 
 def assert_model_is_valid(self, model):
     """Assert that the provided MODEL is valid."""
-    self.assertEquals(validate_and_get_errors(model), [])
+    self.assertEqual(validate_and_get_errors(model), [])
 
 
 def assert_model_is_invalid(self, model, error_pattern):
     """Assert that the provided MODEL is invalid."""
     errors = validate_and_get_errors(model)
-    self.assertNotEquals(errors, [])
+    self.assertNotEqual(errors, [])
     assert_errors_contain(self, errors, error_pattern)
 
 
