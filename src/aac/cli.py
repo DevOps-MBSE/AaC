@@ -49,8 +49,11 @@ def run_cli():
         parsed_models = parser.parse_file(model_file)
     except RuntimeError as re:
         model_file, errors = re.args
+        errors = "\n  ".join(errors)
+
         print(f"Failed to validate {model_file}")
-        print(f"Failed with errors:\n  {'\n  '.join(errors)}")
+        print(f"Failed with errors:\n  {errors}")
+
         sys.exit("validation error")
 
     # validate is a built-in command - when called just print that the input model is valid
