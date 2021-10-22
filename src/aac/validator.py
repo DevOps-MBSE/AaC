@@ -85,14 +85,15 @@ def _apply_extension(extension, data, enums):
     if not _is_enum_ext(extension) and not _is_data_ext(extension):
         return f"unrecognized extension type {type_to_extend}"
 
-    def add_values_to_model(model, name, items, thing="add"):
+    def add_values_to_model(model, name, items, thing="add", required=None):
         ext_type = f"{name}Ext"
         model[type_to_extend][name][items] += extension[ext_type][thing]
-        if "required" in extension[ext_type]:
-            add_values_to_model(model, name, items, "required")
+        if required and "required" in extension[ext_type]:
+            add_values_to_model(model, name, required, required)
 
-    args = (enums, "enum", "values") if _is_enum_ext(extension) else (data, "data", "fields")
-    add_values_to_model(*args)
+    if _is_enum_ext(extension):
+        return add_values_to_model(enums, "enum", "values")
+    return add_values_to_model(data, "data", "fields", required="required")
 
 
 def _is_data_ext(model):
@@ -254,6 +255,7 @@ def _validate_enum_references(models: list, data: dict, enums: dict) -> list:
     ]
 
 
+# TODO: Clean up
 def _get_enum_fields(enum: str, fields: list, data: dict, enums: dict) -> list:
     """Get all fields in models that are of the desired type."""
     enum_fields = []

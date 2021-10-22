@@ -138,8 +138,12 @@ class ValidatorTest(TestCase):
         assert_model_is_invalid(self, usecase(invalid="item"), "unrecognized.*field.*invalid")
 
     def test_can_validate_models(self):
-        one_behavior = [kw(name="test", type="pub-sub", acceptance=[])]
-        two_behaviors = one_behavior + [kw(name="test", type="pub-sub", acceptance=[])]
+        # TODO: Figure out how to clear out the spec before running each test so we don't assume
+        # behaviors must have descriptions
+        one_behavior = [kw(name="test", type="pub-sub", acceptance=[], description="stuff")]
+        two_behaviors = one_behavior + [
+            kw(name="test", type="pub-sub", acceptance=[], description="more stuff")
+        ]
 
         assert_model_is_valid(self, model(name="test", behavior=[]))
         assert_model_is_valid(self, model(name="test", behavior=one_behavior))
@@ -214,6 +218,14 @@ class ValidatorTest(TestCase):
                 name="test",
                 type="model",
                 dataExt=kw(add=[kw(name="a", type="int"), kw(name="b", type="int")]),
+            ),
+        )
+        assert_model_is_valid(
+            self,
+            ext(
+                name="CommandBehaviorInput",
+                type="Behavior",
+                dataExt=kw(add=[kw(name="description", type="string")], required=["description"]),
             ),
         )
 
