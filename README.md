@@ -3,7 +3,7 @@
 AaC is a distinctly different take on Model-Based System Engineering (MBSE) that allows a
 system modeller to define a system in simple yaml.  This approach allows engineers to
 apply rigorous configuration management to their baselines (unlike other "boxes and lines" approaches).
-Our team has spent many years engineering, building, testing, and delivering complex systems. In 
+Our team has spent many years engineering, building, testing, and delivering complex systems. In
 that time we've seen an enormous amount of effort and money put into system modelling. Unfortunately,
 it is almost always the case that the system model is either never used by the teams building and
 delivering product, or it adds complexity to those team's workflow and becomes an impediment. The
@@ -13,13 +13,13 @@ the "wall of confusion" between developers and operations and optimizing around 
 and continuous improvement through learning and experimentation. We believe the critical tipping point
 that allowed this to occur was the creation of Infrastructure-as-Code and the adoption of new practices
 like GitOps that embrace automated quality assurance, automated deployment, and continuous monitoring.
-Our objective is to knock down the "wall of confusion" that exists between systems engineering and 
+Our objective is to knock down the "wall of confusion" that exists between systems engineering and
 development, optimizing the total system delivery value stream from concept/requirement through to
 operations with complete traceability and configuration management throughout.  We believe we can
 discover new ways to define, deliver, and evolve complex systems using Architecture-as-Code.
 
 AaC is a self-defining solution. At the heart of the AaC application is a definition of AaC itself.
-This model is used in validation of itself.  Core data types are purposefully simple and can be 
+This model is used in validation of itself.  Core data types are purposefully simple and can be
 extended by a user.
 
 AaC is designed with extensibility in mind.  The built-in functionallity is intentionally minimized.
@@ -37,11 +37,11 @@ pip install aac
 ```
 
 To use AaC you first define a model of your system in yaml.  Refer to the documentation for more details.
-A simple model for an EchoService is provided here for reference.  Cut and paste the below model into a 
-file called EchoService.yaml.  
+A simple model for an EchoService is provided here for reference.  Cut and paste the below model into a
+file called EchoService.yaml.
 *Note: This is using a little yaml trick to concatenate the content of two yaml files into a single file.*
 ```yaml
-data: 
+data:
   name: Message
   fields:
   - name: body
@@ -85,14 +85,14 @@ The AaC core root types are:
 - usecase: Allows you to model the sequence of interactions between your models.
 - ext: Allows you to easily extend the AaC model itself and tailor things to your needs.
 
-Although you can use the yaml trick above when modelling your system, it would be better to keep things more 
+Although you can use the yaml trick above when modelling your system, it would be better to keep things more
 structured and organized.  To help with this AaC allows you to define each item you model in a separate file and
-then import it as needed.  To do this just put an **import** at the root of your model file.  
+then import it as needed.  To do this just put an **import** at the root of your model file.
 
 Here's an example of the EchoService broken into two files:
 - Message.yaml
     ```yaml
-    data: 
+    data:
     name: Message
     fields:
     - name: body
@@ -176,7 +176,7 @@ $ python3.9 -m venv .env
 $ source .env/bin/activate
 ```
 
-The dependencies are structured into 3 sections: 
+The dependencies are structured into 3 sections:
 - runtime - the dependencies required to run the project
 - test - the dependencies required to run the project's automated tests
 - dev - the dependencies required to run development tools like linting and quality checks
@@ -208,7 +208,7 @@ $ pip install -e .[all]
 To run tests, make sure you've set up your dependencies using `pip install -e .[test]` (see above). Then, from the project root directory, run the following command (from within your virtual environment).
 
 ```bash
-$ nose2
+$ tox
 ```
 
 ### Running

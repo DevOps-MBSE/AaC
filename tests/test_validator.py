@@ -1,107 +1,351 @@
 import re
 from unittest import TestCase, skip
 
-from aac import util, validator, parser
+from aac.parser import parse_str
+from aac.validator import is_valid, validate_and_get_errors
 
 
-def assert_status_is_false(status):
-    return assert_status_is(status, False)
+def kw(**kwargs):
+    """Return a dictionary of the provided keyword arguments."""
+    return kwargs
 
 
-def assert_status_is_true(status):
-    return assert_status_is(status, True)
+def o(model: str, **kwargs):
+    """Return a simulated model after being parsed."""
+    root = ("name" in kwargs and kwargs["name"]) or "root"
+    return {root: {model: kwargs}}
 
 
-def assert_status_is(status, expected_status):
-    """Assert STATUS is EXPECTED_STATUS."""
-    assert status is expected_status
+def enum(**kwargs):
+    """Return a simulated enum model."""
+    return o("enum", **kwargs)
 
 
-def assert_errors_exist(errors):
-    """Assert that ERRORS is a non-empty collection."""
-    assert len(errors) > 0
+def data(**kwargs):
+    """Return a simulated data model."""
+    return o("data", **kwargs)
 
 
-def assert_no_errors(errors):
-    """Assert that ERRORS is an empty collection."""
-    assert len(errors) == 0
+def usecase(**kwargs):
+    """Return a simulated usecase model."""
+    return o("usecase", **kwargs)
 
 
-def assert_errors_contain(errors, pattern):
+def model(**kwargs):
+    """Return a simulated system model."""
+    return o("model", **kwargs)
+
+
+def ext(**kwargs):
+    """Return a simulated ext model."""
+    return o("ext", **kwargs)
+
+
+def assert_errors_contain(self, errors, pattern):
     """Assert that at least one error in ERRORS matches PATTERN."""
-    for e in errors:
-        assert re.search(pattern, e)
+
+    def assertion(e):
+        return re.search(pattern, e) is not None
+
+    self.failIf(not any(map(assertion, errors)), f"did not find '{pattern}' in {errors}")
+
+
+def assert_model_is_valid(self, model):
+    """Assert that the provided MODEL is valid."""
+    self.assertEqual(validate_and_get_errors(model), [])
+
+
+def assert_model_is_invalid(self, model, error_pattern):
+    """Assert that the provided MODEL is invalid."""
+    errors = validate_and_get_errors(model)
+    self.assertNotEqual(errors, [])
+    assert_errors_contain(self, errors, error_pattern)
 
 
 class ValidatorTest(TestCase):
-    def test_validation_succeeds_for_valid_enum(self):
-        status, errors = validator._validate_general(
-            {"enum": {"name": "test", "values": ["a", "b"]}}
+    def test_is_valid(self):
+        self.assertTrue(is_valid(data(name="test", fields=[kw(name="a", type="int")])))
+        self.assertFalse(is_valid(data()))
+
+    def test_can_validate_enums(self):
+        assert_model_is_valid(self, enum(name="test", values=[]))
+        assert_model_is_valid(self, enum(name="test", values=["a"]))
+        assert_model_is_valid(self, enum(name="test", values=["a", "b"]))
+
+        assert_model_is_invalid(self, enum(), "missing.*required.*(name|values)")
+        assert_model_is_invalid(self, enum(name="test"), "missing.*required.*values")
+        assert_model_is_invalid(self, enum(values=[]), "missing.*required.*name")
+        assert_model_is_invalid(self, enum(invalid="item"), "unrecognized.*field.*invalid")
+
+    def test_can_validate_data(self):
+        one_field = [kw(name="x", type="int")]
+        two_fields = one_field + [kw(name="y", type="int")]
+
+        assert_model_is_valid(self, data(name="test", fields=[]))
+        assert_model_is_valid(self, data(name="test", fields=one_field))
+        assert_model_is_valid(self, data(name="test", fields=two_fields))
+
+        assert_model_is_valid(self, data(name="test", fields=[], required=[]))
+        assert_model_is_valid(self, data(name="test", fields=one_field, required=["x"]))
+        assert_model_is_valid(self, data(name="test", fields=two_fields, required=["x"]))
+        assert_model_is_valid(self, data(name="test", fields=two_fields, required=["x", "y"]))
+
+        assert_model_is_invalid(self, data(), "missing.*required.*(name|fields)")
+        assert_model_is_invalid(self, data(name="test"), "missing.*required.*fields")
+        assert_model_is_invalid(self, data(fields=[]), "missing.*required.*name")
+        assert_model_is_invalid(
+            self,
+            data(
+                name="Message",
+                fields=[
+                    kw(name="to", type="EmailAddress"),
+                    kw(name="from", type="EmailAddress[]"),
+                ],
+            ),
+            "unrecognized.*type.*EmailAddress(\\[\\])?.*Message",
         )
 
-        assert_status_is_true(status)
-        assert_no_errors(errors)
+        assert_model_is_invalid(self, data(invalid="item"), "unrecognized.*field.*invalid")
 
-    def test_validation_succeeds_for_valid_data(self):
-        status, errors = validator._validate_general(
-            {"data": {"name": "test", "fields": [{"name": "a", "type": "number"}]}}
+        assert_model_is_invalid(
+            self, data(name="test", fields=[], required=["x"]), "reference.*undefined.*x"
+        )
+        assert_model_is_invalid(
+            self, data(name="test", fields=two_fields, required=["z"]), "reference.*undefined.*z"
         )
 
-        assert_status_is_true(status)
-        assert_no_errors(errors)
+    def test_can_validate_usecase(self):
+        one_part = [kw(name="x", type="X")]
+        two_parts = one_part + [kw(name="y", type="Y")]
 
-    def test_validation_succeeds_for_minimal_valid_model(self):
-        status, errors = validator._validate_general({"model": {"name": "test", "behavior": []}})
+        one_step = [kw(step="alpha", source="x", target="y", action="b")]
+        two_steps = one_step + [kw(step="beta", source="y", target="x", action="b")]
 
-        assert_status_is_true(status)
-        assert_no_errors(errors)
-
-    def test_validation_fails_when_model_has_unrecognized_fields(self):
-        status, errors = validator._validate_model_entry(
-            "data",
-            "data",
-            {"name": "test", "fields": {}, "unrecognized": "key"},
-            *util.get_aac_spec(),
+        assert_model_is_valid(self, usecase(name="test", participants=[], steps=[]))
+        assert_model_is_valid(self, usecase(name="test", participants=one_part, steps=[]))
+        assert_model_is_valid(self, usecase(name="test", participants=two_parts, steps=[]))
+        assert_model_is_valid(self, usecase(name="test", participants=[], steps=one_step))
+        assert_model_is_valid(self, usecase(name="test", participants=[], steps=two_steps))
+        assert_model_is_valid(self, usecase(name="test", participants=one_part, steps=one_step))
+        assert_model_is_valid(
+            self,
+            usecase(
+                name="test", participants=one_part, steps=one_step, description="test description"
+            ),
         )
 
-        assert_status_is_false(status)
-        assert_errors_exist(errors)
-        assert_errors_contain(errors, "unrecognized.*field.*unrecognized")
+        assert_model_is_invalid(self, usecase(), "missing.*required.*(name|participants|steps)")
+        assert_model_is_invalid(self, usecase(invalid="item"), "unrecognized.*field.*invalid")
 
-    def test_validation_fails_when_model_has_more_than_one_root_item(self):
-        status, errors = validator._validate_general({"a": 1, "b": 2})
+    def test_can_validate_models(self):
+        # TODO: Figure out how to clear out the spec before running each test so we don't assume
+        # behaviors must have descriptions
+        one_behavior = [kw(name="test", type="pub-sub", acceptance=[], description="stuff")]
+        two_behaviors = one_behavior + [
+            kw(name="test", type="pub-sub", acceptance=[], description="more stuff")
+        ]
 
-        assert_status_is_false(status)
-        assert_errors_exist(errors)
-        assert_errors_contain(errors, "more.*one.*root")
+        assert_model_is_valid(self, model(name="test", behavior=[]))
+        assert_model_is_valid(self, model(name="test", behavior=one_behavior))
+        assert_model_is_valid(self, model(name="test", behavior=two_behaviors))
+        assert_model_is_valid(
+            self, model(name="test", behavior=one_behavior, description="description")
+        )
+        assert_model_is_valid(self, model(name="test", behavior=one_behavior, components=[]))
+        assert_model_is_valid(
+            self,
+            model(name="test", behavior=one_behavior, components=[kw(name="a", type="string")]),
+        )
+        assert_model_is_valid(
+            self,
+            model(name="test", behavior=one_behavior, description="description", components=[]),
+        )
+        assert_model_is_valid(
+            self,
+            model(
+                name="test",
+                behavior=one_behavior,
+                description="description",
+                components=[kw(name="a", type="string[]")],
+            ),
+        )
 
-    def test_validation_fails_when_model_has_unknown_root(self):
-        status, errors = validator._validate_general({"a": 1})
+        assert_model_is_invalid(self, model(), "missing.*required.*(name|behavior)")
+        assert_model_is_invalid(self, model(invalid="item"), "unrecognized.*field.*invalid")
+        assert_model_is_invalid(
+            self,
+            model(name="test", behavior=[kw(name="test", type="Nothing", acceptance=[kw()])]),
+            "missing.*required.*(scenario|when|then)",
+        )
+        assert_model_is_invalid(
+            self,
+            model(
+                name="test",
+                behavior=[kw(name="test", type="pub-sub", acceptance=[], input=[kw()])],
+            ),
+            "missing.*required.*(name|type)",
+        )
+        assert_model_is_invalid(
+            self,
+            model(
+                name="test",
+                behavior=[kw(name="test", type="pub-sub", acceptance=[], output=[kw()])],
+            ),
+            "missing.*required.*(name|type)",
+        )
+        assert_model_is_invalid(
+            self,
+            model(
+                name="test",
+                behavior=[kw(name="test", type="bad", acceptance=[], output=[kw()])],
+            ),
+            "unrecognized.*BehaviorType.*bad.*test",
+        )
 
-        assert_status_is_false(status)
-        assert_errors_exist(errors)
-        assert_errors_contain(errors, "unrecognized.*root.*[a]")
+    def test_can_validate_extensions(self):
+        assert_model_is_valid(self, ext(name="test", type="Primitives", enumExt=kw(add=[])))
+        assert_model_is_valid(self, ext(name="test", type="Primitives", enumExt=kw(add=["a"])))
+        assert_model_is_valid(
+            self, ext(name="test", type="Primitives", enumExt=kw(add=["a", "b"]))
+        )
+        assert_model_is_valid(self, ext(name="test", type="model", dataExt=kw(add=[])))
+        assert_model_is_valid(
+            self, ext(name="test", type="model", dataExt=kw(add=[kw(name="a", type="int")]))
+        )
+        assert_model_is_valid(
+            self,
+            ext(
+                name="test",
+                type="model",
+                dataExt=kw(add=[kw(name="a", type="int"), kw(name="b", type="int")]),
+            ),
+        )
+        assert_model_is_valid(
+            self,
+            ext(
+                name="CommandBehaviorInput",
+                type="Behavior",
+                dataExt=kw(add=[kw(name="description", type="string")], required=["description"]),
+            ),
+        )
 
-    @skip("This is failing due to pollution from other tests and the aac_spec plugin")
-    def test_data_validation(self):
+        assert_model_is_invalid(
+            self, ext(name="test", type="Primitives"), "unrecognized.*extension.*type"
+        )
+        assert_model_is_invalid(
+            self,
+            ext(name="test", type="invalid"),
+            "unrecognized.*extension.*type.*invalid",
+        )
+        assert_model_is_invalid(self, ext(), "missing.*required.*(name|type)")
+        assert_model_is_invalid(self, ext(invalid="item"), "unrecognized.*field.*invalid")
+        assert_model_is_invalid(
+            self,
+            ext(name="", type="", enumExt=kw(), dataExt=kw()),
+            "cannot.*combine.*enumExt.*dataExt",
+        )
+        assert_model_is_invalid(
+            self,
+            ext(name="", type="", dataExt=kw(add=[kw()])),
+            "missing.*required.*field.*(name|type)",
+        )
+        assert_model_is_invalid(
+            self,
+            o("bad", name=""),
+            "bad.*not.*AaC.*root",
+        )
 
-        valid_data = """
-        data:
-            name: MyTestFieldType
-            fields:
-                - name: name
-                  type: string
-                - name: type
-                  type: string
-            required:
-                - name
-                - type
-        """
-        validate_me = parser.parse_str(valid_data, "test_validator.test_datavalidation", False)
-        status, errors = validator.validate(validate_me)
 
-        if not status:
-            print(f"Failed to validate with errors: {errors}")
+class ValidatorFunctionalTest(TestCase):
+    @skip("FIXME: extended enum type is not being recognized")
+    def test_full(self):
+        model = parse_str(
+            """
+enum:
+  name: us-time-zone
+  values:
+    - est
+    - cst
+    - mst
+    - pst
+---
+data:
+  name: time
+  fields:
+    - name: hours
+      type: int
+    - name: minutes
+      type: int
+    - name: seconds
+      type: int
+---
+ext:
+  name: zoned-time
+  type: time
+  dataExt:
+    add:
+      - name: tzone
+        type: us-time-zone
+---
+model:
+  name: clock
+  behavior:
+    - name: publish current time
+      type: pub-sub
+      input:
+        - name: time-to-set
+          type: zoned-time
+      output:
+        - name: current-time
+          type: zoned-time
+      acceptance:
+        - scenario: publish current time
+          when:
+            - waiting 1 second
+          then:
+            - will publish current-time in us-time-zone
+            - will be completed within 5 milliseconds
+        """,
+            "validation-test",
+        )
+        assert_model_is_valid(self, model)
 
-        assert_status_is_true(status)
-        assert_no_errors(errors)
+    def test_extension(self):
+        model = parse_str(
+            """
+ext:
+   name: CommandBehaviorType
+   type: BehaviorType
+   enumExt:
+      add:
+         - command
+---
+ext:
+   name: CommandBehaviorInput
+   type: Behavior
+   dataExt:
+      add:
+        - name: description
+          type: string
+---
+model:
+  name: clock
+  behavior:
+    - name: say goodmorning
+      type: command
+      input:
+        - name: name
+          type: string
+      output:
+        - name: good-morning
+          type: string
+      acceptance:
+        - scenario: time to wake up
+          when:
+            - waiting 1 second
+          then:
+            - will say good-morning
+""",
+            "validation-test",
+        )
+        assert_model_is_valid(self, model)
