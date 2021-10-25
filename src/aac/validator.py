@@ -38,7 +38,7 @@ def validate_and_get_errors(model: dict) -> list:
     def collect_errors(model):
         actual_model = dict(list(model.values())[0])
         kind = actual_model["name"] if "name" in actual_model else ""
-        return (
+        errors = (
             _get_all_parsing_errors(model)
             + _get_all_enum_errors(model)
             + _get_all_data_errors(model)
@@ -47,6 +47,9 @@ def validate_and_get_errors(model: dict) -> list:
             + _get_all_extension_errors(model)
             + _get_all_cross_reference_errors(kind, model)
         )
+        if len(errors) == 0:
+            _set_valid_types({kind: actual_model})
+        return errors
 
     return _apply_extensions(model) + list(flatten(map(collect_errors, model.values())))
 
@@ -60,18 +63,19 @@ def _apply_extensions(model):
             errors.append(f"unrecognized extension type {extension}")
             continue
 
-        ext = extension["ext"]
-        type_to_extend = ext["type"]
+        ext_value = extension["ext"]
+        type_to_extend = ext_value["type"]
         if type_to_extend in aac_data or type_to_extend in aac_enums:
-            errors.append(_apply_extension(ext, aac_data, aac_enums))
+            errors.append(_apply_extension(ext_value, aac_data, aac_enums))
         else:
             errors.append(
                 _apply_extension(
-                    ext,
+                    ext_value,
                     util.get_models_by_type(model, "data"),
                     util.get_models_by_type(model, "enum"),
                 )
             )
+        _set_valid_types({ext: ext_value})
 
     return _filter_none_values(errors)
 
@@ -158,8 +162,6 @@ def _get_all_errors_if_missing_required_properties(model: dict, required: list) 
 
 def _get_all_cross_reference_errors(kind: str, model: dict) -> iter:
     """Validate all cross references."""
-
-    _set_valid_types({kind: model})
 
     data, enums = util.get_aac_spec()
     models = {kind: model} | data | enums

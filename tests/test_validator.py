@@ -257,7 +257,6 @@ class ValidatorTest(TestCase):
 
 
 class ValidatorFunctionalTest(TestCase):
-    @skip("FIXME: extended enum type is not being recognized")
     def test_full(self):
         model = parse_str(
             """
@@ -303,7 +302,7 @@ model:
           when:
             - waiting 1 second
           then:
-            - will publish current-time in us-time-zone
+            - will publish current-time
             - will be completed within 5 milliseconds
         """,
             "validation-test",
