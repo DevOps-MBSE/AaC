@@ -1,10 +1,15 @@
 from unittest import TestCase
 
-from aac.genplug import compile_templates, _convert_template_name_to_file_name
+from aac import util, validator
+from aac.genplug import _convert_template_name_to_file_name, compile_templates
 from aac.parser import parse_str
 
 
 class TestGenPlug(TestCase):
+    def setUp(self):
+        util.AAC_MODEL = {}
+        validator.VALID_TYPES = []
+
     def test_convert_template_name_to_file_name(self):
         plugin_name = "aac-test"
         template_names = ["__init__.py.jinja2", "plugin.py.jinja2", "plugin_impl.py.jinja2"]
@@ -16,8 +21,7 @@ class TestGenPlug(TestCase):
             self.assertEqual(expected_filename, actual_filename)
 
     def test_compile_templates(self):
-        # TODO: Re-run validation when we figure out why it's failing
-        parsed_model = parse_str(TEST_PLUGIN_YAML_STRING, "", False)
+        parsed_model = parse_str(TEST_PLUGIN_YAML_STRING, "")
         plugin_name = "aac_spec"
 
         generated_templates = compile_templates(parsed_model)

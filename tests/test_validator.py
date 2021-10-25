@@ -1,6 +1,7 @@
 import re
 from unittest import TestCase, skip
 
+from aac import util, validator
 from aac.parser import parse_str
 from aac.validator import is_valid, validate_and_get_errors
 
@@ -63,6 +64,10 @@ def assert_model_is_invalid(self, model, error_pattern):
 
 
 class ValidatorTest(TestCase):
+    def setUp(self):
+        util.AAC_MODEL = {}
+        validator.VALID_TYPES = []
+
     def test_is_valid(self):
         self.assertTrue(is_valid(data(name="test", fields=[kw(name="a", type="int")])))
         self.assertFalse(is_valid(data()))
@@ -257,6 +262,10 @@ class ValidatorTest(TestCase):
 
 
 class ValidatorFunctionalTest(TestCase):
+    def setUp(self):
+        util.AAC_MODEL = {}
+        validator.VALID_TYPES = []
+
     def test_full(self):
         model = parse_str(
             """
