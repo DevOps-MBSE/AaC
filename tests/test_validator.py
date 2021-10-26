@@ -64,6 +64,10 @@ def assert_model_is_invalid(self, model, error_pattern):
 
 
 class ValidatorTest(TestCase):
+    MODEL_NAME = "test"
+
+    ENUM_VALID_VALUES = ["a", "b"]
+
     def setUp(self):
         util.AAC_MODEL = {}
         validator.VALID_TYPES = []
@@ -72,14 +76,19 @@ class ValidatorTest(TestCase):
         self.assertTrue(is_valid(data(name="test", fields=[kw(name="a", type="int")])))
         self.assertFalse(is_valid(data()))
 
-    def test_can_validate_enums(self):
-        assert_model_is_valid(self, enum(name="test", values=[]))
-        assert_model_is_valid(self, enum(name="test", values=["a"]))
-        assert_model_is_valid(self, enum(name="test", values=["a", "b"]))
+    def test_valid_enums_pass_validation(self):
+        enums = [
+            enum(name=self.MODEL_NAME, values=self.ENUM_VALID_VALUES[:i])
+            for i in range(len(self.ENUM_VALID_VALUES))
+        ]
 
+        for e in enums:
+            assert_model_is_valid(self, e)
+
+    def test_enum_with_missing_fields_fails_validation(self):
         assert_model_is_invalid(self, enum(), "missing.*required.*(name|values)")
-        assert_model_is_invalid(self, enum(name="test"), "missing.*required.*values")
-        assert_model_is_invalid(self, enum(values=[]), "missing.*required.*name")
+
+    def test_enum_with_unrecognized_fields_fails_validation(self):
         assert_model_is_invalid(self, enum(invalid="item"), "unrecognized.*field.*invalid")
 
     def test_can_validate_data(self):
