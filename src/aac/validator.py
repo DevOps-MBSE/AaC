@@ -51,6 +51,7 @@ def validate_and_get_errors(model: dict) -> list:
             _set_valid_types({kind: actual_model})
         return errors
 
+    _set_valid_types({})
     return _apply_extensions(model) + list(flatten(map(collect_errors, model.values())))
 
 
@@ -75,7 +76,6 @@ def _apply_extensions(model):
                     util.get_models_by_type(model, "enum"),
                 )
             )
-        _set_valid_types({ext: ext_value})
 
     return _filter_none_values(errors)
 
@@ -185,7 +185,9 @@ def _set_valid_types(model: dict) -> None:
     global VALID_TYPES
 
     data, enums = util.get_aac_spec()
-    VALID_TYPES = list((model | data | enums).keys()) + util.get_primitives()
+    if not VALID_TYPES:
+        VALID_TYPES = list((data | enums).keys()) + util.get_primitives()
+    VALID_TYPES += list(model.keys())
 
 
 def _get_error_messages_if_invalid_type(name: str, types: list) -> list:
