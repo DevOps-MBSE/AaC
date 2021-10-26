@@ -87,7 +87,7 @@ data:
     - id
     - shall
 ---
-data: 
+data:
   name: RequirementAttribute
   fields:
     - name: name
@@ -136,5 +136,5 @@ model:
           - when
           then:
           - then
-  
+
 """
