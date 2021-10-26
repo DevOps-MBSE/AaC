@@ -203,12 +203,12 @@ def _convert_template_name_to_file_name(template_name: str, plugin_name: str) ->
     return file_name
 
 
-def _is_user_desired_output_directory(arch_file: str, output_dir: str) -> bool:
+def _is_user_desired_output_directory(architecture_file: str, output_dir: str) -> bool:
     """
     Ask the user if they're comfortable with the target generation directory.
 
     Args:
-        arch_file: Name of the architecture file
+        architecture_file: Name of the architecture file
         output_dir: The path to the target output directory
     Returns:
         boolean True if the user wishes to write to <output_dir>
@@ -223,7 +223,7 @@ def _is_user_desired_output_directory(arch_file: str, output_dir: str) -> bool:
         )
 
     if confirmation in ["n", "N"]:
-        print(f"Canceled: Please move {arch_file} to the desired directory and rerun the command.")
+        print(f"Canceled: Please move {architecture_file} to the desired directory and rerun the command.")
 
     return confirmation in ["y", "Y"]
 
@@ -246,12 +246,6 @@ def _gather_commands(behaviors: dict) -> list[dict]:
 
         if behavior_type != "command":
             continue
-
-        if behavior_description.startswith("'"):
-            behavior_description = behavior_description[1:]
-
-        if behavior_description.endswith("'"):
-            behavior_description = behavior_description[:-1]
 
         # First line should end with a period. flake8(D400)
         if not behavior_description.endswith("."):

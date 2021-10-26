@@ -56,7 +56,7 @@ class TestGenPlug(TestCase):
 
         self.assertRaises(GeneratePluginException, _compile_templates, parsed_model)
 
-    def test__compile_templates_with_model_missing_package_prefix(self):
+    def test__compile_templates_with_model_name_missing_package_prefix(self):
         parsed_model = parser.parse_str(MODEL_YAML_DEFINITION_SANS_PACKAGE_PREFIX, "", False)
         plugin_name = "aac_spec"
 
