@@ -332,61 +332,12 @@ class ValidatorFunctionalTest(TestCase):
         util.AAC_MODEL = {}
         validator.VALID_TYPES = []
 
-    def test_full(self):
-        model = parse_str(
-            """
-enum:
-  name: us-time-zone
-  values:
-    - est
-    - cst
-    - mst
-    - pst
----
-data:
-  name: time
-  fields:
-    - name: hours
-      type: int
-    - name: minutes
-      type: int
-    - name: seconds
-      type: int
----
-ext:
-  name: zoned-time
-  type: time
-  dataExt:
-    add:
-      - name: tzone
-        type: us-time-zone
----
-model:
-  name: clock
-  behavior:
-    - name: publish current time
-      type: pub-sub
-      input:
-        - name: time-to-set
-          type: zoned-time
-      output:
-        - name: current-time
-          type: zoned-time
-      acceptance:
-        - scenario: publish current time
-          when:
-            - waiting 1 second
-          then:
-            - will publish current-time
-            - will be completed within 5 milliseconds
-        """,
-            "validation-test",
-        )
+    def test_validates_parsed_yaml_models(self):
+        model = parse_str(TEST_MODEL_WITH_EXTENSIONS, "validation-test")
         assert_model_is_valid(self, model)
 
-    def test_extension(self):
-        model = parse_str(
-            """
+
+TEST_MODEL_WITH_EXTENSIONS = """
 ext:
    name: CommandBehaviorType
    type: BehaviorType
@@ -419,7 +370,4 @@ model:
             - waiting 1 second
           then:
             - will say good-morning
-""",
-            "validation-test",
-        )
-        assert_model_is_valid(self, model)
+"""
