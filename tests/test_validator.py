@@ -131,9 +131,14 @@ class ValidatorTest(TestCase):
         name = self.MODEL_NAME
         fields = self.DATA_INVALID_FIELDS
         pattern = "reference.*undefined.*(x|z)"
+        required = ["x", "z"]
 
-        assert_model_is_invalid(self, data(name=name, fields=fields[:0], required=["x"]), pattern)
-        assert_model_is_invalid(self, data(name=name, fields=fields[:2], required=["z"]), pattern)
+        test_data = [
+            data(name=name, fields=fields[:i], required=[required[i]]) for i in range(len(fields))
+        ]
+
+        for d in test_data:
+            assert_model_is_invalid(self, d, pattern)
 
     def test_can_validate_usecase(self):
         one_part = [kw(name="x", type="X")]
