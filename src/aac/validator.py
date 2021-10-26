@@ -10,6 +10,7 @@ from iteration_utilities import flatten
 from aac import util
 
 VALID_TYPES = []
+MAYBE_VALID_TYPES = []
 
 
 def is_valid(model: dict) -> bool:
@@ -34,6 +35,7 @@ def validate_and_get_errors(model: dict) -> list:
         Returns a list of all errors found when validating the model. If the
         model is valid (i.e. there are no errors) an empty list is returned.
     """
+    global MAYBE_VALID_TYPES
 
     def collect_errors(model):
         actual_model = dict(list(model.values())[0])
@@ -52,6 +54,7 @@ def validate_and_get_errors(model: dict) -> list:
         return errors
 
     _set_valid_types({})
+    MAYBE_VALID_TYPES = list(model.keys())
     return _apply_extensions(model) + list(flatten(map(collect_errors, model.values())))
 
 

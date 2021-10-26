@@ -106,6 +106,13 @@ ext:
       - name: spec
         type: Specification
 ---
+ext:
+   name: CommandBehaviorType
+   type: BehaviorType
+   enumExt:
+      add:
+         - command
+---
 model:
   name: aac-spec
   description: aac-spec is a Architecture-as-Code plugin that enables requirement definition and trace in Arch-as-Code models.
