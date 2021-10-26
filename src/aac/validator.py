@@ -39,7 +39,7 @@ def validate_and_get_errors(model: dict) -> list:
 
     def collect_errors(model):
         actual_model = dict(list(model.values())[0])
-        kind = actual_model["name"] if "name" in actual_model else ""
+        name = actual_model["name"] if "name" in actual_model else ""
         errors = (
             _get_all_parsing_errors(model)
             + _get_all_enum_errors(model)
@@ -47,10 +47,10 @@ def validate_and_get_errors(model: dict) -> list:
             + _get_all_usecase_errors(model)
             + _get_all_model_errors(model)
             + _get_all_extension_errors(model)
-            + _get_all_cross_reference_errors(kind, model)
+            + _get_all_cross_reference_errors(name, model)
         )
         if len(errors) == 0:
-            _set_valid_types({kind: actual_model})
+            _set_valid_types({name: actual_model})
         return errors
 
     _set_valid_types({})
