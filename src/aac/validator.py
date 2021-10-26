@@ -192,12 +192,12 @@ def _set_valid_types(model: dict) -> None:
 
 def _get_error_messages_if_invalid_type(name: str, types: list) -> list:
     """Get a list of error messages if any types are unrecognized."""
-    return [f"unrecognized type {t} used in {name}" for t in types if _is_valid_type(t)]
+    return [f"unrecognized type {t} used in {name}" for t in types if not _is_valid_type(t)]
 
 
 def _is_valid_type(type: str) -> bool:
     """Determine whether the type is valid, or not."""
-    return type.strip("[]") not in VALID_TYPES
+    return type.strip("[]") in VALID_TYPES + MAYBE_VALID_TYPES
 
 
 def _validate_data_references(data: dict) -> list:
