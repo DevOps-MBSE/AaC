@@ -1,5 +1,5 @@
 ---
-# root is a special case representing the root of the architecture model and 
+# root is a special case representing the root of the architecture model and
 # not explicitly included in a model file
 data:
   name: root
@@ -50,7 +50,7 @@ data:
       type: string[]
   required:
     - add
----      
+---
 data:
   name: DataExtension
   fields:
@@ -97,7 +97,7 @@ enum:
     - date
     - file
     - map
----  
+---
 data:
   name: Field
   fields:
@@ -143,7 +143,7 @@ data:
     - name
     - type
     - acceptance
-      
+
 ---
 data:
   name: model
@@ -186,7 +186,7 @@ data:
     - name: target  # this should be a name of a participant (i.e. modelled system component)
       type: string
     - name: action  # this as a behavior reference on the target or a subordinate use case definition
-      type: string  
+      type: string
     - name: if      # would create an alt in a sequence diagram
       type: Branch
     - name: else    # would create the "lower cell" in an alt in a sequence diagram

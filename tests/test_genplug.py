@@ -1,20 +1,23 @@
 import os
 from tempfile import TemporaryDirectory
-from unittest import TestCase, skip
+from unittest import TestCase
 
+from aac import util, validator, parser
 from aac.genplug import (
-    generate_plugin,
     _compile_templates,
     _convert_template_name_to_file_name,
     _write_generated_templates_to_file,
     TemplateOutputFile,
     GeneratePluginException,
 )
-from aac.parser import parse_str
 
 
 class TestGenPlug(TestCase):
-    def test__convert_template_name_to_file_name(self):
+    def setUp(self):
+        util.AAC_MODEL = {}
+        validator.DEFINED_TYPES = []
+
+    def test_convert_template_name_to_file_name(self):
         plugin_name = "aac-test"
         template_names = ["__init__.py.jinja2", "plugin.py.jinja2", "plugin_impl.py.jinja2"]
         expected_filenames = ["__init__.py", f"{plugin_name}.py", f"{plugin_name}_impl.py"]
@@ -24,8 +27,8 @@ class TestGenPlug(TestCase):
             actual_filename = _convert_template_name_to_file_name(template_names[i], plugin_name)
             self.assertEqual(expected_filename, actual_filename)
 
-    def test__compile_templates(self):
-        parsed_model = parse_str(TEST_PLUGIN_YAML_STRING, "", True)
+    def test_compile_templates(self):
+        parsed_model = parser.parse_str(TEST_PLUGIN_YAML_STRING, "")
         plugin_name = "aac_spec"
 
         generated_templates = _compile_templates(parsed_model)
@@ -47,14 +50,14 @@ class TestGenPlug(TestCase):
         self.assertIn(f"{plugin_name}_impl.py", generated_template_names)
 
     def test__compile_templates_errors_on_multiple_models(self):
-        parsed_model = parse_str(
+        parsed_model = parser.parse_str(
             f"{TEST_PLUGIN_YAML_STRING}\n---\n{SECONDARY_MODEL_YAML_DEFINITION}", "", True
         )
 
         self.assertRaises(GeneratePluginException, _compile_templates, parsed_model)
 
     def test__compile_templates_with_model_missing_package_prefix(self):
-        parsed_model = parse_str(MODEL_YAML_DEFINITION_SANS_PACKAGE_PREFIX, "", False)
+        parsed_model = parser.parse_str(MODEL_YAML_DEFINITION_SANS_PACKAGE_PREFIX, "", False)
         plugin_name = "aac_spec"
 
         generated_templates = _compile_templates(parsed_model)
@@ -155,6 +158,13 @@ ext:
       - name: spec
         type: Specification
 ---
+ext:
+   name: CommandBehaviorType
+   type: BehaviorType
+   enumExt:
+      add:
+         - command
+---
 model:
   name: aac-spec
   description: aac-spec is a Architecture-as-Code plugin that enables requirement definition and trace in Arch-as-Code models.
@@ -185,7 +195,6 @@ model:
           - when
           then:
           - then
-
 """
 
 SECONDARY_MODEL_YAML_DEFINITION = """
@@ -219,7 +228,6 @@ model:
           - when
           then:
           - then
-
 """
 
 

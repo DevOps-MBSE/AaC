@@ -1,318 +1,453 @@
-"""
-The AaC validation module.  Validates a model against the model spec.
-"""
+"""Validate a model per the AaC DSL."""
+
+# TODO: Replace "magic strings" with a more maintainable solution
+# TODO: Generalize validate_and_get_errors to handle all (or at least most of) the cases
+
+from typing import Union
+
+from iteration_utilities import flatten
+
 from aac import util
 
+DEFINED_TYPES = []
+REFERENCED_TYPES_IN_MODEL = []
 
-def validate(validate_me: dict[str, dict]) -> tuple[bool, list[str]]:
+
+def is_valid(model: dict) -> bool:
+    """Check if MODEL is valid per the AaC spec.
+
+    Args:
+        model: The model to validate.
+
+    Returns:
+        Returns True if the model is valid per the AaC spec; false otherwise.
     """
-    Performs validation against the validate_me arg using the AaC model spec.
+    return len(validate_and_get_errors(model)) == 0
+
+
+def validate_and_get_errors(model: dict) -> list:
+    """Return all validation errors for MODEL.
+
+    Args:
+        model: The model to validate.
+
+    Returns:
+        Returns a list of all errors found when validating the model. If the
+        model is valid (i.e. there are no errors) an empty list is returned.
     """
+    global REFERENCED_TYPES_IN_MODEL
 
-    found_invalid = False
-    err_msg_list = []
+    def collect_errors(model):
+        actual_model = dict(list(model.values())[0])
+        name = actual_model["name"] if "name" in actual_model else ""
+        errors = (
+            _get_all_parsing_errors(model)
+            + _get_all_enum_errors(model)
+            + _get_all_data_errors(model)
+            + _get_all_usecase_errors(model)
+            + _get_all_model_errors(model)
+            + _get_all_extension_errors(model)
+            + _get_all_cross_reference_errors(name, model)
+        )
+        if len(errors) == 0:
+            _set_valid_types({name: actual_model})
+        return errors
 
-    for model in validate_me.values():
-        is_valid, err_msg = _validate_general(model)
-        if not is_valid:
-            # print("Enum Validation Failed: {}".format(errMsg))
-            found_invalid = True
-            err_msg_list = err_msg_list + err_msg
+    _set_valid_types({})
+    REFERENCED_TYPES_IN_MODEL = list(model.keys())
+    return _apply_extensions(model) + list(flatten(map(collect_errors, model.values())))
 
-    # combine parsed types and AaC built-in types
+
+def _apply_extensions(model):
+    errors = []
     aac_data, aac_enums = util.get_aac_spec()
-    all_types = validate_me | aac_data | aac_enums
-    is_valid, err_msg = _validate_cross_references(all_types)
-    if not is_valid:
-        found_invalid = True
-        err_msg_list = err_msg_list + err_msg
+    for ext in util.get_models_by_type(model, "ext"):
+        extension = model[ext]
+        if not _can_apply_extension(extension):
+            errors.append(f"unrecognized extension type {extension}")
+            continue
 
-    is_valid, err_msg = _validate_enum_values(validate_me)
-    if not is_valid:
-        found_invalid = True
-        err_msg_list = err_msg_list + err_msg
-
-    for ext in util.get_models_by_type(validate_me, "ext"):
-        type_to_extend = validate_me[ext]["ext"]["type"]
+        ext_value = extension["ext"]
+        type_to_extend = ext_value["type"]
         if type_to_extend in aac_data or type_to_extend in aac_enums:
-            apply_extension(validate_me[ext], aac_data, aac_enums)
+            errors.append(_apply_extension(ext_value, aac_data, aac_enums))
         else:
-            apply_extension(validate_me[ext],
-                            util.get_models_by_type(validate_me, "data"),
-                            util.get_models_by_type(validate_me, "enum"))
-
-    return not found_invalid, err_msg_list
-
-
-def _validate_general(validate_me: dict) -> tuple[bool, list]:
-    """
-    Validate any given AaC model from the root.
-    """
-
-    model = validate_me.copy()
-    # remove any imports before validation
-    if "import" in model:
-        del model["import"]
-
-    # any model can only have a single root
-    if len(list(model.keys())) > 1:
-        return False, ["AaC Validation Error: yaml file has more than one root defined"]
-
-    # ensure the model has a known root
-    root_name = list(model.keys())[0]
-    if root_name not in util.get_roots():
-        return False, [f"AaC Validation Error: yaml file has an unrecognized root [{root_name}].  Known roots {util.get_roots()}"]
-
-    # get the root type to validate against
-    root_type = ""
-    aac_data, aac_enums = util.get_aac_spec()
-    for field in util.search(aac_data["root"], ["data", "fields"]):
-        if field["name"] == root_name:
-            root_type = field["type"]
-            break
-
-    return _validate_model_entry(root_name, root_type, model[root_name], aac_data, aac_enums)
-
-
-def _validate_cross_references(all_models: dict[str, dict]):
-    """
-    Process all provided models and ensure known type references are defined in the model.
-    """
-    all_types = list(all_models.keys())
-    all_types.extend(util.get_primitives())
-
-    models = util.get_models_by_type(all_models, "model")
-    data = util.get_models_by_type(all_models, "data")
-
-    found_invalid = False
-    err_msgs = []
-
-    for model_name, data_entry in data.items():
-        data_model_types = util.search(data_entry, ["data", "fields", "type"])
-        # print("processing {} - data_model_types: {}".format(model_name, data_model_types))
-        for data_model_type in data_model_types:
-            _, base_type_name = _get_simple_base_type_name(data_model_type)
-            if base_type_name not in all_types:
-                found_invalid = True
-                err_msgs.append(
-                    "Data model [{}] uses undefined data type [{}]".format(
-                        model_name, base_type_name
-                    )
+            errors.append(
+                _apply_extension(
+                    ext_value,
+                    util.get_models_by_type(model, "data"),
+                    util.get_models_by_type(model, "enum"),
                 )
+            )
 
-    for model_name, model_entry in models.items():
-        model_entry_types = util.search(model_entry, ["model", "components", "type"])
-        model_entry_types.extend(util.search(model_entry, ["model", "behavior", "input", "type"]))
-        model_entry_types.extend(util.search(model_entry, ["model", "behavior", "output", "type"]))
-        # print("processing {} - model_entry_types: {}".format(model_name, model_entry_types))
-        for model_entry_type in model_entry_types:
-            _, base_type_name = _get_simple_base_type_name(model_entry_type)
-            if base_type_name not in all_types:
-                found_invalid = True
-                err_msgs.append(f"Model model [{model_name}] uses undefined data type [{base_type_name}]")
-
-    if not found_invalid:
-        return True, ""
-    else:
-        return False, err_msgs
+    return _filter_none_values(errors)
 
 
-def _validate_enum_values(all_models: dict[str, dict]):
-    """
-    Checks to see that any value for an enum type is defined in the enum spec.
-    """
-
-    models = util.get_models_by_type(all_models, "model")
-    data = util.get_models_by_type(all_models, "data")
-    enums = util.get_models_by_type(all_models, "enum")
-
-    # find serach paths to the usage
-    enum_validation_paths = {}
-    for enum_name in enums:
-        if enum_name == "Primitives":
-            # skip primitives
-            continue
-        found_paths = _find_enum_field_paths(enum_name, "model", "model", data, enums)
-        # print("{} found_paths: {}".format(enum_name, found_paths))
-        enum_validation_paths[enum_name] = found_paths
-
-    # then ensure the value provided in the model is defined in the enum
-    found_invalid = False
-    err_msg_list = []
-
-    valid_values = []
-    for enum_name in enum_validation_paths:
-        if enum_name == "Primitives":
-            # skip primitives
-            continue
-
-        valid_values = util.search(enums[enum_name], ["enum", "values"])
-        # print("Enum {} valid values: {}".format(enum_name, valid_values))
-
-        for model_name in models:
-            for path in found_paths:
-                for result in util.search(models[model_name], path):
-                    # print("Model {} entry {} has a value {} being validated by the enumeration {}: {}".format(model_name, path, result, enum_name, valid_values))
-                    if result not in valid_values:
-                        found_invalid = True
-                        err_msg_list.append(f"Model {model_name} entry {path} has a value {result} not allowed in the enumeration {enum_name}: {valid_values}")
-
-    if not found_invalid:
-        return True, []
-
-    return False, err_msg_list
+def _can_apply_extension(extension):
+    return "ext" in extension and "type" in extension["ext"] and extension["ext"]["type"] != ""
 
 
-def _find_enum_field_paths(find_enum, data_name, data_type, data, enums) -> list:
-    # print("findEnumFieldPaths: {}, {}, {}".format(find_enum, data_name, data_type))
-    data_model = data[data_type]
-    fields = util.search(data_model, ["data", "fields"])
+def _apply_extension(extension, data, enums):
+    type_to_extend = extension["type"]
+    if not _is_enum_ext(extension) and not _is_data_ext(extension):
+        return f"unrecognized extension type {type_to_extend}"
+
+    def add_values_to_model(model, name, items, thing="add", required=None):
+        ext_type = f"{name}Ext"
+        model[type_to_extend][name][items] += extension[ext_type][thing]
+        if required and "required" in extension[ext_type]:
+            add_values_to_model(model, name, required, required)
+
+    if _is_enum_ext(extension):
+        return add_values_to_model(enums, "enum", "values")
+    return add_values_to_model(data, "data", "fields", required="required")
+
+
+def _is_data_ext(model):
+    return "dataExt" in model and isinstance(model["dataExt"], dict)
+
+
+def _is_enum_ext(model):
+    return "enumExt" in model and isinstance(model["enumExt"], dict)
+
+
+def _get_all_parsing_errors(model: dict) -> list:
+    """Return all parsing errors."""
+
+    def get_unrecognized_root_errors(root):
+        if root not in util.get_roots():
+            return f"{root} is not a recognized AaC root type"
+
+    return _filter_none_values(map(get_unrecognized_root_errors, model.keys()))
+
+
+def _get_all_enum_errors(model: dict) -> list:
+    """Return all validation errors for the enumeration MODEL."""
+
+    def is_enum_model(model):
+        return kind in model
+
+    kind = "enum"
+    if is_enum_model(model):
+        return _get_all_errors_for(model, kind=kind, fields=_load_aac_fields_for(kind))
+
+    return []
+
+
+def _get_all_errors_for(model: dict, **properties) -> list:
+    """Get all model errors for the specified kind of model."""
+    model = model[properties["kind"]] if "kind" in properties else model
+    fields = properties["fields"]
+
+    props = [f["name"] for f in fields]
+    required = [f["name"] for f in fields if f["required"]]
+
+    return _filter_none_values(
+        _get_all_errors_if_missing_required_properties(model, required),
+        _get_all_errors_if_unrecognized_properties(model, props),
+    )
+
+
+def _filter_none_values(*xs: list) -> list:
+    """Return XS without None values."""
+    return list(filter(lambda x: x, flatten(xs)))
+
+
+def _get_all_errors_if_missing_required_properties(model: dict, required: list) -> iter:
+    """Get error messages if the model is missing required properties."""
+
+    def get_error_if_missing_required_property(key):
+        if key not in model.keys():
+            return f"missing required field '{key}' in model '{model}'"
+
+    return map(get_error_if_missing_required_property, required)
+
+
+def _get_all_cross_reference_errors(kind: str, model: dict) -> iter:
+    """Validate all cross references."""
+
+    data, enums = util.get_aac_spec()
+    models = {kind: model} | data | enums
+
+    data = util.get_models_by_type(models, "data")
+    enums = util.get_models_by_type(models, "enum")
+    models = util.get_models_by_type(models, "model")
+    return list(
+        flatten(
+            _filter_none_values(
+                _validate_data_references(data),
+                _validate_model_references(models, data),
+                _validate_enum_references(models, data, enums),
+            )
+        )
+    )
+
+
+def _set_valid_types(model: dict) -> None:
+    """Initialize the list of valid types."""
+    global DEFINED_TYPES
+
+    data, enums = util.get_aac_spec()
+    if not DEFINED_TYPES:
+        DEFINED_TYPES = list((data | enums).keys()) + util.get_primitives()
+    DEFINED_TYPES += list(model.keys())
+
+
+def _get_error_messages_if_invalid_type(name: str, types: list) -> list:
+    """Get a list of error messages if any types are unrecognized."""
+    return [f"unrecognized type {t} used in {name}" for t in types if not _is_defined_type(t)]
+
+
+def _is_defined_type(type: str) -> bool:
+    """Determine whether the type is valid, or not."""
+    return type.strip("[]") in DEFINED_TYPES + REFERENCED_TYPES_IN_MODEL
+
+
+def _validate_data_references(data: dict) -> list:
+    """Ensure all references in data models are valid."""
+
+    def fn(name, spec):
+        return _get_error_messages_if_invalid_type(
+            name, util.search(spec, ["data", "fields", "type"])
+        )
+
+    return list(map(fn, data.keys(), data.values()))
+
+
+def _validate_model_references(models: list, data: dict) -> list:
+    """Ensure all references in sysetm models are valid."""
+
+    def fn(name, spec):
+        return _get_error_messages_if_invalid_type(
+            name,
+            util.search(spec, ["model", "components", "type"])
+            + util.search(spec, ["model", "behavior", "input", "type"])
+            + util.search(spec, ["model", "behavior", "output", "type"]),
+        )
+
+    return list(map(fn, data.keys(), data.values()))
+
+
+def _get_enum_paths(data: dict, enums: dict) -> dict:
+    """Get the paths to enum values in models."""
+    paths = [
+        (e, _find_paths_to_enum_fields(e, "model", "model", data, enums))
+        for e in enums
+        if e != "Primitives"
+    ]
+    return dict(paths)
+
+
+def _get_errors_if_model_references_bad_enum_value(
+    models: list, enum: str, paths: list, valid: list
+) -> list:
+    """Return error messages for any enum value that is referenced but not recognized."""
+
+    def get_errors_for_bad_enum_in_model(model, paths):
+        errors = []
+        for path in paths:
+            errors += [
+                f"unrecognized '{enum}' value '{result}' in '{model}' at '{' -> '.join(path)}': {valid}"
+                for result in util.search(models[model], path)
+                if result not in valid
+            ]
+        return errors
+
+    return list(flatten(map(lambda m: get_errors_for_bad_enum_in_model(m, paths), models)))
+
+
+def _validate_enum_references(models: list, data: dict, enums: dict) -> list:
+    """Validate all references to enum fields in all models."""
+    enum_paths = _get_enum_paths(data, enums)
+    paths = list(enum_paths.values())[0]
+    return [
+        _get_errors_if_model_references_bad_enum_value(
+            models, e, paths, util.search(enums[e], ["enum", "values"])
+        )
+        for e in enum_paths
+    ]
+
+
+# TODO: Clean up
+def _get_enum_fields(enum: str, fields: list, data: dict, enums: dict) -> list:
+    """Get all fields in models that are of the desired type."""
     enum_fields = []
     for field in fields:
-        _, field_type = _get_simple_base_type_name(field["type"])
+        field_type = field["type"].strip("[]")
         if field_type in enums.keys():
-            # only report the enum being serached for
-            if field_type == find_enum:
+            if field_type == enum:
                 enum_fields.append([field["name"]])
-            else:
-                continue
         elif field_type not in util.get_primitives():
-            found_paths = _find_enum_field_paths(find_enum, field["name"], field_type, data, enums)
+            found_paths = _find_paths_to_enum_fields(enum, field["name"], field_type, data, enums)
             for found in found_paths:
                 entry = found.copy()
-                # entry.insert(0, field["name"])
                 enum_fields.append(entry)
-
-    ret_val = []
-    for enum_entry in enum_fields:
-        entry = enum_entry.copy()
-        entry.insert(0, data_name)
-        ret_val.append(entry)
-    return ret_val
+    return enum_fields
 
 
-def _get_spec_required_fields(spec_model, name):
-    return util.search(spec_model, [name, "data", "required"])
+def _find_paths_to_enum_fields(find_enum, data_name, data_type, data, enums):
+    """Return the paths to any references to enum fields in models."""
+    fields = util.search(data[data_type], ["data", "fields"])
+    return map(
+        lambda enum: [data_name] + enum,
+        _get_enum_fields(find_enum, fields, data, enums),
+    )
 
 
-def _get_spec_field_names(spec_model, name):
-    ret_val = []
-    fields = util.search(spec_model, [name, "data", "fields"])
-    for field in fields:
-        ret_val.append(field["name"])
-    return ret_val
+def _get_all_errors_if_unrecognized_properties(model: dict, props: list) -> iter:
+    """Get error messages if the model has unrecognized properties."""
+
+    def get_error_if_property_is_unrecognized(key):
+        if key not in props:
+            return f"unrecognized field named '{key}' found in model '{model}'"
+
+    return map(get_error_if_property_is_unrecognized, model.keys())
 
 
-def _get_simple_base_type_name(type_declaration):
-    if type_declaration.endswith("[]"):
-        return True, type_declaration[0:-2]
+def _get_all_data_errors(model: dict) -> list:
+    """Return all validation errors for the data MODEL."""
 
-    return False, type_declaration
+    def is_data_model(model):
+        return kind in model
 
-
-def _get_model_object_fields(spec_model, enum_spec, name):
-    retVal = {}
-    fields = util.search(spec_model, [name, "data", "fields"])
-    for field in fields:
-        isList, field_type_name = _get_simple_base_type_name(field["type"])
-        isEnum = field_type_name in enum_spec.keys()
-        isPrimitive = field_type_name in util.get_primitives()
-        if not isEnum and not isPrimitive:
-            retVal[field["name"]] = field["type"]
-
-    return retVal
-
-
-def _validate_model_entry(name: str, model_type: str, model: dict, data_spec: dict[str, dict], enum_spec: dict[str, dict]):
-    """
-    Validate an Architecture-as-Code model.  A model item is a root of the AaC approach.
-    Unlike enum and data, the content and structure of a model is not "hard coded", but specified in the data definition of a model in the yaml file that models AaC itself.
-    This was put in place to support extensibility and customization, but does create a bit of "inception" that can be difficult to reason about.
-
-    :param model: The model to be validated.
-    :param data_specs: The data definitions of the modelled system (including AaC base types).
-    """
-    # make sure the model fields are correct per the spec
-    model_spec_fields = _get_spec_field_names(data_spec, model_type)
-    model_spec_required_fields = _get_spec_required_fields(data_spec, model_type)
-    model_fields = list(model.keys())
-
-    # check that required fields are present
-    is_valid, err_msg_list = _check_required_fields(name, model_fields, model_spec_required_fields)
-    if not is_valid:
-        return is_valid, err_msg_list
-
-    # check that model fields are recognized per the spec
-    is_valid, err_msg_list = _check_fields_known(name, model_fields, model_spec_fields)
-    if not is_valid:
-        return is_valid, err_msg_list
-
-    # look for any field that is not a primitive type and validate the contents
-    object_fields = _get_model_object_fields(data_spec, enum_spec, model_type)
-    if len(object_fields) == 0:
-        # there are only primitives, validation successful
-        return True, []
-
-    for field_name in object_fields:
-        if field_name not in model.keys():
-            # print("in model {} object field {} is not present but optional".format(name, field_name))
-            continue
-        field_type = object_fields[field_name]
-        sub_model = model[field_name]
-        isList, field_type_name = _get_simple_base_type_name(field_type)
-        err_msg_list
-        if isList:
-            for sub_model_item in sub_model:
-                isValid, errMsg = _validate_model_entry(
-                    field_name, field_type_name, sub_model_item, data_spec, enum_spec
-                )
-                if not isValid:
-                    return isValid, errMsg
-        else:
-            isValid, errMsg = _validate_model_entry(
-                field_name, field_type_name, sub_model, data_spec, enum_spec
-            )
-            if not isValid:
-                return isValid, errMsg
-
-    return True, []
-
-
-def _check_required_fields(name: str, model_fields: list[str], model_spec_required_fields: list[str]) -> tuple[bool, list[str]]:
-    for required_field in model_spec_required_fields:
-        if required_field not in model_fields:
-            return False, [f"model {name} is missing required field {required_field}"]
-    return True, []
-
-
-def _check_fields_known(name: str, model_fields: list[str], model_spec_fields: list[str]) -> tuple[bool, list[str]]:
-    for model_field in model_fields:
-        if model_field not in model_spec_fields:
-            return False, [f"model {name} contains unrecognized field {model_field}"]
-    return True, []
-
-
-def apply_extension(extension: dict, data: dict[str, dict], enums: dict[str, dict]):
-    """
-    Uses the provided extension to update data and enum definitions in the provided
-    specification sets.
-    """
-    type_to_extend = extension["ext"]["type"]
-    if "enumExt" in extension["ext"]:
-        # apply the enum extension
-        updated_values = (
-            enums[type_to_extend]["enum"]["values"] + extension["ext"]["enumExt"]["add"]
+    kind = "data"
+    if is_data_model(model):
+        data = model[kind]
+        return _filter_none_values(
+            _get_all_errors_for(model, kind=kind, fields=_load_aac_fields_for(kind)),
+            _get_all_non_root_element_errors(data, "fields", list, _load_aac_fields_for("Field")),
+            _get_all_required_field_errors(data),
         )
-        enums[type_to_extend]["enum"]["values"] = updated_values
-    else:
-        # apply the data extension
-        updated_fields = (
-            data[type_to_extend]["data"]["fields"] + extension["ext"]["dataExt"]["add"]
-        )
-        data[type_to_extend]["data"]["fields"] = updated_fields
 
-        if "required" in extension["ext"]["dataExt"]:
-            updated_required = (
-                data[type_to_extend]["data"]["required"] + extension["ext"]["dataExt"]["required"]
-            )
-            data[type_to_extend]["data"]["fields"] = updated_required
+    return []
+
+
+def _get_all_non_root_element_errors(
+    model: Union[dict, list], element: str, type: type, fields: list
+) -> list:
+    """Return all validation errors for the non-root element MODELs."""
+
+    def has_element(model):
+        return element in model and isinstance(model[element], type)
+
+    def get_field_errors(model):
+        if has_element(model):
+            model = [model[element]] if isinstance(model[element], dict) else model[element]
+            return flatten(map(lambda x: _get_all_errors_for(x, fields=fields), model))
+        return []
+
+    model = model if isinstance(model, list) else [model]
+    return flatten(map(get_field_errors, model))
+
+
+def _get_all_required_field_errors(model: dict) -> list:
+    """Return all validation errors for the required fields of the MODEL."""
+
+    def has_required_fields(model: dict):
+        return "required" in model and isinstance(model["required"], list)
+
+    def get_required_field_error(required):
+        if required not in map(lambda f: f["name"], model["fields"]):
+            return f"reference to undefined required field: {required}"
+
+    if has_required_fields(model):
+        return _filter_none_values(map(get_required_field_error, model["required"]))
+
+    return []
+
+
+def _get_all_usecase_errors(model: dict) -> list:
+    """Return all validation errors for the usecase MODEL."""
+
+    def is_usecase(model):
+        return "usecase" in model
+
+    if is_usecase(model):
+        usecase = model["usecase"]
+        return _filter_none_values(
+            _get_all_errors_for(model, kind="usecase", fields=_load_aac_fields_for("usecase")),
+            _get_all_non_root_element_errors(
+                usecase, "participants", list, _load_aac_fields_for("Field")
+            ),
+            _get_all_non_root_element_errors(usecase, "steps", list, _load_aac_fields_for("Step")),
+        )
+
+    return []
+
+
+def _get_all_model_errors(model: dict) -> list:
+    """Return all validation errors for the system MODEL."""
+
+    def is_model(model):
+        return "model" in model
+
+    def has_behaviors(model):
+        return "behavior" in model and isinstance(model["behavior"], list)
+
+    if is_model(model):
+        m = model["model"]
+        behaviors = m["behavior"] if has_behaviors(m) else []
+        return _filter_none_values(
+            _get_all_errors_for(model, kind="model", fields=_load_aac_fields_for("model")),
+            _get_all_non_root_element_errors(
+                m, "behavior", list, _load_aac_fields_for("Behavior")
+            ),
+            _get_all_non_root_element_errors(m, "components", list, _load_aac_fields_for("Field")),
+            _get_all_non_root_element_errors(
+                behaviors, "acceptance", list, _load_aac_fields_for("Scenario")
+            ),
+            _get_all_non_root_element_errors(
+                behaviors, "input", list, _load_aac_fields_for("Field")
+            ),
+            _get_all_non_root_element_errors(
+                behaviors, "output", list, _load_aac_fields_for("Field")
+            ),
+        )
+
+    return []
+
+
+def _get_all_extension_errors(model: dict) -> list:
+    """Return all validation errors for the system MODEL."""
+
+    def is_ext(model):
+        return "ext" in model
+
+    def get_all_errors_if_data_and_enum_extension_combined(model):
+        if _is_data_ext(model) and _is_enum_ext(model):
+            return ["cannot combine enumExt and dataExt in the same extension"]
+        return []
+
+    if is_ext(model):
+        ext = model["ext"]
+        kind, type, items = (
+            ("dataExt", dict, _load_aac_fields_for("DataExtension"))
+            if _is_data_ext(ext)
+            else ("enumExt", dict, _load_aac_fields_for("EnumExtension"))
+        )
+        return _filter_none_values(
+            _get_all_errors_for(model, kind="ext", fields=_load_aac_fields_for("extension")),
+            get_all_errors_if_data_and_enum_extension_combined(ext),
+            _get_all_non_root_element_errors(ext, kind, type, items),
+            # TODO: Not generic enough
+            _get_all_non_root_element_errors(ext[kind], "add", list, _load_aac_fields_for("Field"))
+            if _is_data_ext(ext)
+            else [],
+        )
+
+    return []
+
+
+def _load_aac_fields_for(kind: str) -> list:
+    """Get the AaC fields and their properties for the specified KIND of item."""
+    data, _ = util.get_aac_spec()
+    values = data[kind]["data"]
+    fields = values["fields"]
+
+    def is_required_field(field):
+        return "required" in values and field["name"] in values["required"]
+
+    def add_required_value_to_field(field):
+        return field | {"required": is_required_field(field)}
+
+    return list(map(add_required_value_to_field, fields))

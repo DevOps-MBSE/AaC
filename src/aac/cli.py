@@ -4,11 +4,12 @@ The command line processor for aac.
 import argparse
 import itertools
 import inspect
+import sys
 
 from typing import Callable
 from pluggy import PluginManager
 
-from aac import genjson, genplug, validator, parser, util, hookspecs, PLUGIN_PROJECT_NAME
+from aac import genjson, genplug, parser, util, hookspecs, PLUGIN_PROJECT_NAME
 from aac.AacCommand import AacCommand, AacCommandArgument
 
 
@@ -47,15 +48,19 @@ def run_cli():
             command.callback(**keyword_args)
 
 
-def _validate_cmd(yaml: str):
+def _validate_cmd(model_file: str):
     """The built-in validate command."""
-    parsed_model = parser.parse_file(yaml, False)
-    valid, error_list = validator.validate(parsed_model)
 
-    if valid:
-        print(f"Model [{yaml}] is valid")
-    else:
-        print(f"Model [{yaml}] is invalid. \n{error_list}")
+    try:
+        parser.parse_file(model_file)
+    except RuntimeError as re:
+        model_file, errors = re.args
+        errors = "\n  ".join(errors)
+
+        print(f"Failed to validate {model_file}")
+        print(f"Failed with errors:\n  {errors}")
+
+        sys.exit("validation error")
 
 
 def _core_spec_cmd():
