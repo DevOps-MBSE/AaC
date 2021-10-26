@@ -68,8 +68,13 @@ class ValidatorTest(TestCase):
 
     ENUM_VALID_VALUES = ["a", "b"]
 
-    DATA_VALID_FIELDS = [kw(name="x", type="int"), kw(name="y", type="int")]
+    VALID_FIELDS = [kw(name="x", type="int"), kw(name="y", type="int")]
     DATA_INVALID_FIELDS = [kw(name="x'", type="invalid"), kw(name="y'", type="invalid[]")]
+
+    USECASE_STEPS = [
+        kw(step="alpha", source="x", target="y", action="b"),
+        kw(step="beta", source="y", target="x", action="b"),
+    ]
 
     def setUp(self):
         util.AAC_MODEL = {}
@@ -97,7 +102,7 @@ class ValidatorTest(TestCase):
 
     def test_valid_data_pass_validation(self):
         name = self.MODEL_NAME
-        fields = self.DATA_VALID_FIELDS
+        fields = self.VALID_FIELDS
 
         data_none_required = [data(name=name, fields=fields[:i]) for i in range(len(fields))]
         data_with_required = [
@@ -140,28 +145,61 @@ class ValidatorTest(TestCase):
         for d in test_data:
             assert_model_is_invalid(self, d, pattern)
 
-    def test_can_validate_usecase(self):
-        one_part = [kw(name="x", type="X")]
-        two_parts = one_part + [kw(name="y", type="Y")]
+    def test_valid_usecases_with_only_participants_pass_validation(self):
+        name = self.MODEL_NAME
+        fields = self.VALID_FIELDS
 
-        one_step = [kw(step="alpha", source="x", target="y", action="b")]
-        two_steps = one_step + [kw(step="beta", source="y", target="x", action="b")]
+        usecases = [
+            usecase(name=name, participants=fields[:i], steps=[]) for i in range(len(fields))
+        ]
 
-        assert_model_is_valid(self, usecase(name="test", participants=[], steps=[]))
-        assert_model_is_valid(self, usecase(name="test", participants=one_part, steps=[]))
-        assert_model_is_valid(self, usecase(name="test", participants=two_parts, steps=[]))
-        assert_model_is_valid(self, usecase(name="test", participants=[], steps=one_step))
-        assert_model_is_valid(self, usecase(name="test", participants=[], steps=two_steps))
-        assert_model_is_valid(self, usecase(name="test", participants=one_part, steps=one_step))
-        assert_model_is_valid(
-            self,
-            usecase(
-                name="test", participants=one_part, steps=one_step, description="test description"
-            ),
-        )
+        for u in usecases:
+            assert_model_is_valid(self, u)
 
-        assert_model_is_invalid(self, usecase(), "missing.*required.*(name|participants|steps)")
-        assert_model_is_invalid(self, usecase(invalid="item"), "unrecognized.*field.*invalid")
+    def test_valid_usecases_with_only_steps_pass_validation(self):
+        name = self.MODEL_NAME
+        steps = self.USECASE_STEPS
+
+        usecases = [
+            usecase(name=name, participants=[], steps=steps[:i]) for i in range(len(steps))
+        ]
+
+        for u in usecases:
+            assert_model_is_valid(self, u)
+
+    def test_valid_usecases_with_participants_and_steps_pass_validation(self):
+        name = self.MODEL_NAME
+        fields = self.VALID_FIELDS
+        steps = self.USECASE_STEPS
+
+        usecases = [
+            usecase(name=name, participants=fields[:i], steps=steps[:i]) for i in range(len(steps))
+        ]
+
+        for u in usecases:
+            assert_model_is_valid(self, u)
+
+    def test_valid_usecase_with_optional_description_passes_validation(self):
+        name = self.MODEL_NAME
+        fields = self.VALID_FIELDS
+        steps = self.USECASE_STEPS
+        desc = "A description"
+
+        usecases = [
+            usecase(name=name, participants=fields[:i], steps=steps[:i], description=desc)
+            for i in range(len(steps))
+        ]
+
+        for u in usecases:
+            assert_model_is_valid(self, u)
+
+    def test_usecase_with_missing_fields_fails_validation(self):
+        pattern = "missing.*required.*(name|participants|steps)"
+        assert_model_is_invalid(self, usecase(), pattern)
+
+    def test_usecase_with_unrecognized_fields_fails_validation(self):
+        pattern = "unrecognized.*field.*invalid"
+        assert_model_is_invalid(self, usecase(invalid="item"), pattern)
 
     def test_can_validate_models(self):
         # TODO: Figure out how to clear out the spec before running each test so we don't assume
