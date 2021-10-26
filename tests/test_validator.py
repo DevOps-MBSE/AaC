@@ -76,6 +76,16 @@ class ValidatorTest(TestCase):
         kw(step="beta", source="y", target="x", action="b"),
     ]
 
+    MODEL_ACCEPTANCE = [
+        kw(scenario="scenario", given="given", when="when", then="then", tags=["tags"]),
+        kw(scenario="scenario", when="when", then="then"),
+    ]
+    MODEL_BEHAVIORS = [
+        kw(name="alpha", type="pub-sub", acceptance=MODEL_ACCEPTANCE, description="alpha"),
+        kw(name="beta", type="pub-sub", acceptance=[], description="beta"),
+        kw(name="gamma", type="pub-sub", acceptance=MODEL_ACCEPTANCE),
+    ]
+
     def setUp(self):
         util.AAC_MODEL = {}
         validator.VALID_TYPES = []
@@ -201,70 +211,70 @@ class ValidatorTest(TestCase):
         pattern = "unrecognized.*field.*invalid"
         assert_model_is_invalid(self, usecase(invalid="item"), pattern)
 
-    def test_can_validate_models(self):
-        # TODO: Figure out how to clear out the spec before running each test so we don't assume
-        # behaviors must have descriptions
-        one_behavior = [kw(name="test", type="pub-sub", acceptance=[], description="stuff")]
-        two_behaviors = one_behavior + [
-            kw(name="test", type="pub-sub", acceptance=[], description="more stuff")
+    def test_valid_models_with_only_required_fields_pass_validation(self):
+        name = self.MODEL_NAME
+        behaviors = self.MODEL_BEHAVIORS
+
+        models = [model(name=name, behavior=behaviors[:i]) for i in range(len(behaviors))]
+
+        for m in models:
+            assert_model_is_valid(self, m)
+
+    def test_valid_models_with_components_pass_validation(self):
+        name = self.MODEL_NAME
+        behaviors = self.MODEL_BEHAVIORS
+        components = self.VALID_FIELDS
+
+        models = [
+            model(name=name, behavior=behaviors[:i], components=components)
+            for i in range(len(behaviors))
         ]
 
-        assert_model_is_valid(self, model(name="test", behavior=[]))
-        assert_model_is_valid(self, model(name="test", behavior=one_behavior))
-        assert_model_is_valid(self, model(name="test", behavior=two_behaviors))
-        assert_model_is_valid(
-            self, model(name="test", behavior=one_behavior, description="description")
-        )
-        assert_model_is_valid(self, model(name="test", behavior=one_behavior, components=[]))
-        assert_model_is_valid(
-            self,
-            model(name="test", behavior=one_behavior, components=[kw(name="a", type="string")]),
-        )
-        assert_model_is_valid(
-            self,
-            model(name="test", behavior=one_behavior, description="description", components=[]),
-        )
-        assert_model_is_valid(
-            self,
-            model(
-                name="test",
-                behavior=one_behavior,
-                description="description",
-                components=[kw(name="a", type="string[]")],
-            ),
-        )
+        for m in models:
+            assert_model_is_valid(self, m)
 
-        assert_model_is_invalid(self, model(), "missing.*required.*(name|behavior)")
-        assert_model_is_invalid(self, model(invalid="item"), "unrecognized.*field.*invalid")
-        assert_model_is_invalid(
-            self,
-            model(name="test", behavior=[kw(name="test", type="Nothing", acceptance=[kw()])]),
-            "missing.*required.*(scenario|when|then)",
-        )
-        assert_model_is_invalid(
-            self,
-            model(
-                name="test",
-                behavior=[kw(name="test", type="pub-sub", acceptance=[], input=[kw()])],
-            ),
-            "missing.*required.*(name|type)",
-        )
-        assert_model_is_invalid(
-            self,
-            model(
-                name="test",
-                behavior=[kw(name="test", type="pub-sub", acceptance=[], output=[kw()])],
-            ),
-            "missing.*required.*(name|type)",
-        )
-        assert_model_is_invalid(
-            self,
-            model(
-                name="test",
-                behavior=[kw(name="test", type="bad", acceptance=[], output=[kw()])],
-            ),
-            "unrecognized.*BehaviorType.*bad.*test",
-        )
+    def test_valid_models_with_components_and_description_pass_validation(self):
+        name = self.MODEL_NAME
+        behaviors = self.MODEL_BEHAVIORS
+        components = self.VALID_FIELDS
+        desc = "A description"
+
+        models = [
+            model(name=name, behavior=behaviors[:i], components=components[:i], description=desc)
+            for i in range(len(behaviors))
+        ]
+
+        for m in models:
+            assert_model_is_valid(self, m)
+
+    def test_model_with_missing_fields_fails_validation(self):
+        name = self.MODEL_NAME
+        invalid_acceptance = kw(name=name, type="Nothing", acceptance=[kw()])
+        invalid_input = kw(name=name, type="pub-sub", acceptance=[], input=[kw()])
+        invalid_output = kw(name=name, type="pub-sub", acceptance=[], output=[kw()])
+
+        models = [
+            (model(), "name|behavior"),
+            (model(name=name, behavior=[invalid_acceptance]), "scenario|when|then"),
+            (model(name="test", behavior=[invalid_input]), "name|type"),
+            (model(name="test", behavior=[invalid_output]), "name|type"),
+        ]
+
+        for m, names in models:
+            assert_model_is_invalid(self, m, f"missing.*required.*({names})")
+
+    def test_model_with_unrecognized_fields_fails_validation(self):
+        pattern = "unrecognized.*field.*invalid"
+        assert_model_is_invalid(self, model(invalid="item"), pattern)
+
+    def test_model_with_invalid_acceptance_fails_validation(self):
+        name = self.MODEL_NAME
+
+    def test_model_with_unrecognized_behavior_type_fails_validation(self):
+        name = self.MODEL_NAME
+        invalid_behavior = kw(name="test", type="bad", acceptance=[], output=[kw()])
+        pattern = "unrecognized.*BehaviorType.*bad.*test"
+        assert_model_is_invalid(self, model(name=name, behavior=[invalid_behavior]), pattern)
 
     def test_can_validate_extensions(self):
         assert_model_is_valid(self, ext(name="test", type="Primitives", enumExt=kw(add=[])))
