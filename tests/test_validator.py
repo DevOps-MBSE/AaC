@@ -96,54 +96,44 @@ class ValidatorTest(TestCase):
         assert_model_is_invalid(self, enum(invalid="item"), pattern)
 
     def test_valid_data_pass_validation(self):
-        data_none_required = [
-            data(name=self.MODEL_NAME, fields=self.DATA_VALID_FIELDS[:i])
-            for i in range(len(self.DATA_VALID_FIELDS))
-        ]
+        name = self.MODEL_NAME
+        fields = self.DATA_VALID_FIELDS
+
+        data_none_required = [data(name=name, fields=fields[:i]) for i in range(len(fields))]
         data_with_required = [
             data(
-                name=self.MODEL_NAME,
-                fields=self.DATA_VALID_FIELDS[:i],
-                required=[
-                    f["name"]
-                    for f in self.DATA_VALID_FIELDS
-                    if self.DATA_VALID_FIELDS.index(f) <= i - 1
-                ],
+                name=name,
+                fields=fields[:i],
+                required=[f["name"] for f in fields if fields.index(f) <= i - 1],
             )
-            for i in range(len(self.DATA_VALID_FIELDS))
+            for i in range(len(fields))
         ]
 
         for d in data_none_required + data_with_required:
             assert_model_is_valid(self, d)
 
-        assert_model_is_valid(self, data(name="test", fields=[], required=[]))
-        assert_model_is_valid(self, data(name="test", fields=one_field, required=["x"]))
-        assert_model_is_valid(self, data(name="test", fields=two_fields, required=["x"]))
-        assert_model_is_valid(self, data(name="test", fields=two_fields, required=["x", "y"]))
+    def test_data_with_missing_fields_fails_validation(self):
+        pattern = "missing.*required.*(name|fields)"
+        assert_model_is_invalid(self, data(), pattern)
 
-        assert_model_is_invalid(self, data(), "missing.*required.*(name|fields)")
-        assert_model_is_invalid(self, data(name="test"), "missing.*required.*fields")
-        assert_model_is_invalid(self, data(fields=[]), "missing.*required.*name")
-        assert_model_is_invalid(
-            self,
-            data(
-                name="Message",
-                fields=[
-                    kw(name="to", type="EmailAddress"),
-                    kw(name="from", type="EmailAddress[]"),
-                ],
-            ),
-            "unrecognized.*type.*EmailAddress(\\[\\])?.*Message",
-        )
+    def test_data_with_unrecognized_fields_fails_validation(self):
+        pattern = "unrecognized.*field.*invalid"
+        assert_model_is_invalid(self, data(invalid="item"), pattern)
 
-        assert_model_is_invalid(self, data(invalid="item"), "unrecognized.*field.*invalid")
+    def test_data_with_unrecognized_type_fails_validation(self):
+        name = self.MODEL_NAME
+        fields = self.DATA_INVALID_FIELDS
+        pattern = "unrecognized.*type.*invalid(\\[\\])?.*test"
 
-        assert_model_is_invalid(
-            self, data(name="test", fields=[], required=["x"]), "reference.*undefined.*x"
-        )
-        assert_model_is_invalid(
-            self, data(name="test", fields=two_fields, required=["z"]), "reference.*undefined.*z"
-        )
+        assert_model_is_invalid(self, data(name=name, fields=fields), pattern)
+
+    def test_data_with_undefined_references_to_required_fields_fails_validation(self):
+        name = self.MODEL_NAME
+        fields = self.DATA_INVALID_FIELDS
+        pattern = "reference.*undefined.*(x|z)"
+
+        assert_model_is_invalid(self, data(name=name, fields=fields[:0], required=["x"]), pattern)
+        assert_model_is_invalid(self, data(name=name, fields=fields[:2], required=["z"]), pattern)
 
     def test_can_validate_usecase(self):
         one_part = [kw(name="x", type="X")]
