@@ -57,8 +57,8 @@ ext:
          - command
 ---
 ext:
-   name: CommandBehaviorInput
-   type: Behavior
+   name: DescriptField
+   type: Field
    dataExt:
       add:
         - name: description
