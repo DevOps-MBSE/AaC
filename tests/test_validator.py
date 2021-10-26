@@ -267,9 +267,6 @@ class ValidatorTest(TestCase):
         pattern = "unrecognized.*field.*invalid"
         assert_model_is_invalid(self, model(invalid="item"), pattern)
 
-    def test_model_with_invalid_acceptance_fails_validation(self):
-        name = self.MODEL_NAME
-
     def test_model_with_unrecognized_behavior_type_fails_validation(self):
         name = self.MODEL_NAME
         invalid_behavior = kw(name="test", type="bad", acceptance=[], output=[kw()])
