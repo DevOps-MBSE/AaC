@@ -68,6 +68,9 @@ class ValidatorTest(TestCase):
 
     ENUM_VALID_VALUES = ["a", "b"]
 
+    DATA_VALID_FIELDS = [kw(name="x", type="int"), kw(name="y", type="int")]
+    DATA_INVALID_FIELDS = [kw(name="x'", type="invalid"), kw(name="y'", type="invalid[]")]
+
     def setUp(self):
         util.AAC_MODEL = {}
         validator.VALID_TYPES = []
@@ -77,27 +80,41 @@ class ValidatorTest(TestCase):
         self.assertFalse(is_valid(data()))
 
     def test_valid_enums_pass_validation(self):
-        enums = [
-            enum(name=self.MODEL_NAME, values=self.ENUM_VALID_VALUES[:i])
-            for i in range(len(self.ENUM_VALID_VALUES))
-        ]
+        name = self.MODEL_NAME
+        values = self.ENUM_VALID_VALUES
+        enums = [enum(name=name, values=values[:i]) for i in range(len(values))]
 
         for e in enums:
             assert_model_is_valid(self, e)
 
-    def test_enum_with_missing_fields_fails_validation(self):
-        assert_model_is_invalid(self, enum(), "missing.*required.*(name|values)")
+    def test_enum_with_missing_values_fails_validation(self):
+        pattern = "missing.*required.*(name|values)"
+        assert_model_is_invalid(self, enum(), pattern)
 
     def test_enum_with_unrecognized_fields_fails_validation(self):
-        assert_model_is_invalid(self, enum(invalid="item"), "unrecognized.*field.*invalid")
+        pattern = "unrecognized.*field.*invalid"
+        assert_model_is_invalid(self, enum(invalid="item"), pattern)
 
-    def test_can_validate_data(self):
-        one_field = [kw(name="x", type="int")]
-        two_fields = one_field + [kw(name="y", type="int")]
+    def test_valid_data_pass_validation(self):
+        data_none_required = [
+            data(name=self.MODEL_NAME, fields=self.DATA_VALID_FIELDS[:i])
+            for i in range(len(self.DATA_VALID_FIELDS))
+        ]
+        data_with_required = [
+            data(
+                name=self.MODEL_NAME,
+                fields=self.DATA_VALID_FIELDS[:i],
+                required=[
+                    f["name"]
+                    for f in self.DATA_VALID_FIELDS
+                    if self.DATA_VALID_FIELDS.index(f) <= i - 1
+                ],
+            )
+            for i in range(len(self.DATA_VALID_FIELDS))
+        ]
 
-        assert_model_is_valid(self, data(name="test", fields=[]))
-        assert_model_is_valid(self, data(name="test", fields=one_field))
-        assert_model_is_valid(self, data(name="test", fields=two_fields))
+        for d in data_none_required + data_with_required:
+            assert_model_is_valid(self, d)
 
         assert_model_is_valid(self, data(name="test", fields=[], required=[]))
         assert_model_is_valid(self, data(name="test", fields=one_field, required=["x"]))
