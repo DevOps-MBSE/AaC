@@ -8,7 +8,7 @@ from aac.parser import parse_str
 class TestGenPlug(TestCase):
     def setUp(self):
         util.AAC_MODEL = {}
-        validator.VALID_TYPES = []
+        validator.DEFINED_TYPES = []
 
     def test_convert_template_name_to_file_name(self):
         plugin_name = "aac-test"

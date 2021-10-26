@@ -9,8 +9,8 @@ from iteration_utilities import flatten
 
 from aac import util
 
-VALID_TYPES = []
-MAYBE_VALID_TYPES = []
+DEFINED_TYPES = []
+REFERENCED_TYPES_IN_MODEL = []
 
 
 def is_valid(model: dict) -> bool:
@@ -35,7 +35,7 @@ def validate_and_get_errors(model: dict) -> list:
         Returns a list of all errors found when validating the model. If the
         model is valid (i.e. there are no errors) an empty list is returned.
     """
-    global MAYBE_VALID_TYPES
+    global REFERENCED_TYPES_IN_MODEL
 
     def collect_errors(model):
         actual_model = dict(list(model.values())[0])
@@ -54,7 +54,7 @@ def validate_and_get_errors(model: dict) -> list:
         return errors
 
     _set_valid_types({})
-    MAYBE_VALID_TYPES = list(model.keys())
+    REFERENCED_TYPES_IN_MODEL = list(model.keys())
     return _apply_extensions(model) + list(flatten(map(collect_errors, model.values())))
 
 
@@ -185,12 +185,12 @@ def _get_all_cross_reference_errors(kind: str, model: dict) -> iter:
 
 def _set_valid_types(model: dict) -> None:
     """Initialize the list of valid types."""
-    global VALID_TYPES
+    global DEFINED_TYPES
 
     data, enums = util.get_aac_spec()
-    if not VALID_TYPES:
-        VALID_TYPES = list((data | enums).keys()) + util.get_primitives()
-    VALID_TYPES += list(model.keys())
+    if not DEFINED_TYPES:
+        DEFINED_TYPES = list((data | enums).keys()) + util.get_primitives()
+    DEFINED_TYPES += list(model.keys())
 
 
 def _get_error_messages_if_invalid_type(name: str, types: list) -> list:
@@ -200,7 +200,7 @@ def _get_error_messages_if_invalid_type(name: str, types: list) -> list:
 
 def _is_valid_type(type: str) -> bool:
     """Determine whether the type is valid, or not."""
-    return type.strip("[]") in VALID_TYPES + MAYBE_VALID_TYPES
+    return type.strip("[]") in DEFINED_TYPES + REFERENCED_TYPES_IN_MODEL
 
 
 def _validate_data_references(data: dict) -> list:

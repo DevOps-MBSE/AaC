@@ -15,7 +15,7 @@ class TestArchUtil(TestCase):
     def setUp(self):
         util.AAC_MODEL = {}
         util.ROOT_NAMES = []
-        validator.VALID_TYPES = []
+        validator.DEFINED_TYPES = []
 
     def test_get_primitive(self):
         """

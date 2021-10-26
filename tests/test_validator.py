@@ -88,7 +88,7 @@ class ValidatorTest(TestCase):
 
     def setUp(self):
         util.AAC_MODEL = {}
-        validator.VALID_TYPES = []
+        validator.DEFINED_TYPES = []
 
     def test_is_valid(self):
         self.assertTrue(is_valid(data(name="test", fields=[kw(name="a", type="int")])))
@@ -330,7 +330,7 @@ class ValidatorTest(TestCase):
 class ValidatorFunctionalTest(TestCase):
     def setUp(self):
         util.AAC_MODEL = {}
-        validator.VALID_TYPES = []
+        validator.DEFINED_TYPES = []
 
     def test_validates_parsed_yaml_models(self):
         model = parse_str(TEST_MODEL_WITH_EXTENSIONS, "validation-test")
