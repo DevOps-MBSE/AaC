@@ -23,16 +23,16 @@ def get_commands() -> list[AacCommand]:
             "Path to a yaml file containing an AaC usecase to generate a Plant ULM component diagram from.",
         )
     ]
-    puml_component_arguments = [
+    puml_sequence_arguments = [
         AacCommandArgument(
             "architecture_file",
-            "Path to a yaml file containing an AaC usecase to generate a Plant ULM component diagram from.",
+            "Path to a yaml file containing an AaC usecase to generate a Plant ULM sequence diagram from.",
         )
     ]
     puml_object_arguments = [
         AacCommandArgument(
             "architecture_file",
-            "Path to a yaml file containing an AaC usecase to generate a Plant ULM component diagram from.",
+            "Path to a yaml file containing an AaC usecase to generate a Plant ULM object diagram from.",
         )
     ]
 
@@ -47,7 +47,7 @@ def get_commands() -> list[AacCommand]:
             "puml-sequence",
             "Converts an AaC usecase to Plant ULM sequence diagram.",
             puml_sequence,
-            puml_component_arguments,
+            puml_sequence_arguments,
         ),
         AacCommand(
             "puml-object",
