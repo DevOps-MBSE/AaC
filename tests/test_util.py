@@ -3,13 +3,20 @@ Unit tests for the aac.util module.
 """
 
 from unittest import TestCase
-from aac import util
+
+from aac import util, validator
 
 
 class TestArchUtil(TestCase):
     """
     Unit test class for aac.util module.
     """
+
+    def setUp(self):
+        util.AAC_MODEL = {}
+        util.ROOT_NAMES = []
+        validator.VALID_TYPES = []
+
     def test_get_primitive(self):
         """
         Unit test for the util.get_primitive method.
@@ -47,7 +54,7 @@ class TestArchUtil(TestCase):
 
         aac_yaml = util.get_aac_spec_as_yaml()
         self.assertTrue(len(aac_yaml) > 0)
-        self.assertGreaterEqual(aac_yaml.count("---"), 14) # there are 14 base types
+        self.assertGreaterEqual(aac_yaml.count("---"), 14)  # there are 14 base types
 
     # TODO This method is working in the current state, but it is poor design with high coupling
     #      which was exposed by this test creating failures.  Go back and clean this up.
