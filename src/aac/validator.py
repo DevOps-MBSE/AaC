@@ -1,7 +1,7 @@
 """Validate a model per the AaC DSL."""
 
 # TODO: Replace "magic strings" with a more maintainable solution
-# TODO: Generalize get_all_errors to handle all (or at least most of) the cases
+# TODO: Generalize validate_and_get_errors to handle all (or at least most of) the cases
 
 from typing import Union
 
@@ -9,7 +9,8 @@ from iteration_utilities import flatten
 
 from aac import util
 
-VALID_TYPES = []
+DEFINED_TYPES = []
+REFERENCED_TYPES_IN_MODEL = []
 
 
 def is_valid(model: dict) -> bool:
@@ -34,20 +35,26 @@ def validate_and_get_errors(model: dict) -> list:
         Returns a list of all errors found when validating the model. If the
         model is valid (i.e. there are no errors) an empty list is returned.
     """
+    global REFERENCED_TYPES_IN_MODEL
 
     def collect_errors(model):
         actual_model = dict(list(model.values())[0])
-        kind = actual_model["name"] if "name" in actual_model else ""
-        return (
+        name = actual_model["name"] if "name" in actual_model else ""
+        errors = (
             _get_all_parsing_errors(model)
             + _get_all_enum_errors(model)
             + _get_all_data_errors(model)
             + _get_all_usecase_errors(model)
             + _get_all_model_errors(model)
             + _get_all_extension_errors(model)
-            + _get_all_cross_reference_errors(kind, model)
+            + _get_all_cross_reference_errors(name, model)
         )
+        if len(errors) == 0:
+            _set_valid_types({name: actual_model})
+        return errors
 
+    _set_valid_types({})
+    REFERENCED_TYPES_IN_MODEL = list(model.keys())
     return _apply_extensions(model) + list(flatten(map(collect_errors, model.values())))
 
 
@@ -60,14 +67,14 @@ def _apply_extensions(model):
             errors.append(f"unrecognized extension type {extension}")
             continue
 
-        ext = extension["ext"]
-        type_to_extend = ext["type"]
+        ext_value = extension["ext"]
+        type_to_extend = ext_value["type"]
         if type_to_extend in aac_data or type_to_extend in aac_enums:
-            errors.append(_apply_extension(ext, aac_data, aac_enums))
+            errors.append(_apply_extension(ext_value, aac_data, aac_enums))
         else:
             errors.append(
                 _apply_extension(
-                    ext,
+                    ext_value,
                     util.get_models_by_type(model, "data"),
                     util.get_models_by_type(model, "enum"),
                 )
@@ -159,8 +166,6 @@ def _get_all_errors_if_missing_required_properties(model: dict, required: list) 
 def _get_all_cross_reference_errors(kind: str, model: dict) -> iter:
     """Validate all cross references."""
 
-    _set_valid_types({kind: model})
-
     data, enums = util.get_aac_spec()
     models = {kind: model} | data | enums
 
@@ -180,20 +185,22 @@ def _get_all_cross_reference_errors(kind: str, model: dict) -> iter:
 
 def _set_valid_types(model: dict) -> None:
     """Initialize the list of valid types."""
-    global VALID_TYPES
+    global DEFINED_TYPES
 
     data, enums = util.get_aac_spec()
-    VALID_TYPES = list((model | data | enums).keys()) + util.get_primitives()
+    if not DEFINED_TYPES:
+        DEFINED_TYPES = list((data | enums).keys()) + util.get_primitives()
+    DEFINED_TYPES += list(model.keys())
 
 
 def _get_error_messages_if_invalid_type(name: str, types: list) -> list:
     """Get a list of error messages if any types are unrecognized."""
-    return [f"unrecognized type {t} used in {name}" for t in types if _is_valid_type(t)]
+    return [f"unrecognized type {t} used in {name}" for t in types if not _is_defined_type(t)]
 
 
-def _is_valid_type(type: str) -> bool:
+def _is_defined_type(type: str) -> bool:
     """Determine whether the type is valid, or not."""
-    return type.strip("[]") not in VALID_TYPES
+    return type.strip("[]") in DEFINED_TYPES + REFERENCED_TYPES_IN_MODEL
 
 
 def _validate_data_references(data: dict) -> list:
