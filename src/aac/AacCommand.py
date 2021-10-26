@@ -13,7 +13,7 @@ class AacCommandArgument:
         name: A string with the name of the command argument
         description: a string with the command argument description -- will provide a description
                         about this argument when the help command is invoked.
-        number_of_arguments: Number of entries that the argument can take. Defaults to 1.
+        number_of_arguments: Number of entries that the argument can take. Maps to the argsparse module's nargs command.
     """
 
     name = attr.ib()
