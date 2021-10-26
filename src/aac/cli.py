@@ -80,7 +80,7 @@ def _setup_arg_parser(
             "validate",
             "Ensures the AaC yaml is valid per the AaC core spec",
             _validate_cmd,
-            [AacCommandArgument("yaml", "The path to your AaC yaml")],
+            [AacCommandArgument("model_file", "The path to the AaC model yaml file to validate")],
         ),
         AacCommand(
             "aac-core-spec",
