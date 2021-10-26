@@ -276,58 +276,55 @@ class ValidatorTest(TestCase):
         pattern = "unrecognized.*BehaviorType.*bad.*test"
         assert_model_is_invalid(self, model(name=name, behavior=[invalid_behavior]), pattern)
 
-    def test_can_validate_extensions(self):
-        assert_model_is_valid(self, ext(name="test", type="Primitives", enumExt=kw(add=[])))
-        assert_model_is_valid(self, ext(name="test", type="Primitives", enumExt=kw(add=["a"])))
-        assert_model_is_valid(
-            self, ext(name="test", type="Primitives", enumExt=kw(add=["a", "b"]))
-        )
-        assert_model_is_valid(self, ext(name="test", type="model", dataExt=kw(add=[])))
-        assert_model_is_valid(
-            self, ext(name="test", type="model", dataExt=kw(add=[kw(name="a", type="int")]))
-        )
-        assert_model_is_valid(
-            self,
-            ext(
-                name="test",
-                type="model",
-                dataExt=kw(add=[kw(name="a", type="int"), kw(name="b", type="int")]),
-            ),
-        )
-        assert_model_is_valid(
-            self,
-            ext(
-                name="CommandBehaviorInput",
-                type="Behavior",
-                dataExt=kw(add=[kw(name="description", type="string")], required=["description"]),
-            ),
-        )
+    def test_valid_enum_extensions_pass_validation(self):
+        name = self.MODEL_NAME
+        added_fields = ["a", "b"]
+        extensions = [
+            ext(name=name, type="Primitives", enumExt=kw(add=added_fields[:i]))
+            for i in range(len(added_fields))
+        ]
 
-        assert_model_is_invalid(
-            self, ext(name="test", type="Primitives"), "unrecognized.*extension.*type"
-        )
-        assert_model_is_invalid(
-            self,
-            ext(name="test", type="invalid"),
-            "unrecognized.*extension.*type.*invalid",
-        )
-        assert_model_is_invalid(self, ext(), "missing.*required.*(name|type)")
-        assert_model_is_invalid(self, ext(invalid="item"), "unrecognized.*field.*invalid")
-        assert_model_is_invalid(
-            self,
-            ext(name="", type="", enumExt=kw(), dataExt=kw()),
-            "cannot.*combine.*enumExt.*dataExt",
-        )
-        assert_model_is_invalid(
-            self,
-            ext(name="", type="", dataExt=kw(add=[kw()])),
-            "missing.*required.*field.*(name|type)",
-        )
-        assert_model_is_invalid(
-            self,
-            o("bad", name=""),
-            "bad.*not.*AaC.*root",
-        )
+        for e in extensions:
+            assert_model_is_valid(self, e)
+
+    def test_valid_data_extensions_pass_validation(self):
+        name = self.MODEL_NAME
+        added_fields = [kw(name="a", type="int"), kw(name="b", type="int")]
+        extensions = [
+            ext(name=name, type="model", dataExt=kw(add=added_fields[:i]))
+            for i in range(len(added_fields))
+        ]
+
+        for e in extensions:
+            assert_model_is_valid(self, e)
+
+    def test_valid_data_extension_that_add_required_fields_pass_validation(self):
+        name = self.MODEL_NAME
+        data_extension = kw(add=[kw(name="new", type="string")], required=["new"])
+        assert_model_is_valid(self, ext(name=name, type="Behavior", dataExt=data_extension))
+
+    def test_extension_with_missing_fields_fails_validation(self):
+        pattern = "missing.*required.*field.*(name|type)"
+        assert_model_is_invalid(self, ext(name="", type="", dataExt=kw(add=[kw()])), pattern)
+
+    def test_extension_with_unrecognized_fields_fails_validation(self):
+        pattern = "unrecognized.*field.*invalid"
+        assert_model_is_invalid(self, ext(invalid="item"), pattern)
+
+    def test_extension_with_unrecognized_behavior_type_fails_validation(self):
+        name = self.MODEL_NAME
+        pattern = "unrecognized.*extension.*type.*(invalid)?"
+
+        for t in ["Primitives", "invalid"]:
+            assert_model_is_invalid(self, ext(name=name, type=t), pattern)
+
+    def test_extension_that_defines_enum_and_data_extensions_fails_validation(self):
+        pattern = "cannot.*combine.*enumExt.*dataExt"
+        assert_model_is_invalid(self, ext(name="", type="", enumExt=kw(), dataExt=kw()), pattern)
+
+    def test_validation_fails_for_invalid_root_type(self):
+        pattern = "bad.*not.*AaC.*root"
+        assert_model_is_invalid(self, o("bad", name=""), pattern)
 
 
 class ValidatorFunctionalTest(TestCase):
