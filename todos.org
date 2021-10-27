@@ -1,15 +1,16 @@
 #+title: Things that need to be done
 #+author: Cameron V Chaparro
 
-* TODO [0/6] Auto-Generate System Design Documentation
+* TODO [1/6] Auto-Generate System Design Documentation
 
   Issue: [[https://github.com/jondavid-black/AaC/issues/12][#12]]
   PR: [[https://github.com/jondavid-black/AaC/pull/74][#74]]
 
-** TODO [1/2] General setup
+** DONE [2/2] General setup
+   CLOSED: [2021-10-27 Wed 13:32]
 
    - [X] Model the command.
-   - [ ] Generate a command plugin to do the work.
+   - [X] Generate a command plugin to do the work.
 
 ** TODO [0/1] Must generate a document outline based on the model decomposition structure
 
