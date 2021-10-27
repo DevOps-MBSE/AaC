@@ -4,6 +4,7 @@
 * TODO [0/6] Auto-Generate System Design Documentation
 
   Issue: [[https://github.com/jondavid-black/AaC/issues/12][#12]]
+  PR: [[https://github.com/jondavid-black/AaC/pull/74][#74]]
 
 ** TODO [0/1] General setup
 
