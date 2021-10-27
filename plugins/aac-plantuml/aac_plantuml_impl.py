@@ -11,7 +11,7 @@ def puml_component(architecture_file: str):
     Converts an AaC model to Plant ULM component diagram.
 
     Args:
-        architecture_file: str: Path to a yaml file containing an AaC usecase to generate a Plant ULM component diagram from.
+        architecture_file: str: Path to a yaml file containing an AaC usecase from which to generate a Plant UML component diagram.
     """
     parsed_model = parser.parse_file(architecture_file)
     model_types = util.get_models_by_type(parsed_model, "model")
@@ -33,7 +33,7 @@ def puml_sequence(architecture_file: str):
     Converts an AaC usecase to Plant ULM sequence diagram.
 
     Args:
-        architecture_file: str: Path to a yaml file containing an AaC usecase to generate a Plant ULM component diagram from.
+        architecture_file: str: Path to a yaml file containing an AaC usecase from which to generate a Plant UML sequence diagram.
     """
 
     parsed_model = parser.parse_file(architecture_file)
@@ -79,7 +79,7 @@ def puml_object(architecture_file: str):
     Converts an AaC model to Plant ULM object diagram.
 
     Args:
-        architecture_file: str: Path to a yaml file containing an AaC usecase to generate a Plant ULM component diagram from.
+        architecture_file: str: Path to a yaml file containing an AaC usecase from which to generate a Plant UML object diagram.
     """
 
     parsed_model = parser.parse_file(architecture_file)
