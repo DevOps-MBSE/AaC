@@ -23,7 +23,7 @@ jobs:
         run: |
           python -m venv venv --system-site-packages
           source venv/bin/activate
-          pip install --upgrade pip 
+          pip install --upgrade pip
           pip install -e .[all]
       - name: Lint with flake8
         run: |
@@ -41,6 +41,16 @@ jobs:
         with:
           name: test-coverage-report
           path: html_code_coverage/
+      - name: Generate API Documentation
+        run: |
+          source venv/bin/activate
+          cd docs/
+          make html
+      - name: Upload API Documentation
+        uses: actions/upload-artifact@v2
+        with:
+          name: api-documentation
+          path: docs/build/html/
       - name: Build distribution package
         run: |
           source venv/bin/activate
