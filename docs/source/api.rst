@@ -3,6 +3,6 @@ API
 
 .. autosummary::
    :recursive:
-   :toctree: generated
+   :toctree: api
 
    aac
