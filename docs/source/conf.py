@@ -49,6 +49,7 @@ autodoc_inherit_docstrings = True
 # -- Ext: autosummary configuration ------------------------------------------
 
 autosummary_generate = True
+autosummary_generate_overwrite = False
 
 # -- Ext: Napoleon configuration ---------------------------------------------
 
