@@ -8,10 +8,9 @@ def gen_design_doc(architecture_files: list[str], output_directory: str):
     Generate a System Design Document from Architecture-as-Code models.
 
     Args:
-        architecture_files <list[str]>: The list of Architecture-as-Code models from which to
-                                            generate the system design document.
-        output_directory <str>: The directory into which the System Design document will be
-                                    generated.
+        architecture_files <list[str]>: The yaml files containing the modelled system for which to
+                                            generate the System Design document.
+        output_directory <str>: The directory to which the System Design document will be written.
     """
 
     # TODO add implementation here
