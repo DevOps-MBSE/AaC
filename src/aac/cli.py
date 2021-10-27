@@ -2,12 +2,15 @@
 The command line processor for aac.
 """
 import argparse
-import sys
-import os
 import itertools
+import inspect
+import sys
+
 from typing import Callable
 from pluggy import PluginManager
+
 from aac import genjson, genplug, parser, util, hookspecs, PLUGIN_PROJECT_NAME
+from aac.AacCommand import AacCommand, AacCommandArgument
 
 
 def run_cli():
@@ -29,24 +32,27 @@ def run_cli():
             parsed = parser.parse_str(plugin_ext, "Plugin Manager Addition", True)
             util.extend_aac_spec(parsed)
 
-    arg_parser.add_argument("yaml", type=str, help="The path to your AaC yaml")
-
     args = arg_parser.parse_args()
 
-    # this command is special, it shouldn't need any additional inputs
-    if args.command == "aac-core-spec":
-        print(util.get_aac_spec_as_yaml())
-        return
+    for command in aac_plugin_commands:
+        if args.command == command.name:
 
-    model_file = args.yaml
-    if not os.path.isfile(model_file):
-        print(f"{model_file} does not exist")
-        arg_parser.print_usage()
-        sys.exit()
+            keyword_args = {}
+            args_dict = vars(args)
 
-    parsed_models = {}
+            # Leverage inspect here to make sure that the arg names we're trying to access are sourced from the target function itself
+            parameters = inspect.signature(command.callback).parameters.keys()
+            for argument in parameters:
+                keyword_args[argument] = args_dict[argument]
+
+            command.callback(**keyword_args)
+
+
+def _validate_cmd(model_file: str):
+    """The built-in validate command."""
+
     try:
-        parsed_models = parser.parse_file(model_file)
+        parser.parse_file(model_file)
     except RuntimeError as re:
         model_file, errors = re.args
         errors = "\n  ".join(errors)
@@ -56,13 +62,10 @@ def run_cli():
 
         sys.exit("validation error")
 
-    # validate is a built-in command - when called just print that the input model is valid
-    if args.command == "validate":
-        print(f"Model [{model_file}] is valid")
 
-    for cmd in aac_plugin_commands:
-        if args.command == cmd.command_name:
-            cmd.callback(model_file, parsed_models)
+def _core_spec_cmd():
+    """The built-in aac-core-spec command."""
+    print(util.get_aac_spec_as_yaml())
 
 
 def _setup_arg_parser(
@@ -70,20 +73,34 @@ def _setup_arg_parser(
 ) -> tuple[argparse.ArgumentParser, list[Callable]]:
     arg_parser = argparse.ArgumentParser()
     command_parser = arg_parser.add_subparsers(dest="command")
-    # the validate command is built-in
-    command_parser.add_parser(
-        "validate", help="Ensures the AaC yaml is valid per the AaC core spec"
-    )
-    # the print-spec command is built-in
-    command_parser.add_parser(
-        "aac-core-spec",
-        help="Prints the AaC model describing core AaC data types and enumerations",
-    )
+
+    # Built-in commands
+    aac_commands = [
+        AacCommand(
+            "validate",
+            "Ensures the AaC yaml is valid per the AaC core spec",
+            _validate_cmd,
+            [AacCommandArgument("model_file", "The path to the AaC model yaml file to validate")],
+        ),
+        AacCommand(
+            "aac-core-spec",
+            "Prints the AaC model describing core AaC data types and enumerations",
+            _core_spec_cmd,
+        ),
+    ]
+
     results = plugin_manager.hook.get_commands()
-    aac_plugin_commands = list(itertools.chain(*results))
-    for cmd in aac_plugin_commands:
-        command_parser.add_parser(cmd.command_name, help=cmd.command_description)
-    return arg_parser, aac_plugin_commands
+    aac_and_plugin_commands = aac_commands + list(itertools.chain(*results))
+
+    for command in aac_and_plugin_commands:
+        command_subparser = command_parser.add_parser(command.name, help=command.description)
+
+        for argument in command.arguments:
+            command_subparser.add_argument(
+                argument.name, help=argument.description, nargs=argument.number_of_arguments
+            )
+
+    return arg_parser, aac_and_plugin_commands
 
 
 def _get_plugin_manager():

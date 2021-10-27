@@ -8,8 +8,8 @@ import attr
 import os
 import yaml
 
-from aac import util, hookimpl
-from aac.AacCommand import AacCommand
+from aac import util, hookimpl, parser
+from aac.AacCommand import AacCommand, AacCommandArgument
 from aac.template_engine import load_templates, generate_templates
 
 
@@ -21,10 +21,23 @@ def get_commands() -> list[AacCommand]:
     Returns:
         A list of AacCommands
     """
-    my_cmd = AacCommand(
-        "gen-plugin", "Generates an AaC plugin from an AaC model of the plugin", generate_plugin
-    )
-    return [my_cmd]
+    command_arguments = [
+        AacCommandArgument(
+            "architecture_file",
+            "The yaml file containing the AaC DSL of the plugin architecture.",
+        )
+    ]
+
+    plugin_commands = [
+        AacCommand(
+            "gen-plugin",
+            "Generates an AaC plugin from an AaC model of the plugin",
+            generate_plugin,
+            command_arguments,
+        )
+    ]
+
+    return plugin_commands
 
 
 @hookimpl
@@ -42,6 +55,14 @@ ext:
    enumExt:
       add:
          - command
+---
+ext:
+   name: DescriptField
+   type: Field
+   dataExt:
+      add:
+        - name: description
+          type: string
 """
 
 
@@ -56,29 +77,29 @@ class TemplateOutputFile:
     """Class containing all of the relevant information necessary to handle writing templates to files."""
 
     file_name = attr.ib()
-    template = attr.ib()
+    content = attr.ib()
     overwrite = attr.ib()
 
 
-def generate_plugin(arch_file: str, parsed_model: dict) -> None:
+def generate_plugin(architecture_file: str) -> None:
     """
     Entrypoint command to generate the plugin.
 
     Args:
-        arch_file <str>: filepath to the architecture file
-        parsed_model <dict>: Dict representing the plugin model
+        architecture_file (str): filepath to the architecture file.
     """
-    plug_dir = os.path.dirname(os.path.realpath(arch_file))
+    plug_dir = os.path.dirname(os.path.abspath(architecture_file))
 
     try:
-        if _is_user_desired_output_directory(arch_file, plug_dir):
-            templates = compile_templates(parsed_model)
+        if _is_user_desired_output_directory(architecture_file, plug_dir):
+            parsed_model = parser.parse_file(architecture_file, True)
+            templates = _compile_templates(parsed_model)
             _write_generated_templates_to_file(templates, plug_dir)
     except GeneratePluginException as exception:
-        print(f"gen-plugin error [{arch_file}]:  {exception}.")
+        print(f"gen-plugin error [{architecture_file}]:  {exception}.")
 
 
-def compile_templates(parsed_models: dict[str, dict]) -> list[TemplateOutputFile]:
+def _compile_templates(parsed_models: dict[str, dict]) -> list[TemplateOutputFile]:
     """
     Parse the model and generate the plugin template accordingly.
 
@@ -87,6 +108,9 @@ def compile_templates(parsed_models: dict[str, dict]) -> list[TemplateOutputFile
 
     Returns:
         List of TemplateOutputFile objects that contain the compiled templates
+
+    Raises:
+        GeneratePluginException: An error encountered during the plugin generation process.
     """
 
     # ensure model is present and valid, get the plugin name
@@ -98,18 +122,19 @@ def compile_templates(parsed_models: dict[str, dict]) -> list[TemplateOutputFile
 
     plugin_model = list(plugin_models.values())[0].get("model")
     plugin_name = plugin_model.get("name")
-    plugin_implementation_name = _convert_to_implementation_name(plugin_name)
 
     # Ensure that the plugin name has package name prepended to it
     if not plugin_name.startswith(__package__):
-        plugin_name = "{__package__}-{plugin_name}"
+        plugin_name = f"{__package__}-{plugin_name}"
+
+    plugin_implementation_name = _convert_to_implementation_name(plugin_name)
 
     # Prepare template variables/properties
     behaviors = util.search(plugin_model, ["behavior"])
     commands = _gather_commands(behaviors)
 
     plugin = {
-        "name": plugin_model.get("name"),
+        "name": plugin_name,
         "implementation_name": plugin_implementation_name,
     }
 
@@ -150,7 +175,7 @@ def _write_generated_templates_to_file(
             plug_dir,
             generated_file.file_name,
             generated_file.overwrite,
-            generated_file.template,
+            generated_file.content,
         )
 
 
@@ -178,12 +203,12 @@ def _convert_template_name_to_file_name(template_name: str, plugin_name: str) ->
     return file_name
 
 
-def _is_user_desired_output_directory(arch_file: str, output_dir: str) -> bool:
+def _is_user_desired_output_directory(architecture_file: str, output_dir: str) -> bool:
     """
     Ask the user if they're comfortable with the target generation directory.
 
     Args:
-        arch_file: Name of the architecture file
+        architecture_file: Name of the architecture file
         output_dir: The path to the target output directory
     Returns:
         boolean True if the user wishes to write to <output_dir>
@@ -198,7 +223,7 @@ def _is_user_desired_output_directory(arch_file: str, output_dir: str) -> bool:
         )
 
     if confirmation in ["n", "N"]:
-        print(f"Canceled: Please move {arch_file} to the desired directory and rerun the command.")
+        print(f"Canceled: Please move {architecture_file} to the desired directory and rerun the command.")
 
     return confirmation in ["y", "Y"]
 
@@ -221,12 +246,6 @@ def _gather_commands(behaviors: dict) -> list[dict]:
 
         if behavior_type != "command":
             continue
-
-        if behavior_description.startswith("'"):
-            behavior_description = behavior_description[1:]
-
-        if behavior_description.endswith("'"):
-            behavior_description = behavior_description[:-1]
 
         # First line should end with a period. flake8(D400)
         if not behavior_description.endswith("."):

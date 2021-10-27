@@ -1,0 +1,22 @@
+model:
+  name: aac-gen-protobuf
+  description: aac-gen-protobuf is an Architecture-as-Code plugin that generates protobuf message definitions from Architecture-as-Code models.
+  behavior:
+    - name: gen-protobuf
+      type: command
+      description: Generate protobuf messages from Arch-as-Code models
+      input:
+        - name: architecture_file
+          type: string
+          description: The yaml file containing the data models to generate as Protobuf messages.
+        - name: output_directory
+          type: string
+          description: The directory to write the generated Protobuf messages to.
+      acceptance:
+        - scenario: Output protobuf messages for behavior input/output entries in an Architecture model.
+          given:
+            - The {{gen-protobuf.input.architecture_file}} contains a valid architecture.
+          when:
+            - The aac app is run with the gen-protobuf command and a valid architecture file.
+          then:
+            - Protobuf messages are written to {{gen-protobuf.input.output_directory}}.
