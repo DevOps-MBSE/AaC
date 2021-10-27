@@ -23,7 +23,7 @@ model:
       input:
         - name: architecture_file
           type: string
-          description: Path to a yaml file containing an AaC usecase to generate a Plant ULM sequence diagram from.
+          description: Path to a yaml file containing an AaC usecase from which to generate a Plant UML sequence diagram.
       acceptance:
         - scenario: Output PlantUML sequence diagram for valid use case.
           given:
