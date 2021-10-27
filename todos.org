@@ -1,0 +1,25 @@
+#+title: Things that need to be done
+#+author: Cameron V Chaparro
+
+* TODO [0/6] Auto-Generate System Design Documentation
+
+  Issue: [[https://github.com/jondavid-black/AaC/issues/12][#12]]
+
+** TODO [0/1] General setup
+
+   - [ ] Generate a command plugin to do the work.
+
+** TODO [0/1] Must generate a document outline based on the model decomposition structure
+
+   - [ ] Implement the command action:
+     * Recurse through the model items and accept a function that allows
+       users to specify what they want action they want to perform for each
+       item.
+
+** TODO [0/0] Must generate content from use cases
+
+** TODO [0/0] Must pull descriptive content from the model and include in the document
+
+** TODO [0/0] Must identify improvements in the model design to support better documentation (write issues, or just implement if simple)
+
+** TODO [0/0] Must delegate documentation content and formatting for model elements to a Markdown file
