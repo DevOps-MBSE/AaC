@@ -41,7 +41,9 @@ extensions = [
 ]
 
 # -- Ext: autodoc configuration ----------------------------------------------
-
+autodoc_default_options = {
+    "members": True,
+}
 autodoc_typehints = "both"
 autodoc_preserve_defaults = True
 autodoc_inherit_docstrings = True
