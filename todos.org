@@ -12,12 +12,14 @@
    - [X] Model the command.
    - [X] Generate a command plugin to do the work.
 
-** TODO [0/1] Must generate a document outline based on the model decomposition structure
+** TODO [1/2] Must generate a document outline based on the model decomposition structure
 
+   - [X] Document parameters for implementation.
    - [ ] Implement the command action:
-     * Recurse through the model items and accept a function that allows
-       users to specify what they want action they want to perform for each
-       item.
+
+         Recurse through the model items and accept a function that allows
+         users to specify what they want action they want to perform for each
+         item.
 
 ** TODO [0/0] Must generate content from use cases
 
