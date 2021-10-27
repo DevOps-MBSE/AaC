@@ -8,7 +8,7 @@ model:
       input:
         - name: architecture_file
           type: string
-          description: Path to a yaml file containing an AaC usecase to generate a Plant ULM component diagram from.
+          description: Path to a yaml file containing an AaC usecase from which to generate a Plant UML component diagram.
       acceptance:
         - scenario: Output PlantUML component diagram for valid architecture.
           given:
@@ -38,7 +38,7 @@ model:
       input:
         - name: architecture_file
           type: string
-          description: Path to a yaml file containing an AaC usecase to generate a Plant ULM object diagram from.
+          description: Path to a yaml file containing an AaC usecase from which to generate a Plant UML object diagram.
       acceptance:
         - scenario: Output PlantUML object diagram for valid model.
           given:
