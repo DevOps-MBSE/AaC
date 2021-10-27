@@ -1,6 +1,6 @@
 model:
   name: aac-gen-protobuf
-  description: aac-gen-protobuf is a Architecture-as-Code plugin generates protobuf message definitions from Arch-as-Code models.
+  description: aac-gen-protobuf is an Architecture-as-Code plugin that generates protobuf message definitions from Architecture-as-Code models.
   behavior:
     - name: gen-protobuf
       type: command
