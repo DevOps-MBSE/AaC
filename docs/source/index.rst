@@ -3,7 +3,7 @@ Welcome to Architecture-as-Code's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: API Documentation:
 
    api
 
@@ -11,7 +11,6 @@ Welcome to Architecture-as-Code's documentation!
 Indices and tables
 ------------------
 
-* :ref:`api`
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
