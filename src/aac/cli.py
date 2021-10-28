@@ -9,7 +9,7 @@ import sys
 from typing import Callable
 from pluggy import PluginManager
 
-from aac import genjson, genplug, parser, util, hookspecs, PLUGIN_PROJECT_NAME
+from aac import parser, util, plugins
 from aac.AacCommand import AacCommand, AacCommandArgument
 
 
@@ -21,7 +21,7 @@ def run_cli():
     requested user command...or outputs usage.
     """
 
-    plugin_manager = _get_plugin_manager()
+    plugin_manager = plugins.get_plugin_manager()
 
     arg_parser, aac_plugin_commands = _setup_arg_parser(plugin_manager)
 
@@ -62,6 +62,9 @@ def _validate_cmd(model_file: str):
 
         sys.exit("validation error")
 
+    # Since we return early with the sys.exit() then we can assume success here.
+    print(f"{model_file} is valid.")
+
 
 def _core_spec_cmd():
     """The built-in aac-core-spec command."""
@@ -101,15 +104,3 @@ def _setup_arg_parser(
             )
 
     return arg_parser, aac_and_plugin_commands
-
-
-def _get_plugin_manager():
-    plugin_manager = PluginManager(PLUGIN_PROJECT_NAME)
-    plugin_manager.add_hookspecs(hookspecs)
-    plugin_manager.load_setuptools_entrypoints(PLUGIN_PROJECT_NAME)
-
-    # register "built-in" plugins
-    plugin_manager.register(genjson)
-    plugin_manager.register(genplug)
-
-    return plugin_manager

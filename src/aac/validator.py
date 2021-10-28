@@ -1,16 +1,17 @@
 """Validate a model per the AaC DSL."""
 
 # TODO: Replace "magic strings" with a more maintainable solution
-# TODO: Generalize validate_and_get_errors to handle all (or at least most of) the cases
 
+import attr
 from typing import Union
-
 from iteration_utilities import flatten
 
-from aac import util
+from aac import util, parser, plugins
+
 
 DEFINED_TYPES = []
 REFERENCED_TYPES_IN_MODEL = []
+VALIDATOR_CONTEXT = None
 
 
 def is_valid(model: dict) -> bool:
@@ -25,6 +26,7 @@ def is_valid(model: dict) -> bool:
     return len(validate_and_get_errors(model)) == 0
 
 
+# TODO: Generalize validate_and_get_errors to handle all (or at least most of) the cases
 def validate_and_get_errors(model: dict) -> list:
     """Return all validation errors for MODEL.
 
@@ -36,6 +38,12 @@ def validate_and_get_errors(model: dict) -> list:
         model is valid (i.e. there are no errors) an empty list is returned.
     """
     global REFERENCED_TYPES_IN_MODEL
+    global VALIDATOR_CONTEXT
+
+    if not VALIDATOR_CONTEXT:
+        plugin_manager = plugins.get_plugin_manager()
+        aac_enum, aac_data = util.get_aac_spec()
+        VALIDATOR_CONTEXT = ValidatorContext(aac_enum | aac_data, {}, plugin_manager.hook.get_base_model_extensions(), model)
 
     def collect_errors(model):
         actual_model = dict(list(model.values())[0])
@@ -55,7 +63,12 @@ def validate_and_get_errors(model: dict) -> list:
 
     _set_valid_types({})
     REFERENCED_TYPES_IN_MODEL = list(model.keys())
-    return _apply_extensions(model) + list(flatten(map(collect_errors, model.values())))
+
+    errors = _apply_extensions(model) + list(flatten(map(collect_errors, model.values())))
+    # Once we're done validating, wipe the context.
+    VALIDATOR_CONTEXT = None
+
+    return errors
 
 
 def _apply_extensions(model):
@@ -169,9 +182,9 @@ def _get_all_cross_reference_errors(kind: str, model: dict) -> iter:
     data, enums = util.get_aac_spec()
     models = {kind: model} | data | enums
 
-    data = util.get_models_by_type(models, "data")
-    enums = util.get_models_by_type(models, "enum")
-    models = util.get_models_by_type(models, "model")
+    data = VALIDATOR_CONTEXT.get_all_data_definitions()
+    enums = VALIDATOR_CONTEXT.get_all_enum_definitions()
+    models = VALIDATOR_CONTEXT.get_all_model_definitions()
     return list(
         flatten(
             _filter_none_values(
@@ -451,3 +464,44 @@ def _load_aac_fields_for(kind: str) -> list:
         return field | {"required": is_required_field(field)}
 
     return list(map(add_required_value_to_field, fields))
+
+
+@attr.s
+class ValidatorContext:
+    """
+    A class used to provide access to several disparate AaC model definition sources during validation.
+
+    Attributes:
+        core_aac_spec_model: A dict of the core AaC spec
+        plugin_defined_models: a list of models, datas, and enums defined via plugins
+        plugin_defined_extensions: a list extensions defined via plugins
+        validation_target_models: a list of models that are being validated.
+    """
+
+    core_aac_spec_models = attr.ib(default={}, validator=attr.validators.instance_of(dict))
+    plugin_defined_models = attr.ib(default=(), validator=attr.validators.instance_of(dict))
+    plugin_defined_extensions = attr.ib(default=[])
+    validation_target_models = attr.ib(default={}, validator=attr.validators.instance_of(dict))
+
+    def get_plugin_extensions(self) -> []:
+        # TODO: change this
+
+        plugin_extensions = {}
+        for plugin_ext in self.plugin_defined_extensions:
+            if len(plugin_ext) > 0:
+                models = parser.parse_str(plugin_ext, "Plugin Manager Addition", False)
+                plugin_extensions = models | plugin_extensions
+
+        return plugin_extensions
+
+    def get_all_model_definitions(self):
+        return util.get_models_by_type(self._get_all_definitions(), "model")
+
+    def get_all_data_definitions(self):
+        return util.get_models_by_type(self._get_all_definitions(), "data")
+
+    def get_all_enum_definitions(self):
+        return util.get_models_by_type(self._get_all_definitions(), "enum")
+
+    def _get_all_definitions(self):
+        return self.core_aac_spec_models | self.plugin_defined_models | self.validation_target_models | self.get_plugin_extensions()
