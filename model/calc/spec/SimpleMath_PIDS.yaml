@@ -1,0 +1,19 @@
+import:
+  - Add_SRS.yaml
+  - Subtract_SRS.yaml
+spec:
+  title:  Simple Math PIDS
+  abbrv: SM
+  description:  This is a representative Prime Item Development Specification for a subsystem called Add-Simple Math.
+  subspecs:
+    - ADD
+    - SUB
+  requirements:
+    - id: 0001
+      shall:  When receiving a simple math request message, the calculator shall respond with the the result of the simple math function.
+      parent:
+        - abbrv: CALC
+          id: 0003
+      attributes:
+        - name: TADI
+          value: Test

@@ -1,0 +1,39 @@
+import:
+  - ./SimpleMath_PIDS.yaml
+  - ./IntermediateMath_PIDS.yaml
+spec:
+  title: Calculator System Spec
+  abbrv: CALC
+  description: This is a specification structure to test the spec plugin.
+  subspecs:
+    - SM
+    - IM
+  requirements:
+    - id: 0001
+      shall:  The test system shall log all messages it receives.
+      attributes:
+        - name: TADI
+          value: Test
+    - id: 0002
+      shall:  The test system shall log all messages it sends.
+      attributes:
+        - name: TADI
+          value: Test
+
+  sections:
+    - name: Funcational Requirements
+      description:  The calculator system performs simple math functions.
+      requirements:
+        - id: 0003
+          shall: When receiving a math function message, the calculator shall respond with the result of the function.
+          attributes:
+            - name: TADI
+              value: Test
+    - name: Performance Requirements
+      description:  The calculator system must be responsive.
+      requirements:
+        - id: 0004
+          shall: When the calculator receives a message, the calculator shall respond within 500 ms.
+          attributes:
+            - name: TADI
+              value:  Test

@@ -1,0 +1,13 @@
+spec:
+  title: Module Multiply SRS
+  abbrv: MULT
+  description:  This is a representative Software Requirements Specification for a module called Multiply.
+  requirements:
+    - id: 0001
+      shall:  When receiving a multiply message, the calculator shall respond with the product of the provided values.
+      parent:
+        - abbrv: IM
+          id: 0001
+      attributes:
+        - name: TADI
+          value: Test

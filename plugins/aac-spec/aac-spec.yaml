@@ -1,7 +1,9 @@
 data:
   name: Specification
   fields:
-    - name: name
+    - name: title
+      type: string
+    - name: abbrv
       type: string
     - name: description
       type: string
@@ -12,7 +14,8 @@ data:
     - name: requirements
       type: Requirement[]
   required:
-    - name
+    - title
+    - abbrv
 ---
 data:
   name: SpecSection
@@ -34,7 +37,7 @@ data:
     - name: shall
       type: string
     - name: parent
-      type: string
+      type: RequirementReference[]
     - name: attributes
       type: RequirementAttribute[]
   required:
@@ -52,10 +55,10 @@ data:
     - name
     - value
 ---
-data: 
+data:
   name: RequirementReference
   fields:
-    - name: spec
+    - name: abbrv
       type: string
     - name: ids
       type: string[]
@@ -78,7 +81,7 @@ ext:
     add:
       - name: requirements
         type: RequirementReference[]
-        ---
+---
 ext:
   name: addSpecTraceToData
   type: data
@@ -97,8 +100,6 @@ model:
       input:
         - name: architecture_file
           type: file
-        - name: parsed_model
-          type: map
       acceptance:
         - scenario: Valid spec traces are modeled.
           given:
