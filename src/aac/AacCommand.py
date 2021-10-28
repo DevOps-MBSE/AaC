@@ -16,9 +16,9 @@ class AacCommandArgument:
         number_of_arguments: Number of entries that the argument can take. Maps to the argsparse module's nargs command.
     """
 
-    name = attr.ib()
-    description = attr.ib()
-    number_of_arguments = attr.ib(default=None)
+    name = attr.ib(validator=attr.validators.instance_of(str))
+    description = attr.ib(validator=attr.validators.instance_of(str))
+    number_of_arguments = attr.ib(default=None, validator=attr.validators.instance_of((str, type(None))))
 
 
 @attr.s
@@ -35,7 +35,7 @@ class AacCommand:
         arguments: A List of AacCommandArgument containing argument information about the command. Defaults to an empty list.
     """
 
-    name = attr.ib()
-    description = attr.ib()
-    callback = attr.ib()
-    arguments = attr.ib(default=[])
+    name = attr.ib(validator=attr.validators.instance_of(str))
+    description = attr.ib(validator=attr.validators.instance_of(str))
+    callback = attr.ib(validator=attr.validators.is_callable())
+    arguments = attr.ib(default=[], validator=attr.validators.instance_of(list))

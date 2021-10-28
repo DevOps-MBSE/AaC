@@ -76,9 +76,9 @@ class GeneratePluginException(Exception):
 class TemplateOutputFile:
     """Class containing all of the relevant information necessary to handle writing templates to files."""
 
-    file_name = attr.ib()
-    content = attr.ib()
-    overwrite = attr.ib()
+    file_name = attr.ib(validator=attr.validators.instance_of(str))
+    content = attr.ib(validator=attr.validators.instance_of(str))
+    overwrite = attr.ib(validator=attr.validators.instance_of(bool))
 
 
 def generate_plugin(architecture_file: str) -> None:
