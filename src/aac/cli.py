@@ -30,7 +30,7 @@ def run_cli():
     for plugin_ext in results:
         if len(plugin_ext) > 0:
             parsed = parser.parse_str(plugin_ext, "Plugin Manager Addition", True)
-            util.extend_aac_spec(parsed)
+            # util.extend_aac_spec(parsed)
 
     args = arg_parser.parse_args()
 
