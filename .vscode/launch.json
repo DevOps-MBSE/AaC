@@ -38,6 +38,18 @@
             "justMyCode": false
         },
         {
+            "name": "Python: Validate AaC gen-protobuf",
+            "type": "python",
+            "request": "launch",
+            "program": "src/aac/__main__.py",
+            "args": [
+                "validate",
+                "./plugins/aac-gen-protobuf/aac-gen-protobuf.yaml"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
             "name": "Python: Json AaC",
             "type": "python",
             "request": "launch",
