@@ -12,6 +12,7 @@
 
 import os
 import sys
+from importlib import metadata
 
 sys.path.insert(0, os.path.abspath("."))
 
@@ -23,7 +24,7 @@ copyright = "2021, JD Black, Alex Monnet, Cameron Chaparro"
 author = "Northrop Grumman Corporation"
 
 # The full version, including alpha/beta/rc tags
-release = "0.0.4"
+release = metadata.version("aac")
 
 
 # -- General configuration ---------------------------------------------------
