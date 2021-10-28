@@ -20,8 +20,8 @@ sys.path.insert(0, os.path.abspath("."))
 # -- Project information -----------------------------------------------------
 
 project = "Architecture-as-Code"
-copyright = "2021, JD Black, Alex Monnet, Cameron Chaparro"
-author = "Northrop Grumman Corporation"
+copyright = "2021, AaC Project Contributors"
+author = "AaC Project Contributors"
 
 # The full version, including alpha/beta/rc tags
 release = metadata.version("aac")
