@@ -1,0 +1,5 @@
+data:
+  name: MathResponse
+  fields:
+    - name: result
+      type: number

@@ -1,0 +1,13 @@
+spec:
+  title: Module Power SRS
+  abbrv: POW
+  description:  This is a representative Software Requirements Specification for a module called Power.
+  requirements:
+    - id: 0001
+      shall:  When receiving a power message, the calculator shall respond with the value raised to the specified exponent.
+      parent:
+        - abbrv: CM
+          id: 0001
+      attributes:
+        - name: TADI
+          value: Test

@@ -1,0 +1,9 @@
+import:
+  - ./MathFunction.yaml
+data:
+  name: MathRequest
+  fields:
+    - name: function
+      type: MathFunction
+    - name: values
+      type: number[]
