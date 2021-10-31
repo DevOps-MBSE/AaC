@@ -5,7 +5,7 @@
 import copy
 from typing import Union
 
-import attr
+from attr import attrib, attrs, validators
 from iteration_utilities import flatten
 
 from aac import plugins, util
@@ -48,7 +48,9 @@ def validate_and_get_errors(model: dict) -> list:
 
     if not VALIDATOR_CONTEXT:
         aac_enum, aac_data = util.get_aac_spec()
-        VALIDATOR_CONTEXT = ValidatorContext(aac_enum | aac_data, {}, plugins.get_plugin_model_definitions(), model)
+        VALIDATOR_CONTEXT = ValidatorContext(
+            aac_enum | aac_data, {}, plugins.get_plugin_model_definitions(), model
+        )
         VALIDATOR_CONTEXT.get_all_extended_definitions()
 
     errors = list(flatten(map(_validate_model, model.values())))
@@ -84,7 +86,7 @@ def validate_plugin_models() -> list:
     # for plugin_name, plugin_model in plugin_models:
     #     plugin_errors = _validate_model, plugin_models
 
-        # if not plugin_errors:
+    # if not plugin_errors:
 
     # Once we're done validating, wipe the context.
     VALIDATOR_CONTEXT = None
@@ -93,8 +95,7 @@ def validate_plugin_models() -> list:
 
 
 def _validate_model(model: dict) -> list:
-    """
-    """
+    """ """
     actual_model = dict(list(model.values())[0])
     name = actual_model["name"] if "name" in actual_model else ""
     errors = (
@@ -108,51 +109,6 @@ def _validate_model(model: dict) -> list:
     )
 
     return errors
-
-
-def _apply_extensions(model):
-    errors = []
-    aac_data, aac_enums = util.get_aac_spec()
-    for ext in util.get_models_by_type(model, "ext"):
-        extension = model[ext]
-        if not _can_apply_extension(extension):
-            errors.append(f"unrecognized extension type {extension}")
-            continue
-
-        ext_value = extension["ext"]
-        type_to_extend = ext_value["type"]
-        if type_to_extend in aac_data or type_to_extend in aac_enums:
-            errors.append(_apply_extension(ext_value, aac_data, aac_enums))
-        else:
-            errors.append(
-                _apply_extension(
-                    ext_value,
-                    util.get_models_by_type(model, "data"),
-                    util.get_models_by_type(model, "enum"),
-                )
-            )
-
-    return _filter_none_values(errors)
-
-
-def _can_apply_extension(extension):
-    return "ext" in extension and "type" in extension["ext"] and extension["ext"]["type"] != ""
-
-
-def _apply_extension(extension, data, enums):
-    type_to_extend = extension["type"]
-    if not _is_enum_ext(extension) and not _is_data_ext(extension):
-        return f"unrecognized extension type {type_to_extend}"
-
-    def add_values_to_model(model, name, items, thing="add", required=None):
-        ext_type = f"{name}Ext"
-        model[type_to_extend][name][items] += extension[ext_type][thing]
-        if required and "required" in extension[ext_type]:
-            add_values_to_model(model, name, required, required)
-
-    if _is_enum_ext(extension):
-        return add_values_to_model(enums, "enum", "values")
-    return add_values_to_model(data, "data", "fields", required="required")
 
 
 def _is_data_ext(model):
@@ -491,7 +447,11 @@ def _get_all_extension_errors(model: dict) -> list:
         return []
 
     if is_ext(model):
-        extension_errors = get_all_errors_if_data_and_enum_extension_combined(model["ext"]) + can_apply_extension(model) + is_valid_extension_type(model)
+        extension_errors = (
+            get_all_errors_if_data_and_enum_extension_combined(model["ext"])
+            + can_apply_extension(model)
+            + is_valid_extension_type(model)
+        )
         if extension_errors:
             return extension_errors
 
@@ -516,7 +476,6 @@ def _get_all_extension_errors(model: dict) -> list:
 
 def _load_aac_fields_for(kind: str) -> list:
     """Get the AaC fields and their properties for the specified KIND of item."""
-    # data, _ = util.get_aac_spec()
     data = VALIDATOR_CONTEXT.get_all_unextended_definitions()
     values = data[kind]["data"]
     fields = values["fields"]
@@ -530,7 +489,7 @@ def _load_aac_fields_for(kind: str) -> list:
     return list(map(add_required_value_to_field, fields))
 
 
-@attr.s(slots=True, auto_attribs=True)
+@attrs(slots=True, auto_attribs=True)
 class ValidatorContext:
     """
     A class used to provide access to several disparate AaC model definition sources during the validation process.
@@ -544,36 +503,65 @@ class ValidatorContext:
 
     parsed_models_type_attribute_settings = {
         "default": {},
-        "validator": attr.validators.instance_of(dict)
+        "validator": validators.instance_of(dict),
     }
 
-    core_aac_spec_models: dict = attr.ib(**parsed_models_type_attribute_settings)  # TODO: Can this be assumed since the core spec should always be accessible from the same point
-    plugin_defined_models: dict = attr.ib(**parsed_models_type_attribute_settings)
-    plugin_defined_extensions: dict = attr.ib(**parsed_models_type_attribute_settings)
-    validation_target_models: dict = attr.ib(**parsed_models_type_attribute_settings)
+    core_aac_spec_models: dict = attrib(
+        **parsed_models_type_attribute_settings
+    )  # TODO: Can this be assumed since the core spec should always be accessible from the same point
+    plugin_defined_models: dict = attrib(**parsed_models_type_attribute_settings)
+    plugin_defined_extensions: dict = attrib(**parsed_models_type_attribute_settings)
+    validation_target_models: dict = attrib(**parsed_models_type_attribute_settings)
 
     # These attributes aren't exposed in the constructor, and are intended as private members, but attrs doesn't support private members.
-    extended_validation_aac_model: list = attr.ib(validator=attr.validators.instance_of(dict), init=False, default={})
+    extended_validation_aac_model: list = attrib(
+        validator=validators.instance_of(dict), init=False, default={}
+    )
 
-    def get_defined_types(self):
+    def get_defined_types(self) -> list[str]:
         """
         Return the complete list of defined types in the validation context.
+
+        Returns:
+            List of all defined types in the validation context
         """
         return list(self.get_all_extended_definitions().keys()) + util.get_primitives()
 
     def get_all_model_definitions(self):
+        """
+        Return all definitions of the 'model' type
+        """
         return util.get_models_by_type(self.get_all_extended_definitions(), "model")
 
     def get_all_data_definitions(self):
+        """
+        Return all definitions of the 'data' type
+        """
         return util.get_models_by_type(self.get_all_extended_definitions(), "data")
 
     def get_all_enum_definitions(self):
+        """
+        Return all definitions of the 'enum' type
+        """
         return util.get_models_by_type(self.get_all_extended_definitions(), "enum")
 
     def get_all_extension_definitions(self):
+        """
+        Return all definitions of the 'ext' type
+        """
         return util.get_models_by_type(self.get_all_extended_definitions(), "ext")
 
     def get_all_extended_definitions(self):
+        """
+        Return all model, data, enum, etc definitions in the context with active plugin extensions and definitions
+
+        Returns the complete list of plugin-extended definitions available in the context.
+            See `get_all_unextended_definitions()` to get the list of definitions without plugin
+            extensions applied.
+
+        Returns:
+            List of AaC definitions
+        """
         definitions = self.get_all_unextended_definitions()
         extensions = util.get_models_by_type(definitions, "ext")
 
@@ -589,11 +577,25 @@ class ValidatorContext:
         return self.extended_validation_aac_model
 
     def get_all_unextended_definitions(self):
-        return copy.deepcopy(self.core_aac_spec_models | self.plugin_defined_models | self.validation_target_models | self.plugin_defined_extensions)
+        """
+        Return all model, data, enum, etc definitions in the context without applying pluggin extensions
+
+        Returns the complete list of definitions available in the context, including those provided by actively
+            installed plugins without applying any plugin extensions to the exsiting definitions.
+            See `get_all_extended_definitions()` to get the list of definitions with plugin
+            extensions applied.
+
+        Returns:
+            List of AaC definitions
+        """
+        return copy.deepcopy(
+            self.core_aac_spec_models
+            | self.plugin_defined_models
+            | self.validation_target_models
+            | self.plugin_defined_extensions
+        )
 
     def _apply_extension_to_model(self, model, extension):
-        errors = []
-
         def add_values_to_model(model, extension_type, items, required=None):
             ext_type = f"{extension_type}Ext"
 
@@ -605,7 +607,3 @@ class ValidatorContext:
         if _is_enum_ext(extension):
             return add_values_to_model(model, "enum", "values")
         return add_values_to_model(model, "data", "fields", required="required")
-
-        return errors
-        # return _filter_none_values(errors)
-
