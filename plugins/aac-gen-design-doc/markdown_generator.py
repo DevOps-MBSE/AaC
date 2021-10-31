@@ -9,6 +9,28 @@ class MarkdownDesignDocumentGenerator(DesignDocumentGenerator):
     MIN_LEVEL: int = 1
     MAX_LEVEL: int = 6
 
+    def make_document_outline(self, model: dict) -> str:
+        """Returns a markdown document outline based on `model`.
+
+        Args:
+            `model` <dict>: The model based on which to generate the document outline.
+
+        Returns:
+            A markdown document outline for the provided `model`.
+        """
+        level = 1
+
+        def maybe_make_section(name, model):
+            aac_type = list(model.keys())[0]
+            if aac_type not in ["usecase", "model"]:
+                return ""
+
+            title = f"{aac_type.capitalize()}: {name}"
+            content = model[aac_type]["description"]
+            return self.make_section(title, level, content) + "\n"
+
+        return "\n".join(list(map(maybe_make_section, model.keys(), model.values())))
+
     def make_section(self, title: str, level: int, text: str) -> str:
         """Returns a markdown section with a heading and `text` content.
 
