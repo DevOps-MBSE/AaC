@@ -9,15 +9,23 @@ class MarkdownDesignDocumentGenerator(DesignDocumentGenerator):
     MIN_LEVEL: int = 1
     MAX_LEVEL: int = 6
 
-    def make_heading(self, title: str, level: int):
-        """Returns a markdown heading for the specified ITEM.
+    def make_heading(self, title: str, level: int) -> str:
+        """Returns a markdown heading with the specified `title`, at the specified `level`.
 
         Args:
-            title <str>: The title to be used for the heading.
-            level <int>: The level to make the heading - must be an integer between 1 and 6, inclusive.
+            `title` <str>: The title to be used for the heading.
+            `level` <int>: The heading level.
 
         Returns:
-            A string representing a markdown heading at the specified level, with the specified title.
+            A string representing a heading at the specified `level`, with the specified `title`.
+
+        Raises:
+            <InvalidLevelError>: If the provided `level` is less than `MIN_LEVEL` or greater than
+            `MAX_LEVEL`, an <InvalidLevelError> is raised.
+
+        See also:
+            `MIN_LEVEL`
+            `MAX_LEVEL`
         """
         min_level = self.MIN_LEVEL
         max_level = self.MAX_LEVEL
