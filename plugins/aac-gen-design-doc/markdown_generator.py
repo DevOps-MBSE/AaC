@@ -57,3 +57,14 @@ class MarkdownDesignDocumentGenerator(DesignDocumentGenerator):
 
         error = f"invalid level: {level}; valid levels {min_level} to {max_level}"
         raise InvalidLevelError(error)
+
+    def make_unordered_list(self, items: list[str]) -> str:
+        """Returns an unordered markdown list.
+
+        Args:
+            `items` <list[str]>: The list of items to be placed in the unordered list.
+
+        Returns:
+            A string representing an unordered list of `items` in markdown format.
+        """
+        return "\n".join(list(map(lambda i: f"- {i}", items)))

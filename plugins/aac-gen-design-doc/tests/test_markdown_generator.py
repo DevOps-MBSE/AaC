@@ -44,3 +44,10 @@ class MarkdownDesignDocumentGeneratorTest(TestCase):
 
         self.assertRaisesRegex(InvalidLevelError, "invalid.*0.*1", make_section, title, 0, "text")
         self.assertRaisesRegex(InvalidLevelError, "invalid.*7.*6", make_section, title, 7, "text")
+
+    def test_can_make_unordered_list_given_list_of_strings(self):
+        items = ["a", "b", "c"]
+        expected = ["", "- a", "- a\n- b", "- a\n- b\n- c"]
+
+        for i in range(1 + len(items)):
+            self.assertEqual(self.markdown.make_unordered_list(items[:i]), expected[i])
