@@ -88,7 +88,7 @@ class ValidatorTest(TestCase):
 
     def setUp(self):
         util.AAC_MODEL = {}
-        validator.DEFINED_TYPES = []
+        validator.VALIDATOR_CONTEXT = None
 
     def test_is_valid(self):
         self.assertTrue(is_valid(data(name="test", fields=[kw(name="a", type="int")])))
@@ -305,7 +305,7 @@ class ValidatorTest(TestCase):
         assert_model_is_invalid(self, ext(name="", type="", dataExt=kw(add=[kw()])), pattern)
 
     def test_extension_with_unrecognized_fields_fails_validation(self):
-        pattern = "unrecognized.*field.*invalid"
+        pattern = "missing.*required.*field.*(type)"
         assert_model_is_invalid(self, ext(invalid="item"), pattern)
 
     def test_extension_with_unrecognized_behavior_type_fails_validation(self):
@@ -327,7 +327,7 @@ class ValidatorTest(TestCase):
 class ValidatorFunctionalTest(TestCase):
     def setUp(self):
         util.AAC_MODEL = {}
-        validator.DEFINED_TYPES = []
+        validator.VALIDATOR_CONTEXT = None
 
     def test_validates_parsed_yaml_models(self):
         model = parse_str(TEST_MODEL_WITH_EXTENSIONS, "validation-test")
