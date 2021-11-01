@@ -19,5 +19,9 @@ class DesignDocumentGenerator(ABC):
         raise NotImplementedError("Implement me!")
 
     @abstractmethod
+    def make_ordered_list(self, items: list[str]) -> str:
+        raise NotImplementedError("Implement me!")
+
+    @abstractmethod
     def make_unordered_list(self, items: list[str]) -> str:
         raise NotImplementedError("Implement me!")

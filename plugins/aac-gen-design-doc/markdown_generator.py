@@ -91,6 +91,17 @@ class MarkdownDesignDocumentGenerator(DesignDocumentGenerator):
 
         return make_reference_link() if label else make_standard_link()
 
+    def make_ordered_list(self, items: list[str]) -> str:
+        """Returns an ordered markdown list.
+
+        Args:
+            `items` <list[str]>: The list of items to be placed in the ordered list.
+
+        Returns:
+            A string representing an ordered list of `items` in markdown format.
+        """
+        return self._make_list("1.", items)
+
     def make_unordered_list(self, items: list[str]) -> str:
         """Returns an unordered markdown list.
 
@@ -100,4 +111,7 @@ class MarkdownDesignDocumentGenerator(DesignDocumentGenerator):
         Returns:
             A string representing an unordered list of `items` in markdown format.
         """
-        return "\n".join(list(map(lambda i: f"- {i}", items)))
+        return self._make_list("-", items)
+
+    def _make_list(self, prefix: str, items: list[str]) -> str:
+        return "\n".join(list(map(lambda i: f"{prefix} {i}", items)))
