@@ -417,31 +417,33 @@ def _get_all_extension_errors(model: dict) -> list:
         return []
 
     def can_apply_extension(extension):
+        """Checks that the extension is an extension and has a non-empty type"""
 
-        # TODO: Refactor this block
-        def is_field_missing(model, field):
-            if field not in model:
-                return True
+        def check_for_missing_field(model: dict, fields: list) -> None:
+            """Checks that the ext and type fields exist in the model and that type is not empty"""
+            if len(fields) == 1:
+                if model[fields[0]] == "":
+                    return [f"missing required field 'ext' in model '{model}'"]
+                else:
+                    return None
+            else:
+                current_field = fields[0]
+                return check_for_missing_field(model[current_field], fields[1:])
 
-        if is_field_missing(extension, "ext"):
-            return [f"missing required field 'ext' in model '{model}'"]
-
-        if is_field_missing(extension["ext"], "type"):
-            return [f"missing required field 'type' in model '{model}'"]
-
-        if extension["ext"]["type"] == "":
-            return [f"missing required field 'type' in model '{model}'"]
-
-        return []
+        missing_error = check_for_missing_field(model, ["ext", "type"])
+        if missing_error:
+            return [missing_error]
+        else:
+            return []
 
     def is_valid_extension_type(extension):
         expected_types = ["dataExt", "enumExt"]
-        has_one = False
+        is_an_expected_type = False
         for expected_type in expected_types:
             if expected_type in extension["ext"]:
-                has_one = True
+                is_an_expected_type = True
 
-        if not has_one:
+        if not is_an_expected_type:
             return [f"unrecognized extension type {extension}"]
 
         return []
@@ -506,9 +508,7 @@ class ValidatorContext:
         "validator": validators.instance_of(dict),
     }
 
-    core_aac_spec_models: dict = attrib(
-        **parsed_models_type_attribute_settings
-    )  # TODO: Can this be assumed since the core spec should always be accessible from the same point
+    core_aac_spec_models: dict = attrib(**parsed_models_type_attribute_settings)
     plugin_defined_models: dict = attrib(**parsed_models_type_attribute_settings)
     plugin_defined_extensions: dict = attrib(**parsed_models_type_attribute_settings)
     validation_target_models: dict = attrib(**parsed_models_type_attribute_settings)
