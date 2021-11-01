@@ -25,3 +25,11 @@ class DesignDocumentGenerator(ABC):
     @abstractmethod
     def make_unordered_list(self, items: list[str]) -> str:
         raise NotImplementedError("Implement me!")
+
+    @abstractmethod
+    def make_code_line(self, code: str) -> str:
+        raise NotImplementedError("Implement me!")
+
+    @abstractmethod
+    def make_code_block(self, code: str, language: str) -> str:
+        raise NotImplementedError("Implement me!")

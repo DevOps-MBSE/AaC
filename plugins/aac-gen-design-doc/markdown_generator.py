@@ -115,3 +115,26 @@ class MarkdownDesignDocumentGenerator(DesignDocumentGenerator):
 
     def _make_list(self, prefix: str, items: list[str]) -> str:
         return "\n".join(list(map(lambda i: f"{prefix} {i}", items)))
+
+    def make_code_line(self, code: str) -> str:
+        """Returns an inline `code` string in markdown.
+
+        Args:
+            `code` <str>: The string to be returned as a line of code in markdown.
+
+        Returns:
+            A string representing inline `code` in markdown.
+        """
+        return self._surround(code, "`")
+
+    def make_code_block(self, code: str, language: str = "") -> str:
+        """Returns an block of code in markdown.
+
+        Args:
+            `code` <str>: The string to be returned as a block of code in markdown.
+            `language` <str>: The name of the language the `code` is written in.
+
+        Returns:
+            A string representing a block of `code` in markdown.
+        """
+        return f"```{language}\n{code}\n```"

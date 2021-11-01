@@ -77,6 +77,17 @@ class MarkdownDesignDocumentGeneratorTest(TestCase):
             "[test link][test label]\n\n[test label]: test url",
         )
 
+    def test_can_make_inline_code(self):
+        for i in range(3):
+            s = ("test " * i).strip()
+            self.assertEqual(self.markdown.make_code_line(s), f"`{s}`")
+
+    def test_can_make_block_code(self):
+        for i in range(3):
+            s = ("test " * i).strip()
+            self.assertEqual(self.markdown.make_code_block(s), f"```\n{s}\n```")
+            self.assertEqual(self.markdown.make_code_block(s, "lang"), f"```lang\n{s}\n```")
+
 class MarkdownDesignDocumentGeneratorFunctionalTest(TestCase):
     markdown = None
 
