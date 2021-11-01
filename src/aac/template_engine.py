@@ -94,8 +94,8 @@ def write_generated_templates_to_file(
         _write_file(
             output_dir,
             generated_file.file_name,
-            generated_file.overwrite,
             generated_file.content,
+            generated_file.overwrite,
         )
 
 
