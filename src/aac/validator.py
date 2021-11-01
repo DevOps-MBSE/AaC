@@ -532,12 +532,6 @@ class ValidatorContext:
         """
         return util.get_models_by_type(self.get_all_extended_definitions(), "enum")
 
-    def get_all_extension_definitions(self):
-        """
-        Return all definitions of the 'ext' type
-        """
-        return util.get_models_by_type(self.get_all_extended_definitions(), "ext")
-
     def get_all_extended_definitions(self):
         """
         Return all model, data, enum, etc definitions in the context with active plugin extensions and definitions
