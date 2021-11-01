@@ -146,6 +146,19 @@
             "justMyCode": false
         },
         {
+            "name": "Python: Gen-Protobuf",
+            "type": "python",
+            "request": "launch",
+            "program": "src/aac/__main__.py",
+            "args": [
+                "gen-protobuf",
+                "./model/flow/System.yaml",
+                "build/"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
             "name": "Python: Unit Tests",
             "type": "python",
             "request": "launch",
