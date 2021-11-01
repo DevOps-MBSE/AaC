@@ -51,7 +51,7 @@ def _load_templates_from_env(env) -> list:
 
 def generate_templates(templates: list[Template], properties: dict[str, str]) -> dict[str, str]:
     """
-    Compile a list of Jinja2 Template objects to a list of strings.
+    Compile a list of Jinja2 Templates with a dict of template properties into a dict of template name to compiled template content.
 
     Args:
         templates: list of Jinja2 templates to compile.
@@ -87,7 +87,7 @@ def write_generated_templates_to_file(
 
     Args:
         generated_files: list of generated files to write to the filesystem
-        plug_dir: the directory to write the generated files to.
+        output_dir: the directory to write the generated files to.
     """
 
     for generated_file in generated_files:
@@ -99,15 +99,15 @@ def write_generated_templates_to_file(
         )
 
 
-def _write_file(path: str, file_name: str, overwrite: bool, content: str) -> None:
+def _write_file(path: str, file_name: str, content: str, overwrite: bool) -> None:
     """
     Write string content to a file.
 
     Args:
         path: the path to the directory that the file will be written to
         file_name: the name of the file to be written
-        overwrite: whether to overwrite an existing file, if false the file will not be altered.
         content: contents of the file to write
+        overwrite: whether to overwrite an existing file, if false the file will not be altered.
     """
     file_to_write = os.path.join(path, file_name)
     if not overwrite and os.path.exists(file_to_write):
