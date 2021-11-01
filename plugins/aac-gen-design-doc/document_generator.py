@@ -33,3 +33,19 @@ class DesignDocumentGenerator(ABC):
     @abstractmethod
     def make_code_block(self, code: str, language: str) -> str:
         raise NotImplementedError("Implement me!")
+
+    @abstractmethod
+    def make_bold_text(self, text: str) -> str:
+        raise NotImplementedError("Implement me!")
+
+    @abstractmethod
+    def make_italic_text(self, text: str) -> str:
+        raise NotImplementedError("Implement me!")
+
+    @abstractmethod
+    def make_underlined_text(self, text: str) -> str:
+        raise NotImplementedError("Implement me!")
+
+    @abstractmethod
+    def make_strikethrough_text(self, text: str) -> str:
+        raise NotImplementedError("Implement me!")

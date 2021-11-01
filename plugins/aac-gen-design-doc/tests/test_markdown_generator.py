@@ -88,6 +88,18 @@ class MarkdownDesignDocumentGeneratorTest(TestCase):
             self.assertEqual(self.markdown.make_code_block(s), f"```\n{s}\n```")
             self.assertEqual(self.markdown.make_code_block(s, "lang"), f"```lang\n{s}\n```")
 
+    def test_can_make_bold_text(self):
+        self.assertEqual(self.markdown.make_bold_text("test"), "**test**")
+
+    def test_can_make_italic_text(self):
+        self.assertEqual(self.markdown.make_italic_text("test"), "*test*")
+
+    def test_cannot_make_underlined_text(self):
+        self.assertEqual(self.markdown.make_underlined_text("test"), "test")
+
+    def test_can_make_strikethrough_text(self):
+        self.assertEqual(self.markdown.make_strikethrough_text("test"), "~~test~~")
+
 class MarkdownDesignDocumentGeneratorFunctionalTest(TestCase):
     markdown = None
 

@@ -137,4 +137,51 @@ class MarkdownDesignDocumentGenerator(DesignDocumentGenerator):
         Returns:
             A string representing a block of `code` in markdown.
         """
-        return f"```{language}\n{code}\n```"
+        return self._surround(f"{language}\n{code}\n", "```")
+
+    def make_bold_text(self, text: str) -> str:
+        """Returns `text` as a bold markdown string.
+
+        Args:
+            `text` <str>: The text to be returned as a bold markdown string.
+
+        Returns:
+            A string representing bold `text` in markdown.
+        """
+        return self._surround(text, "**")
+
+    def make_italic_text(self, text: str) -> str:
+        """Returns `text` as an italic markdown string.
+
+        Args:
+            `text` <str>: The text to be returned as an italic markdown string.
+
+        Returns:
+            A string representing italic `text` in markdown.
+        """
+        return self._surround(text, "*")
+
+    def make_underlined_text(self, text: str) -> str:
+        """Returns `text` as an underlined markdown string.
+
+        Args:
+            `text` <str>: The text to be returned as an underlined markdown string.
+
+        Returns:
+            A string representing an underlined `text` in markdown.
+        """
+        return text
+
+    def make_strikethrough_text(self, text: str) -> str:
+        """Returns `text` as a strikethrough markdown string.
+
+        Args:
+            `text` <str>: The text to be returned as a strikethrough markdown string.
+
+        Returns:
+            A string representing strikethrough `text` in markdown.
+        """
+        return self._surround(text, "~~")
+
+    def _surround(self, text: str, wrap: str) -> str:
+        return f"{wrap}{text}{wrap}"
