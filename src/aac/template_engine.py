@@ -1,7 +1,6 @@
 """ This module provides a common set of templating and generation functions """
-import os
 
-from jinja2 import Template, FileSystemLoader, Environment
+from jinja2 import Environment, PackageLoader, Template
 
 
 def load_templates(group_dir_name: str) -> list[Template]:
@@ -14,12 +13,9 @@ def load_templates(group_dir_name: str) -> list[Template]:
     Returns:
         list of loaded templates
     """
-    path = os.path.realpath(f"{TEMPLATES_DIR_PATH}/{group_dir_name}")
 
-    # Packageloader returned errors when trying to load templates in the aac package
-    #   We may have to resort to a custom loader if Filesystem doesn't work with distributions.
     env = Environment(
-        loader=FileSystemLoader(path),
+        loader=PackageLoader("aac", f"templates/{group_dir_name}"),
         autoescape=True,
     )
 
@@ -58,7 +54,3 @@ def generate_template(template: Template, properties: dict[str, str]) -> str:
         Compiled/Rendered template as a string
     """
     return template.render(properties)
-
-
-# Constants
-TEMPLATES_DIR_PATH = "src/templates"
