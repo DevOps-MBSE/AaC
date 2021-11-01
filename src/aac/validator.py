@@ -279,7 +279,9 @@ def _get_all_data_errors(model: dict) -> list:
         data = model[kind]
         return _filter_none_values(
             _get_all_errors_for(model, kind=kind, fields=_load_extended_aac_fields_for(kind)),
-            _get_all_non_root_element_errors(data, "fields", list, _load_extended_aac_fields_for("Field")),
+            _get_all_non_root_element_errors(
+                data, "fields", list, _load_extended_aac_fields_for("Field")
+            ),
             _get_all_required_field_errors(data),
         )
 
@@ -329,11 +331,15 @@ def _get_all_usecase_errors(model: dict) -> list:
     if is_usecase(model):
         usecase = model["usecase"]
         return _filter_none_values(
-            _get_all_errors_for(model, kind="usecase", fields=_load_extended_aac_fields_for("usecase")),
+            _get_all_errors_for(
+                model, kind="usecase", fields=_load_extended_aac_fields_for("usecase")
+            ),
             _get_all_non_root_element_errors(
                 usecase, "participants", list, _load_extended_aac_fields_for("Field")
             ),
-            _get_all_non_root_element_errors(usecase, "steps", list, _load_extended_aac_fields_for("Step")),
+            _get_all_non_root_element_errors(
+                usecase, "steps", list, _load_extended_aac_fields_for("Step")
+            ),
         )
 
     return []
@@ -352,11 +358,15 @@ def _get_all_model_errors(model: dict) -> list:
         m = model["model"]
         behaviors = m["behavior"] if has_behaviors(m) else []
         return _filter_none_values(
-            _get_all_errors_for(model, kind="model", fields=_load_extended_aac_fields_for("model")),
+            _get_all_errors_for(
+                model, kind="model", fields=_load_extended_aac_fields_for("model")
+            ),
             _get_all_non_root_element_errors(
                 m, "behavior", list, _load_extended_aac_fields_for("Behavior")
             ),
-            _get_all_non_root_element_errors(m, "components", list, _load_extended_aac_fields_for("Field")),
+            _get_all_non_root_element_errors(
+                m, "components", list, _load_extended_aac_fields_for("Field")
+            ),
             _get_all_non_root_element_errors(
                 behaviors, "acceptance", list, _load_extended_aac_fields_for("Scenario")
             ),
@@ -426,11 +436,15 @@ def _get_all_extension_errors(model: dict) -> list:
             else ("enumExt", dict, _load_unextended_aac_fields_for("EnumExtension"))
         )
         return _filter_none_values(
-            _get_all_errors_for(model, kind="ext", fields=_load_unextended_aac_fields_for("extension")),
+            _get_all_errors_for(
+                model, kind="ext", fields=_load_unextended_aac_fields_for("extension")
+            ),
             get_all_errors_if_data_and_enum_extension_combined(ext),
             _get_all_non_root_element_errors(ext, kind, type, items),
             # TODO: Not generic enough
-            _get_all_non_root_element_errors(ext[kind], "add", list, _load_unextended_aac_fields_for("Field"))
+            _get_all_non_root_element_errors(
+                ext[kind], "add", list, _load_unextended_aac_fields_for("Field")
+            )
             if _is_data_ext(ext)
             else [],
         )
