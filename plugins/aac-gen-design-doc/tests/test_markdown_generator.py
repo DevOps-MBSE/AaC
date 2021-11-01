@@ -54,6 +54,21 @@ class MarkdownDesignDocumentGeneratorTest(TestCase):
         for i in range(1 + len(items)):
             self.assertEqual(self.markdown.make_unordered_list(items[:i]), expected[i])
 
+    def test_can_make_standard_markdown_links(self):
+        text = "test link"
+        url = "test url"
+
+        self.assertEqual(self.markdown.make_link(text, url), "[test link](test url)")
+
+    def test_can_make_link_that_references_label(self):
+        text = "test link"
+        url = "test url"
+        label = "test label"
+
+        self.assertEqual(
+            self.markdown.make_link(text, url, label),
+            "[test link][test label]\n\n[test label]: test url",
+        )
 
 class MarkdownDesignDocumentGeneratorFunctionalTest(TestCase):
     markdown = None

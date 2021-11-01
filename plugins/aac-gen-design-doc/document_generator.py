@@ -15,5 +15,9 @@ class DesignDocumentGenerator(ABC):
         raise NotImplementedError("Implement me!")
 
     @abstractmethod
+    def make_link(self, text: str, url: str) -> str:
+        raise NotImplementedError("Implement me!")
+
+    @abstractmethod
     def make_unordered_list(self, items: list[str]) -> str:
         raise NotImplementedError("Implement me!")

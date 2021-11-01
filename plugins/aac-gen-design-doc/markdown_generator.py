@@ -80,6 +80,17 @@ class MarkdownDesignDocumentGenerator(DesignDocumentGenerator):
         error = f"invalid level: {level}; valid levels {min_level} to {max_level}"
         raise InvalidLevelError(error)
 
+    def make_link(self, text: str, url: str, label: str = None) -> str:
+        """Returns"""
+
+        def make_reference_link():
+            return f"[{text}][{label}]\n\n[{label}]: {url}"
+
+        def make_standard_link():
+            return f"[{text}]({url})"
+
+        return make_reference_link() if label else make_standard_link()
+
     def make_unordered_list(self, items: list[str]) -> str:
         """Returns an unordered markdown list.
 
