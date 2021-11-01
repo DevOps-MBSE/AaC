@@ -1,4 +1,9 @@
 """ This module provides a common set of templating and generation functions """
+from __future__ import annotations
+
+import os
+
+from attr import attrib, attrs, validators
 from jinja2 import Environment, PackageLoader, Template
 
 
@@ -72,3 +77,51 @@ def generate_template(template: Template, properties: dict[str, str]) -> str:
         Compiled/Rendered template as a string
     """
     return template.render(properties)
+
+
+def write_generated_templates_to_file(
+    generated_files: list[TemplateOutputFile], output_dir: str
+) -> None:
+    """
+    Write a list of generated files to the target directory.
+
+    Args:
+        generated_files: list of generated files to write to the filesystem
+        plug_dir: the directory to write the generated files to.
+    """
+
+    for generated_file in generated_files:
+        _write_file(
+            output_dir,
+            generated_file.file_name,
+            generated_file.overwrite,
+            generated_file.content,
+        )
+
+
+def _write_file(path: str, file_name: str, overwrite: bool, content: str) -> None:
+    """
+    Write string content to a file.
+
+    Args:
+        path: the path to the directory that the file will be written to
+        file_name: the name of the file to be written
+        overwrite: whether to overwrite an existing file, if false the file will not be altered.
+        content: contents of the file to write
+    """
+    file_to_write = os.path.join(path, file_name)
+    if not overwrite and os.path.exists(file_to_write):
+        print(f"{file_to_write} already exists, skipping write")
+    else:
+        file = open(file_to_write, "w")
+        file.writelines(content)
+        file.close()
+
+
+@attrs(slots=True, auto_attribs=True)
+class TemplateOutputFile:
+    """Class containing all of the relevant information necessary to handle writing templates to files."""
+
+    file_name: str = attrib(validator=validators.instance_of(str))
+    content: str = attrib(validator=validators.instance_of(str))
+    overwrite: str = attrib(validator=validators.instance_of(bool))

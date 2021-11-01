@@ -6,7 +6,7 @@ from aac import parser, util, validator
 from aac.genplug import (GeneratePluginException, TemplateOutputFile,
                          _compile_templates,
                          _convert_template_name_to_file_name,
-                         _write_generated_templates_to_file)
+                         write_generated_templates_to_file)
 
 
 class TestGenPlug(TestCase):
@@ -66,8 +66,6 @@ class TestGenPlug(TestCase):
         self.assertIn("output_directory", generated_plugin_impl_file_contents)
         self.assertIn("raise NotImplementedError", generated_plugin_impl_file_contents)
 
-
-
     def test__compile_templates_errors_on_multiple_models(self):
         parsed_model = parser.parse_str(
             f"{TEST_PLUGIN_YAML_STRING}\n---\n{SECONDARY_MODEL_YAML_DEFINITION}", "", True
@@ -103,7 +101,7 @@ class TestGenPlug(TestCase):
         templates = [TemplateOutputFile(template_name, template_content, True)]
 
         with TemporaryDirectory() as temp_directory:
-            _write_generated_templates_to_file(templates, temp_directory)
+            write_generated_templates_to_file(templates, temp_directory)
             temp_directory_files = os.listdir(temp_directory)
 
             for template in templates:

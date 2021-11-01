@@ -7,11 +7,12 @@ defined behavior becomes a new command for the aac CLI.
 import os
 
 import yaml
-from attr import attrib, attrs, validators
 
 from aac import hookimpl, parser, util
 from aac.AacCommand import AacCommand, AacCommandArgument
-from aac.template_engine import generate_templates, load_default_templates
+from aac.template_engine import (TemplateOutputFile, generate_templates,
+                                 load_default_templates,
+                                 write_generated_templates_to_file)
 
 
 @hookimpl
@@ -73,15 +74,6 @@ class GeneratePluginException(Exception):
     pass
 
 
-@attrs(slots=True, auto_attribs=True)
-class TemplateOutputFile:
-    """Class containing all of the relevant information necessary to handle writing templates to files."""
-
-    file_name: str = attrib(validator=validators.instance_of(str))
-    content: str = attrib(validator=validators.instance_of(str))
-    overwrite: str = attrib(validator=validators.instance_of(bool))
-
-
 def generate_plugin(architecture_file: str) -> None:
     """
     Entrypoint command to generate the plugin.
@@ -95,7 +87,7 @@ def generate_plugin(architecture_file: str) -> None:
         if _is_user_desired_output_directory(architecture_file, plug_dir):
             parsed_model = parser.parse_file(architecture_file, True)
             templates = _compile_templates(parsed_model)
-            _write_generated_templates_to_file(templates, plug_dir)
+            write_generated_templates_to_file(templates, plug_dir)
     except GeneratePluginException as exception:
         print(f"gen-plugin error [{architecture_file}]:  {exception}.")
 
@@ -124,7 +116,7 @@ def _compile_templates(parsed_models: dict[str, dict]) -> list[TemplateOutputFil
     plugin_model = list(plugin_models.values())[0].get("model")
     plugin_name = plugin_model.get("name")
 
-    # Ensure that the plugin name has package name prepended to it
+    # Ensure that the plugin name has that 'aac' package name prepended to it
     if not plugin_name.startswith(__package__):
         plugin_name = f"{__package__}-{plugin_name}"
 
@@ -158,26 +150,6 @@ def _compile_templates(parsed_models: dict[str, dict]) -> list[TemplateOutputFil
         files_to_write.append(TemplateOutputFile(file_name, template_content, overwrite))
 
     return files_to_write
-
-
-def _write_generated_templates_to_file(
-    generated_files: list[TemplateOutputFile], plug_dir: str
-) -> None:
-    """
-    Write a list of generated files to the target directory.
-
-    Args:
-        generated_files: list of generated files to write to the filesystem
-        plug_dir: the directory to write the generated files to.
-    """
-
-    for generated_file in generated_files:
-        _write_file(
-            plug_dir,
-            generated_file.file_name,
-            generated_file.overwrite,
-            generated_file.content,
-        )
 
 
 def _convert_template_name_to_file_name(template_name: str, plugin_name: str) -> str:
@@ -270,25 +242,6 @@ def _gather_plugin_aac_definitions(parsed_models: dict[str, dict]) -> list[dict]
 def _add_definitions_yaml_string(model: dict) -> dict:
     model["yaml"] = yaml.dump(model)
     return model
-
-
-def _write_file(path: str, file_name: str, overwrite: bool, content: str) -> None:
-    """
-    Write string content to a file.
-
-    Args:
-        path: the path to the directory that the file will be written to
-        file_name: the name of the file to be written
-        overwrite: whether to overwrite an existing file, if false the file will not be altered.
-        content: contents of the file to write
-    """
-    file_to_write = os.path.join(path, file_name)
-    if not overwrite and os.path.exists(file_to_write):
-        print(f"{file_to_write} already exists, skipping write")
-    else:
-        file = open(file_to_write, "w")
-        file.writelines(content)
-        file.close()
 
 
 def _convert_to_implementation_name(original_name: str) -> str:
