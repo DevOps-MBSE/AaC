@@ -1,12 +1,8 @@
-import os
-from tempfile import TemporaryDirectory
 from unittest import TestCase
 
 from aac import parser, util, validator
-from aac.genplug import (GeneratePluginException, TemplateOutputFile,
-                         _compile_templates,
-                         _convert_template_name_to_file_name,
-                         write_generated_templates_to_file)
+from aac.genplug import (GeneratePluginException, _compile_templates,
+                         _convert_template_name_to_file_name)
 
 
 class TestGenPlug(TestCase):
@@ -94,22 +90,6 @@ class TestGenPlug(TestCase):
         self.assertIn("setup.py", generated_template_names)
         self.assertIn(f"{plugin_name}.py", generated_template_names)
         self.assertIn(f"{plugin_name}_impl.py", generated_template_names)
-
-    def test__write_generated_templates_to_file(self):
-        template_name = "myTemplate.test"
-        template_content = "This is the sample content in my template"
-        templates = [TemplateOutputFile(template_name, template_content, True)]
-
-        with TemporaryDirectory() as temp_directory:
-            write_generated_templates_to_file(templates, temp_directory)
-            temp_directory_files = os.listdir(temp_directory)
-
-            for template in templates:
-                self.assertEqual(len(templates), len(temp_directory_files))
-                self.assertIn(template.file_name, temp_directory_files)
-
-                with open(os.path.join(temp_directory, template.file_name)) as file:
-                    self.assertEqual(template.content, file.read())
 
 
 TEST_PLUGIN_YAML_STRING = """
