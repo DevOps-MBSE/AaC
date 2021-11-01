@@ -2,14 +2,11 @@ import os
 from tempfile import TemporaryDirectory
 from unittest import TestCase
 
-from aac import util, validator, parser
-from aac.genplug import (
-    _compile_templates,
-    _convert_template_name_to_file_name,
-    _write_generated_templates_to_file,
-    TemplateOutputFile,
-    GeneratePluginException,
-)
+from aac import parser, util, validator
+from aac.genplug import (GeneratePluginException, TemplateOutputFile,
+                         _compile_templates,
+                         _convert_template_name_to_file_name,
+                         _write_generated_templates_to_file)
 
 
 class TestGenPlug(TestCase):
@@ -29,13 +26,15 @@ class TestGenPlug(TestCase):
 
     def test_compile_templates(self):
         parsed_model = parser.parse_str(TEST_PLUGIN_YAML_STRING, "")
-        plugin_name = "aac_spec"
+        plugin_name = "aac_gen_protobuf"
 
         generated_templates = _compile_templates(parsed_model)
 
-        generated_template_names = []
+        generated_templates_dict = {}
         for generated_template in generated_templates:
-            generated_template_names.append(generated_template.file_name)
+            generated_templates_dict[generated_template.file_name] = generated_template
+
+        generated_template_names = list(generated_templates_dict.keys())
 
         # Check that the files don't have "-" in the name
         for name in generated_template_names:
@@ -44,10 +43,30 @@ class TestGenPlug(TestCase):
         # Check that the expected files were created and named correctly
         self.assertEqual(len(generated_template_names), 4)
 
+        # Assert that the expected template files were generated
+        generated_plugin_file = f"{plugin_name}.py"
+        generated_plugin_impl_file = f"{plugin_name}_impl.py"
+
         self.assertIn("__init__.py", generated_template_names)
         self.assertIn("setup.py", generated_template_names)
-        self.assertIn(f"{plugin_name}.py", generated_template_names)
-        self.assertIn(f"{plugin_name}_impl.py", generated_template_names)
+        self.assertIn(generated_plugin_file, generated_template_names)
+        self.assertIn(generated_plugin_impl_file, generated_template_names)
+
+        # Assert that some expected content is present
+        generated_plugin_file_contents = generated_templates_dict.get(generated_plugin_file).content
+        self.assertIn("@aac.hookimpl", generated_plugin_file_contents)
+        self.assertIn("gen_protobuf_arguments", generated_plugin_file_contents)
+        self.assertIn("import gen_protobuf", generated_plugin_file_contents)
+        self.assertIn("architecture_file", generated_plugin_file_contents)
+        self.assertIn("output_directory", generated_plugin_file_contents)
+
+        generated_plugin_impl_file_contents = generated_templates_dict.get(generated_plugin_impl_file).content
+        self.assertIn("def gen_protobuf", generated_plugin_impl_file_contents)
+        self.assertIn("architecture_file", generated_plugin_impl_file_contents)
+        self.assertIn("output_directory", generated_plugin_impl_file_contents)
+        self.assertIn("raise NotImplementedError", generated_plugin_impl_file_contents)
+
+
 
     def test__compile_templates_errors_on_multiple_models(self):
         parsed_model = parser.parse_str(
@@ -96,105 +115,53 @@ class TestGenPlug(TestCase):
 
 
 TEST_PLUGIN_YAML_STRING = """
-data:
-  name: Specification
-  fields:
-    - name: name
-      type: string
-    - name: description
-      type: string
-    - name: subspecs
-      type: string[]
-    - name: sections
-      type: SpecSection[]
-    - name: requirements
-      type: Requirement[]
-  required:
-    - name
----
-data:
-  name: SpecSection
-  fields:
-    - name: name
-      type: string
-    - name: description
-      type: string
-    - name: requirements
-      type: Requirement[]
-  required:
-    - name
----
-data:
-  name: Requirement
-  fields:
-    - name: id
-      type: string
-    - name: shall
-      type: string
-    - name: parent
-      type: string
-    - name: attributes
-      type: RequirementAttribute[]
-  required:
-    - id
-    - shall
----
-data:
-  name: RequirementAttribute
-  fields:
-    - name: name
-      type: string
-    - name: value
-      type: string
-  required:
-    - name
-    - value
----
-ext:
-  name: addSpecificationToRoot
-  type: root
-  dataExt:
-    add:
-      - name: spec
-        type: Specification
----
-ext:
-   name: CommandBehaviorType
-   type: BehaviorType
-   enumExt:
-      add:
-         - command
----
 model:
-  name: aac-spec
-  description: aac-spec is a Architecture-as-Code plugin that enables requirement definition and trace in Arch-as-Code models.
+  name: aac-gen-protobuf
+  description: aac-gen-protobuf is an Architecture-as-Code plugin that generates protobuf message definitions from Architecture-as-Code models.
   behavior:
-    - name: spec-validate
+    - name: gen-protobuf
       type: command
-      description: 'Validates spec traces within the AaC model'
+      description: Generate protobuf messages from Arch-as-Code models
       input:
-        - name: archFile
-          type: file
-        - name: parsed_model
-          type: map
+        - name: architecture_file
+          type: string
+          description: The yaml file containing the data models to generate as Protobuf messages.
+        - name: output_directory
+          type: string
+          description: The directory to write the generated Protobuf messages to.
       acceptance:
-        - scenario: Valid spec traces are modeled.
+        - scenario: Output protobuf messages for behavior input/output entries in an Architecture model.
           given:
-            - The {{spec-validate.input.archFile}} contains a valid architecture specification.
-            - The {{spec-validate.input.parsed_model}} contains the parsed content from archFile.
+            - The {{gen-protobuf.input.architecture_file}} contains a valid architecture.
           when:
-            - The aac app is run with the spec-validate command.
+            - The aac app is run with the gen-protobuf command and a valid architecture file.
           then:
-            - A message saying spec validation was successful is printed to the console.
-    - name: non-cmd-behavior
-      type: startup
-      description: You shouldn't see me
-      acceptance:
-        - scenario: Pretend to do something on startup.
-          when:
-          - when
-          then:
-          - then
+            - Protobuf messages are written to {{gen-protobuf.input.output_directory}}.
+---
+enum:
+  name: ProtobufDataType
+  values:
+    - double
+    - float
+    - int32
+    - int64
+    - uint32
+    - uint64
+    - sint32
+    - sint64
+    - fixed32
+    - fixed64
+    - bool
+    - string
+    - bytes
+---
+ext:
+   name: ProtobufTypeField
+   type: Field
+   dataExt:
+      add:
+        - name: protobuf_type
+          type: ProtobufDataType
 """
 
 SECONDARY_MODEL_YAML_DEFINITION = """
