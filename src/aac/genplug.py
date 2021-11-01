@@ -4,13 +4,14 @@ A plugin to generate new plugins based on a specifically structured AaC model fi
 The plugin AaC model must define behaviors using the command BehaviorType.  Each
 defined behavior becomes a new command for the aac CLI.
 """
-import attr
 import os
-import yaml
 
-from aac import util, hookimpl, parser
+import yaml
+from attr import attrib, attrs, validators
+
+from aac import hookimpl, parser, util
 from aac.AacCommand import AacCommand, AacCommandArgument
-from aac.template_engine import load_templates, generate_templates
+from aac.template_engine import generate_templates, load_templates
 
 
 @hookimpl
@@ -72,13 +73,13 @@ class GeneratePluginException(Exception):
     pass
 
 
-@attr.s
+@attrs(slots=True, auto_attribs=True)
 class TemplateOutputFile:
     """Class containing all of the relevant information necessary to handle writing templates to files."""
 
-    file_name = attr.ib(validator=attr.validators.instance_of(str))
-    content = attr.ib(validator=attr.validators.instance_of(str))
-    overwrite = attr.ib(validator=attr.validators.instance_of(bool))
+    file_name: str = attrib(validator=validators.instance_of(str))
+    content: str = attrib(validator=validators.instance_of(str))
+    overwrite: str = attrib(validator=validators.instance_of(bool))
 
 
 def generate_plugin(architecture_file: str) -> None:
@@ -138,11 +139,11 @@ def _compile_templates(parsed_models: dict[str, dict]) -> list[TemplateOutputFil
         "implementation_name": plugin_implementation_name,
     }
 
-    extensions = [
-        _add_extensions_yaml_string(definition) for definition in _gather_extensions(parsed_models)
+    plugin_aac_definitions = [
+        _add_definitions_yaml_string(definition) for definition in _gather_plugin_aac_definitions(parsed_models)
     ]
 
-    template_properties = {"plugin": plugin, "commands": commands, "extensions": extensions}
+    template_properties = {"plugin": plugin, "commands": commands, "aac_definitions": plugin_aac_definitions}
     generated_templates = generate_templates(load_templates("genplug"), template_properties)
 
     # Define which templates we want to overwrite.
@@ -258,16 +259,17 @@ def _gather_commands(behaviors: dict) -> list[dict]:
     return commands
 
 
-def _gather_extensions(parsed_models: dict[str, dict]) -> list[dict]:
+def _gather_plugin_aac_definitions(parsed_models: dict[str, dict]) -> list[dict]:
     extension_definitions = list(util.get_models_by_type(parsed_models, "ext").values())
     data_definitions = list(util.get_models_by_type(parsed_models, "data").values())
+    enum_definitions = list(util.get_models_by_type(parsed_models, "enum").values())
 
-    return extension_definitions + data_definitions
+    return extension_definitions + data_definitions + enum_definitions
 
 
-def _add_extensions_yaml_string(extension_model: dict) -> dict:
-    extension_model["yaml"] = yaml.dump(extension_model)
-    return extension_model
+def _add_definitions_yaml_string(model: dict) -> dict:
+    model["yaml"] = yaml.dump(model)
+    return model
 
 
 def _write_file(path: str, file_name: str, overwrite: bool, content: str) -> None:
