@@ -1,11 +1,29 @@
 """ This module provides a common set of templating and generation functions """
-
 from jinja2 import Environment, PackageLoader, Template
 
 
-def load_templates(group_dir_name: str) -> list[Template]:
+def load_templates(package_name: str) -> list[Template]:
     """
-    Load default templates based on group-name.
+    Load templates from a `templates` directory within a package.
+
+    Args:
+        group_dir_name: name of the templates sub-directory to load templates from.
+
+    Returns:
+        list of loaded templates
+    """
+
+    env = Environment(
+        loader=PackageLoader(package_name, "templates"),
+        autoescape=True,
+    )
+
+    return _load_templates_from_env(env)
+
+
+def load_default_templates(group_dir_name: str) -> list[Template]:
+    """
+    Load default templates embedded in the AaC project based on a template group-name.
 
     Args:
         group_dir_name: name of the templates sub-directory to load templates from.
@@ -19,11 +37,11 @@ def load_templates(group_dir_name: str) -> list[Template]:
         autoescape=True,
     )
 
-    templates = []
-    for template_name in env.list_templates():
-        templates.append(env.get_template(template_name))
+    return _load_templates_from_env(env)
 
-    return templates
+
+def _load_templates_from_env(env) -> list:
+    return list(map(env.get_template, env.list_templates()))
 
 
 def generate_templates(templates: list[Template], properties: dict[str, str]) -> dict[str, str]:

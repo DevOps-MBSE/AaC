@@ -1,4 +1,5 @@
 from unittest import TestCase
+
 from jinja2 import Template
 
 from aac import template_engine
@@ -6,7 +7,7 @@ from aac import template_engine
 
 class TestTemplateEngine(TestCase):
     def test_load_templates(self):
-        templates = template_engine.load_templates("genplug")
+        templates = template_engine.load_default_templates("genplug")
         self.assertGreater(len(templates), 0)
 
     def test_generate_template(self):
