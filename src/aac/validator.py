@@ -39,11 +39,6 @@ def validate_and_get_errors(model: dict) -> list:
         model is valid (i.e. there are no errors) an empty list is returned.
     """
 
-    # plugin_errors = validate_plugin_models()
-    # if plugin_errors:
-    #     print("Failed to validate: Plugins are invalid")
-    #     return plugin_errors
-
     global VALIDATOR_CONTEXT
 
     if not VALIDATOR_CONTEXT:
@@ -61,41 +56,8 @@ def validate_and_get_errors(model: dict) -> list:
     return errors
 
 
-def validate_plugin_models() -> list:
-    """
-    Special validation step for plugin_models that doesn't load plugin definitions into the validation context.
-
-    Args:
-        none - This function loads all actively installed plugins and fetches their plugin definitions.
-
-    Returns:
-        Returns a list of all errors found when validating the model. If the
-        model is valid (i.e. there are no errors) an empty list is returned.
-    """
-
-    global VALIDATOR_CONTEXT
-
-    if not VALIDATOR_CONTEXT:
-        aac_enum, aac_data = util.get_aac_spec()
-        VALIDATOR_CONTEXT = ValidatorContext(aac_enum | aac_data, {}, {}, {})
-        VALIDATOR_CONTEXT.get_all_extended_definitions()
-
-    plugin_models = plugins.get_plugin_model_definitions()
-
-    all_validation_errors = []
-    # for plugin_name, plugin_model in plugin_models:
-    #     plugin_errors = _validate_model, plugin_models
-
-    # if not plugin_errors:
-
-    # Once we're done validating, wipe the context.
-    VALIDATOR_CONTEXT = None
-
-    return all_validation_errors
-
-
 def _validate_model(model: dict) -> list:
-    """ """
+    """Validate a model by checking that it meets the requirements to be considered valid, and return any errors if it's invalid."""
     actual_model = dict(list(model.values())[0])
     name = actual_model["name"] if "name" in actual_model else ""
     errors = (
@@ -117,6 +79,10 @@ def _is_data_ext(model):
 
 def _is_enum_ext(model):
     return "enumExt" in model and isinstance(model["enumExt"], dict)
+
+
+def _is_ext(model):
+    return "ext" in model and isinstance(model["ext"], dict)
 
 
 def _get_all_parsing_errors(model: dict) -> list:
@@ -408,9 +374,6 @@ def _get_all_model_errors(model: dict) -> list:
 def _get_all_extension_errors(model: dict) -> list:
     """Return all validation errors for the system MODEL."""
 
-    def is_ext(model):
-        return "ext" in model
-
     def get_all_errors_if_data_and_enum_extension_combined(model):
         if _is_data_ext(model) and _is_enum_ext(model):
             return ["cannot combine enumExt and dataExt in the same extension"]
@@ -419,16 +382,15 @@ def _get_all_extension_errors(model: dict) -> list:
     def can_apply_extension(extension):
         """Checks that the extension is an extension and has a non-empty type"""
 
-        def check_for_missing_field(model: dict, fields: list) -> None:
+        def check_for_missing_field(model: dict, fields: list) -> str:
             """Checks that the ext and type fields exist in the model and that type is not empty"""
-            if len(fields) == 1:
-                if model[fields[0]] == "":
-                    return [f"missing required field 'ext' in model '{model}'"]
-                else:
-                    return None
-            else:
-                current_field = fields[0]
+            current_field = fields[0]
+            if current_field not in model or model[current_field] == "":
+                return f"missing required field '{current_field}' in model '{model}'"
+            elif len(fields) != 1:
                 return check_for_missing_field(model[current_field], fields[1:])
+            else:
+                return None
 
         missing_error = check_for_missing_field(model, ["ext", "type"])
         if missing_error:
@@ -448,7 +410,7 @@ def _get_all_extension_errors(model: dict) -> list:
 
         return []
 
-    if is_ext(model):
+    if _is_ext(model):
         extension_errors = (
             get_all_errors_if_data_and_enum_extension_combined(model["ext"])
             + can_apply_extension(model)
