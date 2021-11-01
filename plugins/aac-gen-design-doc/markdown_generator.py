@@ -162,13 +162,16 @@ class MarkdownDesignDocumentGenerator(DesignDocumentGenerator):
         return self._surround(text, "*")
 
     def make_underlined_text(self, text: str) -> str:
-        """Returns `text` as an underlined markdown string.
+        """Returns `text`.
+
+        Note: Markdown does provide syntax to underline text. This is because underlined text can
+        be confused with hyperlinks in HTML output.
 
         Args:
-            `text` <str>: The text to be returned as an underlined markdown string.
+            `text` <str>: The text to be returned.
 
         Returns:
-            A string representing an underlined `text` in markdown.
+            `text`
         """
         return text
 
