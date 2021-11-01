@@ -11,7 +11,7 @@ from attr import attrib, attrs, validators
 
 from aac import hookimpl, parser, util
 from aac.AacCommand import AacCommand, AacCommandArgument
-from aac.template_engine import generate_templates, load_templates
+from aac.template_engine import generate_templates, load_default_templates
 
 
 @hookimpl
@@ -144,7 +144,7 @@ def _compile_templates(parsed_models: dict[str, dict]) -> list[TemplateOutputFil
     ]
 
     template_properties = {"plugin": plugin, "commands": commands, "aac_definitions": plugin_aac_definitions}
-    generated_templates = generate_templates(load_templates("genplug"), template_properties)
+    generated_templates = generate_templates(load_default_templates("genplug"), template_properties)
 
     # Define which templates we want to overwrite.
     templates_to_overwrite = ["plugin.py.jinja2", "setup.py.jinja2"]
