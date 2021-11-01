@@ -1,0 +1,5 @@
+message {{message.name}} {
+    {%- for field in message.field %}
+    {{field.type}} {{field.name}} = {{field.proto_field_number}};
+    {%- endfor %}
+}
