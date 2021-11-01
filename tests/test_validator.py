@@ -333,6 +333,18 @@ class ValidatorFunctionalTest(TestCase):
         model = parse_str(TEST_MODEL_WITH_EXTENSIONS, "validation-test")
         assert_model_is_valid(self, model)
 
+    def test_validates_parsed_yaml_models_that_leverage_gen_pugin_extensions(self):
+        model = parse_str(TEST_MODEL_WITH_EXTENSIONS, "validation-test")
+        assert_model_is_valid(self, model)
+
+    def test_validate_parsed_yaml_model_with_missing_enum_def(self):
+        model = parse_str(TEST_MODEL_WITH_EXTENSIONS, "validation-test")
+        assert_model_is_invalid(self, model)
+
+    def test_validate_parsed_yaml_model_with_missing_data_def(self):
+        model = parse_str(TEST_MODEL_WITH_EXTENSIONS, "validation-test")
+        assert_model_is_invalid(self, model)
+
 
 TEST_MODEL_WITH_EXTENSIONS = """
 ext:
@@ -358,6 +370,69 @@ model:
       input:
         - name: name
           type: string
+          description: input description
+      output:
+        - name: good-morning
+          type: string
+      acceptance:
+        - scenario: time to wake up
+          when:
+            - waiting 1 second
+          then:
+            - will say good-morning
+"""
+
+TEST_MODEL_WITH_GUN_PLUGIN_EXTENSION_VALUES = """
+model:
+  name: clock
+  behavior:
+    - name: say goodmorning
+      type: command
+      input:
+        - name: name
+          type: string
+      output:
+        - name: good-morning
+          type: string
+      acceptance:
+        - scenario: time to wake up
+          when:
+            - waiting 1 second
+          then:
+            - will say good-morning
+"""
+
+TEST_MODEL_WITH_MISSING_ENUM_EXTENSION = """
+model:
+  name: clock
+  behavior:
+    - name: say goodmorning
+      type: some_undefined_enum
+      input:
+        - name: name
+          type: string
+      output:
+        - name: good-morning
+          type: string
+      acceptance:
+        - scenario: time to wake up
+          when:
+            - waiting 1 second
+          then:
+            - will say good-morning
+"""
+
+
+TEST_MODEL_WITH_MISSING_DATA_EXTENSION = """
+model:
+  name: clock
+  behavior:
+    - name: say goodmorning
+      type: command
+      input:
+        - name: name
+          type: string
+          undefined_field: undefined_value
       output:
         - name: good-morning
           type: string
