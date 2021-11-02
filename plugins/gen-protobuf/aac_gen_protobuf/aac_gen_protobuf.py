@@ -32,3 +32,38 @@ def get_commands() -> list[AacCommand]:
     ]
 
     return plugin_commands
+
+@aac.hookimpl
+def get_base_model_extensions() -> str:
+    """
+    Returns the CommandBehaviorType modeling language extension to the plugin infrastructure.
+
+    Returns:
+        string representing yaml extensions and data definitions employed by the plugin
+    """
+    return """
+enum:
+  name: ProtobufDataType
+  values:
+    - double
+    - float
+    - int32
+    - int64
+    - uint32
+    - uint64
+    - sint32
+    - sint64
+    - fixed32
+    - fixed64
+    - bool
+    - string
+    - bytes
+---
+ext:
+   name: ProtobufTypeField
+   type: Field
+   dataExt:
+      add:
+        - name: protobuf_type
+          type: ProtobufDataType
+"""
