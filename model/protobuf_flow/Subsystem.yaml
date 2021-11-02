@@ -1,0 +1,25 @@
+import:
+  - ./Data.yaml
+  - ./Services.yaml
+model:
+  name: Subsystem
+  components:
+    - name: svc2
+      type: ServiceTwo
+  behavior:
+    - name: processDataB
+      type: request-response
+      input:
+        - name: in
+          type: DataB
+      output:
+        - name: out
+          type: DataC
+      acceptance:
+        - scenario: go
+          given:
+            - The Sybsystem is running.
+          when:
+            - The user issues a request with DataB
+          then:
+            - The user receives a response with DataC

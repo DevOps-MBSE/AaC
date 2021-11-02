@@ -1,0 +1,30 @@
+data:
+  name: DataA
+  fields:
+  - name: msg
+    type: string
+    protobuf_type: string
+---
+data:
+  name: DataB
+  fields:
+  - name: id_number
+    type: number
+    protobuf_type: int64
+  - name: msg
+    type: string
+    protobuf_type: string
+---
+data:
+  name: DataC
+  fields:
+  - name: msg
+    type: number
+    protobuf_type: fixed64
+---
+data:
+  name: DataD
+  fields:
+  - name: msg
+    type: string
+    protobuf_type: string
