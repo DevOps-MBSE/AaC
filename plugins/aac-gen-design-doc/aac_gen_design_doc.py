@@ -20,6 +20,7 @@ def get_commands() -> list[AacCommand]:
     gen_design_doc_arguments = [
         AacCommandArgument("architecture_files", "The yaml files containing the modelled system for which to generate the System Design document."),
         AacCommandArgument("output_directory", "The directory to which the System Design document will be written."),
+        AacCommandArgument("template_file", "The name of the template file to use for generating the document."),
     ]
 
     plugin_commands = [
