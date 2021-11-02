@@ -124,4 +124,4 @@ class TemplateOutputFile:
 
     file_name: str = attrib(validator=validators.instance_of(str))
     content: str = attrib(validator=validators.instance_of(str))
-    overwrite: str = attrib(validator=validators.instance_of(bool))
+    overwrite: bool = attrib(validator=validators.instance_of(bool))
