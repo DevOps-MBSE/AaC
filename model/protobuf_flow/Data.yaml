@@ -14,6 +14,8 @@ data:
   - name: msg
     type: string
     protobuf_type: string
+  required:
+  - id_number
 ---
 data:
   name: DataC
