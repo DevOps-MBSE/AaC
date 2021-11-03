@@ -53,13 +53,10 @@ class TestGenPlug(TestCase):
         self.assertEqual(len(generated_template_names), 4)
 
         # Assert that the expected template files were generated
-        generated_plugin_file = f"{plugin_name}.py"
-        generated_plugin_impl_file = f"{plugin_name}_impl.py"
-
         self.assertIn("__init__.py", generated_template_names)
         self.assertIn("setup.py", generated_template_names)
-        self.assertIn(generated_plugin_file, generated_template_names)
-        self.assertIn(generated_plugin_impl_file, generated_template_names)
+        self.assertIn(f"{plugin_name}.py", generated_template_names)
+        self.assertIn(f"{plugin_name}_impl.py", generated_template_names)
 
         # Assert that some expected content is present
         generated_plugin_file_contents = generated_templates.get(PLUGIN_TEMPLATE_NAME).content
