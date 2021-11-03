@@ -27,6 +27,10 @@ If you nest a `data:` field in another `data:` definition, then you do not need 
 ### Enum - ProtobufDataType
 A new enum has been added, `ProtobufDataType`, which provides a new `fields:` attribute `protobuf_type`. This new enum in `fields:` provides typing information to the protobuf 3 generator needed to produce the correct types. If a `protobuf_type` is not provided, then the generator will simply insert the value in `type`. So, if you fail to specify the `protobuf_type` field as `protobuf_type: int64` then it would fallback to the value in `type: number`.
 
+### Enum - ProtobufFieldRepeat
+A new enum has been added, `ProtobufFieldRepeat`, which provides a new `fields:` attribute `protobuf_repeat`. This new enum in `fields:` allows the user to define that the field is repeating. If the enum value `repeated` is not set, or set to `not_repeated`, then the protobuf field will NOT be generated as `repeated`.
+
+
 ### Example Implementation
 Before gen-protobuf plugin:
 ```yaml
@@ -42,7 +46,7 @@ data:
   - name: id_number
     type: number
   - name: code
-    type: string
+    type: string[]
   required:
   - id_number
 ```
@@ -55,6 +59,7 @@ data:
   - name: msg
     type: string
     protobuf_type: string
+    protobuf_repeat: not_repeated
 ---
 data:
   name: DataB
@@ -62,10 +67,11 @@ data:
   - name: id_number
     type: number
     protobuf_type: int64
+    protobuf_repeat: not_repeated
   - name: code
-    type: string
+    type: string[]
     protobuf_type: string
+    protobuf_repeat: repeated
   required:
   - id_number
 ```
-

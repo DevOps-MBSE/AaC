@@ -106,6 +106,7 @@ def _generate_protobuf_template_details_from_data_and_enum_models(data_and_enum_
 
             field_type = field.get("type")
             field_proto_type = field.get("protobuf_type")
+            field_proto_repeat = (field.get("protobuf_repeated") or "not_repeated") == "repeated"
             if field_type in data_and_enum_models:
                 proto_field_type = field_type
 
@@ -117,7 +118,7 @@ def _generate_protobuf_template_details_from_data_and_enum_models(data_and_enum_
             else:
                 proto_field_type = field_proto_type or field_type
 
-            message_fields.append({"name": proto_field_name, "type": proto_field_type, "optional": not (proto_field_name in required_fields)})
+            message_fields.append({"name": proto_field_name, "type": proto_field_type, "optional": not (proto_field_name in required_fields), "repeat": field_proto_repeat})
 
         return get_properties_dict(data_name, "data", fields=message_fields, imports=message_imports)
 

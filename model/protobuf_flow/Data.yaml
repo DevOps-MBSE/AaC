@@ -26,8 +26,9 @@ data:
   - name: metadata
     type: MessageMetadataData
   - name: code
-    type: number
+    type: number[]
     protobuf_type: fixed64
+    protobuf_repeat: repeated
 ---
 data:
   name: DataD

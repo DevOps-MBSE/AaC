@@ -59,6 +59,12 @@ enum:
     - string
     - bytes
 ---
+enum:
+  name: ProtobufFieldRepeat
+  values:
+    - repeated
+    - not_repeated
+---
 ext:
    name: ProtobufTypeField
    type: Field
@@ -66,4 +72,6 @@ ext:
       add:
         - name: protobuf_type
           type: ProtobufDataType
+        - name: protobuf_repeat
+          type: ProtobufFieldRepeat
 """

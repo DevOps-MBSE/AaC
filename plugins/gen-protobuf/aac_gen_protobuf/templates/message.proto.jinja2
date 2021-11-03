@@ -12,7 +12,7 @@ import "{{import_name}}"
 {% if file_type == "data" -%}
 message {{name}} {
   {%- for field in fields %}
-  {%if field.optional%}optional {%endif-%} {{field.type}} {{field.name}} = {{loop.index}};
+  {%if field.repeated%}repeated {%elif field.optional%}optional {%endif-%} {{field.type}} {{field.name}} = {{loop.index}};
   {%- endfor %}
 }
 {%- elif file_type == "enum" -%}
