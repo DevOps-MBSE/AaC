@@ -152,7 +152,7 @@
             "program": "src/aac/__main__.py",
             "args": [
                 "gen-protobuf",
-                "./model/flow/System.yaml",
+                "./model/protobuf_flow/System.yaml",
                 "build/"
             ],
             "console": "integratedTerminal",

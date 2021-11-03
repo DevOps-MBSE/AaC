@@ -24,7 +24,7 @@ def gen_protobuf(architecture_file: str, output_directory: str):
     loaded_templates = load_templates(__package__)
 
     data_messages = _collect_data_messages_from_behavior(parsed_models)
-    message_template_properties = _generate_protobuf_template_details_from_data_message_models(data_messages)
+    message_template_properties = _generate_protobuf_template_details_from_data_and_enum_models(data_messages)
     generated_template_messages = _generate_protobuf_messages(loaded_templates, message_template_properties)
 
     write_generated_templates_to_file(generated_template_messages, output_directory)
@@ -38,16 +38,16 @@ def _collect_data_messages_from_behavior(parsed_models: dict) -> dict[str, dict]
         A dict of data message type keys to data message parsed model values
     """
     def collect_nested_data_types(interface_data_message_types: list[str]):
-        nested_data_types = []
+        nested_types = []
         for message_type in interface_data_message_types:
             data_model = parsed_models[message_type]["data"]
 
             for field in data_model.get("fields"):
                 field_type = field.get("type")
                 if field_type in parsed_models:
-                    nested_data_types.append(field_type)
+                    nested_types.append(field_type)
 
-        return list(set(nested_data_types))
+        return list(set(nested_types))
 
     def collect_behaviors(model_with_behaviors):
         return util.search(model_with_behaviors, ["model", "behavior"])
@@ -68,45 +68,68 @@ def _collect_data_messages_from_behavior(parsed_models: dict) -> dict[str, dict]
     return {data_message_type: parsed_models[data_message_type] for data_message_type in all_data_types_to_generate}
 
 
-def _generate_protobuf_template_details_from_data_message_models(data_message_models: dict) -> list[dict]:
+def _generate_protobuf_template_details_from_data_and_enum_models(data_and_enum_models: dict) -> list[dict]:
     """
     Generates a list of template properties dictionaries for each protobuf file to generate.
     """
 
-    template_properties_list = []
-    for data_message_model in data_message_models.values():
-        message_model_data = data_message_model.get("data")
+    def get_properties_dict(name: str, definition_type: str, enums: list[str] = [], fields: list[dict] = [], imports: list[str] = []):
+        properties = {
+            "name": name,
+            "file_type": definition_type,
+        }
 
-        message_name = message_model_data.get("name")
-        fields = message_model_data.get("fields") or []
-        required = message_model_data.get("required") or []
+        if enums:
+            properties["enums"] = enums
+        if fields:
+            properties["fields"] = fields
+        if imports:
+            properties["imports"] = imports
+
+        return properties
+
+    def get_enum_properties(enum_model):
+        enum_name = enum_model.get("name")
+        enum_values = [enum.upper() for enum in enum_model.get("values")]
+        return get_properties_dict(enum_name, "enum", enums=enum_values)
+
+    def get_data_model_properties(data_model):
+        data_name = data_model.get("name")
+
+        required_fields = data_model.get("required") or []
 
         message_fields = []
         message_imports = []
-        for field in fields:
+        for field in data_model.get("fields"):
             proto_field_name = field.get("name")
             proto_field_type = None
 
             field_type = field.get("type")
             field_proto_type = field.get("protobuf_type")
-            if field_type in data_message_models:
+            if field_type in data_and_enum_models:
                 proto_field_type = field_type
 
                 # This is the last time we have access to the other message, calculate its future protobuf file name here
-                message_to_import = data_message_models.get(field_type).get("data")
-                message_imports.append(_convert_message_name_to_file_name(message_to_import.get("name")))
+                model_to_import = data_and_enum_models.get(field_type)
+                model_to_import = model_to_import.get("data") or model_to_import.get("enum")
+                message_imports.append(_convert_message_name_to_file_name(model_to_import.get("name")))
 
             else:
                 proto_field_type = field_proto_type or field_type
 
-            proto_field_optional = not (proto_field_name in required)
-            message_fields.append({"name": proto_field_name, "type": proto_field_type, "optional": proto_field_optional})
+            message_fields.append({"name": proto_field_name, "type": proto_field_type, "optional": not (proto_field_name in required_fields)})
 
-        template_properties_list.append({
-            "name": message_name,
-            "fields": message_fields,
-            "imports": message_imports
-        })
+        return get_properties_dict(data_name, "data", fields=message_fields, imports=message_imports)
+
+    template_properties_list = []
+    for data_or_enum_message_model in data_and_enum_models.values():
+        data_model = data_or_enum_message_model.get("data")
+        enum_model = data_or_enum_message_model.get("enum")
+
+        if data_model:
+            template_properties_list.append(get_data_model_properties(data_model))
+        elif enum_model:
+            template_properties_list.append(get_enum_properties(enum_model))
 
     return template_properties_list
 

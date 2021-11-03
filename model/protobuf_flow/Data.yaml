@@ -6,6 +6,8 @@ data:
   - name: msg
     type: string
     protobuf_type: string
+  - name: message_type
+    type: MessageType
 ---
 data:
   name: DataB
@@ -44,3 +46,10 @@ data:
     protobuf_type: int64
   required:
   - message_id
+---
+enum:
+  name: MessageType
+  values:
+  - type_1
+  - type_2
+  - type_3

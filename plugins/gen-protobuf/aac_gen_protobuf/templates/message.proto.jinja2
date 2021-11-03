@@ -7,11 +7,18 @@ syntax = "proto3"
 {% if imports -%}
 {% for import_name in imports -%}
 import "{{import_name}}"
-{%- endfor %}
-
+{% endfor %}
 {% endif -%}
+{% if file_type == "data" -%}
 message {{name}} {
   {%- for field in fields %}
   {%if field.optional%}optional {%endif-%} {{field.type}} {{field.name}} = {{loop.index}};
   {%- endfor %}
 }
+{%- elif file_type == "enum" -%}
+enum {{name}} {
+  {%- for enum in enums %}
+  {{enum}} = {{loop.index}};
+  {%- endfor %}
+}
+{%endif-%}
