@@ -48,10 +48,13 @@ def validate_and_get_errors(model: dict) -> list:
         )
         VALIDATOR_CONTEXT.get_all_extended_definitions()
 
-    errors = list(flatten(map(_validate_model, model.values())))
-
-    # Once we're done validating, wipe the context.
-    VALIDATOR_CONTEXT = None
+    try:
+        errors = list(flatten(map(_validate_model, model.values())))
+    except Exception as exception:
+        raise exception
+    finally:
+        # Once we're done validating, wipe the context.
+        VALIDATOR_CONTEXT = None
 
     return errors
 
