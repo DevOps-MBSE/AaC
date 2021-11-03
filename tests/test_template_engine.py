@@ -4,9 +4,15 @@ from unittest import TestCase
 
 from jinja2 import Template
 
-from aac.template_engine import (TemplateOutputFile, generate_template,
-                                 generate_templates, load_default_templates,
-                                 write_generated_templates_to_file)
+from aac.template_engine import (
+    TemplateOutputFile,
+    generate_template_as_string,
+    generate_template,
+    generate_templates,
+    generate_templates_as_strings,
+    load_default_templates,
+    write_generated_templates_to_file,
+)
 
 
 class TestTemplateEngine(TestCase):
@@ -15,15 +21,26 @@ class TestTemplateEngine(TestCase):
         self.assertGreater(len(templates), 0)
 
     def test_generate_template(self):
+        expected_output = TemplateOutputFile("template.py", "my first name is John and my last name is Doe", False)
+
+        template = Template("my first name is {{name.first}} and my last name is {{name.last}}")
+        template.name = "template.py"  # This would have been set by the template loader
+        properties = {"name": {"first": "John", "last": "Doe"}}
+
+        actual_output = generate_template(template, properties)
+
+        self.assertEqual(expected_output, actual_output)
+
+    def test_generate_template_as_string(self):
         expected_string = "my first name is John and my last name is Doe"
         template = Template("my first name is {{name.first}} and my last name is {{name.last}}")
         properties = {"name": {"first": "John", "last": "Doe"}}
 
-        actual_string = generate_template(template, properties)
+        actual_string = generate_template_as_string(template, properties)
 
         self.assertEqual(expected_string, actual_string)
 
-    def test_generate_templates(self):
+    def test_generate_templates_as_strings(self):
         expected_strings = [
             "my first name is John and my last name is Doe",
             "my last name is Doe and my first name is John",
@@ -39,23 +56,30 @@ class TestTemplateEngine(TestCase):
 
         properties = {"name": {"first": "John", "last": "Doe"}}
 
-        actual_strings = generate_templates(templates, properties)
+        actual_strings = generate_templates_as_strings(templates, properties)
 
         self.assertEqual(expected_strings[0], actual_strings.get(templates[0].name))
         self.assertEqual(expected_strings[1], actual_strings.get(templates[1].name))
 
     def test_write_generated_templates_to_file(self):
-        template_name = "myTemplate.test"
-        template_content = "This is the sample content in my template"
-        templates = [TemplateOutputFile(template_name, template_content, True)]
+        test_template_one = TemplateOutputFile("myTemplate.test", "This is the sample content in my template", True)
+        test_template_one.file_name = "temp1"
+
+        test_template_two = TemplateOutputFile("myOtherTemplate.test", "This is the other sample content in my template", True)
+        test_template_two.file_name = "temp2"
+
+        templates = [test_template_one, test_template_two]
 
         with TemporaryDirectory() as temp_directory:
             write_generated_templates_to_file(templates, temp_directory)
             temp_directory_files = os.listdir(temp_directory)
 
-            for template in templates:
-                self.assertEqual(len(templates), len(temp_directory_files))
-                self.assertIn(template.file_name, temp_directory_files)
+            self.assertEqual(len(templates), len(temp_directory_files))
 
-                with open(os.path.join(temp_directory, template.file_name)) as file:
-                    self.assertEqual(template.content, file.read())
+            for i in range(len(templates)):
+                expected_template = templates[i]
+
+                self.assertIn(expected_template.file_name, temp_directory_files)
+
+                with open(os.path.join(temp_directory, expected_template.file_name)) as file:
+                    self.assertEqual(expected_template.content, file.read())

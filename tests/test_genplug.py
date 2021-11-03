@@ -5,6 +5,11 @@ from aac.genplug import (GeneratePluginException, _compile_templates,
                          _convert_template_name_to_file_name)
 
 
+INIT_TEMPLATE_NAME = "__init__.py.jinja2"
+PLUGIN_TEMPLATE_NAME = "plugin.py.jinja2"
+PLUGIN_IMPL_TEMPLATE_NAME = "plugin_impl.py.jinja2"
+SETUP_TEMPLATE_NAME = "setup.py.jinja2"
+
 class TestGenPlug(TestCase):
     def setUp(self):
         util.AAC_MODEL = {}
@@ -12,8 +17,8 @@ class TestGenPlug(TestCase):
 
     def test_convert_template_name_to_file_name(self):
         plugin_name = "aac-test"
-        template_names = ["__init__.py.jinja2", "plugin.py.jinja2", "plugin_impl.py.jinja2"]
-        expected_filenames = ["__init__.py", f"{plugin_name}.py", f"{plugin_name}_impl.py"]
+        template_names = [INIT_TEMPLATE_NAME, PLUGIN_TEMPLATE_NAME, PLUGIN_IMPL_TEMPLATE_NAME, SETUP_TEMPLATE_NAME]
+        expected_filenames = ["__init__.py", f"{plugin_name}.py", f"{plugin_name}_impl.py", "setup.py"]
 
         for i in range(len(template_names)):
             expected_filename = expected_filenames[i]
@@ -26,11 +31,9 @@ class TestGenPlug(TestCase):
 
         generated_templates = _compile_templates(parsed_model)
 
-        generated_templates_dict = {}
-        for generated_template in generated_templates:
-            generated_templates_dict[generated_template.file_name] = generated_template
-
-        generated_template_names = list(generated_templates_dict.keys())
+        generated_template_names = []
+        for template in generated_templates.values():
+            generated_template_names.append(template.file_name)
 
         # Check that the files don't have "-" in the name
         for name in generated_template_names:
@@ -49,14 +52,14 @@ class TestGenPlug(TestCase):
         self.assertIn(generated_plugin_impl_file, generated_template_names)
 
         # Assert that some expected content is present
-        generated_plugin_file_contents = generated_templates_dict.get(generated_plugin_file).content
+        generated_plugin_file_contents = generated_templates.get(PLUGIN_TEMPLATE_NAME).content
         self.assertIn("@aac.hookimpl", generated_plugin_file_contents)
         self.assertIn("gen_protobuf_arguments", generated_plugin_file_contents)
         self.assertIn("import gen_protobuf", generated_plugin_file_contents)
         self.assertIn("architecture_file", generated_plugin_file_contents)
         self.assertIn("output_directory", generated_plugin_file_contents)
 
-        generated_plugin_impl_file_contents = generated_templates_dict.get(generated_plugin_impl_file).content
+        generated_plugin_impl_file_contents = generated_templates.get(PLUGIN_IMPL_TEMPLATE_NAME).content
         self.assertIn("def gen_protobuf", generated_plugin_impl_file_contents)
         self.assertIn("architecture_file", generated_plugin_impl_file_contents)
         self.assertIn("output_directory", generated_plugin_impl_file_contents)
@@ -76,8 +79,8 @@ class TestGenPlug(TestCase):
         generated_templates = _compile_templates(parsed_model)
 
         generated_template_names = []
-        for generated_template in generated_templates:
-            generated_template_names.append(generated_template.file_name)
+        for template in generated_templates.values():
+            generated_template_names.append(template.file_name)
 
         # Check that the files don't have "-" in the name
         for name in generated_template_names:

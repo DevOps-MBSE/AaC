@@ -106,6 +106,15 @@ def _compile_templates(parsed_models: dict[str, dict]) -> list[TemplateOutputFil
         GeneratePluginException: An error encountered during the plugin generation process.
     """
 
+    # Define which templates we want to overwrite.
+    templates_to_overwrite = ["plugin.py.jinja2", "setup.py.jinja2"]
+
+    def set_overwrite_value(template: TemplateOutputFile):
+        template.overwrite = (template.template_name in templates_to_overwrite)
+
+    def set_filename_value(template: TemplateOutputFile):
+        template.file_name = _convert_template_name_to_file_name(template.template_name, plugin_implementation_name)
+
     # ensure model is present and valid, get the plugin name
     plugin_models = util.get_models_by_type(parsed_models, "model")
     if len(plugin_models.keys()) != 1:
@@ -138,18 +147,11 @@ def _compile_templates(parsed_models: dict[str, dict]) -> list[TemplateOutputFil
     template_properties = {"plugin": plugin, "commands": commands, "aac_definitions": plugin_aac_definitions}
     generated_templates = generate_templates(load_default_templates("genplug"), template_properties)
 
-    # Define which templates we want to overwrite.
-    templates_to_overwrite = ["plugin.py.jinja2", "setup.py.jinja2"]
+    for template in generated_templates.values():
+        set_overwrite_value(template)
+        set_filename_value(template)
 
-    # Compile the files to write in to a list.
-    files_to_write = []
-    for template_name, template_content in generated_templates.items():
-        file_name = _convert_template_name_to_file_name(template_name, plugin_implementation_name)
-        overwrite = template_name in templates_to_overwrite
-
-        files_to_write.append(TemplateOutputFile(file_name, template_content, overwrite))
-
-    return files_to_write
+    return generated_templates
 
 
 def _convert_template_name_to_file_name(template_name: str, plugin_name: str) -> str:
