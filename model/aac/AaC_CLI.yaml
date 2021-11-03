@@ -1,10 +1,9 @@
 ---
 model:
   name: aac
-  description: '''
-  AaC is an architecture-as-code command line tool that allows an engineering team to capture representaitons of their
-  system decomposition, system interfaces, system behaviors, and traceability within a configuration managable form.
-  '''
+  description: |
+    AaC is an architecture-as-code command line tool that allows an engineering team to capture representaitons of their
+    system decomposition, system interfaces, system behaviors, and traceability within a configuration managable form.
   components:
     - name: parser
       type: ArchParser
@@ -17,12 +16,11 @@ model:
   behavior:
     - name: validate
       type: command
-      description:  ''' 
-      The validate command reads a yaml file containing an architecture specification and ensures it is properly formed.
-      If the model is properly formed the validate method returns true.
-      If the model is improperly formed the validate method returns false and an error message.
-      '''
-      input: 
+      description: |
+        The validate command reads a yaml file containing an architecture specification and ensures it is properly formed.
+        If the model is properly formed the validate method returns true.
+        If the model is improperly formed the validate method returns false and an error message.
+      input:
         - name: archFile
           type: file
       output:
@@ -39,7 +37,7 @@ model:
             - The {{validate.output.result.errorMsg}} output is empty.
         - scenario: Validate an incorrect architecture.
           tags:
-            - 'off-nominal'
+            - off-nominal
           given:
             - The {{validate.input.archFile}} contains an invalid architecture specification.
           when:
@@ -49,10 +47,9 @@ model:
             - The {{validate.output.result.errorMsg}} output contains details of the error.
     - name: json
       type: command
-      description: '''
-      The json command reads a yaml file containing an architecture specification, validates it using the validate command, 
-      and if valid outputs a corresponding json representation.  If the input yaml is invlid, an error message is provided.
-      '''
+      description: |
+        The json command reads a yaml file containing an architecture specification, validates it using the validate command,
+        and if valid outputs a corresponding json representation.  If the input yaml is invlid, an error message is provided.
       input:
         - name: archFile
           type: file
@@ -77,10 +74,9 @@ model:
             - The application raises an exception.
     - name: puml-component
       type: command
-      description: '''
-      The puml-component command reads a yaml file containing an architecture specification, validates it using the validate command, 
-      and if valid outputs a corresponding PlantUML representation.  If the input yaml is invlid, an exception is thrown.
-      '''
+      description: |
+        The puml-component command reads a yaml file containing an architecture specification, validates it using the validate command,
+        and if valid outputs a corresponding PlantUML representation.  If the input yaml is invlid, an exception is thrown.
       input:
         - name: archFile
           type: file
@@ -105,10 +101,9 @@ model:
             - The application raises an exception.
     - name: puml-sequence
       type: command
-      description: '''
-      The puml-sequence command reads a yaml file containing an use case specification, validates it using the validate command, 
-      and if valid outputs a corresponding PlantUML sequence diagram representation.  If the input yaml is invlid, an exception is thrown.
-      '''
+      description: |
+        The puml-sequence command reads a yaml file containing an use case specification, validates it using the validate command,
+        and if valid outputs a corresponding PlantUML sequence diagram representation.  If the input yaml is invlid, an exception is thrown.
       input:
         - name: archFile
           type: file
@@ -168,12 +163,11 @@ data:
     - name: enum
       type: enum
 ---
-model: 
+model:
   name: ArchParser
-  description: '''
-  The parser reads a YAML file and provides back a model representing the contents of the YAML file.
-  The parser does not inherently perform any validation.
-  '''
+  description: |
+    The parser reads a YAML file and provides back a model representing the contents of the YAML file.
+    The parser does not inherently perform any validation.
   behavior:
     - name: parse
       type: request-response
@@ -283,11 +277,9 @@ ext:
       - name: errCount
         type: int
 ---
-model: 
+model:
   name: ArchValidator
-  description: '''
-  The validator examines a model for correctness of form and content.
-  '''
+  description: The validator examines a model for correctness of form and content.
   behavior:
     - name: validate
       type: request-response
@@ -315,11 +307,9 @@ model:
             - The {{validate.output.result.isValid}} is false.
             - The {{validate.output.result.errorMsg}} contains information about the error.
 ---
-model: 
+model:
   name: JsonConverter
-  description: '''
-  The JsonConverter validates a model using the ArchValidator then converts it to JSON.
-  '''
+  description: The JsonConverter validates a model using the ArchValidator then converts it to JSON.
   behavior:
     - name: convertJson
       type: request-response
@@ -338,11 +328,10 @@ model:
           then:
             - The {{convertJson.output.json}} is not empty.
 ---
-model: 
+model:
   name: PlantUmlGenerator
-  description: '''
-  The PlantUmlGenerator validates a model using the ArchValidator then generated a PlantUML component model.
-  '''
+  description: |
+    The PlantUmlGenerator validates a model using the ArchValidator then generated a PlantUML component model.
   behavior:
     - name: umlComponent
       type: request-response
@@ -359,7 +348,7 @@ model:
           when:
             - The PlantUmlConverter component generator is run.
           then:
-            - The {{umlComponent.output.umlComponentModel}} is not empty.  
+            - The {{umlComponent.output.umlComponentModel}} is not empty.
     - name: umlSequence
       type: request-response
       input:
@@ -375,5 +364,4 @@ model:
           when:
             - The PlantUmlConverter sequence generator is run.
           then:
-            - The {{umlComponent.output.umlSequenceModel}} is not empty.    
-          
+            - The {{umlComponent.output.umlSequenceModel}} is not empty.
