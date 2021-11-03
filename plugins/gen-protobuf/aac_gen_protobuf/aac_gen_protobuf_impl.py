@@ -26,9 +26,9 @@ def gen_protobuf(architecture_file: str, output_directory: str):
 
     loaded_templates = load_templates(__package__)
 
-    data_messages = _collect_data_messages_from_behavior(parsed_models)
+    data_messages_and_enum_definitions = _collect_data_and_enum_definitions(parsed_models)
     message_template_properties = _generate_protobuf_template_details_from_data_and_enum_models(
-        data_messages
+        data_messages_and_enum_definitions
     )
     generated_template_messages = _generate_protobuf_messages(
         loaded_templates, message_template_properties
@@ -38,14 +38,18 @@ def gen_protobuf(architecture_file: str, output_directory: str):
     print(f"Succesfully generated templates to directory: {output_directory}")
 
 
-def _collect_data_messages_from_behavior(parsed_models: dict) -> dict[str, dict]:
+def _collect_data_and_enum_definitions(parsed_models: dict) -> dict[str, dict]:
     """
+    Collects all data and enum definitions that are referenced as interface messages or as a nested type within an interface message.
+
+    Args:
+        parsed_models: A dict containing models parsed from an AaC yaml file.
 
     Returns:
         A dict of data message type keys to data message parsed model values
     """
 
-    def collect_nested_data_types(interface_data_message_types: list[str]):
+    def collect_nested_types(interface_data_message_types: list[str]):
         nested_types = []
         for message_type in interface_data_message_types:
             data_model = parsed_models[message_type]["data"]
@@ -71,13 +75,13 @@ def _collect_data_messages_from_behavior(parsed_models: dict) -> dict[str, dict]
     model_definitions = util.get_models_by_type(parsed_models, "model")
     behaviors = list(flatten(map(collect_behaviors, model_definitions.values())))
     interface_data_message_types = list(set(flatten(map(collect_data_message_types, behaviors))))
-    all_data_types_to_generate = interface_data_message_types + collect_nested_data_types(
+    all_definitions_types_to_generate = interface_data_message_types + collect_nested_types(
         interface_data_message_types
     )
 
     return {
         data_message_type: parsed_models[data_message_type]
-        for data_message_type in all_data_types_to_generate
+        for data_message_type in all_definitions_types_to_generate
     }
 
 
@@ -86,6 +90,12 @@ def _generate_protobuf_template_details_from_data_and_enum_models(
 ) -> list[dict]:
     """
     Generates a list of template properties dictionaries for each protobuf file to generate.
+
+    Args:
+        data_and_enum_models: a dict of models where the key is the model name and the value is the model dict
+
+    Returns:
+        a list of template property dicts
     """
 
     def get_properties_dict(
@@ -131,7 +141,7 @@ def _generate_protobuf_template_details_from_data_and_enum_models(
             if field_type in data_and_enum_models:
                 proto_field_type = field_type
 
-                # This is the last time we have access to the other message, calculate its future protobuf file name here
+                # This is the last time we have access to the other model, calculate its future protobuf file name here
                 model_to_import = data_and_enum_models.get(field_type)
                 model_to_import = model_to_import.get("data") or model_to_import.get("enum")
                 message_imports.append(
@@ -139,13 +149,14 @@ def _generate_protobuf_template_details_from_data_and_enum_models(
                 )
 
             else:
+                # If the referenced type isn't a user-defined type, then set the primitive type prioritizing `protobuf_type` before `type`
                 proto_field_type = field_proto_type or field_type
 
             message_fields.append(
                 {
                     "name": proto_field_name,
                     "type": proto_field_type,
-                    "optional": not (proto_field_name in required_fields),
+                    "optional": proto_field_name not in required_fields,
                     "repeat": field_proto_repeat,
                 }
             )
@@ -168,13 +179,17 @@ def _generate_protobuf_template_details_from_data_and_enum_models(
 
 
 def _generate_protobuf_messages(
-    protobuf_message_templates: list, properties: dict
+    protobuf_message_templates: list, properties: list[dict]
 ) -> list[TemplateOutputFile]:
     """
-    Compiles templates and file information.
+    Compiles templates and with variable properties information.
 
     File and general structure style will follow the google protobuf style which can be found at
         https://developers.google.com/protocol-buffers/docs/style
+
+    Args:
+        protobuf_message_templates: templates to generate against. (Should only be one template)
+        properties: a list of dicts of properties
 
     Returns:
         list of template information dictionaries.
@@ -186,7 +201,7 @@ def _generate_protobuf_messages(
         generated_template.overwrite = True  # Protobuf files shouldn't be modified by the user, and so should always overwrite
         return generated_template
 
-    # This plugin produces only protobuf messages and one message per file due to protobuf specifications
+    # This plugin produces only protobuf messages and one message per file due to protobuf specifications. (it only needs one template)
     protobuf_template = None
     if len(protobuf_message_templates) != 1:
         raise GenerateProtobufException(
@@ -221,6 +236,12 @@ def _convert_message_name_to_file_name(message_name: str) -> str:
 def _convert_camel_case_to_snake_case(camel_case_str: str) -> str:
     """
     Converts a camelCase string to a snake_case string.
+
+    Args:
+        camel_case_str: the camelCase string to convert
+
+    Returns:
+        a snake_case string
     """
     snake_case_str = camel_case_str[:1].lower()
     for char in camel_case_str[1:]:
