@@ -1,0 +1,23 @@
+{% set usecase = u.usecase %}
+### Usecase: {{ usecase.name }}
+
+{%- if 'description' in usecase %}
+
+{{ usecase.description }}
+{%- endif %}
+
+#### Participants
+{% for participant in usecase.participants %}
+- {{ participant.type }} {{ participant.name }}
+{%- endfor %}
+
+#### Steps
+
+{%- for steps in usecase.steps %}
+
+***{{ steps.step }}***
+
+- **Source:** {{ steps.source }}
+- **Target:** {{ steps.target }}
+- **Action:** {{ steps.action }}
+{%- endfor %}

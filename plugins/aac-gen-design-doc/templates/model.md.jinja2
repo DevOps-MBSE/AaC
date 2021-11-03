@@ -1,0 +1,42 @@
+{% set model = m.model %}
+### Model: {{ model.name }}
+
+{%- if 'description' in model %}
+
+{{ model.description }}
+{%- endif %}
+
+#### Components
+{% for component in model.components %}
+- {{ component.type }} {{ component.name }}{%- if component.name in model.required %} (required){%- endif %}
+{%- endfor %}
+
+#### Behavior
+{% for behavior in model.behavior %}
+***{{ behavior.name }}***
+
+{%- if 'description' in behavior %}
+
+{{ behavior.description }}
+{%- endif %}
+
+This is a {{ behavior.type }} type of behavior.
+
+{%- for acceptance in behavior.acceptance %}
+
+**Scenario: {{ acceptance.scenario }}**
+
+*Procedure:*
+{%- if 'given' in acceptance %}
+{%- for given in acceptance.given %}
+1. Given {{ given }}
+{%- endfor %}
+{%- endif %}
+{%- for when in acceptance.when %}
+1. When {{ when }}
+{%- endfor %}
+{%- for then in acceptance.then %}
+1. Then {{ then }}
+{%- endfor %}
+{%- endfor %}
+{%- endfor %}
