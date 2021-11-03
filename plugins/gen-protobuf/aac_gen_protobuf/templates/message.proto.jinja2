@@ -1,5 +1,7 @@
+syntax = "proto3"
+
 message {{name}} {
-    {%- for field in fields %}
-    {{field.type}} {{field.name}} = {{loop.index}};
-    {%- endfor %}
+  {%- for field in fields %}
+  {%if field.optional%}optional {%endif-%} {{field.type}} {{field.name}} = {{loop.index}};
+  {%- endfor %}
 }

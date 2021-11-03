@@ -25,22 +25,10 @@ def gen_protobuf(architecture_file: str, output_directory: str):
 
     data_messages = _collect_data_messages_from_behavior(parsed_models)
     message_template_properties = list(map(_generate_protobuf_details_from_data_message_model, data_messages.values()))
-    generated_messages = _generate_protobuf_messages(loaded_templates, message_template_properties)
+    generated_template_messages = _generate_protobuf_messages(loaded_templates, message_template_properties)
 
-    templates_to_write = _convert_generated_files_dict_to_template_outputs(generated_messages)
-    write_generated_templates_to_file(templates_to_write, output_directory)
+    write_generated_templates_to_file(generated_template_messages, output_directory)
     print(f"Succesfully generated templates to directory: {output_directory}")
-
-
-def _convert_generated_files_dict_to_template_outputs(generated_messages: dict) -> list[TemplateOutputFile]:
-    """
-    This method should go away once the template engine's interface is updated so that it returns generated templates
-        as TemplateOutputFile instead of as strings
-    """
-    def create_template_output(file_info_dict: dict):
-        return TemplateOutputFile(file_info_dict.get("filename"), file_info_dict.get("content"), True)
-
-    return list(map(create_template_output, generated_messages))
 
 
 def _collect_data_messages_from_behavior(parsed_models: dict):
@@ -67,8 +55,11 @@ def _generate_protobuf_details_from_data_message_model(data_message_model) -> di
     """
     Produces a dict of protobuf template properties based on the data message model
     """
-    message_name = data_message_model["data"]["name"]
-    fields = data_message_model["data"]["fields"]
+    message_model_data = data_message_model.get("data")
+
+    message_name = message_model_data.get("name")
+    fields = message_model_data.get("fields") or []
+    required = message_model_data.get("required") or []
 
     message_fields = []
     for field in fields:
@@ -78,7 +69,8 @@ def _generate_protobuf_details_from_data_message_model(data_message_model) -> di
 
         field_name = field.get("name")
         field_type = field.get("protobuf_type") or field.get("type")
-        message_fields.append({"name": field_name, "type": field_type})
+        field_optional = not (field_name in required)
+        message_fields.append({"name": field_name, "type": field_type, "optional": field_optional})
 
     message_properties = {
         "name": message_name,
@@ -98,7 +90,7 @@ def _convert_camel_case_to_snake_case(camel_case_str: str):
     return snake_case_str
 
 
-def _generate_protobuf_messages(protobuf_message_templates, properties) -> list:
+def _generate_protobuf_messages(protobuf_message_templates: list, properties: dict) -> list[TemplateOutputFile]:
     """
     Compiles templates and file information.
 
@@ -109,14 +101,16 @@ def _generate_protobuf_messages(protobuf_message_templates, properties) -> list:
         list of template information dictionaries.
     """
 
-    def convert_message_name_to_file_name(message_name: str):
+    def convert_message_name_to_file_name(message_name: str) -> str:
         new_file_name = f"{message_name}.proto"
         new_file_name = new_file_name.replace("- ", "_")
         new_file_name = _convert_camel_case_to_snake_case(new_file_name)
         return new_file_name
 
-    def generate_protobuf_message_from_template(properties) -> list:
-        return [{"filename": convert_message_name_to_file_name(properties.get("name")), "content": generate_template(protobuf_template, properties)}]
+    def generate_protobuf_message_from_template(properties) -> TemplateOutputFile:
+        generated_template = generate_template(protobuf_template, properties)
+        generated_template.file_name = convert_message_name_to_file_name(properties.get("name"))
+        return generated_template
 
     # This plugin produces only protobuf messages and one message per file due to protobuf specifications
     protobuf_template = None
@@ -126,7 +120,7 @@ def _generate_protobuf_messages(protobuf_message_templates, properties) -> list:
     else:
         protobuf_template = protobuf_message_templates[0]
 
-    return list(flatten(map(generate_protobuf_message_from_template, properties)))
+    return list(map(generate_protobuf_message_from_template, properties))
 
 
 class GenerateProtobufException(Exception):
