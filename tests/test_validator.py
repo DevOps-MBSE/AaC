@@ -300,10 +300,6 @@ class ValidatorTest(TestCase):
         pattern = "missing.*required.*field.*(name|type)"
         assert_model_is_invalid(self, ext(name="", type="", dataExt=kw(add=[kw()])), pattern)
 
-    def test_extension_with_unrecognized_fields_fails_validation(self):
-        pattern = "missing.*required.*field.*(type)"
-        assert_model_is_invalid(self, ext(invalid="item"), pattern)
-
     def test_extension_with_unrecognized_behavior_type_fails_validation(self):
         name = self.MODEL_NAME
         pattern = "unrecognized.*extension.*type.*(invalid)?"
