@@ -1,8 +1,11 @@
 from unittest import TestCase
 
 from aac import parser, util, validator
-from aac.genplug import (GeneratePluginException, _compile_templates,
-                         _convert_template_name_to_file_name)
+from aac.genplug import (
+    GeneratePluginException,
+    _compile_templates,
+    _convert_template_name_to_file_name,
+)
 
 
 INIT_TEMPLATE_NAME = "__init__.py.jinja2"
@@ -10,12 +13,22 @@ PLUGIN_TEMPLATE_NAME = "plugin.py.jinja2"
 PLUGIN_IMPL_TEMPLATE_NAME = "plugin_impl.py.jinja2"
 SETUP_TEMPLATE_NAME = "setup.py.jinja2"
 
-class TestGenPlug(TestCase):
 
+class TestGenPlug(TestCase):
     def test_convert_template_name_to_file_name(self):
         plugin_name = "aac-test"
-        template_names = [INIT_TEMPLATE_NAME, PLUGIN_TEMPLATE_NAME, PLUGIN_IMPL_TEMPLATE_NAME, SETUP_TEMPLATE_NAME]
-        expected_filenames = ["__init__.py", f"{plugin_name}.py", f"{plugin_name}_impl.py", "setup.py"]
+        template_names = [
+            INIT_TEMPLATE_NAME,
+            PLUGIN_TEMPLATE_NAME,
+            PLUGIN_IMPL_TEMPLATE_NAME,
+            SETUP_TEMPLATE_NAME,
+        ]
+        expected_filenames = [
+            "__init__.py",
+            f"{plugin_name}.py",
+            f"{plugin_name}_impl.py",
+            "setup.py",
+        ]
 
         for i in range(len(template_names)):
             expected_filename = expected_filenames[i]
@@ -56,7 +69,9 @@ class TestGenPlug(TestCase):
         self.assertIn("architecture_file", generated_plugin_file_contents)
         self.assertIn("output_directory", generated_plugin_file_contents)
 
-        generated_plugin_impl_file_contents = generated_templates.get(PLUGIN_IMPL_TEMPLATE_NAME).content
+        generated_plugin_impl_file_contents = generated_templates.get(
+            PLUGIN_IMPL_TEMPLATE_NAME
+        ).content
         self.assertIn("def gen_protobuf", generated_plugin_impl_file_contents)
         self.assertIn("architecture_file", generated_plugin_impl_file_contents)
         self.assertIn("output_directory", generated_plugin_impl_file_contents)
