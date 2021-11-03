@@ -106,7 +106,7 @@ def _generate_protobuf_template_details_from_data_and_enum_models(data_and_enum_
 
             field_type = field.get("type")
             field_proto_type = field.get("protobuf_type")
-            field_proto_repeat = (field.get("protobuf_repeated") or "not_repeated") == "repeated"
+            field_proto_repeat = (field.get("protobuf_repeat") or "not_repeated") == "repeated"
             if field_type in data_and_enum_models:
                 proto_field_type = field_type
 

@@ -19,7 +19,7 @@ class TestGenerateProtobufPlugin(TestCase):
 
     def test__generate_protobuf_details_from_data_message_model_wth_repeated_fields(self):
         expected_result = {"name": "DataA", "file_type": "data", "fields": [{"name": "msg", "type": "int64", "optional": True, "repeat": True}]}
-        test_model = {"DataA": {"data": {"name": "DataA", "fields": [{"name": "msg", "type": "number", "protobuf_type": "int64", "protobuf_repeated": "repeated"}]}}}
+        test_model = {"DataA": {"data": {"name": "DataA", "fields": [{"name": "msg", "type": "number", "protobuf_type": "int64", "protobuf_repeat": "repeated"}]}}}
 
         actual_result = _generate_protobuf_template_details_from_data_and_enum_models(test_model)
         self.assertDictEqual(expected_result, actual_result[0])
