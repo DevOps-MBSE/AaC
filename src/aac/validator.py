@@ -46,7 +46,6 @@ def validate_and_get_errors(model: dict) -> list:
         VALIDATOR_CONTEXT = ValidatorContext(
             aac_enum | aac_data, {}, plugins.get_plugin_model_definitions(), model
         )
-        VALIDATOR_CONTEXT.get_all_extended_definitions()
 
     try:
         errors = list(flatten(map(_validate_model, model.values())))
@@ -61,8 +60,8 @@ def validate_and_get_errors(model: dict) -> list:
 
 def _validate_model(model: dict) -> list:
     """Validate a model by checking that it meets the requirements to be considered valid, and return any errors if it's invalid."""
-    actual_model = dict(list(model.values())[0])
-    name = actual_model["name"] if "name" in actual_model else ""
+    actual_model = list(model.values())[0]
+    name = actual_model.get("name") or ""
     errors = (
         _get_all_parsing_errors(model)
         + _get_all_enum_errors(model)

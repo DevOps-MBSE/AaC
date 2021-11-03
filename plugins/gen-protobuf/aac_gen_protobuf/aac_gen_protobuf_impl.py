@@ -19,8 +19,8 @@ def gen_protobuf(architecture_file: str, output_directory: str):
     Generate protobuf messages from Arch-as-Code models.
 
     Args:
-        architecture_file <str>: The yaml file containing the data models to generate as Protobuf messages.
-        output_directory <str>: The directory to write the generated Protobuf messages to.
+        architecture_file (str): The yaml file containing the data models to generate as Protobuf messages.
+        output_directory (str): The directory to write the generated Protobuf messages to.
     """
     parsed_models = parser.parse_file(architecture_file)
 
@@ -35,7 +35,7 @@ def gen_protobuf(architecture_file: str, output_directory: str):
     )
 
     write_generated_templates_to_file(generated_template_messages, output_directory)
-    print(f"Succesfully generated templates to directory: {output_directory}")
+    print(f"Successfully generated templates to directory: {output_directory}")
 
 
 def _collect_data_and_enum_definitions(parsed_models: dict) -> dict[str, dict]:
