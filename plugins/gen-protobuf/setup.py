@@ -4,6 +4,9 @@
 from aac_gen_protobuf.aac_gen_protobuf_impl import plugin_version
 from setuptools import setup
 
+with open("README.md", "r") as fh:
+    readme_description = fh.read()
+
 runtime_dependencies = [
     "Jinja2 >= 3.0",
 ]
