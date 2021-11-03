@@ -19,8 +19,8 @@ def gen_protobuf(architecture_file: str, output_directory: str):
     Generate protobuf messages from Arch-as-Code models.
 
     Args:
-        architecture_file <str>: TODO add a helpful parameter description
-        output_directory <str>: TODO add a helpful parameter description
+        architecture_file <str>: The yaml file containing the data models to generate as Protobuf messages.
+        output_directory <str>: The directory to write the generated Protobuf messages to.
     """
     parsed_models = parser.parse_file(architecture_file)
 
