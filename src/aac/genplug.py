@@ -10,9 +10,12 @@ import yaml
 
 from aac import hookimpl, parser, util
 from aac.AacCommand import AacCommand, AacCommandArgument
-from aac.template_engine import (TemplateOutputFile, generate_templates,
-                                 load_default_templates,
-                                 write_generated_templates_to_file)
+from aac.template_engine import (
+    TemplateOutputFile,
+    generate_templates,
+    load_default_templates,
+    write_generated_templates_to_file,
+)
 
 
 @hookimpl
@@ -110,10 +113,12 @@ def _compile_templates(parsed_models: dict[str, dict]) -> list[TemplateOutputFil
     templates_to_overwrite = ["plugin.py.jinja2", "setup.py.jinja2"]
 
     def set_overwrite_value(template: TemplateOutputFile):
-        template.overwrite = (template.template_name in templates_to_overwrite)
+        template.overwrite = template.template_name in templates_to_overwrite
 
     def set_filename_value(template: TemplateOutputFile):
-        template.file_name = _convert_template_name_to_file_name(template.template_name, plugin_implementation_name)
+        template.file_name = _convert_template_name_to_file_name(
+            template.template_name, plugin_implementation_name
+        )
 
     # ensure model is present and valid, get the plugin name
     plugin_models = util.get_models_by_type(parsed_models, "model")
@@ -141,11 +146,18 @@ def _compile_templates(parsed_models: dict[str, dict]) -> list[TemplateOutputFil
     }
 
     plugin_aac_definitions = [
-        _add_definitions_yaml_string(definition) for definition in _gather_plugin_aac_definitions(parsed_models)
+        _add_definitions_yaml_string(definition)
+        for definition in _gather_plugin_aac_definitions(parsed_models)
     ]
 
-    template_properties = {"plugin": plugin, "commands": commands, "aac_definitions": plugin_aac_definitions}
-    generated_templates = generate_templates(load_default_templates("genplug"), template_properties)
+    template_properties = {
+        "plugin": plugin,
+        "commands": commands,
+        "aac_definitions": plugin_aac_definitions,
+    }
+    generated_templates = generate_templates(
+        load_default_templates("genplug"), template_properties
+    )
 
     for template in generated_templates.values():
         set_overwrite_value(template)
@@ -198,7 +210,9 @@ def _is_user_desired_output_directory(architecture_file: str, output_dir: str) -
         )
 
     if confirmation in ["n", "N"]:
-        print(f"Canceled: Please move {architecture_file} to the desired directory and rerun the command.")
+        print(
+            f"Canceled: Please move {architecture_file} to the desired directory and rerun the command."
+        )
 
     return confirmation in ["y", "Y"]
 

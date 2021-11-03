@@ -4,9 +4,12 @@
 from iteration_utilities import flatten
 
 from aac import parser, util
-from aac.template_engine import (TemplateOutputFile, generate_template,
-                                 load_templates,
-                                 write_generated_templates_to_file)
+from aac.template_engine import (
+    TemplateOutputFile,
+    generate_template,
+    load_templates,
+    write_generated_templates_to_file,
+)
 
 plugin_version = "0.0.1"
 
@@ -24,8 +27,12 @@ def gen_protobuf(architecture_file: str, output_directory: str):
     loaded_templates = load_templates(__package__)
 
     data_messages = _collect_data_messages_from_behavior(parsed_models)
-    message_template_properties = _generate_protobuf_template_details_from_data_and_enum_models(data_messages)
-    generated_template_messages = _generate_protobuf_messages(loaded_templates, message_template_properties)
+    message_template_properties = _generate_protobuf_template_details_from_data_and_enum_models(
+        data_messages
+    )
+    generated_template_messages = _generate_protobuf_messages(
+        loaded_templates, message_template_properties
+    )
 
     write_generated_templates_to_file(generated_template_messages, output_directory)
     print(f"Succesfully generated templates to directory: {output_directory}")
@@ -37,6 +44,7 @@ def _collect_data_messages_from_behavior(parsed_models: dict) -> dict[str, dict]
     Returns:
         A dict of data message type keys to data message parsed model values
     """
+
     def collect_nested_data_types(interface_data_message_types: list[str]):
         nested_types = []
         for message_type in interface_data_message_types:
@@ -63,17 +71,30 @@ def _collect_data_messages_from_behavior(parsed_models: dict) -> dict[str, dict]
     model_definitions = util.get_models_by_type(parsed_models, "model")
     behaviors = list(flatten(map(collect_behaviors, model_definitions.values())))
     interface_data_message_types = list(set(flatten(map(collect_data_message_types, behaviors))))
-    all_data_types_to_generate = interface_data_message_types + collect_nested_data_types(interface_data_message_types)
+    all_data_types_to_generate = interface_data_message_types + collect_nested_data_types(
+        interface_data_message_types
+    )
 
-    return {data_message_type: parsed_models[data_message_type] for data_message_type in all_data_types_to_generate}
+    return {
+        data_message_type: parsed_models[data_message_type]
+        for data_message_type in all_data_types_to_generate
+    }
 
 
-def _generate_protobuf_template_details_from_data_and_enum_models(data_and_enum_models: dict) -> list[dict]:
+def _generate_protobuf_template_details_from_data_and_enum_models(
+    data_and_enum_models: dict,
+) -> list[dict]:
     """
     Generates a list of template properties dictionaries for each protobuf file to generate.
     """
 
-    def get_properties_dict(name: str, definition_type: str, enums: list[str] = [], fields: list[dict] = [], imports: list[str] = []):
+    def get_properties_dict(
+        name: str,
+        definition_type: str,
+        enums: list[str] = [],
+        fields: list[dict] = [],
+        imports: list[str] = [],
+    ):
         properties = {
             "name": name,
             "file_type": definition_type,
@@ -106,21 +127,32 @@ def _generate_protobuf_template_details_from_data_and_enum_models(data_and_enum_
 
             field_type = field.get("type")
             field_proto_type = field.get("protobuf_type")
-            field_proto_repeat = ("[]" in field_type)
+            field_proto_repeat = "[]" in field_type
             if field_type in data_and_enum_models:
                 proto_field_type = field_type
 
                 # This is the last time we have access to the other message, calculate its future protobuf file name here
                 model_to_import = data_and_enum_models.get(field_type)
                 model_to_import = model_to_import.get("data") or model_to_import.get("enum")
-                message_imports.append(_convert_message_name_to_file_name(model_to_import.get("name")))
+                message_imports.append(
+                    _convert_message_name_to_file_name(model_to_import.get("name"))
+                )
 
             else:
                 proto_field_type = field_proto_type or field_type
 
-            message_fields.append({"name": proto_field_name, "type": proto_field_type, "optional": not (proto_field_name in required_fields), "repeat": field_proto_repeat})
+            message_fields.append(
+                {
+                    "name": proto_field_name,
+                    "type": proto_field_type,
+                    "optional": not (proto_field_name in required_fields),
+                    "repeat": field_proto_repeat,
+                }
+            )
 
-        return get_properties_dict(data_name, "data", fields=message_fields, imports=message_imports)
+        return get_properties_dict(
+            data_name, "data", fields=message_fields, imports=message_imports
+        )
 
     template_properties_list = []
     for data_or_enum_message_model in data_and_enum_models.values():
@@ -135,7 +167,9 @@ def _generate_protobuf_template_details_from_data_and_enum_models(data_and_enum_
     return template_properties_list
 
 
-def _generate_protobuf_messages(protobuf_message_templates: list, properties: dict) -> list[TemplateOutputFile]:
+def _generate_protobuf_messages(
+    protobuf_message_templates: list, properties: dict
+) -> list[TemplateOutputFile]:
     """
     Compiles templates and file information.
 
@@ -155,8 +189,10 @@ def _generate_protobuf_messages(protobuf_message_templates: list, properties: di
     # This plugin produces only protobuf messages and one message per file due to protobuf specifications
     protobuf_template = None
     if len(protobuf_message_templates) != 1:
-        raise GenerateProtobufException(f"Unexpected number of templates loaded {len(protobuf_message_templates)}, \
-                    expecting only protobuf message template. Loaded templates: {protobuf_message_templates}")
+        raise GenerateProtobufException(
+            f"Unexpected number of templates loaded {len(protobuf_message_templates)}, \
+                    expecting only protobuf message template. Loaded templates: {protobuf_message_templates}"
+        )
     else:
         protobuf_template = protobuf_message_templates[0]
 
