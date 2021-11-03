@@ -12,7 +12,8 @@ def load_templates(package_name: str, template_directory: str = "templates") -> 
     Load templates from a `templates` directory within a package.
 
     Args:
-        group_dir_name: name of the templates sub-directory to load templates from.
+        group_dir_name: name of the templates sub-directory to load templates from
+        template_directory: the directory within the package containing the templates. Defaults to 'templates'
 
     Returns:
         list of loaded templates
