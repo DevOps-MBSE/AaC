@@ -7,7 +7,7 @@ from attr import attrib, attrs, validators
 from jinja2 import Environment, PackageLoader, Template
 
 
-def load_templates(package_name: str) -> list[Template]:
+def load_templates(package_name: str, template_directory: str = "templates") -> list[Template]:
     """
     Load templates from a `templates` directory within a package.
 
@@ -18,8 +18,11 @@ def load_templates(package_name: str) -> list[Template]:
         list of loaded templates
     """
 
+    def _load_templates_from_env(env) -> list:
+        return list(map(env.get_template, env.list_templates()))
+
     env = Environment(
-        loader=PackageLoader(package_name, "templates"),
+        loader=PackageLoader(package_name, template_directory),
         autoescape=True,
     )
 
@@ -37,16 +40,7 @@ def load_default_templates(group_dir_name: str) -> list[Template]:
         list of loaded templates
     """
 
-    env = Environment(
-        loader=PackageLoader("aac", f"templates/{group_dir_name}"),
-        autoescape=True,
-    )
-
-    return _load_templates_from_env(env)
-
-
-def _load_templates_from_env(env) -> list:
-    return list(map(env.get_template, env.list_templates()))
+    return load_templates(__package__, f"templates/{group_dir_name}")
 
 
 def generate_templates(templates: list[Template], properties: dict[str, str]) -> dict[str, TemplateOutputFile]:
