@@ -59,7 +59,6 @@ data:
   - name: msg
     type: string
     protobuf_type: string
-    protobuf_repeat: not_repeated
 ---
 data:
   name: DataB
@@ -67,11 +66,9 @@ data:
   - name: id_number
     type: number
     protobuf_type: int64
-    protobuf_repeat: not_repeated
   - name: code
     type: string[]
     protobuf_type: string
-    protobuf_repeat: repeated
   required:
   - id_number
 ```
