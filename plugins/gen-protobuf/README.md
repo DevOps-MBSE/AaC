@@ -20,10 +20,12 @@ Command arguments:
 ## Plugin Extensions & Definitions
 In order to use this plugin, you'll have to extend your models to provide necessary contextual information for the protobuf generator.
 
+Protobuf messages will only be generated for `data:` definitions that are referenced in `model:behavior:` fields: `input:` and `output:`.
+
+If you nest a `data:` field in another `data:` definition, then you do not need to set the `protobuf_type` attribute for the field since it will be ignored and a protobuf message will be generated for the nested data type and included into the generated protobuf messages.
+
 ### Enum - ProtobufDataType
 A new enum has been added, `ProtobufDataType`, which provides a new `fields:` attribute `protobuf_type`. This new enum in `fields:` provides typing information to the protobuf 3 generator needed to produce the correct types. If a `protobuf_type` is not provided, then the generator will simply insert the value in `type`. So, if you fail to specify the `protobuf_type` field as `protobuf_type: int64` then it would fallback to the value in `type: number`.
-
-Protobuf messages will only be generated for `data:` definitions that are referenced in `model:behavior:` fields: `input:` and `output:`.
 
 ### Example Implementation
 Before gen-protobuf plugin:
@@ -66,3 +68,4 @@ data:
   required:
   - id_number
 ```
+

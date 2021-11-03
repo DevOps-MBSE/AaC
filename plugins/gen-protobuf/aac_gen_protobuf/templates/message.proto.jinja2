@@ -4,6 +4,12 @@
 
 syntax = "proto3"
 
+{% if imports -%}
+{% for import_name in imports -%}
+import "{{import_name}}"
+{%- endfor %}
+
+{% endif -%}
 message {{name}} {
   {%- for field in fields %}
   {%if field.optional%}optional {%endif-%} {{field.type}} {{field.name}} = {{loop.index}};

@@ -1,6 +1,8 @@
 data:
   name: DataA
   fields:
+  - name: metadata
+    type: MessageMetadataData
   - name: msg
     type: string
     protobuf_type: string
@@ -8,25 +10,37 @@ data:
 data:
   name: DataB
   fields:
-  - name: id_number
-    type: number
-    protobuf_type: int64
-  - name: msg
+  - name: metadata
+    type: MessageMetadataData
+  - name: transformed_msg
     type: string
     protobuf_type: string
   required:
-  - id_number
+  - transformed_msg
 ---
 data:
   name: DataC
   fields:
-  - name: msg
+  - name: metadata
+    type: MessageMetadataData
+  - name: code
     type: number
     protobuf_type: fixed64
 ---
 data:
   name: DataD
   fields:
+  - name: metadata
+    type: MessageMetadataData
   - name: msg
     type: string
     protobuf_type: string
+---
+data:
+  name: MessageMetadataData
+  fields:
+  - name: message_id
+    type: number
+    protobuf_type: int64
+  required:
+  - message_id
