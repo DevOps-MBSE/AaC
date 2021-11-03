@@ -450,13 +450,13 @@ def _get_all_extension_errors(model: dict) -> list:
     return []
 
 
-def _load_aac_fields_for(kind: str, data: dict) -> list:
+def _load_aac_fields_from_models(model_type: str, models: dict) -> list:
     """Get the AaC fields and their properties for the specified KIND of item."""
-    values = data[kind]["data"]
-    fields = values["fields"]
+    data_model = models[model_type]["data"]
+    fields = data_model["fields"]
 
     def is_required_field(field):
-        return "required" in values and field["name"] in values["required"]
+        return "required" in data_model and field["name"] in data_model["required"]
 
     def add_required_value_to_field(field):
         return field | {"required": is_required_field(field)}
@@ -464,16 +464,16 @@ def _load_aac_fields_for(kind: str, data: dict) -> list:
     return list(map(add_required_value_to_field, fields))
 
 
-def _load_extended_aac_fields_for(kind: str) -> list:
+def _load_extended_aac_fields_for(model_type: str) -> list:
     """Get the AaC fields and their properties for the specified KIND of item."""
-    data = VALIDATOR_CONTEXT.get_all_extended_definitions()
-    return _load_aac_fields_for(kind, data)
+    models = VALIDATOR_CONTEXT.get_all_extended_definitions()
+    return _load_aac_fields_from_models(model_type, models)
 
 
-def _load_unextended_aac_fields_for(kind: str) -> list:
+def _load_unextended_aac_fields_for(model_type: str) -> list:
     """Get the AaC fields and their properties for the specified KIND of item."""
-    data = VALIDATOR_CONTEXT.get_all_unextended_definitions()
-    return _load_aac_fields_for(kind, data)
+    models = VALIDATOR_CONTEXT.get_all_unextended_definitions()
+    return _load_aac_fields_from_models(model_type, models)
 
 
 @attrs(slots=True, auto_attribs=True)
