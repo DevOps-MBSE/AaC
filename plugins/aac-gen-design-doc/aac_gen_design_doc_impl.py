@@ -27,7 +27,9 @@ def gen_design_doc(template_file: str, architecture_files: str, output_directory
     template_properties = _make_template_properties(parsed_models, first_arch_file)
 
     template_file_name = os.path.basename(template_file)
-    output_filespec = _get_document_title(template_file)
+    output_filespec = _get_output_filespec(
+        first_arch_file, _get_output_file_extension(template_file_name)
+    )
 
     _create_directory_if_does_not_exist(output_directory)
 
@@ -61,8 +63,17 @@ def _make_template_properties(parsed_models: dict, arch_file: str) -> dict:
 
 
 def _get_document_title(arch_file: str) -> str:
-    filespec, *ext = os.path.splitext(arch_file)
+    filespec, _ = os.path.splitext(arch_file)
     return os.path.basename(filespec)
+
+
+def _get_output_filespec(filespec: str, ext: str) -> str:
+    return f"{_get_document_title(filespec)}_system_design_document{ext}"
+
+
+def _get_output_file_extension(template_filespec: str) -> str:
+    _, extension = os.path.splitext(template_filespec.replace(".jinja2", ""))
+    return extension
 
 
 def _get_from_parsed_models(parsed_models: dict, aac_type: str) -> list:
