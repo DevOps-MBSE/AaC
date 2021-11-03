@@ -110,6 +110,7 @@ def _generate_protobuf_messages(protobuf_message_templates: list, properties: di
     def generate_protobuf_message_from_template(properties) -> TemplateOutputFile:
         generated_template = generate_template(protobuf_template, properties)
         generated_template.file_name = convert_message_name_to_file_name(properties.get("name"))
+        generated_template.overwrite = True  # Protobuf files shouldn't be modified by the user, and so should always overwrite
         return generated_template
 
     # This plugin produces only protobuf messages and one message per file due to protobuf specifications
