@@ -86,10 +86,6 @@ class ValidatorTest(TestCase):
         kw(name="gamma", type="pub-sub", acceptance=MODEL_ACCEPTANCE),
     ]
 
-    def setUp(self):
-        util.AAC_MODEL = {}
-        validator.VALIDATOR_CONTEXT = None
-
     def test_is_valid(self):
         self.assertTrue(is_valid(data(name="test", fields=[kw(name="a", type="int")])))
         self.assertFalse(is_valid(data()))
@@ -325,9 +321,6 @@ class ValidatorTest(TestCase):
 
 
 class ValidatorFunctionalTest(TestCase):
-    def setUp(self):
-        util.AAC_MODEL = {}
-        validator.VALIDATOR_CONTEXT = None
 
     def test_validates_parsed_yaml_models(self):
         model = parse_str(TEST_MODEL_WITH_EXTENSIONS, "validation-test")

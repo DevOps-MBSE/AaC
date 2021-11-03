@@ -11,9 +11,6 @@ PLUGIN_IMPL_TEMPLATE_NAME = "plugin_impl.py.jinja2"
 SETUP_TEMPLATE_NAME = "setup.py.jinja2"
 
 class TestGenPlug(TestCase):
-    def setUp(self):
-        util.AAC_MODEL = {}
-        validator.DEFINED_TYPES = []
 
     def test_convert_template_name_to_file_name(self):
         plugin_name = "aac-test"
