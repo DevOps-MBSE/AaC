@@ -5,14 +5,40 @@ import sys
 from functools import partial
 
 from iteration_utilities import flatten
-from markdown_generator import MarkdownDesignDocumentGenerator
+from jinja2 import Environment, FileSystemLoader
 
 from aac import parser, util
 
 plugin_version = "0.0.1"
 
 
-# TODO: Once we can get lists, fix type hint and docstring type for architecture_files.
+def __load_templates() -> list:
+    """TEMPORARY: Load all plugin templates.
+
+    TODO: Remove once Alex's template engine changes are in.
+    """
+    env = Environment(
+        loader=FileSystemLoader(f"{os.path.dirname(__file__)}/templates/"),
+        autoescape=True,
+    )
+    return [env.get_template(name) for name in env.list_templates()]
+
+
+def __generate_templates(templates: list, properties: dict) -> dict:
+    """TEMPORARY: Generate all plugin templates.
+
+    TODO: Remove once Alex's template engine changes are in.
+    """
+    generated_templates = {}
+
+    def generate_template(template, properties):
+        name = template.name.replace(".jinja2", "")
+        generated_templates[name] = template.render(properties)
+
+    [generate_template(template, properties) for template in templates]
+    return generated_templates
+
+
 def gen_design_doc(architecture_files: str, output_directory: str, template_file: str):
     """
     Generate a System Design Document from Architecture-as-Code models.
@@ -49,11 +75,10 @@ def gen_design_doc(architecture_files: str, output_directory: str, template_file
     }
 
     _maybe_create_directory(output_directory)
-
-    generator = MarkdownDesignDocumentGenerator()
-    x = generator.generate_templates(generator.load_templates(), template_properties)
     write = partial(_write_content, output_directory)
-    [write(filespec, content) for filespec, content in x.items()]
+
+    templates = __generate_templates(__load_templates(), template_properties)
+    [write(filespec, content) for filespec, content in templates.items()]
 
 
 # TODO: We really need this try/except code in a separate function
