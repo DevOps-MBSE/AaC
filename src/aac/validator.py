@@ -411,13 +411,9 @@ def _get_all_extension_errors(model: dict) -> list:
             return []
 
     def is_valid_extension_type(extension):
-        expected_types = ["dataExt", "enumExt"]
-        is_an_expected_type = False
-        for expected_type in expected_types:
-            if expected_type in extension["ext"]:
-                is_an_expected_type = True
+        extension_model = extension["ext"]
 
-        if not is_an_expected_type:
+        if not (extension_model.get("dataExt") or extension_model.get("enumExt")):
             return [f"unrecognized extension type {extension}"]
 
         return []
