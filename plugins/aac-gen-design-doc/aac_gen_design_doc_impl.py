@@ -12,80 +12,35 @@ from aac import parser, util
 plugin_version = "0.0.1"
 
 
-def __load_templates() -> list:
-    """TEMPORARY: Load all plugin templates.
-
-    TODO: Remove once Alex's template engine changes are in.
-    """
-    env = Environment(
-        loader=FileSystemLoader(f"{os.path.dirname(__file__)}/templates/"),
-        autoescape=True,
-    )
-    return [env.get_template(name) for name in env.list_templates()]
-
-
-def __generate_templates(templates: list, properties: dict) -> dict:
-    """TEMPORARY: Generate all plugin templates.
-
-    TODO: Remove once Alex's template engine changes are in.
-    """
-    generated_templates = {}
-
-    def generate_template(template, properties):
-        name = template.name.replace(".jinja2", "")
-        generated_templates[name] = template.render(properties)
-
-    [generate_template(template, properties) for template in templates]
-    return generated_templates
-
-
-def gen_design_doc(architecture_files: str, output_directory: str, template_file: str):
+def gen_design_doc(template_file: str, architecture_files: str, output_directory: str):
     """
     Generate a System Design Document from Architecture-as-Code models.
 
     Args:
+        `template_file` <str>: The name of the template file to use for generating the document.
         `architecture_files` <str>: A comma-separated list of yaml file(s) containing the modeled
                                       system for which to generate the System Design document.
         `output_directory` <str>: The directory to which the System Design document will be written.
-        `template_file` <str>: The name of the template file to use for generating the document.
     """
     first_arch_file, *other_arch_files = architecture_files.split(",")
     parsed_models = _get_parsed_models([first_arch_file] + other_arch_files)
+    template_properties = _make_template_properties(parsed_models, first_arch_file)
 
-    template_properties = {
-        "doc_title": ".".join(os.path.basename(first_arch_file).split(".")[:-1]),
-        "models": list(
-            flatten(
-                [m.values() for m in [util.get_models_by_type(m, "model") for m in parsed_models]]
-            )
-        ),
-        "usecases": list(
-            flatten(
-                [
-                    m.values()
-                    for m in [util.get_models_by_type(m, "usecase") for m in parsed_models]
-                ]
-            )
-        ),
-        "interfaces": list(
-            flatten(
-                [m.values() for m in [util.get_models_by_type(m, "data") for m in parsed_models]]
-            )
-        ),
-    }
+    template_file_name = os.path.basename(template_file)
+    output_filespec = _get_document_title(template_file)
 
-    _maybe_create_directory(output_directory)
-    write = partial(_write_content, output_directory)
+    _create_directory_if_does_not_exist(output_directory)
 
-    templates = __generate_templates(__load_templates(), template_properties)
-    [write(filespec, content) for filespec, content in templates.items()]
+    template = __generate_templates([template_file], template_properties)[template_file_name]
+    _write_content(output_directory, output_filespec, template)
+
+    print(f"Wrote system design document to {os.path.join(output_directory, output_filespec)}")
 
 
 # TODO: We really need this try/except code in a separate function
 def _get_parsed_models(architecture_files: list) -> list:
-    models = None
     try:
-        models = list(map(parser.parse_file, architecture_files))
+        return list(map(parser.parse_file, architecture_files))
     except RuntimeError as re:
         model_file, errors = re.args
         errors = "\n  ".join(errors)
@@ -95,10 +50,27 @@ def _get_parsed_models(architecture_files: list) -> list:
 
         sys.exit("validation error")
 
-    return models
+
+def _make_template_properties(parsed_models: dict, arch_file: str) -> dict:
+    return {
+        "doc_title": _get_document_title(arch_file),
+        "models": _get_from_parsed_models(parsed_models, "model"),
+        "usecases": _get_from_parsed_models(parsed_models, "usecase"),
+        "interfaces": _get_from_parsed_models(parsed_models, "data"),
+    }
 
 
-def _maybe_create_directory(output_directory: str) -> None:
+def _get_document_title(arch_file: str) -> str:
+    filespec, *ext = os.path.splitext(arch_file)
+    return os.path.basename(filespec)
+
+
+def _get_from_parsed_models(parsed_models: dict, aac_type: str) -> list:
+    aac_types = [util.get_models_by_type(m, aac_type) for m in parsed_models]
+    return list(flatten([m.values() for m in aac_types]))
+
+
+def _create_directory_if_does_not_exist(output_directory: str) -> None:
     if not os.path.exists(output_directory):
         os.mkdir(output_directory)
 
@@ -106,3 +78,21 @@ def _maybe_create_directory(output_directory: str) -> None:
 def _write_content(output_directory: str, filespec: str, content: str):
     with open(os.path.join(output_directory, filespec), "w") as f:
         f.write(content)
+
+
+def __generate_templates(templates: list, properties: dict) -> dict:
+    """TEMPORARY: Generate all plugin templates.
+
+    TODO: Remove once Alex's template engine changes are in.
+    """
+    env = Environment(
+        loader=FileSystemLoader(f"{os.path.dirname(__file__)}/templates"),
+        autoescape=True,
+    )
+
+    generated_templates = {}
+
+    for template in [env.get_template(template) for template in env.list_templates()]:
+        generated_templates[template.name] = template.render(properties)
+
+    return generated_templates
