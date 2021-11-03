@@ -1,3 +1,4 @@
+{%- for m in models %}
 {% set model = m.model %}
 ### Model: {{ model.name }}
 
@@ -22,13 +23,13 @@
 
 This is a {{ behavior.type }} type of behavior.
 
-{%- for acceptance in behavior.acceptance %}
+{% for acceptance in behavior.acceptance %}
 
 **Scenario: {{ acceptance.scenario }}**
 
 *Procedure:*
 {%- if 'given' in acceptance %}
-{%- for given in acceptance.given %}
+{% for given in acceptance.given %}
 1. Given {{ given }}
 {%- endfor %}
 {%- endif %}
@@ -38,5 +39,7 @@ This is a {{ behavior.type }} type of behavior.
 {%- for then in acceptance.then %}
 1. Then {{ then }}
 {%- endfor %}
+{% endfor %}
 {%- endfor %}
+
 {%- endfor %}

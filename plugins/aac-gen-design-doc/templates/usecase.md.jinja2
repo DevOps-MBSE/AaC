@@ -1,3 +1,4 @@
+{%- for u in usecases %}
 {% set usecase = u.usecase %}
 ### Usecase: {{ usecase.name }}
 
@@ -13,11 +14,13 @@
 
 #### Steps
 
-{%- for steps in usecase.steps %}
+{% for steps in usecase.steps %}
 
 ***{{ steps.step }}***
 
 - **Source:** {{ steps.source }}
 - **Target:** {{ steps.target }}
 - **Action:** {{ steps.action }}
+{%- endfor %}
+
 {%- endfor %}

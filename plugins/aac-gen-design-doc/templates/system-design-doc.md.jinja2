@@ -3,23 +3,17 @@
 {%- if interfaces | length > 0 %}
 
 ## Interfaces
-{%- for i in interfaces %}
-{% include 'datum.md.jinja2' %}
-{%- endfor %}
+{% include 'datum.md.jinja2' with context %}
 {%- endif %}
 
 {%- if models | length > 0 %}
 
 ## System Components
-{%- for m in models %}
-{% include 'model.md.jinja2' %}
-{%- endfor %}
+{% include 'model.md.jinja2' with context %}
 {%- endif %}
 
 {%- if usecases | length > 0 %}
 
 ## Use Cases
-{%- for u in usecases %}
-{% include 'usecase.md.jinja2' %}
-{%- endfor %}
+{% include 'usecase.md.jinja2' with context %}
 {%- endif %}
