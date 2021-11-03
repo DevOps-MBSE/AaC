@@ -25,13 +25,6 @@ def run_cli():
 
     arg_parser, aac_plugin_commands = _setup_arg_parser(plugin_manager)
 
-    # apply plugin extensions
-    results = plugin_manager.hook.get_base_model_extensions()
-    for plugin_ext in results:
-        if len(plugin_ext) > 0:
-            parsed = parser.parse_str(plugin_ext, "Plugin Manager Addition", True)
-            # util.extend_aac_spec(parsed)
-
     args = arg_parser.parse_args()
 
     for command in aac_plugin_commands:
