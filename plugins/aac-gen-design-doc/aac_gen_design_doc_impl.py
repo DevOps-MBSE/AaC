@@ -54,12 +54,11 @@ def _get_parsed_models(architecture_files: list) -> list:
 
 
 def _make_template_properties(parsed_models: dict, arch_file: str) -> dict:
-    return {
-        "doc_title": _get_document_title(arch_file),
-        "models": _get_from_parsed_models(parsed_models, "model"),
-        "usecases": _get_from_parsed_models(parsed_models, "usecase"),
-        "interfaces": _get_from_parsed_models(parsed_models, "data"),
-    }
+    title = _get_document_title(arch_file)
+    models = _get_from_parsed_models(parsed_models, "model")
+    usecases = _get_from_parsed_models(parsed_models, "usecase")
+    interfaces = _get_from_parsed_models(parsed_models, "data")
+    return {"title": title, "models": models, "usecases": usecases, "interfaces": interfaces}
 
 
 def _get_document_title(arch_file: str) -> str:
