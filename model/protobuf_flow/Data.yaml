@@ -8,6 +8,8 @@ data:
     protobuf_type: string
   - name: message_type
     type: MessageType
+  required:
+  - metadata
 ---
 data:
   name: DataB
@@ -18,6 +20,7 @@ data:
     type: string
     protobuf_type: string
   required:
+  - metadata
   - transformed_msg
 ---
 data:
@@ -28,7 +31,8 @@ data:
   - name: code
     type: number[]
     protobuf_type: fixed64
-    protobuf_repeat: repeated
+  required:
+  - metadata
 ---
 data:
   name: DataD
@@ -38,6 +42,8 @@ data:
   - name: msg
     type: string
     protobuf_type: string
+  required:
+  - metadata
 ---
 data:
   name: MessageMetadataData

@@ -24,13 +24,6 @@ Protobuf messages will only be generated for `data:` definitions that are refere
 
 If you nest a `data:` field in another `data:` definition, then you do not need to set the `protobuf_type` attribute for the field since it will be ignored and a protobuf message will be generated for the nested data type and included into the generated protobuf messages.
 
-### Enum - ProtobufDataType
-A new enum has been added, `ProtobufDataType`, which provides a set of enum values consisting of all protobuf 3 primitive types.
-
-This enum is added as an extension to the `Fields` definition and is not a required field.
-
-This new enum in `fields:` provides typing information to the protobuf 3 generator needed to produce the correct types. If a `protobuf_type` is not provided, then the generator will simply insert the value in `type`. So, if you fail to specify the `protobuf_type` field as `protobuf_type: int64` then it would fallback to the value in `type: number`.
-
 ### Enum - ProtobufFieldRepeat
 A new enum has been added, `ProtobufFieldRepeat`, which provides a set of enum values that represent whether a field can have multiple (repeated) entries.
 
