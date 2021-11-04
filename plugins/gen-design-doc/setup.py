@@ -10,6 +10,6 @@ setup(
     name="aac-gen-design-doc",
     install_requires=["aac"],
     entry_points={
-        "aac": ["aac-gen-design-doc=aac_gen_design_doc"],
+        "aac": ["aac_gen_design_doc=aac_gen_design_doc.aac_gen_design_doc"],
     }
 )

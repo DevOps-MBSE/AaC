@@ -18,14 +18,14 @@ def {{command.implementation_name}}({% for command_input in command.input -%}{{c
 
     Args:
     {%- for command_input in command.input %}
-        {{command_input.name}} <{{command_input.type}}>: TODO add a helpful parameter description
+        {{command_input.name}} ({{command_input.type}}): {% if command_input.description is defined -%} {{command_input.description}} {%- else -%} TODO add a helpful parameter description {%- endif -%}
     {%- endfor %}
     {%- endif %}
     {%- if command.output is defined %}
 
     Returns:
     {%- for command_output in command.output %}
-        {{command_output.name}} <{{command_output.type}}>: TODO add a helpful parameter description
+        {{command_output.name}} ({{command_output.type}}): {% if command_output.description is defined -%} {{command_output.description}} {%- else -%} TODO add a helpful parameter description {%- endif -%}
     {% endfor -%}
     {%- endif %}
     """
