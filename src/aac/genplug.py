@@ -86,13 +86,13 @@ def generate_plugin(architecture_file: str) -> None:
     try:
         if _is_user_desired_output_directory(architecture_file, plug_dir):
             parsed_model = parser.parse_file(architecture_file, True)
-            templates = _compile_templates(parsed_model)
+            templates = list(_compile_templates(parsed_model).values())
             write_generated_templates_to_file(templates, plug_dir)
     except GeneratePluginException as exception:
         print(f"gen-plugin error [{architecture_file}]:  {exception}.")
 
 
-def _compile_templates(parsed_models: dict[str, dict]) -> list[TemplateOutputFile]:
+def _compile_templates(parsed_models: dict[str, dict]) -> dict[str, list[TemplateOutputFile]]:
     """
     Parse the model and generate the plugin template accordingly.
 
@@ -160,7 +160,7 @@ def _compile_templates(parsed_models: dict[str, dict]) -> list[TemplateOutputFil
         set_overwrite_value(template)
         set_filename_value(template)
 
-    return generated_templates.values()
+    return generated_templates
 
 
 def _convert_template_name_to_file_name(template_name: str, plugin_name: str) -> str:
