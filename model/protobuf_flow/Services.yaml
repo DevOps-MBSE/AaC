@@ -1,0 +1,65 @@
+import:
+  - ./Data.yaml
+model:
+  name: ServiceOne
+  behavior:
+    - name: ProcessDataA
+      type: request-response
+      input:
+        - name: in
+          type: DataA
+      output:
+        - name: out
+          type: DataB
+      acceptance:
+        - scenario: go
+          given:
+            - ServiceOne is running.
+          when:
+            - The user sends a DataA request
+          then:
+            - The user receives a DataB response
+---
+import:
+  - ./Data.yaml
+model:
+  name: ServiceTwo
+  behavior:
+    - name: Process DataB
+      type: request-response
+      input:
+        - name: in
+          type: DataB
+      output:
+        - name: out
+          type: DataC
+      acceptance:
+        - scenario: go
+          given:
+            - The ServiceTwo is running
+          when:
+            - The user makes a request with DataB
+          then:
+            - The user receives a response with DataC
+---
+import:
+  - ./Data.yaml
+model:
+  name: ServiceThree
+  behavior:
+    - name: ProcessDataC
+      type: request-response
+      input:
+        - name: in
+          type: DataC
+      output:
+        - name: out
+          type: DataD
+      acceptance:
+        - scenario: go
+          given:
+            - The ServiceThree is running
+          when:
+            - The user makes a request with DataC
+          then:
+            - The user gets a response with DataD

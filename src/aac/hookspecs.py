@@ -8,7 +8,7 @@ def get_commands() -> list[AacCommand]:
     """
     Return a list of AacCommands provided by the plugin to register for use.
 
-    Returns: 
+    Returns:
         list of AacCommands
     """
 

@@ -86,10 +86,6 @@ class ValidatorTest(TestCase):
         kw(name="gamma", type="pub-sub", acceptance=MODEL_ACCEPTANCE),
     ]
 
-    def setUp(self):
-        util.AAC_MODEL = {}
-        validator.DEFINED_TYPES = []
-
     def test_is_valid(self):
         self.assertTrue(is_valid(data(name="test", fields=[kw(name="a", type="int")])))
         self.assertFalse(is_valid(data()))
@@ -304,10 +300,6 @@ class ValidatorTest(TestCase):
         pattern = "missing.*required.*field.*(name|type)"
         assert_model_is_invalid(self, ext(name="", type="", dataExt=kw(add=[kw()])), pattern)
 
-    def test_extension_with_unrecognized_fields_fails_validation(self):
-        pattern = "unrecognized.*field.*invalid"
-        assert_model_is_invalid(self, ext(invalid="item"), pattern)
-
     def test_extension_with_unrecognized_behavior_type_fails_validation(self):
         name = self.MODEL_NAME
         pattern = "unrecognized.*extension.*type.*(invalid)?"
@@ -325,13 +317,24 @@ class ValidatorTest(TestCase):
 
 
 class ValidatorFunctionalTest(TestCase):
-    def setUp(self):
-        util.AAC_MODEL = {}
-        validator.DEFINED_TYPES = []
 
     def test_validates_parsed_yaml_models(self):
         model = parse_str(TEST_MODEL_WITH_EXTENSIONS, "validation-test")
         assert_model_is_valid(self, model)
+
+    def test_validates_parsed_yaml_models_that_leverage_gen_pugin_extensions(self):
+        model = parse_str(TEST_MODEL_WITH_EXTENSIONS, "validation-test")
+        assert_model_is_valid(self, model)
+
+    def test_validate_parsed_yaml_model_with_missing_enum_def(self):
+        pattern = "unrecognized.*BehaviorType.*value.*(some_undefined_enum)"
+        model = parse_str(TEST_MODEL_WITH_MISSING_ENUM_EXTENSION, "validation-test", False)
+        assert_model_is_invalid(self, model, pattern)
+
+    def test_validate_parsed_yaml_model_with_missing_data_def(self):
+        pattern = "unrecognized.*field.*named.*(undefined_field)"
+        model = parse_str(TEST_MODEL_WITH_MISSING_DATA_EXTENSION, "validation-test", False)
+        assert_model_is_invalid(self, model, pattern)
 
 
 TEST_MODEL_WITH_EXTENSIONS = """
@@ -358,6 +361,69 @@ model:
       input:
         - name: name
           type: string
+          description: input description
+      output:
+        - name: good-morning
+          type: string
+      acceptance:
+        - scenario: time to wake up
+          when:
+            - waiting 1 second
+          then:
+            - will say good-morning
+"""
+
+TEST_MODEL_WITH_GUN_PLUGIN_EXTENSION_VALUES = """
+model:
+  name: clock
+  behavior:
+    - name: say goodmorning
+      type: command
+      input:
+        - name: name
+          type: string
+      output:
+        - name: good-morning
+          type: string
+      acceptance:
+        - scenario: time to wake up
+          when:
+            - waiting 1 second
+          then:
+            - will say good-morning
+"""
+
+TEST_MODEL_WITH_MISSING_ENUM_EXTENSION = """
+model:
+  name: clock
+  behavior:
+    - name: say goodmorning
+      type: some_undefined_enum
+      input:
+        - name: name
+          type: string
+      output:
+        - name: good-morning
+          type: string
+      acceptance:
+        - scenario: time to wake up
+          when:
+            - waiting 1 second
+          then:
+            - will say good-morning
+"""
+
+
+TEST_MODEL_WITH_MISSING_DATA_EXTENSION = """
+model:
+  name: clock
+  behavior:
+    - name: say goodmorning
+      type: command
+      input:
+        - name: name
+          type: string
+          undefined_field: undefined_value
       output:
         - name: good-morning
           type: string

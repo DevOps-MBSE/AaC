@@ -12,11 +12,6 @@ class TestArchUtil(TestCase):
     Unit test class for aac.util module.
     """
 
-    def setUp(self):
-        util.AAC_MODEL = {}
-        util.ROOT_NAMES = []
-        validator.DEFINED_TYPES = []
-
     def test_get_primitive(self):
         """
         Unit test for the util.get_primitive method.

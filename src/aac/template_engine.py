@@ -1,12 +1,38 @@
 """ This module provides a common set of templating and generation functions """
+from __future__ import annotations
+
 import os
 
-from jinja2 import Template, FileSystemLoader, Environment
+from attr import attrib, attrs, validators
+from jinja2 import Environment, PackageLoader, Template
 
 
-def load_templates(group_dir_name: str) -> list[Template]:
+def load_templates(package_name: str, template_directory: str = "templates") -> list[Template]:
     """
-    Load default templates based on group-name.
+    Load templates from a `templates` directory within a package.
+
+    Args:
+        group_dir_name: name of the templates sub-directory to load templates from
+        template_directory: the directory within the package containing the templates. Defaults to 'templates'
+
+    Returns:
+        list of loaded templates
+    """
+
+    def _load_templates_from_env(env) -> list:
+        return list(map(env.get_template, env.list_templates()))
+
+    env = Environment(
+        loader=PackageLoader(package_name, template_directory),
+        autoescape=True,
+    )
+
+    return _load_templates_from_env(env)
+
+
+def load_default_templates(group_dir_name: str) -> list[Template]:
+    """
+    Load default templates embedded in the AaC project based on a template group-name.
 
     Args:
         group_dir_name: name of the templates sub-directory to load templates from.
@@ -14,29 +40,20 @@ def load_templates(group_dir_name: str) -> list[Template]:
     Returns:
         list of loaded templates
     """
-    path = os.path.realpath(f"{TEMPLATES_DIR_PATH}/{group_dir_name}")
 
-    # Packageloader returned errors when trying to load templates in the aac package
-    #   We may have to resort to a custom loader if Filesystem doesn't work with distributions.
-    env = Environment(
-        loader=FileSystemLoader(path),
-        autoescape=True,
-    )
-
-    templates = []
-    for template_name in env.list_templates():
-        templates.append(env.get_template(template_name))
-
-    return templates
+    return load_templates(__package__, f"templates/{group_dir_name}")
 
 
-def generate_templates(templates: list[Template], properties: dict[str, str]) -> dict[str, str]:
+def generate_templates(templates: list[Template], properties: dict[str, str]) -> dict[str, TemplateOutputFile]:
     """
-    Compile a list of Jinja2 Template objects to a list of strings.
+    Compile a list of Jinja2 Templates with a dict of template properties into a dict of template name to compiled template content.
 
     Args:
         templates: list of Jinja2 templates to compile.
         properties: Dict of properties to use when compiling the templates
+
+    Returns:
+        Dict of template names to TemplateOutputFile objects
     """
     generated_templates = {}
     for template in templates:
@@ -46,7 +63,40 @@ def generate_templates(templates: list[Template], properties: dict[str, str]) ->
     return generated_templates
 
 
-def generate_template(template: Template, properties: dict[str, str]) -> str:
+def generate_templates_as_strings(templates: list[Template], properties: dict[str, str]) -> dict[str, str]:
+    """
+    Compile a list of Jinja2 Templates with a dict of template properties into a dict of template name to compiled template content.
+
+    Args:
+        templates: list of Jinja2 templates to compile.
+        properties: Dict of properties to use when compiling the templates
+
+    Returns:
+        Dict of template names to template content strings
+    """
+    generated_templates = {}
+    for template in templates:
+        template_id = template.name
+        generated_templates[template_id] = generate_template_as_string(template, properties)
+
+    return generated_templates
+
+
+def generate_template(template: Template, properties: dict[str, str]) -> TemplateOutputFile:
+    """
+    Compile a Jinja2 Template object to a TemplateOutputFile object.
+
+    Args:
+        template: Jinja2 template to compile.
+        properties: Dict of properties to use when compiling the template
+
+    Returns:
+        Compiled/Rendered template as a TemplateOutputFile object
+    """
+    return TemplateOutputFile(template.name, generate_template_as_string(template, properties), False)
+
+
+def generate_template_as_string(template: Template, properties: dict[str, str]) -> str:
     """
     Compile a Jinja2 Template object to a string.
 
@@ -60,5 +110,59 @@ def generate_template(template: Template, properties: dict[str, str]) -> str:
     return template.render(properties)
 
 
-# Constants
-TEMPLATES_DIR_PATH = "src/templates"
+def write_generated_templates_to_file(
+    generated_files: list[TemplateOutputFile], output_dir: str
+) -> None:
+    """
+    Write a list of generated files to the target directory.
+
+    Args:
+        generated_files: list of generated files to write to the filesystem
+        output_dir: the directory to write the generated files to.
+    """
+
+    for generated_file in generated_files:
+        _write_file(
+            output_dir,
+            generated_file.file_name,
+            generated_file.content,
+            generated_file.overwrite,
+        )
+
+
+def _write_file(path: str, file_name: str, content: str, overwrite: bool) -> None:
+    """
+    Write string content to a file.
+
+    Args:
+        path: the path to the directory that the file will be written to
+        file_name: the name of the file to be written
+        content: contents of the file to write
+        overwrite: whether to overwrite an existing file, if false the file will not be altered.
+    """
+    file_to_write = os.path.join(path, file_name)
+    if not overwrite and os.path.exists(file_to_write):
+        print(f"{file_to_write} already exists, skipping write")
+    else:
+        file = open(file_to_write, "w")
+        file.writelines(content)
+        file.close()
+
+
+@attrs(slots=True, auto_attribs=True)
+class TemplateOutputFile:
+    """
+    Class containing all of the relevant information necessary to handle writing templates to files.
+
+    Attributes:
+        template_name: The name of the jinja2 template the generated content is based on
+        content: The generated content
+        overwrite: A boolean to indicate if this template output should overwrite any existing files with the same name.
+
+        file_name: This attribute is not exposed in the constructor. It's up to the user to set the filename.
+    """
+
+    template_name: str = attrib(validator=validators.instance_of(str))
+    file_name: str = attrib(validator=validators.instance_of(str), default="", init=False)
+    content: str = attrib(validator=validators.instance_of(str))
+    overwrite: bool = attrib(validator=validators.instance_of(bool))
