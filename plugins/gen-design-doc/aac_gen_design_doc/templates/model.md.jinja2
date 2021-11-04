@@ -19,6 +19,16 @@
 
 This is a {{ behavior.type }} type of behavior.
 
+{% if 'input' in behavior -%}
+**Inputs**
+{{ print_fields(behavior.input) }}
+{% endif %}
+
+{%- if 'output' in behavior -%}
+**Outputs**
+{{ print_fields(behavior.output) }}
+{% endif %}
+
 {% for acceptance in behavior.acceptance %}
 
 **Scenario: {{ acceptance.scenario }}**
