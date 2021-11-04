@@ -1,0 +1,62 @@
+data:
+  name: DataA
+  fields:
+  - name: metadata
+    type: MessageMetadataData
+  - name: msg
+    type: string
+    protobuf_type: string
+  - name: message_type
+    type: MessageType
+  required:
+  - metadata
+---
+data:
+  name: DataB
+  fields:
+  - name: metadata
+    type: MessageMetadataData
+  - name: transformed_msg
+    type: string
+    protobuf_type: string
+  required:
+  - metadata
+  - transformed_msg
+---
+data:
+  name: DataC
+  fields:
+  - name: metadata
+    type: MessageMetadataData
+  - name: code
+    type: number[]
+    protobuf_type: fixed64
+  required:
+  - metadata
+---
+data:
+  name: DataD
+  fields:
+  - name: metadata
+    type: MessageMetadataData
+  - name: msg
+    type: string
+    protobuf_type: string
+  required:
+  - metadata
+---
+data:
+  name: MessageMetadataData
+  fields:
+  - name: message_id
+    type: number
+    protobuf_type: int64
+  required:
+  - message_id
+---
+enum:
+  name: MessageType
+  values:
+  - type_1
+  - type_2
+  - type_3

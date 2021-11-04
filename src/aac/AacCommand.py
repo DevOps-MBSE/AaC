@@ -1,10 +1,10 @@
 """
 A simple data class to collect AaC command info from plugins.
 """
-import attr
+from attr import attrs, attrib, validators
 
 
-@attr.s
+@attrs
 class AacCommandArgument:
     """
     A class used as a struct to hold a command argument name and description.
@@ -16,12 +16,12 @@ class AacCommandArgument:
         number_of_arguments: Number of entries that the argument can take. Maps to the argsparse module's nargs command.
     """
 
-    name = attr.ib()
-    description = attr.ib()
-    number_of_arguments = attr.ib(default=None)
+    name = attrib(validator=validators.instance_of(str))
+    description = attrib(validator=validators.instance_of(str))
+    number_of_arguments = attrib(default=None, validator=validators.instance_of((str, type(None))))
 
 
-@attr.s
+@attrs
 class AacCommand:
     """
     A class used as a struct to hold a command name, command description, and callback.
@@ -35,7 +35,7 @@ class AacCommand:
         arguments: A List of AacCommandArgument containing argument information about the command. Defaults to an empty list.
     """
 
-    name = attr.ib()
-    description = attr.ib()
-    callback = attr.ib()
-    arguments = attr.ib(default=[])
+    name = attrib(validator=validators.instance_of(str))
+    description = attrib(validator=validators.instance_of(str))
+    callback = attrib(validator=validators.is_callable())
+    arguments = attrib(default=[], validator=validators.instance_of(list))

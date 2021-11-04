@@ -20,3 +20,28 @@ model:
             - The aac app is run with the gen-protobuf command and a valid architecture file.
           then:
             - Protobuf messages are written to {{gen-protobuf.input.output_directory}}.
+---
+enum:
+  name: ProtobufDataType
+  values:
+    - double
+    - float
+    - int32
+    - int64
+    - uint32
+    - uint64
+    - sint32
+    - sint64
+    - fixed32
+    - fixed64
+    - bool
+    - string
+    - bytes
+---
+ext:
+   name: ProtobufTypeField
+   type: Field
+   dataExt:
+      add:
+        - name: protobuf_type
+          type: ProtobufDataType

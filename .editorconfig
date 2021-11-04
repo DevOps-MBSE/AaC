@@ -11,9 +11,12 @@ charset = utf-8
 trim_trailing_whitespace = true
 insert_final_newline = false
 
-[*.py, *.py.*jinja2]
+[{*.py,*.py.jinja2}]
 trim_trailing_whitespace = true
 insert_final_newline = true
+
+[{*.proto,*.proto.jinja2}]
+indent_size = 2
 
 [*.y{ml,aml}]
 indent_size = 2
