@@ -10,12 +10,9 @@ import yaml
 
 from aac import hookimpl, parser, util
 from aac.AacCommand import AacCommand, AacCommandArgument
-from aac.template_engine import (
-    TemplateOutputFile,
-    generate_templates,
-    load_default_templates,
-    write_generated_templates_to_file,
-)
+from aac.template_engine import (TemplateOutputFile, generate_templates,
+                                 load_default_templates,
+                                 write_generated_templates_to_file)
 
 
 @hookimpl
@@ -163,7 +160,7 @@ def _compile_templates(parsed_models: dict[str, dict]) -> list[TemplateOutputFil
         set_overwrite_value(template)
         set_filename_value(template)
 
-    return generated_templates
+    return generated_templates.values()
 
 
 def _convert_template_name_to_file_name(template_name: str, plugin_name: str) -> str:
