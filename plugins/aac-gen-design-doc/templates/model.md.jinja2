@@ -7,10 +7,12 @@
 {{ model.description }}
 {%- endif %}
 
+{%- if 'components' in model -%}
 #### Components
 {% for component in model.components %}
-- {{ component.type }} {{ component.name }}{%- if component.name in model.required %} (required){%- endif %}
+- {{ component.type }} {{ component.name }}
 {%- endfor %}
+{% endif %}
 
 #### Behavior
 {% for behavior in model.behavior %}
