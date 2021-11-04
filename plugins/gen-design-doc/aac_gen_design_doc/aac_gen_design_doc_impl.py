@@ -23,10 +23,10 @@ def gen_design_doc(architecture_files: str, output_directory: str, template_file
     Generate a System Design Document from Architecture-as-Code models.
 
     Args:
-        `architecture_files` <str>: A comma-separated list of yaml file(s) containing the modeled
+        architecture_files (str): A comma-separated list of yaml file(s) containing the modeled
                                       system for which to generate the System Design document.
-        `output_directory` <str>: The directory to which the System Design document will be written.
-        `template_file` <str>: The name of the template file to use for generating the document. (optional)
+        output_directory (str): The directory to which the System Design document will be written.
+        template_file (str): The name of the template file to use for generating the document. (optional)
     """
     first_arch_file, *other_arch_files = architecture_files.split(",")
     parsed_models = _get_parsed_models([first_arch_file] + other_arch_files)
