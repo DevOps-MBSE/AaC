@@ -1,27 +1,21 @@
+{% from 'macros.jinja2' import description, print_fields %}
+
 {%- for m in models %}
 {% set model = m.model %}
 ### Model: {{ model.name }}
 
-{%- if 'description' in model %}
-
-{{ model.description }}
-{%- endif %}
+{{ description(model) }}
 
 {%- if 'components' in model -%}
 #### Components
-{% for component in model.components %}
-- {{ component.type }} {{ component.name }}
-{%- endfor %}
+{{ print_fields(model.components) }}
 {% endif %}
 
 #### Behavior
 {% for behavior in model.behavior %}
 ***{{ behavior.name }}***
 
-{%- if 'description' in behavior %}
-
-{{ behavior.description }}
-{%- endif %}
+{{ description(behavior) }}
 
 This is a {{ behavior.type }} type of behavior.
 

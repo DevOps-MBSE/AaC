@@ -1,16 +1,12 @@
+{% from 'macros.jinja2' import description, print_fields %}
 {%- for u in usecases %}
 {% set usecase = u.usecase %}
 ### Usecase: {{ usecase.name }}
 
-{%- if 'description' in usecase %}
-
-{{ usecase.description }}
-{%- endif %}
+{{ description(usecase) }}
 
 #### Participants
-{% for participant in usecase.participants %}
-- {{ participant.type }} {{ participant.name }}
-{%- endfor %}
+{{ print_fields(usecase.participants) }}
 
 #### Steps
 

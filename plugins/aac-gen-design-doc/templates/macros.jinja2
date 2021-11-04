@@ -1,0 +1,12 @@
+{% macro description(map) %}
+{%- if 'description' in map %}
+
+{{ map.description }}
+{%- endif %}
+{% endmacro %}
+
+{% macro print_fields(fields) %}
+{% for field in fields %}
+- {{ field.type }} {{ field.name }}
+{%- endfor %}
+{% endmacro %}
