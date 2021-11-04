@@ -4,13 +4,18 @@ A plugin to generate new plugins based on a specifically structured AaC model fi
 The plugin AaC model must define behaviors using the command BehaviorType.  Each
 defined behavior becomes a new command for the aac CLI.
 """
-import attr
 import os
+
 import yaml
 
-from aac import util, hookimpl, parser
+from aac import hookimpl, parser, util
 from aac.AacCommand import AacCommand, AacCommandArgument
-from aac.template_engine import load_templates, generate_templates
+from aac.template_engine import (
+    TemplateOutputFile,
+    generate_templates,
+    load_default_templates,
+    write_generated_templates_to_file,
+)
 
 
 @hookimpl
@@ -72,15 +77,6 @@ class GeneratePluginException(Exception):
     pass
 
 
-@attr.s
-class TemplateOutputFile:
-    """Class containing all of the relevant information necessary to handle writing templates to files."""
-
-    file_name = attr.ib()
-    content = attr.ib()
-    overwrite = attr.ib()
-
-
 def generate_plugin(architecture_file: str) -> None:
     """
     Entrypoint command to generate the plugin.
@@ -94,7 +90,7 @@ def generate_plugin(architecture_file: str) -> None:
         if _is_user_desired_output_directory(architecture_file, plug_dir):
             parsed_model = parser.parse_file(architecture_file, True)
             templates = _compile_templates(parsed_model)
-            _write_generated_templates_to_file(templates, plug_dir)
+            write_generated_templates_to_file(templates, plug_dir)
     except GeneratePluginException as exception:
         print(f"gen-plugin error [{architecture_file}]:  {exception}.")
 
@@ -113,6 +109,17 @@ def _compile_templates(parsed_models: dict[str, dict]) -> list[TemplateOutputFil
         GeneratePluginException: An error encountered during the plugin generation process.
     """
 
+    # Define which templates we want to overwrite.
+    templates_to_overwrite = ["plugin.py.jinja2", "setup.py.jinja2"]
+
+    def set_overwrite_value(template: TemplateOutputFile):
+        template.overwrite = template.template_name in templates_to_overwrite
+
+    def set_filename_value(template: TemplateOutputFile):
+        template.file_name = _convert_template_name_to_file_name(
+            template.template_name, plugin_implementation_name
+        )
+
     # ensure model is present and valid, get the plugin name
     plugin_models = util.get_models_by_type(parsed_models, "model")
     if len(plugin_models.keys()) != 1:
@@ -123,7 +130,7 @@ def _compile_templates(parsed_models: dict[str, dict]) -> list[TemplateOutputFil
     plugin_model = list(plugin_models.values())[0].get("model")
     plugin_name = plugin_model.get("name")
 
-    # Ensure that the plugin name has package name prepended to it
+    # Ensure that the plugin name has that 'aac' package name prepended to it
     if not plugin_name.startswith(__package__):
         plugin_name = f"{__package__}-{plugin_name}"
 
@@ -138,45 +145,25 @@ def _compile_templates(parsed_models: dict[str, dict]) -> list[TemplateOutputFil
         "implementation_name": plugin_implementation_name,
     }
 
-    extensions = [
-        _add_extensions_yaml_string(definition) for definition in _gather_extensions(parsed_models)
+    plugin_aac_definitions = [
+        _add_definitions_yaml_string(definition)
+        for definition in _gather_plugin_aac_definitions(parsed_models)
     ]
 
-    template_properties = {"plugin": plugin, "commands": commands, "extensions": extensions}
-    generated_templates = generate_templates(load_templates("genplug"), template_properties)
+    template_properties = {
+        "plugin": plugin,
+        "commands": commands,
+        "aac_definitions": plugin_aac_definitions,
+    }
+    generated_templates = generate_templates(
+        load_default_templates("genplug"), template_properties
+    )
 
-    # Define which templates we want to overwrite.
-    templates_to_overwrite = ["plugin.py.jinja2", "setup.py.jinja2"]
+    for template in generated_templates.values():
+        set_overwrite_value(template)
+        set_filename_value(template)
 
-    # Compile the files to write in to a list.
-    files_to_write = []
-    for template_name, template_content in generated_templates.items():
-        file_name = _convert_template_name_to_file_name(template_name, plugin_implementation_name)
-        overwrite = template_name in templates_to_overwrite
-
-        files_to_write.append(TemplateOutputFile(file_name, template_content, overwrite))
-
-    return files_to_write
-
-
-def _write_generated_templates_to_file(
-    generated_files: list[TemplateOutputFile], plug_dir: str
-) -> None:
-    """
-    Write a list of generated files to the target directory.
-
-    Args:
-        generated_files: list of generated files to write to the filesystem
-        plug_dir: the directory to write the generated files to.
-    """
-
-    for generated_file in generated_files:
-        _write_file(
-            plug_dir,
-            generated_file.file_name,
-            generated_file.overwrite,
-            generated_file.content,
-        )
+    return generated_templates
 
 
 def _convert_template_name_to_file_name(template_name: str, plugin_name: str) -> str:
@@ -223,7 +210,9 @@ def _is_user_desired_output_directory(architecture_file: str, output_dir: str) -
         )
 
     if confirmation in ["n", "N"]:
-        print(f"Canceled: Please move {architecture_file} to the desired directory and rerun the command.")
+        print(
+            f"Canceled: Please move {architecture_file} to the desired directory and rerun the command."
+        )
 
     return confirmation in ["y", "Y"]
 
@@ -258,35 +247,17 @@ def _gather_commands(behaviors: dict) -> list[dict]:
     return commands
 
 
-def _gather_extensions(parsed_models: dict[str, dict]) -> list[dict]:
+def _gather_plugin_aac_definitions(parsed_models: dict[str, dict]) -> list[dict]:
     extension_definitions = list(util.get_models_by_type(parsed_models, "ext").values())
     data_definitions = list(util.get_models_by_type(parsed_models, "data").values())
+    enum_definitions = list(util.get_models_by_type(parsed_models, "enum").values())
 
-    return extension_definitions + data_definitions
-
-
-def _add_extensions_yaml_string(extension_model: dict) -> dict:
-    extension_model["yaml"] = yaml.dump(extension_model)
-    return extension_model
+    return extension_definitions + data_definitions + enum_definitions
 
 
-def _write_file(path: str, file_name: str, overwrite: bool, content: str) -> None:
-    """
-    Write string content to a file.
-
-    Args:
-        path: the path to the directory that the file will be written to
-        file_name: the name of the file to be written
-        overwrite: whether to overwrite an existing file, if false the file will not be altered.
-        content: contents of the file to write
-    """
-    file_to_write = os.path.join(path, file_name)
-    if not overwrite and os.path.exists(file_to_write):
-        print(f"{file_to_write} already exists, skipping write")
-    else:
-        file = open(file_to_write, "w")
-        file.writelines(content)
-        file.close()
+def _add_definitions_yaml_string(model: dict) -> dict:
+    model["yaml"] = yaml.dump(model)
+    return model
 
 
 def _convert_to_implementation_name(original_name: str) -> str:
