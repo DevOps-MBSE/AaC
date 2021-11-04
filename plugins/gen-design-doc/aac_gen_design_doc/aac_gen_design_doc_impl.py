@@ -16,30 +16,29 @@ from aac.template_engine import (
 )
 
 plugin_version = "0.0.1"
+default_template_file = "templates/system-design-doc.md.jinja2"
 
 
-def gen_design_doc(template_file: str, architecture_files: str, output_directory: str):
+def gen_design_doc(architecture_files: str, output_directory: str, template_file: str):
     """
     Generate a System Design Document from Architecture-as-Code models.
 
     Args:
-        `template_file` <str>: The name of the template file to use for generating the document.
         `architecture_files` <str>: A comma-separated list of yaml file(s) containing the modeled
                                       system for which to generate the System Design document.
         `output_directory` <str>: The directory to which the System Design document will be written.
+        `template_file` <str>: The name of the template file to use for generating the document. (optional)
     """
     first_arch_file, *other_arch_files = architecture_files.split(",")
     parsed_models = _get_parsed_models([first_arch_file] + other_arch_files)
 
     loaded_templates = load_templates(__package__)
+
+    template_file = template_file if template_file else default_template_file
     template_file_name = os.path.basename(template_file)
 
     # TODO: Find a better solution to select between available templates.
-    selected_template = None
-    for template in loaded_templates:
-        if template_file_name == template.name:
-            selected_template = template
-            break
+    selected_template, *_ = [t for t in loaded_templates if template_file_name == t.name]
 
     output_filespec = _get_output_filespec(
         first_arch_file, _get_output_file_extension(template_file_name)

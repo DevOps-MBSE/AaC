@@ -19,9 +19,18 @@ def get_commands() -> list[AacCommand]:
         list of AacCommands
     """
     gen_design_doc_arguments = [
-        AacCommandArgument("template_file", "The name of the Jinja2 template file to use for generating the document."),
-        AacCommandArgument("architecture_files", "A comma-separated list of yaml file(s) containing the modeled system for which to generate the System Design document."),
-        AacCommandArgument("output_directory", "The directory to which the System Design document will be written."),
+        AacCommandArgument(
+            "architecture_files",
+            "A comma-separated list of yaml file(s) containing the modeled system for which to generate the System Design document.",
+        ),
+        AacCommandArgument(
+            "output_directory",
+            "The directory to which the System Design document will be written.",
+        ),
+        AacCommandArgument(
+            "--template_file",
+            "The name of the Jinja2 template file to use for generating the document. (optional)",
+        ),
     ]
 
     plugin_commands = [
@@ -29,7 +38,8 @@ def get_commands() -> list[AacCommand]:
             "gen-design-doc",
             "Generate a System Design Document from Architecture-as-Code models.",
             gen_design_doc,
-            gen_design_doc_arguments),
+            gen_design_doc_arguments,
+        ),
     ]
 
     return plugin_commands

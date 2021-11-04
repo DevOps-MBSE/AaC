@@ -6,15 +6,15 @@ model:
       type: command
       description: Generate a System Design Document from Architecture-as-Code models.
       input:
-        - name: template_file
-          type: string
-          description: The name of the Jinja2 template file to use for generating the document.
         - name: architecture_files
           type: string
           description: A comma-separated list of yaml file(s) containing the modeled system for which to generate the System Design document.
         - name: output_directory
           type: string
           description: The directory to which the System Design document will be written.
+        - name: --template_file
+          type: string
+          description: The name of the Jinja2 template file to use for generating the document. (optional)
       acceptance:
         - scenario: Output a System Design document containing an outline of the model and its components.
           given:
