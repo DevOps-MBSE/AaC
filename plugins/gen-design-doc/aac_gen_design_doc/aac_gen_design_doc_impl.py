@@ -2,10 +2,9 @@
 
 import os
 import sys
-from functools import partial
 
 from iteration_utilities import flatten
-from jinja2 import Template, Environment, FileSystemLoader
+from jinja2 import Template
 
 from aac import parser, util
 from aac.template_engine import (
@@ -45,7 +44,9 @@ def gen_design_doc(architecture_files: str, output_directory: str, template_file
     )
 
     template_properties = _make_template_properties(parsed_models, first_arch_file)
-    generated_document = _generate_system_doc(output_filespec, selected_template, template_properties)
+    generated_document = _generate_system_doc(
+        output_filespec, selected_template, template_properties
+    )
     write_generated_templates_to_file([generated_document], output_directory)
 
     print(f"Wrote system design document to {os.path.join(output_directory, output_filespec)}")
@@ -92,7 +93,9 @@ def _get_from_parsed_models(parsed_models: dict, aac_type: str) -> list:
     return list(flatten([m.values() for m in aac_types]))
 
 
-def _generate_system_doc(output_filespec: str, selected_template: Template, template_properties: dict) -> TemplateOutputFile:
+def _generate_system_doc(
+    output_filespec: str, selected_template: Template, template_properties: dict
+) -> TemplateOutputFile:
     template = generate_template(selected_template, template_properties)
 
     template.file_name = output_filespec
