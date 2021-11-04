@@ -1,6 +1,5 @@
 {% macro description(map) %}
-{%- if 'description' in map %}
-
+{%- if map and 'description' in map and map.description %}
 {{ map.description }}
 {%- endif %}
 {% endmacro %}
