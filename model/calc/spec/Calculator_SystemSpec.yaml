@@ -1,6 +1,7 @@
 import:
   - ./SimpleMath_PIDS.yaml
   - ./IntermediateMath_PIDS.yaml
+  - ./ComplexMath_PIDS.yaml
 spec:
   title: Calculator System Spec
   abbrv: CALC
@@ -8,6 +9,7 @@ spec:
   subspecs:
     - SM
     - IM
+    - CM
   requirements:
     - id: 0001
       shall:  The test system shall log all messages it receives.
