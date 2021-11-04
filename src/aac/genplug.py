@@ -10,12 +10,9 @@ import yaml
 
 from aac import hookimpl, parser, util
 from aac.AacCommand import AacCommand, AacCommandArgument
-from aac.template_engine import (
-    TemplateOutputFile,
-    generate_templates,
-    load_default_templates,
-    write_generated_templates_to_file,
-)
+from aac.template_engine import (TemplateOutputFile, generate_templates,
+                                 load_default_templates,
+                                 write_generated_templates_to_file)
 
 
 @hookimpl
@@ -89,13 +86,13 @@ def generate_plugin(architecture_file: str) -> None:
     try:
         if _is_user_desired_output_directory(architecture_file, plug_dir):
             parsed_model = parser.parse_file(architecture_file, True)
-            templates = _compile_templates(parsed_model)
+            templates = list(_compile_templates(parsed_model).values())
             write_generated_templates_to_file(templates, plug_dir)
     except GeneratePluginException as exception:
         print(f"gen-plugin error [{architecture_file}]:  {exception}.")
 
 
-def _compile_templates(parsed_models: dict[str, dict]) -> list[TemplateOutputFile]:
+def _compile_templates(parsed_models: dict[str, dict]) -> dict[str, list[TemplateOutputFile]]:
     """
     Parse the model and generate the plugin template accordingly.
 

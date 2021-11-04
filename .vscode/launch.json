@@ -159,6 +159,20 @@
             "justMyCode": false
         },
         {
+            "name": "Python: Gen-System Document",
+            "type": "python",
+            "request": "launch",
+            "program": "src/aac/__main__.py",
+            "args": [
+                "gen-design-doc",
+                "system-design-doc.md.jinja2",
+                "model/flow/System.yaml",
+                "test"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
             "name": "Python: Unit Tests",
             "type": "python",
             "request": "launch",
