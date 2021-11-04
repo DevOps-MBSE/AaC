@@ -19,7 +19,7 @@ model:
         - scenario: Output a System Design document containing an outline of the model and its components.
           given:
             - The {{gen-design-doc.input.architecture_files}} represent a valid system architecture.
-            - The {{gen-design-doc.input.template_file}} exists and is a valid Jinja2 tempalte.
+            - The {{gen-design-doc.input.template_file}} exists and is a valid Jinja2 template.
           when:
             - The aac application is run with the gen-design-doc command and one, or more, valid architecture files, a template file, and an output directory.
           then:

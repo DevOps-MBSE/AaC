@@ -18,7 +18,7 @@ plugin_version = "0.0.1"
 default_template_file = "templates/system-design-doc.md.jinja2"
 
 
-def gen_design_doc(architecture_files: str, output_directory: str, template_file: str):
+def gen_design_doc(architecture_files: str, output_directory: str, template_file: str = None):
     """
     Generate a System Design Document from Architecture-as-Code models.
 
@@ -33,7 +33,7 @@ def gen_design_doc(architecture_files: str, output_directory: str, template_file
 
     loaded_templates = load_templates(__package__)
 
-    template_file = template_file if template_file else default_template_file
+    template_file = template_file or default_template_file
     template_file_name = os.path.basename(template_file)
 
     # TODO: Find a better solution to select between available templates.
@@ -99,5 +99,5 @@ def _generate_system_doc(
     template = generate_template(selected_template, template_properties)
 
     template.file_name = output_filespec
-    template.overwrite = True  # TODO: double check
+    template.overwrite = True
     return template
