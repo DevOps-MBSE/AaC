@@ -5,9 +5,15 @@ import sys
 from functools import partial
 
 from iteration_utilities import flatten
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Template, Environment, FileSystemLoader
 
 from aac import parser, util
+from aac.template_engine import (
+    TemplateOutputFile,
+    generate_template,
+    load_templates,
+    write_generated_templates_to_file,
+)
 
 plugin_version = "0.0.1"
 
@@ -24,17 +30,24 @@ def gen_design_doc(template_file: str, architecture_files: str, output_directory
     """
     first_arch_file, *other_arch_files = architecture_files.split(",")
     parsed_models = _get_parsed_models([first_arch_file] + other_arch_files)
-    template_properties = _make_template_properties(parsed_models, first_arch_file)
 
+    loaded_templates = load_templates(__package__)
     template_file_name = os.path.basename(template_file)
+
+    # TODO: Find a better solution to select between available templates.
+    selected_template = None
+    for template in loaded_templates:
+        if template_file_name == template.name:
+            selected_template = template
+            break
+
     output_filespec = _get_output_filespec(
         first_arch_file, _get_output_file_extension(template_file_name)
     )
 
-    _create_directory_if_does_not_exist(output_directory)
-
-    template = __generate_templates([template_file], template_properties)[template_file_name]
-    _write_content(output_directory, output_filespec, template)
+    template_properties = _make_template_properties(parsed_models, first_arch_file)
+    generated_document = _generate_system_doc(output_filespec, selected_template, template_properties)
+    write_generated_templates_to_file([generated_document], output_directory)
 
     print(f"Wrote system design document to {os.path.join(output_directory, output_filespec)}")
 
@@ -80,29 +93,9 @@ def _get_from_parsed_models(parsed_models: dict, aac_type: str) -> list:
     return list(flatten([m.values() for m in aac_types]))
 
 
-def _create_directory_if_does_not_exist(output_directory: str) -> None:
-    if not os.path.exists(output_directory):
-        os.mkdir(output_directory)
+def _generate_system_doc(output_filespec: str, selected_template: Template, template_properties: dict) -> TemplateOutputFile:
+    template = generate_template(selected_template, template_properties)
 
-
-def _write_content(output_directory: str, filespec: str, content: str):
-    with open(os.path.join(output_directory, filespec), "w") as f:
-        f.write(content)
-
-
-def __generate_templates(templates: list, properties: dict) -> dict:
-    """TEMPORARY: Generate all plugin templates.
-
-    TODO: Remove once Alex's template engine changes are in.
-    """
-    env = Environment(
-        loader=FileSystemLoader(f"{os.path.dirname(__file__)}/templates"),
-        autoescape=True,
-    )
-
-    generated_templates = {}
-
-    for template in [env.get_template(template) for template in env.list_templates()]:
-        generated_templates[template.name] = template.render(properties)
-
-    return generated_templates
+    template.file_name = output_filespec
+    template.overwrite = True  # TODO: double check
+    return template
