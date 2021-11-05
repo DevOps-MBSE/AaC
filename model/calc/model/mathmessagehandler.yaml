@@ -1,0 +1,23 @@
+import:
+  - ./MathRequest.yaml
+  - ./MathResponse.yaml
+model:
+  name: MathMessageHandler
+  description: Api handler for math functions.
+  behavior:
+    - name: api
+      type: request-response
+      input:
+        - name: request
+          type: MathRequest
+      output:
+        - name: response
+          type: MathResponse
+      acceptance:
+        - scenario: on-request
+          given:
+            - The MathMessageHandler is running
+          when:
+            - The user makes a request with MathRequest
+          then:
+            - The user gets a response with MathResponse
