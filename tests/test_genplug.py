@@ -7,7 +7,6 @@ from aac.genplug import (
     _convert_template_name_to_file_name,
 )
 
-
 INIT_TEMPLATE_NAME = "__init__.py.jinja2"
 PLUGIN_TEMPLATE_NAME = "plugin.py.jinja2"
 PLUGIN_IMPL_TEMPLATE_NAME = "plugin_impl.py.jinja2"

@@ -1,0 +1,28 @@
+model:
+  name: aac-gen-design-doc
+  description: aac-gen-design-doc is an Architecture-as-Code plugin that generates a System Design Document from Architecture-as-Code models.
+  behavior:
+    - name: gen-design-doc
+      type: command
+      description: Generate a System Design Document from Architecture-as-Code models.
+      input:
+        - name: architecture_files
+          type: string
+          description: A comma-separated list of yaml file(s) containing the modeled system for which to generate the System Design document.
+        - name: output_directory
+          type: string
+          description: The directory to which the System Design document will be written.
+        - name: --template_file
+          type: string
+          description: The name of the Jinja2 template file to use for generating the document. (optional)
+      acceptance:
+        - scenario: Output a System Design document containing an outline of the model and its components.
+          given:
+            - The {{gen-design-doc.input.architecture_files}} represent a valid system architecture.
+            - The {{gen-design-doc.input.template_file}} exists and is a valid Jinja2 template.
+          when:
+            - The aac application is run with the gen-design-doc command and one, or more, valid architecture files, a template file, and an output directory.
+          then:
+            - A System Design document is written to {{gen-design-doc.input.output_directory}}.
+            - The {{gen-design-doc.input.template_file}} template is used as a basis for the System Design document.
+            - The System Design document is generated and contains an outline of the model(s).
