@@ -7,6 +7,19 @@ model:
   behavior:
     - name: api
       type: request-response
+      requirements:
+        - abbrv: ADD
+          ids: 0001
+        - abbrv: SUB
+          ids: 0001
+        - abbrv: MULT
+          ids: 0001
+        - abbrv: DIV
+          ids: 0001
+        - abbrv: POW
+          ids: 0001
+        - abbrv: SQRT
+          ids: 0001
       input:
         - name: request
           type: MathRequest
@@ -20,4 +33,5 @@ model:
           when:
             - The user makes a request with MathRequest
           then:
-            - The user gets a response with MathResponse
+            - The MathRequest function is executed against the values and a result is calculated
+            - The user gets a MathResponse response with the calculated value
