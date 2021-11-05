@@ -13,7 +13,7 @@ def kw(**kwargs):
 
 def o(model: str, **kwargs):
     """Return a simulated model after being parsed."""
-    root = ("name" in kwargs and kwargs["name"]) or "root"
+    root = ("name" in kwargs and kwargs["name"]) or "undefined_name"
     return {root: {model: kwargs}}
 
 
