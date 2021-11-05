@@ -1,5 +1,5 @@
 spec:
-  title: Module Divide SRS
+  name: Module Divide SRS
   abbrv: DIV
   description:  This is a representative Software Requirements Specification for a module called Divide.
   requirements:

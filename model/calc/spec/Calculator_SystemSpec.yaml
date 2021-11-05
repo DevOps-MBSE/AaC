@@ -3,7 +3,7 @@ import:
   - ./IntermediateMath_PIDS.yaml
   - ./ComplexMath_PIDS.yaml
 spec:
-  title: Calculator System Spec
+  name: Calculator System Spec
   abbrv: CALC
   description: This is a specification structure to test the spec plugin.
   subspecs:

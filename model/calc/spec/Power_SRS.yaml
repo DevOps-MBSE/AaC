@@ -1,5 +1,5 @@
 spec:
-  title: Module Power SRS
+  name: Module Power SRS
   abbrv: POW
   description:  This is a representative Software Requirements Specification for a module called Power.
   requirements:

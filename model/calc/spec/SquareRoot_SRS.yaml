@@ -1,5 +1,5 @@
 spec:
-  title: Module Square Root SRS
+  name: Module Square Root SRS
   abbrv: SQRT
   description:  This is a representative Software Requirements Specification for a module called Square Root.
   requirements:

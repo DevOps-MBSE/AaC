@@ -1,5 +1,5 @@
 spec:
-  title: Module Add SRS
+  name: Module Add SRS
   abbrv: ADD
   description:  This is a representative Software Requirements Specification for a module called Add.
   requirements:

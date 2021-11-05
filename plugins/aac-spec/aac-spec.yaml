@@ -1,7 +1,7 @@
 data:
   name: Specification
   fields:
-    - name: title
+    - name: name
       type: string
     - name: abbrv
       type: string

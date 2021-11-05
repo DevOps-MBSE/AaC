@@ -1,5 +1,5 @@
 spec:
-  title: Module Subtract SRS
+  name: Module Subtract SRS
   abbrv: SUB
   description:  This is a representative Software Requirements Specification for a module called Subtract.
   requirements:

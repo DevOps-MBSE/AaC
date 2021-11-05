@@ -1,5 +1,5 @@
 spec:
-  title: Module Multiply SRS
+  name: Module Multiply SRS
   abbrv: MULT
   description:  This is a representative Software Requirements Specification for a module called Multiply.
   requirements:
