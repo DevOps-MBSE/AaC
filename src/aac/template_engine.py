@@ -111,19 +111,21 @@ def generate_template_as_string(template: Template, properties: dict[str, str]) 
 
 
 def write_generated_templates_to_file(
-    generated_files: list[TemplateOutputFile], output_dir: str
+    generated_files: list[TemplateOutputFile], output_directory: str
 ) -> None:
     """
     Write a list of generated files to the target directory.
 
     Args:
         generated_files: list of generated files to write to the filesystem
-        output_dir: the directory to write the generated files to.
+        output_directory: the directory to write the generated files to.
     """
+    if not os.path.exists(output_directory):
+        os.mkdir(output_directory)
 
     for generated_file in generated_files:
         _write_file(
-            output_dir,
+            output_directory,
             generated_file.file_name,
             generated_file.content,
             generated_file.overwrite,

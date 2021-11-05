@@ -52,7 +52,7 @@ data:
     - name
     - value
 ---
-data: 
+data:
   name: RequirementReference
   fields:
     - name: spec
@@ -78,7 +78,7 @@ ext:
     add:
       - name: requirements
         type: RequirementReference[]
-        ---
+---
 ext:
   name: addSpecTraceToData
   type: data
