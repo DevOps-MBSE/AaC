@@ -1,6 +1,6 @@
 import:
-  - mathmessagehandler.yaml
-  - mathlogger.yaml
+  - ./mathmessagehandler.yaml
+  - ./mathlogger.yaml
 model:
   name: Calculator
   description:  A simple calculator.

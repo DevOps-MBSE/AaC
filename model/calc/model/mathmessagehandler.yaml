@@ -1,0 +1,37 @@
+import:
+  - ./MathRequest.yaml
+  - ./MathResponse.yaml
+model:
+  name: MathMessageHandler
+  description: Api handler for math functions.
+  behavior:
+    - name: api
+      type: request-response
+      requirements:
+        - abbrv: ADD
+          ids: 0001
+        - abbrv: SUB
+          ids: 0001
+        - abbrv: MULT
+          ids: 0001
+        - abbrv: DIV
+          ids: 0001
+        - abbrv: POW
+          ids: 0001
+        - abbrv: SQRT
+          ids: 0001
+      input:
+        - name: request
+          type: MathRequest
+      output:
+        - name: response
+          type: MathResponse
+      acceptance:
+        - scenario: on-request
+          given:
+            - The MathMessageHandler is running
+          when:
+            - The user makes a request with MathRequest
+          then:
+            - The MathRequest function is executed against the values and a result is calculated
+            - The user gets a MathResponse response with the calculated value
