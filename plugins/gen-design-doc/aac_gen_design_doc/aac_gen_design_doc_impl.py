@@ -52,7 +52,6 @@ def gen_design_doc(architecture_files: str, output_directory: str, template_file
     print(f"Wrote system design document to {os.path.join(output_directory, output_filespec)}")
 
 
-# TODO: We really need this try/except code in a separate function
 def _get_parsed_models(architecture_files: list) -> list:
     try:
         return list(map(parser.parse_file, architecture_files))
