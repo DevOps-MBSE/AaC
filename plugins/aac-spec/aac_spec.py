@@ -36,70 +36,95 @@ def get_base_model_extensions() -> str:
 
 
 PLUGIN_EXTENSION_YAML = """
+data:
+  name: Specification
+  fields:
+    - name: title
+      type: string
+    - name: abbrv
+      type: string
+    - name: description
+      type: string
+    - name: subspecs
+      type: string[]
+    - name: sections
+      type: SpecSection[]
+    - name: requirements
+      type: Requirement[]
+  required:
+    - title
+    - abbrv
+---
+data:
+  name: SpecSection
+  fields:
+    - name: name
+      type: string
+    - name: description
+      type: string
+    - name: requirements
+      type: Requirement[]
+  required:
+    - name
+---
+data:
+  name: Requirement
+  fields:
+    - name: id
+      type: string
+    - name: shall
+      type: string
+    - name: parent
+      type: RequirementReference[]
+    - name: attributes
+      type: RequirementAttribute[]
+  required:
+    - id
+    - shall
+---
+data:
+  name: RequirementAttribute
+  fields:
+    - name: name
+      type: string
+    - name: value
+      type: string
+  required:
+    - name
+    - value
+---
+data:
+  name: RequirementReference
+  fields:
+    - name: abbrv
+      type: string
+    - name: ids
+      type: string[]
+  required:
+    - spec
+    - ids
+---
 ext:
-  dataExt:
-    add:
-    - name: spec
-      type: Specification
   name: addSpecificationToRoot
   type: root
-
+  dataExt:
+    add:
+      - name: spec
+        type: Specification
 ---
-data:
-  fields:
-  - name: name
-    type: string
-  - name: description
-    type: string
-  - name: subspecs
-    type: string[]
-  - name: sections
-    type: SpecSection[]
-  - name: requirements
-    type: Requirement[]
-  name: Specification
-  required:
-  - name
-
+ext:
+  name: addSpecTraceToBehavior
+  type: Behavior
+  dataExt:
+    add:
+      - name: requirements
+        type: RequirementReference[]
 ---
-data:
-  fields:
-  - name: name
-    type: string
-  - name: description
-    type: string
-  - name: requirements
-    type: Requirement[]
-  name: SpecSection
-  required:
-  - name
-
----
-data:
-  fields:
-  - name: id
-    type: string
-  - name: shall
-    type: string
-  - name: parent
-    type: string
-  - name: attributes
-    type: RequirementAttribute[]
-  name: Requirement
-  required:
-  - id
-  - shall
-
----
-data:
-  fields:
-  - name: name
-    type: string
-  - name: value
-    type: string
-  name: RequirementAttribute
-  required:
-  - name
-  - value
-
+ext:
+  name: addSpecTraceToData
+  type: data
+  dataExt:
+    add:
+      - name: requirements
+        type: RequirementReference[]
 """
