@@ -1,5 +1,3 @@
-from os.path import abspath
-
 from pluggy import HookimplMarker, HookspecMarker
 
 PLUGIN_PROJECT_NAME = "aac"
