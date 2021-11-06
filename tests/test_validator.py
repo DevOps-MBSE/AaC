@@ -13,7 +13,7 @@ def kw(**kwargs):
 
 def o(model: str, **kwargs):
     """Return a simulated model after being parsed."""
-    root = ("name" in kwargs and kwargs["name"]) or "root"
+    root = ("name" in kwargs and kwargs["name"]) or "undefined_name"
     return {root: {model: kwargs}}
 
 
@@ -314,6 +314,12 @@ class ValidatorTest(TestCase):
     def test_validation_fails_for_invalid_root_type(self):
         pattern = "bad.*not.*AaC.*root"
         assert_model_is_invalid(self, o("bad", name=""), pattern)
+
+    def test_validation_passes_for_valid_root_extensions(self):
+        new_root_type = data(name="Specification", fields=[kw(name="spec_name", type="string")])
+        new_root_extension = ext(name="root_ext", type="root", dataExt=kw(add=[kw(name="spec", type="Specification")]))
+        spec_root_definition = o(model="spec", name="spec", spec_name="some spec")
+        assert_model_is_valid(self, new_root_type | new_root_extension | spec_root_definition)
 
 
 class ValidatorFunctionalTest(TestCase):
