@@ -5,9 +5,6 @@ spec:
   name: Complex Math PIDS
   abbrv: CM
   description:  This is a representative Prime Item Development Specification for a subsystem called Complex Math.
-  subspecs:
-    - POW
-    - SQRT
   requirements:
     - id: 0001
       shall:  When receiving a complex math request message, the calculator shall respond with the the result of the complex math function.

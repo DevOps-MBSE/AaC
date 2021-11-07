@@ -6,10 +6,6 @@ spec:
   name: Calculator System Spec
   abbrv: CALC
   description: This is a specification structure to test the spec plugin.
-  subspecs:
-    - SM
-    - IM
-    - CM
   requirements:
     - id: 0001
       shall:  The test system shall log all messages it receives.

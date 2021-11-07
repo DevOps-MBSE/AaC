@@ -1,5 +1,8 @@
 data:
   name: MathResponse
+  requirements:
+    - abbrv: CALC_IRS
+      ids: 0003
   fields:
     - name: result
       type: number

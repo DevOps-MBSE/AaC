@@ -5,9 +5,6 @@ spec:
   name:  Simple Math PIDS
   abbrv: SM
   description:  This is a representative Prime Item Development Specification for a subsystem called Add-Simple Math.
-  subspecs:
-    - ADD
-    - SUB
   requirements:
     - id: 0001
       shall:  When receiving a simple math request message, the calculator shall respond with the the result of the simple math function.

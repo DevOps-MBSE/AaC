@@ -5,9 +5,6 @@ spec:
   name: Intermediate Math PIDS
   abbrv: IM
   description:  This is a representative Prime Item Development Specification for a subsystem called Intermediate Math.
-  subspecs:
-    - MULT
-    - DIV
   requirements:
     - id: 0001
       shall:  When receiving a intermediate math request message, the calculator shall respond with the the result of the intermediate math function.

@@ -7,8 +7,6 @@ data:
       type: string
     - name: description
       type: string
-    - name: subspecs
-      type: string[]
     - name: sections
       type: SpecSection[]
     - name: requirements
