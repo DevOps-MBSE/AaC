@@ -14,5 +14,7 @@ def spec_validate(architecture_file: str, parsed_model: dict):
         parsed_model <dict>: Dict obj representing a yaml plugin model
     """
 
+    print(parsed_model)
+
     # TODO add implementation here
     raise NotImplementedError("spec_validate is not implemented.")

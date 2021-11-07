@@ -1,6 +1,6 @@
 import:
   - ../spec/Add_SRS.yaml
-  - ../spec/Subtrace_SRS.yaml
+  - ../spec/Subtract_SRS.yaml
   - ../spec/Multiply_SRS.yaml
   - ../spec/Divide_SRS.yaml
   - ../spec/Power_SRS.yaml
