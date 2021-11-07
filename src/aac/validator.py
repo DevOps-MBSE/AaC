@@ -91,7 +91,7 @@ def _get_all_parsing_errors(model: dict) -> list:
     """Return all parsing errors."""
 
     def get_unrecognized_root_errors(root):
-        if root not in util.get_roots():
+        if root not in VALIDATOR_CONTEXT.get_root_type_names():
             return f"{root} is not a recognized AaC root type"
 
     return _filter_none_values(map(get_unrecognized_root_errors, model.keys()))
@@ -502,6 +502,21 @@ class ValidatorContext:
     extended_validation_aac_model: list = attrib(
         validator=validators.instance_of(dict), init=False, default={}
     )
+
+    def get_root_type_names(self) -> list[str]:
+        """Gets the list of root names as defined in the extended AaC model specification.
+        Returns:
+            A list of strings, one entry for each root name in the AaC model specification.
+        """
+        def get_field_name(fields_entry_dict: dict):
+            return fields_entry_dict.get("name")
+
+        roots_model = self.get_all_extended_definitions().get("root")
+
+        if roots_model:
+            return map(get_field_name, roots_model.get("data").get("fields"))
+        else:
+            return []
 
     def get_defined_types(self) -> list[str]:
         """
