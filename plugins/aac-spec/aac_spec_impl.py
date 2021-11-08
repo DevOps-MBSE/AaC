@@ -14,15 +14,43 @@ def spec_validate(architecture_file: str):
         architecture_file (file): The file to validate for spec cross-references.
     """
 
+    validation_errors = []
     parsed_model = parser.parse_file(architecture_file)
 
     # go through the parsed model to find requirement references
-    req_refs = []
-    req_refs.extend(util.search(parsed_model, ["spec", "requirements", "parent"]))
-    req_refs.extend(util.search(parsed_model, ["model", "behavior", "requirements"]))
-    req_refs.extend(util.search(parsed_model, ["data", "requirements"]))
+    req_refs = {}
+    for model_name in parsed_model:
+        refs = []
+        refs.extend(util.search(parsed_model[model_name], ["spec", "requirements", "parent"]))
+        refs.extend(util.search(parsed_model[model_name], ["model", "behavior", "requirements"]))
+        refs.extend(util.search(parsed_model[model_name], ["data", "requirements"]))
+        if refs:
+            req_refs[model_name] = refs
 
-    print("Found the following requirement references:")
-    print(req_refs)
+    # get all the specs by abbreviation
+    spec_by_abbrv = {}
+    specs = util.get_models_by_type(parsed_model, "spec")
+    for spec in specs:
+        abbrv = util.search(spec, ["spec", "abbrv"])  # TODO this is giving me an empty list..figure out why
+        print(f"Found abbrv: {abbrv}")
+        spec_by_abbrv[abbrv] = spec
+
+    # ensure all req_refs are present in the referenced location
+    for model_name in req_refs:
+        ref = req_refs[model_name]
+        abbrv = ref["abbrv"]
+        if abbrv in spec_by_abbrv:
+            # abbrv ref is good, now check the id
+            id = ref["id"]
+            ids_in_spec = []
+            ids_in_spec.extend(util.search(spec_by_abbrv[abbrv], ["spec", "requirements", "id"]))
+            ids_in_spec.extend(util.search(spec_by_abbrv[abbrv], ["spec", "sections", "requirements", "id"]))
+            print("Found requirement ids:")
+            print(ids_in_spec)
+            if id not in ids_in_spec:
+                validation_errors.extend(f"Invalid requirement id reference in {model_name}: {ref}")
+
+        else:
+            validation_errors.extend(f"Invalid requirement abbreviation reference in {model_name}:  {ref}")
 
     raise NotImplementedError("spec_validate is not implemented.")
