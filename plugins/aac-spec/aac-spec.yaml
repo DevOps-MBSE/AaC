@@ -1,3 +1,48 @@
+model:
+  name: aac-spec
+  description: aac-spec is a Architecture-as-Code plugin that enables requirement definition and trace in Arch-as-Code models.
+  behavior:
+    - name: spec-validate
+      type: command
+      description: Validates spec traces within the AaC model
+      input:
+        - name: architecture_file
+          type: file
+          description:  The file to validate for spec cross-references.
+      acceptance:
+        - scenario: Valid spec traces are modeled.
+          given:
+            - The {{spec-validate.input.architecture_file}} contains a valid architecture specification.
+            - The {{spec-validate.input.parsed_model}} contains the parsed content from architecture_file.
+          when:
+            - The aac app is run with the spec-validate command.
+          then:
+            - A message saying spec validation was successful is printed to the console.
+---
+ext:
+  name: addSpecificationToRoot
+  type: root
+  dataExt:
+    add:
+      - name: spec
+        type: Specification
+---
+ext:
+  name: addSpecTraceToBehavior
+  type: Behavior
+  dataExt:
+    add:
+      - name: requirements
+        type: RequirementReference[]
+---
+ext:
+  name: addSpecTraceToData
+  type: data
+  dataExt:
+    add:
+      - name: requirements
+        type: RequirementReference[]
+---
 data:
   name: Specification
   fields:
@@ -63,48 +108,3 @@ data:
   required:
     - abbrv
     - ids
----
-ext:
-  name: addSpecificationToRoot
-  type: root
-  dataExt:
-    add:
-      - name: spec
-        type: Specification
----
-ext:
-  name: addSpecTraceToBehavior
-  type: Behavior
-  dataExt:
-    add:
-      - name: requirements
-        type: RequirementReference[]
----
-ext:
-  name: addSpecTraceToData
-  type: data
-  dataExt:
-    add:
-      - name: requirements
-        type: RequirementReference[]
----
-model:
-  name: aac-spec
-  description: aac-spec is a Architecture-as-Code plugin that enables requirement definition and trace in Arch-as-Code models.
-  behavior:
-    - name: spec-validate
-      type: command
-      description: Validates spec traces within the AaC model
-      input:
-        - name: architecture_file
-          type: file
-          description:  The file to validate for spec cross-references.
-      acceptance:
-        - scenario: Valid spec traces are modeled.
-          given:
-            - The {{spec-validate.input.architecture_file}} contains a valid architecture specification.
-            - The {{spec-validate.input.parsed_model}} contains the parsed content from architecture_file.
-          when:
-            - The aac app is run with the spec-validate command.
-          then:
-            - A message saying spec validation was successful is printed to the console.

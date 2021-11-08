@@ -30,3 +30,115 @@ def get_commands() -> list[AacCommand]:
     ]
 
     return plugin_commands
+
+
+@aac.hookimpl
+def get_base_model_extensions() -> str:
+    """
+    Return data and ext definitions to apply to the AaC base.
+
+    Returns:
+        string representing yaml extensions and data definitions employed by the plugin
+    """
+    return PLUGIN_EXTENSION_YAML
+
+
+PLUGIN_EXTENSION_YAML = """
+ext:
+  dataExt:
+    add:
+    - name: spec
+      type: Specification
+  name: addSpecificationToRoot
+  type: root
+
+---
+ext:
+  dataExt:
+    add:
+    - name: requirements
+      type: RequirementReference[]
+  name: addSpecTraceToBehavior
+  type: Behavior
+
+---
+ext:
+  dataExt:
+    add:
+    - name: requirements
+      type: RequirementReference[]
+  name: addSpecTraceToData
+  type: data
+
+---
+data:
+  fields:
+  - name: name
+    type: string
+  - name: abbrv
+    type: string
+  - name: description
+    type: string
+  - name: sections
+    type: SpecSection[]
+  - name: requirements
+    type: Requirement[]
+  name: Specification
+  required:
+  - name
+  - abbrv
+
+---
+data:
+  fields:
+  - name: name
+    type: string
+  - name: description
+    type: string
+  - name: requirements
+    type: Requirement[]
+  name: SpecSection
+  required:
+  - name
+
+---
+data:
+  fields:
+  - name: id
+    type: string
+  - name: shall
+    type: string
+  - name: parent
+    type: RequirementReference[]
+  - name: attributes
+    type: RequirementAttribute[]
+  name: Requirement
+  required:
+  - id
+  - shall
+
+---
+data:
+  fields:
+  - name: name
+    type: string
+  - name: value
+    type: string
+  name: RequirementAttribute
+  required:
+  - name
+  - value
+
+---
+data:
+  fields:
+  - name: abbrv
+    type: string
+  - name: ids
+    type: string[]
+  name: RequirementReference
+  required:
+  - abbrv
+  - ids
+
+"""

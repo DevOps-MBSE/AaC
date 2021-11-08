@@ -117,6 +117,7 @@ def _compile_templates(parsed_models: dict[str, dict]) -> dict[str, list[Templat
             template.template_name, plugin_implementation_name
         )
 
+    # TODO I can imagine a scenario where all a plugin does is extend the data model.  Issue #99
     # ensure model is present and valid, get the plugin name
     plugin_models = util.get_models_by_type(parsed_models, "model")
     if len(plugin_models.keys()) != 1:
@@ -150,7 +151,7 @@ def _compile_templates(parsed_models: dict[str, dict]) -> dict[str, list[Templat
     template_properties = {
         "plugin": plugin,
         "commands": commands,
-        "aac_definitions": plugin_aac_definitions,
+        "extensions": plugin_aac_definitions,
     }
     generated_templates = generate_templates(
         load_default_templates("genplug"), template_properties
