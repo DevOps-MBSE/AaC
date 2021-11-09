@@ -120,16 +120,32 @@ def write_generated_templates_to_file(
         generated_files: list of generated files to write to the filesystem
         output_directory: the directory to write the generated files to.
     """
-    if not os.path.exists(output_directory):
-        os.mkdir(output_directory)
 
+    _ensure_directory_exists(output_directory)
     for generated_file in generated_files:
         _write_file(
-            output_directory,
+            _full_output_directory(output_directory, generated_file),
             generated_file.file_name,
             generated_file.content,
             generated_file.overwrite,
         )
+
+
+def _full_output_directory(output_directory: str, generated_file: TemplateOutputFile) -> str:
+    def _should_output_to_cwd(path: TemplateOutputFile) -> bool:
+        return path.parent_dir == "."
+
+    output_dir = output_directory
+    if not _should_output_to_cwd(generated_file):
+        output_dir = os.path.join(output_directory, generated_file.parent_dir)
+        _ensure_directory_exists(output_dir)
+
+    return output_dir
+
+
+def _ensure_directory_exists(path: str) -> None:
+    if not os.path.exists(path):
+        os.mkdir(path)
 
 
 def _write_file(path: str, file_name: str, content: str, overwrite: bool) -> None:
@@ -145,10 +161,10 @@ def _write_file(path: str, file_name: str, content: str, overwrite: bool) -> Non
     file_to_write = os.path.join(path, file_name)
     if not overwrite and os.path.exists(file_to_write):
         print(f"{file_to_write} already exists, skipping write")
-    else:
-        file = open(file_to_write, "w")
+        return
+
+    with open(file_to_write, "w") as file:
         file.writelines(content)
-        file.close()
 
 
 @attrs(slots=True, auto_attribs=True)
@@ -157,13 +173,15 @@ class TemplateOutputFile:
     Class containing all of the relevant information necessary to handle writing templates to files.
 
     Attributes:
-        template_name: The name of the jinja2 template the generated content is based on
-        content: The generated content
-        overwrite: A boolean to indicate if this template output should overwrite any existing files with the same name.
+        parent_dir (str): The directory in which to generate the file (defaults to the current directory).
+        template_name (str): The name of the jinja2 template the generated content is based on
+        content (str): The generated content
+        overwrite (bool): A boolean to indicate if this template output should overwrite any existing files with the same name.
 
         file_name: This attribute is not exposed in the constructor. It's up to the user to set the filename.
     """
 
+    parent_dir: str = attrib(validator=validators.instance_of(str), default=".", kw_only=True)
     template_name: str = attrib(validator=validators.instance_of(str))
     file_name: str = attrib(validator=validators.instance_of(str), default="", init=False)
     content: str = attrib(validator=validators.instance_of(str))
