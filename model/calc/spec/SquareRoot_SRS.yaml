@@ -3,11 +3,11 @@ spec:
   abbrv: SQRT
   description:  This is a representative Software Requirements Specification for a module called Square Root.
   requirements:
-    - id: 0001
+    - id: 1
       shall:  When receiving a square root message, the calculator shall respond with the square root of the value.
       parent:
         - abbrv: CM
-          id: 0001
+          ids: 1
       attributes:
         - name: TADI
           value: Test

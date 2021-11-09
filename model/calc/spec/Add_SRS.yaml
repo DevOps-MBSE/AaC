@@ -3,11 +3,11 @@ spec:
   abbrv: ADD
   description:  This is a representative Software Requirements Specification for a module called Add.
   requirements:
-    - id: 0001
+    - id: 1
       shall:  When receiving an add message, the calculator shall respond with the sum of the provided values.
       parent:
         - abbrv: SM
-          id: 0001
+          ids: 1
       attributes:
         - name: TADI
           value: Test

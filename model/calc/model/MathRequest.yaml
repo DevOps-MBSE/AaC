@@ -5,7 +5,9 @@ data:
   name: MathRequest
   requirements:
     - abbrv: CALC_IRS
-      ids: 0001, 0002
+      ids:
+        - 1
+        - 2
   fields:
     - name: function
       type: MathFunction

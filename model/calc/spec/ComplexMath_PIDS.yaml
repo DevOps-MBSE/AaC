@@ -6,11 +6,11 @@ spec:
   abbrv: CM
   description:  This is a representative Prime Item Development Specification for a subsystem called Complex Math.
   requirements:
-    - id: 0001
+    - id: 1
       shall:  When receiving a complex math request message, the calculator shall respond with the the result of the complex math function.
       parent:
         - abbrv: CALC
-          id: 0003
+          ids: 3
       attributes:
         - name: TADI
           value: Test

@@ -2,7 +2,7 @@ data:
   name: MathResponse
   requirements:
     - abbrv: CALC_IRS
-      ids: 0003
+      ids: 3
   fields:
     - name: result
       type: number

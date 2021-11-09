@@ -16,7 +16,11 @@ model:
       description: Add or subtract numbers
       requirements:
         - abbrv: CALC
-          ids: 0001, 0002, 0003, 0004
+          ids:
+            - 1
+            - 2
+            - 3
+            - 4
       input:
         - name: request
           type: MathRequest

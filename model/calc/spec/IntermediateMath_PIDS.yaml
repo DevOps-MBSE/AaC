@@ -6,11 +6,11 @@ spec:
   abbrv: IM
   description:  This is a representative Prime Item Development Specification for a subsystem called Intermediate Math.
   requirements:
-    - id: 0001
+    - id: 1
       shall:  When receiving a intermediate math request message, the calculator shall respond with the the result of the intermediate math function.
       parent:
         - abbrv: CALC
-          id: 0003
+          ids: 3
       attributes:
         - name: TADI
           value: Test
