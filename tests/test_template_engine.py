@@ -97,7 +97,6 @@ class TestTemplateEngine(TestCase):
         with TemporaryDirectory() as temp_dir:
             write_generated_templates_to_file([test_template], temp_dir)
             temp_dir_files = os.listdir(temp_dir)
-            print(temp_dir_files)
 
             self.assertEqual(len(temp_dir_files), 1)
             self.assertIn(test_template.parent_dir, temp_dir_files)
