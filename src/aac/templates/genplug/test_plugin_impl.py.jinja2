@@ -1,0 +1,8 @@
+from unittest import TestCase
+
+from {{plugin.implementation_name}}_impl import *
+
+class Test{{plugin.name | title | replace('-', '')}}(TestCase):
+    def test(self):
+        # TODO: Write tests for {{plugin.name}}
+        self.assertTrue(False)
