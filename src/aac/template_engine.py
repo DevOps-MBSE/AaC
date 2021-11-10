@@ -132,11 +132,11 @@ def write_generated_templates_to_file(
 
 
 def _full_output_directory(output_directory: str, generated_file: TemplateOutputFile) -> str:
-    def _should_output_to_cwd(path: TemplateOutputFile) -> bool:
-        return path.parent_dir == "."
+    def _should_output_to_plugin_root_directory(output_file: TemplateOutputFile) -> bool:
+        return output_file.parent_dir == "."
 
     output_dir = output_directory
-    if not _should_output_to_cwd(generated_file):
+    if not _should_output_to_plugin_root_directory(generated_file):
         output_dir = os.path.join(output_directory, generated_file.parent_dir)
         _ensure_directory_exists(output_dir)
 
@@ -173,7 +173,7 @@ class TemplateOutputFile:
     Class containing all of the relevant information necessary to handle writing templates to files.
 
     Attributes:
-        parent_dir (str): The directory in which to generate the file (defaults to the current directory).
+        parent_dir (str): The directory in which to generate the file (defaults to the plugin root directory).
         template_name (str): The name of the jinja2 template the generated content is based on
         content (str): The generated content
         overwrite (bool): A boolean to indicate if this template output should overwrite any existing files with the same name.
