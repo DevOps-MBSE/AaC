@@ -108,6 +108,7 @@ def _compile_templates(parsed_models: dict[str, dict]) -> dict[str, list[Templat
 
     # Define which templates we want to overwrite.
     templates_to_overwrite = ["plugin.py.jinja2", "setup.py.jinja2"]
+    template_parent_directories = {"test_plugin_impl.py.jinja2": "tests"}
 
     def set_overwrite_value(template: TemplateOutputFile):
         template.overwrite = template.template_name in templates_to_overwrite
@@ -116,6 +117,10 @@ def _compile_templates(parsed_models: dict[str, dict]) -> dict[str, list[Templat
         template.file_name = _convert_template_name_to_file_name(
             template.template_name, plugin_implementation_name
         )
+
+    def set_parent_directory_value(template: TemplateOutputFile):
+        if template.template_name in template_parent_directories:
+            template.parent_dir = template_parent_directories[template.template_name]
 
     # ensure model is present and valid, get the plugin name
     plugin_models = util.get_models_by_type(parsed_models, "model")
@@ -159,6 +164,7 @@ def _compile_templates(parsed_models: dict[str, dict]) -> dict[str, list[Templat
     for template in generated_templates.values():
         set_overwrite_value(template)
         set_filename_value(template)
+        set_parent_directory_value(template)
 
     return generated_templates
 
