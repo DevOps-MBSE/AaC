@@ -83,3 +83,24 @@ class TestTemplateEngine(TestCase):
 
                 with open(os.path.join(temp_directory, expected_template.file_name)) as file:
                     self.assertEqual(expected_template.content, file.read())
+
+    def test_write_generated_templates_to_file_in_directory(self):
+        test_template = TemplateOutputFile(
+            "template.test", "The sample content.", False, parent_dir="tests"
+        )
+        test_template.file_name = "temp"
+
+        self.assertIsNotNone(test_template)
+        self.assertEqual(test_template.file_name, "temp")
+        self.assertEqual(test_template.parent_dir, "tests")
+
+        with TemporaryDirectory() as temp_dir:
+            write_generated_templates_to_file([test_template], temp_dir)
+            temp_dir_files = os.listdir(temp_dir)
+
+            self.assertEqual(len(temp_dir_files), 1)
+            self.assertIn(test_template.parent_dir, temp_dir_files)
+
+            test_file = os.path.join(temp_dir, test_template.parent_dir, test_template.file_name)
+            with open(test_file) as file:
+                self.assertEqual(test_template.content, file.read())
