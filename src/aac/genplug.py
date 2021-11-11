@@ -119,8 +119,7 @@ def _compile_templates(parsed_models: dict[str, dict]) -> dict[str, list[Templat
         )
 
     def set_parent_directory_value(template: TemplateOutputFile):
-        if template.template_name in template_parent_directories:
-            template.parent_dir = template_parent_directories[template.template_name]
+        template.parent_dir = template_parent_directories.get(template.template_name) or template.parent_dir
 
     # ensure model is present and valid, get the plugin name
     plugin_models = util.get_models_by_type(parsed_models, "model")

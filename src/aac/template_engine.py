@@ -124,14 +124,16 @@ def write_generated_templates_to_file(
     _ensure_directory_exists(output_directory)
     for generated_file in generated_files:
         _write_file(
-            _full_output_directory(output_directory, generated_file),
+            _get_template_output_directory(output_directory, generated_file),
             generated_file.file_name,
             generated_file.content,
             generated_file.overwrite,
         )
 
 
-def _full_output_directory(output_directory: str, generated_file: TemplateOutputFile) -> str:
+def _get_template_output_directory(
+    output_directory: str, generated_file: TemplateOutputFile
+) -> str:
     def _should_output_to_plugin_root_directory(output_file: TemplateOutputFile) -> bool:
         return output_file.parent_dir == "."
 
