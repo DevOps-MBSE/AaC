@@ -9,13 +9,30 @@ plugin_version = "0.0.1"
 
 def spec_validate(architecture_file: str):
     """
-    Validates spec traces within the AaC model.
+    Validates spec traces within the AaC model.  If the model is invalid, print errors and exit with a code of 1.
 
     Args:
         architecture_file (file): The file to validate for spec cross-references.
     """
 
+    is_valid, validation_errors = _do_validate(architecture_file)
+
+    # if validation errors have been found raise a validation exception
+    if not is_valid:
+        print("Spec is invalid")
+        for msg in validation_errors:
+            print(msg)
+        sys.exit(1)
+
+    else:
+        print("Spec is valid.")
+
+
+def _do_validate(architecture_file: str) -> tuple[bool, list]:
+
+    is_valid = True
     validation_errors = []
+
     parsed_model = parser.parse_file(architecture_file)
 
     # go through the parsed model to find requirement references
@@ -37,6 +54,7 @@ def spec_validate(architecture_file: str):
         if len(abbrv) == 1:
             spec_by_abbrv[abbrv[0]] = specs[spec_name]
         else:
+            is_valid = False
             validation_errors.append(f"Spec named {spec_name} must have 1 abbrv in it's definition.  Found {abbrv}.")
 
     # ensure all req_refs are present in the referenced location
@@ -54,20 +72,15 @@ def spec_validate(architecture_file: str):
                 if isinstance(ids, list):
                     for id in ids:
                         if id not in ids_in_spec:
+                            is_valid = False
                             validation_errors.append(f"Invalid requirement id {id} reference in {model_name}: {ref}")
                 else:
                     if ids not in ids_in_spec:
+                        is_valid = False
                         validation_errors.append(f"Invalid requirement id {ids} reference in {model_name}: {ref}")
 
             else:
+                is_valid = False
                 validation_errors.append(f"Invalid requirement abbreviation {abbrv} reference in {model_name}:  {ref}")
 
-    # if validation errors have been found raise a validation exception
-    if validation_errors:
-        print("Spec is invalid")
-        for msg in validation_errors:
-            print(msg)
-        sys.exit(1)
-
-    else:
-        print("Spec is valid.")
+    return is_valid, validation_errors
