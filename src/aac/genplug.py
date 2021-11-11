@@ -179,17 +179,7 @@ def _convert_template_name_to_file_name(template_name: str, plugin_name: str) ->
         A string containing the personalized/pythonic file name.
     """
 
-    #  we're using that genplug will only ever generate python templates
-    assumed_file_extension = ".py"
-
-    #  Strip anything after the .py ending
-    strip_index = template_name.index(assumed_file_extension) + len(assumed_file_extension)
-    file_name = template_name[:strip_index]
-
-    # Replace "plugin" with the plugin name
-    file_name = file_name.replace("plugin", plugin_name)
-
-    return file_name
+    return template_name.replace(".jinja2", "").replace("plugin", plugin_name)
 
 
 def _is_user_desired_output_directory(architecture_file: str, output_dir: str) -> bool:
