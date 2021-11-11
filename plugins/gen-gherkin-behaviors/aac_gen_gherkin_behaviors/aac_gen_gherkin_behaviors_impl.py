@@ -36,10 +36,10 @@ def gen_gherkin_behaviors(architecture_file: str, output_directory: str):
 
 def _get_template_properties(parsed_models: dict) -> dict[str, dict]:
     """
-    Generates a list of template properties dictionaries for each protobuf file to generate.
+    Generates a list of template properties dictionaries for each gherkin feature file to generate.
 
     Args:
-        data_and_enum_models: a dict of models where the key is the model name and the value is the model dict
+        parsed_models: a dict of models where the key is the model name and the value is the model dict
 
     Returns:
         a list of template property dicts
