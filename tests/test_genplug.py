@@ -10,6 +10,7 @@ from aac.genplug import (
 INIT_TEMPLATE_NAME = "__init__.py.jinja2"
 PLUGIN_TEMPLATE_NAME = "plugin.py.jinja2"
 PLUGIN_IMPL_TEMPLATE_NAME = "plugin_impl.py.jinja2"
+PLUGIN_IMPL_TEST_TEMPLATE_NAME = "test_plugin_impl.py.jinja2"
 SETUP_TEMPLATE_NAME = "setup.py.jinja2"
 
 
@@ -41,21 +42,28 @@ class TestGenPlug(TestCase):
         generated_templates = _compile_templates(parsed_model)
 
         generated_template_names = []
+        generated_template_parent_directories = []
         for template in generated_templates.values():
             generated_template_names.append(template.file_name)
+            generated_template_parent_directories.append(template.parent_dir)
 
         # Check that the files don't have "-" in the name
         for name in generated_template_names:
             self.assertNotIn("-", name)
 
-        # Check that the expected files were created and named correctly
-        self.assertEqual(len(generated_template_names), 4)
+        # Check that the expected files and directories were created and named correctly
+        num_generated_templates = len(generated_templates)
+        self.assertEqual(len(generated_template_names), num_generated_templates)
+        self.assertEqual(len(generated_template_parent_directories), num_generated_templates)
 
         # Assert that the expected template files were generated
         self.assertIn("__init__.py", generated_template_names)
         self.assertIn("setup.py", generated_template_names)
         self.assertIn(f"{plugin_name}.py", generated_template_names)
         self.assertIn(f"{plugin_name}_impl.py", generated_template_names)
+        self.assertIn(f"test_{plugin_name}_impl.py", generated_template_names)
+
+        self.assertIn("tests", generated_template_parent_directories)
 
         # Assert that some expected content is present
         generated_plugin_file_contents = generated_templates.get(PLUGIN_TEMPLATE_NAME).content
@@ -73,6 +81,18 @@ class TestGenPlug(TestCase):
         self.assertIn("output_directory", generated_plugin_impl_file_contents)
         self.assertIn("raise NotImplementedError", generated_plugin_impl_file_contents)
 
+        generated_plugin_impl_test_file_contents = generated_templates.get(
+            PLUGIN_IMPL_TEST_TEMPLATE_NAME
+        ).content
+        self.assertIn("TestAacGenProtobuf(TestCase)", generated_plugin_impl_test_file_contents)
+        self.assertIn("TODO: Write tests", generated_plugin_impl_test_file_contents)
+        self.assertIn("self.assertTrue(False)", generated_plugin_impl_test_file_contents)
+
+        generated_plugin_impl_test_file_parent_dir = generated_templates.get(
+            PLUGIN_IMPL_TEST_TEMPLATE_NAME
+        ).parent_dir
+        self.assertEqual(generated_plugin_impl_test_file_parent_dir, "tests")
+
     def test__compile_templates_errors_on_multiple_models(self):
         parsed_model = parser.parse_str(
             f"{TEST_PLUGIN_YAML_STRING}\n---\n{SECONDARY_MODEL_YAML_DEFINITION}", "", True
@@ -87,20 +107,27 @@ class TestGenPlug(TestCase):
         generated_templates = _compile_templates(parsed_model)
 
         generated_template_names = []
+        generated_template_parent_directories = []
         for template in generated_templates.values():
             generated_template_names.append(template.file_name)
+            generated_template_parent_directories.append(template.parent_dir)
 
         # Check that the files don't have "-" in the name
         for name in generated_template_names:
             self.assertNotIn("-", name)
 
-        # Check that the expected files were created and named correctly
-        self.assertEqual(len(generated_template_names), 4)
+        # Check that the expected files and directories were created and named correctly
+        num_generated_templates = len(generated_templates)
+        self.assertEqual(len(generated_template_names), num_generated_templates)
+        self.assertEqual(len(generated_template_parent_directories), num_generated_templates)
 
         self.assertIn("__init__.py", generated_template_names)
         self.assertIn("setup.py", generated_template_names)
         self.assertIn(f"{plugin_name}.py", generated_template_names)
         self.assertIn(f"{plugin_name}_impl.py", generated_template_names)
+        self.assertIn(f"test_{plugin_name}_impl.py", generated_template_names)
+
+        self.assertIn("tests", generated_template_parent_directories)
 
 
 TEST_PLUGIN_YAML_STRING = """
