@@ -1,0 +1,34 @@
+# {{plugin.name}}
+
+## Plugin Commands
+
+### Shell Command
+
+```bash
+(.env) $ aac {{plugin.name}}
+```
+
+### Command arguments
+
+- `-h, --help`: Shows a help message
+{%- for command in commands %}
+{%- if command.input is defined %}
+{%- for command_input in command.input %}
+- `{{command_input.name}}`: {% if command_input.description is defined %}{{command_input.description}}{% else %}TODO: add description{%- endif %}
+{%- endfor %}
+{%- endif %}
+{%- endfor %}
+
+## Plugin Extensions and Definitions
+
+{%- for def in aac_definitions %}
+{%- set type = def | rejectattr('yaml') | list | first %}
+
+### {{type | title}} - {{def[type].name}}
+
+TODO: Add descriptive information about {{def[type].name}}
+
+```yaml
+{{def.yaml}}
+```
+{%- endfor %}
