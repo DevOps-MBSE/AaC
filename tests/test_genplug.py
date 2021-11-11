@@ -12,6 +12,7 @@ PLUGIN_TEMPLATE_NAME = "plugin.py.jinja2"
 PLUGIN_IMPL_TEMPLATE_NAME = "plugin_impl.py.jinja2"
 PLUGIN_IMPL_TEST_TEMPLATE_NAME = "test_plugin_impl.py.jinja2"
 SETUP_TEMPLATE_NAME = "setup.py.jinja2"
+README_TEMPLATE_NAME = "README.md.jinja2"
 
 
 class TestGenPlug(TestCase):
@@ -59,6 +60,7 @@ class TestGenPlug(TestCase):
         # Assert that the expected template files were generated
         self.assertIn("__init__.py", generated_template_names)
         self.assertIn("setup.py", generated_template_names)
+        self.assertIn("README.md", generated_template_names)
         self.assertIn(f"{plugin_name}.py", generated_template_names)
         self.assertIn(f"{plugin_name}_impl.py", generated_template_names)
         self.assertIn(f"test_{plugin_name}_impl.py", generated_template_names)
@@ -93,6 +95,14 @@ class TestGenPlug(TestCase):
         ).parent_dir
         self.assertEqual(generated_plugin_impl_test_file_parent_dir, "tests")
 
+        generated_readme_file_contents = generated_templates.get(README_TEMPLATE_NAME).content
+        self.assertIn("# aac-gen-protobuf", generated_readme_file_contents)
+        self.assertIn("## Plugin Commands", generated_readme_file_contents)
+        self.assertIn("## Plugin Extensions and Definitions", generated_readme_file_contents)
+        self.assertIn("$ aac aac-gen-protobuf", generated_readme_file_contents)
+        self.assertIn("### Ext", generated_readme_file_contents)
+        self.assertIn("### Enum", generated_readme_file_contents)
+
     def test__compile_templates_errors_on_multiple_models(self):
         parsed_model = parser.parse_str(
             f"{TEST_PLUGIN_YAML_STRING}\n---\n{SECONDARY_MODEL_YAML_DEFINITION}", "", True
@@ -123,6 +133,7 @@ class TestGenPlug(TestCase):
 
         self.assertIn("__init__.py", generated_template_names)
         self.assertIn("setup.py", generated_template_names)
+        self.assertIn("README.md", generated_template_names)
         self.assertIn(f"{plugin_name}.py", generated_template_names)
         self.assertIn(f"{plugin_name}_impl.py", generated_template_names)
         self.assertIn(f"test_{plugin_name}_impl.py", generated_template_names)
