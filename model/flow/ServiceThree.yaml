@@ -17,7 +17,7 @@ model:
           given:
             - ServiceThree is running
           when:
-            - The ServiceThree receives a DataC request
+            - ServiceThree receives a DataC request
           then:
             - ServiceThree processes the request into a DataD response
             - ServiceThree returns the DataD response

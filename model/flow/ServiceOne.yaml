@@ -18,7 +18,7 @@ model:
           given:
             - ServiceOne is running
           when:
-            - The ServiceOne receives a DataA request
+            - ServiceOne receives a DataA request
           then:
             - ServiceOne processes the request into a DataB response
             - ServiceOne returns the DataB response
@@ -26,6 +26,6 @@ model:
           given:
             - ServiceOne is running
           when:
-            - The ServiceOne receives request that isn't a DataA request
+            - ServiceOne receives request that isn't a DataA request
           then:
             - ServiceOne returns an error response code

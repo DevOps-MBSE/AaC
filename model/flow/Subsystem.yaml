@@ -22,7 +22,7 @@ model:
             - Subsystem is running
             - ServiceTwo is running
           when:
-            - The Subsystem receives a DataB request
+            - Subsystem receives a DataB request
           then:
             - Subsystem delegates the request processing to ServiceTwo which returns a DataC response
             - Subsystem returns the DataC response

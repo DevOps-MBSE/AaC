@@ -32,7 +32,7 @@ model:
             - Subsystem is running
             - ServiceThree is running
           when:
-            - The System receives a DataA request
+            - System receives a DataA request
           then:
             - System processes the request into a DataD response
             - System returns the DataD response
