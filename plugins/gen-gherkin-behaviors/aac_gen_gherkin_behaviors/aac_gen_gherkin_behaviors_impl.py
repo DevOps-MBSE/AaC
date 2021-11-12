@@ -28,7 +28,6 @@ def gen_gherkin_behaviors(architecture_file: str, output_directory: str):
     loaded_templates = load_templates(__package__)
 
     message_template_properties = _get_template_properties(parsed_models)
-    print(message_template_properties)
     generated_template_messages = _generate_gherkin_feature_files(
         loaded_templates, message_template_properties
     )
@@ -136,9 +135,12 @@ def _generate_gherkin_feature_files(
     """
 
     def gen_template(properties: dict) -> TemplateOutputFile:
+        feature_name = properties.get("feature").get("name")
+
         generated_template = generate_template(gherkin_template, properties)
-        generated_template.file_name = properties.get("feature").get("name")
+        generated_template.file_name = _generate_gherkin_feature_file_name(feature_name)
         generated_template.overwrite = False
+
         return generated_template
 
     # This plugin produces only gherkin feature files (it only needs one template)
@@ -154,6 +156,15 @@ def _generate_gherkin_feature_files(
     generated_templates = list(map(gen_template, properties_list))
 
     return generated_templates
+
+
+def _generate_gherkin_feature_file_name(behavior_name: str) -> str:
+    sanitized_name = behavior_name.strip()
+
+    for replacement in ((" ", "_"), ("-", "_")):
+        sanitized_name = sanitized_name.replace(*replacement)
+
+    return f"{sanitized_name}.feature"
 
 
 class GenerateGherkinException(Exception):

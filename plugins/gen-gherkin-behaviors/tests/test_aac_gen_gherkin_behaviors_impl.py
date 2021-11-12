@@ -2,11 +2,16 @@ import os
 from tempfile import NamedTemporaryFile, TemporaryDirectory
 from unittest import TestCase
 
-from aac_gen_gherkin_behaviors.aac_gen_gherkin_behaviors_impl import gen_gherkin_behaviors
+from aac_gen_gherkin_behaviors.aac_gen_gherkin_behaviors_impl import (
+    _generate_gherkin_feature_file_name,
+    gen_gherkin_behaviors,
+)
+from nose2.tools import params
 
 
 class TestGenerateGherkinBehaviorsPlugin(TestCase):
     def test_gen_gherkin_behaviors_with_one_behavior_multiple_scenarios(self):
+        expected_filename = "First_Behavior.feature"
         behavior_name_1 = "First Behavior"
         behavior_description_1 = "Takes inspiration from the universe and creates magical beans"
 
@@ -18,7 +23,7 @@ class TestGenerateGherkinBehaviorsPlugin(TestCase):
         )
         behavior_scenario_1_then_1 = "the energy of inspiration manifests as magical beans"
 
-        # Scenario 1
+        # Scenario 2
         behavior_scenario_2 = "convert inspiration to magical beans"
         behavior_scenario_2_given_1 = "a feeling of wonder from the universe"
         behavior_scenario_2_given_2 = "a feeling of awe from the universe"
@@ -64,6 +69,7 @@ model:
 
             # Check the generated files
             self.assertEqual(1, len(os.listdir(temp_output_dir)))
+            self.assertEqual(expected_filename, os.listdir(temp_output_dir)[0])
 
             temp_output_file_path = os.path.join(temp_output_dir, os.listdir(temp_output_dir)[0])
             with open(temp_output_file_path, "r") as temp_gherkin_feature_file:
@@ -83,7 +89,8 @@ model:
                 self.assertIn(f"Then {behavior_scenario_2_then_1}", gherkin_feature_file_content)
 
     def test_gen_gherkin_behaviors_with_gherkin_keyword_collisions(self):
-        behavior_name_1 = "First Behavior"
+        expected_filename = "magic_manifests.feature"
+        behavior_name_1 = "magic manifests"
         behavior_description_1 = "Takes inspiration from the universe and create magical beans"
 
         # Scenario 1
@@ -129,6 +136,7 @@ model:
 
             # Check the generated files
             self.assertEqual(1, len(os.listdir(temp_output_dir)))
+            self.assertEqual(expected_filename, os.listdir(temp_output_dir)[0])
 
             temp_output_file_path = os.path.join(temp_output_dir, os.listdir(temp_output_dir)[0])
             with open(temp_output_file_path, "r") as temp_gherkin_feature_file:
@@ -161,6 +169,15 @@ model:
                     f"And {_remove_first_word_in_string(behavior_scenario_1_then_2)}",
                     gherkin_feature_file_content,
                 )
+
+    @params(
+        ("DataA", "DataA.feature"),
+        ("Data B", "Data_B.feature"),
+        ("data a", "data_a.feature"),
+        ("data-a", "data_a.feature"),
+    )
+    def test__generate_gherkin_feature_file_name(self, input_name, expected_filename):
+        self.assertEqual(expected_filename, _generate_gherkin_feature_file_name(input_name))
 
 
 def _remove_first_word_in_string(string: str) -> str:
