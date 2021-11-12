@@ -8,16 +8,16 @@ model:
   name: System
   description: A simple distributed system model
   components:
-    - name: svc1 
+    - name: svc1
       type: ServiceOne
     - name: sub
       type: Subsystem
     - name: svc3
       type: ServiceThree
   behavior:
-    - name: doFlow
+    - name: Process DataA Request to DataD Response
       type: request-response
-      description:  process DataA and respond with DataD
+      description: process DataA and respond with DataD
       input:
         - name: in
           type: DataA
@@ -25,10 +25,14 @@ model:
         - name: out
           type: DataD
       acceptance:
-        - scenario: go
+        - scenario: Receive DataA request and return DataD response
           given:
-            - The System is running.
+            - System is running
+            - ServiceOne is running
+            - Subsystem is running
+            - ServiceThree is running
           when:
-            - The System receives input.in
+            - The System receives a DataA request
           then:
-            - The System responds with output.out
+            - System processes the request into a DataD response
+            - System returns the DataD response

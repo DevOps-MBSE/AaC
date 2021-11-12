@@ -4,8 +4,9 @@ import:
 model:
   name: ServiceOne
   behavior:
-    - name: ProcessDataA
+    - name: Process DataA Request
       type: request-response
+      description: Process a DataA request and return a DataB response
       input:
         - name: in
           type: DataA
@@ -13,10 +14,18 @@ model:
         - name: out
           type: DataB
       acceptance:
-        - scenario: go
+        - scenario: Receive DataA request and return DataB response
           given:
-            - ServiceOne is running.
+            - ServiceOne is running
           when:
-            - The user sends a DataA request 
+            - The ServiceOne receives a DataA request
           then:
-            - The user receives a DataB response
+            - ServiceOne processes the request into a DataB response
+            - ServiceOne returns the DataB response
+        - scenario: Receive invalid request
+          given:
+            - ServiceOne is running
+          when:
+            - The ServiceOne receives request that isn't a DataA request
+          then:
+            - ServiceOne returns an error response code
