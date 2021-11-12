@@ -1,8 +1,8 @@
 # ATTENTION - This generated file is safe to modify. It will not be overwritten.
 
 Feature: {{feature.description}}
+    {%- for scenario in scenarios %}
 
-    {% for scenario in scenarios -%}
     Scenario: {{scenario.description}}
 
     {%- set given_joiner = joiner("And") %}
@@ -19,5 +19,4 @@ Feature: {{feature.description}}
     {%- for then in scenario.thens %}
     {{then_joiner() or "Then"}} {{then}}
     {%- endfor %}
-
-    {% endfor -%}
+    {%- endfor %}
