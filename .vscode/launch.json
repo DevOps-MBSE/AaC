@@ -179,7 +179,7 @@
             "program": "src/aac/__main__.py",
             "args": [
                 "gen-gherkin-behaviors",
-                "plugins/gen-gherkin-behaviors/aac-gen-gherkin-behaviors.yaml",
+                "model/flow/flow.yaml",
                 "test"
             ],
             "console": "integratedTerminal",
@@ -189,7 +189,7 @@
             "name": "Python: Unit Tests",
             "type": "python",
             "request": "launch",
-            "program": "nose2",
+            "program": "nose2 -c tox.ini",
             "console": "integratedTerminal",
             "justMyCode": false
         }
