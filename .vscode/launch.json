@@ -173,6 +173,19 @@
             "justMyCode": false
         },
         {
+            "name": "Python: Gen-Gherkin Feature File",
+            "type": "python",
+            "request": "launch",
+            "program": "src/aac/__main__.py",
+            "args": [
+                "gen-gherkin-behaviors",
+                "plugins/gen-gherkin-behaviors/aac-gen-gherkin-behaviors.yaml",
+                "test"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
             "name": "Python: Unit Tests",
             "type": "python",
             "request": "launch",

@@ -4,7 +4,7 @@
 
 import aac
 from aac.AacCommand import AacCommand, AacCommandArgument
-from aac_gen_gherkin_behaviors_impl import gen_gherkin_behaviors
+from aac_gen_gherkin_behaviors.aac_gen_gherkin_behaviors_impl import gen_gherkin_behaviors
 
 
 @aac.hookimpl
