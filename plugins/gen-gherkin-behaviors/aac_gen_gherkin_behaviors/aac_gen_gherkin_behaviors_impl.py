@@ -14,7 +14,7 @@ from aac.template_engine import (
 plugin_version = "0.0.1"
 
 
-def gen_gherkin_behaviors(architecture_file: str, output_directory: str):
+def gen_gherkin_behaviors(architecture_file: str, output_directory: str) -> None:
     """
     Generate Gherkin feature files from Arch-as-Code model behavior scenarios.
 
@@ -44,7 +44,7 @@ def _get_template_properties(parsed_models: dict) -> dict[str, dict]:
         parsed_models: a dict of models where the key is the model name and the value is the model dict
 
     Returns:
-        a list of template property dicts
+        a list of template property dictionaries
     """
 
     def collect_models(parsed_models: dict) -> dict:
@@ -59,6 +59,7 @@ def _get_template_properties(parsed_models: dict) -> dict[str, dict]:
         return list(flatten(map(collect_behavior_entry_properties, behaviors)))
 
     def collect_behavior_entry_properties(behavior_entry: dict) -> list[dict]:
+        """Produces a list of template property dictionaries from a behavior entry."""
         feature_name = behavior_entry.get("name")
         feature_description = (
             behavior_entry.get("description") or "TODO: Fill out this feature description."
@@ -86,6 +87,7 @@ def _get_template_properties(parsed_models: dict) -> dict[str, dict]:
         ]
 
     def sanitize_scenario_step_entry(step: str) -> str:
+        """Removes any conflicting keyword from the scenario step."""
         if does_step_start_with_gherkin_keyword(step):
             return step.split(None, 1)[1]
 
@@ -128,22 +130,22 @@ def _generate_gherkin_feature_files(
 
     Args:
         gherkin_templates: templates to generate against. (Should only be one template)
-        properties: a list of dicts of properties
+        properties_list: a list of template property dictionaries
 
     Returns:
-        list of template information dictionaries.
+        list of template information dictionaries
     """
 
-    def gen_template(properties: dict) -> TemplateOutputFile:
+    def generate_file(properties: dict) -> TemplateOutputFile:
         feature_name = properties.get("feature").get("name")
 
-        generated_template = generate_template(gherkin_template, properties)
-        generated_template.file_name = _generate_gherkin_feature_file_name(feature_name)
-        generated_template.overwrite = False
+        generated_file = generate_template(gherkin_template, properties)
+        generated_file.file_name = _create_gherkin_feature_file_name(feature_name)
+        generated_file.overwrite = False
 
-        return generated_template
+        return generated_file
 
-    # This plugin produces only gherkin feature files (it only needs one template)
+    # This plugin produces only gherkin feature file and so it only needs one template
     gherkin_template = None
     if len(gherkin_templates) != 1:
         raise GenerateGherkinException(
@@ -153,12 +155,10 @@ def _generate_gherkin_feature_files(
     else:
         gherkin_template = gherkin_templates[0]
 
-    generated_templates = list(map(gen_template, properties_list))
-
-    return generated_templates
+    return list(map(generate_file, properties_list))
 
 
-def _generate_gherkin_feature_file_name(behavior_name: str) -> str:
+def _create_gherkin_feature_file_name(behavior_name: str) -> str:
     sanitized_name = behavior_name.strip()
 
     for replacement in ((" ", "_"), ("-", "_")):
