@@ -11,7 +11,6 @@ from aac.template_engine import (
     write_generated_templates_to_file,
 )
 
-
 plugin_version = "0.0.1"
 
 
@@ -62,26 +61,34 @@ def _get_template_properties(parsed_models: dict) -> dict[str, dict]:
 
     def collect_behavior_entry_properties(behavior_entry: dict) -> list[dict]:
         feature_name = behavior_entry.get("name")
-        feature_description = behavior_entry.get("description") or "TODO: Fill out this feature description."
+        feature_description = (
+            behavior_entry.get("description") or "TODO: Fill out this feature description."
+        )
         behavior_scenarios = behavior_entry.get("acceptance") or []
 
-        return [{
-            "feature": {"name": feature_name, "description": feature_description},
-            "scenarios": list(flatten(map(collect_and_sanitize_scenario_steps, behavior_scenarios)))
-        }]
+        return [
+            {
+                "feature": {"name": feature_name, "description": feature_description},
+                "scenarios": list(
+                    flatten(map(collect_and_sanitize_scenario_steps, behavior_scenarios))
+                ),
+            }
+        ]
 
     def collect_and_sanitize_scenario_steps(scenario: dict) -> dict:
         """Collects and sanitizes scenario steps then returns template properties for a 'scenarios' entry."""
-        return [{
-            "description": scenario.get("scenario") or "TODO: Write a description.",
-            "givens": list(map(sanitize_scenario_step_entry, scenario.get("given"))),
-            "whens": list(map(sanitize_scenario_step_entry, scenario.get("when"))),
-            "thens": list(map(sanitize_scenario_step_entry, scenario.get("then"))),
-        }]
+        return [
+            {
+                "description": scenario.get("scenario") or "TODO: Write a description.",
+                "givens": list(map(sanitize_scenario_step_entry, scenario.get("given"))),
+                "whens": list(map(sanitize_scenario_step_entry, scenario.get("when"))),
+                "thens": list(map(sanitize_scenario_step_entry, scenario.get("then"))),
+            }
+        ]
 
     def sanitize_scenario_step_entry(step: str) -> str:
         if does_step_start_with_gherkin_keyword(step):
-            return step.split(None, 1)
+            return step.split(None, 1)[1]
 
         return step
 
@@ -109,7 +116,9 @@ def _get_template_properties(parsed_models: dict) -> dict[str, dict]:
 
         return step.startswith(tuple(gherkin_keywords))
 
-    return list(flatten(map(collect_model_behavior_properties, collect_models(parsed_models).values())))
+    return list(
+        flatten(map(collect_model_behavior_properties, collect_models(parsed_models).values()))
+    )
 
 
 def _generate_gherkin_feature_files(
@@ -151,4 +160,3 @@ class GenerateGherkinException(Exception):
     """Exceptions specifically concerning gherkin feature file generation."""
 
     pass
-
