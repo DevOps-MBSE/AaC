@@ -8,7 +8,7 @@ model:
     - name: svc2
       type: ServiceTwo
   behavior:
-    - name: processDataB
+    - name: Delegate Processing DataB Request
       type: request-response
       input:
         - name: in
@@ -17,10 +17,12 @@ model:
         - name: out
           type: DataC
       acceptance:
-        - scenario: go
+        - scenario: Receive DataB request and return DataC response
           given:
-            - The Sybsystem is running.
+            - Subsystem is running
+            - ServiceTwo is running
           when:
-            - The user issues a request with DataB
+            - Subsystem receives a DataB request
           then:
-            - The user receives a response with DataC
+            - Subsystem delegates the request processing to ServiceTwo which returns a DataC response
+            - Subsystem returns the DataC response

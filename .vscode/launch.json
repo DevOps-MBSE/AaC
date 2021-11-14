@@ -173,10 +173,23 @@
             "justMyCode": false
         },
         {
+            "name": "Python: Gen-Gherkin Feature File",
+            "type": "python",
+            "request": "launch",
+            "program": "src/aac/__main__.py",
+            "args": [
+                "gen-gherkin-behaviors",
+                "model/flow/flow.yaml",
+                "test"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
             "name": "Python: Unit Tests",
             "type": "python",
             "request": "launch",
-            "program": "nose2",
+            "program": "nose2 -c tox.ini",
             "console": "integratedTerminal",
             "justMyCode": false
         }

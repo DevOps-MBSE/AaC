@@ -4,7 +4,7 @@ import:
 model:
   name: ServiceThree
   behavior:
-    - name: ProcessDataC
+    - name: Process DataC Request
       type: request-response
       input:
         - name: in
@@ -13,10 +13,11 @@ model:
         - name: out
           type: DataD
       acceptance:
-        - scenario: go
+        - scenario: Receive DataC request and return DataD response
           given:
-            - The ServiceThree is running
+            - ServiceThree is running
           when:
-            - The user makes a request with DataC
+            - ServiceThree receives a DataC request
           then:
-            - The user gets a response with DataD
+            - ServiceThree processes the request into a DataD response
+            - ServiceThree returns the DataD response

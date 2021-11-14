@@ -4,8 +4,9 @@ import:
 model:
   name: ServiceTwo
   behavior:
-    - name: Process DataB
+    - name: Process DataB Request
       type: request-response
+      description: Process a DataB request and return a DataC response
       input:
         - name: in
           type: DataB
@@ -13,11 +14,11 @@ model:
         - name: out
           type: DataC
       acceptance:
-        - scenario: go
+        - scenario: Receive DataB request and return DataC response
           given:
-            - The ServiceTwo is running
+            - ServiceTwo is running
           when:
-            - The user makes a request with DataB
+            - ServiceTwo receives a DataB request
           then:
-            - The user receives a response with DataC
-          
+            - ServiceTwo processes the request into a DataC response
+            - ServiceTwo returns the DataC response
