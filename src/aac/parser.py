@@ -96,7 +96,7 @@ def _get_files_to_process(arch_file_path: str) -> list[str]:
     content = _read_file_content(arch_file_path)
     roots = yaml.load_all(content, Loader=yaml.FullLoader)
     for root in roots:
-        if "import" in root.keys():
+        if root and "import" in root.keys():
             for imp in root["import"]:
                 # parse the imported files
                 parse_path = ""
