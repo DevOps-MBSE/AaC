@@ -97,8 +97,10 @@ model:
       input:
         - name: architecture_file
           type: file
+          python_type: str
         - name: parsed_model
           type: map
+          python_type: dict
       acceptance:
         - scenario: Valid spec traces are modeled.
           given:

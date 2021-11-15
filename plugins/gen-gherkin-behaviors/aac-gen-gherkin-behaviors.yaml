@@ -8,9 +8,11 @@ model:
       input:
         - name: architecture_file
           type: string
+          python_type: str
           description: The yaml file containing the data models to generate as Gherkin feature files.
         - name: output_directory
           type: string
+          python_type: str
           description: The directory to write the generated Gherkin feature files to.
       acceptance:
         - scenario: Output Gherkin feature files for behavior scenarios in an Architecture model.
