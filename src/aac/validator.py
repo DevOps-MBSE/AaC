@@ -142,9 +142,6 @@ def _get_all_errors_if_missing_required_properties(model: dict, required: list) 
 def _get_all_cross_reference_errors(kind: str, model: dict) -> iter:
     """Validate all cross references."""
 
-    data, enums = util.get_aac_spec()
-    models = {kind: model} | data | enums
-
     data = VALIDATOR_CONTEXT.get_all_data_definitions()
     enums = VALIDATOR_CONTEXT.get_all_enum_definitions()
     models = VALIDATOR_CONTEXT.get_all_model_definitions()
@@ -181,7 +178,7 @@ def _validate_data_references(data: dict) -> list:
 
 
 def _validate_model_references(models: list, data: dict) -> list:
-    """Ensure all references in sysetm models are valid."""
+    """Ensure all references in system models are valid."""
 
     def fn(name, spec):
         return _get_error_messages_if_invalid_type(
@@ -209,7 +206,7 @@ def _get_errors_if_model_references_bad_enum_value(
 ) -> list:
     """Return error messages for any enum value that is referenced but not recognized."""
 
-    def get_errors_for_bad_enum_in_model(model, paths):
+    def get_errors_for_bad_enum_in_model(model):
         errors = []
         for path in paths:
             errors += [
@@ -219,7 +216,7 @@ def _get_errors_if_model_references_bad_enum_value(
             ]
         return errors
 
-    return list(flatten(map(lambda m: get_errors_for_bad_enum_in_model(m, paths), models)))
+    return list(flatten(map(get_errors_for_bad_enum_in_model, models)))
 
 
 def _validate_enum_references(models: list, data: dict, enums: dict) -> list:
@@ -508,6 +505,7 @@ class ValidatorContext:
         Returns:
             A list of strings, one entry for each root name in the AaC model specification.
         """
+
         def get_field_name(fields_entry_dict: dict):
             return fields_entry_dict.get("name")
 
