@@ -24,6 +24,8 @@ Example shell usage:
 {%- endif %}
 {%- endfor %}
 
+{%- if aac_definitions | length > 0 %}
+
 ## Plugin Extensions and Definitions
 
 {%- for def in aac_definitions %}
@@ -37,3 +39,4 @@ TODO: Add descriptive information about {{def[type].name}}
 {{def.yaml}}
 ```
 {%- endfor %}
+{%- endif %}
