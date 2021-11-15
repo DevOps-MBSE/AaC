@@ -97,9 +97,9 @@ class TestGenPlug(TestCase):
 
         generated_readme_file_contents = generated_templates.get(README_TEMPLATE_NAME).content
         self.assertIn("# aac-gen-protobuf", generated_readme_file_contents)
-        self.assertIn("## Plugin Commands", generated_readme_file_contents)
+        self.assertIn("## Command:", generated_readme_file_contents)
         self.assertIn("## Plugin Extensions and Definitions", generated_readme_file_contents)
-        self.assertIn("$ aac aac-gen-protobuf", generated_readme_file_contents)
+        self.assertIn("$ aac gen-protobuf", generated_readme_file_contents)
         self.assertIn("### Ext", generated_readme_file_contents)
         self.assertIn("### Enum", generated_readme_file_contents)
 
