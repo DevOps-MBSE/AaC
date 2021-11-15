@@ -255,12 +255,18 @@ def _gather_commands(behaviors: dict) -> list[dict]:
     Returns:
         list of command-type behaviors dicts
     """
+    def modify_command_input_output_entry(in_out_entry: dict):
+        """Modifies the input and output entries of a behavior definition to reduce complexity in the templates."""
+        in_out_entry["type"] = in_out_entry.get("python_type") or in_out_entry.get("type")
+
+        return in_out_entry
+
     commands = []
 
     for behavior in behaviors:
         behavior_name = behavior["name"]
         behavior_description = behavior["description"]
-        behavior_type = behavior["type"]
+        behavior_type = behavior.get("type")
 
         if behavior_type != "command":
             continue
@@ -268,6 +274,9 @@ def _gather_commands(behaviors: dict) -> list[dict]:
         # First line should end with a period. flake8(D400)
         if not behavior_description.endswith("."):
             behavior_description = f"{behavior_description}."
+
+        if behavior.get("input"):
+            behavior["input"] = list(map(modify_command_input_output_entry, behavior.get("input")))
 
         behavior["description"] = behavior_description
         behavior["implementation_name"] = _convert_to_implementation_name(behavior_name)
