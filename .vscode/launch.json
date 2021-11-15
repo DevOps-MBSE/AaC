@@ -44,7 +44,7 @@
             "program": "src/aac/__main__.py",
             "args": [
                 "validate",
-                "./plugins/aac-gen-protobuf/aac-gen-protobuf.yaml"
+                "./plugins/gen-protobuf/aac-gen-protobuf.yaml"
             ],
             "console": "integratedTerminal",
             "justMyCode": false
