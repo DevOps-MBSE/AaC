@@ -77,8 +77,8 @@ class TestGenPlug(TestCase):
             PLUGIN_IMPL_TEMPLATE_NAME
         ).content
         self.assertIn("def gen_protobuf", generated_plugin_impl_file_contents)
-        self.assertIn("architecture_file", generated_plugin_impl_file_contents)
-        self.assertIn("output_directory", generated_plugin_impl_file_contents)
+        self.assertIn("architecture_file: str", generated_plugin_impl_file_contents)
+        self.assertIn("output_directory: string", generated_plugin_impl_file_contents)
         self.assertIn("raise NotImplementedError", generated_plugin_impl_file_contents)
 
         generated_plugin_impl_test_file_contents = generated_templates.get(
@@ -141,6 +141,7 @@ model:
       input:
         - name: architecture_file
           type: string
+          python_type: str
           description: The yaml file containing the data models to generate as Protobuf messages.
         - name: output_directory
           type: string
