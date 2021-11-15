@@ -43,6 +43,7 @@ jobs:
           path: html_code_coverage/
       - name: Validate Core Spec and Plugin Specs
         run: |
+          source venv/bin/activate
           find . -name AaC.yaml -exec aac validate {} \;
           find plugins -name *.yaml -exec aac validate {} \;
       - name: Generate API Documentation
