@@ -51,6 +51,33 @@ def get_base_model_extensions() -> str:
         string representing yaml extensions and data definitions employed by the plugin
     """
     return """
+---
+enum:
+  name: PythonDataType
+  values:
+    - str
+    - int
+    - float
+    - complex
+    - list
+    - tuple
+    - range
+    - dict
+    - set
+    - frozenset
+    - bool
+    - bytes
+    - bytearray
+    - memoryview
+---
+ext:
+   name: PythonTypeField
+   type: Field
+   dataExt:
+      add:
+        - name: python_type
+          type: PythonDataType
+---
 ext:
    name: CommandBehaviorType
    type: BehaviorType
@@ -264,3 +291,4 @@ def _add_definitions_yaml_string(model: dict) -> dict:
 
 def _convert_to_implementation_name(original_name: str) -> str:
     return original_name.replace("-", "_")
+
