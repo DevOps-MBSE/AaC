@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from aac import parser, util, validator
+from aac import parser
 from aac.genplug import (
     GeneratePluginException,
     _compile_templates,
