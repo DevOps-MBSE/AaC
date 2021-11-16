@@ -8,9 +8,11 @@ model:
       input:
         - name: architecture_file
           type: string
+          python_type: str
           description: The yaml file containing the data models to generate as Protobuf messages.
         - name: output_directory
           type: string
+          python_type: str
           description: The directory to write the generated Protobuf messages to.
       acceptance:
         - scenario: Output protobuf messages for behavior input/output entries in an Architecture model.
