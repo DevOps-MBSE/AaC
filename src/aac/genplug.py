@@ -181,7 +181,7 @@ def _compile_templates(parsed_models: dict[str, dict]) -> dict[str, list[Templat
     template_properties = {
         "plugin": plugin,
         "commands": commands,
-        "aac_definitions": plugin_aac_definitions,
+        "plugin_definitions": plugin_aac_definitions,
     }
     generated_templates = generate_templates(
         load_default_templates("genplug"), template_properties

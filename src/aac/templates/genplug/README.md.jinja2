@@ -24,11 +24,11 @@ Example shell usage:
 {%- endif %}
 {%- endfor %}
 
-{%- if aac_definitions | length > 0 %}
+{%- if plugin_definitions | length > 0 %}
 
 ## Plugin Extensions and Definitions
 
-{%- for def in aac_definitions %}
+{%- for def in plugin_definitions %}
 {%- set type = def | rejectattr('yaml') | list | first %}
 
 ### {{type | title}} - {{def[type].name}}
