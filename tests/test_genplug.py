@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from aac import parser, util, validator
+from aac import parser
 from aac.genplug import (
     GeneratePluginException,
     _compile_templates,
@@ -12,6 +12,7 @@ PLUGIN_TEMPLATE_NAME = "plugin.py.jinja2"
 PLUGIN_IMPL_TEMPLATE_NAME = "plugin_impl.py.jinja2"
 PLUGIN_IMPL_TEST_TEMPLATE_NAME = "test_plugin_impl.py.jinja2"
 SETUP_TEMPLATE_NAME = "setup.py.jinja2"
+README_TEMPLATE_NAME = "README.md.jinja2"
 
 
 class TestGenPlug(TestCase):
@@ -59,6 +60,7 @@ class TestGenPlug(TestCase):
         # Assert that the expected template files were generated
         self.assertIn("__init__.py", generated_template_names)
         self.assertIn("setup.py", generated_template_names)
+        self.assertIn("README.md", generated_template_names)
         self.assertIn(f"{plugin_name}.py", generated_template_names)
         self.assertIn(f"{plugin_name}_impl.py", generated_template_names)
         self.assertIn(f"test_{plugin_name}_impl.py", generated_template_names)
@@ -73,12 +75,18 @@ class TestGenPlug(TestCase):
         self.assertIn("architecture_file", generated_plugin_file_contents)
         self.assertIn("output_directory", generated_plugin_file_contents)
 
+        # Assert Model Extensions were generated
+        self.assertIn("get_base_model_extensions", generated_plugin_file_contents)
+        self.assertIn("PLUGIN_EXTENSION_YAML", generated_plugin_file_contents)
+        self.assertIn("name: ProtobufDataType", generated_plugin_file_contents)
+        self.assertIn("name: ProtobufTypeField", generated_plugin_file_contents)
+
         generated_plugin_impl_file_contents = generated_templates.get(
             PLUGIN_IMPL_TEMPLATE_NAME
         ).content
         self.assertIn("def gen_protobuf", generated_plugin_impl_file_contents)
-        self.assertIn("architecture_file", generated_plugin_impl_file_contents)
-        self.assertIn("output_directory", generated_plugin_impl_file_contents)
+        self.assertIn("architecture_file: str", generated_plugin_impl_file_contents)
+        self.assertIn("output_directory: string", generated_plugin_impl_file_contents)
         self.assertIn("raise NotImplementedError", generated_plugin_impl_file_contents)
 
         generated_plugin_impl_test_file_contents = generated_templates.get(
@@ -92,6 +100,14 @@ class TestGenPlug(TestCase):
             PLUGIN_IMPL_TEST_TEMPLATE_NAME
         ).parent_dir
         self.assertEqual(generated_plugin_impl_test_file_parent_dir, "tests")
+
+        generated_readme_file_contents = generated_templates.get(README_TEMPLATE_NAME).content
+        self.assertIn("# aac-gen-protobuf", generated_readme_file_contents)
+        self.assertIn("## Command:", generated_readme_file_contents)
+        self.assertIn("## Plugin Extensions and Definitions", generated_readme_file_contents)
+        self.assertIn("$ aac gen-protobuf", generated_readme_file_contents)
+        self.assertIn("### Ext", generated_readme_file_contents)
+        self.assertIn("### Enum", generated_readme_file_contents)
 
     def test__compile_templates_errors_on_multiple_models(self):
         parsed_model = parser.parse_str(
@@ -123,6 +139,7 @@ class TestGenPlug(TestCase):
 
         self.assertIn("__init__.py", generated_template_names)
         self.assertIn("setup.py", generated_template_names)
+        self.assertIn("README.md", generated_template_names)
         self.assertIn(f"{plugin_name}.py", generated_template_names)
         self.assertIn(f"{plugin_name}_impl.py", generated_template_names)
         self.assertIn(f"test_{plugin_name}_impl.py", generated_template_names)
@@ -141,6 +158,7 @@ model:
       input:
         - name: architecture_file
           type: string
+          python_type: str
           description: The yaml file containing the data models to generate as Protobuf messages.
         - name: output_directory
           type: string
