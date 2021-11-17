@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from aac import parser, util, validator
+from aac import parser
 from aac.genplug import (
     GeneratePluginException,
     _compile_templates,
@@ -74,6 +74,12 @@ class TestGenPlug(TestCase):
         self.assertIn("import gen_protobuf", generated_plugin_file_contents)
         self.assertIn("architecture_file", generated_plugin_file_contents)
         self.assertIn("output_directory", generated_plugin_file_contents)
+
+        # Assert Model Extensions were generated
+        self.assertIn("get_base_model_extensions", generated_plugin_file_contents)
+        self.assertIn("PLUGIN_EXTENSION_YAML", generated_plugin_file_contents)
+        self.assertIn("name: ProtobufDataType", generated_plugin_file_contents)
+        self.assertIn("name: ProtobufTypeField", generated_plugin_file_contents)
 
         generated_plugin_impl_file_contents = generated_templates.get(
             PLUGIN_IMPL_TEMPLATE_NAME

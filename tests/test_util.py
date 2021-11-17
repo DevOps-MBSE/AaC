@@ -4,7 +4,7 @@ Unit tests for the aac.util module.
 
 from unittest import TestCase
 
-from aac import util, validator
+from aac import util
 
 
 class TestArchUtil(TestCase):
@@ -39,8 +39,8 @@ class TestArchUtil(TestCase):
 
         aac_data, _ = util.get_aac_spec()
 
-        self.assertTrue(len(aac_data.keys()) > 0)
-        self.assertTrue(len(aac_data.keys()) > 0)
+        self.assertGreater(len(aac_data.keys()), 0)
+        self.assertGreater(len(aac_data.keys()), 0)
 
     def test_get_aac_spec_as_yaml(self):
         """
@@ -48,29 +48,8 @@ class TestArchUtil(TestCase):
         """
 
         aac_yaml = util.get_aac_spec_as_yaml()
-        self.assertTrue(len(aac_yaml) > 0)
+        self.assertGreater(len(aac_yaml), 0)
         self.assertGreaterEqual(aac_yaml.count("---"), 14)  # there are 14 base types
-
-    # TODO This method is working in the current state, but it is poor design with high coupling
-    #      which was exposed by this test creating failures.  Go back and clean this up.
-
-    # def test_extend_aac_spec(self):
-    #     ext_enum = {
-    #         "ext": {
-    #             "enumExt": {
-    #                 "add": ["test"]
-    #             },
-    #             "name": "TestBehavior",
-    #             "type": "BehaviorType"
-    #         }
-    #     }
-    #     _, enums = util.get_aac_spec()
-    #     print(enums)
-    #     util.extend_aac_spec(ext_enum)
-    #     _, enums = util.get_aac_spec()
-    #     print(enums)
-    #     behavior_types = util.search(enums["BehaviorType"], ["enum", "values"])
-    #     self.assertIn("test", behavior_types)
 
     def test_get_models_by_type(self):
         """
