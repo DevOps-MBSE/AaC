@@ -146,7 +146,9 @@ def _compile_templates(parsed_models: dict[str, dict]) -> dict[str, list[Templat
         )
 
     def set_parent_directory_value(template: TemplateOutputFile):
-        template.parent_dir = template_parent_directories.get(template.template_name) or template.parent_dir
+        template.parent_dir = (
+            template_parent_directories.get(template.template_name) or template.parent_dir
+        )
 
     # ensure model is present and valid, get the plugin name
     plugin_models = util.get_models_by_type(parsed_models, "model")
@@ -224,6 +226,9 @@ def _is_user_desired_output_directory(architecture_file: str, output_dir: str) -
     while confirmation not in ["y", "n", "Y", "N"]:
         if not first:
             print(f"Unrecognized input {confirmation}:  please enter 'y' or 'n'.")
+        else:
+            first = False
+
         confirmation = input(
             f"Do you want to generate an AaC plugin in the directory {output_dir}? [y/n]"
         )
@@ -245,6 +250,7 @@ def _gather_commands(behaviors: dict) -> list[dict]:
     Returns:
         list of command-type behaviors dicts
     """
+
     def modify_command_input_output_entry(in_out_entry: dict):
         """Modifies the input and output entries of a behavior definition to reduce complexity in the templates."""
         in_out_entry["type"] = in_out_entry.get("python_type") or in_out_entry.get("type")
@@ -290,4 +296,3 @@ def _add_definitions_yaml_string(model: dict) -> dict:
 
 def _convert_to_implementation_name(original_name: str) -> str:
     return original_name.replace("-", "_")
-
