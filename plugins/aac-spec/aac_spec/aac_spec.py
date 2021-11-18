@@ -4,7 +4,7 @@
 
 import aac
 from aac.AacCommand import AacCommand, AacCommandArgument
-from aac_spec_impl import spec_validate
+from aac_spec.aac_spec_impl import spec_validate
 
 
 @aac.hookimpl
