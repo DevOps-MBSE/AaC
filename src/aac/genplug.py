@@ -124,7 +124,7 @@ def _compile_templates(parsed_models: dict[str, dict]) -> dict[str, list[Templat
     Parse the model and generate the plugin template accordingly.
 
     Args:
-        parsed_models: Dict representing the plugin models
+        parsed_models (dict[str, dict]): Dict representing the plugin models
 
     Returns:
         List of TemplateOutputFile objects that contain the compiled templates
@@ -133,7 +133,6 @@ def _compile_templates(parsed_models: dict[str, dict]) -> dict[str, list[Templat
         GeneratePluginException: An error encountered during the plugin generation process.
     """
 
-    # Define which templates we want to overwrite.
     templates_to_overwrite = ["plugin.py.jinja2", "setup.py.jinja2"]
     template_parent_directories = {"test_plugin_impl.py.jinja2": "tests"}
 
