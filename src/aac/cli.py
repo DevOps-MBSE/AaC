@@ -9,7 +9,7 @@ import sys
 from typing import Callable
 from pluggy import PluginManager
 
-from aac import parser, util, plugins
+from aac import parser, util, plugins, ui
 from aac.AacCommand import AacCommand, AacCommandArgument
 
 
@@ -72,6 +72,11 @@ def _setup_arg_parser(
 
     # Built-in commands
     aac_commands = [
+        AacCommand(
+            "ui",
+            "Run the AaC Graphical User Interface",
+            ui.run_ui(),
+        ),
         AacCommand(
             "validate",
             "Ensures the AaC yaml is valid per the AaC core spec",
