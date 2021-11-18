@@ -165,6 +165,12 @@ def _compile_templates(parsed_models: dict[str, dict]) -> dict[str, list[Templat
 
     plugin_implementation_name = _convert_to_implementation_name(plugin_name)
 
+    template_parent_directories = template_parent_directories | {
+        "plugin.py.jinja2": plugin_name,
+        "plugin_impl.py.jinja2": plugin_name,
+        "__init__.py.jinja2": plugin_name,
+    }
+
     # Prepare template variables/properties
     behaviors = util.search(plugin_model, ["behavior"])
     commands = _gather_commands(behaviors)
