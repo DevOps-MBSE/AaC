@@ -249,3 +249,7 @@ def _convert_camel_case_to_snake_case(camel_case_str: str) -> str:
     return snake_case_str
 
 
+class GenerateProtobufException(Exception):
+    """Exceptions specifically concerning protobuf message generation."""
+
+    pass

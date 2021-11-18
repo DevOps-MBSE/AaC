@@ -291,8 +291,3 @@ def _add_definitions_yaml_string(model: dict) -> dict:
 def _convert_to_implementation_name(original_name: str) -> str:
     return original_name.replace("-", "_")
 
-
-class GenerateProtobufException(Exception):
-    """Exceptions specifically concerning protobuf message generation."""
-
-    pass
