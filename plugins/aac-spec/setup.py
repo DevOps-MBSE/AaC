@@ -13,6 +13,6 @@ setup(
     name="aac-spec",
     install_requires=["aac"],
     entry_points={
-        "aac": ["aac-spec=aac_spec"],
+        "aac": ["aac-spec=aac_spec.aac_spec"],
     }
 )

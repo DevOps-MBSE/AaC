@@ -20,7 +20,7 @@ def spec_validate(architecture_file: str):
     # if validation errors have been found raise a validation exception
     if not is_valid:
         print("Spec is invalid")
-        raise AacSpecValidationException("Spec is invalid:\n" + validation_errors.join("\n"))
+        raise AacSpecValidationException("Spec is invalid:\n" + "\n".join(validation_errors))
     else:
         print("Spec is valid.")
 
@@ -44,9 +44,10 @@ def _do_validate(architecture_file: str) -> tuple[bool, list]:
 
     # get all the specs by abbreviation
     spec_by_abbrv = {}
+
     specs = util.get_models_by_type(parsed_model, "spec")
     for spec_name in specs:
-
+        print(spec_name)
         abbrv = util.search(specs[spec_name], ["spec", "abbrv"])
         if len(abbrv) == 1:
             spec_by_abbrv[abbrv[0]] = specs[spec_name]

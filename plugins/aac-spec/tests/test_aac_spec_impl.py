@@ -10,6 +10,7 @@ class TestAacSpec(TestCase):
 
         with NamedTemporaryFile("w") as temp_spec:
             temp_spec.write(VALID_SPEC)
+            temp_spec.seek(0)
 
             try:
                 spec_validate(temp_spec.name)
@@ -19,7 +20,8 @@ class TestAacSpec(TestCase):
     def test_spec_validate_fails(self):
 
         with NamedTemporaryFile("w") as temp_spec:
-            temp_spec.write(INVALID_SPEC_1)
+            temp_spec.write(INVALID_SPEC_MISSING_ABRV)
+            temp_spec.seek(0)
 
             with self.assertRaises(AacSpecValidationException) as context_manager:
                 spec_validate(temp_spec.name)
@@ -52,10 +54,10 @@ spec:
           value: Test
 """
 
-INVALID_SPEC_1 = """
+INVALID_SPEC_MISSING_ABRV = """
 spec:
   name: Subsystem
-  abbrv: SUB
+  abbrv:
   description:  This is a representative subsystem requirement specification.
   requirements:
     - id: 1
