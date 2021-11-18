@@ -13,7 +13,6 @@ model:
         - scenario: Valid spec traces are modeled.
           given:
             - The {{spec-validate.input.architecture_file}} contains a valid architecture specification.
-            - The {{spec-validate.input.parsed_model}} contains the parsed content from architecture_file.
           when:
             - The aac app is run with the spec-validate command.
           then:
