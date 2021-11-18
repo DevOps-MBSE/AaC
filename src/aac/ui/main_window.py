@@ -2,7 +2,7 @@ from tkinter import Tk
 
 from aac.ui.menu_bar import menu_bar
 from aac.ui.models_tree import add_models_tree
-from aac.ui.tab_views import add_tab_views
+from aac.ui.model_views import add_model_views
 from aac.ui.view_diagram_button import add_view_diagram_button
 
 
@@ -20,7 +20,7 @@ def main_window() -> None:
     tabs_view_width = main_window.winfo_screenwidth() - model_tree_view_width
 
     add_models_tree(main_window, model_tree_view_width)
-    add_tab_views(main_window, tabs_view_width)
+    add_model_views(main_window, tabs_view_width)
     add_view_diagram_button(main_window)
 
     return main_window

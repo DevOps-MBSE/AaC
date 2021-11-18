@@ -1,5 +1,5 @@
 """AaC UI module."""
-from aac.ui.window import main_window
+from aac.ui.main_window import main_window
 
 
 def run_ui():

@@ -2,7 +2,7 @@ from tkinter import Tk, TOP, NW
 from tkinter.ttk import Notebook, Frame, Style
 
 
-def add_tab_views(root_window: Tk, view_width: int) -> None:
+def add_model_views(root_window: Tk, view_width: int) -> None:
     """
     Creates a view ....
 
@@ -10,10 +10,7 @@ def add_tab_views(root_window: Tk, view_width: int) -> None:
         root_window: The window to attach the models tree frame to
         view_width (int): The width of the canvas
     """
-    style = Style()
-    style.configure('My.TFrame', background='green')
-
-    tab_view_frame = Frame(root_window, width=view_width, height=root_window.winfo_screenheight(), style='My.TFrame')
+    tab_view_frame = Frame(root_window, width=view_width, height=root_window.winfo_screenheight(), borderwidth=1)
     tab_view_frame.pack(side=TOP, anchor=NW)
 
     tabs_notebook = Notebook(tab_view_frame)
