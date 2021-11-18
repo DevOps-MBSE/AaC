@@ -20,10 +20,7 @@ def spec_validate(architecture_file: str):
     # if validation errors have been found raise a validation exception
     if not is_valid:
         print("Spec is invalid")
-        for msg in validation_errors:
-            print(msg)
-        sys.exit(1)
-
+        raise AacSpecValidationException("Spec is invalid:\n" + validation_errors.join("\n"))
     else:
         print("Spec is valid.")
 
@@ -84,3 +81,9 @@ def _do_validate(architecture_file: str) -> tuple[bool, list]:
                 validation_errors.append(f"Invalid requirement abbreviation {abbrv} reference in {model_name}:  {ref}")
 
     return is_valid, validation_errors
+
+
+class AacSpecValidationException(Exception):
+    """Exceptions specifically concerning errors when validating specs."""
+
+    pass

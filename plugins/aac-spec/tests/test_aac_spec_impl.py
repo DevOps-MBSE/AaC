@@ -1,44 +1,31 @@
 from unittest import TestCase
+from tempfile import NamedTemporaryFile
 
-from aac_spec_impl import _do_validate
+from aac_spec.aac_spec_impl import _do_validate, spec_validate, AacSpecValidationException
 
 
 class TestAacSpec(TestCase):
 
-    def test_can_validate_spec(self):
-        # TODO: test spec validation with correct spec definition
-        # create a temp file with valid spec
+    def test_spec_validate(self):
 
-        # do the validation and ensure is_valid and no errors
-        is_valid, errors = _do_validate()
-        self.assertTrue(False)
+        with NamedTemporaryFile("w") as temp_spec:
+            temp_spec.write(VALID_SPEC)
 
-        # clean up
+            try:
+                spec_validate(temp_spec.name)
+            except AacSpecValidationException as e:
+                self.fail("validate() raised AacSpecValidationException with error: {0}".format(e))
 
-    def test_validate_spec_fails_for_bad_input(self):
-        # TODO: test spec validation with invalid spec definition
-        self.assertTrue(False)
+    def test_spec_validate_fails(self):
 
-    def test_can_validate_model_with_spec_refs(self):
-        # TODO: test model validation with correct spec refs
-        self.assertTrue(False)
+        with NamedTemporaryFile("w") as temp_spec:
+            temp_spec.write(INVALID_SPEC_1)
 
-    def test_validate_model_with_bad_spec_refs(self):
-        # TODO: test model validation with incorrect spec refs
-        self.assertTrue(False)
+            with self.assertRaises(AacSpecValidationException) as context_manager:
+                spec_validate(temp_spec.name)
 
-    def test_can_validate_data_with_spec_refs(self):
-        # TODO: test model validation with correct spec refs
-        self.assertTrue(False)
 
-    def test_validate_data_with_bad_spec_refs(self):
-        # TODO: test model validation with incorrect spec refs
-        self.assertTrue(False)
-
-    def _create_temp_test_file(content: str) -> str:
-        return ""
-
-    VALID_SPEC = """
+VALID_SPEC = """
 spec:
   name: Subsystem
   abbrv: SUB
