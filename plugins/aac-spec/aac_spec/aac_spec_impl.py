@@ -12,7 +12,7 @@ def spec_validate(architecture_file: str):
     Validates spec traces within the AaC model.  If the model is invalid, print errors and exit with a code of 1.
 
     Args:
-        architecture_file (file): The file to validate for spec cross-references.
+        architecture_file (str): The file to validate for spec cross-references.
     """
 
     is_valid, validation_errors = _do_validate(architecture_file)
