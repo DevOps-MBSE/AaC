@@ -1,20 +1,22 @@
-from tkinter import Canvas, Label, Tk, LEFT, TOP, GROOVE, Frame
+from tkinter import Canvas, Label, Tk, LEFT, TOP, GROOVE, Frame, END
+from tkinter.ttk import Treeview
 
-
-def add_models_tree(root_window: Tk, view_width: int, view_height: int) -> None:
+def add_models_tree(parent_window: Tk) -> None:
     """
     Creates a view containing all contextual models and definitions.
-
-    Args:
-        root_window: The window to attach the models tree canvas to
-        view_width (int): The width of the canvas
     """
-    models_tree_frame = Frame(root_window, width=view_width, height=view_height, bg="green")
-    models_tree_frame.pack(fill="both", side=LEFT)
+    models_tree_view = Treeview(parent_window)
 
-    # models_label = Label(models_tree_frame, text="Test")
-    # models_label.pack()
+    # TODO: This will need to be generated from the loaded models
+    models_id = models_tree_view.insert('', END, text='Models', open=False)
+    models_tree_view.insert('', END, text='Usecase', open=False)
+    models_tree_view.insert('', END, text='Data', open=False)
+    models_tree_view.insert('', END, text='Enum', open=False)
 
-    # models_tree_entry = Entry(root_window)
-    # models_tree_canvas.create_window(view_width // 2, 20, window=models_tree_entry)
+    models_tree_view.insert(models_id, END, text='A', open=False)
+    models_tree_view.insert(models_id, END, text='B', open=False)
+
+    models_tree_view.pack(side=LEFT)
+
+    parent_window.add(models_tree_view)
 

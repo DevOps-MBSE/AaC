@@ -1,14 +1,13 @@
 from tkinter import Tk, Button, BOTTOM, SE, Label, LEFT, RIGHT
 from tkinter.ttk import Style, Frame
 
-CONST_ON_TEXT_VALUE = "On"
-CONST_OFF_TEXT_VALUE = "Off"
 
-
-def add_view_diagram_button(root_window: Tk, button_callback: callable, view_width: int, view_height: int) -> None:
+def add_view_diagram_button(parent_window: Tk, button_callback: callable, view_width: int, view_height: int) -> None:
     """
     ...
     """
+    CONST_ON_TEXT_VALUE = "On"
+    CONST_OFF_TEXT_VALUE = "Off"
 
     def _toggle(toggle_value=[0]):
         """
@@ -28,8 +27,8 @@ def add_view_diagram_button(root_window: Tk, button_callback: callable, view_wid
         CONST_OFF_TEXT_VALUE: 'red',
     }
 
-    toggle_view_frame = Frame(root_window, width=view_width, height=view_height)
-    toggle_view_frame.pack(side=BOTTOM, anchor=SE, fill='both')
+    toggle_view_frame = Frame(parent_window, width=view_width, height=view_height)
+    toggle_view_frame.pack(side=BOTTOM, anchor=SE, fill='both', expand=True)
 
     view_diagram_button = Button(toggle_view_frame, text=CONST_ON_TEXT_VALUE, bd=0, command=_toggle, width=3, height=2)
     view_diagram_button.config(text=CONST_ON_TEXT_VALUE, background=state_color_dict[CONST_ON_TEXT_VALUE], activebackground=state_color_dict[CONST_ON_TEXT_VALUE])  # Set Default State and Style
@@ -38,3 +37,6 @@ def add_view_diagram_button(root_window: Tk, button_callback: callable, view_wid
 
     label = Label(toggle_view_frame, text="View Diagram")
     label.pack(side=RIGHT)
+
+    parent_window.add(toggle_view_frame)
+

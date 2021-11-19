@@ -1,9 +1,9 @@
-from tkinter import Tk
+from tkinter import Tk, PanedWindow, LEFT, Listbox
+from tkinter.ttk import Treeview
 
 from aac.ui.menu_bar import menu_bar
 from aac.ui.models_tree import add_models_tree
-from aac.ui.model_views import get_model_views
-from aac.ui.view_diagram_button import add_view_diagram_button
+from aac.ui.model_views import add_model_views
 
 
 def main_window() -> None:
@@ -13,15 +13,17 @@ def main_window() -> None:
         print("boop")
         view_toggle_callback()
 
-    main_window = Tk()
-    main_window.title("Architecture-as-Code")
+    root_window = Tk()
+    root_window.title("Architecture-as-Code")
 
-    main_window_width = main_window.winfo_screenwidth()
-    main_window_height = main_window.winfo_screenheight()
+    main_window_width = root_window.winfo_screenwidth()
+    main_window_height = root_window.winfo_screenheight()
 
-    main_window.geometry("%dx%d" % (main_window_width, main_window_height))
-    main_window_menu_bar = menu_bar(main_window)
-    main_window.config(menu=main_window_menu_bar)
+    root_window.geometry("%dx%d" % (main_window_width, main_window_height))
+    root_window_menu_bar = menu_bar(root_window)
+    root_window.config(menu=root_window_menu_bar)
+
+    main_window = PanedWindow(showhandle=True)
 
     # Calculate main_window widget widths and heights
     model_tree_view_width = 200
@@ -40,10 +42,10 @@ def main_window() -> None:
     print(f"models_view width x height: {models_view_width}, {models_view_height}")
 
     # Add main_window widgets
-    add_models_tree(main_window, model_tree_view_width, model_tree_view_height)
-    add_view_diagram_button(main_window, toggle_view_diagram, view_diagram_button_width, view_diagram_button_height)
+    add_models_tree(main_window)
+    add_model_views(main_window)
 
-    view_toggle_callback = get_model_views(main_window, models_view_width, models_view_height)
+    main_window.pack(fill="both", expand=True)
 
-    return main_window
+    return root_window
 
