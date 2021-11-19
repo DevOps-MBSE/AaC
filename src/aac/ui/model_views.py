@@ -1,4 +1,4 @@
-from tkinter import Tk, TOP, NW, Label, Canvas, Entry
+from tkinter import Tk, TOP, NW, Label, Canvas, Entry, RIGHT
 from tkinter.ttk import Notebook, Frame
 
 VIEWS_FRAME = None
@@ -16,8 +16,8 @@ def get_model_views(root_window: Tk, view_width: int, view_height: int) -> calla
     Returns:
         A callback function for updating the model view between diagram and text.
     """
-    tab_view_frame = Frame(root_window, width=view_width, height=view_height, borderwidth=1)
-    tab_view_frame.pack(fill='both', expand=True, side=TOP, anchor=NW)
+    tab_view_frame = Frame(root_window, width=view_width, height=view_height)
+    tab_view_frame.pack(fill='both', expand=True, side=RIGHT)
 
     global VIEWS_FRAME
     global IS_DIAGRAM_VIEW
@@ -29,6 +29,8 @@ def get_model_views(root_window: Tk, view_width: int, view_height: int) -> calla
 
 
 def set_diagram_view_frame(root_frame: Frame, is_diagram_view: bool, view_width: int, view_height: int):
+    print(view_width, view_height)
+
     if (is_diagram_view):
         view_diagram_notebook(root_frame, view_width, view_height)
     else:
@@ -36,7 +38,7 @@ def set_diagram_view_frame(root_frame: Frame, is_diagram_view: bool, view_width:
 
 
 def view_diagram_notebook(window_frame: Frame, view_width: int, view_height: int):
-    tabs_notebook = Notebook(window_frame)
+    tabs_notebook = Notebook(window_frame, height=view_width, width=view_height)
 
     diagram_tab = _get_diagram_tab_frame(tabs_notebook, view_width, view_height)
     properties_tab = _get_properties_tab_frame(tabs_notebook, view_width, view_height)
@@ -87,7 +89,5 @@ def _switch_views():
 
     IS_DIAGRAM_VIEW = (not IS_DIAGRAM_VIEW)
 
-    print("fudge")
-    print(VIEWS_FRAME.winfo_width(), VIEWS_FRAME.winfo_height())
     set_diagram_view_frame(VIEWS_FRAME, IS_DIAGRAM_VIEW, VIEWS_FRAME.winfo_width(), VIEWS_FRAME.winfo_height())
 

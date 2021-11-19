@@ -27,11 +27,17 @@ def main_window() -> None:
     model_tree_view_width = 200
     model_tree_view_height = main_window_height
 
+    print(f"model_tree_view width x height: {model_tree_view_width}, {model_tree_view_height}")
+
+    view_diagram_button_width = main_window_width - model_tree_view_width
+    view_diagram_button_height = 30
+
+    print(f"view_diagram_button width x height: {view_diagram_button_width}, {view_diagram_button_height}")
+
     models_view_width = main_window_width - model_tree_view_width
     models_view_height = main_window_height
 
-    view_diagram_button_width = main_window_width
-    view_diagram_button_height = 30
+    print(f"models_view width x height: {models_view_width}, {models_view_height}")
 
     # Add main_window widgets
     add_models_tree(main_window, model_tree_view_width, model_tree_view_height)
