@@ -15,13 +15,13 @@ def add_model_views(root_window: Tk, view_width: int) -> None:
 
     tabs_notebook = Notebook(tab_view_frame)
 
-    tab1 = Frame(tabs_notebook)
-    tab2 = Frame(tabs_notebook)
-    tab3 = Frame(tabs_notebook)
+    diagram_tab = Frame(tabs_notebook)
+    properties_tab = Frame(tabs_notebook)
+    imports_tab = Frame(tabs_notebook)
 
-    _add_tab_to_notebook(tabs_notebook, tab1, {"text": "Notebook tab1"})
-    _add_tab_to_notebook(tabs_notebook, tab2, {"text": "Notebook tab2"})
-    _add_tab_to_notebook(tabs_notebook, tab3, {"text": "Notebook tab3"})
+    _add_tab_to_notebook(tabs_notebook, diagram_tab, {"text": "Diagram"})
+    _add_tab_to_notebook(tabs_notebook, properties_tab, {"text": "Properties"})
+    _add_tab_to_notebook(tabs_notebook, imports_tab, {"text": "Imports"})
 
     tabs_notebook.pack()
 
