@@ -19,7 +19,7 @@ spec:
           value: Test
 
   sections:
-    - name: Funcational Requirements
+    - name: Functional Requirements
       description:  The calculator system performs simple math functions.
       requirements:
         - id: 3
