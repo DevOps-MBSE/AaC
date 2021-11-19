@@ -57,7 +57,7 @@ class TestAacSpec(TestCase):
 VALID_SPEC = """
 spec:
   name: Subsystem
-  abbrv: SUB
+  abbreviation: SUB
   description:  This is a representative subsystem requirement specification.
   requirements:
     - id: 1
@@ -68,13 +68,13 @@ spec:
 ---
 spec:
   name: Module
-  abbrv: MOD
+  abbreviation: MOD
   description:  This is a representative module requirement specification.
   requirements:
     - id: 1
       shall:  When receiving a message, the module shall respond with a value.
       parent:
-        - abbrv: SUB
+        - abbreviation: SUB
           ids: 1
       attributes:
         - name: TADI
@@ -84,7 +84,7 @@ spec:
 INVALID_SPEC_MISSING_ABRV = """
 spec:
   name: Subsystem
-  abbrv:
+  abbreviation:
   description:  This is a representative subsystem requirement specification.
   requirements:
     - id: 1
@@ -95,13 +95,13 @@ spec:
 ---
 spec:
   name: Module
-  abbrv: MOD
+  abbreviation: MOD
   description:  This is a representative module requirement specification.
   requirements:
     - id: 1
       shall:  When receiving a message, the module shall respond with a value.
       parent:
-        - abbrv: SUB_SYS
+        - abbreviation: SUB_SYS
           ids: 1
       attributes:
         - name: TADI
@@ -111,7 +111,7 @@ spec:
 INVALID_SPEC_BAD_ID_REFERENCE = """
 spec:
   name: Subsystem
-  abbrv: SUB
+  abbreviation: SUB
   description:  This is a representative subsystem requirement specification.
   requirements:
     - id: 1
@@ -122,13 +122,13 @@ spec:
 ---
 spec:
   name: Module
-  abbrv: MOD
+  abbreviation: MOD
   description:  This is a representative module requirement specification.
   requirements:
     - id: 1
       shall:  When receiving a message, the module shall respond with a value.
       parent:
-        - abbrv: SUB
+        - abbreviation: SUB
           ids: 3
       attributes:
         - name: TADI
@@ -138,7 +138,7 @@ spec:
 INVALID_SPEC_BAD_ABBRV_VALUE = """
 spec:
   name: Subsystem
-  abbrv: SUB
+  abbreviation: SUB
   description:  This is a representative subsystem requirement specification.
   requirements:
     - id: 1
@@ -149,13 +149,13 @@ spec:
 ---
 spec:
   name: Module
-  abbrv: MOD
+  abbreviation: MOD
   description:  This is a representative module requirement specification.
   requirements:
     - id: 1
       shall:  When receiving a message, the module shall respond with a value.
       parent:
-        - abbrv: NOTSUB
+        - abbreviation: NOTSUB
           ids: 1
       attributes:
         - name: TADI

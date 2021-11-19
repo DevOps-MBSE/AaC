@@ -15,7 +15,7 @@ model:
       type: request-response
       description: Add or subtract numbers
       requirements:
-        - abbrv: CALC
+        - abbreviation: CALC
           ids:
             - 1
             - 2

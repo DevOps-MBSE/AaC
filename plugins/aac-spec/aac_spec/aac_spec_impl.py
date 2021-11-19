@@ -48,7 +48,7 @@ def _do_validate(architecture_file: str) -> tuple[bool, list]:
     specs = util.get_models_by_type(parsed_model, "spec")
     for spec_name in specs:
 
-        abbrv = util.search(specs[spec_name], ["spec", "abbrv"])
+        abbrv = util.search(specs[spec_name], ["spec", "abbreviation"])
         if len(abbrv) == 1:
             spec_by_abbrv[abbrv[0]] = specs[spec_name]
         else:
@@ -58,7 +58,7 @@ def _do_validate(architecture_file: str) -> tuple[bool, list]:
     # ensure all req_refs are present in the referenced location
     for model_name in req_refs:
         for ref in req_refs[model_name]:
-            abbrv = ref["abbrv"]
+            abbrv = ref["abbreviation"]
             if abbrv in spec_by_abbrv:
                 # abbrv ref is good, now check the ids
                 ids_in_spec = []

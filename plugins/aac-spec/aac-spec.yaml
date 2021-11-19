@@ -47,7 +47,7 @@ data:
   fields:
     - name: name
       type: string
-    - name: abbrv
+    - name: abbreviation
       type: string
     - name: description
       type: string
@@ -57,7 +57,7 @@ data:
       type: Requirement[]
   required:
     - name
-    - abbrv
+    - abbreviation
 ---
 data:
   name: SpecSection
@@ -100,10 +100,10 @@ data:
 data:
   name: RequirementReference
   fields:
-    - name: abbrv
+    - name: abbreviation
       type: string
     - name: ids
       type: string[]
   required:
-    - abbrv
+    - abbreviation
     - ids

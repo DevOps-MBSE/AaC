@@ -1,6 +1,6 @@
 spec:
   name: Calculator System Interface Requirements
-  abbrv: CALC_IRS
+  abbreviation: CALC_IRS
   description: This is a interface specification structure to test the spec plugin.
   requirements:
     - id: 1

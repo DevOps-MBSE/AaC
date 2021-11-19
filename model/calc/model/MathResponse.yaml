@@ -1,7 +1,7 @@
 data:
   name: MathResponse
   requirements:
-    - abbrv: CALC_IRS
+    - abbreviation: CALC_IRS
       ids: 3
   fields:
     - name: result

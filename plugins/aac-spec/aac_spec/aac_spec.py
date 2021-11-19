@@ -75,7 +75,7 @@ data:
   fields:
   - name: name
     type: string
-  - name: abbrv
+  - name: abbreviation
     type: string
   - name: description
     type: string
@@ -86,7 +86,7 @@ data:
   name: Specification
   required:
   - name
-  - abbrv
+  - abbreviation
 
 ---
 data:
@@ -132,13 +132,13 @@ data:
 ---
 data:
   fields:
-  - name: abbrv
+  - name: abbreviation
     type: string
   - name: ids
     type: string[]
   name: RequirementReference
   required:
-  - abbrv
+  - abbreviation
   - ids
 
 """

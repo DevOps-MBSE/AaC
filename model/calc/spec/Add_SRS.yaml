@@ -1,12 +1,12 @@
 spec:
   name: Module Add SRS
-  abbrv: ADD
+  abbreviation: ADD
   description:  This is a representative Software Requirements Specification for a module called Add.
   requirements:
     - id: 1
       shall:  When receiving an add message, the calculator shall respond with the sum of the provided values.
       parent:
-        - abbrv: SM
+        - abbreviation: SM
           ids: 1
       attributes:
         - name: TADI

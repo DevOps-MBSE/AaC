@@ -5,9 +5,6 @@
 from setuptools import setup
 from aac_spec.aac_spec_impl import plugin_version
 
-with open("README.md", "r") as fh:
-    readme_description = fh.read()
-
 setup(
     version=plugin_version,
     name="aac-spec",

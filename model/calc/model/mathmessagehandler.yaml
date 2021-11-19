@@ -14,17 +14,17 @@ model:
     - name: api
       type: request-response
       requirements:
-        - abbrv: ADD
+        - abbreviation: ADD
           ids: 1
-        - abbrv: SUB
+        - abbreviation: SUB
           ids: 1
-        - abbrv: MULT
+        - abbreviation: MULT
           ids: 1
-        - abbrv: DIV
+        - abbreviation: DIV
           ids: 1
-        - abbrv: POW
+        - abbreviation: POW
           ids: 1
-        - abbrv: SQRT
+        - abbreviation: SQRT
           ids: 1
       input:
         - name: request

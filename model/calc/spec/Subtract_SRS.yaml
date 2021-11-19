@@ -1,12 +1,12 @@
 spec:
   name: Module Subtract SRS
-  abbrv: SUB
+  abbreviation: SUB
   description:  This is a representative Software Requirements Specification for a module called Subtract.
   requirements:
     - id: 1
       shall: When receiving a subtract message, the calculator shall respond with the difference between the provided values.
       parent:
-        - abbrv: SM
+        - abbreviation: SM
           ids: 1
       attributes:
         - name: TADI
