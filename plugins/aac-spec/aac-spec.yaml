@@ -1,67 +1,22 @@
-data:
-  name: Specification
-  fields:
-    - name: name
-      type: string
-    - name: description
-      type: string
-    - name: subspecs
-      type: string[]
-    - name: sections
-      type: SpecSection[]
-    - name: requirements
-      type: Requirement[]
-  required:
-    - name
----
-data:
-  name: SpecSection
-  fields:
-    - name: name
-      type: string
-    - name: description
-      type: string
-    - name: requirements
-      type: Requirement[]
-  required:
-    - name
----
-data:
-  name: Requirement
-  fields:
-    - name: id
-      type: string
-    - name: shall
-      type: string
-    - name: parent
-      type: string
-    - name: attributes
-      type: RequirementAttribute[]
-  required:
-    - id
-    - shall
----
-data:
-  name: RequirementAttribute
-  fields:
-    - name: name
-      type: string
-    - name: value
-      type: string
-  required:
-    - name
-    - value
----
-data:
-  name: RequirementReference
-  fields:
-    - name: spec
-      type: string
-    - name: ids
-      type: string[]
-  required:
-    - spec
-    - ids
+model:
+  name: aac-spec
+  description: aac-spec is a Architecture-as-Code plugin that enables requirement definition and traceability in Architecture-as-Code models.
+  behavior:
+    - name: spec-validate
+      type: command
+      description: Validates spec traces within the AaC model
+      input:
+        - name: architecture_file
+          type: file
+          description:  The file to validate for spec cross-references.
+      acceptance:
+        - scenario: Valid spec traces are modeled.
+          given:
+            - The {{spec-validate.input.architecture_file}} contains a valid architecture specification.
+          when:
+            - The aac app is run with the spec-validate command.
+          then:
+            - A message saying spec validation was successful is printed to the console.
 ---
 ext:
   name: addSpecificationToRoot
@@ -87,26 +42,68 @@ ext:
       - name: requirements
         type: RequirementReference[]
 ---
-model:
-  name: aac-spec
-  description: aac-spec is a Architecture-as-Code plugin that enables requirement definition and trace in Arch-as-Code models.
-  behavior:
-    - name: spec-validate
-      type: command
-      description: Validates spec traces within the AaC model
-      input:
-        - name: architecture_file
-          type: file
-          python_type: str
-        - name: parsed_model
-          type: map
-          python_type: dict
-      acceptance:
-        - scenario: Valid spec traces are modeled.
-          given:
-            - The {{spec-validate.input.architecture_file}} contains a valid architecture specification.
-            - The {{spec-validate.input.parsed_model}} contains the parsed content from architecture_file.
-          when:
-            - The aac app is run with the spec-validate command.
-          then:
-            - A message saying spec validation was successful is printed to the console.
+data:
+  name: Specification
+  fields:
+    - name: name
+      type: string
+    - name: abbreviation
+      type: string
+    - name: description
+      type: string
+    - name: sections
+      type: SpecSection[]
+    - name: requirements
+      type: Requirement[]
+  required:
+    - name
+    - abbreviation
+---
+data:
+  name: SpecSection
+  fields:
+    - name: name
+      type: string
+    - name: description
+      type: string
+    - name: requirements
+      type: Requirement[]
+  required:
+    - name
+---
+data:
+  name: Requirement
+  fields:
+    - name: id
+      type: string
+    - name: shall
+      type: string
+    - name: parent
+      type: RequirementReference[]
+    - name: attributes
+      type: RequirementAttribute[]
+  required:
+    - id
+    - shall
+---
+data:
+  name: RequirementAttribute
+  fields:
+    - name: name
+      type: string
+    - name: value
+      type: string
+  required:
+    - name
+    - value
+---
+data:
+  name: RequirementReference
+  fields:
+    - name: abbreviation
+      type: string
+    - name: ids
+      type: string[]
+  required:
+    - abbreviation
+    - ids
