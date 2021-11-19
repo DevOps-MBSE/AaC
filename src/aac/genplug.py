@@ -124,7 +124,7 @@ def _compile_templates(parsed_models: dict[str, dict]) -> dict[str, list[Templat
     Parse the model and generate the plugin template accordingly.
 
     Args:
-        parsed_models: Dict representing the plugin models
+        parsed_models (dict[str, dict]): Dict representing the plugin models
 
     Returns:
         List of TemplateOutputFile objects that contain the compiled templates
@@ -133,7 +133,6 @@ def _compile_templates(parsed_models: dict[str, dict]) -> dict[str, list[Templat
         GeneratePluginException: An error encountered during the plugin generation process.
     """
 
-    # Define which templates we want to overwrite.
     templates_to_overwrite = ["plugin.py.jinja2", "setup.py.jinja2"]
     template_parent_directories = {"test_plugin_impl.py.jinja2": "tests"}
 
@@ -146,7 +145,9 @@ def _compile_templates(parsed_models: dict[str, dict]) -> dict[str, list[Templat
         )
 
     def set_parent_directory_value(template: TemplateOutputFile):
-        template.parent_dir = template_parent_directories.get(template.template_name) or template.parent_dir
+        template.parent_dir = (
+            template_parent_directories.get(template.template_name) or template.parent_dir
+        )
 
     # ensure model is present and valid, get the plugin name
     plugin_models = util.get_models_by_type(parsed_models, "model")
@@ -163,6 +164,12 @@ def _compile_templates(parsed_models: dict[str, dict]) -> dict[str, list[Templat
         plugin_name = f"{__package__}-{plugin_name}"
 
     plugin_implementation_name = _convert_to_implementation_name(plugin_name)
+
+    template_parent_directories = template_parent_directories | {
+        "plugin.py.jinja2": plugin_name,
+        "plugin_impl.py.jinja2": plugin_name,
+        "__init__.py.jinja2": plugin_name,
+    }
 
     # Prepare template variables/properties
     behaviors = util.search(plugin_model, ["behavior"])
@@ -224,6 +231,9 @@ def _is_user_desired_output_directory(architecture_file: str, output_dir: str) -
     while confirmation not in ["y", "n", "Y", "N"]:
         if not first:
             print(f"Unrecognized input {confirmation}:  please enter 'y' or 'n'.")
+        else:
+            first = False
+
         confirmation = input(
             f"Do you want to generate an AaC plugin in the directory {output_dir}? [y/n]"
         )
@@ -245,6 +255,7 @@ def _gather_commands(behaviors: dict) -> list[dict]:
     Returns:
         list of command-type behaviors dicts
     """
+
     def modify_command_input_output_entry(in_out_entry: dict):
         """Modifies the input and output entries of a behavior definition to reduce complexity in the templates."""
         in_out_entry["type"] = in_out_entry.get("python_type") or in_out_entry.get("type")
@@ -290,4 +301,3 @@ def _add_definitions_yaml_string(model: dict) -> dict:
 
 def _convert_to_implementation_name(original_name: str) -> str:
     return original_name.replace("-", "_")
-
