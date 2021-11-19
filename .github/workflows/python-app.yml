@@ -16,9 +16,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python 3.9
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.9
+        run : |
+          apt-get update
+          apt-get install python3.9 python3.9-venv python3.9-tk -y
       - name: Install dependencies
         run: |
           python -m venv venv --system-site-packages
