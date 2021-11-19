@@ -17,8 +17,8 @@ jobs:
       - uses: actions/checkout@v2
       - name: Set up Python 3.9
         run : |
-          apt-get update
-          apt-get install python3.9 python3.9-venv python3.9-tk -y
+          sudo apt-get update
+          sudo apt-get install python3.9 python3.9-venv python3.9-tk -y
       - name: Install dependencies
         run: |
           python -m venv venv --system-site-packages
