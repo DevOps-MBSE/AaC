@@ -1,7 +1,8 @@
 from tkinter import Canvas, Label, Tk, LEFT, TOP, GROOVE, Frame, END
 from tkinter.ttk import Treeview
 
-def add_models_tree(parent_window: Tk) -> None:
+
+def add_models_treeview(parent_window: Tk) -> None:
     """
     Creates a view containing all contextual models and definitions.
     """
