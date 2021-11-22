@@ -1,3 +1,6 @@
+[![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/from-referrer/)
+
+
 # Architecture-as-Code (AaC)
 
 AaC is a distinctly different take on Model-Based System Engineering (MBSE) that allows a
