@@ -2,15 +2,16 @@
 The command line processor for aac.
 """
 import argparse
-import itertools
 import inspect
+import itertools
 import sys
-
 from typing import Callable
+
 from pluggy import PluginManager
 
-from aac import parser, util, plugins
+from aac import parser, plugins, util
 from aac.AacCommand import AacCommand, AacCommandArgument
+from aac.spec.core import get_aac_spec_as_yaml
 
 
 def run_cli():
@@ -61,7 +62,7 @@ def _validate_cmd(model_file: str):
 
 def _core_spec_cmd():
     """The built-in aac-core-spec command."""
-    print(util.get_aac_spec_as_yaml())
+    print(get_aac_spec_as_yaml())
 
 
 def _setup_arg_parser(
