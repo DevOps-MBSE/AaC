@@ -8,12 +8,7 @@ Avoid adding to this module, always look for ways move these functions into modu
 """
 
 import logging
-import os
 from typing import Any
-
-import yaml
-
-from aac import parser
 
 
 def search(model: dict[str, Any], search_keys: list[str]) -> list:
