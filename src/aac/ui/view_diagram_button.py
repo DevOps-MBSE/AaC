@@ -1,8 +1,7 @@
-from tkinter import Tk, Button, BOTTOM, SE, Label, LEFT, RIGHT
-from tkinter.ttk import Style, Frame
+from tkinter import Tk, Button, BOTTOM, Label, RIGHT, Frame
 
 
-def add_view_diagram_button(parent_window: Tk, button_callback: callable) -> None:
+def get_view_diagram_button(parent_window: Tk, button_callback: callable) -> None:
     """
     ...
     """
@@ -21,7 +20,6 @@ def add_view_diagram_button(parent_window: Tk, button_callback: callable) -> Non
         a list default argument has a fixed address
         """
 
-        print(toggle_value)
         toggle_value[0] = not toggle_value[0]
         if toggle_value[0]:
             config_button(view_diagram_button, CONST_OFF_TEXT_VALUE)
@@ -35,17 +33,18 @@ def add_view_diagram_button(parent_window: Tk, button_callback: callable) -> Non
         CONST_OFF_TEXT_VALUE: "red",
     }
 
-    toggle_view_frame = Frame(parent_window)
-    toggle_view_frame.pack(side=BOTTOM, anchor=SE, expand=True, fill="both")
+    toggle_view_frame = Frame(parent_window, height=40)
 
     view_diagram_button = Button(
         toggle_view_frame, text=CONST_ON_TEXT_VALUE, bd=1, command=toggle
     )
     config_button(view_diagram_button, CONST_ON_TEXT_VALUE)
 
-    view_diagram_button.pack(side=RIGHT, expand=True, fill="both")
+    view_diagram_button.pack(side=RIGHT)
 
     label = Label(toggle_view_frame, text="View Diagram")
-    label.pack(side=RIGHT, expand=True, fill="both")
+    label.pack(side=RIGHT)
+
+    toggle_view_frame.pack(side=BOTTOM)
 
     return toggle_view_frame

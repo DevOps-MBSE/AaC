@@ -1,4 +1,4 @@
-from tkinter import Canvas, Label, Tk, LEFT, TOP, GROOVE, Frame, END
+from tkinter import Tk, LEFT, END
 from tkinter.ttk import Treeview
 
 
