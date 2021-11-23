@@ -26,4 +26,3 @@ def main_window() -> None:
     add_model_views(main_window)
 
     return root_window
-
