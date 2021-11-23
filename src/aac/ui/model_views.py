@@ -1,10 +1,11 @@
-from tkinter import Tk, TOP, NW, Label, Canvas, Entry, RIGHT, VERTICAL, PanedWindow, Text, N, S, W, E
+from tkinter import Tk, TOP, Label, VERTICAL, PanedWindow, Text, Widget, BOTTOM, GROOVE, Canvas, CENTER
 from tkinter.ttk import Notebook, Frame
 
-from aac.ui.view_diagram_button import add_view_diagram_button
+from attr import attrs, attrib, validators
 
-VIEWS_FRAME = None
-IS_DIAGRAM_VIEW = True
+from aac.ui.view_diagram_button import get_view_diagram_button
+
+WIDGETS_MANAGER = None
 
 
 def add_model_views(root_window: Tk):
@@ -13,36 +14,25 @@ def add_model_views(root_window: Tk):
 
     Args:
         root_window: The window to attach the models tree frame to
-        view_width (int): The width of the canvas
     """
-    models_view_paned_window = PanedWindow(root_window, orient=VERTICAL, showhandle=True, bg="red")
+    models_view_paned_window = PanedWindow(root_window, orient=VERTICAL, showhandle=True)
 
-    global VIEWS_FRAME
-    global IS_DIAGRAM_VIEW
-    VIEWS_FRAME = models_view_paned_window
+    global WIDGETS_MANAGER
+    WIDGETS_MANAGER = ViewWidgetsManager(models_view_paned_window)
+    WIDGETS_MANAGER.set_view_toggle_button(
+        get_view_diagram_button(models_view_paned_window, WIDGETS_MANAGER.toggle_view)
+    )
 
-    _set_diagram_view_frame(models_view_paned_window, IS_DIAGRAM_VIEW)
+    diagrams_views = _get_diagram_notebook_view(WIDGETS_MANAGER.parent_window)
+    textual_view = _get_model_text_view(WIDGETS_MANAGER.parent_window)
+
+    WIDGETS_MANAGER.add_view(diagrams_views)
+    WIDGETS_MANAGER.add_view(textual_view)
 
     root_window.add(models_view_paned_window)
 
 
-def _set_diagram_view_frame(parent_window: PanedWindow, is_diagram_view: bool):
-
-    button_height = 40
-    window_height = parent_window.winfo_height() if parent_window.winfo_height() > 1 else button_height * 2
-    window_width = parent_window.winfo_width() if parent_window.winfo_width() > 1 else button_height * 2
-
-    models_view = _view_diagram_notebook(parent_window) if is_diagram_view else _view_model_text(parent_window)
-    parent_window.add(models_view)
-
-    diagram_button = add_view_diagram_button(parent_window, _switch_views)
-    parent_window.add(diagram_button)
-
-    parent_window.paneconfig(models_view, width=window_width, height=window_height - button_height * 2, sticky=N + W + E + S)
-    parent_window.paneconfig(diagram_button, height=button_height, sticky=S + E)
-
-
-def _view_diagram_notebook(parent_window: PanedWindow):
+def _get_diagram_notebook_view(parent_window: PanedWindow):
     tabs_notebook = Notebook(parent_window)
 
     diagram_tab = _get_diagram_tab_frame(tabs_notebook)
@@ -52,27 +42,26 @@ def _view_diagram_notebook(parent_window: PanedWindow):
     tabs_notebook.add(diagram_tab, text="Diagram")
     tabs_notebook.add(properties_tab, text="Properties")
     tabs_notebook.add(imports_tab, text="Imports")
-
-    tabs_notebook.pack(fill="both", expand=True, side=TOP)
     return tabs_notebook
 
 
-def _view_model_text(parent_window: PanedWindow):
-    model_text_view = Text(parent_window, bg="yellow")
-    model_text_view.pack(fill="both", expand=True)
+def _get_model_text_view(parent_window: PanedWindow):
+    model_text_view = Text(parent_window, bd=2, relief=GROOVE)
     model_text_view.insert("1.0", _get_sample_model_text())
     return model_text_view
 
 
 def _get_diagram_tab_frame(root_notebook: Notebook) -> Frame:
     diagram_frame = Frame(root_notebook)
-    Label(diagram_frame, text="test").pack(fill="both", expand=True)
-
-    model_text_view = Text(diagram_frame, bg="yellow")
-    model_text_view.pack(fill="both", expand=True)
-    model_text_view.insert("1.0", "")
-
     diagram_frame.pack(fill="both", expand=True)
+
+    model_canvas = Canvas(diagram_frame)
+    model_canvas.pack(side=TOP, fill="both", expand=True)
+
+    # Replace these with the model diagram content
+    model_canvas.create_line(0, 0, 2000, 1129)
+    model_canvas.create_line(0, 960, 1700, 0)
+
     return diagram_frame
 
 
@@ -86,21 +75,6 @@ def _get_imports_tab_frame(root_notebook: Notebook) -> Frame:
     imports_frame = Frame(root_notebook)
     imports_frame.pack()
     return imports_frame
-
-
-def _switch_views():
-    global VIEWS_FRAME
-    global IS_DIAGRAM_VIEW
-
-    # Clear existing frames
-    # TODO FIXME This is cuasing weird behavior like the button not changing state since it's being killed every update.
-    # leverage add() and forget() instead https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/panedwindow.html
-    for widgets in VIEWS_FRAME.winfo_children():
-        widgets.destroy()
-
-    IS_DIAGRAM_VIEW = not IS_DIAGRAM_VIEW
-
-    _set_diagram_view_frame(VIEWS_FRAME, IS_DIAGRAM_VIEW)
 
 
 def _get_sample_model_text() -> str:
@@ -120,3 +94,65 @@ model:
           then:
             - The system responds
     """
+
+
+@attrs
+class ViewWidgetsManager:
+    """This class provides persistent management of the various model views and transitions between them."""
+
+    parent_window = attrib(validator=validators.instance_of(Widget))
+    current_view = attrib(default=None, validator=validators.instance_of((Widget, type(None))))
+    available_views = attrib(default=[], validator=validators.instance_of(list))
+    view_toggle_button = attrib(
+        default=None, validator=validators.instance_of((Widget, type(None)))
+    )
+
+    def set_view_toggle_button(self, button: Frame):
+        """Sets the widget that represents the botton used to toggle between model text views and model diagram views."""
+        self.view_toggle_button = button
+        self.parent_window.add(self.view_toggle_button)
+
+    def add_view(self, widget: Widget):
+        """Register a view to toggle between."""
+        self.available_views.append(widget)
+
+        # If a current view isn't set yet, set it to our new view.
+        if not self.current_view:
+            self.current_view = widget
+            self._pack_models_view_widget(self.current_view)
+
+    def toggle_view(self):
+        """Transition between registered views."""
+
+        if self._are_available_views_populated():
+
+            previous_view = self.current_view
+
+            # If no view is set, set the initial one
+            if self.current_view not in self.available_views:
+                self.current_view = self.available_views[0]
+            else:
+                current_view_index = self.available_views.index(self.current_view)
+
+                # Increment or roll over to 0
+                current_view_index = (current_view_index + 1) % len(self.available_views)
+                self.current_view = self.available_views[current_view_index]
+
+            if previous_view:
+                previous_view.pack_forget()
+
+            self._pack_models_view_widget(self.current_view)
+
+        else:
+            print("Err available views not populated.")
+
+    def _are_available_views_populated(self):
+        return len(self.available_views) > 0
+
+    def _pack_models_view_widget(self, widget: Widget):
+        widget.pack(fill="both", expand=True, side=TOP)
+        self._repack_button()
+
+    def _repack_button(self):
+        self.view_toggle_button.pack_forget()
+        self.view_toggle_button.pack(side=BOTTOM, anchor="se", expand=False, fill="none")
