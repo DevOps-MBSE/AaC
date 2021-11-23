@@ -7,10 +7,12 @@ module we prevent code duplication and simplify maintenance.
 Avoid adding to this module, always look for ways move these functions into modules with similar functionality.
 """
 
-import os
 import logging
+import os
 from typing import Any
+
 import yaml
+
 from aac import parser
 
 PRIMITIVES: list[str] = []
@@ -168,25 +170,6 @@ def get_aac_spec_as_yaml() -> str:
 
         aac_yaml = aac_yaml + yaml.dump(aac_model[aac_name]) + "\n"
     return aac_yaml
-
-
-def extend_aac_spec(parsed_model: dict[str, dict]):
-    """Applies an extension to the base AaC model specification.
-
-    The AaC base model specification is used for validation. This method allows
-    you to apply an extention (modeled as an ext root type) to modify that
-    base model specification.
-
-    Args:
-        parsed_model: The result of aac.parser.parse(<aac_file>).
-    """
-    global AAC_MODEL
-
-    apply_me = parsed_model.copy()
-    extensions = get_models_by_type(apply_me, "ext")
-    for ext_type in extensions:
-        del apply_me[ext_type]
-    AAC_MODEL = AAC_MODEL | apply_me
 
 
 def get_primitives(reload: bool = False) -> list[str]:
