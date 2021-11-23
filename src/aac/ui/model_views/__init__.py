@@ -1,16 +1,16 @@
-from tkinter import Tk, TOP, VERTICAL, PanedWindow, Text, Widget, BOTTOM, GROOVE, Canvas
-from tkinter.ttk import Notebook, Frame
+from tkinter import Tk, TOP, VERTICAL, PanedWindow, Widget, BOTTOM, Frame
 
 from attr import attrs, attrib, validators
 
-from aac.ui.view_diagram_button import get_view_diagram_button
+from aac.ui.model_views import diagram_view, text_view, toggle_view_diagram_button
+
 
 WIDGETS_MANAGER = None
 
 
 def add_model_views(root_window: Tk):
     """
-    Creates a view ....
+    Creates the main model views (text and diagram).
 
     Args:
         root_window: The window to attach the models tree frame to
@@ -20,80 +20,16 @@ def add_model_views(root_window: Tk):
     global WIDGETS_MANAGER
     WIDGETS_MANAGER = ViewWidgetsManager(models_view_paned_window)
     WIDGETS_MANAGER.set_view_toggle_button(
-        get_view_diagram_button(models_view_paned_window, WIDGETS_MANAGER.toggle_view)
+        toggle_view_diagram_button.get_view_diagram_button(models_view_paned_window, WIDGETS_MANAGER.toggle_view)
     )
 
-    diagrams_views = _get_diagram_notebook_view(WIDGETS_MANAGER.parent_window)
-    textual_view = _get_model_text_view(WIDGETS_MANAGER.parent_window)
+    diagrams_views = diagram_view.get_diagram_view(WIDGETS_MANAGER.parent_window)
+    textual_view = text_view.get_model_text_view(WIDGETS_MANAGER.parent_window)
 
     WIDGETS_MANAGER.add_view(diagrams_views)
     WIDGETS_MANAGER.add_view(textual_view)
 
     root_window.add(models_view_paned_window)
-
-
-def _get_diagram_notebook_view(parent_window: PanedWindow):
-    tabs_notebook = Notebook(parent_window)
-
-    diagram_tab = _get_diagram_tab_frame(tabs_notebook)
-    properties_tab = _get_properties_tab_frame(tabs_notebook)
-    imports_tab = _get_imports_tab_frame(tabs_notebook)
-
-    tabs_notebook.add(diagram_tab, text="Diagram")
-    tabs_notebook.add(properties_tab, text="Properties")
-    tabs_notebook.add(imports_tab, text="Imports")
-    return tabs_notebook
-
-
-def _get_model_text_view(parent_window: PanedWindow):
-    model_text_view = Text(parent_window, bd=2, relief=GROOVE)
-    model_text_view.insert("1.0", _get_sample_model_text())
-    return model_text_view
-
-
-def _get_diagram_tab_frame(root_notebook: Notebook) -> Frame:
-    diagram_frame = Frame(root_notebook)
-    diagram_frame.pack(fill="both", expand=True)
-
-    model_canvas = Canvas(diagram_frame)
-    model_canvas.pack(side=TOP, fill="both", expand=True)
-
-    # Replace these with the model diagram content
-    model_canvas.create_line(0, 0, 2000, 1129)
-    model_canvas.create_line(0, 960, 1700, 0)
-
-    return diagram_frame
-
-
-def _get_properties_tab_frame(root_notebook: Notebook) -> Frame:
-    properties_frame = Frame(root_notebook)
-    properties_frame.pack(fill="both", expand=True)
-    return properties_frame
-
-
-def _get_imports_tab_frame(root_notebook: Notebook) -> Frame:
-    imports_frame = Frame(root_notebook)
-    imports_frame.pack()
-    return imports_frame
-
-
-def _get_sample_model_text() -> str:
-    """Temporary function, remove it once models are actually loaded."""
-    return """---
-model:
-  name: Test Model A
-  behavior:
-    - name: Do first thing
-      type: pub-sub
-      acceptance:
-        - scenario: A simple flow through the system
-          given:
-            - The system is in a valid state
-          when:
-            - The user does something
-          then:
-            - The system responds
-    """
 
 
 @attrs
