@@ -1,3 +1,5 @@
+"""Functions to allow interacting with the core AaC spec."""
+
 from importlib import resources
 
 import yaml
