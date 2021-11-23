@@ -1,4 +1,4 @@
-import os
+from importlib import resources
 
 import yaml
 
@@ -31,14 +31,10 @@ def get_aac_spec() -> tuple[dict[str, dict], dict[str, dict]]:
         aac_enums = get_models_by_type(AAC_MODEL, "enum")
         return aac_data, aac_enums
 
-    # get the AaC.yaml spec for architecture modeling
-    this_file_path = os.path.dirname(os.path.realpath(__file__))
-    relpath_to_aac_yaml = "spec.yaml"
-    aac_model_file = os.path.join(this_file_path, relpath_to_aac_yaml)
-
-    AAC_MODEL = parser.parse_file(aac_model_file, False)
-    aac_data = get_models_by_type(AAC_MODEL, "data")
-    aac_enums = get_models_by_type(AAC_MODEL, "enum")
+    with resources.path(__package__, "spec.yaml") as aac_model_file:
+        AAC_MODEL = parser.parse_file(aac_model_file, False)
+        aac_data = get_models_by_type(AAC_MODEL, "data")
+        aac_enums = get_models_by_type(AAC_MODEL, "enum")
 
     return aac_data, aac_enums
 
