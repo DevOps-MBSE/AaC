@@ -1,4 +1,4 @@
-from tkinter import Tk, TOP, Label, VERTICAL, PanedWindow, Text, Widget, BOTTOM, GROOVE, Canvas, CENTER
+from tkinter import Tk, TOP, VERTICAL, PanedWindow, Text, Widget, BOTTOM, GROOVE, Canvas
 from tkinter.ttk import Notebook, Frame
 
 from attr import attrs, attrib, validators
