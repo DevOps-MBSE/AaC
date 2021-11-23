@@ -35,9 +35,7 @@ def get_view_diagram_button(parent_window: Tk, button_callback: callable) -> Non
 
     toggle_view_frame = Frame(parent_window, height=40)
 
-    view_diagram_button = Button(
-        toggle_view_frame, text=CONST_ON_TEXT_VALUE, bd=1, command=toggle
-    )
+    view_diagram_button = Button(toggle_view_frame, text=CONST_ON_TEXT_VALUE, bd=1, command=toggle)
     config_button(view_diagram_button, CONST_ON_TEXT_VALUE)
 
     view_diagram_button.pack(side=RIGHT)
