@@ -198,6 +198,37 @@ ext:
           type: ProtobufDataType
 """
 
+TEST_EXTENSION_PLUGIN_YAML_STRING = """
+model:
+  name: ext-add-protobuf
+  description: ext-add-protobuf is an Architecture-as-Code plugin that extends the AaC spec with protobuf type definitions.
+---
+enum:
+  name: ProtobufDataType
+  values:
+    - double
+    - float
+    - int32
+    - int64
+    - uint32
+    - uint64
+    - sint32
+    - sint64
+    - fixed32
+    - fixed64
+    - bool
+    - string
+    - bytes
+---
+ext:
+   name: ProtobufTypeField
+   type: Field
+   dataExt:
+      add:
+        - name: protobuf_type
+          type: ProtobufDataType
+"""
+
 SECONDARY_MODEL_YAML_DEFINITION = """
 model:
   name: aac-spec-secondary
