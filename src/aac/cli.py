@@ -75,7 +75,7 @@ def _setup_arg_parser(
         AacCommand(
             "ui",
             "Run the AaC Graphical User Interface",
-            ui.run_ui(),
+            ui.run_ui,
         ),
         AacCommand(
             "validate",
