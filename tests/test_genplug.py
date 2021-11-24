@@ -294,5 +294,4 @@ model:
           - when
           then:
           - then
-
 """
