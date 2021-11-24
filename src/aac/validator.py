@@ -9,6 +9,7 @@ from attr import attrib, attrs, validators
 from iteration_utilities import flatten
 
 from aac import plugins, util
+from aac.spec.core import get_aac_spec, get_primitives
 
 VALIDATOR_CONTEXT = None
 
@@ -42,7 +43,7 @@ def validate_and_get_errors(model: dict) -> list:
     global VALIDATOR_CONTEXT
 
     if not VALIDATOR_CONTEXT:
-        aac_enum, aac_data = util.get_aac_spec()
+        aac_enum, aac_data = get_aac_spec()
         VALIDATOR_CONTEXT = ValidatorContext(
             aac_enum | aac_data, {}, plugins.get_plugin_model_definitions(), model
         )
@@ -240,7 +241,7 @@ def _get_enum_fields(enum: str, fields: list, data: dict, enums: dict) -> list:
         if field_type in enums.keys():
             if field_type == enum:
                 enum_fields.append([field["name"]])
-        elif field_type not in util.get_primitives():
+        elif field_type not in get_primitives():
             found_paths = _find_paths_to_enum_fields(enum, field["name"], field_type, data, enums)
             for found in found_paths:
                 entry = found.copy()
@@ -523,7 +524,7 @@ class ValidatorContext:
         Returns:
             List of all defined types in the validation context
         """
-        return list(self.get_all_extended_definitions().keys()) + util.get_primitives()
+        return list(self.get_all_extended_definitions().keys()) + get_primitives()
 
     def get_all_model_definitions(self):
         """

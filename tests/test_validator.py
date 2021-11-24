@@ -1,7 +1,6 @@
 import re
 from unittest import TestCase
 
-from aac import util, validator
 from aac.parser import parse_str
 from aac.validator import is_valid, validate_and_get_errors
 

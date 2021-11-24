@@ -222,8 +222,8 @@ To run the command, execute the script (from within your virtual environment) as
 # For usage information
 $ aac --help
 
-# For example, to validate the AaC.yaml file
-$ aac validate model/aac/AaC.yaml
+# For example, to validate the spec.yaml file
+$ aac validate src/aac/spec/spec.yaml
 ```
 ### Documenting
 
