@@ -156,7 +156,6 @@ data:
       type: Behavior[]
   required:
     - name
-    - behavior
 ---
 data:
   name: usecase
