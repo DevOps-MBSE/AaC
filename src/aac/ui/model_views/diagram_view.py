@@ -1,5 +1,6 @@
-from tkinter import TOP, PanedWindow, Canvas, Text, END, Frame, Label, LEFT, RIGHT
+from tkinter import font, PanedWindow, Canvas, Text, Button, Frame, Label, LEFT, RIGHT, END, TOP
 from tkinter.ttk import Notebook
+from tkinter.font import BOLD
 
 
 def get_diagram_view(parent_window: PanedWindow):
@@ -48,34 +49,42 @@ def _get_properties_tab_frame(root_notebook: Notebook) -> Frame:
     properties_description_frame = Frame(properties_frame)
     properties_description_frame.pack(fill="x", expand=True, padx=25)
 
-    properties_name_label = Label(properties_description_frame, text="Description")
-    properties_name_label.pack(side=LEFT, padx=(0, 20))
+    properties_description_label = Label(properties_description_frame, text="Description")
+    properties_description_label.pack(side=LEFT, padx=(0, 20))
 
-    properties_name_text = Text(properties_description_frame, height=1)
-    properties_name_text.insert(END, "")
-    properties_name_text.pack(side=RIGHT, fill="x", expand=True)
+    properties_description_text = Text(properties_description_frame, height=1)
+    properties_description_text.insert(END, "")
+    properties_description_text.pack(side=RIGHT, fill="x", expand=True)
 
     # Properties Components Frame #
     properties_components_frame = Frame(properties_frame)
     properties_components_frame.pack(fill="x", expand=True, padx=25)
 
-    properties_name_label = Label(properties_components_frame, text="Components")
-    properties_name_label.pack(side=LEFT, padx=(0, 20))
+    properties_components_label = Label(properties_components_frame, text="Components")
+    properties_components_label.pack(side=LEFT, padx=(0, 20))
 
-    properties_name_text = Text(properties_components_frame, height=1)
-    properties_name_text.insert(END, "Component 3")
-    properties_name_text.pack(side=RIGHT, fill="x", expand=True)
+    properties_components_plus_button_font = font.Font(size=11, weight=BOLD)
+    properties_components_plus_button = Button(properties_components_frame, text="+", command=not_implemented, font=properties_components_plus_button_font)
+    properties_components_plus_button.pack(side=RIGHT)
+
+    properties_components_text = Text(properties_components_frame, height=1)
+    properties_components_text.insert(END, "Component 3")
+    properties_components_text.pack(side=RIGHT, fill="x", expand=True, padx=(0, 20))
 
     # Properties Behavior Frame #
     properties_behavior_frame = Frame(properties_frame)
     properties_behavior_frame.pack(fill="x", expand=True, padx=25)
 
-    properties_name_label = Label(properties_behavior_frame, text="Behavior")
-    properties_name_label.pack(side=LEFT, padx=(0, 20))
+    properties_behavior_name_label = Label(properties_behavior_frame, text="Behavior")
+    properties_behavior_name_label.pack(side=LEFT, padx=(0, 20))
 
-    properties_name_text = Text(properties_behavior_frame, height=1)
-    properties_name_text.insert(END, "Behavior 2")
-    properties_name_text.pack(side=RIGHT, fill="x", expand=True)
+    properties_behavior_plus_button_font = font.Font(size=11, weight=BOLD)
+    properties_behavior_plus_button = Button(properties_behavior_frame, text="+", command=not_implemented, font=properties_behavior_plus_button_font)
+    properties_behavior_plus_button.pack(side=RIGHT)
+
+    properties_behavior_name_text = Text(properties_behavior_frame, height=1)
+    properties_behavior_name_text.insert(END, "Behavior 2")
+    properties_behavior_name_text.pack(side=RIGHT, fill="x", expand=True, padx=(0, 20))
 
     return properties_frame
 
@@ -88,11 +97,19 @@ def _get_imports_tab_frame(root_notebook: Notebook) -> Frame:
     imports_name_frame = Frame(imports_frame)
     imports_name_frame.pack(side=TOP, fill="x", expand=True, padx=25)
 
-    properties_name_label = Label(imports_name_frame, text="Name")
-    properties_name_label.pack(side=LEFT, padx=(0, 20))
+    imports_name_label = Label(imports_name_frame, text="Name")
+    imports_name_label.pack(side=LEFT, padx=(0, 20))
 
-    properties_name_text = Text(imports_name_frame, height=1)
-    properties_name_text.insert(END, "")
-    properties_name_text.pack(side=RIGHT, fill="x", expand=True)
+    imports_plus_button_font = font.Font(size=11, weight=BOLD)
+    imports_plus_button = Button(imports_name_frame, text="+", command=not_implemented, font=imports_plus_button_font)
+    imports_plus_button.pack(side=RIGHT)
+
+    imports_name_text = Text(imports_name_frame, height=1)
+    imports_name_text.insert(END, "")
+    imports_name_text.pack(side=RIGHT, fill="x", expand=True, padx=(0, 20))
 
     return imports_frame
+
+
+def not_implemented():
+    print("Not implemented")
