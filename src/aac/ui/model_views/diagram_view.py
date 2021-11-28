@@ -83,4 +83,16 @@ def _get_properties_tab_frame(root_notebook: Notebook) -> Frame:
 def _get_imports_tab_frame(root_notebook: Notebook) -> Frame:
     imports_frame = Frame(root_notebook)
     imports_frame.pack()
+
+    # Imports Name Frame #
+    imports_name_frame = Frame(imports_frame)
+    imports_name_frame.pack(side=TOP, fill="x", expand=True, padx=25)
+
+    properties_name_label = Label(imports_name_frame, text="Name")
+    properties_name_label.pack(side=LEFT, padx=(0, 20))
+
+    properties_name_text = Text(imports_name_frame, height=1)
+    properties_name_text.insert(END, "")
+    properties_name_text.pack(side=RIGHT, fill="x", expand=True)
+
     return imports_frame
