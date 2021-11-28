@@ -1,5 +1,5 @@
-from tkinter import TOP, PanedWindow, Canvas
-from tkinter.ttk import Notebook, Frame
+from tkinter import TOP, PanedWindow, Canvas, Text, END, Frame, Label, LEFT, RIGHT
+from tkinter.ttk import Notebook
 
 
 def get_diagram_view(parent_window: PanedWindow):
@@ -31,7 +31,52 @@ def _get_diagram_tab_frame(root_notebook: Notebook) -> Frame:
 
 def _get_properties_tab_frame(root_notebook: Notebook) -> Frame:
     properties_frame = Frame(root_notebook)
-    properties_frame.pack(fill="both", expand=True)
+    properties_frame.pack()
+
+    # Properties Name Frame #
+    properties_name_frame = Frame(properties_frame)
+    properties_name_frame.pack(fill="x", expand=True, padx=25)
+
+    properties_name_label = Label(properties_name_frame, text="Name")
+    properties_name_label.pack(side=LEFT, padx=(0, 20))
+
+    properties_name_text = Text(properties_name_frame, height=1)
+    properties_name_text.insert(END, "A")
+    properties_name_text.pack(side=RIGHT, fill="x", expand=True)
+
+    # Properties Description Frame #
+    properties_description_frame = Frame(properties_frame)
+    properties_description_frame.pack(fill="x", expand=True, padx=25)
+
+    properties_name_label = Label(properties_description_frame, text="Description")
+    properties_name_label.pack(side=LEFT, padx=(0, 20))
+
+    properties_name_text = Text(properties_description_frame, height=1)
+    properties_name_text.insert(END, "")
+    properties_name_text.pack(side=RIGHT, fill="x", expand=True)
+
+    # Properties Components Frame #
+    properties_components_frame = Frame(properties_frame)
+    properties_components_frame.pack(fill="x", expand=True, padx=25)
+
+    properties_name_label = Label(properties_components_frame, text="Components")
+    properties_name_label.pack(side=LEFT, padx=(0, 20))
+
+    properties_name_text = Text(properties_components_frame, height=1)
+    properties_name_text.insert(END, "Component 3")
+    properties_name_text.pack(side=RIGHT, fill="x", expand=True)
+
+    # Properties Behavior Frame #
+    properties_behavior_frame = Frame(properties_frame)
+    properties_behavior_frame.pack(fill="x", expand=True, padx=25)
+
+    properties_name_label = Label(properties_behavior_frame, text="Behavior")
+    properties_name_label.pack(side=LEFT, padx=(0, 20))
+
+    properties_name_text = Text(properties_behavior_frame, height=1)
+    properties_name_text.insert(END, "Behavior 2")
+    properties_name_text.pack(side=RIGHT, fill="x", expand=True)
+
     return properties_frame
 
 
