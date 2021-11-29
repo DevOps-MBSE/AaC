@@ -16,6 +16,11 @@ class LabeledInput(BaseTkinterComponent):
     """
     Component class for labeled text input.
 
+    Attributes:
+        parent_widget (Widget): inherited attribute - the parent Tkinter widget
+        label_text (str):
+        input_value (str):
+
     Returns:
         A frame with a label and text input.
     """

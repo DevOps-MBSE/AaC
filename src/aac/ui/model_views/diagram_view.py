@@ -7,7 +7,6 @@ from tkinter import (
 )
 from tkinter.ttk import Notebook
 
-from aac.ui.components.InsertNewItemInput import InsertNewItemInput
 from aac.ui.components.LabeledInputList import LabeledInputList
 from aac.ui.components.LabeledInput import LabeledInput
 
@@ -65,34 +64,24 @@ def _get_properties_tab_frame(root_notebook: Notebook) -> Frame:
     properties_components_frame = Frame(properties_content_frame)
     properties_components_frame.pack(fill="x", expand=True)
 
-    properties_components_insert_new_frame = InsertNewItemInput(
-        label_text="Components",
-        input_value="Component 3",
-        parent_widget=properties_components_frame,
-        button_command_callable=not_implemented,
-    ).build()
-
     properties_components_listbox_frame = LabeledInputList(
-        label_text="Model Components",
         parent_widget=properties_components_frame,
+        listbox_label_text="Model Components",
         listbox_content=["Component 1", "Component 2"],
+        input_label_text="Components",
+        input_content="Component 3"
     ).build()
 
     # Properties Behavior Frame #
     properties_behavior_frame = Frame(properties_content_frame)
     properties_behavior_frame.pack(fill="x", expand=True)
 
-    properties_behavior_insert_new_frame = InsertNewItemInput(
-        label_text="Behavior",
-        input_value="Behavior 2",
-        parent_widget=properties_behavior_frame,
-        button_command_callable=not_implemented,
-    ).build()
-
     properties_behavior_listbox_frame = LabeledInputList(
-        label_text="Model Behaviors",
         parent_widget=properties_behavior_frame,
+        listbox_label_text="Model Behaviors",
         listbox_content=["Behavior 1"],
+        input_label_text="Behavior",
+        input_content="Behavior 2"
     ).build()
 
     return properties_frame
@@ -106,18 +95,12 @@ def _get_imports_tab_frame(root_notebook: Notebook) -> Frame:
     imports_tab_content_frame = Frame(imports_tab_frame)
     imports_tab_content_frame.pack(anchor="n", fill="x", expand=True, padx=25)
 
-    # Model Imports #
-    imports_insert_new_frame = InsertNewItemInput(
-        label_text="Name",
-        input_value="",
-        parent_widget=imports_tab_content_frame,
-        button_command_callable=not_implemented,
-    ).build()
-
     imports_listbox_frame = LabeledInputList(
-        label_text="Imports",
         parent_widget=imports_tab_content_frame,
+        listbox_label_text="Imports",
         listbox_content=["Imported Enum Data", "Imported Data"],
+        input_label_text="Name",
+        input_content=""
     ).build()
 
     return imports_tab_frame
