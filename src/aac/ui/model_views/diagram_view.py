@@ -1,23 +1,15 @@
 from tkinter import (
-    font,
     PanedWindow,
     Canvas,
-    Text,
-    Button,
-    Listbox,
     Frame,
-    Label,
-    LEFT,
-    RIGHT,
-    CENTER,
-    END,
     TOP,
-    BOTTOM,
     RIDGE,
 )
 from tkinter.ttk import Notebook
-from tkinter.font import BOLD
-from attr import attrs, attrib
+
+from aac.ui.components.InsertNewItemInput import InsertNewItemInput
+from aac.ui.components.LabeledInputList import LabeledInputList
+from aac.ui.components.LabeledInput import LabeledInput
 
 
 def get_diagram_view(parent_window: PanedWindow):
@@ -80,7 +72,7 @@ def _get_properties_tab_frame(root_notebook: Notebook) -> Frame:
         button_command_callable=not_implemented,
     ).build()
 
-    properties_components_listbox_frame = LabeledListBox(
+    properties_components_listbox_frame = LabeledInputList(
         label_text="Model Components",
         parent_widget=properties_components_frame,
         listbox_content=["Component 1", "Component 2"],
@@ -97,7 +89,7 @@ def _get_properties_tab_frame(root_notebook: Notebook) -> Frame:
         button_command_callable=not_implemented,
     ).build()
 
-    properties_behavior_listbox_frame = LabeledListBox(
+    properties_behavior_listbox_frame = LabeledInputList(
         label_text="Model Behaviors",
         parent_widget=properties_behavior_frame,
         listbox_content=["Behavior 1"],
@@ -122,7 +114,7 @@ def _get_imports_tab_frame(root_notebook: Notebook) -> Frame:
         button_command_callable=not_implemented,
     ).build()
 
-    imports_listbox_frame = LabeledListBox(
+    imports_listbox_frame = LabeledInputList(
         label_text="Imports",
         parent_widget=imports_tab_content_frame,
         listbox_content=["Imported Enum Data", "Imported Data"],
@@ -134,92 +126,3 @@ def _get_imports_tab_frame(root_notebook: Notebook) -> Frame:
 def not_implemented():
     print("Not implemented")
 
-
-@attrs
-class BaseTkinterComponent:
-    """Base class for all custom Tkinter components."""
-
-    parent_widget = attrib()
-
-    def build(self):
-        raise NotImplementedError()
-
-
-@attrs
-class LabeledInput(BaseTkinterComponent):
-    """
-    Component class for labeled text input.
-
-    Returns:
-        A frame with a label and text input.
-    """
-
-    label_text = attrib()
-    input_value = attrib()
-
-    def build(self):
-        frame = Frame(self.parent_widget)
-        frame.pack(side=TOP, fill="x", expand=True, pady=10)
-
-        properties_components_label = Label(frame, text=self.label_text)
-        properties_components_label.pack(side=LEFT, padx=(0, 20))
-
-        text = Text(frame, height=1)
-        text.insert(END, self.input_value)
-        text.pack(side=LEFT, fill="x", expand=True)
-        return frame
-
-
-@attrs
-class InsertNewItemInput(LabeledInput):
-    """
-    Component class for a labeled input used to insert new items.
-
-    Returns:
-        A frame with a label and text input.
-    """
-
-    button_command_callable = attrib()
-
-    def build(self):
-        frame = LabeledInput.build(self)
-
-        plus_button_font = font.Font(size=11, weight=BOLD)
-        plus_button = Button(
-            frame, text="+", command=self.button_command_callable, font=plus_button_font
-        )
-        plus_button.pack(side=RIGHT, padx=(20, 0))
-
-        return frame
-
-
-@attrs
-class LabeledListBox(BaseTkinterComponent):
-    """
-    Component class for a labeled list box.
-
-    Returns:
-        A frame with a label and listbox.
-    """
-
-    listbox_content = attrib()
-    label_text = attrib()
-
-    def build(self):
-        frame = Frame(self.parent_widget)
-        frame.pack(side=BOTTOM, fill="x", expand=True, pady=10)
-
-        listbox_frame = Frame(self.parent_widget, borderwidth=3, relief=RIDGE)
-        listbox_frame.pack(side=BOTTOM, fill="x", expand=True)
-
-        listbox_frame_label = Label(listbox_frame, text=self.label_text)
-        listbox_frame_label.pack(side=TOP)
-
-        listbox = Listbox(listbox_frame)
-
-        for entry in self.listbox_content:
-            listbox.insert(END, entry)
-
-        listbox.pack(side=BOTTOM, fill="x", expand=True)
-
-        return frame
