@@ -1,6 +1,23 @@
-from tkinter import font, PanedWindow, Canvas, Text, Button, Listbox, Frame, Label, LEFT, RIGHT, END, TOP, BOTTOM, RIDGE
+from tkinter import (
+    font,
+    PanedWindow,
+    Canvas,
+    Text,
+    Button,
+    Listbox,
+    Frame,
+    Label,
+    LEFT,
+    RIGHT,
+    CENTER,
+    END,
+    TOP,
+    BOTTOM,
+    RIDGE,
+)
 from tkinter.ttk import Notebook
 from tkinter.font import BOLD
+from attr import attrs, attrib
 
 
 def get_diagram_view(parent_window: PanedWindow):
@@ -17,10 +34,14 @@ def get_diagram_view(parent_window: PanedWindow):
 
 
 def _get_diagram_tab_frame(root_notebook: Notebook) -> Frame:
-    diagram_frame = Frame(root_notebook)
+    diagram_frame = Frame(root_notebook, borderwidth=3, relief=RIDGE)
     diagram_frame.pack(fill="both", expand=True)
 
-    model_canvas = Canvas(diagram_frame)
+    # Using a second layer frame for content in the notebook page since the frame diagram_frame doesn't seem to respect styling via pack()
+    diagram_content_frame = Frame(diagram_frame)
+    diagram_content_frame.pack(anchor="n", fill="both", expand=True, padx=25)
+
+    model_canvas = Canvas(diagram_content_frame)
     model_canvas.pack(side=TOP, fill="both", expand=True)
 
     # Replace these with the model diagram content
@@ -31,128 +52,174 @@ def _get_diagram_tab_frame(root_notebook: Notebook) -> Frame:
 
 
 def _get_properties_tab_frame(root_notebook: Notebook) -> Frame:
-    properties_frame = Frame(root_notebook)
-    properties_frame.pack()
+    properties_frame = Frame(root_notebook, borderwidth=3, relief=RIDGE)
+    properties_frame.pack(fill="both", expand=True)
+
+    # Using a second layer frame for content in the notebook page since the frame properties_frame doesn't seem to respect styling via pack()
+    properties_content_frame = Frame(properties_frame)
+    properties_content_frame.pack(anchor="n", fill="x", expand=True, padx=25)
 
     # Properties Name Frame #
-    properties_name_frame = Frame(properties_frame)
-    properties_name_frame.pack(fill="x", expand=True, padx=25)
-
-    properties_name_label = Label(properties_name_frame, text="Name")
-    properties_name_label.pack(side=LEFT, padx=(0, 20))
-
-    properties_name_text = Text(properties_name_frame, height=1)
-    properties_name_text.insert(END, "A")
-    properties_name_text.pack(side=RIGHT, fill="x", expand=True)
+    properties_name_frame = LabeledInput(
+        label_text="Name", input_value="A", parent_widget=properties_content_frame
+    ).build()
 
     # Properties Description Frame #
-    properties_description_frame = Frame(properties_frame)
-    properties_description_frame.pack(fill="x", expand=True, padx=25)
-
-    properties_description_label = Label(properties_description_frame, text="Description")
-    properties_description_label.pack(side=LEFT, padx=(0, 20))
-
-    properties_description_text = Text(properties_description_frame, height=1)
-    properties_description_text.insert(END, "")
-    properties_description_text.pack(side=RIGHT, fill="x", expand=True)
+    properties_description_frame = LabeledInput(
+        label_text="Description", input_value="", parent_widget=properties_content_frame
+    ).build()
 
     # Properties Components Frame #
-    properties_components_frame = Frame(properties_frame)
-    properties_components_frame.pack(fill="x", expand=True, padx=25)
+    properties_components_frame = Frame(properties_content_frame)
+    properties_components_frame.pack(fill="x", expand=True)
 
-    properties_components_insert_new_frame = Frame(properties_components_frame)
-    properties_components_insert_new_frame.pack(side=TOP, fill="x", expand=True)
+    properties_components_insert_new_frame = InsertNewItemInput(
+        label_text="Components",
+        input_value="Component 3",
+        parent_widget=properties_components_frame,
+        button_command_callable=not_implemented,
+    ).build()
 
-    properties_components_label = Label(properties_components_insert_new_frame, text="Components")
-    properties_components_label.pack(side=LEFT, padx=(0, 20))
-
-    properties_components_plus_button_font = font.Font(size=11, weight=BOLD)
-    properties_components_plus_button = Button(properties_components_insert_new_frame, text="+", command=not_implemented, font=properties_components_plus_button_font)
-    properties_components_plus_button.pack(side=RIGHT)
-
-    properties_components_text = Text(properties_components_insert_new_frame, height=1)
-    properties_components_text.insert(END, "Component 3")
-    properties_components_text.pack(side=RIGHT, fill="x", expand=True, padx=(0, 20))
-
-    properties_components_listbox_frame = Frame(properties_components_frame, borderwidth=3, relief=RIDGE)
-    properties_components_listbox_frame.pack(side=BOTTOM, fill="x", expand=True)
-
-    properties_components_listbox_frame_label = Label(properties_components_listbox_frame, text="Model Components")
-    properties_components_listbox_frame_label.pack(side=TOP)
-
-    properties_components_listbox = Listbox(properties_components_listbox_frame)
-    properties_components_listbox.insert(1, "Component 1")
-    properties_components_listbox.insert(2, "Component 2")
-    properties_components_listbox.pack(side=BOTTOM, fill="x", expand=True)
+    properties_components_listbox_frame = LabeledListBox(
+        label_text="Model Components",
+        parent_widget=properties_components_frame,
+        listbox_content=["Component 1", "Component 2"],
+    ).build()
 
     # Properties Behavior Frame #
-    properties_behavior_frame = Frame(properties_frame)
-    properties_behavior_frame.pack(fill="x", expand=True, padx=25)
+    properties_behavior_frame = Frame(properties_content_frame)
+    properties_behavior_frame.pack(fill="x", expand=True)
 
-    properties_behavior_insert_new_frame = Frame(properties_behavior_frame)
-    properties_behavior_insert_new_frame.pack(side=TOP, fill="x", expand=True)
+    properties_behavior_insert_new_frame = InsertNewItemInput(
+        label_text="Behavior",
+        input_value="Behavior 2",
+        parent_widget=properties_behavior_frame,
+        button_command_callable=not_implemented,
+    ).build()
 
-    properties_behavior_name_label = Label(properties_behavior_insert_new_frame, text="Behavior")
-    properties_behavior_name_label.pack(side=LEFT, padx=(0, 20))
-
-    properties_behavior_plus_button_font = font.Font(size=11, weight=BOLD)
-    properties_behavior_plus_button = Button(properties_behavior_insert_new_frame, text="+", command=not_implemented, font=properties_behavior_plus_button_font)
-    properties_behavior_plus_button.pack(side=RIGHT)
-
-    properties_behavior_name_text = Text(properties_behavior_insert_new_frame, height=1)
-    properties_behavior_name_text.insert(END, "Behavior 2")
-    properties_behavior_name_text.pack(side=RIGHT, fill="x", expand=True, padx=(0, 20))
-
-    properties_behavior_listbox_frame = Frame(properties_behavior_frame, borderwidth=3, relief=RIDGE)
-    properties_behavior_listbox_frame.pack(side=BOTTOM, fill="x", expand=True)
-
-    properties_behavior_listbox_frame_label = Label(properties_behavior_listbox_frame, text="Model Behaviors")
-    properties_behavior_listbox_frame_label.pack(side=TOP)
-
-    properties_behavior_listbox = Listbox(properties_behavior_listbox_frame)
-    properties_behavior_listbox.insert(1, "Behavior 1")
-    properties_behavior_listbox.pack(fill="x", expand=True)
+    properties_behavior_listbox_frame = LabeledListBox(
+        label_text="Model Behaviors",
+        parent_widget=properties_behavior_frame,
+        listbox_content=["Behavior 1"],
+    ).build()
 
     return properties_frame
 
 
 def _get_imports_tab_frame(root_notebook: Notebook) -> Frame:
-    imports_tab_frame = Frame(root_notebook)
-    imports_tab_frame.pack()
+    imports_tab_frame = Frame(root_notebook, borderwidth=3, relief=RIDGE)
+    imports_tab_frame.pack(fill="both", expand=True)
 
-    # Imports Frame #
-    imports_frame = Frame(imports_tab_frame)
-    imports_frame.pack(anchor="n", fill="x", expand=True, padx=40, pady=20)
+    # Using a second layer frame for content in the notebook page since the frame properties_frame doesn't seem to respect styling via pack()
+    imports_tab_content_frame = Frame(imports_tab_frame)
+    imports_tab_content_frame.pack(anchor="n", fill="x", expand=True, padx=25)
 
-    # Imports Name Frame #
-    imports_name_frame = Frame(imports_frame)
-    imports_name_frame.pack(side=TOP, fill="x", expand=True)
+    # Model Imports #
+    imports_insert_new_frame = InsertNewItemInput(
+        label_text="Name",
+        input_value="",
+        parent_widget=imports_tab_content_frame,
+        button_command_callable=not_implemented,
+    ).build()
 
-    imports_name_label = Label(imports_name_frame, text="Name")
-    imports_name_label.pack(side=LEFT, padx=(0, 20))
-
-    imports_plus_button_font = font.Font(size=11, weight=BOLD)
-    imports_plus_button = Button(imports_name_frame, text="+", command=not_implemented, font=imports_plus_button_font)
-    imports_plus_button.pack(side=RIGHT)
-
-    imports_name_text = Text(imports_name_frame, height=1)
-    imports_name_text.insert(END, "")
-    imports_name_text.pack(side=RIGHT, fill="x", expand=True, padx=(0, 20))
-
-    # Imports Listbox Frame #
-    imports_listbox_frame = Frame(imports_frame, borderwidth=3, relief=RIDGE)
-    imports_listbox_frame.pack(side=BOTTOM, fill="x", expand=True)
-
-    imports_listbox_frame_label = Label(imports_listbox_frame, text="Imports")
-    imports_listbox_frame_label.pack(side=TOP)
-
-    imports_listbox = Listbox(imports_listbox_frame)
-    imports_listbox.insert(1, "Imported Data")
-    imports_listbox.insert(2, "Imported Enum")
-    imports_listbox.pack(fill="x", expand=True)
+    imports_listbox_frame = LabeledListBox(
+        label_text="Imports",
+        parent_widget=imports_tab_content_frame,
+        listbox_content=["Imported Enum Data", "Imported Data"],
+    ).build()
 
     return imports_tab_frame
 
 
 def not_implemented():
     print("Not implemented")
+
+
+@attrs
+class BaseTkinterComponent:
+    """Base class for all custom Tkinter components."""
+
+    parent_widget = attrib()
+
+    def build(self):
+        raise NotImplementedError()
+
+
+@attrs
+class LabeledInput(BaseTkinterComponent):
+    """
+    Component class for labeled text input.
+
+    Returns:
+        A frame with a label and text input.
+    """
+
+    label_text = attrib()
+    input_value = attrib()
+
+    def build(self):
+        frame = Frame(self.parent_widget)
+        frame.pack(side=TOP, fill="x", expand=True, pady=10)
+
+        properties_components_label = Label(frame, text=self.label_text)
+        properties_components_label.pack(side=LEFT, padx=(0, 20))
+
+        text = Text(frame, height=1)
+        text.insert(END, self.input_value)
+        text.pack(side=LEFT, fill="x", expand=True)
+        return frame
+
+
+@attrs
+class InsertNewItemInput(LabeledInput):
+    """
+    Component class for a labeled input used to insert new items.
+
+    Returns:
+        A frame with a label and text input.
+    """
+
+    button_command_callable = attrib()
+
+    def build(self):
+        frame = LabeledInput.build(self)
+
+        plus_button_font = font.Font(size=11, weight=BOLD)
+        plus_button = Button(
+            frame, text="+", command=self.button_command_callable, font=plus_button_font
+        )
+        plus_button.pack(side=RIGHT, padx=(20, 0))
+
+        return frame
+
+
+@attrs
+class LabeledListBox(BaseTkinterComponent):
+    """
+    Component class for a labeled list box.
+
+    Returns:
+        A frame with a label and listbox.
+    """
+
+    listbox_content = attrib()
+    label_text = attrib()
+
+    def build(self):
+        frame = Frame(self.parent_widget)
+        frame.pack(side=BOTTOM, fill="x", expand=True, pady=10)
+
+        listbox_frame = Frame(self.parent_widget, borderwidth=3, relief=RIDGE)
+        listbox_frame.pack(side=BOTTOM, fill="x", expand=True)
+
+        listbox_frame_label = Label(listbox_frame, text=self.label_text)
+        listbox_frame_label.pack(side=TOP)
+
+        listbox = Listbox(listbox_frame)
+
+        for entry in self.listbox_content:
+            listbox.insert(END, entry)
+
+        listbox.pack(side=BOTTOM, fill="x", expand=True)
+
+        return frame
