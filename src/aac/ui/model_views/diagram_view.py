@@ -3,12 +3,15 @@ from tkinter import (
     Canvas,
     Frame,
     TOP,
+    BOTTOM,
+    RIGHT,
     RIDGE,
 )
 from tkinter.ttk import Notebook
 
 from aac.ui.components.LabeledInputList import LabeledInputList
 from aac.ui.components.LabeledInput import LabeledInput
+from aac.ui.components.ColoredCircle import ColoredCircle
 
 
 def get_diagram_view(parent_window: PanedWindow):
@@ -38,6 +41,10 @@ def _get_diagram_tab_frame(root_notebook: Notebook) -> Frame:
     # Replace these with the model diagram content
     model_canvas.create_line(0, 0, 2000, 1129)
     model_canvas.create_line(0, 960, 1700, 0)
+
+    # Validation Indicator #
+    validation_indicator = ColoredCircle(diagram_content_frame, "green").build()
+    validation_indicator.pack(anchor="e")
 
     return diagram_frame
 
@@ -84,6 +91,10 @@ def _get_properties_tab_frame(root_notebook: Notebook) -> Frame:
         input_content="Behavior 2"
     ).build()
 
+    # Validation Indicator #
+    validation_indicator = ColoredCircle(properties_content_frame, "green").build()
+    validation_indicator.pack(anchor="e")
+
     return properties_frame
 
 
@@ -95,13 +106,21 @@ def _get_imports_tab_frame(root_notebook: Notebook) -> Frame:
     imports_tab_content_frame = Frame(imports_tab_frame)
     imports_tab_content_frame.pack(anchor="n", fill="x", expand=True, padx=25)
 
+    # Imports Frame #
+    imports_list_frame = Frame(imports_tab_content_frame)
+    imports_list_frame.pack(fill="x", expand=True)
+
     imports_listbox_frame = LabeledInputList(
-        parent_widget=imports_tab_content_frame,
+        parent_widget=imports_list_frame,
         listbox_label_text="Imports",
         listbox_content=["Imported Enum Data", "Imported Data"],
         input_label_text="Name",
         input_content=""
     ).build()
+
+    # Validation Indicator #
+    validation_indicator = ColoredCircle(imports_tab_content_frame, "green").build()
+    validation_indicator.pack(side=BOTTOM, anchor="se")
 
     return imports_tab_frame
 
