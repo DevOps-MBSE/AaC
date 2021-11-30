@@ -1,6 +1,4 @@
-"""
-The command line processor for aac.
-"""
+"""The command line processor for aac."""
 import argparse
 import inspect
 import itertools
