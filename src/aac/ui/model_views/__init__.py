@@ -85,7 +85,7 @@ class ViewWidgetsManager:
             self._pack_models_view_widget(self.current_view)
 
         else:
-            print("Err available views not populated.")
+            print("Error: available views not populated.")
 
     def _are_available_views_populated(self):
         return len(self.available_views) > 0
