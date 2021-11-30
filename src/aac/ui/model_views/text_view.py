@@ -11,10 +11,16 @@ def get_model_text_view(parent_window: PanedWindow):
 def _get_sample_model_text() -> str:
     """Temporary function, remove it once models are actually loaded."""
     return """---
+imports:
+  - Imported_Enum_Data.yaml
+  - Imported_Data.yaml
 model:
   name: Test Model A
+  components:
+    - Component 1
+    - Component 2
   behavior:
-    - name: Do first thing
+    - name: Behavior 1
       type: pub-sub
       acceptance:
         - scenario: A simple flow through the system
@@ -24,4 +30,20 @@ model:
             - The user does something
           then:
             - The system responds
+    - name: Behavior 2
+      type: pub-sub
+      acceptance:
+        - scenario: Another simple flow through the system
+          given:
+            - The system is in a valid state
+          when:
+            - The user does something
+          then:
+            - The system responds
+---
+model:
+  name: Test Model B
+  components:
+    - Component 2
+  behavior:
     """

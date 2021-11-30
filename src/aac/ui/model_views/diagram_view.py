@@ -59,7 +59,7 @@ def _get_properties_tab_frame(root_notebook: Notebook) -> Frame:
 
     # Properties Name Frame #
     properties_name_frame = LabeledInput(
-        label_text="Name", input_value="A", parent_widget=properties_content_frame
+        label_text="Name", input_value="Test Model A", parent_widget=properties_content_frame
     ).build()
 
     # Properties Description Frame #

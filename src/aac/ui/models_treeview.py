@@ -13,8 +13,8 @@ def get_models_treeview(parent_window: Tk) -> Treeview:
     models_tree_view.insert("", END, text="Data", open=False)
     models_tree_view.insert("", END, text="Enum", open=False)
 
-    models_tree_view.insert(models_id, END, text="A", open=False)
-    models_tree_view.insert(models_id, END, text="B", open=False)
+    models_tree_view.insert(models_id, END, text="Test Model A", open=False)
+    models_tree_view.insert(models_id, END, text="Test Model B", open=False)
 
     models_tree_view.pack(side=LEFT)
     return models_tree_view
