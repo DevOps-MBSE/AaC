@@ -7,7 +7,7 @@ from tkinter import Widget
 @attrs
 class BaseTkinterComponent:
     """
-    Base class for all custom Tkinter components. DO NOT USE.
+    Base class for all custom Tkinter components. DO NOT INSTANTIATE - ONLY EXTEND THIS CLASS.
 
     Attributes:
         parent_widget (tkinter.Widget): The parent widget to attach the component to.
