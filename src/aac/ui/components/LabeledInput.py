@@ -1,5 +1,5 @@
 """Python Tkinter reusable component for a text field and accompanying label."""
-from attr import attrs, attrib
+from attr import attrs, attrib, validators
 from tkinter import (
     Text,
     Frame,
@@ -26,8 +26,8 @@ class LabeledInput(BaseTkinterComponent):
         A frame with a label and text input.
     """
 
-    label_text = attrib()
-    input_value = attrib()
+    label_text = attrib(default="label", validator=validators.instance_of(str))
+    input_value = attrib(default="", validator=validators.instance_of(str))
 
     def build(self):
         """

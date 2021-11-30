@@ -1,5 +1,5 @@
 """Python Tkinter reusable component for a list of items that the user can manipulate."""
-from attr import attrs, attrib
+from attr import attrs, attrib, validators
 from tkinter import (
     font,
     Button,
@@ -26,11 +26,11 @@ class LabeledInputList(BaseTkinterComponent):
         A frame with a label and listbox.
     """
 
-    listbox_content = attrib()
-    listbox_label_text = attrib()
+    listbox_content = attrib(default=[], validator=validators.instance_of(list))
+    listbox_label_text = attrib(default="label", validator=validators.instance_of(str))
 
-    input_content = attrib()
-    input_label_text = attrib()
+    input_content = attrib(default="", validator=validators.instance_of(str))
+    input_label_text = attrib(default="label", validator=validators.instance_of(str))
 
     def build(self):
         """

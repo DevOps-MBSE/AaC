@@ -1,5 +1,5 @@
 """Python Tkinter reusable component for a colored circle."""
-from attr import attrs, attrib
+from attr import attrs, attrib, validators
 from tkinter import (
     Frame,
     Canvas,
@@ -25,8 +25,8 @@ class ColoredCircle(BaseTkinterComponent):
         A frame with a canvas and colored circle.
     """
 
-    circle_color = attrib(default="black")
-    circle_radius = attrib(default=30)
+    circle_color = attrib(default="black", validator=validators.instance_of(str))
+    circle_radius = attrib(default=30, validator=validators.instance_of(int))
 
     def build(self):
         """
