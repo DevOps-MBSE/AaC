@@ -3,6 +3,7 @@ from tkinter import PanedWindow, Text, GROOVE
 
 
 def get_model_text_view(parent_window: PanedWindow):
+    """Provides a view containing the text representation of a model."""
     model_text_view = Text(parent_window, bd=2, relief=GROOVE)
     model_text_view.insert("1.0", _get_sample_model_text())
     return model_text_view

@@ -15,6 +15,7 @@ from aac.ui.components.ColoredCircle import ColoredCircle
 
 
 def get_diagram_view(parent_window: PanedWindow):
+    """Provides a view containing the diagram representation of a model."""
     tabs_notebook = Notebook(parent_window)
 
     diagram_tab = _get_diagram_tab_frame(tabs_notebook)

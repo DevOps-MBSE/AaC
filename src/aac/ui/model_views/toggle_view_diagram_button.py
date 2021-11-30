@@ -3,9 +3,7 @@ from tkinter import Tk, Button, BOTTOM, Label, RIGHT, Frame
 
 
 def get_view_diagram_button(parent_window: Tk, button_callback: callable) -> None:
-    """
-    Provides a frame containing the toggle button for switching between model views.
-    """
+    """Provides a frame containing the toggle button for switching between model views."""
     CONST_ON_TEXT_VALUE = "On"
     CONST_OFF_TEXT_VALUE = "Off"
 
