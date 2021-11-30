@@ -23,6 +23,7 @@ class LabeledInputList(BaseTkinterComponent):
     Component class for a labeled user-input list.
 
     Attributes:
+        parent_widget (tkinter.Widget): The parent widget to attach the component to.
         listbox_content (list[str]): a list of strings that will compose the list of entries
         listbox_label_text (str): The listbox label for the list of items
         input_content (str): An initial input box value
