@@ -9,7 +9,7 @@ from typing import Callable
 
 from pluggy import PluginManager
 
-from aac import parser, plugins, ui, util
+from aac import parser, plugins, ui
 from aac.AacCommand import AacCommand, AacCommandArgument
 from aac.spec.core import get_aac_spec_as_yaml
 
