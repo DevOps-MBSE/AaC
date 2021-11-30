@@ -20,9 +20,6 @@ class ColoredCircle(BaseTkinterComponent):
                                 or one of the following ("white", "black", "red", "green",
                                 "blue", "cyan", "yellow", and "magenta")
         circle_radius (int): The radius of the circle, defaults to '30'
-
-    Returns:
-        A frame with a canvas and colored circle.
     """
 
     circle_color = attrib(default="black", validator=validators.instance_of(str))

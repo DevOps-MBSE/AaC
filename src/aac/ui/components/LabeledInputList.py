@@ -22,8 +22,11 @@ class LabeledInputList(BaseTkinterComponent):
     """
     Component class for a labeled user-input list.
 
-    Returns:
-        A frame with a label and listbox.
+    Attributes:
+        listbox_content (list[str]): a list of strings that will compose the list of entries
+        listbox_label_text (str): The listbox label for the list of items
+        input_content (str): An initial input box value
+        input_label_text (str): The text for the input box label
     """
 
     listbox_content = attrib(default=[], validator=validators.instance_of(list))
