@@ -1,3 +1,4 @@
+"""Python Tkinter reusable component for a text field and accompanying label."""
 from attr import attrs, attrib
 from tkinter import (
     Text,

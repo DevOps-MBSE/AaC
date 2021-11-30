@@ -1,3 +1,4 @@
+"""Python Tkinter reusable component for a list of items that the user can manipulate."""
 from attr import attrs, attrib
 from tkinter import (
     font,
