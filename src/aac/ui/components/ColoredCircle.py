@@ -1,11 +1,8 @@
+"""Python Tkinter reusable component for a colored circle."""
 from attr import attrs, attrib
 from tkinter import (
-    Text,
     Frame,
     Canvas,
-    Label,
-    LEFT,
-    END,
     TOP,
 )
 
@@ -32,6 +29,12 @@ class ColoredCircle(BaseTkinterComponent):
     circle_radius = attrib(default=30)
 
     def build(self):
+        """
+        Create the component, pack the tkinter widget, and return the encompassing frame.
+
+        Returns:
+            A packed tkinter.Frame containing the component's content.
+        """
         frame = Frame(self.parent_widget, bg="yellow")
         frame.pack(side=TOP, pady=10)
 

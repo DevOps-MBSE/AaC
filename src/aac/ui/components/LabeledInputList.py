@@ -32,6 +32,12 @@ class LabeledInputList(BaseTkinterComponent):
     input_label_text = attrib()
 
     def build(self):
+        """
+        Create the component, pack the tkinter widget, and return the encompassing frame.
+
+        Returns:
+            A packed tkinter.Frame containing the component's content.
+        """
         labeled_input_list_frame = Frame(self.parent_widget)
         labeled_input_list_frame.pack(side=TOP, fill="x", expand=True, pady=10)
 
