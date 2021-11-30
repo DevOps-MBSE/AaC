@@ -36,6 +36,9 @@ class LabeledInputList(BaseTkinterComponent):
     input_content = attrib(default="", validator=validators.instance_of(str))
     input_label_text = attrib(default="label", validator=validators.instance_of(str))
 
+    def _button_action(self):
+        print("Future feature: Add item")
+
     def build(self):
         """
         Create the component, pack the tkinter widget, and return the encompassing frame.
@@ -52,7 +55,7 @@ class LabeledInputList(BaseTkinterComponent):
         # Add Entry Button for Labeled Input #
         plus_button_font = font.Font(size=11, weight=font.BOLD)
         plus_button = Button(
-            labeled_input_frame, text="+", command=do_nothing, font=plus_button_font
+            labeled_input_frame, text="+", command=self._button_action, font=plus_button_font
         )
         plus_button.pack(side=RIGHT, padx=(20, 0))
 
@@ -71,7 +74,3 @@ class LabeledInputList(BaseTkinterComponent):
         listbox.pack(side=BOTTOM, fill="x", expand=True)
 
         return labeled_input_list_frame
-
-
-def do_nothing():
-    print("Do nothing")
