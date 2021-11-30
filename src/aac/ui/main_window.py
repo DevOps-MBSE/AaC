@@ -24,9 +24,9 @@ def main_window() -> None:
 
     # Add main_window widgets
     models_tree_view = get_models_treeview(main_window)
-    root_window.add(models_tree_view)
+    main_window.add(models_tree_view)
 
     model_views = get_model_views(main_window)
-    root_window.add(model_views)
+    main_window.add(model_views)
 
     return root_window
