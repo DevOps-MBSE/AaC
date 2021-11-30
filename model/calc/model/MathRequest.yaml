@@ -1,0 +1,15 @@
+import:
+  - ./MathFunction.yaml
+  - ../spec/Calculator_IRS.yaml
+data:
+  name: MathRequest
+  requirements:
+    - abbreviation: CALC_IRS
+      ids:
+        - 1
+        - 2
+  fields:
+    - name: function
+      type: MathFunction
+    - name: values
+      type: number[]

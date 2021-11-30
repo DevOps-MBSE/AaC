@@ -1,0 +1,13 @@
+spec:
+  name: Module Divide SRS
+  abbreviation: DIV
+  description:  This is a representative Software Requirements Specification for a module called Divide.
+  requirements:
+    - id: 1
+      shall:  When receiving a divide message, the calculator shall respond with the quotient of the provided values.
+      parent:
+        - abbreviation: IM
+          ids: 1
+      attributes:
+        - name: TADI
+          value: Test

@@ -1,0 +1,9 @@
+enum:
+  name: MathFunction
+  values:
+    - add
+    - subtract
+    - multiply
+    - divide
+    - power
+    - square-root

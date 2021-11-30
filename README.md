@@ -1,3 +1,6 @@
+[![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/from-referrer/)
+
+
 # Architecture-as-Code (AaC)
 
 AaC is a distinctly different take on Model-Based System Engineering (MBSE) that allows a
@@ -219,8 +222,8 @@ To run the command, execute the script (from within your virtual environment) as
 # For usage information
 $ aac --help
 
-# For example, to validate the AaC.yaml file
-$ aac validate model/aac/AaC.yaml
+# For example, to validate the spec.yaml file
+$ aac validate src/aac/spec/spec.yaml
 ```
 ### Documenting
 
