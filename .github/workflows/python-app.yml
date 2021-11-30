@@ -15,26 +15,30 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - uses: BSFishy/pip-action@v1
+        with:
+          packages: |
+            .[all]
       - name: Set up Python 3.9
         uses: actions/setup-python@v2
         with:
           python-version: 3.9
-      - name: Install dependencies
-        run: |
-          python -m venv venv --system-site-packages
-          source venv/bin/activate
-          pip install --upgrade pip
-          pip install -e .[all]
+      # - name: Install dependencies
+      #   run: |
+      #     python -m venv venv --system-site-packages
+      #     source venv/bin/activate
+      #     pip install --upgrade pip
+      #     pip install -e .[all]
       - name: Lint with flake8
         run: |
-          source venv/bin/activate
+          # source venv/bin/activate
           # stop the build if there are Python syntax errors or undefined names
           flake8 . --select=E9,F63,F7,F82
           # exit-zero treats all errors as warnings.
           flake8 . --exit-zero
       - name: Test with Tox
         run: |
-          source venv/bin/activate
+          # source venv/bin/activate
           tox -- --coverage-report html
       - name: Upload Code Coverage Report
         uses: actions/upload-artifact@v2
@@ -43,12 +47,12 @@ jobs:
           path: html_code_coverage/
       - name: Validate Core Spec and Plugin Specs
         run: |
-          source venv/bin/activate
+          # source venv/bin/activate
           find . -name AaC.yaml -exec aac validate {} \;
           find plugins -name *.yaml -exec aac validate {} \;
       - name: Generate API Documentation
         run: |
-          source venv/bin/activate
+          # source venv/bin/activate
           cd docs/
           make html
       - name: Upload API Documentation
@@ -58,7 +62,7 @@ jobs:
           path: docs/build/html/
       - name: Build distribution package
         run: |
-          source venv/bin/activate
+          # source venv/bin/activate
           python setup.py bdist_wheel
       # - name: Publish distribution to PyPI
       #   if: startsWith(github.ref, 'refs/tags')
