@@ -2,8 +2,8 @@
 from tkinter import Tk, PanedWindow
 
 from aac.ui.menu_bar import menu_bar
-from aac.ui.models_treeview import add_models_treeview
-from aac.ui.model_views import add_model_views
+from aac.ui.models_treeview import get_models_treeview
+from aac.ui.model_views import get_model_views
 
 
 def main_window() -> None:
@@ -23,7 +23,10 @@ def main_window() -> None:
     main_window.pack(fill="both", expand=True)
 
     # Add main_window widgets
-    add_models_treeview(main_window)
-    add_model_views(main_window)
+    models_tree_view = get_models_treeview(main_window)
+    root_window.add(models_tree_view)
+
+    model_views = get_model_views(main_window)
+    root_window.add(model_views)
 
     return root_window

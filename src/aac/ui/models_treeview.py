@@ -3,7 +3,7 @@ from tkinter import Tk, LEFT, END
 from tkinter.ttk import Treeview
 
 
-def add_models_treeview(parent_window: Tk) -> None:
+def get_models_treeview(parent_window: Tk) -> Treeview:
     """Creates a view containing all contextual models and definitions."""
     models_tree_view = Treeview(parent_window)
 
@@ -17,5 +17,4 @@ def add_models_treeview(parent_window: Tk) -> None:
     models_tree_view.insert(models_id, END, text="B", open=False)
 
     models_tree_view.pack(side=LEFT)
-
-    parent_window.add(models_tree_view)
+    return models_tree_view

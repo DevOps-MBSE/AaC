@@ -8,12 +8,15 @@ from aac.ui.model_views import diagram_view, text_view, toggle_view_diagram_butt
 WIDGETS_MANAGER = None
 
 
-def add_model_views(root_window: Tk):
+def get_model_views(root_window: Tk) -> PanedWindow:
     """
     Creates the main model views (text and diagram).
 
     Args:
         root_window: The window to attach the models tree frame to
+
+    Returns:
+        tkinter.PanedWindow with the various model views.
     """
     models_view_paned_window = PanedWindow(root_window, orient=VERTICAL, showhandle=True)
 
@@ -31,7 +34,7 @@ def add_model_views(root_window: Tk):
     WIDGETS_MANAGER.add_view(diagrams_views)
     WIDGETS_MANAGER.add_view(textual_view)
 
-    root_window.add(models_view_paned_window)
+    return models_view_paned_window
 
 
 @attrs
