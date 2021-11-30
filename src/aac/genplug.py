@@ -109,12 +109,15 @@ def generate_plugin(architecture_file: str) -> None:
         architecture_file (str): filepath to the architecture file.
     """
     plug_dir = os.path.dirname(os.path.abspath(architecture_file))
+    if _is_user_desired_output_directory(architecture_file, plug_dir):
+        _generate_plugin(architecture_file, plug_dir)
 
+
+def _generate_plugin(architecture_file: str, plug_dir: str) -> None:
     try:
-        if _is_user_desired_output_directory(architecture_file, plug_dir):
-            parsed_model = parser.parse_file(architecture_file, True)
-            templates = list(_compile_templates(parsed_model).values())
-            write_generated_templates_to_file(templates, plug_dir)
+        parsed_model = parser.parse_file(architecture_file, True)
+        templates = list(_compile_templates(parsed_model).values())
+        write_generated_templates_to_file(templates, plug_dir)
     except GeneratePluginException as exception:
         print(f"gen-plugin error [{architecture_file}]:  {exception}.")
 
