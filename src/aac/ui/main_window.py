@@ -1,3 +1,4 @@
+"""Provides the main application window."""
 from tkinter import Tk, PanedWindow
 
 from aac.ui.menu_bar import menu_bar

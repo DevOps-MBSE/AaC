@@ -1,9 +1,9 @@
+"""Provides the overall model views widget featuring toggleable views."""
 from tkinter import Tk, TOP, VERTICAL, PanedWindow, Widget, BOTTOM, Frame
 
 from attr import attrs, attrib, validators
 
 from aac.ui.model_views import diagram_view, text_view, toggle_view_diagram_button
-
 
 WIDGETS_MANAGER = None
 
@@ -20,7 +20,9 @@ def add_model_views(root_window: Tk):
     global WIDGETS_MANAGER
     WIDGETS_MANAGER = ViewWidgetsManager(models_view_paned_window)
     WIDGETS_MANAGER.set_view_toggle_button(
-        toggle_view_diagram_button.get_view_diagram_button(models_view_paned_window, WIDGETS_MANAGER.toggle_view)
+        toggle_view_diagram_button.get_view_diagram_button(
+            models_view_paned_window, WIDGETS_MANAGER.toggle_view
+        )
     )
 
     diagrams_views = diagram_view.get_diagram_view(WIDGETS_MANAGER.parent_window)

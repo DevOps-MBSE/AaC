@@ -1,3 +1,4 @@
+"""Provides the main application window's menu bar."""
 from tkinter import Menu, Tk
 
 
@@ -62,4 +63,3 @@ def _add_help_menu(root_menu: Menu) -> None:
     help_menu.add_command(label="About", command=donothing)
 
     root_menu.add_cascade(label="Help", menu=help_menu)
-

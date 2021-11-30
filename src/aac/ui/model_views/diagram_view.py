@@ -1,10 +1,10 @@
+"""Provides the model diagram views."""
 from tkinter import (
     PanedWindow,
     Canvas,
     Frame,
     TOP,
     BOTTOM,
-    RIGHT,
     RIDGE,
 )
 from tkinter.ttk import Notebook
@@ -76,7 +76,7 @@ def _get_properties_tab_frame(root_notebook: Notebook) -> Frame:
         listbox_label_text="Model Components",
         listbox_content=["Component 1", "Component 2"],
         input_label_text="Components",
-        input_content="Component 3"
+        input_content="Component 3",
     ).build()
 
     # Properties Behavior Frame #
@@ -88,7 +88,7 @@ def _get_properties_tab_frame(root_notebook: Notebook) -> Frame:
         listbox_label_text="Model Behaviors",
         listbox_content=["Behavior 1"],
         input_label_text="Behavior",
-        input_content="Behavior 2"
+        input_content="Behavior 2",
     ).build()
 
     # Validation Indicator #
@@ -115,7 +115,7 @@ def _get_imports_tab_frame(root_notebook: Notebook) -> Frame:
         listbox_label_text="Imports",
         listbox_content=["Imported Enum Data", "Imported Data"],
         input_label_text="Name",
-        input_content=""
+        input_content="",
     ).build()
 
     # Validation Indicator #
@@ -127,4 +127,3 @@ def _get_imports_tab_frame(root_notebook: Notebook) -> Frame:
 
 def not_implemented():
     print("Not implemented")
-

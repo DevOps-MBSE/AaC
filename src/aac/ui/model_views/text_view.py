@@ -1,3 +1,4 @@
+"""Provides the model's textual view."""
 from tkinter import PanedWindow, Text, GROOVE
 
 

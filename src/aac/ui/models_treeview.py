@@ -1,11 +1,10 @@
+"""Provides the collapseable treeview of the currently loaded models."""
 from tkinter import Tk, LEFT, END
 from tkinter.ttk import Treeview
 
 
 def add_models_treeview(parent_window: Tk) -> None:
-    """
-    Creates a view containing all contextual models and definitions.
-    """
+    """Creates a view containing all contextual models and definitions."""
     models_tree_view = Treeview(parent_window)
 
     # TODO: This will need to be generated from the loaded models
