@@ -50,8 +50,8 @@ jobs:
           path: html_code_coverage/
       - name: Validate Core Spec and Plugin Specs
         run: |
-          find . -name AaC.yaml -print0 | xargs -0 -n1 python -m aac validate
-          find plugins -name *.yaml -print0 | xargs -0 -n1 python -m aac validate
+          find . -name AaC.yaml -print0 | xargs -0 -n1 -t python -m aac validate
+          find plugins -name *.yaml -print0 | xargs -0 -n1 -t python -m aac validate
       - name: Generate API Documentation
         run: |
           cd docs/
