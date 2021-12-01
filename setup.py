@@ -38,6 +38,7 @@ development_dependencies = [
     "sphinxcontrib-qthelp == 1.0.3",
     "sphinxcontrib-serializinghtml == 1.1.5",
     "furo == 2021.10.9",
+    "pipdeptree >= 2.2.0",
 ]
 
 test_dependencies = [
