@@ -20,15 +20,17 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install libgirepository1.0-dev -y
-      - name: Install Python Package
-        uses: BSFishy/pip-action@v1
-        with:
-          packages: |
-            .[all]
       - name: Set up Python 3.9
         uses: actions/setup-python@v2
         with:
           python-version: 3.9
+      - name: Install Pip
+        uses: BSFishy/pip-action@v1
+        with:
+          packages: |
+            pip
+      - name: Install the AaC Package
+        run: pip install -e .[all]
       - name: List Transitive Dependencies
         run: |
           pipdeptree
@@ -48,8 +50,8 @@ jobs:
           path: html_code_coverage/
       - name: Validate Core Spec and Plugin Specs
         run: |
-          find . -name AaC.yaml -exec aac validate {} \;
-          find plugins -name *.yaml -exec aac validate {} \;
+          find . -name AaC.yaml -print0 | xargs -0 -n1 aac validate
+          find plugins -name *.yaml -print0 | xargs -0 -n1 aac validate
       - name: Generate API Documentation
         run: |
           cd docs/
