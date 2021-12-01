@@ -4,21 +4,23 @@ with open("README.md", "r") as fh:
     readme_description = fh.read()
 
 runtime_dependencies = [
-    "attrs == 21.2.0",
-    "coverage == 6.0",
-    "jsonschema == 4.0.1",
-    "pyrsistent == 0.18.0",
-    "PyYAML == 5.4.1",
-    "six == 1.16.0",
-    "click == 8.0.1",
-    "pathspec == 0.9.0",
-    "platformdirs == 2.4.0",
-    "regex == 2021.9.30",
-    "typing-extensions == 3.10.0.2",
-    "pluggy == 1.0.0",
-    "iteration_utilities == 0.11.0",
-    "Jinja2 >= 3.0.2",
+    "attrs >= 21.2",
+    "coverage >= 6.0",
+    "jsonschema >= 4.0",
+    "pyrsistent >= 0.18",
+    "PyYAML >= 5.4",
+    "six >= 1.16",
+    "click >= 8.0",
+    "pathspec >= 0.9",
+    "platformdirs >= 2.4",
+    "regex >= 2021.9",
+    "typing-extensions >= 3.10",
+    "pluggy >= 1.0",
+    "iteration_utilities >= 0.11",
+    "Jinja2 >= 3.0",
     "MarkupSafe >= 2.0",
+    "PyGObject >= 3.36.0",
+    "pycairo >= 1.20",
 ]
 
 development_dependencies = [
@@ -39,6 +41,7 @@ development_dependencies = [
     "sphinxcontrib-serializinghtml == 1.1.5",
     "furo == 2021.10.9",
     "pipdeptree >= 2.2.0",
+    "Pygments >= 2.5.1",
 ]
 
 test_dependencies = [
