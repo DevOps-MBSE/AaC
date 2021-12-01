@@ -27,8 +27,7 @@ jobs:
       - name: Install Pip
         uses: BSFishy/pip-action@v1
         with:
-          packages: |
-            pip
+          packages: pip
       - name: Install the AaC Package
         run: pip install -e .[all]
       - name: List Transitive Dependencies
