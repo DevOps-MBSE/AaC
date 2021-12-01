@@ -13,7 +13,6 @@ runtime_dependencies = [
     "click == 8.0.1",
     "pathspec == 0.9.0",
     "platformdirs == 2.4.0",
-    "pyrsistent == 0.18.0",
     "regex == 2021.9.30",
     "typing-extensions == 3.10.0.2",
     "pluggy == 1.0.0",
