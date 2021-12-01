@@ -16,7 +16,7 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
-      - name: Install xmllint
+      - name: Install System Packages
         run: |
           sudo apt-get update
           sudo apt-get install libgirepository1.0-dev -y
