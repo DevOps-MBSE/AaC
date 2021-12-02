@@ -15,7 +15,7 @@ def main_window() -> None:
     main_window_width = root_window.winfo_screenwidth()
     main_window_height = root_window.winfo_screenheight()
 
-    root_window.geometry("%dx%d" % (main_window_width, main_window_height))
+    root_window.geometry(f"{main_window_width}x{main_window_height}")
     root_window_menu_bar = menu_bar(root_window)
     root_window.config(menu=root_window_menu_bar)
 
