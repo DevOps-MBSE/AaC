@@ -1,6 +1,5 @@
 [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/from-referrer/)
 
-
 # Architecture-as-Code (AaC)
 
 AaC is a distinctly different take on Model-Based System Engineering (MBSE) that allows a
@@ -225,6 +224,15 @@ $ aac --help
 # For example, to validate the spec.yaml file
 $ aac validate src/aac/spec/spec.yaml
 ```
+
+#### Running on MacOS
+
+When running from MacOS, you may see failures due to missing Tkinter (depending on how you installed Python). If you see these errors, and you installed Python using [Homebrew](https://brew.sh), then run the following commands:
+
+```bash
+$ brew install gobject-introspection python-tk@3.9
+```
+
 ### Documenting
 
 #### Writing API Documentation
