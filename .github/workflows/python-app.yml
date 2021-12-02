@@ -90,6 +90,9 @@ jobs:
       run: |
         find src -name spec.yaml -print0 | xargs -0 -n1 aac validate
         find plugins -name *.yaml -print0 | xargs -0 -n1 aac validate
+    - name: Print out Core Spec
+      run: |
+        aac aac-core-spec
 
   # deploy:
   #   runs-on: ubuntu-latest
