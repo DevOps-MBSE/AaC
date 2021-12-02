@@ -64,7 +64,7 @@ setup(
     long_description=readme_description,
     long_description_content_type="text/markdown",
     packages=find_packages(where="src", exclude="tests"),
-    package_dir={"aac": "src/aac"},
+    package_dir={"": "src"},
     package_data={'aac.spec': ['spec.yaml'], '': ['*.jinja2']},
     install_requires=runtime_dependencies,
     setup_requires=development_dependencies,
