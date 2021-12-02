@@ -57,6 +57,10 @@ test_dependencies = [
 setup(
     name="aac",
     version="0.0.4",
+    description=(
+        "A distinctly different take on Model-Based System Engineering (MBSE) that allows a system modeller to define a system in simple yaml. "
+    ),
+    license="MIT",
     long_description=readme_description,
     long_description_content_type="text/markdown",
     packages=find_packages(where="aac", exclude="tests"),
@@ -66,7 +70,7 @@ setup(
     tests_require=test_dependencies,
     entry_points={
         "console_scripts": [
-            "aac = aac.cli:run_cli",
+            "aac=aac.cli:run_cli",
         ]
     },
     extras_require={

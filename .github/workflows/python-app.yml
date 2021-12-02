@@ -47,10 +47,6 @@ jobs:
         with:
           name: test-coverage-report
           path: html_code_coverage/
-      - name: Validate Core Spec and Plugin Specs
-        run: |
-          find src -name spec.yaml -print0 | xargs -0 -n1 aac validate
-          find plugins -name *.yaml -print0 | xargs -0 -n1 aac validate
       - name: Generate API Documentation
         run: |
           cd docs/
@@ -63,8 +59,43 @@ jobs:
       - name: Build distribution package
         run: |
           python setup.py bdist_wheel
-      # - name: Publish distribution to PyPI
-      #   if: startsWith(github.ref, 'refs/tags')
-      #   uses: pypa/gh-action-pypi-publish@master
-      #   with:
-      #     password: ${{ secrets.PYPI_API_TOKEN }}
+      - name: Upload Python Wheel
+        uses: actions/upload-artifact@v2
+        with:
+          name: aac_wheel
+          path: dist/
+
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+    - name: Install Pip
+      uses: BSFishy/pip-action@v1
+      with:
+        packages: pip
+    - name: Download Python Wheel
+      uses: actions/download-artifact@v2
+      with:
+        name: aac_wheel
+        path: dist/
+    - name: Install Wheel Distribution
+      run: |
+        pip install dist/*.whl
+    - name: Validate Core Spec and Plugin Specs
+      run: |
+        find src -name spec.yaml -print0 | xargs -0 -n1 aac validate
+        find plugins -name *.yaml -print0 | xargs -0 -n1 aac validate
+
+  # deploy:
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #   - name: Publish distribution to PyPI
+  #     if: startsWith(github.ref, 'refs/tags')
+  #     uses: pypa/gh-action-pypi-publish@master
+  #     with:
+  #       password: ${{ secrets.PYPI_API_TOKEN }}
