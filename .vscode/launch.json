@@ -8,7 +8,7 @@
             "program": "src/aac/__main__.py",
             "args": [
                 "validate",
-                "./model/aac/AaC.yaml"
+                "./src/aac/spec/spec.yaml"
             ],
             "console": "integratedTerminal",
             "justMyCode": false
@@ -56,7 +56,7 @@
             "program": "src/aac/__main__.py",
             "args": [
                 "json",
-                "./model/aac/AaC.yaml"
+                "./src/aac/spec/spec.yaml"
             ],
             "console": "integratedTerminal",
             "justMyCode": false
