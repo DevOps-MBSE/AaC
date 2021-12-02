@@ -1,6 +1,4 @@
-"""
-The command line processor for aac.
-"""
+"""The command line processor for aac."""
 import argparse
 import inspect
 import itertools
@@ -9,7 +7,7 @@ from typing import Callable
 
 from pluggy import PluginManager
 
-from aac import parser, plugins, util
+from aac import parser, plugins, ui
 from aac.AacCommand import AacCommand, AacCommandArgument
 from aac.spec.core import get_aac_spec_as_yaml
 
@@ -73,6 +71,11 @@ def _setup_arg_parser(
 
     # Built-in commands
     aac_commands = [
+        AacCommand(
+            "ui",
+            "Run the AaC Graphical User Interface",
+            ui.run_ui,
+        ),
         AacCommand(
             "validate",
             "Ensures the AaC yaml is valid per the AaC core spec",
