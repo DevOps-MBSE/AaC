@@ -129,8 +129,6 @@ data:
 ---
 data:
   fields:
-  - name: abbreviation
-    type: string
   - name: ids
     type: string[]
   name: RequirementReference
