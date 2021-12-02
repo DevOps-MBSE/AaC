@@ -64,7 +64,7 @@ setup(
     long_description=readme_description,
     long_description_content_type="text/markdown",
     packages=find_packages(where="aac", exclude="tests"),
-    package_dir={"": "src"},
+    package_dir={"aac": "src"},
     install_requires=runtime_dependencies,
     setup_requires=development_dependencies,
     tests_require=test_dependencies,
