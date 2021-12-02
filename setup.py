@@ -60,7 +60,7 @@ setup(
     description=(
         "A distinctly different take on Model-Based System Engineering (MBSE) that allows a system modeller to define a system in simple yaml. "
     ),
-    license="MIT",
+    license="",
     long_description=readme_description,
     long_description_content_type="text/markdown",
     packages=find_packages(where="src", exclude="tests"),
