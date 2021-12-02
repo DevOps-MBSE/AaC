@@ -19,8 +19,6 @@ runtime_dependencies = [
     "iteration_utilities >= 0.11",
     "Jinja2 >= 3.0",
     "MarkupSafe >= 2.0",
-    "PyGObject >= 3.36.0",
-    "pycairo >= 1.20",
 ]
 
 development_dependencies = [
