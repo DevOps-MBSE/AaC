@@ -142,7 +142,6 @@ data:
   required:
     - name
     - type
-
 ---
 data:
   name: model
@@ -157,7 +156,6 @@ data:
       type: Behavior[]
   required:
     - name
-    - behavior
 ---
 data:
   name: usecase
@@ -178,19 +176,19 @@ data:
 data:
   name: Step
   fields:
-    - name: step  # this is the human readable narrative suitable for document generation
+    - name: step
       type: string
-    - name: source  # this should be a name of a participant (i.e. modelled system component)
+    - name: source
       type: string
-    - name: target  # this should be a name of a participant (i.e. modelled system component)
+    - name: target
       type: string
-    - name: action  # this as a behavior reference on the target or a subordinate use case definition
+    - name: action
       type: string
-    - name: if      # would create an alt in a sequence diagram
+    - name: if
       type: Branch
-    - name: else    # would create the "lower cell" in an alt in a sequence diagram
+    - name: else
       type: Branch
-    - name: loop    # would create a loop in a sequence diagram
+    - name: loop
       type: Branch
 ---
 data:

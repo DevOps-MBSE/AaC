@@ -109,12 +109,15 @@ def generate_plugin(architecture_file: str) -> None:
         architecture_file (str): filepath to the architecture file.
     """
     plug_dir = os.path.dirname(os.path.abspath(architecture_file))
+    if _is_user_desired_output_directory(architecture_file, plug_dir):
+        _generate_plugin(architecture_file, plug_dir)
 
+
+def _generate_plugin(architecture_file: str, plug_dir: str) -> None:
     try:
-        if _is_user_desired_output_directory(architecture_file, plug_dir):
-            parsed_model = parser.parse_file(architecture_file, True)
-            templates = list(_compile_templates(parsed_model).values())
-            write_generated_templates_to_file(templates, plug_dir)
+        parsed_model = parser.parse_file(architecture_file, True)
+        templates = list(_compile_templates(parsed_model).values())
+        write_generated_templates_to_file(templates, plug_dir)
     except GeneratePluginException as exception:
         print(f"gen-plugin error [{architecture_file}]:  {exception}.")
 
@@ -165,10 +168,11 @@ def _compile_templates(parsed_models: dict[str, dict]) -> dict[str, list[Templat
 
     plugin_implementation_name = _convert_to_implementation_name(plugin_name)
 
+    plugin_dir = _convert_to_implementation_name(plugin_name)
     template_parent_directories = template_parent_directories | {
-        "plugin.py.jinja2": plugin_name,
-        "plugin_impl.py.jinja2": plugin_name,
-        "__init__.py.jinja2": plugin_name,
+        "plugin.py.jinja2": plugin_dir,
+        "plugin_impl.py.jinja2": plugin_dir,
+        "__init__.py.jinja2": plugin_dir,
     }
 
     # Prepare template variables/properties

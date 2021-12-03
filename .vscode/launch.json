@@ -5,10 +5,10 @@
             "name": "Python: Validate AaC",
             "type": "python",
             "request": "launch",
-            "program": "src/aac/__main__.py",
+            "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "validate",
-                "./model/aac/AaC.yaml"
+                "${workspaceFolder}/src/aac/spec/spec.yaml"
             ],
             "console": "integratedTerminal",
             "justMyCode": false
@@ -17,10 +17,10 @@
             "name": "Python: Validate EchoService",
             "type": "python",
             "request": "launch",
-            "program": "src/aac/__main__.py",
+            "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "validate",
-                "./model/echo/EchoService.yaml"
+                "${workspaceFolder}/model/echo/EchoService.yaml"
             ],
             "console": "integratedTerminal",
             "justMyCode": false
@@ -29,10 +29,10 @@
             "name": "Python: Validate Flow",
             "type": "python",
             "request": "launch",
-            "program": "src/aac/__main__.py",
+            "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "validate",
-                "./model/flow/System.yaml"
+                "${workspaceFolder}/model/flow/System.yaml"
             ],
             "console": "integratedTerminal",
             "justMyCode": false
@@ -41,10 +41,10 @@
             "name": "Python: Validate AaC gen-protobuf",
             "type": "python",
             "request": "launch",
-            "program": "src/aac/__main__.py",
+            "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "validate",
-                "./plugins/gen-protobuf/aac-gen-protobuf.yaml"
+                "${workspaceFolder}/plugins/gen-protobuf/aac-gen-protobuf.yaml"
             ],
             "console": "integratedTerminal",
             "justMyCode": false
@@ -53,10 +53,10 @@
             "name": "Python: Json AaC",
             "type": "python",
             "request": "launch",
-            "program": "src/aac/__main__.py",
+            "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "json",
-                "./model/aac/AaC.yaml"
+                "${workspaceFolder}/src/aac/spec/spec.yaml"
             ],
             "console": "integratedTerminal",
             "justMyCode": false
@@ -65,10 +65,10 @@
             "name": "Python: Json EchoService",
             "type": "python",
             "request": "launch",
-            "program": "src/aac/__main__.py",
+            "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "json",
-                "./model/echo/EchoService.yaml"
+                "${workspaceFolder}/model/echo/EchoService.yaml"
             ],
             "console": "integratedTerminal",
             "justMyCode": false
@@ -77,10 +77,10 @@
             "name": "Python: Json Flow",
             "type": "python",
             "request": "launch",
-            "program": "src/aac/__main__.py",
+            "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "json",
-                "./model/flow/System.yaml"
+                "${workspaceFolder}/model/flow/System.yaml"
             ],
             "console": "integratedTerminal",
             "justMyCode": false
@@ -89,10 +89,10 @@
             "name": "Python: Puml-component Flow",
             "type": "python",
             "request": "launch",
-            "program": "src/aac/__main__.py",
+            "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "puml-component",
-                "./model/flow/System.yaml"
+                "${workspaceFolder}/model/flow/System.yaml"
             ],
             "console": "integratedTerminal",
             "justMyCode": false
@@ -101,10 +101,10 @@
             "name": "Python: Puml-object Flow",
             "type": "python",
             "request": "launch",
-            "program": "src/aac/__main__.py",
+            "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "puml-object",
-                "./model/flow/System.yaml"
+                "${workspaceFolder}/model/flow/System.yaml"
             ],
             "console": "integratedTerminal",
             "justMyCode": false
@@ -113,10 +113,10 @@
             "name": "Python: Puml-sequence Flow",
             "type": "python",
             "request": "launch",
-            "program": "src/aac/__main__.py",
+            "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "puml-object",
-                "./model/flow/flow.yaml"
+                "${workspaceFolder}/model/flow/flow.yaml"
             ],
             "console": "integratedTerminal",
             "justMyCode": false
@@ -125,10 +125,10 @@
             "name": "Python: Gen-Plugin PlantUML",
             "type": "python",
             "request": "launch",
-            "program": "src/aac/__main__.py",
+            "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "gen-plugin",
-                "./plugins/aac-plantuml/aac-plantuml.yaml"
+                "${workspaceFolder}/plugins/aac-plantuml/aac-plantuml.yaml"
             ],
             "console": "integratedTerminal",
             "justMyCode": false
@@ -137,10 +137,10 @@
             "name": "Python: Gen-Plugin Protobuf",
             "type": "python",
             "request": "launch",
-            "program": "src/aac/__main__.py",
+            "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "gen-plugin",
-                "./plugins/aac-gen-protobuf/aac-gen-protobuf.yaml"
+                "${workspaceFolder}/plugins/aac-gen-protobuf/aac-gen-protobuf.yaml"
             ],
             "console": "integratedTerminal",
             "justMyCode": false
@@ -149,10 +149,10 @@
             "name": "Python: Gen-Protobuf",
             "type": "python",
             "request": "launch",
-            "program": "src/aac/__main__.py",
+            "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "gen-protobuf",
-                "./model/protobuf_flow/System.yaml",
+                "${workspaceFolder}/model/protobuf_flow/System.yaml",
                 "build/"
             ],
             "console": "integratedTerminal",
@@ -162,11 +162,11 @@
             "name": "Python: Gen-System Document",
             "type": "python",
             "request": "launch",
-            "program": "src/aac/__main__.py",
+            "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "gen-design-doc",
                 "system-design-doc.md.jinja2",
-                "model/flow/System.yaml",
+                "${workspaceFolder}/model/flow/System.yaml",
                 "test"
             ],
             "console": "integratedTerminal",
@@ -176,10 +176,10 @@
             "name": "Python: Gen-Gherkin Feature File",
             "type": "python",
             "request": "launch",
-            "program": "src/aac/__main__.py",
+            "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "gen-gherkin-behaviors",
-                "model/flow/flow.yaml",
+                "${workspaceFolder}/model/flow/flow.yaml",
                 "test"
             ],
             "console": "integratedTerminal",
@@ -189,7 +189,7 @@
             "name": "Python: Unit Tests",
             "type": "python",
             "request": "launch",
-            "program": "nose2 -c tox.ini",
+            "program": "nose2 -c ${workspaceFolder}/tox.ini",
             "console": "integratedTerminal",
             "justMyCode": false
         }

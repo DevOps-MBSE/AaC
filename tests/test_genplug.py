@@ -231,7 +231,6 @@ model:
           - then
 """
 
-
 MODEL_YAML_DEFINITION_SANS_PACKAGE_PREFIX = """
 model:
   name: spec
@@ -263,5 +262,4 @@ model:
           - when
           then:
           - then
-
 """
