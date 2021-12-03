@@ -19,8 +19,6 @@ runtime_dependencies = [
     "iteration_utilities >= 0.11",
     "Jinja2 >= 3.0",
     "MarkupSafe >= 2.0",
-    "PyGObject >= 3.36.0",
-    "pycairo >= 1.20",
 ]
 
 development_dependencies = [
@@ -59,16 +57,21 @@ test_dependencies = [
 setup(
     name="aac",
     version="0.0.4",
+    description=(
+        "A distinctly different take on Model-Based System Engineering (MBSE) that allows a system modeller to define a system in simple yaml. "
+    ),
+    license="",
     long_description=readme_description,
     long_description_content_type="text/markdown",
-    packages=find_packages(where="aac", exclude="tests"),
+    packages=find_packages(where="src", exclude="tests"),
     package_dir={"": "src"},
+    package_data={'aac.spec': ['spec.yaml'], '': ['*.jinja2']},
     install_requires=runtime_dependencies,
     setup_requires=development_dependencies,
     tests_require=test_dependencies,
     entry_points={
         "console_scripts": [
-            "aac = aac.cli:run_cli",
+            "aac=aac.cli:run_cli",
         ]
     },
     extras_require={
