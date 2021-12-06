@@ -1,4 +1,4 @@
-"""Provides plugin management functions for the AaC project."""
+"""Provides plugin management functions and access to the default plugins for the AaC project."""
 from pluggy import PluginManager
 
 from aac import hookspecs, genjson, genplug, parser, PLUGIN_PROJECT_NAME
