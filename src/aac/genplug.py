@@ -8,7 +8,8 @@ import os
 
 import yaml
 
-from aac import hookimpl, parser, util
+from aac import parser, util
+from aac.plugins import hookimpl
 from aac.AacCommand import AacCommand, AacCommandArgument
 from aac.template_engine import (TemplateOutputFile, generate_templates,
                                  load_default_templates,

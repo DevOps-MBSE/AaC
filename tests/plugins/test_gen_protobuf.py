@@ -1,7 +1,7 @@
 from unittest import TestCase
 from nose2.tools import params
 
-from aac_gen_protobuf.aac_gen_protobuf_impl import _convert_camel_case_to_snake_case, _generate_protobuf_template_details_from_data_and_enum_models
+from aac.plugins.gen_protobuf.gen_protobuf_impl import _convert_camel_case_to_snake_case, _generate_protobuf_template_details_from_data_and_enum_models
 
 
 class TestGenerateProtobufPlugin(TestCase):

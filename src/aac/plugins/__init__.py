@@ -1,7 +1,11 @@
 """Provides plugin management functions and access to the default plugins for the AaC project."""
-from pluggy import PluginManager
+from pluggy import PluginManager, HookimplMarker, HookspecMarker
 
-from aac import hookspecs, genjson, genplug, parser, PLUGIN_PROJECT_NAME
+PLUGIN_PROJECT_NAME = __package__
+hookimpl = HookimplMarker(PLUGIN_PROJECT_NAME)
+hookspec = HookspecMarker(PLUGIN_PROJECT_NAME)
+
+from aac.plugins import plugin_manager
 
 
 def get_plugin_manager() -> PluginManager:
@@ -11,15 +15,7 @@ def get_plugin_manager() -> PluginManager:
     Returns:
         The plugin manager.
     """
-    plugin_manager = PluginManager(PLUGIN_PROJECT_NAME)
-    plugin_manager.add_hookspecs(hookspecs)
-    plugin_manager.load_setuptools_entrypoints(PLUGIN_PROJECT_NAME)
-
-    # register "built-in" plugins
-    plugin_manager.register(genjson)
-    plugin_manager.register(genplug)
-
-    return plugin_manager
+    return plugin_manager.get_plugin_manager()
 
 
 def get_plugin_model_definitions():
@@ -29,12 +25,4 @@ def get_plugin_model_definitions():
     Returns:
         A list of plugin defined models.
     """
-    plugin_manager = get_plugin_manager()
-    plugin_models_yaml = plugin_manager.hook.get_base_model_extensions()
-    plugin_extensions = {}
-    for plugin_ext in plugin_models_yaml:
-        if len(plugin_ext) > 0:
-            models = parser.parse_str(plugin_ext, "Plugin Manager Addition", False)
-            plugin_extensions = models | plugin_extensions
-
-    return plugin_extensions
+    return plugin_manager.get_plugin_model_definitions()

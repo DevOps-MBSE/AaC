@@ -1,10 +1,11 @@
 """A plugin to print JSON schema of AaC model files."""
 import json
-import aac
+from aac.plugins import hookimpl
+from aac.parser import parse_file
 from aac.AacCommand import AacCommand, AacCommandArgument
 
 
-@aac.hookimpl
+@hookimpl
 def get_commands() -> list[AacCommand]:
     """
     Provides the json command for integration into the CLI.
@@ -26,7 +27,7 @@ def get_commands() -> list[AacCommand]:
     return plugin_commands
 
 
-@aac.hookimpl
+@hookimpl
 def get_base_model_extensions() -> None:
     """
     This plugin doesn't define any extensions, so returns None.
@@ -40,7 +41,7 @@ def toJson(architecture_files: list[str]) -> None:
 
     for architecture_file in architecture_files:
         print(f"File: {architecture_file}")
-        parsed_model = aac.parser.parse_file(architecture_file, True)
+        parsed_model = parse_file(architecture_file, True)
         _print_parsed_model(parsed_model)
 
 
