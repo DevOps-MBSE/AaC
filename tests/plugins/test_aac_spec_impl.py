@@ -1,7 +1,7 @@
 from unittest import TestCase
 from tempfile import NamedTemporaryFile
 
-from aac_spec.aac_spec_impl import spec_validate, AacSpecValidationException
+from aac.plugins.specifications.specifications_impl import spec_validate, AacSpecValidationException
 
 
 class TestAacSpec(TestCase):
