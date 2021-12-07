@@ -43,5 +43,5 @@ def get_base_model_extensions() -> str:
     Returns:
         string representing yaml extensions and data definitions employed by the plugin
     """
-    with resources.path(__name__, "gen_protobuf.yaml") as plugin_model_file:
+    with resources.open_text(__package__, "gen_protobuf.yaml") as plugin_model_file:
         return plugin_model_file.read()
