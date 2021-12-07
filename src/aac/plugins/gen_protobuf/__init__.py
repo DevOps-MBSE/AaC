@@ -4,9 +4,9 @@
 
 from importlib import resources
 
-from aac.plugins.gen_protobuf.gen_protobuf_impl import gen_protobuf
 from aac.AacCommand import AacCommand, AacCommandArgument
 from aac.plugins import hookimpl
+from aac.plugins.gen_protobuf.gen_protobuf_impl import gen_protobuf
 
 
 @hookimpl

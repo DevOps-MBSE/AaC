@@ -9,7 +9,8 @@ def get_plugin_manager() -> PluginManager:
         The plugin manager.
     """
     from aac import genplug, genjson
-    from aac.plugins import hookspecs, gen_protobuf, PLUGIN_PROJECT_NAME
+    from aac.plugins import hookspecs, PLUGIN_PROJECT_NAME
+    from aac.plugins import gen_protobuf, gen_design_doc, gen_gherkin_behaviors, gen_plant_uml, specifications
 
     plugin_manager = PluginManager(PLUGIN_PROJECT_NAME)
     plugin_manager.add_hookspecs(hookspecs)
@@ -19,6 +20,10 @@ def get_plugin_manager() -> PluginManager:
     plugin_manager.register(genjson)
     plugin_manager.register(genplug)
     plugin_manager.register(gen_protobuf)
+    plugin_manager.register(gen_design_doc)
+    plugin_manager.register(gen_gherkin_behaviors)
+    plugin_manager.register(gen_plant_uml)
+    plugin_manager.register(specifications)
 
     return plugin_manager
 

@@ -7,7 +7,7 @@ from aac import parser, util
 from aac.template_engine import (
     TemplateOutputFile,
     generate_template,
-    load_templates,
+    load_default_templates,
     write_generated_templates_to_file,
 )
 
@@ -25,7 +25,7 @@ def gen_gherkin_behaviors(architecture_file: str, output_directory: str) -> None
 
     parsed_models = parser.parse_file(architecture_file)
 
-    loaded_templates = load_templates(__package__)
+    loaded_templates = load_default_templates("gen_gherkin_behaviors")
 
     message_template_properties = _get_template_properties(parsed_models)
     generated_template_messages = _generate_gherkin_feature_files(

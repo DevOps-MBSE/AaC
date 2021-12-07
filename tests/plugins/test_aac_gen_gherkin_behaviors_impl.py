@@ -2,8 +2,8 @@ import os
 from tempfile import NamedTemporaryFile, TemporaryDirectory
 from unittest import TestCase
 
-from aac_gen_gherkin_behaviors.aac_gen_gherkin_behaviors_impl import (
-    _generate_gherkin_feature_file_name,
+from aac.plugins.gen_gherkin_behaviors.gen_gherkin_behaviors_impl import (
+    _create_gherkin_feature_file_name,
     gen_gherkin_behaviors,
 )
 from nose2.tools import params
@@ -177,7 +177,7 @@ model:
         ("data-a", "data_a.feature"),
     )
     def test__generate_gherkin_feature_file_name(self, input_name, expected_filename):
-        self.assertEqual(expected_filename, _generate_gherkin_feature_file_name(input_name))
+        self.assertEqual(expected_filename, _create_gherkin_feature_file_name(input_name))
 
 
 def _remove_first_word_in_string(string: str) -> str:

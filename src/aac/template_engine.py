@@ -18,9 +18,16 @@ def load_templates(package_name: str, template_directory: str = "templates") -> 
     Returns:
         list of loaded templates
     """
+    def _filter_non_jinja2_files(files_list: list) -> list:
+        return
 
     def _load_templates_from_env(env) -> list:
-        return list(map(env.get_template, env.list_templates()))
+        templates = list(map(env.get_template, env.list_templates()))
+        for template in templates:
+            if not template.name.endswith("jinja2"):
+                templates.remove(template)
+
+        return templates
 
     env = Environment(
         loader=PackageLoader(package_name, template_directory),

@@ -7,7 +7,7 @@ from aac import parser, util
 from aac.template_engine import (
     TemplateOutputFile,
     generate_template,
-    load_templates,
+    load_default_templates,
     write_generated_templates_to_file,
 )
 
@@ -24,7 +24,7 @@ def gen_protobuf(architecture_file: str, output_directory: str):
     """
     parsed_models = parser.parse_file(architecture_file)
 
-    loaded_templates = load_templates(__package__, "gen_protobuf")
+    loaded_templates = load_default_templates("gen_protobuf")
 
     data_messages_and_enum_definitions = _collect_data_and_enum_definitions(parsed_models)
     message_template_properties = _generate_protobuf_template_details_from_data_and_enum_models(
