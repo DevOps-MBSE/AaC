@@ -2,7 +2,7 @@ import re
 from unittest import TestCase
 
 from aac.parser import parse_str
-from aac.validator import is_valid, validate_and_get_errors
+from aac.validator import validate_and_get_errors
 
 
 def kw(**kwargs):
@@ -84,10 +84,6 @@ class ValidatorTest(TestCase):
         kw(name="beta", type="pub-sub", acceptance=[], description="beta"),
         kw(name="gamma", type="pub-sub", acceptance=MODEL_ACCEPTANCE),
     ]
-
-    def test_is_valid(self):
-        self.assertTrue(is_valid(data(name="test", fields=[kw(name="a", type="int")])))
-        self.assertFalse(is_valid(data()))
 
     def test_valid_enums_pass_validation(self):
         name = self.MODEL_NAME
@@ -322,7 +318,6 @@ class ValidatorTest(TestCase):
 
 
 class ValidatorFunctionalTest(TestCase):
-
     def test_validates_parsed_yaml_models(self):
         model = parse_str(TEST_MODEL_WITH_EXTENSIONS, "validation-test")
         assert_model_is_valid(self, model)

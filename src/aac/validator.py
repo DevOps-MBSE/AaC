@@ -14,18 +14,6 @@ from aac.spec.core import get_aac_spec, get_primitives
 VALIDATOR_CONTEXT = None
 
 
-def is_valid(model: dict) -> bool:
-    """Check if MODEL is valid per the AaC spec.
-
-    Args:
-        model: The model to validate.
-
-    Returns:
-        Returns True if the model is valid per the AaC spec; false otherwise.
-    """
-    return len(validate_and_get_errors(model)) == 0
-
-
 # TODO: Generalize validate_and_get_errors to handle all (or at least most of) the cases
 def validate_and_get_errors(model: dict) -> list:
     """Return all validation errors for the model.
