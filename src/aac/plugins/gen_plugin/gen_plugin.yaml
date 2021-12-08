@@ -11,7 +11,7 @@ model:
           python_type: str
           description: filepath to the architecture file.
       acceptance:
-        - scenario: Output generate python plugin stub files.
+        - scenario: Output generated python plugin stub files.
           given:
             - The {{gen-plugin.input.architecture_file}} contains a valid model.
           when:

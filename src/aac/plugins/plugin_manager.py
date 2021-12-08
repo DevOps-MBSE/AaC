@@ -8,9 +8,10 @@ def get_plugin_manager() -> PluginManager:
     Returns:
         The plugin manager.
     """
-    from aac import genjson
+
     from aac.plugins import hookspecs, PLUGIN_PROJECT_NAME
     from aac.plugins import (
+        gen_json,
         gen_plugin,
         gen_protobuf,
         gen_design_doc,
@@ -24,7 +25,7 @@ def get_plugin_manager() -> PluginManager:
     plugin_manager.load_setuptools_entrypoints(PLUGIN_PROJECT_NAME)
 
     # register "built-in" plugins
-    plugin_manager.register(genjson)
+    plugin_manager.register(gen_json)
     plugin_manager.register(gen_plugin)
     plugin_manager.register(gen_protobuf)
     plugin_manager.register(gen_design_doc)
