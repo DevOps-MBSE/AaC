@@ -19,6 +19,13 @@ model:
             - A message saying spec validation was successful is printed to the console.
 ---
 ext:
+  name: addLoggingToBehaviorType
+  type: BehaviorType
+  enumExt:
+    add:
+      - logging
+---
+ext:
   name: addSpecificationToRoot
   type: root
   dataExt:
