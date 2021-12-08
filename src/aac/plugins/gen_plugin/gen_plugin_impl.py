@@ -9,12 +9,14 @@ import os
 import yaml
 
 from aac import parser, util
-from aac.template_engine import (TemplateOutputFile, generate_templates,
-                                 load_default_templates,
-                                 write_generated_templates_to_file)
+from aac.template_engine import (
+    TemplateOutputFile,
+    generate_templates,
+    load_default_templates,
+    write_generated_templates_to_file,
+)
 from aac.plugins import PLUGIN_PROJECT_NAME
 from aac.plugins.gen_plugin.GeneratePluginException import GeneratePluginException
-
 
 
 def generate_plugin(architecture_file: str) -> None:
