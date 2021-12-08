@@ -28,10 +28,7 @@ def parse_file(arch_file: str, validate: bool = True) -> dict[str, dict]:
         parsed_models = parsed_models | parse_str(contents, arch_file, False)
 
     if validate:
-        error_messages = validator.validate_and_get_errors(parsed_models)
-
-        if error_messages:
-            raise RuntimeError(arch_file, error_messages)
+        validator.validate_and_get_errors(parsed_models)
 
     return parsed_models
 
@@ -59,10 +56,7 @@ def parse_str(model_content: str, source: str, validate: bool = True) -> dict[st
         parsed_models[root[root_name]["name"]] = root
 
     if validate:
-        error_messages = validator.validate_and_get_errors(parsed_models)
-
-        if error_messages:
-            raise RuntimeError(source, error_messages)
+        validator.validate_and_get_errors(parsed_models)
 
     return parsed_models
 
