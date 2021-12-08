@@ -14,18 +14,24 @@ from aac.spec.core import get_aac_spec, get_primitives
 VALIDATOR_CONTEXT = None
 
 
+class ValidationError(RuntimeError):
+    """An error that represents a model with invalid components and/or structure."""
+
+    pass
+
+
 # TODO: Generalize validate_and_get_errors to handle all (or at least most of) the cases
-def validate_and_get_errors(model: dict) -> list:
+def validate_and_get_errors(model: dict) -> None:
     """Return all validation errors for the model.
 
-    This function validates the target model against the core AaC Spec and any actively installed plugin data, enum, and extension definitions.
+    This function validates the target model against the core AaC Spec and any actively installed
+    plugin data, enum, and extension definitions.
 
     Args:
         model: The model to validate.
 
-    Returns:
-        Returns a list of all errors found when validating the model. If the
-        model is valid (i.e. there are no errors) an empty list is returned.
+    Raises:
+        Raises a ValidationError if any errors are found when validating the model.
     """
 
     global VALIDATOR_CONTEXT
@@ -44,7 +50,8 @@ def validate_and_get_errors(model: dict) -> list:
         # Once we're done validating, wipe the context.
         VALIDATOR_CONTEXT = None
 
-    return errors
+    if errors:
+        raise ValidationError(model, errors)
 
 
 def _validate_model(model: dict) -> list:
