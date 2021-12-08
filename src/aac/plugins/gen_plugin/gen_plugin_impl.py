@@ -9,97 +9,12 @@ import os
 import yaml
 
 from aac import parser, util
-from aac.plugins import hookimpl
-from aac.AacCommand import AacCommand, AacCommandArgument
 from aac.template_engine import (TemplateOutputFile, generate_templates,
                                  load_default_templates,
                                  write_generated_templates_to_file)
+from aac.plugins import PLUGIN_PROJECT_NAME
+from aac.plugins.gen_plugin.GeneratePluginException import GeneratePluginException
 
-
-@hookimpl
-def get_commands() -> list[AacCommand]:
-    """
-    Returns the gen-plugin command type to the plugin infrastructure.
-
-    Returns:
-        A list of AacCommands
-    """
-    command_arguments = [
-        AacCommandArgument(
-            "architecture_file",
-            "The yaml file containing the AaC DSL of the plugin architecture.",
-        )
-    ]
-
-    plugin_commands = [
-        AacCommand(
-            "gen-plugin",
-            "Generates an AaC plugin from an AaC model of the plugin",
-            generate_plugin,
-            command_arguments,
-        )
-    ]
-
-    return plugin_commands
-
-
-@hookimpl
-def get_base_model_extensions() -> str:
-    """
-    Returns the CommandBehaviorType modeling language extension to the plugin infrastructure.
-
-    Returns:
-        string representing yaml extensions and data definitions employed by the plugin
-    """
-    return """
----
-enum:
-  name: PythonDataType
-  values:
-    - str
-    - int
-    - float
-    - complex
-    - list
-    - tuple
-    - range
-    - dict
-    - set
-    - frozenset
-    - bool
-    - bytes
-    - bytearray
-    - memoryview
----
-ext:
-   name: PythonTypeField
-   type: Field
-   dataExt:
-      add:
-        - name: python_type
-          type: PythonDataType
----
-ext:
-   name: CommandBehaviorType
-   type: BehaviorType
-   enumExt:
-      add:
-         - command
----
-ext:
-   name: DescriptField
-   type: Field
-   dataExt:
-      add:
-        - name: description
-          type: string
-"""
-
-
-class GeneratePluginException(Exception):
-    """Exceptions specifically concerning plugin generation."""
-
-    pass
 
 
 def generate_plugin(architecture_file: str) -> None:
@@ -164,8 +79,8 @@ def _compile_templates(parsed_models: dict[str, dict]) -> dict[str, list[Templat
     plugin_name = plugin_model.get("name")
 
     # Ensure that the plugin name has that 'aac' package name prepended to it
-    if not plugin_name.startswith(__package__):
-        plugin_name = f"{__package__}-{plugin_name}"
+    if not plugin_name.startswith(PLUGIN_PROJECT_NAME):
+        plugin_name = f"{PLUGIN_PROJECT_NAME}-{plugin_name}"
 
     plugin_implementation_name = _convert_to_implementation_name(plugin_name)
 

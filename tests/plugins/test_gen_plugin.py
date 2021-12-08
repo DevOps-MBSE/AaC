@@ -1,11 +1,8 @@
 from unittest import TestCase
 
 from aac import parser
-from aac.genplug import (
-    GeneratePluginException,
-    _compile_templates,
-    _convert_template_name_to_file_name,
-)
+from aac.plugins.gen_plugin.GeneratePluginException import GeneratePluginException
+from aac.plugins.gen_plugin.gen_plugin_impl import _compile_templates, _convert_template_name_to_file_name
 
 INIT_TEMPLATE_NAME = "__init__.py.jinja2"
 PLUGIN_TEMPLATE_NAME = "plugin.py.jinja2"

@@ -1,7 +1,7 @@
 """Provides plugin management functions and access to the default plugins for the AaC project."""
 from pluggy import PluginManager, HookimplMarker, HookspecMarker
 
-PLUGIN_PROJECT_NAME = __package__
+PLUGIN_PROJECT_NAME = "aac"
 hookimpl = HookimplMarker(PLUGIN_PROJECT_NAME)
 hookspec = HookspecMarker(PLUGIN_PROJECT_NAME)
 

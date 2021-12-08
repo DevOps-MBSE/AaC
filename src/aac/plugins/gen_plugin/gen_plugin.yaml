@@ -1,0 +1,41 @@
+---
+enum:
+  name: PythonDataType
+  values:
+    - str
+    - int
+    - float
+    - complex
+    - list
+    - tuple
+    - range
+    - dict
+    - set
+    - frozenset
+    - bool
+    - bytes
+    - bytearray
+    - memoryview
+---
+ext:
+   name: PythonTypeField
+   type: Field
+   dataExt:
+      add:
+        - name: python_type
+          type: PythonDataType
+---
+ext:
+   name: CommandBehaviorType
+   type: BehaviorType
+   enumExt:
+      add:
+         - command
+---
+ext:
+   name: DescriptField
+   type: Field
+   dataExt:
+      add:
+        - name: description
+          type: string
