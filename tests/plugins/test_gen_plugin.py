@@ -15,7 +15,7 @@ SETUP_TEMPLATE_NAME = "setup.py.jinja2"
 README_TEMPLATE_NAME = "README.md.jinja2"
 
 
-class TestGenPlug(TestCase):
+class TestGenPlugin(TestCase):
     def test_convert_template_name_to_file_name(self):
         plugin_name = "aac-test"
         template_names = [
