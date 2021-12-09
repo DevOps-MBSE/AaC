@@ -28,12 +28,12 @@ def parse_file(arch_file: str) -> dict[str, dict]:
     return parsed_models
 
 
-def parse_str(model_content: str, source: str) -> dict[str, dict]:
+def parse_str(source: str, model_content: str) -> dict[str, dict]:
     """Parse a string containing one or more yaml model definitions.
 
     Args:
-        model_content:  The yaml to parse
         source:  The file the content came from (to help with better logging)
+        model_content:  The yaml to parse
 
     Returns:
         A dictionary of the parsed model(s).  The key is the type name from the model and the
