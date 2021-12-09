@@ -3,6 +3,7 @@
 # TODO: Replace "magic strings" with a more maintainable solution
 
 import copy
+from contextlib import contextmanager
 from typing import Union
 
 from attr import attrib, attrs, validators
@@ -20,6 +21,32 @@ class ValidationError(RuntimeError):
     pass
 
 
+@contextmanager
+def validation(func: callable, source: str, **kwargs):
+    """Run validation on the model returned by func.
+
+    Args:
+        func (callable): A function that returns an Architecture-as-Code model. The
+                         first argument accepted by func must be the YAML source.
+        source (str): The source of the YAML representation of the model.
+
+    Returns:
+        If the model returned by func is valid, it is returned. Otherwise, None is returned.
+    """
+    model = None
+    try:
+        model = func(source, **kwargs)
+        validate_and_get_errors(model)
+        yield model
+    except ValidationError as ve:
+        _, errors = ve.args
+        errors = "\n  ".join(errors)
+        print(f"Failed to validate {source}")
+        print(f"Failed with errors:\n  {errors}")
+        print("validation error")
+        yield
+
+
 # TODO: Generalize validate_and_get_errors to handle all (or at least most of) the cases
 def validate_and_get_errors(model: dict) -> None:
     """Return all validation errors for the model.
@@ -33,7 +60,6 @@ def validate_and_get_errors(model: dict) -> None:
     Raises:
         Raises a ValidationError if any errors are found when validating the model.
     """
-
     global VALIDATOR_CONTEXT
 
     if not VALIDATOR_CONTEXT:
