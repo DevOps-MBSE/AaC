@@ -34,6 +34,23 @@ pip install -e . # -e for editable
 ```
 Once the plugin packages have been installed, then the plugin manager in AaC will be able to pick them up and import them.
 
+## Validating AaC Models in a Plugin
+
+To validate an Architecture-as-Code model from within your plugin, you can do the following:
+
+```python
+from pprint import pprint
+
+from aac.parser import parse_file, parse_str
+from aac.validator import validation
+
+def my_plugin_command(architecture_file: str):
+    with validation(parse_file, architecture_file) as model:
+        # Do whatever you want to with the validated `model' here.
+        print(f"The model in {architecture_file} is valid!\n")
+        pprint(model)
+```
+
 ## Pitfalls
 Some pitfalls experienced when implementing the example echo plugins.
 
