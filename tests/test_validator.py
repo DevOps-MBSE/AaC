@@ -319,6 +319,10 @@ class ValidatorTest(TestCase):
         spec_root_definition = o(model="spec", name="spec", spec_name="some spec")
         assert_model_is_valid(self, new_root_type | new_root_extension | spec_root_definition)
 
+    def test_validation_fails_for_required_field_with_empty_list(self):
+        model = ext(name="invalid_ext", type="root", dataExt=kw(add=[]))
+        assert_model_is_invalid(self, model, "empty.*required.*add")
+
 
 class ValidatorFunctionalTest(TestCase):
     def test_validates_parsed_yaml_models(self):
