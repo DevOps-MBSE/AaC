@@ -2,7 +2,7 @@ import re
 from unittest import TestCase
 
 from aac.parser import parse_str
-from aac.validator import ValidationError, validate_and_get_errors
+from aac.validator import ValidationError, validate_and_get_errors, validation
 
 
 def kw(**kwargs):
@@ -322,12 +322,16 @@ class ValidatorTest(TestCase):
 
 class ValidatorFunctionalTest(TestCase):
     def test_validates_parsed_yaml_models(self):
-        model = parse_str("validation-test", TEST_MODEL_WITH_EXTENSIONS)
-        assert_model_is_valid(self, model)
+        with validation(
+            parse_str, "validation-test", model_content=TEST_MODEL_WITH_EXTENSIONS
+        ) as model:
+            assert_model_is_valid(self, model)
 
     def test_validates_parsed_yaml_models_that_leverage_gen_pugin_extensions(self):
-        model = parse_str("validation-test", TEST_MODEL_WITH_EXTENSIONS)
-        assert_model_is_valid(self, model)
+        with validation(
+            parse_str, "validation-test", model_content=TEST_MODEL_WITH_EXTENSIONS
+        ) as model:
+            assert_model_is_valid(self, model)
 
     def test_validate_parsed_yaml_model_with_missing_enum_def(self):
         pattern = "unrecognized.*BehaviorType.*value.*(some_undefined_enum)"

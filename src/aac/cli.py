@@ -10,6 +10,7 @@ from pluggy import PluginManager
 from aac import parser, plugins, ui
 from aac.AacCommand import AacCommand, AacCommandArgument
 from aac.spec.core import get_aac_spec_as_yaml
+from aac.validator import validation
 
 
 def run_cli():
@@ -42,20 +43,11 @@ def run_cli():
 
 def _validate_cmd(model_file: str):
     """The built-in validate command."""
+    with validation(parser.parse_file, model_file) as model:
+        if not model:
+            sys.exit("validation error")
 
-    try:
-        parser.parse_file(model_file)
-    except RuntimeError as re:
-        model_file, errors = re.args
-        errors = "\n  ".join(errors)
-
-        print(f"Failed to validate {model_file}")
-        print(f"Failed with errors:\n  {errors}")
-
-        sys.exit("validation error")
-
-    # Since we return early with the sys.exit() then we can assume success here.
-    print(f"{model_file} is valid.")
+        print(f"{model_file} is valid.")
 
 
 def _core_spec_cmd():

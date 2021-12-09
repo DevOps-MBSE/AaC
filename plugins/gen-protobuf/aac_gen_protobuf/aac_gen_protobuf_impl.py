@@ -10,6 +10,7 @@ from aac.template_engine import (
     load_templates,
     write_generated_templates_to_file,
 )
+from aac.validator import validation
 
 plugin_version = "0.0.1"
 
@@ -22,20 +23,22 @@ def gen_protobuf(architecture_file: str, output_directory: str):
         architecture_file (str): The yaml file containing the data models to generate as Protobuf messages.
         output_directory (str): The directory to write the generated Protobuf messages to.
     """
-    parsed_models = parser.parse_file(architecture_file)
+    # TODO: Add validation CM
+    with validation(parser.parse_file, architecture_file) as parsed_models:
+        loaded_templates = load_templates(__package__)
 
-    loaded_templates = load_templates(__package__)
+        data_messages_and_enum_definitions = _collect_data_and_enum_definitions(parsed_models)
+        message_template_properties = (
+            _generate_protobuf_template_details_from_data_and_enum_models(
+                data_messages_and_enum_definitions
+            )
+        )
+        generated_template_messages = _generate_protobuf_messages(
+            loaded_templates, message_template_properties
+        )
 
-    data_messages_and_enum_definitions = _collect_data_and_enum_definitions(parsed_models)
-    message_template_properties = _generate_protobuf_template_details_from_data_and_enum_models(
-        data_messages_and_enum_definitions
-    )
-    generated_template_messages = _generate_protobuf_messages(
-        loaded_templates, message_template_properties
-    )
-
-    write_generated_templates_to_file(generated_template_messages, output_directory)
-    print(f"Successfully generated templates to directory: {output_directory}")
+        write_generated_templates_to_file(generated_template_messages, output_directory)
+        print(f"Successfully generated templates to directory: {output_directory}")
 
 
 def _collect_data_and_enum_definitions(parsed_models: dict) -> dict[str, dict]:

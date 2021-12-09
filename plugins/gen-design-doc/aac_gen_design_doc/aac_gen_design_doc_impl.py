@@ -1,7 +1,6 @@
 """AaC Plugin implementation module for the aac-gen-design-doc plugin."""
 
 import os
-import sys
 
 from iteration_utilities import flatten
 from jinja2 import Template
@@ -13,6 +12,7 @@ from aac.template_engine import (
     load_templates,
     write_generated_templates_to_file,
 )
+from aac.validator import validation
 
 plugin_version = "0.0.1"
 default_template_file = "templates/system-design-doc.md.jinja2"
@@ -53,16 +53,11 @@ def gen_design_doc(architecture_files: str, output_directory: str, template_file
 
 
 def _get_parsed_models(architecture_files: list) -> list:
-    try:
-        return list(map(parser.parse_file, architecture_files))
-    except RuntimeError as re:
-        model_file, errors = re.args
-        errors = "\n  ".join(errors)
+    def parse_with_validation(architecture_file):
+        with validation(parser.parse_file, architecture_file) as model:
+            return model
 
-        print(f"Failed to validate {model_file}")
-        print(f"Failed with errors:\n  {errors}")
-
-        sys.exit("validation error")
+    return [parse_with_validation(f) for f in architecture_files]
 
 
 def _make_template_properties(parsed_models: dict, arch_file: str) -> dict:

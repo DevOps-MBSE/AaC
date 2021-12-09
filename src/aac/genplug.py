@@ -13,6 +13,7 @@ from aac.AacCommand import AacCommand, AacCommandArgument
 from aac.template_engine import (TemplateOutputFile, generate_templates,
                                  load_default_templates,
                                  write_generated_templates_to_file)
+from aac.validator import validation
 
 
 @hookimpl
@@ -115,9 +116,9 @@ def generate_plugin(architecture_file: str) -> None:
 
 def _generate_plugin(architecture_file: str, plug_dir: str) -> None:
     try:
-        parsed_model = parser.parse_file(architecture_file)
-        templates = list(_compile_templates(parsed_model).values())
-        write_generated_templates_to_file(templates, plug_dir)
+        with validation(parser.parse_file, architecture_file) as parsed_model:
+            templates = list(_compile_templates(parsed_model).values())
+            write_generated_templates_to_file(templates, plug_dir)
     except GeneratePluginException as exception:
         print(f"gen-plugin error [{architecture_file}]:  {exception}.")
 
