@@ -23,7 +23,6 @@ def gen_protobuf(architecture_file: str, output_directory: str):
         architecture_file (str): The yaml file containing the data models to generate as Protobuf messages.
         output_directory (str): The directory to write the generated Protobuf messages to.
     """
-    # TODO: Add validation CM
     with validation(parser.parse_file, architecture_file) as parsed_models:
         loaded_templates = load_templates(__package__)
 
