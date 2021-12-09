@@ -1,7 +1,7 @@
 # Plugins
 
 ## Registering Plugins
-Currently, plugins are loaded by checking for packages with `setup.py` entrypoints that match the group name defined in the AaC package ("aac"). 
+Currently, plugins are loaded by checking for packages with `setup.py` entrypoints that match the group name defined in the AaC package ("aac").
 
 Example `setup.py`
 ```python
@@ -27,8 +27,8 @@ In the above example, the `entry_points` can be broken down into the following s
 Currently, the _only_ requirement is that the plugin specify a value in the `<group>` that matches the group identifier defined in the plugin manager ("aac").
 
 ## Local Development
-If you're developing plugins locally in the top-level plugins directory then you will need to locally install them with pip and with the `--editable,-e` flag: 
-```bash 
+If you're developing plugins locally in the top-level plugins directory then you will need to locally install them with pip and with the `--editable,-e` flag:
+```bash
 cd plugins/aac-my-plugin/ #Or whatever your plugin directory is
 pip install -e . # -e for editable
 ```
@@ -38,9 +38,9 @@ Once the plugin packages have been installed, then the plugin manager in AaC wil
 Some pitfalls experienced when implementing the example echo plugins.
 
 ### Multiple Plugin Module name collision
-If more than plugin uses the same name for a module, it will create runtime errors when loading multiple plugins that have the same module name. 
+If more than plugin uses the same name for a module, it will create runtime errors when loading multiple plugins that have the same module name.
 
-For example, if we have two plugins that implement the `echo()` spec, and the two modules define their `echo()` implemenetations in modules that happen to share the same name `echo.py`, then the plugin manager will fail when loading in the second plugin. 
+For example, if we have two plugins that implement the `echo()` spec, and the two modules define their `echo()` implemenetations in modules that happen to share the same name `echo.py`, then the plugin manager will fail when loading in the second plugin.
 
 If we were to change the module name from `echo.py` in one of our plugins, then we'll be able to successfully load in both plugins.
 
