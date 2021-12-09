@@ -45,7 +45,7 @@ def _validate_cmd(model_file: str):
     """The built-in validate command."""
     with validation(parser.parse_file, model_file) as model:
         if not model:
-            sys.exit("validation error")
+            sys.exit(1)
 
         print(f"{model_file} is valid.")
 
