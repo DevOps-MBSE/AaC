@@ -91,7 +91,7 @@ class ValidatorTest(TestCase):
     def test_valid_enums_pass_validation(self):
         name = self.MODEL_NAME
         values = self.ENUM_VALID_VALUES
-        enums = [enum(name=name, values=values[:i]) for i in range(len(values))]
+        enums = [enum(name=name, values=values[:i]) for i in range(1, len(values))]
 
         for e in enums:
             assert_model_is_valid(self, e)
@@ -108,14 +108,14 @@ class ValidatorTest(TestCase):
         name = self.MODEL_NAME
         fields = self.VALID_FIELDS
 
-        data_none_required = [data(name=name, fields=fields[:i]) for i in range(len(fields))]
+        data_none_required = [data(name=name, fields=fields[:i]) for i in range(1, len(fields))]
         data_with_required = [
             data(
                 name=name,
                 fields=fields[:i],
                 required=[f["name"] for f in fields if fields.index(f) <= i - 1],
             )
-            for i in range(len(fields))
+            for i in range(1, len(fields))
         ]
 
         for d in data_none_required + data_with_required:
@@ -143,7 +143,8 @@ class ValidatorTest(TestCase):
         required = ["x", "z"]
 
         test_data = [
-            data(name=name, fields=fields[:i], required=[required[i]]) for i in range(len(fields))
+            data(name=name, fields=fields[:i], required=[required[i]])
+            for i in range(1, len(fields))
         ]
 
         for d in test_data:
@@ -177,7 +178,8 @@ class ValidatorTest(TestCase):
         steps = self.USECASE_STEPS
 
         usecases = [
-            usecase(name=name, participants=fields[:i], steps=steps[:i]) for i in range(len(steps))
+            usecase(name=name, participants=fields[:i], steps=steps[:i])
+            for i in range(1, len(steps))
         ]
 
         for u in usecases:
@@ -191,7 +193,7 @@ class ValidatorTest(TestCase):
 
         usecases = [
             usecase(name=name, participants=fields[:i], steps=steps[:i], description=desc)
-            for i in range(len(steps))
+            for i in range(1, len(steps))
         ]
 
         for u in usecases:
@@ -209,7 +211,7 @@ class ValidatorTest(TestCase):
         name = self.MODEL_NAME
         behaviors = self.MODEL_BEHAVIORS
 
-        models = [model(name=name, behavior=behaviors[:i]) for i in range(len(behaviors))]
+        models = [model(name=name, behavior=behaviors[:i]) for i in range(1, len(behaviors))]
 
         for m in models:
             assert_model_is_valid(self, m)
@@ -221,7 +223,7 @@ class ValidatorTest(TestCase):
 
         models = [
             model(name=name, behavior=behaviors[:i], components=components)
-            for i in range(len(behaviors))
+            for i in range(1, len(behaviors))
         ]
 
         for m in models:
@@ -235,7 +237,7 @@ class ValidatorTest(TestCase):
 
         models = [
             model(name=name, behavior=behaviors[:i], components=components[:i], description=desc)
-            for i in range(len(behaviors))
+            for i in range(1, len(behaviors))
         ]
 
         for m in models:
@@ -272,7 +274,7 @@ class ValidatorTest(TestCase):
         added_fields = ["a", "b"]
         extensions = [
             ext(name=name, type="Primitives", enumExt=kw(add=added_fields[:i]))
-            for i in range(len(added_fields))
+            for i in range(1, len(added_fields))
         ]
 
         for e in extensions:
@@ -283,7 +285,7 @@ class ValidatorTest(TestCase):
         added_fields = [kw(name="a", type="int"), kw(name="b", type="int")]
         extensions = [
             ext(name=name, type="model", dataExt=kw(add=added_fields[:i]))
-            for i in range(len(added_fields))
+            for i in range(1, len(added_fields))
         ]
 
         for e in extensions:
