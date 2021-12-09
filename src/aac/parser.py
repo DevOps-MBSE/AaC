@@ -7,7 +7,6 @@ import os
 
 import yaml
 
-from aac import validator
 
 
 def parse_file(arch_file: str, validate: bool = True) -> dict[str, dict]:
@@ -26,9 +25,6 @@ def parse_file(arch_file: str, validate: bool = True) -> dict[str, dict]:
     for f in files:
         contents = _read_file_content(f)
         parsed_models = parsed_models | parse_str(contents, arch_file, False)
-
-    if validate:
-        validator.validate_and_get_errors(parsed_models)
 
     return parsed_models
 
@@ -54,10 +50,6 @@ def parse_str(model_content: str, source: str, validate: bool = True) -> dict[st
             del root["import"]
         root_name = list(root.keys())[0]
         parsed_models[root[root_name]["name"]] = root
-
-    if validate:
-        validator.validate_and_get_errors(parsed_models)
-
     return parsed_models
 
 
