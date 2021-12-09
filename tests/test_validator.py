@@ -150,28 +150,6 @@ class ValidatorTest(TestCase):
         for d in test_data:
             assert_model_is_invalid(self, d, pattern)
 
-    def test_valid_usecases_with_only_participants_pass_validation(self):
-        name = self.MODEL_NAME
-        fields = self.VALID_FIELDS
-
-        usecases = [
-            usecase(name=name, participants=fields[:i], steps=[]) for i in range(len(fields))
-        ]
-
-        for u in usecases:
-            assert_model_is_valid(self, u)
-
-    def test_valid_usecases_with_only_steps_pass_validation(self):
-        name = self.MODEL_NAME
-        steps = self.USECASE_STEPS
-
-        usecases = [
-            usecase(name=name, participants=[], steps=steps[:i]) for i in range(len(steps))
-        ]
-
-        for u in usecases:
-            assert_model_is_valid(self, u)
-
     def test_valid_usecases_with_participants_and_steps_pass_validation(self):
         name = self.MODEL_NAME
         fields = self.VALID_FIELDS
