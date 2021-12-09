@@ -2,7 +2,7 @@ import re
 from unittest import TestCase
 
 from aac.parser import parse_str
-from aac.validator import ValidationError, validate_and_get_errors, validation
+from aac.validator import ValidationError, validate, validation
 
 
 def kw(**kwargs):
@@ -52,13 +52,13 @@ def assert_errors_contain(self, errors, pattern):
 
 def assert_model_is_valid(self, model):
     """Assert that the provided MODEL is valid."""
-    self.assertIsNone(validate_and_get_errors(model))
+    self.assertIsNone(validate(model))
 
 
 def assert_model_is_invalid(self, model, error_pattern):
     """Assert that the provided MODEL is invalid."""
     with self.assertRaises(ValidationError) as cm:
-        validate_and_get_errors(model)
+        validate(model)
 
         _, errors = cm.exception.args
         self.assertNotEqual(errors, [])

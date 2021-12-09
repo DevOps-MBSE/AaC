@@ -35,7 +35,7 @@ def validation(func: callable, source: str, **kwargs):
     """
     try:
         model = func(source, **kwargs)
-        validate_and_get_errors(model)
+        validate(model)
         yield model
     except ValidationError as ve:
         _, errors = ve.args
@@ -46,8 +46,8 @@ def validation(func: callable, source: str, **kwargs):
         yield
 
 
-# TODO: Generalize validate_and_get_errors to handle all (or at least most of) the cases
-def validate_and_get_errors(model: dict) -> None:
+# TODO: Generalize validate to handle all (or at least most of) the cases
+def validate(model: dict) -> None:
     """Return all validation errors for the model.
 
     This function validates the target model against the core AaC Spec and any actively installed
