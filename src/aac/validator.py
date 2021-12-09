@@ -33,7 +33,6 @@ def validation(func: callable, source: str, **kwargs):
     Returns:
         If the model returned by func is valid, it is returned. Otherwise, None is returned.
     """
-    model = None
     try:
         model = func(source, **kwargs)
         validate_and_get_errors(model)
