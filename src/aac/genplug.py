@@ -115,7 +115,7 @@ def generate_plugin(architecture_file: str) -> None:
 
 def _generate_plugin(architecture_file: str, plug_dir: str) -> None:
     try:
-        parsed_model = parser.parse_file(architecture_file, True)
+        parsed_model = parser.parse_file(architecture_file)
         templates = list(_compile_templates(parsed_model).values())
         write_generated_templates_to_file(templates, plug_dir)
     except GeneratePluginException as exception:

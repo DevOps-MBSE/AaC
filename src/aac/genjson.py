@@ -40,7 +40,7 @@ def toJson(architecture_files: list[str]) -> None:
 
     for architecture_file in architecture_files:
         print(f"File: {architecture_file}")
-        parsed_model = aac.parser.parse_file(architecture_file, True)
+        parsed_model = aac.parser.parse_file(architecture_file)
         _print_parsed_model(parsed_model)
 
 

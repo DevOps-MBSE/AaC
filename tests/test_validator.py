@@ -331,12 +331,12 @@ class ValidatorFunctionalTest(TestCase):
 
     def test_validate_parsed_yaml_model_with_missing_enum_def(self):
         pattern = "unrecognized.*BehaviorType.*value.*(some_undefined_enum)"
-        model = parse_str(TEST_MODEL_WITH_MISSING_ENUM_EXTENSION, "validation-test", False)
+        model = parse_str(TEST_MODEL_WITH_MISSING_ENUM_EXTENSION, "validation-test")
         assert_model_is_invalid(self, model, pattern)
 
     def test_validate_parsed_yaml_model_with_missing_data_def(self):
         pattern = "unrecognized.*field.*named.*(undefined_field)"
-        model = parse_str(TEST_MODEL_WITH_MISSING_DATA_EXTENSION, "validation-test", False)
+        model = parse_str(TEST_MODEL_WITH_MISSING_DATA_EXTENSION, "validation-test")
         assert_model_is_invalid(self, model, pattern)
 
 
