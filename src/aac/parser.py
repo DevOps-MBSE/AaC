@@ -22,8 +22,8 @@ def parse_file(arch_file: str) -> dict[str, dict]:
     parsed_models: dict[str, dict] = {}
 
     files = _get_files_to_process(arch_file)
-    for f in files:
-        contents = _read_file_content(f)
+    for file in files:
+        contents = _read_file_content(file)
         parsed_models = parsed_models | parse_str(arch_file, contents)
     return parsed_models
 
