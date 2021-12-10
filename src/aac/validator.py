@@ -522,6 +522,7 @@ class ValidatorContext:
 
     def get_root_type_names(self) -> list[str]:
         """Gets the list of root names as defined in the extended AaC model specification.
+
         Returns:
             A list of strings, one entry for each root name in the AaC model specification.
         """

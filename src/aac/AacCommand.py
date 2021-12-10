@@ -23,6 +23,7 @@ class AacCommandArgument:
 class AacCommand:
     """
     A class used as a struct to hold a command name, command description, and callback.
+
     The command name is added to the argument parser with help set to teh command description.
     The callback is invoked if the user specifies the command.
 
