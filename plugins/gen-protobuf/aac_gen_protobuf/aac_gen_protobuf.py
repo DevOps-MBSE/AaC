@@ -33,6 +33,7 @@ def get_commands() -> list[AacCommand]:
 
     return plugin_commands
 
+
 @aac.hookimpl
 def get_base_model_extensions() -> str:
     """
