@@ -1,7 +1,14 @@
 import os
+from importlib import resources
 from tempfile import NamedTemporaryFile, TemporaryDirectory
 from unittest import TestCase
 
+from aac import util, parser
+from aac.plugins.gen_gherkin_behaviors import (
+    get_commands,
+    get_base_model_extensions,
+    __name__ as gen_gherkin_behaviors_module_name,
+)
 from aac.plugins.gen_gherkin_behaviors.gen_gherkin_behaviors_impl import (
     _create_gherkin_feature_file_name,
     gen_gherkin_behaviors,
@@ -10,6 +17,40 @@ from nose2.tools import params
 
 
 class TestGenerateGherkinBehaviorsPlugin(TestCase):
+    def test_gen_gherkin_get_commands_conforms_with_plugin_model(self):
+        with resources.open_text(
+            gen_gherkin_behaviors_module_name, "gen_gherkin_behaviors.yaml"
+        ) as plugin_model_file:
+            plugin_name = "aac-gen-gherkin-behaviors"
+            plugin_model = parser.parse_str(plugin_model_file.name, plugin_model_file.read())
+            commands_yaml = list(map(_filter_command_behaviors, util.search(plugin_model.get(plugin_name), ["model", "behavior"])))
+
+            # Assert that the commands returned by the plugin matches those defined in the yaml file
+            commands_yaml_dict = {}
+            for command_yaml in commands_yaml:
+                commands_yaml_dict[command_yaml.get("name")] = command_yaml
+
+            for command in get_commands():
+                self.assertIn(command.name, commands_yaml_dict)
+                command_yaml = commands_yaml_dict.get(command.name)
+
+                # Assert help messages match
+                self.assertEqual(command.description, util.search(command_yaml, ["description"])[0])
+
+                for argument in command.arguments:
+                    yaml_arguments = command_yaml.get("input")
+                    arg_names = [util.search(arg, ["name"])[0] for arg in yaml_arguments]
+                    # Assert argument is defined
+                    self.assertIn(argument.name, arg_names)
+
+    def test_get_base_model_extensions_conforms_with_plugin_model(self):
+        with resources.open_text(
+            gen_gherkin_behaviors_module_name, "gen_gherkin_behaviors.yaml"
+        ) as plugin_model_file:
+            plugin_model_content = plugin_model_file.read()
+
+            self.assertEqual(plugin_model_content, get_base_model_extensions())
+
     def test_gen_gherkin_behaviors_with_one_behavior_multiple_scenarios(self):
         expected_filename = "First_Behavior.feature"
         behavior_name_1 = "First Behavior"
@@ -182,3 +223,10 @@ model:
 
 def _remove_first_word_in_string(string: str) -> str:
     return string.split(None, 1)[1]
+
+
+def _filter_command_behaviors(behavior_definition: dict):
+    if behavior_definition.get("type") == "command":
+        return behavior_definition
+    else:
+        return None

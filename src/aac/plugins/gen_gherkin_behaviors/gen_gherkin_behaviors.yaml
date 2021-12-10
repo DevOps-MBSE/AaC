@@ -4,7 +4,7 @@ model:
   behavior:
     - name: gen-gherkin-behaviors
       type: command
-      description: Generate Gherkin feature files from Arch-as-Code model behavior scenarios
+      description: Generate Gherkin feature files from Arch-as-Code model behavior scenarios.
       input:
         - name: architecture_file
           type: string
