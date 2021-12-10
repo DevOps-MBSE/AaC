@@ -37,7 +37,7 @@ def validation(model_producer: callable, source: str, **kwargs):
     """
     try:
         model = model_producer(source, **kwargs)
-        validate(model)
+        _validate(model)
         yield model
     except ValidationError as ve:
         _, errors = ve.args
@@ -48,7 +48,7 @@ def validation(model_producer: callable, source: str, **kwargs):
         yield
 
 
-def validate(model: dict) -> None:
+def _validate(model: dict) -> None:
     """Return all validation errors for the model.
 
     This function validates the target model against the core AaC Spec and any actively installed
