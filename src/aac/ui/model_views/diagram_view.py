@@ -124,7 +124,3 @@ def _get_imports_tab_frame(root_notebook: Notebook) -> Frame:
     validation_indicator.pack(side=BOTTOM, anchor="se")
 
     return imports_tab_frame
-
-
-def not_implemented():
-    print("Not implemented")
