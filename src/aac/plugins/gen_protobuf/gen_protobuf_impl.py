@@ -22,7 +22,7 @@ def gen_protobuf(architecture_file: str, output_directory: str):
         output_directory (str): The directory to write the generated Protobuf messages to.
     """
     with validation(parser.parse_file, architecture_file) as parsed_models:
-        loaded_templates = load_default_templates(__package__)
+        loaded_templates = load_default_templates("gen_protobuf")
 
         data_messages_and_enum_definitions = _collect_data_and_enum_definitions(parsed_models)
         message_template_properties = (
