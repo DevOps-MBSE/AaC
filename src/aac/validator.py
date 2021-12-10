@@ -401,7 +401,7 @@ def _get_all_model_errors(model: dict) -> list:
     return []
 
 
-def _get_all_extension_errors(model: dict) -> list:
+def _get_all_extension_errors(model: dict) -> list:  # noqa: C901
     """Return all validation errors for the system MODEL."""
 
     def get_all_errors_if_data_and_enum_extension_combined(model):
