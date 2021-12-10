@@ -57,7 +57,7 @@ def _get_parsed_models(architecture_files: list) -> list:
         with validation(parser.parse_file, architecture_file) as model:
             return model
 
-    return [parse_with_validation(f) for f in architecture_files]
+    return [parse_with_validation(file) for file in architecture_files]
 
 
 def _make_template_properties(parsed_models: dict, arch_file: str) -> dict:
