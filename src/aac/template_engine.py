@@ -1,4 +1,4 @@
-""" This module provides a common set of templating and generation functions """
+"""This module provides a common set of templating and generation functions."""
 from __future__ import annotations
 
 import os
