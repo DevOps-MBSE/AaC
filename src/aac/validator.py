@@ -3,6 +3,7 @@
 # TODO: Replace "magic strings" with a more maintainable solution
 
 import copy
+from contextlib import contextmanager
 from typing import Union
 
 from attr import attrib, attrs, validators
@@ -14,32 +15,51 @@ from aac.spec.core import get_aac_spec, get_primitives
 VALIDATOR_CONTEXT = None
 
 
-def is_valid(model: dict) -> bool:
-    """Check if MODEL is valid per the AaC spec.
+class ValidationError(RuntimeError):
+    """An error that represents a model with invalid components and/or structure."""
+
+    pass
+
+
+@contextmanager
+def validation(model_producer: callable, source: str, **kwargs):
+    """Run validation on the model returned by func.
 
     Args:
-        model: The model to validate.
+        model_producer (callable): A function that returns an Architecture-as-Code model. The
+                                       first argument accepted by model_producer must be the source
+                                       of the YAML representation of the model.
+        source (str): The source of the YAML representation of the model.
+        kwargs (dict): Any additional arguments that should be passed on to model_producer.
 
     Returns:
-        Returns True if the model is valid per the AaC spec; false otherwise.
+        If the model returned by model_producer is valid, it is returned. Otherwise, None is returned.
     """
-    return len(validate_and_get_errors(model)) == 0
+    try:
+        model = model_producer(source, **kwargs)
+        _validate(model)
+        yield model
+    except ValidationError as ve:
+        _, errors = ve.args
+        errors = "\n  ".join(errors)
+        print(f"Failed to validate {source}")
+        print(f"Failed with errors:\n  {errors}")
+        print("validation error")
+        yield
 
 
-# TODO: Generalize validate_and_get_errors to handle all (or at least most of) the cases
-def validate_and_get_errors(model: dict) -> list:
+def _validate(model: dict) -> None:
     """Return all validation errors for the model.
 
-    This function validates the target model against the core AaC Spec and any actively installed plugin data, enum, and extension definitions.
+    This function validates the target model against the core AaC Spec and any actively installed
+    plugin data, enum, and extension definitions.
 
     Args:
         model: The model to validate.
 
-    Returns:
-        Returns a list of all errors found when validating the model. If the
-        model is valid (i.e. there are no errors) an empty list is returned.
+    Raises:
+        Raises a ValidationError if any errors are found when validating the model.
     """
-
     global VALIDATOR_CONTEXT
 
     if not VALIDATOR_CONTEXT:
@@ -56,7 +76,8 @@ def validate_and_get_errors(model: dict) -> list:
         # Once we're done validating, wipe the context.
         VALIDATOR_CONTEXT = None
 
-    return errors
+    if errors:
+        raise ValidationError(model, errors)
 
 
 def _validate_model(model: dict) -> list:

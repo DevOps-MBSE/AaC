@@ -7,43 +7,33 @@ import os
 
 import yaml
 
-from aac import validator
 
+def parse_file(arch_file: str) -> dict[str, dict]:
+    """Parse an Architecture-as-Code YAML file.
 
-def parse_file(arch_file: str, validate: bool = True) -> dict[str, dict]:
-    """
-    The parse method takes a path to an Arch-as-Code YAML file, parses it,
-    and optionally validates it (default is to perform validation).
+    Args:
+        arch_file (str): The Architecture-as-Code YAML file to be parsed.
 
-    The parse method returns a dict of each root type defined in the Arch-as-Code spec.
-
-    If an invalid YAML file is provided and validation is performed, an error message
-    and an exception being thrown.
+    Returns:
+        The parse method returns a dict of each root type defined in the Arch-as-Code spec. If
+        validation of the provided YAML file fails, an error message is displayed and None is
+        returned.
     """
     parsed_models: dict[str, dict] = {}
 
     files = _get_files_to_process(arch_file)
-    for f in files:
-        contents = _read_file_content(f)
-        parsed_models = parsed_models | parse_str(contents, arch_file, False)
-
-    if validate:
-        error_messages = validator.validate_and_get_errors(parsed_models)
-
-        if error_messages:
-            raise RuntimeError(arch_file, error_messages)
-
+    for file in files:
+        contents = _read_file_content(file)
+        parsed_models = parsed_models | parse_str(arch_file, contents)
     return parsed_models
 
 
-def parse_str(model_content: str, source: str, validate: bool = True) -> dict[str, dict]:
-    """
-    Parse a string containing one or more yaml model definitions.
+def parse_str(source: str, model_content: str) -> dict[str, dict]:
+    """Parse a string containing one or more yaml model definitions.
 
     Args:
-        model_content:  The yaml to parse
         source:  The file the content came from (to help with better logging)
-        validate: defaults true, but can be used to disable validation
+        model_content:  The yaml to parse
 
     Returns:
         A dictionary of the parsed model(s).  The key is the type name from the model and the
@@ -57,13 +47,6 @@ def parse_str(model_content: str, source: str, validate: bool = True) -> dict[st
             del root["import"]
         root_name = list(root.keys())[0]
         parsed_models[root[root_name]["name"]] = root
-
-    if validate:
-        error_messages = validator.validate_and_get_errors(parsed_models)
-
-        if error_messages:
-            raise RuntimeError(source, error_messages)
-
     return parsed_models
 
 

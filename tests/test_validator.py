@@ -2,7 +2,7 @@ import re
 from unittest import TestCase
 
 from aac.parser import parse_str
-from aac.validator import is_valid, validate_and_get_errors
+from aac.validator import ValidationError, _validate, validation
 
 
 def kw(**kwargs):
@@ -52,14 +52,19 @@ def assert_errors_contain(self, errors, pattern):
 
 def assert_model_is_valid(self, model):
     """Assert that the provided MODEL is valid."""
-    self.assertEqual(validate_and_get_errors(model), [])
+    self.assertIsNone(_validate(model))
 
 
 def assert_model_is_invalid(self, model, error_pattern):
     """Assert that the provided MODEL is invalid."""
-    errors = validate_and_get_errors(model)
-    self.assertNotEqual(errors, [])
-    assert_errors_contain(self, errors, error_pattern)
+    with self.assertRaises(ValidationError) as cm:
+        _validate(model)
+
+        self.assertIsInstance(cm.exception, ValidationError)
+
+        _, errors = cm.exception.args
+        self.assertNotEqual(errors, [])
+        assert_errors_contain(self, errors, error_pattern)
 
 
 class ValidatorTest(TestCase):
@@ -84,10 +89,6 @@ class ValidatorTest(TestCase):
         kw(name="beta", type="pub-sub", acceptance=[], description="beta"),
         kw(name="gamma", type="pub-sub", acceptance=MODEL_ACCEPTANCE),
     ]
-
-    def test_is_valid(self):
-        self.assertTrue(is_valid(data(name="test", fields=[kw(name="a", type="int")])))
-        self.assertFalse(is_valid(data()))
 
     def test_valid_enums_pass_validation(self):
         name = self.MODEL_NAME
@@ -322,23 +323,26 @@ class ValidatorTest(TestCase):
 
 
 class ValidatorFunctionalTest(TestCase):
-
     def test_validates_parsed_yaml_models(self):
-        model = parse_str(TEST_MODEL_WITH_EXTENSIONS, "validation-test")
-        assert_model_is_valid(self, model)
+        with validation(
+            parse_str, "validation-test", model_content=TEST_MODEL_WITH_EXTENSIONS
+        ) as model:
+            assert_model_is_valid(self, model)
 
     def test_validates_parsed_yaml_models_that_leverage_gen_pugin_extensions(self):
-        model = parse_str(TEST_MODEL_WITH_EXTENSIONS, "validation-test")
-        assert_model_is_valid(self, model)
+        with validation(
+            parse_str, "validation-test", model_content=TEST_MODEL_WITH_EXTENSIONS
+        ) as model:
+            assert_model_is_valid(self, model)
 
     def test_validate_parsed_yaml_model_with_missing_enum_def(self):
         pattern = "unrecognized.*BehaviorType.*value.*(some_undefined_enum)"
-        model = parse_str(TEST_MODEL_WITH_MISSING_ENUM_EXTENSION, "validation-test", False)
+        model = parse_str("validation-test", TEST_MODEL_WITH_MISSING_ENUM_EXTENSION)
         assert_model_is_invalid(self, model, pattern)
 
     def test_validate_parsed_yaml_model_with_missing_data_def(self):
         pattern = "unrecognized.*field.*named.*(undefined_field)"
-        model = parse_str(TEST_MODEL_WITH_MISSING_DATA_EXTENSION, "validation-test", False)
+        model = parse_str("validation-test", TEST_MODEL_WITH_MISSING_DATA_EXTENSION)
         assert_model_is_invalid(self, model, pattern)
 
 

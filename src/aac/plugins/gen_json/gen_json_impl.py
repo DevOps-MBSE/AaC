@@ -1,6 +1,8 @@
 """A plugin to print JSON schema of AaC model files."""
 import json
+
 from aac.parser import parse_file
+from aac.validator import validation
 
 
 def print_json(architecture_files: list[str]) -> None:
@@ -10,8 +12,8 @@ def print_json(architecture_files: list[str]) -> None:
 
     for architecture_file in architecture_files:
         print(f"File: {architecture_file}")
-        parsed_model = parse_file(architecture_file, True)
-        _print_parsed_model(parsed_model)
+        with validation(parse_file, architecture_file) as parsed_model:
+            _print_parsed_model(parsed_model)
 
 
 def _print_parsed_model(parsed_model: dict[str, any]) -> None:
