@@ -22,19 +22,20 @@ class ValidationError(RuntimeError):
 
 
 @contextmanager
-def validation(func: callable, source: str, **kwargs):
+def validation(model_producer: callable, source: str, **kwargs):
     """Run validation on the model returned by func.
 
     Args:
-        func (callable): A function that returns an Architecture-as-Code model. The
-                         first argument accepted by func must be the YAML source.
+        model_producer (callable): A function that returns an Architecture-as-Code model. The
+                                       first argument accepted by model_producer must be the source
+                                       of the YAML representation of the model.
         source (str): The source of the YAML representation of the model.
 
     Returns:
         If the model returned by func is valid, it is returned. Otherwise, None is returned.
     """
     try:
-        model = func(source, **kwargs)
+        model = model_producer(source, **kwargs)
         validate(model)
         yield model
     except ValidationError as ve:
