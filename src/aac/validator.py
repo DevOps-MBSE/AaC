@@ -33,7 +33,7 @@ def validation(model_producer: callable, source: str, **kwargs):
         kwargs (dict): Any additional arguments that should be passed on to model_producer.
 
     Returns:
-        If the model returned by func is valid, it is returned. Otherwise, None is returned.
+        If the model returned by model_producer is valid, it is returned. Otherwise, None is returned.
     """
     try:
         model = model_producer(source, **kwargs)
