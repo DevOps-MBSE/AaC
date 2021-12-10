@@ -30,6 +30,7 @@ def validation(model_producer: callable, source: str, **kwargs):
                                        first argument accepted by model_producer must be the source
                                        of the YAML representation of the model.
         source (str): The source of the YAML representation of the model.
+        kwargs (dict): Any additional arguments that should be passed on to model_producer.
 
     Returns:
         If the model returned by func is valid, it is returned. Otherwise, None is returned.
