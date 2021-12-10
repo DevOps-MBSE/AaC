@@ -410,10 +410,10 @@ def _get_all_extension_errors(model: dict) -> list:
         return []
 
     def can_apply_extension(extension):
-        """Checks that the extension is an extension and has a non-empty type"""
+        """Checks that the extension is an extension and has a non-empty type."""
 
         def check_for_missing_field(model: dict, fields: list) -> str:
-            """Checks that the ext and type fields exist in the model and that type is not empty"""
+            """Checks that the ext and type fields exist in the model and that type is not empty."""
             current_field = fields[0]
             if current_field not in model or model[current_field] == "":
                 return f"missing required field '{current_field}' in model '{model}'"
@@ -560,7 +560,7 @@ class ValidatorContext:
 
     def get_all_extended_definitions(self):
         """
-        Return all model, data, enum, etc definitions in the context with active plugin extensions and definitions
+        Return all model, data, enum, etc definitions in the context with active plugin extensions and definitions.
 
         Returns the complete list of plugin-extended definitions available in the context.
             See `get_all_unextended_definitions()` to get the list of definitions without plugin
@@ -585,7 +585,7 @@ class ValidatorContext:
 
     def get_all_unextended_definitions(self):
         """
-        Return all model, data, enum, etc definitions in the context without applying pluggin extensions
+        Return all model, data, enum, etc definitions in the context without applying pluggin extensions.
 
         Returns the complete list of definitions available in the context, including those provided by actively
             installed plugins without applying any plugin extensions to the exsiting definitions.
