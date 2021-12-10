@@ -147,9 +147,11 @@ def new_working_dir(directory):
             print(getcwd())
         print(getcwd())
     """
+    current_dir = getcwd()
     try:
-        current_dir = getcwd()
         chdir(directory)
         yield getcwd()
-    except Exception:
         chdir(current_dir)
+    except Exception as e:
+        chdir(current_dir)
+        raise e
