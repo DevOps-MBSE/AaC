@@ -113,7 +113,7 @@ def puml_object(architecture_file: str):
         print(model_text)
 
 
-def _find_root_names(models):
+def _find_root_names(models) -> list[str]:
 
     model_names = list(models.keys())
 
@@ -121,7 +121,7 @@ def _find_root_names(models):
         return model_names
 
     # there are multiple models, so we have to look through them
-    subs = []  # names of subcomponent models
+    subcomponents = []  # names of subcomponent models
     for name in model_names:
         model = models[name]
         components = util.search(model, ["model", "components"])
@@ -131,11 +131,11 @@ def _find_root_names(models):
             # make sure this is a model type (not a data type)
             if component_type in model_names:
                 # add the component type to the list of subs
-                subs.append(component_type)
+                subcomponents.append(component_type)
 
     # remove the subs types from model names
-    res = [i for i in model_names if i not in subs]
-    return res
+    sanitized_model_names = [name for name in model_names if name not in subcomponents]
+    return sanitized_model_names
 
 
 def _print_component_content(root, existing, puml_lines, model_types):
