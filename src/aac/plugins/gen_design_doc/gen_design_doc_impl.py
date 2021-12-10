@@ -14,7 +14,6 @@ from aac.template_engine import (
 )
 from aac.validator import validation
 
-plugin_version = "0.0.1"
 default_template_file = "templates/system-design-doc.md.jinja2"
 
 

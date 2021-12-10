@@ -12,8 +12,6 @@ from aac.template_engine import (
 )
 from aac.validator import validation
 
-plugin_version = "0.0.1"
-
 
 def gen_gherkin_behaviors(architecture_file: str, output_directory: str) -> None:
     """

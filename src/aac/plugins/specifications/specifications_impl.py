@@ -5,8 +5,6 @@
 from aac import parser, util
 from aac.validator import validation
 
-plugin_version = "0.0.1"
-
 
 def spec_validate(architecture_file: str):
     """
@@ -56,7 +54,9 @@ def _run_spec_validation(parsed_model: dict):
             spec_by_abbrv[abbrv[0]] = specs[spec_name]
         else:
             is_valid = False
-            validation_errors.append(f"Spec named {spec_name} must have 1 abbrv in it's definition.  Found {abbrv}.")
+            validation_errors.append(
+                f"Spec named {spec_name} must have 1 abbrv in it's definition.  Found {abbrv}."
+            )
 
     # ensure all req_refs are present in the referenced location
     for model_name in req_refs:
@@ -65,8 +65,12 @@ def _run_spec_validation(parsed_model: dict):
             if abbrv in spec_by_abbrv:
                 # abbrv ref is good, now check the ids
                 ids_in_spec = []
-                ids_in_spec.extend(util.search(spec_by_abbrv[abbrv], ["spec", "requirements", "id"]))
-                ids_in_spec.extend(util.search(spec_by_abbrv[abbrv], ["spec", "sections", "requirements", "id"]))
+                ids_in_spec.extend(
+                    util.search(spec_by_abbrv[abbrv], ["spec", "requirements", "id"])
+                )
+                ids_in_spec.extend(
+                    util.search(spec_by_abbrv[abbrv], ["spec", "sections", "requirements", "id"])
+                )
 
                 ids = ref["ids"]
                 # ids could be a list of values or a single value, so check both possibilities
@@ -74,15 +78,21 @@ def _run_spec_validation(parsed_model: dict):
                     for id in ids:
                         if id not in ids_in_spec:
                             is_valid = False
-                            validation_errors.append(f"Invalid requirement id {id} reference in {model_name}: {ref}")
+                            validation_errors.append(
+                                f"Invalid requirement id {id} reference in {model_name}: {ref}"
+                            )
                 else:
                     if ids not in ids_in_spec:
                         is_valid = False
-                        validation_errors.append(f"Invalid requirement id {ids} reference in {model_name}: {ref}")
+                        validation_errors.append(
+                            f"Invalid requirement id {ids} reference in {model_name}: {ref}"
+                        )
 
             else:
                 is_valid = False
-                validation_errors.append(f"Invalid requirement abbreviation {abbrv} reference in {model_name}:  {ref}")
+                validation_errors.append(
+                    f"Invalid requirement abbreviation {abbrv} reference in {model_name}:  {ref}"
+                )
 
     return is_valid, validation_errors
 

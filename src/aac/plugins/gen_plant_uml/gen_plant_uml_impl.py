@@ -4,8 +4,6 @@
 from aac import parser, util
 from aac.validator import validation
 
-plugin_version = "0.0.2"
-
 
 def puml_component(architecture_file: str):
     """
