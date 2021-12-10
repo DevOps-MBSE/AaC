@@ -59,12 +59,12 @@ def _get_properties_tab_frame(root_notebook: Notebook) -> Frame:
     properties_content_frame.pack(anchor="n", fill="x", expand=True, padx=25)
 
     # Properties Name Frame #
-    properties_name_frame = LabeledInput(
+    LabeledInput(
         label_text="Name", input_value="Test Model A", parent_widget=properties_content_frame
     ).build()
 
     # Properties Description Frame #
-    properties_description_frame = LabeledInput(
+    LabeledInput(
         label_text="Description", input_value="", parent_widget=properties_content_frame
     ).build()
 
@@ -72,7 +72,7 @@ def _get_properties_tab_frame(root_notebook: Notebook) -> Frame:
     properties_components_frame = Frame(properties_content_frame)
     properties_components_frame.pack(fill="x", expand=True)
 
-    properties_components_listbox_frame = LabeledInputList(
+    LabeledInputList(
         parent_widget=properties_components_frame,
         listbox_label_text="Model Components",
         listbox_content=["Component 1", "Component 2"],
@@ -84,7 +84,7 @@ def _get_properties_tab_frame(root_notebook: Notebook) -> Frame:
     properties_behavior_frame = Frame(properties_content_frame)
     properties_behavior_frame.pack(fill="x", expand=True)
 
-    properties_behavior_listbox_frame = LabeledInputList(
+    LabeledInputList(
         parent_widget=properties_behavior_frame,
         listbox_label_text="Model Behaviors",
         listbox_content=["Behavior 1"],
@@ -111,7 +111,7 @@ def _get_imports_tab_frame(root_notebook: Notebook) -> Frame:
     imports_list_frame = Frame(imports_tab_content_frame)
     imports_list_frame.pack(fill="x", expand=True)
 
-    imports_listbox_frame = LabeledInputList(
+    LabeledInputList(
         parent_widget=imports_list_frame,
         listbox_label_text="Imports",
         listbox_content=["Imported Enum Data", "Imported Data"],
