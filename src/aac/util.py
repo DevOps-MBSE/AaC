@@ -8,6 +8,8 @@ Avoid adding to this module, always look for ways move these functions into modu
 """
 
 import logging
+from contextlib import contextmanager
+from os import chdir, getcwd
 from typing import Any
 
 
@@ -124,3 +126,30 @@ def get_models_by_type(models: dict[str, dict], root_name: str) -> dict[str, dic
             ret_val[key] = value
 
     return ret_val
+
+
+@contextmanager
+def new_working_dir(directory):
+    """Change directories to execute some code, then change back.
+
+    Args:
+        directory: The new working directory to switch to.
+
+    Returns:
+        The new working directory.
+
+    Example Usage:
+        from os import getcwd
+        from tempfile import TemporaryDirectory
+
+        print(getcwd())
+        with TemporaryDirectory() as tmpdir, new_working_dir(tmpdir):
+            print(getcwd())
+        print(getcwd())
+    """
+    try:
+        current_dir = getcwd()
+        chdir(directory)
+        yield getcwd()
+    except Exception:
+        chdir(current_dir)
