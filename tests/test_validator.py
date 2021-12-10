@@ -60,6 +60,8 @@ def assert_model_is_invalid(self, model, error_pattern):
     with self.assertRaises(ValidationError) as cm:
         validate(model)
 
+        self.assertIsInstance(cm.exception, ValidationError)
+
         _, errors = cm.exception.args
         self.assertNotEqual(errors, [])
         assert_errors_contain(self, errors, error_pattern)
