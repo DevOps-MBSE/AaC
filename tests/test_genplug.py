@@ -96,7 +96,9 @@ class TestGenPlug(TestCase):
                 PLUGIN_IMPL_TEST_TEMPLATE_NAME
             ).content
             self.assertIn("TestAacGenProtobuf(TestCase)", generated_plugin_impl_test_file_contents)
-            self.assertIn("TODO: Write tests", generated_plugin_impl_test_file_contents)
+            self.assertIn(
+                "TODO: Write tests", generated_plugin_impl_test_file_contents  # noqa: T101
+            )
             self.assertIn("self.assertTrue(False)", generated_plugin_impl_test_file_contents)
 
             generated_plugin_impl_test_file_parent_dir = generated_templates.get(

@@ -4,11 +4,8 @@ from aac import parser
 
 
 class TestArchParser(TestCase):
-
     def test_nothing(self):
         self.assertTrue(True)
-
-    # TODO  For now I'm just going to test those items that don't require file system manipulation.  Expand later.
 
     # def test_process_data_root(self):
     #     model_types = {}

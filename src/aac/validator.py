@@ -1,7 +1,5 @@
 """Validate a model per the AaC DSL."""
 
-# TODO: Replace "magic strings" with a more maintainable solution
-
 import copy
 from contextlib import contextmanager
 from typing import Union
@@ -253,20 +251,21 @@ def _validate_enum_references(models: list, data: dict, enums: dict) -> list:
     ]
 
 
-# TODO: Clean up
 def _get_enum_fields(enum: str, fields: list, data: dict, enums: dict) -> list:
     """Get all fields in models that are of the desired type."""
     enum_fields = []
-    for field in fields:
-        field_type = field["type"].strip("[]")
+
+    def get_enum_field(field_name, field_type):
         if field_type in enums.keys():
             if field_type == enum:
-                enum_fields.append([field["name"]])
+                enum_fields.append([field_name])
         elif field_type not in get_primitives():
-            found_paths = _find_paths_to_enum_fields(enum, field["name"], field_type, data, enums)
-            for found in found_paths:
-                entry = found.copy()
-                enum_fields.append(entry)
+            found_paths = _find_paths_to_enum_fields(enum, field_name, field_type, data, enums)
+            enum_fields.extend([found.copy() for found in found_paths])
+
+    for field in fields:
+        get_enum_field(field["name"], field["type"].strip("[]"))
+
     return enum_fields
 
 
@@ -458,7 +457,6 @@ def _get_all_extension_errors(model: dict) -> list:
             ),
             get_all_errors_if_data_and_enum_extension_combined(ext),
             _get_all_non_root_element_errors(ext, kind, type, items),
-            # TODO: Not generic enough
             _get_all_non_root_element_errors(
                 ext[kind], "add", list, _load_unextended_aac_fields_for("Field")
             )
