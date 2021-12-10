@@ -546,21 +546,15 @@ class ValidatorContext:
         return list(self.get_all_extended_definitions().keys()) + get_primitives()
 
     def get_all_model_definitions(self):
-        """
-        Return all definitions of the 'model' type
-        """
+        """Return all definitions of the 'model' type."""
         return util.get_models_by_type(self.get_all_extended_definitions(), "model")
 
     def get_all_data_definitions(self):
-        """
-        Return all definitions of the 'data' type
-        """
+        """Return all definitions of the 'data' type."""
         return util.get_models_by_type(self.get_all_extended_definitions(), "data")
 
     def get_all_enum_definitions(self):
-        """
-        Return all definitions of the 'enum' type
-        """
+        """Return all definitions of the 'enum' type."""
         return util.get_models_by_type(self.get_all_extended_definitions(), "enum")
 
     def get_all_extended_definitions(self):

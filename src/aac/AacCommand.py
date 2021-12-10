@@ -1,7 +1,5 @@
-"""
-A simple data class to collect AaC command info from plugins.
-"""
-from attr import attrs, attrib, validators
+"""A simple data class to collect AaC command info from plugins."""
+from attr import attrib, attrs, validators
 
 
 @attrs

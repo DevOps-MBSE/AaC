@@ -30,15 +30,11 @@ def get_commands() -> list[AacCommand]:
 
 @aac.hookimpl
 def get_base_model_extensions() -> None:
-    """
-    This plugin doesn't define any extensions, so returns None.
-    """
+    """This plugin doesn't define any extensions, so returns None."""
 
 
 def toJson(architecture_files: list[str]) -> None:
-    """
-    Prints the parsed_models from the parsed architecture_files values in JSON format.
-    """
+    """Prints the parsed_models from the parsed architecture_files values in JSON format."""
 
     for architecture_file in architecture_files:
         print(f"File: {architecture_file}")
