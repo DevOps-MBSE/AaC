@@ -48,7 +48,6 @@ def validation(model_producer: callable, source: str, **kwargs):
         yield
 
 
-# TODO: Generalize validate to handle all (or at least most of) the cases
 def validate(model: dict) -> None:
     """Return all validation errors for the model.
 
