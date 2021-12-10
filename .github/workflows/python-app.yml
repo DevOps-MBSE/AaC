@@ -33,7 +33,7 @@ jobs:
           # stop the build if there are Python syntax errors or undefined names
           flake8 . --select=E9,F63,F7,F82
           # exit-zero treats all errors as warnings.
-          flake8 . --exit-zero
+          flake8 .
       - name: Test with Tox
         run: |
           tox -- --coverage-report html
