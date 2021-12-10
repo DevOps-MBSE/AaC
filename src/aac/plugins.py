@@ -34,7 +34,7 @@ def get_plugin_model_definitions():
     plugin_extensions = {}
     for plugin_ext in plugin_models_yaml:
         if len(plugin_ext) > 0:
-            models = parser.parse_str(plugin_ext, "Plugin Manager Addition", False)
+            models = parser.parse_str("Plugin Manager Addition", plugin_ext)
             plugin_extensions = models | plugin_extensions
 
     return plugin_extensions

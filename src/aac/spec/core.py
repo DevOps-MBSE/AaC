@@ -34,7 +34,7 @@ def get_aac_spec() -> tuple[dict[str, dict], dict[str, dict]]:
         return aac_data, aac_enums
 
     with resources.path(__package__, "spec.yaml") as aac_model_file:
-        AAC_MODEL = parser.parse_file(aac_model_file, False)
+        AAC_MODEL = parser.parse_file(aac_model_file)
         aac_data = get_models_by_type(AAC_MODEL, "data")
         aac_enums = get_models_by_type(AAC_MODEL, "enum")
 

@@ -10,6 +10,7 @@ from aac.template_engine import (
     load_templates,
     write_generated_templates_to_file,
 )
+from aac.validator import validation
 
 plugin_version = "0.0.1"
 
@@ -23,17 +24,16 @@ def gen_gherkin_behaviors(architecture_file: str, output_directory: str) -> None
         output_directory (str): The directory to write the generated Gherkin feature files to.
     """
 
-    parsed_models = parser.parse_file(architecture_file)
+    with validation(parser.parse_file, architecture_file) as parsed_models:
+        loaded_templates = load_templates(__package__)
 
-    loaded_templates = load_templates(__package__)
+        message_template_properties = _get_template_properties(parsed_models)
+        generated_template_messages = _generate_gherkin_feature_files(
+            loaded_templates, message_template_properties
+        )
 
-    message_template_properties = _get_template_properties(parsed_models)
-    generated_template_messages = _generate_gherkin_feature_files(
-        loaded_templates, message_template_properties
-    )
-
-    write_generated_templates_to_file(generated_template_messages, output_directory)
-    print(f"Successfully generated templates to directory: {output_directory}")
+        write_generated_templates_to_file(generated_template_messages, output_directory)
+        print(f"Successfully generated templates to directory: {output_directory}")
 
 
 def _get_template_properties(parsed_models: dict) -> dict[str, dict]:

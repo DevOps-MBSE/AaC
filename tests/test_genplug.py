@@ -6,6 +6,7 @@ from aac.genplug import (
     _compile_templates,
     _convert_template_name_to_file_name,
 )
+from aac.validator import validation
 
 INIT_TEMPLATE_NAME = "__init__.py.jinja2"
 PLUGIN_TEMPLATE_NAME = "plugin.py.jinja2"
@@ -37,87 +38,90 @@ class TestGenPlug(TestCase):
             self.assertEqual(expected_filename, actual_filename)
 
     def test_compile_templates(self):
-        parsed_model = parser.parse_str(TEST_PLUGIN_YAML_STRING, "")
-        plugin_name = "aac_gen_protobuf"
+        with validation(
+            parser.parse_str, "", model_content=TEST_PLUGIN_YAML_STRING
+        ) as parsed_model:
+            plugin_name = "aac_gen_protobuf"
 
-        generated_templates = _compile_templates(parsed_model)
+            generated_templates = _compile_templates(parsed_model)
 
-        generated_template_names = []
-        generated_template_parent_directories = []
-        for template in generated_templates.values():
-            generated_template_names.append(template.file_name)
-            generated_template_parent_directories.append(template.parent_dir)
+            generated_template_names = []
+            generated_template_parent_directories = []
+            for template in generated_templates.values():
+                generated_template_names.append(template.file_name)
+                generated_template_parent_directories.append(template.parent_dir)
 
-        # Check that the files don't have "-" in the name
-        for name in generated_template_names:
-            self.assertNotIn("-", name)
+            # Check that the files don't have "-" in the name
+            for name in generated_template_names:
+                self.assertNotIn("-", name)
 
-        # Check that the expected files and directories were created and named correctly
-        num_generated_templates = len(generated_templates)
-        self.assertEqual(len(generated_template_names), num_generated_templates)
-        self.assertEqual(len(generated_template_parent_directories), num_generated_templates)
+            # Check that the expected files and directories were created and named correctly
+            num_generated_templates = len(generated_templates)
+            self.assertEqual(len(generated_template_names), num_generated_templates)
+            self.assertEqual(len(generated_template_parent_directories), num_generated_templates)
 
-        # Assert that the expected template files were generated
-        self.assertIn("__init__.py", generated_template_names)
-        self.assertIn("setup.py", generated_template_names)
-        self.assertIn("README.md", generated_template_names)
-        self.assertIn(f"{plugin_name}.py", generated_template_names)
-        self.assertIn(f"{plugin_name}_impl.py", generated_template_names)
-        self.assertIn(f"test_{plugin_name}_impl.py", generated_template_names)
+            # Assert that the expected template files were generated
+            self.assertIn("__init__.py", generated_template_names)
+            self.assertIn("setup.py", generated_template_names)
+            self.assertIn("README.md", generated_template_names)
+            self.assertIn(f"{plugin_name}.py", generated_template_names)
+            self.assertIn(f"{plugin_name}_impl.py", generated_template_names)
+            self.assertIn(f"test_{plugin_name}_impl.py", generated_template_names)
 
-        self.assertIn("tests", generated_template_parent_directories)
+            self.assertIn("tests", generated_template_parent_directories)
 
-        # Assert that some expected content is present
-        generated_plugin_file_contents = generated_templates.get(PLUGIN_TEMPLATE_NAME).content
-        self.assertIn("@aac.hookimpl", generated_plugin_file_contents)
-        self.assertIn("gen_protobuf_arguments", generated_plugin_file_contents)
-        self.assertIn("import gen_protobuf", generated_plugin_file_contents)
-        self.assertIn("architecture_file", generated_plugin_file_contents)
-        self.assertIn("output_directory", generated_plugin_file_contents)
+            # Assert that some expected content is present
+            generated_plugin_file_contents = generated_templates.get(PLUGIN_TEMPLATE_NAME).content
+            self.assertIn("@aac.hookimpl", generated_plugin_file_contents)
+            self.assertIn("gen_protobuf_arguments", generated_plugin_file_contents)
+            self.assertIn("import gen_protobuf", generated_plugin_file_contents)
+            self.assertIn("architecture_file", generated_plugin_file_contents)
+            self.assertIn("output_directory", generated_plugin_file_contents)
 
-        # Assert Model Extensions were generated
-        self.assertIn("get_base_model_extensions", generated_plugin_file_contents)
-        self.assertIn("PLUGIN_EXTENSION_YAML", generated_plugin_file_contents)
-        self.assertIn("name: ProtobufDataType", generated_plugin_file_contents)
-        self.assertIn("name: ProtobufTypeField", generated_plugin_file_contents)
+            # Assert Model Extensions were generated
+            self.assertIn("get_base_model_extensions", generated_plugin_file_contents)
+            self.assertIn("PLUGIN_EXTENSION_YAML", generated_plugin_file_contents)
+            self.assertIn("name: ProtobufDataType", generated_plugin_file_contents)
+            self.assertIn("name: ProtobufTypeField", generated_plugin_file_contents)
 
-        generated_plugin_impl_file_contents = generated_templates.get(
-            PLUGIN_IMPL_TEMPLATE_NAME
-        ).content
-        self.assertIn("def gen_protobuf", generated_plugin_impl_file_contents)
-        self.assertIn("architecture_file: str", generated_plugin_impl_file_contents)
-        self.assertIn("output_directory: string", generated_plugin_impl_file_contents)
-        self.assertIn("raise NotImplementedError", generated_plugin_impl_file_contents)
+            generated_plugin_impl_file_contents = generated_templates.get(
+                PLUGIN_IMPL_TEMPLATE_NAME
+            ).content
+            self.assertIn("def gen_protobuf", generated_plugin_impl_file_contents)
+            self.assertIn("architecture_file: str", generated_plugin_impl_file_contents)
+            self.assertIn("output_directory: string", generated_plugin_impl_file_contents)
+            self.assertIn("raise NotImplementedError", generated_plugin_impl_file_contents)
 
-        generated_plugin_impl_test_file_contents = generated_templates.get(
-            PLUGIN_IMPL_TEST_TEMPLATE_NAME
-        ).content
-        self.assertIn("TestAacGenProtobuf(TestCase)", generated_plugin_impl_test_file_contents)
-        self.assertIn("TODO: Write tests", generated_plugin_impl_test_file_contents)
-        self.assertIn("self.assertTrue(False)", generated_plugin_impl_test_file_contents)
+            generated_plugin_impl_test_file_contents = generated_templates.get(
+                PLUGIN_IMPL_TEST_TEMPLATE_NAME
+            ).content
+            self.assertIn("TestAacGenProtobuf(TestCase)", generated_plugin_impl_test_file_contents)
+            self.assertIn("TODO: Write tests", generated_plugin_impl_test_file_contents)
+            self.assertIn("self.assertTrue(False)", generated_plugin_impl_test_file_contents)
 
-        generated_plugin_impl_test_file_parent_dir = generated_templates.get(
-            PLUGIN_IMPL_TEST_TEMPLATE_NAME
-        ).parent_dir
-        self.assertEqual(generated_plugin_impl_test_file_parent_dir, "tests")
+            generated_plugin_impl_test_file_parent_dir = generated_templates.get(
+                PLUGIN_IMPL_TEST_TEMPLATE_NAME
+            ).parent_dir
+            self.assertEqual(generated_plugin_impl_test_file_parent_dir, "tests")
 
-        generated_readme_file_contents = generated_templates.get(README_TEMPLATE_NAME).content
-        self.assertIn("# aac-gen-protobuf", generated_readme_file_contents)
-        self.assertIn("## Command:", generated_readme_file_contents)
-        self.assertIn("## Plugin Extensions and Definitions", generated_readme_file_contents)
-        self.assertIn("$ aac gen-protobuf", generated_readme_file_contents)
-        self.assertIn("### Ext", generated_readme_file_contents)
-        self.assertIn("### Enum", generated_readme_file_contents)
+            generated_readme_file_contents = generated_templates.get(README_TEMPLATE_NAME).content
+            self.assertIn("# aac-gen-protobuf", generated_readme_file_contents)
+            self.assertIn("## Command:", generated_readme_file_contents)
+            self.assertIn("## Plugin Extensions and Definitions", generated_readme_file_contents)
+            self.assertIn("$ aac gen-protobuf", generated_readme_file_contents)
+            self.assertIn("### Ext", generated_readme_file_contents)
+            self.assertIn("### Enum", generated_readme_file_contents)
 
     def test__compile_templates_errors_on_multiple_models(self):
-        parsed_model = parser.parse_str(
-            f"{TEST_PLUGIN_YAML_STRING}\n---\n{SECONDARY_MODEL_YAML_DEFINITION}", "", True
-        )
-
-        self.assertRaises(GeneratePluginException, _compile_templates, parsed_model)
+        with validation(
+            parser.parse_str,
+            "",
+            model_content=f"{TEST_PLUGIN_YAML_STRING}\n---\n{SECONDARY_MODEL_YAML_DEFINITION}",
+        ) as parsed_model:
+            self.assertRaises(GeneratePluginException, _compile_templates, parsed_model)
 
     def test__compile_templates_with_model_name_missing_package_prefix(self):
-        parsed_model = parser.parse_str(MODEL_YAML_DEFINITION_SANS_PACKAGE_PREFIX, "", False)
+        parsed_model = parser.parse_str("", MODEL_YAML_DEFINITION_SANS_PACKAGE_PREFIX)
         plugin_name = "aac_spec"
 
         generated_templates = _compile_templates(parsed_model)
