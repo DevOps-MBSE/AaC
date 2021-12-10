@@ -1,3 +1,5 @@
+"""The Architecture-as-Code tool."""
+
 from pluggy import HookimplMarker, HookspecMarker
 
 PLUGIN_PROJECT_NAME = "aac"
