@@ -29,7 +29,7 @@ def get_commands() -> list[AacCommand]:
 
 
 @aac.hookimpl
-def get_base_model_extensions() -> None:
+def get_plugin_aac_definitions() -> None:
     """
     This plugin doesn't define any extensions, so returns None.
     """
