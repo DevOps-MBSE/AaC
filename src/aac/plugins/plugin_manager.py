@@ -2,15 +2,6 @@ from pluggy import PluginManager
 
 from aac import parser
 from aac.plugins import hookspecs, PLUGIN_PROJECT_NAME
-from aac.plugins import (
-    gen_json,
-    gen_plugin,
-    gen_protobuf,
-    gen_design_doc,
-    gen_gherkin_behaviors,
-    gen_plant_uml,
-    specifications,
-)
 
 
 def get_plugin_manager() -> PluginManager:
@@ -20,6 +11,16 @@ def get_plugin_manager() -> PluginManager:
     Returns:
         The plugin manager.
     """
+    # Import plugins within the function to prevent circular imports and partial initialization
+    from aac.plugins import (
+        gen_json,
+        gen_plugin,
+        gen_protobuf,
+        gen_design_doc,
+        gen_gherkin_behaviors,
+        gen_plant_uml,
+        specifications,
+    )
 
     plugin_manager = PluginManager(PLUGIN_PROJECT_NAME)
     plugin_manager.add_hookspecs(hookspecs)
