@@ -16,9 +16,9 @@ jobs:
     steps:
       - uses: ./.github/workflows/build-job.yml@alexcmonnet/break-out-github-actions-77
 
-  Package-Functional-Tests:
+  Package_Functional_Tests:
     runs-on: ubuntu-latest
-    needs: Build-AaC-Package-and-Docs
+    needs: Build_Package_and_Artifacts
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v2
