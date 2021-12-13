@@ -2,9 +2,6 @@ name: Build Package and Artifacts
 
 on:
   workflow_call:
-    # secrets:
-    #   token:
-    #     required: true
 
 jobs:
   Package_Functional_Tests:
@@ -12,22 +9,25 @@ jobs:
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v2
+
     - name: Set up Python 3.9
       uses: actions/setup-python@v2
       with:
         python-version: 3.9
+
     - name: Download Python Wheel
       uses: actions/download-artifact@v2
       with:
         name: aac_wheel
         path: dist/
+
     - name: Install Wheel Distribution
-      run: |
-        pip install dist/*.whl
+      run: pip install dist/*.whl
+
     - name: Validate Core Spec and Plugin Specs
       run: |
         find src -name spec.yaml -print0 | xargs -0 -n1 aac validate
         find plugins -name *.yaml -print0 | xargs -0 -n1 aac validate
+
     - name: Print out Core Spec
-      run: |
-        aac aac-core-spec
+      run: aac aac-core-spec

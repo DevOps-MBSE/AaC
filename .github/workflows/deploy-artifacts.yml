@@ -1,0 +1,23 @@
+name: Deploy AaC Artifacts
+
+on:
+  workflow_call:
+
+jobs:
+  Deploy-Artifacts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Github Pages
+        run: echo "This is where I'd deploy if I were setup"
+
+      - name: Publish distribution to PyPI
+        run: echo "This is where I'd deploy if I were setup"
+  #     if: startsWith(github.ref, 'refs/tags')
+  #     uses: pypa/gh-action-pypi-publish@master
+  #     with:
+  #       password: ${{ secrets.PYPI_API_TOKEN }}
+
+
