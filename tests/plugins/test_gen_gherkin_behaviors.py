@@ -226,7 +226,4 @@ def _remove_first_word_in_string(string: str) -> str:
 
 
 def _filter_command_behaviors(behavior_definition: dict):
-    if behavior_definition.get("type") == "command":
-        return behavior_definition
-    else:
-        return None
+    return behavior_definition if behavior_definition.get("type") == "command" else None
