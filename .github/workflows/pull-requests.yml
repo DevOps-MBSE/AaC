@@ -6,18 +6,8 @@ on:
 
 jobs:
   Build_Package_and_Artifacts:
-    uses: jondavid-black/AaC/.github/workflows/build-job.yml@70937f95f9312e5a1e3f622249dcc6f3315987bd
+    uses: jondavid-black/AaC/.github/workflows/templates/build-job.yml@
 
-  Package_Functional_Tests:
+  Run_Functional_Tests:
     needs: Build_Package_and_Artifacts
-    uses: jondavid-black/AaC/.github/workflows/functional-tests.yml@70937f95f9312e5a1e3f622249dcc6f3315987bd
-
-  # deploy:
-  #   runs-on: ubuntu-latest
-
-  #   steps:
-  #   - name: Publish distribution to PyPI
-  #     if: startsWith(github.ref, 'refs/tags')
-  #     uses: pypa/gh-action-pypi-publish@master
-  #     with:
-  #       password: ${{ secrets.PYPI_API_TOKEN }}
+    uses: jondavid-black/AaC/.github/workflows/templates/functional-tests.yml@
