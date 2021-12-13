@@ -11,7 +11,7 @@ on:
 
 jobs:
   Build_Package_and_Artifacts:
-    uses: ./.github/workflows/build-job.yml@be10b9cedf6f14f5fca2cf45b414aa9d8fc4126f
+    uses: jondavid-black/AaC/.github/workflows/build-job.yml@be10b9cedf6f14f5fca2cf45b414aa9d8fc4126f
 
   Package_Functional_Tests:
     runs-on: ubuntu-latest
