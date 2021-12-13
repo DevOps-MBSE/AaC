@@ -11,7 +11,7 @@ on:
 
 jobs:
   Build_Package_and_Artifacts:
-    uses: jondavid-black/AaC/.github/workflows/build-job.yaml@alexcmonnet/break-out-github-actions-77
+    uses: ./.github/workflows/build-job.yml@alexcmonnet/break-out-github-actions-77
 
   Package-Functional-Tests:
     runs-on: ubuntu-latest
