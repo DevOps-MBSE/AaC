@@ -6,11 +6,11 @@ on:
 
 jobs:
   Build_Package_and_Artifacts:
-    uses: jondavid-black/AaC/.github/workflows/build-job.yml@5811933d59552ab65ebf962c3a5cbf3b9ec8e7fa
+    uses: jondavid-black/AaC/.github/workflows/build-job.yml@70937f95f9312e5a1e3f622249dcc6f3315987bd
 
   Package_Functional_Tests:
     needs: Build_Package_and_Artifacts
-    uses: jondavid-black/AaC/.github/workflows/functional-tests.yml@
+    uses: jondavid-black/AaC/.github/workflows/functional-tests.yml@70937f95f9312e5a1e3f622249dcc6f3315987bd
 
 
   # deploy:
