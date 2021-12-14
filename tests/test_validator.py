@@ -307,6 +307,12 @@ class ValidatorTest(TestCase):
 
 
 class ValidatorFunctionalTest(TestCase):
+    def test_fails_to_validate_invalid_yaml_models(self):
+        with validation(
+            parse_str, "validation-test", model_content="""data:\n  name: invalid"""
+        ) as model:
+            self.assertIsNone(model)
+
     def test_validates_parsed_yaml_models(self):
         with validation(
             parse_str, "validation-test", model_content=TEST_MODEL_WITH_EXTENSIONS

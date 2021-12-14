@@ -1,155 +1,85 @@
+from tempfile import TemporaryDirectory
 from unittest import TestCase
 
 from aac import parser
+from aac.util import new_working_dir
 
 
 class TestArchParser(TestCase):
+    def write_test_file(self, name, content):
+        with open(name, "w") as test_file:
+            test_file.write(content)
+        return name
 
-    def test_nothing(self):
-        self.assertTrue(True)
+    def check_model_name(self, model, name, type):
+        self.assertIsNotNone(model.get(name))
+        self.assertIsNotNone(model.get(name).get(type))
+        self.assertEqual(name, model.get(name).get(type).get("name"))
 
-    # TODO  For now I'm just going to test those items that don't require file system manipulation.  Expand later.
+    def test_can_parse_architecture_model_string(self):
+        model = parser.parse_str("parser-test", TEST_IMPORTED_MODEL_FILE_CONTENTS)
 
-    # def test_process_data_root(self):
-    #     model_types = {}
-    #     data_types = {}
-    #     enum_types = {}
-    #     use_case_types = {}
-    #     ext_types = {}
+        self.check_model_name(model, "Message", "data")
 
-    #     root = {
-    #         "data": {
-    #             "fields": [
-    #                 {"type": "string", "name": "name"},
-    #                 {"type": "Field[]", "name": "fields"},
-    #                 {"type": "string[]", "name": "required"},
-    #             ],
-    #             "required": ["name", "fields"],
-    #             "name": "data",
-    #         }
-    #     }
+    def test_can_parse_architecture_model_string_with_imports(self):
+        model = parser.parse_str("parser-test", TEST_MODEL_FILE)
 
-    #     parser._process_root(root, model_types, data_types, enum_types, use_case_types, ext_types)
-    #     self.assertEqual(len(data_types), 1)
+        self.check_model_name(model, "EchoService", "model")
 
-    # def test_process_model_root(self):
-    #     model_types = {}
-    #     data_types = {}
-    #     enum_types = {}
-    #     use_case_types = {}
-    #     ext_types = {}
+    def test_can_parse_architecture_model_from_file(self):
+        with TemporaryDirectory() as tmpdir, new_working_dir(tmpdir):
+            self.write_test_file("Message.yaml", TEST_IMPORTED_MODEL_FILE_CONTENTS)
+            self.write_test_file("Status.yaml", TEST_SECONDARY_IMPORTED_MODEL_FILE_CONTENTS)
+            model_file = self.write_test_file("EchoService.yaml", TEST_MODEL_FILE)
 
-    #     root = {
-    #         "model": {
-    #             "name": "EchoService",
-    #             "behavior": [
-    #                 {
-    #                     "name": "echo",
-    #                     "input": [{"type": "Message", "name": "inbound"}],
-    #                     "output": [{"type": "Message", "name": "outbound"}],
-    #                     "acceptance": [
-    #                         {
-    #                             "then": ["The user receives the same message from EchoService."],
-    #                             "given": ["The EchoService is running."],
-    #                             "when": ["The user sends a message to EchoService."],
-    #                             "scenario": "onReceive",
-    #                         }
-    #                     ],
-    #                     "type": "request-response",
-    #                     "description": "This is the one thing it does.",
-    #                 }
-    #             ],
-    #             "description": "This is a message mirror.",
-    #         }
-    #     }
+            model = parser.parse_file(model_file)
 
-    #     parser._process_root(root, model_types, data_types, enum_types, use_case_types, ext_types)
-    #     self.assertEqual(len(model_types), 1)
+            self.check_model_name(model, "Message", "data")
+            self.check_model_name(model, "Status", "enum")
+            self.check_model_name(model, "EchoService", "model")
 
-    # def test_process_enum_root(self):
-    #     model_types = {}
-    #     data_types = {}
-    #     enum_types = {}
-    #     use_case_types = {}
-    #     ext_types = {}
 
-    #     root = {
-    #         "enum": {
-    #             "values": ["string", "int", "number", "bool", "date", "file"],
-    #             "name": "Primitives",
-    #         }
-    #     }
+TEST_IMPORTED_MODEL_FILE_CONTENTS = """
+data:
+  name: Message
+  fields:
+  - name: body
+    type: string
+  - name: sender
+    type: string
+"""
 
-    #     parser._process_root(root, model_types, data_types, enum_types, use_case_types, ext_types)
-    #     self.assertEqual(len(enum_types), 1)
+TEST_SECONDARY_IMPORTED_MODEL_FILE_CONTENTS = """
+enum:
+  name: Status
+  values:
+    - sent
+    - 'failed to send'
+"""
 
-    # def test_process_use_case_root(self):
-    #     model_types = {}
-    #     data_types = {}
-    #     enum_types = {}
-    #     use_case_types = {}
-    #     ext_types = {}
-
-    #     root = {
-    #         "usecase": {
-    #             "participants": [
-    #                 {"type": "~User", "name": "user"},
-    #                 {"type": "System", "name": "system"},
-    #             ],
-    #             "steps": [
-    #                 {
-    #                     "action": "doFlow",
-    #                     "source": "user",
-    #                     "step": "The user invokes doFlow on system.",
-    #                     "target": "system",
-    #                 },
-    #                 {
-    #                     "action": "response",
-    #                     "source": "system",
-    #                     "step": "The system performs flow and responds to the user.",
-    #                     "target": "user",
-    #                 },
-    #             ],
-    #             "description": "Something happens.",
-    #             "title": "Nominal flow of data through the system.",
-    #         }
-    #     }
-
-    #     parser._process_root(root, model_types, data_types, enum_types, use_case_types, ext_types)
-    #     self.assertEqual(len(use_case_types), 1)
-
-    # def test_process_ext_enum_root(self):
-    #     model_types = {}
-    #     data_types = {}
-    #     enum_types = {}
-    #     use_case_types = {}
-    #     ext_types = {}
-
-    #     root = {
-    #         "extension": {
-    #             "enumExt": {"add": ["rest"]},
-    #             "type": "BehaviorType",
-    #             "name": "restActionType",
-    #         }
-    #     }
-
-    #     parser._process_root(root, model_types, data_types, enum_types, use_case_types, ext_types)
-    #     self.assertEqual(len(ext_types), 1)
-
-    # def test_process_ext_data_root(self):
-    #     model_types = {}
-    #     data_types = {}
-    #     enum_types = {}
-    #     use_case_types = {}
-    #     ext_types = {}
-
-    #     root = {
-    #         "extension": {
-    #             "dataExt": {"add": [{"name": "errCount", "type": "int"}]},
-    #             "name": "addCountToValidationResult",
-    #             "type": "ValidationResult",
-    #         }
-    #     }
-
-    #     parser._process_root(root, model_types, data_types, enum_types, use_case_types, ext_types)
-    #     self.assertEqual(len(ext_types), 1)
+TEST_MODEL_FILE = """
+import:
+  - ./Message.yaml
+  - Status.yaml
+model:
+  name: EchoService
+  description: This is a message mirror.
+  behavior:
+    - name: echo
+      type: request-response
+      description: This is the one thing it does.
+      input:
+        - name: inbound
+          type: Message
+      output:
+        - name: outbound
+          type: Message
+      acceptance:
+        - scenario: onReceive
+          given:
+           - The EchoService is running.
+          when:
+            - The user sends a message to EchoService.
+          then:
+            - The user receives the same message from EchoService.
+"""

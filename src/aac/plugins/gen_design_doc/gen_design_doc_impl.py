@@ -35,7 +35,6 @@ def gen_design_doc(architecture_files: str, output_directory: str, template_file
     template_file = template_file or default_template_file
     template_file_name = os.path.basename(template_file)
 
-    # TODO: Find a better solution to select between available templates.
     selected_template, *_ = [t for t in loaded_templates if template_file_name == t.name]
 
     output_filespec = _get_output_filespec(

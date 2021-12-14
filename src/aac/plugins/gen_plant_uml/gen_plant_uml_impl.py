@@ -64,9 +64,7 @@ def puml_sequence(architecture_file: str):
 
             # end the uml
             puml_lines.append("@enduml")
-            puml_lines.append(
-                ""
-            )  # just put a blank line in between sequence diagrams for now  TODO revisit this decision later
+            puml_lines.append("")
 
         model_text = ""
         for line in puml_lines:

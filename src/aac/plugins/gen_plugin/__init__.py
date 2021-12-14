@@ -45,4 +45,3 @@ def get_base_model_extensions() -> str:
         string representing yaml extensions and data definitions employed by the plugin
     """
     return get_resource_file_contents(__package__, "gen_plugin.yaml")
-
