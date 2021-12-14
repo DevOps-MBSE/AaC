@@ -1,8 +1,9 @@
-# This workflow is intended to run for ANY pull request
-name: Pull Requests AaC Workflow
+# This workflow is only intended to run when a pull-request is merged into the main branch
+name: Main branch AaC Workflow
 
 on:
-  pull_request:
+  push:
+    branches: [main]
 
 jobs:
   Build_Package_and_Artifacts:
@@ -11,3 +12,7 @@ jobs:
   Run_Functional_Tests:
     needs: Build_Package_and_Artifacts
     uses: jondavid-black/AaC/.github/workflows/functional-tests.yml@69e0ae74a70d3effe8b4151dc07132a15851ea9a
+
+  Deploy_Artifacts:
+    needs: Run_Functional_Tests
+    uses: jondavid-black/AaC/.github/workflows/deploy-artifacts.yml@69e0ae74a70d3effe8b4151dc07132a15851ea9a
