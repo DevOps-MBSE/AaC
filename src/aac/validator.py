@@ -156,6 +156,10 @@ def _get_all_errors_if_missing_required_properties(model: dict, required: list) 
         if key not in model.keys():
             return f"missing required field '{key}' in model '{model}'"
 
+        prop = model[key]
+        if isinstance(prop, list) and len(prop) == 0:
+            return f"empty list provided for required property '{key}' in model '{model}'"
+
     return map(get_error_if_missing_required_property, required)
 
 

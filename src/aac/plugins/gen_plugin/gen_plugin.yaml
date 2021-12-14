@@ -1,0 +1,61 @@
+model:
+  name: gen-plugin
+  description: An Architecture-as-Code plugin that generates opinionated plugin stubs for easier and quicker plugin development.
+  behavior:
+    - name: gen-plugin
+      type: command
+      description: Generate
+      input:
+        - name: architecture_file
+          type: string
+          python_type: str
+          description: filepath to the architecture file.
+      acceptance:
+        - scenario: Output generated python plugin stub files.
+          given:
+            - The {{gen-plugin.input.architecture_file}} contains a valid model.
+          when:
+            - The aac app is run with the gen-plugin command.
+          then:
+            - Stubbed plugin files are generated.
+---
+enum:
+  name: PythonDataType
+  values:
+    - str
+    - int
+    - float
+    - complex
+    - list
+    - tuple
+    - range
+    - dict
+    - set
+    - frozenset
+    - bool
+    - bytes
+    - bytearray
+    - memoryview
+---
+ext:
+   name: PythonTypeField
+   type: Field
+   dataExt:
+      add:
+        - name: python_type
+          type: PythonDataType
+---
+ext:
+   name: CommandBehaviorType
+   type: BehaviorType
+   enumExt:
+      add:
+         - command
+---
+ext:
+   name: DescriptField
+   type: Field
+   dataExt:
+      add:
+        - name: description
+          type: string

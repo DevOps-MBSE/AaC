@@ -1,10 +1,10 @@
 """Functions to allow interacting with the core AaC spec."""
 
-from importlib import resources
-
+import os
 import yaml
 
 from aac import parser
+from aac.package_resources import get_resource_file_contents
 from aac.util import get_models_by_type, search
 
 PRIMITIVES: list[str] = []
@@ -33,10 +33,11 @@ def get_aac_spec() -> tuple[dict[str, dict], dict[str, dict]]:
         aac_enums = get_models_by_type(AAC_MODEL, "enum")
         return aac_data, aac_enums
 
-    with resources.path(__package__, "spec.yaml") as aac_model_file:
-        AAC_MODEL = parser.parse_file(aac_model_file)
-        aac_data = get_models_by_type(AAC_MODEL, "data")
-        aac_enums = get_models_by_type(AAC_MODEL, "enum")
+    model_content = get_resource_file_contents(__package__, "spec.yaml")
+    file_path = os.path.join(__package__, "spec.yaml")
+    AAC_MODEL = parser.parse_str(file_path, model_content)
+    aac_data = get_models_by_type(AAC_MODEL, "data")
+    aac_enums = get_models_by_type(AAC_MODEL, "enum")
 
     return aac_data, aac_enums
 

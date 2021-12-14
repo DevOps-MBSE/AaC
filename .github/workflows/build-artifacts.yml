@@ -1,0 +1,63 @@
+name: Build Package and Artifacts
+
+on:
+  workflow_call:
+
+jobs:
+  Build-Artifacts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Install System Packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install libgirepository1.0-dev -y
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: Install the AaC Package
+        run: pip install -e .[all]
+
+      - name: List Transitive Dependencies
+        run: pipdeptree
+
+      - name: Lint with flake8
+        run: |
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 . --select=E9,F63,F7,F82
+          # exit-zero treats all errors as warnings.
+          flake8 . --exit-zero
+
+      - name: Test with Tox
+        run: tox -- --coverage-report html
+
+      - name: Upload Code Coverage Report
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-coverage-report
+          path: html_code_coverage/
+
+      - name: Generate API Documentation
+        run: |
+          cd docs/
+          make html
+
+      - name: Upload API Documentation
+        uses: actions/upload-artifact@v2
+        with:
+          name: api-documentation
+          path: docs/build/html/
+
+      - name: Build distribution package
+        run: python setup.py bdist_wheel
+
+      - name: Upload Python Wheel
+        uses: actions/upload-artifact@v2
+        with:
+          name: aac_wheel
+          path: dist/
