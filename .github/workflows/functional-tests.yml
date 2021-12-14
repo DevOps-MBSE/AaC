@@ -31,7 +31,7 @@ jobs:
 
     - name: Validate Example Model
       run: |
-        find model/flow -name system.yaml -print0 | xargs -0 -n1 aac validate
+        aac validate model/flow/System.yaml
 
     - name: Test gen-plugin
       run: |
