@@ -28,7 +28,8 @@ def get_commands() -> list[AacCommand]:
             "spec-validate",
             "Validates spec traces within the AaC model.",
             spec_validate,
-            spec_validate_arguments),
+            spec_validate_arguments
+        ),
     ]
 
     return plugin_commands

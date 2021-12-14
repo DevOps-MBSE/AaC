@@ -18,7 +18,6 @@ def load_templates(package_name: str, template_directory: str = "templates") -> 
     Returns:
         list of loaded templates
     """
-    
     def _load_templates_from_env(env) -> list:
         templates = list(map(env.get_template, env.list_templates()))
         return list(filter(lambda template: template.name.endswith("jinja2"), templates))
