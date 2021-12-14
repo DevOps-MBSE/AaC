@@ -2,16 +2,32 @@ name: Deploy AaC Artifacts
 
 on:
   workflow_call:
+    # secrets:
+    #   PYPI_API_TOKEN:
+    #     required: true
 
 jobs:
   Deploy-Artifacts:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
+      # Temporary to reduce minutes used in the pipeline.
+      # - name: Checkout Repository
+      #   uses: actions/checkout@v2
 
-      - name: Github Pages
+      - name: Download API Documentation
+        uses: actions/download-artifact@v2
+        with:
+          name: api-documentation
+          path: docs/build/html/
+
+      - name: Github Pages and Sphinx Deployment
         run: echo "This is where I'd deploy if I were setup"
+
+      - name: Download Python Wheel
+        uses: actions/download-artifact@v2
+        with:
+          name: aac_wheel
+          path: dist/
 
       - name: Publish distribution to PyPI
         run: echo "This is where I'd deploy if I were setup"

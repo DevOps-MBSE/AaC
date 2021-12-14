@@ -2,9 +2,6 @@ name: Build Package and Artifacts
 
 on:
   workflow_call:
-    # secrets:
-    #   token:
-    #     required: true
 
 jobs:
   Build-Artifacts:
