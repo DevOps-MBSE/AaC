@@ -29,8 +29,8 @@ class AacCommand:
     The callback is invoked if the user specifies the command.
 
     Attributes:
-        command_name: A string with the name of the command_description
-        command_description: a string with the command description -- will be provided with the help command
+        name: A string with the name of the command_description
+        description: a string with the command description -- will be provided with the help command
         callback: A Callable function that's executed when the user runs the AaC command
         arguments: A List of AacCommandArgument containing argument information about the command. Defaults to an empty list.
     """

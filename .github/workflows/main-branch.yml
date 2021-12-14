@@ -7,12 +7,12 @@ on:
 
 jobs:
   Build_Package_and_Artifacts:
-    uses: jondavid-black/AaC/.github/workflows/build-artifacts.yml@a3ffb8e025a1c30d4f2a09c97cd964ec28474650
+    uses: jondavid-black/AaC/.github/workflows/build-artifacts.yml@0fea358c040d9cdc3055e523f34718f6d5c6eed1
 
   Run_Functional_Tests:
     needs: Build_Package_and_Artifacts
-    uses: jondavid-black/AaC/.github/workflows/functional-tests.yml@a3ffb8e025a1c30d4f2a09c97cd964ec28474650
+    uses: jondavid-black/AaC/.github/workflows/functional-tests.yml@9e0ff39886f7a0ce54e6eac6c6f2d78f9f9f1254
 
   Deploy_Artifacts:
     needs: Run_Functional_Tests
-    uses: jondavid-black/AaC/.github/workflows/deploy-artifacts.yml@a3ffb8e025a1c30d4f2a09c97cd964ec28474650
+    uses: jondavid-black/AaC/.github/workflows/deploy-artifacts.yml@0fea358c040d9cdc3055e523f34718f6d5c6eed1

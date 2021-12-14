@@ -60,7 +60,7 @@ def search(model: dict[str, Any], search_keys: list[str]) -> list:
     keys = search_keys.copy()
     # first make sure there is a key to search for
     if len(keys) == 0 or not isinstance(model, dict):
-        logging.error(f"invalid arguments: [{keys}], {type(model)}")
+        logging.error(f"invalid arguments: {keys}, {type(model)}")
         return []
 
     search_key = keys.pop(0)
