@@ -29,5 +29,15 @@ jobs:
         find src -name spec.yaml -print0 | xargs -0 -n1 aac validate
         find src/aac/plugins -name *.yaml -print0 | xargs -0 -n1 aac validate
 
+    - name: Validate Example Model
+      run: |
+        find model/flow -name system.yaml -print0 | xargs -0 -n1 aac validate
+
+    - name: Test gen-plugin
+      run: |
+        mkdir -p AaC/model/test
+        cp AaC/plugins/aac-spec/aac-spec.yaml AaC/model/test
+        Aac gen-plugin AaC/model/test/aac-spec.yaml
+
     - name: Print out Core Spec
       run: aac aac-core-spec
