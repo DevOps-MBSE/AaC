@@ -37,7 +37,7 @@ jobs:
       run: |
         mkdir -p AaC/model/test
         cp AaC/plugins/aac-spec/aac-spec.yaml AaC/model/test
-        Aac gen-plugin AaC/model/test/aac-spec.yaml
+        aac gen-plugin AaC/model/test/aac-spec.yaml
 
     - name: Print out Core Spec
       run: aac aac-core-spec
