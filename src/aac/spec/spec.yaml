@@ -103,6 +103,8 @@ data:
   fields:
     - name: add
       type: string[]
+      description: |
+        The list of values to add to an `enum' extension.
   required:
     - add
 ---
