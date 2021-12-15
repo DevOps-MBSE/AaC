@@ -128,14 +128,28 @@ data:
   fields:
     - name: scenario
       type: string
+      description: |
+        The name of the scenario.
     - name: tags
       type: string[]
+      description: |
+        Tags associated with the scenario. These could be used to group similar
+        scenarios into categories like "front-end", "back-end", etc.
     - name: given
       type: string[]
+      description: |
+        A list of preconditions that must be true in order for the scenario to
+        perform the expected action or provide the expected result.
     - name: when
       type: string[]
+      description: |
+        A list of triggers that indicate some reason for the system to act in a
+        certain way or provide some result.
     - name: then
       type: string[]
+      description: |
+        A list of postconditions that will be true once the system has completed
+        its action based on the triggers.
   required:
     - scenario
     - when
