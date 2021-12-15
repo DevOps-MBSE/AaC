@@ -113,8 +113,13 @@ data:
   fields:
     - name: add
       type: Field[]
+      description: |
+        The list of fields to add to a `data' extension.
     - name: required
       type: string[]
+      description: |
+        The list of names of all the additional fields that are required for the
+        extended definition.
   required:
     - add
 ---
