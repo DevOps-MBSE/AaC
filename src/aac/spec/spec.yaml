@@ -54,8 +54,12 @@ data:
   fields:
     - name: name
       type: string
+      description: |
+        The name of the enumeration.
     - name: values
       type: string[]
+      description: |
+        A list of strings that encompass the enumeration's possible values.
   required:
     - name
     - values
