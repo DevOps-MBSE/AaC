@@ -4,7 +4,7 @@ from tempfile import NamedTemporaryFile
 from aac.plugins.specifications.specifications_impl import spec_validate, AacSpecValidationException
 
 
-class TestAacSpec(TestCase):
+class TestSpecifications(TestCase):
 
     def test_spec_validate(self):
 
