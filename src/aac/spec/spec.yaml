@@ -69,12 +69,31 @@ data:
   fields:
     - name: name
       type: string
+      description: |
+        The name of the extension.
     - name: type
       type: string
+      description: |
+        The name of the `data' or `enum' definition that this definition is
+        extending.
     - name: enumExt
       type: EnumExtension
+      description: |
+        If extending an `enum' definition, this represents a list of the items
+        to add to the `enum's `values' property.
+
+        Note: Only one of `enumExt' and `dataExt' are valid per extension.
+
+        See also, `EnumExtension'
     - name: dataExt
       type: DataExtension
+      description: |
+        If extending an `data' definition, this represents a list of the items
+        to add to the `data's `fields' property.
+
+        Note: Only one of `enumExt' and `dataExt' are valid per extension.
+
+        See also, `DataExtension'
   required:
     - name
     - type
