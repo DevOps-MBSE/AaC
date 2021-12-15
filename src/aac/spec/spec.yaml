@@ -263,12 +263,21 @@ data:
   fields:
     - name: name
       type: string
+      description: |
+        The name of the system model.
     - name: description
       type: string
+      description: |
+        An explanatory description for the model including what the
+        component/system is modeleing and any other relevant information.
     - name: components
       type: Field[]
+      description: |
+        A list of the components that are part of the system.
     - name: behavior
       type: Behavior[]
+      description: |
+        A list of behaviors that the system will perform.
   required:
     - name
 ---
