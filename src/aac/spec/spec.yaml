@@ -286,12 +286,26 @@ data:
   fields:
     - name: name
       type: string
+      description: |
+        The name of the use case.
     - name: description
       type: string
+      description: |
+        An explanatory description of the use case to include what purpose the
+        use case serves, design ideas when fullfilling the use case, etc.
     - name: participants
       type: Field[]
+      description: |
+        A list of participants in the use case.
+
+        Generally, these would be users, other systems, etc. that are
+        interacting with the system during the course of the use case.
     - name: steps
       type: Step[]
+      description: |
+        A list of steps taken in the use case.
+
+        See `Step'
   required:
     - name
     - participants
