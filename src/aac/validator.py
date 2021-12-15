@@ -1,7 +1,5 @@
 """Validate a model per the AaC DSL."""
 
-# TODO: Replace "magic strings" with a more maintainable solution
-
 import copy
 from contextlib import contextmanager
 from typing import Union
@@ -257,20 +255,21 @@ def _validate_enum_references(models: list, data: dict, enums: dict) -> list:
     ]
 
 
-# TODO: Clean up
 def _get_enum_fields(enum: str, fields: list, data: dict, enums: dict) -> list:
     """Get all fields in models that are of the desired type."""
     enum_fields = []
-    for field in fields:
-        field_type = field["type"].strip("[]")
+
+    def get_enum_field(field_name, field_type):
         if field_type in enums.keys():
             if field_type == enum:
-                enum_fields.append([field["name"]])
+                enum_fields.append([field_name])
         elif field_type not in get_primitives():
-            found_paths = _find_paths_to_enum_fields(enum, field["name"], field_type, data, enums)
-            for found in found_paths:
-                entry = found.copy()
-                enum_fields.append(entry)
+            found_paths = _find_paths_to_enum_fields(enum, field_name, field_type, data, enums)
+            enum_fields.extend([found.copy() for found in found_paths])
+
+    for field in fields:
+        get_enum_field(field["name"], field["type"].strip("[]"))
+
     return enum_fields
 
 
@@ -406,7 +405,7 @@ def _get_all_model_errors(model: dict) -> list:
     return []
 
 
-def _get_all_extension_errors(model: dict) -> list:
+def _get_all_extension_errors(model: dict) -> list:  # noqa: C901
     """Return all validation errors for the system MODEL."""
 
     def get_all_errors_if_data_and_enum_extension_combined(model):
@@ -415,10 +414,10 @@ def _get_all_extension_errors(model: dict) -> list:
         return []
 
     def can_apply_extension(extension):
-        """Checks that the extension is an extension and has a non-empty type"""
+        """Checks that the extension is an extension and has a non-empty type."""
 
         def check_for_missing_field(model: dict, fields: list) -> str:
-            """Checks that the ext and type fields exist in the model and that type is not empty"""
+            """Checks that the ext and type fields exist in the model and that type is not empty."""
             current_field = fields[0]
             if current_field not in model or model[current_field] == "":
                 return f"missing required field '{current_field}' in model '{model}'"
@@ -462,7 +461,6 @@ def _get_all_extension_errors(model: dict) -> list:
             ),
             get_all_errors_if_data_and_enum_extension_combined(ext),
             _get_all_non_root_element_errors(ext, kind, type, items),
-            # TODO: Not generic enough
             _get_all_non_root_element_errors(
                 ext[kind], "add", list, _load_unextended_aac_fields_for("Field")
             )
@@ -528,6 +526,7 @@ class ValidatorContext:
 
     def get_root_type_names(self) -> list[str]:
         """Gets the list of root names as defined in the extended AaC model specification.
+
         Returns:
             A list of strings, one entry for each root name in the AaC model specification.
         """
@@ -552,26 +551,20 @@ class ValidatorContext:
         return list(self.get_all_extended_definitions().keys()) + get_primitives()
 
     def get_all_model_definitions(self):
-        """
-        Return all definitions of the 'model' type
-        """
+        """Return all definitions of the 'model' type."""
         return util.get_models_by_type(self.get_all_extended_definitions(), "model")
 
     def get_all_data_definitions(self):
-        """
-        Return all definitions of the 'data' type
-        """
+        """Return all definitions of the 'data' type."""
         return util.get_models_by_type(self.get_all_extended_definitions(), "data")
 
     def get_all_enum_definitions(self):
-        """
-        Return all definitions of the 'enum' type
-        """
+        """Return all definitions of the 'enum' type."""
         return util.get_models_by_type(self.get_all_extended_definitions(), "enum")
 
     def get_all_extended_definitions(self):
         """
-        Return all model, data, enum, etc definitions in the context with active plugin extensions and definitions
+        Return all model, data, enum, etc definitions in the context with active plugin extensions and definitions.
 
         Returns the complete list of plugin-extended definitions available in the context.
             See `get_all_unextended_definitions()` to get the list of definitions without plugin
@@ -596,7 +589,7 @@ class ValidatorContext:
 
     def get_all_unextended_definitions(self):
         """
-        Return all model, data, enum, etc definitions in the context without applying pluggin extensions
+        Return all model, data, enum, etc definitions in the context without applying pluggin extensions.
 
         Returns the complete list of definitions available in the context, including those provided by actively
             installed plugins without applying any plugin extensions to the exsiting definitions.

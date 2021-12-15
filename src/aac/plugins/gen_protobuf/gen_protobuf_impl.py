@@ -85,7 +85,7 @@ def _collect_data_and_enum_definitions(parsed_models: dict) -> dict[str, dict]:
     }
 
 
-def _generate_protobuf_template_details_from_data_and_enum_models(
+def _generate_protobuf_template_details_from_data_and_enum_models(  # noqa: C901
     data_and_enum_models: dict,
 ) -> list[dict]:
     """

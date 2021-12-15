@@ -1,3 +1,5 @@
+"""Provide access to plugins and plugin data."""
+
 from pluggy import PluginManager
 
 from aac import parser

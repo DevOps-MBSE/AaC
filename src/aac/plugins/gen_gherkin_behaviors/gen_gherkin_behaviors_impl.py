@@ -60,7 +60,8 @@ def _get_template_properties(parsed_models: dict) -> dict[str, dict]:
         """Produces a list of template property dictionaries from a behavior entry."""
         feature_name = behavior_entry.get("name")
         feature_description = (
-            behavior_entry.get("description") or "TODO: Fill out this feature description."
+            behavior_entry.get("description")
+            or "TODO: Fill out this feature description."  # noqa: T101
         )
         behavior_scenarios = behavior_entry.get("acceptance") or []
 
@@ -77,7 +78,8 @@ def _get_template_properties(parsed_models: dict) -> dict[str, dict]:
         """Collects and sanitizes scenario steps then returns template properties for a 'scenarios' entry."""
         return [
             {
-                "description": scenario.get("scenario") or "TODO: Write a description.",
+                "description": scenario.get("scenario")
+                or "TODO: Write a description.",  # noqa: T101
                 "givens": list(map(sanitize_scenario_step_entry, scenario.get("given"))),
                 "whens": list(map(sanitize_scenario_step_entry, scenario.get("when"))),
                 "thens": list(map(sanitize_scenario_step_entry, scenario.get("then"))),

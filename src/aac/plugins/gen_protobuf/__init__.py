@@ -19,8 +19,13 @@ def get_commands() -> list[AacCommand]:
         list of AacCommands
     """
     gen_protobuf_arguments = [
-        AacCommandArgument("architecture_file", "The yaml file containing the data models to generate as Protobuf messages."),
-        AacCommandArgument("output_directory", "The directory to write the generated Protobuf messages to."),
+        AacCommandArgument(
+            "architecture_file",
+            "The yaml file containing the data models to generate as Protobuf messages.",
+        ),
+        AacCommandArgument(
+            "output_directory", "The directory to write the generated Protobuf messages to."
+        ),
     ]
 
     plugin_commands = [
@@ -28,7 +33,8 @@ def get_commands() -> list[AacCommand]:
             "gen-protobuf",
             "Generate protobuf messages from Arch-as-Code models.",
             gen_protobuf,
-            gen_protobuf_arguments),
+            gen_protobuf_arguments,
+        ),
     ]
 
     return plugin_commands
