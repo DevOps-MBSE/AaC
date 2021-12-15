@@ -223,18 +223,37 @@ data:
   fields:
     - name: name
       type: string
+      description: |
+        The name of the behavior.
     - name: type
       type: BehaviorType
+      description: |
+        The type of behavior.
     - name: description
       type: string
+      description: |
+        An explanatory description of the behavior, including what the behavior
+        is, why it exists, etc.
     - name: tags
       type: string[]
+      description: |
+        Tags associated with the behavior. These could be used to group similar
+        behaviors into categories like "timing", "network", etc.
     - name: input
       type: Field[]
+      description: |
+        The list of all the fields that are inputs to the component when the
+        behavior is performed.
     - name: output
       type: Field[]
+      description: |
+        The list of all the fields that are outputs to the component when the
+        behavior is performed.
     - name: acceptance
       type: Scenario[]
+      description: |
+        A list of scenarios that define the acceptance criteria to signify that
+        the system is behaving as expected.
   required:
     - name
     - type
