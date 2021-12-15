@@ -6,16 +6,48 @@ data:
   fields:
     - name: import
       type: string[]
+      description: |
+        A list references to dependent models whose definitions should be
+        available for use by the current model.
     - name: enum
       type: enum
+      description: |
+        A definition that represents an enumerated type of value.
+
+        An example of when to use an `enum' is when you want to provide several
+        different options for a single value.
     - name: data
       type: data
+      description: |
+        A definition that represents a data value.
+
+        An example of when to use a `data' definition is when you want to define
+        some part of the system that can be an input and/or output to another
+        part of the system.
     - name: model
       type: model
+      description: |
+        A definition that represents a system and/or component model.
+
+        An example of when to use a `model' is when you want to define the
+        behavior for some component of the system.
     - name: usecase
       type: usecase
+      description: |
+        A definition that represents a usecase for the system.
+
+        An example of when to use a `usecase' is when you want to define how the
+        system might be used in a particular instance.
     - name: ext
       type: extension
+      description: |
+        A meta definition used for adding information to another definition.
+
+        An example of when to use an `ext' is when you wish to add extra
+        information to a model that isn't included in the core specification or
+        the specification of any plugins you may have installed.
+
+        You can extend any `enum' and `data' definition.
 ---
 data:
   name: enum
