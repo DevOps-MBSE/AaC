@@ -179,10 +179,21 @@ data:
   fields:
     - name: name
       type: string
+      description: |
+        The name of the field.
+
+        Used to refer to the field, in certain cases.
     - name: type
       type: string
+      description: |
+        The type of the field.
+
+        Used to constrain the field's values to make it simpler to reason about.
     - name: description
       type: string
+      description: |
+        A description for the field to let users know what it's for and any
+        other useful information.
   required:
     - name
     - type
