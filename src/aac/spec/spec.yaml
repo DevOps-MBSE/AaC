@@ -6,24 +6,61 @@ data:
   fields:
     - name: import
       type: string[]
+      description: |
+        A list of references to other models composing the current model.
+
+        Component model definitions must be visible from the current model's
+        scope.
     - name: enum
       type: enum
+      description: |
+        A definition that represents an enumerated type of value.
+
+        An example of when to use an 'enum' is when you want to provide several
+        different options for a single value.
     - name: data
       type: data
+      description: |
+        A definition that represents a data value.
+
+        A 'data' definition can generally be thought of as shorthand for 'data
+        structure'.
     - name: model
       type: model
+      description: |
+        A definition that represents a system and/or component model.
+
+        An example of when to use a 'model' is when you want to define the
+        behavior for some component of the system.
     - name: usecase
       type: usecase
+      description: |
+        A definition that represents a usecase for the system.
+
+        An example of when to use a 'usecase' is when you want to define how the
+        system might be used in a particular instance.
     - name: ext
       type: extension
+      description: |
+        A meta definition used for adding information to another definition.
+
+        An example of when to use an 'ext' is when you wish to add extra
+        information to a model that isn't included in the core specification or
+        the specification of any plugins you may have installed.
+
+        You can extend any 'enum' and 'data' definition.
 ---
 data:
   name: enum
   fields:
     - name: name
       type: string
+      description: |
+        The name of the enumeration.
     - name: values
       type: string[]
+      description: |
+        A list of strings that encompass the enumeration's possible values.
   required:
     - name
     - values
@@ -33,12 +70,31 @@ data:
   fields:
     - name: name
       type: string
+      description: |
+        The name of the extension.
     - name: type
       type: string
+      description: |
+        The name of the 'data' or 'enum' definition that this definition is
+        extending.
     - name: enumExt
       type: EnumExtension
+      description: |
+        If extending an 'enum' definition, this represents a list of the items
+        to add to the 'enum's 'values' property.
+
+        Note: Only one of 'enumExt' and 'dataExt' are valid per extension.
+
+        See also, 'EnumExtension'
     - name: dataExt
       type: DataExtension
+      description: |
+        If extending an 'data' definition, this represents a list of the items
+        to add to the 'data's 'fields' property.
+
+        Note: Only one of 'enumExt' and 'dataExt' are valid per extension.
+
+        See also, 'DataExtension'
   required:
     - name
     - type
@@ -48,6 +104,8 @@ data:
   fields:
     - name: add
       type: string[]
+      description: |
+        The list of values to add to an 'enum' extension.
   required:
     - add
 ---
@@ -56,8 +114,13 @@ data:
   fields:
     - name: add
       type: Field[]
+      description: |
+        The list of fields to add to a 'data' extension.
     - name: required
       type: string[]
+      description: |
+        The list of names of all the additional fields that are required for the
+        extended definition.
   required:
     - add
 ---
@@ -66,14 +129,28 @@ data:
   fields:
     - name: scenario
       type: string
+      description: |
+        The name of the scenario.
     - name: tags
       type: string[]
+      description: |
+        Tags associated with the scenario. These could be used to group similar
+        scenarios into categories like "front-end", "back-end", etc.
     - name: given
       type: string[]
+      description: |
+        A list of preconditions that must be true in order for the scenario to
+        perform the expected action or provide the expected result.
     - name: when
       type: string[]
+      description: |
+        A list of triggers that indicate some reason for the system to act in a
+        certain way or provide some result.
     - name: then
       type: string[]
+      description: |
+        A list of postconditions that will be true once the system has completed
+        its action based on the triggers.
   required:
     - scenario
     - when
@@ -103,8 +180,22 @@ data:
   fields:
     - name: name
       type: string
+      description: |
+        The name of the field.
+
+        Used to refer to the field, in certain cases.
     - name: type
       type: string
+      description: |
+        The type of the field.
+
+        Used to constrain the field's values to make it simpler to reason about. Must
+        reference an existing definition by name.
+    - name: description
+      type: string
+      description: |
+        A description for the field to let users know what it's for and any
+        other useful information.
   required:
     - name
     - type
@@ -114,10 +205,17 @@ data:
   fields:
     - name: name
       type: string
+      description: |
+        The name of the data definition.
     - name: fields
       type: Field[]
+      description: |
+        A list of fields that make up the definition.
     - name: required
       type: string[]
+      description: |
+        The list of names of all the fields that are required for the
+        definition.
   required:
     - name
     - fields
@@ -127,18 +225,37 @@ data:
   fields:
     - name: name
       type: string
+      description: |
+        The name of the behavior.
     - name: type
       type: BehaviorType
+      description: |
+        The type of behavior.
     - name: description
       type: string
+      description: |
+        An explanatory description of the behavior, including what the behavior
+        is, why it exists, etc.
     - name: tags
       type: string[]
+      description: |
+        Tags associated with the behavior. These could be used to group similar
+        behaviors into categories like "timing", "network", etc.
     - name: input
       type: Field[]
+      description: |
+        The list of all the fields that are inputs to the component when the
+        behavior is performed.
     - name: output
       type: Field[]
+      description: |
+        The list of all the fields that are outputs to the component when the
+        behavior is performed.
     - name: acceptance
       type: Scenario[]
+      description: |
+        A list of scenarios that define the acceptance criteria to signify that
+        the system is behaving as expected.
   required:
     - name
     - type
@@ -148,12 +265,21 @@ data:
   fields:
     - name: name
       type: string
+      description: |
+        The name of the model.
     - name: description
       type: string
+      description: |
+        An explanatory description for the model including what the
+        component/system is modeleing and any other relevant information.
     - name: components
       type: Field[]
+      description: |
+        A list of models that are components of the system.
     - name: behavior
       type: Behavior[]
+      description: |
+        A list of behaviors that the system being modeled will perform.
   required:
     - name
 ---
@@ -162,12 +288,26 @@ data:
   fields:
     - name: name
       type: string
+      description: |
+        The name of the use case.
     - name: description
       type: string
+      description: |
+        An explanatory description of the use case to include what purpose the
+        use case serves, design ideas when fullfilling the use case, etc.
     - name: participants
       type: Field[]
+      description: |
+        A list of participants in the use case.
+
+        Generally, these would be users, other systems, etc. that are
+        interacting with the system during the course of the use case.
     - name: steps
       type: Step[]
+      description: |
+        A list of steps taken in the use case.
+
+        See 'Step'
   required:
     - name
     - participants
@@ -178,26 +318,46 @@ data:
   fields:
     - name: step
       type: string
+      description: |
+        The name of the step.
     - name: source
       type: string
+      description: |
+        The source for the step. This should be the name of a particpant - i.e.
+        a modeled system component.
     - name: target
       type: string
+      description: |
+        The target for the step. This should be the name of a particpant - i.e.
+        a modeled system component.
     - name: action
       type: string
+      description: |
+        A behavior reference on the target or a subordinate use case definition.
     - name: if
       type: Branch
+      description: |
+        Used to create an "alt" in a sequence diagram.
     - name: else
       type: Branch
+      description: |
+        Used to create the "lower cell" in an "alt" in a sequence diagram.
     - name: loop
       type: Branch
+      description: |
+        Used to create a loop in a sequence diagram.
 ---
 data:
   name: Branch
   fields:
     - name: condition
       type: string
+      description: |
+        A condition to test whether a sequence of steps should be performed.
     - name: steps
       type: Step[]
+      description: |
+        A list of steps to perform if the condition for the branch is "true".
   required:
     - condition
     - steps
