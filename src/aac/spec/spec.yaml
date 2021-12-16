@@ -316,18 +316,34 @@ data:
   fields:
     - name: step
       type: string
+      description: |
+        The name of the step.
     - name: source
       type: string
+      description: |
+        The source for the step. This should be the name of a particpant - i.e.
+        a modeled system component.
     - name: target
       type: string
+      description: |
+        The target for the step. This should be the name of a particpant - i.e.
+        a modeled system component.
     - name: action
       type: string
+      description: |
+        A behavior reference on the target or a subordinate use case definition.
     - name: if
       type: Branch
+      description: |
+        Used to create an "alt" in a sequence diagram.
     - name: else
       type: Branch
+      description: |
+        Used to create the "lower cell" in an "alt" in a sequence diagram.
     - name: loop
       type: Branch
+      description: |
+        Used to create a loop in a sequence diagram.
 ---
 data:
   name: Branch
