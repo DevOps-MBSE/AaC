@@ -4,15 +4,14 @@ import:
   - ./ComplexMath_PIDS.yaml
 spec:
   name: Calculator System Spec
-  abbreviation: CALC
   description: This is a specification structure to test the spec plugin.
   requirements:
-    - id: 1
+    - id: "CALC-1"
       shall:  The test system shall log all messages it receives.
       attributes:
         - name: TADI
           value: Test
-    - id: 2
+    - id: "CALC-2"
       shall:  The test system shall log all messages it sends.
       attributes:
         - name: TADI
@@ -22,7 +21,7 @@ spec:
     - name: Functional Requirements
       description:  The calculator system performs simple math functions.
       requirements:
-        - id: 3
+        - id: "CALC-3"
           shall: When receiving a math function message, the calculator shall respond with the result of the function.
           attributes:
             - name: TADI
@@ -30,7 +29,7 @@ spec:
     - name: Performance Requirements
       description:  The calculator system must be responsive.
       requirements:
-        - id: 4
+        - id: "CALC-4"
           shall: When the calculator receives a message, the calculator shall respond within 500 ms.
           attributes:
             - name: TADI

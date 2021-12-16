@@ -14,18 +14,13 @@ model:
     - name: api
       type: request-response
       requirements:
-        - abbreviation: ADD
-          ids: 1
-        - abbreviation: SUB
-          ids: 1
-        - abbreviation: MULT
-          ids: 1
-        - abbreviation: DIV
-          ids: 1
-        - abbreviation: POW
-          ids: 1
-        - abbreviation: SQRT
-          ids: 1
+        ids:
+          - "ADD-1"
+          - "SUB-1"
+          - "MULT-1"
+          - "DIV-1"
+          - "POW-1"
+          - "SQRT-1"
       input:
         - name: request
           type: MathRequest
