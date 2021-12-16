@@ -34,58 +34,55 @@ def _run_spec_validation(parsed_model: dict):
     validation_errors = []
 
     # go through the parsed model to find requirement references
-    req_refs = {}
+    requirement_refs = {}
     for model_name in parsed_model:
         refs = []
-        refs.extend(util.search(parsed_model[model_name], ["spec", "requirements", "parent"]))
-        refs.extend(util.search(parsed_model[model_name], ["model", "behavior", "requirements"]))
-        refs.extend(util.search(parsed_model[model_name], ["data", "requirements"]))
+        refs.extend(
+            util.search(parsed_model[model_name], ["spec", "requirements", "parent", "ids"])
+        )
+        refs.extend(
+            util.search(parsed_model[model_name], ["model", "behavior", "requirements", "ids"])
+        )
+        refs.extend(util.search(parsed_model[model_name], ["data", "requirements", "ids"]))
         if refs:
-            req_refs[model_name] = refs
-
-    # get all the specs by abbreviation
-    spec_by_abbrv = {}
+            requirement_refs[model_name] = refs
 
     specs = util.get_models_by_type(parsed_model, "spec")
-    # for spec_name in specs:
+    requirements_by_id = _collect_ids_from_specs(specs)
 
     # ensure all req_refs are present in the referenced location
-    for model_name in req_refs:
-        for ref in req_refs[model_name]:
-            abbrv = ref["abbreviation"]
-            if abbrv in spec_by_abbrv:
-                # abbrv ref is good, now check the ids
-                ids_in_spec = []
-                ids_in_spec.extend(
-                    util.search(spec_by_abbrv[abbrv], ["spec", "requirements", "id"])
-                )
-                ids_in_spec.extend(
-                    util.search(spec_by_abbrv[abbrv], ["spec", "sections", "requirements", "id"])
-                )
+    for model_name, id_references in requirement_refs.items():
 
-                ids = ref["ids"]
-                # ids could be a list of values or a single value, so check both possibilities
-                if isinstance(ids, list):
-                    for id in ids:
-                        if id not in ids_in_spec:
-                            is_valid = False
-                            validation_errors.append(
-                                f"Invalid requirement id {id} reference in {model_name}: {ref}"
-                            )
-                else:
-                    if ids not in ids_in_spec:
-                        is_valid = False
-                        validation_errors.append(
-                            f"Invalid requirement id {ids} reference in {model_name}: {ref}"
-                        )
-
-            else:
+        # Check the refs exists
+        for requirement_id in id_references:
+            if requirement_id not in list(requirements_by_id.keys()):
                 is_valid = False
                 validation_errors.append(
-                    f"Invalid requirement abbreviation {abbrv} reference in {model_name}:  {ref}"
+                    f"Invalid requirement id {requirement_id} reference in {model_name}:  {id_references}"
                 )
 
     return is_valid, validation_errors
+
+
+def _collect_ids_from_specs(specs: list[dict]) -> dict:
+    """Returns all ids and their definitions as a key-value pair with the id being the key."""
+    requirements_by_id = {}
+
+    for spec in specs.values():
+        spec_definition = spec.get("spec")
+        spec_requirements = spec_definition.get("requirements") or []
+        spec_sections = spec_definition.get("sections") or []
+
+        for requirement in spec_requirements:
+            requirements_by_id[requirement.get("id")] = requirement
+
+        for section in spec_sections:
+            section_requirements = section.get("requirements")
+
+            for section_requirement in section_requirements:
+                requirements_by_id[section_requirement.get("id")] = section_requirement
+
+    return requirements_by_id
 
 
 class AacSpecValidationException(Exception):
