@@ -7,22 +7,22 @@ data:
     - name: import
       type: string[]
       description: |
-        A list of references to other models composing the current model. 
-        
+        A list of references to other models composing the current model.
+
         Component model definitions must be visible from the current model's scope.
     - name: enum
       type: enum
       description: |
         A definition that represents an enumerated type of value.
 
-        An example of when to use an `enum' is when you want to provide several
+        An example of when to use an 'enum' is when you want to provide several
         different options for a single value.
     - name: data
       type: data
       description: |
         A definition that represents a data value.
 
-        An example of when to use a `data' definition is when you want to define
+        An example of when to use a 'data' definition is when you want to define
         some part of the system that can be an input and/or output to another
         part of the system.
     - name: model
@@ -30,25 +30,25 @@ data:
       description: |
         A definition that represents a system and/or component model.
 
-        An example of when to use a `model' is when you want to define the
+        An example of when to use a 'model' is when you want to define the
         behavior for some component of the system.
     - name: usecase
       type: usecase
       description: |
         A definition that represents a usecase for the system.
 
-        An example of when to use a `usecase' is when you want to define how the
+        An example of when to use a 'usecase' is when you want to define how the
         system might be used in a particular instance.
     - name: ext
       type: extension
       description: |
         A meta definition used for adding information to another definition.
 
-        An example of when to use an `ext' is when you wish to add extra
+        An example of when to use an 'ext' is when you wish to add extra
         information to a model that isn't included in the core specification or
         the specification of any plugins you may have installed.
 
-        You can extend any `enum' and `data' definition.
+        You can extend any 'enum' and 'data' definition.
 ---
 data:
   name: enum
@@ -75,26 +75,26 @@ data:
     - name: type
       type: string
       description: |
-        The name of the `data' or `enum' definition that this definition is
+        The name of the 'data' or 'enum' definition that this definition is
         extending.
     - name: enumExt
       type: EnumExtension
       description: |
-        If extending an `enum' definition, this represents a list of the items
-        to add to the `enum's `values' property.
+        If extending an 'enum' definition, this represents a list of the items
+        to add to the 'enum's 'values' property.
 
-        Note: Only one of `enumExt' and `dataExt' are valid per extension.
+        Note: Only one of 'enumExt' and 'dataExt' are valid per extension.
 
-        See also, `EnumExtension'
+        See also, 'EnumExtension'
     - name: dataExt
       type: DataExtension
       description: |
-        If extending an `data' definition, this represents a list of the items
-        to add to the `data's `fields' property.
+        If extending an 'data' definition, this represents a list of the items
+        to add to the 'data's 'fields' property.
 
-        Note: Only one of `enumExt' and `dataExt' are valid per extension.
+        Note: Only one of 'enumExt' and 'dataExt' are valid per extension.
 
-        See also, `DataExtension'
+        See also, 'DataExtension'
   required:
     - name
     - type
@@ -105,7 +105,7 @@ data:
     - name: add
       type: string[]
       description: |
-        The list of values to add to an `enum' extension.
+        The list of values to add to an 'enum' extension.
   required:
     - add
 ---
@@ -115,7 +115,7 @@ data:
     - name: add
       type: Field[]
       description: |
-        The list of fields to add to a `data' extension.
+        The list of fields to add to a 'data' extension.
     - name: required
       type: string[]
       description: |
@@ -189,7 +189,7 @@ data:
       description: |
         The type of the field.
 
-        Used to constrain the field's values to make it simpler to reason about. Must 
+        Used to constrain the field's values to make it simpler to reason about. Must
         reference an existing definition by name.
     - name: description
       type: string
@@ -307,7 +307,7 @@ data:
       description: |
         A list of steps taken in the use case.
 
-        See `Step'
+        See 'Step'
   required:
     - name
     - participants
