@@ -7,8 +7,9 @@ data:
     - name: import
       type: string[]
       description: |
-        A list references to dependent models whose definitions should be
-        available for use by the current model.
+        A list of references to other models composing the current model. 
+        
+        Component model definitions must be visible from the current model's scope.
     - name: enum
       type: enum
       description: |
@@ -188,7 +189,8 @@ data:
       description: |
         The type of the field.
 
-        Used to constrain the field's values to make it simpler to reason about.
+        Used to constrain the field's values to make it simpler to reason about. Must 
+        reference an existing definition by name.
     - name: description
       type: string
       description: |
@@ -264,7 +266,7 @@ data:
     - name: name
       type: string
       description: |
-        The name of the system model.
+        The name of the model.
     - name: description
       type: string
       description: |
@@ -273,7 +275,7 @@ data:
     - name: components
       type: Field[]
       description: |
-        A list of the components that are part of the system.
+        A list of models that are components of the system.
     - name: behavior
       type: Behavior[]
       description: |
