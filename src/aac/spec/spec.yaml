@@ -279,7 +279,7 @@ data:
     - name: behavior
       type: Behavior[]
       description: |
-        A list of behaviors that the system will perform.
+        A list of behaviors that the system being modeled will perform.
   required:
     - name
 ---
