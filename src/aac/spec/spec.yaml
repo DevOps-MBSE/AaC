@@ -9,7 +9,8 @@ data:
       description: |
         A list of references to other models composing the current model.
 
-        Component model definitions must be visible from the current model's scope.
+        Component model definitions must be visible from the current model's
+        scope.
     - name: enum
       type: enum
       description: |
@@ -22,9 +23,8 @@ data:
       description: |
         A definition that represents a data value.
 
-        An example of when to use a 'data' definition is when you want to define
-        some part of the system that can be an input and/or output to another
-        part of the system.
+        A 'data' definition can generally be thought of as shorthand for 'data
+        structure'.
     - name: model
       type: model
       description: |
