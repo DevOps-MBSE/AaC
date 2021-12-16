@@ -47,16 +47,7 @@ def _run_spec_validation(parsed_model: dict):
     spec_by_abbrv = {}
 
     specs = util.get_models_by_type(parsed_model, "spec")
-    for spec_name in specs:
-
-        abbrv = util.search(specs[spec_name], ["spec", "abbreviation"])
-        if len(abbrv) == 1:
-            spec_by_abbrv[abbrv[0]] = specs[spec_name]
-        else:
-            is_valid = False
-            validation_errors.append(
-                f"Spec named {spec_name} must have 1 abbrv in it's definition.  Found {abbrv}."
-            )
+    # for spec_name in specs:
 
     # ensure all req_refs are present in the referenced location
     for model_name in req_refs:
