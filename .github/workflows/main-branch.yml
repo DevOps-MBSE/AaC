@@ -11,7 +11,7 @@ jobs:
 
   Run_Functional_Tests:
     needs: Build_Package_and_Artifacts
-    uses: jondavid-black/AaC/.github/workflows/functional-tests.yml@6ee0e7e59609550adb8296e2e2638d47d2382181
+    uses: jondavid-black/AaC/.github/workflows/functional-tests.yml@80bdd88b0d35b04c14d7e54d4c1de1c3f2ef0e69
   Deploy_Artifacts:
     needs: Run_Functional_Tests
     uses: jondavid-black/AaC/.github/workflows/deploy-artifacts.yml@1e3f89c23eb6583116848d81ccd5ad952f9a62b6
