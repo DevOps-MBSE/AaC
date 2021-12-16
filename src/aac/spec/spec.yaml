@@ -350,8 +350,12 @@ data:
   fields:
     - name: condition
       type: string
+      description: |
+        A condition to test whether a sequence of steps should be performed.
     - name: steps
       type: Step[]
+      description: |
+        A list of steps to perform if the condition for the branch is "true".
   required:
     - condition
     - steps
