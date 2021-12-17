@@ -60,7 +60,7 @@ def _run_spec_validation(parsed_model: dict):
             if requirement_id not in defined_requirement_ids:
                 is_valid = False
                 validation_errors.append(
-                    f"Invalid requirement id \"{requirement_id}\" reference in \"{model_name}\":  {defined_requirement_ids}"
+                    f"Invalid requirement id '{requirement_id}' reference in '{model_name}':  {defined_requirement_ids}"
                 )
 
     return is_valid, validation_errors
