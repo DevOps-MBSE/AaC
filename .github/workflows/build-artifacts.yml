@@ -10,11 +10,6 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Install System Packages
-        run: |
-          sudo apt-get update
-          sudo apt-get install libgirepository1.0-dev -y
-
       - name: Set up Python 3.9
         uses: actions/setup-python@v2
         with:
