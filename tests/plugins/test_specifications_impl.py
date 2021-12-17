@@ -27,7 +27,7 @@ class TestSpecifications(TestCase):
                 spec_validate(temp_spec.name)
 
             validation_exception = context_manager.exception
-            self.assertIn("Invalid requirement id \"SUB-3\"", validation_exception.message)
+            self.assertIn("Invalid requirement id 'SUB-3'", validation_exception.message)
 
 
 VALID_SPEC = """
