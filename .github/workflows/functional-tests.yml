@@ -1,4 +1,4 @@
-name: Build Package and Artifacts
+name: AaC Package Functional Tests
 
 on:
   workflow_call:
