@@ -3,11 +3,11 @@ spec:
   abbreviation: MULT
   description:  This is a representative Software Requirements Specification for a module called Multiply.
   requirements:
-    - id: 1
+    - id: "MULT-1"
       shall:  When receiving a multiply message, the calculator shall respond with the product of the provided values.
       parent:
-        - abbreviation: IM
-          ids: 1
+        ids:
+          - "IM-1"
       attributes:
         - name: TADI
           value: Test

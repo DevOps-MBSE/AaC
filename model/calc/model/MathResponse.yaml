@@ -1,8 +1,8 @@
 data:
   name: MathResponse
   requirements:
-    - abbreviation: CALC_IRS
-      ids: 3
+    ids:
+    - "CALC_IRS-3"
   fields:
     - name: result
       type: number

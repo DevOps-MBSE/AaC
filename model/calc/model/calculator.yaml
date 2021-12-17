@@ -15,12 +15,11 @@ model:
       type: request-response
       description: Add or subtract numbers
       requirements:
-        - abbreviation: CALC
           ids:
-            - 1
-            - 2
-            - 3
-            - 4
+            - "CALC-1"
+            - "CALC-2"
+            - "CALC-3"
+            - "CALC-4"
       input:
         - name: request
           type: MathRequest
