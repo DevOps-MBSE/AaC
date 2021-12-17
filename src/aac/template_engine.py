@@ -1,4 +1,4 @@
-""" This module provides a common set of templating and generation functions """
+"""This module provides a common set of templating and generation functions."""
 from __future__ import annotations
 
 import os
@@ -19,8 +19,8 @@ def load_templates(package_name: str, template_directory: str = "templates") -> 
         list of loaded templates
     """
     def _load_templates_from_env(env) -> list:
-        templates = list(map(env.get_template, env.list_templates()))
-        return list(filter(lambda template: template.name.endswith("jinja2"), templates))
+        filtered_templates = list(filter(lambda template: template.endswith("jinja2"), env.list_templates()))
+        return list(map(env.get_template, filtered_templates))
 
     env = Environment(
         loader=PackageLoader(package_name, template_directory),

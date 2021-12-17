@@ -30,7 +30,7 @@ def _run_full_validation(architecture_file: str) -> tuple[bool, list]:
         return _run_spec_validation(parsed_model)
 
 
-def _run_spec_validation(parsed_model: dict):
+def _run_spec_validation(parsed_model: dict):  # noqa: C901
     is_valid = True
     validation_errors = []
 

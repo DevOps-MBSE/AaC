@@ -1,7 +1,5 @@
-"""
-A simple data class to collect AaC command info from plugins.
-"""
-from attr import attrs, attrib, validators
+"""A simple data class to collect AaC command info from plugins."""
+from attr import attrib, attrs, validators
 
 
 @attrs
@@ -25,6 +23,7 @@ class AacCommandArgument:
 class AacCommand:
     """
     A class used as a struct to hold a command name, command description, and callback.
+
     The command name is added to the argument parser with help set to teh command description.
     The callback is invoked if the user specifies the command.
 

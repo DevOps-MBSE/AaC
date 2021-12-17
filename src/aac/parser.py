@@ -1,4 +1,5 @@
-"""
+"""Parse Architecture-as-Code YAML files.
+
 The AaC parser reads a yaml file, performs validation (if not suppressed) and provides
 the caller with a dictionary of the content keyed by the named type.  This allows you
 to find a certain type in a model by just looking for that key.
@@ -69,10 +70,10 @@ def _read_file_content(arch_file: str) -> str:
 
 
 def _get_files_to_process(arch_file_path: str) -> list[str]:
-    """
-    The get files to process method traverses the import path starting from
-    the specified Arch-as-Code file and returns a list of all files referenced
-    by the model.
+    """Return a list of all files referenced in the model.
+
+    Traverse the import path starting from the specified Arch-as-Code file and returns a list of
+    all files referenced by the model.
     """
 
     ret_val = [arch_file_path]

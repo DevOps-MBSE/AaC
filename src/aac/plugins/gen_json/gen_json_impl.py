@@ -6,9 +6,7 @@ from aac.validator import validation
 
 
 def print_json(architecture_files: list[str]) -> None:
-    """
-    Prints the parsed_models from the parsed architecture_files values in JSON format.
-    """
+    """Prints the parsed_models from the parsed architecture_files values in JSON format."""
 
     for architecture_file in architecture_files:
         print(f"File: {architecture_file}")
