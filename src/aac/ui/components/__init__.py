@@ -1,1 +1,0 @@
-"""Provide Tkinter UI components."""
