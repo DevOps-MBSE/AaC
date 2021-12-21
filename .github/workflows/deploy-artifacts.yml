@@ -1,7 +1,7 @@
 name: Deploy AaC Artifacts
 
 on:
-  workflow_call:
+  workflow_dispatch:
     # secrets:
     #   PYPI_API_TOKEN:
     #     required: true
