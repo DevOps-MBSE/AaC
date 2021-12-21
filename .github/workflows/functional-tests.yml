@@ -1,5 +1,4 @@
-name: Build Package and Artifacts
-
+name: Functional Tests
 on:
   workflow_call:
 
