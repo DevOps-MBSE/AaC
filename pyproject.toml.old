@@ -7,7 +7,7 @@ always-on = true
 
 [build-system]
 requires = [
-    "setuptools>=42",
+    "setuptools>=60",
     "wheel"
 ]
 build-backend = "setuptools.build_meta"
