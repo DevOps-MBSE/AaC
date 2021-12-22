@@ -2,6 +2,7 @@ tasks:
   - name: Setup Python Virtual Environment
     init: |
       python3.9 -m venv venv --system-site-packages
+      python3.9 -m pip install --upgrade pip
       source venv/bin/activate
       pip install -e .[all]
     command: source venv/bin/activate # Always launch a console with our virtual env
