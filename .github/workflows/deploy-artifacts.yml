@@ -26,7 +26,6 @@ jobs:
           path: dist/
 
       - name: Publish distribution to PyPI
-        run: echo "This is where I'd deploy if I were setup"
   #     uses: pypa/gh-action-pypi-publish@master
   #     with:
   #       password: ${{ secrets.PYPI_API_TOKEN }}
