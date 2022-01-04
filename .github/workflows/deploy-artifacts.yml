@@ -9,6 +9,7 @@ jobs:
 
   Deploy-Artifacts:
     runs-on: ubuntu-latest
+    needs: Build_Package_and_Artifacts
     steps:
       - name: Download API Documentation
         uses: actions/download-artifact@v2
