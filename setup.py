@@ -23,7 +23,8 @@ runtime_dependencies = [
 
 development_dependencies = [
     "wheel == 0.37.0",
-    "black == 21.9b0",
+    "tomli < 2.0.0",
+    "black == 21.12b0",
     "mccabe == 0.6.1",
     "mypy-extensions == 0.4.3",
     "pycodestyle >= 2.8.0",
