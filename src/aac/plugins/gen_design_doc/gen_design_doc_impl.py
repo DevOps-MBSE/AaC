@@ -6,6 +6,10 @@ from iteration_utilities import flatten
 from jinja2 import Template
 
 from aac import parser, util
+from aac.plugins.plugin_execution import (
+    PluginExecutionStatusCode,
+    PluginExecutionResult,
+)
 from aac.template_engine import (
     TemplateOutputFile,
     generate_template,
@@ -14,10 +18,13 @@ from aac.template_engine import (
 )
 from aac.validator import validation
 
+plugin_name = "gen-design-doc"
 default_template_file = "templates/system-design-doc.md.jinja2"
 
 
-def gen_design_doc(architecture_files: str, output_directory: str, template_file: str = None):
+def gen_design_doc(
+    architecture_files: str, output_directory: str, template_file: str = None
+) -> PluginExecutionResult:
     """
     Generate a System Design Document from Architecture-as-Code models.
 
@@ -35,7 +42,9 @@ def gen_design_doc(architecture_files: str, output_directory: str, template_file
     template_file = template_file or default_template_file
     template_file_name = os.path.basename(template_file)
 
-    selected_template, *_ = [t for t in loaded_templates if template_file_name == t.name]
+    selected_template, *_ = [
+        t for t in loaded_templates if template_file_name == t.name
+    ]
 
     output_filespec = _get_output_filespec(
         first_arch_file, _get_output_file_extension(template_file_name)
@@ -47,7 +56,12 @@ def gen_design_doc(architecture_files: str, output_directory: str, template_file
     )
     write_generated_templates_to_file([generated_document], output_directory)
 
-    print(f"Wrote system design document to {os.path.join(output_directory, output_filespec)}")
+    result = PluginExecutionResult(plugin_name, PluginExecutionStatusCode.SUCCESS)
+    result.add_message(
+        f"Wrote system design document to {os.path.join(output_directory, output_filespec)}"
+    )
+
+    return result
 
 
 def _get_parsed_models(architecture_files: list) -> list:
@@ -63,7 +77,12 @@ def _make_template_properties(parsed_models: dict, arch_file: str) -> dict:
     models = _get_from_parsed_models(parsed_models, "model")
     usecases = _get_from_parsed_models(parsed_models, "usecase")
     interfaces = _get_from_parsed_models(parsed_models, "data")
-    return {"title": title, "models": models, "usecases": usecases, "interfaces": interfaces}
+    return {
+        "title": title,
+        "models": models,
+        "usecases": usecases,
+        "interfaces": interfaces,
+    }
 
 
 def _get_document_title(arch_file: str) -> str:
