@@ -4,6 +4,7 @@ from tempfile import NamedTemporaryFile, TemporaryDirectory
 from unittest import TestCase
 
 from aac import util, parser
+from aac.plugins.plugin_execution import PluginExecutionStatusCode
 from aac.plugins.gen_gherkin_behaviors import (
     get_commands,
     get_base_model_extensions,
@@ -106,7 +107,8 @@ model:
             temp_arch_file.seek(0)
 
             # Generate gherkin files to temp directory
-            gen_gherkin_behaviors(temp_arch_file.name, temp_output_dir)
+            result = gen_gherkin_behaviors(temp_arch_file.name, temp_output_dir)
+            self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
 
             # Check the generated files
             self.assertEqual(1, len(os.listdir(temp_output_dir)))
@@ -173,7 +175,8 @@ model:
             temp_arch_file.seek(0)
 
             # Generate gherkin files to temp directory
-            gen_gherkin_behaviors(temp_arch_file.name, temp_output_dir)
+            result = gen_gherkin_behaviors(temp_arch_file.name, temp_output_dir)
+            self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
 
             # Check the generated files
             self.assertEqual(1, len(os.listdir(temp_output_dir)))

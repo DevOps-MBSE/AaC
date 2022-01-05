@@ -4,6 +4,10 @@
 from iteration_utilities import flatten
 
 from aac import parser, util
+from aac.plugins.plugin_execution import (
+    PluginExecutionResult,
+    PluginExecutionStatusCode,
+)
 from aac.template_engine import (
     TemplateOutputFile,
     generate_template,
@@ -11,6 +15,8 @@ from aac.template_engine import (
     write_generated_templates_to_file,
 )
 from aac.validator import validation
+
+plugin_name = "gen-gherkin-behaviors"
 
 
 def gen_gherkin_behaviors(architecture_file: str, output_directory: str) -> None:
@@ -30,7 +36,13 @@ def gen_gherkin_behaviors(architecture_file: str, output_directory: str) -> None
         )
 
         write_generated_templates_to_file(generated_template_messages, output_directory)
-        print(f"Successfully generated templates to directory: {output_directory}")
+
+        result = PluginExecutionResult(plugin_name, PluginExecutionStatusCode.SUCCESS)
+        result.add_message(
+            f"Successfully generated templates to directory: {output_directory}"
+        )
+
+        return result
 
 
 def _get_template_properties(parsed_models: dict) -> dict[str, dict]:
