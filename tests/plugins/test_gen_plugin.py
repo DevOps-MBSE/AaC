@@ -1,9 +1,15 @@
+from tempfile import TemporaryDirectory, NamedTemporaryFile
 from unittest import TestCase
 
 from aac import parser
-from aac.validator import validation
+from aac.plugins.plugin_execution import PluginExecutionStatusCode
 from aac.plugins.gen_plugin.GeneratePluginException import GeneratePluginException
-from aac.plugins.gen_plugin.gen_plugin_impl import _compile_templates, _convert_template_name_to_file_name
+from aac.plugins.gen_plugin.gen_plugin_impl import (
+    _generate_plugin,
+    _compile_templates,
+    _convert_template_name_to_file_name,
+)
+from aac.validator import validation
 
 INIT_TEMPLATE_NAME = "__init__.py.jinja2"
 PLUGIN_TEMPLATE_NAME = "plugin.py.jinja2"
@@ -14,6 +20,22 @@ README_TEMPLATE_NAME = "README.md.jinja2"
 
 
 class TestGenPlugin(TestCase):
+    def test_generate_plugin(self):
+        with (TemporaryDirectory() as temp_dir, NamedTemporaryFile(mode="w") as plugin_yaml):
+            plugin_yaml.write(TEST_PLUGIN_YAML_STRING)
+            plugin_yaml.seek(0)
+
+            result = _generate_plugin(plugin_yaml.name, temp_dir)
+            self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
+
+    def test_generate_plugin_fails_with_multiple_models(self):
+        with (TemporaryDirectory() as temp_dir, NamedTemporaryFile(mode="w") as plugin_yaml):
+            plugin_yaml.write(f"{TEST_PLUGIN_YAML_STRING}\n---\n{SECONDARY_MODEL_YAML_DEFINITION}")
+            plugin_yaml.seek(0)
+
+            result = _generate_plugin(plugin_yaml.name, temp_dir)
+            self.assertEqual(result.status_code, PluginExecutionStatusCode.PLUGIN_FAILURE)
+
     def test_convert_template_name_to_file_name(self):
         plugin_name = "aac-test"
         template_names = [

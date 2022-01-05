@@ -37,7 +37,9 @@ def generate_plugin(architecture_file: str) -> PluginExecutionResult:
     if _is_user_desired_output_directory(architecture_file, plug_dir):
         return _generate_plugin(architecture_file, plug_dir)
 
-    result = PluginExecutionResult(plugin_name, PluginExecutionStatusCode.SUCCESS)
+    result = PluginExecutionResult(
+        plugin_name, PluginExecutionStatusCode.OPERATION_CANCELLED
+    )
     result.set_messages(
         f"Canceled: Move {architecture_file} to the desired directory and retry."
     )
@@ -48,15 +50,17 @@ def generate_plugin(architecture_file: str) -> PluginExecutionResult:
 def _generate_plugin(architecture_file: str, plug_dir: str) -> PluginExecutionResult:
     result = PluginExecutionResult(plugin_name, PluginExecutionStatusCode.SUCCESS)
     result.set_messages(f"successfully created plugin in {plug_dir}")
+
     try:
         with validation(parser.parse_file, architecture_file) as parsed_model:
             templates = list(_compile_templates(parsed_model).values())
             write_generated_templates_to_file(templates, plug_dir)
     except GeneratePluginException as exception:
-        result.status_code = PluginExecutionStatusCode.GENERATE_PLUGIN_FAILURE
+        result.status_code = PluginExecutionStatusCode.PLUGIN_FAILURE
         result.set_messages(f"error [{architecture_file}]:  {exception}.")
 
     return result
+
 
 def _compile_templates(parsed_models: dict[str, dict]) -> dict[str, list[TemplateOutputFile]]:
     """
@@ -151,7 +155,6 @@ def _convert_template_name_to_file_name(template_name: str, plugin_name: str) ->
     Returns:
         A string containing the personalized/pythonic file name.
     """
-
     return template_name.replace(".jinja2", "").replace("plugin", plugin_name)
 
 
@@ -183,7 +186,7 @@ def _is_user_desired_output_directory(architecture_file: str, output_dir: str) -
 
 def _gather_commands(behaviors: dict) -> list[dict]:
     """
-    Parses the plugin model's behaviors and returns a list of commands derived from the plugin's behavior.
+    Parse the plugin model's behaviors and return a list of commands derived from the plugin's behavior.
 
     Args:
         behaviors: The plugin's modeled behaviors
@@ -192,7 +195,7 @@ def _gather_commands(behaviors: dict) -> list[dict]:
     """
 
     def modify_command_input_output_entry(in_out_entry: dict):
-        """Modifies the input and output entries of a behavior definition to reduce complexity in the templates."""
+        """Modify the input and output entries of a behavior definition to reduce complexity in the templates."""
         in_out_entry["type"] = in_out_entry.get("python_type") or in_out_entry.get("type")
 
         return in_out_entry
