@@ -17,10 +17,16 @@ from aac.template_engine import (
 )
 from aac.plugins import PLUGIN_PROJECT_NAME
 from aac.plugins.gen_plugin.GeneratePluginException import GeneratePluginException
+from aac.plugins.plugin_execution import (
+    PluginExecutionStatusCode,
+    PluginExecutionResult,
+)
 from aac.validator import validation
 
+plugin_name = "gen-plugin"
 
-def generate_plugin(architecture_file: str) -> None:
+
+def generate_plugin(architecture_file: str) -> PluginExecutionResult:
     """
     Entrypoint command to generate the plugin.
 
@@ -29,17 +35,28 @@ def generate_plugin(architecture_file: str) -> None:
     """
     plug_dir = os.path.dirname(os.path.abspath(architecture_file))
     if _is_user_desired_output_directory(architecture_file, plug_dir):
-        _generate_plugin(architecture_file, plug_dir)
+        return _generate_plugin(architecture_file, plug_dir)
+
+    result = PluginExecutionResult(plugin_name, PluginExecutionStatusCode.SUCCESS)
+    result.set_messages(
+        f"Canceled: Move {architecture_file} to the desired directory and retry."
+    )
+
+    return result
 
 
-def _generate_plugin(architecture_file: str, plug_dir: str) -> None:
+def _generate_plugin(architecture_file: str, plug_dir: str) -> PluginExecutionResult:
+    result = PluginExecutionResult(plugin_name, PluginExecutionStatusCode.SUCCESS)
+    result.set_messages(f"successfully created plugin in {plug_dir}")
     try:
         with validation(parser.parse_file, architecture_file) as parsed_model:
             templates = list(_compile_templates(parsed_model).values())
             write_generated_templates_to_file(templates, plug_dir)
     except GeneratePluginException as exception:
-        print(f"gen-plugin error [{architecture_file}]:  {exception}.")
+        result.status_code = PluginExecutionStatusCode.GENERATE_PLUGIN_FAILURE
+        result.set_messages(f"error [{architecture_file}]:  {exception}.")
 
+    return result
 
 def _compile_templates(parsed_models: dict[str, dict]) -> dict[str, list[TemplateOutputFile]]:
     """
@@ -54,7 +71,6 @@ def _compile_templates(parsed_models: dict[str, dict]) -> dict[str, list[Templat
     Raises:
         GeneratePluginException: An error encountered during the plugin generation process.
     """
-
     templates_to_overwrite = ["plugin.py.jinja2", "setup.py.jinja2"]
     template_parent_directories = {"test_plugin_impl.py.jinja2": "tests"}
 
@@ -146,6 +162,7 @@ def _is_user_desired_output_directory(architecture_file: str, output_dir: str) -
     Args:
         architecture_file: Name of the architecture file
         output_dir: The path to the target output directory
+
     Returns:
         boolean True if the user wishes to write to <output_dir>
     """
@@ -159,11 +176,6 @@ def _is_user_desired_output_directory(architecture_file: str, output_dir: str) -
 
         confirmation = input(
             f"Do you want to generate an AaC plugin in the directory {output_dir}? [y/n]"
-        )
-
-    if confirmation in ["n", "N"]:
-        print(
-            f"Canceled: Please move {architecture_file} to the desired directory and rerun the command."
         )
 
     return confirmation in ["y", "Y"]
