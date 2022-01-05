@@ -7,12 +7,11 @@ from aac.validator import validation
 
 def puml_component(architecture_file: str):
     """
-    Converts an AaC model to Plant ULM component diagram.
+    Convert an AaC model to Plant ULM component diagram.
 
     Args:
         architecture_file: str: Path to a yaml file containing an AaC usecase from which to generate a Plant UML component diagram.
     """
-
     with validation(parser.parse_file, architecture_file) as parsed_model:
         model_types = util.get_models_by_type(parsed_model, "model")
 
@@ -30,12 +29,11 @@ def puml_component(architecture_file: str):
 
 def puml_sequence(architecture_file: str):
     """
-    Converts an AaC usecase to Plant ULM sequence diagram.
+    Convert an AaC usecase to Plant ULM sequence diagram.
 
     Args:
         architecture_file: str: Path to a yaml file containing an AaC usecase from which to generate a Plant UML sequence diagram.
     """
-
     with validation(parser.parse_file, architecture_file) as parsed_model:
         use_case_types = util.get_models_by_type(parsed_model, "usecase")
 
@@ -74,12 +72,11 @@ def puml_sequence(architecture_file: str):
 
 def puml_object(architecture_file: str):
     """
-    Converts an AaC model to Plant ULM object diagram.
+    Convert an AaC model to Plant ULM object diagram.
 
     Args:
         architecture_file: str: Path to a yaml file containing an AaC usecase from which to generate a Plant UML object diagram.
     """
-
     with validation(parser.parse_file, architecture_file) as parsed_model:
         model_types = util.get_models_by_type(parsed_model, "model")
 
