@@ -35,6 +35,6 @@ class PluginExecutionResult:
         """Add a message to the list of messages."""
         self.messages.add(message)
 
-    def set_messages(self, *messages: list[str]) -> None:
+    def set_messages(self, *messages) -> None:
         """Clear the current messages and set them to the passed in messages."""
-        self.messages = messages
+        self.messages = list(messages)
