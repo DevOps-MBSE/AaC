@@ -3,14 +3,13 @@ import:
   - ./SquareRoot_SRS.yaml
 spec:
   name: Complex Math PIDS
-  abbreviation: CM
   description:  This is a representative Prime Item Development Specification for a subsystem called Complex Math.
   requirements:
-    - id: 1
+    - id: "CM-1"
       shall:  When receiving a complex math request message, the calculator shall respond with the the result of the complex math function.
       parent:
-        - abbreviation: CALC
-          ids: 3
+        ids:
+          - "CALC-3"
       attributes:
         - name: TADI
           value: Test

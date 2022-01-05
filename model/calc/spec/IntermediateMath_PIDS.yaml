@@ -3,14 +3,13 @@ import:
   - ./Divide_SRS.yaml
 spec:
   name: Intermediate Math PIDS
-  abbreviation: IM
   description:  This is a representative Prime Item Development Specification for a subsystem called Intermediate Math.
   requirements:
-    - id: 1
+    - id: "IM-1"
       shall:  When receiving a intermediate math request message, the calculator shall respond with the the result of the intermediate math function.
       parent:
-        - abbreviation: CALC
-          ids: 3
+        ids:
+          - "CALC-3"
       attributes:
         - name: TADI
-          value: Test
+          value: Tests

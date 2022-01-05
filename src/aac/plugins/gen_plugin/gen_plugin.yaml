@@ -51,11 +51,3 @@ ext:
    enumExt:
       add:
          - command
----
-ext:
-   name: DescriptField
-   type: Field
-   dataExt:
-      add:
-        - name: description
-          type: string
