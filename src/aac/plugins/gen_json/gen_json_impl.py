@@ -3,16 +3,23 @@
 import json
 
 from aac.parser import parse_file
+from aac.plugins.plugin_execution import (
+    PluginExecutionResult,
+    PluginExecutionStatusCode,
+)
 from aac.validator import validation
 
+plugin_name = "gen-json"
 
-def print_json(architecture_files: list[str]) -> None:
+
+def print_json(architecture_files: list[str]) -> PluginExecutionResult:
     """Print the parsed_models from the parsed architecture_files values in JSON format."""
+    messages = []
+
     for architecture_file in architecture_files:
-        print(f"File: {architecture_file}")
         with validation(parse_file, architecture_file) as parsed_model:
-            _print_parsed_model(parsed_model)
+            messages.append(f"File: {architecture_file}\n{json.dumps(parsed_model)}")
 
-
-def _print_parsed_model(parsed_model: dict[str, any]) -> None:
-    print(json.dumps(parsed_model))
+    return PluginExecutionResult(
+        plugin_name, PluginExecutionStatusCode.SUCCESS, messages
+    )
