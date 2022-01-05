@@ -1,19 +1,25 @@
 import os
 from unittest import TestCase
+from unittest.mock import patch
 from tempfile import TemporaryDirectory, NamedTemporaryFile
 from nose2.tools import params
 
-from aac.plugins.gen_protobuf.gen_protobuf_impl import gen_protobuf, _convert_camel_case_to_snake_case, _generate_protobuf_template_details_from_data_and_enum_models
+from aac.plugins.plugin_execution import PluginExecutionStatusCode
+from aac.plugins.gen_protobuf.gen_protobuf_impl import (
+    gen_protobuf,
+    _convert_camel_case_to_snake_case,
+    _generate_protobuf_template_details_from_data_and_enum_models,
+)
 
 
 class TestGenerateProtobufPlugin(TestCase):
-
     def test_gen_protobuf(self):
         with TemporaryDirectory() as temp_dir, NamedTemporaryFile("w") as temp_arch_file:
             temp_arch_file.write(TEST_ARCH_YAML_STRING)
             temp_arch_file.seek(0)
 
-            gen_protobuf(temp_arch_file.name, temp_dir)
+            result = gen_protobuf(temp_arch_file.name, temp_dir)
+            self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
 
             # Assert each data message has its own file.
             generated_file_names = os.listdir(temp_dir)
@@ -75,6 +81,16 @@ class TestGenerateProtobufPlugin(TestCase):
                 self.assertIn("TYPE_1", message_type_proto_file_contents)
                 self.assertIn("TYPE_2", message_type_proto_file_contents)
                 self.assertIn("TYPE_3", message_type_proto_file_contents)
+
+    @patch('aac.plugins.gen_protobuf.gen_protobuf_impl.load_default_templates')
+    def test_gen_protobuf_fails_with_multiple_message_templates(self, load_default_templates):
+        with TemporaryDirectory() as temp_dir, NamedTemporaryFile("w") as arch_file:
+            arch_file.write(TEST_ARCH_YAML_STRING)
+            arch_file.seek(0)
+
+            load_default_templates.return_value = ["a", "b"]
+            result = gen_protobuf(arch_file.name, temp_dir)
+            self.assertEqual(result.status_code, PluginExecutionStatusCode.PLUGIN_FAILURE)
 
     @params(("DataA", "data_a"), ("somethingSimple", "something_simple"), ("SomethingComplex!To.Test", "something_complex!_to._test"), ("whataboutnocamelcases?", "whataboutnocamelcases?"))
     def test__convert_camel_case_to_snake_case(self, test_string, expected_string):
