@@ -40,9 +40,3 @@ jobs:
 
     - name: Print out Core Spec
       run: aac aac-core-spec
-
-    - name: Test gen-plugin failure
-      run: |
-        mkdir tmp
-        cp  src/aac/plugins/gen_protobuf/gen_protobuf.yaml tmp
-        echo n | aac gen-plugin tmp/gen_protobuf.yaml
