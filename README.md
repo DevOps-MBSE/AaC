@@ -5,7 +5,7 @@
 
 Due to certain uncontrollable circumstances surrounding the environment in which
 Architecture as code is being developed and funded, we cannot accept any new outside
-contributors at this time. We will reject any pull requests from untrusted sources.
+contributions at this time. We will reject any pull requests from unknown sources.
 While this is unfortunate, we still accept feedback and ideas that will better the
 form and function of the aac package. We apologize for this inconvenience.
 
