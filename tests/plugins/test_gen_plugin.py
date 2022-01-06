@@ -109,7 +109,8 @@ class TestGenPlugin(TestCase):
             self.assertIn("def gen_protobuf", generated_plugin_impl_file_contents)
             self.assertIn("architecture_file: str", generated_plugin_impl_file_contents)
             self.assertIn("output_directory: string", generated_plugin_impl_file_contents)
-            self.assertIn("raise NotImplementedError", generated_plugin_impl_file_contents)
+            self.assertIn("result = PluginExecutionResult", generated_plugin_impl_file_contents)
+            self.assertIn("return result", generated_plugin_impl_file_contents)
 
             generated_plugin_impl_test_file_contents = generated_templates.get(
                 PLUGIN_IMPL_TEST_TEMPLATE_NAME
