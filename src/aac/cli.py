@@ -9,18 +9,20 @@ from pluggy import PluginManager
 
 from aac import parser, plugins
 from aac.AacCommand import AacCommand, AacCommandArgument
+from aac.plugins.plugin_execution import (
+    PluginExecutionResult,
+    PluginExecutionStatusCode,
+)
 from aac.spec.core import get_aac_spec_as_yaml
 from aac.validator import validation
 
 
 def run_cli():
     """
-    The main entry point for aac.
+    Run the specified AaC command.
 
-    This method parses the command line and performs the
-    requested user command...or outputs usage.
+    This method parses the command line and performs the requested user command or outputs usage.
     """
-
     plugin_manager = plugins.get_plugin_manager()
 
     arg_parser, aac_plugin_commands = _setup_arg_parser(plugin_manager)
@@ -33,26 +35,41 @@ def run_cli():
             keyword_args = {}
             args_dict = vars(args)
 
-            # Leverage inspect here to make sure that the arg names we're trying to access are sourced from the target function itself
+            # Leverage inspect here to make sure that the arg names we're trying to access are
+            # sourced from the target function itself
             parameters = inspect.signature(command.callback).parameters.keys()
             for argument in parameters:
                 keyword_args[argument] = args_dict[argument]
 
-            command.callback(**keyword_args)
+            result = command.callback(**keyword_args)
+
+            if not result.success():
+                print(
+                    f"{result.name}: {result.status_code.name.lower()}\n\n"
+                    + "\n".join(result.messages)
+                )
+                sys.exit(result.status_code.value)
 
 
-def _validate_cmd(model_file: str):
-    """The built-in validate command."""
+def _validate_cmd(model_file: str) -> PluginExecutionResult:
+    """Run the built-in validate command."""
     with validation(parser.parse_file, model_file) as model:
+        result = PluginExecutionResult("validate", PluginExecutionStatusCode.SUCCESS)
+        result.add_message(f"{model_file} is valid.")
+
         if not model:
-            sys.exit(1)
+            result.status_code = PluginExecutionStatusCode.VALIDATION_FAILURE
+            result.set_messages("")
 
-        print(f"{model_file} is valid.")
+        return result
 
 
-def _core_spec_cmd():
-    """The built-in aac-core-spec command."""
-    print(get_aac_spec_as_yaml())
+def _core_spec_cmd() -> PluginExecutionResult:
+    """Run the built-in aac-core-spec command."""
+    result = PluginExecutionResult("aac-core-spec", PluginExecutionStatusCode.SUCCESS)
+    result.add_message(get_aac_spec_as_yaml())
+
+    return result
 
 
 def _setup_arg_parser(

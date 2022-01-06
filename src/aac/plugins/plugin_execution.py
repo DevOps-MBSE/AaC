@@ -8,7 +8,7 @@ from enum import Enum, auto, unique
 class PluginExecutionStatusCode(Enum):
     """An enumeration that represents status codes for plugins to return."""
 
-    SUCCESS = auto()
+    SUCCESS = 0
     VALIDATION_FAILURE = auto()
     PLUGIN_FAILURE = auto()
     OPERATION_CANCELLED = auto()
@@ -38,3 +38,7 @@ class PluginExecutionResult:
     def set_messages(self, *messages) -> None:
         """Clear the current messages and set them to the passed in messages."""
         self.messages = list(messages)
+
+    def success(self) -> bool:
+        """Return True if the command succeeded; False, otherwise."""
+        self.status_code == PluginExecutionStatusCode.SUCCESS
