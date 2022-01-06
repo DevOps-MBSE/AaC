@@ -1,5 +1,19 @@
 [![Main branch AaC Workflow](https://github.com/jondavid-black/AaC/actions/workflows/main-branch.yml/badge.svg)](https://github.com/jondavid-black/AaC/actions/workflows/main-branch.yml)
 [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/from-referrer/)
+# Note to Contributors
+
+Due to certain uncontrollable circumstances surrounding the environment in which
+Architecture as code is being developed and funded, we cannot accept any new outside
+contributors at this time. We will reject any pull requests from untrusted sources.
+While this is unfortunate, we still accept feedback and ideas that will better the
+form and function of the aac package. We apologize for this inconvenience.
+
+In the future, it is our intention to accept contributions from outside sources
+per our standards and code of conduct. We are committed to reaching the goal of an
+open source repository and hope that potential contributors will still follow our
+progress and join us in the future.
+
+
 
 # Architecture-as-Code (AaC)
 
