@@ -20,6 +20,4 @@ def print_json(architecture_files: list[str]) -> PluginExecutionResult:
         with validation(parse_file, architecture_file) as parsed_model:
             messages.append(f"File: {architecture_file}\n{json.dumps(parsed_model)}")
 
-    return PluginExecutionResult(
-        plugin_name, PluginExecutionStatusCode.SUCCESS, messages
-    )
+    return PluginExecutionResult(plugin_name, PluginExecutionStatusCode.SUCCESS, messages)

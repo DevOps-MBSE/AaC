@@ -44,10 +44,7 @@ def run_cli():
             result = command.callback(**keyword_args)
 
             if not result.success():
-                print(
-                    f"{result.name}: {result.status_code.name.lower()}\n\n"
-                    + "\n".join(result.messages)
-                )
+                print(f"{result.name}: {result.status_code.name.lower()}\n\n" + "\n".join(result.messages))
                 sys.exit(result.status_code.value)
 
 

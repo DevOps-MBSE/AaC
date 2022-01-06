@@ -37,12 +37,8 @@ def generate_plugin(architecture_file: str) -> PluginExecutionResult:
     if _is_user_desired_output_directory(architecture_file, plug_dir):
         return _generate_plugin(architecture_file, plug_dir)
 
-    result = PluginExecutionResult(
-        plugin_name, PluginExecutionStatusCode.OPERATION_CANCELLED
-    )
-    result.set_messages(
-        f"Canceled: Move {architecture_file} to the desired directory and retry."
-    )
+    result = PluginExecutionResult(plugin_name, PluginExecutionStatusCode.OPERATION_CANCELLED)
+    result.set_messages(f"Move {architecture_file} to the desired directory and retry.")
 
     return result
 

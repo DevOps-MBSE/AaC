@@ -26,9 +26,7 @@ class PluginExecutionResult:
     """
 
     name: str = attrib(validator=validators.instance_of(str))
-    status_code: PluginExecutionStatusCode = attrib(
-        validator=validators.instance_of(PluginExecutionStatusCode)
-    )
+    status_code: PluginExecutionStatusCode = attrib(validator=validators.instance_of(PluginExecutionStatusCode))
     messages: list[str] = attrib(default=[], validator=validators.instance_of(list))
 
     def add_message(self, message: str) -> None:

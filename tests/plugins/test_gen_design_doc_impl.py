@@ -47,9 +47,7 @@ class TestGenerateDesignDocumentPlugin(TestCase):
         names = ["x", "y", "z"]
         required = [n for n in names if n != "z"]
         [
-            self.assertIn(
-                f"number {n}{' (required)' if n in required else ''}", markdown
-            )
+            self.assertIn(f"number {n}{' (required)' if n in required else ''}", markdown)
             for n in names
         ]
 

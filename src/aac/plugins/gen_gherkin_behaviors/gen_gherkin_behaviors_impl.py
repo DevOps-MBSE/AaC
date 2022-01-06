@@ -38,9 +38,7 @@ def gen_gherkin_behaviors(architecture_file: str, output_directory: str) -> None
         write_generated_templates_to_file(generated_template_messages, output_directory)
 
         result = PluginExecutionResult(plugin_name, PluginExecutionStatusCode.SUCCESS)
-        result.add_message(
-            f"Successfully generated templates to directory: {output_directory}"
-        )
+        result.add_message(f"Successfully generated templates to directory: {output_directory}")
 
         return result
 
@@ -92,9 +90,7 @@ def _get_template_properties(parsed_models: dict) -> dict[str, dict]:
             {
                 "description": scenario.get("scenario")
                 or "TODO: Write a description.",  # noqa: T101
-                "givens": list(
-                    map(sanitize_scenario_step_entry, scenario.get("given"))
-                ),
+                "givens": list(map(sanitize_scenario_step_entry, scenario.get("given"))),
                 "whens": list(map(sanitize_scenario_step_entry, scenario.get("when"))),
                 "thens": list(map(sanitize_scenario_step_entry, scenario.get("then"))),
             }
@@ -132,12 +128,7 @@ def _get_template_properties(parsed_models: dict) -> dict[str, dict]:
         return step.startswith(tuple(gherkin_keywords))
 
     return list(
-        flatten(
-            map(
-                collect_model_behavior_properties,
-                collect_models(parsed_models).values(),
-            )
-        )
+        flatten(map(collect_model_behavior_properties, collect_models(parsed_models).values()))
     )
 
 

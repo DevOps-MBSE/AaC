@@ -20,9 +20,7 @@ class TestSpecifications(TestCase):
             temp_spec.seek(0)
 
             result = spec_validate(temp_spec.name)
-            self.assertEqual(
-                result.status_code, PluginExecutionStatusCode.PLUGIN_FAILURE
-            )
+            self.assertEqual(result.status_code, PluginExecutionStatusCode.PLUGIN_FAILURE)
             self.assertIn("Invalid requirement id 'SUB-3'", "\n".join(result.messages))
 
 

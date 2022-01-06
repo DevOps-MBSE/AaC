@@ -42,9 +42,7 @@ def gen_design_doc(
     template_file = template_file or default_template_file
     template_file_name = os.path.basename(template_file)
 
-    selected_template, *_ = [
-        t for t in loaded_templates if template_file_name == t.name
-    ]
+    selected_template, *_ = [t for t in loaded_templates if template_file_name == t.name]
 
     output_filespec = _get_output_filespec(
         first_arch_file, _get_output_file_extension(template_file_name)
@@ -57,9 +55,7 @@ def gen_design_doc(
     write_generated_templates_to_file([generated_document], output_directory)
 
     result = PluginExecutionResult(plugin_name, PluginExecutionStatusCode.SUCCESS)
-    result.add_message(
-        f"Wrote system design document to {os.path.join(output_directory, output_filespec)}"
-    )
+    result.add_message(f"Wrote system design document to {os.path.join(output_directory, output_filespec)}")
 
     return result
 
