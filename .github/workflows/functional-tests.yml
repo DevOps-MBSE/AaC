@@ -40,3 +40,12 @@ jobs:
 
     - name: Print out Core Spec
       run: aac aac-core-spec
+
+    - name: Ensure plugins that fail, cause the pipeline to fail
+      run: |
+        cat > tmp.yaml <<EOF
+        hello: world
+        ---
+        goodbye: world
+        EOF
+        aac validate tmp.yaml
