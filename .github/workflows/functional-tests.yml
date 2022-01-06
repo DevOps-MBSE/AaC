@@ -41,11 +41,8 @@ jobs:
     - name: Print out Core Spec
       run: aac aac-core-spec
 
-    - name: Ensure plugins that fail, cause the pipeline to fail
+    - name: Test gen-plugin failure
       run: |
-        cat > tmp.yaml <<EOF
-        hello: world
-        ---
-        goodbye: world
-        EOF
-        aac validate tmp.yaml
+        mkdir gen_plugin_generation_test
+        cp  src/aac/plugins/gen_protobuf/gen_protobuf.yaml gen_plugin_generation_test
+        echo n | aac gen-plugin gen_plugin_generation_test/gen_protobuf.yaml
