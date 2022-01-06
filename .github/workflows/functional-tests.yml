@@ -43,6 +43,6 @@ jobs:
 
     - name: Test gen-plugin failure
       run: |
-        mkdir gen_plugin_generation_test
-        cp  src/aac/plugins/gen_protobuf/gen_protobuf.yaml gen_plugin_generation_test
-        echo n | aac gen-plugin gen_plugin_generation_test/gen_protobuf.yaml
+        mkdir tmp
+        cp  src/aac/plugins/gen_protobuf/gen_protobuf.yaml tmp
+        echo n | aac gen-plugin tmp/gen_protobuf.yaml
