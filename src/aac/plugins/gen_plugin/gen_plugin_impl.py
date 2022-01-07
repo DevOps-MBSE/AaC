@@ -48,8 +48,8 @@ def _generate_plugin(architecture_file: str, plug_dir: str) -> PluginExecutionRe
     result.set_messages(f"successfully created plugin in {plug_dir}")
 
     try:
-        with validation(parser.parse_file, architecture_file) as parsed_model:
-            templates = list(_compile_templates(parsed_model).values())
+        with validation(parser.parse_file, architecture_file) as validation_result:
+            templates = list(_compile_templates(validation_result.model).values())
             write_generated_templates_to_file(templates, plug_dir)
     except GeneratePluginException as exception:
         result.status_code = PluginExecutionStatusCode.PLUGIN_FAILURE

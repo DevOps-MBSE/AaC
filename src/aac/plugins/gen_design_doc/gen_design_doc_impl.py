@@ -62,8 +62,8 @@ def gen_design_doc(
 
 def _get_parsed_models(architecture_files: list) -> list:
     def parse_with_validation(architecture_file):
-        with validation(parser.parse_file, architecture_file) as model:
-            return model
+        with validation(parser.parse_file, architecture_file) as result:
+            return result.model
 
     return [parse_with_validation(file) for file in architecture_files]
 

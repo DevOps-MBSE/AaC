@@ -30,10 +30,12 @@ def gen_protobuf(architecture_file: str, output_directory: str) -> PluginExecuti
     """
     result = PluginExecutionResult(plugin_name, PluginExecutionStatusCode.SUCCESS)
 
-    with validation(parser.parse_file, architecture_file) as parsed_models:
+    with validation(parser.parse_file, architecture_file) as validation_result:
         loaded_templates = load_default_templates("gen_protobuf")
 
-        data_messages_and_enum_definitions = _collect_data_and_enum_definitions(parsed_models)
+        data_messages_and_enum_definitions = _collect_data_and_enum_definitions(
+            validation_result.model
+        )
         message_template_properties = (
             _generate_protobuf_template_details_from_data_and_enum_models(
                 data_messages_and_enum_definitions

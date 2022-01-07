@@ -36,8 +36,8 @@ def spec_validate(architecture_file: str) -> PluginExecutionResult:
 
 
 def _run_full_validation(architecture_file: str) -> tuple[bool, list]:
-    with validation(parser.parse_file, architecture_file) as parsed_model:
-        return _run_spec_validation(parsed_model)
+    with validation(parser.parse_file, architecture_file) as result:
+        return _run_spec_validation(result.model)
 
 
 def _run_spec_validation(parsed_model: dict):

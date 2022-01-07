@@ -45,13 +45,13 @@ from aac.parser import parse_file, parse_str
 from aac.validator import validation
 
 def my_plugin_command(architecture_file: str):
-    with validation(parse_file, architecture_file) as model:
-        if not model:
+    with validation(parse_file, architecture_file) as result:
+        if result.is_valid:
             return
 
         # Do whatever you want to with the validated `model' here.
         print(f"The model in {architecture_file} is valid!\n")
-        pprint(model)
+        pprint(result.model)
 ```
 
 It's worth noting that the context manager will yield `None` if the model is invalid so the standard pattern we use to handle this is, for example, `if not model: something()`, where `something()` is your procedure for dealing with an invalid model.

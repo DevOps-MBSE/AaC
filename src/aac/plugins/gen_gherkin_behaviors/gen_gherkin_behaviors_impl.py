@@ -27,10 +27,10 @@ def gen_gherkin_behaviors(architecture_file: str, output_directory: str) -> None
         architecture_file (str): The yaml file containing the data models to generate as Gherkin feature files.
         output_directory (str): The directory to write the generated Gherkin feature files to.
     """
-    with validation(parser.parse_file, architecture_file) as parsed_models:
+    with validation(parser.parse_file, architecture_file) as validation_result:
         loaded_templates = load_default_templates("gen_gherkin_behaviors")
 
-        message_template_properties = _get_template_properties(parsed_models)
+        message_template_properties = _get_template_properties(validation_result.model)
         generated_template_messages = _generate_gherkin_feature_files(
             loaded_templates, message_template_properties
         )

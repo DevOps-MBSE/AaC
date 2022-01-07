@@ -19,6 +19,21 @@ class ValidationError(RuntimeError):
     pass
 
 
+@attrs(slots=True, auto_attribs=True)
+class ValidationResult:
+    """Represents the result of validating a model.
+
+    Attributes:
+        is_valid (bool): Determines whether the model is valid, or not.
+        messages (list[str]): A list of messages to be provided as feedback for the user.
+        model (dict): The model that was validated; if the model is invalid, None.
+    """
+
+    is_valid: bool = attrib(default=False, validator=validators.instance_of(bool))
+    messages: list[str] = attrib(default=[], validator=validators.instance_of(list))
+    model: dict = attrib(default={}, validator=validators.instance_of(dict))
+
+
 @contextmanager
 def validation(model_producer: callable, source: str, **kwargs):
     """Run validation on the model returned by func.
@@ -33,17 +48,24 @@ def validation(model_producer: callable, source: str, **kwargs):
     Returns:
         If the model returned by model_producer is valid, it is returned. Otherwise, None is returned.
     """
+    result = ValidationResult()
     try:
-        model = model_producer(source, **kwargs)
-        _validate(model)
-        yield model
+        result.model = model_producer(source, **kwargs)
+        _validate(result.model)
+        result.is_valid = True
+        result.messages.append(f"{source} is valid")
     except ValidationError as ve:
         _, errors = ve.args
-        errors = "\n  ".join(errors)
-        print(f"Failed to validate {source}")
-        print(f"Failed with errors:\n  {errors}")
-        print("validation error")
-        yield
+        result.is_valid = False
+        result.messages = (
+            [
+                f"Failed to validate {source}",
+                "Failed with errors:\n  ",
+            ]
+            + errors
+            + ["validation error"]
+        )
+    yield result
 
 
 def _validate(model: dict) -> None:

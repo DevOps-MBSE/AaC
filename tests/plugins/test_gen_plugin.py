@@ -57,12 +57,10 @@ class TestGenPlugin(TestCase):
             self.assertEqual(expected_filename, actual_filename)
 
     def test_compile_templates(self):
-        with validation(
-            parser.parse_str, "", model_content=TEST_PLUGIN_YAML_STRING
-        ) as parsed_model:
+        with validation(parser.parse_str, "", model_content=TEST_PLUGIN_YAML_STRING) as result:
             plugin_name = "aac_gen_protobuf"
 
-            generated_templates = _compile_templates(parsed_model)
+            generated_templates = _compile_templates(result.model)
 
             generated_template_names = []
             generated_template_parent_directories = []
@@ -139,8 +137,8 @@ class TestGenPlugin(TestCase):
             parser.parse_str,
             "",
             model_content=f"{TEST_PLUGIN_YAML_STRING}\n---\n{SECONDARY_MODEL_YAML_DEFINITION}",
-        ) as parsed_model:
-            self.assertRaises(GeneratePluginException, _compile_templates, parsed_model)
+        ) as result:
+            self.assertRaises(GeneratePluginException, _compile_templates, result.model)
 
     def test__compile_templates_with_model_name_missing_package_prefix(self):
         parsed_model = parser.parse_str("", MODEL_YAML_DEFINITION_SANS_PACKAGE_PREFIX)
