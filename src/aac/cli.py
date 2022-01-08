@@ -63,7 +63,12 @@ def _validate_cmd(model_file: str) -> PluginExecutionResult:
 def _core_spec_cmd() -> PluginExecutionResult:
     """Run the built-in aac-core-spec command."""
     result = PluginExecutionResult("aac-core-spec", PluginExecutionStatusCode.SUCCESS)
-    result.add_message(get_aac_spec_as_yaml())
+
+    try:
+        result.add_message(get_aac_spec_as_yaml())
+    except FileNotFoundError as error:
+        result.status_code = PluginExecutionStatusCode.GENERAL_FAILURE
+        result.set_messages(error)
 
     return result
 
