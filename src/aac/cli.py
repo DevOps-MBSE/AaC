@@ -50,15 +50,14 @@ def run_cli():
 
 def _validate_cmd(model_file: str) -> PluginExecutionResult:
     """Run the built-in validate command."""
-    with validation(parser.parse_file, model_file) as model:
-        result = PluginExecutionResult("validate", PluginExecutionStatusCode.SUCCESS)
-        result.add_message(f"{model_file} is valid.")
+    with validation(parser.parse_file, model_file) as validation_result:
+        status = (
+            PluginExecutionStatusCode.SUCCESS
+            if validation_result.is_valid
+            else PluginExecutionStatusCode.VALIDATION_FAILURE
+        )
 
-        if not model:
-            result.status_code = PluginExecutionStatusCode.VALIDATION_FAILURE
-            result.set_messages("")
-
-        return result
+        return PluginExecutionResult("validate", status, validation_result.messages)
 
 
 def _core_spec_cmd() -> PluginExecutionResult:
