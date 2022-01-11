@@ -42,7 +42,7 @@ def generate_plugin(architecture_file: str) -> PluginExecutionResult:
         return result
 
 
-def _generate_plugin(architecture_file: str, plug_dir: str) -> PluginExecutionResult:
+def _generate_plugin(architecture_file: str, plug_dir: str) -> str:
     with validation(parser.parse_file, architecture_file) as validation_result:
         templates = list(_compile_templates(validation_result.model).values())
         write_generated_templates_to_file(templates, plug_dir)
