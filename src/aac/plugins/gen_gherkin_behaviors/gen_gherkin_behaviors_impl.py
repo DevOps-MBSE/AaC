@@ -80,9 +80,7 @@ def _get_template_properties(parsed_models: dict) -> dict[str, dict]:
             {
                 "feature": {"name": feature_name, "description": feature_description},
                 "scenarios": list(
-                    flatten(
-                        map(collect_and_sanitize_scenario_steps, behavior_scenarios)
-                    )
+                    flatten(map(collect_and_sanitize_scenario_steps, behavior_scenarios))
                 ),
             }
         ]
