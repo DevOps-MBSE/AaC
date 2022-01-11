@@ -10,7 +10,7 @@ from aac.plugins.gen_plugin.gen_plugin_impl import (
     generate_plugin,
 )
 from aac.plugins.gen_plugin.GeneratePluginException import GeneratePluginException
-from aac.plugins.plugin_execution import PluginExecutionStatusCode, plugin_result
+from aac.plugins.plugin_execution import PluginExecutionStatusCode
 from aac.validator import validation
 
 INIT_TEMPLATE_NAME = "__init__.py.jinja2"
@@ -34,7 +34,7 @@ class TestGenPlugin(TestCase):
 
     @patch("aac.plugins.gen_plugin.gen_plugin_impl._is_user_desired_output_directory")
     def test_generate_plugin_fails_with_multiple_models(self, is_user_desired_output_dir):
-        with (TemporaryDirectory() as temp_dir, NamedTemporaryFile(mode="w") as plugin_yaml):
+        with (TemporaryDirectory(), NamedTemporaryFile(mode="w") as plugin_yaml):
             plugin_yaml.write(f"{TEST_PLUGIN_YAML_STRING}\n---\n{SECONDARY_MODEL_YAML_DEFINITION}")
             plugin_yaml.seek(0)
 
@@ -44,7 +44,7 @@ class TestGenPlugin(TestCase):
 
     @patch("aac.plugins.gen_plugin.gen_plugin_impl._is_user_desired_output_directory")
     def test_generate_plugin_returns_op_cancelled_when_confirmation_is_false(self, is_user_desired_output_dir):
-        with (TemporaryDirectory() as temp_dir, NamedTemporaryFile(mode="w") as plugin_yaml):
+        with (TemporaryDirectory(), NamedTemporaryFile(mode="w") as plugin_yaml):
             plugin_yaml.write(TEST_PLUGIN_YAML_STRING)
             plugin_yaml.seek(0)
 
