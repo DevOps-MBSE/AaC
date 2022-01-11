@@ -24,7 +24,6 @@ class ValidationResult:
     """Represents the result of validating a model.
 
     Attributes:
-        is_valid (bool): Determines whether the model is valid, or not.
         messages (list[str]): A list of messages to be provided as feedback for the user.
         model (dict): The model that was validated; if the model is invalid, None.
     """
