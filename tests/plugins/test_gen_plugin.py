@@ -23,7 +23,7 @@ README_TEMPLATE_NAME = "README.md.jinja2"
 class TestGenPlugin(TestCase):
     @patch("aac.plugins.gen_plugin.gen_plugin_impl._is_user_desired_output_directory")
     def test_generate_plugin(self, is_user_desired_output_dir):
-        with (TemporaryDirectory() as temp_dir, NamedTemporaryFile(mode="w") as plugin_yaml):
+        with (TemporaryDirectory(), NamedTemporaryFile(mode="w") as plugin_yaml):
             plugin_yaml.write(TEST_PLUGIN_YAML_STRING)
             plugin_yaml.seek(0)
 
