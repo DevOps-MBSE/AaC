@@ -11,7 +11,7 @@ from aac import parser, plugins
 from aac.AacCommand import AacCommand, AacCommandArgument
 from aac.plugins.plugin_execution import (
     PluginExecutionResult,
-    PluginExecutionStatusCode,
+    plugin_result,
 )
 from aac.spec.core import get_aac_spec_as_yaml
 from aac.validator import validation
@@ -42,35 +42,26 @@ def run_cli():
                 keyword_args[argument] = args_dict[argument]
 
             result = command.callback(**keyword_args)
-
-            if not result.success():
-                print(f"{result.name}: {result.status_code.name.lower()}\n\n" + "\n".join(result.messages))
+            print(f"{result.name}: {result.status_code.name.lower()}\n\n" + "\n".join(result.messages))
+            if not result.is_success():
                 sys.exit(result.status_code.value)
 
 
 def _validate_cmd(model_file: str) -> PluginExecutionResult:
     """Run the built-in validate command."""
-    with validation(parser.parse_file, model_file) as validation_result:
-        status = (
-            PluginExecutionStatusCode.SUCCESS
-            if validation_result.is_valid
-            else PluginExecutionStatusCode.VALIDATION_FAILURE
-        )
 
-        return PluginExecutionResult("validate", status, validation_result.messages)
+    def validate_model() -> str:
+        with validation(parser.parse_file, model_file):
+            return f"{model_file} is valid"
+
+    with plugin_result("validate", validate_model) as result:
+        return result
 
 
 def _core_spec_cmd() -> PluginExecutionResult:
     """Run the built-in aac-core-spec command."""
-    result = PluginExecutionResult("aac-core-spec", PluginExecutionStatusCode.SUCCESS)
-
-    try:
-        result.add_message(get_aac_spec_as_yaml())
-    except FileNotFoundError as error:
-        result.status_code = PluginExecutionStatusCode.GENERAL_FAILURE
-        result.set_messages(error)
-
-    return result
+    with plugin_result("aac-core-spec", get_aac_spec_as_yaml) as result:
+        return result
 
 
 def _setup_arg_parser(

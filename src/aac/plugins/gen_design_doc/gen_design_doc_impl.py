@@ -7,8 +7,8 @@ from jinja2 import Template
 
 from aac import parser, util
 from aac.plugins.plugin_execution import (
-    PluginExecutionStatusCode,
     PluginExecutionResult,
+    plugin_result,
 )
 from aac.template_engine import (
     TemplateOutputFile,
@@ -34,30 +34,30 @@ def gen_design_doc(
         output_directory (str): The directory to which the System Design document will be written.
         template_file (str): The name of the template file to use for generating the document. (optional)
     """
-    first_arch_file, *other_arch_files = architecture_files.split(",")
-    parsed_models = _get_parsed_models([first_arch_file] + other_arch_files)
 
-    loaded_templates = load_default_templates("gen_design_doc")
+    def write_design_doc_to_directory():
+        first_arch_file, *other_arch_files = architecture_files.split(",")
+        parsed_models = _get_parsed_models([first_arch_file] + other_arch_files)
 
-    template_file = template_file or default_template_file
-    template_file_name = os.path.basename(template_file)
+        loaded_templates = load_default_templates("gen_design_doc")
+        template_file_name = os.path.basename(template_file or default_template_file)
 
-    selected_template, *_ = [t for t in loaded_templates if template_file_name == t.name]
+        selected_template, *_ = [t for t in loaded_templates if template_file_name == t.name]
 
-    output_filespec = _get_output_filespec(
-        first_arch_file, _get_output_file_extension(template_file_name)
-    )
+        output_filespec = _get_output_filespec(
+            first_arch_file, _get_output_file_extension(template_file_name)
+        )
 
-    template_properties = _make_template_properties(parsed_models, first_arch_file)
-    generated_document = _generate_system_doc(
-        output_filespec, selected_template, template_properties
-    )
-    write_generated_templates_to_file([generated_document], output_directory)
+        template_properties = _make_template_properties(parsed_models, first_arch_file)
+        generated_document = _generate_system_doc(
+            output_filespec, selected_template, template_properties
+        )
+        write_generated_templates_to_file([generated_document], output_directory)
 
-    result = PluginExecutionResult(plugin_name, PluginExecutionStatusCode.SUCCESS)
-    result.add_message(f"Wrote system design document to {os.path.join(output_directory, output_filespec)}")
+        return f"Wrote system design document to {os.path.join(output_directory, output_filespec)}"
 
-    return result
+    with plugin_result(plugin_name, write_design_doc_to_directory) as result:
+        return result
 
 
 def _get_parsed_models(architecture_files: list) -> list:

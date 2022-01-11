@@ -1,14 +1,16 @@
-from tempfile import TemporaryDirectory, NamedTemporaryFile
+import os
+from tempfile import NamedTemporaryFile, TemporaryDirectory
 from unittest import TestCase
+from unittest.mock import patch
 
 from aac import parser
-from aac.plugins.plugin_execution import PluginExecutionStatusCode
-from aac.plugins.gen_plugin.GeneratePluginException import GeneratePluginException
 from aac.plugins.gen_plugin.gen_plugin_impl import (
-    _generate_plugin,
     _compile_templates,
     _convert_template_name_to_file_name,
+    generate_plugin,
 )
+from aac.plugins.gen_plugin.GeneratePluginException import GeneratePluginException
+from aac.plugins.plugin_execution import PluginExecutionStatusCode, plugin_result
 from aac.validator import validation
 
 INIT_TEMPLATE_NAME = "__init__.py.jinja2"
@@ -20,21 +22,35 @@ README_TEMPLATE_NAME = "README.md.jinja2"
 
 
 class TestGenPlugin(TestCase):
-    def test_generate_plugin(self):
+    @patch("aac.plugins.gen_plugin.gen_plugin_impl._is_user_desired_output_directory")
+    def test_generate_plugin(self, is_user_desired_output_dir):
         with (TemporaryDirectory() as temp_dir, NamedTemporaryFile(mode="w") as plugin_yaml):
             plugin_yaml.write(TEST_PLUGIN_YAML_STRING)
             plugin_yaml.seek(0)
 
-            result = _generate_plugin(plugin_yaml.name, temp_dir)
-            self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
+            is_user_desired_output_dir.return_value = True
+            result = generate_plugin(plugin_yaml.name)
+            self.assertRegexpMatches("\n".join(result.messages), f"[Ss]uccess.*{os.path.dirname(temp_dir)}")
 
-    def test_generate_plugin_fails_with_multiple_models(self):
+    @patch("aac.plugins.gen_plugin.gen_plugin_impl._is_user_desired_output_directory")
+    def test_generate_plugin_fails_with_multiple_models(self, is_user_desired_output_dir):
         with (TemporaryDirectory() as temp_dir, NamedTemporaryFile(mode="w") as plugin_yaml):
             plugin_yaml.write(f"{TEST_PLUGIN_YAML_STRING}\n---\n{SECONDARY_MODEL_YAML_DEFINITION}")
             plugin_yaml.seek(0)
 
-            result = _generate_plugin(plugin_yaml.name, temp_dir)
+            is_user_desired_output_dir.return_value = True
+            result = generate_plugin(plugin_yaml.name)
             self.assertEqual(result.status_code, PluginExecutionStatusCode.PLUGIN_FAILURE)
+
+    @patch("aac.plugins.gen_plugin.gen_plugin_impl._is_user_desired_output_directory")
+    def test_generate_plugin_returns_op_cancelled_when_confirmation_is_false(self, is_user_desired_output_dir):
+        with (TemporaryDirectory() as temp_dir, NamedTemporaryFile(mode="w") as plugin_yaml):
+            plugin_yaml.write(TEST_PLUGIN_YAML_STRING)
+            plugin_yaml.seek(0)
+
+            is_user_desired_output_dir.return_value = False
+            result = generate_plugin(plugin_yaml.name)
+            self.assertEqual(result.status_code, PluginExecutionStatusCode.OPERATION_CANCELLED)
 
     def test_convert_template_name_to_file_name(self):
         plugin_name = "aac-test"

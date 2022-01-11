@@ -29,7 +29,6 @@ class ValidationResult:
         model (dict): The model that was validated; if the model is invalid, None.
     """
 
-    is_valid: bool = attrib(default=False, validator=validators.instance_of(bool))
     messages: list[str] = attrib(default=[], validator=validators.instance_of(list))
     model: dict = attrib(default={}, validator=validators.instance_of(dict))
 
@@ -52,20 +51,10 @@ def validation(model_producer: callable, source: str, **kwargs):
     try:
         result.model = model_producer(source, **kwargs)
         _validate(result.model)
-        result.is_valid = True
         result.messages.append(f"{source} is valid")
+        yield result
     except ValidationError as ve:
-        _, errors = ve.args
-        result.is_valid = False
-        result.messages = (
-            [
-                f"Failed to validate {source}",
-                "Failed with errors:\n  ",
-            ]
-            + errors
-            + ["validation error"]
-        )
-    yield result
+        raise ValidationError(source, *ve.args)
 
 
 def _validate(model: dict) -> None:

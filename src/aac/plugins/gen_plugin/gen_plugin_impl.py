@@ -15,12 +15,9 @@ from aac.template_engine import (
     load_default_templates,
     write_generated_templates_to_file,
 )
-from aac.plugins import PLUGIN_PROJECT_NAME
+from aac.plugins import PLUGIN_PROJECT_NAME, OperationCancelled
 from aac.plugins.gen_plugin.GeneratePluginException import GeneratePluginException
-from aac.plugins.plugin_execution import (
-    PluginExecutionStatusCode,
-    PluginExecutionResult,
-)
+from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 from aac.validator import validation
 
 plugin_name = "gen-plugin"
@@ -33,29 +30,23 @@ def generate_plugin(architecture_file: str) -> PluginExecutionResult:
     Args:
         architecture_file (str): filepath to the architecture file.
     """
-    plug_dir = os.path.dirname(os.path.abspath(architecture_file))
-    if _is_user_desired_output_directory(architecture_file, plug_dir):
-        return _generate_plugin(architecture_file, plug_dir)
 
-    result = PluginExecutionResult(plugin_name, PluginExecutionStatusCode.OPERATION_CANCELLED)
-    result.set_messages(f"Move {architecture_file} to the desired directory and retry.")
+    def confirm_with_user():
+        plug_dir = os.path.dirname(os.path.abspath(architecture_file))
+        if _is_user_desired_output_directory(architecture_file, plug_dir):
+            return _generate_plugin(architecture_file, plug_dir)
 
-    return result
+        raise OperationCancelled(f"Move {architecture_file} to the desired directory and retry.")
+
+    with plugin_result(plugin_name, confirm_with_user) as result:
+        return result
 
 
 def _generate_plugin(architecture_file: str, plug_dir: str) -> PluginExecutionResult:
-    result = PluginExecutionResult(plugin_name, PluginExecutionStatusCode.SUCCESS)
-    result.set_messages(f"successfully created plugin in {plug_dir}")
-
-    try:
-        with validation(parser.parse_file, architecture_file) as validation_result:
-            templates = list(_compile_templates(validation_result.model).values())
-            write_generated_templates_to_file(templates, plug_dir)
-    except GeneratePluginException as exception:
-        result.status_code = PluginExecutionStatusCode.PLUGIN_FAILURE
-        result.set_messages(f"error [{architecture_file}]:  {exception}.")
-
-    return result
+    with validation(parser.parse_file, architecture_file) as validation_result:
+        templates = list(_compile_templates(validation_result.model).values())
+        write_generated_templates_to_file(templates, plug_dir)
+        return f"Successfully created plugin in {plug_dir}"
 
 
 def _compile_templates(parsed_models: dict[str, dict]) -> dict[str, list[TemplateOutputFile]]:

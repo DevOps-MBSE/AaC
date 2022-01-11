@@ -4,7 +4,7 @@ from unittest.mock import patch
 from tempfile import TemporaryDirectory, NamedTemporaryFile
 from nose2.tools import params
 
-from aac.plugins.plugin_execution import PluginExecutionStatusCode
+from aac.plugins.plugin_execution import PluginExecutionStatusCode, plugin_result
 from aac.plugins.gen_protobuf.gen_protobuf_impl import (
     gen_protobuf,
     _convert_camel_case_to_snake_case,
@@ -18,8 +18,8 @@ class TestGenerateProtobufPlugin(TestCase):
             temp_arch_file.write(TEST_ARCH_YAML_STRING)
             temp_arch_file.seek(0)
 
-            result = gen_protobuf(temp_arch_file.name, temp_dir)
-            self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
+            with plugin_result("", gen_protobuf, temp_arch_file.name, temp_dir) as result:
+                self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
 
             # Assert each data message has its own file.
             generated_file_names = os.listdir(temp_dir)
@@ -82,7 +82,7 @@ class TestGenerateProtobufPlugin(TestCase):
                 self.assertIn("TYPE_2", message_type_proto_file_contents)
                 self.assertIn("TYPE_3", message_type_proto_file_contents)
 
-    @patch('aac.plugins.gen_protobuf.gen_protobuf_impl.load_default_templates')
+    @patch("aac.plugins.gen_protobuf.gen_protobuf_impl.load_default_templates")
     def test_gen_protobuf_fails_with_multiple_message_templates(self, load_default_templates):
         with TemporaryDirectory() as temp_dir, NamedTemporaryFile("w") as arch_file:
             arch_file.write(TEST_ARCH_YAML_STRING)
