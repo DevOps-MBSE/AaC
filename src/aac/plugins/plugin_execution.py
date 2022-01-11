@@ -73,10 +73,10 @@ def plugin_result(name: str, cmd: callable, *args, **kwargs) -> PluginExecutionR
         result.add_messages(f"{error.strerror}: {error.filename}")
         result.status_code = PluginExecutionStatusCode.GENERAL_FAILURE
     except PluginError as error:
-        result.add_messages(error.message)
+        result.set_messages(error.message)
         result.status_code = PluginExecutionStatusCode.PLUGIN_FAILURE
     except OperationCancelled as condition:
-        result.add_messages(condition.message)
+        result.set_messages(condition.message)
         result.status_code = PluginExecutionStatusCode.OPERATION_CANCELLED
     except Exception as error:
         result.add_messages(f"an unrecognized error occurred: {error}")

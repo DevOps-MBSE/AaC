@@ -1,4 +1,3 @@
-import os
 from tempfile import NamedTemporaryFile, TemporaryDirectory
 from unittest import TestCase
 from unittest.mock import patch
@@ -30,7 +29,7 @@ class TestGenPlugin(TestCase):
 
             is_user_desired_output_dir.return_value = True
             result = generate_plugin(plugin_yaml.name)
-            self.assertRegexpMatches("\n".join(result.messages), f"[Ss]uccess.*{os.path.dirname(temp_dir)}")
+            self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
 
     @patch("aac.plugins.gen_plugin.gen_plugin_impl._is_user_desired_output_directory")
     def test_generate_plugin_fails_with_multiple_models(self, is_user_desired_output_dir):
