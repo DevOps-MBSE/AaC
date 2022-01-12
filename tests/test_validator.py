@@ -308,22 +308,26 @@ class ValidatorTest(TestCase):
 
 class ValidatorFunctionalTest(TestCase):
     def test_fails_to_validate_invalid_yaml_models(self):
-        with validation(
-            parse_str, "validation-test", model_content="""data:\n  name: invalid"""
-        ) as model:
-            self.assertIsNone(model)
+        with self.assertRaises(ValidationError) as cm:
+            with validation(
+                parse_str, "validation-test", model_content="data:\n  name: invalid"
+            ):
+                pass
+
+        _, __, messages = cm.exception.args
+        self.assertRegexpMatches("\n".join(messages), "missing.*field.*fields")
 
     def test_validates_parsed_yaml_models(self):
         with validation(
             parse_str, "validation-test", model_content=TEST_MODEL_WITH_EXTENSIONS
-        ) as model:
-            assert_model_is_valid(self, model)
+        ) as result:
+            assert_model_is_valid(self, result.model)
 
     def test_validates_parsed_yaml_models_that_leverage_gen_pugin_extensions(self):
         with validation(
             parse_str, "validation-test", model_content=TEST_MODEL_WITH_EXTENSIONS
-        ) as model:
-            assert_model_is_valid(self, model)
+        ) as result:
+            assert_model_is_valid(self, result.model)
 
     def test_validate_parsed_yaml_model_with_missing_enum_def(self):
         pattern = "unrecognized.*BehaviorType.*value.*(some_undefined_enum)"

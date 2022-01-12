@@ -1,9 +1,16 @@
+from tempfile import NamedTemporaryFile, TemporaryDirectory
 from unittest import TestCase
+from unittest.mock import patch
 
 from aac import parser
-from aac.validator import validation
+from aac.plugins.gen_plugin.gen_plugin_impl import (
+    _compile_templates,
+    _convert_template_name_to_file_name,
+    generate_plugin,
+)
 from aac.plugins.gen_plugin.GeneratePluginException import GeneratePluginException
-from aac.plugins.gen_plugin.gen_plugin_impl import _compile_templates, _convert_template_name_to_file_name
+from aac.plugins.plugin_execution import PluginExecutionStatusCode
+from aac.validator import validation
 
 INIT_TEMPLATE_NAME = "__init__.py.jinja2"
 PLUGIN_TEMPLATE_NAME = "plugin.py.jinja2"
@@ -14,6 +21,36 @@ README_TEMPLATE_NAME = "README.md.jinja2"
 
 
 class TestGenPlugin(TestCase):
+    @patch("aac.plugins.gen_plugin.gen_plugin_impl._is_user_desired_output_directory")
+    def test_generate_plugin(self, is_user_desired_output_dir):
+        with (TemporaryDirectory(), NamedTemporaryFile(mode="w") as plugin_yaml):
+            plugin_yaml.write(TEST_PLUGIN_YAML_STRING)
+            plugin_yaml.seek(0)
+
+            is_user_desired_output_dir.return_value = True
+            result = generate_plugin(plugin_yaml.name)
+            self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
+
+    @patch("aac.plugins.gen_plugin.gen_plugin_impl._is_user_desired_output_directory")
+    def test_generate_plugin_fails_with_multiple_models(self, is_user_desired_output_dir):
+        with (TemporaryDirectory(), NamedTemporaryFile(mode="w") as plugin_yaml):
+            plugin_yaml.write(f"{TEST_PLUGIN_YAML_STRING}\n---\n{SECONDARY_MODEL_YAML_DEFINITION}")
+            plugin_yaml.seek(0)
+
+            is_user_desired_output_dir.return_value = True
+            result = generate_plugin(plugin_yaml.name)
+            self.assertEqual(result.status_code, PluginExecutionStatusCode.PLUGIN_FAILURE)
+
+    @patch("aac.plugins.gen_plugin.gen_plugin_impl._is_user_desired_output_directory")
+    def test_generate_plugin_returns_op_cancelled_when_confirmation_is_false(self, is_user_desired_output_dir):
+        with (TemporaryDirectory(), NamedTemporaryFile(mode="w") as plugin_yaml):
+            plugin_yaml.write(TEST_PLUGIN_YAML_STRING)
+            plugin_yaml.seek(0)
+
+            is_user_desired_output_dir.return_value = False
+            result = generate_plugin(plugin_yaml.name)
+            self.assertEqual(result.status_code, PluginExecutionStatusCode.OPERATION_CANCELLED)
+
     def test_convert_template_name_to_file_name(self):
         plugin_name = "aac-test"
         template_names = [
@@ -35,12 +72,10 @@ class TestGenPlugin(TestCase):
             self.assertEqual(expected_filename, actual_filename)
 
     def test_compile_templates(self):
-        with validation(
-            parser.parse_str, "", model_content=TEST_PLUGIN_YAML_STRING
-        ) as parsed_model:
+        with validation(parser.parse_str, "", model_content=TEST_PLUGIN_YAML_STRING) as result:
             plugin_name = "aac_gen_protobuf"
 
-            generated_templates = _compile_templates(parsed_model)
+            generated_templates = _compile_templates(result.model)
 
             generated_template_names = []
             generated_template_parent_directories = []
@@ -87,7 +122,8 @@ class TestGenPlugin(TestCase):
             self.assertIn("def gen_protobuf", generated_plugin_impl_file_contents)
             self.assertIn("architecture_file: str", generated_plugin_impl_file_contents)
             self.assertIn("output_directory: string", generated_plugin_impl_file_contents)
-            self.assertIn("raise NotImplementedError", generated_plugin_impl_file_contents)
+            self.assertIn("result = PluginExecutionResult", generated_plugin_impl_file_contents)
+            self.assertIn("return result", generated_plugin_impl_file_contents)
 
             generated_plugin_impl_test_file_contents = generated_templates.get(
                 PLUGIN_IMPL_TEST_TEMPLATE_NAME
@@ -116,8 +152,8 @@ class TestGenPlugin(TestCase):
             parser.parse_str,
             "",
             model_content=f"{TEST_PLUGIN_YAML_STRING}\n---\n{SECONDARY_MODEL_YAML_DEFINITION}",
-        ) as parsed_model:
-            self.assertRaises(GeneratePluginException, _compile_templates, parsed_model)
+        ) as result:
+            self.assertRaises(GeneratePluginException, _compile_templates, result.model)
 
     def test__compile_templates_with_model_name_missing_package_prefix(self):
         parsed_model = parser.parse_str("", MODEL_YAML_DEFINITION_SANS_PACKAGE_PREFIX)

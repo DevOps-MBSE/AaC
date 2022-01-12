@@ -7,7 +7,7 @@ on:
 
 jobs:
   Build_Package_and_Artifacts:
-    uses: jondavid-black/AaC/.github/workflows/build-artifacts.yml@1e3f89c23eb6583116848d81ccd5ad952f9a62b6
+    uses: jondavid-black/AaC/.github/workflows/build-artifacts.yml@2f31748af5e838d581bfce55111a76ee5c8d0add
 
   Run_Functional_Tests:
     needs: Build_Package_and_Artifacts

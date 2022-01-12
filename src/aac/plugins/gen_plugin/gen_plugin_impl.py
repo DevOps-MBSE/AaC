@@ -15,30 +15,38 @@ from aac.template_engine import (
     load_default_templates,
     write_generated_templates_to_file,
 )
-from aac.plugins import PLUGIN_PROJECT_NAME
+from aac.plugins import PLUGIN_PROJECT_NAME, OperationCancelled
 from aac.plugins.gen_plugin.GeneratePluginException import GeneratePluginException
+from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 from aac.validator import validation
 
+plugin_name = "gen-plugin"
 
-def generate_plugin(architecture_file: str) -> None:
+
+def generate_plugin(architecture_file: str) -> PluginExecutionResult:
     """
     Entrypoint command to generate the plugin.
 
     Args:
         architecture_file (str): filepath to the architecture file.
     """
-    plug_dir = os.path.dirname(os.path.abspath(architecture_file))
-    if _is_user_desired_output_directory(architecture_file, plug_dir):
-        _generate_plugin(architecture_file, plug_dir)
+
+    def confirm_with_user():
+        plug_dir = os.path.dirname(os.path.abspath(architecture_file))
+        if _is_user_desired_output_directory(architecture_file, plug_dir):
+            return _generate_plugin(architecture_file, plug_dir)
+
+        raise OperationCancelled(f"Move {architecture_file} to the desired directory and retry.")
+
+    with plugin_result(plugin_name, confirm_with_user) as result:
+        return result
 
 
-def _generate_plugin(architecture_file: str, plug_dir: str) -> None:
-    try:
-        with validation(parser.parse_file, architecture_file) as parsed_model:
-            templates = list(_compile_templates(parsed_model).values())
-            write_generated_templates_to_file(templates, plug_dir)
-    except GeneratePluginException as exception:
-        print(f"gen-plugin error [{architecture_file}]:  {exception}.")
+def _generate_plugin(architecture_file: str, plug_dir: str) -> str:
+    with validation(parser.parse_file, architecture_file) as validation_result:
+        templates = list(_compile_templates(validation_result.model).values())
+        write_generated_templates_to_file(templates, plug_dir)
+        return f"Successfully created plugin in {plug_dir}"
 
 
 def _compile_templates(parsed_models: dict[str, dict]) -> dict[str, list[TemplateOutputFile]]:
@@ -54,7 +62,6 @@ def _compile_templates(parsed_models: dict[str, dict]) -> dict[str, list[Templat
     Raises:
         GeneratePluginException: An error encountered during the plugin generation process.
     """
-
     templates_to_overwrite = ["plugin.py.jinja2", "setup.py.jinja2"]
     template_parent_directories = {"test_plugin_impl.py.jinja2": "tests"}
 
@@ -135,7 +142,6 @@ def _convert_template_name_to_file_name(template_name: str, plugin_name: str) ->
     Returns:
         A string containing the personalized/pythonic file name.
     """
-
     return template_name.replace(".jinja2", "").replace("plugin", plugin_name)
 
 
@@ -146,6 +152,7 @@ def _is_user_desired_output_directory(architecture_file: str, output_dir: str) -
     Args:
         architecture_file: Name of the architecture file
         output_dir: The path to the target output directory
+
     Returns:
         boolean True if the user wishes to write to <output_dir>
     """
@@ -161,17 +168,12 @@ def _is_user_desired_output_directory(architecture_file: str, output_dir: str) -
             f"Do you want to generate an AaC plugin in the directory {output_dir}? [y/n]"
         )
 
-    if confirmation in ["n", "N"]:
-        print(
-            f"Canceled: Please move {architecture_file} to the desired directory and rerun the command."
-        )
-
     return confirmation in ["y", "Y"]
 
 
 def _gather_commands(behaviors: dict) -> list[dict]:
     """
-    Parses the plugin model's behaviors and returns a list of commands derived from the plugin's behavior.
+    Parse the plugin model's behaviors and return a list of commands derived from the plugin's behavior.
 
     Args:
         behaviors: The plugin's modeled behaviors
@@ -180,7 +182,7 @@ def _gather_commands(behaviors: dict) -> list[dict]:
     """
 
     def modify_command_input_output_entry(in_out_entry: dict):
-        """Modifies the input and output entries of a behavior definition to reduce complexity in the templates."""
+        """Modify the input and output entries of a behavior definition to reduce complexity in the templates."""
         in_out_entry["type"] = in_out_entry.get("python_type") or in_out_entry.get("type")
 
         return in_out_entry
