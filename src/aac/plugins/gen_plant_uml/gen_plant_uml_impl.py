@@ -12,7 +12,7 @@ plugin_name = "gen_plant_uml"
 
 def puml_component(architecture_file: str) -> PluginExecutionResult:
     """
-    Convert an AaC model to Plant ULM component diagram.
+    Convert an AaC model to Plant UML component diagram.
 
     Args:
         architecture_file: str: Path to a yaml file containing an AaC usecase from which to generate a Plant UML component diagram.
