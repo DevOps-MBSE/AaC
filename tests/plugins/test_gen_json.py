@@ -1,24 +1,16 @@
-import os
+
 from unittest import TestCase
-from unittest.mock import patch
 from tempfile import TemporaryDirectory, NamedTemporaryFile
-from nose2.tools import params
 
-import json
-import os
+from aac.plugins.gen_json.gen_json_impl import print_json
+from aac.plugins.plugin_execution import PluginExecutionStatusCode, plugin_result
 
-from aac.parser import parse_file
-from aac.plugins.plugin_execution import (
-    PluginExecutionResult,
-    PluginExecutionStatusCode,
-    plugin_result,
-)
-from aac.validator import validation
 
-class TestGenjSON(TestCase):
+class Testgen_json(TestCase):
+
     def test_print_json_with_output_directory(self):
 
-        with TemporaryDirectory() as temp_dir, NamedTemporaryFile("w") as temp_arch_file_:
+        with TemporaryDirectory() as temp_dir, NamedTemporaryFile("w") as temp_arch_file:
             temp_arch_file.write(TEST_ARCH_YAML_STRING)
             temp_arch_file.seek(0)
 
@@ -27,7 +19,7 @@ class TestGenjSON(TestCase):
 
     def test_gen_json_output_to_cli(self):
 
-        with TemporaryDirectory() as temp_dir, NamedTemporaryFile("w") as temp_arch_file_:
+        with TemporaryDirectory() as temp_dir, NamedTemporaryFile("w") as temp_arch_file:
             temp_arch_file.write(TEST_ARCH_YAML_STRING)
             temp_arch_file.seek(0)
 
@@ -36,6 +28,7 @@ class TestGenjSON(TestCase):
 
     def test_gen_json_with_invlaid_arch_file(self):
         pass
+
 
 TEST_ARCH_YAML_STRING = """
 model:
