@@ -15,7 +15,7 @@ from aac.validator import validation
 plugin_name = "gen-json"
 
 
-def print_json(architecture_files: list[str], output_directory: str) -> PluginExecutionResult:
+def print_json(architecture_files: list[str], output_directory: str = None) -> PluginExecutionResult:
     """Prints the parsed_models from the parsed architecture_files values in JSON format.
 
        (optional) if output directory is given to the cli, parsed_models with be writen to

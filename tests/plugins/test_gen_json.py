@@ -14,19 +14,21 @@ class Testgen_json(TestCase):
             temp_arch_file.write(TEST_ARCH_YAML_STRING)
             temp_arch_file.seek(0)
 
-        with plugin_result("", print_json, temp_arch_file.name, temp_dir) as result:
-            self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
+            with plugin_result("", print_json, [temp_arch_file.name], temp_dir) as result:
+                print(result.messages)
+                self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
 
     def test_gen_json_output_to_cli(self):
 
-        with TemporaryDirectory() as temp_dir, NamedTemporaryFile("w") as temp_arch_file:
+        with TemporaryDirectory(), NamedTemporaryFile("w") as temp_arch_file:
             temp_arch_file.write(TEST_ARCH_YAML_STRING)
             temp_arch_file.seek(0)
 
-        with plugin_result("", print_json, temp_arch_file.name) as result:
-            self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
+            with plugin_result("", print_json, [temp_arch_file.name]) as result:
+                print(result.messages)
+                self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
 
-    def test_gen_json_with_invlaid_arch_file(self):
+    def test_gen_json_with_invalid_arch_file(self):
         pass
 
 
