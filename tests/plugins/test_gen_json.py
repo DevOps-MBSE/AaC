@@ -19,7 +19,7 @@ class TestGenjSON(TestCase):
     def test_print_json_with_output_directory(self):
 
         with TemporaryDirectory() as temp_dir, NamedTemporaryFile("w") as temp_arch_file_:
-            temp_arch_file.write(YAML_STRING)
+            temp_arch_file.write(TEST_ARCH_YAML_STRING)
             temp_arch_file.seek(0)
 
         with plugin_result("", print_json, temp_arch_file.name, temp_dir) as result:
@@ -28,7 +28,7 @@ class TestGenjSON(TestCase):
     def test_gen_json_output_to_cli(self):
 
         with TemporaryDirectory() as temp_dir, NamedTemporaryFile("w") as temp_arch_file_:
-            temp_arch_file.write(YAML_STRING)
+            temp_arch_file.write(TEST_ARCH_YAML_STRING)
             temp_arch_file.seek(0)
 
         with plugin_result("", print_json, temp_arch_file.name) as result:
@@ -37,7 +37,7 @@ class TestGenjSON(TestCase):
     def test_gen_json_with_invlaid_arch_file(self):
         pass
 
-TEST_ARCH_YAML_STRING_1 = """
+TEST_ARCH_YAML_STRING = """
 model:
   name: System
   description: A simple distributed system model
