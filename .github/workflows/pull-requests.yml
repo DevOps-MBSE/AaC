@@ -5,9 +5,9 @@ on:
   pull_request:
 
 jobs:
-  Build_Package_and_Artifacts:
+  Build_Artifacts:
     uses: jondavid-black/AaC/.github/workflows/build-artifacts.yml@2f31748af5e838d581bfce55111a76ee5c8d0add
 
-  Run_Functional_Tests:
-    needs: Build_Package_and_Artifacts
+  Functional_Tests:
+    needs: Build_Artifacts
     uses: jondavid-black/AaC/.github/workflows/functional-tests.yml@80bdd88b0d35b04c14d7e54d4c1de1c3f2ef0e69

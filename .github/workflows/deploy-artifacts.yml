@@ -4,12 +4,12 @@ on:
   workflow_dispatch:
 
 jobs:
-  Build_Package_and_Artifacts:
+  Build_Artifacts:
     uses: jondavid-black/AaC/.github/workflows/build-artifacts.yml@1e3f89c23eb6583116848d81ccd5ad952f9a62b6
 
   Deploy-Artifacts:
     runs-on: ubuntu-latest
-    needs: Build_Package_and_Artifacts
+    needs: Build_Artifacts
     steps:
       - name: Download API Documentation
         uses: actions/download-artifact@v2
