@@ -42,7 +42,7 @@ jobs:
         cp  src/aac/plugins/gen_protobuf/gen_protobuf.yaml gen_plugin_generation_test
         echo y | aac gen-plugin gen_plugin_generation_test/gen_protobuf.yaml
 
-  OS_Matrix_Tests:
+  OS_Matrix:
       needs: Package_Functional_Tests
       runs-on: ${{matrix.os}}
 
