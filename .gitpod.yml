@@ -12,7 +12,7 @@ tasks:
     init: |
       cd vscode_extension/
       npm install
-    command: cd vscode_extension/; npm run start
+    command: cd vscode_extension/; npm run watch
 
 vscode:
   extensions:
