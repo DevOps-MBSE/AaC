@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-with open("README.md", "r") as fh:
+with open("../README.md", "r") as fh:
     readme_description = fh.read()
 
 runtime_dependencies = [

@@ -11,5 +11,6 @@
         "test_*.py"
     ],
     "python.testing.pytestEnabled": false,
-    "python.testing.unittestEnabled": true
+    "python.testing.unittestEnabled": true,
+    "python.pythonPath": "python/venv/bin/python"
 }
