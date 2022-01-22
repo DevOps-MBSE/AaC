@@ -1,0 +1,5 @@
+data:
+  name: EventCount
+  fields:
+  - name: count
+    type: int
