@@ -21,7 +21,7 @@ model:
       acceptance:
         - scenario: Receive request and send back a response.
           given:
-           - The Counter is running.
+            - The Counter is running.
           when:
             - The user sends a request to Counter.
           then:
@@ -36,8 +36,8 @@ model:
       acceptance:
         - scenario: Provide the event count.
           given:
-           - The Counter is running.
-           - The event count is 0.
+            - The Counter is running.
+            - The event count is 0.
           when:
             - The user sends a request to Counter.
             - The user requests the event count.

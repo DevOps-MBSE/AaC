@@ -28,7 +28,7 @@ of the system and the behaviors of the elements within the logical structure.
 
 ### Components
 
-Image a large system made up of many interacting components.  In an
+Imagine a large system made up of many interacting components.  In an
 abstract way, you can think of the design of that system as a decomposition
 heirarchy starting with the system, then subsystem, then components, and modules.
 The AaC model type allows this vertical decomposition to be captured using components
@@ -49,7 +49,7 @@ over time.  If modeling a horizontally scaled distributed system, state may also
 shared among instances of the modeled entity. When following design guidance such as
 [12 Factor App](https://12factor.net/), maintaining state is generally to be avoided
 in system module design. That said, when state is necessary it should be well defined.
-The state of a model is intended to be strictly encapsuylated within the model and not
+The state of a model is intended to be strictly encapsulated within the model and not
 visible to any other models.  Only the model's behaviors have visibility of the data
 persisted as state within the model.
 
