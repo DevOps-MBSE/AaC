@@ -58,63 +58,19 @@ interface AacTaskDefinition extends vscode.TaskDefinition {
 	task: string;
 }
 
-async function getAacTasks(): Promise<vscode.Task[]> {
-	const result: vscode.Task[] = [];
+async function execAac(command: string, args: Array<string>): Promise<string> {
 
-    const commandLine = 'aac -h';
+    let result: string = "";
 
+    let commandArgsArray = ["aac", command, ...args]
     try {
-        const { stdout, stderr } = await exec(commandLine, {});
+        const { stdout, stderr } = await exec(commandArgsArray.join(" "), {});
         if (stderr && stderr.length > 0) {
             getOutputChannel().appendLine(stderr);
             getOutputChannel().show(true);
         }
         if (stdout) {
-            console.log(stdout)
-
-            const regExp = /{(.*)}/;
-            const commandNamesMatch = regExp.exec(stdout);
-
-            let commandNames: Array<string> = []
-            if (commandNamesMatch && commandNamesMatch.length >= 2) {
-                commandNames = commandNamesMatch[1].split(",")
-            }
-
-            for (const commandName of commandNames) {
-
-                const commandNameRegexPattern = `\\\s+${commandName}[\\s|\\n]*\\s(.*)`
-                var regex = new RegExp(commandNameRegexPattern, "g");
-                const matches = regex.exec(stdout)
-                if (matches && matches.length > 0) {
-                    var commandDescription = matches[1]
-
-                    const taskDefinition: AacTaskDefinition = {
-                        type: AacTaskProvider.AacType,
-                        task: commandName
-                    };
-
-                    const task = new vscode.Task(taskDefinition, vscode.TaskScope.Workspace, commandName, 'aac', new vscode.ShellExecution(`aac ${commandName}`));
-                    task.group = new AacTaskGroup();
-                    result.push(task);
-                    // commands[commandName] = commandDescription
-                }
-
-                // if (matches && matches.length === 2) {
-                //     const taskName = matches[1].trim();
-                //     const kind: AacTaskDefinition = {
-                //         type: 'aac',
-                //         task: taskName
-                //     };
-                //     const task = new vscode.Task(kind, vscode.TaskScope.Workspace, taskName, 'aac', new vscode.ShellExecution(`aac ${taskName}`));
-                //
-                //     const lowerCaseLine = line.toLowerCase();
-                //     if (isBuildTask(lowerCaseLine)) {
-                //         task.group = vscode.TaskGroup.Build;
-                //     } else if (isTestTask(lowerCaseLine)) {
-                //         task.group = vscode.TaskGroup.Test;
-                //     }
-                // }
-            }
+            result = stdout
         }
     } catch (err: any) {
         console.error(err)
@@ -125,10 +81,49 @@ async function getAacTasks(): Promise<vscode.Task[]> {
         if (err.stdout) {
             channel.appendLine(err.stdout);
         }
-        channel.appendLine('Auto detecting aac tasks failed.');
+        channel.appendLine('Failed to execute AaC command');
         channel.show(true);
+        throw err
     }
 
     console.log(result)
 	return result;
+}
+
+async function getAacTasks(): Promise<vscode.Task[]> {
+
+    const commandLine = 'aac -h';
+
+    return execAac("", ["-h"]).then(aacHelpOutput => {
+        const result: vscode.Task[] = [];
+
+        const regExp = /{(.*)}/;
+        const commandNamesMatch = regExp.exec(aacHelpOutput);
+
+        let commandNames: Array<string> = []
+        if (commandNamesMatch && commandNamesMatch.length >= 2) {
+            commandNames = commandNamesMatch[1].split(",")
+        }
+
+        for (const commandName of commandNames) {
+
+            const commandNameRegexPattern = `\\\s+${commandName}[\\s|\\n]*\\s(.*)`
+            var regex = new RegExp(commandNameRegexPattern, "g");
+            const matches = regex.exec(aacHelpOutput)
+            if (matches && matches.length > 0) {
+                var commandDescription = matches[1]
+
+                const taskDefinition: AacTaskDefinition = {
+                    type: AacTaskProvider.AacType,
+                    task: commandName
+                };
+
+                const task = new vscode.Task(taskDefinition, vscode.TaskScope.Workspace, commandName, 'aac', new vscode.ShellExecution(`aac ${commandName}`));
+                task.group = new AacTaskGroup();
+                result.push(task);
+            }
+        }
+
+        return result;
+    })
 }

@@ -5,10 +5,10 @@
             "name": "Python: Validate AaC",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/python/src/aac/__main__.py",
+            "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "validate",
-                "${workspaceFolder}/python/src/aac/spec/spec.yaml"
+                "${workspaceFolder}/src/aac/spec/spec.yaml"
             ],
             "console": "integratedTerminal",
             "justMyCode": false
@@ -17,7 +17,7 @@
             "name": "Python: Validate EchoService",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/python/src/aac/__main__.py",
+            "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "validate",
                 "${workspaceFolder}/model/echo/EchoService.yaml"
@@ -29,7 +29,7 @@
             "name": "Python: Validate Flow",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/python/src/aac/__main__.py",
+            "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "validate",
                 "${workspaceFolder}/model/flow/System.yaml"
@@ -41,7 +41,7 @@
             "name": "Python: Validate AaC gen-protobuf",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/python/src/aac/__main__.py",
+            "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "validate",
                 "${workspaceFolder}/plugins/gen-protobuf/aac-gen-protobuf.yaml"
@@ -53,10 +53,10 @@
             "name": "Python: Json AaC",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/python/src/aac/__main__.py",
+            "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "json",
-                "${workspaceFolder}/python/src/aac/spec/spec.yaml"
+                "${workspaceFolder}/src/aac/spec/spec.yaml"
             ],
             "console": "integratedTerminal",
             "justMyCode": false
@@ -65,7 +65,7 @@
             "name": "Python: Json EchoService",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/python/src/aac/__main__.py",
+            "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "json",
                 "${workspaceFolder}/model/echo/EchoService.yaml"
@@ -77,7 +77,7 @@
             "name": "Python: Json Flow",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/python/src/aac/__main__.py",
+            "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "json",
                 "${workspaceFolder}/model/flow/System.yaml"
@@ -89,7 +89,7 @@
             "name": "Python: Puml-component Flow",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/python/src/aac/__main__.py",
+            "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "puml-component",
                 "${workspaceFolder}/model/flow/System.yaml"
@@ -101,7 +101,7 @@
             "name": "Python: Puml-object Flow",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/python/src/aac/__main__.py",
+            "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "puml-object",
                 "${workspaceFolder}/model/flow/System.yaml"
@@ -113,7 +113,7 @@
             "name": "Python: Puml-sequence Flow",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/python/src/aac/__main__.py",
+            "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "puml-object",
                 "${workspaceFolder}/model/flow/flow.yaml"
@@ -125,7 +125,7 @@
             "name": "Python: Gen-Plugin PlantUML",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/python/src/aac/__main__.py",
+            "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "gen-plugin",
                 "${workspaceFolder}/plugins/aac-plantuml/aac-plantuml.yaml"
@@ -137,7 +137,7 @@
             "name": "Python: Gen-Plugin Protobuf",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/python/src/aac/__main__.py",
+            "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "gen-plugin",
                 "${workspaceFolder}/plugins/aac-gen-protobuf/aac-gen-protobuf.yaml"
@@ -149,7 +149,7 @@
             "name": "Python: Gen-Protobuf",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/python/src/aac/__main__.py",
+            "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "gen-protobuf",
                 "${workspaceFolder}/model/protobuf_flow/System.yaml",
@@ -162,7 +162,7 @@
             "name": "Python: Gen-System Document",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/python/src/aac/__main__.py",
+            "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "gen-design-doc",
                 "system-design-doc.md.jinja2",
@@ -176,7 +176,7 @@
             "name": "Python: Gen-Gherkin Feature File",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/python/src/aac/__main__.py",
+            "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "gen-gherkin-behaviors",
                 "${workspaceFolder}/model/flow/flow.yaml",

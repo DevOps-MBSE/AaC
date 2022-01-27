@@ -6,8 +6,8 @@ on:
 
 jobs:
   Build_Python_Artifacts:
-    uses: jondavid-black/AaC/.github/workflows/python/build-artifacts.yml@2f31748af5e838d581bfce55111a76ee5c8d0add
+    uses: jondavid-black/AaC/.github/workflows/python/build-artifacts.yml@a612abe7becce08d0543dc0498e95fe7febc89e9
 
   Functional_Python_Tests:
     needs: Build_Artifacts
-    uses: jondavid-black/AaC/.github/workflows/python/functional-tests.yml@e900b85adc127f80f53663f91bfb34d32cfe080f
+    uses: jondavid-black/AaC/.github/workflows/python/functional-tests.yml@a612abe7becce08d0543dc0498e95fe7febc89e9
