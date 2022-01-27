@@ -1,6 +1,5 @@
 """Main entry point."""
 
-import os
 import sys
 
 if sys.argv[0].endswith("__main__.py"):
