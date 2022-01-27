@@ -1,7 +1,13 @@
-name: Build Package and Artifacts
+name: Build Python Artifacts
 
 on:
   workflow_call:
+  paths:
+      - 'python/'
+
+defaults:
+  run:
+    working-directory: ./python
 
 jobs:
   Build-Artifacts:

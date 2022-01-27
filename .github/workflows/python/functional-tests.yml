@@ -1,6 +1,12 @@
-name: Functional Tests
+name: Python Functional Tests
 on:
   workflow_call:
+  paths:
+      - 'python/'
+
+defaults:
+  run:
+    working-directory: ./python
 
 jobs:
   Package_Functional_Tests:

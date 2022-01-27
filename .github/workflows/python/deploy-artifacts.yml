@@ -1,7 +1,11 @@
-name: Deploy AaC Artifacts
+name: Deploy Python Artifacts
 
 on:
   workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: ./python
 
 jobs:
   Build_Artifacts:
