@@ -9,7 +9,7 @@ defaults:
 
 jobs:
   Build_Artifacts:
-    uses: jondavid-black/AaC/.github/workflows/build-artifacts.yml@1e3f89c23eb6583116848d81ccd5ad952f9a62b6
+    uses: jondavid-black/AaC/.github/workflows/python-build-artifacts.yml@74a2b7938227334eb8a6f6abe0f7958fcf5452d5
 
   Deploy-Artifacts:
     runs-on: ubuntu-latest
