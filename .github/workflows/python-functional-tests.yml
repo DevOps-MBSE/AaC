@@ -1,7 +1,7 @@
 name: Python Functional Tests
 on:
   workflow_call:
-  paths:
+    paths:
       - 'python/'
 
 defaults:
