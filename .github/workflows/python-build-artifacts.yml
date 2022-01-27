@@ -2,8 +2,6 @@ name: Build Python Artifacts
 
 on:
   workflow_call:
-    paths:
-        - 'python/'
 
 defaults:
   run:
