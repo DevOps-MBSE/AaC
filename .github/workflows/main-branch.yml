@@ -11,8 +11,8 @@ defaults:
 
 jobs:
   Build_Python_Artifacts:
-    uses: jondavid-black/AaC/.github/workflows/python/python-build-artifacts.yml@a612abe7becce08d0543dc0498e95fe7febc89e9
+    uses: jondavid-black/AaC/.github/workflows/python-build-artifacts.yml@74a2b7938227334eb8a6f6abe0f7958fcf5452d5
 
   Python_Functional_Tests:
     needs: Build_Artifacts
-    uses: jondavid-black/AaC/.github/workflows/python/python-functional-tests.yml@a612abe7becce08d0543dc0498e95fe7febc89e9
+    uses: jondavid-black/AaC/.github/workflows/python-functional-tests.yml@74a2b7938227334eb8a6f6abe0f7958fcf5452d5
