@@ -8,12 +8,14 @@ defaults:
     working-directory: ./python
 
 jobs:
-  Build_Artifacts:
+  build_deployment_artifacts:
+    name: Build Artifacts
     uses: jondavid-black/AaC/.github/workflows/python-build-artifacts.yml@74a2b7938227334eb8a6f6abe0f7958fcf5452d5
 
-  Deploy-Artifacts:
+  deploy_artifacts:
+    name: Deploy Artifacts
     runs-on: ubuntu-latest
-    needs: Build_Artifacts
+    needs: build_deployment_artifacts
     steps:
       - name: Download API Documentation
         uses: actions/download-artifact@v2

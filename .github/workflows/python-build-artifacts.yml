@@ -10,7 +10,8 @@ defaults:
     working-directory: ./python
 
 jobs:
-  Build-Artifacts:
+  build_python_artifacts:
+    name: Build Artifacts
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository

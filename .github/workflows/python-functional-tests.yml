@@ -1,4 +1,5 @@
 name: Python Functional Tests
+
 on:
   workflow_call:
     paths:
@@ -9,7 +10,8 @@ defaults:
     working-directory: ./python
 
 jobs:
-  Package_Functional_Tests:
+  python_functional_Tests:
+    name: Python Package Functional Tests
     runs-on: ubuntu-latest
 
     outputs:
@@ -48,8 +50,9 @@ jobs:
         cp  src/aac/plugins/gen_protobuf/gen_protobuf.yaml gen_plugin_generation_test
         echo y | aac gen-plugin gen_plugin_generation_test/gen_protobuf.yaml
 
-  OS_Matrix:
-      needs: Package_Functional_Tests
+  os_test_matrix:
+      name: OS Test Matrix
+      needs: python_functional_Tests
       runs-on: ${{matrix.os}}
 
       strategy:
