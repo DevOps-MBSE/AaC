@@ -7,9 +7,9 @@ on:
 jobs:
   build_python_artifacts:
     name: Build_Python_Artifacts
-    uses: jondavid-black/AaC/.github/workflows/python-build-artifacts.yml@66cad847e91b2040a3c73624a9442027d25165cc
+    uses: jondavid-black/AaC/.github/workflows/python-build-artifacts.yml@485e5ced9de355ec7155cfaa791c1eee88f14c5d
 
   python_functional_tests:
     name: Python Functional Tests
     needs: build_python_artifacts
-    uses: jondavid-black/AaC/.github/workflows/python-functional-tests.yml@66cad847e91b2040a3c73624a9442027d25165cc
+    uses: jondavid-black/AaC/.github/workflows/python-functional-tests.yml@485e5ced9de355ec7155cfaa791c1eee88f14c5d
