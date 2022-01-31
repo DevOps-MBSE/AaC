@@ -10,15 +10,14 @@ export class AacTaskProvider implements vscode.TaskProvider {
 
 	constructor() {}
 
-	public provideTasks(token: vscode.CancellationToken): vscode.ProviderResult<vscode.Task[]> {
+	public provideTasks(): vscode.ProviderResult<vscode.Task[]> {
 		if (!this.aacTaskPromise) {
-            console.log("Loading extension tasks");
 			this.aacTaskPromise = getAacTasks();
 		}
 		return this.aacTaskPromise;
 	}
 
-	public resolveTask(_task: vscode.Task, token: vscode.CancellationToken): vscode.ProviderResult<vscode.Task> {
+	public resolveTask(_task: vscode.Task): vscode.ProviderResult<vscode.Task> {
 		const task = _task.definition.task;
 		if (task) {
 			const definition: AacTaskDefinition = <any>_task.definition;
@@ -41,8 +40,9 @@ function exec(command: string, options: cp.ExecOptions): Promise<{ stdout: strin
 
 let _channel: vscode.OutputChannel;
 function getOutputChannel(): vscode.OutputChannel {
+    // Creates a new entry in the "OUTPUT" panel at the bottom of the IDE.
 	if (!_channel) {
-		_channel = vscode.window.createOutputChannel('Aac Auto Detection');
+		_channel = vscode.window.createOutputChannel('Architecture-as-code');
 	}
 	return _channel;
 }
@@ -58,27 +58,29 @@ async function execAacShellCommand(command: string, args: Array<string> = []): P
 
     let result: string = "";
 
+    const outputChannel = getOutputChannel();
+
     let commandArgsArray = ["aac", command, ...args]
     try {
         const { stdout, stderr } = await exec(commandArgsArray.join(" "), {});
         if (stderr && stderr.length > 0) {
-            getOutputChannel().appendLine(stderr);
-            getOutputChannel().show(true);
+            outputChannel.appendLine(stderr);
+            outputChannel.show(true);
         }
         if (stdout) {
             result = stdout
         }
-    } catch (err: any) {
-        const channel = getOutputChannel();
-        if (err.stderr) {
-            channel.appendLine(err.stderr);
+    } catch (error: any) {
+        let errorMessage = ""
+        if (error.stderr) {
+            errorMessage = error.stderr;
         }
-        if (err.stdout) {
-            channel.appendLine(err.stdout);
+        if (error.stdout) {
+            errorMessage = error.stderr;
         }
-        channel.appendLine('Failed to execute AaC command');
-        channel.show(true);
-        throw err
+        outputChannel.appendLine(`Failed to execute AaC command:\n${errorMessage}`);
+        outputChannel.show(true);
+        throw error
     }
 
 	return result;

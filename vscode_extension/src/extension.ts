@@ -3,7 +3,7 @@ import { AacTaskProvider } from './AacTaskProvider';
 
 let aacTaskProvider: vscode.Disposable | undefined;
 
-export function activate(context: vscode.ExtensionContext) {
+export function activate() {
 
     aacTaskProvider = vscode.tasks.registerTaskProvider(AacTaskProvider.AacType, new AacTaskProvider());
 
