@@ -1,12 +1,12 @@
 # This workflow is intended to run for ANY pull request
-name: Pull Requests AaC Workflow
+name: Pull Request Workflow
 
 on:
   pull_request:
 
 jobs:
   build_python_artifacts:
-    name: Build_Python_Artifacts
+    name: Build Python Artifacts
     uses: jondavid-black/AaC/.github/workflows/python-build-artifacts.yml@cf72323c380900408ce03a690564e1a803122713
 
   build_vscode_artifacts:

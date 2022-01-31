@@ -1,5 +1,5 @@
 # This workflow is only intended to run when a pull-request is merged into the main branch
-name: Main branch AaC Workflow
+name: Main branch Workflow
 
 on:
   push:
