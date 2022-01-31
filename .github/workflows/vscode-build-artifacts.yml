@@ -35,9 +35,7 @@ jobs:
         run: yarn run eslint . --ext .js,.jsx,.ts,.tsx --max-warnings=0
 
       - name: Test VSCode Extension
-        uses: GabrielBB/xvfb-action@v1
-        with:
-          run: yarn --cwd vscode_extension/ test
+        run: xvfb-run -a yarn test
 
       - name: Build distribution package
         run: yarn package
