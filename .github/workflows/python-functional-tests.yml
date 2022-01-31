@@ -8,7 +8,7 @@ defaults:
     working-directory: ./python
 
 jobs:
-  python_functional_Tests:
+  python_functional_tests:
     name: Python Package Functional Tests
     runs-on: ubuntu-latest
 
@@ -50,7 +50,7 @@ jobs:
 
   os_test_matrix:
       name: OS Test Matrix
-      needs: python_functional_Tests
+      needs: python_functional_tests
       runs-on: ${{matrix.os}}
 
       strategy:
@@ -74,7 +74,7 @@ jobs:
             path: python/dist/
 
         - name: Install Wheel Distribution
-          run: pip install ${{steps.download-wheel.outputs.download-path}}/${{needs.Package_Functional_Tests.outputs.wheel_name}}
+          run: pip install ${{steps.download-wheel.outputs.download-path}}/${{needs.python_functional_tests.outputs.wheel_name}}
 
         - name: Validate Core Spec
           run: python -m aac validate src/aac/spec/spec.yaml
