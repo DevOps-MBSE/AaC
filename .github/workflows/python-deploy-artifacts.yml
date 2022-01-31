@@ -21,7 +21,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: api-documentation
-          path: docs/build/html/
+          path: python/docs/build/html/
 
       - name: Github Pages and Sphinx Deployment
         run: echo "This is where I'd deploy if I were setup"
@@ -30,7 +30,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: aac_wheel
-          path: dist/
+          path: python/dist/
 
       - name: Publish distribution to PyPI
         uses: pypa/gh-action-pypi-publish@master

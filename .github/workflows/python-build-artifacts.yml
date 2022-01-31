@@ -48,7 +48,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: api-documentation
-          path: docs/build/html/
+          path: python/docs/build/html/
 
       - name: Build distribution package
         run: python setup.py bdist_wheel
@@ -57,4 +57,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: aac_wheel
-          path: dist/
+          path: python/dist/

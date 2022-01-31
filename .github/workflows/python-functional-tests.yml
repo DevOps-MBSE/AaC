@@ -28,7 +28,7 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: aac_wheel
-        path: dist/
+        path: python/dist/
 
     - name: Set Wheel Artifact Name
       id: wheel_artifact
@@ -71,7 +71,7 @@ jobs:
           id: download-wheel
           with:
             name: aac_wheel
-            path: dist/
+            path: python/dist/
 
         - name: Install Wheel Distribution
           run: pip install ${{steps.download-wheel.outputs.download-path}}/${{needs.Package_Functional_Tests.outputs.wheel_name}}
