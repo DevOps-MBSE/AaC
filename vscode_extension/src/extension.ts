@@ -5,7 +5,7 @@ let aacTaskProvider: vscode.Disposable | undefined;
 
 export function activate() {
 
-    aacTaskProvider = vscode.tasks.registerTaskProvider(AacTaskProvider.AacType, new AacTaskProvider());
+    aacTaskProvider = vscode.tasks.registerTaskProvider(AacTaskProvider.aacType, new AacTaskProvider());
 
     console.log('Congratulations, your extension "AaC" is now active!');
 }
