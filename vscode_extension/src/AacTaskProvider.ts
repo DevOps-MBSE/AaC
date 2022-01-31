@@ -5,7 +5,7 @@ import * as vscode from 'vscode';
 import { AacTaskGroup } from './AacTaskGroup';
 
 export class AacTaskProvider implements vscode.TaskProvider {
-	static AacType = 'aac';
+	static aacType: string = 'aac';
 	private aacTaskPromise: vscode.ProviderResult<vscode.Task[]> | undefined = undefined;
 
 	constructor() {}
@@ -27,7 +27,7 @@ export class AacTaskProvider implements vscode.TaskProvider {
 	}
 }
 
-function exec(command: string, options: cp.ExecOptions): Promise<{ stdout: string; stderr: string }> {
+function execShell(command: string, options: cp.ExecOptions): Promise<{ stdout: string; stderr: string }> {
 	return new Promise<{ stdout: string; stderr: string }>((resolve, reject) => {
 		cp.exec(command, options, (error, stdout, stderr) => {
 			if (error) {
@@ -60,18 +60,18 @@ async function execAacShellCommand(command: string, args: Array<string> = []): P
 
     const outputChannel = getOutputChannel();
 
-    let commandArgsArray = ["aac", command, ...args]
+    let commandArgsArray = ["aac", command, ...args];
     try {
-        const { stdout, stderr } = await exec(commandArgsArray.join(" "), {});
+        const { stdout, stderr } = await execShell(commandArgsArray.join(" "), {});
         if (stderr && stderr.length > 0) {
             outputChannel.appendLine(stderr);
             outputChannel.show(true);
         }
         if (stdout) {
-            result = stdout
+            result = stdout;
         }
     } catch (error: any) {
-        let errorMessage = ""
+        let errorMessage = "";
         if (error.stderr) {
             errorMessage = error.stderr;
         }
@@ -80,7 +80,7 @@ async function execAacShellCommand(command: string, args: Array<string> = []): P
         }
         outputChannel.appendLine(`Failed to execute AaC command:\n${errorMessage}`);
         outputChannel.show(true);
-        throw error
+        throw error;
     }
 
 	return result;
@@ -94,16 +94,16 @@ async function getAacTasks(): Promise<vscode.Task[]> {
         const regExp = /{(.*)}/;
         const commandNamesMatch = regExp.exec(aacHelpOutput);
 
-        let commandNames: Array<string> = []
+        let commandNames: Array<string> = [];
         if (commandNamesMatch && commandNamesMatch.length >= 2) {
-            commandNames = commandNamesMatch[1].split(",")
+            commandNames = commandNamesMatch[1].split(",");
         }
 
         for (const commandName of commandNames) {
 
-            const commandNameRegexPattern = `\\\s+${commandName}[\\s|\\n]*\\s(.*)`
+            const commandNameRegexPattern = `\\\s+${commandName}[\\s|\\n]*\\s(.*)`;
             const regex = new RegExp(commandNameRegexPattern, "g");
-            const matches = regex.exec(aacHelpOutput)
+            const matches = regex.exec(aacHelpOutput);
             if (matches && matches.length > 0) {
                 // We can extract the command description with the following use of group matches
                 // const commandDescription = matches[1]
@@ -120,5 +120,5 @@ async function getAacTasks(): Promise<vscode.Task[]> {
         }
 
         return result;
-    })
+    });
 }
