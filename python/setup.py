@@ -1,7 +1,14 @@
+import logging
 from setuptools import find_packages, setup
 
-with open("../README.md", "r") as fh:
-    readme_description = fh.read()
+README_FILE_PATH = "../README.md"
+
+try:
+    with open(README_FILE_PATH, "r") as file_handler:
+        readme_description = file_handler.read()
+except Exception as exception:
+    logging.error(f"Failed to open readme file {README_FILE_PATH} with error:\n {exception}")
+    readme_description = ""
 
 runtime_dependencies = [
     "attrs >= 21.2",
