@@ -2,8 +2,8 @@ tasks:
   - name: VSCode Extension Environment
     init: |
       cd vscode_extension/
-      npm install
-    command: cd vscode_extension/; npm run watch
+      yarn install
+    command: cd vscode_extension/; yarn compile
 
   - name: Python Virtual Environment
     init: |
