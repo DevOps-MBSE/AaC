@@ -37,7 +37,9 @@ jobs:
       - name: Test VSCode Extension
         uses: GabrielBB/xvfb-action@v1
         with:
-          run: yarn test
+          run: |
+            cd vscode_extension
+            yarn test
 
       - name: Build distribution package
         run: yarn package
