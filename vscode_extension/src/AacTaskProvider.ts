@@ -5,53 +5,53 @@ import * as vscode from 'vscode';
 import { AacTaskGroup } from './AacTaskGroup';
 
 export class AacTaskProvider implements vscode.TaskProvider {
-	static aacType: string = 'aac';
-	private aacTaskPromise: vscode.ProviderResult<vscode.Task[]> | undefined = undefined;
+    static aacType: string = 'aac';
+    private aacTaskPromise: vscode.ProviderResult<vscode.Task[]> | undefined = undefined;
 
-	constructor() {}
+    constructor() {}
 
-	public provideTasks(): vscode.ProviderResult<vscode.Task[]> {
-		if (!this.aacTaskPromise) {
-			this.aacTaskPromise = getAacTasks();
-		}
-		return this.aacTaskPromise;
-	}
+    public provideTasks(): vscode.ProviderResult<vscode.Task[]> {
+        if (!this.aacTaskPromise) {
+            this.aacTaskPromise = getAacTasks();
+        }
+        return this.aacTaskPromise;
+    }
 
-	public resolveTask(_task: vscode.Task): vscode.ProviderResult<vscode.Task> {
-		const task = _task.definition.task;
-		if (task) {
-			const definition: AacTaskDefinition = <any>_task.definition;
-			return new vscode.Task(definition, _task.scope ?? vscode.TaskScope.Workspace, definition.task, 'aac', new vscode.ShellExecution(`aac ${definition.task}`));
-		}
-		return undefined;
-	}
+    public resolveTask(_task: vscode.Task): vscode.ProviderResult<vscode.Task> {
+        const task = _task.definition.task;
+        if (task) {
+            const definition: AacTaskDefinition = <any>_task.definition;
+            return new vscode.Task(definition, _task.scope ?? vscode.TaskScope.Workspace, definition.task, 'aac', new vscode.ShellExecution(`aac ${definition.task}`));
+        }
+        return undefined;
+    }
 }
 
 function execShell(command: string, options: cp.ExecOptions): Promise<{ stdout: string; stderr: string }> {
-	return new Promise<{ stdout: string; stderr: string }>((resolve, reject) => {
-		cp.exec(command, options, (error, stdout, stderr) => {
-			if (error) {
-				reject({ error, stdout, stderr });
-			}
-			resolve({ stdout, stderr });
-		});
-	});
+    return new Promise<{ stdout: string; stderr: string }>((resolve, reject) => {
+        cp.exec(command, options, (error, stdout, stderr) => {
+            if (error) {
+                reject({ error, stdout, stderr });
+            }
+            resolve({ stdout, stderr });
+        });
+    });
 }
 
 let _channel: vscode.OutputChannel;
 function getOutputChannel(): vscode.OutputChannel {
     // Creates a new entry in the "OUTPUT" panel at the bottom of the IDE.
-	if (!_channel) {
-		_channel = vscode.window.createOutputChannel('Architecture-as-code');
-	}
-	return _channel;
+    if (!_channel) {
+        _channel = vscode.window.createOutputChannel('Architecture-as-code');
+    }
+    return _channel;
 }
 
 interface AacTaskDefinition extends vscode.TaskDefinition {
-	/**
-	 * The task name
-	 */
-	task: string;
+    /**
+     * The task name
+     */
+    task: string;
 }
 
 async function execAacShellCommand(command: string, args: Array<string> = []): Promise<string> {
@@ -83,7 +83,7 @@ async function execAacShellCommand(command: string, args: Array<string> = []): P
         throw error;
     }
 
-	return result;
+    return result;
 }
 
 async function getAacTasks(): Promise<vscode.Task[]> {

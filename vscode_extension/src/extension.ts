@@ -12,6 +12,6 @@ export function activate() {
 
 export function deactivate(): void {
     if (aacTaskProvider) {
-		aacTaskProvider.dispose();
-	}
+        aacTaskProvider.dispose();
+    }
 }
