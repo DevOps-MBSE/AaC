@@ -42,7 +42,7 @@ let _channel: vscode.OutputChannel;
 function getOutputChannel(): vscode.OutputChannel {
     // Creates a new entry in the "OUTPUT" panel at the bottom of the IDE.
     if (!_channel) {
-        _channel = vscode.window.createOutputChannel('Architecture-as-code');
+        _channel = vscode.window.createOutputChannel('Architecture-as-Code');
     }
     return _channel;
 }
