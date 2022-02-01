@@ -15,7 +15,7 @@ model:
           python_type: str
           description: |
             denotes whether to generate a first or third party plugin. If you're not contributing to the AaC repository, then use the option "third".
-            valid values: "first", "third"
+            valid values are: "first", "third"
       acceptance:
         - scenario: Output generated python plugin stub files.
           given:
@@ -24,6 +24,32 @@ model:
             - The aac app is run with the gen-plugin command.
           then:
             - Stubbed plugin files are generated.
+        - scenario: Generate first party plugin stub files.
+          given:
+            - The {{gen-plugin.input.architecture_file}} contains a valid model.
+          when:
+            - The aac app is run with the gen-plugin command.
+            - The value of {{gen-plugin.input.plugin_type}} is equal to "first".
+            - The value of {{gen-plugin.input.architecture_file}} contains "src/aac/plugins/".
+          then:
+            - Stubbed first party plugin files are generated.
+        - scenario: Fail to generate first party plugin stub files.
+          given:
+            - The {{gen-plugin.input.architecture_file}} contains a valid model.
+          when:
+            - The aac app is run with the gen-plugin command.
+            - The value of {{gen-plugin.input.plugin_type}} is equal to "first".
+            - The value of {{gen-plugin.input.architecture_file}} does not contain "src/aac/plugins/".
+          then:
+            - Stubbed first party plugin files are not generated.
+        - scenario: Generate third party plugin stub files.
+          given:
+            - The {{gen-plugin.input.architecture_file}} contains a valid model.
+          when:
+            - The aac app is run with the gen-plugin command.
+            - The value of {{gen-plugin.input.plugin_type}} is equal to "third".
+          then:
+            - Stubbed third party plugin files are generated.
 ---
 enum:
   name: PythonDataType
