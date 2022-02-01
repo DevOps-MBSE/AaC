@@ -1,4 +1,4 @@
-FROM gitpod/workspace-full-vnc
+FROM gitpod/workspace-full
 
 # Python Dependencies
 ARG PYTHON_VERSION=3.9
