@@ -23,33 +23,59 @@ from aac.validator import validation
 plugin_name = "gen-plugin"
 
 
-def generate_plugin(architecture_file: str) -> PluginExecutionResult:
+def generate_plugin(architecture_file: str, plugin_type: str) -> PluginExecutionResult:
     """
     Entrypoint command to generate the plugin.
 
     Args:
         architecture_file (str): filepath to the architecture file.
+        plugin_type (str): denotes whether to generate a first or third party plugin. If you're not
+                            contributing to the AaC repository, then use the option "third".
+                            Valid values are: "first", "third"
     """
 
-    def confirm_with_user():
+    def _generate_plugin():
+        if plugin_type == "first" and not _is_first_party_plugin_in_project_repo:
+            raise OperationCancelled(
+                f"Move {architecture_file} to the desired directory and retry."
+            )
+
         plug_dir = os.path.dirname(os.path.abspath(architecture_file))
         if _is_user_desired_output_directory(architecture_file, plug_dir):
-            return _generate_plugin(architecture_file, plug_dir)
+            return _generate_plugin_files_to_directory(architecture_file, plug_dir)
 
-        raise OperationCancelled(f"Move {architecture_file} to the desired directory and retry.")
+        raise OperationCancelled(
+            f"Move {architecture_file} to the desired directory and retry."
+        )
 
-    with plugin_result(plugin_name, confirm_with_user) as result:
+    with plugin_result(plugin_name, _generate_plugin) as result:
         return result
 
 
-def _generate_plugin(architecture_file: str, plug_dir: str) -> str:
+def _generate_plugin_files_to_directory(architecture_file: str, plug_dir: str) -> str:
     with validation(parser.parse_file, architecture_file) as validation_result:
         templates = list(_compile_templates(validation_result.model).values())
         write_generated_templates_to_file(templates, plug_dir)
         return f"Successfully created plugin in {plug_dir}"
 
 
-def _compile_templates(parsed_models: dict[str, dict]) -> dict[str, list[TemplateOutputFile]]:
+def _is_first_party_plugin_in_project_repo(architecture_file: str):
+    """
+    Returns true if the architecture file path is inside the AaC repository.
+
+    Performs a basic check that a first party plugin is generated in the AaC repo by
+        matching the architecture file's path with some partial structure that matches
+        the directory hierarchy of the project.
+
+    Args:
+        architecture_file: str the full path to the architecture file and output directory
+    """
+    return str(os.path.join("src", "aac", "plugins")) in architecture_file
+
+
+def _compile_templates(
+    parsed_models: dict[str, dict]
+) -> dict[str, list[TemplateOutputFile]]:
     """
     Parse the model and generate the plugin template accordingly.
 
@@ -75,7 +101,8 @@ def _compile_templates(parsed_models: dict[str, dict]) -> dict[str, list[Templat
 
     def set_parent_directory_value(template: TemplateOutputFile):
         template.parent_dir = (
-            template_parent_directories.get(template.template_name) or template.parent_dir
+            template_parent_directories.get(template.template_name)
+            or template.parent_dir
         )
 
     # ensure model is present and valid, get the plugin name
@@ -183,7 +210,9 @@ def _gather_commands(behaviors: dict) -> list[dict]:
 
     def modify_command_input_output_entry(in_out_entry: dict):
         """Modify the input and output entries of a behavior definition to reduce complexity in the templates."""
-        in_out_entry["type"] = in_out_entry.get("python_type") or in_out_entry.get("type")
+        in_out_entry["type"] = in_out_entry.get("python_type") or in_out_entry.get(
+            "type"
+        )
 
         return in_out_entry
 
@@ -202,7 +231,9 @@ def _gather_commands(behaviors: dict) -> list[dict]:
             behavior_description = f"{behavior_description}."
 
         if behavior.get("input"):
-            behavior["input"] = list(map(modify_command_input_output_entry, behavior.get("input")))
+            behavior["input"] = list(
+                map(modify_command_input_output_entry, behavior.get("input"))
+            )
 
         behavior["description"] = behavior_description
         behavior["implementation_name"] = _convert_to_implementation_name(behavior_name)
