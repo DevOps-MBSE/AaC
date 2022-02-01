@@ -99,7 +99,7 @@ def _setup_arg_parser(
 
         for argument in command.arguments:
             command_subparser.add_argument(
-                argument.name, help=argument.description, nargs=argument.number_of_arguments
+                argument.name, help=argument.description, nargs=argument.number_of_arguments, choices=argument.choices
             )
 
     return arg_parser, aac_and_plugin_commands
