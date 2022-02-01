@@ -15,7 +15,6 @@ class Testgen_json(TestCase):
             temp_arch_file.seek(0)
 
             with plugin_result("", print_json, [temp_arch_file.name], temp_dir) as result:
-                print(result.messages)
                 self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
 
     def test_gen_json_output_to_cli(self):
@@ -25,7 +24,6 @@ class Testgen_json(TestCase):
             temp_arch_file.seek(0)
 
             with plugin_result("", print_json, [temp_arch_file.name]) as result:
-                print(result.messages)
                 self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
 
     def test_gen_json_with_invalid_arch_file(self):

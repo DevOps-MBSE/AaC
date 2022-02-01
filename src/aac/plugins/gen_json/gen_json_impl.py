@@ -26,13 +26,18 @@ def print_json(architecture_files: list[str], output_directory: str = None) -> P
     def to_json(architecture_file: str, output_directory: str) -> str:
         file_name = os.path.basename(architecture_file)
         file_ext = os.path.splitext(file_name)[1]
+
         with validation(parse_file, architecture_file) as result:
 
             if output_directory is None:
                 return f"File: {architecture_file}\n{json.dumps(result.model, indent=2)}\n"
 
             else:
-                file_name = file_name.replace(file_ext, '.json')
+                if file_ext == '':
+                    file_name = (file_name + '.json')
+                else:
+                    file_name = file_name.replace(file_ext, '.json')
+
                 output_file_path = os.path.join(output_directory, file_name)
                 outFile = open(output_file_path, "w")
                 outFile.write(json.dumps(result.model, indent=2))
