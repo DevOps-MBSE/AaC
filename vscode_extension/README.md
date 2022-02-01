@@ -15,7 +15,7 @@ Provides an AaC Language Server
 
 This plugin relies on the Python package [`aac`](https://pypi.org/project/aac/). In order to use this plugin, you must install `aac` locally. See the [AaC Repository](https://github.com/jondavid-black/AaC#using-aac-to-model-your-system) for how to install the AaC package.
 
-Once the `aac` package is installed, verify that it's the installation is working correctly by running `aac -h` in a shell terminal and asserting that a list of commands with accompanying descriptions is returned.
+Once the `aac` package is installed, verify that the installation is working correctly by running `aac -h` in a terminal. If you are presented with a list of commands with accompanying descriptions, the installation was successful.
 
 ## Extension Settings
 
