@@ -18,6 +18,7 @@ PLUGIN_IMPL_TEMPLATE_NAME = "plugin_impl.py.jinja2"
 PLUGIN_IMPL_TEST_TEMPLATE_NAME = "test_plugin_impl.py.jinja2"
 SETUP_TEMPLATE_NAME = "setup.py.jinja2"
 README_TEMPLATE_NAME = "README.md.jinja2"
+TOX_CONFIG_TEMPLATE_NAME = "tox.ini.jinja2"
 
 
 class TestGenPlugin(TestCase):
@@ -93,9 +94,10 @@ class TestGenPlugin(TestCase):
             self.assertEqual(len(generated_template_parent_directories), num_generated_templates)
 
             # Assert that the expected template files were generated
+            self.assertIn("README.md", generated_template_names)
+            self.assertIn("tox.ini", generated_template_names)
             self.assertIn("__init__.py", generated_template_names)
             self.assertIn("setup.py", generated_template_names)
-            self.assertIn("README.md", generated_template_names)
             self.assertIn(f"{plugin_name}.py", generated_template_names)
             self.assertIn(f"{plugin_name}_impl.py", generated_template_names)
             self.assertIn(f"test_{plugin_name}_impl.py", generated_template_names)
@@ -146,6 +148,20 @@ class TestGenPlugin(TestCase):
             self.assertIn("$ aac gen-protobuf", generated_readme_file_contents)
             self.assertIn("### Ext", generated_readme_file_contents)
             self.assertIn("### Enum", generated_readme_file_contents)
+
+            generated_tox_config_file_contents = generated_templates.get(
+                TOX_CONFIG_TEMPLATE_NAME
+            ).content
+            self.assertIn("[testenv]", generated_tox_config_file_contents)
+            self.assertIn("[flake8]", generated_tox_config_file_contents)
+            self.assertIn("[unittest]", generated_tox_config_file_contents)
+            self.assertIn("[run]", generated_tox_config_file_contents)
+            self.assertIn("[report]", generated_tox_config_file_contents)
+            self.assertIn(
+                "code-directories = aac_gen_protobuf",
+                generated_tox_config_file_contents,
+            )
+            self.assertIn("fail_under = 80.00", generated_tox_config_file_contents)
 
     def test__compile_templates_errors_on_multiple_models(self):
         with validation(
