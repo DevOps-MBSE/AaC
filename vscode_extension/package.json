@@ -1,7 +1,7 @@
 {
     "name": "AaC",
     "displayName": "Architecture As Code",
-    "description": "A distinctly different take on Model-Based System Engineering (MBSE) that allows a system modeller to define a system in simple yaml",
+    "description": "A distinctly different take on Model-Based System Engineering (MBSE) that allows a system modeler to define a system in simple yaml",
     "version": "0.0.1",
     "engines": {
         "vscode": "^1.60.0"
@@ -22,9 +22,9 @@
             {
                 "type": "aac",
                 "properties": {
-                    "task": {
+                    "name": {
                         "type": "string",
-                        "description": "AaC Command"
+                        "description": "AaC command name"
                     }
                 },
                 "required": []

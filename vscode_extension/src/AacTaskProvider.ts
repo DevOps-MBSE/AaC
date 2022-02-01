@@ -1,5 +1,3 @@
-import * as path from 'path';
-import * as fs from 'fs';
 import * as cp from 'child_process';
 import * as vscode from 'vscode';
 import { AacTaskGroup } from './AacTaskGroup';
@@ -51,7 +49,7 @@ interface AacTaskDefinition extends vscode.TaskDefinition {
     /**
      * The task name
      */
-    task: string;
+    name: string;
 }
 
 async function execAacShellCommand(command: string, args: Array<string> = []): Promise<string> {
@@ -71,13 +69,8 @@ async function execAacShellCommand(command: string, args: Array<string> = []): P
             result = stdout;
         }
     } catch (error: any) {
-        let errorMessage = "";
-        if (error.stderr) {
-            errorMessage = error.stderr;
-        }
-        if (error.stdout) {
-            errorMessage = error.stderr;
-        }
+        let errorMessage = error.stderr || error.stdout || "";
+
         outputChannel.appendLine(`Failed to execute AaC command:\n${errorMessage}`);
         outputChannel.show(true);
         throw error;
@@ -110,7 +103,7 @@ async function getAacTasks(): Promise<vscode.Task[]> {
 
                 const taskDefinition: AacTaskDefinition = {
                     type: "shell",
-                    task: commandName
+                    name: commandName
                 };
 
                 const task = new vscode.Task(taskDefinition, vscode.TaskScope.Workspace, commandName, 'aac', new vscode.ShellExecution(`aac ${commandName}`));
