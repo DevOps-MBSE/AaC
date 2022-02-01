@@ -36,7 +36,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: test-coverage-report
-          path: html_code_coverage/
+          path: python/html_code_coverage/
 
       - name: Generate API Documentation
         run: |
