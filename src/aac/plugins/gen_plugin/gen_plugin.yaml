@@ -17,13 +17,6 @@ model:
             denotes whether to generate a first or third party plugin. If you're not contributing to the AaC repository, then use the option "third".
             valid values are: "first", "third"
       acceptance:
-        - scenario: Output generated python plugin stub files.
-          given:
-            - The {{gen-plugin.input.architecture_file}} contains a valid model.
-          when:
-            - The aac app is run with the gen-plugin command.
-          then:
-            - Stubbed plugin files are generated.
         - scenario: Generate first party plugin stub files.
           given:
             - The {{gen-plugin.input.architecture_file}} contains a valid model.
