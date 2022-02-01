@@ -1,6 +1,6 @@
-# AaC VSCode Extension README
+# Architecture-as-Code VSCode Extension
 
-VSCode Extension that wraps the python package [`aac`](https://pypi.org/project/aac/).
+VSCode Extension that wraps the Python3 package [`aac`](https://pypi.org/project/aac/). This extension provides AaC commands at your fingertips within VSCode as well as providing language server features for an easier, more productive experience with AaC.
 
 ## Features
 
