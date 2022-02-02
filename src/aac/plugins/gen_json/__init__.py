@@ -24,7 +24,7 @@ def get_commands() -> list[AacCommand]:
         ),
         AacCommandArgument(
             "--output_directory",
-            "optiional direcctory to desired output location of JSON files",
+            "Directory in which JSON files will be written",
         )
     ]
 
