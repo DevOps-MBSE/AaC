@@ -54,9 +54,3 @@ def print_json(architecture_files: list[str], output_directory: str = None) -> P
                 status = result.status_code
 
     return PluginExecutionResult(plugin_name, status, messages)
-
-
-
-
-
-
