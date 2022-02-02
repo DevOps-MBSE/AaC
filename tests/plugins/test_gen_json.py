@@ -77,6 +77,7 @@ model:
             - The user sends a DataA request
           then:
             - The user receives a DataB response
+---
 model:
   name: ServiceTwo
   behavior:
