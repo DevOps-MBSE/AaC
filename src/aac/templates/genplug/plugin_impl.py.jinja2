@@ -32,7 +32,7 @@ def {{command.implementation_name}}({% for command_input in command.input -%}{{c
     """
     # TODO add implementation here
     def implement_me():
-        raise "{{command.implementation_name}} is not implemented."
+        raise NotImplementedError("{{command.implementation_name}} is not implemented.")
 
     with plugin_result(plugin_name, implement_me) as result:
         return result
