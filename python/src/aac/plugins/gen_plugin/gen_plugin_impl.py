@@ -22,6 +22,9 @@ from aac.validator import validation
 
 plugin_name = "gen-plugin"
 
+FIRST_PARTY_STRING = "first"
+THIRD_PARTY_STRING = "third"
+
 
 def generate_plugin(architecture_file: str, plugin_type: str) -> PluginExecutionResult:
     """
@@ -35,7 +38,7 @@ def generate_plugin(architecture_file: str, plugin_type: str) -> PluginExecution
     """
 
     def _generate_plugin():
-        if plugin_type == "first" and not _is_first_party_plugin_in_project_repo:
+        if plugin_type == FIRST_PARTY_STRING and not _is_first_party_plugin_in_project_repo:
             raise OperationCancelled(
                 f"Move {architecture_file} to the desired directory and retry."
             )

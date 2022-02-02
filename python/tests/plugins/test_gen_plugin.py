@@ -20,16 +20,39 @@ SETUP_TEMPLATE_NAME = "setup.py.jinja2"
 README_TEMPLATE_NAME = "README.md.jinja2"
 TOX_CONFIG_TEMPLATE_NAME = "tox.ini.jinja2"
 
+FIRST_PARTY_STRING = "first"
+THIRD_PARTY_STRING = "third"
+
 
 class TestGenPlugin(TestCase):
     @patch("aac.plugins.gen_plugin.gen_plugin_impl._is_user_desired_output_directory")
-    def test_generate_plugin(self, is_user_desired_output_dir):
+    def test_generate_first_party_plugin(self, is_user_desired_output_dir):
         with (TemporaryDirectory(), NamedTemporaryFile(mode="w") as plugin_yaml):
             plugin_yaml.write(TEST_PLUGIN_YAML_STRING)
             plugin_yaml.seek(0)
 
             is_user_desired_output_dir.return_value = True
-            result = generate_plugin(plugin_yaml.name)
+            result = generate_plugin(plugin_yaml.name, FIRST_PARTY_STRING)
+            self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
+
+    @patch("aac.plugins.gen_plugin.gen_plugin_impl._is_user_desired_output_directory")
+    def test_fail_to_generate_first_party_plugin(self, is_user_desired_output_dir):
+        with (TemporaryDirectory(prefix="src/something"), NamedTemporaryFile(mode="w") as plugin_yaml):
+            plugin_yaml.write(TEST_PLUGIN_YAML_STRING)
+            plugin_yaml.seek(0)
+
+            is_user_desired_output_dir.return_value = True
+            result = generate_plugin(plugin_yaml.name, FIRST_PARTY_STRING)
+            self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
+
+    @patch("aac.plugins.gen_plugin.gen_plugin_impl._is_user_desired_output_directory")
+    def test_generate_third_party_plugin(self, is_user_desired_output_dir):
+        with (TemporaryDirectory(), NamedTemporaryFile(mode="w") as plugin_yaml):
+            plugin_yaml.write(TEST_PLUGIN_YAML_STRING)
+            plugin_yaml.seek(0)
+
+            is_user_desired_output_dir.return_value = True
+            result = generate_plugin(plugin_yaml.name, THIRD_PARTY_STRING)
             self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
 
     @patch("aac.plugins.gen_plugin.gen_plugin_impl._is_user_desired_output_directory")
