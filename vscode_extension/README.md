@@ -7,8 +7,6 @@ VSCode Extension that wraps the Python3 package [`aac`](https://pypi.org/project
 Provides the complete list of AaC commands as VSCode Tasks
 
 Provides an AaC Language Server
-  * feature 1
-  * feature 2
 
 
 ## Requirements
