@@ -57,6 +57,7 @@ model:
             - The System receives input.in
           then:
             - The System responds with output.out
+---
 model:
   name: ServiceOne
   behavior:
