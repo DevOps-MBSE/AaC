@@ -43,7 +43,7 @@ def print_json(architecture_files: list[str], output_directory: str = None) -> P
                 outFile = open(output_file_path, "w")
                 outFile.write(json.dumps(result.model, indent=2))
                 outFile.close()
-                return f"Successfully added {file_name} to directory"
+                return f"Wrote {file_name} to {output_file_path}."
 
     status = PluginExecutionStatusCode.SUCCESS
     messages = []
