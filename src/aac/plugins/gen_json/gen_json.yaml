@@ -13,7 +13,7 @@ model:
         - name: --output_directory
           type: string
           python_type: str
-          description: Directory pointing to the desired output for the JSON files (optional).
+          description: Directory in which JSON files will be written
       acceptance:
         - scenario: Output JSON representation.
           given:
