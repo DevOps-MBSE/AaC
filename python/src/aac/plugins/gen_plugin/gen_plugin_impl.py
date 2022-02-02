@@ -25,6 +25,8 @@ plugin_name = "gen-plugin"
 FIRST_PARTY_STRING = "first"
 THIRD_PARTY_STRING = "third"
 
+EXPECTED_FIRST_PARTY_DIRECTORY_PATH = str(os.path.join("src", "aac", "plugins"))
+
 
 def generate_plugin(architecture_file: str, plugin_type: str) -> PluginExecutionResult:
     """
@@ -38,9 +40,9 @@ def generate_plugin(architecture_file: str, plugin_type: str) -> PluginExecution
     """
 
     def _generate_plugin():
-        if plugin_type == FIRST_PARTY_STRING and not _is_first_party_plugin_in_project_repo:
+        if plugin_type == FIRST_PARTY_STRING and not _does_path_contain_expected_project_path(architecture_file):
             raise OperationCancelled(
-                f"Move {architecture_file} to the desired directory and retry."
+                f"First party plugin architecture files are expected to be in the project repository under {EXPECTED_FIRST_PARTY_DIRECTORY_PATH}"
             )
 
         plug_dir = os.path.dirname(os.path.abspath(architecture_file))
@@ -62,7 +64,7 @@ def _generate_plugin_files_to_directory(architecture_file: str, plug_dir: str) -
         return f"Successfully created plugin in {plug_dir}"
 
 
-def _is_first_party_plugin_in_project_repo(architecture_file: str):
+def _does_path_contain_expected_project_path(architecture_file: str):
     """
     Returns true if the architecture file path is inside the AaC repository.
 
@@ -73,7 +75,7 @@ def _is_first_party_plugin_in_project_repo(architecture_file: str):
     Args:
         architecture_file: str the full path to the architecture file and output directory
     """
-    return str(os.path.join("src", "aac", "plugins")) in architecture_file
+    return EXPECTED_FIRST_PARTY_DIRECTORY_PATH in architecture_file
 
 
 def _compile_templates(
