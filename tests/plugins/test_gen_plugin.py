@@ -157,10 +157,7 @@ class TestGenPlugin(TestCase):
             self.assertIn("[unittest]", generated_tox_config_file_contents)
             self.assertIn("[run]", generated_tox_config_file_contents)
             self.assertIn("[report]", generated_tox_config_file_contents)
-            self.assertIn(
-                "code-directories = aac_gen_protobuf",
-                generated_tox_config_file_contents,
-            )
+            self.assertIn("code-directories = aac_gen_protobuf", generated_tox_config_file_contents)
             self.assertIn("fail_under = 80.00", generated_tox_config_file_contents)
 
     def test__compile_templates_errors_on_multiple_models(self):
