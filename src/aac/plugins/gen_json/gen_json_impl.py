@@ -26,7 +26,7 @@ def print_json(architecture_files: list[str], output_directory: str = None) -> P
 
     def to_json(architecture_file: str, output_directory: str) -> str:
         file_name = os.path.basename(architecture_file)
-        file_ext = os.path.splitext(file_name)[1]
+        _, file_ext = os.path.splitext(file_name)
 
         with validation(parse_file, architecture_file) as result:
 
