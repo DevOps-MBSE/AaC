@@ -10,7 +10,7 @@ from aac.plugins.gen_plugin.gen_plugin_impl import (
     generate_plugin,
 )
 from aac.plugins.gen_plugin.GeneratePluginException import GeneratePluginException
-from aac.plugins.gen_plugin.gen_plugin_impl import FIRST_PARTY_STRING, THIRD_PARTY_STRING, EXPECTED_FIRST_PARTY_DIRECTORY_PATH
+from aac.plugins.gen_plugin.gen_plugin_impl import PLUGIN_TYPE_FIRST_STRING, PLUGIN_TYPE_THIRD_STRING, EXPECTED_FIRST_PARTY_DIRECTORY_PATH
 from aac.plugins.plugin_execution import PluginExecutionStatusCode
 from aac.validator import validation
 
@@ -37,7 +37,7 @@ class TestGenPlugin(TestCase):
                 plugin_yaml.seek(0)
 
                 is_user_desired_output_dir.return_value = True
-                result = generate_plugin(plugin_yaml.name, FIRST_PARTY_STRING)
+                result = generate_plugin(plugin_yaml.name, PLUGIN_TYPE_FIRST_STRING)
 
                 self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
 
@@ -56,7 +56,7 @@ class TestGenPlugin(TestCase):
                 plugin_yaml.seek(0)
 
                 is_user_desired_output_dir.return_value = True
-                result = generate_plugin(plugin_yaml.name, FIRST_PARTY_STRING)
+                result = generate_plugin(plugin_yaml.name, PLUGIN_TYPE_FIRST_STRING)
 
                 self.assertEqual(len(result.messages), 1)
                 self.assertEqual(result.status_code, PluginExecutionStatusCode.OPERATION_CANCELLED)
@@ -75,7 +75,7 @@ class TestGenPlugin(TestCase):
                 plugin_yaml.seek(0)
 
                 is_user_desired_output_dir.return_value = True
-                result = generate_plugin(plugin_yaml.name, THIRD_PARTY_STRING)
+                result = generate_plugin(plugin_yaml.name, PLUGIN_TYPE_THIRD_STRING)
 
                 self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
                 self.assertEqual(len(os.listdir(temp_directory)), 6)
@@ -91,7 +91,7 @@ class TestGenPlugin(TestCase):
                 plugin_yaml.seek(0)
 
                 is_user_desired_output_dir.return_value = True
-                result = generate_plugin(plugin_yaml.name, THIRD_PARTY_STRING)
+                result = generate_plugin(plugin_yaml.name, PLUGIN_TYPE_THIRD_STRING)
 
                 self.assertEqual(result.status_code, PluginExecutionStatusCode.PLUGIN_FAILURE)
                 self.assertEqual(len(os.listdir(temp_directory)), 1)
@@ -107,7 +107,7 @@ class TestGenPlugin(TestCase):
                 plugin_yaml.seek(0)
 
                 is_user_desired_output_dir.return_value = False
-                result = generate_plugin(plugin_yaml.name, THIRD_PARTY_STRING)
+                result = generate_plugin(plugin_yaml.name, PLUGIN_TYPE_THIRD_STRING)
 
                 self.assertEqual(result.status_code, PluginExecutionStatusCode.OPERATION_CANCELLED)
                 self.assertEqual(len(os.listdir(temp_directory)), 1)

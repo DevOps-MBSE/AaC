@@ -22,8 +22,10 @@ from aac.validator import validation
 
 plugin_name = "gen-plugin"
 
-FIRST_PARTY_STRING = "first"
-THIRD_PARTY_STRING = "third"
+FIRST_PARTY_STRING = "first_party"
+THIRD_PARTY_STRING = "third_party"
+PLUGIN_TYPE_FIRST_STRING = "first"
+PLUGIN_TYPE_THIRD_STRING = "third"
 
 EXPECTED_FIRST_PARTY_DIRECTORY_PATH = str(os.path.join("src", "aac", "plugins"))
 
@@ -40,7 +42,7 @@ def generate_plugin(architecture_file: str, plugin_type: str) -> PluginExecution
     """
 
     def _generate_plugin():
-        if plugin_type == FIRST_PARTY_STRING and not _does_path_contain_expected_project_path(architecture_file):
+        if plugin_type == PLUGIN_TYPE_FIRST_STRING and not _does_path_contain_expected_project_path(architecture_file):
             raise OperationCancelled(
                 f"First party plugin architecture files are expected to be in the project repository under {EXPECTED_FIRST_PARTY_DIRECTORY_PATH}"
             )
@@ -77,6 +79,8 @@ def _does_path_contain_expected_project_path(architecture_file: str):
     """
     return EXPECTED_FIRST_PARTY_DIRECTORY_PATH in architecture_file
 
+
+def _get_first_party_
 
 def _compile_templates(
     parsed_models: dict[str, dict]
@@ -153,7 +157,7 @@ def _compile_templates(
         "plugin_definitions": plugin_aac_definitions,
     }
     generated_templates = generate_templates(
-        load_default_templates("genplug"), template_properties
+        load_default_templates(f"genplug/{THIRD_PARTY_STRING}"), template_properties
     )
 
     for template in generated_templates.values():
