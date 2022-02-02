@@ -1,0 +1,47 @@
+name: Build VSCode Extension Artifacts
+
+on:
+  workflow_call:
+
+defaults:
+  run:
+    working-directory: ./vscode_extension
+
+jobs:
+  build_vscode_artifacts:
+    name: Build Extension Artifacts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up NodeJS
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+          cache: 'yarn'
+          cache-dependency-path: vscode_extension/yarn.lock
+
+      - name: Install Yarn Package Manager
+        run: npm install -g yarn
+
+      - name: Install the Node Dependencies
+        run: yarn install
+
+      - name: Compile VSCode Extension
+        run: yarn compile
+
+      - name: Lint with ESLint
+        run: yarn run eslint . --ext .js,.jsx,.ts,.tsx --max-warnings=0
+
+      - name: Test VSCode Extension
+        run: xvfb-run -a yarn test
+
+      - name: Build distribution package
+        run: yarn package
+
+      - name: Upload Extension Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: aac.vsix
+          path: vscode_extension/aac.vsix

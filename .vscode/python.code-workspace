@@ -1,7 +1,27 @@
 {
-    "version": "0.2.0",
-    "configurations": [
+    "folders": [
         {
+            "path": "../python"
+        }
+    ],
+    "settings": {
+        "python.linting.pylintEnabled": false,
+        "python.linting.flake8Enabled": true,
+        "python.linting.enabled": true,
+        "python.formatting.provider": "black",
+        "python.testing.unittestArgs": [
+            "-v",
+            "-s",
+            "./tests",
+            "-p",
+            "test_*.py"
+        ],
+        "python.testing.pytestEnabled": false,
+        "python.testing.unittestEnabled": true,
+        "python.pythonPath": "python/venv/bin/python"
+    },
+    "launch": {
+        "configurations": [{
             "name": "Python: Validate AaC",
             "type": "python",
             "request": "launch",
@@ -50,36 +70,36 @@
             "justMyCode": false
         },
         {
-            "name": "Python: Json AaC",
+            "name": "Python: Gen-JSON Core AaC Spec",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
-                "json",
+                "gen-json",
                 "${workspaceFolder}/src/aac/spec/spec.yaml"
             ],
             "console": "integratedTerminal",
             "justMyCode": false
         },
         {
-            "name": "Python: Json EchoService",
+            "name": "Python: Gen-JSON EchoService",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
-                "json",
+                "gen-json",
                 "${workspaceFolder}/model/echo/EchoService.yaml"
             ],
             "console": "integratedTerminal",
             "justMyCode": false
         },
         {
-            "name": "Python: Json Flow",
+            "name": "Python: Gen-JSON Flow",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
-                "json",
+                "gen-json",
                 "${workspaceFolder}/model/flow/System.yaml"
             ],
             "console": "integratedTerminal",
@@ -192,6 +212,7 @@
             "program": "nose2 -c ${workspaceFolder}/tox.ini",
             "console": "integratedTerminal",
             "justMyCode": false
-        }
-    ]
+        }],
+        "compounds": []
+    }
 }

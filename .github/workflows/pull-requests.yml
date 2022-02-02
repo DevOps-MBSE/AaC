@@ -1,13 +1,19 @@
 # This workflow is intended to run for ANY pull request
-name: Pull Requests AaC Workflow
+name: Pull Request Workflow
 
 on:
   pull_request:
 
 jobs:
-  Build_Artifacts:
-    uses: jondavid-black/AaC/.github/workflows/build-artifacts.yml@2f31748af5e838d581bfce55111a76ee5c8d0add
+  build_python_artifacts:
+    name: Build Python Artifacts
+    uses: jondavid-black/AaC/.github/workflows/python-build-artifacts.yml@3abd213570a5960ee502fb1992241dc12715a949
 
-  Functional_Tests:
-    needs: Build_Artifacts
-    uses: jondavid-black/AaC/.github/workflows/functional-tests.yml@e900b85adc127f80f53663f91bfb34d32cfe080f
+  build_vscode_artifacts:
+    name: Build VSCode Extension Artifacts
+    uses: jondavid-black/AaC/.github/workflows/vscode-build-artifacts.yml@3abd213570a5960ee502fb1992241dc12715a949
+
+  python_functional_tests:
+    name: Python Functional Tests
+    needs: build_python_artifacts
+    uses: jondavid-black/AaC/.github/workflows/python-functional-tests.yml@3abd213570a5960ee502fb1992241dc12715a949

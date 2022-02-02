@@ -1,21 +1,27 @@
-name: Deploy AaC Artifacts
+name: Deploy Python Artifacts
 
 on:
   workflow_dispatch:
 
-jobs:
-  Build_Artifacts:
-    uses: jondavid-black/AaC/.github/workflows/build-artifacts.yml@1e3f89c23eb6583116848d81ccd5ad952f9a62b6
+defaults:
+  run:
+    working-directory: ./python
 
-  Deploy-Artifacts:
+jobs:
+  build_deployment_artifacts:
+    name: Build Artifacts
+    uses: jondavid-black/AaC/.github/workflows/python-build-artifacts.yml@485e5ced9de355ec7155cfaa791c1eee88f14c5d
+
+  deploy_artifacts:
+    name: Deploy Artifacts
     runs-on: ubuntu-latest
-    needs: Build_Artifacts
+    needs: build_deployment_artifacts
     steps:
       - name: Download API Documentation
         uses: actions/download-artifact@v2
         with:
           name: api-documentation
-          path: docs/build/html/
+          path: python/docs/build/html/
 
       - name: Github Pages and Sphinx Deployment
         run: echo "This is where I'd deploy if I were setup"
@@ -24,7 +30,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: aac_wheel
-          path: dist/
+          path: python/dist/
 
       - name: Publish distribution to PyPI
         uses: pypa/gh-action-pypi-publish@master

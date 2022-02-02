@@ -1,10 +1,15 @@
-name: Build Package and Artifacts
+name: Build Python Artifacts
 
 on:
   workflow_call:
 
+defaults:
+  run:
+    working-directory: ./python
+
 jobs:
-  Build-Artifacts:
+  build_python_artifacts:
+    name: Build Artifacts
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -31,18 +36,19 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: test-coverage-report
-          path: html_code_coverage/
+          path: python/html_code_coverage/
 
       - name: Generate API Documentation
         run: |
-          cd docs/
+          cp -R ../docs/ ./docs
+          cd ./docs/
           make html
 
       - name: Upload API Documentation
         uses: actions/upload-artifact@v2
         with:
           name: api-documentation
-          path: docs/build/html/
+          path: python/docs/build/html/
 
       - name: Build distribution package
         run: python setup.py bdist_wheel
@@ -51,4 +57,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: aac_wheel
-          path: dist/
+          path: python/dist/

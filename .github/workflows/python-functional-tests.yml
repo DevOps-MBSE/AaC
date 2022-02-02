@@ -1,9 +1,15 @@
-name: Functional Tests
+name: Python Functional Tests
+
 on:
   workflow_call:
 
+defaults:
+  run:
+    working-directory: ./python
+
 jobs:
-  Package_Functional_Tests:
+  python_functional_tests:
+    name: Python Package Functional Tests
     runs-on: ubuntu-latest
 
     outputs:
@@ -22,7 +28,7 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: aac_wheel
-        path: dist/
+        path: python/dist/
 
     - name: Set Wheel Artifact Name
       id: wheel_artifact
@@ -42,8 +48,9 @@ jobs:
         cp  src/aac/plugins/gen_protobuf/gen_protobuf.yaml gen_plugin_generation_test
         echo y | aac gen-plugin gen_plugin_generation_test/gen_protobuf.yaml
 
-  OS_Matrix:
-      needs: Package_Functional_Tests
+  os_test_matrix:
+      name: OS Test Matrix
+      needs: python_functional_tests
       runs-on: ${{matrix.os}}
 
       strategy:
@@ -64,10 +71,10 @@ jobs:
           id: download-wheel
           with:
             name: aac_wheel
-            path: dist/
+            path: python/dist/
 
         - name: Install Wheel Distribution
-          run: pip install ${{steps.download-wheel.outputs.download-path}}/${{needs.Package_Functional_Tests.outputs.wheel_name}}
+          run: pip install ${{steps.download-wheel.outputs.download-path}}/${{needs.python_functional_tests.outputs.wheel_name}}
 
         - name: Validate Core Spec
           run: python -m aac validate src/aac/spec/spec.yaml
