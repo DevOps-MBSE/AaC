@@ -124,7 +124,7 @@ class TestGenPlugin(TestCase):
             self.assertIn("def gen_protobuf", generated_plugin_impl_file_contents)
             self.assertIn("architecture_file: str", generated_plugin_impl_file_contents)
             self.assertIn("output_directory: string", generated_plugin_impl_file_contents)
-            self.assertIn("result = PluginExecutionResult", generated_plugin_impl_file_contents)
+            self.assertIn("with plugin_result", generated_plugin_impl_file_contents)
             self.assertIn("return result", generated_plugin_impl_file_contents)
 
             generated_plugin_impl_test_file_contents = generated_templates.get(
@@ -158,6 +158,7 @@ class TestGenPlugin(TestCase):
             self.assertIn("[run]", generated_tox_config_file_contents)
             self.assertIn("[report]", generated_tox_config_file_contents)
             self.assertIn("code-directories = aac_gen_protobuf", generated_tox_config_file_contents)
+            self.assertIn("coverage = aac_gen_protobuf", generated_tox_config_file_contents)
             self.assertIn("fail_under = 80.00", generated_tox_config_file_contents)
 
     def test__compile_templates_errors_on_multiple_models(self):
