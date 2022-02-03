@@ -1,5 +1,4 @@
 """A plugin to print JSON schema of AaC model files."""
-
 import json
 import os
 
@@ -29,21 +28,19 @@ def print_json(architecture_files: list[str], output_directory: str = None) -> P
         _, file_ext = os.path.splitext(file_name)
 
         with validation(parse_file, architecture_file) as result:
+            formatted_json = json.dumps(result.model, indent=2)
 
-            if output_directory is None:
-                return f"File: {architecture_file}\n{json.dumps(result.model, indent=2)}\n"
+            if output_directory:
+
+                file_name = file_name.replace(file_ext, '.json') if file_ext else f'{file_name} + .json'
+                output_file_path = os.path.join(output_directory, file_name)
+                with open(output_file_path, "w") as out_file:
+                    out_file.write(formatted_json)
+
+                return f"Wrote JSON to {output_file_path}."
 
             else:
-                if file_ext == '':
-                    file_name = (file_name + '.json')
-                else:
-                    file_name = file_name.replace(file_ext, '.json')
-
-                output_file_path = os.path.join(output_directory, file_name)
-                outFile = open(output_file_path, "w")
-                outFile.write(json.dumps(result.model, indent=2))
-                outFile.close()
-                return f"Wrote {file_name} to {output_file_path}."
+                return f"File: {architecture_file}\n{formatted_json}\n"
 
     status = PluginExecutionStatusCode.SUCCESS
     messages = []

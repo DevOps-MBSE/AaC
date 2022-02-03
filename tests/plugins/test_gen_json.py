@@ -1,4 +1,3 @@
-
 from unittest import TestCase
 from tempfile import TemporaryDirectory, NamedTemporaryFile
 
@@ -58,46 +57,6 @@ model:
           then:
             - The System responds with output.out
 ---
-model:
-  name: ServiceOne
-  behavior:
-    - name: ProcessDataA
-      type: request-response
-      input:
-        - name: in
-          type: DataA
-      output:
-        - name: out
-          type: DataB
-      acceptance:
-        - scenario: go
-          given:
-            - ServiceOne is running.
-          when:
-            - The user sends a DataA request
-          then:
-            - The user receives a DataB response
----
-model:
-  name: ServiceTwo
-  behavior:
-    - name: Process DataB
-      type: request-response
-      input:
-        - name: in
-          type: DataB
-      output:
-        - name: out
-          type: DataC
-      acceptance:
-        - scenario: go
-          given:
-            - The ServiceTwo is running
-          when:
-            - The user makes a request with DataB
-          then:
-            - The user receives a response with DataC
----
 data:
   name: DataA
   fields:
@@ -110,18 +69,6 @@ data:
     type: MessageType
   required:
   - metadata
----
-data:
-  name: DataB
-  fields:
-  - name: metadata
-    type: MessageMetadataData
-  - name: transformed_msg
-    type: string
-    protobuf_type: string
-  required:
-  - metadata
-  - transformed_msg
 ---
 data:
   name: DataC
@@ -142,11 +89,4 @@ data:
     protobuf_type: int64
   required:
   - message_id
----
-enum:
-  name: MessageType
-  values:
-  - type_1
-  - type_2
-  - type_3
 """
