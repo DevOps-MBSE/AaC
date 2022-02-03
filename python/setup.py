@@ -26,6 +26,7 @@ runtime_dependencies = [
     "iteration_utilities >= 0.11",
     "Jinja2 >= 3.0",
     "MarkupSafe >= 2.0",
+    "pygls >= 0.11",
 ]
 
 development_dependencies = [

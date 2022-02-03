@@ -9,6 +9,7 @@ from pluggy import PluginManager
 
 from aac import parser, plugins
 from aac.AacCommand import AacCommand, AacCommandArgument
+from aac.lang.server import start_lsp
 from aac.plugins.plugin_execution import (
     PluginExecutionResult,
     plugin_result,
@@ -88,6 +89,21 @@ def _setup_arg_parser(
             "aac-core-spec",
             "Prints the AaC model describing core AaC data types and enumerations",
             _core_spec_cmd,
+        ),
+        AacCommand(
+            "start-lsp",
+            "Start the AaC Language Server Protocol (LSP) server",
+            start_lsp,
+            [
+                AacCommandArgument(
+                    "--host",
+                    "The host on which the server should listen for LSP requests.",
+                ),
+                AacCommandArgument(
+                    "--port",
+                    "The port on which the server should listen for LSP requests.",
+                ),
+            ],
         ),
     ]
 
