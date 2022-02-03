@@ -32,7 +32,7 @@ def print_json(architecture_files: list[str], output_directory: str = None) -> P
 
             if output_directory:
 
-                file_name = file_name.replace(file_ext, '.json') if file_ext else f'{file_name} + .json'
+                file_name = file_name.replace(file_ext, '.json') if file_ext else f'{file_name}.json'
                 output_file_path = os.path.join(output_directory, file_name)
                 with open(output_file_path, "w") as out_file:
                     out_file.write(formatted_json)
