@@ -3,7 +3,6 @@
 import logging
 
 from asyncio import SelectorEventLoop
-from threading import Thread
 
 from pygls.server import LanguageServer
 
@@ -34,28 +33,6 @@ class AacLanguageServer(LanguageServer):
         super().__init__(loop)
 
 
-class AacLanguageServerThread(Thread):
-    """A thread to handle AaC LSP requests.
-
-    Properties:
-        server (AacLanguageServer): The AaC Language Server.
-        host (str): The host on which to listen for LSP requests.
-        port (int): The port on which to listen for LSP requests.
-    """
-
-    def __init__(self, server: AacLanguageServer, host: str = None, port: int = None):
-        """Create a new AaC Language Server thread."""
-        super().__init__()
-
-        self.server = server
-        self.host = host
-        self.port = port
-
-    def run(self):
-        """Run the AaC Language Server."""
-        self.server.start_tcp(self.host, self.port)
-
-
 server = AacLanguageServer(AacLanguageServerEventLoop())
 
 
@@ -68,9 +45,7 @@ def start_lsp(host: str = None, port: int = None):
     """
 
     def start(host, port):
-        thread = AacLanguageServerThread(server, host, port)
-        thread.start()
-        return f"Starting server: {thread.host}:{thread.port}"
+        server.start_tcp(host, port)
 
     connection_details = host or default_host, port or default_port
     with plugin_result("lsp", start, *connection_details) as result:
