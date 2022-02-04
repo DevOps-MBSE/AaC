@@ -42,14 +42,17 @@ def generate_plugin(architecture_file: str, plugin_type: str) -> PluginExecution
     """
 
     def _generate_plugin():
-        if plugin_type == PLUGIN_TYPE_FIRST_STRING and not _does_path_contain_expected_project_path(architecture_file):
+        if (
+            plugin_type == PLUGIN_TYPE_FIRST_STRING
+            and not _does_path_contain_expected_project_path(architecture_file)
+        ):
             raise OperationCancelled(
                 f"First party plugin architecture files are expected to be in the project repository under {EXPECTED_FIRST_PARTY_DIRECTORY_PATH}"
             )
 
         plug_dir = os.path.dirname(os.path.abspath(architecture_file))
         if _is_user_desired_output_directory(architecture_file, plug_dir):
-            return _generate_plugin_files_to_directory(architecture_file, plug_dir)
+            return _generate_plugin_files_to_directory(architecture_file, plug_dir, plugin_type)
 
         raise OperationCancelled(
             f"Move {architecture_file} to the desired directory and retry."
@@ -59,9 +62,9 @@ def generate_plugin(architecture_file: str, plugin_type: str) -> PluginExecution
         return result
 
 
-def _generate_plugin_files_to_directory(architecture_file: str, plug_dir: str) -> str:
+def _generate_plugin_files_to_directory(architecture_file: str, plug_dir: str, plugin_type: str) -> str:
     with validation(parser.parse_file, architecture_file) as validation_result:
-        templates = list(_compile_templates(validation_result.model).values())
+        templates = list(_prepare_and_generate_plugin_files(validation_result.model, plugin_type).values())
         write_generated_templates_to_file(templates, plug_dir)
         return f"Successfully created plugin in {plug_dir}"
 
@@ -80,11 +83,66 @@ def _does_path_contain_expected_project_path(architecture_file: str):
     return EXPECTED_FIRST_PARTY_DIRECTORY_PATH in architecture_file
 
 
-def _get_first_party_
+def _apply_output_template_properties(
+    output_files: list[TemplateOutputFile],
+    overwite_files: list[str],
+    parent_directories: dict[str, str],
+    plugin_implementation_name,
+):
+    """
+    Apply post-generation settings to the files prior to them being written to the filesystem.
 
-def _compile_templates(
-    parsed_models: dict[str, dict]
-) -> dict[str, list[TemplateOutputFile]]:
+    Args:
+        output_files (list[TemplateOutputFile]): The generated files to apply the settings to (this mutates output_files)
+        overwite_files (list[str]): A list of template files that can be overwritten
+        parent_directories (dict[str, str]): A dictionary of directories to generate the output files under
+        plugin_implementation_name: The plugin's implementation name
+    """
+
+    def set_overwrite_value(output_file: TemplateOutputFile):
+        output_file.overwrite = output_file.template_name in overwite_files
+
+    def set_filename_value(output_file: TemplateOutputFile):
+        output_file.file_name = _convert_template_name_to_file_name(
+            output_file.template_name, plugin_implementation_name
+        )
+
+    def set_parent_directory_value(output_file: TemplateOutputFile):
+        output_file.parent_dir = (
+            parent_directories.get(output_file.template_name) or output_file.parent_dir
+        )
+
+    for output_file in output_files.values():
+        set_overwrite_value(output_file)
+        set_filename_value(output_file)
+        set_parent_directory_value(output_file)
+
+
+def _get_overwriteable_templates():
+    """Returns a manually maintained list of templates that can be overwritten."""
+    return ["plugin.py.jinja2", "setup.py.jinja2"]
+
+
+def _get_template_parent_directories(plugin_directory):
+    """Returns a manually maintained list of templates and their parent directories."""
+    return {
+        "plugin.py.jinja2": plugin_directory,
+        "plugin_impl.py.jinja2": plugin_directory,
+        "__init__.py.jinja2": plugin_directory,
+        "test_plugin_impl.py.jinja2": "tests",
+    }
+
+
+def _generate_template_files(plugin_type: str, template_properties: dict):
+    """Generates the Jinja2 templates with the template properties."""
+
+    template_directory_name = f"genplug/{plugin_type}_party"
+    return generate_templates(
+        load_default_templates(template_directory_name), template_properties
+    )
+
+
+def _prepare_and_generate_plugin_files(parsed_models: dict[str, dict], plugin_type: str) -> dict[str, list[TemplateOutputFile]]:
     """
     Parse the model and generate the plugin template accordingly.
 
@@ -97,22 +155,30 @@ def _compile_templates(
     Raises:
         GeneratePluginException: An error encountered during the plugin generation process.
     """
-    templates_to_overwrite = ["plugin.py.jinja2", "setup.py.jinja2"]
-    template_parent_directories = {"test_plugin_impl.py.jinja2": "tests"}
+    template_properties = _gather_template_properties(parsed_models)
 
-    def set_overwrite_value(template: TemplateOutputFile):
-        template.overwrite = template.template_name in templates_to_overwrite
+    plugin_name = template_properties.get("plugin").get("name")
+    plugin_implementation_name = template_properties.get("plugin").get("implementation_name")
 
-    def set_filename_value(template: TemplateOutputFile):
-        template.file_name = _convert_template_name_to_file_name(
-            template.template_name, plugin_implementation_name
-        )
+    plugin_directory_name = _convert_to_implementation_name(plugin_name)
+    templates_to_overwrite = _get_overwriteable_templates()
+    template_parent_directories = _get_template_parent_directories(
+        plugin_directory_name
+    )
 
-    def set_parent_directory_value(template: TemplateOutputFile):
-        template.parent_dir = (
-            template_parent_directories.get(template.template_name)
-            or template.parent_dir
-        )
+    generated_templates = _generate_template_files(plugin_type, template_properties)
+
+    _apply_output_template_properties(
+        generated_templates,
+        templates_to_overwrite,
+        template_parent_directories,
+        plugin_implementation_name,
+    )
+
+    return generated_templates
+
+
+def _gather_template_properties(parsed_models: dict[str, dict]):
 
     # ensure model is present and valid, get the plugin name
     plugin_models = util.get_models_by_type(parsed_models, "model")
@@ -129,13 +195,6 @@ def _compile_templates(
         plugin_name = f"{PLUGIN_PROJECT_NAME}-{plugin_name}"
 
     plugin_implementation_name = _convert_to_implementation_name(plugin_name)
-
-    plugin_dir = _convert_to_implementation_name(plugin_name)
-    template_parent_directories = template_parent_directories | {
-        "plugin.py.jinja2": plugin_dir,
-        "plugin_impl.py.jinja2": plugin_dir,
-        "__init__.py.jinja2": plugin_dir,
-    }
 
     # Prepare template variables/properties
     behaviors = util.search(plugin_model, ["behavior"])
@@ -156,16 +215,8 @@ def _compile_templates(
         "commands": commands,
         "plugin_definitions": plugin_aac_definitions,
     }
-    generated_templates = generate_templates(
-        load_default_templates(f"genplug/{THIRD_PARTY_STRING}"), template_properties
-    )
 
-    for template in generated_templates.values():
-        set_overwrite_value(template)
-        set_filename_value(template)
-        set_parent_directory_value(template)
-
-    return generated_templates
+    return template_properties
 
 
 def _convert_template_name_to_file_name(template_name: str, plugin_name: str) -> str:

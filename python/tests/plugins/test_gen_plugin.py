@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 from aac import parser
 from aac.plugins.gen_plugin.gen_plugin_impl import (
-    _compile_templates,
+    _prepare_and_generate_plugin_files,
     _convert_template_name_to_file_name,
     generate_plugin,
 )
@@ -41,7 +41,7 @@ class TestGenPlugin(TestCase):
 
                 self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
 
-                self.assertEqual(len(os.listdir(output_directory_path)), 6)  # TODO: Update me to 1st party file count
+                self.assertEqual(len(os.listdir(output_directory_path)), 3)  # TODO: Update me to 1st party file count
 
     @patch("aac.plugins.gen_plugin.gen_plugin_impl._is_user_desired_output_directory")
     def test_fail_to_generate_first_party_plugin(self, is_user_desired_output_dir):
@@ -132,11 +132,11 @@ class TestGenPlugin(TestCase):
             actual_filename = _convert_template_name_to_file_name(template_names[i], plugin_name)
             self.assertEqual(expected_filename, actual_filename)
 
-    def test_compile_templates(self):
+    def test_prepare_and_generate_plugin_files(self):
         with validation(parser.parse_str, "", model_content=TEST_PLUGIN_YAML_STRING) as result:
             plugin_name = "aac_gen_protobuf"
 
-            generated_templates = _compile_templates(result.model)
+            generated_templates = _prepare_and_generate_plugin_files(result.model, PLUGIN_TYPE_THIRD_STRING)
 
             generated_template_names = []
             generated_template_parent_directories = []
@@ -221,19 +221,19 @@ class TestGenPlugin(TestCase):
             self.assertIn("coverage = aac_gen_protobuf", generated_tox_config_file_contents)
             self.assertIn("fail_under = 80.00", generated_tox_config_file_contents)
 
-    def test__compile_templates_errors_on_multiple_models(self):
+    def test__prepare_and_generate_plugin_files_errors_on_multiple_models(self):
         with validation(
             parser.parse_str,
             "",
             model_content=f"{TEST_PLUGIN_YAML_STRING}\n---\n{SECONDARY_MODEL_YAML_DEFINITION}",
         ) as result:
-            self.assertRaises(GeneratePluginException, _compile_templates, result.model)
+            self.assertRaises(GeneratePluginException, _prepare_and_generate_plugin_files, result.model, PLUGIN_TYPE_THIRD_STRING)
 
-    def test__compile_templates_with_model_name_missing_package_prefix(self):
+    def test__prepare_and_generate_plugin_files_with_model_name_missing_package_prefix(self):
         parsed_model = parser.parse_str("", MODEL_YAML_DEFINITION_SANS_PACKAGE_PREFIX)
         plugin_name = "aac_spec"
 
-        generated_templates = _compile_templates(parsed_model)
+        generated_templates = _prepare_and_generate_plugin_files(parsed_model, PLUGIN_TYPE_THIRD_STRING)
 
         generated_template_names = []
         generated_template_parent_directories = []
