@@ -14,9 +14,6 @@ class Testgen_json(TestCase):
             temp_arch_file.seek(0)
 
             result = print_json([temp_arch_file.name], temp_dir)
-            # TODO: Delete these once testing is complete
-            print(result.messages)
-            print(result.status_code)
             self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
             self.assertIn("Wrote JSON to", "\n".join(result.messages))
 
@@ -27,9 +24,6 @@ class Testgen_json(TestCase):
             temp_arch_file.seek(0)
 
             result = print_json([temp_arch_file.name])
-            # TODO: Delete these once testing is complete
-            print(result.messages)
-            print(result.status_code)
             self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
             self.assertIn('"name": "Test_model"', "\n".join(result.messages))
 
@@ -40,9 +34,6 @@ class Testgen_json(TestCase):
             temp_arch_file.seek(0)
 
             result = print_json([temp_arch_file.name])
-            # TODO: Delete these once testing is complete
-            print(result.messages)
-            print(result.status_code)
             self.assertEqual(result.status_code, PluginExecutionStatusCode.VALIDATION_FAILURE)
 
 
