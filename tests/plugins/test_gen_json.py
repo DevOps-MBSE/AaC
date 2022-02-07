@@ -13,7 +13,7 @@ class Testgen_json(TestCase):
             temp_arch_file.write(TEST_ARCH_YAML_STRING)
             temp_arch_file.seek(0)
 
-            result = print_json([temp_arch_file.name], temp_dir):
+            result = print_json([temp_arch_file.name], temp_dir)
             # TODO: Delete these once testing is complete
             print(result.messages)
             print(result.status_code)
@@ -34,7 +34,16 @@ class Testgen_json(TestCase):
             self.assertIn('"name": "Test_model"', "\n".join(result.messages))
 
     def test_gen_json_with_invalid_arch_file(self):
-        pass
+
+        with TemporaryDirectory(), NamedTemporaryFile("w") as temp_arch_file:
+            temp_arch_file.write(BAD_YAML_STRING)
+            temp_arch_file.seek(0)
+
+            result = print_json([temp_arch_file.name])
+            # TODO: Delete these once testing is complete
+            print(result.messages)
+            print(result.status_code)
+            self.assertEqual(result.status_code, PluginExecutionStatusCode.VALIDATION_FAILURE)
 
 
 TEST_ARCH_YAML_STRING = """
@@ -47,6 +56,20 @@ model:
       description: Tests Yaml
       input:
         - name: architecture_file
+          type: string
+
+"""
+
+BAD_YAML_STRING = """
+model:
+  name: Test_model
+  description: A Test Yaml file.
+  behavior:
+    - Name: Test
+      type: command
+      description: Tests Yaml
+      input:
+        - name: architecture
           type: string
 
 """
