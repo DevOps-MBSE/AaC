@@ -2,7 +2,7 @@ from unittest import TestCase
 from tempfile import TemporaryDirectory, NamedTemporaryFile
 
 from aac.plugins.gen_json.gen_json_impl import print_json
-from aac.plugins.plugin_execution import PluginExecutionStatusCode, plugin_result
+from aac.plugins.plugin_execution import PluginExecutionStatusCode
 
 
 class Testgen_json(TestCase):
