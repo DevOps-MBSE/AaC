@@ -17,10 +17,9 @@ plugin_name = "gen-json"
 def print_json(architecture_files: list[str], output_directory: str = None) -> PluginExecutionResult:
     """Prints the parsed_models from the parsed architecture_files values in JSON format.
 
-       Arguments:
-           architecture_files (list[str]): filepath to the architecture file to convert to JSON.
-           output_directory (str): Directory in which JSON files will be written. (optional)
-
+    Arguments:
+        architecture_files (list[str]): filepath to the architecture file to convert to JSON.
+        output_directory (str): Directory in which JSON files will be written. (optional)
     """
 
     def to_json(architecture_file: str, output_directory: str) -> str:
