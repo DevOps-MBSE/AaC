@@ -6,6 +6,7 @@ defined behavior becomes a new command for the aac CLI.
 """
 import os
 
+import logging
 import yaml
 
 from aac import parser, util
@@ -22,8 +23,6 @@ from aac.validator import validation
 
 plugin_name = "gen-plugin"
 
-FIRST_PARTY_STRING = "first_party"
-THIRD_PARTY_STRING = "third_party"
 PLUGIN_TYPE_FIRST_STRING = "first"
 PLUGIN_TYPE_THIRD_STRING = "third"
 
@@ -42,34 +41,39 @@ def generate_plugin(architecture_file: str, plugin_type: str) -> PluginExecution
     """
 
     def _generate_plugin():
-        if (
-            plugin_type == PLUGIN_TYPE_FIRST_STRING
-            and not _does_path_contain_expected_project_path(architecture_file)
-        ):
-            raise OperationCancelled(
-                f"First party plugin architecture files are expected to be in the project repository under {EXPECTED_FIRST_PARTY_DIRECTORY_PATH}"
-            )
+        plugin_output_directory = ""
+        if plugin_type == PLUGIN_TYPE_FIRST_STRING:
 
-        plug_dir = os.path.dirname(os.path.abspath(architecture_file))
-        if _is_user_desired_output_directory(architecture_file, plug_dir):
-            return _generate_plugin_files_to_directory(architecture_file, plug_dir, plugin_type)
+            if not _does_path_contain_expected_project_path(architecture_file):
+                raise OperationCancelled(
+                    f"First party plugin architecture files are expected to be generated in the project repository under '{EXPECTED_FIRST_PARTY_DIRECTORY_PATH}'"
+                )
 
-        raise OperationCancelled(
-            f"Move {architecture_file} to the desired directory and retry."
-        )
+            # For first-party plugins, set the path to the repository's root
+            plugin_output_directory = _get_repository_root_directory_from_path(os.path.abspath(architecture_file))
+
+        else:
+            plugin_output_directory = os.path.dirname(os.path.abspath(architecture_file))
+
+        if _is_user_desired_output_directory(architecture_file, plugin_output_directory):
+            return _generate_plugin_files_to_directory(architecture_file, plugin_output_directory, plugin_type)
+
+        raise OperationCancelled(f"Move {architecture_file} to the desired directory and retry.")
 
     with plugin_result(plugin_name, _generate_plugin) as result:
         return result
 
 
-def _generate_plugin_files_to_directory(architecture_file: str, plug_dir: str, plugin_type: str) -> str:
+def _generate_plugin_files_to_directory(architecture_file: str, plugin_output_directory: str, plugin_type: str) -> str:
     with validation(parser.parse_file, architecture_file) as validation_result:
-        templates = list(_prepare_and_generate_plugin_files(validation_result.model, plugin_type).values())
-        write_generated_templates_to_file(templates, plug_dir)
-        return f"Successfully created plugin in {plug_dir}"
+        templates = list(
+            _prepare_and_generate_plugin_files(validation_result.model, plugin_type, plugin_output_directory).values()
+        )
+        write_generated_templates_to_file(templates, plugin_output_directory)
+        return f"Successfully created plugin in {plugin_output_directory}"
 
 
-def _does_path_contain_expected_project_path(architecture_file: str):
+def _does_path_contain_expected_project_path(architecture_file: str) -> bool:
     """
     Returns true if the architecture file path is inside the AaC repository.
 
@@ -103,14 +107,10 @@ def _apply_output_template_properties(
         output_file.overwrite = output_file.template_name in overwite_files
 
     def set_filename_value(output_file: TemplateOutputFile):
-        output_file.file_name = _convert_template_name_to_file_name(
-            output_file.template_name, plugin_implementation_name
-        )
+        output_file.file_name = _convert_template_name_to_file_name(output_file.template_name, plugin_implementation_name)
 
     def set_parent_directory_value(output_file: TemplateOutputFile):
-        output_file.parent_dir = (
-            parent_directories.get(output_file.template_name) or output_file.parent_dir
-        )
+        output_file.parent_dir = parent_directories.get(output_file.template_name) or output_file.parent_dir
 
     for output_file in output_files.values():
         set_overwrite_value(output_file)
@@ -118,36 +118,46 @@ def _apply_output_template_properties(
         set_parent_directory_value(output_file)
 
 
-def _get_overwriteable_templates():
+def _get_overwriteable_templates() -> list[str]:
     """Returns a manually maintained list of templates that can be overwritten."""
     return ["plugin.py.jinja2", "setup.py.jinja2"]
 
 
-def _get_template_parent_directories(plugin_directory):
+def _get_template_parent_directories(plugin_type: str, plugin_output_directory: str, plugin_name: str) -> dict[str, str]:
     """Returns a manually maintained list of templates and their parent directories."""
-    return {
-        "plugin.py.jinja2": plugin_directory,
-        "plugin_impl.py.jinja2": plugin_directory,
-        "__init__.py.jinja2": plugin_directory,
+
+    # Assuming first-party plugin will result in plugin_output_directory being set to the python workspace root directory.
+    first_party_directories = {
+        "test_plugin_impl.py.jinja2": f"tests/plugins/{plugin_name}",
+        "plugin_impl.py.jinja2": f"src/aac/plugins/{plugin_name}",
+        "__init__.py.jinja2": f"src/aac/plugins/{plugin_name}",
+    }
+
+    third_party_directories = {
+        "plugin.py.jinja2": plugin_name,
+        "plugin_impl.py.jinja2": plugin_name,
+        "__init__.py.jinja2": plugin_name,
         "test_plugin_impl.py.jinja2": "tests",
     }
 
+    return first_party_directories if plugin_type == PLUGIN_TYPE_FIRST_STRING else third_party_directories
 
-def _generate_template_files(plugin_type: str, template_properties: dict):
+
+def _generate_template_files(plugin_type: str, template_properties: dict) -> dict[str, TemplateOutputFile]:
     """Generates the Jinja2 templates with the template properties."""
-
     template_directory_name = f"genplug/{plugin_type}_party"
-    return generate_templates(
-        load_default_templates(template_directory_name), template_properties
-    )
+    return generate_templates(load_default_templates(template_directory_name), template_properties)
 
 
-def _prepare_and_generate_plugin_files(parsed_models: dict[str, dict], plugin_type: str) -> dict[str, list[TemplateOutputFile]]:
+def _prepare_and_generate_plugin_files(
+    parsed_models: dict[str, dict], plugin_type: str, plugin_output_directory: str
+) -> dict[str, list[TemplateOutputFile]]:
     """
     Parse the model and generate the plugin template accordingly.
 
     Args:
         parsed_models (dict[str, dict]): Dict representing the plugin models
+        plugin_type (str): A string representing the plugin type {PLUGIN_TYPE_FIRST_STRING, PLUGIN_TYPE_THIRD_STRING}
 
     Returns:
         List of TemplateOutputFile objects that contain the compiled templates
@@ -160,10 +170,10 @@ def _prepare_and_generate_plugin_files(parsed_models: dict[str, dict], plugin_ty
     plugin_name = template_properties.get("plugin").get("name")
     plugin_implementation_name = template_properties.get("plugin").get("implementation_name")
 
-    plugin_directory_name = _convert_to_implementation_name(plugin_name)
+    plugin_implementation_name = _convert_to_implementation_name(plugin_name)
     templates_to_overwrite = _get_overwriteable_templates()
     template_parent_directories = _get_template_parent_directories(
-        plugin_directory_name
+        plugin_type, plugin_output_directory, plugin_implementation_name
     )
 
     generated_templates = _generate_template_files(plugin_type, template_properties)
@@ -183,9 +193,7 @@ def _gather_template_properties(parsed_models: dict[str, dict]):
     # ensure model is present and valid, get the plugin name
     plugin_models = util.get_models_by_type(parsed_models, "model")
     if len(plugin_models.keys()) != 1:
-        raise GeneratePluginException(
-            "Plugin Arch-as-Code yaml must contain one and only one model."
-        )
+        raise GeneratePluginException("Plugin Arch-as-Code yaml must contain one and only one model.")
 
     plugin_model = list(plugin_models.values())[0].get("model")
     plugin_name = plugin_model.get("name")
@@ -206,8 +214,7 @@ def _gather_template_properties(parsed_models: dict[str, dict]):
     }
 
     plugin_aac_definitions = [
-        _add_definitions_yaml_string(definition)
-        for definition in _gather_plugin_aac_definitions(parsed_models)
+        _add_definitions_yaml_string(definition) for definition in _gather_plugin_aac_definitions(parsed_models)
     ]
 
     template_properties = {
@@ -251,9 +258,7 @@ def _is_user_desired_output_directory(architecture_file: str, output_dir: str) -
         else:
             first = False
 
-        confirmation = input(
-            f"Do you want to generate an AaC plugin in the directory {output_dir}? [y/n]"
-        )
+        confirmation = input(f"Do you want to generate an AaC plugin in the directory {output_dir}? [y/n]")
 
     return confirmation in ["y", "Y"]
 
@@ -270,9 +275,7 @@ def _gather_commands(behaviors: dict) -> list[dict]:
 
     def modify_command_input_output_entry(in_out_entry: dict):
         """Modify the input and output entries of a behavior definition to reduce complexity in the templates."""
-        in_out_entry["type"] = in_out_entry.get("python_type") or in_out_entry.get(
-            "type"
-        )
+        in_out_entry["type"] = in_out_entry.get("python_type") or in_out_entry.get("type")
 
         return in_out_entry
 
@@ -291,9 +294,7 @@ def _gather_commands(behaviors: dict) -> list[dict]:
             behavior_description = f"{behavior_description}."
 
         if behavior.get("input"):
-            behavior["input"] = list(
-                map(modify_command_input_output_entry, behavior.get("input"))
-            )
+            behavior["input"] = list(map(modify_command_input_output_entry, behavior.get("input")))
 
         behavior["description"] = behavior_description
         behavior["implementation_name"] = _convert_to_implementation_name(behavior_name)
@@ -317,3 +318,15 @@ def _add_definitions_yaml_string(model: dict) -> dict:
 
 def _convert_to_implementation_name(original_name: str) -> str:
     return original_name.replace("-", "_")
+
+
+def _get_repository_root_directory_from_path(system_path: str) -> str:
+    target_index = system_path.find(EXPECTED_FIRST_PARTY_DIRECTORY_PATH)
+
+    if target_index < 0:
+        logging.error(f"Failed to find '{EXPECTED_FIRST_PARTY_DIRECTORY_PATH}' in plugin output path: '{system_path}'.")
+        raise (
+            GeneratePluginException(f"Expected file path '{system_path}' to contain '{EXPECTED_FIRST_PARTY_DIRECTORY_PATH}'.")
+        )
+
+    return system_path[:target_index]
