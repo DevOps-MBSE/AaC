@@ -45,7 +45,7 @@ def print_json(architecture_files: list[str], output_directory: str = None) -> P
     messages = []
     for arch_file in architecture_files:
         with plugin_result(plugin_name, to_json, arch_file, output_directory) as result:
-            messages = result.messages
+            messages = messages + result.messages
             if not result.is_success():
                 status = result.status_code
 
