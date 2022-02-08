@@ -55,7 +55,7 @@ def generate_plugin(architecture_file: str, plugin_type: str) -> PluginExecution
         else:
             plugin_output_directory = os.path.dirname(os.path.abspath(architecture_file))
 
-        if _is_user_desired_output_directory(architecture_file, plugin_output_directory):
+        if _is_user_desired_output_directory(architecture_file):
             return _generate_plugin_files_to_directory(architecture_file, plugin_output_directory, plugin_type)
 
         raise OperationCancelled(f"Move {architecture_file} to the desired directory and retry.")
@@ -64,10 +64,10 @@ def generate_plugin(architecture_file: str, plugin_type: str) -> PluginExecution
         return result
 
 
-def _generate_plugin_files_to_directory(architecture_file: str, plugin_output_directory: str, plugin_type: str) -> str:
-    with validation(parser.parse_file, architecture_file) as validation_result:
+def _generate_plugin_files_to_directory(architecture_file_path: str, plugin_output_directory: str, plugin_type: str) -> str:
+    with validation(parser.parse_file, architecture_file_path) as validation_result:
         templates = list(
-            _prepare_and_generate_plugin_files(validation_result.model, plugin_type, plugin_output_directory).values()
+            _prepare_and_generate_plugin_files(validation_result.model, plugin_type, architecture_file_path).values()
         )
         write_generated_templates_to_file(templates, plugin_output_directory)
         return f"Successfully created plugin in {plugin_output_directory}"
@@ -123,16 +123,19 @@ def _get_overwriteable_templates() -> list[str]:
     return ["plugin.py.jinja2", "setup.py.jinja2"]
 
 
-def _get_template_parent_directories(plugin_type: str, plugin_output_directory: str, plugin_name: str) -> dict[str, str]:
+def _get_template_parent_directories(plugin_type: str, architecture_file_path: str, plugin_name: str) -> dict[str, str]:
     """Returns a manually maintained list of templates and their parent directories."""
 
-    # Assuming first-party plugin will result in plugin_output_directory being set to the python workspace root directory.
+    architecture_file_directory_path = os.path.dirname(architecture_file_path)
+
+    # First party files are generated at the same level as the architecture file
     first_party_directories = {
-        "test_plugin_impl.py.jinja2": f"tests/plugins/{plugin_name}",
-        "plugin_impl.py.jinja2": f"src/aac/plugins/{plugin_name}",
-        "__init__.py.jinja2": f"src/aac/plugins/{plugin_name}",
+        "test_plugin_impl.py.jinja2": "tests/plugins/",
+        "plugin_impl.py.jinja2": architecture_file_directory_path,
+        "__init__.py.jinja2": architecture_file_directory_path,
     }
 
+    # Third party files are generated a level belowthe architecture file
     third_party_directories = {
         "plugin.py.jinja2": plugin_name,
         "plugin_impl.py.jinja2": plugin_name,
@@ -150,7 +153,7 @@ def _generate_template_files(plugin_type: str, template_properties: dict) -> dic
 
 
 def _prepare_and_generate_plugin_files(
-    parsed_models: dict[str, dict], plugin_type: str, plugin_output_directory: str
+    parsed_models: dict[str, dict], plugin_type: str, architecture_file_path: str
 ) -> dict[str, list[TemplateOutputFile]]:
     """
     Parse the model and generate the plugin template accordingly.
@@ -158,6 +161,7 @@ def _prepare_and_generate_plugin_files(
     Args:
         parsed_models (dict[str, dict]): Dict representing the plugin models
         plugin_type (str): A string representing the plugin type {PLUGIN_TYPE_FIRST_STRING, PLUGIN_TYPE_THIRD_STRING}
+        architecture_file_path (str): The filepath to the architecture file used to generate the plugin
 
     Returns:
         List of TemplateOutputFile objects that contain the compiled templates
@@ -173,7 +177,7 @@ def _prepare_and_generate_plugin_files(
     plugin_implementation_name = _convert_to_implementation_name(plugin_name)
     templates_to_overwrite = _get_overwriteable_templates()
     template_parent_directories = _get_template_parent_directories(
-        plugin_type, plugin_output_directory, plugin_implementation_name
+        plugin_type, architecture_file_path, plugin_implementation_name
     )
 
     generated_templates = _generate_template_files(plugin_type, template_properties)
@@ -190,7 +194,7 @@ def _prepare_and_generate_plugin_files(
 
 def _gather_template_properties(parsed_models: dict[str, dict]):
 
-    # ensure model is present and valid, get the plugin name
+    # Ensure model is present and valid, get the plugin name
     plugin_models = util.get_models_by_type(parsed_models, "model")
     if len(plugin_models.keys()) != 1:
         raise GeneratePluginException("Plugin Arch-as-Code yaml must contain one and only one model.")
@@ -239,17 +243,18 @@ def _convert_template_name_to_file_name(template_name: str, plugin_name: str) ->
     return template_name.replace(".jinja2", "").replace("plugin", plugin_name)
 
 
-def _is_user_desired_output_directory(architecture_file: str, output_dir: str) -> bool:
+def _is_user_desired_output_directory(architecture_file_path: str) -> bool:
     """
     Ask the user if they're comfortable with the target generation directory.
 
     Args:
-        architecture_file: Name of the architecture file
-        output_dir: The path to the target output directory
+        architecture_file_path: Path to the plugin's architecture file
 
     Returns:
         boolean True if the user wishes to write to <output_dir>
     """
+    output_dir = os.path.dirname(os.path.abspath(architecture_file_path))
+
     first = True
     confirmation = ""
     while confirmation not in ["y", "n", "Y", "N"]:
@@ -258,7 +263,7 @@ def _is_user_desired_output_directory(architecture_file: str, output_dir: str) -
         else:
             first = False
 
-        confirmation = input(f"Do you want to generate an AaC plugin in the directory {output_dir}? [y/n]")
+        confirmation = input(f"Do you want to generate an AaC plugin in the directory {output_dir}/? [y/n]")
 
     return confirmation in ["y", "Y"]
 
