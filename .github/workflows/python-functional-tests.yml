@@ -46,7 +46,7 @@ jobs:
       run: |
         mkdir -p src/aac/plugins/test_gen_protobuf/
         cp  src/aac/plugins/gen_protobuf/gen_protobuf.yaml src/aac/plugins/test_gen_protobuf/gen_plugin_generation_test.yaml
-        echo y | aac gen-plugin gen_plugin_generation_test/gen_protobuf.yaml "first"
+        echo y | aac gen-plugin src/aac/plugins/test_gen_protobuf/gen_plugin_generation_test.yaml "first"
 
     - name: Test gen-plugin third-party
       run: |
