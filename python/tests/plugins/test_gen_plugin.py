@@ -7,10 +7,15 @@ from aac import parser
 from aac.plugins.gen_plugin.gen_plugin_impl import (
     _prepare_and_generate_plugin_files,
     _convert_template_name_to_file_name,
+    _get_repository_root_directory_from_path,
     generate_plugin,
 )
 from aac.plugins.gen_plugin.GeneratePluginException import GeneratePluginException
-from aac.plugins.gen_plugin.gen_plugin_impl import PLUGIN_TYPE_FIRST_STRING, PLUGIN_TYPE_THIRD_STRING, EXPECTED_FIRST_PARTY_DIRECTORY_PATH
+from aac.plugins.gen_plugin.gen_plugin_impl import (
+    PLUGIN_TYPE_FIRST_STRING,
+    PLUGIN_TYPE_THIRD_STRING,
+    EXPECTED_FIRST_PARTY_DIRECTORY_PATH,
+)
 from aac.plugins.plugin_execution import PluginExecutionStatusCode
 from aac.validator import validation
 
@@ -27,12 +32,15 @@ class TestGenPlugin(TestCase):
     @patch("aac.plugins.gen_plugin.gen_plugin_impl._is_user_desired_output_directory")
     def test_generate_first_party_plugin(self, is_user_desired_output_dir):
         with TemporaryDirectory() as temp_directory:
-            output_directory_path = os.path.join(temp_directory, EXPECTED_FIRST_PARTY_DIRECTORY_PATH)
-            os.makedirs(output_directory_path)
 
-            self.assertEqual(len(os.listdir(output_directory_path)), 0)
+            self.assertEqual(len(os.listdir(temp_directory)), 0)
 
-            with NamedTemporaryFile(dir=output_directory_path, mode="w") as plugin_yaml:
+            plugin_name = "aac_gen_protobuf"  # Pulled from TEST_PLUGIN_YAML_STRING and modified to impl with '_'
+            plugin_aac_path = os.path.join(temp_directory, EXPECTED_FIRST_PARTY_DIRECTORY_PATH, plugin_name)
+            os.makedirs(plugin_aac_path)
+
+            # Write the plugin file into the "fake" test repo path
+            with NamedTemporaryFile(dir=plugin_aac_path, mode="w", suffix=".yaml") as plugin_yaml:
                 plugin_yaml.write(TEST_PLUGIN_YAML_STRING)
                 plugin_yaml.seek(0)
 
@@ -41,7 +49,15 @@ class TestGenPlugin(TestCase):
 
                 self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
 
-                self.assertEqual(len(os.listdir(output_directory_path)), 3)  # TODO: Update me to 1st party file count
+                # Assert that top-level are all directories, no files at the top should be generated
+                self.assertEqual(len(os.listdir(temp_directory)), 2)
+
+                # Assert the test was generated
+                self.assertEqual(len(os.listdir(f"{temp_directory}/tests/")), 1)
+
+                # Assert the plugin was generated
+                print(os.listdir(f"{temp_directory}/src/aac/plugins/{plugin_name}/"))
+                self.assertEqual(len(os.listdir(f"{temp_directory}/src/aac/plugins/{plugin_name}/")), 3)
 
     @patch("aac.plugins.gen_plugin.gen_plugin_impl._is_user_desired_output_directory")
     def test_fail_to_generate_first_party_plugin(self, is_user_desired_output_dir):
@@ -136,7 +152,7 @@ class TestGenPlugin(TestCase):
         with validation(parser.parse_str, "", model_content=TEST_PLUGIN_YAML_STRING) as result:
             plugin_name = "aac_gen_protobuf"
 
-            generated_templates = _prepare_and_generate_plugin_files(result.model, PLUGIN_TYPE_THIRD_STRING)
+            generated_templates = _prepare_and_generate_plugin_files(result.model, PLUGIN_TYPE_THIRD_STRING, "")
 
             generated_template_names = []
             generated_template_parent_directories = []
@@ -178,27 +194,19 @@ class TestGenPlugin(TestCase):
             self.assertIn("name: ProtobufDataType", generated_plugin_file_contents)
             self.assertIn("name: ProtobufTypeField", generated_plugin_file_contents)
 
-            generated_plugin_impl_file_contents = generated_templates.get(
-                PLUGIN_IMPL_TEMPLATE_NAME
-            ).content
+            generated_plugin_impl_file_contents = generated_templates.get(PLUGIN_IMPL_TEMPLATE_NAME).content
             self.assertIn("def gen_protobuf", generated_plugin_impl_file_contents)
             self.assertIn("architecture_file: str", generated_plugin_impl_file_contents)
             self.assertIn("output_directory: string", generated_plugin_impl_file_contents)
             self.assertIn("with plugin_result", generated_plugin_impl_file_contents)
             self.assertIn("return result", generated_plugin_impl_file_contents)
 
-            generated_plugin_impl_test_file_contents = generated_templates.get(
-                PLUGIN_IMPL_TEST_TEMPLATE_NAME
-            ).content
+            generated_plugin_impl_test_file_contents = generated_templates.get(PLUGIN_IMPL_TEST_TEMPLATE_NAME).content
             self.assertIn("TestAacGenProtobuf(TestCase)", generated_plugin_impl_test_file_contents)
-            self.assertIn(
-                "TODO: Write tests", generated_plugin_impl_test_file_contents  # noqa: T101
-            )
+            self.assertIn("TODO: Write tests", generated_plugin_impl_test_file_contents)  # noqa: T101
             self.assertIn("self.assertTrue(False)", generated_plugin_impl_test_file_contents)
 
-            generated_plugin_impl_test_file_parent_dir = generated_templates.get(
-                PLUGIN_IMPL_TEST_TEMPLATE_NAME
-            ).parent_dir
+            generated_plugin_impl_test_file_parent_dir = generated_templates.get(PLUGIN_IMPL_TEST_TEMPLATE_NAME).parent_dir
             self.assertEqual(generated_plugin_impl_test_file_parent_dir, "tests")
 
             generated_readme_file_contents = generated_templates.get(README_TEMPLATE_NAME).content
@@ -209,9 +217,7 @@ class TestGenPlugin(TestCase):
             self.assertIn("### Ext", generated_readme_file_contents)
             self.assertIn("### Enum", generated_readme_file_contents)
 
-            generated_tox_config_file_contents = generated_templates.get(
-                TOX_CONFIG_TEMPLATE_NAME
-            ).content
+            generated_tox_config_file_contents = generated_templates.get(TOX_CONFIG_TEMPLATE_NAME).content
             self.assertIn("[testenv]", generated_tox_config_file_contents)
             self.assertIn("[flake8]", generated_tox_config_file_contents)
             self.assertIn("[unittest]", generated_tox_config_file_contents)
@@ -227,13 +233,15 @@ class TestGenPlugin(TestCase):
             "",
             model_content=f"{TEST_PLUGIN_YAML_STRING}\n---\n{SECONDARY_MODEL_YAML_DEFINITION}",
         ) as result:
-            self.assertRaises(GeneratePluginException, _prepare_and_generate_plugin_files, result.model, PLUGIN_TYPE_THIRD_STRING)
+            self.assertRaises(
+                GeneratePluginException, _prepare_and_generate_plugin_files, result.model, PLUGIN_TYPE_THIRD_STRING, ""
+            )
 
     def test__prepare_and_generate_plugin_files_with_model_name_missing_package_prefix(self):
         parsed_model = parser.parse_str("", MODEL_YAML_DEFINITION_SANS_PACKAGE_PREFIX)
         plugin_name = "aac_spec"
 
-        generated_templates = _prepare_and_generate_plugin_files(parsed_model, PLUGIN_TYPE_THIRD_STRING)
+        generated_templates = _prepare_and_generate_plugin_files(parsed_model, PLUGIN_TYPE_THIRD_STRING, "")
 
         generated_template_names = []
         generated_template_parent_directories = []
@@ -258,6 +266,14 @@ class TestGenPlugin(TestCase):
         self.assertIn(f"test_{plugin_name}_impl.py", generated_template_names)
 
         self.assertIn("tests", generated_template_parent_directories)
+
+    def test__get_repository_root_directory_from_path(self):
+        path = "/workspace/AaC/python/src/aac/plugins/new_plugin"
+
+        expected_result = "/workspace/AaC/python/"
+        actual_result = _get_repository_root_directory_from_path(path)
+
+        self.assertEqual(expected_result, actual_result)
 
 
 TEST_PLUGIN_YAML_STRING = """
