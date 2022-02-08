@@ -42,11 +42,18 @@ jobs:
         find src -name spec.yaml -print0 | xargs -0 -n1 aac validate
         find src/aac/plugins -name *.yaml -print0 | xargs -0 -n1 aac validate
 
-    - name: Test gen-plugin
+    - name: Test gen-plugin first-party
+      run: |
+        mkdir -p src/aac/plugins/test_gen_protobuf/
+        cp  src/aac/plugins/gen_protobuf/gen_protobuf.yaml src/aac/plugins/test_gen_protobuf/gen_plugin_generation_test.yaml
+        echo y | aac gen-plugin gen_plugin_generation_test/gen_protobuf.yaml "first"
+
+    - name: Test gen-plugin third-party
       run: |
         mkdir gen_plugin_generation_test
         cp  src/aac/plugins/gen_protobuf/gen_protobuf.yaml gen_plugin_generation_test
-        echo y | aac gen-plugin gen_plugin_generation_test/gen_protobuf.yaml
+        echo y | aac gen-plugin gen_plugin_generation_test/gen_protobuf.yaml "third"
+
 
   os_test_matrix:
       name: OS Test Matrix
