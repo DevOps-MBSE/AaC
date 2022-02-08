@@ -1,14 +1,20 @@
 # This workflow is only intended to run when a pull-request is merged into the main branch
-name: Main branch AaC Workflow
+name: Main branch Workflow
 
 on:
   push:
     branches: [main]
 
 jobs:
-  Build_Package_and_Artifacts:
-    uses: jondavid-black/AaC/.github/workflows/build-artifacts.yml@2f31748af5e838d581bfce55111a76ee5c8d0add
+  build_python_artifacts:
+    name: Build Python Artifacts
+    uses: jondavid-black/AaC/.github/workflows/python-build-artifacts.yml@6cd53c89ddf306c7050a6dab0b29fd40f682f564
 
-  Run_Functional_Tests:
-    needs: Build_Package_and_Artifacts
-    uses: jondavid-black/AaC/.github/workflows/functional-tests.yml@80bdd88b0d35b04c14d7e54d4c1de1c3f2ef0e69
+  build_vscode_artifacts:
+    name: Build VSCode Extension Artifacts
+    uses: jondavid-black/AaC/.github/workflows/vscode-build-artifacts.yml@6cd53c89ddf306c7050a6dab0b29fd40f682f564
+
+  python_functional_tests:
+    name: Python Functional Tests
+    needs: build_python_artifacts
+    uses: jondavid-black/AaC/.github/workflows/python-functional-tests.yml@6cd53c89ddf306c7050a6dab0b29fd40f682f564

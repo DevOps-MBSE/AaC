@@ -1,11 +1,18 @@
 tasks:
-  - name: Setup Python Virtual Environment
+  - name: VSCode Extension Environment
     init: |
+      cd vscode_extension/
+      yarn install
+    command: cd vscode_extension/; yarn compile
+
+  - name: Python Virtual Environment
+    init: |
+      cd python/
       python3.9 -m venv venv --system-site-packages
       python3.9 -m pip install --upgrade pip
       source venv/bin/activate
       pip install -e .[all]
-    command: source venv/bin/activate # Always launch a console with our virtual env
+    command: cd python/; source venv/bin/activate # Always launch a console with our virtual env
 
 vscode:
   extensions:
@@ -14,6 +21,7 @@ vscode:
     - editorconfig.editorconfig
     - ms-python.python
     - samuelcolvin.jinjahtml
+    - vscode.typescript
 
 image:
   file: .gitpod.Dockerfile
