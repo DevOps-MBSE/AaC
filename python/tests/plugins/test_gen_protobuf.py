@@ -145,7 +145,6 @@ class TestGenerateProtobufPlugin(TestCase):
 
         actual_result = _generate_protobuf_template_details_from_data_and_enum_models(test_model)
         for i in range(len(actual_result)):
-            print(actual_result[i])
             self.assertDictEqual(expected_result[i], actual_result[i])
 
 

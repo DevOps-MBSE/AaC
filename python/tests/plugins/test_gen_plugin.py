@@ -56,7 +56,6 @@ class TestGenPlugin(TestCase):
                 self.assertEqual(len(os.listdir(f"{temp_directory}/tests/")), 1)
 
                 # Assert the plugin was generated
-                print(os.listdir(f"{temp_directory}/src/aac/plugins/{plugin_name}/"))
                 self.assertEqual(len(os.listdir(f"{temp_directory}/src/aac/plugins/{plugin_name}/")), 3)
 
     @patch("aac.plugins.gen_plugin.gen_plugin_impl._is_user_desired_output_directory")
