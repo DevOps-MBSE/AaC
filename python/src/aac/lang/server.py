@@ -1,8 +1,7 @@
 """The Architecture-as-Code Language Server."""
 
 import logging
-
-from asyncio import SelectorEventLoop
+import pygls.lsp.methods as methods
 
 from pygls.server import LanguageServer
 
@@ -11,18 +10,8 @@ from aac.plugins.plugin_execution import plugin_result
 default_host = "127.0.0.1"
 default_port = 8080
 
-
-class AacLanguageServerEventLoop(SelectorEventLoop):
-    """An event loop for handling AaC Language Server Protocol (LSP) requests."""
-
-    def __init__(self):
-        """Create an AaC Language Server event loop."""
-        super().__init__()
-
-    def run_until_complete(self, future):
-        """Run until the Future is done."""
-        super().run_until_complete(future)
-        logging.info("received request:", future)
+# We probably don't want to be doing this here...
+logging.basicConfig(level=logging.DEBUG)
 
 
 class AacLanguageServer(LanguageServer):
@@ -33,7 +22,7 @@ class AacLanguageServer(LanguageServer):
         super().__init__(loop)
 
 
-server = AacLanguageServer(AacLanguageServerEventLoop())
+server = AacLanguageServer()
 
 
 def start_lsp(host: str = None, port: int = None):
@@ -51,3 +40,9 @@ def start_lsp(host: str = None, port: int = None):
     with plugin_result("lsp", start, *connection_details) as result:
         result.messages = [m for m in result.messages if m]
         return result
+
+
+@server.feature(methods.HOVER)
+async def handle_hover(ls: LanguageServer, params):
+    """Handle a hover event."""
+    ls.show_message("received hover request")
