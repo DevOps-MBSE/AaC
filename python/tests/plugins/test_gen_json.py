@@ -5,7 +5,7 @@ from aac.plugins.gen_json.gen_json_impl import print_json
 from aac.plugins.plugin_execution import PluginExecutionStatusCode
 
 
-class Testgen_json(TestCase):
+class TestGenJson(TestCase):
 
     def test_print_json_with_output_directory(self):
 
