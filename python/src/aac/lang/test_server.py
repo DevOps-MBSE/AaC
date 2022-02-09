@@ -1,12 +1,21 @@
 """Test the LSP server."""
 
 import requests
-from pygls.lsp.types import ClientCapabilities, InitializedParams, InitializeParams
+from pygls.lsp.types import (
+    ClientCapabilities,
+    InitializedParams,
+    InitializeParams,
+    HoverParams,
+    TextDocumentIdentifier,
+    Position,
+)
+
+from server import default_host, default_port
 
 identifier = 0
 
 
-async def _request(method, params, host="http://127.0.0.1", port=9528):
+def _request(method, params, host=default_host, port=default_port):
     global identifier
 
     identifier += 1
@@ -17,23 +26,26 @@ async def _request(method, params, host="http://127.0.0.1", port=9528):
         "method": "{method}",
         "params": {params.json()}
     }}"""
-    return await requests.get(url=f"{host}:{port}", data=body, headers=headers)
+    return requests.post(url=f"http://{host}:{port}", json=body, headers=headers)
 
 
-async def _initialize():
-    global identifier
-
+def _initialize():
     params = InitializeParams(
-        process_id=68834,
         capabilities=ClientCapabilities(),
         client_info={"name": "aac-client"},
         trace="verbose",
     )
-    return await _request("initialize", params)
+    return _request("initialize", params)
 
 
-async def _initialized():
-    global identifier
-
+def _initialized():
     params = InitializedParams()
-    return await _request("initialized", params)
+    return _request("initialized", params)
+
+
+def _hover():
+    params = HoverParams(
+        textDocument=TextDocumentIdentifier(uri="file:///test.yaml"),
+        position=Position(line=5, character=10),
+    )
+    return _request("textDocument/hover", params)

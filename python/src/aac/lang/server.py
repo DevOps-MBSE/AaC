@@ -4,6 +4,7 @@ import logging
 import pygls.lsp.methods as methods
 
 from pygls.server import LanguageServer
+from pygls.lsp.types import InitializeResult, ServerCapabilities
 
 from aac.plugins.plugin_execution import plugin_result
 
@@ -14,15 +15,7 @@ default_port = 8080
 logging.basicConfig(level=logging.DEBUG)
 
 
-class AacLanguageServer(LanguageServer):
-    """A language server for the AaC requests."""
-
-    def __init__(self, loop=None):
-        """Create a new instance of an AaC Language Server."""
-        super().__init__(loop)
-
-
-server = AacLanguageServer()
+server = LanguageServer()
 
 
 def start_lsp(host: str = None, port: int = None):
@@ -42,7 +35,27 @@ def start_lsp(host: str = None, port: int = None):
         return result
 
 
+@server.feature(methods.INITIALIZE)
+def handle_initialize(ls: LanguageServer, params):
+    """Handle an initialize request."""
+    ls.show_message_log("received initialize request")
+    ls.show_message_log(f"params: {params}")
+    return InitializeResult(
+        capabilities=ServerCapabilities(hoverProvider=True),
+        serverInfo={"name": "aac-server"},
+    )
+
+
+@server.feature(methods.INITIALIZED)
+def handle_initialized(ls: LanguageServer, params):
+    """Handle an initialized notification."""
+    ls.show_message("received initialized notification")
+    ls.show_message_log(f"params: {params}")
+    return None
+
+
 @server.feature(methods.HOVER)
-async def handle_hover(ls: LanguageServer, params):
+def handle_hover(ls: LanguageServer, params):
     """Handle a hover event."""
     ls.show_message("received hover request")
+    ls.show_message_log(f"params: {params}")
