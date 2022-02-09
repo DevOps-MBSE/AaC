@@ -289,6 +289,7 @@ class TestGenPlugin(TestCase):
 
         self.assertEqual(expected_result, actual_result)
 
+
 TEST_PLUGIN_NAME = "aac_gen_protobuf"
 
 TEST_PLUGIN_YAML_STRING = """
