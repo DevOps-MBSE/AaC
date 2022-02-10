@@ -26,7 +26,7 @@ def {{command.implementation_name}}({% for command_input in command.input -%}{{c
 
     Returns:
     {%- for command_output in command.output %}
-        {{command_output.name}} ({{command_output.type}}): {% if command_output.description is defined -%} {{command_output.description}} {%- else -%} TODO add a helpful parameter description {%- endif -%}
+        {{command_output.name}} ({{command_output.type}}): {% if command_output.description is defined -%} {{command_output.description}} {%- else -%} TODO add a helpful return value description {%- endif -%}
     {% endfor -%}
     {%- endif %}
     """
