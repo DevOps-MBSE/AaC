@@ -21,6 +21,10 @@ def get_commands() -> list[AacCommand]:
             "architecture_files",
             "Space delimited list of one or more file paths to yaml file(s) containing models to parse and print as JSON.",
             number_of_arguments="+",
+        ),
+        AacCommandArgument(
+            "--output_directory",
+            "Directory in which JSON files will be written",
         )
     ]
 

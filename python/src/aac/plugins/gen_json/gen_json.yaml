@@ -10,6 +10,10 @@ model:
           type: string
           python_type: str
           description: filepath to the architecture file to convert to JSON.
+        - name: --output_directory
+          type: string
+          python_type: str
+          description: Directory in which JSON files will be written
       acceptance:
         - scenario: Output JSON representation.
           given:
@@ -17,4 +21,4 @@ model:
           when:
             - The aac app is run with the gen-json command.
           then:
-            - JSON representation is output to the user.
+            - JSON representation is output to the user or to the user defined output directory.
