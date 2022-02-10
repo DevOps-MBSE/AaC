@@ -1689,9 +1689,9 @@ semver@^5.1.0, semver@^5.4.1:
   resolved "https://registry.npmjs.org/semver/-/semver-5.7.1.tgz"
   integrity sha512-sauaDf/PZdVgrLTNYHRtpXa1iRiKcaebiKQ1BJdpQlWH2lCvexQdX55snPFyK7QzpudqbCI0qXFfOasHdyNDGQ==
 
-semver@^7.3.5:
+semver@^7.3.4, semver@^7.3.5:
   version "7.3.5"
-  resolved "https://registry.npmjs.org/semver/-/semver-7.3.5.tgz"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-7.3.5.tgz#0b621c879348d8998e4b0e4be94b3f12e6018ef7"
   integrity sha512-PoeGJYh8HK4BTO/a9Tf6ZG3veo/A7ZVsYrSA6J8ny9nb3B1VrpkuN+z9OE5wfE5p6H4LchYZsegiQgbJD94ZFQ==
   dependencies:
     lru-cache "^6.0.0"
@@ -2001,6 +2001,33 @@ vsce@^2.6.4:
     xml2js "^0.4.23"
     yauzl "^2.3.1"
     yazl "^2.2.2"
+
+vscode-jsonrpc@6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/vscode-jsonrpc/-/vscode-jsonrpc-6.0.0.tgz#108bdb09b4400705176b957ceca9e0880e9b6d4e"
+  integrity sha512-wnJA4BnEjOSyFMvjZdpiOwhSq9uDoK8e/kpRJDTaMYzwlkrhG1fwDIZI94CLsLzlCK5cIbMMtFlJlfR57Lavmg==
+
+vscode-languageclient@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/vscode-languageclient/-/vscode-languageclient-7.0.0.tgz#b505c22c21ffcf96e167799757fca07a6bad0fb2"
+  integrity sha512-P9AXdAPlsCgslpP9pRxYPqkNYV7Xq8300/aZDpO35j1fJm/ncize8iGswzYlcvFw5DQUx4eVk+KvfXdL0rehNg==
+  dependencies:
+    minimatch "^3.0.4"
+    semver "^7.3.4"
+    vscode-languageserver-protocol "3.16.0"
+
+vscode-languageserver-protocol@3.16.0:
+  version "3.16.0"
+  resolved "https://registry.yarnpkg.com/vscode-languageserver-protocol/-/vscode-languageserver-protocol-3.16.0.tgz#34135b61a9091db972188a07d337406a3cdbe821"
+  integrity sha512-sdeUoAawceQdgIfTI+sdcwkiK2KU+2cbEYA0agzM2uqaUy2UpnnGHtWTHVEtS0ES4zHU0eMFRGN+oQgDxlD66A==
+  dependencies:
+    vscode-jsonrpc "6.0.0"
+    vscode-languageserver-types "3.16.0"
+
+vscode-languageserver-types@3.16.0:
+  version "3.16.0"
+  resolved "https://registry.yarnpkg.com/vscode-languageserver-types/-/vscode-languageserver-types-3.16.0.tgz#ecf393fc121ec6974b2da3efb3155644c514e247"
+  integrity sha512-k8luDIWJWyenLc5ToFQQMaSrqCHiLwyKPHKPQZ5zz21vM+vIVUSvsRpcbiECH4WR88K2XZqc4ScRcZ7nk/jbeA==
 
 which@2.0.2, which@^2.0.1:
   version "2.0.2"
