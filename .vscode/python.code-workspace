@@ -212,6 +212,19 @@
             "program": "nose2 -c ${workspaceFolder}/tox.ini",
             "console": "integratedTerminal",
             "justMyCode": false
+        },
+        {
+            "name": "Python: Start LSP Server (port 5000)",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/aac/__main__.py",
+            "args": [
+                "start-lsp",
+                "--port",
+                "5000"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
         }],
         "compounds": []
     }
