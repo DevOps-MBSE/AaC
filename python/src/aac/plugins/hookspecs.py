@@ -15,7 +15,7 @@ def get_commands() -> list[AacCommand]:
 
 
 @hookspec
-def get_base_model_extensions() -> str:
+def get_plugin_aac_definitions() -> str:
     """
     Return data and ext definitions to apply to the AaC base.
 
