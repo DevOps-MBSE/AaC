@@ -1,5 +1,5 @@
 {
-    "name": "AaC",
+    "name": "aac",
     "displayName": "Architecture As Code",
     "description": "A distinctly different take on Model-Based System Engineering (MBSE) that allows a system modeler to define a system in simple yaml",
     "version": "0.0.1",
@@ -18,6 +18,43 @@
     ],
     "main": "./out/extension.js",
     "contributes": {
+        "configuration": {
+            "type": "string",
+            "title": "Architecture-as-Code",
+            "properties": {
+                "aac.version": {
+                    "scope": "machine-overridable",
+                    "type": "string",
+                    "enum": [
+                        "latest",
+                        "0.0.4"
+                    ],
+                    "default": "latest",
+                    "description": "The version of the AaC tool to install"
+                },
+                "aac.virtualEnvironmentPath": {
+                    "scope": "machine-overridable",
+                    "type": "string",
+                    "default": "",
+                    "format": "uri",
+                    "description": "The filesystem path at which to create the Python virtual environment."
+                }
+            }
+        },
+        "languages": [
+            {
+                "id": "aac",
+                "extensions": [
+                    ".aac",
+                    ".yaml"
+                ],
+                "aliases": [
+                    "aac",
+                    "Architecture-as-Code",
+                    "AaC"
+                ]
+            }
+        ],
         "taskDefinitions": [
             {
                 "type": "aac",
@@ -31,6 +68,10 @@
             }
         ]
     },
+    "extensionKind": [
+        "ui",
+        "workspace"
+    ],
     "scripts": {
         "vscode:prepublish": "yarn run compile",
         "compile": "tsc -p ./",
