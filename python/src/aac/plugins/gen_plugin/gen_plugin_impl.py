@@ -29,7 +29,7 @@ PLUGIN_TYPE_THIRD_STRING = "third"
 EXPECTED_FIRST_PARTY_DIRECTORY_PATH = str(os.path.join("src", "aac", "plugins"))
 
 
-def generate_plugin(architecture_file: str, plugin_type: str) -> PluginExecutionResult:
+def generate_plugin(architecture_file: str) -> PluginExecutionResult:
     """
     Entrypoint command to generate the plugin.
 
@@ -41,19 +41,14 @@ def generate_plugin(architecture_file: str, plugin_type: str) -> PluginExecution
     """
 
     def _generate_plugin():
-        plugin_output_directory = ""
-        if plugin_type == PLUGIN_TYPE_FIRST_STRING:
+        plugin_output_directory = os.path.dirname(os.path.abspath(architecture_file))
+        plugin_type = PLUGIN_TYPE_THIRD_STRING
 
-            if not _does_path_contain_expected_project_path(architecture_file):
-                raise OperationCancelled(
-                    f"First party plugin architecture files are expected to be generated in the project repository under '{EXPECTED_FIRST_PARTY_DIRECTORY_PATH}'"
-                )
+        if _is_plugin_in_aac_repository(architecture_file):
 
             # For first-party plugins, set the path to the repository's root
             plugin_output_directory = _get_repository_root_directory_from_path(os.path.abspath(architecture_file))
-
-        else:
-            plugin_output_directory = os.path.dirname(os.path.abspath(architecture_file))
+            plugin_type = PLUGIN_TYPE_FIRST_STRING
 
         if _is_user_desired_output_directory(architecture_file):
             return _generate_plugin_files_to_directory(architecture_file, plugin_output_directory, plugin_type)
@@ -70,21 +65,21 @@ def _generate_plugin_files_to_directory(architecture_file_path: str, plugin_outp
             _prepare_and_generate_plugin_files(validation_result.model, plugin_type, architecture_file_path).values()
         )
         write_generated_templates_to_file(templates, plugin_output_directory)
-        return f"Successfully created plugin in {plugin_output_directory}"
+        return f"Successfully created a {plugin_type}-party plugin in {plugin_output_directory}"
 
 
-def _does_path_contain_expected_project_path(architecture_file: str) -> bool:
+def _is_plugin_in_aac_repository(architecture_file_path: str) -> bool:
     """
     Returns true if the architecture file path is inside the AaC repository.
 
-    Performs a basic check that a first party plugin is generated in the AaC repo by
-        matching the architecture file's path with some partial structure that matches
+    Performs a basic check against the file path of the architecture as code plugin file
+        to determine if the file's path matches  some partial structure that matches
         the directory hierarchy of the project.
 
     Args:
-        architecture_file: str the full path to the architecture file and output directory
+        architecture_file_path: str the full path to the architecture file and output directory
     """
-    return EXPECTED_FIRST_PARTY_DIRECTORY_PATH in architecture_file
+    return EXPECTED_FIRST_PARTY_DIRECTORY_PATH in architecture_file_path
 
 
 def _apply_output_template_properties(
@@ -192,7 +187,16 @@ def _prepare_and_generate_plugin_files(
     return generated_templates
 
 
-def _gather_template_properties(parsed_models: dict[str, dict]):
+def _gather_template_properties(parsed_models: dict[str, dict]) -> dict[str, any]:
+    """
+    Analyzes the models and returns the necessary template data to generate the plugin.
+
+    Args:
+        parsed_models (dict[str, dict]): Dict representing the plugin models
+
+    Returns:
+        A dictionary of properties to be used when generating the jinja templates.
+    """
 
     # Ensure model is present and valid, get the plugin name
     plugin_models = util.get_models_by_type(parsed_models, "model")
@@ -235,20 +239,21 @@ def _convert_template_name_to_file_name(template_name: str, plugin_name: str) ->
     Convert template names to pythonic file names.
 
     Args:
-        template_name: The template's name
-        plugin_name: The plugin's name
+        template_name (str): The template's name
+        plugin_name (str): The plugin's name
+
     Returns:
-        A string containing the personalized/pythonic file name.
+        A string containing the customized/pythonic file name.
     """
     return template_name.replace(".jinja2", "").replace("plugin", plugin_name)
 
 
 def _is_user_desired_output_directory(architecture_file_path: str) -> bool:
     """
-    Ask the user if they're comfortable with the target generation directory.
+    Confirms with the user that they're comfortable with the target generation directory.
 
     Args:
-        architecture_file_path: Path to the plugin's architecture file
+        architecture_file_path (str): Path to the plugin's architecture file
 
     Returns:
         boolean True if the user wishes to write to <output_dir>
@@ -274,6 +279,7 @@ def _gather_commands(behaviors: dict) -> list[dict]:
 
     Args:
         behaviors: The plugin's modeled behaviors
+
     Returns:
         list of command-type behaviors dicts
     """
@@ -309,6 +315,15 @@ def _gather_commands(behaviors: dict) -> list[dict]:
 
 
 def _gather_plugin_aac_definitions(parsed_models: dict[str, dict]) -> list[dict]:
+    """
+    Gather all AaC definitions declared by the model.
+
+    Args:
+        parsed_models (dict[str, dict]): Dict representing the plugin models
+
+    Returns:
+        A list of AaC definitions provided by the plugin
+    """
     extension_definitions = list(util.get_models_by_type(parsed_models, "ext").values())
     data_definitions = list(util.get_models_by_type(parsed_models, "data").values())
     enum_definitions = list(util.get_models_by_type(parsed_models, "enum").values())
@@ -322,10 +337,12 @@ def _add_definitions_yaml_string(model: dict) -> dict:
 
 
 def _convert_to_implementation_name(original_name: str) -> str:
+    """Converts a plugin name to a pythonic version for implementaiton."""
     return original_name.replace("-", "_")
 
 
 def _get_repository_root_directory_from_path(system_path: str) -> str:
+    """Returns the root of the AaC Repository from a path within the repository's plugins directory."""
     target_index = system_path.find(EXPECTED_FIRST_PARTY_DIRECTORY_PATH)
 
     if target_index < 0:

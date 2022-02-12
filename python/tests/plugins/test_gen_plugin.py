@@ -12,9 +12,8 @@ from aac.plugins.gen_plugin.gen_plugin_impl import (
 )
 from aac.plugins.gen_plugin.GeneratePluginException import GeneratePluginException
 from aac.plugins.gen_plugin.gen_plugin_impl import (
-    PLUGIN_TYPE_FIRST_STRING,
-    PLUGIN_TYPE_THIRD_STRING,
     EXPECTED_FIRST_PARTY_DIRECTORY_PATH,
+    PLUGIN_TYPE_THIRD_STRING
 )
 from aac.plugins.plugin_execution import PluginExecutionStatusCode
 from aac.validator import validation
@@ -44,7 +43,7 @@ class TestGenPlugin(TestCase):
                 plugin_yaml.seek(0)
 
                 is_user_desired_output_dir.return_value = True
-                result = generate_plugin(plugin_yaml.name, PLUGIN_TYPE_FIRST_STRING)
+                result = generate_plugin(plugin_yaml.name)
 
                 self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
 
@@ -64,29 +63,6 @@ class TestGenPlugin(TestCase):
                 self.assertIn(os.path.basename(plugin_yaml.name), generated_plugin_files)
 
     @patch("aac.plugins.gen_plugin.gen_plugin_impl._is_user_desired_output_directory")
-    def test_fail_to_generate_first_party_plugin(self, is_user_desired_output_dir):
-        with TemporaryDirectory() as temp_directory:
-            output_directory_path = os.path.join(temp_directory, "src", "bbc", "something")
-            os.makedirs(output_directory_path)
-
-            self.assertEqual(len(os.listdir(output_directory_path)), 0)
-
-            with NamedTemporaryFile(dir=output_directory_path, mode="w") as plugin_yaml:
-                plugin_yaml.write(TEST_PLUGIN_YAML_STRING)
-                plugin_yaml.seek(0)
-
-                is_user_desired_output_dir.return_value = True
-                result = generate_plugin(plugin_yaml.name, PLUGIN_TYPE_FIRST_STRING)
-
-                self.assertEqual(len(result.messages), 1)
-                self.assertEqual(result.status_code, PluginExecutionStatusCode.OPERATION_CANCELLED)
-
-                # Assert no files were generated. Count 1 is for the plugin_yaml file
-                generated_plugin_files = os.listdir(output_directory_path)
-                self.assertEqual(len(os.listdir(output_directory_path)), 1)
-                self.assertIn(os.path.basename(plugin_yaml.name), generated_plugin_files)
-
-    @patch("aac.plugins.gen_plugin.gen_plugin_impl._is_user_desired_output_directory")
     def test_generate_third_party_plugin(self, is_user_desired_output_dir):
         with TemporaryDirectory() as temp_directory:
 
@@ -97,7 +73,7 @@ class TestGenPlugin(TestCase):
                 plugin_yaml.seek(0)
 
                 is_user_desired_output_dir.return_value = True
-                result = generate_plugin(plugin_yaml.name, PLUGIN_TYPE_THIRD_STRING)
+                result = generate_plugin(plugin_yaml.name)
 
                 self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
 
@@ -117,7 +93,7 @@ class TestGenPlugin(TestCase):
                 plugin_yaml.seek(0)
 
                 is_user_desired_output_dir.return_value = True
-                result = generate_plugin(plugin_yaml.name, PLUGIN_TYPE_THIRD_STRING)
+                result = generate_plugin(plugin_yaml.name)
 
                 temp_directory_files = os.listdir(temp_directory)
                 self.assertEqual(result.status_code, PluginExecutionStatusCode.PLUGIN_FAILURE)
@@ -135,7 +111,7 @@ class TestGenPlugin(TestCase):
                 plugin_yaml.seek(0)
 
                 is_user_desired_output_dir.return_value = False
-                result = generate_plugin(plugin_yaml.name, PLUGIN_TYPE_THIRD_STRING)
+                result = generate_plugin(plugin_yaml.name)
 
                 temp_directory_files = os.listdir(temp_directory)
                 self.assertEqual(result.status_code, PluginExecutionStatusCode.OPERATION_CANCELLED)

@@ -22,14 +22,6 @@ def get_commands() -> list[AacCommand]:
             "architecture_file",
             "The yaml file containing the AaC DSL of the plugin architecture.",
         ),
-        AacCommandArgument(
-            "plugin_type",
-            """
-            denotes whether to generate a first or third party plugin. If you're not contributing to the AaC repository, then use the option "third".
-            valid values are: ["first", "third"]
-            """,
-            choices=["first", "third"]
-        )
     ]
 
     plugin_commands = [
