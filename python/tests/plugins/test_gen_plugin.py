@@ -227,36 +227,6 @@ class TestGenPlugin(TestCase):
                 GeneratePluginException, _prepare_and_generate_plugin_files, result.model, PLUGIN_TYPE_THIRD_STRING, ""
             )
 
-    def test__prepare_and_generate_plugin_files_with_model_name_missing_package_prefix(self):
-        parsed_model = parser.parse_str("", MODEL_YAML_DEFINITION_SANS_PACKAGE_PREFIX)
-        plugin_name = "aac_spec"
-
-        generated_templates = _prepare_and_generate_plugin_files(parsed_model, PLUGIN_TYPE_THIRD_STRING, "")
-
-        generated_template_names = []
-        generated_template_parent_directories = []
-        for template in generated_templates.values():
-            generated_template_names.append(template.file_name)
-            generated_template_parent_directories.append(template.parent_dir)
-
-        # Check that the files don't have "-" in the name
-        for name in generated_template_names:
-            self.assertNotIn("-", name)
-
-        # Check that the expected files and directories were created and named correctly
-        num_generated_templates = len(generated_templates)
-        self.assertEqual(len(generated_template_names), num_generated_templates)
-        self.assertEqual(len(generated_template_parent_directories), num_generated_templates)
-
-        self.assertIn("__init__.py", generated_template_names)
-        self.assertIn("setup.py", generated_template_names)
-        self.assertIn("README.md", generated_template_names)
-        self.assertIn(f"{plugin_name}.py", generated_template_names)
-        self.assertIn(f"{plugin_name}_impl.py", generated_template_names)
-        self.assertIn(f"test_{plugin_name}_impl.py", generated_template_names)
-
-        self.assertIn("tests", generated_template_parent_directories)
-
     def test__get_repository_root_directory_from_path(self):
         path = "/workspace/AaC/python/src/aac/plugins/new_plugin"
 
