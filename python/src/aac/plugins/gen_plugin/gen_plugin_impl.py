@@ -4,10 +4,10 @@ A plugin to generate new plugins based on a specifically structured AaC model fi
 The plugin AaC model must define behaviors using the command BehaviorType.  Each
 defined behavior becomes a new command for the aac CLI.
 """
-import os
-
 import logging
 import yaml
+
+from os import path
 
 from aac import parser, util
 from aac.template_engine import (
@@ -16,7 +16,7 @@ from aac.template_engine import (
     load_default_templates,
     write_generated_templates_to_file,
 )
-from aac.plugins import PLUGIN_PROJECT_NAME, OperationCancelled
+from aac.plugins import OperationCancelled
 from aac.plugins.gen_plugin.GeneratePluginException import GeneratePluginException
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 from aac.validator import validation
@@ -26,7 +26,7 @@ plugin_name = "gen-plugin"
 PLUGIN_TYPE_FIRST_STRING = "first"
 PLUGIN_TYPE_THIRD_STRING = "third"
 
-EXPECTED_FIRST_PARTY_DIRECTORY_PATH = str(os.path.join("src", "aac", "plugins"))
+EXPECTED_FIRST_PARTY_DIRECTORY_PATH = str(path.join("src", "aac", "plugins"))
 
 
 def generate_plugin(architecture_file: str) -> PluginExecutionResult:
@@ -39,21 +39,22 @@ def generate_plugin(architecture_file: str) -> PluginExecutionResult:
                             contributing to the AaC repository, then use the option "third".
                             Valid values are: "first", "third"
     """
+    architecture_file_path = path.abspath(architecture_file)
 
     def _generate_plugin():
-        plugin_output_directory = os.path.dirname(os.path.abspath(architecture_file))
+        plugin_output_directory = path.dirname(architecture_file_path)
         plugin_type = PLUGIN_TYPE_THIRD_STRING
 
-        if _is_plugin_in_aac_repository(architecture_file):
+        if _is_plugin_in_aac_repository(architecture_file_path):
 
             # For first-party plugins, set the path to the repository's root
-            plugin_output_directory = _get_repository_root_directory_from_path(os.path.abspath(architecture_file))
+            plugin_output_directory = _get_repository_root_directory_from_path(architecture_file_path)
             plugin_type = PLUGIN_TYPE_FIRST_STRING
 
-        if _is_user_desired_output_directory(architecture_file):
-            return _generate_plugin_files_to_directory(architecture_file, plugin_output_directory, plugin_type)
+        if _is_user_desired_output_directory(architecture_file_path):
+            return _generate_plugin_files_to_directory(architecture_file_path, plugin_output_directory, plugin_type)
 
-        raise OperationCancelled(f"Move {architecture_file} to the desired directory and retry.")
+        raise OperationCancelled(f"Move {architecture_file_path} to the desired directory and retry.")
 
     with plugin_result(plugin_name, _generate_plugin) as result:
         return result
@@ -121,7 +122,7 @@ def _get_overwriteable_templates() -> list[str]:
 def _get_template_parent_directories(plugin_type: str, architecture_file_path: str, plugin_name: str) -> dict[str, str]:
     """Returns a manually maintained list of templates and their parent directories."""
 
-    architecture_file_directory_path = os.path.dirname(architecture_file_path)
+    architecture_file_directory_path = path.dirname(architecture_file_path)
 
     # First party files are generated at the same level as the architecture file
     first_party_directories = {
@@ -164,7 +165,7 @@ def _prepare_and_generate_plugin_files(
     Raises:
         GeneratePluginException: An error encountered during the plugin generation process.
     """
-    template_properties = _gather_template_properties(parsed_models)
+    template_properties = _gather_template_properties(parsed_models, architecture_file_path)
 
     plugin_name = template_properties.get("plugin").get("name")
     plugin_implementation_name = template_properties.get("plugin").get("implementation_name")
@@ -187,12 +188,13 @@ def _prepare_and_generate_plugin_files(
     return generated_templates
 
 
-def _gather_template_properties(parsed_models: dict[str, dict]) -> dict[str, any]:
+def _gather_template_properties(parsed_models: dict[str, dict], architecture_file_path: str) -> dict[str, any]:
     """
     Analyzes the models and returns the necessary template data to generate the plugin.
 
     Args:
         parsed_models (dict[str, dict]): Dict representing the plugin models
+        architecture_file_path (str): The filepath to the architecture file used to generate the plugin
 
     Returns:
         A dictionary of properties to be used when generating the jinja templates.
@@ -205,11 +207,6 @@ def _gather_template_properties(parsed_models: dict[str, dict]) -> dict[str, any
 
     plugin_model = list(plugin_models.values())[0].get("model")
     plugin_name = plugin_model.get("name")
-
-    # Ensure that the plugin name has that 'aac' package name prepended to it
-    if not plugin_name.startswith(PLUGIN_PROJECT_NAME):
-        plugin_name = f"{PLUGIN_PROJECT_NAME}-{plugin_name}"
-
     plugin_implementation_name = _convert_to_implementation_name(plugin_name)
 
     # Prepare template variables/properties
@@ -225,10 +222,16 @@ def _gather_template_properties(parsed_models: dict[str, dict]) -> dict[str, any
         _add_definitions_yaml_string(definition) for definition in _gather_plugin_aac_definitions(parsed_models)
     ]
 
+    architecture_file = {
+        "name": path.basename(architecture_file_path),
+        "parent_directory_name": path.basename(path.dirname(architecture_file_path)),
+    }
+
     template_properties = {
         "plugin": plugin,
         "commands": commands,
         "plugin_definitions": plugin_aac_definitions,
+        "architecture_file": architecture_file,
     }
 
     return template_properties
@@ -258,7 +261,7 @@ def _is_user_desired_output_directory(architecture_file_path: str) -> bool:
     Returns:
         boolean True if the user wishes to write to <output_dir>
     """
-    output_dir = os.path.dirname(os.path.abspath(architecture_file_path))
+    output_dir = path.dirname(architecture_file_path)
 
     first = True
     confirmation = ""
@@ -286,7 +289,11 @@ def _gather_commands(behaviors: dict) -> list[dict]:
 
     def modify_command_input_output_entry(in_out_entry: dict):
         """Modify the input and output entries of a behavior definition to reduce complexity in the templates."""
-        in_out_entry["type"] = in_out_entry.get("python_type") or in_out_entry.get("type")
+        python_type = in_out_entry.get("python_type")
+
+        if python_type:
+            in_out_entry["type"] = python_type
+            in_out_entry["python_type_default"] = type(python_type)
 
         return in_out_entry
 
