@@ -25,26 +25,25 @@
                 "aac.pythonPath": {
                     "scope": "machine-overridable",
                     "type": "string",
-                    "default": "",
-                    "format": "uri",
+                    "default": "/usr/local/bin",
+                    "pattern": "(\\\\?([^\\/]*[\\/])*)([^\\/]+)$",
                     "description": "The filesystem path to the Python3 executable."
                 },
                 "aac.version": {
                     "scope": "machine-overridable",
                     "type": "string",
                     "enum": [
-                        "latest",
                         "0.0.4"
                     ],
-                    "default": "latest",
+                    "default": "0.0.4",
                     "description": "The version of the AaC tool to install"
                 },
-                "aac.virtualEnvironmentPath": {
+                "aac.aacPath": {
                     "scope": "machine-overridable",
                     "type": "string",
                     "default": "",
-                    "format": "uri",
-                    "description": "The filesystem path at which to create the Python virtual environment."
+                    "pattern": "(\\\\?([^\\/]*[\\/])*)([^\\/]+)$",
+                    "description": "The filesystem path to the aac CLI tool."
                 }
             }
         },

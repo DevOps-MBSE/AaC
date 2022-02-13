@@ -1,4 +1,5 @@
 import * as cp from 'child_process';
+import { StringDecoder } from "string_decoder";
 import * as vscode from 'vscode';
 import { AacTaskGroup } from './AacTaskGroup';
 
@@ -6,7 +7,7 @@ export class AacTaskProvider implements vscode.TaskProvider {
     static aacType: string = 'aac';
     private aacTaskPromise: vscode.ProviderResult<vscode.Task[]> | undefined = undefined;
 
-    constructor() {}
+    constructor() { }
 
     public provideTasks(): vscode.ProviderResult<vscode.Task[]> {
         if (!this.aacTaskPromise) {
@@ -25,15 +26,23 @@ export class AacTaskProvider implements vscode.TaskProvider {
     }
 }
 
-function execShell(command: string, options: cp.ExecOptions): Promise<{ stdout: string; stderr: string }> {
+export function execShell(command: string, options?: cp.ExecOptions): Promise<{ stdout: string; stderr: string }> {
     return new Promise<{ stdout: string; stderr: string }>((resolve, reject) => {
         cp.exec(command, options, (error, stdout, stderr) => {
+            stdout = maybeConvertBufferToString(stdout);
+            stderr = maybeConvertBufferToString(stderr)
             if (error) {
                 reject({ error, stdout, stderr });
             }
             resolve({ stdout, stderr });
         });
     });
+}
+
+function maybeConvertBufferToString(arg: string | Buffer, encoding: BufferEncoding = "utf-8"): string {
+    if (Buffer.isBuffer(arg))
+        return new StringDecoder(encoding).write(Buffer.from(arg));
+    return <string>arg;
 }
 
 let _channel: vscode.OutputChannel;
