@@ -21,7 +21,7 @@ def get_commands() -> list[AacCommand]:
         AacCommandArgument(
             "architecture_file",
             "The yaml file containing the AaC DSL of the plugin architecture.",
-        ),
+        )
     ]
 
     plugin_commands = [
