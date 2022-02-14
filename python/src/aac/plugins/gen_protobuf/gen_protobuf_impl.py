@@ -93,7 +93,7 @@ def _collect_data_and_enum_definitions(parsed_models: dict) -> dict[str, dict]:
 
 def _collect_template_generation_properties(data_and_enum_models: dict) -> list[dict]:
     """
-    Aanalyzes data and enum models and prdocues a list of template property dictionaries for each protobuf file to generate.
+    Analyzes data and enum models and produces a list of template property dictionaries for each protobuf file to generate.
 
     Args:
         data_and_enum_models: a dict of models where the key is the model name and the value is the model dict. Each model represents a protobuf message.
