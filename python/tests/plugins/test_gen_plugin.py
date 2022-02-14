@@ -19,7 +19,6 @@ from aac.plugins.plugin_execution import PluginExecutionStatusCode
 from aac.validator import validation
 
 INIT_TEMPLATE_NAME = "__init__.py.jinja2"
-PLUGIN_TEMPLATE_NAME = "plugin.py.jinja2"
 PLUGIN_IMPL_TEMPLATE_NAME = "plugin_impl.py.jinja2"
 PLUGIN_IMPL_TEST_TEMPLATE_NAME = "test_plugin_impl.py.jinja2"
 SETUP_TEMPLATE_NAME = "setup.py.jinja2"
@@ -122,13 +121,11 @@ class TestGenPlugin(TestCase):
         plugin_name = "aac-test"
         template_names = [
             INIT_TEMPLATE_NAME,
-            PLUGIN_TEMPLATE_NAME,
             PLUGIN_IMPL_TEMPLATE_NAME,
             SETUP_TEMPLATE_NAME,
         ]
         expected_filenames = [
             "__init__.py",
-            f"{plugin_name}.py",
             f"{plugin_name}_impl.py",
             "setup.py",
         ]
@@ -164,25 +161,18 @@ class TestGenPlugin(TestCase):
             self.assertIn("tox.ini", generated_template_names)
             self.assertIn("__init__.py", generated_template_names)
             self.assertIn("setup.py", generated_template_names)
-            self.assertIn(f"{plugin_name}.py", generated_template_names)
             self.assertIn(f"{plugin_name}_impl.py", generated_template_names)
             self.assertIn(f"test_{plugin_name}_impl.py", generated_template_names)
 
             self.assertIn("tests", generated_template_parent_directories)
 
             # Assert that some expected content is present
-            generated_plugin_file_contents = generated_templates.get(PLUGIN_TEMPLATE_NAME).content
-            self.assertIn("@aac.hookimpl", generated_plugin_file_contents)
+            generated_plugin_file_contents = generated_templates.get(INIT_TEMPLATE_NAME).content
+            self.assertIn("@hookimpl", generated_plugin_file_contents)
             self.assertIn("gen_protobuf_arguments", generated_plugin_file_contents)
             self.assertIn("import gen_protobuf", generated_plugin_file_contents)
             self.assertIn("architecture_file", generated_plugin_file_contents)
             self.assertIn("output_directory", generated_plugin_file_contents)
-
-            # Assert Model Extensions were generated
-            self.assertIn("get_base_model_extensions", generated_plugin_file_contents)
-            self.assertIn("PLUGIN_EXTENSION_YAML", generated_plugin_file_contents)
-            self.assertIn("name: ProtobufDataType", generated_plugin_file_contents)
-            self.assertIn("name: ProtobufTypeField", generated_plugin_file_contents)
 
             generated_plugin_impl_file_contents = generated_templates.get(PLUGIN_IMPL_TEMPLATE_NAME).content
             self.assertIn("def gen_protobuf", generated_plugin_impl_file_contents)
@@ -193,8 +183,6 @@ class TestGenPlugin(TestCase):
 
             generated_plugin_impl_test_file_contents = generated_templates.get(PLUGIN_IMPL_TEST_TEMPLATE_NAME).content
             self.assertIn("TestAacGenProtobuf(TestCase)", generated_plugin_impl_test_file_contents)
-            self.assertIn("TODO: Write tests", generated_plugin_impl_test_file_contents)  # noqa: T101
-            self.assertIn("self.assertTrue(False)", generated_plugin_impl_test_file_contents)
 
             generated_plugin_impl_test_file_parent_dir = generated_templates.get(PLUGIN_IMPL_TEST_TEMPLATE_NAME).parent_dir
             self.assertEqual(generated_plugin_impl_test_file_parent_dir, "tests")

@@ -116,7 +116,7 @@ def _apply_output_template_properties(
 
 def _get_overwriteable_templates() -> list[str]:
     """Returns a manually maintained list of templates that can be overwritten."""
-    return ["plugin.py.jinja2", "setup.py.jinja2"]
+    return ["setup.py.jinja2"]
 
 
 def _get_template_parent_directories(plugin_type: str, architecture_file_path: str, plugin_name: str) -> dict[str, str]:
@@ -133,7 +133,6 @@ def _get_template_parent_directories(plugin_type: str, architecture_file_path: s
 
     # Third party files are generated a level belowthe architecture file
     third_party_directories = {
-        "plugin.py.jinja2": plugin_name,
         "plugin_impl.py.jinja2": plugin_name,
         "__init__.py.jinja2": plugin_name,
         "test_plugin_impl.py.jinja2": "tests",

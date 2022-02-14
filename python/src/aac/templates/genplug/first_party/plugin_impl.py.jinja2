@@ -31,9 +31,9 @@ def {{command.implementation_name}}({% for command_input in command.input -%}{{c
     {%- endif %}
     """
     # TODO add implementation here
-    def implement_me():
+    def _implement__and_rename_me():
         raise NotImplementedError("{{command.implementation_name}} is not implemented.")
 
-    with plugin_result(plugin_name, implement_me) as result:
+    with plugin_result(plugin_name, _implement__and_rename_me) as result:
         return result
 {% endfor %}
