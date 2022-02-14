@@ -22,9 +22,7 @@ from aac.validator import validation
 plugin_name = "gen-protobuf"
 
 
-def gen_protobuf(
-    architecture_file: str, output_directory: str
-) -> PluginExecutionResult:
+def gen_protobuf(architecture_file: str, output_directory: str) -> PluginExecutionResult:
     """
     Generate protobuf messages from Arch-as-Code models.
 
@@ -38,22 +36,12 @@ def gen_protobuf(
         with validation(parser.parse_file, architecture_file) as validation_result:
             loaded_templates = load_default_templates("gen_protobuf")
 
-            data_messages_and_enum_definitions = _collect_data_and_enum_definitions(
-                validation_result.model
-            )
-            message_template_properties = (
-                _generate_protobuf_template_details_from_data_and_enum_models(
-                    data_messages_and_enum_definitions
-                )
-            )
+            data_messages_and_enum_definitions = _collect_data_and_enum_definitions(validation_result.model)
+            message_template_properties = _collect_template_generation_properties(data_messages_and_enum_definitions)
 
-            generated_template_messages = _generate_protobuf_messages(
-                loaded_templates, message_template_properties
-            )
+            generated_template_messages = _generate_protobuf_messages(loaded_templates, message_template_properties)
 
-            write_generated_templates_to_file(
-                generated_template_messages, output_directory
-            )
+            write_generated_templates_to_file(generated_template_messages, output_directory)
 
             return f"Successfully generated templates to directory: {output_directory}"
 
@@ -98,95 +86,21 @@ def _collect_data_and_enum_definitions(parsed_models: dict) -> dict[str, dict]:
     model_definitions = util.get_models_by_type(parsed_models, "model")
     behaviors = list(flatten(map(collect_behaviors, model_definitions.values())))
     interface_data_message_types = list(set(flatten(map(collect_data_message_types, behaviors))))
-    all_definitions_types_to_generate = interface_data_message_types + collect_nested_types(
-        interface_data_message_types
-    )
+    all_definitions_types_to_generate = interface_data_message_types + collect_nested_types(interface_data_message_types)
 
-    return {
-        data_message_type: parsed_models[data_message_type]
-        for data_message_type in all_definitions_types_to_generate
-    }
+    return {data_message_type: parsed_models[data_message_type] for data_message_type in all_definitions_types_to_generate}
 
 
-def _generate_protobuf_template_details_from_data_and_enum_models(  # noqa: C901
-    data_and_enum_models: dict,
-) -> list[dict]:
+def _collect_template_generation_properties(data_and_enum_models: dict) -> list[dict]:
     """
-    Generate a list of template property dictionaries for each protobuf file to generate.
+    Analyzes data and enum models and produces a list of template property dictionaries for each protobuf file to generate.
 
     Args:
-        data_and_enum_models: a dict of models where the key is the model name and the value is the model dict
+        data_and_enum_models: a dict of models where the key is the model name and the value is the model dict. Each model represents a protobuf message.
 
     Returns:
         a list of template property dicts
     """
-
-    def get_properties_dict(
-        name: str,
-        definition_type: str,
-        enums: list[str] = [],
-        fields: list[dict] = [],
-        imports: list[str] = [],
-    ):
-        properties = {
-            "name": name,
-            "file_type": definition_type,
-        }
-
-        if enums:
-            properties["enums"] = enums
-        if fields:
-            properties["fields"] = fields
-        if imports:
-            properties["imports"] = imports
-
-        return properties
-
-    def get_enum_properties(enum_model):
-        enum_name = enum_model.get("name")
-        enum_values = [enum.upper() for enum in enum_model.get("values")]
-        return get_properties_dict(enum_name, "enum", enums=enum_values)
-
-    def get_data_model_properties(data_model):
-        data_name = data_model.get("name")
-
-        required_fields = data_model.get("required") or []
-
-        message_fields = []
-        message_imports = []
-        for field in data_model.get("fields"):
-            proto_field_name = field.get("name")
-            proto_field_type = None
-
-            field_type = field.get("type")
-            field_proto_type = field.get("protobuf_type")
-            field_proto_repeat = "[]" in field_type
-            if field_type in data_and_enum_models:
-                proto_field_type = field_type
-
-                # This is the last time we have access to the other model, calculate its future protobuf file name here
-                model_to_import = data_and_enum_models.get(field_type)
-                model_to_import = model_to_import.get("data") or model_to_import.get("enum")
-                message_imports.append(
-                    _convert_message_name_to_file_name(model_to_import.get("name"))
-                )
-
-            else:
-                # If the referenced type isn't a user-defined type, then set the primitive type prioritizing `protobuf_type` before `type`
-                proto_field_type = field_proto_type or field_type
-
-            message_fields.append(
-                {
-                    "name": proto_field_name,
-                    "type": proto_field_type,
-                    "optional": proto_field_name not in required_fields,
-                    "repeat": field_proto_repeat,
-                }
-            )
-
-        return get_properties_dict(
-            data_name, "data", fields=message_fields, imports=message_imports
-        )
 
     template_properties_list = []
     for data_or_enum_message_model in data_and_enum_models.values():
@@ -194,16 +108,109 @@ def _generate_protobuf_template_details_from_data_and_enum_models(  # noqa: C901
         enum_model = data_or_enum_message_model.get("enum")
 
         if data_model:
-            template_properties_list.append(get_data_model_properties(data_model))
+            template_properties_list.append(_get_data_model_properties(data_and_enum_models, data_model))
         elif enum_model:
-            template_properties_list.append(get_enum_properties(enum_model))
+            template_properties_list.append(_get_enum_properties(enum_model))
 
     return template_properties_list
 
 
-def _generate_protobuf_messages(
-    protobuf_message_templates: list, properties: list[dict]
-) -> list[TemplateOutputFile]:
+def _properties_dict(
+    name: str, definition_type: str, enums: list[str] = [], fields: list[dict] = [], imports: list[str] = []
+) -> dict[str, any]:
+    """
+    Provides a consistent dictionary structrue for model properties.
+
+    Args:
+        name (str): The name of the model/enum
+        definition_type (str): The definition type
+        enums (list): A list of enum values
+        fields (list): A list of model fields
+        imports (list): A list of model imports
+
+    Returns:
+        A dictionary containing the properties in a consistent structure.
+    """
+
+    properties = {
+        "name": name,
+        "file_type": definition_type,
+    }
+
+    if enums:
+        properties["enums"] = enums
+    if fields:
+        properties["fields"] = fields
+    if imports:
+        properties["imports"] = imports
+
+    return properties
+
+
+def _get_enum_properties(enum_definition: dict) -> dict[str, any]:
+    """
+    Analyzes an enum definition and returns a properties dictionary for template generation.
+
+    Args:
+        enum_definition (dict): An enum defintion as a dictionary
+
+    Returns:
+         A dictionary containing the template generation properties.
+    """
+    enum_name = enum_definition.get("name")
+    enum_values = [enum.upper() for enum in enum_definition.get("values")]
+    return _properties_dict(enum_name, "enum", enums=enum_values)
+
+
+def _get_data_model_properties(data_and_enum_models: dict, data_model: dict) -> dict[str, any]:
+    """
+    Analyzes a data model definition and returns a properties dictionary for template generation.
+
+    Args:
+        data_and_enum_models (dict): A list of data model and enum defintions for enum/data model reference lookup
+        data_model (dict): A data model defintion as a dictionary
+
+    Returns:
+         A dictionary containing the template generation properties.
+    """
+    data_name = data_model.get("name")
+
+    required_fields = data_model.get("required") or []
+
+    message_fields = []
+    message_imports = []
+    for field in data_model.get("fields"):
+        proto_field_name = field.get("name")
+        proto_field_type = None
+
+        field_type = field.get("type")
+        field_proto_type = field.get("protobuf_type")
+        field_proto_repeat = "[]" in field_type
+        if field_type in data_and_enum_models:
+            proto_field_type = field_type
+
+            # This is the last time we have access to the other model, calculate its future protobuf file name here
+            model_to_import = data_and_enum_models.get(field_type)
+            model_to_import = model_to_import.get("data") or model_to_import.get("enum")
+            message_imports.append(_convert_message_name_to_file_name(model_to_import.get("name")))
+
+        else:
+            # If the referenced type isn't a user-defined type, then set the primitive type prioritizing `protobuf_type` before `type`
+            proto_field_type = field_proto_type or field_type
+
+        message_fields.append(
+            {
+                "name": proto_field_name,
+                "type": proto_field_type,
+                "optional": proto_field_name not in required_fields,
+                "repeat": field_proto_repeat,
+            }
+        )
+
+    return _properties_dict(data_name, "data", fields=message_fields, imports=message_imports)
+
+
+def _generate_protobuf_messages(protobuf_message_templates: list, properties: list[dict]) -> list[TemplateOutputFile]:
     """
     Compile templates and with variable properties information.
 
