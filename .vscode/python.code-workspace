@@ -67,7 +67,7 @@
             "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "validate",
-                "${workspaceFolder}/plugins/gen-protobuf/aac-gen-protobuf.yaml"
+                "${workspaceFolder}/src/aac/plugins/gen-protobuf/aac-gen-protobuf.yaml"
             ],
             "console": "integratedTerminal",
             "justMyCode": false
@@ -151,7 +151,7 @@
             "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "gen-plugin",
-                "${workspaceFolder}/plugins/aac-plantuml/aac-plantuml.yaml",
+                "${workspaceFolder}/src/aac/plugins/gen_plant_uml/gen_plant_uml.yaml",
             ],
             "console": "integratedTerminal",
             "justMyCode": false
@@ -163,7 +163,7 @@
             "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "gen-plugin",
-                "${workspaceFolder}/plugins/aac-gen-protobuf/aac-gen-protobuf.yaml",
+                "${workspaceFolder}/src/aac/plugins/gen_protobuf/gen_protobuf.yaml",
             ],
             "console": "integratedTerminal",
             "justMyCode": false
