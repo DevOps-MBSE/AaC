@@ -7,7 +7,7 @@ from typing import Callable
 
 from pluggy import PluginManager
 
-from aac import parser, plugins
+from aac import parser, plugins, __version__
 from aac.AacCommand import AacCommand, AacCommandArgument
 from aac.plugins.plugin_execution import (
     PluginExecutionResult,
@@ -47,6 +47,21 @@ def run_cli():
                 sys.exit(result.status_code.value)
 
 
+VERSION_COMMAND_NAME = "version"
+VALIDATE_COMMAND_NAME = "validate"
+CORE_SPEC_COMMAND_NAME = "aac-core-spec"
+
+
+def _version_cmd() -> PluginExecutionResult:
+    """Run the built-in verison command."""
+
+    def get_version() -> str:
+        return __version__
+
+    with plugin_result(VERSION_COMMAND_NAME, get_version) as result:
+        return result
+
+
 def _validate_cmd(model_file: str) -> PluginExecutionResult:
     """Run the built-in validate command."""
 
@@ -54,13 +69,13 @@ def _validate_cmd(model_file: str) -> PluginExecutionResult:
         with validation(parser.parse_file, model_file):
             return f"{model_file} is valid"
 
-    with plugin_result("validate", validate_model) as result:
+    with plugin_result(VALIDATE_COMMAND_NAME, validate_model) as result:
         return result
 
 
 def _core_spec_cmd() -> PluginExecutionResult:
     """Run the built-in aac-core-spec command."""
-    with plugin_result("aac-core-spec", get_aac_spec_as_yaml) as result:
+    with plugin_result(CORE_SPEC_COMMAND_NAME, get_aac_spec_as_yaml) as result:
         return result
 
 
@@ -72,20 +87,19 @@ def _setup_arg_parser(
 
     # Built-in commands
     aac_commands = [
-        # Temporarily disabled.
-        # AacCommand(
-        #     "ui",
-        #     "Run the AaC Graphical User Interface",
-        #     ui.run_ui,
-        # ),
         AacCommand(
-            "validate",
+            VALIDATE_COMMAND_NAME,
             "Ensures the AaC yaml is valid per the AaC core spec",
             _validate_cmd,
             [AacCommandArgument("model_file", "The path to the AaC model yaml file to validate")],
         ),
         AacCommand(
-            "aac-core-spec",
+            VERSION_COMMAND_NAME,
+            "Outputs Architecture-as-Code Python package version",
+            _version_cmd,
+        ),
+        AacCommand(
+            CORE_SPEC_COMMAND_NAME,
             "Prints the AaC model describing core AaC data types and enumerations",
             _core_spec_cmd,
         ),
