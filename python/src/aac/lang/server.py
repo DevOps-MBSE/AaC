@@ -4,7 +4,6 @@ import logging
 import pygls.lsp.methods as methods
 
 from pygls.server import LanguageServer
-from pygls.lsp.types import InitializeResult, ServerCapabilities
 
 from aac.plugins.plugin_execution import plugin_result
 
@@ -33,25 +32,6 @@ def start_lsp(host: str = None, port: int = None):
     with plugin_result("lsp", start, *connection_details) as result:
         result.messages = [m for m in result.messages if m]
         return result
-
-
-@server.feature(methods.INITIALIZE)
-def handle_initialize(ls: LanguageServer, params):
-    """Handle an initialize request."""
-    ls.show_message_log("received initialize request")
-    ls.show_message_log(f"params: {params}")
-    return InitializeResult(
-        capabilities=ServerCapabilities(hoverProvider=True),
-        serverInfo={"name": "aac-server"},
-    )
-
-
-@server.feature(methods.INITIALIZED)
-def handle_initialized(ls: LanguageServer, params):
-    """Handle an initialized notification."""
-    ls.show_message("received initialized notification")
-    ls.show_message_log(f"params: {params}")
-    return None
 
 
 @server.feature(methods.HOVER)
