@@ -11,7 +11,7 @@ let aacLspClient: LanguageClient | undefined;
 
 export function activate(context: ExtensionContext) {
     aacTaskProvider = tasks.registerTaskProvider(AacTaskProvider.aacType, new AacTaskProvider());
-    startLanguageServer(context)
+    startLanguageServer(context);
 }
 
 function startLanguageServer(_context: ExtensionContext) {
@@ -29,8 +29,8 @@ function ensureAacToolIsAvailable(): void {
 
 function getPython3Path(): string {
     const pythonPath: string = getConfigurationItem("pythonPath") ?? "";
-    ensureTrue("Cannot start Language Server; 'pythonPath' is not configured!", pythonPath.length > 0)
-    ensureTrue(`Cannot use ${pythonPath} as it does not exist!`, fs.existsSync(pythonPath))
+    ensureTrue("Cannot start Language Server; 'pythonPath' is not configured!", pythonPath.length > 0);
+    ensureTrue(`Cannot use ${pythonPath} as it does not exist!`, fs.existsSync(pythonPath));
 
     return pythonPath;
 }
@@ -47,7 +47,7 @@ async function ensureCorrectPythonVersionIsInstalled(pythonPath: string): Promis
 }
 
 async function ensureCorrectAacVersionIsInstalled(pythonPath: string): Promise<void> {
-    const resolve = await execShell(`${pythonPath} -m pip freeze`)
+    const resolve = await execShell(`${pythonPath} -m pip freeze`);
     ensureTrue(`Could not get the installed AaC version.\n${resolve.stderr}`, !resolve.stderr);
 
     const expectedAacVersion: string = getConfigurationItem("version") ?? "";

@@ -30,7 +30,7 @@ export function execShell(command: string, options?: cp.ExecOptions): Promise<{ 
     return new Promise<{ stdout: string; stderr: string }>((resolve, reject) => {
         cp.exec(command, options, (error, stdout, stderr) => {
             stdout = maybeConvertBufferToString(stdout);
-            stderr = maybeConvertBufferToString(stderr)
+            stderr = maybeConvertBufferToString(stderr);
             if (error) {
                 reject({ error, stdout, stderr });
             }
@@ -40,8 +40,9 @@ export function execShell(command: string, options?: cp.ExecOptions): Promise<{ 
 }
 
 function maybeConvertBufferToString(arg: string | Buffer, encoding: BufferEncoding = "utf-8"): string {
-    if (Buffer.isBuffer(arg))
+    if (Buffer.isBuffer(arg)) {
         return new StringDecoder(encoding).write(Buffer.from(arg));
+    }
     return <string>arg;
 }
 

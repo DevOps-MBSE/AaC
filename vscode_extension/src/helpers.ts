@@ -1,8 +1,9 @@
 import { workspace } from "vscode";
 
 export function ensure(messageIfTestFails: string, test: (...args: any[]) => boolean, ...args: any[]): void {
-    if (!test(...args))
-        throw new Error(messageIfTestFails)
+    if (!test(...args)) {
+        throw new Error(messageIfTestFails);
+    }
 }
 
 export function ensureTrue(messageIfTestFails: string, test: boolean): void {
