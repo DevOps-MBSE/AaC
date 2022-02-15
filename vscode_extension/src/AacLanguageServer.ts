@@ -76,6 +76,7 @@ export class AacLanguageServerClient {
     }
 
     private startLspClient(context: ExtensionContext, aacPath: string, host: string, port: number): void {
+        if (this.aacLspClient) { return; }
         this.aacLspClient = new LanguageClient(
             aacPath,
             this.getServerOptions(aacPath, "start-lsp", "--host", host, "--port", `${port}`),
