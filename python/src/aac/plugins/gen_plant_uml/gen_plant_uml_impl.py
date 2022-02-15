@@ -8,9 +8,18 @@ import os
 from aac import parser, util
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 from aac.validator import validation
+from aac.template_engine import (
+    TemplateOutputFile,
+    generate_templates,
+    load_default_templates,
+    write_generated_templates_to_file,
+)
 
 plugin_name = "gen_plant_uml"
 PLANT_UML_FILE_EXTENSION = ".puml"
+COMPONENT_STRING = "component"
+OBJECT_STRING = "object"
+SEQUENCE_STRING = "sequence"
 
 
 def puml_component(architecture_file: str, output_directory: str = None) -> PluginExecutionResult:
@@ -38,7 +47,7 @@ def puml_component(architecture_file: str, output_directory: str = None) -> Plug
         _generate_diagram_to_file,
         architecture_file_path,
         output_directory,
-        "component",
+        COMPONENT_STRING,
         generate_component_diagram,
     ) as result:
         return result
@@ -57,32 +66,41 @@ def puml_sequence(architecture_file: str, output_directory: str = None) -> Plugi
     def generate_sequence_diagram(models: dict):
         use_case_types = util.get_models_by_type(models, "usecase")
 
-        puml_lines = []
+        participants = []
+        sequences = []
 
         for use_case_title in _find_root_names(use_case_types):
-            puml_lines.append("@startuml")
-            puml_lines.append(f"title {use_case_title}")
 
             # declare participants
-            participants = util.search(use_case_types[use_case_title], ["usecase", "participants"])
-            for participant in participants:  # each participant is a field type
-                participant_type = participant.get("type")
-                participant_name = participant.get("name")
-                puml_lines.append(f"participant {participant_type} as {participant_name}")
+            usecase_participants = util.search(use_case_types[use_case_title], ["usecase", "participants"])
+            for usecase_participant in usecase_participants:  # each participant is a field type
+                participants.append({
+                    "type": usecase_participant.get("type"),
+                    "name": usecase_participant.get("name"),
+                })
 
             # process steps
             steps = util.search(use_case_types[use_case_title], ["usecase", "steps"])
             for step in steps:  # each step of a step type
-                step_source = step.get("source")
-                step_target = step.get("target")
-                step_action = step.get("action")
-                puml_lines.append(f"{step_source} -> {step_target} : {step_action}")
+                sequences.append({
+                    "source": step.get("source"),
+                    "target": step.get("target"),
+                    "action": step.get("action"),
+                })
 
-            puml_lines.append("@enduml")
-            return puml_lines
+            return {
+                "title": use_case_title,
+                "participants": participants,
+                "sequences": sequences
+            }
 
     with plugin_result(
-        plugin_name, _generate_diagram_to_file, architecture_file_path, output_directory, "sequence", generate_sequence_diagram
+        plugin_name,
+        _generate_diagram_to_file,
+        architecture_file_path,
+        output_directory,
+        SEQUENCE_STRING,
+        generate_sequence_diagram,
     ) as result:
         return result
 
@@ -111,26 +129,29 @@ def puml_object(architecture_file: str, output_directory: str = None) -> PluginE
 
                 object_compositions[model_name].add(component)
 
-        puml_lines = []
-        puml_lines.append("@startuml")
-        for obj in object_declarations:
-            puml_lines.append(f"object {obj}")
-
+        object_hierarchies = []
         for parent in object_compositions:
             for child in object_compositions[parent]:
-                puml_lines.append(f"{parent} *-- {child}")
+                object_hierarchies.append({"parent": parent, "child": child})
 
-        puml_lines.append("@enduml")
-        return puml_lines
+        return {
+            "objects": object_declarations,
+            "object_hierarchies": object_hierarchies
+        }
 
     with plugin_result(
-        plugin_name, _generate_diagram_to_file, architecture_file_path, output_directory, "object", generate_object_diagram
+        plugin_name,
+        _generate_diagram_to_file,
+        architecture_file_path,
+        output_directory,
+        OBJECT_STRING,
+        generate_object_diagram,
     ) as result:
         return result
 
 
 def _generate_diagram_to_file(
-    architecture_file_path: str, output_directory: str, puml_type: str, puml_content_function: callable
+    architecture_file_path: str, output_directory: str, puml_type: str, property_generator: callable
 ) -> str:
     """
     Generic plant UML generate diagram to output handler. Takes a function reference that generates an array of file lines to write to file.
@@ -139,26 +160,32 @@ def _generate_diagram_to_file(
         architecture_file_path (str): The path to the architecture as code file.
         output_directory (str): The path to the generated output directory.
         puml_type (str): The name of diagram type. Will be used in the result message.
-        puml_content_function (callable): The diagram-specific generation function. Must return an array of the diagram file contents by line.
+        property_generator (callable): The diagram-specific template property generation function. Must return a dictionary
+                                        of template properties for use with its associated template.
 
     Returns:
         Result message string
     """
     with validation(parser.parse_file, architecture_file_path) as result:
         file_name, _ = os.path.splitext(os.path.basename(architecture_file_path))
-        puml_lines = puml_content_function(result.model)
-        puml_output_string = "\n".join(puml_lines)
+        generated_file_name = f"{file_name}.puml"
+
+        template_properties = property_generator(result.model)
+        generated_templates = generate_templates(
+            load_default_templates(f"{plugin_name}/{puml_type}"), template_properties
+        )
+
+        for generated_template in generated_templates.values():
+            generated_template.file_name = generated_file_name
 
         if output_directory:
-            output_file_path = os.path.join(output_directory, f"{file_name}{PLANT_UML_FILE_EXTENSION}")
-
-            with open(output_file_path, "w") as out_file:
-                out_file.write(puml_output_string)
-
-            return f"Wrote PUML {puml_type} diagram to {output_file_path}."
+            write_generated_templates_to_file(list(generated_templates.values()), output_directory)
+            return f"Wrote PUML {puml_type} diagram to {generated_file_name}."
 
         else:
-            return f"File: {architecture_file_path}\n{puml_output_string}\n"
+            # Assuming we maintain one template to diagram type
+            generated_template = list(generated_templates.values()).pop()
+            return f"File: {architecture_file_path}\n{generated_template.content}\n"
 
 
 def _find_root_names(models) -> list[str]:
