@@ -258,7 +258,6 @@ def _get_model_content(model: dict, model_types, defined_interfaces: set):
         component_type = component["type"]
         model_components.append(_get_model_content(model_types[component_type], model_types, set()))
 
-    print(model_interfaces)
     return {
         "name": model_name,
         "interfaces": model_interfaces,
