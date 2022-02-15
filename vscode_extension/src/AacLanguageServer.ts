@@ -78,10 +78,12 @@ export class AacLanguageServerClient {
     private startLspClient(context: ExtensionContext, aacPath: string, host: string, port: number): void {
         if (this.aacLspClient) { return; }
         this.aacLspClient = new LanguageClient(
-            aacPath,
+            "aac",
+            "AaC Language Client",
             this.getServerOptions(aacPath, "start-lsp", "--host", host, "--port", `${port}`),
-            this.getClientOptions()
+            this.getClientOptions(),
         );
+        this.aacLspClient.trace = Trace.Verbose;
         context.subscriptions.push(this.aacLspClient.start());
     }
 
@@ -95,10 +97,11 @@ export class AacLanguageServerClient {
     private getClientOptions(): LanguageClientOptions {
         return {
             documentSelector: [
-                { scheme: "file", language: "aac" },
-                { scheme: "untitled", language: "aac" },
+                { scheme: "file", language: "aac", pattern: "**/*.aac" },
+                { scheme: "file", language: "aac", pattern: "**/*.yaml" },
             ],
-            outputChannelName: "[aac] Architecture-as-Code Language Server",
+            diagnosticCollectionName: "aac",
+            outputChannelName: "Architecture-as-Code",
             synchronize: {
                 fileEvents: workspace.createFileSystemWatcher("**/.clientrc"),
             }
