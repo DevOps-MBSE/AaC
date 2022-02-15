@@ -1,6 +1,6 @@
 import * as fs from "fs";
-import { ExtensionContext, workspace } from "vscode";
-import { LanguageClient, LanguageClientOptions, ServerOptions } from "vscode-languageclient/node";
+import { ExtensionContext, Hover, HoverProvider, languages, ProviderResult, window, workspace } from "vscode";
+import { LanguageClient, LanguageClientOptions, ServerOptions, Trace } from "vscode-languageclient/node";
 import { execShell } from "./AacTaskProvider";
 import { ensureTrue, getConfigurationItem } from "./helpers";
 
@@ -85,6 +85,22 @@ export class AacLanguageServerClient {
         );
         this.aacLspClient.trace = Trace.Verbose;
         context.subscriptions.push(this.aacLspClient.start());
+        this.registerHoverProvider(context);
+    }
+
+    private async registerHoverProvider(context: ExtensionContext): Promise<void> {
+        const client = this.aacLspClient;
+        context.subscriptions.push(languages.registerHoverProvider({ scheme: "file", language: "aac", pattern: "**/*.yaml" }, {
+            provideHover(document, position, token): ProviderResult<Hover> {
+                window.showInformationMessage(
+                    `File: ${document.uri.path}; Line: ${position.line}; Character: ${position.character}`
+                );
+                return client.sendRequest("textDocument/hover", {
+                    textDocument: document,
+                    position: position,
+                }, token);
+            }
+        }));
     }
 
     private getServerOptions(command: string, ...args: any[]): ServerOptions {
