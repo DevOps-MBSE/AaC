@@ -85,6 +85,9 @@ jobs:
         - name: Install Wheel Distribution
           run: pip install ${{steps.download-wheel.outputs.download-path}}/${{needs.python_functional_tests.outputs.wheel_name}}
 
+        - name: Get Package Version
+          run: python -m aac version
+
         - name: Validate Core Spec
           run: python -m aac validate src/aac/spec/spec.yaml
 

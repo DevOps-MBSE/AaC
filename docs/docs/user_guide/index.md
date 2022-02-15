@@ -22,6 +22,12 @@ Usage information is available from the command line interface:
 ```bash
 aac --help
 ```
+
+Installed `aac` executable version information is available via `version`:
+```bash
+aac version
+```
+
 The core functionallity of AaC provides commands to:
 - validate:  Ensures your model is correctly defined.
 - json:  Convert your model from yaml to json.
@@ -43,11 +49,11 @@ aac --help
 # Using AaC to Model Your System
 
 To use AaC you first define a model of your system in yaml.  Refer to the documentation for more details.
-A simple model for an EchoService is provided here for reference.  Cut and paste the below model into a 
-file called EchoService.yaml.  
+A simple model for an EchoService is provided here for reference.  Cut and paste the below model into a
+file called EchoService.yaml.
 *Note: This is using a little yaml trick to concatenate the content of two yaml files into a single file.*
 ```yaml
-data: 
+data:
   name: Message
   fields:
   - name: body
@@ -91,15 +97,15 @@ The AaC core root types are:
 - usecase: Allows you to model the sequence of interactions between your models.
 - ext: Allows you to easily extend the AaC model itself and tailor things to your needs.
 
-Although you can use the yaml trick above when modelling your system, it would be better to keep things more 
+Although you can use the yaml trick above when modelling your system, it would be better to keep things more
 structured and organized.  To help with this AaC allows you to define each item you model in a separate file and
-then import it as needed.  To do this just put an **import** at the root of your model file.  
+then import it as needed.  To do this just put an **import** at the root of your model file.
 
 Here's an example of the EchoService broken into two files:
 - Message.yaml
 
     ```yaml
-    data: 
+    data:
     name: Message
     fields:
     - name: body

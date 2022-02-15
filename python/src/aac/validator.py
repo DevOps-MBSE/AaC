@@ -4,7 +4,7 @@ import copy
 from contextlib import contextmanager
 from typing import Union
 
-from attr import attrib, attrs, validators
+from attr import attrib, attrs, validators, Factory
 from iteration_utilities import flatten
 
 from aac import plugins, util
@@ -28,8 +28,8 @@ class ValidationResult:
         model (dict): The model that was validated; if the model is invalid, None.
     """
 
-    messages: list[str] = attrib(default=[], validator=validators.instance_of(list))
-    model: dict = attrib(default={}, validator=validators.instance_of(dict))
+    messages: list[str] = attrib(default=Factory(list), validator=validators.instance_of(list))
+    model: dict = attrib(default=Factory(dict), validator=validators.instance_of(dict))
 
 
 @contextmanager
@@ -531,7 +531,7 @@ class ValidatorContext:
 
     # These attributes aren't exposed in the constructor, and are intended as private members, but attrs doesn't support private members.
     extended_validation_aac_model: list = attrib(
-        validator=validators.instance_of(dict), init=False, default={}
+        validator=validators.instance_of(dict), init=False, default=Factory(dict)
     )
 
     def get_root_type_names(self) -> list[str]:
