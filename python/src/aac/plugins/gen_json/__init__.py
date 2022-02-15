@@ -31,7 +31,8 @@ def get_commands() -> list[AacCommand]:
     plugin_commands = [
         AacCommand("gen-json", "Converts an AaC model to JSON", print_json, command_arguments)
     ]
-    get_plugin_aac_definitions
+
+    return plugin_commands
 
 
 @hookimpl
