@@ -3,6 +3,7 @@
 import logging
 import pygls.lsp.methods as methods
 
+from pygls.lsp import Hover, HoverParams
 from pygls.server import LanguageServer
 
 from aac.plugins.plugin_execution import plugin_result
