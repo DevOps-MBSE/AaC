@@ -9,7 +9,6 @@ from aac import parser, util
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 from aac.validator import validation
 from aac.template_engine import (
-    TemplateOutputFile,
     generate_templates,
     load_default_templates,
     write_generated_templates_to_file,
@@ -34,13 +33,15 @@ def puml_component(architecture_file: str, output_directory: str = None) -> Plug
 
     def generate_component_diagram(models: dict):
         model_types = util.get_models_by_type(models, "model")
-        puml_lines = []
-        puml_lines.append("@startuml")
+
+        models = []
         for root_model_name in _find_root_names(model_types):
-            model_component_puml = _get_component_content(model_types[root_model_name], [], model_types)
-            puml_lines.append(model_component_puml)
-        puml_lines.append("@enduml")
-        return puml_lines
+            model_properties = _get_model_content(model_types[root_model_name], model_types, set())
+            models.append(model_properties)
+
+        return {
+            "models": models
+        }
 
     with plugin_result(
         plugin_name,
@@ -212,48 +213,56 @@ def _find_root_names(models) -> list[str]:
     return sanitized_model_names
 
 
-def _get_component_content(root, existing, model_types):
+def _get_model_content(model: dict, model_types, defined_interfaces: set):
 
-    puml_lines = []
-    model_name = root["model"]["name"]
+    model_name = model["model"]["name"]
+    model_interfaces = set()
 
     # define UML interface for each input
-    inputs = util.search(root, ["model", "behavior", "input"])
+    inputs = util.search(model, ["model", "behavior", "input"])
+    model_inputs = []
     for input in inputs:
-        if not input["type"] in existing:
-            puml_lines.append("interface {}".format(input["type"]))
-            existing.append(input["type"])
+        input_name = input["name"]
+        input_type = input["type"]
+        model_inputs.append({
+            "name": input_name,
+            "type": input_type,
+            "target": model_name
+        })
+
+        if input_type not in defined_interfaces:
+            defined_interfaces.add(input_type)
+            model_interfaces.add(input_type)
 
     # define UML interface for each output
-    outputs = util.search(root, ["model", "behavior", "output"])
+    outputs = util.search(model, ["model", "behavior", "output"])
+    model_outputs = []
     for output in outputs:
-        if not output["type"] in existing:
-            puml_lines.append("interface {}".format(output["type"]))
-            existing.append(output["type"])
+        output_name = output["name"]
+        output_type = output["type"]
+        model_outputs.append({
+            "name": output_name,
+            "type": output_type,
+            "source": model_name
+        })
+
+        if output_type not in defined_interfaces:
+            defined_interfaces.add(output_type)
+            model_interfaces.add(output_type)
 
     # define UML package for each component
-    components = util.search(root, ["model", "components"])
+    components = util.search(model, ["model", "components"])
+    model_components = []
 
-    if len(components) > 0:
-        # if the model has a components, show it as a package
-        puml_lines.append('package "{}" {{'.format(model_name))
-        existing.append(model_name)
-        for component in components:
-            # component is a Field type
-            component_type = component["type"]
+    for component in components:
+        component_type = component["type"]
+        model_components.append(_get_model_content(model_types[component_type], model_types, set()))
 
-            component_puml = _get_component_content(model_types[component_type], existing, model_types)
-
-            puml_lines.append(component_puml)
-
-        puml_lines.append("}")
-    else:
-        # if there are no components, show it as a class
-        inputs = util.search(root, ["model", "behavior", "input"])
-        for input in inputs:
-            puml_lines.append("{} -> [{}] : {}".format(input["type"], model_name, input["name"]))
-        outputs = util.search(root, ["model", "behavior", "output"])
-        for output in outputs:
-            puml_lines.append("[{}] -> {} : {}".format(model_name, output["type"], output["name"]))
-
-    return "\n".join(puml_lines)
+    print(model_interfaces)
+    return {
+        "name": model_name,
+        "interfaces": model_interfaces,
+        "components": model_components,
+        "inputs": model_inputs,
+        "outputs": model_outputs,
+    }
