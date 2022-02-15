@@ -12,6 +12,7 @@ default_port = 8080
 
 # We probably don't want to be doing this here...
 logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 
 server = LanguageServer()
@@ -26,7 +27,8 @@ def start_lsp(host: str = None, port: int = None):
     """
 
     def start(host, port):
-        server.start_tcp(host, port)
+        logger.info(f"Starting server at {host}:{port}")
+        server.start_ws(host, port)
 
     connection_details = host or default_host, port or default_port
     with plugin_result("lsp", start, *connection_details) as result:
@@ -35,7 +37,11 @@ def start_lsp(host: str = None, port: int = None):
 
 
 @server.feature(methods.HOVER)
-def handle_hover(ls: LanguageServer, params):
+async def handle_hover(ls: LanguageServer, params: HoverParams):
     """Handle a hover event."""
+    logger.info(f"received hover request\nparams are: {params.text_document.uri}")
+
     ls.show_message("received hover request")
-    ls.show_message_log(f"params: {params}")
+    ls.show_message(f"file: {params.text_document.uri}; line: {params.position.line}; character: {params.position.character}")
+
+    return Hover(contents="Hello from your friendly AaC LSP server!")
