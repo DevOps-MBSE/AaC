@@ -113,7 +113,7 @@ class TestGenPlugin(TestCase):
             self.assertIn("output_directory", generated_plugin_file_contents)
 
             # Assert Model Extensions were generated
-            self.assertIn("get_base_model_extensions", generated_plugin_file_contents)
+            self.assertIn("get_plugin_aac_definitions", generated_plugin_file_contents)
             self.assertIn("PLUGIN_EXTENSION_YAML", generated_plugin_file_contents)
             self.assertIn("name: ProtobufDataType", generated_plugin_file_contents)
             self.assertIn("name: ProtobufTypeField", generated_plugin_file_contents)
