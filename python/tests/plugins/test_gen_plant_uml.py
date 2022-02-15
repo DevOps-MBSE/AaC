@@ -3,6 +3,9 @@ from tempfile import NamedTemporaryFile, TemporaryDirectory
 from unittest import TestCase
 
 from aac.plugins.gen_plant_uml.gen_plant_uml_impl import (
+    COMPONENT_STRING,
+    OBJECT_STRING,
+    SEQUENCE_STRING,
     puml_component,
     puml_object,
     puml_sequence,
@@ -32,7 +35,7 @@ class TestGenPlantUml(TestCase):
                 plugin_yaml.seek(0)
 
                 # Get the rng temp AaC file name, but with a puml extension
-                expected_puml_file_path = os.path.basename(plugin_yaml.name).replace(".yaml", ".puml")
+                expected_puml_file_path = os.path.basename(plugin_yaml.name).replace(".yaml", f"_{COMPONENT_STRING}.puml")
 
                 result = puml_component(plugin_yaml.name, temp_directory)
                 self.assertIn(expected_puml_file_path, "\n".join(result.messages))
@@ -67,7 +70,7 @@ class TestGenPlantUml(TestCase):
                 plugin_yaml.seek(0)
 
                 # Get the rng temp AaC file name, but with a puml extension
-                expected_puml_file_path = os.path.basename(plugin_yaml.name).replace(".yaml", ".puml")
+                expected_puml_file_path = os.path.basename(plugin_yaml.name).replace(".yaml", f"_{OBJECT_STRING}.puml")
 
                 result = puml_object(plugin_yaml.name, temp_directory)
                 self.assertIn(expected_puml_file_path, "\n".join(result.messages))
@@ -102,7 +105,7 @@ class TestGenPlantUml(TestCase):
                 plugin_yaml.seek(0)
 
                 # Get the rng temp AaC file name, but with a puml extension
-                expected_puml_file_path = os.path.basename(plugin_yaml.name).replace(".yaml", ".puml")
+                expected_puml_file_path = os.path.basename(plugin_yaml.name).replace(".yaml", f"_{SEQUENCE_STRING}.puml")
 
                 result = puml_sequence(plugin_yaml.name, temp_directory)
                 self.assertIn(expected_puml_file_path, "\n".join(result.messages))

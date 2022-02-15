@@ -169,7 +169,7 @@ def _generate_diagram_to_file(
     """
     with validation(parser.parse_file, architecture_file_path) as result:
         file_name, _ = os.path.splitext(os.path.basename(architecture_file_path))
-        generated_file_name = f"{file_name}.puml"
+        generated_file_name = f"{file_name}_{puml_type}.puml"
 
         template_properties = property_generator(result.model)
         generated_templates = generate_templates(
