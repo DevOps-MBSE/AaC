@@ -119,12 +119,12 @@ class TestGenPlantUml(TestCase):
 
     def _assert_component_diagram_content(self, component_diagram_content_string: str):
         self._assert_diagram_contains_uml_boilerplate(component_diagram_content_string)
-        self.assertIn(f"interface {TEST_PUML_DATA_A_NAME}", component_diagram_content_string)
-        self.assertIn(f"interface {TEST_PUML_DATA_B_NAME}", component_diagram_content_string)
-        self.assertIn(f"interface {TEST_PUML_DATA_C_NAME}", component_diagram_content_string)
+        self.assertIn(f"interface {TEST_PUML_DATA_A_TYPE}", component_diagram_content_string)
+        self.assertIn(f"interface {TEST_PUML_DATA_B_TYPE}", component_diagram_content_string)
+        self.assertIn(f"interface {TEST_PUML_DATA_C_TYPE}", component_diagram_content_string)
         self.assertIn(f"package \"{TEST_PUML_SYSTEM_NAME}\"", component_diagram_content_string)
-        self.assertIn(f"{TEST_PUML_DATA_A_NAME} -> [{TEST_PUML_SERVICE_ONE_TYPE}] : in", component_diagram_content_string)
-        self.assertIn(f"[{TEST_PUML_SERVICE_ONE_TYPE}] -> {TEST_PUML_DATA_B_NAME} : out", component_diagram_content_string)
+        self.assertIn(f"{TEST_PUML_DATA_A_TYPE} -> [{TEST_PUML_SERVICE_ONE_TYPE}] : in", component_diagram_content_string)
+        self.assertIn(f"[{TEST_PUML_SERVICE_ONE_TYPE}] -> {TEST_PUML_DATA_B_TYPE} : out", component_diagram_content_string)
 
     def _assert_object_diagram_content(self, object_diagram_content_string: str):
         self._assert_diagram_contains_uml_boilerplate(object_diagram_content_string)
@@ -157,9 +157,9 @@ TEST_PUML_SERVICE_ONE_NAME = "svc1"
 TEST_PUML_SERVICE_ONE_TYPE = "ServiceOne"
 TEST_PUML_SERVICE_TWO_NAME = "svc2"
 TEST_PUML_SERVICE_TWO_TYPE = "ServiceTwo"
-TEST_PUML_DATA_A_NAME = "DataA"
-TEST_PUML_DATA_B_NAME = "DataB"
-TEST_PUML_DATA_C_NAME = "DataC"
+TEST_PUML_DATA_A_TYPE = "DataA"
+TEST_PUML_DATA_B_TYPE = "DataB"
+TEST_PUML_DATA_C_TYPE = "DataC"
 TEST_PUML_USE_CASE_TITLE = "Nominal flow within the system."
 
 TEST_PUML_ARCH_YAML = f"""
@@ -172,15 +172,15 @@ model:
     - name: {TEST_PUML_SERVICE_TWO_NAME}
       type: {TEST_PUML_SERVICE_TWO_TYPE}
   behavior:
-    - name: Process DataA Request to {TEST_PUML_DATA_C_NAME} Response
+    - name: Process DataA Request to {TEST_PUML_DATA_C_TYPE} Response
       type: request-response
-      description: process DataA and respond with {TEST_PUML_DATA_C_NAME}
+      description: process DataA and respond with {TEST_PUML_DATA_C_TYPE}
       input:
         - name: in
-          type: {TEST_PUML_DATA_A_NAME}
+          type: {TEST_PUML_DATA_A_TYPE}
       output:
         - name: out
-          type: {TEST_PUML_DATA_C_NAME}
+          type: {TEST_PUML_DATA_C_TYPE}
       acceptance:
         - scenario: Receive DataA request and return DataD response
           given:
@@ -191,74 +191,74 @@ model:
           when:
             - System receives a DataA request
           then:
-            - System processes the request into a {TEST_PUML_DATA_C_NAME} response
-            - System returns the {TEST_PUML_DATA_C_NAME} response
+            - System processes the request into a {TEST_PUML_DATA_C_TYPE} response
+            - System returns the {TEST_PUML_DATA_C_TYPE} response
 ---
 model:
   name: {TEST_PUML_SERVICE_ONE_TYPE}
   behavior:
-    - name: Process {TEST_PUML_DATA_A_NAME} Request
+    - name: Process {TEST_PUML_DATA_A_TYPE} Request
       type: request-response
-      description: Process a {TEST_PUML_DATA_A_NAME} request and return a {TEST_PUML_DATA_B_NAME} response
+      description: Process a {TEST_PUML_DATA_A_TYPE} request and return a {TEST_PUML_DATA_B_TYPE} response
       input:
         - name: in
-          type: {TEST_PUML_DATA_A_NAME}
+          type: {TEST_PUML_DATA_A_TYPE}
       output:
         - name: out
-          type: {TEST_PUML_DATA_B_NAME}
+          type: {TEST_PUML_DATA_B_TYPE}
       acceptance:
-        - scenario: Receive {TEST_PUML_DATA_A_NAME} request and return {TEST_PUML_DATA_B_NAME} response
+        - scenario: Receive {TEST_PUML_DATA_A_TYPE} request and return {TEST_PUML_DATA_B_TYPE} response
           given:
             - {TEST_PUML_SERVICE_ONE_TYPE} is running
           when:
-            - {TEST_PUML_SERVICE_ONE_TYPE} receives a {TEST_PUML_DATA_A_NAME} request
+            - {TEST_PUML_SERVICE_ONE_TYPE} receives a {TEST_PUML_DATA_A_TYPE} request
           then:
-            - {TEST_PUML_SERVICE_ONE_TYPE} processes the request into a {TEST_PUML_DATA_B_NAME} response
-            - {TEST_PUML_SERVICE_ONE_TYPE} returns the {TEST_PUML_DATA_B_NAME} response
+            - {TEST_PUML_SERVICE_ONE_TYPE} processes the request into a {TEST_PUML_DATA_B_TYPE} response
+            - {TEST_PUML_SERVICE_ONE_TYPE} returns the {TEST_PUML_DATA_B_TYPE} response
         - scenario: Receive invalid request
           given:
             - {TEST_PUML_SERVICE_ONE_TYPE} is running
           when:
-            - {TEST_PUML_SERVICE_ONE_TYPE} receives request that isn't a {TEST_PUML_DATA_A_NAME} request
+            - {TEST_PUML_SERVICE_ONE_TYPE} receives request that isn't a {TEST_PUML_DATA_A_TYPE} request
           then:
             - {TEST_PUML_SERVICE_ONE_TYPE} returns an error response code
 ---
 model:
   name: {TEST_PUML_SERVICE_TWO_TYPE}
   behavior:
-    - name: Process {TEST_PUML_DATA_B_NAME} Request
+    - name: Process {TEST_PUML_DATA_B_TYPE} Request
       type: request-response
-      description: Process a {TEST_PUML_DATA_B_NAME} request and return a {TEST_PUML_DATA_C_NAME} response
+      description: Process a {TEST_PUML_DATA_B_TYPE} request and return a {TEST_PUML_DATA_C_TYPE} response
       input:
         - name: in
-          type: {TEST_PUML_DATA_B_NAME}
+          type: {TEST_PUML_DATA_B_TYPE}
       output:
         - name: out
-          type: {TEST_PUML_DATA_C_NAME}
+          type: {TEST_PUML_DATA_C_TYPE}
       acceptance:
-        - scenario: Receive {TEST_PUML_DATA_B_NAME} request and return {TEST_PUML_DATA_C_NAME} response
+        - scenario: Receive {TEST_PUML_DATA_B_TYPE} request and return {TEST_PUML_DATA_C_TYPE} response
           given:
             - {TEST_PUML_SERVICE_TWO_TYPE} is running
           when:
-            - {TEST_PUML_SERVICE_TWO_TYPE} receives a {TEST_PUML_DATA_B_NAME} request
+            - {TEST_PUML_SERVICE_TWO_TYPE} receives a {TEST_PUML_DATA_B_TYPE} request
           then:
-            - {TEST_PUML_SERVICE_TWO_TYPE} processes the request into a {TEST_PUML_DATA_C_NAME} response
-            - {TEST_PUML_SERVICE_TWO_TYPE} returns the {TEST_PUML_DATA_C_NAME} response
+            - {TEST_PUML_SERVICE_TWO_TYPE} processes the request into a {TEST_PUML_DATA_C_TYPE} response
+            - {TEST_PUML_SERVICE_TWO_TYPE} returns the {TEST_PUML_DATA_C_TYPE} response
 ---
 data:
-  name: {TEST_PUML_DATA_A_NAME}
+  name: {TEST_PUML_DATA_A_TYPE}
   fields:
   - name: msg
     type: string
 ---
 data:
-  name: {TEST_PUML_DATA_B_NAME}
+  name: {TEST_PUML_DATA_B_TYPE}
   fields:
   - name: msg
     type: string
 ---
 data:
-  name: {TEST_PUML_DATA_C_NAME}
+  name: {TEST_PUML_DATA_C_TYPE}
   fields:
   - name: msg
     type: string
