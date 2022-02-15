@@ -82,7 +82,11 @@ def _core_spec_cmd() -> PluginExecutionResult:
 def _setup_arg_parser(
     plugin_manager: PluginManager,
 ) -> tuple[argparse.ArgumentParser, list[Callable]]:
-    arg_parser = argparse.ArgumentParser()
+
+    def help_formatter(prog):
+        return argparse.HelpFormatter(prog, max_help_position=30)
+
+    arg_parser = argparse.ArgumentParser(formatter_class=help_formatter)
     command_parser = arg_parser.add_subparsers(dest="command")
 
     # Built-in commands
@@ -113,7 +117,7 @@ def _setup_arg_parser(
 
         for argument in command.arguments:
             command_subparser.add_argument(
-                argument.name, help=argument.description, nargs=argument.number_of_arguments
+                argument.name, help=argument.description, nargs=argument.number_of_arguments, choices=argument.choices
             )
 
     return arg_parser, aac_and_plugin_commands

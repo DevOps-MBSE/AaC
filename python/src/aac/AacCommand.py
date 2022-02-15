@@ -12,11 +12,13 @@ class AacCommandArgument:
         description: a string with the command argument description -- will provide a description
                         about this argument when the help command is invoked.
         number_of_arguments: Number of entries that the argument can take. Maps to the argsparse module's nargs command.
+        choices: The set of allowable values for the argument. Maps to the argparse module's choices argument.
     """
 
     name = attrib(validator=validators.instance_of(str))
     description = attrib(validator=validators.instance_of(str))
     number_of_arguments = attrib(default=None, validator=validators.instance_of((str, type(None))))
+    choices = attrib(default=None, validator=validators.instance_of((list, type(None))))
 
 
 @attrs

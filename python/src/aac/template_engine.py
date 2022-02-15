@@ -147,7 +147,7 @@ def _get_template_output_directory(
 
 def _ensure_directory_exists(path: str) -> None:
     if not os.path.exists(path):
-        os.mkdir(path)
+        os.makedirs(path)
 
 
 def _write_file(path: str, file_name: str, content: str, overwrite: bool) -> None:
