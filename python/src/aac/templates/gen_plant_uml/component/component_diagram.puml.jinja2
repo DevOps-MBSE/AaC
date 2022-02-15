@@ -6,7 +6,7 @@
 
 {% if model.components|length > 0 %}
 {{space(indent_level)}}package "{{model.name}}" {
-{%- for component in model.components -%}
+{% for component in model.components -%}
 {{print_components(component, indent_level + 1)}}
 {% endfor -%}
 {{space(indent_level)}}}
