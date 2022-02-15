@@ -23,23 +23,22 @@ def print_json(architecture_files: list[str], output_directory: str = None) -> P
     """
 
     def to_json(architecture_file: str, output_directory: str) -> str:
-        file_name = os.path.basename(architecture_file)
-        _, file_ext = os.path.splitext(file_name)
+        architecture_file_path = os.path.abspath(architecture_file)
+        file_name, _ = os.path.splitext(os.path.basename(architecture_file_path))
 
-        with validation(parse_file, architecture_file) as result:
+        with validation(parse_file, architecture_file_path) as result:
             formatted_json = json.dumps(result.model, indent=2)
 
             if output_directory:
+                output_file_path = os.path.join(output_directory, f"{file_name}.json")
 
-                file_name = file_name.replace(file_ext, '.json') if file_ext else f'{file_name}.json'
-                output_file_path = os.path.join(output_directory, file_name)
                 with open(output_file_path, "w") as out_file:
                     out_file.write(formatted_json)
 
                 return f"Wrote JSON to {output_file_path}."
 
             else:
-                return f"File: {architecture_file}\n{formatted_json}\n"
+                return f"File: {architecture_file_path}\n{formatted_json}\n"
 
     status = PluginExecutionStatusCode.SUCCESS
     messages = []

@@ -1,0 +1,10 @@
+@startuml
+title {{title}}
+{%- for participant in participants %}
+participant {{participant.type}} as {{participant.name}}
+{%- endfor %}
+
+{%- for sequence in sequences %}
+{{sequence.source}} -> {{sequence.target}} : {{sequence.name}}
+{%- endfor %}
+@enduml

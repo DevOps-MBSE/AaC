@@ -1,5 +1,5 @@
 """A simple data class to collect AaC command info from plugins."""
-from attr import attrib, attrs, validators
+from attr import attrib, attrs, validators, Factory
 
 
 @attrs
@@ -37,4 +37,4 @@ class AacCommand:
     name = attrib(validator=validators.instance_of(str))
     description = attrib(validator=validators.instance_of(str))
     callback = attrib(validator=validators.is_callable())
-    arguments = attrib(default=[], validator=validators.instance_of(list))
+    arguments = attrib(default=Factory(list), validator=validators.instance_of(list))
