@@ -90,3 +90,13 @@ You can open a workspace in VSCode by:
     - /workspace/AaC/.vscode/python.code-workspace
     - /workspace/AaC/.vscode/vscode_extension.code-workspace
 4. Press the `Ok` button and watch the IDE switch workspaces.
+
+## Testing
+To run tests, make sure you've set up your dependencies using `pip install -e .[test]` or `pip install -e .[all]`. Then, from the root of the python project, run the following shell command (from within your virtual environment).
+
+```bash
+$ tox
+```
+
+### VSCode Unit Test Support
+The python plugin for VSCode supports the `unittest` python library, and not the nose2 framework that we use. The impact is fairly minimal, but python unit tests using the nose2 parameterized tests will not run correctly from within the VSCode IDE since it fails to recognize the nose2 parameterized tests as parameterized tests causing them to fail.
