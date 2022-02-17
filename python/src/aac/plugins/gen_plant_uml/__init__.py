@@ -22,18 +22,30 @@ def get_commands() -> list[AacCommand]:
         AacCommandArgument(
             "architecture_file",
             "Path to a yaml file containing an AaC usecase from which to generate a Plant UML component diagram.",
+        ),
+        AacCommandArgument(
+            "--output_directory",
+            "Output directory for the PlantUML (.puml) diagram file",
         )
     ]
     puml_sequence_arguments = [
         AacCommandArgument(
             "architecture_file",
             "Path to a yaml file containing an AaC usecase from which to generate a Plant UML sequence diagram.",
+        ),
+        AacCommandArgument(
+            "--output_directory",
+            "Output directory for the PlantUML (.puml) diagram file",
         )
     ]
     puml_object_arguments = [
         AacCommandArgument(
             "architecture_file",
             "Path to a yaml file containing an AaC usecase from which to generate a Plant UML object diagram.",
+        ),
+        AacCommandArgument(
+            "--output_directory",
+            "Output directory for the PlantUML (.puml) diagram file",
         )
     ]
 
@@ -62,7 +74,7 @@ def get_commands() -> list[AacCommand]:
 
 
 @hookimpl
-def get_base_model_extensions() -> str:
+def get_plugin_aac_definitions() -> str:
     """
     Returns the CommandBehaviorType modeling language extension to the plugin infrastructure.
 

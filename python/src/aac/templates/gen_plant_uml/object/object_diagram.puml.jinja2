@@ -1,0 +1,9 @@
+@startuml
+{%- for object in objects %}
+object {{object}}
+{%- endfor %}
+
+{%- for object_hierarchy in object_hierarchies %}
+{{object_hierarchy.parent}} *-- {{object_hierarchy.child}}
+{%- endfor %}
+@enduml

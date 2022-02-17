@@ -35,7 +35,7 @@ def get_commands() -> list[AacCommand]:
 
 
 @hookimpl
-def get_base_model_extensions() -> str:
+def get_plugin_aac_definitionss() -> str:
     """
     Returns the CommandBehaviorType modeling language extension to the plugin infrastructure.
 

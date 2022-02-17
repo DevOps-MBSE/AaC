@@ -1,5 +1,6 @@
 import logging
 from setuptools import find_packages, setup
+from src.aac import __version__
 
 README_FILE_PATH = "../README.md"
 
@@ -65,7 +66,7 @@ test_dependencies = [
 
 setup(
     name="aac",
-    version="0.0.4",
+    version=__version__,
     description=(
         "A distinctly different take on Model-Based System Engineering (MBSE) that allows a system modeller to define a system in simple yaml. "
     ),

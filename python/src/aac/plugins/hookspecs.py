@@ -15,9 +15,9 @@ def get_commands() -> list[AacCommand]:
 
 
 @hookspec
-def get_base_model_extensions() -> str:
+def get_plugin_aac_definitionss() -> str:
     """
-    Return data and ext definitions to apply to the AaC base.
+    Return the plugins Aac definitions.
 
     Returns:
          string representing yaml extensions and data definitions employed by the plugin
