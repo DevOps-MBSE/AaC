@@ -6,7 +6,7 @@ export function ensure(messageIfTestFails: string, test: (...args: any[]) => boo
     }
 }
 
-export function ensureTrue(messageIfTestFails: string, test: boolean): void {
+export function ensureTrue(test: boolean, messageIfTestFails: string): void {
     ensure(messageIfTestFails, () => test);
 }
 

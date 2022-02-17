@@ -39,30 +39,30 @@ export class AacLanguageServerClient {
 
     private getConfigurationItemFile(name: string): string {
         const item: string = getConfigurationItem(name);
-        ensureTrue(`Cannot start Language Server; '${item}' is not configured!`, item.length > 0);
-        ensureTrue(`Cannot use ${item} as it does not exist!`, fs.existsSync(item));
+        ensureTrue(item.length > 0, `Cannot start Language Server; '${item}' is not configured!`);
+        ensureTrue(fs.existsSync(item), `Cannot use ${item} as it does not exist!`);
         return item;
     }
 
     private async ensureCorrectPythonVersionIsInstalled(pythonPath: string): Promise<void> {
         const resolve = await execShell(`${pythonPath} --version`, {});
-        ensureTrue(`Could not get the Python version.\n${resolve.stderr}`, !resolve.stderr);
+        ensureTrue(!resolve.stderr, `Could not get the Python version.\n${resolve.stderr}`);
 
         const pythonVersion = resolve.stdout.match(/\d+\.\d+\.\d+/)?.pop() ?? "unknown";
         ensureTrue(
+            pythonVersion.startsWith(MIN_REQUIRED_PYTHON_VERSION),
             `The AaC tool requires Python ${MIN_REQUIRED_PYTHON_VERSION} or newer; current version is: ${pythonVersion}`,
-            pythonVersion.startsWith(MIN_REQUIRED_PYTHON_VERSION)
         );
     }
 
     private async ensureCorrectAacVersionIsInstalled(pythonPath: string): Promise<void> {
         const resolve = await execShell(`${pythonPath} -m pip freeze`);
-        ensureTrue(`Could not get the installed AaC version.\n${resolve.stderr}`, !resolve.stderr);
+        ensureTrue(!resolve.stderr, `Could not get the installed AaC version.\n${resolve.stderr}`);
 
         const expectedAacVersion: string = getConfigurationItem("version") ?? "";
         const aacVersionPattern = new RegExp(`aac==${expectedAacVersion}|-e git.*egg=aac`, "ig");
         const actualAacVersion = resolve.stdout.match(aacVersionPattern)?.pop();
-        ensureTrue(`The installed aac version is ${actualAacVersion} which is unsupported.`, !!actualAacVersion);
+        ensureTrue(!!actualAacVersion, `The installed aac version is ${actualAacVersion} which is unsupported.`);
     }
 
     private ensureLspServerIsReady(context: ExtensionContext): void {
