@@ -1,25 +1,19 @@
-# Action to backup issues using gh2md, contributed by
-# https://github.com/0ut0fcontrol.
-# See https://github.com/mattduck/gh2md/issues/11.
-name: Issues2Markdown
+name: Export Issues to Markdown
 on:
   workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    # - name: Checkout repository
-    #   uses: actions/checkout@master
-    #   # with:
-    #     # persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
-    - name: Backup github issues to a markdown file.
+    - name: Backup Github Issues to Markdown
       run: |
         pip3 install --user --upgrade setuptools
         pip3 install --user gh2md
         $HOME/.local/bin/gh2md $GITHUB_REPOSITORY issues.md --idempotent
       env:
         GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: Archive issues export
+    - name: Archive Issues Report
       uses: actions/upload-artifact@v2
       with:
         name: issues_export
