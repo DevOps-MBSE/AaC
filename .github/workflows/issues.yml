@@ -4,6 +4,7 @@ on:
 
 jobs:
   build:
+    name: Export Issues to Markdown
     runs-on: ubuntu-latest
     steps:
     - name: Backup Github Issues to Markdown
