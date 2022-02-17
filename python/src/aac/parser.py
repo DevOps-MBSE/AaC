@@ -7,6 +7,8 @@ to find a certain type in a model by just looking for that key.
 import os
 
 import yaml
+from attr import Factory, attrib, attrs, validators
+from yaml.parser import ParserError as YAMLParserError
 
 
 def parse_file(arch_file: str) -> dict[str, dict]:
@@ -42,13 +44,41 @@ def parse_str(source: str, model_content: str) -> dict[str, dict]:
     """
     parsed_models = {}
 
-    roots = yaml.load_all(model_content, Loader=yaml.FullLoader)
+    roots = _load_yaml(source, model_content)
     for root in roots:
         if "import" in root:
             del root["import"]
-        root_name = list(root.keys())[0]
-        parsed_models[root[root_name]["name"]] = root
+
+        if not isinstance(root, dict):
+            raise ParserError(source, ["provided content was not YAML", model_content])
+
+        root_name, *_ = root.keys()
+        root_item = root.get(root_name)
+
+        if not root_item:
+            raise ParserError(source, ["incomplete model:", model_content, ""])
+
+        parsed_models = parsed_models | {root_item.get("name"): root}
     return parsed_models
+
+
+def _load_yaml(source: str, content: str) -> dict:
+    """Parse content as a YAML string and return the resulting structure.
+
+    Arguments:
+        source (str): The source of the YAML content. Used to provide better error messages.
+        content (str): The YAML content to be parsed.
+
+    Returns:
+        The parsed YAML content.
+
+    Raises:
+        If the YAML is invalid, a ParserError is raised.
+    """
+    try:
+        return list(yaml.load_all(content, Loader=yaml.SafeLoader))
+    except YAMLParserError as error:
+        raise ParserError(source, [f"invalid YAML {error.context}", error.problem, content])
 
 
 def _read_file_content(arch_file: str) -> str:
@@ -78,7 +108,7 @@ def _get_files_to_process(arch_file_path: str) -> list[str]:
 
     ret_val = [arch_file_path]
     content = _read_file_content(arch_file_path)
-    roots = yaml.load_all(content, Loader=yaml.FullLoader)
+    roots = _load_yaml(arch_file_path, content)
     for root in roots:
         if root and "import" in root.keys():
             for imp in root["import"]:
@@ -94,3 +124,11 @@ def _get_files_to_process(arch_file_path: str) -> list[str]:
                     ret_val.append(append_me)
 
     return ret_val
+
+
+@attrs
+class ParserError(Exception):
+    """An error that represents a file that could not be parsed."""
+
+    source: str = attrib(validator=validators.instance_of(str))
+    errors: list[str] = attrib(default=Factory(list), validator=validators.instance_of(list))

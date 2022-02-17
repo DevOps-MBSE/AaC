@@ -16,6 +16,16 @@ class TestArchParser(TestCase):
         self.assertIsNotNone(model.get(name).get(type))
         self.assertEqual(name, model.get(name).get(type).get("name"))
 
+    def check_parser_errors(self, model, error_message):
+        source = "parser-test"
+        with self.assertRaises(parser.ParserError) as cm:
+            parser.parse_str(source, model)
+
+        errors = "\n".join(cm.exception.errors)
+        self.assertIn(error_message, errors)
+        self.assertIn(model, errors)
+        self.assertEqual(cm.exception.source, source)
+
     def test_can_parse_architecture_model_string(self):
         model = parser.parse_str("parser-test", TEST_IMPORTED_MODEL_FILE_CONTENTS)
 
@@ -37,6 +47,15 @@ class TestArchParser(TestCase):
             self.check_model_name(model, "Message", "data")
             self.check_model_name(model, "Status", "enum")
             self.check_model_name(model, "EchoService", "model")
+
+    def test_errors_when_parsing_invalid_yaml(self):
+        self.check_parser_errors("""model: ][""", "invalid YAML")
+
+    def test_errors_when_parsing_incomplete_model(self):
+        self.check_parser_errors("model:", "incomplete model")
+
+    def test_errors_when_parsing_non_yaml(self):
+        self.check_parser_errors("not yaml", "not YAML")
 
 
 TEST_IMPORTED_MODEL_FILE_CONTENTS = """
