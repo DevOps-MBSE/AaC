@@ -1,9 +1,10 @@
 """Parse Architecture-as-Code YAML files.
 
-The AaC parser reads a yaml file, performs validation (if not suppressed) and provides
+The AaC parser reads a YAML file, performs validation (if not suppressed) and provides
 the caller with a dictionary of the content keyed by the named type.  This allows you
 to find a certain type in a model by just looking for that key.
 """
+
 import os
 
 import yaml
@@ -14,7 +15,7 @@ from yaml.parser import ParserError as YAMLParserError
 def parse_file(arch_file: str) -> dict[str, dict]:
     """Parse an Architecture-as-Code YAML file.
 
-    Args:
+    Arguments:
         arch_file (str): The Architecture-as-Code YAML file to be parsed.
 
     Returns:
@@ -32,14 +33,14 @@ def parse_file(arch_file: str) -> dict[str, dict]:
 
 
 def parse_str(source: str, model_content: str) -> dict[str, dict]:
-    """Parse a string containing one or more yaml model definitions.
+    """Parse a string containing one or more YAML model definitions.
 
-    Args:
+    Arguments:
         source:  The file the content came from (to help with better logging)
-        model_content:  The yaml to parse
+        model_content:  The YAML to parse
 
     Returns:
-        A dictionary of the parsed model(s).  The key is the type name from the model and the
+        A dictionary of the parsed model(s). The key is the type name from the model and the
         value is the parsed model root.
     """
     parsed_models = {}
@@ -83,15 +84,14 @@ def _load_yaml(source: str, content: str) -> dict:
 
 def _read_file_content(arch_file: str) -> str:
     """
-    The read file content method extracts text content from the specified file.
+    Read file content method extracts text content from the specified file.
 
-    Args:
+    Arguments:
         arch_file: The file to read.
 
     Returns:
         The contents of the file as a string.
     """
-
     arch_file_path = arch_file
     content = ""
     with open(arch_file_path, "r") as file:
@@ -105,7 +105,6 @@ def _get_files_to_process(arch_file_path: str) -> list[str]:
     Traverse the import path starting from the specified Arch-as-Code file and returns a list of
     all files referenced by the model.
     """
-
     ret_val = [arch_file_path]
     content = _read_file_content(arch_file_path)
     roots = _load_yaml(arch_file_path, content)
