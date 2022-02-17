@@ -1,12 +1,20 @@
 """The Architecture-as-Code Language Server."""
 
 import logging
+
 import pygls.lsp.methods as methods
 
-from pygls.lsp import Hover, HoverParams
+from pygls.lsp import (
+    Hover,
+    HoverParams,
+    InitializeParams,
+    InitializeResult,
+    ServerCapabilities,
+)
 from pygls.server import LanguageServer
 
 from aac.plugins.plugin_execution import plugin_result
+
 
 default_host = "127.0.0.1"
 default_port = 8080
@@ -37,12 +45,33 @@ def start_lsp(host: str = None, port: int = None):
         return result
 
 
+@server.feature(methods.INITIALIZE)
+async def handle_initialize(ls: LanguageServer, params: InitializeParams):
+    """Handle initialize request."""
+    logger.info("received initialize request")
+
+    ls.show_message("received initialize request")
+
+    return InitializeResult(capabilities=ServerCapabilities(hover_provider=True))
+
+
+@server.feature(methods.INITIALIZED)
+async def handle_initialized(ls: LanguageServer, params):
+    """Handle initialized notification."""
+    logger.info("received initialized notification")
+
+    ls.show_message("received initialized notification")
+
+
 @server.feature(methods.HOVER)
 async def handle_hover(ls: LanguageServer, params: HoverParams):
-    """Handle a hover event."""
+    """Handle a hover request."""
     logger.info(f"received hover request\nparams are: {params.text_document.uri}")
 
     ls.show_message("received hover request")
-    ls.show_message(f"file: {params.text_document.uri}; line: {params.position.line}; character: {params.position.character}")
+    ls.show_message(
+        f"file: {params.text_document.uri}; "
+        f"line: {params.position.line}; character: {params.position.character}"
+    )
 
     return Hover(contents="Hello from your friendly AaC LSP server!")

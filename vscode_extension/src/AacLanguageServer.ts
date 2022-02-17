@@ -67,15 +67,31 @@ export class AacLanguageServerClient {
 
     private ensureLspServerIsReady(context: ExtensionContext): void {
         const aacPath: string = this.getConfigurationItemFile("aacPath");
-        this.startLspClient(
-            context,
-            aacPath,
-            getConfigurationItem("lspServerHost") ?? DEFAULT_LSP_SERVER_HOST,
-            getConfigurationItem("lspServerPort") ?? DEFAULT_LSP_SERVER_PORT,
-        );
+        try {
+            this.startLspClient(
+                context,
+                aacPath,
+                getConfigurationItem("lspServerHost") ?? DEFAULT_LSP_SERVER_HOST,
+                getConfigurationItem("lspServerPort") ?? DEFAULT_LSP_SERVER_PORT,
+            );
+        } catch (onStartFailure) {
+            window.showInformationMessage(`Failure starting the server.\n${onStartFailure}`);
+        }
+
+        try {
+            this.aacLspClient.onReady();
+        } catch (onReadyFailure) {
+            window.showInformationMessage(`Failure waiting for the server to become ready.\n${onReadyFailure}`);
+        }
+
+        try {
+            this.registerHoverProvider(context);
+        } catch (onRegisterHoverFailure) {
+            window.showInformationMessage(`Failure waiting for the server to become ready.\n${onRegisterHoverFailure}`);
+        }
     }
 
-    private startLspClient(context: ExtensionContext, aacPath: string, host: string, port: number): void {
+    private async startLspClient(context: ExtensionContext, aacPath: string, host: string, port: number): Promise<void> {
         if (this.aacLspClient) { return; }
         this.aacLspClient = new LanguageClient(
             "aac",
@@ -85,22 +101,22 @@ export class AacLanguageServerClient {
         );
         this.aacLspClient.trace = Trace.Verbose;
         context.subscriptions.push(this.aacLspClient.start());
-        this.registerHoverProvider(context);
     }
 
     private async registerHoverProvider(context: ExtensionContext): Promise<void> {
         const client = this.aacLspClient;
-        context.subscriptions.push(languages.registerHoverProvider({ scheme: "file", language: "aac", pattern: "**/*.yaml" }, {
+        const provider = languages.registerHoverProvider({ scheme: "file", language: "aac", pattern: "**/*.yaml" }, {
             provideHover(document, position, token): ProviderResult<Hover> {
                 window.showInformationMessage(
                     `File: ${document.uri.path}; Line: ${position.line}; Character: ${position.character}`
                 );
-                return client.sendRequest("textDocument/hover", {
+                return client.sendRequest<Hover>("textDocument/hover", {
                     textDocument: document,
                     position: position,
                 }, token);
             }
-        }));
+        });
+        context.subscriptions.push(provider);
     }
 
     private getServerOptions(command: string, ...args: any[]): ServerOptions {
