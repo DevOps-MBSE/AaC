@@ -45,7 +45,7 @@ def parse_str(source: str, model_content: str) -> dict[str, dict]:
     """
     parsed_models = {}
 
-    roots = _load_yaml(source, model_content)
+    roots = _parse_yaml(source, model_content)
     for root in roots:
         if "import" in root:
             del root["import"]
@@ -57,7 +57,7 @@ def parse_str(source: str, model_content: str) -> dict[str, dict]:
     return parsed_models
 
 
-def _load_yaml(source: str, content: str) -> dict:
+def _parse_yaml(source: str, content: str) -> dict:
     """Parse content as a YAML string and return the resulting structure.
 
     Arguments:
@@ -72,33 +72,37 @@ def _load_yaml(source: str, content: str) -> dict:
         If the model is not a dictionary, a ParserError is raised.
         If the model does not have (at least) a "name" field, a ParserError is raised.
     """
+    try:
+        models = list(yaml.load_all(content, Loader=yaml.SafeLoader))
+        _error_if_not_yaml(source, content, models)
+        _error_if_not_complete(source, content, models)
+        return models
+    except YAMLParserError as error:
+        raise ParserError(source, [f"invalid YAML {error.context} {error.problem}", content])
 
-    def is_import(model):
-        if not is_model(model):
-            print(model)
-        type, *_ = model.keys()
-        return type == "import"
 
+def _error_if_not_yaml(source, content, models):
+    """Raise a ParserError if the model is not a YAML model we can parse."""
     def is_model(model):
         return isinstance(model, dict)
+
+    if not all(map(is_model, models)):
+        raise ParserError(source, ["provided content was not YAML", content])
+
+
+def _error_if_not_complete(source, content, models):
+    """Raise a ParserError if the model is incomplete."""
+    def is_import(model):
+        type, *_ = model.keys()
+        return type == "import"
 
     def is_complete_model(model):
         type, *_ = model.keys()
         return model.get(type) and model.get(type).get("name")
 
-    try:
-        models = list(yaml.load_all(content, Loader=yaml.SafeLoader))
-
-        if not all(map(is_model, models)):
-            raise ParserError(source, ["provided content was not YAML", content])
-
-        models_no_imports = list(filter(lambda m: not is_import(m), models))
-        if not all(map(is_complete_model, models_no_imports)):
-            raise ParserError(source, [f"incomplete model:\n{content}\n"])
-
-        return models
-    except YAMLParserError as error:
-        raise ParserError(source, [f"invalid YAML {error.context} {error.problem}", content])
+    models_no_imports = list(filter(lambda m: not is_import(m), models))
+    if not all(map(is_complete_model, models_no_imports)):
+        raise ParserError(source, [f"incomplete model:\n{content}\n"])
 
 
 def _read_file_content(arch_file: str) -> str:
@@ -126,7 +130,7 @@ def _get_files_to_process(arch_file_path: str) -> list[str]:
     """
     ret_val = [arch_file_path]
     content = _read_file_content(arch_file_path)
-    roots = _load_yaml(arch_file_path, content)
+    roots = _parse_yaml(arch_file_path, content)
     for root in roots:
         if "import" in root.keys():
             for imp in root["import"]:
