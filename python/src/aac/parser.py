@@ -15,7 +15,7 @@ from yaml.parser import ParserError as YAMLParserError
 def parse_file(arch_file: str) -> dict[str, dict]:
     """Parse an Architecture-as-Code YAML file.
 
-    Arguments:
+    Args:
         arch_file (str): The Architecture-as-Code YAML file to be parsed.
 
     Returns:
@@ -35,7 +35,7 @@ def parse_file(arch_file: str) -> dict[str, dict]:
 def parse_str(source: str, model_content: str) -> dict[str, dict]:
     """Parse a string containing one or more YAML model definitions.
 
-    Arguments:
+    Args:
         source:  The file the content came from (to help with better logging)
         model_content:  The YAML to parse
 
@@ -59,7 +59,7 @@ def parse_str(source: str, model_content: str) -> dict[str, dict]:
 def _parse_yaml(source: str, content: str) -> dict:
     """Parse content as a YAML string and return the resulting structure.
 
-    Arguments:
+    Args:
         source (str): The source of the YAML content. Used to provide better error messages.
         content (str): The YAML content to be parsed.
 
@@ -113,7 +113,7 @@ def _read_file_content(arch_file: str) -> str:
     """
     Read file content method extracts text content from the specified file.
 
-    Arguments:
+    Args:
         arch_file: The file to read.
 
     Returns:
