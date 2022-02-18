@@ -1,8 +1,10 @@
 from tempfile import TemporaryDirectory
 from unittest import TestCase
 
-from aac import parser
 from aac.util import new_working_dir
+from tests.util import temporary_test_file
+
+from aac import parser
 
 
 class TestArchParser(TestCase):
@@ -16,15 +18,14 @@ class TestArchParser(TestCase):
         self.assertIsNotNone(model.get(name).get(type))
         self.assertEqual(name, model.get(name).get(type).get("name"))
 
-    def check_parser_errors(self, model, error_message):
-        source = "parser-test"
+    def check_parser_errors(self, filespec: str, *error_messages: list[str]):
         with self.assertRaises(parser.ParserError) as cm:
-            parser.parse_str(source, model)
+            parser.parse_file(filespec)
 
+        # Assert that each error message is contained in the returned error message string.
         errors = "\n".join(cm.exception.errors)
-        self.assertIn(error_message, errors)
-        self.assertIn(model, errors)
-        self.assertEqual(cm.exception.source, source)
+        list(map(lambda e: self.assertIn(e, errors), error_messages))
+        self.assertEqual(cm.exception.source, filespec)
 
     def test_can_parse_architecture_model_string(self):
         model = parser.parse_str("parser-test", TEST_IMPORTED_MODEL_FILE_CONTENTS)
@@ -49,13 +50,19 @@ class TestArchParser(TestCase):
             self.check_model_name(model, "EchoService", "model")
 
     def test_errors_when_parsing_invalid_yaml(self):
-        self.check_parser_errors("""model: ][""", "invalid YAML")
+        content = """model: ]["""
+        with temporary_test_file(content) as test_yaml:
+            self.check_parser_errors(test_yaml.name, "invalid YAML", content)
 
     def test_errors_when_parsing_incomplete_model(self):
-        self.check_parser_errors("model:", "incomplete model")
+        content = "model:"
+        with temporary_test_file(content) as test_yaml:
+            self.check_parser_errors(test_yaml.name, "incomplete model", content)
 
     def test_errors_when_parsing_non_yaml(self):
-        self.check_parser_errors("not yaml", "not YAML")
+        content = "not yaml"
+        with temporary_test_file(content) as test_yaml:
+            self.check_parser_errors(test_yaml.name, "not YAML", content)
 
 
 TEST_IMPORTED_MODEL_FILE_CONTENTS = """

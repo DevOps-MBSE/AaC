@@ -109,7 +109,7 @@ def _get_files_to_process(arch_file_path: str) -> list[str]:
     content = _read_file_content(arch_file_path)
     roots = _load_yaml(arch_file_path, content)
     for root in roots:
-        if root and "import" in root.keys():
+        if root and isinstance(root, dict) and "import" in root.keys():
             for imp in root["import"]:
                 # parse the imported files
                 parse_path = ""
