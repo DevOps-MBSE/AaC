@@ -7,13 +7,10 @@ from typing import Callable
 
 from pluggy import PluginManager
 
-from aac import parser, plugins, __version__
+from aac import __version__, parser, plugins
 from aac.AacCommand import AacCommand, AacCommandArgument
 from aac.lang.server import start_lsp
-from aac.plugins.plugin_execution import (
-    PluginExecutionResult,
-    plugin_result,
-)
+from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 from aac.spec.core import get_aac_spec_as_yaml
 from aac.validator import validation
 
@@ -51,6 +48,7 @@ def run_cli():
 VERSION_COMMAND_NAME = "version"
 VALIDATE_COMMAND_NAME = "validate"
 CORE_SPEC_COMMAND_NAME = "aac-core-spec"
+START_LSP_COMMAND_NAME = "start-lsp"
 
 
 def _version_cmd() -> PluginExecutionResult:
@@ -109,7 +107,7 @@ def _setup_arg_parser(
             _core_spec_cmd,
         ),
         AacCommand(
-            "start-lsp",
+            START_LSP_COMMAND_NAME,
             "Start the AaC Language Server Protocol (LSP) server",
             start_lsp,
             [
@@ -121,6 +119,11 @@ def _setup_arg_parser(
                     "--port",
                     "The port on which the server should listen for LSP requests.",
                 ),
+                AacCommandArgument(
+                    "--dev",
+                    "Start the server in development mode.",
+                    action="store_true",
+                )
             ],
         ),
     ]
@@ -132,8 +135,16 @@ def _setup_arg_parser(
         command_subparser = command_parser.add_parser(command.name, help=command.description)
 
         for argument in command.arguments:
-            command_subparser.add_argument(
-                argument.name, help=argument.description, nargs=argument.number_of_arguments, choices=argument.choices
-            )
+            command_subparser.add_argument(argument.name, help=argument.description, **_get_arguments(argument))
 
     return arg_parser, aac_and_plugin_commands
+
+
+def _get_arguments(argument):
+    arguments = {}
+    if argument.action:
+        arguments = arguments | {"action": argument.action}
+    else:
+        arguments = arguments | {"nargs": argument.number_of_arguments, "choices": argument.choices}
+
+    return arguments

@@ -27,17 +27,22 @@ logger = logging.getLogger(__name__)
 server = LanguageServer()
 
 
-def start_lsp(host: str = None, port: int = None):
+def start_lsp(host: str = None, port: int = None, dev: bool = False):
     """Start the LSP server.
 
     Arguments:
         host (str): The host on which to listen for LSP requests.
         port (int): The port on which to listen for LSP requests.
+        dev (bool): Whether to start the development (TCP) server.
     """
 
     def start(host, port):
-        logger.info(f"Starting server at {host}:{port}")
-        server.start_ws(host, port)
+        if dev:
+            logger.info(f"Starting the development server at {host}:{port}")
+            server.start_ws(host, port)
+        else:
+            logger.info("Starting the production server")
+            server.start_io()
 
     connection_details = host or default_host, port or default_port
     with plugin_result("lsp", start, *connection_details) as result:
