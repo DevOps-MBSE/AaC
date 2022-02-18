@@ -39,7 +39,7 @@ def start_lsp(host: str = None, port: int = None, dev: bool = False):
     def start(host, port):
         if dev:
             logger.info(f"Starting the development server at {host}:{port}")
-            server.start_ws(host, port)
+            server.start_tcp(host, port)
         else:
             logger.info("Starting the production server")
             server.start_io()
