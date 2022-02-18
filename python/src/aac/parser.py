@@ -86,8 +86,8 @@ def _error_if_not_yaml(source, content, models):
         """Return True if the model is further parseable."""
         return isinstance(model, dict)
 
-    # Raise an error if any of the loaded YAML models are not actual models - i.e. valid YAML but not a model dictionary.
-    if not all(map(is_model, models)):
+    # Iterate over each model and test if it is considered a valid model.
+    if False in map(is_model, models):
         raise ParserError(source, ["provided content was not YAML", content])
 
 
