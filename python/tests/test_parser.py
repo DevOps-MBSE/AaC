@@ -50,7 +50,7 @@ class TestArchParser(TestCase):
             self.check_model_name(model, "EchoService", "model")
 
     def test_errors_when_parsing_invalid_yaml(self):
-        content = """model: ]["""
+        content = "model: ]["
         with temporary_test_file(content) as test_yaml:
             self.check_parser_errors(test_yaml.name, "invalid YAML", content)
 
