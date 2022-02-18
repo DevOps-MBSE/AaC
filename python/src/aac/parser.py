@@ -84,8 +84,10 @@ def _parse_yaml(source: str, content: str) -> dict:
 def _error_if_not_yaml(source, content, models):
     """Raise a ParserError if the model is not a YAML model we can parse."""
     def is_model(model):
+        """Return True if the model is further parseable."""
         return isinstance(model, dict)
 
+    # Raise an error if any of the loaded YAML models are not actual models - i.e. valid YAML but not a model dictionary.
     if not all(map(is_model, models)):
         raise ParserError(source, ["provided content was not YAML", content])
 
@@ -93,13 +95,16 @@ def _error_if_not_yaml(source, content, models):
 def _error_if_not_complete(source, content, models):
     """Raise a ParserError if the model is incomplete."""
     def is_import(model):
+        """Return True if the model is an import declaration."""
         type, *_ = model.keys()
         return type == "import"
 
     def is_complete_model(model):
+        """Return True if the model has a name property; False, otherwise."""
         type, *_ = model.keys()
         return model.get(type) and model.get(type).get("name")
 
+    # Raise an error if any of the loaded YAML models are incomplete.
     models_no_imports = list(filter(lambda m: not is_import(m), models))
     if not all(map(is_complete_model, models_no_imports)):
         raise ParserError(source, [f"incomplete model:\n{content}\n"])
