@@ -50,14 +50,8 @@ def parse_str(source: str, model_content: str) -> dict[str, dict]:
         if "import" in root:
             del root["import"]
 
-        if not isinstance(root, dict):
-            raise ParserError(source, ["provided content was not YAML", model_content])
-
         root_name, *_ = root.keys()
         root_item = root.get(root_name)
-
-        if not root_item:
-            raise ParserError(source, ["incomplete model:", model_content, ""])
 
         parsed_models = parsed_models | {root_item.get("name"): root}
     return parsed_models
@@ -75,11 +69,36 @@ def _load_yaml(source: str, content: str) -> dict:
 
     Raises:
         If the YAML is invalid, a ParserError is raised.
+        If the model is not a dictionary, a ParserError is raised.
+        If the model does not have (at least) a "name" field, a ParserError is raised.
     """
+
+    def is_import(model):
+        if not is_model(model):
+            print(model)
+        type, *_ = model.keys()
+        return type == "import"
+
+    def is_model(model):
+        return isinstance(model, dict)
+
+    def is_complete_model(model):
+        type, *_ = model.keys()
+        return model.get(type) and model.get(type).get("name")
+
     try:
-        return list(yaml.load_all(content, Loader=yaml.SafeLoader))
+        models = list(yaml.load_all(content, Loader=yaml.SafeLoader))
+
+        if not all(map(is_model, models)):
+            raise ParserError(source, ["provided content was not YAML", content])
+
+        models_no_imports = list(filter(lambda m: not is_import(m), models))
+        if not all(map(is_complete_model, models_no_imports)):
+            raise ParserError(source, [f"incomplete model:\n{content}\n"])
+
+        return models
     except YAMLParserError as error:
-        raise ParserError(source, [f"invalid YAML {error.context}", error.problem, content])
+        raise ParserError(source, [f"invalid YAML {error.context} {error.problem}", content])
 
 
 def _read_file_content(arch_file: str) -> str:
@@ -109,7 +128,7 @@ def _get_files_to_process(arch_file_path: str) -> list[str]:
     content = _read_file_content(arch_file_path)
     roots = _load_yaml(arch_file_path, content)
     for root in roots:
-        if root and isinstance(root, dict) and "import" in root.keys():
+        if "import" in root.keys():
             for imp in root["import"]:
                 # parse the imported files
                 parse_path = ""
