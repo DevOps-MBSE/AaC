@@ -1,5 +1,6 @@
 import * as fs from "fs";
-import { ExtensionContext, Hover, HoverProvider, languages, ProviderResult, window, workspace } from "vscode";
+import * as net from "net";
+import { ExtensionContext, ExtensionMode, Hover, languages, ProviderResult, window, workspace } from "vscode";
 import { LanguageClient, LanguageClientOptions, ServerOptions, Trace } from "vscode-languageclient/node";
 import { execShell } from "./AacTaskProvider";
 import { ensureTrue, getConfigurationItem } from "./helpers";
@@ -93,12 +94,21 @@ export class AacLanguageServerClient {
 
     private async startLspClient(context: ExtensionContext, aacPath: string, host: string, port: number): Promise<void> {
         if (this.aacLspClient) { return; }
-        this.aacLspClient = new LanguageClient(
-            "aac",
-            "AaC Language Client",
-            this.getServerOptions(aacPath, "start-lsp", "--host", host, "--port", `${port}`),
-            this.getClientOptions(),
-        );
+        if (context.extensionMode == ExtensionMode.Development) {
+            this.aacLspClient = new LanguageClient(
+                "aac",
+                "AaC Language Client",
+                this.getDevServerOptions(host, port),
+                this.getClientOptions(),
+            );
+        } else {
+            this.aacLspClient = new LanguageClient(
+                "aac",
+                "AaC Language Client",
+                this.getProdServerOptions(aacPath, "start-lsp"),
+                this.getClientOptions(),
+            );
+        }
         this.aacLspClient.trace = Trace.Verbose;
         context.subscriptions.push(this.aacLspClient.start());
     }
@@ -119,10 +129,21 @@ export class AacLanguageServerClient {
         context.subscriptions.push(provider);
     }
 
-    private getServerOptions(command: string, ...args: any[]): ServerOptions {
+    private getProdServerOptions(command: string, ...args: string[]): ServerOptions {
         return {
             args,
             command,
+        };
+    }
+
+    private getDevServerOptions(host: string, port: number): ServerOptions {
+        return () => {
+            return new Promise(resolve => {
+                const clientSocket = new net.Socket();
+                clientSocket.connect(port, host, () => {
+                    resolve({ reader: clientSocket, writer: clientSocket });
+                });
+            });
         };
     }
 
