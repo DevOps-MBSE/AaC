@@ -5,8 +5,8 @@ import { execShell } from "./AacTaskProvider";
 import { ensureTrue, getConfigurationItem } from "./helpers";
 
 const MIN_REQUIRED_PYTHON_VERSION = "3.9";
-const DEFAULT_LSP_SERVER_HOST = "127.0.0.1";
-const DEFAULT_LSP_SERVER_PORT = 8080;
+const DEFAULT_LSP_SERVER_HOST = getConfigurationItem("debugHost");
+const DEFAULT_LSP_SERVER_PORT = getConfigurationItem("debugPort");
 
 export class AacLanguageServerClient {
     private static instance: AacLanguageServerClient;
