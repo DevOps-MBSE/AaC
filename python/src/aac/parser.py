@@ -50,10 +50,9 @@ def parse_str(source: str, model_content: str) -> dict[str, dict]:
         if "import" in root:
             del root["import"]
 
-        root_name, *_ = root.keys()
-        root_item = root.get(root_name)
-
-        parsed_models = parsed_models | {root_item.get("name"): root}
+        root_type, *_ = root.keys()
+        root_name = root.get(root_type).get("name")
+        parsed_models = parsed_models | {root_name: root}
     return parsed_models
 
 
