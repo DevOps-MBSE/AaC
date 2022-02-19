@@ -7,6 +7,17 @@ permalink: docs/dev_guide
 ---
 
 # Getting started
+## VSCode Workspaces
+Because this repository houses both a Python and TypeScript project, we're using [VSCode Workspaces](https://code.visualstudio.com/docs/editor/workspaces) to separate and present two different projects and experiences. When you first open the project in VSCode, you will see the entirety of it, however, if you open say the python workspace then the VSCode instance will reload and now the visible files, IDE configuration, and the configured tasks will now pertain only to the python package. The same is true for the vscode_extension workspace and its TypeScript configuration.
+
+You can open a workspace in VSCode by:
+1. Hitting the `f1` key
+2. When prompted, type `Open Workspace From File`
+3. When presented with a filepath, enter:
+    - /workspace/AaC/.vscode/python.code-workspace
+    - /workspace/AaC/.vscode/vscode_extension.code-workspace
+4. Press the `Ok` button and watch the IDE switch workspaces.
+---
 
 ## Gitpod Environment
 This project prioritizes supporting accessible, reproduceable, and easy to use development environments which is why we support and recommend users use the already-curated [Gitpod](https://www.gitpod.io/) Architecture-as-Code development environment. In fact, you can open a Gitpod instance right now by clicking this link: https://Gitpod.io/#https://github.com/jondavid-black/AaC. The Gitpod environment handles all the setup and configuration necessary to begin developing AaC. You can immediately open a vscode workspace file and begin debugging the Python and Typescript applications.
@@ -24,7 +35,10 @@ There are some developmental and system requirements for developing with AaC. Th
     * libnss3-dev
     * libgbm-dev
 
-### Installing AaC Python Package
+### Developing the AaC Python Package
+The AaC python package, its source code, and its configuration are all found in the `python/` directory.
+
+#### Installing AaC Python Package
 We expect python developers to use a virtual environment when developing the AaC package, and so the project is configured only for use with virtual environments.
 
 Create a new environment:
@@ -77,26 +91,26 @@ To install all dependencies (runtime, dev, and test), run this:
 $ pip install -e .[all]
 ```
 
-### Running the AaC VSCode Extension
-The Typescript VSCode Extension can be run by
-
-## VSCode Workspaces
-Because this repository houses both a Python and TypeScript project, we're using [VSCode Workspaces](https://code.visualstudio.com/docs/editor/workspaces) to separate and present two different projects and experiences. When you first open the project in VSCode, you will see the entirety of it, however, if you open say the python workspace then the VSCode instance will reload and now the visible files, IDE configuration, and the configured tasks will now pertain only to the python package. The same is true for the vscode_extension workspace and its TypeScript configuration.
-
-You can open a workspace in VSCode by:
-1. Hitting the `f1` key
-2. When prompted, type `Open Workspace From File`
-3. When presented with a filepath, enter:
-    - /workspace/AaC/.vscode/python.code-workspace
-    - /workspace/AaC/.vscode/vscode_extension.code-workspace
-4. Press the `Ok` button and watch the IDE switch workspaces.
-
-## Testing
+#### Testing the Python Package
 To run tests, make sure you've set up your dependencies using `pip install -e .[test]` or `pip install -e .[all]`. Then, from the root of the python project, run the following shell command (from within your virtual environment).
 
 ```bash
 $ tox
 ```
 
-### VSCode Unit Test Support
+#### VSCode Unit Test Support for Python
 The python plugin for VSCode supports the `unittest` python library, and not the nose2 framework that we use. The impact is fairly minimal, but python unit tests using the nose2 parameterized tests will not run correctly from within the VSCode IDE since it fails to recognize the nose2 parameterized tests as parameterized tests causing them to fail.
+
+### Developing the AaC TypeScript VSCode Extension
+The TypeScript AaC VSCode Extension, its source code, and its configuration are all found in the `vscode_extension/` directory.
+
+#### Installing & Building the AaC VSCode Extension
+The Typescript VSCode Extension can be installed by running:
+```bash
+yarn compile
+```
+
+#### Running the AaC VSCode Extension
+Assuming that the Typescript VSCode Extension workspace is currently open and active, the VSCode extension can be debugged in VSCode by opening an extension typescript file, hitting the `f5` key, and selecting "VSCode Extension Development" from the debug run configurations.
+
+Assuming all went well, VSCode will launch another instance of the IDE with the AaC Extension installed.
