@@ -5,6 +5,10 @@ import logging
 import pygls.lsp.methods as methods
 
 from pygls.lsp import (
+    CompletionItem,
+    CompletionList,
+    CompletionOptions,
+    CompletionParams,
     Hover,
     HoverParams,
     InitializeParams,
@@ -60,3 +64,16 @@ async def handle_initialize(ls: LanguageServer, params: InitializeParams):
 async def handle_hover(ls: LanguageServer, params: HoverParams):
     """Handle a hover request."""
     return Hover(contents="Hello from your friendly AaC LSP server!")
+
+
+@server.feature(methods.COMPLETION, CompletionOptions(triggerCharacters=[]))
+async def handle_completion(ls: LanguageServer, params: CompletionParams):
+    """Handle a completion request."""
+    return CompletionList(is_incomplete=False, items=[
+        CompletionItem(label="import", documentation="An import"),
+        CompletionItem(label="enum", documentation="An enum"),
+        CompletionItem(label="data", documentation="A data"),
+        CompletionItem(label="model", documentation="A model"),
+        CompletionItem(label="usecase", documentation="A usecase"),
+        CompletionItem(label="ext", documentation="An ext"),
+    ])
