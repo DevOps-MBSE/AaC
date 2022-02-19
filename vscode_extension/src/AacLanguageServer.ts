@@ -94,7 +94,7 @@ export class AacLanguageServerClient {
 
     private async startLspClient(context: ExtensionContext, aacPath: string, host: string, port: number): Promise<void> {
         if (this.aacLspClient) { return; }
-        if (context.extensionMode == ExtensionMode.Development) {
+        if (context.extensionMode === ExtensionMode.Development) {
             this.aacLspClient = new LanguageClient(
                 "aac",
                 "AaC Language Client",
