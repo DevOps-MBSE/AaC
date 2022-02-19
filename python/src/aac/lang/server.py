@@ -53,30 +53,10 @@ def start_lsp(host: str = None, port: int = None, dev: bool = False):
 @server.feature(methods.INITIALIZE)
 async def handle_initialize(ls: LanguageServer, params: InitializeParams):
     """Handle initialize request."""
-    logger.info("received initialize request")
-
-    ls.show_message("received initialize request")
-
     return InitializeResult(capabilities=ServerCapabilities(hover_provider=True))
-
-
-@server.feature(methods.INITIALIZED)
-async def handle_initialized(ls: LanguageServer, params):
-    """Handle initialized notification."""
-    logger.info("received initialized notification")
-
-    ls.show_message("received initialized notification")
 
 
 @server.feature(methods.HOVER)
 async def handle_hover(ls: LanguageServer, params: HoverParams):
     """Handle a hover request."""
-    logger.info(f"received hover request\nparams are: {params.text_document.uri}")
-
-    ls.show_message("received hover request")
-    ls.show_message(
-        f"file: {params.text_document.uri}; "
-        f"line: {params.position.line}; character: {params.position.character}"
-    )
-
     return Hover(contents="Hello from your friendly AaC LSP server!")
