@@ -18,6 +18,8 @@ from pygls.lsp import (
 from pygls.server import LanguageServer
 
 from aac.plugins.plugin_execution import plugin_result
+from aac.spec.core import get_aac_spec
+from aac.util import search
 
 
 default_host = "127.0.0.1"
@@ -66,14 +68,14 @@ async def handle_hover(ls: LanguageServer, params: HoverParams):
     return Hover(contents="Hello from your friendly AaC LSP server!")
 
 
-@server.feature(methods.COMPLETION, CompletionOptions(triggerCharacters=[]))
+@server.feature(methods.COMPLETION, CompletionOptions(trigger_characters=[], all_commit_characters=[":"]))
 async def handle_completion(ls: LanguageServer, params: CompletionParams):
     """Handle a completion request."""
+    data, _ = get_aac_spec()
+    fields = search(data, ["root", "data", "fields"])
     return CompletionList(is_incomplete=False, items=[
-        CompletionItem(label="import", documentation="An import"),
-        CompletionItem(label="enum", documentation="An enum"),
-        CompletionItem(label="data", documentation="A data"),
-        CompletionItem(label="model", documentation="A model"),
-        CompletionItem(label="usecase", documentation="A usecase"),
-        CompletionItem(label="ext", documentation="An ext"),
+        CompletionItem(
+            label=f.get("name"),
+            documentation=f.get("description"),
+        ) for f in fields
     ])
