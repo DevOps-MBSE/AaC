@@ -10,7 +10,7 @@ defaults:
 jobs:
   build_deployment_artifacts:
     name: Build Artifacts
-    uses: Coffee2Bits/AaC/.github/workflows/python-build-artifacts.yml@6cd53c89ddf306c7050a6dab0b29fd40f682f564
+    uses: Coffee2Bits/AaC/.github/workflows/python-build-artifacts.yml@a6a2fa700f2b823035ecf3597ff744159e55d6f9
 
   deploy_artifacts:
     name: Deploy Artifacts
@@ -42,6 +42,7 @@ jobs:
         with:
           draft: true
           fail_on_unmatched_files: true
+          name: ${{needs.build_deployment_artifacts.outputs.aac_package_version}}
           files: |
             python/dist/*.whl
             
