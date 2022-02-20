@@ -10,7 +10,7 @@ defaults:
 jobs:
   build_deployment_artifacts:
     name: Build Artifacts
-    uses: Coffee2Bits/AaC/.github/workflows/python-build-artifacts.yml@1b262231779b9dc4c8cda1429846dba2da354274
+    uses: Coffee2Bits/AaC/.github/workflows/python-build-artifacts.yml@0c6546e03ff01802b005718d5c6ba5d610491e8b
 
   deploy_artifacts:
     name: Deploy Artifacts
