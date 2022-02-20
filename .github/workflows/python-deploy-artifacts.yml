@@ -44,19 +44,17 @@ jobs:
           path: version.txt
 
       - name: Set Version Value
-        run: |
-          export VERSION=$(cat version.txt)
-          echo "::set-env name=VERSION::$VERSION"
+        run: echo "package_version=$(cat version.txt)" >> $GITHUB_ENV
 
       - name: Verify Version Value
-        run: echo this is our new version \$VERSION\
+        run: echo this is our new version \${{ env.package_version }}\
 
       - name: Create Github Release
         uses: softprops/action-gh-release@v1
         with:
           draft: true
           fail_on_unmatched_files: true
-          name: ${{needs.build_deployment_artifacts.outputs.aac_package_version}}
+          name: ${{ env.package_version }}
           files: |
             python/dist/*.whl
 
