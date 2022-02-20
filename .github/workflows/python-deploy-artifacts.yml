@@ -1,4 +1,4 @@
-name: Deploy Python Artifacts
+name: Create Python Release
 
 on:
   workflow_dispatch:
@@ -10,7 +10,7 @@ defaults:
 jobs:
   build_deployment_artifacts:
     name: Build Artifacts
-    uses: jondavid-black/AaC/.github/workflows/python-build-artifacts.yml@485e5ced9de355ec7155cfaa791c1eee88f14c5d
+    uses: Coffee2Bits/AaC/.github/workflows/python-build-artifacts.yml@6cd53c89ddf306c7050a6dab0b29fd40f682f564
 
   deploy_artifacts:
     name: Deploy Artifacts
