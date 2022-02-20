@@ -27,10 +27,7 @@ from aac.util import search
 default_host = "127.0.0.1"
 default_port = 8080
 
-# We probably don't want to be doing this here...
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__name__)
-
+logger: Optional[logging.Logger] = None
 server: Optional[LanguageServer] = None
 
 
@@ -44,9 +41,12 @@ def start_lsp(host: str = None, port: int = None, dev: bool = False):
     """
 
     def start(host, port):
-        global server
+        global server, logger
+
         server = server or LanguageServer()
         setup_features(server)
+        _setup_logger(logging.DEBUG if dev else logging.INFO)
+
         if dev:
             logger.info(f"Starting the development server at {host}:{port}")
             server.start_tcp(host, port)
@@ -90,3 +90,14 @@ def setup_features(server: LanguageServer) -> None:
                 commit_characters=[":"],
             ) for f in fields
         ])
+
+
+def _setup_logger(log_level: int):
+    """Configure the logger.
+
+    Args:
+        log_level (int): The logging level to use for the logger.
+    """
+    global logger
+    logging.basicConfig(level=log_level)
+    logger = logging.getLogger(__name__)
