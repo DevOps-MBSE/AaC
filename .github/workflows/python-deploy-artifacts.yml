@@ -10,7 +10,7 @@ defaults:
 jobs:
   build_deployment_artifacts:
     name: Build Artifacts
-    uses: Coffee2Bits/AaC/.github/workflows/python-build-artifacts.yml@7a9f9a433d724c62f57792fa07470c278bc4aeb4
+    uses: Coffee2Bits/AaC/.github/workflows/python-build-artifacts.yml@8147363a018854e4245c447e4974ec2ecfe03a52
 
   deploy_artifacts:
     name: Deploy Artifacts
@@ -36,10 +36,10 @@ jobs:
 #         uses: pypa/gh-action-pypi-publish@master
 #         with:
 #           password: ${{ secrets.PYPI_API_TOKEN }}
-          
+
       - name: Verify Version Value
         run: echo this is our new version \${{needs.build_deployment_artifacts.outputs.aac_package_version}}\
-        
+
       - name: Create Github Release
         uses: softprops/action-gh-release@v1
         with:
@@ -48,7 +48,7 @@ jobs:
           name: ${{needs.build_deployment_artifacts.outputs.aac_package_version}}
           files: |
             python/dist/*.whl
-            
+
 
 
 
