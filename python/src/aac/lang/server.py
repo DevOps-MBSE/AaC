@@ -1,6 +1,7 @@
 """The Architecture-as-Code Language Server."""
 
 import logging
+from typing import Optional
 
 import pygls.lsp.methods as methods
 
@@ -30,7 +31,7 @@ default_port = 8080
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-server = LanguageServer()
+server: Optional[LanguageServer] = None
 
 
 def start_lsp(host: str = None, port: int = None, dev: bool = False):
@@ -43,6 +44,9 @@ def start_lsp(host: str = None, port: int = None, dev: bool = False):
     """
 
     def start(host, port):
+        global server
+        server = server or LanguageServer()
+        setup_features(server)
         if dev:
             logger.info(f"Starting the development server at {host}:{port}")
             server.start_tcp(host, port)
@@ -56,28 +60,33 @@ def start_lsp(host: str = None, port: int = None, dev: bool = False):
         return result
 
 
-@server.feature(methods.INITIALIZE)
-async def handle_initialize(ls: LanguageServer, params: InitializeParams):
-    """Handle initialize request."""
-    return InitializeResult(capabilities=ServerCapabilities(hover_provider=True))
+def setup_features(server: LanguageServer) -> None:
+    """Configure the server with the supported features.
 
+    Args:
+        server (LanguageServer): The language server for which to configure the available features.
+    """
 
-@server.feature(methods.HOVER)
-async def handle_hover(ls: LanguageServer, params: HoverParams):
-    """Handle a hover request."""
-    return Hover(contents="Hello from your friendly AaC LSP server!")
+    @server.feature(methods.INITIALIZE)
+    async def handle_initialize(ls: LanguageServer, params: InitializeParams):
+        """Handle initialize request."""
+        return InitializeResult(capabilities=ServerCapabilities(hover_provider=True))
 
+    @server.feature(methods.HOVER)
+    async def handle_hover(ls: LanguageServer, params: HoverParams):
+        """Handle a hover request."""
+        return Hover(contents="Hello from your friendly AaC LSP server!")
 
-@server.feature(methods.COMPLETION, CompletionOptions(all_commit_characters=[":"]))
-async def handle_completion(ls: LanguageServer, params: CompletionParams):
-    """Handle a completion request."""
-    data, _ = get_aac_spec()
-    fields = search(data, ["root", "data", "fields"])
-    return CompletionList(is_incomplete=False, items=[
-        CompletionItem(
-            label=f.get("name"),
-            kind=CompletionItemKind.Struct,
-            documentation=f.get("description"),
-            commit_characters=[":"],
-        ) for f in fields
-    ])
+    @server.feature(methods.COMPLETION, CompletionOptions(all_commit_characters=[":"]))
+    async def handle_completion(ls: LanguageServer, params: CompletionParams):
+        """Handle a completion request."""
+        data, _ = get_aac_spec()
+        fields = search(data, ["root", "data", "fields"])
+        return CompletionList(is_incomplete=False, items=[
+            CompletionItem(
+                label=f.get("name"),
+                kind=CompletionItemKind.Struct,
+                documentation=f.get("description"),
+                commit_characters=[":"],
+            ) for f in fields
+        ])
