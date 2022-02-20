@@ -54,7 +54,7 @@ jobs:
         with:
           draft: true
           fail_on_unmatched_files: true
-          name: ${{ env.package_version }}
+          name: "v${{ env.package_version }}"
           files: |
             python/dist/*.whl
 
