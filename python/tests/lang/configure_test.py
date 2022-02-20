@@ -14,6 +14,7 @@ default_timeout = 3
 
 class LspTestClient:
     def __init__(self):
+        """Create an LSP test client."""
         client_server_reader, client_server_writer = os.pipe()
         server_client_reader, server_client_writer = os.pipe()
 
@@ -29,7 +30,6 @@ class LspTestClient:
         self.client = LanguageServer(asyncio.new_event_loop())
         self.client_thread = Thread(target=self.client.start_io, args=(os.fdopen(reader, "rb"), os.fdopen(writer, "wb")))
         self.client_thread.daemon = True
-
 
     def start(self):
         self.server_thread.start()
