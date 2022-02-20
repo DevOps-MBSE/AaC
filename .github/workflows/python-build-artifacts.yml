@@ -67,4 +67,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: version_file
-          path: version.txt
+          path: python/version.txt
