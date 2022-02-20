@@ -71,19 +71,4 @@ class TestLspServer(TestCase):
         self.assertFalse(res.get("isIncomplete"))
 
 
-TEST_DOCUMENT = """
-data:
-  name: test data
-  fields:
-    - name: alpha
-      type: string
-    - name: beta
-      type: string
-    - name: gamma
-      type: string
-  required:
-    - alpha
-    - beta
-"""
-
 TEST_DOCUMENT_URI = uris.from_fs_path(__file__)
