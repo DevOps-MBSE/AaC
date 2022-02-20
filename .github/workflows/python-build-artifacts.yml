@@ -11,8 +11,6 @@ jobs:
   build_python_artifacts:
     name: Build Artifacts
     runs-on: ubuntu-latest
-    outputs:
-      aac_package_version: ${{ steps.get_package_version.outputs.package_version }}
 
     steps:
       - name: Checkout Repository
@@ -63,7 +61,10 @@ jobs:
           path: python/dist/
 
       - name: Get Package Version
-        id: get_package_version
-        run: |
-          echo "name=package_version::$(aac version | awk 'END{print}')"
-          echo "::set-output name=package_version::$(aac version | awk 'END{print}')"
+        run: echo "$(aac version | awk 'END{print}')" >> version.txt
+
+      - name: Upload Package Version
+        uses: actions/upload-artifact@v2
+        with:
+          name: version_file
+          path: version.txt
