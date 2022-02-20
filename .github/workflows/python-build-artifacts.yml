@@ -12,8 +12,8 @@ jobs:
     name: Build Artifacts
     runs-on: ubuntu-latest
     outputs:
-      aac_package_version: ${{ steps.package_version.outputs.package_version }}
-      
+      aac_package_version: ${{ steps.get_package_version.outputs.package_version }}
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -61,9 +61,9 @@ jobs:
         with:
           name: aac_wheel
           path: python/dist/
-          
+
       - name: Get Package Version
-        id: package_version
+        id: get_package_version
         run: |
           echo "name=package_version::$(aac version | awk 'END{print}')"
           echo "::set-output name=package_version::$(aac version | awk 'END{print}')"
