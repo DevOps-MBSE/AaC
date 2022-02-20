@@ -61,6 +61,7 @@ jobs:
       - name: Create Github Release
         uses: marvinpinto/action-automatic-releases@latest
         with:
+          draft: true
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: "v${{ env.package_version }}"
           prerelease: true
