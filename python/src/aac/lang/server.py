@@ -6,6 +6,7 @@ import pygls.lsp.methods as methods
 
 from pygls.lsp import (
     CompletionItem,
+    CompletionItemKind,
     CompletionList,
     CompletionOptions,
     CompletionParams,
@@ -28,7 +29,6 @@ default_port = 8080
 # We probably don't want to be doing this here...
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
-
 
 server = LanguageServer()
 
@@ -68,7 +68,7 @@ async def handle_hover(ls: LanguageServer, params: HoverParams):
     return Hover(contents="Hello from your friendly AaC LSP server!")
 
 
-@server.feature(methods.COMPLETION, CompletionOptions(trigger_characters=[], all_commit_characters=[":"]))
+@server.feature(methods.COMPLETION, CompletionOptions(all_commit_characters=[":"]))
 async def handle_completion(ls: LanguageServer, params: CompletionParams):
     """Handle a completion request."""
     data, _ = get_aac_spec()
@@ -76,6 +76,8 @@ async def handle_completion(ls: LanguageServer, params: CompletionParams):
     return CompletionList(is_incomplete=False, items=[
         CompletionItem(
             label=f.get("name"),
+            kind=CompletionItemKind.Struct,
             documentation=f.get("description"),
+            commit_characters=[":"],
         ) for f in fields
     ])
