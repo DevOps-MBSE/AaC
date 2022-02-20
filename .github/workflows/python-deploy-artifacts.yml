@@ -41,7 +41,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: version_file
-          path: version.txt
+          path: python/version.txt
 
       - name: Set Version Value
         run: echo "package_version=$(cat version.txt)" >> $GITHUB_ENV
