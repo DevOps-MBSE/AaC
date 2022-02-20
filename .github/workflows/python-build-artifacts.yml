@@ -64,4 +64,6 @@ jobs:
           
       - name: Get Package Version
         id: package_version
-        run: echo "::set-output name=package_version::$(aac version | awk 'END{print}')"
+        run: |
+          echo "name=package_version::$(aac version | awk 'END{print}')"
+          echo "::set-output name=package_version::$(aac version | awk 'END{print}')"
