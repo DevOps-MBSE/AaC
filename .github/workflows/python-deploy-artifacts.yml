@@ -49,15 +49,21 @@ jobs:
       - name: Verify Version Value
         run: echo this is our new version \${{ env.package_version }}\
 
+      # - name: Create Github Release
+      #   uses: softprops/action-gh-release@v1
+      #   with:
+      #     draft: true
+      #     fail_on_unmatched_files: true
+      #     name: "v${{ env.package_version }}"
+      #     files: |
+      #       python/dist/*.whl
+
       - name: Create Github Release
-        uses: softprops/action-gh-release@v1
+        uses: marvinpinto/action-automatic-releases@latest
         with:
-          draft: true
-          fail_on_unmatched_files: true
-          name: "v${{ env.package_version }}"
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "v${{ env.package_version }}"
+          prerelease: true
+          title: "Development Build"
           files: |
             python/dist/*.whl
-
-
-
-
