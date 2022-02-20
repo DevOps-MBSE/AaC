@@ -37,6 +37,9 @@ jobs:
 #         with:
 #           password: ${{ secrets.PYPI_API_TOKEN }}
           
+      - name: Verify Version Value
+        run: echo "this is our new version: ${{needs.build_deployment_artifacts.outputs.aac_package_version}}"
+        
       - name: Create Github Release
         uses: softprops/action-gh-release@v1
         with:
