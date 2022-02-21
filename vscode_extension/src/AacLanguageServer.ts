@@ -1,8 +1,8 @@
 import * as fs from "fs";
-import { ExtensionContext, Hover, languages, ProviderResult, window, workspace } from "vscode";
+import { ExtensionContext, window, workspace } from "vscode";
 import { LanguageClient, LanguageClientOptions, ServerOptions, Trace } from "vscode-languageclient/node";
 import { execShell } from "./AacTaskProvider";
-import { ensureTrue, getConfigurationItem } from "./helpers";
+import { ensureTrue, showMessageOnError, getConfigurationItem } from "./helpers";
 
 const MIN_REQUIRED_PYTHON_VERSION = "3.9";
 
@@ -65,17 +65,8 @@ export class AacLanguageServerClient {
 
     private ensureLspServerIsReady(context: ExtensionContext): void {
         const aacPath: string = this.getConfigurationItemFile("aacPath");
-        try {
-            this.startLspClient(context, aacPath);
-        } catch (onStartFailure) {
-            window.showInformationMessage(`Failure starting the server.\n${onStartFailure}`);
-        }
-
-        try {
-            this.aacLspClient.onReady();
-        } catch (onReadyFailure) {
-            window.showInformationMessage(`Failure waiting for the server to become ready.\n${onReadyFailure}`);
-        }
+        showMessageOnError(() => this.startLspClient(context, aacPath), 'Failed trying to start the server.');
+        showMessageOnError(() => this.aacLspClient.onReady(), 'Failed waiting for the server to become ready.');
     }
 
     private async startLspClient(context: ExtensionContext, aacPath: string): Promise<void> {

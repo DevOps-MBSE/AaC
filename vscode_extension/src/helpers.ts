@@ -8,6 +8,13 @@ export function ensure(messageIfTestFails: string, test: (...args: any[]) => boo
 
 export function ensureTrue(test: boolean, messageIfTestFails: string): void {
     ensure(messageIfTestFails, () => test);
+
+export function showMessageOnError(action: () => any, failureMessage: string): any {
+    try {
+        return action();
+    } catch (onFailure) {
+        throw new Error(`${failureMessage}\n${onFailure}`);
+    }
 }
 
 export function getConfigurationItem(name: string): any {
