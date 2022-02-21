@@ -44,19 +44,6 @@
                     "default": "",
                     "pattern": "(\\\\?([^\\/]*[\\/])*)([^\\/]+)$",
                     "description": "The filesystem path to the aac CLI tool."
-                },
-                "aac.debugHost": {
-                    "scope": "machine",
-                    "type": "string",
-                    "default": "127.0.0.1",
-                    "pattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$",
-                    "description": "The host to use when debugging the LSP client and or server."
-                },
-                "aac.debugPort": {
-                    "scope": "machine",
-                    "type": "number",
-                    "default": 5000,
-                    "description": "The port to use when debugging the LSP client and or server."
                 }
             }
         },
