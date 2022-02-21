@@ -2,7 +2,7 @@ from tempfile import TemporaryDirectory
 from unittest import TestCase
 
 from aac.util import new_working_dir
-from tests.util import temporary_test_file
+from tests.helpers.io import temporary_test_file
 
 from aac import parser
 
