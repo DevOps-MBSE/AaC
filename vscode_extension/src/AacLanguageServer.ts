@@ -76,12 +76,6 @@ export class AacLanguageServerClient {
         } catch (onReadyFailure) {
             window.showInformationMessage(`Failure waiting for the server to become ready.\n${onReadyFailure}`);
         }
-
-        try {
-            this.registerHoverProvider(context);
-        } catch (onRegisterHoverFailure) {
-            window.showInformationMessage(`Failure waiting for the server to become ready.\n${onRegisterHoverFailure}`);
-        }
     }
 
     private async startLspClient(context: ExtensionContext, aacPath: string): Promise<void> {
@@ -94,22 +88,6 @@ export class AacLanguageServerClient {
         );
         this.aacLspClient.trace = Trace.Verbose;
         context.subscriptions.push(this.aacLspClient.start());
-    }
-
-    private async registerHoverProvider(context: ExtensionContext): Promise<void> {
-        const client = this.aacLspClient;
-        const provider = languages.registerHoverProvider({ scheme: "file", language: "aac", pattern: "**/*.yaml" }, {
-            provideHover(document, position, token): ProviderResult<Hover> {
-                window.showInformationMessage(
-                    `File: ${document.uri.path}; Line: ${position.line}; Character: ${position.character}`
-                );
-                return client.sendRequest<Hover>("textDocument/hover", {
-                    textDocument: document,
-                    position: position,
-                }, token);
-            }
-        });
-        context.subscriptions.push(provider);
     }
 
     private getProdServerOptions(command: string, ...args: string[]): ServerOptions {
