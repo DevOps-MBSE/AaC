@@ -110,21 +110,7 @@ def _setup_arg_parser(
             START_LSP_COMMAND_NAME,
             "Start the AaC Language Server Protocol (LSP) server",
             start_lsp,
-            [
-                AacCommandArgument(
-                    "--host",
-                    "The host on which the server should listen for LSP requests.",
-                ),
-                AacCommandArgument(
-                    "--port",
-                    "The port on which the server should listen for LSP requests.",
-                ),
-                AacCommandArgument(
-                    "--dev",
-                    "Start the server in development mode.",
-                    action="store_true",
-                )
-            ],
+            [AacCommandArgument("--dev", "Start the server in development mode.", action="store_true")],
         ),
     ]
 

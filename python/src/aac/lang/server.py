@@ -24,38 +24,27 @@ from aac.spec.core import get_aac_spec
 from aac.util import search
 
 
-default_host = "127.0.0.1"
-default_port = 8080
-
 logger: Optional[logging.Logger] = None
 server: Optional[LanguageServer] = None
 
 
-def start_lsp(host: str = None, port: int = None, dev: bool = False):
+def start_lsp(dev: bool = False):
     """Start the LSP server.
 
     Arguments:
-        host (str): The host on which to listen for LSP requests.
-        port (int): The port on which to listen for LSP requests.
-        dev (bool): Whether to start the development (TCP) server.
+        dev (bool): Whether to start the server and setup logging for development. (optional)
     """
 
-    def start(host, port):
+    def start():
         global server, logger
 
         server = server or LanguageServer()
         setup_features(server)
         _setup_logger(logging.DEBUG if dev else logging.INFO)
+        logger.info("Starting the AaC LSP server")
+        server.start_io()
 
-        if dev:
-            logger.info(f"Starting the development server at {host}:{port}")
-            server.start_tcp(host, port)
-        else:
-            logger.info("Starting the production server")
-            server.start_io()
-
-    connection_details = host or default_host, port or default_port
-    with plugin_result("lsp", start, *connection_details) as result:
+    with plugin_result("lsp", start) as result:
         result.messages = [m for m in result.messages if m]
         return result
 
