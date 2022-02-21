@@ -1,13 +1,14 @@
 import { workspace } from "vscode";
 
-export function ensure(messageIfTestFails: string, test: (...args: any[]) => boolean, ...args: any[]): void {
-    if (!test(...args)) {
+export function ensure(test: () => boolean, messageIfTestFails: string): void {
+    if (!test()) {
         throw new Error(messageIfTestFails);
     }
 }
 
 export function ensureTrue(test: boolean, messageIfTestFails: string): void {
-    ensure(messageIfTestFails, () => test);
+    ensure(() => test, messageIfTestFails);
+}
 
 export function showMessageOnError(action: () => any, failureMessage: string): any {
     try {
