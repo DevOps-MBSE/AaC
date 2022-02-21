@@ -4,6 +4,7 @@ import asyncio
 from threading import Thread
 
 from pygls.lsp import methods
+from pygls.lsp.types import Model
 from pygls.server import LanguageServer
 
 from aac.lang.server import setup_features
@@ -51,3 +52,6 @@ class LspTestClient:
         except AttributeError:
             pass
         self.client_thread.join()
+
+    def send_request(self, method: str, params: Model, timeout: int = default_timeout):
+        return self.client.lsp.send_request(method, params).result(timeout=timeout)
