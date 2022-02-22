@@ -19,7 +19,7 @@ from pygls.lsp import (
 )
 from pygls.server import LanguageServer
 
-from aac.plugins.plugin_execution import plugin_result
+from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 from aac.spec.core import get_aac_spec
 from aac.util import search
 
@@ -28,7 +28,7 @@ logger: Optional[logging.Logger] = None
 server: Optional[LanguageServer] = None
 
 
-def start_lsp(dev: bool = False):
+def start_lsp(dev: bool = False) -> PluginExecutionResult:
     """Start the LSP server.
 
     Args:
@@ -40,8 +40,10 @@ def start_lsp(dev: bool = False):
 
         server = server or LanguageServer()
         setup_features(server)
+
         _setup_logger(logging.DEBUG if dev else logging.INFO)
         logger.info("Starting the AaC LSP server")
+
         server.start_io()
 
     with plugin_result("lsp", start) as result:
@@ -71,17 +73,21 @@ def setup_features(server: LanguageServer) -> None:
         """Handle a completion request."""
         data, _ = get_aac_spec()
         fields = search(data, ["root", "data", "fields"])
-        return CompletionList(is_incomplete=False, items=[
-            CompletionItem(
-                label=f.get("name"),
-                kind=CompletionItemKind.Struct,
-                documentation=f.get("description"),
-                commit_characters=[":"],
-            ) for f in fields
-        ])
+        return CompletionList(
+            is_incomplete=False,
+            items=[
+                CompletionItem(
+                    label=f.get("name"),
+                    kind=CompletionItemKind.Struct,
+                    documentation=f.get("description"),
+                    commit_characters=[":"],
+                )
+                for f in fields
+            ],
+        )
 
 
-def _setup_logger(log_level: int):
+def _setup_logger(log_level: int) -> None:
     """Configure the logger.
 
     Args:
