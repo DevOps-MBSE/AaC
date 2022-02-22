@@ -31,7 +31,7 @@ server: Optional[LanguageServer] = None
 def start_lsp(dev: bool = False):
     """Start the LSP server.
 
-    Arguments:
+    Args:
         dev (bool): Whether to start the server and setup logging for development. (optional)
     """
 
