@@ -3,7 +3,7 @@ import { AacLanguageServerClient } from "./AacLanguageServer";
 import { AacTaskProvider } from "./AacTaskProvider";
 
 let aacTaskProvider: Disposable | undefined;
-let aacLspClient: AacLanguageServerClient = AacLanguageServerClient.makeLspClient();
+let aacLspClient: AacLanguageServerClient = AacLanguageServerClient.getLspClient();
 
 export function activate(context: ExtensionContext) {
     aacTaskProvider = tasks.registerTaskProvider(AacTaskProvider.aacType, new AacTaskProvider());

@@ -12,7 +12,7 @@ export class AacLanguageServerClient {
 
     private constructor() { }
 
-    public static makeLspClient(): AacLanguageServerClient {
+    public static getLspClient(): AacLanguageServerClient {
         if (!AacLanguageServerClient.instance) {
             AacLanguageServerClient.instance = new AacLanguageServerClient();
         }
