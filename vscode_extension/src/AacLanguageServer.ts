@@ -74,14 +74,14 @@ export class AacLanguageServerClient {
         this.aacLspClient = new LanguageClient(
             "aac",
             "AaC Language Client",
-            this.getProdServerOptions(aacPath, "start-lsp"),
+            this.getServerOptions(aacPath, "start-lsp"),
             this.getClientOptions(),
         );
         this.aacLspClient.trace = Trace.Verbose;
         context.subscriptions.push(this.aacLspClient.start());
     }
 
-    private getProdServerOptions(command: string, ...args: string[]): ServerOptions {
+    private getServerOptions(command: string, ...args: string[]): ServerOptions {
         return {
             args,
             command,
