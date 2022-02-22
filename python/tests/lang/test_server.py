@@ -15,7 +15,7 @@ from pygls.lsp.types import (
     Position,
 )
 
-from .configure_test import LspTestClient
+from tests.lang.LspTestClient import LspTestClient
 
 
 class TestLspServer(TestCase):
