@@ -222,13 +222,12 @@
             "request": "launch",
             "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
-                "start-lsp",
-                "--port",
-                "5000"
+                "start-lsp"
             ],
             "console": "integratedTerminal",
             "justMyCode": false
-        }],
-        "compounds": []
+        }
+    ],
+    "compounds": []
     }
 }
