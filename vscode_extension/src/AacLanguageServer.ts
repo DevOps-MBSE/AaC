@@ -1,8 +1,7 @@
 import * as fs from "fs";
 import { ExtensionContext, window, workspace } from "vscode";
 import { LanguageClient, LanguageClientOptions, ServerOptions, Trace } from "vscode-languageclient/node";
-import { execShell } from "./AacTaskProvider";
-import { ensureTrue, showMessageOnError, getConfigurationItem } from "./helpers";
+import { ensureTrue, execShell, getConfigurationItem, showMessageOnError } from "./helpers";
 
 const MIN_REQUIRED_PYTHON_VERSION = "3.9";
 
