@@ -2,6 +2,16 @@ import { exec, ExecOptions } from 'child_process';
 import { StringDecoder } from "string_decoder";
 import { workspace } from "vscode";
 
+export function ensure(test: () => boolean, failureMessage: string): void {
+    if (!test()) {
+        throw new Error(failureMessage);
+    }
+}
+
+export function ensureTrue(test: boolean, failureMessage: string): void {
+    ensure(() => test, failureMessage);
+}
+
 export function showMessageOnError(action: () => any, failureMessage: string): any {
     try {
         return action();
