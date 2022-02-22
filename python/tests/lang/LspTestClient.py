@@ -25,12 +25,6 @@ class LspTestClient:
         client (LanguageServer): The client used for communicating with the AaC LSP server.
     """
 
-    server: LanguageServer
-    client: LanguageServer
-
-    _server_thread: Thread
-    _client_thread: Thread
-
     def __init__(self):
         """Create an LSP test client."""
         client_server_reader, client_server_writer = os.pipe()
