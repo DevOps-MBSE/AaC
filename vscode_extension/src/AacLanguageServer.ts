@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import { ExtensionContext, window, workspace } from "vscode";
+import { ExtensionContext, workspace } from "vscode";
 import { LanguageClient, LanguageClientOptions, ServerOptions, Trace } from "vscode-languageclient/node";
 import { ensureTrue, execShell, getConfigurationItem, showMessageOnError } from "./helpers";
 
