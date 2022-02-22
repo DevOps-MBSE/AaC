@@ -217,7 +217,7 @@
             "justMyCode": false
         },
         {
-            "name": "Python: Start LSP Server (port 5000)",
+            "name": "Python: Start LSP Server",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/aac/__main__.py",
