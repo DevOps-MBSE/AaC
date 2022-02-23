@@ -175,7 +175,6 @@ def _get_all_errors_if_missing_required_properties(model: dict, required: list) 
 
 def _get_all_cross_reference_errors(kind: str, model: dict) -> iter:
     """Validate all cross references."""
-
     data = VALIDATOR_CONTEXT.get_all_data_definitions()
     enums = VALIDATOR_CONTEXT.get_all_enum_definitions()
     models = VALIDATOR_CONTEXT.get_all_model_definitions()
@@ -235,9 +234,7 @@ def _get_enum_paths(data: dict, enums: dict) -> dict:
     return dict(paths)
 
 
-def _get_errors_if_model_references_bad_enum_value(
-    models: list, enum: str, paths: list, valid: list
-) -> list:
+def _get_errors_if_model_references_bad_enum_value(models: list, enum: str, paths: list, valid: list) -> list:
     """Return error messages for any enum value that is referenced but not recognized."""
 
     def get_errors_for_bad_enum_in_model(model):
@@ -415,7 +412,7 @@ def _get_all_model_errors(model: dict) -> list:
     return []
 
 
-def _get_all_extension_errors(model: dict) -> list:  # noqa: C901
+def _get_all_extension_errors(model: dict) -> list:
     """Return all validation errors for the system MODEL."""
 
     def get_all_errors_if_data_and_enum_extension_combined(model):
