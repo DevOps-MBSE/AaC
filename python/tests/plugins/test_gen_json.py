@@ -16,6 +16,14 @@ class TestGenJson(TestCase):
             self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
             self.assertIn("Wrote JSON to", "\n".join(result.messages))
 
+    def test_gen_json_with_output_directory_that_does_not_exist(self):
+        with temporary_test_file(TEST_ARCH_YAML_STRING) as temp_arch_file:
+            temp_dir = os.path.join(os.path.dirname(temp_arch_file.name), "does", "not", "exist")
+            self.assertFalse(os.path.exists(temp_dir))
+            result = print_json([temp_arch_file.name], temp_dir)
+            self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
+            self.assertTrue(os.path.exists(temp_dir))
+
     def test_gen_json_output_to_cli(self):
         with temporary_test_file(TEST_ARCH_YAML_STRING) as temp_arch_file:
             result = print_json([temp_arch_file.name])

@@ -30,8 +30,10 @@ def print_json(architecture_files: list[str], output_directory: str = None) -> P
             formatted_json = json.dumps(result.model, indent=2)
 
             if output_directory:
-                output_file_path = os.path.join(output_directory, f"{file_name}.json")
+                if not os.path.exists(output_directory):
+                    os.makedirs(output_directory)
 
+                output_file_path = os.path.join(output_directory, f"{file_name}.json")
                 with open(output_file_path, "w") as out_file:
                     out_file.write(formatted_json)
 
