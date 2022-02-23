@@ -15,7 +15,7 @@ plugin_name = "gen-json"
 
 
 def print_json(architecture_files: list[str], output_directory: str = None) -> PluginExecutionResult:
-    """Prints the parsed_models from the parsed architecture_files values in JSON format.
+    """Print the parsed_models from the parsed architecture_files values in JSON format.
 
     Arguments:
         architecture_files (list[str]): filepath to the architecture file to convert to JSON.
@@ -36,17 +36,15 @@ def print_json(architecture_files: list[str], output_directory: str = None) -> P
                 output_file_path = os.path.join(output_directory, f"{file_name}.json")
                 with open(output_file_path, "w") as out_file:
                     out_file.write(formatted_json)
+                    return f"Wrote JSON to {output_file_path}."
 
-                return f"Wrote JSON to {output_file_path}."
-
-            else:
-                return f"File: {architecture_file_path}\n{formatted_json}\n"
+            return f"File: {architecture_file_path}\n{formatted_json}\n"
 
     status = PluginExecutionStatusCode.SUCCESS
     messages = []
     for arch_file in architecture_files:
         with plugin_result(plugin_name, to_json, arch_file, output_directory) as result:
-            messages = messages + result.messages
+            messages += result.messages
             if not result.is_success():
                 status = result.status_code
 
