@@ -4,7 +4,7 @@
 .settings/
 .dir-locals.el
 
-#Occasionally created gitpod .tmp files
+# Occasionally created gitpod .tmp files
 *.tmp
 
 # jekyll / GitHub Pages
@@ -17,3 +17,5 @@ _site
 Gemfile.lock
 node_modules
 
+# TypeScript server logs
+.log/
