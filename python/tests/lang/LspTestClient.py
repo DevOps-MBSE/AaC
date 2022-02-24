@@ -78,7 +78,7 @@ class LspTestClient:
             method (str): The LSP method to use for the request.
             params (Model): The parameters to send with the request. (optional)
             timeout (int): The timeout to use when waiting for a result. If not passed,
-                           default_timeout is used.
+                           DEFAULT_TIMEOUT_IN_SECONDS is used.
 
         Returns:
             The LSP response for the sent request.
