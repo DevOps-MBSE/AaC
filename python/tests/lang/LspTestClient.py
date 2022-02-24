@@ -12,7 +12,7 @@ from pygls.server import LanguageServer
 from aac.lang.server import setup_features
 
 
-default_timeout = 3
+DEFAULT_TIMEOUT_IN_SECONDS = 3
 
 
 class LspTestClient:
@@ -58,7 +58,7 @@ class LspTestClient:
 
     def stop(self):
         """Stop the test LSP server and client."""
-        shutdown_response = self.send_request(methods.SHUTDOWN).result(timeout=default_timeout)
+        shutdown_response = self.send_request(methods.SHUTDOWN).result(timeout=DEFAULT_TIMEOUT_IN_SECONDS)
         assert shutdown_response is None
 
         self.send_notification(methods.EXIT)
@@ -71,7 +71,7 @@ class LspTestClient:
             pass
         self._client_thread.join()
 
-    def send_request(self, method: str, params: Model = None, timeout: int = default_timeout):
+    def send_request(self, method: str, params: Model = None, timeout: int = DEFAULT_TIMEOUT_IN_SECONDS):
         """Send a request to the server.
 
         Args:

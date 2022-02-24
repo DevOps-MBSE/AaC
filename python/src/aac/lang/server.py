@@ -77,12 +77,12 @@ def setup_features(server: LanguageServer) -> None:
             is_incomplete=False,
             items=[
                 CompletionItem(
-                    label=f.get("name"),
+                    label=field.get("name"),
                     kind=CompletionItemKind.Struct,
-                    documentation=f.get("description"),
+                    documentation=field.get("description"),
                     commit_characters=[":"],
                 )
-                for f in fields
+                for field in fields
             ],
         )
 
