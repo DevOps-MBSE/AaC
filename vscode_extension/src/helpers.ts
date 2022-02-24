@@ -1,10 +1,10 @@
 import { exec, ExecOptions } from 'child_process';
 import { StringDecoder } from "string_decoder";
-import { workspace } from "vscode";
+import { window, workspace } from "vscode";
 
 export function assert(test: () => boolean, failureMessage: string): void {
     if (!test()) {
-        throw new Error(failureMessage);
+        window.showErrorMessage(failureMessage);
     }
 }
 
@@ -16,7 +16,7 @@ export function showMessageOnError(action: () => any, failureMessage: string): a
     try {
         return action();
     } catch (onFailure) {
-        throw new Error(`${failureMessage}\n${onFailure}`);
+        window.showErrorMessage(`${failureMessage}\n${onFailure}`);
     }
 }
 
