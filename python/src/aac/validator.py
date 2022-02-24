@@ -72,9 +72,7 @@ def _validate(model: dict) -> None:
 
     if not VALIDATOR_CONTEXT:
         aac_enum, aac_data = get_aac_spec()
-        VALIDATOR_CONTEXT = ValidatorContext(
-            aac_enum | aac_data, {}, plugins.get_plugin_model_definitions(), model
-        )
+        VALIDATOR_CONTEXT = ValidatorContext(aac_enum | aac_data, {}, plugins.get_plugin_model_definitions(), model)
 
     try:
         errors = list(flatten(map(_validate_model, model.values())))
@@ -166,11 +164,11 @@ def _get_all_errors_if_missing_required_properties(model: dict, required: list) 
         if key not in model.keys():
             return f"missing required field '{key}' in model '{model}'"
 
-        prop = model[key]
-        if isinstance(prop, list) and len(prop) == 0:
-            return f"empty list provided for required property '{key}' in model '{model}'"
+        prop = model.get(key)
+        if isinstance(prop, (list, str)) and len(prop) == 0:
+            return f"empty {type(prop).__name__} provided for required property '{key}' in model '{model}'"
 
-    return map(get_error_if_missing_required_property, required)
+    return list(map(get_error_if_missing_required_property, required))
 
 
 def _get_all_cross_reference_errors(kind: str, model: dict) -> iter:
@@ -421,10 +419,10 @@ def _get_all_extension_errors(model: dict) -> list:
         return []
 
     def can_apply_extension(extension):
-        """Checks that the extension is an extension and has a non-empty type."""
+        """Check that the extension is an extension and has a non-empty type."""
 
         def check_for_missing_field(model: dict, fields: list) -> str:
-            """Checks that the ext and type fields exist in the model and that type is not empty."""
+            """Check that the ext and type fields exist in the model and that type is not empty."""
             current_field = fields[0]
             if current_field not in model or model[current_field] == "":
                 return f"missing required field '{current_field}' in model '{model}'"
@@ -456,21 +454,17 @@ def _get_all_extension_errors(model: dict) -> list:
         if extension_errors:
             return extension_errors
 
-        ext = model["ext"]
-        kind, type, items = (
-            ("dataExt", dict, _load_unextended_aac_fields_for("DataExtension"))
+        ext = model.get("ext")
+        kind, items = (
+            ("dataExt", _load_unextended_aac_fields_for("DataExtension"))
             if _is_data_ext(ext)
-            else ("enumExt", dict, _load_unextended_aac_fields_for("EnumExtension"))
+            else ("enumExt", _load_unextended_aac_fields_for("EnumExtension"))
         )
         return _filter_none_values(
-            _get_all_errors_for(
-                model, kind="ext", fields=_load_unextended_aac_fields_for("extension")
-            ),
+            _get_all_errors_for(model, kind="ext", fields=_load_unextended_aac_fields_for("extension")),
             get_all_errors_if_data_and_enum_extension_combined(ext),
-            _get_all_non_root_element_errors(ext, kind, type, items),
-            _get_all_non_root_element_errors(
-                ext[kind], "add", list, _load_unextended_aac_fields_for("Field")
-            )
+            _get_all_non_root_element_errors(ext, kind, dict, items),
+            _get_all_non_root_element_errors(ext[kind], "add", list, _load_unextended_aac_fields_for("Field"))
             if _is_data_ext(ext)
             else [],
         )
