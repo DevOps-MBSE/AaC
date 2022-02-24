@@ -27,6 +27,7 @@ runtime_dependencies = [
     "iteration_utilities >= 0.11",
     "Jinja2 >= 3.0",
     "MarkupSafe >= 2.0",
+    "pygls >= 0.11",
 ]
 
 development_dependencies = [
@@ -55,7 +56,7 @@ test_dependencies = [
     "tox >= 3.24",
     "nose2 >= 0.10.0",
     "coverage >= 6.0",
-    "flake8 >= 3.9",
+    "flake8 >= 4.0",
     "flake8-docstrings >= 1.6.0",
     "flake8-fixme >= 1.1.1",
     "flake8-eradicate >= 1.2.0",

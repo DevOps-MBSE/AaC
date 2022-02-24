@@ -1,12 +1,12 @@
-import * as cp from 'child_process';
 import * as vscode from 'vscode';
 import { AacTaskGroup } from './AacTaskGroup';
+import { execShell } from './helpers';
 
 export class AacTaskProvider implements vscode.TaskProvider {
     static aacType: string = 'aac';
     private aacTaskPromise: vscode.ProviderResult<vscode.Task[]> | undefined = undefined;
 
-    constructor() {}
+    constructor() { }
 
     public provideTasks(): vscode.ProviderResult<vscode.Task[]> {
         if (!this.aacTaskPromise) {
@@ -23,17 +23,6 @@ export class AacTaskProvider implements vscode.TaskProvider {
         }
         return undefined;
     }
-}
-
-function execShell(command: string, options: cp.ExecOptions): Promise<{ stdout: string; stderr: string }> {
-    return new Promise<{ stdout: string; stderr: string }>((resolve, reject) => {
-        cp.exec(command, options, (error, stdout, stderr) => {
-            if (error) {
-                reject({ error, stdout, stderr });
-            }
-            resolve({ stdout, stderr });
-        });
-    });
 }
 
 let _channel: vscode.OutputChannel;

@@ -1,5 +1,5 @@
 """A simple data class to collect AaC command info from plugins."""
-from attr import attrib, attrs, validators, Factory
+from attr import Factory, attrib, attrs, validators
 
 
 @attrs
@@ -13,12 +13,14 @@ class AacCommandArgument:
                         about this argument when the help command is invoked.
         number_of_arguments: Number of entries that the argument can take. Maps to the argsparse module's nargs command.
         choices: The set of allowable values for the argument. Maps to the argparse module's choices argument.
+        action: An action to take with the argument. Maps to the argparse module's action argument.
     """
 
     name = attrib(validator=validators.instance_of(str))
     description = attrib(validator=validators.instance_of(str))
     number_of_arguments = attrib(default=None, validator=validators.instance_of((str, type(None))))
     choices = attrib(default=None, validator=validators.instance_of((list, type(None))))
+    action = attrib(default=None, validator=validators.instance_of((str, type(None))))
 
 
 @attrs

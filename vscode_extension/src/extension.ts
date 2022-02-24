@@ -1,14 +1,16 @@
-import * as vscode from 'vscode';
-import { AacTaskProvider } from './AacTaskProvider';
+import { Disposable, ExtensionContext, tasks } from "vscode";
+import { AacLanguageServerClient } from "./AacLanguageServer";
+import { AacTaskProvider } from "./AacTaskProvider";
 
-let aacTaskProvider: vscode.Disposable | undefined;
+let aacTaskProvider: Disposable | undefined;
+let aacLspClient: AacLanguageServerClient = AacLanguageServerClient.getLspClient();
 
-export function activate() {
-    aacTaskProvider = vscode.tasks.registerTaskProvider(AacTaskProvider.aacType, new AacTaskProvider());
+export function activate(context: ExtensionContext) {
+    aacTaskProvider = tasks.registerTaskProvider(AacTaskProvider.aacType, new AacTaskProvider());
+    aacLspClient.startLanguageServer(context);
 }
 
 export function deactivate(): void {
-    if (aacTaskProvider) {
-        aacTaskProvider.dispose();
-    }
+    aacTaskProvider?.dispose();
+    aacLspClient.shutdownServer();
 }
