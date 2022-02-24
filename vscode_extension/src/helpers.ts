@@ -24,6 +24,11 @@ export function getConfigurationItem(name: string): any {
     return workspace.getConfiguration().get(`aac.${name}`) ?? null;
 }
 
+export function getSemanticVersionNumber(str: string): string | undefined {
+    const versionRegex = /\d+\.\d+\.\d+/;
+    return str.match(versionRegex)?.pop();
+}
+
 /**
  * Execute a shell `command` on the underlying system.
  *

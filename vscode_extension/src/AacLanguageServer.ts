@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import { ExtensionContext, workspace } from "vscode";
 import { LanguageClient, LanguageClientOptions, ServerOptions, Trace } from "vscode-languageclient/node";
-import { assertTrue, execShell, getConfigurationItem, showMessageOnError } from "./helpers";
+import { assertTrue, execShell, getConfigurationItem, showMessageOnError, getSemanticVersionNumber } from "./helpers";
 
 const MIN_REQUIRED_PYTHON_VERSION = "3.9";
 
@@ -43,9 +43,12 @@ export class AacLanguageServerClient {
 
     private async assertCorrectPythonVersionIsInstalled(pythonPath: string): Promise<void> {
         const resolve = await execShell(`${pythonPath} --version`, {});
-        assertTrue(!resolve.stderr, `Could not get the Python version.\n${resolve.stderr}`);
 
-        const pythonVersion = resolve.stdout.match(/\d+\.\d+\.\d+/)?.pop() ?? "unknown";
+        // Python 2 apparently writes it's version to standard error...
+        const versionInStandardError = getSemanticVersionNumber(resolve.stderr);
+        assertTrue(!resolve.stderr || !!versionInStandardError, `Could not get the Python version.\n${resolve.stderr}`);
+
+        const pythonVersion = getSemanticVersionNumber(resolve.stdout) ?? versionInStandardError ?? "unknown";
         assertTrue(
             pythonVersion.startsWith(MIN_REQUIRED_PYTHON_VERSION),
             `The AaC tool requires Python ${MIN_REQUIRED_PYTHON_VERSION} or newer; current version is: ${pythonVersion}`,
