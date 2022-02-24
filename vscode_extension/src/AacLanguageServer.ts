@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import { ExtensionContext, workspace } from "vscode";
 import { LanguageClient, LanguageClientOptions, ServerOptions, Trace } from "vscode-languageclient/node";
-import { ensureTrue, execShell, getConfigurationItem, showMessageOnError } from "./helpers";
+import { assertTrue, execShell, getConfigurationItem, showMessageOnError } from "./helpers";
 
 const MIN_REQUIRED_PYTHON_VERSION = "3.9";
 
@@ -20,49 +20,49 @@ export class AacLanguageServerClient {
     }
 
     public startLanguageServer(context: ExtensionContext): void {
-        this.ensureAacToolIsAvailable();
-        this.ensureLspServerIsReady(context);
+        this.assertAacToolIsAvailable();
+        this.assertLspServerIsReady(context);
     }
 
     public shutdownServer(): void {
         this.aacLspClient.stop();
     }
 
-    private ensureAacToolIsAvailable(): void {
+    private assertAacToolIsAvailable(): void {
         const pythonPath = this.getConfigurationItemFile("pythonPath");
-        this.ensureCorrectPythonVersionIsInstalled(pythonPath);
-        this.ensureCorrectAacVersionIsInstalled(pythonPath);
+        this.assertCorrectPythonVersionIsInstalled(pythonPath);
+        this.assertCorrectAacVersionIsInstalled(pythonPath);
     }
 
     private getConfigurationItemFile(name: string): string {
         const item: string = getConfigurationItem(name);
-        ensureTrue(item.length > 0, `Cannot start Language Server; '${item}' is not configured!`);
-        ensureTrue(fs.existsSync(item), `Cannot use ${item} as it does not exist!`);
+        assertTrue(item.length > 0, `Cannot start Language Server; '${item}' is not configured!`);
+        assertTrue(fs.existsSync(item), `Cannot use ${item} as it does not exist!`);
         return item;
     }
 
-    private async ensureCorrectPythonVersionIsInstalled(pythonPath: string): Promise<void> {
+    private async assertCorrectPythonVersionIsInstalled(pythonPath: string): Promise<void> {
         const resolve = await execShell(`${pythonPath} --version`, {});
-        ensureTrue(!resolve.stderr, `Could not get the Python version.\n${resolve.stderr}`);
+        assertTrue(!resolve.stderr, `Could not get the Python version.\n${resolve.stderr}`);
 
         const pythonVersion = resolve.stdout.match(/\d+\.\d+\.\d+/)?.pop() ?? "unknown";
-        ensureTrue(
+        assertTrue(
             pythonVersion.startsWith(MIN_REQUIRED_PYTHON_VERSION),
             `The AaC tool requires Python ${MIN_REQUIRED_PYTHON_VERSION} or newer; current version is: ${pythonVersion}`,
         );
     }
 
-    private async ensureCorrectAacVersionIsInstalled(pythonPath: string): Promise<void> {
+    private async assertCorrectAacVersionIsInstalled(pythonPath: string): Promise<void> {
         const resolve = await execShell(`${pythonPath} -m pip freeze`);
-        ensureTrue(!resolve.stderr, `Could not get the installed AaC version.\n${resolve.stderr}`);
+        assertTrue(!resolve.stderr, `Could not get the installed AaC version.\n${resolve.stderr}`);
 
         const expectedAacVersion: string = getConfigurationItem("version") ?? "";
         const aacVersionPattern = new RegExp(`aac==${expectedAacVersion}|-e git.*egg=aac`, "ig");
         const actualAacVersion = resolve.stdout.match(aacVersionPattern)?.pop();
-        ensureTrue(!!actualAacVersion, `The installed aac version is ${actualAacVersion} which is unsupported.`);
+        assertTrue(!!actualAacVersion, `The installed aac version is ${actualAacVersion} which is unsupported.`);
     }
 
-    private ensureLspServerIsReady(context: ExtensionContext): void {
+    private assertLspServerIsReady(context: ExtensionContext): void {
         const aacPath: string = this.getConfigurationItemFile("aacPath");
         showMessageOnError(() => this.startLspClient(context, aacPath), 'Failed trying to start the server.');
         showMessageOnError(() => this.aacLspClient.onReady(), 'Failed waiting for the server to become ready.');
