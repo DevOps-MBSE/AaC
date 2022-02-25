@@ -76,8 +76,6 @@ def _validate(model: dict) -> None:
 
     try:
         errors = list(flatten(map(_validate_model, model.values())))
-    except Exception as exception:
-        raise exception
     finally:
         # Once we're done validating, wipe the context.
         VALIDATOR_CONTEXT = None
@@ -412,45 +410,8 @@ def _get_all_model_errors(model: dict) -> list:
 
 def _get_all_extension_errors(model: dict) -> list:
     """Return all validation errors for the system MODEL."""
-
-    def get_all_errors_if_data_and_enum_extension_combined(model):
-        if _is_data_ext(model) and _is_enum_ext(model):
-            return ["cannot combine enumExt and dataExt in the same extension"]
-        return []
-
-    def can_apply_extension(extension):
-        """Check that the extension is an extension and has a non-empty type."""
-
-        def check_for_missing_field(model: dict, fields: list) -> str:
-            """Check that the ext and type fields exist in the model and that type is not empty."""
-            current_field = fields[0]
-            if current_field not in model or model[current_field] == "":
-                return f"missing required field '{current_field}' in model '{model}'"
-            elif len(fields) != 1:
-                return check_for_missing_field(model[current_field], fields[1:])
-            else:
-                return None
-
-        missing_error = check_for_missing_field(model, ["ext", "type"])
-        if missing_error:
-            return [missing_error]
-        else:
-            return []
-
-    def is_valid_extension_type(extension):
-        extension_model = extension["ext"]
-
-        if not (extension_model.get("dataExt") or extension_model.get("enumExt")):
-            return [f"unrecognized extension type {extension}"]
-
-        return []
-
     if _is_ext(model):
-        extension_errors = (
-            get_all_errors_if_data_and_enum_extension_combined(model["ext"])
-            + can_apply_extension(model)
-            + is_valid_extension_type(model)
-        )
+        extension_errors = _is_valid_extension(model) + _is_valid_extension_type(model)
         if extension_errors:
             return extension_errors
 
@@ -462,13 +423,40 @@ def _get_all_extension_errors(model: dict) -> list:
         )
         return _filter_none_values(
             _get_all_errors_for(model, kind="ext", fields=_load_unextended_aac_fields_for("extension")),
-            get_all_errors_if_data_and_enum_extension_combined(ext),
             _get_all_non_root_element_errors(ext, kind, dict, items),
             _get_all_non_root_element_errors(ext[kind], "add", list, _load_unextended_aac_fields_for("Field"))
             if _is_data_ext(ext)
             else [],
         )
 
+    return []
+
+
+def _is_valid_extension(model):
+    """Check that the extension is an extension and has a non-empty type."""
+
+    def get_all_errors_if_data_and_enum_extension_combined(model):
+        if _is_data_ext(model) and _is_enum_ext(model):
+            return ["cannot combine enumExt and dataExt in the same extension"]
+        return []
+
+    def check_for_missing_field(model: dict, fields: list) -> str:
+        """Check that the ext and type fields exist in the model and that type is not empty."""
+        current_field, *remaining_fields = fields
+        if current_field not in model or model.get(current_field) == "":
+            return [f"missing required field '{current_field}' in model '{model}'"]
+        elif remaining_fields:
+            return check_for_missing_field(model.get(current_field), remaining_fields)
+        return []
+
+    return check_for_missing_field(model, ["ext", "type"]) + get_all_errors_if_data_and_enum_extension_combined(model.get("ext"))
+
+
+def _is_valid_extension_type(model):
+    """Check that the extension is either a data or enum extension."""
+    extension_model = model.get("ext")
+    if not (extension_model.get("dataExt") or extension_model.get("enumExt")):
+        return [f"unrecognized extension type {model}"]
     return []
 
 
@@ -526,7 +514,7 @@ class ValidatorContext:
     )
 
     def get_root_type_names(self) -> list[str]:
-        """Gets the list of root names as defined in the extended AaC model specification.
+        """Get the list of root names as defined in the extended AaC model specification.
 
         Returns:
             A list of strings, one entry for each root name in the AaC model specification.
