@@ -2,7 +2,7 @@ import { Disposable, ExtensionContext, tasks, commands, window } from "vscode";
 import { AacLanguageServerClient } from "./AacLanguageServer";
 import { AacTaskProvider } from "./AacTaskProvider";
 import { executeAacCommand } from "./aacExecutableWrapper";
-import { getOutputChannel } from "./outputChannel"
+import { getOutputChannel } from "./outputChannel";
 
 let aacTaskProvider: Disposable | undefined;
 let aacLspClient: AacLanguageServerClient = AacLanguageServerClient.getLspClient();

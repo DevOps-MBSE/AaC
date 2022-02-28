@@ -1,6 +1,6 @@
 import { window, OutputChannel } from "vscode";
 
-let _extension_output_channel: OutputChannel;
+let extension_output_channel: OutputChannel;
 
 /**
  * @returns vscode.OutputChannel for AaC extension output to the VSCode Output Panel.
@@ -17,8 +17,8 @@ let _extension_output_channel: OutputChannel;
  */
  export function getOutputChannel(): OutputChannel {
 
-    if (!_extension_output_channel) {
-        _extension_output_channel = window.createOutputChannel('Architecture-as-Code');
+    if (!extension_output_channel) {
+        extension_output_channel = window.createOutputChannel('Architecture-as-Code');
     }
-    return _extension_output_channel;
+    return extension_output_channel;
 }
