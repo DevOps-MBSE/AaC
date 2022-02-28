@@ -47,6 +47,13 @@
                 }
             }
         },
+        "commands": [
+            {
+              "command": "aac.execute",
+              "title": "Execute AaC Command",
+              "category": "AaC"
+            }
+        ],
         "languages": [
             {
                 "id": "aac",
