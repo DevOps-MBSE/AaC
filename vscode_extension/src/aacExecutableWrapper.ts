@@ -52,26 +52,13 @@ async function getCommandArgUserInput(commandArguments: CommandArgument[]) {
     }
 }
 
-/**
- * @returns Promise<string[]> containing the list of available AaC command names.
- *
- * @example
- * Sets the content of an output panel to `Hello!`:
- * ```ts
- *  let stringMessage = "Hello!"
- *  const outputChannel = getOutputChannel();
- *  outputChannel.appendLine(stringMessage);
- *  outputChannel.show(true);
- * ```
- * @see {@link https://code.visualstudio.com/api/references/vscode-api#OutputChannel | VSCode OutputChannel API documentation}
- */
 async function getAacCommandNames(): Promise<string[]> {
     const aacHelpOutput = await execAacShellCommand("-h");
     return parseTaskNamesFromHelpCommand(aacHelpOutput);
 }
 
 /**
- * Recursively populates the command arguments for the commanf name.
+ * @returns Promise<CommandArgument[]> Command arguments
  */
 async function getAacCommandArgs(aacCommandName: string): Promise<CommandArgument[]> {
     const aacHelpOutput = await execAacShellCommand(`${aacCommandName} -h`);
@@ -95,8 +82,6 @@ async function execAacShellCommand(command: string, commandArgs: CommandArgument
         outputChannel.show(true);
         throw error;
     }
-
-    return result;
 }
 
 function parseTaskNamesFromHelpCommand(aacHelpOutput: string): string[] {
