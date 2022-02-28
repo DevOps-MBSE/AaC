@@ -1,6 +1,6 @@
 import { execShell } from "./helpers";
 import { getOutputChannel } from "./outputChannel"
-import { window, QuickPickOptions, InputBoxOptions } from 'vscode';
+import { window, QuickPickOptions, InputBoxOptions, OpenDialogOptions, Uri } from 'vscode';
 
 const outputChannel = getOutputChannel();
 
@@ -41,12 +41,21 @@ async function getCommandArgUserInput(commandArguments: CommandArgument[]) {
 
     if (unansweredCommandArguments.length > 0) {
         let argumentToPromptFor = unansweredCommandArguments[0]
+        const dialogBoxOptions: OpenDialogOptions = {
+            title: argumentToPromptFor.name,
+        }
         const inputBoxOptions: InputBoxOptions = {
             title: argumentToPromptFor.name,
             prompt: argumentToPromptFor.description,
         }
 
-        argumentToPromptFor.userResponse = await window.showInputBox(inputBoxOptions)
+        if (argumentToPromptFor.description.toLowerCase().includes("path")){
+            let fileUri: Uri[] | undefined = await window.showOpenDialog(inputBoxOptions)
+            if(fileUri)
+                argumentToPromptFor.userResponse = fileUri[0]?.path
+        } else {
+            argumentToPromptFor.userResponse = await window.showInputBox(inputBoxOptions)
+        }
     } else if(unansweredCommandArguments.length > 1) {
         getCommandArgUserInput(commandArguments)
     }
