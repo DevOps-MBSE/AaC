@@ -31,7 +31,6 @@ export class AacLanguageServerClient {
     private assertAacToolIsAvailable(): void {
         const pythonPath = this.getConfigurationItemFile("pythonPath");
         this.assertCorrectPythonVersionIsInstalled(pythonPath);
-        this.assertCorrectAacVersionIsInstalled(pythonPath);
     }
 
     private getConfigurationItemFile(name: string): string {
@@ -53,16 +52,6 @@ export class AacLanguageServerClient {
             pythonVersion.startsWith(MIN_REQUIRED_PYTHON_VERSION),
             `The AaC tool requires Python ${MIN_REQUIRED_PYTHON_VERSION} or newer; current version is: ${pythonVersion}`,
         );
-    }
-
-    private async assertCorrectAacVersionIsInstalled(pythonPath: string): Promise<void> {
-        const resolve = await execShell(`${pythonPath} -m pip freeze`);
-        assertTrue(!resolve.stderr, `Could not get the installed AaC version.\n${resolve.stderr}`);
-
-        const expectedAacVersion: string = getConfigurationItem("version") ?? "";
-        const aacVersionPattern = new RegExp(`aac==${expectedAacVersion}|-e git.*egg=aac`, "ig");
-        const actualAacVersion = resolve.stdout.match(aacVersionPattern)?.pop();
-        assertTrue(!!actualAacVersion, `The installed aac version is ${actualAacVersion} which is unsupported.`);
     }
 
     private assertLspServerIsReady(context: ExtensionContext): void {

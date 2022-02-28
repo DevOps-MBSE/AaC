@@ -43,6 +43,7 @@ async function getCommandArgUserInput(commandArguments: CommandArgument[]) {
         let argumentToPromptFor = unansweredCommandArguments[0];
         const dialogBoxOptions: OpenDialogOptions = {
             title: argumentToPromptFor.name,
+            canSelectMany: false
         };
         const inputBoxOptions: InputBoxOptions = {
             title: argumentToPromptFor.name,
@@ -50,9 +51,9 @@ async function getCommandArgUserInput(commandArguments: CommandArgument[]) {
         };
 
         if (argumentToPromptFor.description.toLowerCase().includes("path")){
-            let fileUri: Uri[] | undefined = await window.showOpenDialog(inputBoxOptions);
-            if(fileUri)
-                {argumentToPromptFor.userResponse = fileUri[0]?.path;}
+            let fileUri: Uri[] | undefined = await window.showOpenDialog(dialogBoxOptions);
+            argumentToPromptFor.userResponse = fileUri ? fileUri[0]?.path : "";
+
         } else {
             argumentToPromptFor.userResponse = await window.showInputBox(inputBoxOptions);
         }
@@ -74,9 +75,13 @@ async function getAacCommandArgs(aacCommandName: string): Promise<CommandArgumen
     return parseTaskArgsFromHelpCommand(aacHelpOutput);
 }
 
+/**
+ * Executes AaC commands with arguments.
+ * @param command AaC command name
+ * @param commandArgs command arguments and
+ * @returns
+ */
 async function execAacShellCommand(command: string, commandArgs: CommandArgument[] = []): Promise<string> {
-
-    let result: string = "";
 
     let commandArgsArray = ["aac", command, ...(commandArgs.map(argument => argument.userResponse))];
     try {
@@ -93,6 +98,11 @@ async function execAacShellCommand(command: string, commandArgs: CommandArgument
     }
 }
 
+/**
+ * Parses command names from the AaC help message.
+ * @param aacHelpOutput the output to parse
+ * @returns array of available command names
+ */
 function parseTaskNamesFromHelpCommand(aacHelpOutput: string): string[] {
 
     const regExp = /{(.*)}/;
@@ -106,6 +116,11 @@ function parseTaskNamesFromHelpCommand(aacHelpOutput: string): string[] {
     return commandNames;
 }
 
+/**
+ * Parses argument names and descriptions from command help output
+ * @param aacHelpOutput the output to parse
+ * @returns array of CommandArgument objects
+ */
 function parseTaskArgsFromHelpCommand(aacHelpOutput: string): CommandArgument[] {
 
     const regExp = /^  (?<argName>\S+)\s+(?<argDescription>.*)$/gm;

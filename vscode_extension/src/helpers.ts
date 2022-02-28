@@ -29,6 +29,18 @@ export function getSemanticVersionNumber(str: string): string | undefined {
     return str.match(versionRegex)?.pop();
 }
 
+export async function assertCorrectAacVersionIsInstalled(): Promise<void> {
+    const resolve = await execShell(`aac version`);
+    assertTrue(!resolve.stderr, `Could not get the installed AaC version.\n${resolve.stderr}`);
+
+    const expectedAacVersion: string = getConfigurationItem("version") ?? "";
+    const aacVersionPattern = new RegExp(`aac==${expectedAacVersion}|-e git.*egg=aac`, "ig");
+    const regExp = /([0-9]+\.*){3}/;
+    const versionMatch = regExp.exec(resolve.stdout)
+    const actualAacVersion = versionMatch ? versionMatch[0] : null;
+    assertTrue(!!actualAacVersion, `The installed aac version is ${actualAacVersion} which is unsupported.`);
+}
+
 /**
  * Execute a shell `command` on the underlying system.
  *
