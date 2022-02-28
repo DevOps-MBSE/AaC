@@ -1,14 +1,14 @@
 import { Disposable, ExtensionContext, tasks, commands, window } from "vscode";
 import { AacLanguageServerClient } from "./AacLanguageServer";
-import { AacTaskProvider } from "./AacTaskProvider";
 import { executeAacCommand } from "./aacExecutableWrapper";
 import { getOutputChannel } from "./outputChannel";
+import { assertCorrectAacVersionIsInstalled } from "./helpers";
 
-let aacTaskProvider: Disposable | undefined;
 let aacLspClient: AacLanguageServerClient = AacLanguageServerClient.getLspClient();
 
 export function activate(context: ExtensionContext) {
-    aacTaskProvider = tasks.registerTaskProvider(AacTaskProvider.aacType, new AacTaskProvider());
+
+    assertCorrectAacVersionIsInstalled();
     aacLspClient.startLanguageServer(context);
     context.subscriptions.push(
         commands.registerCommand('aac.execute', executeAacCommand)
@@ -16,7 +16,6 @@ export function activate(context: ExtensionContext) {
 }
 
 export function deactivate(): void {
-    aacTaskProvider?.dispose();
     aacLspClient.shutdownServer();
     getOutputChannel().dispose();
 }

@@ -67,18 +67,6 @@
                     "AaC"
                 ]
             }
-        ],
-        "taskDefinitions": [
-            {
-                "type": "aac",
-                "properties": {
-                    "name": {
-                        "type": "string",
-                        "description": "AaC command name"
-                    }
-                },
-                "required": []
-            }
         ]
     },
     "extensionKind": [
