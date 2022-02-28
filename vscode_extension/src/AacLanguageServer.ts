@@ -36,8 +36,8 @@ export class AacLanguageServerClient {
 
     private getConfigurationItemFile(name: string): string {
         const item: string = getConfigurationItem(name);
-        assertTrue(item.length > 0, `Cannot start Language Server; '${item}' is not configured!`);
-        assertTrue(fs.existsSync(item), `Cannot use ${item} as it does not exist!`);
+        assertTrue(item.length > 0, `Cannot start Language Server; '${name}' is not configured!`);
+        assertTrue(fs.existsSync(item), `Cannot use ${name} as it does not exist!`);
         return item;
     }
 
