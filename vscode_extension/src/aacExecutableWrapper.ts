@@ -108,7 +108,7 @@ function parseTaskNamesFromHelpCommand(aacHelpOutput: string): string[] {
 
 function parseTaskArgsFromHelpCommand(aacHelpOutput: string): CommandArgument[] {
 
-    const regExp = /^  (?<argName>\S+)*\s*(?<argDescription>.*)$/gm;
+    const regExp = /^  (?<argName>\S+)\s+(?<argDescription>.*)$/gm;
     const commandArgumentsMatch = regExp.exec(aacHelpOutput);
 
     let commandArguments: CommandArgument[] = [];
