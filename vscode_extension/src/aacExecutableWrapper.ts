@@ -125,12 +125,12 @@ async function execAacShellCommand(command: string, commandArgs: CommandArgument
  */
 function parseTaskNamesFromHelpCommand(aacHelpOutput: string): string[] {
 
-    const regExp = /{(.*?)}/;
+    const regExp = /\{(?<commandNames>.*?)\}/;
     const commandNamesMatch = regExp.exec(aacHelpOutput);
 
     let commandNames: string[] = [];
-    if (commandNamesMatch && commandNamesMatch.length >= 2) {
-        commandNames = commandNamesMatch[1].split(",");
+    if (commandNamesMatch?.groups?.commandNames) {
+        commandNames = commandNamesMatch.groups.commandNames.split(",");
     }
 
     return commandNames;
