@@ -1,6 +1,7 @@
 import { execShell } from "./helpers";
 import { getOutputChannel } from "./outputChannel";
 import { window, QuickPickOptions, InputBoxOptions, OpenDialogOptions, Uri } from 'vscode';
+import { getConfigurationItem } from './helpers';
 
 const outputChannel = getOutputChannel();
 
