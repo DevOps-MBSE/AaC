@@ -1,7 +1,6 @@
-import { execShell } from "./helpers";
+import { execShell, getConfigurationItem } from "./helpers";
 import { getOutputChannel } from "./outputChannel";
 import { window, QuickPickOptions, InputBoxOptions, OpenDialogOptions, Uri } from 'vscode';
-import { getConfigurationItem } from './helpers';
 
 const outputChannel = getOutputChannel();
 
@@ -104,8 +103,7 @@ async function getAacCommandArgs(aacCommandName: string): Promise<CommandArgumen
  * @returns
  */
 async function execAacShellCommand(command: string, commandArgs: CommandArgument[] = []): Promise<string> {
-    const aacPath = getConfigurationItem("aacPath") ?? "aac";
-    const commandArgsArray = [aacPath, command, ...(commandArgs.map(argument => argument.userResponse))];
+    const commandArgsArray = ["aac", command, ...(commandArgs.map(argument => argument.userResponse))];
     try {
         const { stdout, stderr } = await execShell(commandArgsArray.join(" "), {});
         const stringOutput = stderr.length > 0 ? stderr : stdout;
