@@ -103,8 +103,8 @@ async function getAacCommandArgs(aacCommandName: string): Promise<CommandArgumen
  * @returns
  */
 async function execAacShellCommand(command: string, commandArgs: CommandArgument[] = []): Promise<string> {
-
-    let commandArgsArray = ["aac", command, ...(commandArgs.map(argument => argument.userResponse))];
+    const aacPath = getConfigurationItem("aacPath") ?? "aac";
+    const commandArgsArray = [aacPath, command, ...(commandArgs.map(argument => argument.userResponse))];
     try {
         const { stdout, stderr } = await execShell(commandArgsArray.join(" "), {});
         const stringOutput = stderr.length > 0 ? stderr : stdout;
