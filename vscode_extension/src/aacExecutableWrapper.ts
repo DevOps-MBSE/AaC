@@ -12,7 +12,7 @@ interface CommandArgument {
 
 /**
  * Prompts the user for input then executes the AaC plugin with user-provided
- *  information and arguments.
+ * information and arguments.
  */
  export async function executeAacCommand(): Promise<void> {
 
@@ -88,9 +88,8 @@ async function execAacShellCommand(command: string, commandArgs: CommandArgument
         const { stdout, stderr } = await execShell(commandArgsArray.join(" "), {});
         const stringOutput = stderr.length > 0 ? stderr : stdout;
         return stringOutput;
-
     } catch (error: any) {
-        let errorMessage = error.stderr || error.stdout || "";
+        let errorMessage = error.stderr || error.stdout || "urecognized error";
 
         outputChannel.appendLine(`Failed to execute AaC command:\n${errorMessage}`);
         outputChannel.show(true);
@@ -105,7 +104,7 @@ async function execAacShellCommand(command: string, commandArgs: CommandArgument
  */
 function parseTaskNamesFromHelpCommand(aacHelpOutput: string): string[] {
 
-    const regExp = /{(.*)}/;
+    const regExp = /{(.*?)}/;
     const commandNamesMatch = regExp.exec(aacHelpOutput);
 
     let commandNames: string[] = [];
@@ -129,8 +128,8 @@ function parseTaskArgsFromHelpCommand(aacHelpOutput: string): CommandArgument[] 
     let commandArguments: CommandArgument[] = [];
     if (commandArgumentsMatch) {
         commandArguments.push({
-            name: commandArgumentsMatch.groups?.argName || "<argument name>",
-            description: commandArgumentsMatch.groups?.argDescription || "<argument description>"
+            name: commandArgumentsMatch.groups?.argName ?? "<argument name>",
+            description: commandArgumentsMatch.groups?.argDescription ?? "<argument description>"
         });
     }
 

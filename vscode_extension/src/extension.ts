@@ -1,4 +1,4 @@
-import { Disposable, ExtensionContext, tasks, commands, window } from "vscode";
+import { Disposable, ExtensionContext, tasks, commands } from "vscode";
 import { AacLanguageServerClient } from "./AacLanguageServer";
 import { executeAacCommand } from "./aacExecutableWrapper";
 import { getOutputChannel } from "./outputChannel";
