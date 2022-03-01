@@ -30,8 +30,8 @@ export class AacLanguageServerClient {
 
     private assertAacToolIsAvailable(): void {
         const pythonPath = this.getConfigurationItemFile("pythonPath");
-        this.assertCorrectAacVersionIsInstalled(pythonPath);
         this.assertCorrectPythonVersionIsInstalled(pythonPath);
+        this.assertCorrectAacVersionIsInstalled(pythonPath);
     }
 
     private getConfigurationItemFile(name: string): string {
