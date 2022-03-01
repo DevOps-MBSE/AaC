@@ -55,27 +55,29 @@ export async function getAaCVersion(): Promise<string|null> {
 
 async function getCommandArgUserInput(commandArguments: CommandArgument[]) {
 
-    let unansweredCommandArguments: CommandArgument[] = commandArguments.filter(argument => { return (argument.userResponse === undefined); } );
+    let argumentsWithoutUserResponse: CommandArgument[] = commandArguments.filter(argument => !argument.userResponse);
 
-    if (unansweredCommandArguments.length > 0) {
-        let argumentToPromptFor = unansweredCommandArguments[0];
-        const dialogBoxOptions: OpenDialogOptions = {
-            title: argumentToPromptFor.name,
-            canSelectMany: false
-        };
-        const inputBoxOptions: InputBoxOptions = {
-            title: argumentToPromptFor.name,
-            prompt: argumentToPromptFor.description,
-        };
+    if (argumentsWithoutUserResponse.length > 0) {
+        let argumentToPromptUserFor = argumentsWithoutUserResponse[0];
 
-        if (argumentToPromptFor.description.toLowerCase().includes("path")){
+        if (argumentToPromptUserFor.description.toLowerCase().includes("path")){
+            const dialogBoxOptions: OpenDialogOptions = {
+                title: argumentToPromptUserFor.name,
+                canSelectMany: false
+            };
+
             let fileUri: Uri[] | undefined = await window.showOpenDialog(dialogBoxOptions);
-            argumentToPromptFor.userResponse = fileUri ? fileUri[0]?.path : "";
+            argumentToPromptUserFor.userResponse = fileUri ? fileUri[0]?.path : "";
 
         } else {
-            argumentToPromptFor.userResponse = await window.showInputBox(inputBoxOptions);
+            const inputBoxOptions: InputBoxOptions = {
+                title: argumentToPromptUserFor.name,
+                prompt: argumentToPromptUserFor.description,
+            };
+
+            argumentToPromptUserFor.userResponse = await window.showInputBox(inputBoxOptions);
         }
-    } else if(unansweredCommandArguments.length > 1) {
+    } else if(argumentsWithoutUserResponse.length > 1) {
         getCommandArgUserInput(commandArguments);
     }
 }
