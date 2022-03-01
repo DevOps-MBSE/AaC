@@ -97,7 +97,7 @@ export class AacLanguageServerClient {
                 { scheme: "file", language: "aac", pattern: "**/*.yaml" },
             ],
             diagnosticCollectionName: "aac",
-            outputChannelName: "Architecture-as-Code",
+            outputChannelName: "Architecture-as-Code Language Server",
             synchronize: {
                 fileEvents: workspace.createFileSystemWatcher("**/.clientrc"),
             }
