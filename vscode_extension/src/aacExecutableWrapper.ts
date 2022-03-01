@@ -14,7 +14,7 @@ interface CommandArgument {
  * Prompts the user for input then executes the AaC plugin with user-provided
  * information and arguments.
  */
- export async function executeAacCommand(): Promise<void> {
+export async function executeAacCommand(): Promise<void> {
 
     let availableCommands: string[] = await getAacCommandNames();
 
@@ -23,7 +23,7 @@ interface CommandArgument {
     };
 
     window.showQuickPick(availableCommands, quickPickOptions).then(commandName => {
-        if(commandName) {
+        if (commandName) {
             getAacCommandArgs(commandName).then(async (commandArguments) => {
                 await getCommandArgUserInput(commandArguments);
                 execAacShellCommand(commandName, commandArguments).then(output => {
@@ -39,7 +39,7 @@ interface CommandArgument {
  * Gets the version of the currently installed AaC package
  * @returns string of the version number or null if not installed.
  */
-export async function getAaCVersion(): Promise<string|null> {
+export async function getAaCVersion(): Promise<string | null> {
 
     let aacVersionOutput: string = "";
     try {
@@ -55,12 +55,13 @@ export async function getAaCVersion(): Promise<string|null> {
 
 async function getCommandArgUserInput(commandArguments: CommandArgument[]) {
 
-    let argumentsWithoutUserResponse: CommandArgument[] = commandArguments.filter(argument => !argument.userResponse);
+    // TODO: remove filter for optional arguments.
+    let argumentsWithoutUserResponse: CommandArgument[] = commandArguments.filter(argument => !argument.userResponse && !argument.name.startsWith("-"));
 
     if (argumentsWithoutUserResponse.length > 0) {
         let argumentToPromptUserFor = argumentsWithoutUserResponse[0];
 
-        if (argumentToPromptUserFor.description.toLowerCase().includes("path")){
+        if (argumentToPromptUserFor.description.toLowerCase().includes("path")) {
             const dialogBoxOptions: OpenDialogOptions = {
                 title: argumentToPromptUserFor.name,
                 canSelectMany: false
@@ -77,7 +78,7 @@ async function getCommandArgUserInput(commandArguments: CommandArgument[]) {
 
             argumentToPromptUserFor.userResponse = await window.showInputBox(inputBoxOptions);
         }
-    } else if(argumentsWithoutUserResponse.length > 1) {
+    } else if (argumentsWithoutUserResponse.length > 1) {
         getCommandArgUserInput(commandArguments);
     }
 }
