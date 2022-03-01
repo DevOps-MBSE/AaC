@@ -47,6 +47,13 @@
                 }
             }
         },
+        "commands": [
+            {
+              "command": "aac.execute",
+              "title": "Execute AaC Command",
+              "category": "AaC"
+            }
+        ],
         "languages": [
             {
                 "id": "aac",
@@ -59,18 +66,6 @@
                     "Architecture-as-Code",
                     "AaC"
                 ]
-            }
-        ],
-        "taskDefinitions": [
-            {
-                "type": "aac",
-                "properties": {
-                    "name": {
-                        "type": "string",
-                        "description": "AaC command name"
-                    }
-                },
-                "required": []
             }
         ]
     },
