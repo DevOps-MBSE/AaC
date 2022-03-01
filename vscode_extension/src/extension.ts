@@ -18,9 +18,7 @@ export function activate(context: ExtensionContext) {
         } else {
             const missingAacMessage = "Please install AaC locally to activate these plugin features.\n 'pip install aac'";
 
-            commands.registerCommand(EXECUTE_AAC_COMMAND_NAME, () => {
-                window.showErrorMessage(missingAacMessage);
-            });
+            commands.registerCommand(EXECUTE_AAC_COMMAND_NAME, () => window.showErrorMessage(missingAacMessage));
             window.showErrorMessage(missingAacMessage);
         }
     });
