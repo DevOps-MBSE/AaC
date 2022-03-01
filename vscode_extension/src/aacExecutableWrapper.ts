@@ -40,7 +40,14 @@ interface CommandArgument {
  * @returns string of the version number or null if not installed.
  */
 export async function getAaCVersion(): Promise<string|null> {
-    const aacVersionOutput = await execAacShellCommand("version");
+
+    let aacVersionOutput: string = "";
+    try {
+        aacVersionOutput = await execAacShellCommand("version");
+    } catch (exception) {
+        // TODO: Change to logging or alternative
+    }
+
     const regExp = /([0-9]+\.*){3}/;
     const versionMatch = regExp.exec(aacVersionOutput);
     return versionMatch ? versionMatch[0] : null;

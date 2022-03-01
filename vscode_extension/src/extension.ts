@@ -16,8 +16,8 @@ export function activate(context: ExtensionContext) {
                 commands.registerCommand(EXECUTE_AAC_COMMAND_NAME, executeAacCommand)
             );
         } else {
-            const missingAacMessage = `Please install AaC locally from PyPI to activate
-                these plugin features - pip install aac`;
+            const missingAacMessage = `Please install AaC locally to activate
+                these plugin features.\n 'pip install aac'`;
 
             commands.registerCommand(EXECUTE_AAC_COMMAND_NAME, () => {
                 window.showErrorMessage(missingAacMessage);
