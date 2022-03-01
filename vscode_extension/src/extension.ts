@@ -1,18 +1,30 @@
-import { Disposable, ExtensionContext, tasks, commands } from "vscode";
+import { ExtensionContext, window, commands } from "vscode";
 import { AacLanguageServerClient } from "./AacLanguageServer";
-import { executeAacCommand } from "./aacExecutableWrapper";
+import { executeAacCommand, getAaCVersion } from "./aacExecutableWrapper";
 import { getOutputChannel } from "./outputChannel";
-import { assertCorrectAacVersionIsInstalled } from "./helpers";
 
 let aacLspClient: AacLanguageServerClient = AacLanguageServerClient.getLspClient();
 
+const EXECUTE_AAC_COMMAND_NAME = "aac.execute";
+
 export function activate(context: ExtensionContext) {
 
-    assertCorrectAacVersionIsInstalled();
-    aacLspClient.startLanguageServer(context);
-    context.subscriptions.push(
-        commands.registerCommand('aac.execute', executeAacCommand)
-    );
+    getAaCVersion().then(installedAaCVersion => {
+        if (installedAaCVersion) {
+            aacLspClient.startLanguageServer(context);
+            context.subscriptions.push(
+                commands.registerCommand(EXECUTE_AAC_COMMAND_NAME, executeAacCommand)
+            );
+        } else {
+            const missingAacMessage = `Please install AaC locally from PyPI to activate
+                these plugin features - pip install aac`;
+
+            commands.registerCommand(EXECUTE_AAC_COMMAND_NAME, () => {
+                window.showErrorMessage(missingAacMessage);
+            });
+            window.showErrorMessage(missingAacMessage);
+        }
+    });
 }
 
 export function deactivate(): void {

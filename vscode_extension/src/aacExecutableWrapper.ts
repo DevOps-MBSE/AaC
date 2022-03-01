@@ -35,6 +35,17 @@ interface CommandArgument {
     });
 }
 
+/**
+ * Gets the version of the currently installed AaC package
+ * @returns string of the version number or null if not installed.
+ */
+export async function getAaCVersion(): Promise<string|null> {
+    const aacVersionOutput = await execAacShellCommand("version");
+    const regExp = /([0-9]+\.*){3}/;
+    const versionMatch = regExp.exec(aacVersionOutput);
+    return versionMatch ? versionMatch[0] : null;
+}
+
 async function getCommandArgUserInput(commandArguments: CommandArgument[]) {
 
     let unansweredCommandArguments: CommandArgument[] = commandArguments.filter(argument => { return (argument.userResponse === undefined); } );
@@ -77,8 +88,8 @@ async function getAacCommandArgs(aacCommandName: string): Promise<CommandArgumen
 
 /**
  * Executes AaC commands with arguments.
- * @param command AaC command name
- * @param commandArgs command arguments and
+ * @param command - AaC command name
+ * @param commandArgs - command arguments and
  * @returns
  */
 async function execAacShellCommand(command: string, commandArgs: CommandArgument[] = []): Promise<string> {
@@ -99,7 +110,7 @@ async function execAacShellCommand(command: string, commandArgs: CommandArgument
 
 /**
  * Parses command names from the AaC help message.
- * @param aacHelpOutput the output to parse
+ * @param aacHelpOutput - the output to parse
  * @returns array of available command names
  */
 function parseTaskNamesFromHelpCommand(aacHelpOutput: string): string[] {
@@ -117,7 +128,7 @@ function parseTaskNamesFromHelpCommand(aacHelpOutput: string): string[] {
 
 /**
  * Parses argument names and descriptions from command help output
- * @param aacHelpOutput the output to parse
+ * @param aacHelpOutput - the output to parse
  * @returns array of CommandArgument objects
  */
 function parseTaskArgsFromHelpCommand(aacHelpOutput: string): CommandArgument[] {
