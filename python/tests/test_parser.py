@@ -64,6 +64,20 @@ class TestArchParser(TestCase):
         with temporary_test_file(content) as test_yaml:
             self.check_parser_errors(test_yaml.name, "not YAML", content)
 
+    def test_can_get_lexemes_from_parsed_architecture_file(self):
+        with temporary_test_file(TEST_MODEL_FILE.strip()) as test_yaml:
+            lexemes = parser.parse(test_yaml.name)
+            self.assertNotEqual(len(lexemes), 0)
+
+            first, second, *_ = lexemes
+            self.assertEqual(first.source, test_yaml.name)
+            self.assertEqual(first.value, "import")
+            self.assertEqual(first.location, parser.SourceLocation(0, 0, 0, 6))
+
+            self.assertEqual(second.source, test_yaml.name)
+            self.assertEqual(second.value, "./Message.yaml")
+            self.assertEqual(second.location, parser.SourceLocation(1, 4, 12, 14))
+
 
 TEST_IMPORTED_MODEL_FILE_CONTENTS = """
 data:

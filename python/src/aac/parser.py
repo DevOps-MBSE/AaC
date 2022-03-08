@@ -8,8 +8,63 @@ to find a certain type in a model by just looking for that key.
 import os
 
 import yaml
+
 from attr import Factory, attrib, attrs, validators
 from yaml.parser import ParserError as YAMLParserError
+
+
+@attrs
+class SourceLocation:
+    """The position and ... of an AaC structure in the source.
+
+    Attributes:
+        line (int): The line number on which the object was found.
+        column (int): The character position at which the object was found.
+        position (int): The position relative to the start of the file where the object was found.
+        span (int): The number of characters occupied by the object relative to `position`.
+    """
+
+    line: int = attrib(validator=validators.instance_of(int))
+    column: int = attrib(validator=validators.instance_of(int))
+    position: int = attrib(validator=validators.instance_of(int))
+    span: int = attrib(validator=validators.instance_of(int))
+
+
+@attrs
+class Lexeme:
+    """A lexical unit for a parsed AaC object.
+
+    Attributes:
+        location (SourceLocation): The location at which the object was found.
+        source (str): The source in which the object was found.
+        value (str): The value of the parsed object.
+    """
+
+    location: SourceLocation = attrib(validator=validators.instance_of(SourceLocation))
+    source: str = attrib(validator=validators.instance_of(str))
+    value: str = attrib(validator=validators.instance_of(str))
+
+
+def parse(source: str) -> list[Lexeme]:
+    """Parse the Architecture-as-Code (AaC) model(s) from the provided source.
+
+    Args:
+        source (str): The location from which to extract the Architecture-as-Code content.
+
+    Returns:
+        A collection of Lexemes representing the parsed system.
+    """
+
+    def mark_to_source_location(start: yaml.error.Mark, end: yaml.error.Mark) -> SourceLocation:
+        return SourceLocation(start.line, start.column, start.index, end.column - start.column)
+
+    lexemes = []
+    tokens = [token for token in yaml.scan(_read_file_content(source), Loader=yaml.SafeLoader)]
+    for token in tokens:
+        if hasattr(token, 'value'):
+            location = mark_to_source_location(token.start_mark, token.end_mark)
+            lexemes.append(Lexeme(location, os.path.abspath(source), token.value))
+    return lexemes
 
 
 def parse_file(arch_file: str) -> dict[str, dict]:
