@@ -46,8 +46,8 @@ def temporary_test_file(content: str, **extra_file_attrs):
     Yields:
         The temporary test file containing the specified contents.
     """
-    with TemporaryDirectory() as temp_dir, NamedTemporaryFile(dir=temp_dir, mode="w", **(extra_file_attrs or {})) as f:
-        f.write(content)
-        f.seek(0)
+    with TemporaryDirectory() as temp_dir, NamedTemporaryFile(dir=temp_dir, mode="w", **(extra_file_attrs or {})) as file:
+        file.write(content)
+        file.seek(0)
 
-        yield f
+        yield file
