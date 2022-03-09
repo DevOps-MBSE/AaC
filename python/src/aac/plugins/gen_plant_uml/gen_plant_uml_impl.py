@@ -5,7 +5,8 @@
 
 import os
 
-from aac import parser, util
+from aac import parser
+from aac.definition_helpers import get_models_by_type, search
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 from aac.validator import validation
 from aac.template_engine import (
@@ -32,7 +33,7 @@ def puml_component(architecture_file: str, output_directory: str = None) -> Plug
     architecture_file_path = os.path.abspath(architecture_file)
 
     def generate_component_diagram(models: dict):
-        model_types = util.get_models_by_type(models, "model")
+        model_types = get_models_by_type(models, "model")
 
         models = []
         for root_model_name in _find_root_names(model_types):
@@ -65,7 +66,7 @@ def puml_sequence(architecture_file: str, output_directory: str = None) -> Plugi
     architecture_file_path = os.path.abspath(architecture_file)
 
     def generate_sequence_diagram(models: dict):
-        use_case_types = util.get_models_by_type(models, "usecase")
+        use_case_types = get_models_by_type(models, "usecase")
 
         participants = []
         sequences = []
@@ -73,7 +74,7 @@ def puml_sequence(architecture_file: str, output_directory: str = None) -> Plugi
         for use_case_title in _find_root_names(use_case_types):
 
             # declare participants
-            usecase_participants = util.search(use_case_types[use_case_title], ["usecase", "participants"])
+            usecase_participants = search(use_case_types[use_case_title], ["usecase", "participants"])
             for usecase_participant in usecase_participants:  # each participant is a field type
                 participants.append({
                     "type": usecase_participant.get("type"),
@@ -81,7 +82,7 @@ def puml_sequence(architecture_file: str, output_directory: str = None) -> Plugi
                 })
 
             # process steps
-            steps = util.search(use_case_types[use_case_title], ["usecase", "steps"])
+            steps = search(use_case_types[use_case_title], ["usecase", "steps"])
             for step in steps:  # each step of a step type
                 sequences.append({
                     "source": step.get("source"),
@@ -117,14 +118,14 @@ def puml_object(architecture_file: str, output_directory: str = None) -> PluginE
     architecture_file_path = os.path.abspath(architecture_file)
 
     def generate_object_diagram(models: dict):
-        model_types = util.get_models_by_type(models, "model")
+        model_types = get_models_by_type(models, "model")
 
         object_declarations = []
         object_compositions = {}
         for model_name in model_types.keys():
             object_declarations.append(model_name)
 
-            for component in util.search(model_types[model_name], ["model", "components", "type"]):
+            for component in search(model_types[model_name], ["model", "components", "type"]):
                 if model_name not in object_compositions:
                     object_compositions[model_name] = set()
 
@@ -199,7 +200,7 @@ def _find_root_names(models) -> list[str]:
     subcomponents = []  # names of subcomponent models
     for name in model_names:
         model = models[name]
-        components = util.search(model, ["model", "components"])
+        components = search(model, ["model", "components"])
         for component in components:
             # component is a Field type
             component_type = component["type"]
@@ -219,7 +220,7 @@ def _get_model_content(model: dict, model_types, defined_interfaces: set):
     model_interfaces = set()
 
     # define UML interface for each input
-    inputs = util.search(model, ["model", "behavior", "input"])
+    inputs = search(model, ["model", "behavior", "input"])
     model_inputs = []
     for input in inputs:
         input_name = input["name"]
@@ -235,7 +236,7 @@ def _get_model_content(model: dict, model_types, defined_interfaces: set):
             model_interfaces.add(input_type)
 
     # define UML interface for each output
-    outputs = util.search(model, ["model", "behavior", "output"])
+    outputs = search(model, ["model", "behavior", "output"])
     model_outputs = []
     for output in outputs:
         output_name = output["name"]
@@ -251,7 +252,7 @@ def _get_model_content(model: dict, model_types, defined_interfaces: set):
             model_interfaces.add(output_type)
 
     # define UML package for each component
-    components = util.search(model, ["model", "components"])
+    components = search(model, ["model", "components"])
     model_components = []
 
     for component in components:

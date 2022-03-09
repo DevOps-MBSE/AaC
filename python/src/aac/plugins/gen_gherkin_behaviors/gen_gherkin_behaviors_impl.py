@@ -5,7 +5,8 @@
 
 from iteration_utilities import flatten
 
-from aac import parser, util
+from aac import parser
+from aac.definition_helpers import get_models_by_type
 from aac.plugins import PluginError
 from aac.plugins.plugin_execution import (
     PluginExecutionResult,
@@ -59,7 +60,7 @@ def _get_template_properties(parsed_models: dict) -> dict[str, dict]:
 
     def collect_models(parsed_models: dict) -> dict:
         """Return a structured dict like parsed_models, but only consisting of model definitions."""
-        return util.get_models_by_type(parsed_models, "model")
+        return get_models_by_type(parsed_models, "model")
 
     def collect_model_behavior_properties(model: dict) -> list[dict]:
         """Produce a template property dictionary for each behavior entry in a model."""

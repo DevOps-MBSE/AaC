@@ -21,7 +21,7 @@ from pygls.server import LanguageServer
 
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 from aac.spec.core import get_aac_spec
-from aac.util import search
+from aac.definition_helpers import search
 
 
 logger: Optional[logging.Logger] = None

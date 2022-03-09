@@ -5,7 +5,8 @@ import os
 from iteration_utilities import flatten
 from jinja2 import Template
 
-from aac import parser, util
+from aac import parser
+from aac.definition_helpers import get_models_by_type
 from aac.plugins.plugin_execution import (
     PluginExecutionResult,
     plugin_result,
@@ -96,7 +97,7 @@ def _get_output_file_extension(template_filespec: str) -> str:
 
 
 def _get_from_parsed_models(parsed_models: dict, aac_type: str) -> list:
-    aac_types = [util.get_models_by_type(m, aac_type) for m in parsed_models]
+    aac_types = [get_models_by_type(m, aac_type) for m in parsed_models]
     return list(flatten([m.values() for m in aac_types]))
 
 

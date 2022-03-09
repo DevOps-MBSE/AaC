@@ -3,7 +3,7 @@ from importlib import resources
 from tempfile import NamedTemporaryFile, TemporaryDirectory
 from unittest import TestCase
 
-from aac import util, parser
+from aac import definition_helpers, parser
 from aac.plugins.plugin_execution import PluginExecutionStatusCode
 from aac.plugins.gen_gherkin_behaviors import (
     get_commands,
@@ -24,7 +24,7 @@ class TestGenerateGherkinBehaviorsPlugin(TestCase):
         ) as plugin_model_file:
             plugin_name = "aac-gen-gherkin-behaviors"
             plugin_model = parser.parse_str(plugin_model_file.name, plugin_model_file.read())
-            commands_yaml = list(map(_filter_command_behaviors, util.search(plugin_model.get(plugin_name), ["model", "behavior"])))
+            commands_yaml = list(map(_filter_command_behaviors, definition_helpers.search(plugin_model.get(plugin_name), ["model", "behavior"])))
 
             # Assert that the commands returned by the plugin matches those defined in the yaml file
             commands_yaml_dict = {}
@@ -36,11 +36,11 @@ class TestGenerateGherkinBehaviorsPlugin(TestCase):
                 command_yaml = commands_yaml_dict.get(command.name)
 
                 # Assert help messages match
-                self.assertEqual(command.description, util.search(command_yaml, ["description"])[0])
+                self.assertEqual(command.description, definition_helpers.search(command_yaml, ["description"])[0])
 
                 for argument in command.arguments:
                     yaml_arguments = command_yaml.get("input")
-                    arg_names = [util.search(arg, ["name"])[0] for arg in yaml_arguments]
+                    arg_names = [definition_helpers.search(arg, ["name"])[0] for arg in yaml_arguments]
                     # Assert argument is defined
                     self.assertIn(argument.name, arg_names)
 

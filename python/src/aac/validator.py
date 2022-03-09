@@ -7,7 +7,8 @@ from typing import Union
 from attr import attrib, attrs, validators, Factory
 from iteration_utilities import flatten
 
-from aac import plugins, util
+from aac import plugins
+from aac.definition_helpers import search, get_models_by_type
 from aac.spec.core import get_aac_spec, get_primitives
 
 VALIDATOR_CONTEXT = None
@@ -200,7 +201,7 @@ def _validate_data_references(data: dict) -> list:
 
     def fn(name, spec):
         return _get_error_messages_if_invalid_type(
-            name, util.search(spec, ["data", "fields", "type"])
+            name, search(spec, ["data", "fields", "type"])
         )
 
     return list(map(fn, data.keys(), data.values()))
@@ -212,9 +213,9 @@ def _validate_model_references(models: list, data: dict) -> list:
     def fn(name, spec):
         return _get_error_messages_if_invalid_type(
             name,
-            util.search(spec, ["model", "components", "type"])
-            + util.search(spec, ["model", "behavior", "input", "type"])
-            + util.search(spec, ["model", "behavior", "output", "type"]),
+            search(spec, ["model", "components", "type"])
+            + search(spec, ["model", "behavior", "input", "type"])
+            + search(spec, ["model", "behavior", "output", "type"]),
         )
 
     return list(map(fn, data.keys(), data.values()))
@@ -238,7 +239,7 @@ def _get_errors_if_model_references_bad_enum_value(models: list, enum: str, path
         for path in paths:
             errors += [
                 f"unrecognized '{enum}' value '{result}' in '{model}' at '{' -> '.join(path)}': {valid}"
-                for result in util.search(models[model], path)
+                for result in search(models[model], path)
                 if result not in valid
             ]
         return errors
@@ -252,7 +253,7 @@ def _validate_enum_references(models: list, data: dict, enums: dict) -> list:
     paths = list(enum_paths.values())[0]
     return [
         _get_errors_if_model_references_bad_enum_value(
-            models, e, paths, util.search(enums[e], ["enum", "values"])
+            models, e, paths, search(enums[e], ["enum", "values"])
         )
         for e in enum_paths
     ]
@@ -278,7 +279,7 @@ def _get_enum_fields(enum: str, fields: list, data: dict, enums: dict) -> list:
 
 def _find_paths_to_enum_fields(find_enum, data_name, data_type, data, enums):
     """Return the paths to any references to enum fields in models."""
-    fields = util.search(data[data_type], ["data", "fields"])
+    fields = search(data[data_type], ["data", "fields"])
     return map(
         lambda enum: [data_name] + enum,
         _get_enum_fields(find_enum, fields, data, enums),
@@ -541,15 +542,15 @@ class ValidatorContext:
 
     def get_all_model_definitions(self):
         """Return all definitions of the 'model' type."""
-        return util.get_models_by_type(self.get_all_extended_definitions(), "model")
+        return get_models_by_type(self.get_all_extended_definitions(), "model")
 
     def get_all_data_definitions(self):
         """Return all definitions of the 'data' type."""
-        return util.get_models_by_type(self.get_all_extended_definitions(), "data")
+        return get_models_by_type(self.get_all_extended_definitions(), "data")
 
     def get_all_enum_definitions(self):
         """Return all definitions of the 'enum' type."""
-        return util.get_models_by_type(self.get_all_extended_definitions(), "enum")
+        return get_models_by_type(self.get_all_extended_definitions(), "enum")
 
     def get_all_extended_definitions(self):
         """
@@ -563,7 +564,7 @@ class ValidatorContext:
             List of AaC definitions
         """
         definitions = self.get_all_unextended_definitions()
-        extensions = util.get_models_by_type(definitions, "ext")
+        extensions = get_models_by_type(definitions, "ext")
 
         if not self.extended_validation_aac_model:
             for extension in extensions.values():

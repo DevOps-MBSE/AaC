@@ -5,7 +5,7 @@ import yaml
 
 from aac import parser
 from aac.package_resources import get_resource_file_contents
-from aac.util import get_models_by_type, search
+from aac.definition_helpers import get_models_by_type, search
 
 PRIMITIVES: list[str] = []
 ROOT_NAMES: list[str] = []

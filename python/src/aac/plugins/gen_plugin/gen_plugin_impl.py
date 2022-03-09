@@ -9,7 +9,8 @@ import yaml
 
 from os import path
 
-from aac import parser, util
+from aac import parser
+from aac.definition_helpers import get_models_by_type, search
 from aac.template_engine import (
     TemplateOutputFile,
     generate_templates,
@@ -200,7 +201,7 @@ def _gather_template_properties(parsed_models: dict[str, dict], architecture_fil
     """
 
     # Ensure model is present and valid, get the plugin name
-    plugin_models = util.get_models_by_type(parsed_models, "model")
+    plugin_models = get_models_by_type(parsed_models, "model")
     if len(plugin_models.keys()) != 1:
         raise GeneratePluginException("Plugin Arch-as-Code yaml must contain one and only one model.")
 
@@ -209,7 +210,7 @@ def _gather_template_properties(parsed_models: dict[str, dict], architecture_fil
     plugin_implementation_name = _convert_to_implementation_name(plugin_name)
 
     # Prepare template variables/properties
-    behaviors = util.search(plugin_model, ["behavior"])
+    behaviors = search(plugin_model, ["behavior"])
     commands = _gather_commands(behaviors)
 
     plugin = {
@@ -330,9 +331,9 @@ def _gather_plugin_aac_definitions(parsed_models: dict[str, dict]) -> list[dict]
     Returns:
         A list of AaC definitions provided by the plugin
     """
-    extension_definitions = list(util.get_models_by_type(parsed_models, "ext").values())
-    data_definitions = list(util.get_models_by_type(parsed_models, "data").values())
-    enum_definitions = list(util.get_models_by_type(parsed_models, "enum").values())
+    extension_definitions = list(get_models_by_type(parsed_models, "ext").values())
+    data_definitions = list(get_models_by_type(parsed_models, "data").values())
+    enum_definitions = list(get_models_by_type(parsed_models, "enum").values())
 
     return extension_definitions + data_definitions + enum_definitions
 

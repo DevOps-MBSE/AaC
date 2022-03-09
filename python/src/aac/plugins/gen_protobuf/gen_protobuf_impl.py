@@ -5,7 +5,8 @@
 
 from iteration_utilities import flatten
 
-from aac import parser, util
+from aac import parser
+from aac.definition_helpers import get_models_by_type, search
 from aac.plugins import PluginError
 from aac.plugins.plugin_execution import (
     PluginExecutionResult,
@@ -73,7 +74,7 @@ def _collect_data_and_enum_definitions(parsed_models: dict) -> dict[str, dict]:
         return list(set(nested_types))
 
     def collect_behaviors(model_with_behaviors):
-        return util.search(model_with_behaviors, ["model", "behavior"])
+        return search(model_with_behaviors, ["model", "behavior"])
 
     def convert_behavior_io_to_data_type(behavior_io_model):
         return behavior_io_model.get("type")
@@ -83,7 +84,7 @@ def _collect_data_and_enum_definitions(parsed_models: dict) -> dict[str, dict]:
         outputs = behavior_model.get("output") or []
         return list(map(convert_behavior_io_to_data_type, inputs + outputs))
 
-    model_definitions = util.get_models_by_type(parsed_models, "model")
+    model_definitions = get_models_by_type(parsed_models, "model")
     behaviors = list(flatten(map(collect_behaviors, model_definitions.values())))
     interface_data_message_types = list(set(flatten(map(collect_data_message_types, behaviors))))
     all_definitions_types_to_generate = interface_data_message_types + collect_nested_types(interface_data_message_types)
