@@ -49,6 +49,16 @@ data:
         the specification of any plugins you may have installed.
 
         You can extend any 'enum' and 'data' definition.
+    - name: validation
+      type: validation
+      description: |
+        A declaration for a validation definition.
+
+        Validation definitions must be paired with a corresponding validation
+        plugin. Validations are referenced by name in the definition that they
+        are applied to. For instance, the validation definition references a
+        validation plugin that ensures validation definitions have a corresponding
+        plugin capable of executing some validation check.
 ---
 data:
   name: enum
@@ -123,6 +133,26 @@ data:
         extended definition.
   required:
     - add
+---
+data:
+  name: validation
+  fields:
+    - name: name
+      type: string
+      description: |
+        The name of the validation rule and plugin.
+    - name: description
+      type: string
+      description: |
+        A high-level description of the validation plugin.
+    - name: behavior
+      type: Behavior[]
+      description: |
+        A list of behaviors that the validation plugin will perform.
+  required:
+    - name
+    - description
+    - behavior
 ---
 data:
   name: Scenario
