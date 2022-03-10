@@ -2,7 +2,6 @@ import os
 from tempfile import TemporaryDirectory
 from unittest import TestCase
 
-from aac.util import new_working_dir
 from tests.helpers.io import temporary_test_file
 
 from aac import parser
@@ -48,7 +47,6 @@ class TestArchParser(TestCase):
 
     def test_can_handle_architecture_file_with_imports(self):
         with (TemporaryDirectory() as temp_dir,
-              new_working_dir(temp_dir),
               temporary_test_file(TEST_IMPORTED_MODEL_FILE_CONTENTS, dir=temp_dir, suffix=".yaml") as import1,
               temporary_test_file(TEST_SECONDARY_IMPORTED_MODEL_FILE_CONTENTS, dir=temp_dir, suffix=".yaml") as import2,
               temporary_test_file(self.get_test_model(import1.name, import2.name), dir=temp_dir) as test_yaml):
