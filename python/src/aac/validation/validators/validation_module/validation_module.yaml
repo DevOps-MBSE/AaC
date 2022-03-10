@@ -1,0 +1,25 @@
+validation:
+  name: Validator Module
+  description: Every validation definition must have a corresponding validator plugin
+  behavior:
+    - name: Validate a complete validator plugin
+      type: request-response
+      description: process DataA and respond with DataD
+      input:
+        - name: in
+          type: validation
+      output:
+        - name: out
+          type: DataD
+      acceptance:
+        - scenario: Receive DataA request and return DataD response
+          given:
+            - System is running
+            - ServiceOne is running
+            - Subsystem is running
+            - ServiceThree is running
+          when:
+            - System receives a DataA request
+          then:
+            - System processes the request into a DataD response
+            - System returns the DataD response
