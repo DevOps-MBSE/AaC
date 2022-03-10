@@ -68,7 +68,8 @@ def parse(source: str) -> ParsedModel:
         source (str): The location from which to extract the Architecture-as-Code content.
 
     Returns:
-        A collection of Lexemes representing the parsed system.
+        A ParsedModel object containing the internal representation of the model and metadata
+        associated with the model.
     """
 
     def mark_to_source_location(start: yaml.error.Mark, end: yaml.error.Mark) -> SourceLocation:
