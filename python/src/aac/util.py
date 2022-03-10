@@ -7,6 +7,7 @@ module we prevent code duplication and simplify maintenance.
 Avoid adding to this module, always look for ways move these functions into modules with similar functionality.
 """
 
+import os
 import logging
 from contextlib import contextmanager
 from os import chdir, getcwd
@@ -55,7 +56,6 @@ def search(model: dict[str, Any], search_keys: list[str]) -> list:
         Returns a list of found data items based on the search keys.
 
     """
-
     done = False
     ret_val = []
 
@@ -155,3 +155,8 @@ def new_working_dir(directory):
     except Exception as e:
         chdir(current_dir)
         raise e
+
+
+def is_path_name(string: str) -> bool:
+    """Return True if string is a pathname; False, otherwise."""
+    return os.path.lexists(string)

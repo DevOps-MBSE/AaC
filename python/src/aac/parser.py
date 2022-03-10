@@ -12,6 +12,8 @@ import yaml
 from attr import Factory, attrib, attrs, validators
 from yaml.parser import ParserError as YAMLParserError
 
+from aac.util import is_path_name
+
 
 @attrs
 class SourceLocation:
@@ -45,7 +47,21 @@ class Lexeme:
     value: str = attrib(validator=validators.instance_of(str))
 
 
-def parse(source: str) -> list[Lexeme]:
+@attrs
+class ParsedModel:
+    """A parsed Architecture-as-Code model.
+
+    Attributes:
+        lexemes (list[Lexeme]): A list of lexemes for each item in the parsed model.
+        model (dict): The parsed model.
+    """
+
+    content: str = attrib(validator=validators.instance_of(str))
+    lexemes: list[Lexeme] = attrib(default=Factory(list), validator=validators.instance_of(list))
+    model: dict = attrib(default=Factory(list), validator=validators.instance_of(dict))
+
+
+def parse(source: str) -> ParsedModel:
     """Parse the Architecture-as-Code (AaC) model(s) from the provided source.
 
     Args:
@@ -58,13 +74,34 @@ def parse(source: str) -> list[Lexeme]:
     def mark_to_source_location(start: yaml.error.Mark, end: yaml.error.Mark) -> SourceLocation:
         return SourceLocation(start.line, start.column, start.index, end.column - start.column)
 
-    lexemes = []
-    tokens = [token for token in yaml.scan(_read_file_content(source), Loader=yaml.SafeLoader)]
-    for token in tokens:
-        if hasattr(token, 'value'):
-            location = mark_to_source_location(token.start_mark, token.end_mark)
-            lexemes.append(Lexeme(location, os.path.abspath(source), token.value))
-    return lexemes
+    def get_lexemes_for_model(contents):
+        yaml_source = os.path.abspath(source) if is_path_name(source) else "<string>"
+        lexemes = []
+        tokens = [token for token in yaml.scan(contents, Loader=yaml.SafeLoader)]
+        for token in tokens:
+            if hasattr(token, "value"):
+                location = mark_to_source_location(token.start_mark, token.end_mark)
+                lexemes.append(Lexeme(location, yaml_source, token.value))
+        return lexemes
+
+    contents = get_yaml_from_source(source)
+    model = parse_file(source) if is_path_name(source) else parse_str(source, contents)
+    return ParsedModel(contents, get_lexemes_for_model(contents), model)
+
+
+def get_yaml_from_source(source: str) -> str:
+    """Get the YAML contents from the provided source.
+
+    Args:
+        source (str): The source from which to get the YAML contents. This can be a path-like
+        string pointing to a file with YAML contents; or a string of YAML contents.
+
+    Returns:
+        The YAML contents extracted from source.
+    """
+    if is_path_name(source):
+        return _read_file_content(source)
+    return source
 
 
 def parse_file(arch_file: str) -> dict[str, dict]:
