@@ -1,7 +1,7 @@
 import re
 from unittest import TestCase
 
-from aac.parser import parse_str
+from aac.parser import parse, ParsedModel
 from aac.validator import ValidationError, _validate, validation
 
 
@@ -13,7 +13,7 @@ def kw(**kwargs):
 def o(model: str, **kwargs):
     """Return a simulated model after being parsed."""
     root = ("name" in kwargs and kwargs["name"]) or "undefined_name"
-    return {root: {model: kwargs}}
+    return ParsedModel("", [], {root: {model: kwargs}})
 
 
 def enum(**kwargs):
@@ -52,13 +52,13 @@ def assert_errors_contain(self, errors, pattern):
 
 def assert_model_is_valid(self, model):
     """Assert that the provided MODEL is valid."""
-    self.assertIsNone(_validate(model))
+    self.assertIsNone(_validate(model.model))
 
 
 def assert_model_is_invalid(self, model, error_pattern):
     """Assert that the provided MODEL is invalid."""
     with self.assertRaises(ValidationError) as cm:
-        _validate(model)
+        _validate(model.model)
 
         self.assertIsInstance(cm.exception, ValidationError)
 
@@ -299,7 +299,8 @@ class ValidatorTest(TestCase):
         new_root_type = data(name="Specification", fields=[kw(name="spec_name", type="string")])
         new_root_extension = ext(name="root_ext", type="root", dataExt=kw(add=[kw(name="spec", type="Specification")]))
         spec_root_definition = o(model="spec", name="spec", spec_name="some spec")
-        assert_model_is_valid(self, new_root_type | new_root_extension | spec_root_definition)
+        model = ParsedModel("", [], new_root_type.model | new_root_extension.model | spec_root_definition.model)
+        assert_model_is_valid(self, model)
 
     def test_validation_fails_for_required_field_with_empty_list(self):
         model = ext(name="invalid_ext", type="root", dataExt=kw(add=[]))
@@ -309,34 +310,28 @@ class ValidatorTest(TestCase):
 class ValidatorFunctionalTest(TestCase):
     def test_fails_to_validate_invalid_yaml_models(self):
         with self.assertRaises(ValidationError) as cm:
-            with validation(
-                parse_str, "validation-test", model_content="data:\n  name: invalid"
-            ):
+            with validation(parse, "data:\n  name: invalid"):
                 pass
 
         _, __, messages = cm.exception.args
         self.assertRegexpMatches("\n".join(messages), "missing.*field.*fields")
 
     def test_validates_parsed_yaml_models(self):
-        with validation(
-            parse_str, "validation-test", model_content=TEST_MODEL_WITH_EXTENSIONS
-        ) as result:
-            assert_model_is_valid(self, result.model)
+        with validation(parse, TEST_MODEL_WITH_EXTENSIONS) as result:
+            assert_model_is_valid(self, result.parsed_model)
 
     def test_validates_parsed_yaml_models_that_leverage_gen_pugin_extensions(self):
-        with validation(
-            parse_str, "validation-test", model_content=TEST_MODEL_WITH_EXTENSIONS
-        ) as result:
-            assert_model_is_valid(self, result.model)
+        with validation(parse, TEST_MODEL_WITH_EXTENSIONS) as result:
+            assert_model_is_valid(self, result.parsed_model)
 
     def test_validate_parsed_yaml_model_with_missing_enum_def(self):
         pattern = "unrecognized.*BehaviorType.*value.*(some_undefined_enum)"
-        model = parse_str("validation-test", TEST_MODEL_WITH_MISSING_ENUM_EXTENSION)
+        model = parse(TEST_MODEL_WITH_MISSING_ENUM_EXTENSION)
         assert_model_is_invalid(self, model, pattern)
 
     def test_validate_parsed_yaml_model_with_missing_data_def(self):
         pattern = "unrecognized.*field.*named.*(undefined_field)"
-        model = parse_str("validation-test", TEST_MODEL_WITH_MISSING_DATA_EXTENSION)
+        model = parse(TEST_MODEL_WITH_MISSING_DATA_EXTENSION)
         assert_model_is_invalid(self, model, pattern)
 
 

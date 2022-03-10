@@ -8,6 +8,8 @@ import os
 from contextlib import contextmanager
 from tempfile import NamedTemporaryFile, TemporaryDirectory
 
+from aac.util import new_working_dir
+
 
 def clear_directory(dirspec: str, *file_list: list[str]) -> None:
     """Clear the specified directory of any file contents.
@@ -47,9 +49,9 @@ def temporary_test_file(content: str, **extra_file_attrs):
         The temporary test file containing the specified contents.
     """
     with TemporaryDirectory() as temp_dir:
-        if not extra_file_attrs.get("dir"):
-            extra_file_attrs |= {"dir": temp_dir}
-        with NamedTemporaryFile(mode="w+", **extra_file_attrs) as file:
+        new_directory = extra_file_attrs.get("dir") or temp_dir
+        extra_file_attrs |= {"dir": new_directory}
+        with new_working_dir(new_directory), NamedTemporaryFile(mode="w", **extra_file_attrs) as file:
             file.write(content)
             file.seek(0)
 

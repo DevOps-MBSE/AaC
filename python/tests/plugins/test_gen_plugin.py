@@ -1,5 +1,5 @@
 import os
-from tempfile import NamedTemporaryFile, TemporaryDirectory
+from tempfile import TemporaryDirectory
 from unittest import TestCase
 from unittest.mock import patch
 
@@ -17,6 +17,7 @@ from aac.plugins.gen_plugin.gen_plugin_impl import (
 )
 from aac.plugins.plugin_execution import PluginExecutionStatusCode
 from aac.validator import validation
+from tests.helpers.io import temporary_test_file
 
 INIT_TEMPLATE_NAME = "__init__.py.jinja2"
 PLUGIN_IMPL_TEMPLATE_NAME = "plugin_impl.py.jinja2"
@@ -37,10 +38,7 @@ class TestGenPlugin(TestCase):
             os.makedirs(plugin_aac_path)
 
             # Write the plugin file into the "fake" test repo path
-            with NamedTemporaryFile(dir=plugin_aac_path, mode="w", suffix=".yaml") as plugin_yaml:
-                plugin_yaml.write(TEST_PLUGIN_YAML_STRING)
-                plugin_yaml.seek(0)
-
+            with temporary_test_file(TEST_PLUGIN_YAML_STRING, dir=plugin_aac_path, suffix=".yaml") as plugin_yaml:
                 is_user_desired_output_dir.return_value = True
                 result = generate_plugin(plugin_yaml.name)
 
@@ -67,10 +65,7 @@ class TestGenPlugin(TestCase):
 
             self.assertEqual(len(os.listdir(temp_directory)), 0)
 
-            with NamedTemporaryFile(dir=temp_directory, mode="w") as plugin_yaml:
-                plugin_yaml.write(TEST_PLUGIN_YAML_STRING)
-                plugin_yaml.seek(0)
-
+            with temporary_test_file(TEST_PLUGIN_YAML_STRING, dir=temp_directory,) as plugin_yaml:
                 is_user_desired_output_dir.return_value = True
                 result = generate_plugin(plugin_yaml.name)
 
@@ -87,10 +82,8 @@ class TestGenPlugin(TestCase):
 
             self.assertEqual(len(os.listdir(temp_directory)), 0)
 
-            with NamedTemporaryFile(dir=temp_directory, mode="w") as plugin_yaml:
-                plugin_yaml.write(f"{TEST_PLUGIN_YAML_STRING}\n---\n{SECONDARY_MODEL_YAML_DEFINITION}")
-                plugin_yaml.seek(0)
-
+            content = f"{TEST_PLUGIN_YAML_STRING}\n---\n{SECONDARY_MODEL_YAML_DEFINITION}"
+            with temporary_test_file(content, dir=temp_directory) as plugin_yaml:
                 is_user_desired_output_dir.return_value = True
                 result = generate_plugin(plugin_yaml.name)
 
@@ -105,10 +98,7 @@ class TestGenPlugin(TestCase):
 
             self.assertEqual(len(os.listdir(temp_directory)), 0)
 
-            with NamedTemporaryFile(dir=temp_directory, mode="w") as plugin_yaml:
-                plugin_yaml.write(TEST_PLUGIN_YAML_STRING)
-                plugin_yaml.seek(0)
-
+            with temporary_test_file(TEST_PLUGIN_YAML_STRING, dir=temp_directory) as plugin_yaml:
                 is_user_desired_output_dir.return_value = False
                 result = generate_plugin(plugin_yaml.name)
 
@@ -136,10 +126,10 @@ class TestGenPlugin(TestCase):
             self.assertEqual(expected_filename, actual_filename)
 
     def test_prepare_and_generate_plugin_files(self):
-        with validation(parser.parse_str, "", model_content=TEST_PLUGIN_YAML_STRING) as result:
+        with validation(parser.parse, TEST_PLUGIN_YAML_STRING) as result:
             plugin_name = "aac_gen_protobuf"
 
-            generated_templates = _prepare_and_generate_plugin_files(result.model, PLUGIN_TYPE_THIRD_STRING, "")
+            generated_templates = _prepare_and_generate_plugin_files(result.parsed_model.model, PLUGIN_TYPE_THIRD_STRING, "")
 
             generated_template_names = []
             generated_template_parent_directories = []
@@ -207,12 +197,11 @@ class TestGenPlugin(TestCase):
 
     def test__prepare_and_generate_plugin_files_errors_on_multiple_models(self):
         with validation(
-            parser.parse_str,
-            "",
-            model_content=f"{TEST_PLUGIN_YAML_STRING}\n---\n{SECONDARY_MODEL_YAML_DEFINITION}",
+            parser.parse,
+            f"{TEST_PLUGIN_YAML_STRING}\n---\n{SECONDARY_MODEL_YAML_DEFINITION}",
         ) as result:
             self.assertRaises(
-                GeneratePluginException, _prepare_and_generate_plugin_files, result.model, PLUGIN_TYPE_THIRD_STRING, ""
+                GeneratePluginException, _prepare_and_generate_plugin_files, result.parsed_model.model, PLUGIN_TYPE_THIRD_STRING, ""
             )
 
     def test__get_repository_root_directory_from_path(self):

@@ -85,7 +85,7 @@ def parse(source: str) -> ParsedModel:
         return lexemes
 
     contents = get_yaml_from_source(source)
-    model = parse_file(source) if is_path_name(source) else parse_str(source, contents)
+    model = _parse_file(source) if is_path_name(source) else _parse_str(source, contents)
     return ParsedModel(contents, get_lexemes_for_model(contents), model)
 
 
@@ -104,7 +104,7 @@ def get_yaml_from_source(source: str) -> str:
     return source
 
 
-def parse_file(arch_file: str) -> dict[str, dict]:
+def _parse_file(arch_file: str) -> dict[str, dict]:
     """Parse an Architecture-as-Code YAML file.
 
     Args:
@@ -120,11 +120,11 @@ def parse_file(arch_file: str) -> dict[str, dict]:
     files = _get_files_to_process(arch_file)
     for file in files:
         contents = _read_file_content(file)
-        parsed_models = parsed_models | parse_str(arch_file, contents)
+        parsed_models = parsed_models | _parse_str(arch_file, contents)
     return parsed_models
 
 
-def parse_str(source: str, model_content: str) -> dict[str, dict]:
+def _parse_str(source: str, model_content: str) -> dict[str, dict]:
     """Parse a string containing one or more YAML model definitions.
 
     Args:

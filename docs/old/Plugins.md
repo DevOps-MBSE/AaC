@@ -41,13 +41,13 @@ To validate an Architecture-as-Code model from within your plugin, you can do th
 ```python
 from pprint import pprint
 
-from aac.parser import parse_file, parse_str
+from aac.parser import parse
 from aac.plugins.plugin_execution import plugin_result
 from aac.validator import validation
 
 def my_plugin_command(architecture_file: str):
     def cmd():
-        with validation(parse_file, architecture_file) as result:
+        with validation(parse, architecture_file) as result:
             # Do whatever you want to with the validated `model' here.
             pprint(result.model)
             return f"The model in {architecture_file} is valid!\n"
