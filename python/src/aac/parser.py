@@ -52,6 +52,7 @@ class ParsedModel:
     """A parsed Architecture-as-Code model.
 
     Attributes:
+        content (str): The textual representation of the model.
         lexemes (list[Lexeme]): A list of lexemes for each item in the parsed model.
         model (dict): The parsed model.
     """
