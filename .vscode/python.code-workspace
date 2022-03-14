@@ -18,7 +18,6 @@
         ],
         "python.testing.pytestEnabled": false,
         "python.testing.unittestEnabled": true,
-        "python.pythonPath": "python/venv/bin/python",
         "python.formatting.blackArgs": [
             "--line-length=127"
         ]
@@ -68,6 +67,18 @@
             "args": [
                 "validate",
                 "${workspaceFolder}/src/aac/plugins/gen-protobuf/aac-gen-protobuf.yaml"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "Python: Preview-Validate Validator Plugin",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/aac/__main__.py",
+            "args": [
+                "validate-preview",
+                "${workspaceFolder}/src/aac/plugins/validators/validation_module/validation_module.yaml"
             ],
             "console": "integratedTerminal",
             "justMyCode": false
