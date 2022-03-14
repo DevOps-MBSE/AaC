@@ -11,8 +11,8 @@ class ValidatorPlugin:
     Attributes:
         name: A string with the name of the command argument
         validation_definition: The AaC definition of the Validator Plugin
-        validation_function:
-        validation_arguments:
+        validation_function: The validation callback function
+        validation_arguments: Any additional arguments to supply to the validation_function
     """
 
     name = attrib(validator=validators.instance_of(str))
