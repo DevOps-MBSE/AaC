@@ -1,11 +1,11 @@
-"""Validation plugin to ensure that each validation definition has a corresponding validation function."""
+"""Validation plugin to ensure that each validation definition has a corresponding validation implementation."""
 
 from aac.package_resources import get_resource_file_contents
 from aac.plugins import hookimpl
 from aac.plugins.validators import get_validation_definition_from_plugin_definitions
 from aac.validation.ValidatorPlugin import ValidatorPlugin
 
-PLUGIN_YAML_FILE = "validation_module.yaml"
+PLUGIN_YAML_FILE = "validator_implementation.yaml"
 
 
 @hookimpl

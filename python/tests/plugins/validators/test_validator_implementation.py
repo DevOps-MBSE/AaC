@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from aac import parser
-from aac.plugins.validators.validation_module import get_plugin_aac_definitions, register_validators
+from aac.plugins.validators.validator_implementation import get_plugin_aac_definitions, register_validators
 from aac.validation.ValidatorPlugin import ValidatorPlugin
 
 
