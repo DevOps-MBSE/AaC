@@ -1,7 +1,6 @@
 """Validation plugin to ensure that each validation definition has a corresponding validation function."""
 
 from aac.package_resources import get_resource_file_contents
-from aac import parser
 from aac.plugins import hookimpl
 from aac.plugins.validators import get_validation_definition_from_plugin_definitions
 from aac.validation.Validator_Plugin import Validator_Plugin
@@ -28,5 +27,5 @@ def register_validators() -> Validator_Plugin:
     Returns:
         A collection of data necessary to manage and execute validation plugins.
     """
-    validation_definition = get_validation_definition_from_plugin_definitions(__name__, get_plugin_aac_definitions())
+    validation_definition = get_validation_definition_from_plugin_definitions(PLUGIN_YAML_FILE, get_plugin_aac_definitions())
     return Validator_Plugin.from_definition(validation_definition)
