@@ -2,15 +2,15 @@ validation:
   name: Definition has an implementation
   description: Verifies that every validation definition has a corresponding python plugin implementation
   behavior:
-    - name: Validate a validator plugin
+    - name: Verify validation definition and implementation
       type: request-response
       description:
       input:
         - name: input
-          type: validator_input
+          type: ValidatorInput
       output:
         - name: results
-          type: validator_output
+          type: ValidatorOutput
       acceptance:
         - scenario: Successfully Validate a Validator Plugin
           given:
@@ -19,9 +19,9 @@ validation:
           when:
             - The validator plugin is tested
           then:
-            - The validator_output does not indicate any errors
-            - The validator_output does not indicate any warnings
-            - The validator_output indicates the validator plugin under test is valid
+            - The ValidatorOutput does not indicate any errors
+            - The ValidatorOutput does not indicate any warnings
+            - The ValidatorOutput indicates the validator plugin under test is valid
         - scenario: Fail to Validate a Validator Plugin with Missing Python Implementation
           given:
             - The plugin has a valid `validation` definition.
@@ -29,5 +29,5 @@ validation:
           when:
             - The validator plugin is tested
           then:
-            - The validator_output has errors
-            - The validator_output errors indicate that there is no corresponding python implementation
+            - The ValidatorOutput has errors
+            - The ValidatorOutput errors indicate that there is no corresponding python implementation

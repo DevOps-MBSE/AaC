@@ -50,7 +50,7 @@ data:
 
         You can extend any 'enum' and 'data' definition.
     - name: validation
-      type: validation
+      type: Validation
       description: |
         A declaration for a validation definition.
 
@@ -135,7 +135,7 @@ data:
     - add
 ---
 data:
-  name: validation
+  name: Validation
   fields:
     - name: name
       type: string
@@ -157,7 +157,21 @@ data:
     - Definition has an implementation
 ---
 data:
-  name: validator_input
+  name: ValidationReference
+  fields:
+    - name: name
+      type: string
+      description: |
+        The name of the validation definition.
+    - name: arguments
+      type: string[]
+      description: |
+        A list of arguments to pass to the validator.
+  required:
+    - name
+---
+data:
+  name: ValidatorInput
   fields:
     - name: name
       type: string
@@ -165,7 +179,7 @@ data:
         The name of the validation rule and plugin.
 ---
 data:
-  name: validator_output
+  name: ValidatorOutput
   fields:
     - name: name
       type: string
@@ -265,9 +279,9 @@ data:
         The list of names of all the fields that are required for the
         definition.
     - name: validation
-      type: string[]
+      type: ValidationReference[]
       description: |
-        The names of validation definitions.
+        References and additional arguments for validations to apply to the definition.
   required:
     - name
     - fields
