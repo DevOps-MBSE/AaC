@@ -1,10 +1,10 @@
-"""Validator_Plugin class."""
+"""ValidatorPlugin class."""
 from __future__ import annotations
 from attr import attrib, attrs, validators
 
 
 @attrs
-class Validator_Plugin:
+class ValidatorPlugin:
     """
     A class that contains all the relevant information to manage and execute validator plugins with the validation process.
 
@@ -21,17 +21,17 @@ class Validator_Plugin:
     validation_arguments = attrib(default=None, validator=validators.instance_of((list, type(None))))
 
     @staticmethod
-    def from_definition(validation_definition: dict) -> Validator_Plugin:
+    def from_definition(validation_definition: dict) -> ValidatorPlugin:
         """
-        Parse a validation definition and return a new instance of Validator_Plugin populated from the validation definition.
+        Parse a validation definition and return a new instance of ValidatorPlugin populated from the validation definition.
 
         Args:
             validation_definition: The definition used to populate the returned class instance
 
         Returns:
-            A instance of Validator_Plugin
+            A instance of ValidatorPlugin
         """
         plugin_definition = validation_definition.get("validation")
         plugin_name = plugin_definition.get("name")
 
-        return Validator_Plugin(name=plugin_name, validation_definition=validation_definition)
+        return ValidatorPlugin(name=plugin_name, validation_definition=validation_definition)

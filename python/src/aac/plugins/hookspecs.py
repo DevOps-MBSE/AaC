@@ -2,7 +2,7 @@
 
 from aac.AacCommand import AacCommand
 from aac.plugins import hookspec
-from aac.validation import Validator_Plugin
+from aac.validation import ValidatorPlugin
 
 
 @hookspec
@@ -26,7 +26,7 @@ def get_plugin_aac_definitions() -> str:
 
 
 @hookspec
-def register_validators() -> Validator_Plugin:
+def register_validators() -> ValidatorPlugin:
     """
     Returns the information about the validation plugin necessary to execute validation.
 
