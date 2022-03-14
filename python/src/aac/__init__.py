@@ -5,7 +5,7 @@ __version__ = "0.0.5"
 
 logging.basicConfig(
     format="%(asctime)s::%(name)s::%(levelname)s::%(message)s",
-    filename="aac.log",  # TODO: make the log naming and destination configurable
+    filename="aac.log",
     encoding="utf-8",
     level=logging.DEBUG,
     datefmt="%m/%d/%Y %H:%M:%S",
