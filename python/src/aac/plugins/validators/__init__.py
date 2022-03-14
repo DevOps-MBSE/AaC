@@ -14,6 +14,7 @@ def get_validation_definition_from_plugin_definitions(source_name: str, plugin_d
     Returns:
         The validation definition for the plugin.
     """
+
     def is_validation_definition(definition):
         return "validation" in definition
 
@@ -21,6 +22,8 @@ def get_validation_definition_from_plugin_definitions(source_name: str, plugin_d
     validation_definitions = list(filter(is_validation_definition, parsed_validator_definitions.values()))
 
     if len(validation_definitions) != 1:
-        raise RuntimeError(f"Expected one and only one validation defintion.\nValidation Definitions:\n{validation_definitions}")
+        raise RuntimeError(
+            f"Expected one and only one validation defintion.\nValidation Definitions:\n{validation_definitions}"
+        )
 
     return validation_definitions[0]
