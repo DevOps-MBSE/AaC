@@ -3,6 +3,7 @@
 import logging
 from typing import Any
 
+
 def search(model: dict[str, Any], search_keys: list[str]) -> list:
     """
     Search an AaC model structure by key(s).
