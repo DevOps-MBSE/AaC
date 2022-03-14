@@ -13,6 +13,7 @@ from aac.lang.server import start_lsp
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 from aac.spec.core import get_aac_spec_as_yaml
 from aac.validator import validation
+from aac.validation import preview_validation
 
 
 def run_cli():
@@ -45,10 +46,11 @@ def run_cli():
                 sys.exit(result.status_code.value)
 
 
-VERSION_COMMAND_NAME = "version"
-VALIDATE_COMMAND_NAME = "validate"
 CORE_SPEC_COMMAND_NAME = "aac-core-spec"
 START_LSP_COMMAND_NAME = "start-lsp"
+VERSION_COMMAND_NAME = "version"
+VALIDATE_COMMAND_NAME = "validate"
+VALIDATE_PREVIEW_COMMAND_NAME = "validate-preview"
 
 
 def _version_cmd() -> PluginExecutionResult:
@@ -69,6 +71,17 @@ def _validate_cmd(model_file: str) -> PluginExecutionResult:
             return f"{model_file} is valid"
 
     with plugin_result(VALIDATE_COMMAND_NAME, validate_model) as result:
+        return result
+
+
+def _preview_validate_cmd(model_file: str) -> PluginExecutionResult:
+    """Run the built-in preview validate 2.0 command."""
+
+    def preview_validate_model() -> str:
+        with preview_validation(parser.parse_file, model_file):
+            return f"{model_file} is valid"
+
+    with plugin_result(VALIDATE_COMMAND_NAME, preview_validate_model) as result:
         return result
 
 
@@ -94,6 +107,12 @@ def _setup_arg_parser(
             VALIDATE_COMMAND_NAME,
             "Ensures the AaC yaml is valid per the AaC core spec",
             _validate_cmd,
+            [AacCommandArgument("model_file", "The path to the AaC model yaml file to validate")],
+        ),
+        AacCommand(
+            VALIDATE_PREVIEW_COMMAND_NAME,
+            "Preview of the new validation command. This command is only temporary and will replace the existing validate command.",
+            _preview_validate_cmd,
             [AacCommandArgument("model_file", "The path to the AaC model yaml file to validate")],
         ),
         AacCommand(
