@@ -2,6 +2,7 @@
 
 from aac.AacCommand import AacCommand
 from aac.plugins import hookspec
+from aac.validation import Validator_Plugin
 
 
 @hookspec
@@ -15,10 +16,20 @@ def get_commands() -> list[AacCommand]:
 
 
 @hookspec
-def get_plugin_aac_definitionss() -> str:
+def get_plugin_aac_definitions() -> str:
     """
     Return the plugins Aac definitions.
 
     Returns:
          string representing yaml extensions and data definitions employed by the plugin
+    """
+
+
+@hookspec
+def register_validators() -> Validator_Plugin:
+    """
+    Returns the information about the validation plugin necessary to execute validation.
+
+    Returns:
+        A collection of data necessary to manage and execute validation plugins.
     """
