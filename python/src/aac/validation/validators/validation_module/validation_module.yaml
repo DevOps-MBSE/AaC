@@ -1,25 +1,33 @@
 validation:
-  name: Validator Module
-  description: Every validation definition must have a corresponding validator plugin
+  name: Validate validation definition and plugin
+  description: Verifies that every validation definition has a corresponding python plugin implementation
   behavior:
-    - name: Validate a complete validator plugin
+    - name: Validate a validator plugin
       type: request-response
-      description: process DataA and respond with DataD
+      description:
       input:
-        - name: in
-          type: validation
+        - name: input
+          type: validator_input
       output:
-        - name: out
-          type: DataD
+        - name: results
+          type: validator_output
       acceptance:
-        - scenario: Receive DataA request and return DataD response
+        - scenario: Successfully Validate a Validator Plugin
           given:
-            - System is running
-            - ServiceOne is running
-            - Subsystem is running
-            - ServiceThree is running
+            - The plugin has a valid `validation` definition.
+            - The plugin has a corresponding python implementation of the validator spechook.
           when:
-            - System receives a DataA request
+            - The validator plugin is tested
           then:
-            - System processes the request into a DataD response
-            - System returns the DataD response
+            - The validator_output does not indicate any errors
+            - The validator_output does not indicate any warnings
+            - The validator_output indicates the validator plugin under test is valid
+        - scenario: Fail to Validate a Validator Plugin with Missing Python Implementation
+          given:
+            - The plugin has a valid `validation` definition.
+            - The plugin does not have a corresponding python implementation of the validator spechook.
+          when:
+            - The validator plugin is tested
+          then:
+            - The validator_output has errors
+            - The validator_output errors indicate that there is no corresponding python implementation
