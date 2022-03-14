@@ -18,7 +18,7 @@ class TestSpecCore(TestCase):
         """
         Unit test for the core.get_root_names method.
         """
-        expected_results = ["import", "enum", "data", "model", "usecase", "ext"]
+        expected_results = ["import", "enum", "data", "model", "usecase", "ext", "validation"]
 
         result = core.get_roots()
 

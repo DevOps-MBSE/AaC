@@ -31,15 +31,7 @@ class Validator_Plugin:
         Returns:
             A instance of Validator_Plugin
         """
-        def is_validation_definition(definition):
-            return "validation" in definition
-
-        validation_definitions = list(filter(is_validation_definition, validation_definition.values()))
-
-        if len(validation_definitions) != 1:
-            raise RuntimeError(f"Expected one and only one validation defintion.\nValidation Definitions:\n{validation_definitions}")
-
-        plugin_definition = validation_definitions[0].get("validation")
+        plugin_definition = validation_definition.get("validation")
         plugin_name = plugin_definition.get("name")
 
         return Validator_Plugin(name=plugin_name, validation_definition=validation_definition)
