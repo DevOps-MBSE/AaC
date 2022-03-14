@@ -10,6 +10,7 @@ Avoid adding to this module, always look for ways move these functions into modu
 from contextlib import contextmanager
 from os import chdir, getcwd
 
+
 @contextmanager
 def new_working_dir(directory):
     """Change directories to execute some code, then change back.
