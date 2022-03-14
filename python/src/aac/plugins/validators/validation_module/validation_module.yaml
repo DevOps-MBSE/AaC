@@ -1,5 +1,5 @@
 validation:
-  name: Validate validation definition and plugin
+  name: Definition has an implementation
   description: Verifies that every validation definition has a corresponding python plugin implementation
   behavior:
     - name: Validate a validator plugin

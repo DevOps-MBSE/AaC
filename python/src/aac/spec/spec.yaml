@@ -153,6 +153,8 @@ data:
     - name
     - description
     - behavior
+  validation:
+    - Definition has an implementation
 ---
 data:
   name: validator_input
@@ -262,6 +264,10 @@ data:
       description: |
         The list of names of all the fields that are required for the
         definition.
+    - name: validation
+      type: string[]
+      description: |
+        The names of validation definitions.
   required:
     - name
     - fields
