@@ -52,13 +52,10 @@ data:
     - name: validation
       type: Validation
       description: |
-        A declaration for a validation definition.
+        A reference to a validation plugin which will provide verification and validation
+        for the definition and any uses of it depending on which validation plugins are referenced.
 
-        Validation definitions must be paired with a corresponding validation
-        plugin. Validations are referenced by name in the definition that they
-        are applied to. For instance, the validation definition references a
-        validation plugin that ensures validation definitions have a corresponding
-        plugin capable of executing some validation check.
+        Validators are referenced by name.
 ---
 data:
   name: enum
@@ -154,7 +151,7 @@ data:
     - description
     - behavior
   validation:
-    - Definition has an implementation
+    - name: Definition has an implementation
 ---
 data:
   name: ValidationReference
