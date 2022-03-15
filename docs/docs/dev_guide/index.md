@@ -24,14 +24,18 @@ This project prioritizes supporting accessible, reproduceable, and easy to use d
 
 If it's your first time using Gitpod, you'll be prompted to make an account or use SSO provided by Gitlab and Github. Gitpod provides a free tier, so you're not required to pay before using it.
 
-Gitpod provides the ability to initialize the environment with shell commands and scripts. We leverage these init commands to prime a development environment (terminal) for the AaC Python package and the AaC VSCode Extension (Typescript). You can find the init commands in the `.Gitpod.yml` file at the root of the repository.
+Gitpod provides the ability to initialize the environment with shell commands and scripts. We leverage these init commands to handle any initialization for the AaC Python package and the AaC VSCode Extension (Typescript), such as installing dependencies and building the projects. You can find the init commands in the `.Gitpod.yml` file at the root of the repository.
 
 ## Non-Gitpod Environment
 
 ### Requirements
-There are some developmental and system requirements for developing with AaC. The always up-to-date source of truth for requirements will be the `.gitpod.Dockerfile` at the root of the AaC repository.
+There are some developmental and system requirements for developing with AaC.
+
 * Python 3.9+ Installed
-* Typescript Dependencies
+* Typescript Development Dependencies
+
+#### Linux Requirements
+Developing the VSCode extension in linux environments may require the installing of additional OS dependencies.
     * libnss3-dev
     * libgbm-dev
 
@@ -43,7 +47,12 @@ We expect python developers to use a virtual environment when developing the AaC
 
 Create a new environment:
 ```bash
-python3.9 -m venv venv --system-site-packages
+python3.9 -m venv venv --upgrade-deps
+```
+
+Or if you're developing in a containerized environment:
+```bash
+python3.9 -m venv venv --upgrade-deps --system-site-packages
 ```
 
 Configure your shell with the virtual environment:
@@ -102,7 +111,7 @@ Additionally, to get an HTML code coverage report, update the `tox` command to i
 
 #### VSCode Unit Test Support for Python
 The python plugin for VSCode supports the `unittest` python library, and not the `nose2` framework that we use. The impact is fairly minimal, but python unit tests using the `nose2` parameterized test feature will not run correctly from within the VSCode IDE since it fails to recognize the `nose2` parameterized tests as parameterized tests causing them to fail.
-	
+
 To get around this, you can run all the tests from the terminal using the above `tox` commands.
 
 ### Developing the AaC TypeScript VSCode Extension
