@@ -36,4 +36,4 @@ use the "aac-" prefix when building and puglishing AaC plugins.  Search (PyPI)[h
 ## AaC Core Plugins
 
 AaC core plugins are built and published by our team but are not part of the AaC distribution.  We want AaC to be
-as useful as possible, but not bloated.  As we extend the functionallity of AaC, expect to see more core plugins published.
+as useful as possible, but not bloated.  As we extend the functionality of AaC, expect to see more core plugins published.
