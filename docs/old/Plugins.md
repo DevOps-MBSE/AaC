@@ -49,7 +49,7 @@ def my_plugin_command(architecture_file: str):
     def cmd():
         with validation(parse, architecture_file) as result:
             # Do whatever you want to with the validated `model' here.
-            pprint(result.model)
+            pprint(result.definition)
             return f"The model in {architecture_file} is valid!\n"
 
     with plugin_result('my-plugin-name', cmd) as result:

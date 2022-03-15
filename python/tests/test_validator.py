@@ -1,7 +1,7 @@
 import re
 from unittest import TestCase
 
-from aac.parser import parse, ParsedModel
+from aac.parser import parse, ParsedDefinition
 from aac.validator import ValidationError, _validate, validation
 
 
@@ -13,7 +13,7 @@ def kw(**kwargs):
 def o(model: str, **kwargs):
     """Return a simulated model after being parsed."""
     root = ("name" in kwargs and kwargs["name"]) or "undefined_name"
-    return ParsedModel("", [], {root: {model: kwargs}})
+    return ParsedDefinition("", [], {root: {model: kwargs}})
 
 
 def enum(**kwargs):
@@ -52,13 +52,13 @@ def assert_errors_contain(self, errors, pattern):
 
 def assert_model_is_valid(self, model):
     """Assert that the provided MODEL is valid."""
-    self.assertIsNone(_validate(model.model))
+    self.assertIsNone(_validate(model.definition))
 
 
 def assert_model_is_invalid(self, model, error_pattern):
     """Assert that the provided MODEL is invalid."""
     with self.assertRaises(ValidationError) as cm:
-        _validate(model.model)
+        _validate(model.definition)
 
         self.assertIsInstance(cm.exception, ValidationError)
 
@@ -299,7 +299,7 @@ class ValidatorTest(TestCase):
         new_root_type = data(name="Specification", fields=[kw(name="spec_name", type="string")])
         new_root_extension = ext(name="root_ext", type="root", dataExt=kw(add=[kw(name="spec", type="Specification")]))
         spec_root_definition = o(model="spec", name="spec", spec_name="some spec")
-        model = ParsedModel("", [], new_root_type.model | new_root_extension.model | spec_root_definition.model)
+        model = ParsedDefinition("", [], new_root_type.definition | new_root_extension.definition | spec_root_definition.definition)
         assert_model_is_valid(self, model)
 
     def test_validation_fails_for_required_field_with_empty_list(self):

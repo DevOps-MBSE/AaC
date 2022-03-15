@@ -24,7 +24,7 @@ class TestGenerateGherkinBehaviorsPlugin(TestCase):
             plugin_model = parser.parse(plugin_model_file.name)
             commands_yaml = list(map(
                 _filter_command_behaviors,
-                util.search(plugin_model.model.get(plugin_name), ["model", "behavior"])
+                util.search(plugin_model.definition.get(plugin_name), ["model", "behavior"])
             ))
 
             # Assert that the commands returned by the plugin matches those defined in the yaml file

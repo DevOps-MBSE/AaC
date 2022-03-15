@@ -51,9 +51,9 @@ class TestArchParser(TestCase):
               temporary_test_file(TEST_SECONDARY_IMPORTED_MODEL_FILE_CONTENTS, dir=temp_dir, suffix=".yaml") as import2,
               temporary_test_file(self.get_test_model(import1.name, import2.name), dir=temp_dir) as test_yaml):
             parsed_model = parser.parse(test_yaml.name)
-            self.check_model_name(parsed_model.model, "Message", "data")
-            self.check_model_name(parsed_model.model, "Status", "enum")
-            self.check_model_name(parsed_model.model, "EchoService", "model")
+            self.check_model_name(parsed_model.definition, "Message", "data")
+            self.check_model_name(parsed_model.definition, "Status", "enum")
+            self.check_model_name(parsed_model.definition, "EchoService", "model")
 
             first, second, *_ = parsed_model.lexemes
             self.assertEqual(first.source, test_yaml.name)

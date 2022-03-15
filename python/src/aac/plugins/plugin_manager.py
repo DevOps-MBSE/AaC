@@ -54,6 +54,6 @@ def get_plugin_model_definitions():
     for plugin_ext in plugin_models_yaml:
         if len(plugin_ext) > 0:
             models = parser.parse(plugin_ext)
-            plugin_extensions = models.model | plugin_extensions
+            plugin_extensions = models.definition | plugin_extensions
 
     return plugin_extensions

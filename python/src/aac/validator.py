@@ -8,7 +8,7 @@ from attr import attrib, attrs, validators, Factory
 from iteration_utilities import flatten
 
 from aac import plugins, util
-from aac.parser import ParsedModel
+from aac.parser import ParsedDefinition
 from aac.spec.core import get_aac_spec, get_primitives
 
 VALIDATOR_CONTEXT = None
@@ -25,11 +25,11 @@ class ValidationResult:
     """Represents the result of validating a model.
 
     Attributes:
+        parsed_model (ParsedDefinition): The model that was validated; if the model is invalid, None.
         messages (list[str]): A list of messages to be provided as feedback for the user.
-        model (ParsedModel): The model that was validated; if the model is invalid, None.
     """
 
-    parsed_model: ParsedModel = attrib(validator=validators.instance_of(ParsedModel))
+    parsed_model: ParsedDefinition = attrib(validator=validators.instance_of(ParsedDefinition))
     messages: list[str] = attrib(default=Factory(list), validator=validators.instance_of(list))
 
 
@@ -49,7 +49,7 @@ def validation(model_producer: callable, source: str, **kwargs):
     """
     try:
         result = ValidationResult(model_producer(source))
-        _validate(result.parsed_model.model)
+        _validate(result.parsed_model.definition)
         result.messages.append(f"{source} is valid")
         yield result
     except ValidationError as ve:

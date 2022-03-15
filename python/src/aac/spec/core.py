@@ -2,13 +2,13 @@
 
 import yaml
 
-from aac.parser import parse, ParsedModel
+from aac.parser import parse, ParsedDefinition
 from aac.package_resources import get_resource_file_contents
 from aac.util import get_models_by_type, search
 
 PRIMITIVES: list[str] = []
 ROOT_NAMES: list[str] = []
-AAC_MODEL: ParsedModel = None
+AAC_MODEL: ParsedDefinition = None
 
 
 def get_aac_spec() -> tuple[dict[str, dict], dict[str, dict]]:
@@ -27,14 +27,14 @@ def get_aac_spec() -> tuple[dict[str, dict], dict[str, dict]]:
     global AAC_MODEL
     if AAC_MODEL:
         # already parsed, just return cached values
-        aac_data = get_models_by_type(AAC_MODEL.model, "data")
-        aac_enums = get_models_by_type(AAC_MODEL.model, "enum")
+        aac_data = get_models_by_type(AAC_MODEL.definition, "data")
+        aac_enums = get_models_by_type(AAC_MODEL.definition, "enum")
         return aac_data, aac_enums
 
     model_content = get_resource_file_contents(__package__, "spec.yaml")
     AAC_MODEL = parse(model_content)
-    aac_data = get_models_by_type(AAC_MODEL.model, "data")
-    aac_enums = get_models_by_type(AAC_MODEL.model, "enum")
+    aac_data = get_models_by_type(AAC_MODEL.definition, "data")
+    aac_enums = get_models_by_type(AAC_MODEL.definition, "enum")
 
     return aac_data, aac_enums
 

@@ -34,7 +34,7 @@ class SourceLocation:
 
 @attrs
 class Lexeme:
-    """A lexical unit for a parsed AaC object.
+    """A lexical unit for a parsed AaC definition.
 
     Attributes:
         location (SourceLocation): The location at which the object was found.
@@ -48,35 +48,35 @@ class Lexeme:
 
 
 @attrs
-class ParsedModel:
-    """A parsed Architecture-as-Code model.
+class ParsedDefinition:
+    """A parsed Architecture-as-Code definition.
 
     Attributes:
-        content (str): The textual representation of the model.
-        lexemes (list[Lexeme]): A list of lexemes for each item in the parsed model.
-        model (dict): The parsed model.
+        content (str): The textual representation of the definition.
+        lexemes (list[Lexeme]): A list of lexemes for each item in the parsed definition.
+        definition (dict): The parsed definition.
     """
 
     content: str = attrib(validator=validators.instance_of(str))
     lexemes: list[Lexeme] = attrib(default=Factory(list), validator=validators.instance_of(list))
-    model: dict = attrib(default=Factory(list), validator=validators.instance_of(dict))
+    definition: dict = attrib(default=Factory(list), validator=validators.instance_of(dict))
 
 
-def parse(source: str) -> ParsedModel:
-    """Parse the Architecture-as-Code (AaC) model(s) from the provided source.
+def parse(source: str) -> ParsedDefinition:
+    """Parse the Architecture-as-Code (AaC) definition(s) from the provided source.
 
     Args:
         source (str): The location from which to extract the Architecture-as-Code content.
 
     Returns:
-        A ParsedModel object containing the internal representation of the model and metadata
-        associated with the model.
+        A ParsedDefinition object containing the internal representation of the definition and metadata
+        associated with the definition.
     """
 
     def mark_to_source_location(start: yaml.error.Mark, end: yaml.error.Mark) -> SourceLocation:
         return SourceLocation(start.line, start.column, start.index, end.column - start.column)
 
-    def get_lexemes_for_model(contents):
+    def get_lexemes_for_definition(contents):
         yaml_source = os.path.abspath(source) if is_path_name(source) else "<string>"
         lexemes = []
         tokens = [token for token in yaml.scan(contents, Loader=yaml.SafeLoader)]
@@ -87,8 +87,8 @@ def parse(source: str) -> ParsedModel:
         return lexemes
 
     contents = get_yaml_from_source(source)
-    model = _parse_file(source) if is_path_name(source) else _parse_str(source, contents)
-    return ParsedModel(contents, get_lexemes_for_model(contents), model)
+    definition = _parse_file(source) if is_path_name(source) else _parse_str(source, contents)
+    return ParsedDefinition(contents, get_lexemes_for_definition(contents), definition)
 
 
 def get_yaml_from_source(source: str) -> str:
