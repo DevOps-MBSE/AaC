@@ -7,7 +7,7 @@ from aac import util, parser
 from aac.plugins.plugin_execution import PluginExecutionStatusCode
 from aac.plugins.gen_gherkin_behaviors import (
     get_commands,
-    get_plugin_aac_definitionss,
+    get_plugin_aac_definitions,
     __name__ as gen_gherkin_behaviors_module_name,
 )
 from aac.plugins.gen_gherkin_behaviors.gen_gherkin_behaviors_impl import (
@@ -45,13 +45,13 @@ class TestGenerateGherkinBehaviorsPlugin(TestCase):
                     # Assert argument is defined
                     self.assertIn(argument.name, arg_names)
 
-    def test_get_plugin_aac_definitionss_conforms_with_plugin_model(self):
+    def test_get_plugin_aac_definitions_conforms_with_plugin_model(self):
         with resources.open_text(
             gen_gherkin_behaviors_module_name, "gen_gherkin_behaviors.yaml"
         ) as plugin_model_file:
             plugin_model_content = plugin_model_file.read()
 
-            self.assertEqual(plugin_model_content, get_plugin_aac_definitionss())
+            self.assertEqual(plugin_model_content, get_plugin_aac_definitions())
 
     def test_gen_gherkin_behaviors_with_one_behavior_multiple_scenarios(self):
         expected_filename = "First_Behavior.feature"

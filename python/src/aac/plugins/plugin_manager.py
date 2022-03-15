@@ -49,7 +49,7 @@ def get_plugin_model_definitions():
     """
 
     plugin_manager = get_plugin_manager()
-    plugin_models_yaml = plugin_manager.hook.get_plugin_aac_definitionss()
+    plugin_models_yaml = plugin_manager.hook.get_plugin_aac_definitions()
     plugin_extensions = {}
     for plugin_ext in plugin_models_yaml:
         if len(plugin_ext) > 0:
