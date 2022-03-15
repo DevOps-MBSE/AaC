@@ -151,7 +151,7 @@ data:
     - description
     - behavior
   validation:
-    - name: Definition has an implementation
+    - name: Validation definition has an implementation
 ---
 data:
   name: ValidationReference
@@ -282,6 +282,9 @@ data:
   required:
     - name
     - fields
+  validation:
+    - name: Type references exist
+    - name: Required fields are present
 ---
 data:
   name: Behavior

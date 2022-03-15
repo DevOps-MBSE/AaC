@@ -1,5 +1,5 @@
 validation:
-  name: Definition has an implementation
+  name: Validation definition has an implementation
   description: Verifies that every validation definition has a corresponding python plugin implementation
   behavior:
     - name: Verify validation definition and implementation
@@ -14,8 +14,8 @@ validation:
       acceptance:
         - scenario: Successfully Validate a Validator Plugin
           given:
-            - The plugin has a valid `validation` definition.
-            - The plugin has a corresponding python implementation of the validator spechook.
+            - The validation plugin has a valid `validation` definition.
+            - The validation definition has a corresponding python implementation.
           when:
             - The validator plugin is tested
           then:
@@ -24,8 +24,8 @@ validation:
             - The ValidatorOutput indicates the validator plugin under test is valid
         - scenario: Fail to Validate a Validator Plugin with Missing Python Implementation
           given:
-            - The plugin has a valid `validation` definition.
-            - The plugin does not have a corresponding python implementation of the validator spechook.
+            - The validation plugin has a valid `validation` definition.
+            - The validation does not have definition has a corresponding python implementation.
           when:
             - The validator plugin is tested
           then:
