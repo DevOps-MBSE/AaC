@@ -46,8 +46,40 @@ def temporary_test_file(content: str, **extra_file_attrs):
     Yields:
         The temporary test file containing the specified contents.
     """
-    with TemporaryDirectory() as temp_dir, NamedTemporaryFile(dir=temp_dir, mode="w", **(extra_file_attrs or {})) as f:
-        f.write(content)
-        f.seek(0)
+    with TemporaryDirectory() as temp_dir:
+        new_directory = extra_file_attrs.get("dir") or temp_dir
+        extra_file_attrs |= {"dir": new_directory}
+        with new_working_dir(new_directory), NamedTemporaryFile(mode="w", **extra_file_attrs) as file:
+            file.write(content)
+            file.seek(0)
 
-        yield f
+            yield file
+
+
+@contextmanager
+def new_working_dir(directory):
+    """Change directories to execute some code, then change back.
+
+    Args:
+        directory: The new working directory to switch to.
+
+    Returns:
+        The new working directory.
+
+    Example Usage:
+        from os import getcwd
+        from tempfile import TemporaryDirectory
+
+        print(getcwd())
+        with TemporaryDirectory() as tmpdir, new_working_dir(tmpdir):
+            print(getcwd())
+        print(getcwd())
+    """
+    current_dir = os.getcwd()
+    try:
+        os.chdir(directory)
+        yield os.getcwd()
+        os.chdir(current_dir)
+    except Exception as e:
+        os.chdir(current_dir)
+        raise e

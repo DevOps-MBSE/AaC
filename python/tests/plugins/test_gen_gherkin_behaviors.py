@@ -19,12 +19,13 @@ from nose2.tools import params
 
 class TestGenerateGherkinBehaviorsPlugin(TestCase):
     def test_gen_gherkin_get_commands_conforms_with_plugin_model(self):
-        with resources.open_text(
-            gen_gherkin_behaviors_module_name, "gen_gherkin_behaviors.yaml"
-        ) as plugin_model_file:
+        with resources.open_text(gen_gherkin_behaviors_module_name, "gen_gherkin_behaviors.yaml") as plugin_model_file:
             plugin_name = "aac-gen-gherkin-behaviors"
-            plugin_model = parser.parse_str(plugin_model_file.name, plugin_model_file.read())
-            commands_yaml = list(map(_filter_command_behaviors, util.search(plugin_model.get(plugin_name), ["model", "behavior"])))
+            plugin_model = parser.parse(plugin_model_file.name)
+            commands_yaml = list(map(
+                _filter_command_behaviors,
+                util.search(plugin_model.definition.get(plugin_name), ["model", "behavior"])
+            ))
 
             # Assert that the commands returned by the plugin matches those defined in the yaml file
             commands_yaml_dict = {}

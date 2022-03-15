@@ -1,15 +1,14 @@
 """Functions to allow interacting with the core AaC spec."""
 
-import os
 import yaml
 
-from aac import parser
+from aac.parser import parse, ParsedDefinition
 from aac.package_resources import get_resource_file_contents
 from aac.util import get_models_by_type, search
 
 PRIMITIVES: list[str] = []
 ROOT_NAMES: list[str] = []
-AAC_MODEL: dict[str, dict] = {}
+AAC_MODEL: ParsedDefinition = None
 
 
 def get_aac_spec() -> tuple[dict[str, dict], dict[str, dict]]:
@@ -25,19 +24,17 @@ def get_aac_spec() -> tuple[dict[str, dict], dict[str, dict]]:
         of enum.
 
     """
-
     global AAC_MODEL
-    if len(AAC_MODEL.keys()) > 0:
+    if AAC_MODEL:
         # already parsed, just return cached values
-        aac_data = get_models_by_type(AAC_MODEL, "data")
-        aac_enums = get_models_by_type(AAC_MODEL, "enum")
+        aac_data = get_models_by_type(AAC_MODEL.definition, "data")
+        aac_enums = get_models_by_type(AAC_MODEL.definition, "enum")
         return aac_data, aac_enums
 
     model_content = get_resource_file_contents(__package__, "spec.yaml")
-    file_path = os.path.join(__package__, "spec.yaml")
-    AAC_MODEL = parser.parse_str(file_path, model_content)
-    aac_data = get_models_by_type(AAC_MODEL, "data")
-    aac_enums = get_models_by_type(AAC_MODEL, "enum")
+    AAC_MODEL = parse(model_content)
+    aac_data = get_models_by_type(AAC_MODEL.definition, "data")
+    aac_enums = get_models_by_type(AAC_MODEL.definition, "enum")
 
     return aac_data, aac_enums
 
