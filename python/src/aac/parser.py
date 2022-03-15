@@ -5,14 +5,12 @@ the caller with a dictionary of the content keyed by the named type.  This allow
 to find a certain type in a model by just looking for that key.
 """
 
-import os
+from os import path
 
 import yaml
 
 from attr import Factory, attrib, attrs, validators
 from yaml.parser import ParserError as YAMLParserError
-
-from aac.util import is_path_name
 
 
 @attrs
@@ -77,7 +75,7 @@ def parse(source: str) -> ParsedDefinition:
         return SourceLocation(start.line, start.column, start.index, end.column - start.column)
 
     def get_lexemes_for_definition(contents):
-        yaml_source = os.path.abspath(source) if is_path_name(source) else "<string>"
+        yaml_source = path.abspath(source) if path.lexists(source) else "<string>"
         lexemes = []
         tokens = [token for token in yaml.scan(contents, Loader=yaml.SafeLoader)]
         for token in tokens:
@@ -87,7 +85,7 @@ def parse(source: str) -> ParsedDefinition:
         return lexemes
 
     contents = get_yaml_from_source(source)
-    definition = _parse_file(source) if is_path_name(source) else _parse_str(source, contents)
+    definition = _parse_file(source) if path.lexists(source) else _parse_str(source, contents)
     return ParsedDefinition(contents, get_lexemes_for_definition(contents), definition)
 
 
@@ -101,7 +99,7 @@ def get_yaml_from_source(source: str) -> str:
     Returns:
         The YAML contents extracted from source.
     """
-    if is_path_name(source):
+    if path.lexists(source):
         return _read_file_content(source)
     return source
 
@@ -236,8 +234,8 @@ def _get_files_to_process(arch_file_path: str) -> list[str]:
                 parse_path = ""
                 if imp.startswith("."):
                     # handle relative path
-                    arch_file_dir = os.path.dirname(os.path.realpath(arch_file_path))
-                    parse_path = os.path.join(arch_file_dir, imp)
+                    arch_file_dir = path.dirname(path.realpath(arch_file_path))
+                    parse_path = path.join(arch_file_dir, imp)
                 else:
                     parse_path = imp
                 for append_me in _get_files_to_process(parse_path):

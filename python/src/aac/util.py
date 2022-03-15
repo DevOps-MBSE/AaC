@@ -7,7 +7,6 @@ module we prevent code duplication and simplify maintenance.
 Avoid adding to this module, always look for ways move these functions into modules with similar functionality.
 """
 
-import os
 import logging
 from typing import Any
 
@@ -124,8 +123,3 @@ def get_models_by_type(models: dict[str, dict], root_name: str) -> dict[str, dic
             ret_val[key] = value
 
     return ret_val
-
-
-def is_path_name(string: str) -> bool:
-    """Return True if string is a pathname; False, otherwise."""
-    return os.path.lexists(string)
