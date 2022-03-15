@@ -101,7 +101,9 @@ $ tox
 Additionally, to get an HTML code coverage report, update the `tox` command to include the following flags: `tox -- --coverage-report html`
 
 #### VSCode Unit Test Support for Python
-The python plugin for VSCode supports the `unittest` python library, and not the nose2 framework that we use. The impact is fairly minimal, but python unit tests using the nose2 parameterized tests will not run correctly from within the VSCode IDE since it fails to recognize the nose2 parameterized tests as parameterized tests causing them to fail.
+The python plugin for VSCode supports the `unittest` python library, and not the `nose2` framework that we use. The impact is fairly minimal, but python unit tests using the `nose2` parameterized test feature will not run correctly from within the VSCode IDE since it fails to recognize the `nose2` parameterized tests as parameterized tests causing them to fail.
+	
+To get around this, you can run all the tests from the terminal using the above `tox` commands.
 
 ### Developing the AaC TypeScript VSCode Extension
 The TypeScript AaC VSCode Extension, its source code, and its configuration are all found in the `vscode_extension/` directory.
