@@ -64,31 +64,31 @@ aac version
 <br>
 
 #### AaC Python Package Dependency Control
-For more fine-grained control when installing dependencies, they have been structured into 3 sections:
+For more fine-grained control, we have three separate categories of dependencies that can be installed:
 - runtime - the dependencies required to run the project
 - test - the dependencies required to run the project's automated tests
 - dev - the dependencies required to run development tools like linting and quality checks
 
 To install only runtime dependencies simply use pip to install the dependencies:
 ```bash
-$ pip install -e .
+pip install -e .
 ```
 
 If you'd like to install the additional dependencies (test and dev), then you can specify that pip include those dependencies like such:
 
 To install test dependencies (test), run this:
 ```bash
-$ pip install -e .[test]
+pip install -e .[test]
 ```
 
 To install development dependencies (dev), run this:
 ```bash
-$ pip install -e .[dev]
+pip install -e .[dev]
 ```
 
 To install all dependencies (runtime, dev, and test), run this:
 ```bash
-$ pip install -e .[all]
+pip install -e .[all]
 ```
 
 #### Testing the Python Package
@@ -98,6 +98,8 @@ To run tests, make sure you've set up your dependencies using `pip install -e .[
 $ tox
 ```
 
+Additionally, to get an HTML code coverage report, update the `tox` command to include the following flags: `tox -- --coverage-report html`
+
 #### VSCode Unit Test Support for Python
 The python plugin for VSCode supports the `unittest` python library, and not the nose2 framework that we use. The impact is fairly minimal, but python unit tests using the nose2 parameterized tests will not run correctly from within the VSCode IDE since it fails to recognize the nose2 parameterized tests as parameterized tests causing them to fail.
 
@@ -105,7 +107,7 @@ The python plugin for VSCode supports the `unittest` python library, and not the
 The TypeScript AaC VSCode Extension, its source code, and its configuration are all found in the `vscode_extension/` directory.
 
 #### Installing & Building the AaC VSCode Extension
-The Typescript VSCode Extension can be installed by running:
+The TypeScript VSCode Extension can be installed by running:
 ```bash
 yarn compile
 ```
