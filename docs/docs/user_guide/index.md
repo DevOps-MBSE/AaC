@@ -3,7 +3,7 @@ layout: default
 title: AaC User's Guide
 nav_order: 2
 has_children: true
-permalink: docs/userguide
+permalink: docs/user_guide
 ---
 
 # Getting started

@@ -62,10 +62,9 @@ def generate_plugin(architecture_file: str) -> PluginExecutionResult:
 
 
 def _generate_plugin_files_to_directory(architecture_file_path: str, plugin_output_directory: str, plugin_type: str) -> str:
-    with validation(parser.parse_file, architecture_file_path) as validation_result:
-        templates = list(
-            _prepare_and_generate_plugin_files(validation_result.model, plugin_type, architecture_file_path).values()
-        )
+    with validation(parser.parse, architecture_file_path) as validation_result:
+        model = validation_result.parsed_model.definition
+        templates = list(_prepare_and_generate_plugin_files(model, plugin_type, architecture_file_path).values())
         write_generated_templates_to_file(templates, plugin_output_directory)
         return f"Successfully created a {plugin_type}-party plugin in {plugin_output_directory}"
 

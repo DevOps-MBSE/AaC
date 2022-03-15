@@ -5,14 +5,106 @@ the caller with a dictionary of the content keyed by the named type.  This allow
 to find a certain type in a model by just looking for that key.
 """
 
-import os
+from os import path
 
 import yaml
+
 from attr import Factory, attrib, attrs, validators
 from yaml.parser import ParserError as YAMLParserError
 
 
-def parse_file(arch_file: str) -> dict[str, dict]:
+@attrs
+class SourceLocation:
+    """The position and ... of an AaC structure in the source.
+
+    Attributes:
+        line (int): The line number on which the object was found.
+        column (int): The character position at which the object was found.
+        position (int): The position relative to the start of the file where the object was found.
+        span (int): The number of characters occupied by the object relative to `position`.
+    """
+
+    line: int = attrib(validator=validators.instance_of(int))
+    column: int = attrib(validator=validators.instance_of(int))
+    position: int = attrib(validator=validators.instance_of(int))
+    span: int = attrib(validator=validators.instance_of(int))
+
+
+@attrs
+class Lexeme:
+    """A lexical unit for a parsed AaC definition.
+
+    Attributes:
+        location (SourceLocation): The location at which the object was found.
+        source (str): The source in which the object was found.
+        value (str): The value of the parsed object.
+    """
+
+    location: SourceLocation = attrib(validator=validators.instance_of(SourceLocation))
+    source: str = attrib(validator=validators.instance_of(str))
+    value: str = attrib(validator=validators.instance_of(str))
+
+
+@attrs
+class ParsedDefinition:
+    """A parsed Architecture-as-Code definition.
+
+    Attributes:
+        content (str): The textual representation of the definition.
+        lexemes (list[Lexeme]): A list of lexemes for each item in the parsed definition.
+        definition (dict): The parsed definition.
+    """
+
+    content: str = attrib(validator=validators.instance_of(str))
+    lexemes: list[Lexeme] = attrib(default=Factory(list), validator=validators.instance_of(list))
+    definition: dict = attrib(default=Factory(list), validator=validators.instance_of(dict))
+
+
+def parse(source: str) -> ParsedDefinition:
+    """Parse the Architecture-as-Code (AaC) definition(s) from the provided source.
+
+    Args:
+        source (str): Must be either a file path to an AaC yaml file or a string containing AaC definitions.
+
+    Returns:
+        A ParsedDefinition object containing the internal representation of the definition and metadata
+        associated with the definition.
+    """
+
+    def mark_to_source_location(start: yaml.error.Mark, end: yaml.error.Mark) -> SourceLocation:
+        return SourceLocation(start.line, start.column, start.index, end.column - start.column)
+
+    def get_lexemes_for_definition(contents):
+        yaml_source = path.abspath(source) if path.lexists(source) else "<string>"
+        lexemes = []
+        tokens = [token for token in yaml.scan(contents, Loader=yaml.SafeLoader)]
+        for token in tokens:
+            if hasattr(token, "value"):
+                location = mark_to_source_location(token.start_mark, token.end_mark)
+                lexemes.append(Lexeme(location, yaml_source, token.value))
+        return lexemes
+
+    contents = get_yaml_from_source(source)
+    definition = _parse_file(source) if path.lexists(source) else _parse_str(source, contents)
+    return ParsedDefinition(contents, get_lexemes_for_definition(contents), definition)
+
+
+def get_yaml_from_source(source: str) -> str:
+    """Get the YAML contents from the provided source.
+
+    Args:
+        source (str): The source from which to get the YAML contents. This can be a path-like
+        string pointing to a file with YAML contents; or a string of YAML contents.
+
+    Returns:
+        The YAML contents extracted from source.
+    """
+    if path.lexists(source):
+        return _read_file_content(source)
+    return source
+
+
+def _parse_file(arch_file: str) -> dict[str, dict]:
     """Parse an Architecture-as-Code YAML file.
 
     Args:
@@ -28,11 +120,11 @@ def parse_file(arch_file: str) -> dict[str, dict]:
     files = _get_files_to_process(arch_file)
     for file in files:
         contents = _read_file_content(file)
-        parsed_models = parsed_models | parse_str(arch_file, contents)
+        parsed_models = parsed_models | _parse_str(arch_file, contents)
     return parsed_models
 
 
-def parse_str(source: str, model_content: str) -> dict[str, dict]:
+def _parse_str(source: str, model_content: str) -> dict[str, dict]:
     """Parse a string containing one or more YAML model definitions.
 
     Args:
@@ -142,8 +234,8 @@ def _get_files_to_process(arch_file_path: str) -> list[str]:
                 parse_path = ""
                 if imp.startswith("."):
                     # handle relative path
-                    arch_file_dir = os.path.dirname(os.path.realpath(arch_file_path))
-                    parse_path = os.path.join(arch_file_dir, imp)
+                    arch_file_dir = path.dirname(path.realpath(arch_file_path))
+                    parse_path = path.join(arch_file_dir, imp)
                 else:
                     parse_path = imp
                 for append_me in _get_files_to_process(parse_path):

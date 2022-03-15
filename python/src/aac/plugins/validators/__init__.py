@@ -18,7 +18,7 @@ def get_validation_definition_from_plugin_definitions(source_name: str, plugin_d
     def is_validation_definition(definition):
         return "validation" in definition
 
-    parsed_validator_definitions = parser.parse_str(source_name, plugin_definitions_string)
+    parsed_validator_definitions = parser.parse(plugin_definitions_string)
     validation_definitions = list(filter(is_validation_definition, parsed_validator_definitions.values()))
 
     if len(validation_definitions) != 1:

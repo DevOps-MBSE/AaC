@@ -14,7 +14,7 @@ class TestValidationModule(TestCase):
         self.assertEqual(expected_validator_plugin.validation_definition, actual_validator_plugin.validation_definition)
 
     def get_parsed_validation_definitions(self):
-        parsed_models = parser.parse_str(__name__, get_plugin_aac_definitions())
+        parsed_models = parser.parse(get_plugin_aac_definitions())
 
         for parsed_model in parsed_models:
             if "validation" in parsed_models[parsed_model]:

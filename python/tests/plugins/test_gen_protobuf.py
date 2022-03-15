@@ -10,14 +10,12 @@ from aac.plugins.gen_protobuf.gen_protobuf_impl import (
     _convert_camel_case_to_snake_case,
     _collect_template_generation_properties,
 )
+from tests.helpers.io import temporary_test_file
 
 
 class TestGenerateProtobufPlugin(TestCase):
     def test_gen_protobuf(self):
-        with TemporaryDirectory() as temp_dir, NamedTemporaryFile("w") as temp_arch_file:
-            temp_arch_file.write(TEST_ARCH_YAML_STRING)
-            temp_arch_file.seek(0)
-
+        with TemporaryDirectory() as temp_dir, temporary_test_file(TEST_ARCH_YAML_STRING) as temp_arch_file:
             with plugin_result("", gen_protobuf, temp_arch_file.name, temp_dir) as result:
                 self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
 

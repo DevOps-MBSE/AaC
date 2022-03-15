@@ -33,10 +33,10 @@ def gen_gherkin_behaviors(architecture_file: str, output_directory: str) -> Plug
     """
 
     def generate_gherkin():
-        with validation(parser.parse_file, architecture_file) as validation_result:
+        with validation(parser.parse, architecture_file) as validation_result:
             loaded_templates = load_default_templates("gen_gherkin_behaviors")
 
-            message_template_properties = _get_template_properties(validation_result.model)
+            message_template_properties = _get_template_properties(validation_result.parsed_model.definition)
             generated_template_messages = _generate_gherkin_feature_files(loaded_templates, message_template_properties)
 
             write_generated_templates_to_file(generated_template_messages, output_directory)

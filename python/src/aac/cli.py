@@ -67,7 +67,7 @@ def _validate_cmd(model_file: str) -> PluginExecutionResult:
     """Run the built-in validate command."""
 
     def validate_model() -> str:
-        with validation(parser.parse_file, model_file):
+        with validation(parser.parse, model_file):
             return f"{model_file} is valid"
 
     with plugin_result(VALIDATE_COMMAND_NAME, validate_model) as result:

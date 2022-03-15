@@ -2,7 +2,7 @@
 import json
 import os
 
-from aac.parser import parse_file
+from aac.parser import parse
 from aac.plugins.plugin_execution import (
     PluginExecutionResult,
     PluginExecutionStatusCode,
@@ -26,8 +26,8 @@ def print_json(architecture_files: list[str], output_directory: str = None) -> P
         architecture_file_path = os.path.abspath(architecture_file)
         file_name, _ = os.path.splitext(os.path.basename(architecture_file_path))
 
-        with validation(parse_file, architecture_file_path) as result:
-            formatted_json = json.dumps(result.model, indent=2)
+        with validation(parse, architecture_file_path) as result:
+            formatted_json = json.dumps(result.parsed_model.definition, indent=2)
 
             if output_directory:
                 if not os.path.exists(output_directory):
