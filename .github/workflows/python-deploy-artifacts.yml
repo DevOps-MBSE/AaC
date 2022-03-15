@@ -10,7 +10,7 @@ defaults:
 jobs:
   build_deployment_artifacts:
     name: Build Artifacts
-    uses: jondavid-black/AaC/.github/workflows/python-build-artifacts.yml@b56359091d584a940bdf730d3e1892c57123c46b
+    uses: jondavid-black/AaC/.github/workflows/python-build-artifacts.yml@145dfeaf3217e1d2f4274fd4093c51137e2e639c
 
   deploy_artifacts:
     name: Deploy Artifacts
@@ -37,5 +37,3 @@ jobs:
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
           packages_dir: python/dist/
-
-
