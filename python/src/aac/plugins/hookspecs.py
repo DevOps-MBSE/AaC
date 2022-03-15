@@ -15,7 +15,7 @@ def get_commands() -> list[AacCommand]:
 
 
 @hookspec
-def get_plugin_aac_definitionss() -> str:
+def get_plugin_aac_definitions() -> str:
     """
     Return the plugins Aac definitions.
 

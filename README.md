@@ -4,16 +4,15 @@
 # Note to Contributors
 
 Due to certain uncontrollable circumstances surrounding the environment in which
-Architecture as code is being developed and funded, we cannot accept any new outside
+Architecture-as-Code is being developed and funded, we cannot accept any new outside
 contributions at this time. We will reject any pull requests from unknown sources.
 While this is unfortunate, we still accept feedback and ideas that will better the
-form and function of the aac package. We apologize for this inconvenience.
+form and function of the AaC product in all of its forms. We apologize for this inconvenience.
 
 In the future, it is our intention to accept contributions from outside sources
 per our standards and code of conduct. We are committed to reaching the goal of an
 open source repository and hope that potential contributors will still follow our
 progress and join us in the future.
-
 
 
 # Architecture-as-Code (AaC)
@@ -149,9 +148,12 @@ Ok, so that's interesting, but what can you do with the AaC model once you've bu
 AaC is designed and built on years of experimentation, experience, and learning.  But this version
 is a brand new implementation rewritten entirely in Python in an attempt to make AaC more user friendly
 to both the casual user and the power user. Right now AaC doesn't have a lot of additional features.
-But new plugins are being created to deliver more functionallity.  Over time there will be plugins
+But new plugins are being created to deliver more functionality.  Over time there will be plugins
 available to use the AaC model to auto-generate content for reviews, documentation, and even system
-devleopment and deployment.
+development and deployment.
+
+## Example AaC Template Repository
+We have a [Github Template Repository]() that's setup to allow users exploring AaC to immediately begin interacting with an example model and the AaC python package. You can access that template repository here: https://github.com/Coffee2Bits/AaC-User-Template-Repository
 
 ## AaC Plugins
 A simple example of one of the plugins mentioned above is the Plant UML plugin in the /plugins/aac-plantuml directory

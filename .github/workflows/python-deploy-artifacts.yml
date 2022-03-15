@@ -10,7 +10,7 @@ defaults:
 jobs:
   build_deployment_artifacts:
     name: Build Artifacts
-    uses: jondavid-black/AaC/.github/workflows/python-build-artifacts.yml@485e5ced9de355ec7155cfaa791c1eee88f14c5d
+    uses: jondavid-black/AaC/.github/workflows/python-build-artifacts.yml@b56359091d584a940bdf730d3e1892c57123c46b
 
   deploy_artifacts:
     name: Deploy Artifacts
@@ -36,5 +36,6 @@ jobs:
         uses: pypa/gh-action-pypi-publish@master
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
+          packages_dir: python/dist/
 
 

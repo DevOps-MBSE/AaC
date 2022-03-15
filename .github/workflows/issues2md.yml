@@ -1,0 +1,21 @@
+name: Export Issues to Markdown
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Export Issues to Markdown
+    runs-on: ubuntu-latest
+    steps:
+    - name: Backup Github Issues to Markdown
+      run: |
+        pip3 install --user --upgrade setuptools
+        pip3 install --user gh2md
+        $HOME/.local/bin/gh2md $GITHUB_REPOSITORY issues.md --idempotent
+      env:
+        GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Archive Issues Report
+      uses: actions/upload-artifact@v2
+      with:
+        name: issues_export
+        path: issues.md

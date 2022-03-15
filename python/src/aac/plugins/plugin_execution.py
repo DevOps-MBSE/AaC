@@ -4,6 +4,7 @@ from attr import attrib, attrs, validators, Factory
 from contextlib import contextmanager
 from enum import Enum, auto, unique
 
+from aac.parser import ParserError
 from aac.plugins import PluginError, OperationCancelled
 from aac.validator import ValidationError
 
@@ -14,6 +15,7 @@ class PluginExecutionStatusCode(Enum):
 
     SUCCESS = 0
     VALIDATION_FAILURE = auto()
+    PARSER_FAILURE = auto()
     PLUGIN_FAILURE = auto()
     OPERATION_CANCELLED = auto()
     GENERAL_FAILURE = auto()
@@ -65,6 +67,10 @@ def plugin_result(name: str, cmd: callable, *args, **kwargs) -> PluginExecutionR
     result = PluginExecutionResult(name, PluginExecutionStatusCode.SUCCESS)
     try:
         result.add_messages(cmd(*args, **kwargs))
+    except ParserError as error:
+        source, errors = error.args
+        result.add_messages(f"Failed to parse {source}\n", *errors, "")
+        result.status_code = PluginExecutionStatusCode.PARSER_FAILURE
     except ValidationError as error:
         source, _, errors = error.args
         result.add_messages(f"Failed to validate {source}\n", *errors, "")
