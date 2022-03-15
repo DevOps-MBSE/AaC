@@ -14,8 +14,8 @@ You can open a workspace in VSCode by:
 1. Hitting the `f1` key
 2. When prompted, type `Open Workspace From File`
 3. When presented with a filepath, enter:
-    - /workspace/AaC/.vscode/python.code-workspace
-    - /workspace/AaC/.vscode/vscode_extension.code-workspace
+    - /path/to/workspace/AaC/.vscode/python.code-workspace
+    - /path/to/workspace/AaC/.vscode/vscode_extension.code-workspace
 4. Press the `Ok` button and watch the IDE switch workspaces.
 ---
 
