@@ -100,9 +100,12 @@ async function getAacCommandArgs(aacCommandName: string): Promise<CommandArgumen
  * @returns
  */
 async function execAacShellCommand(command: string, commandArgs: CommandArgument[] = []): Promise<string> {
-    const commandArgsArray = ["aac", command, ...(commandArgs.map(argument => argument.userResponse))];
+    const commandArgsArray = commandArgs
+        .filter(argument => argument.userResponse)
+        .map(argument => argument.optional ? `${argument.name} ${argument.userResponse}` : argument.userResponse);
+
     try {
-        const { stdout, stderr } = await execShell(commandArgsArray.join(" "), {});
+        const { stdout, stderr } = await execShell(["aac", command, ...commandArgsArray].join(" "), {});
         return stderr.length > 0 ? stderr : stdout;
     } catch (error: any) {
         let errorMessage = error.stderr || error.stdout || "urecognized error";
@@ -162,7 +165,10 @@ function parseTaskArgsFromHelpCommand(commandHelpOutput: string): CommandArgumen
             : "",
         "optional arguments:"
     );
-    optionalArgs.forEach(arg => arg.optional = true)
+    optionalArgs.forEach(arg => {
+        arg.name = !arg.name?.includes("--help") ? arg.name?.split(" ")[0] : arg.name;
+        arg.optional = true;
+    })
 
     return requiredArgs.concat(optionalArgs);
 }
