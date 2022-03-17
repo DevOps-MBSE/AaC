@@ -55,8 +55,7 @@ export async function getAaCVersion(): Promise<string | null> {
 
 async function getCommandArgUserInput(commandArguments: CommandArgument[]) {
 
-    // TODO: remove filter for optional arguments.
-    let argumentsWithoutUserResponse: CommandArgument[] = commandArguments.filter(argument => !argument.userResponse && !argument.name.startsWith("-"));
+    let argumentsWithoutUserResponse: CommandArgument[] = commandArguments.filter(argument => !argument.userResponse);
 
     if (argumentsWithoutUserResponse.length > 0) {
         let argumentToPromptUserFor = argumentsWithoutUserResponse[0];
