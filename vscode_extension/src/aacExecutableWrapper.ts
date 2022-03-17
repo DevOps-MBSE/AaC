@@ -140,11 +140,14 @@ function parseTaskArgsFromHelpCommand(commandHelpOutput: string): CommandArgumen
     const startRequiredArgsPos = commandHelpOutput.search("positional arguments");
     const startOptionalArgsPos = commandHelpOutput.search("optional arguments");
 
+    const defaultNameExtractor = (str: string, descriptionPos: number) => str.substring(0, descriptionPos + 1).trim();
+    const defaultDescriptionExtractor = (str: string, descriptionPos: number) => str.substring(descriptionPos + 1).trim();
+
     const requiredArgsString = commandHelpOutput.substring(startRequiredArgsPos, startOptionalArgsPos);
     const requiredArgs = getArguments(
         requiredArgsString,
-        (str: string, descriptionPos: number) => str.substring(0, descriptionPos + 1).trim(),
-        (str: string, descriptionPos: number) => str.substring(descriptionPos + 1).trim(),
+        defaultNameExtractor,
+        defaultDescriptionExtractor,
         "positional arguments:"
     );
 
@@ -152,10 +155,10 @@ function parseTaskArgsFromHelpCommand(commandHelpOutput: string): CommandArgumen
     const optionalArgs = getArguments(
         optionalArgsString,
         (str: string, descriptionPos: number) => descriptionPos >= 0
-            ? str.substring(0, descriptionPos + 1).trim()
+            ? defaultNameExtractor(str, descriptionPos)
             : str.trim(),
         (str: string, descriptionPos: number) => descriptionPos >= 0
-            ? str.substring(descriptionPos + 1).trim()
+            ? defaultDescriptionExtractor(str, descriptionPos)
             : "",
         "optional arguments:"
     );
