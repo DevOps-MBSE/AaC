@@ -5,9 +5,10 @@ import { window, QuickPickOptions, InputBoxOptions, OpenDialogOptions, Uri } fro
 const outputChannel = getOutputChannel();
 
 interface CommandArgument {
-    name: string;
-    description: string;
+    name?: string;
+    description?: string;
     userResponse?: string;
+    optional?: boolean;
 }
 
 /**
@@ -60,7 +61,7 @@ async function getCommandArgUserInput(commandArguments: CommandArgument[]) {
     if (argumentsWithoutUserResponse.length > 0) {
         let argumentToPromptUserFor = argumentsWithoutUserResponse[0];
 
-        if (argumentToPromptUserFor.description.toLowerCase().includes("path")) {
+        if (argumentToPromptUserFor?.description?.toLowerCase().includes("path")) {
             const dialogBoxOptions: OpenDialogOptions = {
                 title: argumentToPromptUserFor.name,
                 canSelectMany: false
@@ -68,7 +69,6 @@ async function getCommandArgUserInput(commandArguments: CommandArgument[]) {
 
             let fileUri: Uri[] | undefined = await window.showOpenDialog(dialogBoxOptions);
             argumentToPromptUserFor.userResponse = fileUri ? fileUri[0]?.path : "";
-
         } else {
             const inputBoxOptions: InputBoxOptions = {
                 title: argumentToPromptUserFor.name,
@@ -138,18 +138,68 @@ function parseTaskNamesFromHelpCommand(aacHelpOutput: string): string[] {
  * @param aacHelpOutput - the output to parse
  * @returns array of CommandArgument objects
  */
-function parseTaskArgsFromHelpCommand(aacHelpOutput: string): CommandArgument[] {
+function parseTaskArgsFromHelpCommand(commandHelpOutput: string): CommandArgument[] {
+    const startRequiredArgsPos = commandHelpOutput.search("positional arguments");
+    const startOptionalArgsPos = commandHelpOutput.search("optional arguments");
 
-    const regExp = /^  (?<argName>\S+)\s+(?<argDescription>.*)$/gm;
-    const commandArgumentsMatch = regExp.exec(aacHelpOutput);
+    const requiredArgsString = commandHelpOutput.substring(startRequiredArgsPos, startOptionalArgsPos);
+    const requiredArgs = getArguments(
+        requiredArgsString,
+        (str: string, descriptionPos: number) => str.substring(0, descriptionPos + 1).trim(),
+        (str: string, descriptionPos: number) => str.substring(descriptionPos + 1).trim(),
+        "positional arguments:"
+    );
 
-    let commandArguments: CommandArgument[] = [];
-    if (commandArgumentsMatch) {
-        commandArguments.push({
-            name: commandArgumentsMatch.groups?.argName ?? "<argument name>",
-            description: commandArgumentsMatch.groups?.argDescription ?? "<argument description>"
+    const optionalArgsString = commandHelpOutput.substring(startOptionalArgsPos);
+    const optionalArgs = getArguments(
+        optionalArgsString,
+        (str: string, descriptionPos: number) => descriptionPos >= 0
+            ? str.substring(0, descriptionPos + 1).trim()
+            : str.trim(),
+        (str: string, descriptionPos: number) => descriptionPos >= 0
+            ? str.substring(descriptionPos + 1).trim()
+            : "",
+        "optional arguments:"
+    );
+    optionalArgs.forEach(arg => arg.optional = true)
+
+    return requiredArgs.concat(optionalArgs);
+}
+
+function getArguments(argsString: string, nameExtractor: Function, descriptionExtractor: Function, headline: string) {
+    const args: CommandArgument[] = [];
+
+    let name = "";
+    let description = "";
+
+    argsString
+        .split("\n")
+        .filter(it => it.length > 0 && !it.startsWith(headline))
+        .forEach((it, _, __) => {
+            if (!it.startsWith(" ", 2)) {
+                if (name && description) {
+                    args.push({
+                        name: name.trim(),
+                        description: description.trim(),
+                    });
+
+                    name = "";
+                    description = "";
+                }
+
+                const str = it.substring(2);
+                const startDescriptionPos = str.search("  ");
+                name = nameExtractor(str, startDescriptionPos);
+                description = descriptionExtractor(str, startDescriptionPos);
+            } else {
+                description += " " + it.trim();
+            }
+        });
+    if (name && description) {
+        args.push({
+            name: name,
+            description: description,
         });
     }
-
-    return commandArguments;
+    return args;
 }
