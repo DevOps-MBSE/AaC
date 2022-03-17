@@ -105,8 +105,7 @@ async function execAacShellCommand(command: string, commandArgs: CommandArgument
     const commandArgsArray = ["aac", command, ...(commandArgs.map(argument => argument.userResponse))];
     try {
         const { stdout, stderr } = await execShell(commandArgsArray.join(" "), {});
-        const stringOutput = stderr.length > 0 ? stderr : stdout;
-        return stringOutput;
+        return stderr.length > 0 ? stderr : stdout;
     } catch (error: any) {
         let errorMessage = error.stderr || error.stdout || "urecognized error";
 
