@@ -55,12 +55,12 @@ export async function getAaCVersion(): Promise<string | null> {
 }
 
 async function getCommandArgUserInput(commandArguments: CommandArgument[]) {
+    let argumentsWithoutUserResponse: CommandArgument[] = commandArguments
+        .filter(argument => !argument.userResponse)
+        .filter(argument => !argument.name?.includes("--help"));
 
-    let argumentsWithoutUserResponse: CommandArgument[] = commandArguments.filter(argument => !argument.userResponse);
-
-    if (argumentsWithoutUserResponse.length > 0) {
-        let argumentToPromptUserFor = argumentsWithoutUserResponse[0];
-
+    for (let index = 0; index < argumentsWithoutUserResponse.length; ++index) {
+        let argumentToPromptUserFor = argumentsWithoutUserResponse[index];
         if (argumentToPromptUserFor?.description?.toLowerCase().includes("path")) {
             const dialogBoxOptions: OpenDialogOptions = {
                 title: argumentToPromptUserFor.name,
@@ -77,8 +77,6 @@ async function getCommandArgUserInput(commandArguments: CommandArgument[]) {
 
             argumentToPromptUserFor.userResponse = await window.showInputBox(inputBoxOptions);
         }
-    } else if (argumentsWithoutUserResponse.length > 1) {
-        getCommandArgUserInput(commandArguments);
     }
 }
 
