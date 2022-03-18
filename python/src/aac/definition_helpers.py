@@ -3,6 +3,8 @@
 import logging
 from typing import Any
 
+from aac.parser import ParsedDefinition
+
 
 def search(model: dict[str, Any], search_keys: list[str]) -> list:
     """
@@ -117,3 +119,24 @@ def get_models_by_type(models: dict[str, dict], root_name: str) -> dict[str, dic
             ret_val[key] = value
 
     return ret_val
+
+
+def get_definitions_by_type(parsed_definitions: list[ParsedDefinition], root_name: str) -> list[ParsedDefinition]:
+    """Gets subset of models of a specific root name.
+
+    The aac.parser.parse() returns a dict of all parsed types.  Sometimes it is
+    useful to only work with certain roots (i.e. model or data).  This utility
+    method allows a setup of parsed models to be "filtered" to a specific root name.
+
+    Args:
+        models: The dict of models to search.
+        root_name: The root name to filter on.
+
+    Returns:
+        A dict mapping type names to AaC model definitions.
+    """
+
+    def does_definition_root_match(parsed_definition: ParsedDefinition) -> bool:
+        return root_name == parsed_definition.get_root_key()
+
+    return list(filter(does_definition_root_match, parsed_definitions))

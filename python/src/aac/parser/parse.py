@@ -5,62 +5,17 @@ the caller with a dictionary of the content keyed by the named type.  This allow
 to find a certain type in a model by just looking for that key.
 """
 
-from os import path
-
-import yaml
-
 from attr import Factory, attrib, attrs, validators
+from os import path
+import yaml
 from yaml.parser import ParserError as YAMLParserError
 
-
-@attrs
-class SourceLocation:
-    """The position and ... of an AaC structure in the source.
-
-    Attributes:
-        line (int): The line number on which the object was found.
-        column (int): The character position at which the object was found.
-        position (int): The position relative to the start of the file where the object was found.
-        span (int): The number of characters occupied by the object relative to `position`.
-    """
-
-    line: int = attrib(validator=validators.instance_of(int))
-    column: int = attrib(validator=validators.instance_of(int))
-    position: int = attrib(validator=validators.instance_of(int))
-    span: int = attrib(validator=validators.instance_of(int))
+from aac.parser.ParsedDefinition import ParsedDefinition
+from aac.parser.SourceLocation import SourceLocation
+from aac.parser.Lexeme import Lexeme
 
 
-@attrs
-class Lexeme:
-    """A lexical unit for a parsed AaC definition.
-
-    Attributes:
-        location (SourceLocation): The location at which the object was found.
-        source (str): The source in which the object was found.
-        value (str): The value of the parsed object.
-    """
-
-    location: SourceLocation = attrib(validator=validators.instance_of(SourceLocation))
-    source: str = attrib(validator=validators.instance_of(str))
-    value: str = attrib(validator=validators.instance_of(str))
-
-
-@attrs
-class ParsedDefinition:
-    """A parsed Architecture-as-Code definition.
-
-    Attributes:
-        content (str): The textual representation of the definition.
-        lexemes (list[Lexeme]): A list of lexemes for each item in the parsed definition.
-        definition (dict): The parsed definition.
-    """
-
-    content: str = attrib(validator=validators.instance_of(str))
-    lexemes: list[Lexeme] = attrib(default=Factory(list), validator=validators.instance_of(list))
-    definition: dict = attrib(default=Factory(list), validator=validators.instance_of(dict))
-
-
-def parse(source: str) -> ParsedDefinition:
+def parse_source(source: str) -> list[ParsedDefinition]:
     """Parse the Architecture-as-Code (AaC) definition(s) from the provided source.
 
     Args:
@@ -85,8 +40,13 @@ def parse(source: str) -> ParsedDefinition:
         return lexemes
 
     contents = get_yaml_from_source(source)
-    definition = _parse_file(source) if path.lexists(source) else _parse_str(source, contents)
-    return ParsedDefinition(contents, get_lexemes_for_definition(contents), definition)
+    definitions = _parse_file(source) if path.lexists(source) else _parse_str(source, contents)
+
+    parsed_definitions = []
+    for name, definition in definitions.items():
+        parsed_definitions.append(ParsedDefinition(name, contents, get_lexemes_for_definition(contents), definition))
+
+    return parsed_definitions
 
 
 def get_yaml_from_source(source: str) -> str:
