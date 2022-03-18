@@ -4,7 +4,7 @@ from attr import attrib, attrs, validators, Factory
 from contextlib import contextmanager
 from enum import Enum, auto, unique
 
-from aac.parser import ParserError
+from aac.parser.ParserError import ParserError
 from aac.plugins import PluginError, OperationCancelled
 from aac.validator import ValidationError
 

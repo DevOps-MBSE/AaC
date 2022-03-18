@@ -5,6 +5,7 @@ Unit tests for the aac.definition_helpers module.
 from unittest import TestCase
 
 from aac import definition_helpers
+from aac.parser.ParsedDefinition import ParsedDefinition
 from aac.spec import core
 
 
@@ -17,14 +18,17 @@ class TestDefinitionHelpers(TestCase):
         """
         Unit test for the definition_helpers.get_models_by_type method.
         """
-        aac_data, aac_enums = core.get_aac_spec()
-        num_data = len(aac_data)
-        num_enums = len(aac_enums)
-        num_models = 0
-        all_aac = aac_data | aac_enums
-        self.assertEqual(len(definition_helpers.get_models_by_type(all_aac, "data")), num_data)
-        self.assertEqual(len(definition_helpers.get_models_by_type(all_aac, "enum")), num_enums)
-        self.assertEqual(len(definition_helpers.get_models_by_type(all_aac, "model")), num_models)
+        def filter_by_root(definition: ParsedDefinition, root_key: str):
+            return (definition.get_root_key() == root_key)
+
+        aac_core_definitions = core.get_aac_spec()
+        data_definitions = list(filter(lambda definition: filter_by_root(definition, "data"), aac_core_definitions))
+        enum_definitions = list(filter(lambda definition: filter_by_root(definition, "enum"), aac_core_definitions))
+        model_definitions = list(filter(lambda definition: filter_by_root(definition, "model"), aac_core_definitions))
+
+        self.assertEqual(len(definition_helpers.get_definitions_by_type(aac_core_definitions, "data")), len(data_definitions))
+        self.assertEqual(len(definition_helpers.get_definitions_by_type(aac_core_definitions, "enum")), len(enum_definitions))
+        self.assertEqual(len(definition_helpers.get_definitions_by_type(aac_core_definitions, "model")), len(model_definitions))
 
     def test_search(self):
         """

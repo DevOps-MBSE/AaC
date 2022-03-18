@@ -1,18 +1,18 @@
 from unittest import TestCase
 
-from aac import parser
+from aac.parser import parse
 from aac.validation.ValidatorPlugin import ValidatorPlugin
 
 
 class TestValidatorPlugin(TestCase):
     def test_from_definition(self):
-        definition = parser.parse(TEST_VALIDATION_DEFINITION_STRING)
+        definition = parse(TEST_VALIDATION_DEFINITION_STRING)[0]
 
-        expected_result = ValidatorPlugin(name=TEST_VALIDATION_NAME, validation_definition=definition.get(TEST_VALIDATION_NAME))
-        actual_result = ValidatorPlugin.from_definition(definition.get(TEST_VALIDATION_NAME))
+        expected_result = ValidatorPlugin(name=TEST_VALIDATION_NAME, definition=definition)
+        actual_result = ValidatorPlugin.from_definition(definition)
 
         self.assertEqual(expected_result.name, actual_result.name)
-        self.assertEqual(expected_result.validation_definition, actual_result.validation_definition)
+        self.assertEqual(expected_result.definition, actual_result.definition)
 
 
 TEST_VALIDATION_NAME = "Test Validator"

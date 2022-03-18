@@ -2,7 +2,7 @@ from unittest import TestCase
 from unittest.mock import patch
 
 from aac.lang.server import start_lsp
-from aac.spec.core import get_roots
+from aac.spec.core import get_root_keys
 from pygls import uris
 from pygls.lsp import methods
 from pygls.lsp.types import (
@@ -54,7 +54,7 @@ class TestLspServer(TestCase):
         )
 
         self.assertSequenceEqual(list(res.keys()), ["isIncomplete", "items"])
-        self.assertSequenceEqual([i.get("label") for i in res.get("items")], get_roots())
+        self.assertSequenceEqual([i.get("label") for i in res.get("items")], get_root_keys())
         self.assertFalse(res.get("isIncomplete"))
 
 

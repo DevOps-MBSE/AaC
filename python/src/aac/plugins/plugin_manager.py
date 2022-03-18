@@ -40,7 +40,7 @@ def get_plugin_manager() -> PluginManager:
     return plugin_manager
 
 
-def get_plugin_model_definitions():
+def get_plugin_model_definitions() -> dict:
     """
     Gets all a list of all the plugin-defined AaC models and definitions.
 
@@ -53,7 +53,8 @@ def get_plugin_model_definitions():
     plugin_extensions = {}
     for plugin_ext in plugin_models_yaml:
         if len(plugin_ext) > 0:
-            models = parser.parse(plugin_ext)
-            plugin_extensions = models.definition | plugin_extensions
+            parsed_definitions = parser.parse(plugin_ext)
+            definitions_dict = dict(map(lambda definition: (definition.name, definition.definition), parsed_definitions))
+            plugin_extensions = definitions_dict | plugin_extensions
 
     return plugin_extensions

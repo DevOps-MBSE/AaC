@@ -5,17 +5,17 @@ the caller with a dictionary of the content keyed by the named type.  This allow
 to find a certain type in a model by just looking for that key.
 """
 
-from attr import Factory, attrib, attrs, validators
 from os import path
 import yaml
 from yaml.parser import ParserError as YAMLParserError
 
+from aac.parser.ParserError import ParserError
 from aac.parser.ParsedDefinition import ParsedDefinition
 from aac.parser.SourceLocation import SourceLocation
 from aac.parser.Lexeme import Lexeme
 
 
-def parse_source(source: str) -> list[ParsedDefinition]:
+def parse(source: str) -> list[ParsedDefinition]:
     """Parse the Architecture-as-Code (AaC) definition(s) from the provided source.
 
     Args:
@@ -203,10 +203,3 @@ def _get_files_to_process(arch_file_path: str) -> list[str]:
 
     return ret_val
 
-
-@attrs
-class ParserError(Exception):
-    """An error that represents a file that could not be parsed."""
-
-    source: str = attrib(validator=validators.instance_of(str))
-    errors: list[str] = attrib(default=Factory(list), validator=validators.instance_of(list))

@@ -122,7 +122,7 @@ def get_models_by_type(models: dict[str, dict], root_name: str) -> dict[str, dic
 
 
 def get_definitions_by_type(parsed_definitions: list[ParsedDefinition], root_name: str) -> list[ParsedDefinition]:
-    """Gets subset of models of a specific root name.
+    """Gets subset of definitions with a specific root name.
 
     The aac.parser.parse() returns a dict of all parsed types.  Sometimes it is
     useful to only work with certain roots (i.e. model or data).  This utility
@@ -140,3 +140,32 @@ def get_definitions_by_type(parsed_definitions: list[ParsedDefinition], root_nam
         return root_name == parsed_definition.get_root_key()
 
     return list(filter(does_definition_root_match, parsed_definitions))
+
+
+def get_definition_by_name(parsed_definitions: list[ParsedDefinition], definition_name: str) -> ParsedDefinition:
+    """Get a definition of models of a specific root name.
+
+    The aac.parser.parse() returns a dict of all parsed types.  Sometimes it is
+    useful to only work with certain roots (i.e. model or data).  This utility
+    method allows a setup of parsed models to be "filtered" to a specific root name.
+
+    Args:
+        models: The dict of models to search.
+        definition_name: The definition's name to locate.
+
+    Returns:
+        A ParsedDefinition matching the name of the .
+    """
+
+    def does_definition_name_match(parsed_definition: ParsedDefinition) -> bool:
+        return definition_name == parsed_definition.name
+
+    matching_definitions = list(filter(does_definition_name_match, parsed_definitions))
+
+    if (len(matching_definitions) > 1):
+        raise RuntimeError(f"Found multiple definitions with the same name \"{definition_name}\"\n{matching_definitions}")
+
+    elif (len(matching_definitions) != 1):
+        logging.debug("Failed to find a definition with the name \"{definition_name}\"")
+
+    return matching_definitions[0]

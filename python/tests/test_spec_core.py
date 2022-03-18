@@ -20,7 +20,7 @@ class TestSpecCore(TestCase):
         """
         expected_results = ["import", "enum", "data", "model", "usecase", "ext", "validation"]
 
-        result = core.get_roots()
+        result = core.get_root_keys()
 
         self.assertCountEqual(result, expected_results)
 
@@ -29,10 +29,9 @@ class TestSpecCore(TestCase):
         Unit test for the core.get_aac_spec method.
         """
 
-        aac_data, _ = core.get_aac_spec()
+        aac_definitions = core.get_aac_spec()
 
-        self.assertGreater(len(aac_data.keys()), 0)
-        self.assertGreater(len(aac_data.keys()), 0)
+        self.assertGreater(len(aac_definitions), 0)
 
     def test_get_aac_spec_as_yaml(self):
         """

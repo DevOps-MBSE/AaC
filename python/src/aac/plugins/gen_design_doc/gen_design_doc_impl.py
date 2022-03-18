@@ -7,6 +7,7 @@ from jinja2 import Template
 
 from aac import parser
 from aac.definition_helpers import get_models_by_type
+from aac.parser.ParsedDefinition import ParsedDefinition
 from aac.plugins.plugin_execution import (
     PluginExecutionResult,
     plugin_result,
@@ -61,12 +62,13 @@ def gen_design_doc(
         return result
 
 
-def _get_parsed_models(architecture_files: list) -> list:
+def _get_parsed_models(architecture_files: list) -> list[ParsedDefinition]:
     def parse_with_validation(architecture_file):
         with validation(parser.parse, architecture_file) as result:
-            return result.parsed_model.definition
+            return result.parsed_definitions
 
-    return [parse_with_validation(file) for file in architecture_files]
+    # For each architecture_file, parse and validate the contents, then flatten the list of lists to a 1D list
+    return list(flatten(map(parse_with_validation, architecture_files)))
 
 
 def _make_template_properties(parsed_models: dict, arch_file: str) -> dict:

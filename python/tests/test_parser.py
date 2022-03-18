@@ -4,7 +4,10 @@ from unittest import TestCase
 
 from tests.helpers.io import temporary_test_file
 
-from aac import parser
+from aac import definition_helpers
+from aac.parser import parse, get_yaml_from_source
+from aac.parser.ParserError import ParserError
+from aac.parser.SourceLocation import SourceLocation
 
 
 class TestArchParser(TestCase):
@@ -12,13 +15,13 @@ class TestArchParser(TestCase):
         return TEST_MODEL_FILE.format(os.path.basename(import1), os.path.basename(import2)).strip()
 
     def check_model_name(self, model, name, type):
-        self.assertIsNotNone(model.get(name))
-        self.assertIsNotNone(model.get(name).get(type))
-        self.assertEqual(name, model.get(name).get(type).get("name"))
+        self.assertIsNotNone(model.get(type))
+        self.assertIsNotNone(model.get(type).get("name"))
+        self.assertEqual(name, model.get(type).get("name"))
 
     def check_parser_errors(self, filespec: str, *error_messages: list[str]):
-        with self.assertRaises(parser.ParserError) as cm:
-            parser.parse(filespec)
+        with self.assertRaises(ParserError) as cm:
+            parse(filespec)
 
         # Assert that each error message is contained in the returned error message string.
         errors = "\n".join(cm.exception.errors)
@@ -27,43 +30,53 @@ class TestArchParser(TestCase):
 
     def test_can_get_lexemes_from_parsed_architecture_file(self):
         with temporary_test_file(TEST_IMPORTED_MODEL_FILE_CONTENTS.strip()) as test_yaml:
-            parsed_model = parser.parse(test_yaml.name)
-            self.assertGreaterEqual(len(parsed_model.lexemes), 2)
+            parsed_definitions = parse(test_yaml.name)
+            self.assertEqual(1, len(parsed_definitions))
+            parsed_definition = parsed_definitions[0]
 
-            first, second, *_ = parsed_model.lexemes
+            self.assertGreaterEqual(len(parsed_definition.lexemes), 2)
+
+            first, second, *_ = parsed_definition.lexemes
             self.assertEqual(first.source, test_yaml.name)
             self.assertEqual(first.value, "data")
-            self.assertEqual(first.location, parser.SourceLocation(0, 0, 0, 4))
+            self.assertEqual(first.location, SourceLocation(0, 0, 0, 4))
 
             self.assertEqual(second.source, test_yaml.name)
             self.assertEqual(second.value, "name")
-            self.assertEqual(second.location, parser.SourceLocation(1, 2, 8, 4))
+            self.assertEqual(second.location, SourceLocation(1, 2, 8, 4))
 
     def test_can_handle_string_or_path_sources(self):
-        self.assertEqual(TEST_MODEL_FILE, parser.get_yaml_from_source(TEST_MODEL_FILE))
+        self.assertEqual(TEST_MODEL_FILE, get_yaml_from_source(TEST_MODEL_FILE))
 
         with temporary_test_file(TEST_MODEL_FILE) as test_yaml:
-            self.assertEqual(TEST_MODEL_FILE, parser.get_yaml_from_source(test_yaml.name))
+            self.assertEqual(TEST_MODEL_FILE, get_yaml_from_source(test_yaml.name))
 
     def test_can_handle_architecture_file_with_imports(self):
-        with (TemporaryDirectory() as temp_dir,
-              temporary_test_file(TEST_IMPORTED_MODEL_FILE_CONTENTS, dir=temp_dir, suffix=".yaml") as import1,
-              temporary_test_file(TEST_SECONDARY_IMPORTED_MODEL_FILE_CONTENTS, dir=temp_dir, suffix=".yaml") as import2,
-              temporary_test_file(self.get_test_model(import1.name, import2.name), dir=temp_dir) as test_yaml):
-            parsed_model = parser.parse(test_yaml.name)
-            self.check_model_name(parsed_model.definition, "Message", "data")
-            self.check_model_name(parsed_model.definition, "Status", "enum")
-            self.check_model_name(parsed_model.definition, "EchoService", "model")
+        with (
+            TemporaryDirectory() as temp_dir,
+            temporary_test_file(TEST_IMPORTED_MODEL_FILE_CONTENTS, dir=temp_dir, suffix=".yaml") as import1,
+            temporary_test_file(TEST_SECONDARY_IMPORTED_MODEL_FILE_CONTENTS, dir=temp_dir, suffix=".yaml") as import2,
+            temporary_test_file(self.get_test_model(import1.name, import2.name), dir=temp_dir) as test_yaml,
+        ):
 
-            first, second, *_ = parsed_model.lexemes
+            parsed_models = parse(test_yaml.name)
+            data_message_definition = definition_helpers.get_definition_by_name(parsed_models, "Message")
+            enum_status_definition = definition_helpers.get_definition_by_name(parsed_models, "Status")
+            model_echosvc_definition = definition_helpers.get_definition_by_name(parsed_models, "EchoService")
+
+            self.check_model_name(data_message_definition.definition, "Message", "data")
+            self.check_model_name(enum_status_definition.definition, "Status", "enum")
+            self.check_model_name(model_echosvc_definition.definition, "EchoService", "model")
+
+            first, second, *_ = model_echosvc_definition.lexemes
             self.assertEqual(first.source, test_yaml.name)
             self.assertEqual(first.value, "import")
-            self.assertEqual(first.location, parser.SourceLocation(0, 0, 0, 6))
+            self.assertEqual(first.location, SourceLocation(0, 0, 0, 6))
 
             import1_basename = os.path.basename(import1.name)
             self.assertEqual(second.source, test_yaml.name)
             self.assertEqual(second.value, f"./{import1_basename}")
-            self.assertEqual(second.location, parser.SourceLocation(1, 4, 12, 2 + len(import1_basename)))
+            self.assertEqual(second.location, SourceLocation(1, 4, 12, 2 + len(import1_basename)))
 
     def test_errors_when_parsing_invalid_yaml(self):
         content = "model: ]["

@@ -17,20 +17,19 @@ VALIDATOR_CONTEXT = None
 
 class ValidationError(RuntimeError):
     """An error that represents a model with invalid components and/or structure."""
-
     pass
 
 
 @attrs(slots=True, auto_attribs=True)
 class ValidationResult:
-    """Represents the result of validating a model.
+    """Represents the result of validating a definition.
 
     Attributes:
         parsed_model (ParsedDefinition): The model that was validated; if the model is invalid, None.
         messages (list[str]): A list of messages to be provided as feedback for the user.
     """
 
-    parsed_model: ParsedDefinition = attrib(validator=validators.instance_of(ParsedDefinition))
+    parsed_definitions: list[ParsedDefinition] = attrib(validator=validators.instance_of(list))
     messages: list[str] = attrib(default=Factory(list), validator=validators.instance_of(list))
 
 
@@ -50,14 +49,14 @@ def validation(model_producer: callable, source: str, **kwargs):
     """
     try:
         result = ValidationResult(model_producer(source))
-        _validate(result.parsed_model.definition)
+        list(map(_validate, result.parsed_definitions))
         result.messages.append(f"{source} is valid")
         yield result
     except ValidationError as ve:
         raise ValidationError(source, *ve.args)
 
 
-def _validate(model: dict) -> None:
+def _validate(definition: ParsedDefinition) -> None:
     """Return all validation errors for the model.
 
     This function validates the target model against the core AaC Spec and any actively installed
@@ -72,17 +71,18 @@ def _validate(model: dict) -> None:
     global VALIDATOR_CONTEXT
 
     if not VALIDATOR_CONTEXT:
-        aac_enum, aac_data = get_aac_spec()
-        VALIDATOR_CONTEXT = ValidatorContext(aac_enum | aac_data, {}, plugins.get_plugin_model_definitions(), model)
+        aac_core_spec_definitions = get_aac_spec()
+        aac_core_spec_dict = dict(map(lambda definition: (definition.name, definition.definition), aac_core_spec_definitions))
+        VALIDATOR_CONTEXT = ValidatorContext(aac_core_spec_dict, {}, plugins.get_plugin_model_definitions(), definition.definition)
 
     try:
-        errors = list(flatten(map(_validate_model, model.values())))
+        errors = list(flatten(map(_validate_model, definition.definition.values())))
     finally:
         # Once we're done validating, wipe the context.
         VALIDATOR_CONTEXT = None
 
     if errors:
-        raise ValidationError(model, errors)
+        raise ValidationError(definition.definition, errors)
 
 
 def _validate_model(model: dict) -> list:
@@ -501,13 +501,13 @@ class ValidatorContext:
 
     parsed_models_type_attribute_settings = {
         "default": {},
-        "validator": validators.instance_of(dict),
+        "validator": validators.instance_of(list),
     }
 
-    core_aac_spec_models: dict = attrib(**parsed_models_type_attribute_settings)
-    plugin_defined_models: dict = attrib(**parsed_models_type_attribute_settings)
-    plugin_defined_extensions: dict = attrib(**parsed_models_type_attribute_settings)
-    validation_target_models: dict = attrib(**parsed_models_type_attribute_settings)
+    core_aac_spec_models: list = attrib(**parsed_models_type_attribute_settings)
+    plugin_defined_models: list = attrib(**parsed_models_type_attribute_settings)
+    plugin_defined_extensions: list = attrib(**parsed_models_type_attribute_settings)
+    validation_target_models: list = attrib(**parsed_models_type_attribute_settings)
 
     # These attributes aren't exposed in the constructor, and are intended as private members, but attrs doesn't support private members.
     extended_validation_aac_model: list = attrib(

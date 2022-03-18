@@ -1,9 +1,11 @@
 """A plugins sub-module specifically for 1st party validator plugins."""
 
-from aac import parser
+from aac.parser import parse
+from aac.parser.ParsedDefinition import ParsedDefinition
+from aac.definition_helpers import get_definitions_by_type
 
 
-def get_validation_definition_from_plugin_definitions(source_name: str, plugin_definitions_string: str) -> dict:
+def get_validation_definition_from_plugin_definitions(plugin_definitions_string: str) -> ParsedDefinition:
     """
     Parses the validation definition sourced from a validator plugin's definitions.
 
@@ -14,12 +16,8 @@ def get_validation_definition_from_plugin_definitions(source_name: str, plugin_d
     Returns:
         The validation definition for the plugin.
     """
-
-    def is_validation_definition(definition):
-        return "validation" in definition
-
-    parsed_validator_definitions = parser.parse(plugin_definitions_string)
-    validation_definitions = list(filter(is_validation_definition, parsed_validator_definitions.values()))
+    parsed_validator_definitions = parse(plugin_definitions_string)
+    validation_definitions = get_definitions_by_type(parsed_validator_definitions, "validation")
 
     if len(validation_definitions) != 1:
         raise RuntimeError(

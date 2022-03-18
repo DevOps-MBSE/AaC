@@ -22,7 +22,7 @@ def spec_validate(architecture_file: str) -> PluginExecutionResult:
 
     def validate():
         with validation(parser.parse, architecture_file) as result:
-            is_valid, validation_errors = _run_spec_validation(result.parsed_model.definition)
+            is_valid, validation_errors = _run_spec_validation(result.parsed_definitions.definition)
 
             if is_valid:
                 return f"Spec in {architecture_file} is valid"

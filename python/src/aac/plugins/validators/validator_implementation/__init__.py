@@ -23,10 +23,10 @@ def get_plugin_aac_definitions() -> str:
 @hookimpl
 def register_validators() -> ValidatorPlugin:
     """
-    Returns the information about the validation plugin necessary to execute validation.
+    Return information about the validation plugin necessary to execute validation.
 
     Returns:
         A collection of data necessary to manage and execute validation plugins.
     """
-    validation_definition = get_validation_definition_from_plugin_definitions(PLUGIN_YAML_FILE, get_plugin_aac_definitions())
+    validation_definition = get_validation_definition_from_plugin_definitions(get_plugin_aac_definitions())
     return ValidatorPlugin.from_definition(validation_definition)

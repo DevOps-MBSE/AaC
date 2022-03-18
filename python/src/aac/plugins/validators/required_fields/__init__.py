@@ -28,5 +28,5 @@ def register_validators() -> ValidatorPlugin:
     Returns:
         A collection of data necessary to manage and execute validation plugins.
     """
-    validation_definition = get_validation_definition_from_plugin_definitions(PLUGIN_YAML_FILE, get_plugin_aac_definitions())
+    validation_definition = get_validation_definition_from_plugin_definitions(get_plugin_aac_definitions())
     return ValidatorPlugin.from_definition(validation_definition)
