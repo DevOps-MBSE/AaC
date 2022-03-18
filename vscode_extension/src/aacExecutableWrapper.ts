@@ -155,7 +155,7 @@ function parseTaskArgsFromHelpCommand(commandHelpOutput: string): CommandArgumen
     optionalArgs.forEach(arg => {
         arg.name = !arg.name?.includes("--help") ? arg.name?.split(" ")[0] : arg.name;
         arg.optional = true;
-    })
+    });
 
     return requiredArgs.concat(optionalArgs);
 }
