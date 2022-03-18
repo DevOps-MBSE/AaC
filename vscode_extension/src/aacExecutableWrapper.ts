@@ -140,31 +140,18 @@ function parseTaskNamesFromHelpCommand(aacHelpOutput: string): string[] {
  * @returns array of CommandArgument objects
  */
 function parseTaskArgsFromHelpCommand(commandHelpOutput: string): CommandArgument[] {
-    const startRequiredArgsPos = commandHelpOutput.search("positional arguments");
-    const startOptionalArgsPos = commandHelpOutput.search("optional arguments");
+    const argumentSectionHeader = (name: string) => `${name} arguments:`;
+    const requiredArgsHeader = argumentSectionHeader("positional");
+    const optionalArgsHeader = argumentSectionHeader("optional");
 
-    const defaultNameExtractor = (str: string, descriptionPos: number) => str.substring(0, descriptionPos + 1).trim();
-    const defaultDescriptionExtractor = (str: string, descriptionPos: number) => str.substring(descriptionPos + 1).trim();
+    const requiredArgsPos = commandHelpOutput.search(requiredArgsHeader) + requiredArgsHeader.length;
+    const optionalArgsPos = commandHelpOutput.search(optionalArgsHeader) + optionalArgsHeader.length;
 
-    const requiredArgsString = commandHelpOutput.substring(startRequiredArgsPos, startOptionalArgsPos);
-    const requiredArgs = getArguments(
-        requiredArgsString,
-        defaultNameExtractor,
-        defaultDescriptionExtractor,
-        "positional arguments:"
-    );
+    const requiredArgsString = commandHelpOutput.substring(requiredArgsPos, optionalArgsPos);
+    const requiredArgs = getArguments(requiredArgsString);
 
-    const optionalArgsString = commandHelpOutput.substring(startOptionalArgsPos);
-    const optionalArgs = getArguments(
-        optionalArgsString,
-        (str: string, descriptionPos: number) => descriptionPos >= 0
-            ? defaultNameExtractor(str, descriptionPos)
-            : str.trim(),
-        (str: string, descriptionPos: number) => descriptionPos >= 0
-            ? defaultDescriptionExtractor(str, descriptionPos)
-            : "",
-        "optional arguments:"
-    );
+    const optionalArgsString = commandHelpOutput.substring(optionalArgsPos);
+    const optionalArgs = getArguments(optionalArgsString);
     optionalArgs.forEach(arg => {
         arg.name = !arg.name?.includes("--help") ? arg.name?.split(" ")[0] : arg.name;
         arg.optional = true;
@@ -173,40 +160,50 @@ function parseTaskArgsFromHelpCommand(commandHelpOutput: string): CommandArgumen
     return requiredArgs.concat(optionalArgs);
 }
 
-function getArguments(argsString: string, nameExtractor: Function, descriptionExtractor: Function, headline: string) {
+/**
+ * Parses the provided section of the help message and extracts command arguments and names.
+ *
+ * @param argsString - A string containing all the required or optional arguments.
+ * @returns A list of required and optional {@link CommandArgument}s.
+ */
+function getArguments(argsString: string) {
     const args: CommandArgument[] = [];
 
     let name = "";
     let description = "";
 
+    function addArgument() {
+        if (name && description) {
+            args.push({
+                name: name.trim(),
+                description: description.trim(),
+            });
+
+            name = "";
+            description = "";
+        }
+    }
+
     argsString
         .split("\n")
-        .filter(it => it.length > 0 && !it.startsWith(headline))
+        .filter(it => it.length > 0)
         .forEach((it, _, __) => {
             if (!it.startsWith(" ", 2)) {
-                if (name && description) {
-                    args.push({
-                        name: name.trim(),
-                        description: description.trim(),
-                    });
-
-                    name = "";
-                    description = "";
-                }
+                addArgument();
 
                 const str = it.substring(2);
                 const startDescriptionPos = str.search("  ");
-                name = nameExtractor(str, startDescriptionPos);
-                description = descriptionExtractor(str, startDescriptionPos);
+
+                name = startDescriptionPos >= 0
+                    ? str.substring(0, startDescriptionPos + 1)
+                    : str.trim();
+                description = startDescriptionPos >= 0
+                    ? str.substring(startDescriptionPos + 1)
+                    : "";
             } else {
                 description += " " + it.trim();
             }
         });
-    if (name && description) {
-        args.push({
-            name: name,
-            description: description,
-        });
-    }
+    addArgument();
     return args;
 }
