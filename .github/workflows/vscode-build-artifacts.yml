@@ -43,7 +43,7 @@ jobs:
         uses: dawidd6/action-download-artifact@v2
         id: download-wheel
         with:
-          workflow: python-build-artifacts.yml
+          workflow: Build Python Artifacts
           workflow_conclusion: success
           name: aac_wheel
           path: dist/
