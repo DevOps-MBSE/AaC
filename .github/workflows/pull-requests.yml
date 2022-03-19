@@ -11,6 +11,7 @@ jobs:
 
   build_vscode_artifacts:
     name: Build VSCode Extension Artifacts
+    needs: build_python_artifacts
     uses: jondavid-black/AaC/.github/workflows/vscode-build-artifacts.yml@3bf4f4deda574e92a3c7632d470373e153badb94
 
   python_functional_tests:
