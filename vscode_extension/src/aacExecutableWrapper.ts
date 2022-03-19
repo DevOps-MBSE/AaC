@@ -16,7 +16,6 @@ interface CommandArgument {
  * information and arguments.
  */
 export async function executeAacCommand(): Promise<void> {
-
     let availableCommands: string[] = await getAacCommandNames();
 
     const quickPickOptions: QuickPickOptions = {
@@ -25,14 +24,18 @@ export async function executeAacCommand(): Promise<void> {
 
     window.showQuickPick(availableCommands, quickPickOptions).then(commandName => {
         if (commandName) {
-            getAacCommandArgs(commandName).then(async (commandArguments) => {
-                await getCommandArgUserInput(commandArguments);
-                execAacShellCommand(commandName, commandArguments).then(output => {
-                    outputChannel.appendLine(output);
-                    outputChannel.show();
-                });
-            });
+            executeCommandWithArguments(commandName).then((output: string) => {
+                outputChannel.appendLine(output);
+                outputChannel.show();
+             });
         }
+    });
+}
+
+export async function executeCommandWithArguments(commandName: string): Promise<string> {
+    return await getAacCommandArgs(commandName).then(async (commandArguments) => {
+        await getCommandArgUserInput(commandArguments);
+        return await execAacShellCommand(commandName, commandArguments);
     });
 }
 
