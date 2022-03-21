@@ -5,15 +5,12 @@ import * as helpers from "../../helpers";
 
 suite("AaC Executable Wrapper Test Suite", () => {
     test("we can get version of aac tool", async () => {
-        await aacWrapper.getAaCVersion().then((value) => {
-            assert.strictEqual(value, helpers.getConfigurationItem("version"));
-            assert.fail(`this should fail! -- value is: ${value}`);
-        });
+        await aacWrapper.getAaCVersion().then(value => assert.strictEqual(value, helpers.getConfigurationItem("version")));
     });
 
     test("we can execute a command with no arguments", async () => {
         await aacWrapper.executeCommandWithArguments("version")
-            .then((output: string) => output.includes(helpers.getConfigurationItem("version")))
+            .then((output: string) => assert.ok(output.includes(helpers.getConfigurationItem("version"))))
             .catch(reason => assert.fail(reason));
     });
 
