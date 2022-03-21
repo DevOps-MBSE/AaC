@@ -34,6 +34,20 @@ jobs:
       - name: Lint with ESLint
         run: yarn run eslint . --ext .js,.jsx,.ts,.tsx --max-warnings=0
 
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: Download Python Wheel
+        uses: actions/download-artifact@v2
+        with:
+          name: aac_wheel
+          path: python/dist/
+
+      - name: Install Wheel Distribution
+        run: pip install ../python/dist/*.whl
+
       - name: Test VSCode Extension
         run: xvfb-run -a yarn test
 
