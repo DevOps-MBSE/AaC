@@ -40,8 +40,7 @@ jobs:
           python-version: 3.9
 
       - name: Download Python Wheel
-        uses: action/download-artifact@v2
-        id: download-wheel
+        uses: actions/download-artifact@v2
         with:
           name: aac_wheel
           path: python/dist/
