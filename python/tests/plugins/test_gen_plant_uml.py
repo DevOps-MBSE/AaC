@@ -1,5 +1,5 @@
 import os
-from tempfile import NamedTemporaryFile, TemporaryDirectory
+from tempfile import TemporaryDirectory
 from unittest import TestCase
 
 from aac.plugins.gen_plant_uml.gen_plant_uml_impl import (
@@ -11,114 +11,96 @@ from aac.plugins.gen_plant_uml.gen_plant_uml_impl import (
     puml_sequence,
 )
 from aac.plugins.plugin_execution import PluginExecutionStatusCode
+from tests.helpers.io import temporary_test_file
 
 
 class TestGenPlantUml(TestCase):
-
     def test_puml_component_diagram_to_console(self):
-        with TemporaryDirectory() as temp_directory:
-            with NamedTemporaryFile(dir=temp_directory, mode="w", suffix=".yaml") as plugin_yaml:
-                plugin_yaml.write(TEST_PUML_ARCH_YAML)
-                plugin_yaml.seek(0)
+        with (TemporaryDirectory() as temp_directory,
+              temporary_test_file(TEST_PUML_ARCH_YAML, dir=temp_directory, suffix=".yaml") as plugin_yaml):
+            result = puml_component(plugin_yaml.name)
+            self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
 
-                result = puml_component(plugin_yaml.name)
-                self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
-
-                puml_content = "\n".join(result.messages)
-                self._assert_diagram_contains_uml_boilerplate(puml_content)
-                self._assert_component_diagram_content(puml_content)
+            puml_content = "\n".join(result.messages)
+            self._assert_diagram_contains_uml_boilerplate(puml_content)
+            self._assert_component_diagram_content(puml_content)
 
     def test_puml_component_diagram_to_file(self):
-        with TemporaryDirectory() as temp_directory:
-            with NamedTemporaryFile(dir=temp_directory, mode="w", suffix=".yaml") as plugin_yaml:
-                plugin_yaml.write(TEST_PUML_ARCH_YAML)
-                plugin_yaml.seek(0)
+        with (TemporaryDirectory() as temp_directory,
+              temporary_test_file(TEST_PUML_ARCH_YAML, dir=temp_directory, suffix=".yaml") as plugin_yaml):
+            # Get the rng temp AaC file name, but with a puml extension
+            expected_puml_file_path = os.path.basename(plugin_yaml.name).replace(".yaml", f"_{COMPONENT_STRING}.puml")
 
-                # Get the rng temp AaC file name, but with a puml extension
-                expected_puml_file_path = os.path.basename(plugin_yaml.name).replace(".yaml", f"_{COMPONENT_STRING}.puml")
+            result = puml_component(plugin_yaml.name, temp_directory)
+            self.assertIn(expected_puml_file_path, "\n".join(result.messages))
+            self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
 
-                result = puml_component(plugin_yaml.name, temp_directory)
-                self.assertIn(expected_puml_file_path, "\n".join(result.messages))
-                self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
+            temp_directory_files = os.listdir(temp_directory)
 
-                temp_directory_files = os.listdir(temp_directory)
+            self.assertIn(expected_puml_file_path, temp_directory_files)
 
-                self.assertIn(expected_puml_file_path, temp_directory_files)
-
-                with open(os.path.join(temp_directory, expected_puml_file_path)) as generated_puml_file:
-                    generated_puml_file_content = generated_puml_file.read()
-                    self._assert_diagram_contains_uml_boilerplate(generated_puml_file_content)
-                    self._assert_component_diagram_content(generated_puml_file_content)
+            with open(os.path.join(temp_directory, expected_puml_file_path)) as generated_puml_file:
+                generated_puml_file_content = generated_puml_file.read()
+                self._assert_diagram_contains_uml_boilerplate(generated_puml_file_content)
+                self._assert_component_diagram_content(generated_puml_file_content)
 
     def test_puml_object_diagram_to_console(self):
-        with TemporaryDirectory() as temp_directory:
-            with NamedTemporaryFile(dir=temp_directory, mode="w", suffix=".yaml") as plugin_yaml:
-                plugin_yaml.write(TEST_PUML_ARCH_YAML)
-                plugin_yaml.seek(0)
+        with (TemporaryDirectory() as temp_directory,
+              temporary_test_file(TEST_PUML_ARCH_YAML, dir=temp_directory, suffix=".yaml") as plugin_yaml):
+            result = puml_object(plugin_yaml.name)
+            self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
 
-                result = puml_object(plugin_yaml.name)
-                self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
-
-                puml_content = "\n".join(result.messages)
-                self._assert_diagram_contains_uml_boilerplate(puml_content)
-                self._assert_object_diagram_content(puml_content)
+            puml_content = "\n".join(result.messages)
+            self._assert_diagram_contains_uml_boilerplate(puml_content)
+            self._assert_object_diagram_content(puml_content)
 
     def test_puml_object_diagram_to_file(self):
-        with TemporaryDirectory() as temp_directory:
-            with NamedTemporaryFile(dir=temp_directory, mode="w", suffix=".yaml") as plugin_yaml:
-                plugin_yaml.write(TEST_PUML_ARCH_YAML)
-                plugin_yaml.seek(0)
+        with (TemporaryDirectory() as temp_directory,
+              temporary_test_file(TEST_PUML_ARCH_YAML, dir=temp_directory, suffix=".yaml") as plugin_yaml):
+            # Get the rng temp AaC file name, but with a puml extension
+            expected_puml_file_path = os.path.basename(plugin_yaml.name).replace(".yaml", f"_{OBJECT_STRING}.puml")
 
-                # Get the rng temp AaC file name, but with a puml extension
-                expected_puml_file_path = os.path.basename(plugin_yaml.name).replace(".yaml", f"_{OBJECT_STRING}.puml")
+            result = puml_object(plugin_yaml.name, temp_directory)
+            self.assertIn(expected_puml_file_path, "\n".join(result.messages))
+            self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
 
-                result = puml_object(plugin_yaml.name, temp_directory)
-                self.assertIn(expected_puml_file_path, "\n".join(result.messages))
-                self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
+            temp_directory_files = os.listdir(temp_directory)
 
-                temp_directory_files = os.listdir(temp_directory)
+            self.assertIn(expected_puml_file_path, temp_directory_files)
 
-                self.assertIn(expected_puml_file_path, temp_directory_files)
-
-                with open(os.path.join(temp_directory, expected_puml_file_path)) as generated_puml_file:
-                    generated_puml_file_content = generated_puml_file.read()
-                    self._assert_diagram_contains_uml_boilerplate(generated_puml_file_content)
-                    self._assert_object_diagram_content(generated_puml_file_content)
+            with open(os.path.join(temp_directory, expected_puml_file_path)) as generated_puml_file:
+                generated_puml_file_content = generated_puml_file.read()
+                self._assert_diagram_contains_uml_boilerplate(generated_puml_file_content)
+                self._assert_object_diagram_content(generated_puml_file_content)
 
     def test_puml_sequence_diagram_to_console(self):
-        with TemporaryDirectory() as temp_directory:
-            with NamedTemporaryFile(dir=temp_directory, mode="w", suffix=".yaml") as plugin_yaml:
-                plugin_yaml.write(TEST_PUML_ARCH_YAML)
-                plugin_yaml.seek(0)
+        with (TemporaryDirectory() as temp_directory,
+              temporary_test_file(TEST_PUML_ARCH_YAML, dir=temp_directory, suffix=".yaml") as plugin_yaml):
+            result = puml_sequence(plugin_yaml.name)
+            self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
 
-                result = puml_sequence(plugin_yaml.name)
-                self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
-
-                puml_content = "\n".join(result.messages)
-                self._assert_diagram_contains_uml_boilerplate(puml_content)
-                self._assert_sequence_diagram_content(puml_content)
+            puml_content = "\n".join(result.messages)
+            self._assert_diagram_contains_uml_boilerplate(puml_content)
+            self._assert_sequence_diagram_content(puml_content)
 
     def test_puml_sequence_diagram_to_file(self):
-        with TemporaryDirectory() as temp_directory:
-            with NamedTemporaryFile(dir=temp_directory, mode="w", suffix=".yaml") as plugin_yaml:
-                plugin_yaml.write(TEST_PUML_ARCH_YAML)
-                plugin_yaml.seek(0)
+        with (TemporaryDirectory() as temp_directory,
+              temporary_test_file(TEST_PUML_ARCH_YAML, dir=temp_directory, suffix=".yaml") as plugin_yaml):
+            # Get the rng temp AaC file name, but with a puml extension
+            expected_puml_file_path = os.path.basename(plugin_yaml.name).replace(".yaml", f"_{SEQUENCE_STRING}.puml")
 
-                # Get the rng temp AaC file name, but with a puml extension
-                expected_puml_file_path = os.path.basename(plugin_yaml.name).replace(".yaml", f"_{SEQUENCE_STRING}.puml")
+            result = puml_sequence(plugin_yaml.name, temp_directory)
+            self.assertIn(expected_puml_file_path, "\n".join(result.messages))
+            self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
 
-                result = puml_sequence(plugin_yaml.name, temp_directory)
-                self.assertIn(expected_puml_file_path, "\n".join(result.messages))
-                self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
+            temp_directory_files = os.listdir(temp_directory)
 
-                temp_directory_files = os.listdir(temp_directory)
+            self.assertIn(expected_puml_file_path, temp_directory_files)
 
-                self.assertIn(expected_puml_file_path, temp_directory_files)
-
-                with open(os.path.join(temp_directory, expected_puml_file_path)) as generated_puml_file:
-                    generated_puml_file_content = generated_puml_file.read()
-                    self._assert_diagram_contains_uml_boilerplate(generated_puml_file_content)
-                    self._assert_sequence_diagram_content(generated_puml_file_content)
+            with open(os.path.join(temp_directory, expected_puml_file_path)) as generated_puml_file:
+                generated_puml_file_content = generated_puml_file.read()
+                self._assert_diagram_contains_uml_boilerplate(generated_puml_file_content)
+                self._assert_sequence_diagram_content(generated_puml_file_content)
 
     def _assert_component_diagram_content(self, component_diagram_content_string: str):
         self._assert_diagram_contains_uml_boilerplate(component_diagram_content_string)
