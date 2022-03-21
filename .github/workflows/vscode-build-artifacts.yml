@@ -40,16 +40,14 @@ jobs:
           python-version: 3.9
 
       - name: Download Python Wheel
-        uses: dawidd6/action-download-artifact@v2
+        uses: action/download-artifact@v2
         id: download-wheel
         with:
-          workflow: Build Python Artifacts
-          workflow_conclusion: success
           name: aac_wheel
-          path: dist/
+          path: python/dist/
 
       - name: Install Wheel Distribution
-        run: pip install dist/*.whl
+        run: pip install ../python/dist/*.whl
 
       - name: Test VSCode Extension
         run: xvfb-run -a yarn test
