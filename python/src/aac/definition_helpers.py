@@ -30,13 +30,13 @@ def search(model: dict[str, Any], search_keys: list[str]) -> list:
         You know the structure of the specification and need to iterate through each field.
         The search utility method simplifies that for you.
 
-            for field in util.search(my_model, ["data", "fields"]):
+            for field in definition_helpers.search(my_model, ["data", "fields"]):
                 print(f"field_name: {field["name"]} field_type {field["type"]}")
 
         The above example demonstrates a complex type being returned as a dict.  Search will also
         provide direct access to simple types in the model.
 
-            for field_name in util.search(my_model, ["data", "fields", "name"]):
+            for field_name in definition_helpers.search(my_model, ["data", "fields", "name"]):
                 print(f"field_name: {field_name}")
 
     Args:
@@ -99,6 +99,52 @@ def search(model: dict[str, Any], search_keys: list[str]) -> list:
     return ret_val
 
 
+def search_definition(parsed_definition: ParsedDefinition, search_keys: list[str]) -> list:
+    """
+    Search an AaC definition structure by key(s).
+
+    Searches a ParsedDefinition for a subset of the definition contents given a set of keys.
+    Search returns a list of  entries in the definition that correspond to those keys. This search
+    will traverse the entire parsed definition's structure.
+
+        Typical usage example:
+        Let's say you have a definition structure parsed from the following AaC yaml.
+
+            data:
+            name: MyData
+            fields:
+                - name: one
+                type: string
+                - name: two
+                type: string
+            required:
+                - one
+
+        You know the structure of the specification and need to iterate through each field.
+        The search utility method simplifies that for you.
+
+            for field in definition_helpers.search(my_model, ["data", "fields"]):
+                print(f"field_name: {field["name"]} field_type {field["type"]}")
+
+        The above example demonstrates a complex type being returned as a dict.  Search will also
+        provide direct access to simple types in the model.
+
+            for field_name in definition_helpers.search(my_definition, ["data", "fields", "name"]):
+                print(f"field_name: {field_name}")
+
+    Args:
+        model: The definition to search.  This is often the value taken from the dict returned
+            by aac.parser.parse(<aac_file>).
+        search_keys: A list of strings representing keys in the model dict hierarchy.
+
+    Returns:
+        Returns a list of found data items based on the search keys.
+
+    """
+
+    return search(parsed_definition.definition, search_keys)
+
+
 def get_models_by_type(models: dict[str, dict], root_name: str) -> dict[str, dict]:
     """Gets subset of models of a specific root name.
 
@@ -122,18 +168,18 @@ def get_models_by_type(models: dict[str, dict], root_name: str) -> dict[str, dic
 
 
 def get_definitions_by_type(parsed_definitions: list[ParsedDefinition], root_name: str) -> list[ParsedDefinition]:
-    """Gets subset of definitions with a specific root name.
+    """Return a subset of definitions with the given root key.
 
     The aac.parser.parse() returns a dict of all parsed types.  Sometimes it is
     useful to only work with certain roots (i.e. model or data).  This utility
-    method allows a setup of parsed models to be "filtered" to a specific root name.
+    method allows a setup of parsed definitions to be "filtered" to a specific root name.
 
     Args:
-        models: The dict of models to search.
-        root_name: The root name to filter on.
+        parsed_definitions: The list of parsed definitions to search.
+        root_name: The root key to filter on.
 
     Returns:
-        A dict mapping type names to AaC model definitions.
+        A list of ParedDefinitions with the given root key AaC model definitions.
     """
 
     def does_definition_root_match(parsed_definition: ParsedDefinition) -> bool:
@@ -169,3 +215,8 @@ def get_definition_by_name(parsed_definitions: list[ParsedDefinition], definitio
         logging.debug("Failed to find a definition with the name \"{definition_name}\"")
 
     return matching_definitions[0]
+
+
+def convert_parsed_definitions_to_dict_definition(parsed_definitions: list[ParsedDefinition]) -> dict:
+    """Returns a combined dict from the list of ParsedDefinitions"""
+    return {definition.name: definition.definition for definition in parsed_definitions}
