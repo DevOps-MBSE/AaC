@@ -17,6 +17,8 @@ from aac.plugins.gen_plugin.gen_plugin_impl import (
 )
 from aac.plugins.plugin_execution import PluginExecutionStatusCode
 from aac.validator import validation
+
+from tests.helpers.assertion import assert_plugin_success
 from tests.helpers.io import temporary_test_file
 
 INIT_TEMPLATE_NAME = "__init__.py.jinja2"
@@ -42,7 +44,7 @@ class TestGenPlugin(TestCase):
                 is_user_desired_output_dir.return_value = True
                 result = generate_plugin(plugin_yaml.name)
 
-                self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
+                assert_plugin_success(result)
 
                 # Assert that top-level are all directories, no files at the top should be generated
                 self.assertEqual(len(os.listdir(temp_directory)), 2)
@@ -69,7 +71,7 @@ class TestGenPlugin(TestCase):
                 is_user_desired_output_dir.return_value = True
                 result = generate_plugin(plugin_yaml.name)
 
-                self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
+                assert_plugin_success(result)
 
                 generated_plugin_files = os.listdir(temp_directory)
                 self.assertEqual(len(generated_plugin_files), 6)

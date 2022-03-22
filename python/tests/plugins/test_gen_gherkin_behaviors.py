@@ -2,10 +2,10 @@ import os
 from importlib import resources
 from tempfile import NamedTemporaryFile, TemporaryDirectory
 from unittest import TestCase
+from nose2.tools import params
 
 from aac import definition_helpers, parser
-from aac.definition_helpers import search
-from aac.plugins.plugin_execution import PluginExecutionStatusCode
+from aac.definition_helpers import search_definition, get_definition_by_name
 from aac.plugins.gen_gherkin_behaviors import (
     get_commands,
     get_plugin_aac_definitions,
@@ -15,17 +15,19 @@ from aac.plugins.gen_gherkin_behaviors.gen_gherkin_behaviors_impl import (
     _create_gherkin_feature_file_name,
     gen_gherkin_behaviors,
 )
-from nose2.tools import params
+
+from tests.helpers.assertion import assert_plugin_success
 
 
 class TestGenerateGherkinBehaviorsPlugin(TestCase):
     def test_gen_gherkin_get_commands_conforms_with_plugin_model(self):
         with resources.open_text(gen_gherkin_behaviors_module_name, "gen_gherkin_behaviors.yaml") as plugin_model_file:
             plugin_name = "aac-gen-gherkin-behaviors"
-            plugin_model = parser.parse(plugin_model_file.name)
+            plugin_parsed_definitions = parser.parse(plugin_model_file.name)
+
             commands_yaml = list(map(
                 _filter_command_behaviors,
-                search(plugin_model.definition.get(plugin_name), ["model", "behavior"])
+                search_definition(get_definition_by_name(plugin_parsed_definitions, plugin_name), ["model", "behavior"])
             ))
 
             # Assert that the commands returned by the plugin matches those defined in the yaml file
@@ -110,7 +112,7 @@ model:
 
             # Generate gherkin files to temp directory
             result = gen_gherkin_behaviors(temp_arch_file.name, temp_output_dir)
-            self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
+            assert_plugin_success(result)
 
             # Check the generated files
             self.assertEqual(1, len(os.listdir(temp_output_dir)))
@@ -178,7 +180,7 @@ model:
 
             # Generate gherkin files to temp directory
             result = gen_gherkin_behaviors(temp_arch_file.name, temp_output_dir)
-            self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
+            assert_plugin_success(result)
 
             # Check the generated files
             self.assertEqual(1, len(os.listdir(temp_output_dir)))
