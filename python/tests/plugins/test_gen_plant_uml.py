@@ -17,8 +17,7 @@ from tests.helpers.io import temporary_test_file
 
 class TestGenPlantUml(TestCase):
     def test_puml_component_diagram_to_console(self):
-        with (TemporaryDirectory() as temp_directory,
-              temporary_test_file(TEST_PUML_ARCH_YAML, dir=temp_directory, suffix=".yaml") as plugin_yaml):
+        with temporary_test_file(TEST_PUML_ARCH_YAML, suffix=".yaml") as plugin_yaml:
             result = puml_component(plugin_yaml.name)
             self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
             self._assert_component_diagram_content("\n".join(result.messages))
@@ -41,8 +40,7 @@ class TestGenPlantUml(TestCase):
                 self._assert_component_diagram_content(generated_puml_file.read())
 
     def test_puml_object_diagram_to_console(self):
-        with (TemporaryDirectory() as temp_directory,
-              temporary_test_file(TEST_PUML_ARCH_YAML, dir=temp_directory, suffix=".yaml") as plugin_yaml):
+        with temporary_test_file(TEST_PUML_ARCH_YAML, suffix=".yaml") as plugin_yaml:
             result = puml_object(plugin_yaml.name)
             self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
             self._assert_object_diagram_content("\n".join(result.messages))
@@ -65,8 +63,7 @@ class TestGenPlantUml(TestCase):
                 self._assert_object_diagram_content(generated_puml_file.read())
 
     def test_puml_sequence_diagram_to_console(self):
-        with (TemporaryDirectory() as temp_directory,
-              temporary_test_file(TEST_PUML_ARCH_YAML, dir=temp_directory, suffix=".yaml") as plugin_yaml):
+        with temporary_test_file(TEST_PUML_ARCH_YAML, suffix=".yaml") as plugin_yaml:
             result = puml_sequence(plugin_yaml.name)
             self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
             self._assert_sequence_diagram_content("\n".join(result.messages))
