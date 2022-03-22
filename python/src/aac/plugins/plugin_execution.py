@@ -3,6 +3,7 @@
 from attr import attrib, attrs, validators, Factory
 from contextlib import contextmanager
 from enum import Enum, auto, unique
+from traceback import extract_tb
 
 from aac.parser.ParserError import ParserError
 from aac.plugins import PluginError, OperationCancelled
@@ -85,7 +86,9 @@ def plugin_result(name: str, cmd: callable, *args, **kwargs) -> PluginExecutionR
         result.set_messages(condition.message)
         result.status_code = PluginExecutionStatusCode.OPERATION_CANCELLED
     except Exception as error:
-        result.add_messages(f"an unrecognized error occurred: {error}")
+        # Extract the first stack trace, skipping the plugin result we'd expect to find in the first element
+        error_trace = extract_tb(error.__traceback__)[1]
+        result.add_messages(f"An unrecognized error occurred:{error_trace.filename} line {error_trace.lineno} message: {error}")
         result.status_code = PluginExecutionStatusCode.GENERAL_FAILURE
 
     yield result
