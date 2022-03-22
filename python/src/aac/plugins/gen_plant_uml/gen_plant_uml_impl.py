@@ -37,7 +37,7 @@ def puml_component(architecture_file: str, output_directory: Union[str, None] = 
 
         models = []
         for root_model_name in _find_root_names(model_types):
-            model_properties = _get_model_content(model_types[root_model_name], model_types, set())
+            model_properties = _get_model_content(model_types.get(root_model_name, {}), model_types, set())
             models.append(model_properties)
 
         return {
@@ -74,7 +74,7 @@ def puml_sequence(architecture_file: str, output_directory: Union[str, None] = N
         for use_case_title in _find_root_names(use_case_types):
 
             # declare participants
-            usecase_participants = util.search(use_case_types[use_case_title], ["usecase", "participants"])
+            usecase_participants = util.search(use_case_types.get(use_case_title, {}), ["usecase", "participants"])
             for usecase_participant in usecase_participants:  # each participant is a field type
                 participants.append({
                     "type": usecase_participant.get("type"),
@@ -82,7 +82,7 @@ def puml_sequence(architecture_file: str, output_directory: Union[str, None] = N
                 })
 
             # process steps
-            steps = util.search(use_case_types[use_case_title], ["usecase", "steps"])
+            steps = util.search(use_case_types.get(use_case_title, {}), ["usecase", "steps"])
             for step in steps:  # each step of a step type
                 sequences.append({
                     "source": step.get("source"),
@@ -125,15 +125,15 @@ def puml_object(architecture_file: str, output_directory: Union[str, None] = Non
         for model_name in model_types.keys():
             object_declarations.append(model_name)
 
-            for component in util.search(model_types[model_name], ["model", "components", "type"]):
+            for component in util.search(model_types.get(model_name, {}), ["model", "components", "type"]):
                 if model_name not in object_compositions:
                     object_compositions[model_name] = set()
 
-                object_compositions[model_name].add(component)
+                object_compositions.get(model_name, set()).add(component)
 
         object_hierarchies = []
         for parent in object_compositions:
-            for child in object_compositions[parent]:
+            for child in object_compositions.get(parent, {}):
                 object_hierarchies.append({"parent": parent, "child": child})
 
         return {
@@ -196,11 +196,11 @@ def _find_root_names(models) -> list[str]:
     # there are multiple models, so we have to look through them
     subcomponents = []  # names of subcomponent models
     for name in model_names:
-        model = models[name]
+        model = models.get(name)
         components = util.search(model, ["model", "components"])
         for component in components:
             # component is a Field type
-            component_type = component["type"]
+            component_type = component.get("type")
             # make sure this is a model type (not a data type)
             if component_type in model_names:
                 # add the component type to the list of subs
@@ -213,15 +213,15 @@ def _find_root_names(models) -> list[str]:
 
 def _get_model_content(model: dict, model_types, defined_interfaces: set):
 
-    model_name = model["model"]["name"]
+    model_name = model.get("model", {}).get("name")
     model_interfaces = set()
 
     # define UML interface for each input
     inputs = util.search(model, ["model", "behavior", "input"])
     model_inputs = []
     for input in inputs:
-        input_name = input["name"]
-        input_type = input["type"]
+        input_name = input.get("name")
+        input_type = input.get("type")
         model_inputs.append({
             "name": input_name,
             "type": input_type,
@@ -236,8 +236,8 @@ def _get_model_content(model: dict, model_types, defined_interfaces: set):
     outputs = util.search(model, ["model", "behavior", "output"])
     model_outputs = []
     for output in outputs:
-        output_name = output["name"]
-        output_type = output["type"]
+        output_name = output.get("name")
+        output_type = output.get("type")
         model_outputs.append({
             "name": output_name,
             "type": output_type,
@@ -253,8 +253,8 @@ def _get_model_content(model: dict, model_types, defined_interfaces: set):
     model_components = []
 
     for component in components:
-        component_type = component["type"]
-        model_components.append(_get_model_content(model_types[component_type], model_types, set()))
+        component_type = component.get("type")
+        model_components.append(_get_model_content(model_types.get(component_type), model_types, set()))
 
     return {
         "name": model_name,
