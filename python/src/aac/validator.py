@@ -8,7 +8,7 @@ from attr import attrib, attrs, validators, Factory
 from iteration_utilities import flatten
 
 from aac import plugins
-from aac.definition_helpers import search, get_models_by_type
+from aac.definition_helpers import search, get_definitions_by_type
 from aac.parser import ParsedDefinition
 from aac.spec.core import get_aac_spec, get_primitives
 
@@ -71,12 +71,10 @@ def _validate(definition: ParsedDefinition) -> None:
     global VALIDATOR_CONTEXT
 
     if not VALIDATOR_CONTEXT:
-        aac_core_spec_definitions = get_aac_spec()
-        aac_core_spec_dict = dict(map(lambda definition: (definition.name, definition.definition), aac_core_spec_definitions))
-        VALIDATOR_CONTEXT = ValidatorContext(aac_core_spec_dict, {}, plugins.get_plugin_model_definitions(), definition.definition)
+        VALIDATOR_CONTEXT = ValidatorContext(get_aac_spec(), plugins.get_plugin_model_definitions(), definition)
 
     try:
-        errors = list(flatten(map(_validate_model, definition.definition.values())))
+        errors = _validate_model(definition)
     finally:
         # Once we're done validating, wipe the context.
         VALIDATOR_CONTEXT = None
@@ -85,19 +83,17 @@ def _validate(definition: ParsedDefinition) -> None:
         raise ValidationError(definition.definition, errors)
 
 
-def _validate_model(model: dict) -> list:
+def _validate_model(definition: ParsedDefinition) -> list:
     """Validate a model by checking that it meets the requirements to be considered valid, and return any errors if it's invalid."""
-    actual_model = list(model.values())[0]
-    name = actual_model.get("name") or ""
-    errors = (
-        _get_all_parsing_errors(model)
-        + _get_all_enum_errors(model)
-        + _get_all_data_errors(model)
-        + _get_all_usecase_errors(model)
-        + _get_all_model_errors(model)
-        + _get_all_extension_errors(model)
-        + _get_all_cross_reference_errors(name, model)
-    )
+    errors = [] # (
+    #     _get_all_parsing_errors(definition)
+    #     + _get_all_enum_errors(definition)
+    #     + _get_all_data_errors(definition)
+    #     + _get_all_usecase_errors(definition)
+    #     + _get_all_model_errors(definition)
+    #     + _get_all_extension_errors(definition)
+    #     + _get_all_cross_reference_errors(definition)
+    # )
 
     return errors
 
@@ -170,7 +166,7 @@ def _get_all_errors_if_missing_required_properties(model: dict, required: list) 
     return list(map(get_error_if_missing_required_property, required))
 
 
-def _get_all_cross_reference_errors(kind: str, model: dict) -> iter:
+def _get_all_cross_reference_errors(definition: ParsedDefinition) -> iter:
     """Validate all cross references."""
     data = VALIDATOR_CONTEXT.get_all_data_definitions()
     enums = VALIDATOR_CONTEXT.get_all_enum_definitions()
@@ -494,20 +490,22 @@ class ValidatorContext:
 
     Attributes:
         core_aac_spec_model: A dict of the core AaC spec
-        plugin_defined_models: a dict of models, datas, and enums defined via plugins
-        plugin_defined_extensions: a dict extensions defined via plugins
+        plugin_defined_definitions: a dict of definitions defined in the plugin's AaC file
         validation_target_models: a dict of models that are being validated.
     """
 
-    parsed_models_type_attribute_settings = {
+    parsed_definitions_type_attribute_settings = {
         "default": {},
         "validator": validators.instance_of(list),
     }
+    parsed_definitions_dict_type_attribute_settings = {
+        "default": {},
+        "validator": validators.instance_of(dict),
+    }
 
-    core_aac_spec_models: list = attrib(**parsed_models_type_attribute_settings)
-    plugin_defined_models: list = attrib(**parsed_models_type_attribute_settings)
-    plugin_defined_extensions: list = attrib(**parsed_models_type_attribute_settings)
-    validation_target_models: list = attrib(**parsed_models_type_attribute_settings)
+    core_aac_spec_models: list = attrib(**parsed_definitions_type_attribute_settings)
+    plugin_defined_definitions: dict = attrib(**parsed_definitions_dict_type_attribute_settings)
+    validation_target_definition: ParsedDefinition = attrib(default=None, validator=validators.instance_of(ParsedDefinition))
 
     # These attributes aren't exposed in the constructor, and are intended as private members, but attrs doesn't support private members.
     extended_validation_aac_model: list = attrib(
@@ -542,15 +540,15 @@ class ValidatorContext:
 
     def get_all_model_definitions(self):
         """Return all definitions of the 'model' type."""
-        return get_models_by_type(self.get_all_extended_definitions(), "model")
+        return get_definitions_by_type(self.get_all_extended_definitions(), "model")
 
     def get_all_data_definitions(self):
         """Return all definitions of the 'data' type."""
-        return get_models_by_type(self.get_all_extended_definitions(), "data")
+        return get_definitions_by_type(self.get_all_extended_definitions(), "data")
 
     def get_all_enum_definitions(self):
         """Return all definitions of the 'enum' type."""
-        return get_models_by_type(self.get_all_extended_definitions(), "enum")
+        return get_definitions_by_type(self.get_all_extended_definitions(), "enum")
 
     def get_all_extended_definitions(self):
         """
@@ -564,7 +562,7 @@ class ValidatorContext:
             List of AaC definitions
         """
         definitions = self.get_all_unextended_definitions()
-        extensions = get_models_by_type(definitions, "ext")
+        extensions = get_definitions_by_type(definitions, "ext")
 
         if not self.extended_validation_aac_model:
             for extension in extensions.values():
@@ -591,9 +589,8 @@ class ValidatorContext:
         """
         return copy.deepcopy(
             self.core_aac_spec_models
-            | self.plugin_defined_models
-            | self.validation_target_models
-            | self.plugin_defined_extensions
+            | self.validation_target_definition
+            | self.plugin_defined_definitions
         )
 
     def _apply_extension_to_model(self, model, extension):
