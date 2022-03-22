@@ -122,7 +122,7 @@ class TestGenPlantUml(TestCase):
 
     def _assert_sequence_diagram_content(self, sequence_diagram_content_string: str):
         self._assert_diagram_contains_uml_boilerplate(sequence_diagram_content_string)
-        self.assertIn(f"title {TEST_PUML_USE_CASE_TITLE}", sequence_diagram_content_string)
+        self.assertIn(f"title {TEST_PUML_USE_CASE_ONE_TITLE}", sequence_diagram_content_string)
         self.assertIn(f"participant {TEST_PUML_SYSTEM_TYPE} as {TEST_PUML_SYSTEM_NAME}", sequence_diagram_content_string)
         self.assertIn(f"participant {TEST_PUML_SERVICE_ONE_TYPE} as {TEST_PUML_SERVICE_ONE_NAME}", sequence_diagram_content_string)
         self.assertIn(f"participant {TEST_PUML_SERVICE_TWO_TYPE} as {TEST_PUML_SERVICE_TWO_NAME}", sequence_diagram_content_string)
@@ -146,7 +146,8 @@ TEST_PUML_SERVICE_TWO_TYPE = "ServiceTwo"
 TEST_PUML_DATA_A_TYPE = "DataA"
 TEST_PUML_DATA_B_TYPE = "DataB"
 TEST_PUML_DATA_C_TYPE = "DataC"
-TEST_PUML_USE_CASE_TITLE = "Nominal flow within the system."
+TEST_PUML_USE_CASE_ONE_TITLE = "Nominal flow within the system."
+TEST_PUML_USE_CASE_TWO_TITLE = "Sample request/response flow."
 
 TEST_PUML_ARCH_YAML = f"""
 model:
@@ -158,9 +159,9 @@ model:
     - name: {TEST_PUML_SERVICE_TWO_NAME}
       type: {TEST_PUML_SERVICE_TWO_TYPE}
   behavior:
-    - name: Process DataA Request to {TEST_PUML_DATA_C_TYPE} Response
+    - name: Process {TEST_PUML_DATA_A_TYPE} Request to {TEST_PUML_DATA_C_TYPE} Response
       type: request-response
-      description: process DataA and respond with {TEST_PUML_DATA_C_TYPE}
+      description: process {TEST_PUML_DATA_A_TYPE} and respond with {TEST_PUML_DATA_C_TYPE}
       input:
         - name: in
           type: {TEST_PUML_DATA_A_TYPE}
@@ -168,14 +169,14 @@ model:
         - name: out
           type: {TEST_PUML_DATA_C_TYPE}
       acceptance:
-        - scenario: Receive DataA request and return DataD response
+        - scenario: Receive {TEST_PUML_DATA_A_TYPE} request and return {TEST_PUML_DATA_C_TYPE} response
           given:
             - System is running
             - {TEST_PUML_SERVICE_ONE_TYPE} is running
             - Subsystem is running
             - ServiceThree is running
           when:
-            - System receives a DataA request
+            - System receives a {TEST_PUML_DATA_A_TYPE} request
           then:
             - System processes the request into a {TEST_PUML_DATA_C_TYPE} response
             - System returns the {TEST_PUML_DATA_C_TYPE} response
@@ -250,7 +251,7 @@ data:
     type: string
 ---
 usecase:
-  name: {TEST_PUML_USE_CASE_TITLE}
+  name: {TEST_PUML_USE_CASE_ONE_TITLE}
   description:
   participants:
     - name: {TEST_PUML_SYSTEM_NAME}
@@ -272,4 +273,22 @@ usecase:
       source: {TEST_PUML_SERVICE_TWO_NAME}
       target: {TEST_PUML_SYSTEM_NAME}
       action: doFlow
+---
+usecase:
+  name: {TEST_PUML_USE_CASE_TWO_TITLE}
+  description:
+  participants:
+    - name: {TEST_PUML_SERVICE_ONE_NAME}
+      type: {TEST_PUML_SERVICE_ONE_TYPE}
+    - name: {TEST_PUML_SERVICE_TWO_NAME}
+      type: {TEST_PUML_SERVICE_TWO_TYPE}
+  steps:
+    - step: {TEST_PUML_SERVICE_ONE_NAME} makes a request for data from {TEST_PUML_SERVICE_TWO_NAME}
+      source: {TEST_PUML_SERVICE_ONE_NAME}
+      target: {TEST_PUML_SERVICE_TWO_NAME}
+      action: sendRequestToServiceTwo
+    - step: {TEST_PUML_SERVICE_TWO_NAME} completes and provides the result back to {TEST_PUML_SERVICE_ONE_NAME}
+      source: {TEST_PUML_SERVICE_TWO_NAME}
+      target: {TEST_PUML_SERVICE_ONE_NAME}
+      action: respondToServiceOne
 """
