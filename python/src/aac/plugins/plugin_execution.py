@@ -48,6 +48,10 @@ class PluginExecutionResult:
         """Return True if the command succeeded; False, otherwise."""
         return self.status_code == PluginExecutionStatusCode.SUCCESS
 
+    def output(self) -> str:
+        """Return the output messages as a combined string."""
+        return "\n".join(self.messages)
+
 
 @contextmanager
 def plugin_result(name: str, cmd: Callable, *args, **kwargs):
