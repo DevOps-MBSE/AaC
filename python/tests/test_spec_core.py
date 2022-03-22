@@ -3,6 +3,9 @@ from unittest import TestCase
 from aac.spec import core
 
 
+EXPECTED_ROOT_KEY_NAMES = ["import", "enum", "data", "model", "usecase", "ext", "validation"]
+
+
 class TestSpecCore(TestCase):
     def test_get_primitive(self):
         """
@@ -14,15 +17,25 @@ class TestSpecCore(TestCase):
 
         self.assertCountEqual(result, expected_results)
 
-    def test_get_root_names(self):
+    def test_get_root_keys(self):
         """
-        Unit test for the core.get_root_names method.
+        Unit test for the core.get_root_keys method.
         """
-        expected_results = ["import", "enum", "data", "model", "usecase", "ext", "validation"]
-
         result = core.get_root_keys()
 
-        self.assertCountEqual(result, expected_results)
+        self.assertEqual(len(result), len(EXPECTED_ROOT_KEY_NAMES))
+
+    def test_get_root_fields(self):
+        """
+        Unit test for the core.get_root_fields method.
+        """
+        result = core.get_root_fields()
+
+        self.assertEqual(len(result), len(EXPECTED_ROOT_KEY_NAMES))
+        for field in result:
+            self.assertIsNotNone(field.get("name"))
+            self.assertIsNotNone(field.get("description"))
+            self.assertIn(field.get("name"), EXPECTED_ROOT_KEY_NAMES)
 
     def test_get_aac_spec(self):
         """

@@ -19,7 +19,7 @@ from pygls.lsp import (
 )
 from pygls.server import LanguageServer
 
-from aac.spec import get_root_keys
+from aac.spec import get_root_fields
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 
 
@@ -70,7 +70,7 @@ def setup_features(server: LanguageServer) -> None:
     @server.feature(methods.COMPLETION, CompletionOptions(all_commit_characters=[":"]))
     async def handle_completion(ls: LanguageServer, params: CompletionParams):
         """Handle a completion request."""
-        root_keys = get_root_keys()
+        root_keys = get_root_fields()
         return CompletionList(
             is_incomplete=False,
             items=[

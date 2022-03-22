@@ -72,8 +72,8 @@ def get_primitives(reload: bool = False) -> list[str]:
     return PRIMITIVES
 
 
-def get_root_keys(reload: bool = False) -> list[str]:
-    """Gets the list of root names as defined in the AaC model specification.
+def get_root_keys(reload: bool = False) -> list[dict]:
+    """Gets the list of root names as defined in the AaC DSL specification.
 
     Args:
         reload: If True the cached root name values will be reloaded.
@@ -91,3 +91,20 @@ def get_root_keys(reload: bool = False) -> list[str]:
         ROOT_NAMES = search(root_definition.definition, ["data", "fields", "name"])
 
     return ROOT_NAMES
+
+
+def get_root_fields(reload: bool = False) -> list[dict]:
+    """Gets the list of the root fields declared in the AaC DSL specification.
+
+    Args:
+        reload: If True the cached root name values will be reloaded.
+            Default is False.
+
+    Returns:
+        A list of dictionaries representing the root keys and their contextual information.
+    """
+
+    aac_definitions = get_aac_spec()
+    root_definition = definition_helpers.get_definition_by_name(aac_definitions, "root")
+
+    return search(dict(root_definition.definition), ["data", "fields"])
