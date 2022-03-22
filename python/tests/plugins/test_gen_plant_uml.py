@@ -21,10 +21,7 @@ class TestGenPlantUml(TestCase):
               temporary_test_file(TEST_PUML_ARCH_YAML, dir=temp_directory, suffix=".yaml") as plugin_yaml):
             result = puml_component(plugin_yaml.name)
             self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
-
-            puml_content = "\n".join(result.messages)
-            self._assert_diagram_contains_uml_boilerplate(puml_content)
-            self._assert_component_diagram_content(puml_content)
+            self._assert_component_diagram_content("\n".join(result.messages))
 
     def test_puml_component_diagram_to_file(self):
         with (TemporaryDirectory() as temp_directory,
@@ -41,19 +38,14 @@ class TestGenPlantUml(TestCase):
             self.assertIn(expected_puml_file_path, temp_directory_files)
 
             with open(os.path.join(temp_directory, expected_puml_file_path)) as generated_puml_file:
-                generated_puml_file_content = generated_puml_file.read()
-                self._assert_diagram_contains_uml_boilerplate(generated_puml_file_content)
-                self._assert_component_diagram_content(generated_puml_file_content)
+                self._assert_component_diagram_content(generated_puml_file.read())
 
     def test_puml_object_diagram_to_console(self):
         with (TemporaryDirectory() as temp_directory,
               temporary_test_file(TEST_PUML_ARCH_YAML, dir=temp_directory, suffix=".yaml") as plugin_yaml):
             result = puml_object(plugin_yaml.name)
             self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
-
-            puml_content = "\n".join(result.messages)
-            self._assert_diagram_contains_uml_boilerplate(puml_content)
-            self._assert_object_diagram_content(puml_content)
+            self._assert_object_diagram_content("\n".join(result.messages))
 
     def test_puml_object_diagram_to_file(self):
         with (TemporaryDirectory() as temp_directory,
@@ -70,19 +62,14 @@ class TestGenPlantUml(TestCase):
             self.assertIn(expected_puml_file_path, temp_directory_files)
 
             with open(os.path.join(temp_directory, expected_puml_file_path)) as generated_puml_file:
-                generated_puml_file_content = generated_puml_file.read()
-                self._assert_diagram_contains_uml_boilerplate(generated_puml_file_content)
-                self._assert_object_diagram_content(generated_puml_file_content)
+                self._assert_object_diagram_content(generated_puml_file.read())
 
     def test_puml_sequence_diagram_to_console(self):
         with (TemporaryDirectory() as temp_directory,
               temporary_test_file(TEST_PUML_ARCH_YAML, dir=temp_directory, suffix=".yaml") as plugin_yaml):
             result = puml_sequence(plugin_yaml.name)
             self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
-
-            puml_content = "\n".join(result.messages)
-            self._assert_diagram_contains_uml_boilerplate(puml_content)
-            self._assert_sequence_diagram_content(puml_content)
+            self._assert_sequence_diagram_content("\n".join(result.messages))
 
     def test_puml_sequence_diagram_to_file(self):
         with (TemporaryDirectory() as temp_directory,
@@ -99,9 +86,7 @@ class TestGenPlantUml(TestCase):
             self.assertIn(expected_puml_file_path, temp_directory_files)
 
             with open(os.path.join(temp_directory, expected_puml_file_path)) as generated_puml_file:
-                generated_puml_file_content = generated_puml_file.read()
-                self._assert_diagram_contains_uml_boilerplate(generated_puml_file_content)
-                self._assert_sequence_diagram_content(generated_puml_file_content)
+                self._assert_sequence_diagram_content(generated_puml_file.read())
 
     def _assert_component_diagram_content(self, component_diagram_content_string: str):
         self._assert_diagram_contains_uml_boilerplate(component_diagram_content_string)
