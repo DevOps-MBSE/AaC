@@ -20,7 +20,7 @@ class TestGenPlantUml(TestCase):
         with temporary_test_file(TEST_PUML_ARCH_YAML, suffix=".yaml") as plugin_yaml:
             result = puml_component(plugin_yaml.name)
             self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
-            self._assert_component_diagram_content("\n".join(result.messages))
+            self._assert_component_diagram_content(result.output())
 
     def test_puml_component_diagram_to_file(self):
         with (TemporaryDirectory() as temp_directory,
@@ -29,7 +29,7 @@ class TestGenPlantUml(TestCase):
             expected_puml_file_path = self._get_expected_puml_file_name(plugin_yaml.name, COMPONENT_STRING)
 
             result = puml_component(plugin_yaml.name, temp_directory)
-            self.assertIn(expected_puml_file_path, "\n".join(result.messages))
+            self.assertIn(expected_puml_file_path, result.output())
             self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
 
             temp_directory_files = os.listdir(temp_directory)
@@ -43,7 +43,7 @@ class TestGenPlantUml(TestCase):
         with temporary_test_file(TEST_PUML_ARCH_YAML, suffix=".yaml") as plugin_yaml:
             result = puml_object(plugin_yaml.name)
             self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
-            self._assert_object_diagram_content("\n".join(result.messages))
+            self._assert_object_diagram_content(result.output())
 
     def test_puml_object_diagram_to_file(self):
         with (TemporaryDirectory() as temp_directory,
@@ -52,7 +52,7 @@ class TestGenPlantUml(TestCase):
             expected_puml_file_path = self._get_expected_puml_file_name(plugin_yaml.name, OBJECT_STRING)
 
             result = puml_object(plugin_yaml.name, temp_directory)
-            self.assertIn(expected_puml_file_path, "\n".join(result.messages))
+            self.assertIn(expected_puml_file_path, result.output())
             self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
 
             temp_directory_files = os.listdir(temp_directory)
@@ -66,7 +66,7 @@ class TestGenPlantUml(TestCase):
         with temporary_test_file(TEST_PUML_ARCH_YAML, suffix=".yaml") as plugin_yaml:
             result = puml_sequence(plugin_yaml.name)
             self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
-            self._assert_sequence_diagram_content("\n".join(result.messages))
+            self._assert_sequence_diagram_content(result.output())
 
     def test_puml_sequence_diagram_to_file(self):
         with (TemporaryDirectory() as temp_directory,
@@ -75,7 +75,7 @@ class TestGenPlantUml(TestCase):
             expected_puml_file_path = self._get_expected_puml_file_name(plugin_yaml.name, SEQUENCE_STRING)
 
             result = puml_sequence(plugin_yaml.name, temp_directory)
-            self.assertIn(expected_puml_file_path, "\n".join(result.messages))
+            self.assertIn(expected_puml_file_path, result.output())
             self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
 
             temp_directory_files = os.listdir(temp_directory)
