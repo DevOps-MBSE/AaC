@@ -6,7 +6,7 @@
 from iteration_utilities import flatten
 
 from aac import parser
-from aac.definition_helpers import get_models_by_type
+from aac.definition_helpers import get_models_by_type, convert_parsed_definitions_to_dict_definition
 from aac.plugins import PluginError
 from aac.plugins.plugin_execution import (
     PluginExecutionResult,
@@ -35,8 +35,9 @@ def gen_gherkin_behaviors(architecture_file: str, output_directory: str) -> Plug
     def generate_gherkin():
         with validation(parser.parse, architecture_file) as validation_result:
             loaded_templates = load_default_templates("gen_gherkin_behaviors")
+            definitions_dictionary = convert_parsed_definitions_to_dict_definition(validation_result.parsed_definitions)
 
-            message_template_properties = _get_template_properties(validation_result.parsed_definitions.definition)
+            message_template_properties = _get_template_properties(definitions_dictionary)
             generated_template_messages = _generate_gherkin_feature_files(loaded_templates, message_template_properties)
 
             write_generated_templates_to_file(generated_template_messages, output_directory)

@@ -10,7 +10,9 @@ import yaml
 from os import path
 
 from aac import parser
+from aac import definition_helpers
 from aac.definition_helpers import get_models_by_type, search
+from aac.parser.ParsedDefinition import ParsedDefinition
 from aac.template_engine import (
     TemplateOutputFile,
     generate_templates,
@@ -63,8 +65,8 @@ def generate_plugin(architecture_file: str) -> PluginExecutionResult:
 
 def _generate_plugin_files_to_directory(architecture_file_path: str, plugin_output_directory: str, plugin_type: str) -> str:
     with validation(parser.parse, architecture_file_path) as validation_result:
-        model = validation_result.parsed_definitions.definition
-        templates = list(_prepare_and_generate_plugin_files(model, plugin_type, architecture_file_path).values())
+        definitions = validation_result.parsed_definitions
+        templates = list(_prepare_and_generate_plugin_files(definitions, plugin_type, architecture_file_path).values())
         write_generated_templates_to_file(templates, plugin_output_directory)
         return f"Successfully created a {plugin_type}-party plugin in {plugin_output_directory}"
 
@@ -148,7 +150,7 @@ def _generate_template_files(plugin_type: str, template_properties: dict) -> dic
 
 
 def _prepare_and_generate_plugin_files(
-    parsed_models: dict[str, dict], plugin_type: str, architecture_file_path: str
+    definitions: list[ParsedDefinition], plugin_type: str, architecture_file_path: str
 ) -> dict[str, list[TemplateOutputFile]]:
     """
     Parse the model and generate the plugin template accordingly.
@@ -164,7 +166,8 @@ def _prepare_and_generate_plugin_files(
     Raises:
         GeneratePluginException: An error encountered during the plugin generation process.
     """
-    template_properties = _gather_template_properties(parsed_models, architecture_file_path)
+    parsed_definitions_dictionary = definition_helpers.convert_parsed_definitions_to_dict_definition(definitions)
+    template_properties = _gather_template_properties(parsed_definitions_dictionary, architecture_file_path)
 
     plugin_name = template_properties.get("plugin").get("name")
     plugin_implementation_name = template_properties.get("plugin").get("implementation_name")

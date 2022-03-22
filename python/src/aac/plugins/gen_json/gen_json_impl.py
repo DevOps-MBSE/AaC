@@ -2,6 +2,7 @@
 import json
 import os
 
+from aac.definition_helpers import convert_parsed_definitions_to_dict_definition
 from aac.parser import parse
 from aac.plugins.plugin_execution import (
     PluginExecutionResult,
@@ -27,7 +28,8 @@ def print_json(architecture_files: list[str], output_directory: str = None) -> P
         file_name, _ = os.path.splitext(os.path.basename(architecture_file_path))
 
         with validation(parse, architecture_file_path) as result:
-            formatted_json = json.dumps(result.parsed_definitions.definition, indent=2)
+            definitions_as_dict = convert_parsed_definitions_to_dict_definition(result.parsed_definitions)
+            formatted_json = json.dumps(definitions_as_dict, indent=2)
 
             if output_directory:
                 if not os.path.exists(output_directory):

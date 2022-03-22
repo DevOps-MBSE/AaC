@@ -6,7 +6,7 @@
 import os
 
 from aac import parser
-from aac.definition_helpers import get_models_by_type, search
+from aac.definition_helpers import get_models_by_type, search, convert_parsed_definitions_to_dict_definition
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 from aac.validator import validation
 from aac.template_engine import (
@@ -40,9 +40,7 @@ def puml_component(architecture_file: str, output_directory: str = None) -> Plug
             model_properties = _get_model_content(model_types[root_model_name], model_types, set())
             models.append(model_properties)
 
-        return {
-            "models": models
-        }
+        return {"models": models}
 
     with plugin_result(
         plugin_name,
@@ -76,25 +74,25 @@ def puml_sequence(architecture_file: str, output_directory: str = None) -> Plugi
             # declare participants
             usecase_participants = search(use_case_types[use_case_title], ["usecase", "participants"])
             for usecase_participant in usecase_participants:  # each participant is a field type
-                participants.append({
-                    "type": usecase_participant.get("type"),
-                    "name": usecase_participant.get("name"),
-                })
+                participants.append(
+                    {
+                        "type": usecase_participant.get("type"),
+                        "name": usecase_participant.get("name"),
+                    }
+                )
 
             # process steps
             steps = search(use_case_types[use_case_title], ["usecase", "steps"])
             for step in steps:  # each step of a step type
-                sequences.append({
-                    "source": step.get("source"),
-                    "target": step.get("target"),
-                    "action": step.get("action"),
-                })
+                sequences.append(
+                    {
+                        "source": step.get("source"),
+                        "target": step.get("target"),
+                        "action": step.get("action"),
+                    }
+                )
 
-            return {
-                "title": use_case_title,
-                "participants": participants,
-                "sequences": sequences
-            }
+            return {"title": use_case_title, "participants": participants, "sequences": sequences}
 
     with plugin_result(
         plugin_name,
@@ -136,10 +134,7 @@ def puml_object(architecture_file: str, output_directory: str = None) -> PluginE
             for child in object_compositions[parent]:
                 object_hierarchies.append({"parent": parent, "child": child})
 
-        return {
-            "objects": object_declarations,
-            "object_hierarchies": object_hierarchies
-        }
+        return {"objects": object_declarations, "object_hierarchies": object_hierarchies}
 
     with plugin_result(
         plugin_name,
@@ -147,7 +142,7 @@ def puml_object(architecture_file: str, output_directory: str = None) -> PluginE
         architecture_file_path,
         output_directory,
         OBJECT_STRING,
-        generate_object_diagram,
+        generate_object_diagram
     ) as result:
         return result
 
@@ -172,10 +167,9 @@ def _generate_diagram_to_file(
         file_name, _ = os.path.splitext(os.path.basename(architecture_file_path))
         generated_file_name = f"{file_name}_{puml_type}.puml"
 
-        template_properties = property_generator(result.parsed_definitions.definition)
-        generated_templates = generate_templates(
-            load_default_templates(f"{plugin_name}/{puml_type}"), template_properties
-        )
+        definitions_as_dict = convert_parsed_definitions_to_dict_definition(result.parsed_definitions)
+        template_properties = property_generator(definitions_as_dict)
+        generated_templates = generate_templates(load_default_templates(f"{plugin_name}/{puml_type}"), template_properties)
 
         for generated_template in generated_templates.values():
             generated_template.file_name = generated_file_name
@@ -225,11 +219,7 @@ def _get_model_content(model: dict, model_types, defined_interfaces: set):
     for input in inputs:
         input_name = input["name"]
         input_type = input["type"]
-        model_inputs.append({
-            "name": input_name,
-            "type": input_type,
-            "target": model_name
-        })
+        model_inputs.append({"name": input_name, "type": input_type, "target": model_name})
 
         if input_type not in defined_interfaces:
             defined_interfaces.add(input_type)
@@ -241,11 +231,7 @@ def _get_model_content(model: dict, model_types, defined_interfaces: set):
     for output in outputs:
         output_name = output["name"]
         output_type = output["type"]
-        model_outputs.append({
-            "name": output_name,
-            "type": output_type,
-            "source": model_name
-        })
+        model_outputs.append({"name": output_name, "type": output_type, "source": model_name})
 
         if output_type not in defined_interfaces:
             defined_interfaces.add(output_type)
