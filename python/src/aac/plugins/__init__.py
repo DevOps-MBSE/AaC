@@ -34,7 +34,7 @@ def get_plugin_manager() -> PluginManager:
     return plugin_manager.get_plugin_manager()
 
 
-def get_plugin_model_definitions():
+def get_plugin_model_definitions() -> list[dict]:
     """
     Get a list of all the plugin-defined AaC models and definitions.
 
