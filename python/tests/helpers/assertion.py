@@ -15,4 +15,3 @@ def assert_plugin_success(plugin_result: PluginExecutionResult):
 
     if plugin_result.status_code != PluginExecutionStatusCode.SUCCESS:
         raise AssertionError(f"PluginResult did not return success as expected:\n{plugin_result.messages}")
-

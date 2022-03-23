@@ -1,6 +1,5 @@
 """Contains functionality to support validating AaC architecture files."""
 from contextlib import contextmanager
-import itertools
 
 from aac import plugins
 from aac.parser import ParsedDefinition
