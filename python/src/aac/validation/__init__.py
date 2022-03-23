@@ -1,27 +1,11 @@
 """Contains functionality to support validating AaC architecture files."""
-from attr import attrib, attrs, validators, Factory
 from contextlib import contextmanager
 import itertools
 
 from aac import plugins
-
-
-class ValidationError(RuntimeError):
-    """An error that represents a model with invalid components and/or structure."""
-    pass
-
-
-@attrs(slots=True, auto_attribs=True)
-class ValidationResult:
-    """Represents the result of validating a model.
-
-    Attributes:
-        messages (list[str]): A list of messages to be provided as feedback for the user.
-        model (dict): The model that was validated; if the model is invalid, None.
-    """
-
-    messages: list[str] = attrib(default=Factory(list), validator=validators.instance_of(list))
-    model: dict = attrib(default=Factory(dict), validator=validators.instance_of(dict))
+from aac.parser import ParsedDefinition
+from aac.validation.ValidationError import ValidationError
+from aac.validation.ValidationResult import ValidationResult
 
 
 @contextmanager
@@ -48,14 +32,14 @@ def preview_validation(model_producer: callable, source: str, **kwargs) -> Valid
         raise ValidationError(source, *ve.args)
 
 
-def _preview_validate(model: dict) -> None:
-    """Return all validation errors for the model.
+def _preview_validate(definition: ParsedDefinition) -> None:
+    """Return all validation errors for the definition.
 
     This function validates the target model against the core AaC Spec and any actively installed
     plugin data, enum, and extension definitions.
 
     Args:
-        model: The model to validate.
+        definition: The definition to validate.
 
     Raises:
         Raises a ValidationError if any errors are found when validating the model.
@@ -63,4 +47,4 @@ def _preview_validate(model: dict) -> None:
     plugin_manager = plugins.get_plugin_manager()
     registered_validators = plugin_manager.hook.register_validators()
 
-    print(list(itertools.chain(*registered_validators)))
+    print(registered_validators)
