@@ -17,10 +17,10 @@ class ValidatorPlugin:
         arguments: Any additional arguments to supply to the validation_function
     """
 
-    name = attrib(validator=validators.instance_of(str))
-    definition = attrib(validator=validators.instance_of(ParsedDefinition))
-    validation_function = attrib(default=None, validator=validators.instance_of((type(callable), type(None))))
-    arguments = attrib(default=None, validator=validators.instance_of((list, type(None))))
+    name: str = attrib(validator=validators.instance_of(str))
+    definition: ParsedDefinition = attrib(validator=validators.instance_of(ParsedDefinition))
+    validation_function: callable = attrib(default=None, validator=validators.instance_of((type(callable), type(None))))
+    arguments: dict = attrib(default=None, validator=validators.instance_of((dict, type(None))))
 
     @staticmethod
     def from_definition(validation_definition: ParsedDefinition) -> ValidatorPlugin:
