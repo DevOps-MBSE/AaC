@@ -24,3 +24,25 @@ class ParsedDefinition:
     def get_root_key(self) -> str:
         """Return the root key for the parsed definition"""
         return list(self.definition.keys())[0]
+
+    def is_extension(self) -> bool:
+        """Returns true if the definition is an extension definition."""
+        return self.get_root_key() == "ext"
+
+    def is_data_extension(self) -> bool:
+        """Returns true if the definition is a data extension definition."""
+        definition = self.definition.get("ext")
+        return "dataExt" in definition and isinstance(definition["dataExt"], dict)
+
+    def is_enum_extension(self) -> bool:
+        """Returns true if the definition is an enum extension definition."""
+        definition = self.definition.get("ext")
+        return "enumExt" in definition and isinstance(definition["enumExt"], dict)
+
+    def is_enum(self) -> bool:
+        """Returns true if the definition is an enum definition."""
+        return self.get_root_key() == "enum"
+
+    def is_data(self) -> bool:
+        """Returns true if the definition is a data definition."""
+        return self.get_root_key() == "data"
