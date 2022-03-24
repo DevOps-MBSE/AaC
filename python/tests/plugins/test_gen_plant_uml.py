@@ -6,6 +6,7 @@ from aac.plugins.gen_plant_uml.gen_plant_uml_impl import (
     COMPONENT_STRING,
     OBJECT_STRING,
     SEQUENCE_STRING,
+    YAML_FILE_EXTENSION,
     PLANT_UML_FILE_EXTENSION,
     INVALID_FILE_NAME_CHARACTERS,
     puml_component,
@@ -49,14 +50,14 @@ class TestGenPlantUml(TestCase):
             )
 
     def test_puml_component_diagram_to_console(self):
-        with temporary_test_file(TEST_PUML_ARCH_YAML, suffix=".yaml") as plugin_yaml:
+        with temporary_test_file(TEST_PUML_ARCH_YAML, suffix=YAML_FILE_EXTENSION) as plugin_yaml:
             result = puml_component(plugin_yaml.name)
             self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
             self._assert_component_diagram_content(result.output())
 
     def test_puml_component_diagram_to_file(self):
         with (TemporaryDirectory() as temp_directory,
-              temporary_test_file(TEST_PUML_ARCH_YAML, dir=temp_directory, suffix=".yaml") as plugin_yaml):
+              temporary_test_file(TEST_PUML_ARCH_YAML, dir=temp_directory, suffix=YAML_FILE_EXTENSION) as plugin_yaml):
             # Get the rng temp AaC file name, but with a puml extension
             expected_puml_file_path = self._get_expected_puml_file_name(plugin_yaml.name, COMPONENT_STRING)
 
@@ -72,14 +73,14 @@ class TestGenPlantUml(TestCase):
                 self._assert_component_diagram_content(generated_puml_file.read())
 
     def test_puml_object_diagram_to_console(self):
-        with temporary_test_file(TEST_PUML_ARCH_YAML, suffix=".yaml") as plugin_yaml:
+        with temporary_test_file(TEST_PUML_ARCH_YAML, suffix=YAML_FILE_EXTENSION) as plugin_yaml:
             result = puml_object(plugin_yaml.name)
             self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
             self._assert_object_diagram_content(result.output())
 
     def test_puml_object_diagram_to_file(self):
         with (TemporaryDirectory() as temp_directory,
-              temporary_test_file(TEST_PUML_ARCH_YAML, dir=temp_directory, suffix=".yaml") as plugin_yaml):
+              temporary_test_file(TEST_PUML_ARCH_YAML, dir=temp_directory, suffix=YAML_FILE_EXTENSION) as plugin_yaml):
             # Get the rng temp AaC file name, but with a puml extension
             expected_puml_file_path = self._get_expected_puml_file_name(plugin_yaml.name, OBJECT_STRING)
 
@@ -95,14 +96,14 @@ class TestGenPlantUml(TestCase):
                 self._assert_object_diagram_content(generated_puml_file.read())
 
     def test_puml_sequence_diagram_to_console(self):
-        with temporary_test_file(TEST_PUML_ARCH_YAML, suffix=".yaml") as plugin_yaml:
+        with temporary_test_file(TEST_PUML_ARCH_YAML, suffix=YAML_FILE_EXTENSION) as plugin_yaml:
             result = puml_sequence(plugin_yaml.name)
             self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
             self._assert_sequence_diagram_content(result.output())
 
     def test_puml_sequence_diagram_to_file(self):
         with (TemporaryDirectory() as temp_directory,
-              temporary_test_file(TEST_PUML_ARCH_YAML, dir=temp_directory, suffix=".yaml") as plugin_yaml):
+              temporary_test_file(TEST_PUML_ARCH_YAML, dir=temp_directory, suffix=YAML_FILE_EXTENSION) as plugin_yaml):
             # Get the rng temp AaC file name, but with a puml extension
             expected_puml_file_path = self._get_expected_puml_file_name(plugin_yaml.name, SEQUENCE_STRING)
 

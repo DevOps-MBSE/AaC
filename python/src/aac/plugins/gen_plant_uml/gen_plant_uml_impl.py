@@ -16,6 +16,7 @@ from aac.template_engine import (
 )
 
 plugin_name = "gen_plant_uml"
+YAML_FILE_EXTENSION = ".yaml"
 PLANT_UML_FILE_EXTENSION = ".puml"
 COMPONENT_STRING = "component"
 OBJECT_STRING = "object"
