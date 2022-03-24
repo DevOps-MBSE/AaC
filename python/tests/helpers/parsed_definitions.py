@@ -22,7 +22,7 @@ TYPE_STRING = "type"
 VALIDATION_STRING = "validation"
 
 
-def create_field_entry(name: str, type: str, description: str) -> dict:
+def create_field_entry(name: str, type: str = "", description: str = "") -> dict:
     """
     Creates a single field entry for definitions.
 

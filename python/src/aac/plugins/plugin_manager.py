@@ -25,6 +25,11 @@ def get_plugin_manager() -> PluginManager:
         specifications,
     )
 
+    # Import Validation Plugins
+    from aac.plugins.validators import (
+        defined_references
+    )
+
     plugin_manager = PluginManager(PLUGIN_PROJECT_NAME)
     plugin_manager.add_hookspecs(hookspecs)
     plugin_manager.load_setuptools_entrypoints(PLUGIN_PROJECT_NAME)
@@ -37,6 +42,9 @@ def get_plugin_manager() -> PluginManager:
     plugin_manager.register(gen_gherkin_behaviors)
     plugin_manager.register(gen_plant_uml)
     plugin_manager.register(specifications)
+
+    # register "built-in" validation plugins
+    plugin_manager.register(defined_references)
 
     return plugin_manager
 
