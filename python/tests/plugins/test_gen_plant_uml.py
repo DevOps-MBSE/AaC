@@ -7,15 +7,47 @@ from aac.plugins.gen_plant_uml.gen_plant_uml_impl import (
     OBJECT_STRING,
     SEQUENCE_STRING,
     PLANT_UML_FILE_EXTENSION,
+    INVALID_FILE_NAME_CHARACTERS,
     puml_component,
     puml_object,
     puml_sequence,
+    _get_generated_file_name,
+    _get_formatted_definition_name,
 )
 from aac.plugins.plugin_execution import PluginExecutionStatusCode
 from tests.helpers.io import temporary_test_file
 
 
 class TestGenPlantUml(TestCase):
+    def test_formatted_definition_name(self):
+        self.assertEqual(_get_formatted_definition_name(""), "")
+        self.assertEqual(_get_formatted_definition_name("name"), "name")
+        self.assertEqual(_get_formatted_definition_name("Name"), "name")
+        self.assertEqual(_get_formatted_definition_name("Definition Name"), "definition_name")
+        self.assertEqual(
+            _get_formatted_definition_name(f"This is my Definition Name{INVALID_FILE_NAME_CHARACTERS}"),
+            "this_is_my_definition_name"
+        )
+
+    def test_generated_file_name_without_output_dir(self):
+        orig_output_dir = "/tmp/some/dir/"
+        new_output_dir = "/dir/some/tmp/"
+        file_name = "test_arch_file"
+        full_file_name = f"{orig_output_dir}{file_name}{PLANT_UML_FILE_EXTENSION}"
+        definition_name = "My test definition name."
+        formatted_definition_name = _get_formatted_definition_name(definition_name)
+
+        puml_types = [COMPONENT_STRING, OBJECT_STRING, SEQUENCE_STRING]
+        for puml_type in puml_types:
+            self.assertEqual(
+                _get_generated_file_name(full_file_name, puml_type, definition_name),
+                os.path.join(orig_output_dir, puml_type, f"{file_name}_{formatted_definition_name}{PLANT_UML_FILE_EXTENSION}"),
+            )
+            self.assertEqual(
+                _get_generated_file_name(full_file_name, puml_type, definition_name, new_output_dir),
+                os.path.join(new_output_dir, puml_type, f"{file_name}_{formatted_definition_name}{PLANT_UML_FILE_EXTENSION}"),
+            )
+
     def test_puml_component_diagram_to_console(self):
         with temporary_test_file(TEST_PUML_ARCH_YAML, suffix=".yaml") as plugin_yaml:
             result = puml_component(plugin_yaml.name)

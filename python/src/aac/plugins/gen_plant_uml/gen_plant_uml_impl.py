@@ -20,6 +20,7 @@ PLANT_UML_FILE_EXTENSION = ".puml"
 COMPONENT_STRING = "component"
 OBJECT_STRING = "object"
 SEQUENCE_STRING = "sequence"
+INVALID_FILE_NAME_CHARACTERS = ".!@#$%^&*();,/?[]{}`~|'"
 
 
 def puml_component(architecture_file: str, output_directory: Union[str, None] = None) -> PluginExecutionResult:
@@ -263,3 +264,40 @@ def _get_model_content(model: dict, model_types, defined_interfaces: set):
         "inputs": model_inputs,
         "outputs": model_outputs,
     }
+
+def _get_generated_file_name(
+    architecture_file: str, puml_type: str, definition_name: str, output_directory: Union[str, None] = None
+) -> str:
+    """Return the generated file name for the specified definition in the architecture file.
+
+    Args:
+        architecture_file (str): The AaC file in which the definition from which to generate a
+                                 PlantUML diagram is stored.
+        puml_type (str): The type of PlantUML diagram to create.
+        definition_name (str): The name of the AaC definition.
+        output_directory (Union[str, None]): The directory in which to generate the PlantUML
+                                             diagram.
+
+    Returns:
+        The file name into which the generated PlantUML diagram(s) should be generated for the
+        provided definition.
+    """
+    dir_name, base_name = os.path.split(architecture_file)
+    file_name, _ = os.path.splitext(base_name)
+    definition_name = definition_name.lower()
+    return os.path.join(
+        output_directory or dir_name,
+        puml_type,
+        f"{file_name}_{_get_formatted_definition_name(definition_name)}{PLANT_UML_FILE_EXTENSION}",
+    )
+
+def _get_formatted_definition_name(definition_name: str) -> str:
+    """Format the definition name such that it can be included as part of a file name.
+
+    Args:
+        definition_name (str): The name of the definition to be formatted.
+
+    Returns:
+        A formatted version of definition name that can be included in
+    """
+    return definition_name.lower().replace(" ", "_").strip(INVALID_FILE_NAME_CHARACTERS)
