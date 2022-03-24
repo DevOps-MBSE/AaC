@@ -164,7 +164,7 @@ TEST_PUML_DATA_C_TYPE = "DataC"
 TEST_PUML_USE_CASE_ONE_TITLE = "Nominal flow within the system."
 TEST_PUML_USE_CASE_TWO_TITLE = "Sample request/response flow."
 
-TEST_PUML_ARCH_YAML = f"""
+TEST_PUML_ARCH_YAML_SIMPLE_MODEL = f"""
 model:
   name: {TEST_PUML_SYSTEM_NAME}
   description: A simple distributed system model
@@ -195,6 +195,28 @@ model:
           then:
             - System processes the request into a {TEST_PUML_DATA_C_TYPE} response
             - System returns the {TEST_PUML_DATA_C_TYPE} response
+"""
+TEST_PUML_ARCH_YAML_SIMPLE_USECASE = f"""
+usecase:
+  name: {TEST_PUML_USE_CASE_TWO_TITLE}
+  description:
+  participants:
+    - name: {TEST_PUML_SERVICE_ONE_NAME}
+      type: {TEST_PUML_SERVICE_ONE_TYPE}
+    - name: {TEST_PUML_SERVICE_TWO_NAME}
+      type: {TEST_PUML_SERVICE_TWO_TYPE}
+  steps:
+    - step: {TEST_PUML_SERVICE_ONE_NAME} makes a request for data from {TEST_PUML_SERVICE_TWO_NAME}
+      source: {TEST_PUML_SERVICE_ONE_NAME}
+      target: {TEST_PUML_SERVICE_TWO_NAME}
+      action: sendRequestToServiceTwo
+    - step: {TEST_PUML_SERVICE_TWO_NAME} completes and provides the result back to {TEST_PUML_SERVICE_ONE_NAME}
+      source: {TEST_PUML_SERVICE_TWO_NAME}
+      target: {TEST_PUML_SERVICE_ONE_NAME}
+      action: respondToServiceOne
+"""
+TEST_PUML_ARCH_YAML = f"""
+{TEST_PUML_ARCH_YAML_SIMPLE_MODEL}
 ---
 model:
   name: {TEST_PUML_SERVICE_ONE_TYPE}
@@ -289,21 +311,5 @@ usecase:
       target: {TEST_PUML_SYSTEM_NAME}
       action: doFlow
 ---
-usecase:
-  name: {TEST_PUML_USE_CASE_TWO_TITLE}
-  description:
-  participants:
-    - name: {TEST_PUML_SERVICE_ONE_NAME}
-      type: {TEST_PUML_SERVICE_ONE_TYPE}
-    - name: {TEST_PUML_SERVICE_TWO_NAME}
-      type: {TEST_PUML_SERVICE_TWO_TYPE}
-  steps:
-    - step: {TEST_PUML_SERVICE_ONE_NAME} makes a request for data from {TEST_PUML_SERVICE_TWO_NAME}
-      source: {TEST_PUML_SERVICE_ONE_NAME}
-      target: {TEST_PUML_SERVICE_TWO_NAME}
-      action: sendRequestToServiceTwo
-    - step: {TEST_PUML_SERVICE_TWO_NAME} completes and provides the result back to {TEST_PUML_SERVICE_ONE_NAME}
-      source: {TEST_PUML_SERVICE_TWO_NAME}
-      target: {TEST_PUML_SERVICE_ONE_NAME}
-      action: respondToServiceOne
+{TEST_PUML_ARCH_YAML_SIMPLE_USECASE}
 """
