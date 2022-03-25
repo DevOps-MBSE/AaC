@@ -12,7 +12,7 @@ class ParsedDefinition:
 
     Attributes:
         name (str): The name of the definition
-        content (str): The textual representation of the definition.
+        content (str): The original source textual representation of the definition.
         lexemes (list[Lexeme]): A list of lexemes for each item in the parsed definition.
         definition (dict): The parsed definition.
     """
@@ -49,5 +49,5 @@ class ParsedDefinition:
         return self.get_root_key() == "data"
 
     def to_yaml(self) -> str:
-        """Return a yaml string based on the current state of the definition."""
+        """Return a yaml string based on the current state of the definition including extensions."""
         return yaml.dump(self.definition, sort_keys=False)
