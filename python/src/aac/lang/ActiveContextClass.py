@@ -1,35 +1,57 @@
-"""The Active Context maintains the highly-contextual AaC DSL"""
+"""The Active Context maintains the highly-contextual AaC DSL."""
+
+import copy
 
 from attr import Factory, attrib, attrs, validators
 
 from aac.parser import ParsedDefinition
-from aac.definition_helpers import get_definition_by_name
+from aac.definition_helpers import get_definition_by_name, get_definitions_by_type
 
 
 @attrs(slots=True, auto_attribs=True)
 class ActiveContext:
     """
-    A class used to provide access to several disparate AaC model definition sources during the validation process.
+    A management and utility class for the contextual AaC domain-specific language.
+
+    Because the AaC DSL is self-defining, self-validating, and highly extensible, the DSL
+    structure and rules are highly dependent on contextual definition sources such as active
+    plugins, 3rd party definitions (libraries), and user-defined definitions.
 
     Attributes:
-        core_aac_spec_model: A dict of the core AaC spec
-        plugin_defined_definitions: a dict of definitions defined in the plugin's AaC file
-        validation_target_models: a dict of models that are being validated.
+        context_definitions: The list of all definitions currently in the ActiveContext
     """
 
-    active_context_definitions: list[ParsedDefinition] = attrib(default=Factory(list), validator=validators.instance_of(list))
+    context_definitions: list[ParsedDefinition] = attrib(default=Factory(list), validator=validators.instance_of(list))
 
-    def add_definition_to_context(self, parsedDefinition: ParsedDefinition):
+    def add_definition_to_context(self, parsed_definition: ParsedDefinition):
         """
         Add the ParsedDefinition to the list of definitions in the ActiveContext.
 
         Args:
-            parsedDefinition: The ParsedDefinition to add to the context.
+            parsed_definition: The ParsedDefinition to add to the context.
         """
-        self.active_context_definitions.append(parsedDefinition)
+        self.context_definitions.append(copy.deepcopy(parsed_definition))
 
-        if parsedDefinition.is_extension():
-            self._apply_extension_to_context(parsedDefinition)
+        if parsed_definition.is_extension():
+            self._apply_extension_to_context(parsed_definition)
+
+    def add_definitions_to_context(self, parsed_definitions: list[ParsedDefinition]):
+        """
+        Add the list of ParsedDefinitions to the list of definitions in the ActiveContext, any extensions are added last.
+
+        Args:
+            parsed_definitions: The list of ParsedDefinitions to add to the context.
+        """
+
+        extension_definitions = get_definitions_by_type(parsed_definitions, "ext")
+
+        # Avoiding the use of sorted() since we already deepcopy each definition as we add it to the context.
+        for parsedDefinition in parsed_definitions:
+            if parsedDefinition not in extension_definitions:
+                self.add_definition_to_context(parsedDefinition)
+
+        for extension_definitions in extension_definitions:
+            self.add_definition_to_context(parsedDefinition)
 
     def get_root_keys(self) -> list[str]:
         """
@@ -57,7 +79,7 @@ class ActiveContext:
     def _apply_extension_to_context(self, extension_definition) -> None:
         """Apply the extension to the definitions it modifies in the ActiveContext."""
         target_to_extend = extension_definition.definition.get("ext").get("type")
-        target_definition_to_extend = get_definition_by_name(self.active_context_definitions, target_to_extend)
+        target_definition_to_extend = get_definition_by_name(self.context_definitions, target_to_extend)
 
         extension_type = ""
         extension_field_name = ""

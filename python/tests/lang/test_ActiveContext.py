@@ -30,16 +30,16 @@ class TestActiveContext(TestCase):
         enum1_ext = create_enum_ext_definition("myEnumExt", enum1_name, [enum1_ext_value])
 
         active_context = ActiveContext()
-        self.assertEqual(0, len(active_context.active_context_definitions))
+        self.assertEqual(0, len(active_context.context_definitions))
 
         active_context.add_definition_to_context(definition1)
-        self.assertEqual(1, len(active_context.active_context_definitions))
+        self.assertEqual(1, len(active_context.context_definitions))
 
         active_context.add_definition_to_context(enum1)
-        self.assertEqual(2, len(active_context.active_context_definitions))
+        self.assertEqual(2, len(active_context.context_definitions))
 
-        self.assertIn(definition1, active_context.active_context_definitions)
-        self.assertIn(enum1, active_context.active_context_definitions)
+        self.assertIn(definition1, active_context.context_definitions)
+        self.assertIn(enum1, active_context.context_definitions)
 
         self.assertEqual(0, len(definition1.definition["data"]["fields"]))
         self.assertEqual(2, len(enum1.definition["enum"]["values"]))

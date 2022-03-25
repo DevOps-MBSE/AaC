@@ -1,5 +1,6 @@
 """Provide access to plugins and plugin data."""
 
+from iteration_utilities import flatten
 from pluggy import PluginManager
 
 from aac import parser
@@ -56,17 +57,14 @@ def get_plugin_definitions() -> list[ParsedDefinition]:
     Returns:
         A list of parsed definitions source from all active plugins.
     """
-
     plugin_manager = get_plugin_manager()
-    plugin_models_yaml = plugin_manager.hook.get_plugin_aac_definitions()
-    plugin_extensions = {}
-    for plugin_ext in plugin_models_yaml:
-        if len(plugin_ext) > 0:
-            parsed_definitions = parser.parse(plugin_ext)
-            definitions_dict = dict(map(lambda definition: (definition.name, definition.definition), parsed_definitions))
-            plugin_extensions = definitions_dict | plugin_extensions
+    plugin_definitions_as_yaml = plugin_manager.hook.get_plugin_aac_definitions()
+    plugin_definitions = []
+    for plugin_definition in plugin_definitions_as_yaml:
+        if len(plugin_definition) > 0:
+            plugin_definitions.append(parser.parse(plugin_definition))
 
-    return plugin_extensions
+    return list(flatten(plugin_definitions))
 
 
 def get_plugin_model_definitions() -> dict:

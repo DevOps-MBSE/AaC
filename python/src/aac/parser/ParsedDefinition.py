@@ -23,7 +23,7 @@ class ParsedDefinition:
     definition: dict = attrib(default=Factory(list), validator=validators.instance_of(dict))
 
     def get_root_key(self) -> str:
-        """Return the root key for the parsed definition"""
+        """Return the root key for the parsed definition."""
         return list(self.definition.keys())[0]
 
     def is_extension(self) -> bool:
