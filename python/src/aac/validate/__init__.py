@@ -3,8 +3,15 @@ from contextlib import contextmanager
 
 from aac import plugins
 from aac.parser import ParsedDefinition
-from aac.validation.ValidationError import ValidationError
-from aac.validation.ValidationResult import ValidationResult
+from aac.validate._validator_plugin import ValidatorPlugin
+from aac.validate._validation_error import ValidationError
+from aac.validate._validation_result import ValidationResult
+
+__all__ = (
+    ValidationError.__name__,
+    ValidationResult.__name__,
+    ValidatorPlugin.__name__,
+)
 
 
 @contextmanager

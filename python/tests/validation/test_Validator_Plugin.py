@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from aac.parser import parse
-from aac.validation.ValidatorPlugin import ValidatorPlugin
+from aac.validate import ValidatorPlugin
 
 
 class TestValidatorPlugin(TestCase):

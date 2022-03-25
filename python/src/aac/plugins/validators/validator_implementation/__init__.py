@@ -3,7 +3,7 @@
 from aac.package_resources import get_resource_file_contents
 from aac.plugins import hookimpl
 from aac.plugins.validators import get_validation_definition_from_plugin_definitions
-from aac.validation.ValidatorPlugin import ValidatorPlugin
+from aac.validate import ValidatorPlugin
 
 PLUGIN_YAML_FILE = "validator_implementation.yaml"
 

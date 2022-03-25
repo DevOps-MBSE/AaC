@@ -13,7 +13,7 @@ from aac.lang.server import start_lsp
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 from aac.spec.core import get_aac_spec_as_yaml
 from aac.validator import validation
-from aac.validation import preview_validation
+from aac.validate import preview_validation
 
 
 def run_cli():
