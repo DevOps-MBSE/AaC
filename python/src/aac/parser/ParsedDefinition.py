@@ -1,6 +1,7 @@
 """"""
 
 from attr import Factory, attrib, attrs, validators
+import yaml
 
 from aac.parser.Lexeme import Lexeme
 
@@ -46,3 +47,7 @@ class ParsedDefinition:
     def is_data(self) -> bool:
         """Returns true if the definition is a data definition."""
         return self.get_root_key() == "data"
+
+    def to_yaml(self) -> str:
+        """Return a yaml string based on the current state of the definition."""
+        return yaml.dump(self.definition, sort_keys=False)
