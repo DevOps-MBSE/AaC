@@ -1,7 +1,7 @@
 """Arch-as-Code helper functions to simplify managing and working with parsed definitions/models."""
 
 import logging
-from typing import Any
+from typing import Any, Optional
 
 from aac.parser import ParsedDefinition
 
@@ -188,7 +188,7 @@ def get_definitions_by_type(parsed_definitions: list[ParsedDefinition], root_nam
     return list(filter(does_definition_root_match, parsed_definitions))
 
 
-def get_definition_by_name(parsed_definitions: list[ParsedDefinition], definition_name: str) -> ParsedDefinition:
+def get_definition_by_name(parsed_definitions: list[ParsedDefinition], definition_name: str) -> Optional[ParsedDefinition]:
     """Get a definition of models of a specific root name.
 
     The aac.parser.parse() returns a dict of all parsed types.  Sometimes it is
@@ -200,23 +200,34 @@ def get_definition_by_name(parsed_definitions: list[ParsedDefinition], definitio
         definition_name: The definition's name to locate.
 
     Returns:
-        A ParsedDefinition matching the name of the .
+        A ParsedDefinition with the given name or None.
     """
 
     def does_definition_name_match(parsed_definition: ParsedDefinition) -> bool:
         return definition_name == parsed_definition.name
 
     matching_definitions = list(filter(does_definition_name_match, parsed_definitions))
+    matching_definitions_count = len(matching_definitions)
 
-    if (len(matching_definitions) > 1):
+    result = None
+    if (matching_definitions_count > 1):
+        logging.error("Found multiple definitions with the same name \"{definition_name}\"\n{matching_definitions}\"")
         raise RuntimeError(f"Found multiple definitions with the same name \"{definition_name}\"\n{matching_definitions}")
 
-    elif (len(matching_definitions) != 1):
+    elif (matching_definitions_count < 1):
         logging.debug("Failed to find a definition with the name \"{definition_name}\"")
 
-    return matching_definitions[0]
+    else:
+        result = matching_definitions[0]
+
+    return result
 
 
 def convert_parsed_definitions_to_dict_definition(parsed_definitions: list[ParsedDefinition]) -> dict:
-    """Returns a combined dict from the list of ParsedDefinitions"""
+    """
+    DEPRECATED: Returns a combined dict from the list of ParsedDefinitions.
+
+    This function is intended only as a stop-gap to support some implementations until they have been fully
+    converted to utilize ParsedDefinitions.
+    """
     return {definition.name: definition.definition for definition in parsed_definitions}
