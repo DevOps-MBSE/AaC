@@ -2,7 +2,6 @@ from unittest import TestCase
 
 from aac.lang import get_active_context
 from aac.lang.definition_helpers import get_definition_by_name, get_definitions_by_root_key
-from aac.lang import ActiveContext
 from aac.parser import parse
 from aac.plugins.validators.defined_references import get_plugin_aac_definitions, register_validators
 from aac.plugins.validators.defined_references._validate_references import validate_references
