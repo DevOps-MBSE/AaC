@@ -20,6 +20,11 @@
         "python.testing.unittestEnabled": true,
         "python.formatting.blackArgs": [
             "--line-length=127"
+        ],
+        "cSpell.enabled": true,
+        "cSpell.words": [
+            "pygls",
+            "usecase"
         ]
     },
     "launch": {
