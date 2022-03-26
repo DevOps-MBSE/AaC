@@ -1,10 +1,8 @@
 """Functions to allow interacting with the core AaC spec."""
 
-from aac import definition_helpers
-
 from aac.parser import parse, ParsedDefinition
 from aac.package_resources import get_resource_file_contents
-from aac.definition_helpers import get_definitions_by_type, search
+from aac.lang.definition_helpers import get_definitions_by_type, search, get_definition_by_name
 
 PRIMITIVES: list[str] = []
 ROOT_NAMES: list[str] = []
@@ -66,7 +64,7 @@ def get_primitives(reload: bool = False) -> list[str]:
 
     if len(PRIMITIVES) == 0 or reload:
         aac_definitions = get_aac_spec()
-        primitives_definition = definition_helpers.get_definition_by_name(aac_definitions, "Primitives")
+        primitives_definition = get_definition_by_name(aac_definitions, "Primitives")
         PRIMITIVES = search(primitives_definition.definition, ["enum", "values"])
 
     return PRIMITIVES
@@ -82,6 +80,7 @@ def get_root_keys(reload: bool = False) -> list[str]:
     Returns:
         A list of strings, one entry for each root name in the AaC model specification.
     """
+
     def get_field_name(fields_entry_dict: dict):
         return fields_entry_dict.get("name")
 
@@ -89,7 +88,7 @@ def get_root_keys(reload: bool = False) -> list[str]:
 
     if len(ROOT_NAMES) == 0 or reload:
         aac_definitions = get_aac_spec()
-        root_definition = definition_helpers.get_definition_by_name(aac_definitions, "root")
+        root_definition = get_definition_by_name(aac_definitions, "root")
         ROOT_NAMES = list(map(get_field_name, search(root_definition.definition, ["data", "fields"])))
 
     return ROOT_NAMES
@@ -107,6 +106,6 @@ def get_root_fields(reload: bool = False) -> list[dict]:
     """
 
     aac_definitions = get_aac_spec()
-    root_definition = definition_helpers.get_definition_by_name(aac_definitions, "root")
+    root_definition = get_definition_by_name(aac_definitions, "root")
 
     return search(root_definition.definition, ["data", "fields"])

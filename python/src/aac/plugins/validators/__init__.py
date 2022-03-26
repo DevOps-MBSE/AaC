@@ -2,7 +2,7 @@
 
 from aac.parser import parse
 from aac.parser.ParsedDefinition import ParsedDefinition
-from aac.definition_helpers import get_definitions_by_type
+from aac.lang.definition_helpers import get_definitions_by_type
 
 
 def get_validation_definition_from_plugin_definitions(plugin_definitions_string: str) -> ParsedDefinition:

@@ -10,8 +10,7 @@ import yaml
 from os import path
 
 from aac import parser
-from aac import definition_helpers
-from aac.definition_helpers import get_models_by_type, search
+from aac.lang.definition_helpers import convert_parsed_definitions_to_dict_definition, get_models_by_type, search
 from aac.parser.ParsedDefinition import ParsedDefinition
 from aac.template_engine import (
     TemplateOutputFile,
@@ -166,7 +165,7 @@ def _prepare_and_generate_plugin_files(
     Raises:
         GeneratePluginException: An error encountered during the plugin generation process.
     """
-    parsed_definitions_dictionary = definition_helpers.convert_parsed_definitions_to_dict_definition(definitions)
+    parsed_definitions_dictionary = convert_parsed_definitions_to_dict_definition(definitions)
     template_properties = _gather_template_properties(parsed_definitions_dictionary, architecture_file_path)
 
     plugin_name = template_properties.get("plugin").get("name")

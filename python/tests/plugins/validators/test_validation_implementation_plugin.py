@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from aac.definition_helpers import get_definitions_by_type
+from aac.lang.definition_helpers import get_definitions_by_type
 from aac.parser import parse
 from aac.plugins.validators.validator_implementation import get_plugin_aac_definitions, register_validators
 from aac.validate import ValidatorPlugin

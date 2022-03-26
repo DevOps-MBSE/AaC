@@ -4,8 +4,8 @@ from tempfile import NamedTemporaryFile, TemporaryDirectory
 from unittest import TestCase
 from nose2.tools import params
 
-from aac import definition_helpers, parser
-from aac.definition_helpers import search_definition, get_definition_by_name
+from aac import parser
+from aac.lang.definition_helpers import search_definition, get_definition_by_name, search
 from aac.plugins.gen_gherkin_behaviors import (
     get_commands,
     get_plugin_aac_definitions,
@@ -40,11 +40,11 @@ class TestGenerateGherkinBehaviorsPlugin(TestCase):
                 command_yaml = commands_yaml_dict.get(command.name)
 
                 # Assert help messages match
-                self.assertEqual(command.description, definition_helpers.search(command_yaml, ["description"])[0])
+                self.assertEqual(command.description, search(command_yaml, ["description"])[0])
 
                 for argument in command.arguments:
                     yaml_arguments = command_yaml.get("input")
-                    arg_names = [definition_helpers.search(arg, ["name"])[0] for arg in yaml_arguments]
+                    arg_names = [search(arg, ["name"])[0] for arg in yaml_arguments]
                     # Assert argument is defined
                     self.assertIn(argument.name, arg_names)
 

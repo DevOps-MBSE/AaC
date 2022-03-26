@@ -8,7 +8,7 @@ from attr import attrib, attrs, validators, Factory
 from iteration_utilities import flatten
 
 from aac import plugins
-from aac.definition_helpers import search, get_definitions_by_type
+from aac.lang.definition_helpers import search, get_definitions_by_type
 from aac.parser import ParsedDefinition
 from aac.spec.core import get_aac_spec, get_primitives
 

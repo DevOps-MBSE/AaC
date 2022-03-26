@@ -2,7 +2,7 @@
 import json
 import os
 
-from aac.definition_helpers import convert_parsed_definitions_to_dict_definition
+from aac.lang.definition_helpers import convert_parsed_definitions_to_dict_definition
 from aac.parser import parse
 from aac.plugins.plugin_execution import (
     PluginExecutionResult,

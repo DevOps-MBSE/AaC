@@ -6,7 +6,7 @@ from iteration_utilities import flatten
 from jinja2 import Template
 
 from aac import parser
-from aac.definition_helpers import get_definitions_by_type
+from aac.lang.definition_helpers import get_definitions_by_type
 from aac.parser.ParsedDefinition import ParsedDefinition
 from aac.plugins.plugin_execution import (
     PluginExecutionResult,

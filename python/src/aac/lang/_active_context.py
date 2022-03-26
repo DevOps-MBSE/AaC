@@ -5,7 +5,7 @@ import copy
 from attr import Factory, attrib, attrs, validators
 
 from aac.parser import ParsedDefinition
-from aac.definition_helpers import get_definition_by_name, get_definitions_by_type, search
+from aac.lang.definition_helpers import get_definition_by_name, get_definitions_by_type, search
 
 
 @attrs(slots=True, auto_attribs=True)

@@ -4,7 +4,7 @@ from unittest import TestCase
 
 from tests.helpers.io import temporary_test_file
 
-from aac import definition_helpers
+from aac.lang import definition_helpers
 from aac.parser import parse, get_yaml_from_source
 from aac.parser.ParserError import ParserError
 from aac.parser.SourceLocation import SourceLocation
