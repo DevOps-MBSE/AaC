@@ -134,6 +134,7 @@ def _parse_yaml(source: str, content: str) -> dict:
 
 def _error_if_not_yaml(source, content, models):
     """Raise a ParserError if the model is not a YAML model we can parse."""
+
     def is_model(model):
         """Return True if the model is further parseable."""
         return isinstance(model, dict)
@@ -145,6 +146,7 @@ def _error_if_not_yaml(source, content, models):
 
 def _error_if_not_complete(source, content, models):
     """Raise a ParserError if the model is incomplete."""
+
     def is_import(model):
         """Return True if the model is an import declaration."""
         type, *_ = model.keys()
@@ -202,4 +204,3 @@ def _get_files_to_process(arch_file_path: str) -> list[str]:
                     ret_val.append(append_me)
 
     return ret_val
-
