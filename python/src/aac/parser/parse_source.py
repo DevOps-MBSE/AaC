@@ -10,7 +10,7 @@ import yaml
 from yaml.parser import ParserError as YAMLParserError
 
 from aac.parser.ParserError import ParserError
-from aac.parser.ParsedDefinition import ParsedDefinition
+from aac.parser import ParsedDefinition
 from aac.parser.SourceLocation import SourceLocation
 from aac.parser.Lexeme import Lexeme
 

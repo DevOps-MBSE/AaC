@@ -4,7 +4,7 @@ from iteration_utilities import flatten
 from pluggy import PluginManager
 
 from aac import parser
-from aac.parser.ParsedDefinition import ParsedDefinition
+from aac.parser import ParsedDefinition
 from aac.plugins import hookspecs, PLUGIN_PROJECT_NAME
 
 

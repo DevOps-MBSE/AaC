@@ -2,7 +2,7 @@
 
 import yaml
 
-from aac.parser.ParsedDefinition import ParsedDefinition
+from aac.parser import ParsedDefinition
 
 ACTION_STRING = "action"
 ADD_STRING = "add"

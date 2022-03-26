@@ -11,7 +11,7 @@ from os import path
 
 from aac import parser
 from aac.lang.definition_helpers import convert_parsed_definitions_to_dict_definition, get_models_by_type, search
-from aac.parser.ParsedDefinition import ParsedDefinition
+from aac.parser import ParsedDefinition
 from aac.template_engine import (
     TemplateOutputFile,
     generate_templates,

@@ -3,9 +3,9 @@ from copy import deepcopy
 
 from aac import plugins
 from aac.parser import ParsedDefinition
-from ._validation_result import ValidationResult
-from ._validation_error import ValidationError
-from ._validator_plugin import ValidatorPlugin
+from aac.validate._validation_result import ValidationResult
+from aac.validate._validation_error import ValidationError
+from aac.validate._validator_plugin import ValidatorPlugin
 
 
 @contextmanager

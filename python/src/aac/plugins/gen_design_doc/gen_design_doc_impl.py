@@ -7,7 +7,7 @@ from jinja2 import Template
 
 from aac import parser
 from aac.lang.definition_helpers import get_definitions_by_root_key
-from aac.parser.ParsedDefinition import ParsedDefinition
+from aac.parser import ParsedDefinition
 from aac.plugins.plugin_execution import (
     PluginExecutionResult,
     plugin_result,

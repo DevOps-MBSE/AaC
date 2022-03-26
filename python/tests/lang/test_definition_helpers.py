@@ -5,7 +5,7 @@ Unit tests for the aac.definition_helpers module.
 from unittest import TestCase
 
 from aac.lang import definition_helpers
-from aac.parser.ParsedDefinition import ParsedDefinition
+from aac.parser import ParsedDefinition
 from aac.spec import core
 
 

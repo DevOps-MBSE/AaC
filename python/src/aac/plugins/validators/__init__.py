@@ -1,7 +1,7 @@
 """A plugins sub-module specifically for 1st party validator plugins."""
 
 from aac.parser import parse
-from aac.parser.ParsedDefinition import ParsedDefinition
+from aac.parser import ParsedDefinition
 from aac.lang.definition_helpers import get_definitions_by_root_key
 
 

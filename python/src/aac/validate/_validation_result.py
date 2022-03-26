@@ -1,6 +1,6 @@
 from attr import attrib, attrs, validators, Factory
 
-from aac.parser.ParsedDefinition import ParsedDefinition
+from aac.parser import ParsedDefinition
 
 
 @attrs(slots=True, auto_attribs=True)

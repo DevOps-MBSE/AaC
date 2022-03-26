@@ -1,7 +1,7 @@
 """A module that provides AaC language features."""
 
-from ._active_context import ActiveContext
-from .context_manager import get_active_context
+from aac.lang._active_context import ActiveContext
+from aac.lang.context_manager import get_active_context
 
 __all__ = (
     ActiveContext.__name__,

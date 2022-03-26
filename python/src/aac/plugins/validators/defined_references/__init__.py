@@ -5,6 +5,8 @@ from aac.plugins import hookimpl
 from aac.plugins.validators import get_validation_definition_from_plugin_definitions
 from aac.validate import ValidatorPlugin
 
+from ._validate_references import validate_references
+
 PLUGIN_YAML_FILE = "defined_references.yaml"
 
 
@@ -29,4 +31,4 @@ def register_validators() -> ValidatorPlugin:
         A collection of data necessary to manage and execute validation plugins.
     """
     validation_definition = get_validation_definition_from_plugin_definitions(get_plugin_aac_definitions())
-    return ValidatorPlugin.from_definition(validation_definition)
+    return ValidatorPlugin(validation_definition.name, validation_definition.definition, validate_references)
