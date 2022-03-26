@@ -345,7 +345,7 @@ def _add_definitions_yaml_string(model: dict) -> dict:
 
 
 def _convert_to_implementation_name(original_name: str) -> str:
-    """Converts a plugin name to a pythonic version for implementaiton."""
+    """Converts a plugin name to a pythonic version for implementation."""
     return original_name.replace("-", "_")
 
 
