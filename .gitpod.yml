@@ -22,6 +22,7 @@ vscode:
     - ms-python.python
     - samuelcolvin.jinjahtml
     - vscode.typescript
+    - streetsidesoftware.code-spell-checker
 
 image:
   file: .gitpod.Dockerfile
