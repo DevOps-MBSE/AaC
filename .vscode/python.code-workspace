@@ -23,7 +23,10 @@
         ],
         "cSpell.enabled": true,
         "cSpell.words": [
+            "pluggy",
+            "protobuf",
             "pygls",
+            "pythonic",
             "usecase"
         ]
     },
