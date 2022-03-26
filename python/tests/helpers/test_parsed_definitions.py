@@ -16,6 +16,7 @@ from tests.helpers.parsed_definitions import (
     create_model_definition,
     create_step_entry,
     create_usecase_definition,
+    create_validation_entry,
 )
 
 
@@ -70,6 +71,27 @@ class TestArchParsedDefinitions(TestCase):
         self.assertEqual(expected_parsed_definition.name, actual_parsed_definition.name)
         self.assertEqual(expected_parsed_definition.definition, actual_parsed_definition.definition)
         self.assertDictEqual(expected_parsed_definition.definition, actual_parsed_definition.definition)
+
+    def test_create_data_definition_with_validation(self):
+        data_name = "Test Name"
+        validation_name = "Test Validation"
+
+        expected_yaml = "\n".join(
+            [
+                "data:",
+                f"  name: {data_name}",
+                "  fields: []",
+                "  required: []",
+                "  validation:",
+                f"  - name: {validation_name}",
+                "    arguments: []"
+            ]
+        )
+
+        validation_entry = create_validation_entry(validation_name)
+        parsed_definition = create_data_definition(name=data_name, validation=[validation_entry])
+
+        self.assertEqual(expected_yaml.strip(), parsed_definition.content.strip())
 
     def test_create_enum_definition(self):
         enum_name = "Test Enum"

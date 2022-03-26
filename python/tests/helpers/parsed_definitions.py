@@ -5,6 +5,7 @@ import yaml
 from aac.parser import ParsedDefinition
 
 ACTION_STRING = "action"
+ARGUMENTS_STRING = "arguments"
 ADD_STRING = "add"
 BEHAVIOR_STRING = "behavior"
 COMPONENTS_STRING = "components"
@@ -40,18 +41,33 @@ def create_field_entry(name: str, type: str = "", description: str = "") -> dict
 
 def create_step_entry(title: str, source: str, target: str, action: str) -> dict:
     """
-    Creates a single field entry for definitions.
+    Creates a single step entry for definitions.
 
-    Use this function to create a field entries for the "fields" section of larger definitions.
+    Use this function to create a step entry for the "steps" section of larger definitions.
 
     Returns:
-        A dictionary representing an AaC Field definition.
+        A dictionary representing an AaC Step definition.
     """
     return {
         STEP_STRING: title,
         SOURCE_STRING: source,
         TARGET_STRING: target,
         ACTION_STRING: action,
+    }
+
+
+def create_validation_entry(name: str, arguments: list[str] = []) -> dict:
+    """
+    Creates a single validation entry for definitions.
+
+    Use this function to create a field entries for the "validation" section of larger definitions.
+
+    Returns:
+        A dictionary representing an AaC validation definition.
+    """
+    return {
+        NAME_STRING: name,
+        ARGUMENTS_STRING: arguments,
     }
 
 
