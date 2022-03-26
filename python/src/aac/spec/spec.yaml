@@ -258,6 +258,10 @@ data:
   required:
     - name
     - type
+  validation:
+    - name: Field reference exists
+      arguments:
+      - type
 ---
 data:
   name: data
@@ -283,7 +287,6 @@ data:
     - name
     - fields
   validation:
-    - name: Type references exist
     - name: Required fields are present
 ---
 data:
