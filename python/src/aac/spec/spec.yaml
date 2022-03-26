@@ -208,7 +208,7 @@ data:
     - name: then
       type: string[]
       description: |
-        A list of postconditions that will be true once the system has completed
+        A list of post conditions that will be true once the system has completed
         its action based on the triggers.
   required:
     - scenario
@@ -340,7 +340,7 @@ data:
       type: string
       description: |
         An explanatory description for the model including what the
-        component/system is modeleing and any other relevant information.
+        component/system is modeling and any other relevant information.
     - name: components
       type: Field[]
       description: |
@@ -370,7 +370,7 @@ data:
       type: string
       description: |
         An explanatory description of the use case to include what purpose the
-        use case serves, design ideas when fullfilling the use case, etc.
+        use case serves, design ideas when fulfilling the use case, etc.
     - name: participants
       type: Field[]
       description: |
@@ -399,12 +399,12 @@ data:
     - name: source
       type: string
       description: |
-        The source for the step. This should be the name of a particpant - i.e.
+        The source for the step. This should be the name of a participant - i.e.
         a modeled system component.
     - name: target
       type: string
       description: |
-        The target for the step. This should be the name of a particpant - i.e.
+        The target for the step. This should be the name of a participant - i.e.
         a modeled system component.
     - name: action
       type: string
