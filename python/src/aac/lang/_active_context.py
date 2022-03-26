@@ -5,7 +5,7 @@ import copy
 from attr import Factory, attrib, attrs, validators
 
 from aac.parser import ParsedDefinition
-from aac.definition_helpers import get_definition_by_name, get_definitions_by_type
+from aac.definition_helpers import get_definition_by_name, get_definitions_by_type, search
 
 
 @attrs(slots=True, auto_attribs=True)
@@ -69,12 +69,46 @@ class ActiveContext:
         def get_field_name(fields_entry_dict: dict):
             return fields_entry_dict.get("name")
 
-        roots_model = self.get_all_extended_definitions().get("root")
+        root_definition = get_definition_by_name(self.context_definitions, "root")
 
-        if roots_model:
-            return map(get_field_name, roots_model.get("data").get("fields"))
+        if root_definition:
+            return list(map(get_field_name, search(root_definition.definition, ["data", "fields"])))
         else:
             return []
+
+    def get_root_fields(self) -> list[dict]:
+        """
+        Get the list of root keys as defined in the ActiveContext.
+
+        Returns a list of strings indicating the current root keys in the active context. These
+        keys may differ from those provided by the core spec since the ActiveContext applies definitions
+        from active plugins and user files, which may extend the set of root keys.
+
+        Returns:
+            A list of strings, one entry for each root name available in the ActiveContext.
+        """
+        root_definition = get_definition_by_name(self.context_definitions, "root")
+
+        if root_definition:
+            return search(root_definition.definition, ["data", "fields"])
+        else:
+            return []
+
+    def get_primitives(self) -> list[str]:
+        """
+        Get the list of primitive types as defined in the ActiveContext.
+
+        Returns a list of strings indicating the currently defined primitive types in the active context.
+        These types may differ from those provided by the core spec since the ActiveContext applies definitions
+        from active plugins and user files, which may extend the set of root keys.
+        See :py:func:`aac.spec.get_primitives()` for the list of root keys provided by the unaltered core AaC DSL.
+
+        Returns:
+            A list of strings, one entry for each root name available in the ActiveContext.
+        """
+
+        primitives_definition = get_definition_by_name(self.context_definitions, "Primitives")
+        return search(primitives_definition.definition, ["enum", "values"])
 
     def _apply_extension_to_context(self, extension_definition) -> None:
         """Apply the extension to the definitions it modifies in the ActiveContext."""

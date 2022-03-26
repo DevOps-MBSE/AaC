@@ -72,7 +72,7 @@ def get_primitives(reload: bool = False) -> list[str]:
     return PRIMITIVES
 
 
-def get_root_keys(reload: bool = False) -> list[dict]:
+def get_root_keys(reload: bool = False) -> list[str]:
     """Gets the list of root names as defined in the AaC DSL specification.
 
     Args:
@@ -82,13 +82,15 @@ def get_root_keys(reload: bool = False) -> list[dict]:
     Returns:
         A list of strings, one entry for each root name in the AaC model specification.
     """
+    def get_field_name(fields_entry_dict: dict):
+        return fields_entry_dict.get("name")
 
     global ROOT_NAMES
 
     if len(ROOT_NAMES) == 0 or reload:
         aac_definitions = get_aac_spec()
         root_definition = definition_helpers.get_definition_by_name(aac_definitions, "root")
-        ROOT_NAMES = search(root_definition.definition, ["data", "fields", "name"])
+        ROOT_NAMES = list(map(get_field_name, search(root_definition.definition, ["data", "fields"])))
 
     return ROOT_NAMES
 
@@ -107,4 +109,4 @@ def get_root_fields(reload: bool = False) -> list[dict]:
     aac_definitions = get_aac_spec()
     root_definition = definition_helpers.get_definition_by_name(aac_definitions, "root")
 
-    return search(dict(root_definition.definition), ["data", "fields"])
+    return search(root_definition.definition, ["data", "fields"])

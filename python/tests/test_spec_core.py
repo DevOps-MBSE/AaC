@@ -23,7 +23,7 @@ class TestSpecCore(TestCase):
         """
         result = core.get_root_keys()
 
-        self.assertEqual(len(result), len(EXPECTED_ROOT_KEY_NAMES))
+        self.assertListEqual(result, EXPECTED_ROOT_KEY_NAMES)
 
     def test_get_root_fields(self):
         """

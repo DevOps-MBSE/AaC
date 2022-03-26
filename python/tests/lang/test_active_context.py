@@ -2,6 +2,7 @@ from unittest import TestCase
 from aac.definition_helpers import get_definition_by_name
 
 from aac.lang import ActiveContext
+from aac.spec import get_aac_spec, get_primitives, get_root_keys
 
 from tests.helpers.parsed_definitions import (
     create_data_definition,
@@ -13,6 +14,7 @@ from tests.helpers.parsed_definitions import (
 
 
 class TestActiveContext(TestCase):
+
     def test_add_definition_to_context_with_extensions(self):
         test_definition_name = "myDef"
         test_definition = create_data_definition(test_definition_name)
@@ -55,3 +57,21 @@ class TestActiveContext(TestCase):
         context_modified_test_enum = get_definition_by_name(active_context.context_definitions, test_enum_name)
         self.assertEqual(3, len(context_modified_test_enum.definition["enum"]["values"]))
         self.assertIn(test_enum_ext_value, context_modified_test_enum.to_yaml())
+
+    def test_get_primitives_with_unextended_context(self):
+        core_spec = get_aac_spec()
+        test_context = ActiveContext(core_spec)
+
+        expected_results = get_primitives()
+        actual_results = test_context.get_primitives()
+
+        self.assertEqual(expected_results, actual_results)
+
+    def test_get_root_keys(self):
+        core_spec = get_aac_spec()
+        test_context = ActiveContext(core_spec)
+
+        expected_results = get_root_keys()
+        actual_results = test_context.get_root_keys()
+
+        self.assertEqual(expected_results, actual_results)
