@@ -6,7 +6,7 @@ from iteration_utilities import flatten
 from jinja2 import Template
 
 from aac import parser
-from aac.lang.definition_helpers import get_definitions_by_type
+from aac.lang.definition_helpers import get_definitions_by_root_key
 from aac.parser.ParsedDefinition import ParsedDefinition
 from aac.plugins.plugin_execution import (
     PluginExecutionResult,
@@ -99,7 +99,7 @@ def _get_output_file_extension(template_filespec: str) -> str:
 
 
 def _get_and_prepare_definitions_by_type(parsed_definitions: ParsedDefinition, aac_type: str) -> list:
-    filtered_definitions = get_definitions_by_type(parsed_definitions, aac_type)
+    filtered_definitions = get_definitions_by_root_key(parsed_definitions, aac_type)
     return list([definition.definition for definition in filtered_definitions])
 
 

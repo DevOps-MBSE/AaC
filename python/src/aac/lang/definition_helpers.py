@@ -167,7 +167,7 @@ def get_models_by_type(models: dict[str, dict], root_name: str) -> dict[str, dic
     return ret_val
 
 
-def get_definitions_by_type(parsed_definitions: list[ParsedDefinition], root_name: str) -> list[ParsedDefinition]:
+def get_definitions_by_root_key(parsed_definitions: list[ParsedDefinition], root_key: str) -> list[ParsedDefinition]:
     """Return a subset of definitions with the given root key.
 
     The aac.parser.parse() returns a dict of all parsed types.  Sometimes it is
@@ -176,14 +176,14 @@ def get_definitions_by_type(parsed_definitions: list[ParsedDefinition], root_nam
 
     Args:
         parsed_definitions: The list of parsed definitions to search.
-        root_name: The root key to filter on.
+        root_key: The root key to filter on.
 
     Returns:
         A list of ParedDefinitions with the given root key AaC model definitions.
     """
 
     def does_definition_root_match(parsed_definition: ParsedDefinition) -> bool:
-        return root_name == parsed_definition.get_root_key()
+        return root_key == parsed_definition.get_root_key()
 
     return list(filter(does_definition_root_match, parsed_definitions))
 

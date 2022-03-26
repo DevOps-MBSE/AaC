@@ -2,7 +2,7 @@
 
 from aac.parser import parse
 from aac.parser.ParsedDefinition import ParsedDefinition
-from aac.lang.definition_helpers import get_definitions_by_type
+from aac.lang.definition_helpers import get_definitions_by_root_key
 
 
 def get_validation_definition_from_plugin_definitions(plugin_definitions_string: str) -> ParsedDefinition:
@@ -17,7 +17,7 @@ def get_validation_definition_from_plugin_definitions(plugin_definitions_string:
         The validation definition for the plugin.
     """
     parsed_validator_definitions = parse(plugin_definitions_string)
-    validation_definitions = get_definitions_by_type(parsed_validator_definitions, "validation")
+    validation_definitions = get_definitions_by_root_key(parsed_validator_definitions, "validation")
 
     if len(validation_definitions) != 1:
         raise RuntimeError(

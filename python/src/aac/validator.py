@@ -8,7 +8,7 @@ from attr import attrib, attrs, validators, Factory
 from iteration_utilities import flatten
 
 from aac import plugins
-from aac.lang.definition_helpers import search, get_definitions_by_type
+from aac.lang.definition_helpers import search, get_definitions_by_root_key
 from aac.parser import ParsedDefinition
 from aac.spec.core import get_aac_spec, get_primitives
 
@@ -540,15 +540,15 @@ class ValidatorContext:
 
     def get_all_model_definitions(self):
         """Return all definitions of the 'model' type."""
-        return get_definitions_by_type(self.get_all_extended_definitions(), "model")
+        return get_definitions_by_root_key(self.get_all_extended_definitions(), "model")
 
     def get_all_data_definitions(self):
         """Return all definitions of the 'data' type."""
-        return get_definitions_by_type(self.get_all_extended_definitions(), "data")
+        return get_definitions_by_root_key(self.get_all_extended_definitions(), "data")
 
     def get_all_enum_definitions(self):
         """Return all definitions of the 'enum' type."""
-        return get_definitions_by_type(self.get_all_extended_definitions(), "enum")
+        return get_definitions_by_root_key(self.get_all_extended_definitions(), "enum")
 
     def get_all_extended_definitions(self):
         """
@@ -562,7 +562,7 @@ class ValidatorContext:
             List of AaC definitions
         """
         definitions = self.get_all_unextended_definitions()
-        extensions = get_definitions_by_type(definitions, "ext")
+        extensions = get_definitions_by_root_key(definitions, "ext")
 
         if not self.extended_validation_aac_model:
             for extension in extensions.values():

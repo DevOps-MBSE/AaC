@@ -2,7 +2,7 @@
 
 from aac.parser import parse, ParsedDefinition
 from aac.package_resources import get_resource_file_contents
-from aac.lang.definition_helpers import get_definitions_by_type, search, get_definition_by_name
+from aac.lang.definition_helpers import get_definitions_by_root_key, search, get_definition_by_name
 
 PRIMITIVES: list[str] = []
 ROOT_NAMES: list[str] = []
@@ -24,14 +24,14 @@ def get_aac_spec() -> list[ParsedDefinition]:
     global AAC_CORE_SPEC_DEFINITIONS
     if len(AAC_CORE_SPEC_DEFINITIONS) > 0:
         # already parsed, just return cached values
-        aac_data = get_definitions_by_type(AAC_CORE_SPEC_DEFINITIONS, "data")
-        aac_enums = get_definitions_by_type(AAC_CORE_SPEC_DEFINITIONS, "enum")
+        aac_data = get_definitions_by_root_key(AAC_CORE_SPEC_DEFINITIONS, "data")
+        aac_enums = get_definitions_by_root_key(AAC_CORE_SPEC_DEFINITIONS, "enum")
         return aac_data + aac_enums
 
     core_spec_as_yaml = get_aac_spec_as_yaml()
     AAC_CORE_SPEC_DEFINITIONS = parse(core_spec_as_yaml)
-    aac_data = get_definitions_by_type(AAC_CORE_SPEC_DEFINITIONS, "data")
-    aac_enums = get_definitions_by_type(AAC_CORE_SPEC_DEFINITIONS, "enum")
+    aac_data = get_definitions_by_root_key(AAC_CORE_SPEC_DEFINITIONS, "data")
+    aac_enums = get_definitions_by_root_key(AAC_CORE_SPEC_DEFINITIONS, "enum")
 
     return aac_data + aac_enums
 

@@ -26,9 +26,9 @@ class TestDefinitionHelpers(TestCase):
         enum_definitions = list(filter(lambda definition: filter_by_root(definition, "enum"), aac_core_definitions))
         model_definitions = list(filter(lambda definition: filter_by_root(definition, "model"), aac_core_definitions))
 
-        self.assertEqual(len(definition_helpers.get_definitions_by_type(aac_core_definitions, "data")), len(data_definitions))
-        self.assertEqual(len(definition_helpers.get_definitions_by_type(aac_core_definitions, "enum")), len(enum_definitions))
-        self.assertEqual(len(definition_helpers.get_definitions_by_type(aac_core_definitions, "model")), len(model_definitions))
+        self.assertEqual(len(definition_helpers.get_definitions_by_root_key(aac_core_definitions, "data")), len(data_definitions))
+        self.assertEqual(len(definition_helpers.get_definitions_by_root_key(aac_core_definitions, "enum")), len(enum_definitions))
+        self.assertEqual(len(definition_helpers.get_definitions_by_root_key(aac_core_definitions, "model")), len(model_definitions))
 
     def test_search(self):
         """

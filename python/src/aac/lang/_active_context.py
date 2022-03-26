@@ -5,7 +5,7 @@ import copy
 from attr import Factory, attrib, attrs, validators
 
 from aac.parser import ParsedDefinition
-from aac.lang.definition_helpers import get_definition_by_name, get_definitions_by_type, search
+from aac.lang.definition_helpers import get_definition_by_name, get_definitions_by_root_key, search
 
 
 @attrs(slots=True, auto_attribs=True)
@@ -43,7 +43,7 @@ class ActiveContext:
             parsed_definitions: The list of ParsedDefinitions to add to the context.
         """
 
-        extension_definitions = get_definitions_by_type(parsed_definitions, "ext")
+        extension_definitions = get_definitions_by_root_key(parsed_definitions, "ext")
 
         # Avoiding the use of sorted() since we already deepcopy each definition as we add it to the context.
         for parsedDefinition in parsed_definitions:
