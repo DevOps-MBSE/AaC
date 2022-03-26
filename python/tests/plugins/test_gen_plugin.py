@@ -131,7 +131,7 @@ class TestGenPlugin(TestCase):
         with validation(parser.parse, TEST_PLUGIN_YAML_STRING) as result:
             plugin_name = "aac_gen_protobuf"
 
-            generated_templates = _prepare_and_generate_plugin_files(result.parsed_definitions.definition, PLUGIN_TYPE_THIRD_STRING, "")
+            generated_templates = _prepare_and_generate_plugin_files(result.parsed_definitions, PLUGIN_TYPE_THIRD_STRING, "")
 
             generated_template_names = []
             generated_template_parent_directories = []
@@ -203,7 +203,7 @@ class TestGenPlugin(TestCase):
             f"{TEST_PLUGIN_YAML_STRING}\n---\n{SECONDARY_MODEL_YAML_DEFINITION}",
         ) as result:
             self.assertRaises(
-                GeneratePluginException, _prepare_and_generate_plugin_files, result.parsed_definitions.definition, PLUGIN_TYPE_THIRD_STRING, ""
+                GeneratePluginException, _prepare_and_generate_plugin_files, result.parsed_definitions, PLUGIN_TYPE_THIRD_STRING, ""
             )
 
     def test__get_repository_root_directory_from_path(self):
