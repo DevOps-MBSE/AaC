@@ -19,7 +19,7 @@ class ValidatorPlugin:
 
     name: str = attrib(validator=validators.instance_of(str))
     definition: ParsedDefinition = attrib(validator=validators.instance_of(ParsedDefinition))
-    validation_function: callable = attrib(default=None, validator=validators.instance_of((type(callable), type(None))))
+    validation_function: callable = attrib(default=None, validator=validators.is_callable())
     arguments: dict = attrib(default=None, validator=validators.instance_of((dict, type(None))))
 
     @staticmethod
