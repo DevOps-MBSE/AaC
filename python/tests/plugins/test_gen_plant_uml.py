@@ -112,16 +112,16 @@ class TestGenPlantUml(TestCase):
     def test_puml_object_diagram_to_file(self):
         with (TemporaryDirectory() as temp_directory,
               temporary_test_file(TEST_PUML_ARCH_YAML, dir=temp_directory, suffix=YAML_FILE_EXTENSION) as plugin_yaml):
-            # Get the rng temp AaC file name, but with a puml extension
-            expected_puml_file_path = self._get_expected_puml_file_name(plugin_yaml.name, OBJECT_STRING)
+            full_output_dir = os.path.join(temp_directory, OBJECT_STRING)
 
             result = puml_object(plugin_yaml.name, temp_directory)
-            self.assertIn(expected_puml_file_path, result.output())
+            self.assertIn(full_output_dir, result.output())
             self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
 
-            temp_directory_files = os.listdir(temp_directory)
+            temp_directory_files = os.listdir(full_output_dir)
 
-            self.assertIn(expected_puml_file_path, temp_directory_files)
+            expected_puml_file_path = _get_generated_file_name(plugin_yaml.name, OBJECT_STRING, "")
+            self.assertIn(os.path.basename(expected_puml_file_path), temp_directory_files)
 
             with open(os.path.join(temp_directory, expected_puml_file_path)) as generated_puml_file:
                 self._assert_object_diagram_content(generated_puml_file.read())
