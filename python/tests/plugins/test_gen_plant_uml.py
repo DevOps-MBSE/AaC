@@ -53,23 +53,25 @@ class TestGenPlantUml(TestCase):
         with temporary_test_file(TEST_PUML_ARCH_YAML, suffix=YAML_FILE_EXTENSION) as plugin_yaml:
             result = puml_component(plugin_yaml.name)
             self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
-            self._assert_component_diagram_content(result.output())
+            self._assert_component_diagram_content_full(result.output())
 
-    def test_puml_component_diagram_to_file(self):
+    def test_single_puml_component_diagram_to_file(self):
         with (TemporaryDirectory() as temp_directory,
-              temporary_test_file(TEST_PUML_ARCH_YAML, dir=temp_directory, suffix=YAML_FILE_EXTENSION) as plugin_yaml):
+              temporary_test_file(TEST_PUML_ARCH_YAML_SIMPLE_MODEL, dir=temp_directory, suffix=YAML_FILE_EXTENSION) as plugin_yaml):
             # Get the rng temp AaC file name, but with a puml extension
-            expected_puml_file_path = self._get_expected_puml_file_name(plugin_yaml.name, COMPONENT_STRING)
-
             result = puml_component(plugin_yaml.name, temp_directory)
-            self.assertIn(expected_puml_file_path, result.output())
+
             self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
+            self.assertIn(temp_directory, result.output())
+            self.assertIn(COMPONENT_STRING, result.output())
 
-            temp_directory_files = os.listdir(temp_directory)
+            full_output_dir = os.path.join(temp_directory, COMPONENT_STRING)
+            temp_directory_files = os.listdir(full_output_dir)
 
-            self.assertIn(expected_puml_file_path, temp_directory_files)
+            expected_puml_file_path = _get_generated_file_name(plugin_yaml.name, COMPONENT_STRING, TEST_PUML_SERVICE_THREE_TYPE)
+            self.assertIn(os.path.basename(expected_puml_file_path), temp_directory_files)
 
-            with open(os.path.join(temp_directory, expected_puml_file_path)) as generated_puml_file:
+            with open(os.path.join(full_output_dir, expected_puml_file_path)) as generated_puml_file:
                 self._assert_component_diagram_content(generated_puml_file.read())
 
     def test_puml_object_diagram_to_console(self):
@@ -121,6 +123,13 @@ class TestGenPlantUml(TestCase):
     def _assert_component_diagram_content(self, component_diagram_content_string: str):
         self._assert_diagram_contains_uml_boilerplate(component_diagram_content_string)
         self.assertIn(f"interface {TEST_PUML_DATA_A_TYPE}", component_diagram_content_string)
+        self.assertIn(f"interface {TEST_PUML_DATA_C_TYPE}", component_diagram_content_string)
+        self.assertIn(f"{TEST_PUML_DATA_C_TYPE} -> [{TEST_PUML_SERVICE_THREE_TYPE}] : in", component_diagram_content_string)
+        self.assertIn(f"[{TEST_PUML_SERVICE_THREE_TYPE}] -> {TEST_PUML_DATA_A_TYPE} : out", component_diagram_content_string)
+
+    def _assert_component_diagram_content_full(self, component_diagram_content_string: str):
+        self._assert_diagram_contains_uml_boilerplate(component_diagram_content_string)
+        self.assertIn(f"interface {TEST_PUML_DATA_A_TYPE}", component_diagram_content_string)
         self.assertIn(f"interface {TEST_PUML_DATA_B_TYPE}", component_diagram_content_string)
         self.assertIn(f"interface {TEST_PUML_DATA_C_TYPE}", component_diagram_content_string)
         self.assertIn(f"package \"{TEST_PUML_SYSTEM_NAME}\"", component_diagram_content_string)
@@ -148,16 +157,16 @@ class TestGenPlantUml(TestCase):
         self.assertIn("@startuml", puml_file)
         self.assertIn("@enduml", puml_file)
 
-    def _get_expected_puml_file_name(self, plugin_architecture_file: str, puml_type: str) -> str:
-        return os.path.basename(plugin_architecture_file).replace(".yaml", f"_{puml_type}{PLANT_UML_FILE_EXTENSION}")
-
-
 TEST_PUML_SYSTEM_NAME = "Test-System"
 TEST_PUML_SYSTEM_TYPE = "System"
 TEST_PUML_SERVICE_ONE_NAME = "svc1"
 TEST_PUML_SERVICE_ONE_TYPE = "ServiceOne"
 TEST_PUML_SERVICE_TWO_NAME = "svc2"
 TEST_PUML_SERVICE_TWO_TYPE = "ServiceTwo"
+TEST_PUML_SERVICE_THREE_NAME = "svc3"
+TEST_PUML_SERVICE_THREE_TYPE = "ServiceThree"
+TEST_PUML_EXTERNAL_SYSTEM_NAME = "ext"
+TEST_PUML_EXTERNAL_SYSTEM_TYPE = "ExternalSystem"
 TEST_PUML_DATA_A_TYPE = "DataA"
 TEST_PUML_DATA_B_TYPE = "DataB"
 TEST_PUML_DATA_C_TYPE = "DataC"
@@ -165,6 +174,54 @@ TEST_PUML_USE_CASE_ONE_TITLE = "Nominal flow within the system."
 TEST_PUML_USE_CASE_TWO_TITLE = "Sample request/response flow."
 
 TEST_PUML_ARCH_YAML_SIMPLE_MODEL = f"""
+model:
+  name: {TEST_PUML_SERVICE_THREE_TYPE}
+  behavior:
+    - name: Do something with an {TEST_PUML_EXTERNAL_SYSTEM_TYPE}
+      type: request-response
+      description: Process data from {TEST_PUML_EXTERNAL_SYSTEM_TYPE}
+      input:
+        - name: in
+          type: {TEST_PUML_DATA_C_TYPE}
+      output:
+        - name: out
+          type: {TEST_PUML_DATA_A_TYPE}
+      acceptance:
+        - scenario: Receive {TEST_PUML_DATA_C_TYPE} request and return {TEST_PUML_DATA_A_TYPE} response
+          given:
+            - {TEST_PUML_EXTERNAL_SYSTEM_TYPE} is accessible
+          when:
+            - {TEST_PUML_SERVICE_THREE_TYPE} receives a {TEST_PUML_DATA_C_TYPE} request
+          then:
+            - {TEST_PUML_SERVICE_THREE_TYPE} returns the {TEST_PUML_DATA_A_TYPE} response
+        - scenario: Receive invalid request
+          given:
+            - {TEST_PUML_SERVICE_THREE_TYPE} is accessible
+          when:
+            - {TEST_PUML_SERVICE_THREE_TYPE} receives request that isn't a {TEST_PUML_DATA_C_TYPE} request
+          then:
+            - {TEST_PUML_SERVICE_THREE_TYPE} returns an error response code
+"""
+TEST_PUML_ARCH_YAML_SIMPLE_USECASE = f"""
+usecase:
+  name: {TEST_PUML_USE_CASE_TWO_TITLE}
+  description: A sample independent flow.
+  participants:
+    - name: {TEST_PUML_SERVICE_ONE_NAME}
+      type: {TEST_PUML_SERVICE_ONE_TYPE}
+    - name: {TEST_PUML_SERVICE_TWO_NAME}
+      type: {TEST_PUML_SERVICE_TWO_TYPE}
+  steps:
+    - step: {TEST_PUML_SERVICE_ONE_NAME} makes a request for data from {TEST_PUML_SERVICE_TWO_NAME}
+      source: {TEST_PUML_SERVICE_ONE_NAME}
+      target: {TEST_PUML_SERVICE_TWO_NAME}
+      action: sendRequestToServiceTwo
+    - step: {TEST_PUML_SERVICE_TWO_NAME} completes and provides the result back to {TEST_PUML_SERVICE_ONE_NAME}
+      source: {TEST_PUML_SERVICE_TWO_NAME}
+      target: {TEST_PUML_SERVICE_ONE_NAME}
+      action: respondToServiceOne
+"""
+TEST_PUML_ARCH_YAML = f"""
 model:
   name: {TEST_PUML_SYSTEM_NAME}
   description: A simple distributed system model
@@ -195,28 +252,6 @@ model:
           then:
             - System processes the request into a {TEST_PUML_DATA_C_TYPE} response
             - System returns the {TEST_PUML_DATA_C_TYPE} response
-"""
-TEST_PUML_ARCH_YAML_SIMPLE_USECASE = f"""
-usecase:
-  name: {TEST_PUML_USE_CASE_TWO_TITLE}
-  description:
-  participants:
-    - name: {TEST_PUML_SERVICE_ONE_NAME}
-      type: {TEST_PUML_SERVICE_ONE_TYPE}
-    - name: {TEST_PUML_SERVICE_TWO_NAME}
-      type: {TEST_PUML_SERVICE_TWO_TYPE}
-  steps:
-    - step: {TEST_PUML_SERVICE_ONE_NAME} makes a request for data from {TEST_PUML_SERVICE_TWO_NAME}
-      source: {TEST_PUML_SERVICE_ONE_NAME}
-      target: {TEST_PUML_SERVICE_TWO_NAME}
-      action: sendRequestToServiceTwo
-    - step: {TEST_PUML_SERVICE_TWO_NAME} completes and provides the result back to {TEST_PUML_SERVICE_ONE_NAME}
-      source: {TEST_PUML_SERVICE_TWO_NAME}
-      target: {TEST_PUML_SERVICE_ONE_NAME}
-      action: respondToServiceOne
-"""
-TEST_PUML_ARCH_YAML = f"""
-{TEST_PUML_ARCH_YAML_SIMPLE_MODEL}
 ---
 model:
   name: {TEST_PUML_SERVICE_ONE_TYPE}

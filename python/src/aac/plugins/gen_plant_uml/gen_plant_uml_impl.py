@@ -39,12 +39,19 @@ def puml_component(architecture_file: str, output_directory: Union[str, None] = 
 
         models = []
         for root_model_name in _find_root_names(model_types):
+            filename = _get_generated_file_name(
+                architecture_file,
+                COMPONENT_STRING,
+                root_model_name,
+                output_directory,
+            )
             model_properties = _get_model_content(model_types.get(root_model_name, {}), model_types, set())
-            models.append(model_properties)
+            models.append({
+                "filename": filename,
+                "models": [model_properties],
+            })
 
-        return {
-            "models": models
-        }
+        return models
 
     with plugin_result(
         plugin_name,
@@ -171,22 +178,28 @@ def _generate_diagram_to_file(
         Result message string
     """
     with validation(parser.parse, architecture_file_path) as result:
-        file_name, _ = os.path.splitext(os.path.basename(architecture_file_path))
-        generated_file_name = f"{file_name}_{puml_type}.puml"
-
         template_properties = property_generator(result.parsed_model.definition)
-        generated_templates = generate_templates(load_default_templates(f"{plugin_name}/{puml_type}"), template_properties)
+        templates = [
+            (props.get("filename"), generate_templates(load_default_templates(f"{plugin_name}/{puml_type}"), props))
+            for props in template_properties
+        ]
 
-        for generated_template in generated_templates.values():
-            generated_template.file_name = generated_file_name
+        generated_templates = []
+        for (generated_filename, generated_template) in templates:
+            generated_template, *_ = generated_template.values()
+            generated_template.file_name = generated_filename
+            generated_templates.append(generated_template)
 
         if output_directory:
-            write_generated_templates_to_file(list(generated_templates.values()), output_directory)
-            return f"Wrote PUML {puml_type} diagram to {generated_file_name}."
+            full_output_path = os.path.join(output_directory, puml_type)
+            os.makedirs(full_output_path)
+            write_generated_templates_to_file(generated_templates, output_directory)
+            return f"Wrote PUML {puml_type} diagram(s) to {full_output_path}."
         else:
-            # Assuming we maintain one template to diagram type
-            generated_template = list(generated_templates.values()).pop()
-            return f"File: {architecture_file_path}\n{generated_template.content}\n"
+            messages = []
+            for generated_template in generated_templates:
+                messages.append(f"File: {architecture_file_path}\n{generated_template.content}\n")
+            return "\n".join(messages)
 
 
 def _find_root_names(models) -> list[str]:
@@ -213,8 +226,17 @@ def _find_root_names(models) -> list[str]:
     return sanitized_model_names
 
 
-def _get_model_content(model: dict, model_types, defined_interfaces: set):
+def _get_model_content(model: dict, model_types: dict, defined_interfaces: set) -> dict:
+    """Return content from the specific model relevant to creating a PlantUML diagram.
 
+    Args:
+        model (dict): The model from which to extract the needed properties.
+        model_types (dict): ???
+        defined_interfaces (set): A collection of inputs and outputs for the model.
+
+    Returns:
+        A dictionary containing the model's name, interfaces, components, inputs, and outputs.
+    """
     model_name = model.get("model", {}).get("name")
     model_interfaces = set()
 
