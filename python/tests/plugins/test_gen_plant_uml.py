@@ -63,26 +63,7 @@ class TestGenPlantUml(TestCase):
             self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
             self._assert_component_diagram_content_full(result.output())
 
-    def test_single_puml_component_diagram_to_file(self):
-        with (TemporaryDirectory() as temp_directory,
-              temporary_test_file(TEST_PUML_ARCH_YAML_SIMPLE_MODEL, dir=temp_directory, suffix=YAML_FILE_EXTENSION) as plugin_yaml):
-            # Get the rng temp AaC file name, but with a puml extension
-            result = puml_component(plugin_yaml.name, temp_directory)
-
-            self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
-            self.assertIn(temp_directory, result.output())
-            self.assertIn(COMPONENT_STRING, result.output())
-
-            full_output_dir = os.path.join(temp_directory, COMPONENT_STRING)
-            temp_directory_files = os.listdir(full_output_dir)
-
-            expected_puml_file_path = _get_generated_file_name(plugin_yaml.name, COMPONENT_STRING, TEST_PUML_SERVICE_THREE_TYPE)
-            self.assertIn(os.path.basename(expected_puml_file_path), temp_directory_files)
-
-            with open(os.path.join(full_output_dir, expected_puml_file_path)) as generated_puml_file:
-                self._assert_component_diagram_content_simple(generated_puml_file.read())
-
-    def test_multiple_puml_component_diagrams_to_file(self):
+    def test_puml_component_diagram_to_file(self):
         with (TemporaryDirectory() as temp_directory,
               temporary_test_file(TEST_PUML_ARCH_YAML, dir=temp_directory, suffix=YAML_FILE_EXTENSION) as plugin_yaml):
             result = puml_component(plugin_yaml.name, temp_directory)
@@ -98,12 +79,12 @@ class TestGenPlantUml(TestCase):
             ]
             [self.assertIn(os.path.basename(path), temp_directory_files) for path in expected_puml_file_paths]
 
-            for name in temp_directory_files:
-                with open(os.path.join(full_output_dir, name)) as generated_puml_file:
+            for path in expected_puml_file_paths:
+                with open(path) as generated_puml_file:
                     content = generated_puml_file.read()
-                    if TEST_PUML_SERVICE_ONE_TYPE.lower() in name:
+                    if TEST_PUML_SERVICE_ONE_TYPE.lower() in path:
                         self._assert_component_diagram_content_serviceone(content)
-                    elif TEST_PUML_SERVICE_TWO_TYPE.lower() in name:
+                    elif TEST_PUML_SERVICE_TWO_TYPE.lower() in path:
                         self._assert_component_diagram_content_servicetwo(content)
                     else:
                         self._assert_component_diagram_content_full(content)
@@ -170,26 +151,37 @@ class TestGenPlantUml(TestCase):
 
     def _assert_component_diagram_content_full(self, component_diagram_content_string: str):
         self._assert_diagram_contains_uml_boilerplate(component_diagram_content_string)
-        self.assertIn(f"interface {TEST_PUML_DATA_A_TYPE}", component_diagram_content_string)
-        self.assertIn(f"interface {TEST_PUML_DATA_B_TYPE}", component_diagram_content_string)
-        self.assertIn(f"interface {TEST_PUML_DATA_C_TYPE}", component_diagram_content_string)
+        self._assert_component_diagram_content_serviceone(component_diagram_content_string)
+        self._assert_component_diagram_content_servicetwo(component_diagram_content_string)
         self.assertIn(f"package \"{TEST_PUML_SYSTEM_NAME}\"", component_diagram_content_string)
-        self.assertIn(f"{TEST_PUML_DATA_A_TYPE} -> [{TEST_PUML_SERVICE_ONE_TYPE}] : in", component_diagram_content_string)
-        self.assertIn(f"[{TEST_PUML_SERVICE_ONE_TYPE}] -> {TEST_PUML_DATA_B_TYPE} : out", component_diagram_content_string)
 
     def _assert_component_diagram_content_serviceone(self, component_diagram_content_string: str):
         self._assert_diagram_contains_uml_boilerplate(component_diagram_content_string)
-        self.assertIn(f"interface {TEST_PUML_DATA_A_TYPE}", component_diagram_content_string)
-        self.assertIn(f"interface {TEST_PUML_DATA_B_TYPE}", component_diagram_content_string)
-        self.assertIn(f"{TEST_PUML_DATA_A_TYPE} -> [{TEST_PUML_SERVICE_ONE_TYPE}] : in", component_diagram_content_string)
-        self.assertIn(f"[{TEST_PUML_SERVICE_ONE_TYPE}] -> {TEST_PUML_DATA_B_TYPE} : out", component_diagram_content_string)
+        self._assert_component_diagram_interface(component_diagram_content_string, [
+            TEST_PUML_DATA_A_TYPE, TEST_PUML_DATA_B_TYPE
+        ])
+        self._assert_component_diagram_relations(component_diagram_content_string, "->", [
+            {"left": TEST_PUML_DATA_A_TYPE, "right": f"[{TEST_PUML_SERVICE_ONE_TYPE}]", "name": "in"},
+            {"left": f"[{TEST_PUML_SERVICE_ONE_TYPE}]", "right": TEST_PUML_DATA_B_TYPE, "name": "out"},
+        ])
 
     def _assert_component_diagram_content_servicetwo(self, component_diagram_content_string: str):
         self._assert_diagram_contains_uml_boilerplate(component_diagram_content_string)
-        self.assertIn(f"interface {TEST_PUML_DATA_B_TYPE}", component_diagram_content_string)
-        self.assertIn(f"interface {TEST_PUML_DATA_C_TYPE}", component_diagram_content_string)
-        self.assertIn(f"{TEST_PUML_DATA_B_TYPE} -> [{TEST_PUML_SERVICE_TWO_TYPE}] : in", component_diagram_content_string)
-        self.assertIn(f"[{TEST_PUML_SERVICE_TWO_TYPE}] -> {TEST_PUML_DATA_C_TYPE} : out", component_diagram_content_string)
+        self._assert_component_diagram_interface(component_diagram_content_string, [
+            TEST_PUML_DATA_B_TYPE, TEST_PUML_DATA_C_TYPE
+        ])
+        self._assert_component_diagram_relations(component_diagram_content_string, "->", [
+            {"left": TEST_PUML_DATA_B_TYPE, "right": f"[{TEST_PUML_SERVICE_TWO_TYPE}]", "name": "in"},
+            {"left": f"[{TEST_PUML_SERVICE_TWO_TYPE}]", "right": TEST_PUML_DATA_C_TYPE, "name": "out"},
+        ])
+
+    def _assert_component_diagram_interface(self, content: str, interfaces: list[str]):
+        for interface in interfaces:
+            self.assertIn(f"interface {interface}", content)
+
+    def _assert_component_diagram_relations(self, content: str, relation: str, links: list[dict[str, str]]):
+        for link in links:
+            self.assertIn(f"{link.get('left')} {relation} {link.get('right')} : {link.get('name')}", content)
 
     def _assert_object_diagram_content(self, object_diagram_content_string: str):
         self._assert_diagram_contains_uml_boilerplate(object_diagram_content_string)
