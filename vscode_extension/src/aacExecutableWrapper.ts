@@ -5,9 +5,10 @@ import { window, QuickPickOptions, InputBoxOptions, OpenDialogOptions, Uri } fro
 const outputChannel = getOutputChannel();
 
 interface CommandArgument {
-    name: string;
-    description: string;
+    name?: string;
+    description?: string;
     userResponse?: string;
+    optional?: boolean;
 }
 
 /**
@@ -15,7 +16,6 @@ interface CommandArgument {
  * information and arguments.
  */
 export async function executeAacCommand(): Promise<void> {
-
     let availableCommands: string[] = await getAacCommandNames();
 
     const quickPickOptions: QuickPickOptions = {
@@ -24,14 +24,18 @@ export async function executeAacCommand(): Promise<void> {
 
     window.showQuickPick(availableCommands, quickPickOptions).then(commandName => {
         if (commandName) {
-            getAacCommandArgs(commandName).then(async (commandArguments) => {
-                await getCommandArgUserInput(commandArguments);
-                execAacShellCommand(commandName, commandArguments).then(output => {
-                    outputChannel.appendLine(output);
-                    outputChannel.show();
-                });
-            });
+            executeCommandWithArguments(commandName).then((output: string) => {
+                outputChannel.appendLine(output);
+                outputChannel.show();
+             });
         }
+    });
+}
+
+export async function executeCommandWithArguments(commandName: string): Promise<string> {
+    return await getAacCommandArgs(commandName).then(async (commandArguments) => {
+        await getCommandArgUserInput(commandArguments);
+        return await execAacShellCommand(commandName, commandArguments);
     });
 }
 
@@ -54,14 +58,13 @@ export async function getAaCVersion(): Promise<string | null> {
 }
 
 async function getCommandArgUserInput(commandArguments: CommandArgument[]) {
+    let argumentsWithoutUserResponse: CommandArgument[] = commandArguments
+        .filter(argument => !argument.userResponse)
+        .filter(argument => !argument.name?.includes("--help"));
 
-    // TODO: remove filter for optional arguments.
-    let argumentsWithoutUserResponse: CommandArgument[] = commandArguments.filter(argument => !argument.userResponse && !argument.name.startsWith("-"));
-
-    if (argumentsWithoutUserResponse.length > 0) {
-        let argumentToPromptUserFor = argumentsWithoutUserResponse[0];
-
-        if (argumentToPromptUserFor.description.toLowerCase().includes("path")) {
+    for (let index = 0; index < argumentsWithoutUserResponse.length; ++index) {
+        let argumentToPromptUserFor = argumentsWithoutUserResponse[index];
+        if (argumentToPromptUserFor?.description?.toLowerCase().includes("path")) {
             const dialogBoxOptions: OpenDialogOptions = {
                 title: argumentToPromptUserFor.name,
                 canSelectMany: false
@@ -69,7 +72,6 @@ async function getCommandArgUserInput(commandArguments: CommandArgument[]) {
 
             let fileUri: Uri[] | undefined = await window.showOpenDialog(dialogBoxOptions);
             argumentToPromptUserFor.userResponse = fileUri ? fileUri[0]?.path : "";
-
         } else {
             const inputBoxOptions: InputBoxOptions = {
                 title: argumentToPromptUserFor.name,
@@ -78,8 +80,6 @@ async function getCommandArgUserInput(commandArguments: CommandArgument[]) {
 
             argumentToPromptUserFor.userResponse = await window.showInputBox(inputBoxOptions);
         }
-    } else if (argumentsWithoutUserResponse.length > 1) {
-        getCommandArgUserInput(commandArguments);
     }
 }
 
@@ -103,11 +103,13 @@ async function getAacCommandArgs(aacCommandName: string): Promise<CommandArgumen
  * @returns
  */
 async function execAacShellCommand(command: string, commandArgs: CommandArgument[] = []): Promise<string> {
-    const commandArgsArray = ["aac", command, ...(commandArgs.map(argument => argument.userResponse))];
+    const commandArgsArray = commandArgs
+        .filter(argument => argument.userResponse)
+        .map(argument => argument.optional ? `${argument.name} ${argument.userResponse}` : argument.userResponse);
+
     try {
-        const { stdout, stderr } = await execShell(commandArgsArray.join(" "), {});
-        const stringOutput = stderr.length > 0 ? stderr : stdout;
-        return stringOutput;
+        const { stdout, stderr } = await execShell(["aac", command, ...commandArgsArray].join(" "), {});
+        return stderr.length > 0 ? stderr : stdout;
     } catch (error: any) {
         let errorMessage = error.stderr || error.stdout || "urecognized error";
 
@@ -140,18 +142,71 @@ function parseTaskNamesFromHelpCommand(aacHelpOutput: string): string[] {
  * @param aacHelpOutput - the output to parse
  * @returns array of CommandArgument objects
  */
-function parseTaskArgsFromHelpCommand(aacHelpOutput: string): CommandArgument[] {
+function parseTaskArgsFromHelpCommand(commandHelpOutput: string): CommandArgument[] {
+    const argumentSectionHeader = (name: string) => `${name} arguments:`;
+    const requiredArgsHeader = argumentSectionHeader("positional");
+    const optionalArgsHeader = argumentSectionHeader("optional");
 
-    const regExp = /^  (?<argName>\S+)\s+(?<argDescription>.*)$/gm;
-    const commandArgumentsMatch = regExp.exec(aacHelpOutput);
+    const requiredArgsPos = commandHelpOutput.search(requiredArgsHeader) + requiredArgsHeader.length;
+    const optionalArgsPos = commandHelpOutput.search(optionalArgsHeader) + optionalArgsHeader.length;
 
-    let commandArguments: CommandArgument[] = [];
-    if (commandArgumentsMatch) {
-        commandArguments.push({
-            name: commandArgumentsMatch.groups?.argName ?? "<argument name>",
-            description: commandArgumentsMatch.groups?.argDescription ?? "<argument description>"
-        });
+    const requiredArgsString = commandHelpOutput.substring(requiredArgsPos, optionalArgsPos);
+    const requiredArgs = getArguments(requiredArgsString);
+
+    const optionalArgsString = commandHelpOutput.substring(optionalArgsPos);
+    const optionalArgs = getArguments(optionalArgsString);
+    optionalArgs.forEach(arg => {
+        arg.name = !arg.name?.includes("--help") ? arg.name?.split(" ")[0] : arg.name;
+        arg.optional = true;
+    });
+
+    return requiredArgs.concat(optionalArgs);
+}
+
+/**
+ * Parses the provided section of the help message and extracts command arguments and names.
+ *
+ * @param argsString - A string containing all the required or optional arguments.
+ * @returns A list of required and optional {@link CommandArgument}s.
+ */
+function getArguments(argsString: string) {
+    const args: CommandArgument[] = [];
+
+    let name = "";
+    let description = "";
+
+    function addArgument() {
+        if (name && description) {
+            args.push({
+                name: name.trim(),
+                description: description.trim(),
+            });
+
+            name = "";
+            description = "";
+        }
     }
 
-    return commandArguments;
+    argsString
+        .split("\n")
+        .filter(it => it.length > 0)
+        .forEach((it, _, __) => {
+            if (!it.startsWith(" ", 2)) {
+                addArgument();
+
+                const str = it.substring(2);
+                const startDescriptionPos = str.search("  ");
+
+                name = startDescriptionPos >= 0
+                    ? str.substring(0, startDescriptionPos + 1)
+                    : str.trim();
+                description = startDescriptionPos >= 0
+                    ? str.substring(startDescriptionPos + 1)
+                    : "";
+            } else {
+                description += " " + it.trim();
+            }
+        });
+    addArgument();
+    return args;
 }
