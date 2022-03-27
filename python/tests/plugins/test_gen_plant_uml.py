@@ -74,6 +74,35 @@ class TestGenPlantUml(TestCase):
             with open(os.path.join(full_output_dir, expected_puml_file_path)) as generated_puml_file:
                 self._assert_component_diagram_content(generated_puml_file.read())
 
+    def test_multiple_puml_component_diagrams_to_file(self):
+        with (TemporaryDirectory() as temp_directory,
+              temporary_test_file(TEST_PUML_ARCH_YAML, dir=temp_directory, suffix=YAML_FILE_EXTENSION) as plugin_yaml):
+            # Get the rng temp AaC file name, but with a puml extension
+            result = puml_component(plugin_yaml.name, temp_directory)
+
+            self.assertIn(temp_directory, result.output())
+            self.assertIn(COMPONENT_STRING, result.output())
+            self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
+
+            full_output_dir = os.path.join(temp_directory, COMPONENT_STRING)
+            temp_directory_files = os.listdir(full_output_dir)
+
+            expected_puml_file_paths = [
+                _get_generated_file_name(plugin_yaml.name, COMPONENT_STRING, name)
+                for name in [TEST_PUML_SYSTEM_NAME, TEST_PUML_SERVICE_ONE_TYPE, TEST_PUML_SERVICE_TWO_TYPE]
+            ]
+            [self.assertIn(os.path.basename(path), temp_directory_files) for path in expected_puml_file_paths]
+
+            for name in temp_directory_files:
+                with open(os.path.join(full_output_dir, name)) as generated_puml_file:
+                    content = generated_puml_file.read()
+                    if TEST_PUML_SERVICE_ONE_TYPE.lower() in name:
+                        self._assert_component_diagram_content_serviceone(content)
+                    elif TEST_PUML_SERVICE_TWO_TYPE.lower() in name:
+                        self._assert_component_diagram_content_servicetwo(content)
+                    else:
+                        self._assert_component_diagram_content_full(content)
+
     def test_puml_object_diagram_to_console(self):
         with temporary_test_file(TEST_PUML_ARCH_YAML, suffix=YAML_FILE_EXTENSION) as plugin_yaml:
             result = puml_object(plugin_yaml.name)
@@ -135,6 +164,20 @@ class TestGenPlantUml(TestCase):
         self.assertIn(f"package \"{TEST_PUML_SYSTEM_NAME}\"", component_diagram_content_string)
         self.assertIn(f"{TEST_PUML_DATA_A_TYPE} -> [{TEST_PUML_SERVICE_ONE_TYPE}] : in", component_diagram_content_string)
         self.assertIn(f"[{TEST_PUML_SERVICE_ONE_TYPE}] -> {TEST_PUML_DATA_B_TYPE} : out", component_diagram_content_string)
+
+    def _assert_component_diagram_content_serviceone(self, component_diagram_content_string: str):
+        self._assert_diagram_contains_uml_boilerplate(component_diagram_content_string)
+        self.assertIn(f"interface {TEST_PUML_DATA_A_TYPE}", component_diagram_content_string)
+        self.assertIn(f"interface {TEST_PUML_DATA_B_TYPE}", component_diagram_content_string)
+        self.assertIn(f"{TEST_PUML_DATA_A_TYPE} -> [{TEST_PUML_SERVICE_ONE_TYPE}] : in", component_diagram_content_string)
+        self.assertIn(f"[{TEST_PUML_SERVICE_ONE_TYPE}] -> {TEST_PUML_DATA_B_TYPE} : out", component_diagram_content_string)
+
+    def _assert_component_diagram_content_servicetwo(self, component_diagram_content_string: str):
+        self._assert_diagram_contains_uml_boilerplate(component_diagram_content_string)
+        self.assertIn(f"interface {TEST_PUML_DATA_B_TYPE}", component_diagram_content_string)
+        self.assertIn(f"interface {TEST_PUML_DATA_C_TYPE}", component_diagram_content_string)
+        self.assertIn(f"{TEST_PUML_DATA_B_TYPE} -> [{TEST_PUML_SERVICE_TWO_TYPE}] : in", component_diagram_content_string)
+        self.assertIn(f"[{TEST_PUML_SERVICE_TWO_TYPE}] -> {TEST_PUML_DATA_C_TYPE} : out", component_diagram_content_string)
 
     def _assert_object_diagram_content(self, object_diagram_content_string: str):
         self._assert_diagram_contains_uml_boilerplate(object_diagram_content_string)

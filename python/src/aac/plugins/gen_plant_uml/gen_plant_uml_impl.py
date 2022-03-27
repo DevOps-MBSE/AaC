@@ -38,7 +38,7 @@ def puml_component(architecture_file: str, output_directory: Union[str, None] = 
         model_types = util.get_models_by_type(definitions, "model")
 
         models = []
-        for root_model_name in _find_root_names(model_types):
+        for root_model_name in model_types.keys():
             filename = _get_generated_file_name(
                 architecture_file,
                 COMPONENT_STRING,
