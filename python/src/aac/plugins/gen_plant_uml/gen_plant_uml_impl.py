@@ -145,10 +145,13 @@ def puml_object(architecture_file: str, output_directory: Union[str, None] = Non
             for child in object_compositions.get(parent, {}):
                 object_hierarchies.append({"parent": parent, "child": child})
 
-        return {
-            "objects": object_declarations,
-            "object_hierarchies": object_hierarchies
-        }
+        return [
+            {
+                "filename": _get_generated_file_name(architecture_file, OBJECT_STRING, "", output_directory),
+                "objects": object_declarations,
+                "object_hierarchies": object_hierarchies,
+            }
+        ]
 
     with plugin_result(
         plugin_name,
