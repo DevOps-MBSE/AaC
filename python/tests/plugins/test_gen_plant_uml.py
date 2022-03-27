@@ -142,13 +142,6 @@ class TestGenPlantUml(TestCase):
                     elif _get_formatted_definition_name(TEST_PUML_USE_CASE_TWO_TITLE) in path:
                         self._assert_sequence_diagram_content_usecase_two(content)
 
-    def _assert_component_diagram_content_simple(self, component_diagram_content_string: str):
-        self._assert_diagram_contains_uml_boilerplate(component_diagram_content_string)
-        self.assertIn(f"interface {TEST_PUML_DATA_A_TYPE}", component_diagram_content_string)
-        self.assertIn(f"interface {TEST_PUML_DATA_C_TYPE}", component_diagram_content_string)
-        self.assertIn(f"{TEST_PUML_DATA_C_TYPE} -> [{TEST_PUML_SERVICE_THREE_TYPE}] : in", component_diagram_content_string)
-        self.assertIn(f"[{TEST_PUML_SERVICE_THREE_TYPE}] -> {TEST_PUML_DATA_A_TYPE} : out", component_diagram_content_string)
-
     def _assert_component_diagram_content_full(self, component_diagram_content_string: str):
         self._assert_diagram_contains_uml_boilerplate(component_diagram_content_string)
         self._assert_component_diagram_content_serviceone(component_diagram_content_string)
