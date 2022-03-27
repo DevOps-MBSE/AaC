@@ -26,6 +26,14 @@ class TestGenPlantUml(TestCase):
         self.assertEqual(_get_formatted_definition_name("Name"), "name")
         self.assertEqual(_get_formatted_definition_name("Definition Name"), "definition_name")
         self.assertEqual(
+            _get_formatted_definition_name(f"{INVALID_FILE_NAME_CHARACTERS}This is my Definition Name"),
+            "this_is_my_definition_name"
+        )
+        self.assertEqual(
+            _get_formatted_definition_name(f"This is my{INVALID_FILE_NAME_CHARACTERS} Definition Name"),
+            "this_is_my_definition_name"
+        )
+        self.assertEqual(
             _get_formatted_definition_name(f"This is my Definition Name{INVALID_FILE_NAME_CHARACTERS}"),
             "this_is_my_definition_name"
         )

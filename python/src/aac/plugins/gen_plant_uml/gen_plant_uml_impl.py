@@ -21,7 +21,7 @@ PLANT_UML_FILE_EXTENSION = ".puml"
 COMPONENT_STRING = "component"
 OBJECT_STRING = "object"
 SEQUENCE_STRING = "sequence"
-INVALID_FILE_NAME_CHARACTERS = ".!@#$%^&*();,/?[]{}`~|'"
+INVALID_FILE_NAME_CHARACTERS = ".!@#$%^&*();,\\/?[]{}`~|'"
 
 
 def puml_component(architecture_file: str, output_directory: Union[str, None] = None) -> PluginExecutionResult:
@@ -305,4 +305,7 @@ def _get_formatted_definition_name(definition_name: str) -> str:
     Returns:
         A formatted version of definition name that can be included in
     """
-    return definition_name.lower().replace(" ", "_").strip(INVALID_FILE_NAME_CHARACTERS)
+    name = definition_name.strip().lower().replace(" ", "_")
+    for ch in INVALID_FILE_NAME_CHARACTERS:
+        name = name.replace(ch, "")
+    return name
