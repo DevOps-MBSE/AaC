@@ -208,30 +208,6 @@ def _generate_diagram_to_file(
             return "\n".join(messages)
 
 
-def _find_root_names(models) -> list[str]:
-    model_names = list(models.keys())
-
-    if len(model_names) == 1:
-        return model_names
-
-    # there are multiple models, so we have to look through them
-    subcomponents = []  # names of subcomponent models
-    for name in model_names:
-        model = models.get(name)
-        components = util.search(model, ["model", "components"])
-        for component in components:
-            # component is a Field type
-            component_type = component.get("type")
-            # make sure this is a model type (not a data type)
-            if component_type in model_names:
-                # add the component type to the list of subs
-                subcomponents.append(component_type)
-
-    # remove the subs types from model names
-    sanitized_model_names = [name for name in model_names if name not in subcomponents]
-    return sanitized_model_names
-
-
 def _get_model_content(model: dict, model_types: dict, defined_interfaces: set) -> dict:
     """Return content from the specific model relevant to creating a PlantUML diagram.
 
