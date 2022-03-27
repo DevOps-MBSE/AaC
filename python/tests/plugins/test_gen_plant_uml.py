@@ -85,16 +85,13 @@ class TestGenPlantUml(TestCase):
     def test_multiple_puml_component_diagrams_to_file(self):
         with (TemporaryDirectory() as temp_directory,
               temporary_test_file(TEST_PUML_ARCH_YAML, dir=temp_directory, suffix=YAML_FILE_EXTENSION) as plugin_yaml):
-            # Get the rng temp AaC file name, but with a puml extension
             result = puml_component(plugin_yaml.name, temp_directory)
 
-            self.assertIn(temp_directory, result.output())
-            self.assertIn(COMPONENT_STRING, result.output())
+            full_output_dir = os.path.join(temp_directory, COMPONENT_STRING)
+            self.assertIn(full_output_dir, result.output())
             self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
 
-            full_output_dir = os.path.join(temp_directory, COMPONENT_STRING)
             temp_directory_files = os.listdir(full_output_dir)
-
             expected_puml_file_paths = [
                 _get_generated_file_name(plugin_yaml.name, COMPONENT_STRING, name)
                 for name in [TEST_PUML_SYSTEM_NAME, TEST_PUML_SERVICE_ONE_TYPE, TEST_PUML_SERVICE_TWO_TYPE]
@@ -138,24 +135,31 @@ class TestGenPlantUml(TestCase):
         with temporary_test_file(TEST_PUML_ARCH_YAML, suffix=YAML_FILE_EXTENSION) as plugin_yaml:
             result = puml_sequence(plugin_yaml.name)
             self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
-            self._assert_sequence_diagram_content(result.output())
+            self._assert_sequence_diagram_content_usecase_one(result.output())
 
     def test_puml_sequence_diagram_to_file(self):
         with (TemporaryDirectory() as temp_directory,
               temporary_test_file(TEST_PUML_ARCH_YAML, dir=temp_directory, suffix=YAML_FILE_EXTENSION) as plugin_yaml):
-            # Get the rng temp AaC file name, but with a puml extension
-            expected_puml_file_path = self._get_expected_puml_file_name(plugin_yaml.name, SEQUENCE_STRING)
-
             result = puml_sequence(plugin_yaml.name, temp_directory)
-            self.assertIn(expected_puml_file_path, result.output())
+
+            full_output_dir = os.path.join(temp_directory, SEQUENCE_STRING)
+            self.assertIn(full_output_dir, result.output())
             self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
 
-            temp_directory_files = os.listdir(temp_directory)
+            temp_directory_files = os.listdir(full_output_dir)
+            expected_puml_file_paths = [
+                _get_generated_file_name(plugin_yaml.name, SEQUENCE_STRING, name)
+                for name in [TEST_PUML_USE_CASE_ONE_TITLE, TEST_PUML_USE_CASE_TWO_TITLE]
+            ]
+            [self.assertIn(os.path.basename(path), temp_directory_files) for path in expected_puml_file_paths]
 
-            self.assertIn(expected_puml_file_path, temp_directory_files)
-
-            with open(os.path.join(temp_directory, expected_puml_file_path)) as generated_puml_file:
-                self._assert_sequence_diagram_content(generated_puml_file.read())
+            for path in expected_puml_file_paths:
+                with open(path) as generated_puml_file:
+                    content = generated_puml_file.read()
+                    if _get_formatted_definition_name(TEST_PUML_USE_CASE_ONE_TITLE) in path:
+                        self._assert_sequence_diagram_content_usecase_one(content)
+                    elif _get_formatted_definition_name(TEST_PUML_USE_CASE_TWO_TITLE) in path:
+                        self._assert_sequence_diagram_content_usecase_two(content)
 
     def _assert_component_diagram_content_simple(self, component_diagram_content_string: str):
         self._assert_diagram_contains_uml_boilerplate(component_diagram_content_string)
@@ -195,7 +199,7 @@ class TestGenPlantUml(TestCase):
         self.assertIn(f"{TEST_PUML_SYSTEM_NAME} *-- {TEST_PUML_SERVICE_ONE_TYPE}", object_diagram_content_string)
         self.assertIn(f"{TEST_PUML_SYSTEM_NAME} *-- {TEST_PUML_SERVICE_TWO_TYPE}", object_diagram_content_string)
 
-    def _assert_sequence_diagram_content(self, sequence_diagram_content_string: str):
+    def _assert_sequence_diagram_content_usecase_one(self, sequence_diagram_content_string: str):
         self._assert_diagram_contains_uml_boilerplate(sequence_diagram_content_string)
         self.assertIn(f"title {TEST_PUML_USE_CASE_ONE_TITLE}", sequence_diagram_content_string)
         self.assertIn(f"participant {TEST_PUML_SYSTEM_TYPE} as {TEST_PUML_SYSTEM_NAME}", sequence_diagram_content_string)
@@ -203,6 +207,14 @@ class TestGenPlantUml(TestCase):
         self.assertIn(f"participant {TEST_PUML_SERVICE_TWO_TYPE} as {TEST_PUML_SERVICE_TWO_NAME}", sequence_diagram_content_string)
         self.assertIn(f"{TEST_PUML_SYSTEM_NAME} -> {TEST_PUML_SERVICE_ONE_NAME} : ", sequence_diagram_content_string)
         self.assertIn(f"{TEST_PUML_SERVICE_TWO_NAME} -> {TEST_PUML_SYSTEM_NAME} : ", sequence_diagram_content_string)
+
+    def _assert_sequence_diagram_content_usecase_two(self, sequence_diagram_content_string: str):
+        self._assert_diagram_contains_uml_boilerplate(sequence_diagram_content_string)
+        self.assertIn(f"title {TEST_PUML_USE_CASE_TWO_TITLE}", sequence_diagram_content_string)
+        self.assertIn(f"participant {TEST_PUML_SERVICE_ONE_TYPE} as {TEST_PUML_SERVICE_ONE_NAME}", sequence_diagram_content_string)
+        self.assertIn(f"participant {TEST_PUML_SERVICE_TWO_TYPE} as {TEST_PUML_SERVICE_TWO_NAME}", sequence_diagram_content_string)
+        self.assertIn(f"{TEST_PUML_SERVICE_ONE_NAME} -> {TEST_PUML_SERVICE_TWO_NAME} : ", sequence_diagram_content_string)
+        self.assertIn(f"{TEST_PUML_SERVICE_TWO_NAME} -> {TEST_PUML_SERVICE_ONE_NAME} : ", sequence_diagram_content_string)
 
     def _assert_diagram_contains_uml_boilerplate(self, puml_file):
         self.assertIn("@startuml", puml_file)
