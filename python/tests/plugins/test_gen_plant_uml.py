@@ -220,6 +220,7 @@ class TestGenPlantUml(TestCase):
         self.assertIn("@startuml", puml_file)
         self.assertIn("@enduml", puml_file)
 
+
 TEST_PUML_SYSTEM_NAME = "Test-System"
 TEST_PUML_SYSTEM_TYPE = "System"
 TEST_PUML_SERVICE_ONE_NAME = "svc1"
