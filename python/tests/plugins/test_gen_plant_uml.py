@@ -72,7 +72,7 @@ class TestGenPlantUml(TestCase):
             self.assertIn(os.path.basename(expected_puml_file_path), temp_directory_files)
 
             with open(os.path.join(full_output_dir, expected_puml_file_path)) as generated_puml_file:
-                self._assert_component_diagram_content(generated_puml_file.read())
+                self._assert_component_diagram_content_simple(generated_puml_file.read())
 
     def test_multiple_puml_component_diagrams_to_file(self):
         with (TemporaryDirectory() as temp_directory,
@@ -149,7 +149,7 @@ class TestGenPlantUml(TestCase):
             with open(os.path.join(temp_directory, expected_puml_file_path)) as generated_puml_file:
                 self._assert_sequence_diagram_content(generated_puml_file.read())
 
-    def _assert_component_diagram_content(self, component_diagram_content_string: str):
+    def _assert_component_diagram_content_simple(self, component_diagram_content_string: str):
         self._assert_diagram_contains_uml_boilerplate(component_diagram_content_string)
         self.assertIn(f"interface {TEST_PUML_DATA_A_TYPE}", component_diagram_content_string)
         self.assertIn(f"interface {TEST_PUML_DATA_C_TYPE}", component_diagram_content_string)
