@@ -38,7 +38,7 @@ class TestGenPlantUml(TestCase):
             "this_is_my_definition_name"
         )
 
-    def test_generated_file_name_without_output_dir(self):
+    def test_generated_file_name(self):
         orig_output_dir = "/tmp/some/dir/"
         new_output_dir = "/dir/some/tmp/"
         file_name = "test_arch_file"
