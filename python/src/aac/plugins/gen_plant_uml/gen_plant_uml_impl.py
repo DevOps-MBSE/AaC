@@ -77,11 +77,11 @@ def puml_sequence(architecture_file: str, output_directory: Union[str, None] = N
     def generate_sequence_diagram(models: dict):
         use_case_types = util.get_models_by_type(models, "usecase")
 
+        properties = []
         participants = []
         sequences = []
 
-        for use_case_title in _find_root_names(use_case_types):
-
+        for use_case_title in use_case_types.keys():
             # declare participants
             usecase_participants = util.search(use_case_types.get(use_case_title, {}), ["usecase", "participants"])
             for usecase_participant in usecase_participants:  # each participant is a field type
@@ -99,11 +99,14 @@ def puml_sequence(architecture_file: str, output_directory: Union[str, None] = N
                     "action": step.get("action"),
                 })
 
-            return {
+            properties.append({
+                "filename": _get_generated_file_name(architecture_file, SEQUENCE_STRING, use_case_title, output_directory),
                 "title": use_case_title,
                 "participants": participants,
-                "sequences": sequences
-            }
+                "sequences": sequences,
+            })
+
+        return properties
 
     with plugin_result(
         plugin_name,
