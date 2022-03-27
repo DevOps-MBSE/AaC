@@ -193,28 +193,54 @@ class TestGenPlantUml(TestCase):
 
     def _assert_object_diagram_content(self, object_diagram_content_string: str):
         self._assert_diagram_contains_uml_boilerplate(object_diagram_content_string)
-        self.assertIn(f"object {TEST_PUML_SYSTEM_NAME}", object_diagram_content_string)
-        self.assertIn(f"object {TEST_PUML_SERVICE_ONE_TYPE}", object_diagram_content_string)
-        self.assertIn(f"object {TEST_PUML_SERVICE_TWO_TYPE}", object_diagram_content_string)
-        self.assertIn(f"{TEST_PUML_SYSTEM_NAME} *-- {TEST_PUML_SERVICE_ONE_TYPE}", object_diagram_content_string)
-        self.assertIn(f"{TEST_PUML_SYSTEM_NAME} *-- {TEST_PUML_SERVICE_TWO_TYPE}", object_diagram_content_string)
+        self._assert_object_diagram_object(object_diagram_content_string, [
+            TEST_PUML_SYSTEM_NAME, TEST_PUML_SERVICE_ONE_TYPE, TEST_PUML_SERVICE_TWO_TYPE
+        ])
+        self._assert_object_diagram_object_relations(object_diagram_content_string, "*--", [
+            {"left": TEST_PUML_SYSTEM_NAME, "right": TEST_PUML_SERVICE_ONE_TYPE},
+            {"left": TEST_PUML_SYSTEM_NAME, "right": TEST_PUML_SERVICE_TWO_TYPE},
+        ])
+
+    def _assert_object_diagram_object(self, content: str, objects: list[str]):
+        for obj in objects:
+            self.assertIn(f"object {obj}", content)
+
+    def _assert_object_diagram_object_relations(self, content: str, relation: str, relationships: list[dict[str, str]]):
+        for relationship in relationships:
+            self.assertIn(f"{relationship.get('left')} {relation} {relationship.get('right')}", content)
 
     def _assert_sequence_diagram_content_usecase_one(self, sequence_diagram_content_string: str):
         self._assert_diagram_contains_uml_boilerplate(sequence_diagram_content_string)
         self.assertIn(f"title {TEST_PUML_USE_CASE_ONE_TITLE}", sequence_diagram_content_string)
-        self.assertIn(f"participant {TEST_PUML_SYSTEM_TYPE} as {TEST_PUML_SYSTEM_NAME}", sequence_diagram_content_string)
-        self.assertIn(f"participant {TEST_PUML_SERVICE_ONE_TYPE} as {TEST_PUML_SERVICE_ONE_NAME}", sequence_diagram_content_string)
-        self.assertIn(f"participant {TEST_PUML_SERVICE_TWO_TYPE} as {TEST_PUML_SERVICE_TWO_NAME}", sequence_diagram_content_string)
-        self.assertIn(f"{TEST_PUML_SYSTEM_NAME} -> {TEST_PUML_SERVICE_ONE_NAME} : ", sequence_diagram_content_string)
-        self.assertIn(f"{TEST_PUML_SERVICE_TWO_NAME} -> {TEST_PUML_SYSTEM_NAME} : ", sequence_diagram_content_string)
+        self._assert_sequence_diagram_participants(sequence_diagram_content_string, [
+            {"name": TEST_PUML_SYSTEM_NAME, "type": TEST_PUML_SYSTEM_TYPE},
+            {"name": TEST_PUML_SERVICE_ONE_NAME, "type": TEST_PUML_SERVICE_ONE_TYPE},
+            {"name": TEST_PUML_SERVICE_TWO_NAME, "type": TEST_PUML_SERVICE_TWO_TYPE},
+        ])
+        self._assert_sequence_diagram_io(sequence_diagram_content_string, [
+            {"in": TEST_PUML_SYSTEM_NAME, "out": TEST_PUML_SERVICE_ONE_NAME},
+            {"in": TEST_PUML_SERVICE_TWO_NAME, "out": TEST_PUML_SYSTEM_NAME},
+        ])
 
     def _assert_sequence_diagram_content_usecase_two(self, sequence_diagram_content_string: str):
         self._assert_diagram_contains_uml_boilerplate(sequence_diagram_content_string)
         self.assertIn(f"title {TEST_PUML_USE_CASE_TWO_TITLE}", sequence_diagram_content_string)
-        self.assertIn(f"participant {TEST_PUML_SERVICE_ONE_TYPE} as {TEST_PUML_SERVICE_ONE_NAME}", sequence_diagram_content_string)
-        self.assertIn(f"participant {TEST_PUML_SERVICE_TWO_TYPE} as {TEST_PUML_SERVICE_TWO_NAME}", sequence_diagram_content_string)
-        self.assertIn(f"{TEST_PUML_SERVICE_ONE_NAME} -> {TEST_PUML_SERVICE_TWO_NAME} : ", sequence_diagram_content_string)
-        self.assertIn(f"{TEST_PUML_SERVICE_TWO_NAME} -> {TEST_PUML_SERVICE_ONE_NAME} : ", sequence_diagram_content_string)
+        self._assert_sequence_diagram_participants(sequence_diagram_content_string, [
+            {"name": TEST_PUML_SERVICE_ONE_NAME, "type": TEST_PUML_SERVICE_ONE_TYPE},
+            {"name": TEST_PUML_SERVICE_TWO_NAME, "type": TEST_PUML_SERVICE_TWO_TYPE},
+        ])
+        self._assert_sequence_diagram_io(sequence_diagram_content_string, [
+            {"in": TEST_PUML_SERVICE_ONE_NAME, "out": TEST_PUML_SERVICE_TWO_NAME},
+            {"in": TEST_PUML_SERVICE_TWO_NAME, "out": TEST_PUML_SERVICE_ONE_NAME},
+        ])
+
+    def _assert_sequence_diagram_participants(self, content: str, participants: list[dict[str, str]]):
+        for participant in participants:
+            self.assertIn(f"participant {participant.get('type')} as {participant.get('name')}", content)
+
+    def _assert_sequence_diagram_io(self, content: str, inputs_outputs: list[dict[str, str]]):
+        for io in inputs_outputs:
+            self.assertIn(f"{io.get('in')} -> {io.get('out')} : ", content)
 
     def _assert_diagram_contains_uml_boilerplate(self, puml_file):
         self.assertIn("@startuml", puml_file)
