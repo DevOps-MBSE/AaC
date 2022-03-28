@@ -9,7 +9,7 @@ from aac.plugins.gen_plant_uml.gen_plant_uml_impl import (
     OBJECT_STRING,
     SEQUENCE_STRING,
     PLANT_UML_FILE_EXTENSION,
-    INVALID_FILE_NAME_CHARACTERS,
+    FILE_NAME_CHARACTERS_TO_REPLACE,
     puml_component,
     puml_object,
     puml_sequence,
@@ -28,15 +28,15 @@ class TestGenPlantUml(TestCase):
         self.assertEqual(_get_formatted_definition_name("Name"), "name")
         self.assertEqual(_get_formatted_definition_name("Definition Name"), "definition_name")
         self.assertEqual(
-            _get_formatted_definition_name(f"{INVALID_FILE_NAME_CHARACTERS}This is my Definition Name"),
+            _get_formatted_definition_name(f"{FILE_NAME_CHARACTERS_TO_REPLACE}This is my Definition Name"),
             "this_is_my_definition_name"
         )
         self.assertEqual(
-            _get_formatted_definition_name(f"This is my{INVALID_FILE_NAME_CHARACTERS} Definition Name"),
+            _get_formatted_definition_name(f"This is my{FILE_NAME_CHARACTERS_TO_REPLACE} Definition Name"),
             "this_is_my_definition_name"
         )
         self.assertEqual(
-            _get_formatted_definition_name(f"This is my Definition Name{INVALID_FILE_NAME_CHARACTERS}"),
+            _get_formatted_definition_name(f"This is my Definition Name{FILE_NAME_CHARACTERS_TO_REPLACE}"),
             "this_is_my_definition_name"
         )
 
