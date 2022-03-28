@@ -20,10 +20,10 @@ PLANT_UML_FILE_EXTENSION = ".puml"
 COMPONENT_STRING = "component"
 OBJECT_STRING = "object"
 SEQUENCE_STRING = "sequence"
-INVALID_FILE_NAME_CHARACTERS = ".!@#$%^&*();,\\/?[]{}`~|'"
+FILE_NAME_CHARACTERS_TO_REPLACE = ".!@#$%^&*();,\\/?[]{}`~|'"
 
 
-def puml_component(architecture_file: str, output_directory: Union[str, None] = None) -> PluginExecutionResult:
+def puml_component(architecture_file: str, output_directory: Optional[str] = None) -> PluginExecutionResult:
     """
     Convert an AaC model to Plant UML component diagram.
 
@@ -62,7 +62,7 @@ def puml_component(architecture_file: str, output_directory: Union[str, None] = 
         return result
 
 
-def puml_sequence(architecture_file: str, output_directory: Union[str, None] = None) -> PluginExecutionResult:
+def puml_sequence(architecture_file: str, output_directory: Optional[str] = None) -> PluginExecutionResult:
     """
     Convert an AaC usecase to Plant ULM sequence diagram.
 
@@ -117,7 +117,7 @@ def puml_sequence(architecture_file: str, output_directory: Union[str, None] = N
         return result
 
 
-def puml_object(architecture_file: str, output_directory: Union[str, None] = None) -> PluginExecutionResult:
+def puml_object(architecture_file: str, output_directory: Optional[str] = None) -> PluginExecutionResult:
     """
     Convert an AaC model to Plant ULM object diagram.
 
@@ -306,6 +306,6 @@ def _get_formatted_definition_name(definition_name: str) -> str:
         A formatted version of definition name that can be included in
     """
     name = definition_name.strip().lower().replace(" ", "_")
-    for ch in INVALID_FILE_NAME_CHARACTERS:
-        name = name.replace(ch, "")
+    for char in FILE_NAME_CHARACTERS_TO_REPLACE:
+        name = name.replace(char, "")
     return name
