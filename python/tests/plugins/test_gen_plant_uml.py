@@ -43,6 +43,7 @@ class TestGenPlantUml(TestCase):
     def test_generated_file_name(self):
         orig_output_dir = "/tmp/some/dir/"
         new_output_dir = "/dir/some/tmp/"
+        new_relative_dir = "tmp/"
         file_name = "test_arch_file"
         full_file_name = f"{orig_output_dir}{file_name}{PLANT_UML_FILE_EXTENSION}"
         definition_name = "My test definition name."
@@ -57,6 +58,10 @@ class TestGenPlantUml(TestCase):
             self.assertEqual(
                 _get_generated_file_name(full_file_name, puml_type, definition_name, new_output_dir),
                 os.path.join(new_output_dir, puml_type, f"{file_name}_{formatted_definition_name}{PLANT_UML_FILE_EXTENSION}"),
+            )
+            self.assertEqual(
+                _get_generated_file_name(full_file_name, puml_type, definition_name, new_relative_dir),
+                os.path.join(new_relative_dir, puml_type, f"{file_name}_{formatted_definition_name}{PLANT_UML_FILE_EXTENSION}"),
             )
 
     def test_puml_component_diagram_to_console(self):
