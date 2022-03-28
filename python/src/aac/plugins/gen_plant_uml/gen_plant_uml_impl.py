@@ -268,6 +268,7 @@ def _get_model_content(model: dict, model_types: dict, defined_interfaces: set) 
         "outputs": model_outputs,
     }
 
+
 def _get_generated_file_name(
     architecture_file: str, puml_type: str, definition_name: str, output_directory: Union[str, None] = None
 ) -> str:
@@ -293,6 +294,7 @@ def _get_generated_file_name(
         puml_type,
         f"{file_name}_{_get_formatted_definition_name(definition_name)}{PLANT_UML_FILE_EXTENSION}",
     )
+
 
 def _get_formatted_definition_name(definition_name: str) -> str:
     """Format the definition name such that it can be included as part of a file name.
