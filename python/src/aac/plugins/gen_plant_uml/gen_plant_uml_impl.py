@@ -197,8 +197,7 @@ def _generate_diagram_to_file(
 
         if output_directory:
             full_output_path = os.path.join(output_directory, puml_type)
-            os.makedirs(full_output_path)
-            write_generated_templates_to_file(generated_templates, output_directory)
+            write_generated_templates_to_file(generated_templates, full_output_path)
             return f"Wrote PUML {puml_type} diagram(s) to {full_output_path}."
         else:
             messages = []
