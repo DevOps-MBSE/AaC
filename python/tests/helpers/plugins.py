@@ -1,4 +1,6 @@
 from typing import Callable
+YAML_FILE_EXTENSION = ".yaml"
+
 
 def check_generated_file_contents(path: str, checker: Callable, *args, **kwargs):
     """Check the contents of the provided file at path according to checker.

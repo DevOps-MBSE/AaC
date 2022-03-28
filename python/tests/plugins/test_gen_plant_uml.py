@@ -8,7 +8,6 @@ from aac.plugins.gen_plant_uml.gen_plant_uml_impl import (
     COMPONENT_STRING,
     OBJECT_STRING,
     SEQUENCE_STRING,
-    YAML_FILE_EXTENSION,
     PLANT_UML_FILE_EXTENSION,
     INVALID_FILE_NAME_CHARACTERS,
     puml_component,
@@ -19,7 +18,7 @@ from aac.plugins.gen_plant_uml.gen_plant_uml_impl import (
 )
 from aac.plugins.plugin_execution import PluginExecutionStatusCode
 from tests.helpers.io import temporary_test_file
-from tests.helpers.plugins import check_generated_file_contents
+from tests.helpers.plugins import check_generated_file_contents, YAML_FILE_EXTENSION
 
 
 class TestGenPlantUml(TestCase):
