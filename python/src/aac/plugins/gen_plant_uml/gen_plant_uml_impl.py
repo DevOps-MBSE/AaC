@@ -38,15 +38,14 @@ def puml_component(architecture_file: str, output_directory: Union[str, None] = 
 
         models = []
         for root_model_name in model_types.keys():
-            filename = _get_generated_file_name(
-                architecture_file,
-                COMPONENT_STRING,
-                root_model_name,
-                output_directory,
-            )
             model_properties = _get_model_content(model_types.get(root_model_name, {}), model_types, set())
             models.append({
-                "filename": filename,
+                "filename": _get_generated_file_name(
+                    architecture_file,
+                    COMPONENT_STRING,
+                    root_model_name,
+                    output_directory,
+                ),
                 "models": [model_properties],
             })
 
