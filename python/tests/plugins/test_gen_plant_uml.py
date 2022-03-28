@@ -84,7 +84,7 @@ class TestGenPlantUml(TestCase):
                 self.assertIn(basename, temp_directory_files)
 
                 parts = os.path.splitext(basename)[0].replace("-", "").split("_")
-                check_generated_file_contents(path, self.get_checker_from_filepath(parts[-1], COMPONENT_STRING))
+                check_generated_file_contents(path, self._get_checker_from_filepath(parts[-1], COMPONENT_STRING))
 
     def test_puml_object_diagram_to_console(self):
         with temporary_test_file(TEST_PUML_ARCH_YAML, suffix=YAML_FILE_EXTENSION) as plugin_yaml:
@@ -134,9 +134,9 @@ class TestGenPlantUml(TestCase):
                 self.assertIn(basename, temp_directory_files)
 
                 _, *parts = os.path.splitext(basename)[0].split("_")
-                check_generated_file_contents(path, self.get_checker_from_filepath("_".join(parts[-2:]), SEQUENCE_STRING))
+                check_generated_file_contents(path, self._get_checker_from_filepath("_".join(parts[-2:]), SEQUENCE_STRING))
 
-    def get_checker_from_filepath(self, path: str, puml_type: str) -> Callable:
+    def _get_checker_from_filepath(self, path: str, puml_type: str) -> Callable:
         """Get the method used to check the content in the generated file.
 
         Methods are expected to have a specific naming format:
