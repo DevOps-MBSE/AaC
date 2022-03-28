@@ -190,10 +190,9 @@ def _generate_diagram_to_file(
 
         generated_templates = []
         for (generated_filename, generated_template) in templates:
-            dirname, filename = os.path.split(generated_filename)
+            _, filename = os.path.split(generated_filename)
             generated_template, *_ = generated_template.values()
             generated_template.file_name = filename
-            generated_template.parent_dir = dirname
             generated_templates.append(generated_template)
 
         if output_directory:
