@@ -259,9 +259,7 @@ data:
     - name
     - type
   validation:
-    - name: Field reference exists
-      arguments:
-      - type
+    - name: Type references exist
 ---
 data:
   name: data
