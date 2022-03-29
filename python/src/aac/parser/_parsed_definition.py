@@ -1,4 +1,4 @@
-""""""
+"""A parsed Architecture-as-Code definition augmented with metadata and helpful functions."""
 
 from attr import Factory, attrib, attrs, validators
 import yaml
