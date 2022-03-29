@@ -1,11 +1,14 @@
 """The Active Context maintains the highly-contextual AaC DSL."""
-
 import copy
-
 from attr import Factory, attrib, attrs, validators
 
 from aac.parser import ParsedDefinition
-from aac.lang.definition_helpers import get_definition_by_name, get_definitions_by_root_key, search_definition, remove_list_type_indicator
+from aac.lang.definition_helpers import (
+    get_definition_by_name,
+    get_definitions_by_root_key,
+    search_definition,
+    remove_list_type_indicator,
+)
 
 
 @attrs(slots=True, auto_attribs=True)
