@@ -51,18 +51,7 @@ def get_aac_spec_as_yaml() -> str:
     """
     aac_data, aac_enums = get_aac_spec()
     aac_model = aac_data | aac_enums
-    aac_yaml = ""
-
-    is_first = True
-    for aac_name in aac_model.keys():
-        # put in the separator for all but the first
-        if is_first:
-            is_first = False
-        else:
-            aac_yaml = aac_yaml + "---\n"
-
-        aac_yaml = aac_yaml + yaml.dump(aac_model[aac_name]) + "\n"
-    return aac_yaml
+    return "---\n".join([yaml.dump(value) for value in aac_model.values()])
 
 
 def get_primitives(reload: bool = False) -> list[str]:
