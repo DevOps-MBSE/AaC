@@ -72,7 +72,7 @@ def _validate_cmd(model_file: str) -> PluginExecutionResult:
         return result
 
 
-def _core_spec_cmd() -> PluginExecutionResult:
+def _print_core_spec_cmd() -> PluginExecutionResult:
     """Run the built-in print-core-spec command."""
     with plugin_result(CORE_SPEC_COMMAND_NAME, get_aac_spec_as_yaml) as result:
         return result
@@ -104,7 +104,7 @@ def _setup_arg_parser(
         AacCommand(
             CORE_SPEC_COMMAND_NAME,
             "Prints the AaC model describing core AaC data types and enumerations",
-            _core_spec_cmd,
+            _print_core_spec_cmd,
         ),
         AacCommand(
             START_LSP_COMMAND_NAME,
