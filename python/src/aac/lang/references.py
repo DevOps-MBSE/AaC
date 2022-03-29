@@ -1,7 +1,7 @@
 """Module for AaC Language functions related to definition references."""
 
 from aac.parser import ParsedDefinition
-from aac.lang import get_active_context
+from aac.lang.context_manager import get_active_context
 
 
 def get_definition_references_from_context(source_definition: ParsedDefinition) -> list[ParsedDefinition]:

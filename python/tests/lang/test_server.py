@@ -2,7 +2,7 @@ from unittest import TestCase
 from unittest.mock import patch
 
 from aac.lang.server import start_lsp
-from aac.lang import get_active_context
+from aac.lang.context_manager import get_active_context
 from pygls import uris
 from pygls.lsp import methods
 from pygls.lsp.types import (
