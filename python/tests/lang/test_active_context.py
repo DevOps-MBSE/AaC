@@ -63,9 +63,32 @@ class TestActiveContext(TestCase):
         test_context = ActiveContext(core_spec)
 
         expected_results = get_primitives()
-        actual_results = test_context.get_primitives()
+        actual_results = test_context.get_primitive_types()
 
         self.assertEqual(expected_results, actual_results)
+
+    def test_get_get_defined_types_with_unextended_context(self):
+        core_spec = get_aac_spec()
+        test_context = ActiveContext(core_spec)
+
+        actual_results = test_context.get_defined_types()
+        expected_results = [definition.name for definition in test_context.context_definitions]
+
+        self.assertListEqual(expected_results, actual_results)
+
+    def test_is_primitive(self):
+        core_spec = get_aac_spec()
+        test_context = ActiveContext(core_spec)
+
+        self.assertTrue(test_context.is_primitive_type("string"))
+        self.assertFalse(test_context.is_primitive_type("striiiiiiiiiiiiiiing"))
+
+    def test_is_defined_type(self):
+        core_spec = get_aac_spec()
+        test_context = ActiveContext(core_spec)
+
+        self.assertTrue(test_context.is_definition_type("data"))
+        self.assertFalse(test_context.is_definition_type("daaaaaaaaaata"))
 
     def test_get_root_keys(self):
         core_spec = get_aac_spec()
