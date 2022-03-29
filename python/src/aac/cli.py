@@ -7,12 +7,14 @@ from typing import Callable
 
 from pluggy import PluginManager
 
-from aac import __version__, parser, plugins
+from aac import __version__, parser
 from aac.AacCommand import AacCommand, AacCommandArgument
 from aac.lang.server import start_lsp
+from aac.plugins.plugin_manager import get_plugin_manager
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 from aac.spec.core import get_aac_spec_as_yaml
 from aac.validate import validate_definitions
+from aac.validator import ValidationError
 
 
 def run_cli():
@@ -21,7 +23,7 @@ def run_cli():
 
     This method parses the command line and performs the requested user command or outputs usage.
     """
-    plugin_manager = plugins.get_plugin_manager()
+    plugin_manager = get_plugin_manager()
 
     arg_parser, aac_plugin_commands = _setup_arg_parser(plugin_manager)
 
@@ -52,7 +54,7 @@ VALIDATE_COMMAND_NAME = "validate"
 
 
 def _version_cmd() -> PluginExecutionResult:
-    """Run the built-in verison command."""
+    """Run the built-in version command."""
 
     def get_version() -> str:
         return __version__
@@ -66,8 +68,11 @@ def _validate_cmd(model_file: str) -> PluginExecutionResult:
 
     def validate_model() -> str:
         user_definitions = parser.parse(model_file)
-        with validate_definitions(user_definitions):
-            return f"{model_file} is valid"
+        with validate_definitions(user_definitions) as validation_result:
+            if validation_result.is_valid:
+                return f"{model_file} is valid"
+            else:
+                raise ValidationError(f"Invalid definitions:\n{user_definitions}\nMessages:\n{validation_result.messages}")
 
     with plugin_result(VALIDATE_COMMAND_NAME, validate_model) as result:
         return result
