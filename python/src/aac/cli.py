@@ -115,7 +115,8 @@ def _setup_arg_parser(
         ),
         AacCommand(
             ACTIVE_CONTEXT_COMMAND_NAME,
-            "Prints the AaC model describing core AaC data types and enumerations",
+            "Prints the AaC active context describing core AaC data types and enumerations and any definitions from loaded "
+            "plugins, etc.",
             _print_active_context_cmd,
         ),
         AacCommand(
