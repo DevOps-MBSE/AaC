@@ -5,7 +5,7 @@ from iteration_utilities import flatten
 from aac.lang.definition_helpers import get_definition_by_name, search_definition, remove_list_type_indicator
 from aac.lang.hierarchy import get_definition_ancestry
 from aac.parser import ParsedDefinition
-from aac.validate._validator_plugin import ValidatorPlugin
+from aac.plugins.validators import ValidatorPlugin
 from aac.lang import ActiveContext
 
 

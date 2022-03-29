@@ -1,6 +1,6 @@
 """Contains classes and functionality to support validating AaC architecture files."""
 
-from aac.validate._validator_plugin import ValidatorPlugin
+from aac.plugins.validators._validator_plugin import ValidatorPlugin
 from aac.validate._validation_error import ValidationError
 from aac.validate._validation_result import ValidationResult
 from aac.validate._validate import validate_definitions
