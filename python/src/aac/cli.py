@@ -7,13 +7,13 @@ from typing import Callable
 
 from pluggy import PluginManager
 
-from aac import __version__, parser
+from aac import __version__
 from aac.AacCommand import AacCommand, AacCommandArgument
 from aac.lang.server import start_lsp
 from aac.plugins.plugin_manager import get_plugin_manager
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 from aac.spec.core import get_aac_spec_as_yaml
-from aac.validate import validate_definitions
+from aac.validate import validate_source
 
 
 def run_cli():
@@ -66,8 +66,7 @@ def _validate_cmd(model_file: str) -> PluginExecutionResult:
     """Run the built-in validate command."""
 
     def validate_model() -> str:
-        user_definitions = parser.parse(model_file)
-        with validate_definitions(user_definitions):
+        with validate_source(model_file):
             return f"{model_file} is valid"
 
     with plugin_result(VALIDATE_COMMAND_NAME, validate_model) as result:
