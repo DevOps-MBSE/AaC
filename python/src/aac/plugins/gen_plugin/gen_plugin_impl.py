@@ -9,7 +9,6 @@ import yaml
 
 from os import path
 
-from aac import parser
 from aac.lang.definition_helpers import convert_parsed_definitions_to_dict_definition, get_models_by_type, search
 from aac.parser import ParsedDefinition
 from aac.template_engine import (
@@ -21,7 +20,7 @@ from aac.template_engine import (
 from aac.plugins import OperationCancelled
 from aac.plugins.gen_plugin.GeneratePluginException import GeneratePluginException
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
-from aac.validator import validation
+from aac.validate import validate_source
 
 plugin_name = "gen-plugin"
 
@@ -63,7 +62,7 @@ def generate_plugin(architecture_file: str) -> PluginExecutionResult:
 
 
 def _generate_plugin_files_to_directory(architecture_file_path: str, plugin_output_directory: str, plugin_type: str) -> str:
-    with validation(parser.parse, architecture_file_path) as validation_result:
+    with validate_source(architecture_file_path) as validation_result:
         definitions = validation_result.parsed_definitions
         templates = list(_prepare_and_generate_plugin_files(definitions, plugin_type, architecture_file_path).values())
         write_generated_templates_to_file(templates, plugin_output_directory)

@@ -5,10 +5,9 @@
 
 import os
 
-from aac import parser
 from aac.lang.definition_helpers import get_models_by_type, search, convert_parsed_definitions_to_dict_definition
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
-from aac.validator import validation
+from aac.validate import validate_source
 from aac.template_engine import (
     generate_templates,
     load_default_templates,
@@ -142,7 +141,7 @@ def puml_object(architecture_file: str, output_directory: str = None) -> PluginE
         architecture_file_path,
         output_directory,
         OBJECT_STRING,
-        generate_object_diagram
+        generate_object_diagram,
     ) as result:
         return result
 
@@ -163,7 +162,7 @@ def _generate_diagram_to_file(
     Returns:
         Result message string
     """
-    with validation(parser.parse, architecture_file_path) as result:
+    with validate_source(architecture_file_path) as result:
         file_name, _ = os.path.splitext(os.path.basename(architecture_file_path))
         generated_file_name = f"{file_name}_{puml_type}.puml"
 

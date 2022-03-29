@@ -5,7 +5,6 @@ import os
 from iteration_utilities import flatten
 from jinja2 import Template
 
-from aac import parser
 from aac.lang.definition_helpers import get_definitions_by_root_key
 from aac.parser import ParsedDefinition
 from aac.plugins.plugin_execution import (
@@ -18,15 +17,13 @@ from aac.template_engine import (
     load_default_templates,
     write_generated_templates_to_file,
 )
-from aac.validator import validation
+from aac.validate import validate_source
 
 plugin_name = "gen-design-doc"
 default_template_file = "templates/system-design-doc.md.jinja2"
 
 
-def gen_design_doc(
-    architecture_files: str, output_directory: str, template_file: str = None
-) -> PluginExecutionResult:
+def gen_design_doc(architecture_files: str, output_directory: str, template_file: str = None) -> PluginExecutionResult:
     """
     Generate a System Design Document from Architecture-as-Code models.
 
@@ -46,14 +43,10 @@ def gen_design_doc(
 
         selected_template, *_ = [t for t in loaded_templates if template_file_name == t.name]
 
-        output_filespec = _get_output_filespec(
-            first_arch_file, _get_output_file_extension(template_file_name)
-        )
+        output_filespec = _get_output_filespec(first_arch_file, _get_output_file_extension(template_file_name))
 
         template_properties = _make_template_properties(parsed_models, first_arch_file)
-        generated_document = _generate_system_doc(
-            output_filespec, selected_template, template_properties
-        )
+        generated_document = _generate_system_doc(output_filespec, selected_template, template_properties)
         write_generated_templates_to_file([generated_document], output_directory)
 
         return f"Wrote system design document to {os.path.join(output_directory, output_filespec)}"
@@ -64,7 +57,7 @@ def gen_design_doc(
 
 def _get_parsed_models(architecture_files: list) -> list[ParsedDefinition]:
     def parse_with_validation(architecture_file):
-        with validation(parser.parse, architecture_file) as result:
+        with validate_source(architecture_file) as result:
             return result.parsed_definitions
 
     # For each architecture_file, parse and validate the contents, then flatten the list of lists to a 1D list
@@ -103,9 +96,7 @@ def _get_and_prepare_definitions_by_type(parsed_definitions: ParsedDefinition, a
     return list([definition.definition for definition in filtered_definitions])
 
 
-def _generate_system_doc(
-    output_filespec: str, selected_template: Template, template_properties: dict
-) -> TemplateOutputFile:
+def _generate_system_doc(output_filespec: str, selected_template: Template, template_properties: dict) -> TemplateOutputFile:
     template = generate_template(selected_template, template_properties)
 
     template.file_name = output_filespec

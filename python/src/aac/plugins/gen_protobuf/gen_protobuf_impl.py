@@ -5,7 +5,6 @@
 
 from iteration_utilities import flatten
 
-from aac import parser
 from aac.lang.definition_helpers import convert_parsed_definitions_to_dict_definition, get_models_by_type, search
 from aac.plugins import PluginError
 from aac.plugins.plugin_execution import (
@@ -18,7 +17,7 @@ from aac.template_engine import (
     load_default_templates,
     write_generated_templates_to_file,
 )
-from aac.validator import validation
+from aac.validate import validate_source
 
 plugin_name = "gen-protobuf"
 
@@ -34,7 +33,7 @@ def gen_protobuf(architecture_file: str, output_directory: str) -> PluginExecuti
     """
 
     def generate_protobuf():
-        with validation(parser.parse, architecture_file) as validation_result:
+        with validate_source(architecture_file) as validation_result:
             loaded_templates = load_default_templates("gen_protobuf")
 
             definitions_as_dictionary = convert_parsed_definitions_to_dict_definition(validation_result.parsed_definitions)

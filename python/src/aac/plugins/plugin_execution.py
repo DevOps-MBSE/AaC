@@ -7,7 +7,7 @@ from traceback import extract_tb
 
 from aac.parser.ParserError import ParserError
 from aac.plugins import PluginError, OperationCancelled
-from aac.validator import ValidationError
+from aac.validate import ValidationError
 
 
 @unique
@@ -88,7 +88,9 @@ def plugin_result(name: str, cmd: callable, *args, **kwargs) -> PluginExecutionR
     except Exception as error:
         # Extract the first stack trace, skipping the plugin result we'd expect to find in the first element
         error_trace = extract_tb(error.__traceback__)[1]
-        result.add_messages(f"An unrecognized error occurred:{error_trace.filename} line {error_trace.lineno} message: {error}")
+        result.add_messages(
+            f"An unrecognized error occurred:{error_trace.filename} line {error_trace.lineno} message: {error}"
+        )
         result.status_code = PluginExecutionStatusCode.GENERAL_FAILURE
 
     yield result

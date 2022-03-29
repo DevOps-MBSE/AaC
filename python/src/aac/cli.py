@@ -14,7 +14,6 @@ from aac.plugins.plugin_manager import get_plugin_manager
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 from aac.spec.core import get_aac_spec_as_yaml
 from aac.validate import validate_definitions
-from aac.validator import ValidationError
 
 
 def run_cli():
@@ -68,11 +67,8 @@ def _validate_cmd(model_file: str) -> PluginExecutionResult:
 
     def validate_model() -> str:
         user_definitions = parser.parse(model_file)
-        with validate_definitions(user_definitions) as validation_result:
-            if validation_result.is_valid:
-                return f"{model_file} is valid"
-            else:
-                raise ValidationError(f"Invalid definitions:\n{user_definitions}\nMessages:\n{validation_result.messages}")
+        with validate_definitions(user_definitions):
+            return f"{model_file} is valid"
 
     with plugin_result(VALIDATE_COMMAND_NAME, validate_model) as result:
         return result
@@ -87,7 +83,6 @@ def _core_spec_cmd() -> PluginExecutionResult:
 def _setup_arg_parser(
     plugin_manager: PluginManager,
 ) -> tuple[argparse.ArgumentParser, list[Callable]]:
-
     def help_formatter(prog):
         return argparse.HelpFormatter(prog, max_help_position=30)
 

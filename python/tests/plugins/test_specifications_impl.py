@@ -1,6 +1,7 @@
 from unittest import TestCase
 from tempfile import NamedTemporaryFile
 
+from aac.lang.context_manager import get_active_context
 from aac.plugins.plugin_execution import PluginExecutionStatusCode
 from aac.plugins.specifications.specifications_impl import spec_validate
 
@@ -8,6 +9,9 @@ from tests.helpers.assertion import assert_plugin_success
 
 
 class TestSpecifications(TestCase):
+    def setUp(self) -> None:
+        get_active_context(reload_context=True)
+
     def test_spec_validate(self):
         with NamedTemporaryFile("w") as temp_spec:
             temp_spec.write(VALID_SPEC)
