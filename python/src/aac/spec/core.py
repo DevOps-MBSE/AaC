@@ -47,12 +47,30 @@ def get_aac_spec_as_yaml() -> str:
     Utility to provide the current base AaC model specification in an easy to read yaml format,
     just as it is defined internally.
 
+    See get_aac_active_context_as_yaml() to get the core AaC spec and all extensions (including
+    those added by all loaded plugins) as a YAML string.
+
     Returns:
         Returns a string containing YAML for the current AaC spec.  Each model entry is separated
         by the "---" yaml syntax representing separate files to be parsed.
     """
     aac_data, aac_enums = get_aac_spec()
     return format_as_yaml((aac_data | aac_enums).values())
+
+
+def get_aac_active_context_as_yaml() -> str:
+    """Get the active context in YAML.
+
+    The active context is a superset of the core spec but also includes any definitions defined by
+    loaded plugins, etc.
+
+    See get_aac_spec_as_yaml() to get just the core AaC spec as a YAML string.
+
+    Returns:
+        Return a string containing YAML for the currently active context.
+    """
+    # TODO: Fill this in when we can.
+    return f"Not implemented!\n{format_as_yaml({}.values())}"
 
 
 # TODO: Move to definition_helpers module

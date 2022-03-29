@@ -11,7 +11,7 @@ from aac import __version__, parser, plugins
 from aac.AacCommand import AacCommand, AacCommandArgument
 from aac.lang.server import start_lsp
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
-from aac.spec.core import get_aac_spec_as_yaml
+from aac.spec.core import get_aac_spec_as_yaml, get_aac_active_context_as_yaml
 from aac.validator import validation
 
 
@@ -48,6 +48,7 @@ def run_cli():
 VERSION_COMMAND_NAME = "version"
 VALIDATE_COMMAND_NAME = "validate"
 CORE_SPEC_COMMAND_NAME = "print-core-spec"
+ACTIVE_CONTEXT_COMMAND_NAME = "print-active-context"
 START_LSP_COMMAND_NAME = "start-lsp"
 
 
@@ -78,6 +79,12 @@ def _print_core_spec_cmd() -> PluginExecutionResult:
         return result
 
 
+def _print_active_context_cmd() -> PluginExecutionResult:
+    """Run the built-in print-active-context command."""
+    with plugin_result(CORE_SPEC_COMMAND_NAME, get_aac_active_context_as_yaml) as result:
+        return result
+
+
 def _setup_arg_parser(
     plugin_manager: PluginManager,
 ) -> tuple[argparse.ArgumentParser, list[Callable]]:
@@ -105,6 +112,11 @@ def _setup_arg_parser(
             CORE_SPEC_COMMAND_NAME,
             "Prints the AaC model describing core AaC data types and enumerations",
             _print_core_spec_cmd,
+        ),
+        AacCommand(
+            ACTIVE_CONTEXT_COMMAND_NAME,
+            "Prints the AaC model describing core AaC data types and enumerations",
+            _print_active_context_cmd,
         ),
         AacCommand(
             START_LSP_COMMAND_NAME,
