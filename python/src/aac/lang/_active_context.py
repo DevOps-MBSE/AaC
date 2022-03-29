@@ -5,7 +5,7 @@ import copy
 from attr import Factory, attrib, attrs, validators
 
 from aac.parser import ParsedDefinition
-from aac.lang.definition_helpers import get_definition_by_name, get_definitions_by_root_key, search
+from aac.lang.definition_helpers import get_definition_by_name, get_definitions_by_root_key, search_definition, remove_list_type_indicator
 
 
 @attrs(slots=True, auto_attribs=True)
@@ -72,7 +72,7 @@ class ActiveContext:
         root_definition = get_definition_by_name(self.context_definitions, "root")
 
         if root_definition:
-            return list(map(get_field_name, search(root_definition.definition, ["data", "fields"])))
+            return list(map(get_field_name, search_definition(root_definition, ["data", "fields"])))
         else:
             return []
 
@@ -90,11 +90,20 @@ class ActiveContext:
         root_definition = get_definition_by_name(self.context_definitions, "root")
 
         if root_definition:
-            return search(root_definition.definition, ["data", "fields"])
+            return search_definition(root_definition, ["data", "fields"])
         else:
             return []
 
-    def get_primitives(self) -> list[str]:
+    def get_primitives_definition(self) -> list[str]:
+        """
+        Return the primitive type definition in the ActiveContext.
+
+        Returns:
+            The definition that defines the primitive types.
+        """
+        return get_definition_by_name(self.context_definitions, "Primitives")
+
+    def get_primitive_types(self) -> list[str]:
         """
         Get the list of primitive types as defined in the ActiveContext.
 
@@ -106,9 +115,27 @@ class ActiveContext:
         Returns:
             A list of strings, one entry for each root name available in the ActiveContext.
         """
+        return search_definition(self.get_primitives_definition(), ["enum", "values"])
 
-        primitives_definition = get_definition_by_name(self.context_definitions, "Primitives")
-        return search(primitives_definition.definition, ["enum", "values"])
+    def get_defined_types(self) -> list[str]:
+        """
+        Get the list of types defined by other definitions in the ActiveContext.
+
+        Returns a list of strings of all definition types in the active context.
+
+        Returns:
+            A list of strings, one entry for each definition name available in the ActiveContext.
+        """
+
+        return list(map(lambda definition: definition.name, self.context_definitions))
+
+    def is_primitive_type(self, type: str) -> bool:
+        """Returns a boolean indicating if the type is defined as a primitive type."""
+        return remove_list_type_indicator(type) in self.get_primitive_types()
+
+    def is_definition_type(self, type: str) -> bool:
+        """Returns a boolean indicating if the type is defined by another definition."""
+        return remove_list_type_indicator(type) in self.get_defined_types()
 
     def _apply_extension_to_context(self, extension_definition) -> None:
         """Apply the extension to the definitions it modifies in the ActiveContext."""

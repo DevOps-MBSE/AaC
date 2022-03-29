@@ -231,3 +231,13 @@ def convert_parsed_definitions_to_dict_definition(parsed_definitions: list[Parse
     converted to utilize ParsedDefinitions.
     """
     return {definition.name: definition.definition for definition in parsed_definitions}
+
+
+def remove_list_type_indicator(list_type: str) -> str:
+    """Return the AaC type without any trailing list indicator characters '[]'."""
+    return list_type.split("[]")[0]
+
+
+def is_array_type(type: str) -> bool:
+    """Returns a boolean indicating if the field is an array of multiple entries."""
+    return type.endswith("[]")
