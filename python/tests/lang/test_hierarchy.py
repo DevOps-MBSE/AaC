@@ -18,8 +18,8 @@ class TestLangHierarchy(TestCase):
 
         actual_result = get_definition_ancestry(data_definition, test_context)
         expected_result = [
-            get_definition_by_name("data", test_context.context_definitions),
-            get_definition_by_name(data_definition.name, test_context.context_definitions),
+            get_definition_by_name("data", test_context.definitions),
+            get_definition_by_name(data_definition.name, test_context.definitions),
         ]
 
         self.assertListEqual(expected_result, actual_result)
@@ -32,9 +32,9 @@ class TestLangHierarchy(TestCase):
 
         actual_result = get_definition_ancestry(enum_definition, test_context)
         expected_result = [
-            get_definition_by_name("data", test_context.context_definitions),
-            get_definition_by_name("enum", test_context.context_definitions),
-            get_definition_by_name(enum_definition.name, test_context.context_definitions),
+            get_definition_by_name("data", test_context.definitions),
+            get_definition_by_name("enum", test_context.definitions),
+            get_definition_by_name(enum_definition.name, test_context.definitions),
         ]
 
         self.assertListEqual(expected_result, actual_result)
@@ -44,8 +44,8 @@ class TestLangHierarchy(TestCase):
 
         active_context = get_active_context(reload_context=True)
 
-        expected_result = get_definition_by_name(target_definition_key, active_context.context_definitions)
-        actual_result = get_root_definition_by_key(target_definition_key, active_context.context_definitions)
+        expected_result = get_definition_by_name(target_definition_key, active_context.definitions)
+        actual_result = get_root_definition_by_key(target_definition_key, active_context.definitions)
 
         self.assertEqual(expected_result, actual_result)
 
@@ -55,7 +55,7 @@ class TestLangHierarchy(TestCase):
 
         active_context = get_active_context(reload_context=True)
 
-        expected_result = get_definition_by_name(target_definition_name, active_context.context_definitions)
-        actual_result = get_root_definition_by_key(target_definition_key, active_context.context_definitions)
+        expected_result = get_definition_by_name(target_definition_name, active_context.definitions)
+        actual_result = get_root_definition_by_key(target_definition_key, active_context.definitions)
 
         self.assertEqual(expected_result, actual_result)

@@ -24,7 +24,7 @@ class ActiveContext:
         context_definitions: The list of all definitions currently in the ActiveContext
     """
 
-    context_definitions: list[ParsedDefinition] = attrib(default=Factory(list), validator=validators.instance_of(list))
+    definitions: list[ParsedDefinition] = attrib(default=Factory(list), validator=validators.instance_of(list))
 
     def add_definition_to_context(self, parsed_definition: ParsedDefinition):
         """
@@ -33,7 +33,7 @@ class ActiveContext:
         Args:
             parsed_definition: The ParsedDefinition to add to the context.
         """
-        self.context_definitions.append(copy.deepcopy(parsed_definition))
+        self.definitions.append(copy.deepcopy(parsed_definition))
 
         if parsed_definition.is_extension():
             self._apply_extension_to_context(parsed_definition)
@@ -72,7 +72,7 @@ class ActiveContext:
         def get_field_name(fields_entry_dict: dict):
             return fields_entry_dict.get("name")
 
-        root_definition = get_definition_by_name("root", self.context_definitions)
+        root_definition = get_definition_by_name("root", self.definitions)
 
         if root_definition:
             return list(map(get_field_name, search_definition(root_definition, ["data", "fields"])))
@@ -90,7 +90,7 @@ class ActiveContext:
         Returns:
             A list of strings, one entry for each root name available in the ActiveContext.
         """
-        root_definition = get_definition_by_name("root", self.context_definitions)
+        root_definition = get_definition_by_name("root", self.definitions)
 
         if root_definition:
             return search_definition(root_definition, ["data", "fields"])
@@ -104,7 +104,7 @@ class ActiveContext:
         Returns:
             The definition that defines the primitive types.
         """
-        return get_definition_by_name("Primitives", self.context_definitions)
+        return get_definition_by_name("Primitives", self.definitions)
 
     def get_primitive_types(self) -> list[str]:
         """
@@ -130,7 +130,7 @@ class ActiveContext:
             A list of strings, one entry for each definition name available in the ActiveContext.
         """
 
-        return list(map(lambda definition: definition.name, self.context_definitions))
+        return list(map(lambda definition: definition.name, self.definitions))
 
     def is_primitive_type(self, type: str) -> bool:
         """Returns a boolean indicating if the type is defined as a primitive type."""
@@ -143,7 +143,7 @@ class ActiveContext:
     def _apply_extension_to_context(self, extension_definition) -> None:
         """Apply the extension to the definitions it modifies in the ActiveContext."""
         target_to_extend = extension_definition.definition.get("ext").get("type")
-        target_definition_to_extend = get_definition_by_name(target_to_extend, self.context_definitions)
+        target_definition_to_extend = get_definition_by_name(target_to_extend, self.definitions)
 
         extension_type = ""
         extension_field_name = ""

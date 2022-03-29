@@ -76,11 +76,11 @@ class TestDefinitionHelpers(TestCase):
         text_context = get_active_context(reload_context=True)
         test_model = create_model_definition("TestModel")
 
-        model_definition = get_definition_by_name("model", text_context.context_definitions)
+        model_definition = get_definition_by_name("model", text_context.definitions)
         expected_fields = search_definition(model_definition, ["data", "fields"])
         self.assertGreater(len(expected_fields), 1)
 
-        actual_result = get_definition_fields_and_types(test_model, text_context.context_definitions)
+        actual_result = get_definition_fields_and_types(test_model, text_context.definitions)
 
         self.assertEqual(len(expected_fields), len(actual_result))
 

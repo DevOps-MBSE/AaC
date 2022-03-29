@@ -19,7 +19,7 @@ def get_definition_ancestry(definition: ParsedDefinition, context: ActiveContext
     while not found_self_defined_ancestor:
         found_self_defined_ancestor = (ancestor_definition.name == ancestor_definition.get_root_key())
         ancestors_list.append(ancestor_definition)
-        ancestor_definition = get_root_definition_by_key(ancestor_definition.get_root_key(), context.context_definitions)
+        ancestor_definition = get_root_definition_by_key(ancestor_definition.get_root_key(), context.definitions)
 
     ancestors_list.reverse()
     return ancestors_list

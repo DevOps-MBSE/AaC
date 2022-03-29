@@ -9,10 +9,10 @@ from aac.spec import get_aac_spec
 class TestContextManager(TestCase):
     def test_init_active_context(self):
 
-        active_context_parsed_definitions = get_active_context().context_definitions
+        active_context_parsed_definitions = get_active_context().definitions
 
         # Assert that the initialized context has more definitions than a new, unmanaged context
-        self.assertGreater(len(active_context_parsed_definitions), len(ActiveContext().context_definitions))
+        self.assertGreater(len(active_context_parsed_definitions), len(ActiveContext().definitions))
 
         core_spec_definitions = get_aac_spec()
         plugin_definitions = get_plugin_definitions()

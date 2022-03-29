@@ -15,7 +15,7 @@ def get_definition_references_from_context(source_definition: ParsedDefinition) 
         A list of ParsedDefinitions that reference the source_definition_name
     """
     active_context = get_active_context()
-    return get_definition_references_from_list(source_definition, active_context.context_definitions)
+    return get_definition_references_from_list(source_definition, active_context.definitions)
 
 
 def get_definition_references_from_list(source_definition: ParsedDefinition, definitions_to_search: list[ParsedDefinition]) -> list[ParsedDefinition]:

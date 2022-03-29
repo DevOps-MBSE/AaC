@@ -22,7 +22,7 @@ class TestCollectValidators(TestCase):
 
         validation_plugins = get_validator_plugins()
 
-        data_definition = get_definition_by_name("data", active_context.context_definitions)
+        data_definition = get_definition_by_name("data", active_context.definitions)
         expected_validations = search_definition(data_definition, ["data", "validation"])
         actual_result = get_applicable_validators_for_definition(test_definition, validation_plugins, active_context)
 
@@ -35,9 +35,9 @@ class TestCollectValidators(TestCase):
 
         validation_plugins = get_validator_plugins()
 
-        data_definition = get_definition_by_name("data", active_context.context_definitions)
+        data_definition = get_definition_by_name("data", active_context.definitions)
         data_validations = search_definition(data_definition, ["data", "validation"])
-        field_definition = get_definition_by_name("Field", active_context.context_definitions)
+        field_definition = get_definition_by_name("Field", active_context.definitions)
         field_validations = search_definition(field_definition, ["data", "validation"])
 
         expected_validations = data_validations + field_validations
@@ -52,9 +52,9 @@ class TestCollectValidators(TestCase):
 
         validation_plugins = get_validator_plugins()
 
-        data_definition = get_definition_by_name("data", active_context.context_definitions)
+        data_definition = get_definition_by_name("data", active_context.definitions)
         data_validations = search_definition(data_definition, ["data", "validation"])
-        field_definition = get_definition_by_name("Field", active_context.context_definitions)
+        field_definition = get_definition_by_name("Field", active_context.definitions)
         field_validations = search_definition(field_definition, ["data", "validation"])
 
         expected_validations = data_validations + field_validations
@@ -69,7 +69,7 @@ class TestCollectValidators(TestCase):
 
         validation_plugins = get_validator_plugins()
 
-        field_definition = get_definition_by_name(target_definition_key, active_context.context_definitions)
+        field_definition = get_definition_by_name(target_definition_key, active_context.definitions)
 
         expected_result = validation_plugins  # TODO: Fix this once we implement more plugins
         actual_result = get_applicable_validators_for_definition(field_definition, validation_plugins, active_context)
@@ -82,7 +82,7 @@ class TestCollectValidators(TestCase):
         validation_plugins = get_validator_plugins()
 
         enum_definition = create_enum_definition("Test Enum", ["val1", "val2"])
-        data_definition = get_definition_by_name("data", active_context.context_definitions)
+        data_definition = get_definition_by_name("data", active_context.definitions)
 
         expected_result = search_definition(data_definition, ["data", "validation"])
         actual_result = get_applicable_validators_for_definition(enum_definition, validation_plugins, active_context)

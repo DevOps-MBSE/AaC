@@ -42,7 +42,7 @@ def _get_validation_entries_from_definition_fields(definition: ParsedDefinition,
         validations = {}
         definition_root_key = field_definition.get_root_key()
         traversed_types.append(field_definition.name)
-        definition_root_structure = get_definition_by_name(definition_root_key, context.context_definitions)
+        definition_root_structure = get_definition_by_name(definition_root_key, context.definitions)
         definition_field_structures_dict = search_definition(
             definition_root_structure, [definition_root_structure.get_root_key(), "fields"]
         )
@@ -55,7 +55,7 @@ def _get_validation_entries_from_definition_fields(definition: ParsedDefinition,
 
             # Since enums don't support the validation field, we can ignore primitive types
             if context.is_definition_type(field_type):
-                type_definition = get_definition_by_name(field_type, context.context_definitions)
+                type_definition = get_definition_by_name(field_type, context.definitions)
                 field_type_validations = _get_validation_entries(type_definition)
                 if len(field_type_validations) > 0:
                     validations[field_type] = field_type_validations

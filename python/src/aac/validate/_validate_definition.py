@@ -50,7 +50,7 @@ def _validate_definition_substructure(
 
     def _recursively_apply_field_validations(definition_to_validate: ParsedDefinition) -> None:
         """Recurse through the fields and identify validations to apply."""
-        definition_fields_dict = get_definition_fields_and_types(definition_to_validate, context.context_definitions)
+        definition_fields_dict = get_definition_fields_and_types(definition_to_validate, context.definitions)
 
         for field_name, field_definition in definition_fields_dict.items():
             fields_to_validate = search_definition(definition_to_validate, [definition_to_validate.get_root_key(), field_name])

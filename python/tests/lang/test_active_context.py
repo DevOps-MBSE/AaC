@@ -34,28 +34,28 @@ class TestActiveContext(TestCase):
         test_enum_ext = create_enum_ext_definition("myEnumExt", test_enum_name, [test_enum_ext_value])
 
         active_context = ActiveContext()
-        self.assertEqual(0, len(active_context.context_definitions))
+        self.assertEqual(0, len(active_context.definitions))
 
         active_context.add_definition_to_context(test_definition)
-        self.assertEqual(1, len(active_context.context_definitions))
+        self.assertEqual(1, len(active_context.definitions))
 
         active_context.add_definition_to_context(test_enum)
-        self.assertEqual(2, len(active_context.context_definitions))
+        self.assertEqual(2, len(active_context.definitions))
 
-        self.assertIn(test_definition, active_context.context_definitions)
-        self.assertIn(test_enum, active_context.context_definitions)
+        self.assertIn(test_definition, active_context.definitions)
+        self.assertIn(test_enum, active_context.definitions)
 
         self.assertEqual(0, len(test_definition.definition["data"]["fields"]))
         self.assertEqual(2, len(test_enum.definition["enum"]["values"]))
 
         active_context.add_definition_to_context(test_definition_ext)
-        context_modified_test_definition = get_definition_by_name(test_definition_name, active_context.context_definitions)
+        context_modified_test_definition = get_definition_by_name(test_definition_name, active_context.definitions)
         self.assertEqual(1, len(context_modified_test_definition.definition["data"]["fields"]))
         self.assertIn(data_ext_field_name, context_modified_test_definition.to_yaml())
         self.assertIn(data_ext_field_type, context_modified_test_definition.to_yaml())
 
         active_context.add_definition_to_context(test_enum_ext)
-        context_modified_test_enum = get_definition_by_name(test_enum_name, active_context.context_definitions)
+        context_modified_test_enum = get_definition_by_name(test_enum_name, active_context.definitions)
         self.assertEqual(3, len(context_modified_test_enum.definition["enum"]["values"]))
         self.assertIn(test_enum_ext_value, context_modified_test_enum.to_yaml())
 
@@ -73,7 +73,7 @@ class TestActiveContext(TestCase):
         test_context = ActiveContext(core_spec)
 
         actual_results = test_context.get_defined_types()
-        expected_results = [definition.name for definition in test_context.context_definitions]
+        expected_results = [definition.name for definition in test_context.definitions]
 
         self.assertListEqual(expected_results, actual_results)
 
