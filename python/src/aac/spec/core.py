@@ -2,7 +2,7 @@
 
 import yaml
 
-from typing import Optional
+from typing import Iterable, Optional
 
 from aac.parser import parse, ParsedDefinition
 from aac.package_resources import get_resource_file_contents
@@ -44,16 +44,28 @@ def get_aac_spec() -> tuple[dict[str, dict], dict[str, dict]]:
 def get_aac_spec_as_yaml() -> str:
     """Get the base AaC spec in YAML.
 
-    Utility to provide the current base AaC model specification (including plugin extensions)
-    in an easy to read yaml format (just as it is defined internally).
+    Utility to provide the current base AaC model specification in an easy to read yaml format,
+    just as it is defined internally.
 
     Returns:
         Returns a string containing YAML for the current AaC spec.  Each model entry is separated
         by the "---" yaml syntax representing separate files to be parsed.
     """
     aac_data, aac_enums = get_aac_spec()
-    aac_model = aac_data | aac_enums
-    return "---\n".join([yaml.dump(value) for value in aac_model.values()])
+    return format_as_yaml((aac_data | aac_enums).values())
+
+
+# TODO: Move to definition_helpers module
+def format_as_yaml(definitions: Iterable) -> str:
+    """Format the definitions as a YAML string.
+
+    Args:
+        definitions (Iterable): The list of definitions to format as a YAML string.
+
+    Returns:
+        A YAML string containing the definitions.
+    """
+    return "---\n".join([yaml.dump(definition) for definition in definitions])
 
 
 def get_primitives(reload: bool = False) -> list[str]:
