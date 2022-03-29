@@ -24,7 +24,6 @@ import:
   - ./ServiceOne.yaml
   - ./Subsystem.yaml
   - ./ServiceThree.yaml
-
 usecase:
   name: Nominal flow within the system.
   description:
