@@ -42,8 +42,7 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": false
-        },
-        {
+        }, {
             "name": "Python: Validate EchoService",
             "type": "python",
             "request": "launch",
@@ -54,8 +53,7 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": false
-        },
-        {
+        }, {
             "name": "Python: Validate Flow",
             "type": "python",
             "request": "launch",
@@ -66,8 +64,7 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": false
-        },
-        {
+        }, {
             "name": "Python: Validate AaC gen-protobuf",
             "type": "python",
             "request": "launch",
@@ -78,20 +75,7 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": false
-        },
-        {
-            "name": "Python: Preview-Validate Validator Plugin",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/src/aac/__main__.py",
-            "args": [
-                "validate-preview",
-                "${workspaceFolder}/src/aac/plugins/validators/validation_module/validation_module.yaml"
-            ],
-            "console": "integratedTerminal",
-            "justMyCode": false
-        },
-        {
+        }, {
             "name": "Python: Gen-JSON Core AaC Spec",
             "type": "python",
             "request": "launch",
@@ -102,8 +86,7 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": false
-        },
-        {
+        }, {
             "name": "Python: Gen-JSON EchoService",
             "type": "python",
             "request": "launch",
@@ -114,8 +97,7 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": false
-        },
-        {
+        }, {
             "name": "Python: Gen-JSON Flow",
             "type": "python",
             "request": "launch",
@@ -126,8 +108,7 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": false
-        },
-        {
+        }, {
             "name": "Python: Puml-component Flow",
             "type": "python",
             "request": "launch",
@@ -138,8 +119,7 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": false
-        },
-        {
+        }, {
             "name": "Python: Puml-object Flow",
             "type": "python",
             "request": "launch",
@@ -150,8 +130,7 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": false
-        },
-        {
+        }, {
             "name": "Python: Puml-sequence Flow",
             "type": "python",
             "request": "launch",
@@ -162,8 +141,7 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": false
-        },
-        {
+        }, {
             "name": "Python: Gen-Plugin PlantUML",
             "type": "python",
             "request": "launch",
@@ -174,20 +152,18 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": false
-        },
-        {
+        }, {
             "name": "Python: Gen-Plugin Protobuf",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "gen-plugin",
-                "${workspaceFolder}/src/aac/plugins/gen_protobuf/gen_protobuf.yaml",
+                "${workspaceFolder}/src/aac/plugins/gen_protobuf/gen_protobuf.yaml"
             ],
             "console": "integratedTerminal",
             "justMyCode": false
-        },
-        {
+        }, {
             "name": "Python: Gen-Protobuf",
             "type": "python",
             "request": "launch",
@@ -199,8 +175,7 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": false
-        },
-        {
+        }, {
             "name": "Python: Gen-System Document",
             "type": "python",
             "request": "launch",
@@ -213,8 +188,7 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": false
-        },
-        {
+        }, {
             "name": "Python: Gen-Gherkin Feature File",
             "type": "python",
             "request": "launch",
@@ -226,16 +200,14 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": false
-        },
-        {
+        }, {
             "name": "Python: Unit Tests",
             "type": "python",
             "request": "launch",
             "program": "nose2 -c ${workspaceFolder}/tox.ini",
             "console": "integratedTerminal",
             "justMyCode": false
-        },
-        {
+        }, {
             "name": "Python: Start LSP Server",
             "type": "python",
             "request": "launch",
@@ -245,8 +217,7 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": false
-        }
-    ],
-    "compounds": []
+        }],
+        "compounds": []
     }
 }

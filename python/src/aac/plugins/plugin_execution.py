@@ -1,5 +1,6 @@
 """Tools for handling plugin execution results consistently."""
 
+from typing import Callable
 from attr import attrib, attrs, validators, Factory
 from contextlib import contextmanager
 from enum import Enum, auto, unique
@@ -48,9 +49,13 @@ class PluginExecutionResult:
         """Return True if the command succeeded; False, otherwise."""
         return self.status_code == PluginExecutionStatusCode.SUCCESS
 
+    def output(self) -> str:
+        """Return the output messages as a combined string."""
+        return "\n".join(self.messages)
+
 
 @contextmanager
-def plugin_result(name: str, cmd: callable, *args, **kwargs) -> PluginExecutionResult:
+def plugin_result(name: str, cmd: Callable, *args, **kwargs):
     """Create a PluginExecutionResult after running command on a validated model from file.
 
     This context manager will yield the validation result containing the valid model contained in
@@ -62,7 +67,7 @@ def plugin_result(name: str, cmd: callable, *args, **kwargs) -> PluginExecutionR
         cmd (str): The command to be called. The command is expected to return a message to be
                        displayed to the user.
 
-    Returns:
+    Yields:
         A PluginExecutionResult populated with any errors that might have been encountered.
     """
     result = PluginExecutionResult(name, PluginExecutionStatusCode.SUCCESS)
