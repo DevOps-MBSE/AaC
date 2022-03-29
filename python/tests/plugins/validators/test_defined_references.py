@@ -3,15 +3,14 @@ from unittest import TestCase
 from aac.lang import get_active_context
 from aac.lang.definition_helpers import get_definition_by_name, get_definitions_by_root_key
 from aac.parser import parse
-from aac.plugins.validators.defined_references import get_plugin_aac_definitions, register_validators
-from aac.plugins.validators.defined_references._validate_references import validate_references
-from aac.validate import ValidatorPlugin, ValidationResult
+from aac.plugins.validators import ValidatorPlugin
+from aac.plugins.validators.defined_references import get_plugin_aac_definitions, register_validators, validate_references
+from aac.validate import ValidationResult
 
 from tests.helpers.parsed_definitions import create_data_definition, create_field_entry
 
 
 class TestDefinedReferencesPlugin(TestCase):
-
     def setUp(self) -> None:
         get_active_context(reload_context=True)
 
@@ -21,7 +20,9 @@ class TestDefinedReferencesPlugin(TestCase):
         validation_definitions = get_definitions_by_root_key(parse(get_plugin_aac_definitions()), "validation")
         self.assertEqual(1, len(validation_definitions))
 
-        expected_validator_plugin = ValidatorPlugin(name="Type references exist", definition=validation_definitions[0], validation_function=(lambda x: x))
+        expected_validator_plugin = ValidatorPlugin(
+            name="Type references exist", definition=validation_definitions[0], validation_function=(lambda x: x)
+        )
         self.assertEqual(expected_validator_plugin.name, actual_validator_plugin.name)
         self.assertEqual(expected_validator_plugin.definition, actual_validator_plugin.definition)
 
@@ -29,7 +30,9 @@ class TestDefinedReferencesPlugin(TestCase):
 
         test_primitive_reference_field = create_field_entry("ValidPrimitiveField", "string")
         test_definition_reference_field = create_field_entry("ValidBehaviorField", "Behavior")
-        test_definition = create_data_definition("Test Definition", [test_primitive_reference_field, test_definition_reference_field])
+        test_definition = create_data_definition(
+            "Test Definition", [test_primitive_reference_field, test_definition_reference_field]
+        )
 
         expected_result = ValidationResult([], test_definition, True)
 
@@ -46,7 +49,9 @@ class TestDefinedReferencesPlugin(TestCase):
 
         test_invalid_primitive_reference_field = create_field_entry("InvalidPrimitiveField", invalid_primitive_type)
         test_invalid_definition_reference_field = create_field_entry("InvalidBehaviorField", invalid_definition_type)
-        test_definition = create_data_definition("Test Definition", [test_invalid_primitive_reference_field, test_invalid_definition_reference_field])
+        test_definition = create_data_definition(
+            "Test Definition", [test_invalid_primitive_reference_field, test_invalid_definition_reference_field]
+        )
 
         invalid_reference_error_message = ""
         expected_result = ValidationResult([invalid_reference_error_message], test_definition, False)

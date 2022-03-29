@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from aac.lang import get_active_context
 from aac.lang.definition_helpers import get_definition_by_name, search_definition
-from aac.plugins import get_validator_plugins
+from aac.plugins.plugin_manager import get_validator_plugins
 from aac.validate import get_applicable_validators_for_definition
 from aac.validate._collect_validators import _get_validation_entries, _get_validator_plugin_by_name
 

@@ -3,7 +3,7 @@
 from aac.package_resources import get_resource_file_contents
 from aac.plugins import hookimpl
 from aac.plugins.validators import get_validation_definition_from_plugin_definitions
-from aac.validate import ValidatorPlugin
+from aac.plugins.validators import ValidatorPlugin
 
 PLUGIN_YAML_FILE = "required_fields.yaml"
 

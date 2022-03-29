@@ -2,7 +2,7 @@ from unittest import TestCase
 from aac.lang._active_context import ActiveContext
 
 from aac.lang.context_manager import get_active_context
-from aac.plugins import get_plugin_definitions
+from aac.plugins.plugin_manager import get_plugin_definitions
 from aac.spec import get_aac_spec
 
 

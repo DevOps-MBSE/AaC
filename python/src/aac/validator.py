@@ -7,7 +7,7 @@ from typing import Union
 from attr import attrib, attrs, validators, Factory
 from iteration_utilities import flatten
 
-from aac import plugins
+from aac.plugins.plugin_manager import get_plugin_model_definitions
 from aac.lang.definition_helpers import search, get_definitions_by_root_key
 from aac.parser import ParsedDefinition
 from aac.spec.core import get_aac_spec, get_primitives
@@ -71,7 +71,7 @@ def _validate(definition: ParsedDefinition) -> None:
     global VALIDATOR_CONTEXT
 
     if not VALIDATOR_CONTEXT:
-        VALIDATOR_CONTEXT = ValidatorContext(get_aac_spec(), plugins.get_plugin_model_definitions(), definition)
+        VALIDATOR_CONTEXT = ValidatorContext(get_aac_spec(), get_plugin_model_definitions(), definition)
 
     try:
         errors = _validate_model(definition)

@@ -6,7 +6,7 @@ from pluggy import PluginManager
 from aac import parser
 from aac.parser import ParsedDefinition
 from aac.plugins import hookspecs, PLUGIN_PROJECT_NAME
-from aac.validate import ValidatorPlugin
+from aac.plugins.validators import ValidatorPlugin
 
 
 def get_plugin_manager() -> PluginManager:

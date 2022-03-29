@@ -2,7 +2,7 @@
 
 from aac.AacCommand import AacCommand
 from aac.plugins import hookspec
-from aac.validate import ValidatorPlugin
+from aac.plugins.validators import ValidatorPlugin
 
 
 @hookspec

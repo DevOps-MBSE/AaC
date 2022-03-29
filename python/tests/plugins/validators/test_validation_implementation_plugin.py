@@ -3,7 +3,7 @@ from unittest import TestCase
 from aac.lang.definition_helpers import get_definitions_by_root_key
 from aac.parser import parse
 from aac.plugins.validators.validator_implementation import get_plugin_aac_definitions, register_validators
-from aac.validate import ValidatorPlugin
+from aac.plugins.validators import ValidatorPlugin
 
 
 class TestValidationImplementPlugin(TestCase):
