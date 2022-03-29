@@ -19,7 +19,7 @@ from pygls.lsp import (
 )
 from pygls.server import LanguageServer
 
-from aac.lang import get_active_context
+from aac.lang.context_manager import get_active_context
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 
 
