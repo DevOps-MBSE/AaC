@@ -7,12 +7,13 @@ PLUGIN_PROJECT_NAME = "aac"
 hookimpl = HookimplMarker(PLUGIN_PROJECT_NAME)
 hookspec = HookspecMarker(PLUGIN_PROJECT_NAME)
 
-from aac.plugins.plugin_manager import get_plugin_model_definitions, get_plugin_manager, get_plugin_definitions
+from aac.plugins.plugin_manager import get_plugin_model_definitions, get_plugin_manager, get_plugin_definitions, get_validator_plugins
 
 __all__ = (
     get_plugin_definitions.__name__,
     get_plugin_model_definitions.__name__,
     get_plugin_manager.__name__,
+    get_validator_plugins.__name__,
 )
 
 

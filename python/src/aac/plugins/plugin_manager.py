@@ -6,6 +6,7 @@ from pluggy import PluginManager
 from aac import parser
 from aac.parser import ParsedDefinition
 from aac.plugins import hookspecs, PLUGIN_PROJECT_NAME
+from aac.validate import ValidatorPlugin
 
 
 def get_plugin_manager() -> PluginManager:
@@ -65,6 +66,17 @@ def get_plugin_definitions() -> list[ParsedDefinition]:
             plugin_definitions.append(parser.parse(plugin_definition))
 
     return list(flatten(plugin_definitions))
+
+
+def get_validator_plugins() -> list[ValidatorPlugin]:
+    """
+    Gets all a list of registered validator plugins and metadata.
+
+    Returns:
+        A list of parsed definitions source from all active plugins.
+    """
+    plugin_manager = get_plugin_manager()
+    return plugin_manager.hook.register_validators()
 
 
 def get_plugin_model_definitions() -> dict:

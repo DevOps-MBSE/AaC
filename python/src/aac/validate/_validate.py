@@ -25,8 +25,7 @@ def validate_definitions(user_definitions: list[ParsedDefinition]) -> list[Valid
     def filter_out_valid_result(validation_result: ValidationResult):
         return not validation_result.is_valid
 
-    plugin_manager = plugins.get_plugin_manager()
-    registered_validators = plugin_manager.hook.register_validators()
+    registered_validators = plugins.get_validator_plugins()
 
     validation_results = [_validate_definition(user_definition, registered_validators) for user_definition in user_definitions]
     invalid_results = list(filter(filter_out_valid_result, validation_results))
