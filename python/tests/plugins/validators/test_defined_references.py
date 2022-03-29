@@ -21,7 +21,7 @@ class TestDefinedReferencesPlugin(TestCase):
         validation_definitions = get_definitions_by_root_key(parse(get_plugin_aac_definitions()), "validation")
         self.assertEqual(1, len(validation_definitions))
 
-        expected_validator_plugin = ValidatorPlugin(name="Type references exist", definition=validation_definitions[0])
+        expected_validator_plugin = ValidatorPlugin(name="Type references exist", definition=validation_definitions[0], validation_function=(lambda x: x))
         self.assertEqual(expected_validator_plugin.name, actual_validator_plugin.name)
         self.assertEqual(expected_validator_plugin.definition, actual_validator_plugin.definition)
 
