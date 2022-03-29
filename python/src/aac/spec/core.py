@@ -2,13 +2,15 @@
 
 import yaml
 
+from typing import Optional
+
 from aac.parser import parse, ParsedDefinition
 from aac.package_resources import get_resource_file_contents
 from aac.util import get_models_by_type, search
 
 PRIMITIVES: list[str] = []
 ROOT_NAMES: list[str] = []
-AAC_MODEL: ParsedDefinition = None
+AAC_MODEL: Optional[ParsedDefinition] = None
 
 
 def get_aac_spec() -> tuple[dict[str, dict], dict[str, dict]]:
