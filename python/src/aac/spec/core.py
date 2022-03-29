@@ -24,14 +24,14 @@ def get_aac_spec() -> list[ParsedDefinition]:
     global AAC_CORE_SPEC_DEFINITIONS
     if len(AAC_CORE_SPEC_DEFINITIONS) > 0:
         # already parsed, just return cached values
-        aac_data = get_definitions_by_root_key(AAC_CORE_SPEC_DEFINITIONS, "data")
-        aac_enums = get_definitions_by_root_key(AAC_CORE_SPEC_DEFINITIONS, "enum")
+        aac_data = get_definitions_by_root_key("data", AAC_CORE_SPEC_DEFINITIONS)
+        aac_enums = get_definitions_by_root_key("enum", AAC_CORE_SPEC_DEFINITIONS)
         return aac_data + aac_enums
 
     core_spec_as_yaml = get_aac_spec_as_yaml()
     AAC_CORE_SPEC_DEFINITIONS = parse(core_spec_as_yaml)
-    aac_data = get_definitions_by_root_key(AAC_CORE_SPEC_DEFINITIONS, "data")
-    aac_enums = get_definitions_by_root_key(AAC_CORE_SPEC_DEFINITIONS, "enum")
+    aac_data = get_definitions_by_root_key("data", AAC_CORE_SPEC_DEFINITIONS)
+    aac_enums = get_definitions_by_root_key("enum", AAC_CORE_SPEC_DEFINITIONS)
 
     return aac_data + aac_enums
 
@@ -64,7 +64,7 @@ def get_primitives(reload: bool = False) -> list[str]:
 
     if len(PRIMITIVES) == 0 or reload:
         aac_definitions = get_aac_spec()
-        primitives_definition = get_definition_by_name(aac_definitions, "Primitives")
+        primitives_definition = get_definition_by_name("Primitives", aac_definitions)
         PRIMITIVES = search_definition(primitives_definition, ["enum", "values"])
 
     return PRIMITIVES
@@ -88,7 +88,7 @@ def get_root_keys(reload: bool = False) -> list[str]:
 
     if len(ROOT_NAMES) == 0 or reload:
         aac_definitions = get_aac_spec()
-        root_definition = get_definition_by_name(aac_definitions, "root")
+        root_definition = get_definition_by_name("root", aac_definitions)
         ROOT_NAMES = list(map(get_field_name, search_definition(root_definition, ["data", "fields"])))
 
     return ROOT_NAMES
@@ -106,6 +106,6 @@ def get_root_fields(reload: bool = False) -> list[dict]:
     """
 
     aac_definitions = get_aac_spec()
-    root_definition = get_definition_by_name(aac_definitions, "root")
+    root_definition = get_definition_by_name("root", aac_definitions)
 
     return search_definition(root_definition, ["data", "fields"])

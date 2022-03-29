@@ -92,7 +92,7 @@ def _get_output_file_extension(template_filespec: str) -> str:
 
 
 def _get_and_prepare_definitions_by_type(parsed_definitions: ParsedDefinition, aac_type: str) -> list:
-    filtered_definitions = get_definitions_by_root_key(parsed_definitions, aac_type)
+    filtered_definitions = get_definitions_by_root_key(aac_type, parsed_definitions)
     return list([definition.definition for definition in filtered_definitions])
 
 

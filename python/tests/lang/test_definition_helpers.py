@@ -35,9 +35,9 @@ class TestDefinitionHelpers(TestCase):
         enum_definitions = list(filter(lambda definition: filter_by_root(definition, "enum"), aac_core_definitions))
         model_definitions = list(filter(lambda definition: filter_by_root(definition, "model"), aac_core_definitions))
 
-        self.assertEqual(len(get_definitions_by_root_key(aac_core_definitions, "data")), len(data_definitions))
-        self.assertEqual(len(get_definitions_by_root_key(aac_core_definitions, "enum")), len(enum_definitions))
-        self.assertEqual(len(get_definitions_by_root_key(aac_core_definitions, "model")), len(model_definitions))
+        self.assertEqual(len(get_definitions_by_root_key("data", aac_core_definitions)), len(data_definitions))
+        self.assertEqual(len(get_definitions_by_root_key("enum", aac_core_definitions)), len(enum_definitions))
+        self.assertEqual(len(get_definitions_by_root_key("model", aac_core_definitions)), len(model_definitions))
 
     def test_search(self):
         """
@@ -76,7 +76,7 @@ class TestDefinitionHelpers(TestCase):
         text_context = get_active_context(reload_context=True)
         test_model = create_model_definition("TestModel")
 
-        model_definition = get_definition_by_name(text_context.context_definitions, "model")
+        model_definition = get_definition_by_name("model", text_context.context_definitions)
         expected_fields = search_definition(model_definition, ["data", "fields"])
         self.assertGreater(len(expected_fields), 1)
 

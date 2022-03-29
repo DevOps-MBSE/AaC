@@ -36,7 +36,7 @@ def get_root_definition_by_key(root_key: str, parsed_definitions: list[ParsedDef
     Return:
         An optional ParsedDefinition that defines the structure of the root key.
     """
-    root_definition = get_definition_by_name(parsed_definitions, "root")
+    root_definition = get_definition_by_name("root", parsed_definitions)
     root_fields = search_definition(root_definition, ["data", "fields"])
 
     root_key_fields = list(filter(lambda field: (field.get("name") == root_key), root_fields))
@@ -51,4 +51,4 @@ def get_root_definition_by_key(root_key: str, parsed_definitions: list[ParsedDef
         if root_key_count > 1:
             logging.error(f"Found multiple fields when only expected to find one.\nField name: {root_key}\nReturned Fields:{root_key_fields}")
 
-    return get_definition_by_name(parsed_definitions, root_key_field.get("type"))
+    return get_definition_by_name(root_key_field.get("type"), parsed_definitions)

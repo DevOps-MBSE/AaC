@@ -16,7 +16,7 @@ class TestDefinedReferencesPlugin(TestCase):
     def test_module_register_validators(self):
         actual_validator_plugin = register_validators()
 
-        validation_definitions = get_definitions_by_root_key(parse(get_plugin_aac_definitions()), "validation")
+        validation_definitions = get_definitions_by_root_key("validation", parse(get_plugin_aac_definitions()))
         self.assertEqual(1, len(validation_definitions))
 
         expected_validator_plugin = ValidatorPlugin(

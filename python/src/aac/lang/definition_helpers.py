@@ -167,7 +167,7 @@ def get_models_by_type(models: dict[str, dict], root_name: str) -> dict[str, dic
     return ret_val
 
 
-def get_definitions_by_root_key(parsed_definitions: list[ParsedDefinition], root_key: str) -> list[ParsedDefinition]:
+def get_definitions_by_root_key(root_key: str, parsed_definitions: list[ParsedDefinition]) -> list[ParsedDefinition]:
     """Return a subset of definitions with the given root key.
 
     The aac.parser.parse() returns a dict of all parsed types.  Sometimes it is
@@ -188,7 +188,7 @@ def get_definitions_by_root_key(parsed_definitions: list[ParsedDefinition], root
     return list(filter(does_definition_root_match, parsed_definitions))
 
 
-def get_definition_by_name(parsed_definitions: list[ParsedDefinition], definition_name: str) -> Optional[ParsedDefinition]:
+def get_definition_by_name(definition_name: str, parsed_definitions: list[ParsedDefinition]) -> Optional[ParsedDefinition]:
     """Get a definition of models of a specific root name.
 
     The aac.parser.parse() returns a dict of all parsed types.  Sometimes it is
@@ -247,11 +247,12 @@ def get_definition_fields_and_types(
     parsed_definition: ParsedDefinition, context_definitions: list[ParsedDefinition]
 ) -> dict[str, ParsedDefinition]:
     """Return a list of field names to their definition types."""
-    root_definition = get_definition_by_name(context_definitions, "root")
+    root_definition = get_definition_by_name("root", context_definitions)
     root_fields = search_definition(root_definition, ["data", "fields"])
     roots_dict = {field.get("name"): field.get("type") for field in root_fields}
+    root_definition_name = roots_dict.get(parsed_definition.get_root_key())
 
-    definition_structure = get_definition_by_name(context_definitions, roots_dict.get(parsed_definition.get_root_key()))
+    definition_structure = get_definition_by_name(root_definition_name, context_definitions)
     defined_fields = search_definition(definition_structure, [definition_structure.get_root_key(), "fields"])
 
     field_types = {}
@@ -259,7 +260,7 @@ def get_definition_fields_and_types(
         field_name = field.get("name")
         field_type = field.get("type")
 
-        type_definition = get_definition_by_name(context_definitions, field_type) or field_type
+        type_definition = get_definition_by_name(field_type, context_definitions) or field_type
         field_types = field_types | {field_name: type_definition}
 
     return field_types

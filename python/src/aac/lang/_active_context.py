@@ -46,7 +46,7 @@ class ActiveContext:
             parsed_definitions: The list of ParsedDefinitions to add to the context.
         """
 
-        extension_definitions = get_definitions_by_root_key(parsed_definitions, "ext")
+        extension_definitions = get_definitions_by_root_key("ext", parsed_definitions)
 
         # Avoiding the use of sorted() since we already deepcopy each definition as we add it to the context.
         for parsed_definition in parsed_definitions:
@@ -72,7 +72,7 @@ class ActiveContext:
         def get_field_name(fields_entry_dict: dict):
             return fields_entry_dict.get("name")
 
-        root_definition = get_definition_by_name(self.context_definitions, "root")
+        root_definition = get_definition_by_name("root", self.context_definitions)
 
         if root_definition:
             return list(map(get_field_name, search_definition(root_definition, ["data", "fields"])))
@@ -90,7 +90,7 @@ class ActiveContext:
         Returns:
             A list of strings, one entry for each root name available in the ActiveContext.
         """
-        root_definition = get_definition_by_name(self.context_definitions, "root")
+        root_definition = get_definition_by_name("root", self.context_definitions)
 
         if root_definition:
             return search_definition(root_definition, ["data", "fields"])
@@ -104,7 +104,7 @@ class ActiveContext:
         Returns:
             The definition that defines the primitive types.
         """
-        return get_definition_by_name(self.context_definitions, "Primitives")
+        return get_definition_by_name("Primitives", self.context_definitions)
 
     def get_primitive_types(self) -> list[str]:
         """
@@ -143,7 +143,7 @@ class ActiveContext:
     def _apply_extension_to_context(self, extension_definition) -> None:
         """Apply the extension to the definitions it modifies in the ActiveContext."""
         target_to_extend = extension_definition.definition.get("ext").get("type")
-        target_definition_to_extend = get_definition_by_name(self.context_definitions, target_to_extend)
+        target_definition_to_extend = get_definition_by_name(target_to_extend, self.context_definitions)
 
         extension_type = ""
         extension_field_name = ""

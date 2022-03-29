@@ -49,13 +49,13 @@ class TestActiveContext(TestCase):
         self.assertEqual(2, len(test_enum.definition["enum"]["values"]))
 
         active_context.add_definition_to_context(test_definition_ext)
-        context_modified_test_definition = get_definition_by_name(active_context.context_definitions, test_definition_name)
+        context_modified_test_definition = get_definition_by_name(test_definition_name, active_context.context_definitions)
         self.assertEqual(1, len(context_modified_test_definition.definition["data"]["fields"]))
         self.assertIn(data_ext_field_name, context_modified_test_definition.to_yaml())
         self.assertIn(data_ext_field_type, context_modified_test_definition.to_yaml())
 
         active_context.add_definition_to_context(test_enum_ext)
-        context_modified_test_enum = get_definition_by_name(active_context.context_definitions, test_enum_name)
+        context_modified_test_enum = get_definition_by_name(test_enum_name, active_context.context_definitions)
         self.assertEqual(3, len(context_modified_test_enum.definition["enum"]["values"]))
         self.assertIn(test_enum_ext_value, context_modified_test_enum.to_yaml())
 
