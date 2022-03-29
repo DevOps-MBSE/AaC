@@ -99,14 +99,3 @@ class TestActiveContext(TestCase):
         actual_results = test_context.get_root_keys()
 
         self.assertEqual(expected_results, actual_results)
-
-    def test_get_definition_substructure_type_by_keys_with_model_definition(self):
-        core_spec = get_aac_spec()
-        test_context = ActiveContext(core_spec)
-
-        test_state_field = create_field_entry("TestState", "string")
-        test_data_definition = create_model_definition("TestData", state=[test_state_field])
-
-        actual_result = test_context.get_definition_substructure_type_by_keys(test_data_definition, ["model", "state"])
-        expected_result = get_definition_by_name(test_context.context_definitions, "Field")
-        self.assertEqual(expected_result, actual_result)

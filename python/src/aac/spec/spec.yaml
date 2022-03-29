@@ -284,8 +284,8 @@ data:
   required:
     - name
     - fields
-  validation:
-    - name: Required fields are present
+  # validation:
+  #   - name: Required fields are present
 ---
 data:
   name: Behavior

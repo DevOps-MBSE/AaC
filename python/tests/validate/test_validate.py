@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from aac.lang.context_manager import get_active_context
-from aac.validate import validate_definitions
+from aac.validate import validate_definitions, ValidationError
 
 from tests.helpers.parsed_definitions import (
     create_data_definition,
@@ -24,5 +24,6 @@ class TestValidators(TestCase):
         test_field = create_field_entry("TestField", "striiiing")
         test_definition = create_data_definition("Empty Data", [test_field])
 
-        with validate_definitions([test_definition]) as result:
-            self.assertFalse(result.is_valid)
+        with self.assertRaises(ValidationError):
+            with validate_definitions([test_definition]):
+                pass

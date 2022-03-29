@@ -210,12 +210,12 @@ def get_definition_by_name(parsed_definitions: list[ParsedDefinition], definitio
     matching_definitions_count = len(matching_definitions)
 
     result = None
-    if (matching_definitions_count > 1):
-        logging.error("Found multiple definitions with the same name \"{definition_name}\"\n{matching_definitions}\"")
-        raise RuntimeError(f"Found multiple definitions with the same name \"{definition_name}\"\n{matching_definitions}")
+    if matching_definitions_count > 1:
+        logging.error('Found multiple definitions with the same name "{definition_name}"\n{matching_definitions}"')
+        raise RuntimeError(f'Found multiple definitions with the same name "{definition_name}"\n{matching_definitions}')
 
-    elif (matching_definitions_count < 1):
-        logging.debug("Failed to find a definition with the name \"{definition_name}\"")
+    elif matching_definitions_count < 1:
+        logging.debug('Failed to find a definition with the name "{definition_name}"')
 
     else:
         result = matching_definitions[0]
@@ -243,9 +243,15 @@ def is_array_type(type: str) -> bool:
     return type.endswith("[]")
 
 
-def get_definition_fields_and_types(parsed_definition: ParsedDefinition, context_definitions: list[ParsedDefinition]) -> dict[str, ParsedDefinition]:
+def get_definition_fields_and_types(
+    parsed_definition: ParsedDefinition, context_definitions: list[ParsedDefinition]
+) -> dict[str, ParsedDefinition]:
     """Return a list of field names to their definition types."""
-    definition_structure = get_definition_by_name(context_definitions, parsed_definition.get_root_key())
+    root_definition = get_definition_by_name(context_definitions, "root")
+    root_fields = search_definition(root_definition, ["data", "fields"])
+    roots_dict = {field.get("name"): field.get("type") for field in root_fields}
+
+    definition_structure = get_definition_by_name(context_definitions, roots_dict.get(parsed_definition.get_root_key()))
     defined_fields = search_definition(definition_structure, [definition_structure.get_root_key(), "fields"])
 
     field_types = {}

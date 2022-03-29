@@ -126,17 +126,17 @@ class TestGenPlantUml(TestCase):
         self.assertIn(f"interface {TEST_PUML_DATA_A_TYPE}", component_diagram_content_string)
         self.assertIn(f"interface {TEST_PUML_DATA_B_TYPE}", component_diagram_content_string)
         self.assertIn(f"interface {TEST_PUML_DATA_C_TYPE}", component_diagram_content_string)
-        self.assertIn(f"package \"{TEST_PUML_SYSTEM_NAME}\"", component_diagram_content_string)
+        self.assertIn(f"package \"{TEST_PUML_SYSTEM_TYPE}\"", component_diagram_content_string)
         self.assertIn(f"{TEST_PUML_DATA_A_TYPE} -> [{TEST_PUML_SERVICE_ONE_TYPE}] : in", component_diagram_content_string)
         self.assertIn(f"[{TEST_PUML_SERVICE_ONE_TYPE}] -> {TEST_PUML_DATA_B_TYPE} : out", component_diagram_content_string)
 
     def _assert_object_diagram_content(self, object_diagram_content_string: str):
         self._assert_diagram_contains_uml_boilerplate(object_diagram_content_string)
-        self.assertIn(f"object {TEST_PUML_SYSTEM_NAME}", object_diagram_content_string)
+        self.assertIn(f"object {TEST_PUML_SYSTEM_TYPE}", object_diagram_content_string)
         self.assertIn(f"object {TEST_PUML_SERVICE_ONE_TYPE}", object_diagram_content_string)
         self.assertIn(f"object {TEST_PUML_SERVICE_TWO_TYPE}", object_diagram_content_string)
-        self.assertIn(f"{TEST_PUML_SYSTEM_NAME} *-- {TEST_PUML_SERVICE_ONE_TYPE}", object_diagram_content_string)
-        self.assertIn(f"{TEST_PUML_SYSTEM_NAME} *-- {TEST_PUML_SERVICE_TWO_TYPE}", object_diagram_content_string)
+        self.assertIn(f"{TEST_PUML_SYSTEM_TYPE} *-- {TEST_PUML_SERVICE_ONE_TYPE}", object_diagram_content_string)
+        self.assertIn(f"{TEST_PUML_SYSTEM_TYPE} *-- {TEST_PUML_SERVICE_TWO_TYPE}", object_diagram_content_string)
 
     def _assert_sequence_diagram_content(self, sequence_diagram_content_string: str):
         self._assert_diagram_contains_uml_boilerplate(sequence_diagram_content_string)
@@ -168,7 +168,7 @@ TEST_PUML_USE_CASE_TITLE = "Nominal flow within the system."
 
 TEST_PUML_ARCH_YAML = f"""
 model:
-  name: {TEST_PUML_SYSTEM_NAME}
+  name: {TEST_PUML_SYSTEM_TYPE}
   description: A simple distributed system model
   components:
     - name: {TEST_PUML_SERVICE_ONE_NAME}

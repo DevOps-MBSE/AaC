@@ -49,12 +49,12 @@ class ActiveContext:
         extension_definitions = get_definitions_by_root_key(parsed_definitions, "ext")
 
         # Avoiding the use of sorted() since we already deepcopy each definition as we add it to the context.
-        for parsedDefinition in parsed_definitions:
-            if parsedDefinition not in extension_definitions:
-                self.add_definition_to_context(parsedDefinition)
+        for parsed_definition in parsed_definitions:
+            if parsed_definition not in extension_definitions:
+                self.add_definition_to_context(parsed_definition)
 
         for extension_definitions in extension_definitions:
-            self.add_definition_to_context(parsedDefinition)
+            self.add_definition_to_context(extension_definitions)
 
     def get_root_keys(self) -> list[str]:
         """
