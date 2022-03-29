@@ -47,7 +47,7 @@ def run_cli():
 
 VERSION_COMMAND_NAME = "version"
 VALIDATE_COMMAND_NAME = "validate"
-CORE_SPEC_COMMAND_NAME = "aac-core-spec"
+CORE_SPEC_COMMAND_NAME = "print-core-spec"
 START_LSP_COMMAND_NAME = "start-lsp"
 
 
@@ -73,7 +73,7 @@ def _validate_cmd(model_file: str) -> PluginExecutionResult:
 
 
 def _core_spec_cmd() -> PluginExecutionResult:
-    """Run the built-in aac-core-spec command."""
+    """Run the built-in print-core-spec command."""
     with plugin_result(CORE_SPEC_COMMAND_NAME, get_aac_spec_as_yaml) as result:
         return result
 
