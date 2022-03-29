@@ -204,7 +204,7 @@ def get_definition_by_name(parsed_definitions: list[ParsedDefinition], definitio
     """
 
     def does_definition_name_match(parsed_definition: ParsedDefinition) -> bool:
-        return definition_name == parsed_definition.name
+        return remove_list_type_indicator(definition_name) == parsed_definition.name
 
     matching_definitions = list(filter(does_definition_name_match, parsed_definitions))
     matching_definitions_count = len(matching_definitions)
@@ -241,3 +241,19 @@ def remove_list_type_indicator(list_type: str) -> str:
 def is_array_type(type: str) -> bool:
     """Returns a boolean indicating if the field is an array of multiple entries."""
     return type.endswith("[]")
+
+
+def get_definition_fields_and_types(parsed_definition: ParsedDefinition, context_definitions: list[ParsedDefinition]) -> dict[str, ParsedDefinition]:
+    """Return a list of field names to their definition types."""
+    definition_structure = get_definition_by_name(context_definitions, parsed_definition.get_root_key())
+    defined_fields = search_definition(definition_structure, [definition_structure.get_root_key(), "fields"])
+
+    field_types = {}
+    for field in defined_fields:
+        field_name = field.get("name")
+        field_type = field.get("type")
+
+        type_definition = get_definition_by_name(context_definitions, field_type) or field_type
+        field_types = field_types | {field_name: type_definition}
+
+    return field_types
