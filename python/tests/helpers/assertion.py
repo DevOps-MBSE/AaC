@@ -1,4 +1,4 @@
-"""Provide some general unit test assertion helpers to address recurring and duplicated testing patterns"""
+"""Provide some general unit test assertion helpers to address recurring and duplicated testing patterns."""
 from aac.plugins.plugin_execution import (
     PluginExecutionResult,
     PluginExecutionStatusCode

@@ -1,4 +1,4 @@
-""""""
+"""Parser Metadata class use to manage and identify the the source of definitions."""
 
 from attr import attrib, attrs, validators
 

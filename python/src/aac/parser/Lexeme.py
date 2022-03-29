@@ -1,4 +1,4 @@
-""""""
+"""Provides lexical unit for a parsed AaC definition."""
 
 from attr import attrib, attrs, validators
 

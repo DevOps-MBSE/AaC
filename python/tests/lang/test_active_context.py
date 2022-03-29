@@ -10,7 +10,6 @@ from tests.helpers.parsed_definitions import (
     create_enum_definition,
     create_enum_ext_definition,
     create_field_entry,
-    create_model_definition,
 )
 
 

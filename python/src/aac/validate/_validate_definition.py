@@ -72,15 +72,13 @@ def _validate_definition_substructure(
             # If the field is not an array type
             if isinstance(fields_to_validate, dict):
                 _apply_validation(fields_to_validate, applicable_validators)
-                # _recursively_apply_field_validations(field_definition)
-                # TODO: Address the issue on how to move the needle....
+                # Need to recurse here for embedded definitions
 
             # Else if the field is an array type
             elif isinstance(fields_to_validate, list):
                 for field_to_validate in fields_to_validate:
                     _apply_validation(field_to_validate, applicable_validators)
-                    # _recursively_apply_field_validations(field_definition)
-                    # TODO: Address the issue on how to move the needle....
+                    # Need to recurse here for embedded definitions
 
     # Pre-populate with the root key a being traversed since we have already validate the root structure
     _recursively_apply_field_validations(definition)

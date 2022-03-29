@@ -158,7 +158,6 @@ class ActiveContext:
         target_definition_dict = target_definition_to_extend.definition
         extension_definition_dict = extension_definition.definition
 
-        # TODO: Tidy up
         extension_subtype_sub_dict = extension_definition_dict.get("ext").get(ext_type)
         target_definition_dict.get(extension_type)[extension_field_name] += extension_subtype_sub_dict.get("add")
 

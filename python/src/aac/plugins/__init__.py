@@ -7,6 +7,7 @@ PLUGIN_PROJECT_NAME = "aac"
 hookimpl = HookimplMarker(PLUGIN_PROJECT_NAME)
 hookspec = HookspecMarker(PLUGIN_PROJECT_NAME)
 
+
 @attrs(slots=True)
 class PluginError(Exception):
     """A base class representing a plugin error condition."""
