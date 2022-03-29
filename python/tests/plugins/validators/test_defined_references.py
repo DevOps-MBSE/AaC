@@ -1,13 +1,12 @@
 from unittest import TestCase
 
-from aac.lang import get_active_context
-from aac.lang.definition_helpers import get_definition_by_name, get_definitions_by_root_key
+from aac.lang.context_manager import get_active_context
+from aac.lang.definition_helpers import get_definitions_by_root_key
 from aac.parser import parse
-from aac.plugins.validators import ValidatorPlugin
+from aac.plugins.validators import ValidatorPlugin, ValidatorResult
 from aac.plugins.validators.defined_references import get_plugin_aac_definitions, register_validators, validate_references
-from aac.validate import ValidationResult
 
-from tests.helpers.parsed_definitions import create_data_definition, create_field_entry
+from tests.helpers.parsed_definitions import create_field_entry
 
 
 class TestDefinedReferencesPlugin(TestCase):
@@ -27,42 +26,46 @@ class TestDefinedReferencesPlugin(TestCase):
         self.assertEqual(expected_validator_plugin.definition, actual_validator_plugin.definition)
 
     def test_validate_references_valid_references(self):
-
         test_primitive_reference_field = create_field_entry("ValidPrimitiveField", "string")
-        test_definition_reference_field = create_field_entry("ValidBehaviorField", "Behavior")
-        test_definition = create_data_definition(
-            "Test Definition", [test_primitive_reference_field, test_definition_reference_field]
-        )
 
-        expected_result = ValidationResult([], test_definition, True)
+        expected_result = ValidatorResult([], True)
 
         test_active_context = get_active_context(reload_context=True)
 
-        actual_result = validate_references(test_definition, test_active_context)
+        actual_result = validate_references(test_primitive_reference_field, test_active_context)
 
         self.assertEqual(expected_result, actual_result)
 
-    def test_validate_references_invalid_reference(self):
+    def test_validate_references_invalid_definition_reference(self):
 
-        invalid_primitive_type = "striiiiing"
         invalid_definition_type = "ThisTypeStringWontAppearInTheCoreSpecIHope"
 
-        test_invalid_primitive_reference_field = create_field_entry("InvalidPrimitiveField", invalid_primitive_type)
         test_invalid_definition_reference_field = create_field_entry("InvalidBehaviorField", invalid_definition_type)
-        test_definition = create_data_definition(
-            "Test Definition", [test_invalid_primitive_reference_field, test_invalid_definition_reference_field]
-        )
 
         invalid_reference_error_message = ""
-        expected_result = ValidationResult([invalid_reference_error_message], test_definition, False)
+        expected_result = ValidatorResult([invalid_reference_error_message], False)
 
         test_active_context = get_active_context(reload_context=True)
-        # Assert invalid_definition_type is not defined in the active context
-        self.assertIsNone(get_definition_by_name(test_active_context.context_definitions, invalid_definition_type))
 
-        # Assert that invalid_primitive_type is not defined in the primitive types
-        self.assertIsNone(get_definition_by_name(test_active_context.context_definitions, invalid_definition_type))
+        actual_result = validate_references(test_invalid_definition_reference_field, test_active_context)
 
-        actual_result = validate_references(test_definition, test_active_context)
+        self.assertEqual(expected_result.is_valid, actual_result.is_valid)
+        self.assertIn("Undefined", "\n".join(actual_result.messages))
+        self.assertIn(invalid_definition_type, "\n".join(actual_result.messages))
 
-        self.assertEqual(expected_result, actual_result)
+    def test_validate_references_invalid_primitive_reference(self):
+
+        invalid_primitive_type = "striiiiing"
+
+        test_invalid_primitive_reference_field = create_field_entry("InvalidPrimitiveField", invalid_primitive_type)
+
+        invalid_reference_error_message = ""
+        expected_result = ValidatorResult([invalid_reference_error_message], False)
+
+        test_active_context = get_active_context(reload_context=True)
+
+        actual_result = validate_references(test_invalid_primitive_reference_field, test_active_context)
+
+        self.assertEqual(expected_result.is_valid, actual_result.is_valid)
+        self.assertIn("Undefined", "\n".join(actual_result.messages))
+        self.assertIn(invalid_primitive_type, "\n".join(actual_result.messages))
