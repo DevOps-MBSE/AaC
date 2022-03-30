@@ -12,3 +12,7 @@ class ValidatorResult:
 
     messages: list[str] = attrib(default=Factory(list), validator=validators.instance_of(list))
     is_valid: bool = attrib(default=False, validator=validators.instance_of(bool))
+
+    def get_messages_as_string(self) -> str:
+        """Get all of the validator result messages as a single string."""
+        return "\n".join(self.messages)
