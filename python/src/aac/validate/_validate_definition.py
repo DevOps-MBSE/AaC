@@ -9,7 +9,7 @@ from aac.lang.definition_helpers import (
 from aac.lang.hierarchy import get_definition_ancestry
 from aac.parser import ParsedDefinition
 from aac.plugins.validators import ValidatorPlugin, ValidatorResult
-from aac.lang import ActiveContext
+from aac.lang.context import ActiveContext
 
 
 def validate_definition(

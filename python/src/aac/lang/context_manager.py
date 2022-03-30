@@ -1,6 +1,6 @@
 """This module manages the ActiveContext instance and its lifecycle."""
 
-from aac.lang import ActiveContext
+from aac.lang.context import ActiveContext
 from aac.plugins.plugin_manager import get_plugin_definitions
 from aac.spec import get_aac_spec
 

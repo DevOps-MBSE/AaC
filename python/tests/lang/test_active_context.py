@@ -1,7 +1,7 @@
 from unittest import TestCase
 from aac.lang.definition_helpers import get_definition_by_name
 
-from aac.lang import ActiveContext
+from aac.lang.context import ActiveContext
 from aac.spec import get_aac_spec, get_primitives, get_root_keys
 
 from tests.helpers.parsed_definitions import (

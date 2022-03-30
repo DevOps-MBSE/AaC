@@ -1,6 +1,6 @@
 import logging
 
-from aac.lang import ActiveContext
+from aac.lang.context import ActiveContext
 from aac.plugins.validators import ValidatorResult
 
 

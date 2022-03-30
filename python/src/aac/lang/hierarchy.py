@@ -3,7 +3,7 @@
 import logging
 from typing import Optional
 
-from aac.lang import ActiveContext
+from aac.lang.context import ActiveContext
 from aac.lang.definition_helpers import get_definition_by_name, search_definition
 from aac.parser import ParsedDefinition
 

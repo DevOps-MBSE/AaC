@@ -6,7 +6,7 @@ from aac.lang.definition_helpers import get_definition_by_name, search_definitio
 from aac.lang.hierarchy import get_definition_ancestry
 from aac.parser import ParsedDefinition
 from aac.plugins.validators import ValidatorPlugin
-from aac.lang import ActiveContext
+from aac.lang.context import ActiveContext
 
 
 def get_applicable_validators_for_definition(
