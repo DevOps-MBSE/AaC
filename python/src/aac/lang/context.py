@@ -2,7 +2,7 @@
 import copy
 from attr import Factory, attrib, attrs, validators
 
-from aac.parser.parsed_definition import ParsedDefinition
+from aac.parser import ParsedDefinition
 from aac.lang.definition_helpers import (
     get_definition_by_name,
     get_definitions_by_root_key,
@@ -35,7 +35,7 @@ class ActiveContext:
         """
         self.definitions.append(copy.deepcopy(parsed_definition))
 
-        if parsed_definition.definition.is_extension():
+        if parsed_definition.is_extension():
             self._apply_extension_to_context(parsed_definition)
 
     def add_definitions_to_context(self, parsed_definitions: list[ParsedDefinition]):
@@ -142,12 +142,12 @@ class ActiveContext:
 
     def _apply_extension_to_context(self, extension_definition: ParsedDefinition) -> None:
         """Apply the extension to the definitions it modifies in the ActiveContext."""
-        target_to_extend = extension_definition.definition.content.get("ext").get("type")
+        target_to_extend = extension_definition.definition.get("ext").get("type")
         target_definition_to_extend = get_definition_by_name(target_to_extend, self.definitions)
 
         extension_type = ""
         extension_field_name = ""
-        if extension_definition.definition.is_enum_extension():
+        if extension_definition.is_enum_extension():
             extension_type = "enum"
             extension_field_name = "values"
         else:
@@ -155,8 +155,8 @@ class ActiveContext:
             extension_field_name = "fields"
 
         ext_type = f"{extension_type}Ext"
-        target_definition_dict = target_definition_to_extend.definition.content
-        extension_definition_dict = extension_definition.definition.content
+        target_definition_dict = target_definition_to_extend.definition
+        extension_definition_dict = extension_definition.definition
 
         extension_subtype_sub_dict = extension_definition_dict.get("ext").get(ext_type)
         target_definition_dict.get(extension_type)[extension_field_name] += extension_subtype_sub_dict.get("add")
