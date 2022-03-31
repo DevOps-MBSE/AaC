@@ -4,7 +4,7 @@ from iteration_utilities import flatten
 from pluggy import PluginManager
 
 from aac import parser
-from aac.parser import ParsedDefinition
+from aac.lang.definitions.definition import Definition
 from aac.plugins import hookspecs, PLUGIN_PROJECT_NAME
 from aac.plugins.validators import ValidatorPlugin
 
@@ -51,7 +51,7 @@ def get_plugin_manager() -> PluginManager:
     return plugin_manager
 
 
-def get_plugin_definitions() -> list[ParsedDefinition]:
+def get_plugin_definitions() -> list[Definition]:
     """
     Gets all a list of all the plugin-defined AaC models and definitions.
 
@@ -93,7 +93,7 @@ def get_plugin_model_definitions() -> dict:
     for plugin_ext in plugin_models_yaml:
         if len(plugin_ext) > 0:
             parsed_definitions = parser.parse(plugin_ext)
-            definitions_dict = dict(map(lambda definition: (definition.name, definition.definition), parsed_definitions))
+            definitions_dict = dict(map(lambda definition: (definition.name, definition.structure), parsed_definitions))
             plugin_extensions = definitions_dict | plugin_extensions
 
     return plugin_extensions

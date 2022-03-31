@@ -3,12 +3,12 @@
 import logging
 from typing import Optional
 
-from aac.lang.context import ActiveContext
+from aac.lang.context import LanguageContext
 from aac.lang.definition_helpers import get_definition_by_name, search_definition
-from aac.parser import ParsedDefinition
+from aac.lang.definitions.definition import Definition
 
 
-def get_definition_ancestry(definition: ParsedDefinition, context: ActiveContext) -> list[ParsedDefinition]:
+def get_definition_ancestry(definition: Definition, context: LanguageContext) -> list[Definition]:
     """Return an ordered list of ancestor definitions starting with the root definition and ending with the argument."""
 
     ancestors_list = []
@@ -25,16 +25,16 @@ def get_definition_ancestry(definition: ParsedDefinition, context: ActiveContext
     return ancestors_list
 
 
-def get_root_definition_by_key(root_key: str, parsed_definitions: list[ParsedDefinition]) -> Optional[ParsedDefinition]:
+def get_root_definition_by_key(root_key: str, parsed_definitions: list[Definition]) -> Optional[Definition]:
     """
     Return the parsed definition that defines a root key structure or None if not found.
 
     Args:
-        root_key (str): The root key from a ParsedDefinition
-        parsed_definitions (list[ParsedDefinition]): A list of definitions to search, must include the root ParsedDefinition.
+        root_key (str): The root key from a Definition
+        parsed_definitions (list[Definition]): A list of definitions to search, must include the root Definition.
 
     Return:
-        An optional ParsedDefinition that defines the structure of the root key.
+        An optional Definition that defines the structure of the root key.
     """
     root_definition = get_definition_by_name("root", parsed_definitions)
     root_fields = search_definition(root_definition, ["data", "fields"])

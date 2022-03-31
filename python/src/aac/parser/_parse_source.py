@@ -9,20 +9,20 @@ from os import path
 import yaml
 from yaml.parser import ParserError as YAMLParserError
 
-from aac.parser.ParserError import ParserError
-from aac.parser import ParsedDefinition
-from aac.parser.SourceLocation import SourceLocation
-from aac.parser.Lexeme import Lexeme
+from aac.parser._parser_error import ParserError
+from aac.lang.definitions.definition import Definition
+from aac.lang.definitions.lexeme import Lexeme
+from aac.lang.definitions.source_location import SourceLocation
 
 
-def parse(source: str) -> list[ParsedDefinition]:
+def parse(source: str) -> list[Definition]:
     """Parse the Architecture-as-Code (AaC) definition(s) from the provided source.
 
     Args:
         source (str): Must be either a file path to an AaC yaml file or a string containing AaC definitions.
 
     Returns:
-        A ParsedDefinition object containing the internal representation of the definition and metadata
+        A Definition object containing the internal representation of the definition and metadata
         associated with the definition.
     """
 
@@ -44,7 +44,7 @@ def parse(source: str) -> list[ParsedDefinition]:
 
     parsed_definitions = []
     for name, definition in definitions.items():
-        parsed_definitions.append(ParsedDefinition(name, contents, get_lexemes_for_definition(contents), definition))
+        parsed_definitions.append(Definition(name, contents, get_lexemes_for_definition(contents), definition))
 
     return parsed_definitions
 

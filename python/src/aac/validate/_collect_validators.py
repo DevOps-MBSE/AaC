@@ -4,13 +4,13 @@ from iteration_utilities import flatten
 
 from aac.lang.definition_helpers import get_definition_by_name, search_definition, remove_list_type_indicator
 from aac.lang.hierarchy import get_definition_ancestry
-from aac.parser import ParsedDefinition
+from aac.lang.definitions.definition import Definition
 from aac.plugins.validators import ValidatorPlugin
-from aac.lang.context import ActiveContext
+from aac.lang.context import LanguageContext
 
 
 def get_applicable_validators_for_definition(
-    definition: ParsedDefinition, validator_plugins: list[ValidatorPlugin], context: ActiveContext
+    definition: Definition, validator_plugins: list[ValidatorPlugin], context: LanguageContext
 ) -> list[ValidatorPlugin]:
     """Traverse the definition and identify all applicable validator plugins."""
 
@@ -35,10 +35,10 @@ def get_applicable_validators_for_definition(
     return list(applicable_validators.values())
 
 
-def _get_validation_entries_from_definition_fields(definition: ParsedDefinition, context: ActiveContext) -> list[dict]:
+def _get_validation_entries_from_definition_fields(definition: Definition, context: LanguageContext) -> list[dict]:
     """Return a list of validation entries from substructures and fields in the definition."""
 
-    def _recursively_gather_field_validations(field_definition: ParsedDefinition, traversed_types: list[str]) -> list[dict[str, list]]:
+    def _recursively_gather_field_validations(field_definition: Definition, traversed_types: list[str]) -> list[dict[str, list]]:
         validations = {}
         definition_root_key = field_definition.get_root_key()
         traversed_types.append(field_definition.name)
@@ -68,7 +68,7 @@ def _get_validation_entries_from_definition_fields(definition: ParsedDefinition,
     return list(validations)
 
 
-def _get_validation_entries(definition: ParsedDefinition) -> list[dict]:
+def _get_validation_entries(definition: Definition) -> list[dict]:
     """Return a list of validation entries from the definition."""
 
     validations = {}

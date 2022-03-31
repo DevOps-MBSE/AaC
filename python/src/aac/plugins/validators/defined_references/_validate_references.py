@@ -1,10 +1,10 @@
 import logging
 
-from aac.lang.context import ActiveContext
+from aac.lang.context import LanguageContext
 from aac.plugins.validators import ValidatorResult
 
 
-def validate_references(validation_content: dict, active_context: ActiveContext) -> ValidatorResult:
+def validate_references(validation_content: dict, active_context: LanguageContext) -> ValidatorResult:
     """Validates that the definition has valid type references to either primitive types or other definitions."""
 
     error_messages = []

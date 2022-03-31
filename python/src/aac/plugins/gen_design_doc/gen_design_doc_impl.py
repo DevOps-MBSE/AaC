@@ -6,7 +6,7 @@ from iteration_utilities import flatten
 from jinja2 import Template
 
 from aac.lang.definition_helpers import get_definitions_by_root_key
-from aac.parser import ParsedDefinition
+from aac.lang.definitions.definition import Definition
 from aac.plugins.plugin_execution import (
     PluginExecutionResult,
     plugin_result,
@@ -55,7 +55,7 @@ def gen_design_doc(architecture_files: str, output_directory: str, template_file
         return result
 
 
-def _get_parsed_models(architecture_files: list) -> list[ParsedDefinition]:
+def _get_parsed_models(architecture_files: list) -> list[Definition]:
     def parse_with_validation(architecture_file):
         with validate_source(architecture_file) as result:
             return result.parsed_definitions
@@ -64,7 +64,7 @@ def _get_parsed_models(architecture_files: list) -> list[ParsedDefinition]:
     return list(flatten(map(parse_with_validation, architecture_files)))
 
 
-def _make_template_properties(parsed_definitions: list[ParsedDefinition], arch_file: str) -> dict:
+def _make_template_properties(parsed_definitions: list[Definition], arch_file: str) -> dict:
     title = _get_document_title(arch_file)
     models = _get_and_prepare_definitions_by_type(parsed_definitions, "model")
     usecases = _get_and_prepare_definitions_by_type(parsed_definitions, "usecase")
@@ -91,9 +91,9 @@ def _get_output_file_extension(template_filespec: str) -> str:
     return extension
 
 
-def _get_and_prepare_definitions_by_type(parsed_definitions: ParsedDefinition, aac_type: str) -> list:
+def _get_and_prepare_definitions_by_type(parsed_definitions: Definition, aac_type: str) -> list:
     filtered_definitions = get_definitions_by_root_key(aac_type, parsed_definitions)
-    return list([definition.definition for definition in filtered_definitions])
+    return list([definition.structure for definition in filtered_definitions])
 
 
 def _generate_system_doc(output_filespec: str, selected_template: Template, template_properties: dict) -> TemplateOutputFile:

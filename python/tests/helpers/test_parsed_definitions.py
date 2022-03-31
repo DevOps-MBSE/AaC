@@ -69,8 +69,8 @@ class TestArchParsedDefinitions(TestCase):
 
         self.assertEqual(expected_yaml.strip(), actual_parsed_definition.content.strip())
         self.assertEqual(expected_parsed_definition.name, actual_parsed_definition.name)
-        self.assertEqual(expected_parsed_definition.definition, actual_parsed_definition.definition)
-        self.assertDictEqual(expected_parsed_definition.definition, actual_parsed_definition.definition)
+        self.assertEqual(expected_parsed_definition.structure, actual_parsed_definition.structure)
+        self.assertDictEqual(expected_parsed_definition.structure, actual_parsed_definition.structure)
 
     def test_create_data_definition_with_validation(self):
         data_name = "Test Name"

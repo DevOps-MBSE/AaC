@@ -1,16 +1,17 @@
 """Functions to allow interacting with the core AaC spec."""
 
-from aac.parser import parse, ParsedDefinition
+from aac.parser import parse
+from aac.lang.definitions.definition import Definition
 from aac.package_resources import get_resource_file_contents
 from aac.lang.definition_helpers import get_definitions_by_root_key, search_definition, get_definition_by_name
 
 PRIMITIVES: list[str] = []
 ROOT_NAMES: list[str] = []
-AAC_CORE_SPEC_DEFINITIONS: list[ParsedDefinition] = []
+AAC_CORE_SPEC_DEFINITIONS: list[Definition] = []
 CORE_SPEC_FILE_NAME = "spec.yaml"
 
 
-def get_aac_spec() -> list[ParsedDefinition]:
+def get_aac_spec() -> list[Definition]:
     """
     Get the specification for Architecture-as-Code itself.
 

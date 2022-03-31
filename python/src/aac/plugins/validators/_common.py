@@ -1,11 +1,12 @@
 """Module for common, shared functions specifically for the validator subclass of plugins."""
 
-from aac.parser import parse, ParsedDefinition
+from aac.parser import parse
+from aac.lang.definitions.definition import Definition
 from aac.lang.definition_helpers import get_definitions_by_root_key
 from aac.plugins import PluginError
 
 
-def get_validation_definition_from_plugin_definitions(plugin_definitions_string: str) -> ParsedDefinition:
+def get_validation_definition_from_plugin_definitions(plugin_definitions_string: str) -> Definition:
     """
     Parses the validation definition sourced from a validator plugin's definitions.
 

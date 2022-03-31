@@ -2,7 +2,8 @@ from contextlib import contextmanager
 from iteration_utilities import flatten
 
 from aac.lang.context_manager import get_active_context
-from aac.parser import parse, ParsedDefinition
+from aac.lang.definitions.definition import Definition
+from aac.parser import parse
 from aac.plugins.plugin_manager import get_validator_plugins
 from aac.plugins.validators import ValidatorResult
 from aac.validate import ValidationResult, ValidationError
@@ -10,11 +11,11 @@ from aac.validate._validate_definition import validate_definition
 
 
 @contextmanager
-def validate_definitions(user_definitions: list[ParsedDefinition]) -> ValidationResult:
+def validate_definitions(user_definitions: list[Definition]) -> ValidationResult:
     """Validate user-defined definitions along with the definitions in the ActiveContext.
 
     Args:
-        user_definitions (list[ParsedDefinition]): A list of user-defined definitions to validate
+        user_definitions (list[Definition]): A list of user-defined definitions to validate
 
     Yields:
         A ValidationResults:py:class:`aac.validate.ValidationResult` indicating the result.
@@ -43,12 +44,12 @@ def validate_source(source: str) -> ValidationResult:
         raise ValidationError("Failed to validate content with errors:", ".\n".join(result.messages))
 
 
-def _validate_definitions(user_definitions: list[ParsedDefinition]) -> ValidationResult:
+def _validate_definitions(user_definitions: list[Definition]) -> ValidationResult:
     registered_validators = get_validator_plugins()
     active_context = get_active_context()
     active_context.add_definitions_to_context(user_definitions)
 
-    def validate_each_definition(definition: ParsedDefinition) -> list[ValidatorResult]:
+    def validate_each_definition(definition: Definition) -> list[ValidatorResult]:
         return validate_definition(definition, registered_validators, active_context)
 
     validator_results = list(flatten(map(validate_each_definition, user_definitions)))

@@ -7,13 +7,13 @@ from aac.lang.definition_helpers import (
     get_definition_fields_and_types,
 )
 from aac.lang.hierarchy import get_definition_ancestry
-from aac.parser import ParsedDefinition
+from aac.lang.definitions.definition import Definition
 from aac.plugins.validators import ValidatorPlugin, ValidatorResult
-from aac.lang.context import ActiveContext
+from aac.lang.context import LanguageContext
 
 
 def validate_definition(
-    definition: ParsedDefinition, validator_plugins: list[ValidatorPlugin], context: ActiveContext
+    definition: Definition, validator_plugins: list[ValidatorPlugin], context: LanguageContext
 ) -> list[ValidatorResult]:
     """Traverse the definition validate it."""
 
@@ -38,7 +38,7 @@ def validate_definition(
 
 
 def _validate_definition_substructure(
-    definition: ParsedDefinition, validator_plugins: list[ValidatorPlugin], context: ActiveContext
+    definition: Definition, validator_plugins: list[ValidatorPlugin], context: LanguageContext
 ) -> list[ValidatorResult]:
     """Return a list of validator results from recursively validating the populated fields of the definition."""
     validator_results = []
@@ -48,7 +48,7 @@ def _validate_definition_substructure(
             [_apply_validator(content_to_validate, context, validator) for validator in validators]
         )
 
-    def _recursively_apply_field_validations(definition_to_validate: ParsedDefinition) -> None:
+    def _recursively_apply_field_validations(definition_to_validate: Definition) -> None:
         """Recurse through the fields and identify validations to apply."""
         definition_fields_dict = get_definition_fields_and_types(definition_to_validate, context.definitions)
 
@@ -85,7 +85,7 @@ def _validate_definition_substructure(
     return validator_results
 
 
-def _get_validation_entries(definition: ParsedDefinition) -> list[dict]:
+def _get_validation_entries(definition: Definition) -> list[dict]:
     """Return a list of validation entries from the definition."""
 
     validations = {}
@@ -117,7 +117,7 @@ def _get_validator_plugin_by_name(validator_name: str, validator_plugins: list[V
 
 
 def _apply_validator(
-    definition_structure_dict: dict, context: ActiveContext, validator_plugin: ValidatorPlugin
+    definition_structure_dict: dict, context: LanguageContext, validator_plugin: ValidatorPlugin
 ) -> ValidatorResult:
     """Executes the validator callback on the applicable dictionary structure or substructure."""
     return validator_plugin.validation_function(definition_structure_dict, context, **validator_plugin.arguments)

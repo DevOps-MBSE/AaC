@@ -10,7 +10,7 @@ import yaml
 from os import path
 
 from aac.lang.definition_helpers import convert_parsed_definitions_to_dict_definition, get_models_by_type, search
-from aac.parser import ParsedDefinition
+from aac.lang.definitions.definition import Definition
 from aac.template_engine import (
     TemplateOutputFile,
     generate_templates,
@@ -148,7 +148,7 @@ def _generate_template_files(plugin_type: str, template_properties: dict) -> dic
 
 
 def _prepare_and_generate_plugin_files(
-    definitions: list[ParsedDefinition], plugin_type: str, architecture_file_path: str
+    definitions: list[Definition], plugin_type: str, architecture_file_path: str
 ) -> dict[str, list[TemplateOutputFile]]:
     """
     Parse the model and generate the plugin template accordingly.

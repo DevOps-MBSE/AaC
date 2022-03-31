@@ -6,7 +6,7 @@ from contextlib import contextmanager
 from enum import Enum, auto, unique
 from traceback import extract_tb
 
-from aac.parser.ParserError import ParserError
+from aac.parser import ParserError
 from aac.plugins import PluginError, OperationCancelled
 from aac.validate import ValidationError
 

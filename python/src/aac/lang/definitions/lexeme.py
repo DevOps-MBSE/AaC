@@ -2,7 +2,7 @@
 
 from attr import attrib, attrs, validators
 
-from aac.parser.SourceLocation import SourceLocation
+from aac.lang.definitions.source_location import SourceLocation
 
 
 @attrs

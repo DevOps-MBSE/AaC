@@ -1,5 +1,5 @@
 from unittest import TestCase
-from aac.lang.context import ActiveContext
+from aac.lang.context import LanguageContext
 
 from aac.lang.context_manager import get_active_context
 from aac.plugins.plugin_manager import get_plugin_definitions
@@ -12,7 +12,7 @@ class TestContextManager(TestCase):
         active_context_parsed_definitions = get_active_context().definitions
 
         # Assert that the initialized context has more definitions than a new, unmanaged context
-        self.assertGreater(len(active_context_parsed_definitions), len(ActiveContext().definitions))
+        self.assertGreater(len(active_context_parsed_definitions), len(LanguageContext().definitions))
 
         core_spec_definitions = get_aac_spec()
         plugin_definitions = get_plugin_definitions()

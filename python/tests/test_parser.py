@@ -5,9 +5,9 @@ from unittest import TestCase
 from tests.helpers.io import temporary_test_file
 
 from aac.lang import definition_helpers
+from aac.lang.definitions.source_location import SourceLocation
 from aac.parser import parse, get_yaml_from_source
-from aac.parser.ParserError import ParserError
-from aac.parser.SourceLocation import SourceLocation
+from aac.parser import ParserError
 
 
 class TestArchParser(TestCase):
@@ -64,9 +64,9 @@ class TestArchParser(TestCase):
             enum_status_definition = definition_helpers.get_definition_by_name("Status", parsed_models)
             model_echosvc_definition = definition_helpers.get_definition_by_name("EchoService", parsed_models)
 
-            self.check_model_name(data_message_definition.definition, "Message", "data")
-            self.check_model_name(enum_status_definition.definition, "Status", "enum")
-            self.check_model_name(model_echosvc_definition.definition, "EchoService", "model")
+            self.check_model_name(data_message_definition.structure, "Message", "data")
+            self.check_model_name(enum_status_definition.structure, "Status", "enum")
+            self.check_model_name(model_echosvc_definition.structure, "EchoService", "model")
 
             first, second, *_ = model_echosvc_definition.lexemes
             self.assertEqual(first.source, test_yaml.name)

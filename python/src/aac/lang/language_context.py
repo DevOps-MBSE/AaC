@@ -2,7 +2,7 @@
 import copy
 from attr import Factory, attrib, attrs, validators
 
-from aac.parser import ParsedDefinition
+from aac.lang.definitions.definition import Definition
 from aac.lang.definition_helpers import (
     get_definition_by_name,
     get_definitions_by_root_key,
@@ -12,7 +12,7 @@ from aac.lang.definition_helpers import (
 
 
 @attrs(slots=True, auto_attribs=True)
-class ActiveContext:
+class LanguageContext:
     """
     A management and utility class for the contextual AaC domain-specific language.
 
@@ -21,29 +21,29 @@ class ActiveContext:
     plugins, 3rd party definitions (libraries), and user-defined definitions.
 
     Attributes:
-        context_definitions: The list of all definitions currently in the ActiveContext
+        context_definitions: The list of all definitions currently in the LanguageContext
     """
 
-    definitions: list[ParsedDefinition] = attrib(default=Factory(list), validator=validators.instance_of(list))
+    definitions: list[Definition] = attrib(default=Factory(list), validator=validators.instance_of(list))
 
-    def add_definition_to_context(self, parsed_definition: ParsedDefinition):
+    def add_definition_to_context(self, parsed_definition: Definition):
         """
-        Add the ParsedDefinition to the list of definitions in the ActiveContext.
+        Add the Definition to the list of definitions in the LanguageContext.
 
         Args:
-            parsed_definition: The ParsedDefinition to add to the context.
+            parsed_definition: The Definition to add to the context.
         """
         self.definitions.append(copy.deepcopy(parsed_definition))
 
         if parsed_definition.is_extension():
             self._apply_extension_to_context(parsed_definition)
 
-    def add_definitions_to_context(self, parsed_definitions: list[ParsedDefinition]):
+    def add_definitions_to_context(self, parsed_definitions: list[Definition]):
         """
-        Add the list of ParsedDefinitions to the list of definitions in the ActiveContext, any extensions are added last.
+        Add the list of Definitions to the list of definitions in the LanguageContext, any extensions are added last.
 
         Args:
-            parsed_definitions: The list of ParsedDefinitions to add to the context.
+            parsed_definitions: The list of Definitions to add to the context.
         """
 
         extension_definitions = get_definitions_by_root_key("ext", parsed_definitions)
@@ -58,15 +58,15 @@ class ActiveContext:
 
     def get_root_keys(self) -> list[str]:
         """
-        Get the list of root keys as defined in the ActiveContext.
+        Get the list of root keys as defined in the LanguageContext.
 
         Returns a list of strings indicating the current root keys in the active context. These
-        keys may differ from those provided by the core spec since the ActiveContext applies definitions
+        keys may differ from those provided by the core spec since the LanguageContext applies definitions
         from active plugins and user files, which may extend the set of root keys.
         See :py:func:`aac.spec.get_root_keys()` for the list of root keys provided by the unaltered core AaC DSL.
 
         Returns:
-            A list of strings, one entry for each root name available in the ActiveContext.
+            A list of strings, one entry for each root name available in the LanguageContext.
         """
 
         def get_field_name(fields_entry_dict: dict):
@@ -81,14 +81,14 @@ class ActiveContext:
 
     def get_root_fields(self) -> list[dict]:
         """
-        Get the list of root keys as defined in the ActiveContext.
+        Get the list of root keys as defined in the LanguageContext.
 
         Returns a list of strings indicating the current root keys in the active context. These
-        keys may differ from those provided by the core spec since the ActiveContext applies definitions
+        keys may differ from those provided by the core spec since the LanguageContext applies definitions
         from active plugins and user files, which may extend the set of root keys.
 
         Returns:
-            A list of strings, one entry for each root name available in the ActiveContext.
+            A list of strings, one entry for each root name available in the LanguageContext.
         """
         root_definition = get_definition_by_name("root", self.definitions)
 
@@ -99,7 +99,7 @@ class ActiveContext:
 
     def get_primitives_definition(self) -> list[str]:
         """
-        Return the primitive type definition in the ActiveContext.
+        Return the primitive type definition in the LanguageContext.
 
         Returns:
             The definition that defines the primitive types.
@@ -108,26 +108,26 @@ class ActiveContext:
 
     def get_primitive_types(self) -> list[str]:
         """
-        Get the list of primitive types as defined in the ActiveContext.
+        Get the list of primitive types as defined in the LanguageContext.
 
         Returns a list of strings indicating the currently defined primitive types in the active context.
-        These types may differ from those provided by the core spec since the ActiveContext applies definitions
+        These types may differ from those provided by the core spec since the LanguageContext applies definitions
         from active plugins and user files, which may extend the set of root keys.
         See :py:func:`aac.spec.get_primitives()` for the list of root keys provided by the unaltered core AaC DSL.
 
         Returns:
-            A list of strings, one entry for each root name available in the ActiveContext.
+            A list of strings, one entry for each root name available in the LanguageContext.
         """
         return search_definition(self.get_primitives_definition(), ["enum", "values"])
 
     def get_defined_types(self) -> list[str]:
         """
-        Get the list of types defined by other definitions in the ActiveContext.
+        Get the list of types defined by other definitions in the LanguageContext.
 
         Returns a list of strings of all definition types in the active context.
 
         Returns:
-            A list of strings, one entry for each definition name available in the ActiveContext.
+            A list of strings, one entry for each definition name available in the LanguageContext.
         """
 
         return list(map(lambda definition: definition.name, self.definitions))
@@ -141,7 +141,7 @@ class ActiveContext:
         return remove_list_type_indicator(type) in self.get_defined_types()
 
     def _apply_extension_to_context(self, extension_definition) -> None:
-        """Apply the extension to the definitions it modifies in the ActiveContext."""
+        """Apply the extension to the definitions it modifies in the LanguageContext."""
         target_to_extend = extension_definition.definition.get("ext").get("type")
         target_definition_to_extend = get_definition_by_name(target_to_extend, self.definitions)
 
@@ -155,7 +155,7 @@ class ActiveContext:
             extension_field_name = "fields"
 
         ext_type = f"{extension_type}Ext"
-        target_definition_dict = target_definition_to_extend.definition
+        target_definition_dict = target_definition_to_extend.structure
         extension_definition_dict = extension_definition.definition
 
         extension_subtype_sub_dict = extension_definition_dict.get("ext").get(ext_type)

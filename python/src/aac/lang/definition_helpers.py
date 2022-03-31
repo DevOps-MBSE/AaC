@@ -3,7 +3,7 @@
 import logging
 from typing import Any, Optional
 
-from aac.parser import ParsedDefinition
+from aac.lang.definitions.definition import Definition
 
 
 def search(model: dict[str, Any], search_keys: list[str]) -> list:
@@ -99,13 +99,13 @@ def search(model: dict[str, Any], search_keys: list[str]) -> list:
     return ret_val
 
 
-def search_definition(parsed_definition: ParsedDefinition, search_keys: list[str]) -> list:
+def search_definition(definition: Definition, search_keys: list[str]) -> list:
     """
     Search an AaC definition structure by key(s).
 
-    Searches a ParsedDefinition for a subset of the definition contents given a set of keys.
+    Searches a Definition for a subset of the definition contents given a set of keys.
     Search returns a list of  entries in the definition that correspond to those keys. This search
-    will traverse the entire parsed definition's structure.
+    will traverse the entire definition's structure.
 
         Typical usage example:
         Let's say you have a definition structure parsed from the following AaC yaml.
@@ -133,8 +133,7 @@ def search_definition(parsed_definition: ParsedDefinition, search_keys: list[str
                 print(f"field_name: {field_name}")
 
     Args:
-        model: The definition to search.  This is often the value taken from the dict returned
-            by aac.parser.parse(<aac_file>).
+        definition: The definition to search.
         search_keys: A list of strings representing keys in the model dict hierarchy.
 
     Returns:
@@ -142,7 +141,7 @@ def search_definition(parsed_definition: ParsedDefinition, search_keys: list[str
 
     """
 
-    return search(parsed_definition.definition, search_keys)
+    return search(definition.structure, search_keys)
 
 
 def get_models_by_type(models: dict[str, dict], root_name: str) -> dict[str, dict]:
@@ -167,7 +166,7 @@ def get_models_by_type(models: dict[str, dict], root_name: str) -> dict[str, dic
     return ret_val
 
 
-def get_definitions_by_root_key(root_key: str, parsed_definitions: list[ParsedDefinition]) -> list[ParsedDefinition]:
+def get_definitions_by_root_key(root_key: str, definitions: list[Definition]) -> list[Definition]:
     """Return a subset of definitions with the given root key.
 
     The aac.parser.parse() returns a dict of all parsed types.  Sometimes it is
@@ -175,38 +174,34 @@ def get_definitions_by_root_key(root_key: str, parsed_definitions: list[ParsedDe
     method allows a setup of parsed definitions to be "filtered" to a specific root name.
 
     Args:
-        parsed_definitions: The list of parsed definitions to search.
+        definitions: The list of parsed definitions to search.
         root_key: The root key to filter on.
 
     Returns:
         A list of ParedDefinitions with the given root key AaC model definitions.
     """
 
-    def does_definition_root_match(parsed_definition: ParsedDefinition) -> bool:
-        return root_key == parsed_definition.get_root_key()
+    def does_definition_root_match(definition: Definition) -> bool:
+        return root_key == definition.get_root_key()
 
-    return list(filter(does_definition_root_match, parsed_definitions))
+    return list(filter(does_definition_root_match, definitions))
 
 
-def get_definition_by_name(definition_name: str, parsed_definitions: list[ParsedDefinition]) -> Optional[ParsedDefinition]:
-    """Get a definition of models of a specific root name.
-
-    The aac.parser.parse() returns a dict of all parsed types.  Sometimes it is
-    useful to only work with certain roots (i.e. model or data).  This utility
-    method allows a setup of parsed models to be "filtered" to a specific root name.
+def get_definition_by_name(definition_name: str, definitions: list[Definition]) -> Optional[Definition]:
+    """Return a definition with a matching name from a list of definitions.
 
     Args:
-        models: The dict of models to search.
         definition_name: The definition's name to locate.
+        definitions: The list of definitions to search through
 
     Returns:
-        A ParsedDefinition with the given name or None.
+        A Definition with the given name or None.
     """
 
-    def does_definition_name_match(parsed_definition: ParsedDefinition) -> bool:
+    def does_definition_name_match(parsed_definition: Definition) -> bool:
         return remove_list_type_indicator(definition_name) == parsed_definition.name
 
-    matching_definitions = list(filter(does_definition_name_match, parsed_definitions))
+    matching_definitions = list(filter(does_definition_name_match, definitions))
     matching_definitions_count = len(matching_definitions)
 
     result = None
@@ -223,14 +218,14 @@ def get_definition_by_name(definition_name: str, parsed_definitions: list[Parsed
     return result
 
 
-def convert_parsed_definitions_to_dict_definition(parsed_definitions: list[ParsedDefinition]) -> dict:
+def convert_parsed_definitions_to_dict_definition(definitions: list[Definition]) -> dict:
     """
-    DEPRECATED: Returns a combined dict from the list of ParsedDefinitions.
+    DEPRECATED: Returns a combined dict from the list of Definitions.
 
     This function is intended only as a stop-gap to support some implementations until they have been fully
-    converted to utilize ParsedDefinitions.
+    converted to utilize Definitions.
     """
-    return {definition.name: definition.definition for definition in parsed_definitions}
+    return {definition.name: definition.structure for definition in definitions}
 
 
 def remove_list_type_indicator(list_type: str) -> str:
@@ -244,8 +239,8 @@ def is_array_type(type: str) -> bool:
 
 
 def get_definition_fields_and_types(
-    parsed_definition: ParsedDefinition, context_definitions: list[ParsedDefinition]
-) -> dict[str, ParsedDefinition]:
+    parsed_definition: Definition, context_definitions: list[Definition]
+) -> dict[str, Definition]:
     """Return a list of field names to their definition types."""
     root_definition = get_definition_by_name("root", context_definitions)
     root_fields = search_definition(root_definition, ["data", "fields"])

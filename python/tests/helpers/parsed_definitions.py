@@ -1,8 +1,8 @@
-"""This module contains helpers for creating ParsedDefinitions for use with unit tests."""
+"""This module contains helpers for creating Definitions for use with unit tests."""
 
 import yaml
 
-from aac.parser import ParsedDefinition
+from aac.lang.definitions.definition import Definition
 
 ACTION_STRING = "action"
 ARGUMENTS_STRING = "arguments"
@@ -149,6 +149,6 @@ def _create_parsed_defintion(root_key: str, definition_structure: dict):
     name = (NAME_STRING in definition_structure and definition_structure[NAME_STRING]) or "undefined_name"
     definition_dict = {root_key: definition_structure}
 
-    return ParsedDefinition(
-        name=name, content=yaml.dump(definition_dict, sort_keys=False), lexemes=[], definition=definition_dict
+    return Definition(
+        name=name, content=yaml.dump(definition_dict, sort_keys=False), lexemes=[], structure=definition_dict
     )

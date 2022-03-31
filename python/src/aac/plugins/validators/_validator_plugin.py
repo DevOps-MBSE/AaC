@@ -2,7 +2,7 @@
 from __future__ import annotations
 from attr import attrib, attrs, validators
 
-from aac.parser import ParsedDefinition
+from aac.lang.definitions.definition import Definition
 
 
 @attrs
@@ -18,6 +18,6 @@ class ValidatorPlugin:
     """
 
     name: str = attrib(validator=validators.instance_of(str))
-    definition: ParsedDefinition = attrib(validator=validators.instance_of(ParsedDefinition))
+    definition: Definition = attrib(validator=validators.instance_of(Definition))
     validation_function: callable = attrib(default=None, validator=validators.is_callable())
     arguments: dict = attrib(default={}, validator=validators.instance_of(dict))

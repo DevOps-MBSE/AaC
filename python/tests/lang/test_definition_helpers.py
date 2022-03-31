@@ -12,7 +12,7 @@ from aac.lang.definition_helpers import (
     search,
     search_definition,
 )
-from aac.parser import ParsedDefinition
+from aac.lang.definitions.definition import Definition
 from aac.spec import core
 from tests.helpers.parsed_definitions import create_model_definition
 
@@ -27,7 +27,7 @@ class TestDefinitionHelpers(TestCase):
         Unit test for the definition_helpers.get_models_by_type method.
         """
 
-        def filter_by_root(definition: ParsedDefinition, root_key: str):
+        def filter_by_root(definition: Definition, root_key: str):
             return definition.get_root_key() == root_key
 
         aac_core_definitions = core.get_aac_spec()
