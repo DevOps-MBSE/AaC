@@ -1,4 +1,4 @@
-import { execShell } from "./helpers";
+import { execShell, getConfigurationItem } from "./helpers";
 import { getOutputChannel } from "./outputChannel";
 import { window, QuickPickOptions, InputBoxOptions, OpenDialogOptions, Uri } from 'vscode';
 
@@ -107,8 +107,10 @@ async function execAacShellCommand(command: string, commandArgs: CommandArgument
         .filter(argument => argument.userResponse)
         .map(argument => argument.optional ? `${argument.name} ${argument.userResponse}` : argument.userResponse);
 
+    const aac = getConfigurationItem("aacPath") || "aac";
+    const cmd = [aac, command, ...commandArgsArray].join(" ");
     try {
-        const { stdout, stderr } = await execShell(["aac", command, ...commandArgsArray].join(" "), {});
+        const { stdout, stderr } = await execShell(cmd, {});
         return stderr.length > 0 ? stderr : stdout;
     } catch (error: any) {
         let errorMessage = error.stderr || error.stdout || "urecognized error";
