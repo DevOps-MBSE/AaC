@@ -5,7 +5,8 @@
 
 from iteration_utilities import flatten
 
-from aac.lang.definition_helpers import convert_parsed_definitions_to_dict_definition, get_models_by_type, search
+from aac.lang.definition_helpers import convert_parsed_definitions_to_dict_definition, get_models_by_type
+from aac.lang.definitions.search import search
 from aac.plugins import PluginError
 from aac.plugins.plugin_execution import (
     PluginExecutionResult,

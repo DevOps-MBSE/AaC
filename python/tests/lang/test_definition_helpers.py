@@ -9,9 +9,8 @@ from aac.lang.definition_helpers import (
     get_definition_by_name,
     get_definitions_by_root_key,
     get_definition_fields_and_types,
-    search,
-    search_definition,
 )
+from aac.lang.definitions.search import search_definition, search
 from aac.lang.definitions.definition import Definition
 from aac.spec import core
 from tests.helpers.parsed_definitions import create_model_definition

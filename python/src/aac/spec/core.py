@@ -1,9 +1,10 @@
 """Functions to allow interacting with the core AaC spec."""
 
-from aac.parser import parse
+from aac.lang.definition_helpers import get_definitions_by_root_key, get_definition_by_name
 from aac.lang.definitions.definition import Definition
+from aac.lang.definitions.search import search_definition
 from aac.package_resources import get_resource_file_contents
-from aac.lang.definition_helpers import get_definitions_by_root_key, search_definition, get_definition_by_name
+from aac.parser import parse
 
 PRIMITIVES: list[str] = []
 ROOT_NAMES: list[str] = []

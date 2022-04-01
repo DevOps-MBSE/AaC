@@ -1,12 +1,13 @@
 """The Language Context manages the highly-contextual AaC DSL."""
+
 import copy
 from attr import Factory, attrib, attrs, validators
 
 from aac.lang.definitions.definition import Definition
+from aac.lang.definitions.search import search_definition
 from aac.lang.definition_helpers import (
     get_definition_by_name,
     get_definitions_by_root_key,
-    search_definition,
     remove_list_type_indicator,
 )
 

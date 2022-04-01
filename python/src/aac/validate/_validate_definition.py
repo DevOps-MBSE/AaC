@@ -2,14 +2,12 @@ import logging
 from typing import Optional
 from iteration_utilities import flatten
 
-from aac.lang.definition_helpers import (
-    search_definition,
-    get_definition_fields_and_types,
-)
-from aac.lang.hierarchy import get_definition_ancestry
-from aac.lang.definitions.definition import Definition
-from aac.plugins.validators import ValidatorPlugin, ValidatorResult
 from aac.lang.context import LanguageContext
+from aac.lang.definition_helpers import get_definition_fields_and_types
+from aac.lang.definitions.definition import Definition
+from aac.lang.definitions.search import search_definition
+from aac.lang.hierarchy import get_definition_ancestry
+from aac.plugins.validators import ValidatorPlugin, ValidatorResult
 
 
 def validate_definition(
@@ -44,9 +42,7 @@ def _validate_definition_substructure(
     validator_results = []
 
     def _apply_validation(content_to_validate: dict, validators: list[ValidatorPlugin]) -> list[ValidatorResult]:
-        validator_results.extend(
-            [_apply_validator(content_to_validate, context, validator) for validator in validators]
-        )
+        validator_results.extend([_apply_validator(content_to_validate, context, validator) for validator in validators])
 
     def _recursively_apply_field_validations(definition_to_validate: Definition) -> None:
         """Recurse through the fields and identify validations to apply."""

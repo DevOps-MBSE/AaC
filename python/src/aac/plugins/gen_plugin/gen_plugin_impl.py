@@ -9,7 +9,8 @@ import yaml
 
 from os import path
 
-from aac.lang.definition_helpers import convert_parsed_definitions_to_dict_definition, get_models_by_type, search
+from aac.lang.definition_helpers import convert_parsed_definitions_to_dict_definition, get_models_by_type
+from aac.lang.definitions.search import search
 from aac.lang.definitions.definition import Definition
 from aac.template_engine import (
     TemplateOutputFile,
