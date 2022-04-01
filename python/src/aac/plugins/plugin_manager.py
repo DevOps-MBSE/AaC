@@ -22,6 +22,7 @@ def get_plugin_manager() -> PluginManager:
         gen_gherkin_behaviors,
         gen_plant_uml,
         specifications,
+        help_dump,
     )
 
     plugin_manager = PluginManager(PLUGIN_PROJECT_NAME)
@@ -36,6 +37,7 @@ def get_plugin_manager() -> PluginManager:
     plugin_manager.register(gen_gherkin_behaviors)
     plugin_manager.register(gen_plant_uml)
     plugin_manager.register(specifications)
+    plugin_manager.register(help_dump)
 
     return plugin_manager
 
@@ -47,7 +49,6 @@ def get_plugin_model_definitions():
     Returns:
         A list of plugin defined models.
     """
-
     plugin_manager = get_plugin_manager()
     plugin_models_yaml = plugin_manager.hook.get_plugin_aac_definitions()
     plugin_extensions = {}
