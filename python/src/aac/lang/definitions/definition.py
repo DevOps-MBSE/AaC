@@ -1,6 +1,7 @@
 """An Architecture-as-Code definition augmented with metadata and helpful functions."""
 
 from attr import Factory, attrib, attrs, validators
+import logging
 import yaml
 
 from aac.lang.definitions.lexeme import Lexeme
@@ -25,6 +26,24 @@ class Definition:
     def get_root_key(self) -> str:
         """Return the root key for the parsed definition."""
         return list(self.structure.keys())[0]
+
+    def get_definition_fields(self) -> dict[str, dict]:
+        """Return a dictionary of fields defined in the definition, where the field name is the key."""
+        fields = self.structure.get(self.get_root_key())
+
+        # Because data is our base root/definition, it is a special case.
+        if self.get_root_key() == "data":
+            data_fields_list = fields.get("fields")
+            fields = {field.get("name"): field for field in data_fields_list}
+
+        if not fields:
+            logging.debug(f"Failed to find any fields defined in the definition. Definition:\n{self.structure}")
+            fields = {}
+        elif type(fields) is not dict:
+            logging.debug(f"Failed to find an dictionary of fields, found this instead:\n{fields} in definition:\n{self.structure}")
+            fields = {}
+
+        return fields
 
     def is_extension(self) -> bool:
         """Returns true if the definition is an extension definition."""
