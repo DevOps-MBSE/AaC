@@ -2,11 +2,12 @@ import logging
 from typing import Optional
 from iteration_utilities import flatten
 
-from aac.lang.definition_helpers import get_definition_by_name, search_definition, remove_list_type_indicator
-from aac.lang.hierarchy import get_definition_ancestry
-from aac.lang.definitions.definition import Definition
-from aac.plugins.validators import ValidatorPlugin
 from aac.lang.context import LanguageContext
+from aac.lang.definition_helpers import get_definition_by_name, remove_list_type_indicator
+from aac.lang.definitions.definition import Definition
+from aac.lang.definitions.search import search_definition
+from aac.lang.hierarchy import get_definition_ancestry
+from aac.plugins.validators import ValidatorPlugin
 
 
 def get_applicable_validators_for_definition(
