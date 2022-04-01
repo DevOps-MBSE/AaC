@@ -4,23 +4,32 @@ import yaml
 
 from aac.lang.definitions.definition import Definition
 
+ACCEPTANCE_STRING = "acceptance"
 ACTION_STRING = "action"
-ARGUMENTS_STRING = "arguments"
 ADD_STRING = "add"
+ARGUMENTS_STRING = "arguments"
+BEHAVIOR_CAPITALIZED_STRING = "Behavior"
 BEHAVIOR_STRING = "behavior"
 COMPONENTS_STRING = "components"
 DESCRIPTION_STRING = "description"
 FIELDS_STRING = "fields"
+GIVEN_STRING = "given"
+INPUT_STRING = "input"
 NAME_STRING = "name"
+OUTPUT_STRING = "output"
 PARTICIPANTS_STRING = "participants"
 REQUIRED_STRING = "required"
+SCENARIO_STRING = "scenario"
 SOURCE_STRING = "source"
 STATE_STRING = "state"
 STEP_STRING = "step"
 STEPS_STRING = "steps"
+TAGS_STRING = "tags"
 TARGET_STRING = "target"
+THEN_STRING = "then"
 TYPE_STRING = "type"
 VALIDATION_STRING = "validation"
+WHEN_STRING = "when"
 
 
 def create_field_entry(name: str, type: str = "", description: str = "") -> dict:
@@ -68,6 +77,44 @@ def create_validation_entry(name: str, arguments: list[str] = []) -> dict:
     return {
         NAME_STRING: name,
         ARGUMENTS_STRING: arguments,
+    }
+
+
+def create_behavior_entry(name: str, behavior_type: str = "pub-sub", description: str = "", tags: list[str] = [], input: list[dict] = [], output: list[dict] = [], acceptance: list[dict] = []) -> dict:
+    """
+    Creates a single behavior entry for definitions.
+
+    Use this function to create a field entries for the "behavior" section of larger definitions.
+
+    Returns:
+        A dictionary representing an AaC behavior definition.
+    """
+    return {
+        NAME_STRING: name,
+        TYPE_STRING: behavior_type,
+        DESCRIPTION_STRING: description,
+        TAGS_STRING: tags,
+        INPUT_STRING: input,
+        OUTPUT_STRING: output,
+        ACCEPTANCE_STRING: acceptance,
+    }
+
+
+def create_scenario_entry(name: str, tags: list[str] = [], given: list[str] = [], when: list[str] = [], then: list[str] = []) -> dict:
+    """
+    Creates a single scenario entry for definitions.
+
+    Use this function to create a field entries for the "scenario" section of larger definitions.
+
+    Returns:
+        A dictionary representing an AaC scenario definition.
+    """
+    return {
+        NAME_STRING: name,
+        TAGS_STRING: tags,
+        GIVEN_STRING: given,
+        WHEN_STRING: when,
+        THEN_STRING: then
     }
 
 

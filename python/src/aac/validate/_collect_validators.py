@@ -3,9 +3,9 @@ from typing import Optional
 from iteration_utilities import flatten
 
 from aac.lang.context import LanguageContext
-from aac.lang.definition_helpers import get_definition_by_name, remove_list_type_indicator
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.search import search_definition
+from aac.lang.definitions.structure import get_sub_definitions
 from aac.lang.hierarchy import get_definition_ancestry
 from aac.plugins.validators import ValidatorPlugin
 
@@ -16,9 +16,10 @@ def get_applicable_validators_for_definition(
     """Traverse the definition and identify all applicable validator plugins."""
 
     ancestor_definitions = get_definition_ancestry(definition, context)
+    sub_structure_definitions = get_sub_definitions(definition, context)
     # For each ancestor definition, pull validation definitions, collapse the 2d list to 1d, and return the list of validations.
     applicable_ancestor_validation_dicts = list(flatten(map(_get_validation_entries, ancestor_definitions)))
-    applicable_substructure_validation_dicts = _get_validation_entries_from_definition_fields(definition, context)
+    applicable_substructure_validation_dicts = list(flatten(map(_get_validation_entries, sub_structure_definitions)))
     applicable_validation_dicts = applicable_ancestor_validation_dicts + applicable_substructure_validation_dicts
 
     applicable_validators = {}
@@ -34,39 +35,6 @@ def get_applicable_validators_for_definition(
             )
 
     return list(applicable_validators.values())
-
-
-def _get_validation_entries_from_definition_fields(definition: Definition, context: LanguageContext) -> list[dict]:
-    """Return a list of validation entries from substructures and fields in the definition."""
-
-    def _recursively_gather_field_validations(field_definition: Definition, traversed_types: list[str]) -> list[dict[str, list]]:
-        validations = {}
-        definition_root_key = field_definition.get_root_key()
-        traversed_types.append(field_definition.name)
-        definition_root_structure = get_definition_by_name(definition_root_key, context.definitions)
-        definition_field_structures_dict = search_definition(
-            definition_root_structure, [definition_root_structure.get_root_key(), "fields"]
-        )
-
-        for field in definition_field_structures_dict:
-            field_type = remove_list_type_indicator(field.get("type"))
-
-            if field_type in traversed_types:
-                continue
-
-            # Since enums don't support the validation field, we can ignore primitive types
-            if context.is_definition_type(field_type):
-                type_definition = get_definition_by_name(field_type, context.definitions)
-                field_type_validations = _get_validation_entries(type_definition)
-                if len(field_type_validations) > 0:
-                    validations[field_type] = field_type_validations
-
-                validations = validations | _recursively_gather_field_validations(type_definition, traversed_types)
-
-        return validations
-
-    validations = flatten(_recursively_gather_field_validations(definition, []).values())
-    return list(validations)
 
 
 def _get_validation_entries(definition: Definition) -> list[dict]:
