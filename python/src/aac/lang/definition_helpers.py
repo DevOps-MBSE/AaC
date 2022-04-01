@@ -4,6 +4,7 @@ import logging
 from typing import Optional
 
 from aac.lang.definitions.definition import Definition
+from aac.lang.definitions.search import search_definition
 
 
 def get_models_by_type(models: dict[str, dict], root_name: str) -> dict[str, dict]:
