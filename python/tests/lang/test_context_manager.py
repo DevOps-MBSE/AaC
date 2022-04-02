@@ -1,5 +1,5 @@
 from unittest import TestCase
-from aac.lang.context import LanguageContext
+from aac.lang.language_context import LanguageContext
 
 from aac.lang.context_manager import get_active_context
 from aac.plugins.plugin_manager import get_plugin_definitions

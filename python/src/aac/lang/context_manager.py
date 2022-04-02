@@ -1,6 +1,6 @@
 """This module manages a singleton instance of LanguageContext and its lifecycle."""
 
-from aac.lang.context import LanguageContext
+from aac.lang.language_context import LanguageContext
 from aac.plugins.plugin_manager import get_plugin_definitions
 from aac.spec import get_aac_spec
 

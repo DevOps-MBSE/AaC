@@ -3,7 +3,7 @@
 import logging
 from typing import Optional
 
-from aac.lang.context import LanguageContext
+from aac.lang.language_context import LanguageContext
 from aac.lang.definition_helpers import get_definition_by_name
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.search import search_definition

@@ -2,7 +2,7 @@ import logging
 from typing import Optional
 from iteration_utilities import flatten
 
-from aac.lang.context import LanguageContext
+from aac.lang.language_context import LanguageContext
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.search import search_definition
 from aac.lang.definitions.structure import get_sub_definitions

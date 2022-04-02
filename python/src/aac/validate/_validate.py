@@ -1,7 +1,7 @@
 from contextlib import contextmanager
 from iteration_utilities import flatten
 
-from aac.lang.context import LanguageContext
+from aac.lang.language_context import LanguageContext
 from aac.lang.context_manager import get_active_context
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.structure import get_sub_definitions

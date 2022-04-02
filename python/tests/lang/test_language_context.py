@@ -1,7 +1,7 @@
 from unittest import TestCase
 from aac.lang.definition_helpers import get_definition_by_name
 
-from aac.lang.context import LanguageContext
+from aac.lang.language_context import LanguageContext
 from aac.spec import get_aac_spec, get_primitives, get_root_keys
 
 from tests.helpers.parsed_definitions import (
@@ -13,7 +13,7 @@ from tests.helpers.parsed_definitions import (
 )
 
 
-class TestActiveContext(TestCase):
+class TestLanguageContext(TestCase):
 
     def test_add_definition_to_context_with_extensions(self):
         test_definition_name = "myDef"

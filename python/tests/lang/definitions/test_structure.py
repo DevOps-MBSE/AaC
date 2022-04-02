@@ -1,5 +1,5 @@
 from unittest import TestCase
-from aac.lang.context import LanguageContext
+from aac.lang.language_context import LanguageContext
 
 from aac.lang.definition_helpers import get_definition_by_name
 from aac.lang.definitions.structure import get_sub_definitions, get_substructures_by_type

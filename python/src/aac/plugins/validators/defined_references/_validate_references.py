@@ -1,6 +1,6 @@
 import logging
 
-from aac.lang.context import LanguageContext
+from aac.lang.language_context import LanguageContext
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.structure import get_substructures_by_type
 from aac.plugins.validators import ValidatorResult
