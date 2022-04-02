@@ -29,7 +29,7 @@ def get_substructures_by_type(source_definition: Definition, subdefinition_type:
         if sub_definition.name == subdefinition_type.name:
             substructure_instances.append(sub_dict)
 
-        sub_definition_defined_fields = sub_definition.get_definition_fields()
+        sub_definition_defined_fields = sub_definition.get_fields()
         sub_definition_defined_field_names = set(sub_definition_defined_fields.keys())
         populated_field_names = set(sub_dict.keys())
 
@@ -60,18 +60,27 @@ def get_substructures_by_type(source_definition: Definition, subdefinition_type:
                 for field in field_sub_dicts:
                     _get_substructures(field_type_definition, field)
 
-    source_definition_populated_fields = source_definition.get_definition_fields()
+    populated_fields = source_definition.get_fields()
     source_definition_root_key = source_definition.get_root_key()
-    source_definition_defined_type = get_definition_by_name(source_definition_root_key, context.definitions)
-    source_defined_fields = source_definition_defined_type.get_definition_fields()
 
-    if not source_definition_populated_fields:
+    # Return the whole definition dictionary if the desired substructure is equal to the root type.
+    if source_definition_root_key == subdefinition_type.name:
+        return [source_definition.structure.get(source_definition_root_key)]
+
+    source_definition_schema_definition = get_definition_by_name(source_definition_root_key, context.definitions)
+    defined_fields = source_definition_schema_definition.get_fields()
+
+    # Data definitions are inherently schema definitions and so must be treated differently.
+    if source_definition_root_key == "data":
+        defined_fields = populated_fields
+
+    if not populated_fields:
         logging.debug(f"Failed to find any fields defined in the definition. Definition:\n{source_definition}")
         return []
 
-    for field_name, field_contents in source_definition_populated_fields.items():
+    for field_name, field_contents in populated_fields.items():
         field_content = {field_name: field_contents}
-        field_type = source_defined_fields.get(field_name).get("type")
+        field_type = defined_fields.get(field_name).get("type")
 
         if not field_type:
             logging.debug(f"Failed to get the field type for {field_content} in the definition: {source_definition.structure}")
@@ -108,7 +117,7 @@ def get_sub_definitions(source_definition: Definition, context: LanguageContext)
 
     def _get_sub_definitions(sub_definition: Definition):
 
-        defined_fields = sub_definition.get_definition_fields()
+        defined_fields = sub_definition.get_fields()
 
         for field_name in defined_fields.keys():
             field_type_name = defined_fields.get(field_name).get("type") or None
@@ -125,7 +134,7 @@ def get_sub_definitions(source_definition: Definition, context: LanguageContext)
 
     source_definition_root_key = source_definition.get_root_key()
     source_definition_type_definition = get_definition_by_name(source_definition_root_key, context.definitions)
-    defined_source_definition_fields = source_definition_type_definition.get_definition_fields()
+    defined_source_definition_fields = source_definition_type_definition.get_fields()
 
     # Loop through the Field[] definitions in the defining type.
     for field_name in defined_source_definition_fields.keys():

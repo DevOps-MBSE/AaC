@@ -27,8 +27,8 @@ class Definition:
         """Return the root key for the parsed definition."""
         return list(self.structure.keys())[0]
 
-    def get_definition_fields(self) -> dict[str, dict]:
-        """Return a dictionary of fields defined in the definition, where the field name is the key."""
+    def get_fields(self) -> dict[str, dict]:
+        """Return a dictionary of field name to field dictionaries."""
         fields = self.structure.get(self.get_root_key())
 
         # Because data is our base root/definition, it is a special case.
@@ -44,6 +44,26 @@ class Definition:
             fields = {}
 
         return fields
+
+    def get_required(self) -> list[str]:
+        """Return a list of field names if the definition has a required field."""
+        fields = self.structure.get(self.get_root_key())
+        required = []
+
+        if "required" in fields:
+            required = fields.get("required")
+
+        return required
+
+    def get_validation(self) -> list[str]:
+        """Return a list of validation entries names if the definition has a validation field."""
+        fields = self.structure.get(self.get_root_key())
+        required = []
+
+        if "validation" in fields:
+            required = fields.get("validation")
+
+        return required
 
     def is_extension(self) -> bool:
         """Returns true if the definition is an extension definition."""
