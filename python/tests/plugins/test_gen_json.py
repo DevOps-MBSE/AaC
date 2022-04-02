@@ -65,5 +65,5 @@ model:
       description: Tests Yaml
       input:
         - name: architecture
-          type: string
+          type: striiiiiiiiiiiiiiing
 """

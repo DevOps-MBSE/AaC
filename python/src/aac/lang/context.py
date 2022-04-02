@@ -1,14 +1,16 @@
 """The Language Context manages the highly-contextual AaC DSL."""
 
-import copy
+from typing import Optional
 from attr import Factory, attrib, attrs, validators
+import copy
+import logging
 
 from aac.lang.definitions.definition import Definition
+from aac.lang.definitions.arrays import is_array_type, remove_list_type_indicator
 from aac.lang.definitions.search import search_definition
 from aac.lang.definition_helpers import (
     get_definition_by_name,
     get_definitions_by_root_key,
-    remove_list_type_indicator,
 )
 
 
@@ -24,8 +26,13 @@ class LanguageContext:
     Attributes:
         definitions: The list of all definitions currently in the LanguageContext
     """
+    def __attrs_post_init__(self):
+        self.definitions_name_dictionary = {definition.name: definition for definition in self.definitions}
 
     definitions: list[Definition] = attrib(default=Factory(list), validator=validators.instance_of(list))
+
+    # Private attribute - don't reference outside the class.
+    definitions_name_dictionary: dict[str, Definition] = attrib(init=False, default=Factory(dict), validator=validators.instance_of(dict))
 
     def add_definition_to_context(self, definition: Definition):
         """
@@ -34,7 +41,13 @@ class LanguageContext:
         Args:
             definition: The Definition to add to the context.
         """
-        self.definitions.append(copy.deepcopy(definition))
+        new_definition = copy.deepcopy(definition)
+
+        if new_definition.name not in self.definitions_name_dictionary:
+            self.definitions_name_dictionary[new_definition.name] = new_definition
+            self.definitions.append(new_definition)
+        else:
+            logging.debug(f"Did not add definition '{new_definition.name}' to the context because one already exists with the same name.")
 
         if definition.is_extension():
             self._apply_extension_to_context(definition)
@@ -130,7 +143,6 @@ class LanguageContext:
         Returns:
             A list of strings, one entry for each definition name available in the LanguageContext.
         """
-
         return list(map(lambda definition: definition.name, self.definitions))
 
     def is_primitive_type(self, type: str) -> bool:
@@ -140,6 +152,13 @@ class LanguageContext:
     def is_definition_type(self, type: str) -> bool:
         """Returns a boolean indicating if the type is defined by another definition."""
         return remove_list_type_indicator(type) in self.get_defined_types()
+
+    def get_definition_by_name(self, definition_name: str) -> Optional[Definition]:
+        """Return the definition corresponding to the argument, or None if not found."""
+        if is_array_type(definition_name):
+            definition_name = remove_list_type_indicator(definition_name)
+
+        return self.definitions_name_dictionary.get(definition_name)
 
     def _apply_extension_to_context(self, extension_definition: Definition) -> None:
         """Apply the extension to the definitions it modifies in the LanguageContext."""

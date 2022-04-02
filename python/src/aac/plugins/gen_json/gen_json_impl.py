@@ -27,7 +27,7 @@ def print_json(architecture_files: list[str], output_directory: str = None) -> P
         file_name, _ = os.path.splitext(os.path.basename(architecture_file_path))
 
         with validate_source(architecture_file_path) as result:
-            definitions_as_dict = convert_parsed_definitions_to_dict_definition(result.parsed_definitions)
+            definitions_as_dict = convert_parsed_definitions_to_dict_definition(result.definitions)
             formatted_json = json.dumps(definitions_as_dict, indent=2)
 
             if output_directory:

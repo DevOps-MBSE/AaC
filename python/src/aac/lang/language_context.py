@@ -1,4 +1,4 @@
-"""The Active Context maintains the highly-contextual AaC DSL."""
+"""The Language Context class contains the highly-contextual AaC DSL."""
 import copy
 from attr import Factory, attrib, attrs, validators
 

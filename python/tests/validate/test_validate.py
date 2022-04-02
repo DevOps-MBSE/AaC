@@ -20,7 +20,7 @@ class TestValidators(TestCase):
         with validate_definitions([test_definition]) as result:
             self.assertTrue(result.is_valid)
 
-    def test_validate_definitions_with_invalid_definition(self):
+    def test_validate_definitions_with_invalid_reference_definition(self):
         test_field = create_field_entry("TestField", "striiiing")
         test_definition = create_data_definition("Empty Data", [test_field])
 

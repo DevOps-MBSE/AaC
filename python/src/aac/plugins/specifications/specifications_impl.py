@@ -22,7 +22,7 @@ def spec_validate(architecture_file: str) -> PluginExecutionResult:
 
     def validate():
         with validate_source(architecture_file) as result:
-            definitions_dict = convert_parsed_definitions_to_dict_definition(result.parsed_definitions)
+            definitions_dict = convert_parsed_definitions_to_dict_definition(result.definitions)
             is_valid, validation_errors = _run_spec_validation(definitions_dict)
 
             if is_valid:

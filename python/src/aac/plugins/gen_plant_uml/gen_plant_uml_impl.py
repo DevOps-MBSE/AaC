@@ -187,7 +187,7 @@ def _generate_diagram_to_file(
         Result message string
     """
     with validate_source(architecture_file_path) as result:
-        template_properties = property_generator(convert_parsed_definitions_to_dict_definition(result.parsed_definitions))
+        template_properties = property_generator(convert_parsed_definitions_to_dict_definition(result.definitions))
         templates = [
             (props.get("filename"), generate_templates(load_default_templates(f"{plugin_name}/{puml_type}"), props))
             for props in template_properties

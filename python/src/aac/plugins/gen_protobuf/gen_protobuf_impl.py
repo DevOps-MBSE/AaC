@@ -37,7 +37,7 @@ def gen_protobuf(architecture_file: str, output_directory: str) -> PluginExecuti
         with validate_source(architecture_file) as validation_result:
             loaded_templates = load_default_templates("gen_protobuf")
 
-            definitions_as_dictionary = convert_parsed_definitions_to_dict_definition(validation_result.parsed_definitions)
+            definitions_as_dictionary = convert_parsed_definitions_to_dict_definition(validation_result.definitions)
             data_messages_and_enum_definitions = _collect_data_and_enum_definitions(definitions_as_dictionary)
             message_template_properties = _collect_template_generation_properties(data_messages_and_enum_definitions)
 

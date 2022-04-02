@@ -2,10 +2,9 @@ from unittest import TestCase
 from tempfile import NamedTemporaryFile
 
 from aac.lang.context_manager import get_active_context
-from aac.plugins.plugin_execution import PluginExecutionStatusCode
 from aac.plugins.specifications.specifications_impl import spec_validate
 
-from tests.helpers.assertion import assert_plugin_success
+from tests.helpers.assertion import assert_plugin_failure, assert_plugin_success
 
 
 class TestSpecifications(TestCase):
@@ -26,7 +25,7 @@ class TestSpecifications(TestCase):
             temp_spec.seek(0)
 
             result = spec_validate(temp_spec.name)
-            self.assertEqual(result.status_code, PluginExecutionStatusCode.PLUGIN_FAILURE)
+            assert_plugin_failure(result)
             self.assertIn("Invalid requirement id 'SUB-3'", "\n".join(result.messages))
 
 

@@ -2,21 +2,21 @@ from unittest import TestCase
 from aac.lang.context import LanguageContext
 
 from aac.lang.definition_helpers import get_definition_by_name
-from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.structure import get_sub_definitions, get_substructures_by_type
-from aac.spec import get_aac_spec
 
+from tests.helpers.context import get_core_spec_context
 from tests.helpers.parsed_definitions import (
     create_behavior_entry,
+    create_data_definition,
     create_field_entry,
     create_model_definition,
     create_scenario_entry,
 )
 
 
-class TestActiveContext(TestCase):
+class TestDefinitionStructures(TestCase):
     def test_get_sub_definitions_with_data(self):
-        test_context = LanguageContext(get_aac_spec())
+        test_context = get_core_spec_context()
 
         data_definition = get_definition_by_name("data", test_context.definitions)
 
@@ -31,9 +31,10 @@ class TestActiveContext(TestCase):
         self.assertListEqual(expected_definitions, actual_definitions)
 
     def test_get_sub_definitions_with_model(self):
-        test_context = LanguageContext(get_aac_spec())
+        test_context = get_core_spec_context()
 
         model_definition = create_model_definition("TestModel")
+        test_context.add_definition_to_context(model_definition)
 
         # Per the core spec, we'd expect Field, Behavior, BehaviorType, and Scenario
         field_definition = get_definition_by_name("Field", test_context.definitions)
@@ -49,8 +50,26 @@ class TestActiveContext(TestCase):
         for actual_definition in actual_definitions:
             self.assertIn(actual_definition, expected_definitions)
 
+    def test_get_substructures_by_type_with_user_defined_data(self):
+        test_context = get_core_spec_context()
+
+        test_string_field_entry = create_field_entry("TestStringField", "string")
+        test_file_field_entry = create_field_entry("TestFileField", "file")
+        test_data_definition = create_data_definition(
+            "TestData", fields=[test_string_field_entry, test_file_field_entry]
+        )
+
+        test_context.add_definition_to_context(test_data_definition)
+
+        field_definition = test_context.get_definition_by_name("Field")
+        expected_field_definitions = [test_string_field_entry, test_file_field_entry]
+
+        actual_field_definitions = get_substructures_by_type(test_data_definition, field_definition, test_context)
+
+        self.assertListEqual(expected_field_definitions, actual_field_definitions)
+
     def test_get_substructures_by_type_with_model(self):
-        test_context = LanguageContext(get_aac_spec())
+        test_context = get_core_spec_context()
 
         sub_model_definition = create_model_definition("SubModel")
 
@@ -64,9 +83,9 @@ class TestActiveContext(TestCase):
 
         test_context.add_definitions_to_context([test_model_definition, sub_model_definition])
 
-        scenario_definition = get_definition_by_name("Scenario", test_context.definitions)
-        field_definition = get_definition_by_name("Field", test_context.definitions)
-        behavior_definition = get_definition_by_name("Behavior", test_context.definitions)
+        scenario_definition = test_context.get_definition_by_name("Scenario")
+        field_definition = test_context.get_definition_by_name("Field")
+        behavior_definition = test_context.get_definition_by_name("Behavior")
 
         expected_field_definitions = [test_component_entry, test_input_field]
         expected_behavior_definitions = [test_behavior_entry]

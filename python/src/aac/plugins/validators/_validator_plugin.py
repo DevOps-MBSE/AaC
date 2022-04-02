@@ -19,5 +19,5 @@ class ValidatorPlugin:
 
     name: str = attrib(validator=validators.instance_of(str))
     definition: Definition = attrib(validator=validators.instance_of(Definition))
-    validation_function: callable = attrib(default=None, validator=validators.is_callable())
+    validation_function: callable = attrib(validator=validators.is_callable())
     arguments: dict = attrib(default={}, validator=validators.instance_of(dict))

@@ -2,8 +2,8 @@
 
 from aac.package_resources import get_resource_file_contents
 from aac.plugins import hookimpl
-from aac.plugins.validators import get_validation_definition_from_plugin_definitions
-from aac.plugins.validators import ValidatorPlugin
+from aac.plugins.validators import ValidatorPlugin, get_validation_definition_from_plugin_definitions
+from aac.plugins.validators.required_fields._validate_required_fields import validate_required_fields
 
 PLUGIN_YAML_FILE = "required_fields.yaml"
 
@@ -29,4 +29,4 @@ def register_validators() -> ValidatorPlugin:
         A collection of data necessary to manage and execute validation plugins.
     """
     validation_definition = get_validation_definition_from_plugin_definitions(get_plugin_aac_definitions())
-    return ValidatorPlugin(validation_definition.name, validation_definition, (lambda x: x))
+    return ValidatorPlugin(validation_definition.name, validation_definition, validate_required_fields)

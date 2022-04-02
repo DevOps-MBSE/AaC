@@ -26,6 +26,7 @@ def get_aac_spec() -> list[Definition]:
     global AAC_CORE_SPEC_DEFINITIONS
     if len(AAC_CORE_SPEC_DEFINITIONS) > 0:
         # already parsed, just return cached values
+        # TODO: just return the core spec....
         aac_data = get_definitions_by_root_key("data", AAC_CORE_SPEC_DEFINITIONS)
         aac_enums = get_definitions_by_root_key("enum", AAC_CORE_SPEC_DEFINITIONS)
         return aac_data + aac_enums

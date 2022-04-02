@@ -4,6 +4,7 @@ import logging
 from typing import Optional
 
 from aac.lang.definitions.definition import Definition
+from aac.lang.definitions.arrays import remove_list_type_indicator
 from aac.lang.definitions.search import search_definition
 
 
@@ -69,11 +70,12 @@ def get_definition_by_name(definition_name: str, definitions: list[Definition]) 
 
     result = None
     if matching_definitions_count > 1:
-        logging.error('Found multiple definitions with the same name "{definition_name}"\n{matching_definitions}"')
+        multiple_definitions_found_error = f"Found multiple definitions with the same name '{definition_name}'\n{matching_definitions}'"
+        logging.error(multiple_definitions_found_error)
         raise RuntimeError(f'Found multiple definitions with the same name "{definition_name}"\n{matching_definitions}')
 
     elif matching_definitions_count < 1:
-        logging.debug('Failed to find a definition with the name "{definition_name}"')
+        logging.debug(f'Failed to find a definition with the name "{definition_name}"')
 
     else:
         result = matching_definitions[0]
@@ -89,16 +91,6 @@ def convert_parsed_definitions_to_dict_definition(definitions: list[Definition])
     converted to utilize Definitions.
     """
     return {definition.name: definition.structure for definition in definitions}
-
-
-def remove_list_type_indicator(list_type: str) -> str:
-    """Return the AaC type without any trailing list indicator characters '[]'."""
-    return list_type.split("[]")[0]
-
-
-def is_array_type(type: str) -> bool:
-    """Returns a boolean indicating if the field is an array of multiple entries."""
-    return type.endswith("[]")
 
 
 def get_definition_fields_and_types(

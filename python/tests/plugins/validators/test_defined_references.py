@@ -1,12 +1,13 @@
 from unittest import TestCase
 
 from aac.lang.context_manager import get_active_context
-from aac.lang.definition_helpers import get_definitions_by_root_key
+from aac.lang.definition_helpers import get_definition_by_name, get_definitions_by_root_key
 from aac.parser import parse
 from aac.plugins.validators import ValidatorPlugin, ValidatorResult
 from aac.plugins.validators.defined_references import get_plugin_aac_definitions, register_validators, validate_references
+from tests.helpers.context import get_core_spec_context
 
-from tests.helpers.parsed_definitions import create_field_entry
+from tests.helpers.parsed_definitions import create_data_definition, create_field_entry
 
 
 class TestDefinedReferencesPlugin(TestCase):
@@ -27,12 +28,15 @@ class TestDefinedReferencesPlugin(TestCase):
 
     def test_validate_references_valid_references(self):
         test_primitive_reference_field = create_field_entry("ValidPrimitiveField", "string")
+        test_definition = create_data_definition("TestData", [test_primitive_reference_field])
 
         expected_result = ValidatorResult([], True)
 
         test_active_context = get_active_context(reload_context=True)
+        test_active_context.add_definition_to_context(test_definition)
+        target_sub_definition = get_definition_by_name("Field", test_active_context.definitions)
 
-        actual_result = validate_references(test_primitive_reference_field, test_active_context)
+        actual_result = validate_references(test_definition, target_sub_definition, test_active_context)
 
         self.assertEqual(expected_result, actual_result)
 
@@ -41,13 +45,15 @@ class TestDefinedReferencesPlugin(TestCase):
         invalid_definition_type = "ThisTypeStringWontAppearInTheCoreSpecIHope"
 
         test_invalid_definition_reference_field = create_field_entry("InvalidBehaviorField", invalid_definition_type)
+        test_invalid_data_defintion = create_data_definition("InvalidData", fields=[test_invalid_definition_reference_field])
 
         invalid_reference_error_message = ""
         expected_result = ValidatorResult([invalid_reference_error_message], False)
 
-        test_active_context = get_active_context(reload_context=True)
+        test_active_context = get_core_spec_context([test_invalid_data_defintion])
+        field_definition = test_active_context.get_definition_by_name("Field")
 
-        actual_result = validate_references(test_invalid_definition_reference_field, test_active_context)
+        actual_result = validate_references(test_invalid_data_defintion, field_definition, test_active_context)
 
         self.assertEqual(expected_result.is_valid, actual_result.is_valid)
         self.assertIn("Undefined", "\n".join(actual_result.messages))
@@ -58,13 +64,15 @@ class TestDefinedReferencesPlugin(TestCase):
         invalid_primitive_type = "striiiiing"
 
         test_invalid_primitive_reference_field = create_field_entry("InvalidPrimitiveField", invalid_primitive_type)
+        test_invalid_data_defintion = create_data_definition("InvalidData", fields=[test_invalid_primitive_reference_field])
 
         invalid_reference_error_message = ""
         expected_result = ValidatorResult([invalid_reference_error_message], False)
 
-        test_active_context = get_active_context(reload_context=True)
+        test_active_context = get_core_spec_context([test_invalid_data_defintion])
+        field_definition = test_active_context.get_definition_by_name("Field")
 
-        actual_result = validate_references(test_invalid_primitive_reference_field, test_active_context)
+        actual_result = validate_references(test_invalid_data_defintion, field_definition, test_active_context)
 
         self.assertEqual(expected_result.is_valid, actual_result.is_valid)
         self.assertIn("Undefined", "\n".join(actual_result.messages))

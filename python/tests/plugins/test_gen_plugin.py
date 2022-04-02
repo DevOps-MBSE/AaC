@@ -14,7 +14,7 @@ from aac.plugins.gen_plugin.gen_plugin_impl import EXPECTED_FIRST_PARTY_DIRECTOR
 from aac.plugins.plugin_execution import PluginExecutionStatusCode
 from aac.validate import validate_source
 
-from tests.helpers.assertion import assert_plugin_success
+from tests.helpers.assertion import assert_plugin_failure, assert_plugin_success
 from tests.helpers.io import temporary_test_file
 
 INIT_TEMPLATE_NAME = "__init__.py.jinja2"
@@ -89,7 +89,7 @@ class TestGenPlugin(TestCase):
                 result = generate_plugin(plugin_yaml.name)
 
                 temp_directory_files = os.listdir(temp_directory)
-                self.assertEqual(result.status_code, PluginExecutionStatusCode.PLUGIN_FAILURE)
+                assert_plugin_failure(result)
                 self.assertEqual(len(temp_directory_files), 1)
                 self.assertIn(os.path.basename(plugin_yaml.name), temp_directory_files)
 
@@ -130,7 +130,7 @@ class TestGenPlugin(TestCase):
         with validate_source(TEST_PLUGIN_YAML_STRING) as result:
             plugin_name = "aac_gen_protobuf"
 
-            generated_templates = _prepare_and_generate_plugin_files(result.parsed_definitions, PLUGIN_TYPE_THIRD_STRING, "")
+            generated_templates = _prepare_and_generate_plugin_files(result.definitions, PLUGIN_TYPE_THIRD_STRING, "")
 
             generated_template_names = []
             generated_template_parent_directories = []
@@ -203,7 +203,7 @@ class TestGenPlugin(TestCase):
             self.assertRaises(
                 GeneratePluginException,
                 _prepare_and_generate_plugin_files,
-                result.parsed_definitions,
+                result.definitions,
                 PLUGIN_TYPE_THIRD_STRING,
                 "",
             )

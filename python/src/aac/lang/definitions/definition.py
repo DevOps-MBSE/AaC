@@ -28,13 +28,13 @@ class Definition:
         return list(self.structure.keys())[0]
 
     def get_fields(self) -> dict[str, dict]:
-        """Return a dictionary of field name to field dictionaries."""
+        """Return a dictionary of the top-level fields that are populated in the defintion by field name to field dictionaries."""
         fields = self.structure.get(self.get_root_key())
 
-        # Because data is our base root/definition, it is a special case.
-        if self.get_root_key() == "data":
-            data_fields_list = fields.get("fields")
-            fields = {field.get("name"): field for field in data_fields_list}
+        # # Because data is our base root/definition, it is a special case.
+        # if self.get_root_key() == "data":
+        #     data_fields_list = fields.get("fields")
+        #     fields = {field.get("name"): field for field in data_fields_list}
 
         if not fields:
             logging.debug(f"Failed to find any fields defined in the definition. Definition:\n{self.structure}")
@@ -44,6 +44,8 @@ class Definition:
             fields = {}
 
         return fields
+
+
 
     def get_required(self) -> list[str]:
         """Return a list of field names if the definition has a required field."""

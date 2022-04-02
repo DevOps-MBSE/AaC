@@ -11,7 +11,7 @@ from aac.plugins.gen_protobuf.gen_protobuf_impl import (
     _collect_template_generation_properties,
 )
 
-from tests.helpers.assertion import assert_plugin_success
+from tests.helpers.assertion import assert_plugin_failure, assert_plugin_success
 from tests.helpers.io import temporary_test_file
 
 
@@ -93,7 +93,7 @@ class TestGenerateProtobufPlugin(TestCase):
 
             load_default_templates.return_value = ["a", "b"]
             result = gen_protobuf(arch_file.name, temp_dir)
-            self.assertEqual(result.status_code, PluginExecutionStatusCode.PLUGIN_FAILURE)
+            assert_plugin_failure(result)
 
     @params(("DataA", "data_a"), ("somethingSimple", "something_simple"), ("SomethingComplex!To.Test", "something_complex!_to._test"), ("whataboutnocamelcases?", "whataboutnocamelcases?"))
     def test__convert_camel_case_to_snake_case(self, test_string, expected_string):
