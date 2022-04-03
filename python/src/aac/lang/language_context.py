@@ -27,6 +27,7 @@ class LanguageContext:
     """
 
     def __attrs_post_init__(self):
+        """Post init hook for attrs classes."""
         self.definitions_name_dictionary = {definition.name: definition for definition in self.definitions}
 
     definitions: list[Definition] = attrib(default=Factory(list), validator=validators.instance_of(list))
