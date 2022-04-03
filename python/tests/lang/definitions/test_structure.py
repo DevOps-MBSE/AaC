@@ -86,7 +86,7 @@ class TestDefinitionStructures(TestCase):
         field_definition = test_context.get_definition_by_name("Field")
         behavior_definition = test_context.get_definition_by_name("Behavior")
 
-        expected_field_definitions = [test_component_entry, test_input_field]
+        expected_field_definitions = [test_input_field, test_component_entry]
         expected_behavior_definitions = [test_behavior_entry]
         expected_scenario_definitions = [test_acceptance_field]
 
