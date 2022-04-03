@@ -3,7 +3,7 @@ Unit tests for the aac.definition_helpers module.
 """
 
 from unittest import TestCase
-from aac.lang.context_manager import get_active_context
+from aac.lang.active_context_lifecycle_manager import get_active_context
 
 from aac.lang.definition_helpers import (
     get_definition_by_name,

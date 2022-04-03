@@ -1,6 +1,6 @@
 """Module for AaC Language functions related to definition references."""
 
-from aac.lang.context_manager import get_active_context
+from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.definitions.definition import Definition
 
 
@@ -9,7 +9,7 @@ def get_definition_references_from_context(source_definition: Definition) -> lis
     Return a list of Definitions from the current active language context that reference the source_definition.
 
     Args:
-        source_definition: The definition that is being referenced
+        source_definition (Definition): The definition that is being referenced
 
     Return:
         A list of Definitions that reference the source_definition_name
@@ -23,8 +23,8 @@ def get_definition_references_from_list(source_definition: Definition, definitio
     Return a subset of Definitions that reference the source_definition.
 
     Args:
-        source_definition: The definition that is being referenced
-        definitions_to_search: The definitions to search through for references
+        source_definition (Definition): The definition that is being referenced
+        definitions_to_search (list[Definition]): The definitions to search through for references
 
     Return:
         A list of Definitions that reference the source_definition_name

@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from aac.lang.context_manager import get_active_context
+from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.plugins.plugin_manager import get_validator_plugins
 from aac.validate._validate import _validate_definition
 

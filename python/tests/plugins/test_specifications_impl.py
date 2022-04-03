@@ -1,7 +1,7 @@
 from unittest import TestCase
 from tempfile import NamedTemporaryFile
 
-from aac.lang.context_manager import get_active_context
+from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.plugins.specifications.specifications_impl import spec_validate
 
 from tests.helpers.assertion import assert_plugin_failure, assert_plugin_success
