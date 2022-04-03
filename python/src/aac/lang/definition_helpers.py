@@ -16,8 +16,8 @@ def get_models_by_type(models: dict[str, dict], root_name: str) -> dict[str, dic
     method allows a setup of parsed models to be "filtered" to a specific root name.
 
     Args:
-        models: The dict of models to search.
-        root_name: The root name to filter on.
+        models (dict[str, dict]): The dict of models to search.
+        root_name (str): The root name to filter on.
 
     Returns:
         A dict mapping type names to AaC model definitions.
@@ -38,8 +38,8 @@ def get_definitions_by_root_key(root_key: str, definitions: list[Definition]) ->
     method allows a setup of parsed definitions to be "filtered" to a specific root name.
 
     Args:
-        definitions: The list of parsed definitions to search.
-        root_key: The root key to filter on.
+        root_key (str): The root key to filter on.
+        definitions (list[Definition]): The list of parsed definitions to search.
 
     Returns:
         A list of ParedDefinitions with the given root key AaC model definitions.
@@ -55,8 +55,8 @@ def get_definition_by_name(definition_name: str, definitions: list[Definition]) 
     """Return a definition with a matching name from a list of definitions.
 
     Args:
-        definition_name: The definition's name to locate.
-        definitions: The list of definitions to search through
+        definition_name (str): The definition's name to locate.
+        definitions (list[Definition]): The list of definitions to search through
 
     Returns:
         A Definition with the given name or None.
@@ -88,7 +88,8 @@ def convert_parsed_definitions_to_dict_definition(definitions: list[Definition])
     DEPRECATED: Returns a combined dict from the list of Definitions.
 
     This function is intended only as a stop-gap to support some implementations until they have been fully
-    converted to utilize Definitions.
+    converted to utilize the Definition class instead of python dictionaries.
+
     """
     return {definition.name: definition.structure for definition in definitions}
 
