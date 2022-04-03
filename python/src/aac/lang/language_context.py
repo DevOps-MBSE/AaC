@@ -9,7 +9,6 @@ from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.arrays import is_array_type, remove_list_type_indicator
 from aac.lang.definitions.search import search_definition
 from aac.lang.definition_helpers import (
-    get_definition_by_name,
     get_definitions_by_root_key,
 )
 
@@ -26,13 +25,16 @@ class LanguageContext:
     Attributes:
         definitions: The list of all definitions currently in the LanguageContext
     """
+
     def __attrs_post_init__(self):
         self.definitions_name_dictionary = {definition.name: definition for definition in self.definitions}
 
     definitions: list[Definition] = attrib(default=Factory(list), validator=validators.instance_of(list))
 
     # Private attribute - don't reference outside the class.
-    definitions_name_dictionary: dict[str, Definition] = attrib(init=False, default=Factory(dict), validator=validators.instance_of(dict))
+    definitions_name_dictionary: dict[str, Definition] = attrib(
+        init=False, default=Factory(dict), validator=validators.instance_of(dict)
+    )
 
     def add_definition_to_context(self, definition: Definition):
         """
@@ -47,7 +49,9 @@ class LanguageContext:
             self.definitions_name_dictionary[new_definition.name] = new_definition
             self.definitions.append(new_definition)
         else:
-            logging.debug(f"Did not add definition '{new_definition.name}' to the context because one already exists with the same name.")
+            logging.debug(
+                f"Did not add definition '{new_definition.name}' to the context because one already exists with the same name."
+            )
 
         if definition.is_extension():
             self._apply_extension_to_context(definition)
@@ -82,15 +86,7 @@ class LanguageContext:
         Returns:
             A list of strings, one entry for each root key in the LanguageContext.
         """
-        def get_field_name(fields_entry_dict: dict):
-            return fields_entry_dict.get("name")
-
-        root_definition = get_definition_by_name("root", self.definitions)
-
-        if root_definition:
-            return list(map(get_field_name, search_definition(root_definition, ["data", "fields"])))
-        else:
-            return []
+        return [field.get("name") for field in self.get_root_fields()]
 
     def get_root_fields(self) -> list[dict]:
         """
@@ -103,7 +99,7 @@ class LanguageContext:
         Returns:
             A list of dictionaries, one dictionary for each root field including name and type.
         """
-        root_definition = get_definition_by_name("root", self.definitions)
+        root_definition = self.get_definition_by_name("root")
 
         if root_definition:
             return search_definition(root_definition, ["data", "fields"])
@@ -117,7 +113,7 @@ class LanguageContext:
         Returns:
             The definition that defines the primitive types.
         """
-        return get_definition_by_name("Primitives", self.definitions)
+        return self.get_definition_by_name("Primitives")
 
     def get_primitive_types(self) -> list[str]:
         """
@@ -162,7 +158,7 @@ class LanguageContext:
     def _apply_extension_to_context(self, extension_definition: Definition) -> None:
         """Apply the extension to the definitions it modifies in the LanguageContext."""
         target_to_extend = extension_definition.structure.get("ext").get("type")
-        target_definition_to_extend = get_definition_by_name(target_to_extend, self.definitions)
+        target_definition_to_extend = self.get_definition_by_name(target_to_extend)
 
         extension_type = ""
         extension_field_name = ""

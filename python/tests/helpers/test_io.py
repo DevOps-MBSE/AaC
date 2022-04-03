@@ -8,17 +8,11 @@ from tempfile import TemporaryDirectory
 from tests.helpers.io import new_working_dir
 
 
-class TestArchUtil(TestCase):
-    """
-    Unit test class for aac.util module.
-    """
-
+class TestIOHelpers(TestCase):
     def test_new_working_dir(self):
-        """
-        Unit test for the util.new_working_dir method.
-        """
         original_working_directory = getcwd()
 
         with TemporaryDirectory() as temp_directory, new_working_dir(temp_directory):
             self.assertNotEqual(original_working_directory, temp_directory)
             self.assertEqual(getcwd(), temp_directory)
+        self.assertEqual(getcwd(), original_working_directory)
