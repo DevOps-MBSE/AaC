@@ -80,9 +80,8 @@ class LanguageContext:
         See :py:func:`aac.spec.get_root_keys()` for the list of root keys provided by the unaltered core AaC DSL.
 
         Returns:
-            A list of strings, one entry for each root name available in the LanguageContext.
+            A list of strings, one entry for each root key in the LanguageContext.
         """
-
         def get_field_name(fields_entry_dict: dict):
             return fields_entry_dict.get("name")
 
@@ -95,14 +94,14 @@ class LanguageContext:
 
     def get_root_fields(self) -> list[dict]:
         """
-        Get the list of root keys as defined in the LanguageContext.
+        Get the list of root fields as defined in the LanguageContext.
 
-        Returns a list of strings indicating the current root keys in the active context. These
+        Returns a list of dictionaries that consist of the root fields in the active context. These
         keys may differ from those provided by the core spec since the LanguageContext applies definitions
         from active plugins and user files, which may extend the set of root keys.
 
         Returns:
-            A list of strings, one entry for each root name available in the LanguageContext.
+            A list of dictionaries, one dictionary for each root field including name and type.
         """
         root_definition = get_definition_by_name("root", self.definitions)
 
@@ -176,10 +175,10 @@ class LanguageContext:
 
         ext_type = f"{extension_type}Ext"
         target_definition_dict = target_definition_to_extend.structure
-        extension_definition_dict = extension_definition.structure
+        extension_definition_fields = extension_definition.get_fields()
 
-        extension_subtype_sub_dict = extension_definition_dict.get("ext").get(ext_type)
+        extension_subtype_sub_dict = extension_definition_fields.get(ext_type)
         target_definition_dict.get(extension_type)[extension_field_name] += extension_subtype_sub_dict.get("add")
 
-        if "required" in extension_definition_dict["ext"][ext_type]:
-            target_definition_dict.get(extension_type)["required"] += extension_subtype_sub_dict["required"]
+        if "required" in extension_subtype_sub_dict:
+            target_definition_dict.get(extension_type)["required"] += extension_subtype_sub_dict.get("required") or []
