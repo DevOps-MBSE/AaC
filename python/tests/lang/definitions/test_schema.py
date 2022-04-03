@@ -1,5 +1,4 @@
 from unittest import TestCase
-from aac.lang.language_context import LanguageContext
 
 from aac.lang.context_manager import get_active_context
 from aac.lang.definitions.schema import get_definition_schema, get_root_schema_definitions, get_schema_defined_fields
@@ -14,7 +13,6 @@ from tests.helpers.parsed_definitions import (
 
 
 class TestDefinitionSchemas(TestCase):
-
     def test_get_root_schema_definitions_with_only_core_spec(self):
         test_context = get_core_spec_context()
         core_root_fields = get_root_fields()

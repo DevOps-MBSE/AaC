@@ -1,8 +1,4 @@
 from unittest import TestCase
-from aac.lang.definition_helpers import get_definition_by_name
-
-from aac.lang.language_context import LanguageContext
-from aac.spec import get_aac_spec, get_primitives, get_root_keys
 
 from tests.helpers.parsed_definitions import (
     create_data_definition,
@@ -14,7 +10,6 @@ from tests.helpers.parsed_definitions import (
 
 
 class TestDefinition(TestCase):
-
     def test_get_fields_with_empty_no_top_level_fields(self):
         test_definition = create_data_definition("EmptyData")
         test_definition.structure["data"] = {}

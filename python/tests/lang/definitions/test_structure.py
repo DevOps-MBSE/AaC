@@ -1,5 +1,4 @@
 from unittest import TestCase
-from aac.lang.language_context import LanguageContext
 
 from aac.lang.definition_helpers import get_definition_by_name
 from aac.lang.definitions.structure import get_sub_definitions, get_substructures_by_type
@@ -55,9 +54,7 @@ class TestDefinitionStructures(TestCase):
 
         test_string_field_entry = create_field_entry("TestStringField", "string")
         test_file_field_entry = create_field_entry("TestFileField", "file")
-        test_data_definition = create_data_definition(
-            "TestData", fields=[test_string_field_entry, test_file_field_entry]
-        )
+        test_data_definition = create_data_definition("TestData", fields=[test_string_field_entry, test_file_field_entry])
 
         test_context.add_definition_to_context(test_data_definition)
 
@@ -75,7 +72,9 @@ class TestDefinitionStructures(TestCase):
 
         test_input_field = create_field_entry("TestInput", "string")
         test_acceptance_field = create_scenario_entry("TestScenario")
-        test_behavior_entry = create_behavior_entry("TestBehavior", input=[test_input_field], acceptance=[test_acceptance_field])
+        test_behavior_entry = create_behavior_entry(
+            "TestBehavior", input=[test_input_field], acceptance=[test_acceptance_field]
+        )
         test_component_entry = create_field_entry("TestComponent", sub_model_definition.name)
         test_model_definition = create_model_definition(
             "TestModel", components=[test_component_entry], behavior=[test_behavior_entry]
