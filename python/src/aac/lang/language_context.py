@@ -175,10 +175,11 @@ class LanguageContext:
 
         ext_type = f"{extension_type}Ext"
         target_definition_dict = target_definition_to_extend.structure
+        target_definition_extension_sub_dict = target_definition_dict.get(extension_type)
         extension_definition_fields = extension_definition.get_fields()
 
         extension_subtype_sub_dict = extension_definition_fields.get(ext_type)
-        target_definition_dict.get(extension_type)[extension_field_name] += extension_subtype_sub_dict.get("add")
+        target_definition_extension_sub_dict[extension_field_name] += extension_subtype_sub_dict.get("add")
 
         if "required" in extension_subtype_sub_dict:
-            target_definition_dict.get(extension_type)["required"] += extension_subtype_sub_dict.get("required") or []
+            target_definition_extension_sub_dict["required"] += extension_subtype_sub_dict.get("required") or []
