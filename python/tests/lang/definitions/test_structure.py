@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from aac.lang.definition_helpers import get_definition_by_name
-from aac.lang.definitions.structure import get_sub_definitions, get_substructures_by_type
+from aac.lang.definitions.structure import get_substructures_by_type
+from aac.lang.definitions.schema import get_definition_schema_components
 
 from tests.helpers.context import get_core_spec_context
 from tests.helpers.parsed_definitions import (
@@ -14,40 +14,6 @@ from tests.helpers.parsed_definitions import (
 
 
 class TestDefinitionStructures(TestCase):
-    def test_get_sub_definitions_with_data(self):
-        test_context = get_core_spec_context()
-
-        data_definition = get_definition_by_name("data", test_context.definitions)
-
-        # Per the core spec, we'd expect Field and ValidationReference
-        field_definition = get_definition_by_name("Field", test_context.definitions)
-        validation_reference_definition = get_definition_by_name("ValidationReference", test_context.definitions)
-
-        expected_definitions = [field_definition, validation_reference_definition]
-        actual_definitions = get_sub_definitions(data_definition, test_context)
-
-        self.assertEqual(len(actual_definitions), 2)
-        self.assertListEqual(expected_definitions, actual_definitions)
-
-    def test_get_sub_definitions_with_model(self):
-        test_context = get_core_spec_context()
-
-        model_definition = create_model_definition("TestModel")
-        test_context.add_definition_to_context(model_definition)
-
-        # Per the core spec, we'd expect Field, Behavior, BehaviorType, and Scenario
-        field_definition = get_definition_by_name("Field", test_context.definitions)
-        behavior_definition = get_definition_by_name("Behavior", test_context.definitions)
-        behavior_type_definition = get_definition_by_name("BehaviorType", test_context.definitions)
-        scenario_definition = get_definition_by_name("Scenario", test_context.definitions)
-
-        expected_definitions = [field_definition, behavior_definition, behavior_type_definition, scenario_definition]
-        actual_definitions = get_sub_definitions(model_definition, test_context)
-
-        # Per the core spec, we'd expect Field, Behavior, BehaviorType, and Scenario
-        self.assertEqual(len(actual_definitions), len(expected_definitions))
-        for actual_definition in actual_definitions:
-            self.assertIn(actual_definition, expected_definitions)
 
     def test_get_substructures_by_type_with_user_defined_data(self):
         test_context = get_core_spec_context()
@@ -97,3 +63,38 @@ class TestDefinitionStructures(TestCase):
         self.assertListEqual(expected_field_definitions, actual_field_definitions)
         self.assertListEqual(expected_behavior_definitions, actual_behavior_definitions)
         self.assertListEqual(expected_scenario_definitions, actual_scenario_definitions)
+
+    def test_get_definition_schema_components_with_data(self):
+        test_context = get_core_spec_context()
+
+        data_definition = test_context.get_definition_by_name("data")
+
+        # Per the core spec, we'd expect Field and ValidationReference
+        field_definition = test_context.get_definition_by_name("Field")
+        validation_reference_definition = test_context.get_definition_by_name("ValidationReference")
+
+        expected_definitions = [field_definition, validation_reference_definition]
+        actual_definitions = get_definition_schema_components(data_definition, test_context)
+
+        self.assertEqual(len(actual_definitions), 2)
+        self.assertListEqual(expected_definitions, actual_definitions)
+
+    def test_get_definition_schema_components_with_model(self):
+        test_context = get_core_spec_context()
+
+        model_definition = create_model_definition("TestModel")
+        test_context.add_definition_to_context(model_definition)
+
+        # Per the core spec, we'd expect Field, Behavior, BehaviorType, and Scenario
+        field_definition = test_context.get_definition_by_name("Field")
+        behavior_definition = test_context.get_definition_by_name("Behavior")
+        behavior_type_definition = test_context.get_definition_by_name("BehaviorType")
+        scenario_definition = test_context.get_definition_by_name("Scenario")
+
+        expected_definitions = [field_definition, behavior_definition, behavior_type_definition, scenario_definition]
+        actual_definitions = get_definition_schema_components(model_definition, test_context)
+
+        # Per the core spec, we'd expect Field, Behavior, BehaviorType, and Scenario
+        self.assertEqual(len(actual_definitions), len(expected_definitions))
+        for actual_definition in actual_definitions:
+            self.assertIn(actual_definition, expected_definitions)

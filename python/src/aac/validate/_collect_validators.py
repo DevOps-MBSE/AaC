@@ -5,7 +5,7 @@ from iteration_utilities import flatten
 from aac.lang.language_context import LanguageContext
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.search import search_definition
-from aac.lang.definitions.structure import get_sub_definitions
+from aac.lang.definitions.schema import get_definition_schema_components
 from aac.lang.hierarchy import get_definition_ancestry
 from aac.plugins.validators import ValidatorPlugin
 
@@ -15,21 +15,21 @@ def get_applicable_validators_for_definition(
 ) -> list[ValidatorPlugin]:
     """
     Return a list of all validator plugins that are applicable to the definition.
-    
+
     Args:
         definition (Definition): The definition to search through.
         validator_plugins (list[ValidatorPlugin]): The list of available, registered validator plugins.
         context (LanguageContext): The language context
-        
+
     Returns:
         A list of validator plugins that can be applied to the definition.
-        
-        The validator plugins are deemed applicable if the definition contains fields or substructures that 
+
+        The validator plugins are deemed applicable if the definition contains fields or substructures that
         are validated, such as field references.
     """
 
     ancestor_definitions = get_definition_ancestry(definition, context)
-    sub_structure_definitions = get_sub_definitions(definition, context)
+    sub_structure_definitions = get_definition_schema_components(definition, context)
     # For each ancestor definition, pull validation definitions, collapse the 2d list to 1d, and return the list of validations.
     applicable_ancestor_validation_dicts = list(flatten(map(_get_validation_entries, ancestor_definitions)))
     applicable_substructure_validation_dicts = list(flatten(map(_get_validation_entries, sub_structure_definitions)))

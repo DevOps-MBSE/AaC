@@ -4,7 +4,7 @@ import logging
 
 from aac.lang.definitions.arrays import is_array_type
 from aac.lang.definitions.definition import Definition
-from aac.lang.definitions.schema import get_definition_schema, get_schema_defined_fields
+from aac.lang.definitions.schema import get_definition_schema
 from aac.lang.language_context import LanguageContext
 
 
@@ -69,42 +69,3 @@ def get_substructures_by_type(
         _get_substructures(source_definition_schema, source_definition_fields)
 
     return substructure_instances
-
-
-def get_sub_definitions(source_definition: Definition, context: LanguageContext) -> list[Definition]:
-    """
-    Return a list schema definitions that make up the structure of the source definition.
-
-    For example, if a definition has two fields, one of `Field` type and one of `Behavior` then
-    the user can expect the returned list to contain `Field`, `Behavior`, and `Scenario`. `Scenario`
-    is also returned because it is a substructure of `Behavior`.
-
-    Args:
-        source_definition (Definition): The definition to search through
-        context (LanguageContext): The language context, used to navigate the structure and lookup definitions
-
-    Returns:
-        A list of dictionaries that match instances of the sub-definition type.
-    """
-    substructure_definitions = {}
-
-    def _get_sub_definitions(schema_definition: Definition, fields):
-
-        for field_dict in fields:
-            field_type = field_dict.get("type")
-
-            if not field_type:
-                logging.debug(
-                    f"Failed to find the field definition for {field_type} in the defined fields {fields} of '{schema_definition.name}'."
-                )
-
-            if context.is_definition_type(field_type) and field_type not in substructure_definitions:
-                field_definition = context.get_definition_by_name(field_type)
-                substructure_definitions[field_type] = field_definition
-
-                if not field_definition.is_enum():
-                    _get_sub_definitions(field_definition, field_definition.get_fields().get("fields"))
-
-    top_level_fields = list(get_schema_defined_fields(source_definition, context).values())
-    _get_sub_definitions(source_definition, top_level_fields)
-    return list(substructure_definitions.values())

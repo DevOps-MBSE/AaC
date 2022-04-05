@@ -4,7 +4,7 @@ from iteration_utilities import flatten
 from aac.lang.language_context import LanguageContext
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.definitions.definition import Definition
-from aac.lang.definitions.structure import get_sub_definitions
+from aac.lang.definitions.schema import get_definition_schema_components
 from aac.lang.hierarchy import get_definition_ancestry
 from aac.parser import parse
 from aac.plugins.plugin_manager import get_validator_plugins
@@ -77,7 +77,7 @@ def _validate_definition(
 
     applicable_validator_plugins = get_applicable_validators_for_definition(definition, validator_plugins, context)
     ancestor_definitions = get_definition_ancestry(definition, context)
-    sub_structure_definitions = get_sub_definitions(definition, context)
+    sub_structure_definitions = get_definition_schema_components(definition, context)
     all_applicable_definitions = ancestor_definitions + sub_structure_definitions
 
     for target_sub_definition in all_applicable_definitions:
