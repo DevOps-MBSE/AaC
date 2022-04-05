@@ -1,6 +1,6 @@
 validation:
   name: Type references exist
-  description: Verifies that references to definitions and models are defined
+  description: Verify that references to definitions and models are defined
   behavior:
     - name: Verify that referenced definitions are defined
       type: request-response

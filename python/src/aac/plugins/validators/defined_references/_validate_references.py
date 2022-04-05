@@ -11,7 +11,7 @@ def validate_references(definition_under_test: Definition, target_sub_definition
     Validates that the definition has valid type references to either primitive types or other definitions.
 
     Args:
-        definition_under_test (Definition): The definition that's being validate.
+        definition_under_test (Definition): The definition that's being validated.
         target_sub_definition (Definition): A definition with applicable validation.
         active_context (LanguageContext): The active context.
 

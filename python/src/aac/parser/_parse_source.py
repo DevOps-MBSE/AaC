@@ -22,7 +22,7 @@ def parse(source: str) -> list[Definition]:
         source (str): Must be either a file path to an AaC yaml file or a string containing AaC definitions.
 
     Returns:
-        A Definition object containing the internal representation of the definition and metadata
+        A list of Definition objects containing the internal representation of the definition and metadata
         associated with the definition.
     """
 

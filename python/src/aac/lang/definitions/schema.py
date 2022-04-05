@@ -19,7 +19,7 @@ def get_definition_schema(source_definition: Definition, context: LanguageContex
 
 
 def get_root_schema_definitions(context: LanguageContext) -> dict[str, Definition]:
-    """Return a dictionary of root key to definition."""
+    """Return a dictionary of root keys to definitions."""
     root_definitions_entries = context.get_root_fields()
 
     root_definitions_dict = {}
@@ -40,7 +40,7 @@ def get_root_schema_definitions(context: LanguageContext) -> dict[str, Definitio
 
 
 def get_schema_defined_fields(source_definition: Definition, context: LanguageContext) -> dict[str, dict]:
-    """Return a dictionary of the schema defined fields where the key is the field name and value the field dict."""
+    """Return a dictionary of the schema defined fields where the key is the field name and the value is the field dict."""
     schema_defined_fields = {}
     schema_defintion = get_definition_schema(source_definition, context)
     schema_definition_fields = schema_defintion.get_fields()

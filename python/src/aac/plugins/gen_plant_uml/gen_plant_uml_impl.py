@@ -82,7 +82,7 @@ def puml_sequence(architecture_file: str, output_directory: Optional[str] = None
 
         for use_case_title in use_case_types.keys():
             # declare participants
-            usecase_participants = search(use_case_types[use_case_title], ["usecase", "participants"])
+            usecase_participants = search(use_case_types.get(use_case_title), ["usecase", "participants"])
             for usecase_participant in usecase_participants:  # each participant is a field type
                 participants.append(
                     {

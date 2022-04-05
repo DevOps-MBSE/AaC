@@ -1,11 +1,11 @@
-"""Parser Metadata class use to manage and identify the the source of definitions."""
+"""Parser Metadata class use to manage and identify the location of definitions in the source YAML."""
 
 from attr import attrib, attrs, validators
 
 
 @attrs
 class SourceLocation:
-    """The position and ... of an AaC structure in the source.
+    """The position and span of an AaC structure in the YAML source.
 
     Attributes:
         line (int): The line number on which the object was found.

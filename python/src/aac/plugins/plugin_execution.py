@@ -78,8 +78,7 @@ def plugin_result(name: str, cmd: Callable, *args, **kwargs):
         result.add_messages(f"Failed to parse {source}\n", *errors, "")
         result.status_code = PluginExecutionStatusCode.PARSER_FAILURE
     except ValidationError as error:
-        errors = error.args
-        result.add_messages("Failed to validate:\n", *errors, "")
+        result.add_messages("Failed to validate:\n", *error.args, "")
         result.status_code = PluginExecutionStatusCode.VALIDATION_FAILURE
     except FileNotFoundError as error:
         result.add_messages(f"{error.strerror}: {error.filename}")

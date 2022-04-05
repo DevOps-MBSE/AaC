@@ -14,7 +14,7 @@ def get_substructures_by_type(
     """
     Return a list of dictionaries that represent instances of the sub-definition type within the source definition.
 
-    For example, if a definition of type `model` where to be searched for every instance of the `Field` type,
+    For example, if a definition of type `model` were to be searched for every instance of the `Field` type,
     then every instance of a `Field` definition within the `model` definition will be returned. This includes embedded
     fields, such as any instances of `Field` the might be defined in the `model` under the `Behavior` definition.
 

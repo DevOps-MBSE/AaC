@@ -111,14 +111,14 @@ def search_definition(definition: Definition, search_keys: list[str]) -> list:
         Let's say you have a definition structure parsed from the following AaC yaml.
 
             data:
-            name: MyData
-            fields:
-                - name: one
-                type: string
-                - name: two
-                type: string
-            required:
-                - one
+              name: MyData
+              fields:
+                  - name: one
+                    type: string
+                  - name: two
+                    type: string
+              required:
+                  - one
 
         You know the structure of the specification and need to iterate through each field.
         The search utility method simplifies that for you.
@@ -138,7 +138,6 @@ def search_definition(definition: Definition, search_keys: list[str]) -> list:
 
     Returns:
         Returns a list of found data items based on the search keys.
-
     """
 
     return search(definition.structure, search_keys)

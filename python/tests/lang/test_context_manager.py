@@ -6,7 +6,7 @@ from aac.plugins.plugin_manager import get_plugin_definitions
 from aac.spec import get_aac_spec
 
 
-class TestContextManager(TestCase):
+class TestActiveContextLifecycleManager(TestCase):
     def test_init_active_context(self):
 
         active_context_parsed_definitions = get_active_context().definitions

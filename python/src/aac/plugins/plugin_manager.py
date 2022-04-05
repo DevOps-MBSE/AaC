@@ -55,10 +55,10 @@ def get_plugin_manager() -> PluginManager:
 
 def get_plugin_definitions() -> list[Definition]:
     """
-    Gets all a list of all the plugin-defined AaC models and definitions.
+    Gets a list of all the plugin-defined AaC models and definitions.
 
     Returns:
-        A list of parsed definitions source from all active plugins.
+        A list of parsed definitions from all active plugins.
     """
     plugin_manager = get_plugin_manager()
     plugin_definitions_as_yaml = plugin_manager.hook.get_plugin_aac_definitions()
@@ -72,10 +72,10 @@ def get_plugin_definitions() -> list[Definition]:
 
 def get_validator_plugins() -> list[ValidatorPlugin]:
     """
-    Gets all a list of registered validator plugins and metadata.
+    Gets a list of registered validator plugins and metadata.
 
     Returns:
-        A list of parsed definitions source from all active plugins.
+        A list of validator plugins that are currently registered.
     """
     plugin_manager = get_plugin_manager()
     return plugin_manager.hook.register_validators()

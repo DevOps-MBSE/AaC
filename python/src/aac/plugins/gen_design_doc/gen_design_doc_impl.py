@@ -93,7 +93,7 @@ def _get_output_file_extension(template_filespec: str) -> str:
 
 def _get_and_prepare_definitions_by_type(parsed_definitions: Definition, aac_type: str) -> list:
     filtered_definitions = get_definitions_by_root_key(aac_type, parsed_definitions)
-    return list([definition.structure for definition in filtered_definitions])
+    return [definition.structure for definition in filtered_definitions]
 
 
 def _generate_system_doc(output_filespec: str, selected_template: Template, template_properties: dict) -> TemplateOutputFile:

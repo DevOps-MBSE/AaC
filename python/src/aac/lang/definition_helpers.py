@@ -11,7 +11,7 @@ from aac.lang.definitions.search import search_definition
 def get_models_by_type(models: dict[str, dict], root_name: str) -> dict[str, dict]:
     """Gets subset of models of a specific root name.
 
-    The aac.parser.parse() returns a dict of all parsed types.  Sometimes it is
+    The aac.parser.parse() function returns a dict of all parsed types.  Sometimes it is
     useful to only work with certain roots (i.e. model or data).  This utility
     method allows a setup of parsed models to be "filtered" to a specific root name.
 
@@ -33,9 +33,9 @@ def get_models_by_type(models: dict[str, dict], root_name: str) -> dict[str, dic
 def get_definitions_by_root_key(root_key: str, definitions: list[Definition]) -> list[Definition]:
     """Return a subset of definitions with the given root key.
 
-    The aac.parser.parse() returns a dict of all parsed types.  Sometimes it is
+    The aac.parser.parse() function returns a dict of all parsed types.  Sometimes it is
     useful to only work with certain roots (i.e. model or data).  This utility
-    method allows a setup of parsed definitions to be "filtered" to a specific root name.
+    method allows a setup of parsed definitions to be "filtered" to a specific root key.
 
     Args:
         root_key (str): The root key to filter on.
@@ -97,7 +97,7 @@ def convert_parsed_definitions_to_dict_definition(definitions: list[Definition])
 def get_definition_fields_and_types(
     parsed_definition: Definition, context_definitions: list[Definition]
 ) -> dict[str, Definition]:
-    """Return a list of field names to their definition types."""
+    """Return a list of field names mapped to their definition types."""
     root_definition = get_definition_by_name("root", context_definitions)
     root_fields = search_definition(root_definition, ["data", "fields"])
     roots_dict = {field.get("name"): field.get("type") for field in root_fields}

@@ -76,15 +76,10 @@ def get_root_keys(reload: bool = False) -> list[str]:
         A list of strings, one entry for each root name in the AaC model specification.
     """
 
-    def get_field_name(fields_entry_dict: dict):
-        return fields_entry_dict.get("name")
-
     global ROOT_NAMES
 
     if len(ROOT_NAMES) == 0 or reload:
-        aac_definitions = get_aac_spec()
-        root_definition = get_definition_by_name("root", aac_definitions)
-        ROOT_NAMES = list(map(get_field_name, search_definition(root_definition, ["data", "fields"])))
+        ROOT_NAMES = [field.get("name") for field in get_root_fields()]
 
     return ROOT_NAMES
 

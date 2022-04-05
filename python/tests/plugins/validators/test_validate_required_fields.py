@@ -33,7 +33,7 @@ class TestDefinedReferencesPlugin(TestCase):
         self.assertEqual(expected_validator_plugin.name, actual_validator_plugin.name)
         self.assertEqual(expected_validator_plugin.definition, actual_validator_plugin.definition)
 
-    def test_validate_validate_required_fields_no_missing_required_fields(self):
+    def test_validate_required_fields_no_missing_required_fields(self):
         test_active_context = get_active_context(reload_context=True)
 
         test_field_entry = create_field_entry("TestField", "string")

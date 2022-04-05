@@ -9,7 +9,7 @@ from aac.lang.definitions.lexeme import Lexeme
 
 @attrs
 class Definition:
-    """A Architecture-as-Code definition.
+    """An Architecture-as-Code definition.
 
     Attributes:
         name (str): The name of the definition
@@ -21,7 +21,7 @@ class Definition:
     name: str = attrib(validator=validators.instance_of(str))
     content: str = attrib(validator=validators.instance_of(str))
     lexemes: list[Lexeme] = attrib(default=Factory(list), validator=validators.instance_of(list))
-    structure: dict = attrib(default=Factory(list), validator=validators.instance_of(dict))
+    structure: dict = attrib(default=Factory(dict), validator=validators.instance_of(dict))
 
     def get_root_key(self) -> str:
         """Return the root key for the parsed definition."""
@@ -50,12 +50,12 @@ class Definition:
     def get_validation(self) -> list[str]:
         """Return a list of validation entries names if the definition has a validation field."""
         fields = self.structure.get(self.get_root_key())
-        required = []
+        validation = []
 
         if "validation" in fields:
-            required = fields.get("validation")
+            validation = fields.get("validation")
 
-        return required
+        return validation
 
     def is_extension(self) -> bool:
         """Returns true if the definition is an extension definition."""

@@ -13,7 +13,20 @@ from aac.plugins.validators import ValidatorPlugin
 def get_applicable_validators_for_definition(
     definition: Definition, validator_plugins: list[ValidatorPlugin], context: LanguageContext
 ) -> list[ValidatorPlugin]:
-    """Traverse the definition and identify all applicable validator plugins."""
+    """
+    Return a list of all validator plugins that are applicable to the definition.
+    
+    Args:
+        definition (Definition): The definition to search through.
+        validator_plugins (list[ValidatorPlugin]): The list of available, registered validator plugins.
+        context (LanguageContext): The language context
+        
+    Returns:
+        A list of validator plugins that can be applied to the definition.
+        
+        The validator plugins are deemed applicable if the definition contains fields or substructures that 
+        are validated, such as field references.
+    """
 
     ancestor_definitions = get_definition_ancestry(definition, context)
     sub_structure_definitions = get_sub_definitions(definition, context)

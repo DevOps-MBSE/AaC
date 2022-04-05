@@ -52,8 +52,9 @@ data:
     - name: validation
       type: Validation
       description: |
-        A reference to a validation plugin which will provide verification and validation
-        for the definition and any uses of it depending on which validation plugins are referenced.
+        A reference to a validation plugin. Validation plugins provide verification and validation
+        for the definition to which they are attached and any uses of that definition, depending
+        on the validation plugins referenced by it.
 
         Validators are referenced by name.
 ---
@@ -173,7 +174,7 @@ data:
     - name: name
       type: string
       description: |
-        The name of the validation rule and plugin.
+        The name of the input to the validation rule and plugin.
 ---
 data:
   name: ValidatorOutput
@@ -181,7 +182,7 @@ data:
     - name: name
       type: string
       description: |
-        The name of the validation rule and plugin.
+        The name of the output from the validation rule and plugin.
 ---
 data:
   name: Scenario
