@@ -49,7 +49,7 @@ class PluginExecutionResult:
         """Return True if the command succeeded; False, otherwise."""
         return self.status_code == PluginExecutionStatusCode.SUCCESS
 
-    def output(self) -> str:
+    def get_messages_as_string(self) -> str:
         """Return the output messages as a combined string."""
         return "\n".join(self.messages)
 

@@ -69,7 +69,7 @@ class TestGenPlantUml(TestCase):
         with temporary_test_file(TEST_PUML_ARCH_YAML, suffix=YAML_FILE_EXTENSION) as plugin_yaml:
             result = puml_component(plugin_yaml.name)
             assert_plugin_success(result)
-            self._check_component_diagram_testsystem(result.output())
+            self._check_component_diagram_testsystem(result.get_messages_as_string())
 
     def test_puml_component_diagram_to_file(self):
         with (TemporaryDirectory() as temp_directory,
@@ -77,7 +77,7 @@ class TestGenPlantUml(TestCase):
             result = puml_component(plugin_yaml.name, temp_directory)
 
             full_output_dir = os.path.join(temp_directory, COMPONENT_STRING)
-            self.assertIn(full_output_dir, result.output())
+            self.assertIn(full_output_dir, result.get_messages_as_string())
             assert_plugin_success(result)
 
             expected_puml_file_paths = [
@@ -96,7 +96,7 @@ class TestGenPlantUml(TestCase):
         with temporary_test_file(TEST_PUML_ARCH_YAML, suffix=YAML_FILE_EXTENSION) as plugin_yaml:
             result = puml_object(plugin_yaml.name)
             assert_plugin_success(result)
-            self._check_object_diagram_content(result.output())
+            self._check_object_diagram_content(result.get_messages_as_string())
 
     def test_puml_object_diagram_to_file(self):
         with (TemporaryDirectory() as temp_directory,
@@ -104,7 +104,7 @@ class TestGenPlantUml(TestCase):
             full_output_dir = os.path.join(temp_directory, OBJECT_STRING)
 
             result = puml_object(plugin_yaml.name, temp_directory)
-            self.assertIn(full_output_dir, result.output())
+            self.assertIn(full_output_dir, result.get_messages_as_string())
             assert_plugin_success(result)
 
             temp_directory_files = os.listdir(full_output_dir)
@@ -119,7 +119,7 @@ class TestGenPlantUml(TestCase):
         with temporary_test_file(TEST_PUML_ARCH_YAML, suffix=YAML_FILE_EXTENSION) as plugin_yaml:
             result = puml_sequence(plugin_yaml.name)
             assert_plugin_success(result)
-            self._check_sequence_diagram_usecase_one(result.output())
+            self._check_sequence_diagram_usecase_one(result.get_messages_as_string())
 
     def test_puml_sequence_diagram_to_file(self):
         with (TemporaryDirectory() as temp_directory,
@@ -127,7 +127,7 @@ class TestGenPlantUml(TestCase):
             result = puml_sequence(plugin_yaml.name, temp_directory)
 
             full_output_dir = os.path.join(temp_directory, SEQUENCE_STRING)
-            self.assertIn(full_output_dir, result.output())
+            self.assertIn(full_output_dir, result.get_messages_as_string())
             assert_plugin_success(result)
 
             expected_puml_file_paths = [
