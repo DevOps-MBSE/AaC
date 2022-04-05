@@ -15,7 +15,7 @@ from aac.validate._collect_validators import get_applicable_validators_for_defin
 
 
 @contextmanager
-def validate_definitions(user_definitions: list[Definition]) -> ValidationResult:
+def validated_definitions(user_definitions: list[Definition]) -> ValidationResult:
     """Validate user-defined definitions along with the definitions in the ActiveContext.
 
     Args:
@@ -28,7 +28,7 @@ def validate_definitions(user_definitions: list[Definition]) -> ValidationResult
 
 
 @contextmanager
-def validate_source(source: str) -> ValidationResult:
+def validated_source(source: str) -> ValidationResult:
     """Run validation on a string-based YAML definition or a YAML file.
 
     Args:

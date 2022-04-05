@@ -18,7 +18,7 @@ from aac.template_engine import (
     load_default_templates,
     write_generated_templates_to_file,
 )
-from aac.validate import validate_source
+from aac.validate import validated_source
 
 plugin_name = "gen-protobuf"
 
@@ -34,7 +34,7 @@ def gen_protobuf(architecture_file: str, output_directory: str) -> PluginExecuti
     """
 
     def generate_protobuf():
-        with validate_source(architecture_file) as validation_result:
+        with validated_source(architecture_file) as validation_result:
             loaded_templates = load_default_templates("gen_protobuf")
 
             definitions_as_dictionary = convert_parsed_definitions_to_dict_definition(validation_result.definitions)

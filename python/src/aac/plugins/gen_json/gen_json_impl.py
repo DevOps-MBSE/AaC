@@ -8,7 +8,7 @@ from aac.plugins.plugin_execution import (
     PluginExecutionStatusCode,
     plugin_result,
 )
-from aac.validate import validate_source
+from aac.validate import validated_source
 
 
 plugin_name = "gen-json"
@@ -26,7 +26,7 @@ def print_json(architecture_files: list[str], output_directory: str = None) -> P
         architecture_file_path = os.path.abspath(architecture_file)
         file_name, _ = os.path.splitext(os.path.basename(architecture_file_path))
 
-        with validate_source(architecture_file_path) as result:
+        with validated_source(architecture_file_path) as result:
             definitions_as_dict = convert_parsed_definitions_to_dict_definition(result.definitions)
             formatted_json = json.dumps(definitions_as_dict, indent=2)
 

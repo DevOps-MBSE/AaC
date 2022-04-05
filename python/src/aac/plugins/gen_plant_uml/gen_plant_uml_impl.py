@@ -9,7 +9,7 @@ from typing import Callable, Optional
 from aac.lang.definition_helpers import get_models_by_type, convert_parsed_definitions_to_dict_definition
 from aac.lang.definitions.search import search
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
-from aac.validate import validate_source
+from aac.validate import validated_source
 from aac.template_engine import (
     generate_templates,
     load_default_templates,
@@ -186,7 +186,7 @@ def _generate_diagram_to_file(
     Returns:
         Result message string
     """
-    with validate_source(architecture_file_path) as result:
+    with validated_source(architecture_file_path) as result:
         template_properties = property_generator(convert_parsed_definitions_to_dict_definition(result.definitions))
         templates = [
             (props.get("filename"), generate_templates(load_default_templates(f"{plugin_name}/{puml_type}"), props))

@@ -17,7 +17,7 @@ from aac.template_engine import (
     load_default_templates,
     write_generated_templates_to_file,
 )
-from aac.validate import validate_source
+from aac.validate import validated_source
 
 plugin_name = "gen-design-doc"
 default_template_file = "templates/system-design-doc.md.jinja2"
@@ -57,7 +57,7 @@ def gen_design_doc(architecture_files: str, output_directory: str, template_file
 
 def _get_parsed_models(architecture_files: list) -> list[Definition]:
     def parse_with_validation(architecture_file):
-        with validate_source(architecture_file) as result:
+        with validated_source(architecture_file) as result:
             return result.definitions
 
     # For each architecture_file, parse and validate the contents, then flatten the list of lists to a 1D list

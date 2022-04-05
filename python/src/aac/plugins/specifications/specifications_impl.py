@@ -7,7 +7,7 @@ from aac.lang.definition_helpers import convert_parsed_definitions_to_dict_defin
 from aac.lang.definitions.search import search
 from aac.plugins import PluginError
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
-from aac.validate import validate_source
+from aac.validate import validated_source
 
 plugin_name = "specification"
 
@@ -21,7 +21,7 @@ def spec_validate(architecture_file: str) -> PluginExecutionResult:
     """
 
     def validate():
-        with validate_source(architecture_file) as result:
+        with validated_source(architecture_file) as result:
             definitions_dict = convert_parsed_definitions_to_dict_definition(result.definitions)
             is_valid, validation_errors = _run_spec_validation(definitions_dict)
 

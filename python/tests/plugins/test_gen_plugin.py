@@ -12,7 +12,7 @@ from aac.plugins.gen_plugin.gen_plugin_impl import (
 from aac.plugins.gen_plugin.GeneratePluginException import GeneratePluginException
 from aac.plugins.gen_plugin.gen_plugin_impl import EXPECTED_FIRST_PARTY_DIRECTORY_PATH, PLUGIN_TYPE_THIRD_STRING
 from aac.plugins.plugin_execution import PluginExecutionStatusCode
-from aac.validate import validate_source
+from aac.validate import validated_source
 
 from tests.helpers.assertion import assert_plugin_failure, assert_plugin_success
 from tests.helpers.io import temporary_test_file
@@ -127,7 +127,7 @@ class TestGenPlugin(TestCase):
             self.assertEqual(expected_filename, actual_filename)
 
     def test_prepare_and_generate_plugin_files(self):
-        with validate_source(TEST_PLUGIN_YAML_STRING) as result:
+        with validated_source(TEST_PLUGIN_YAML_STRING) as result:
             plugin_name = "aac_gen_protobuf"
 
             generated_templates = _prepare_and_generate_plugin_files(result.definitions, PLUGIN_TYPE_THIRD_STRING, "")
@@ -197,7 +197,7 @@ class TestGenPlugin(TestCase):
             self.assertIn("fail_under = 80.00", generated_tox_config_file_contents)
 
     def test__prepare_and_generate_plugin_files_errors_on_multiple_models(self):
-        with validate_source(
+        with validated_source(
             f"{TEST_PLUGIN_YAML_STRING}\n---\n{SECONDARY_MODEL_YAML_DEFINITION}",
         ) as result:
             self.assertRaises(
