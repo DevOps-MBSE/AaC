@@ -79,7 +79,7 @@ class LanguageContext:
 
         Returns:
             A list of strings, one entry for each root key in the LanguageContext.
-            
+
             These keys may differ from those provided by the core spec since the LanguageContext applies definitions
             from active plugins and user files, which may extend the set of root keys.
             See :py:func:`aac.spec.get_root_keys()` for the list of root keys provided by the unaltered core AaC DSL.
@@ -90,10 +90,9 @@ class LanguageContext:
         """
         Get the list of root fields as defined in the LanguageContext.
 
-
         Returns:
             A list of dictionaries, one dictionary for each root field including name and type.
-            
+
             These fields may differ from those provided by the core spec since the LanguageContext applies definitions
             from active plugins and user files, which may extend the set of root fields.
         """
@@ -119,7 +118,7 @@ class LanguageContext:
 
         Returns:
             A list of strings, one entry for each primitive type defined in the LanguageContext.
-            
+
             These types may differ from those provided by the core spec since the LanguageContext applies definitions
             from active plugins and user files, which may extend the set of root keys.
             See :py:func:`aac.spec.get_primitives()` for the list of root keys provided by the unaltered core AaC DSL.
@@ -129,7 +128,7 @@ class LanguageContext:
     def get_defined_types(self) -> list[str]:
         """
         Return a list of strings containing the names of all the definitions in the LanguageContext.
-        
+
         Returns:
             A list of strings, one entry for each definition name available in the LanguageContext.
         """
@@ -138,10 +137,10 @@ class LanguageContext:
     def is_primitive_type(self, type: str) -> bool:
         """
         Returns a boolean indicating if the type is defined as a primitive type.
-        
+
         Args:
             type (str): The type string.
-            
+
         Returns:
             A boolean indicating if the string matches a primitive type defined in the context.
         """
@@ -150,10 +149,10 @@ class LanguageContext:
     def is_definition_type(self, type: str) -> bool:
         """
         Returns a boolean indicating if the type is defined by another definition.
-        
+
         Args:
             type (str): The type string.
-            
+
         Returns:
             A boolean indicating if the string matches a definition name within in the context.
         """
@@ -162,10 +161,10 @@ class LanguageContext:
     def get_definition_by_name(self, definition_name: str) -> Optional[Definition]:
         """
         Return the definition corresponding to the argument, or None if not found.
-        
+
         Args:
             definition_name (str): The definition name to search for.
-            
+
         Returns:
             The definition corresponding to the name, or None if not found.
         """
@@ -177,7 +176,7 @@ class LanguageContext:
     def _apply_extension_to_context(self, extension_definition: Definition) -> None:
         """
         Apply the extension to the definitions it modifies in the LanguageContext.
-        
+
         Args:
             extension_definition (Definition): The extension definition to apply to the context.
         """
