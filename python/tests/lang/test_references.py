@@ -24,10 +24,9 @@ class TestLangReferences(TestCase):
         unrelated_definition = create_data_definition(unrelated_definition, [unrelated_definition_field])
 
         expected_references = [reference_definition1, reference_definition2]
+        definitions_to_search = expected_references + [unrelated_definition, source_definition]
 
-        actual_references = get_definition_references_from_list(
-            source_definition, expected_references + [unrelated_definition]
-        )
+        actual_references = get_definition_references_from_list(source_definition, definitions_to_search)
 
         self.assertCountEqual(actual_references, expected_references)
-        self.assertEqual(expected_references, actual_references)
+        self.assertListEqual(expected_references, actual_references)
