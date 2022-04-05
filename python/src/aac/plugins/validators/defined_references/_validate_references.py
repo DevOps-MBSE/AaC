@@ -6,7 +6,7 @@ from aac.lang.definitions.structure import get_substructures_by_type
 from aac.plugins.validators import ValidatorResult
 
 
-def validate_references(definition_under_test: Definition, target_sub_definition: Definition, active_context: LanguageContext) -> ValidatorResult:
+def validate_references(definition_under_test: Definition, target_sub_definition: Definition, active_context: LanguageContext, **validation_kwargs) -> ValidatorResult:
     """
     Validates that the definition has valid type references to either primitive types or other definitions.
 

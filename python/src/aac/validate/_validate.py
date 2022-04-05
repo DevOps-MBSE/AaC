@@ -97,4 +97,13 @@ def _apply_validator(
     definition_structure_dict: dict, target_sub_definition: Definition, context: LanguageContext, validator_plugin: ValidatorPlugin
 ) -> ValidatorResult:
     """Executes the validator callback on the applicable dictionary structure or substructure."""
-    return validator_plugin.validation_function(definition_structure_dict, target_sub_definition, context, **validator_plugin.arguments)
+    defined_validations = target_sub_definition.get_validation()
+    validation_kwargs = {}
+
+    for validation in defined_validations:
+        defined_args = validation.get("arguments")
+
+        if defined_args:
+            validation_kwargs[validation.name] = validation.arguments
+
+    return validator_plugin.validation_function(definition_structure_dict, target_sub_definition, context, **validation_kwargs)
