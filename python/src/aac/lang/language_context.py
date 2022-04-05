@@ -64,10 +64,8 @@ class LanguageContext:
         Args:
             definitions: The list of Definitions to add to the context.
         """
-
         extension_definitions = get_definitions_by_root_key("ext", definitions)
 
-        # Avoiding the use of sorted() since we already deepcopy each definition as we add it to the context.
         for definition in definitions:
             if definition not in extension_definitions:
                 self.add_definition_to_context(definition)
@@ -79,13 +77,12 @@ class LanguageContext:
         """
         Get the list of root keys as defined in the LanguageContext.
 
-        Returns a list of strings indicating the current root keys in the active context. These
-        keys may differ from those provided by the core spec since the LanguageContext applies definitions
-        from active plugins and user files, which may extend the set of root keys.
-        See :py:func:`aac.spec.get_root_keys()` for the list of root keys provided by the unaltered core AaC DSL.
-
         Returns:
             A list of strings, one entry for each root key in the LanguageContext.
+            
+            These keys may differ from those provided by the core spec since the LanguageContext applies definitions
+            from active plugins and user files, which may extend the set of root keys.
+            See :py:func:`aac.spec.get_root_keys()` for the list of root keys provided by the unaltered core AaC DSL.
         """
         return [field.get("name") for field in self.get_root_fields()]
 
@@ -93,12 +90,12 @@ class LanguageContext:
         """
         Get the list of root fields as defined in the LanguageContext.
 
-        Returns a list of dictionaries that consist of the root fields in the active context. These
-        keys may differ from those provided by the core spec since the LanguageContext applies definitions
-        from active plugins and user files, which may extend the set of root keys.
 
         Returns:
             A list of dictionaries, one dictionary for each root field including name and type.
+            
+            These fields may differ from those provided by the core spec since the LanguageContext applies definitions
+            from active plugins and user files, which may extend the set of root fields.
         """
         root_definition = self.get_definition_by_name("root")
 
@@ -120,44 +117,70 @@ class LanguageContext:
         """
         Get the list of primitive types as defined in the LanguageContext.
 
-        Returns a list of strings indicating the currently defined primitive types in the active context.
-        These types may differ from those provided by the core spec since the LanguageContext applies definitions
-        from active plugins and user files, which may extend the set of root keys.
-        See :py:func:`aac.spec.get_primitives()` for the list of root keys provided by the unaltered core AaC DSL.
-
         Returns:
-            A list of strings, one entry for each root name available in the LanguageContext.
+            A list of strings, one entry for each primitive type defined in the LanguageContext.
+            
+            These types may differ from those provided by the core spec since the LanguageContext applies definitions
+            from active plugins and user files, which may extend the set of root keys.
+            See :py:func:`aac.spec.get_primitives()` for the list of root keys provided by the unaltered core AaC DSL.
         """
         return search_definition(self.get_primitives_definition(), ["enum", "values"])
 
     def get_defined_types(self) -> list[str]:
         """
-        Get the list of types defined by other definitions in the LanguageContext.
-
-        Returns a list of strings of all definition types in the active context.
-
+        Return a list of strings containing the names of all the definitions in the LanguageContext.
+        
         Returns:
             A list of strings, one entry for each definition name available in the LanguageContext.
         """
         return list(map(lambda definition: definition.name, self.definitions))
 
     def is_primitive_type(self, type: str) -> bool:
-        """Returns a boolean indicating if the type is defined as a primitive type."""
+        """
+        Returns a boolean indicating if the type is defined as a primitive type.
+        
+        Args:
+            type (str): The type string.
+            
+        Returns:
+            A boolean indicating if the string matches a primitive type defined in the context.
+        """
         return remove_list_type_indicator(type) in self.get_primitive_types()
 
     def is_definition_type(self, type: str) -> bool:
-        """Returns a boolean indicating if the type is defined by another definition."""
+        """
+        Returns a boolean indicating if the type is defined by another definition.
+        
+        Args:
+            type (str): The type string.
+            
+        Returns:
+            A boolean indicating if the string matches a definition name within in the context.
+        """
         return remove_list_type_indicator(type) in self.get_defined_types()
 
     def get_definition_by_name(self, definition_name: str) -> Optional[Definition]:
-        """Return the definition corresponding to the argument, or None if not found."""
+        """
+        Return the definition corresponding to the argument, or None if not found.
+        
+        Args:
+            definition_name (str): The definition name to search for.
+            
+        Returns:
+            The definition corresponding to the name, or None if not found.
+        """
         if is_array_type(definition_name):
             definition_name = remove_list_type_indicator(definition_name)
 
         return self.definitions_name_dictionary.get(definition_name)
 
     def _apply_extension_to_context(self, extension_definition: Definition) -> None:
-        """Apply the extension to the definitions it modifies in the LanguageContext."""
+        """
+        Apply the extension to the definitions it modifies in the LanguageContext.
+        
+        Args:
+            extension_definition (Definition): The extension definition to apply to the context.
+        """
         target_to_extend = extension_definition.structure.get("ext").get("type")
         target_definition_to_extend = self.get_definition_by_name(target_to_extend)
 
