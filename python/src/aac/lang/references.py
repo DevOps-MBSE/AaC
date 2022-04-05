@@ -17,7 +17,7 @@ def get_definition_references_from_list(
         A list of Definitions that reference the source_definition
     """
 
-    def _filter_definitions_by_reference(definition_to_filter: Definition) -> bool:
+    def filter_definitions_by_reference(definition_to_filter: Definition) -> bool:
         return f"type: {source_definition.name}" in definition_to_filter.to_yaml()
 
-    return list(filter(_filter_definitions_by_reference, definitions_to_search))
+    return list(filter(filter_definitions_by_reference, definitions_to_search))
