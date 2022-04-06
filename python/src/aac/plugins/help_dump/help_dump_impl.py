@@ -25,7 +25,7 @@ def help_dump() -> PluginExecutionResult:
 
 def _format_command(command: AacCommand) -> str:
     def format_argument(argument):
-        return f"\n{argument.name}::{argument.description}"
+        return f"\n{argument.name}::{argument.description}::{argument.data_type}"
 
     return (
         f"{command.name}::{command.description}::{len(command.arguments)}"
