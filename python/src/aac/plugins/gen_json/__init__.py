@@ -38,9 +38,10 @@ def get_commands() -> list[AacCommand]:
 @hookimpl
 def get_plugin_aac_definitions() -> str:
     """
-    Returns the CommandBehaviorType modeling language extension to the plugin infrastructure.
+    Return the plugins Aac definitions.
 
     Returns:
-        string representing yaml extensions and data definitions employed by the plugin
+         string representing yaml extensions and data definitions employed by the plugin
     """
+
     return get_resource_file_contents(__package__, "gen_json.yaml")

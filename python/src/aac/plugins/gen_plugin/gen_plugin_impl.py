@@ -9,7 +9,9 @@ import yaml
 
 from os import path
 
-from aac import parser, util
+from aac.lang.definition_helpers import convert_parsed_definitions_to_dict_definition, get_models_by_type
+from aac.lang.definitions.search import search
+from aac.lang.definitions.definition import Definition
 from aac.template_engine import (
     TemplateOutputFile,
     generate_templates,
@@ -19,7 +21,7 @@ from aac.template_engine import (
 from aac.plugins import OperationCancelled
 from aac.plugins.gen_plugin.GeneratePluginException import GeneratePluginException
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
-from aac.validator import validation
+from aac.validate import validated_source
 
 plugin_name = "gen-plugin"
 
@@ -61,9 +63,9 @@ def generate_plugin(architecture_file: str) -> PluginExecutionResult:
 
 
 def _generate_plugin_files_to_directory(architecture_file_path: str, plugin_output_directory: str, plugin_type: str) -> str:
-    with validation(parser.parse, architecture_file_path) as validation_result:
-        model = validation_result.parsed_model.definition
-        templates = list(_prepare_and_generate_plugin_files(model, plugin_type, architecture_file_path).values())
+    with validated_source(architecture_file_path) as validation_result:
+        definitions = validation_result.definitions
+        templates = list(_prepare_and_generate_plugin_files(definitions, plugin_type, architecture_file_path).values())
         write_generated_templates_to_file(templates, plugin_output_directory)
         return f"Successfully created a {plugin_type}-party plugin in {plugin_output_directory}"
 
@@ -147,7 +149,7 @@ def _generate_template_files(plugin_type: str, template_properties: dict) -> dic
 
 
 def _prepare_and_generate_plugin_files(
-    parsed_models: dict[str, dict], plugin_type: str, architecture_file_path: str
+    definitions: list[Definition], plugin_type: str, architecture_file_path: str
 ) -> dict[str, list[TemplateOutputFile]]:
     """
     Parse the model and generate the plugin template accordingly.
@@ -163,7 +165,8 @@ def _prepare_and_generate_plugin_files(
     Raises:
         GeneratePluginException: An error encountered during the plugin generation process.
     """
-    template_properties = _gather_template_properties(parsed_models, architecture_file_path)
+    parsed_definitions_dictionary = convert_parsed_definitions_to_dict_definition(definitions)
+    template_properties = _gather_template_properties(parsed_definitions_dictionary, architecture_file_path)
 
     plugin_name = template_properties.get("plugin").get("name")
     plugin_implementation_name = template_properties.get("plugin").get("implementation_name")
@@ -199,7 +202,7 @@ def _gather_template_properties(parsed_models: dict[str, dict], architecture_fil
     """
 
     # Ensure model is present and valid, get the plugin name
-    plugin_models = util.get_models_by_type(parsed_models, "model")
+    plugin_models = get_models_by_type(parsed_models, "model")
     if len(plugin_models.keys()) != 1:
         raise GeneratePluginException("Plugin Arch-as-Code yaml must contain one and only one model.")
 
@@ -208,7 +211,7 @@ def _gather_template_properties(parsed_models: dict[str, dict], architecture_fil
     plugin_implementation_name = _convert_to_implementation_name(plugin_name)
 
     # Prepare template variables/properties
-    behaviors = util.search(plugin_model, ["behavior"])
+    behaviors = search(plugin_model, ["behavior"])
     commands = _gather_commands(behaviors)
 
     plugin = {
@@ -329,9 +332,9 @@ def _gather_plugin_aac_definitions(parsed_models: dict[str, dict]) -> list[dict]
     Returns:
         A list of AaC definitions provided by the plugin
     """
-    extension_definitions = list(util.get_models_by_type(parsed_models, "ext").values())
-    data_definitions = list(util.get_models_by_type(parsed_models, "data").values())
-    enum_definitions = list(util.get_models_by_type(parsed_models, "enum").values())
+    extension_definitions = list(get_models_by_type(parsed_models, "ext").values())
+    data_definitions = list(get_models_by_type(parsed_models, "data").values())
+    enum_definitions = list(get_models_by_type(parsed_models, "enum").values())
 
     return extension_definitions + data_definitions + enum_definitions
 
@@ -342,7 +345,7 @@ def _add_definitions_yaml_string(model: dict) -> dict:
 
 
 def _convert_to_implementation_name(original_name: str) -> str:
-    """Converts a plugin name to a pythonic version for implementaiton."""
+    """Converts a plugin name to a pythonic version for implementation."""
     return original_name.replace("-", "_")
 
 

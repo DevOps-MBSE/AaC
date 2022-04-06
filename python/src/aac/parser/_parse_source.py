@@ -6,68 +6,23 @@ to find a certain type in a model by just looking for that key.
 """
 
 from os import path
-
 import yaml
-
-from attr import Factory, attrib, attrs, validators
 from yaml.parser import ParserError as YAMLParserError
 
-
-@attrs
-class SourceLocation:
-    """The position and ... of an AaC structure in the source.
-
-    Attributes:
-        line (int): The line number on which the object was found.
-        column (int): The character position at which the object was found.
-        position (int): The position relative to the start of the file where the object was found.
-        span (int): The number of characters occupied by the object relative to `position`.
-    """
-
-    line: int = attrib(validator=validators.instance_of(int))
-    column: int = attrib(validator=validators.instance_of(int))
-    position: int = attrib(validator=validators.instance_of(int))
-    span: int = attrib(validator=validators.instance_of(int))
+from aac.parser._parser_error import ParserError
+from aac.lang.definitions.definition import Definition
+from aac.lang.definitions.lexeme import Lexeme
+from aac.lang.definitions.source_location import SourceLocation
 
 
-@attrs
-class Lexeme:
-    """A lexical unit for a parsed AaC definition.
-
-    Attributes:
-        location (SourceLocation): The location at which the object was found.
-        source (str): The source in which the object was found.
-        value (str): The value of the parsed object.
-    """
-
-    location: SourceLocation = attrib(validator=validators.instance_of(SourceLocation))
-    source: str = attrib(validator=validators.instance_of(str))
-    value: str = attrib(validator=validators.instance_of(str))
-
-
-@attrs
-class ParsedDefinition:
-    """A parsed Architecture-as-Code definition.
-
-    Attributes:
-        content (str): The textual representation of the definition.
-        lexemes (list[Lexeme]): A list of lexemes for each item in the parsed definition.
-        definition (dict): The parsed definition.
-    """
-
-    content: str = attrib(validator=validators.instance_of(str))
-    lexemes: list[Lexeme] = attrib(default=Factory(list), validator=validators.instance_of(list))
-    definition: dict = attrib(default=Factory(list), validator=validators.instance_of(dict))
-
-
-def parse(source: str) -> ParsedDefinition:
+def parse(source: str) -> list[Definition]:
     """Parse the Architecture-as-Code (AaC) definition(s) from the provided source.
 
     Args:
         source (str): Must be either a file path to an AaC yaml file or a string containing AaC definitions.
 
     Returns:
-        A ParsedDefinition object containing the internal representation of the definition and metadata
+        A list of Definition objects containing the internal representation of the definition and metadata
         associated with the definition.
     """
 
@@ -85,8 +40,13 @@ def parse(source: str) -> ParsedDefinition:
         return lexemes
 
     contents = get_yaml_from_source(source)
-    definition = _parse_file(source) if path.lexists(source) else _parse_str(source, contents)
-    return ParsedDefinition(contents, get_lexemes_for_definition(contents), definition)
+    definitions = _parse_file(source) if path.lexists(source) else _parse_str(source, contents)
+
+    parsed_definitions = []
+    for name, definition in definitions.items():
+        parsed_definitions.append(Definition(name, contents, get_lexemes_for_definition(contents), definition))
+
+    return parsed_definitions
 
 
 def get_yaml_from_source(source: str) -> str:
@@ -174,6 +134,7 @@ def _parse_yaml(source: str, content: str) -> dict:
 
 def _error_if_not_yaml(source, content, models):
     """Raise a ParserError if the model is not a YAML model we can parse."""
+
     def is_model(model):
         """Return True if the model is further parseable."""
         return isinstance(model, dict)
@@ -185,6 +146,7 @@ def _error_if_not_yaml(source, content, models):
 
 def _error_if_not_complete(source, content, models):
     """Raise a ParserError if the model is incomplete."""
+
     def is_import(model):
         """Return True if the model is an import declaration."""
         type, *_ = model.keys()
@@ -242,11 +204,3 @@ def _get_files_to_process(arch_file_path: str) -> list[str]:
                     ret_val.append(append_me)
 
     return ret_val
-
-
-@attrs
-class ParserError(Exception):
-    """An error that represents a file that could not be parsed."""
-
-    source: str = attrib(validator=validators.instance_of(str))
-    errors: list[str] = attrib(default=Factory(list), validator=validators.instance_of(list))

@@ -39,7 +39,7 @@ ext:
   dataExt:
     add:
       - name: requirements
-        type: RequirementReference[]
+        type: RequirementReference
 ---
 ext:
   name: addSpecTraceToData
@@ -47,7 +47,7 @@ ext:
   dataExt:
     add:
       - name: requirements
-        type: RequirementReference[]
+        type: RequirementReference
 ---
 data:
   name: Specification
@@ -83,7 +83,7 @@ data:
     - name: shall
       type: string
     - name: parent
-      type: RequirementReference[]
+      type: RequirementReference
     - name: attributes
       type: RequirementAttribute[]
   required:

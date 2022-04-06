@@ -7,12 +7,13 @@ from typing import Callable
 
 from pluggy import PluginManager
 
-from aac import __version__, parser, plugins
+from aac import __version__
 from aac.AacCommand import AacCommand, AacCommandArgument
 from aac.lang.server import start_lsp
+from aac.plugins.plugin_manager import get_plugin_manager
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 from aac.spec.core import get_aac_spec_as_yaml
-from aac.validator import validation
+from aac.validate import validated_source
 
 
 def run_cli():
@@ -21,7 +22,7 @@ def run_cli():
 
     This method parses the command line and performs the requested user command or outputs usage.
     """
-    plugin_manager = plugins.get_plugin_manager()
+    plugin_manager = get_plugin_manager()
 
     arg_parser, aac_plugin_commands = _setup_arg_parser(plugin_manager)
 
@@ -45,14 +46,14 @@ def run_cli():
                 sys.exit(result.status_code.value)
 
 
-VERSION_COMMAND_NAME = "version"
-VALIDATE_COMMAND_NAME = "validate"
 CORE_SPEC_COMMAND_NAME = "aac-core-spec"
 START_LSP_COMMAND_NAME = "start-lsp"
+VERSION_COMMAND_NAME = "version"
+VALIDATE_COMMAND_NAME = "validate"
 
 
 def _version_cmd() -> PluginExecutionResult:
-    """Run the built-in verison command."""
+    """Run the built-in version command."""
 
     def get_version() -> str:
         return __version__
@@ -65,7 +66,7 @@ def _validate_cmd(model_file: str) -> PluginExecutionResult:
     """Run the built-in validate command."""
 
     def validate_model() -> str:
-        with validation(parser.parse, model_file):
+        with validated_source(model_file):
             return f"{model_file} is valid"
 
     with plugin_result(VALIDATE_COMMAND_NAME, validate_model) as result:
@@ -81,7 +82,6 @@ def _core_spec_cmd() -> PluginExecutionResult:
 def _setup_arg_parser(
     plugin_manager: PluginManager,
 ) -> tuple[argparse.ArgumentParser, list[Callable]]:
-
     def help_formatter(prog):
         return argparse.HelpFormatter(prog, max_help_position=30)
 

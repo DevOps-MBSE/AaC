@@ -19,9 +19,8 @@ from pygls.lsp import (
 )
 from pygls.server import LanguageServer
 
+from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
-from aac.spec.core import get_aac_spec
-from aac.util import search
 
 
 logger: Optional[logging.Logger] = None
@@ -71,18 +70,17 @@ def setup_features(server: LanguageServer) -> None:
     @server.feature(methods.COMPLETION, CompletionOptions(all_commit_characters=[":"]))
     async def handle_completion(ls: LanguageServer, params: CompletionParams):
         """Handle a completion request."""
-        data, _ = get_aac_spec()
-        fields = search(data, ["root", "data", "fields"])
+        root_fields = get_active_context().get_root_fields()
         return CompletionList(
             is_incomplete=False,
             items=[
                 CompletionItem(
-                    label=field.get("name"),
+                    label=root_field.get("name"),
                     kind=CompletionItemKind.Struct,
-                    documentation=field.get("description"),
+                    documentation=root_field.get("description"),
                     commit_characters=[":"],
                 )
-                for field in fields
+                for root_field in root_fields
             ],
         )
 

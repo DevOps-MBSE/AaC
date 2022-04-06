@@ -3,6 +3,9 @@ from unittest import TestCase
 from aac.spec import core
 
 
+EXPECTED_ROOT_KEY_NAMES = ["import", "enum", "data", "model", "usecase", "ext", "validation"]
+
+
 class TestSpecCore(TestCase):
     def test_get_primitive(self):
         """
@@ -14,25 +17,34 @@ class TestSpecCore(TestCase):
 
         self.assertCountEqual(result, expected_results)
 
-    def test_get_root_names(self):
+    def test_get_root_keys(self):
         """
-        Unit test for the core.get_root_names method.
+        Unit test for the core.get_root_keys method.
         """
-        expected_results = ["import", "enum", "data", "model", "usecase", "ext"]
+        result = core.get_root_keys()
 
-        result = core.get_roots()
+        self.assertListEqual(result, EXPECTED_ROOT_KEY_NAMES)
 
-        self.assertCountEqual(result, expected_results)
+    def test_get_root_fields(self):
+        """
+        Unit test for the core.get_root_fields method.
+        """
+        result = core.get_root_fields()
+
+        self.assertEqual(len(result), len(EXPECTED_ROOT_KEY_NAMES))
+        for field in result:
+            self.assertIsNotNone(field.get("name"))
+            self.assertIsNotNone(field.get("description"))
+            self.assertIn(field.get("name"), EXPECTED_ROOT_KEY_NAMES)
 
     def test_get_aac_spec(self):
         """
         Unit test for the core.get_aac_spec method.
         """
 
-        aac_data, _ = core.get_aac_spec()
+        aac_definitions = core.get_aac_spec()
 
-        self.assertGreater(len(aac_data.keys()), 0)
-        self.assertGreater(len(aac_data.keys()), 0)
+        self.assertGreater(len(aac_definitions), 0)
 
     def test_get_aac_spec_as_yaml(self):
         """

@@ -6,9 +6,10 @@
 import os
 from typing import Callable, Optional
 
-from aac import parser, util
+from aac.lang.definition_helpers import get_models_by_type, convert_parsed_definitions_to_dict_definition
+from aac.lang.definitions.search import search
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
-from aac.validator import validation
+from aac.validate import validated_source
 from aac.template_engine import (
     generate_templates,
     load_default_templates,
@@ -33,8 +34,8 @@ def puml_component(architecture_file: str, output_directory: Optional[str] = Non
     """
     architecture_file_path = os.path.abspath(architecture_file)
 
-    def generate_component_diagram(definitions: dict):
-        model_types = util.get_models_by_type(definitions, "model")
+    def generate_component_diagram(models: dict):
+        model_types = get_models_by_type(models, "model")
 
         models = []
         for root_model_name in model_types.keys():
@@ -73,7 +74,7 @@ def puml_sequence(architecture_file: str, output_directory: Optional[str] = None
     architecture_file_path = os.path.abspath(architecture_file)
 
     def generate_sequence_diagram(models: dict):
-        use_case_types = util.get_models_by_type(models, "usecase")
+        use_case_types = get_models_by_type(models, "usecase")
 
         properties = []
         participants = []
@@ -81,21 +82,25 @@ def puml_sequence(architecture_file: str, output_directory: Optional[str] = None
 
         for use_case_title in use_case_types.keys():
             # declare participants
-            usecase_participants = util.search(use_case_types.get(use_case_title, {}), ["usecase", "participants"])
+            usecase_participants = search(use_case_types.get(use_case_title), ["usecase", "participants"])
             for usecase_participant in usecase_participants:  # each participant is a field type
-                participants.append({
-                    "type": usecase_participant.get("type"),
-                    "name": usecase_participant.get("name"),
-                })
+                participants.append(
+                    {
+                        "type": usecase_participant.get("type"),
+                        "name": usecase_participant.get("name"),
+                    }
+                )
 
             # process steps
-            steps = util.search(use_case_types.get(use_case_title, {}), ["usecase", "steps"])
+            steps = search(use_case_types[use_case_title], ["usecase", "steps"])
             for step in steps:  # each step of a step type
-                sequences.append({
-                    "source": step.get("source"),
-                    "target": step.get("target"),
-                    "action": step.get("action"),
-                })
+                sequences.append(
+                    {
+                        "source": step.get("source"),
+                        "target": step.get("target"),
+                        "action": step.get("action"),
+                    }
+                )
 
             properties.append({
                 "filename": _get_generated_file_name(architecture_file, SEQUENCE_STRING, use_case_title, output_directory),
@@ -128,14 +133,14 @@ def puml_object(architecture_file: str, output_directory: Optional[str] = None) 
     architecture_file_path = os.path.abspath(architecture_file)
 
     def generate_object_diagram(models: dict):
-        model_types = util.get_models_by_type(models, "model")
+        model_types = get_models_by_type(models, "model")
 
         object_declarations = []
         object_compositions = {}
         for model_name in model_types.keys():
             object_declarations.append(model_name)
 
-            for component in util.search(model_types.get(model_name, {}), ["model", "components", "type"]):
+            for component in search(model_types[model_name], ["model", "components", "type"]):
                 if model_name not in object_compositions:
                     object_compositions[model_name] = set()
 
@@ -181,8 +186,8 @@ def _generate_diagram_to_file(
     Returns:
         Result message string
     """
-    with validation(parser.parse, architecture_file_path) as result:
-        template_properties = property_generator(result.parsed_model.definition)
+    with validated_source(architecture_file_path) as result:
+        template_properties = property_generator(convert_parsed_definitions_to_dict_definition(result.definitions))
         templates = [
             (props.get("filename"), generate_templates(load_default_templates(f"{plugin_name}/{puml_type}"), props))
             for props in template_properties
@@ -221,7 +226,7 @@ def _get_model_content(model: dict, model_types: dict, defined_interfaces: set) 
     model_interfaces = set()
 
     # define UML interface for each input
-    inputs = util.search(model, ["model", "behavior", "input"])
+    inputs = search(model, ["model", "behavior", "input"])
     model_inputs = []
     for input in inputs:
         input_name = input.get("name")
@@ -237,7 +242,7 @@ def _get_model_content(model: dict, model_types: dict, defined_interfaces: set) 
             model_interfaces.add(input_type)
 
     # define UML interface for each output
-    outputs = util.search(model, ["model", "behavior", "output"])
+    outputs = search(model, ["model", "behavior", "output"])
     model_outputs = []
     for output in outputs:
         output_name = output.get("name")
@@ -253,7 +258,7 @@ def _get_model_content(model: dict, model_types: dict, defined_interfaces: set) 
             model_interfaces.add(output_type)
 
     # define UML package for each component
-    components = util.search(model, ["model", "components"])
+    components = search(model, ["model", "components"])
     model_components = []
 
     for component in components:
