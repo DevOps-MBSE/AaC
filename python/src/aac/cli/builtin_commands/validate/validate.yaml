@@ -7,7 +7,7 @@ model:
       description: Validate the AaC definition file.
       input:
         - name: architecture_file
-          type: string
+          type: file
           python_type: str
           description: The path to the AaC file to be validated.
       acceptance:

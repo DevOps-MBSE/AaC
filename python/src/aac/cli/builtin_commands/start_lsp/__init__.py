@@ -18,7 +18,7 @@ def get_commands() -> list[AacCommand]:
         list of AacCommands
     """
     start_lsp_arguments = [
-        AacCommandArgument("--dev", "Start the server in development mode.", action="store_true"),
+        AacCommandArgument("--dev", "Start the server in development mode.", data_type="bool", action="store_true"),
     ]
 
     plugin_commands = [

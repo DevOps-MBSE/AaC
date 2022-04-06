@@ -18,7 +18,7 @@ def get_commands() -> list[AacCommand]:
         list of AacCommands
     """
     validate_arguments = [
-        AacCommandArgument("architecture_file", "The path to the AaC file to be validated."),
+        AacCommandArgument("architecture_file", "The path to the AaC file to be validated.", data_type="file"),
     ]
 
     plugin_commands = [
