@@ -1,8 +1,6 @@
 """The Architecture-as-Code Language Server."""
 
-import logging
-from typing import Optional
-
+from pygls.server import LanguageServer
 import pygls.lsp.methods as methods
 
 from pygls.lsp import (
@@ -17,38 +15,8 @@ from pygls.lsp import (
     InitializeResult,
     ServerCapabilities,
 )
-from pygls.server import LanguageServer
 
-from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
-from aac.spec.core import get_aac_spec
-from aac.util import search
-
-
-logger: Optional[logging.Logger] = None
-server: Optional[LanguageServer] = None
-
-
-def start_lsp(dev: bool = False) -> PluginExecutionResult:
-    """Start the LSP server.
-
-    Args:
-        dev (bool): Whether to start the server and setup logging for development. (optional)
-    """
-
-    def start():
-        global server, logger
-
-        server = server or LanguageServer()
-        setup_features(server)
-
-        _setup_logger(logging.DEBUG if dev else logging.INFO)
-        logger.info("Starting the AaC LSP server")
-
-        server.start_io()
-
-    with plugin_result("lsp", start) as result:
-        result.messages = [m for m in result.messages if m]
-        return result
+from aac.lang.active_context_lifecycle_manager import get_active_context
 
 
 def setup_features(server: LanguageServer) -> None:
@@ -71,28 +39,16 @@ def setup_features(server: LanguageServer) -> None:
     @server.feature(methods.COMPLETION, CompletionOptions(all_commit_characters=[":"]))
     async def handle_completion(ls: LanguageServer, params: CompletionParams):
         """Handle a completion request."""
-        data, _ = get_aac_spec()
-        fields = search(data, ["root", "data", "fields"])
+        root_fields = get_active_context().get_root_fields()
         return CompletionList(
             is_incomplete=False,
             items=[
                 CompletionItem(
-                    label=field.get("name"),
+                    label=root_field.get("name"),
                     kind=CompletionItemKind.Struct,
-                    documentation=field.get("description"),
+                    documentation=root_field.get("description"),
                     commit_characters=[":"],
                 )
-                for field in fields
+                for root_field in root_fields
             ],
         )
-
-
-def _setup_logger(log_level: int) -> None:
-    """Configure the logger.
-
-    Args:
-        log_level (int): The logging level to use for the logger.
-    """
-    global logger
-    logging.basicConfig(level=log_level)
-    logger = logging.getLogger(__name__)

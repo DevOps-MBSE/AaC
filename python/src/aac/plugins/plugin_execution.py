@@ -4,10 +4,11 @@ from typing import Callable
 from attr import attrib, attrs, validators, Factory
 from contextlib import contextmanager
 from enum import Enum, auto, unique
+from traceback import extract_tb
 
 from aac.parser import ParserError
 from aac.plugins import PluginError, OperationCancelled
-from aac.validator import ValidationError
+from aac.validate import ValidationError
 
 
 @unique
@@ -48,7 +49,7 @@ class PluginExecutionResult:
         """Return True if the command succeeded; False, otherwise."""
         return self.status_code == PluginExecutionStatusCode.SUCCESS
 
-    def output(self) -> str:
+    def get_messages_as_string(self) -> str:
         """Return the output messages as a combined string."""
         return "\n".join(self.messages)
 
@@ -77,8 +78,7 @@ def plugin_result(name: str, cmd: Callable, *args, **kwargs):
         result.add_messages(f"Failed to parse {source}\n", *errors, "")
         result.status_code = PluginExecutionStatusCode.PARSER_FAILURE
     except ValidationError as error:
-        source, _, errors = error.args
-        result.add_messages(f"Failed to validate {source}\n", *errors, "")
+        result.add_messages("Failed to validate:\n", *error.args, "")
         result.status_code = PluginExecutionStatusCode.VALIDATION_FAILURE
     except FileNotFoundError as error:
         result.add_messages(f"{error.strerror}: {error.filename}")
@@ -90,7 +90,11 @@ def plugin_result(name: str, cmd: Callable, *args, **kwargs):
         result.set_messages(condition.message)
         result.status_code = PluginExecutionStatusCode.OPERATION_CANCELLED
     except Exception as error:
-        result.add_messages(f"an unrecognized error occurred: {error}")
+        # Extract the first stack trace, skipping the plugin result we'd expect to find in the first element
+        error_trace = extract_tb(error.__traceback__)[1]
+        result.add_messages(
+            f"An unrecognized error occurred:{error_trace.filename} line {error_trace.lineno} message: {error}"
+        )
         result.status_code = PluginExecutionStatusCode.GENERAL_FAILURE
 
     yield result

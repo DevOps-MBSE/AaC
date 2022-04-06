@@ -5,7 +5,8 @@
 
 from iteration_utilities import flatten
 
-from aac import parser, util
+from aac.lang.definition_helpers import convert_parsed_definitions_to_dict_definition, get_models_by_type
+from aac.lang.definitions.search import search
 from aac.plugins import PluginError
 from aac.plugins.plugin_execution import (
     PluginExecutionResult,
@@ -17,7 +18,7 @@ from aac.template_engine import (
     load_default_templates,
     write_generated_templates_to_file,
 )
-from aac.validator import validation
+from aac.validate import validated_source
 
 plugin_name = "gen-protobuf"
 
@@ -33,10 +34,11 @@ def gen_protobuf(architecture_file: str, output_directory: str) -> PluginExecuti
     """
 
     def generate_protobuf():
-        with validation(parser.parse, architecture_file) as validation_result:
+        with validated_source(architecture_file) as validation_result:
             loaded_templates = load_default_templates("gen_protobuf")
 
-            data_messages_and_enum_definitions = _collect_data_and_enum_definitions(validation_result.parsed_model.definition)
+            definitions_as_dictionary = convert_parsed_definitions_to_dict_definition(validation_result.definitions)
+            data_messages_and_enum_definitions = _collect_data_and_enum_definitions(definitions_as_dictionary)
             message_template_properties = _collect_template_generation_properties(data_messages_and_enum_definitions)
 
             generated_template_messages = _generate_protobuf_messages(loaded_templates, message_template_properties)
@@ -73,7 +75,7 @@ def _collect_data_and_enum_definitions(parsed_models: dict) -> dict[str, dict]:
         return list(set(nested_types))
 
     def collect_behaviors(model_with_behaviors):
-        return util.search(model_with_behaviors, ["model", "behavior"])
+        return search(model_with_behaviors, ["model", "behavior"])
 
     def convert_behavior_io_to_data_type(behavior_io_model):
         return behavior_io_model.get("type")
@@ -83,7 +85,7 @@ def _collect_data_and_enum_definitions(parsed_models: dict) -> dict[str, dict]:
         outputs = behavior_model.get("output") or []
         return list(map(convert_behavior_io_to_data_type, inputs + outputs))
 
-    model_definitions = util.get_models_by_type(parsed_models, "model")
+    model_definitions = get_models_by_type(parsed_models, "model")
     behaviors = list(flatten(map(collect_behaviors, model_definitions.values())))
     interface_data_message_types = list(set(flatten(map(collect_data_message_types, behaviors))))
     all_definitions_types_to_generate = interface_data_message_types + collect_nested_types(interface_data_message_types)

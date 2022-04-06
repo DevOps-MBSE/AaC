@@ -1,14 +1,9 @@
-"""Arch-as-Code helper utilities to simplify development.
-
-The aac.util module provides some functionality discovered to be valuable
-during the development of aac.  By placing this behavior in a utility
-module we prevent code duplication and simplify maintenance.
-
-Avoid adding to this module, always look for ways move these functions into modules with similar functionality.
-"""
+"""Various functions that provide the ability to search through a definition's structure."""
 
 import logging
 from typing import Any
+
+from aac.lang.definitions.definition import Definition
 
 
 def search(model: dict[str, Any], search_keys: list[str]) -> list:
@@ -35,13 +30,13 @@ def search(model: dict[str, Any], search_keys: list[str]) -> list:
         You know the structure of the specification and need to iterate through each field.
         The search utility method simplifies that for you.
 
-            for field in util.search(my_model, ["data", "fields"]):
+            for field in definition_helpers.search(my_model, ["data", "fields"]):
                 print(f"field_name: {field["name"]} field_type {field["type"]}")
 
         The above example demonstrates a complex type being returned as a dict.  Search will also
         provide direct access to simple types in the model.
 
-            for field_name in util.search(my_model, ["data", "fields", "name"]):
+            for field_name in definition_helpers.search(my_model, ["data", "fields", "name"]):
                 print(f"field_name: {field_name}")
 
     Args:
@@ -53,6 +48,7 @@ def search(model: dict[str, Any], search_keys: list[str]) -> list:
         Returns a list of found data items based on the search keys.
 
     """
+
     done = False
     ret_val = []
 
@@ -103,23 +99,45 @@ def search(model: dict[str, Any], search_keys: list[str]) -> list:
     return ret_val
 
 
-def get_models_by_type(models: dict[str, dict], root_name: str) -> dict[str, dict]:
-    """Gets subset of models of a specific root name.
+def search_definition(definition: Definition, search_keys: list[str]) -> list:
+    """
+    Search an AaC definition structure by key(s).
 
-    The aac.parser.parse() returns a dict of all parsed types.  Sometimes it is
-    useful to only work with certain roots (i.e. model or data).  This utility
-    method allows a setup of parsed models to be "filtered" to a specific root name.
+    Searches a Definition for a subset of the definition contents given a set of keys.
+    Search returns a list of  entries in the definition that correspond to those keys. This search
+    will traverse the entire definition's structure.
+
+        Typical usage example:
+        Let's say you have a definition structure parsed from the following AaC yaml.
+
+            data:
+              name: MyData
+              fields:
+                  - name: one
+                    type: string
+                  - name: two
+                    type: string
+              required:
+                  - one
+
+        You know the structure of the specification and need to iterate through each field.
+        The search utility method simplifies that for you.
+
+            for field in definition_helpers.search(my_model, ["data", "fields"]):
+                print(f"field_name: {field["name"]} field_type {field["type"]}")
+
+        The above example demonstrates a complex type being returned as a dict.  Search will also
+        provide direct access to simple types in the model.
+
+            for field_name in definition_helpers.search(my_definition, ["data", "fields", "name"]):
+                print(f"field_name: {field_name}")
 
     Args:
-        models: The dict of models to search.
-        root_name: The root name to filter on.
+        definition: The definition to search.
+        search_keys: A list of strings representing keys in the model dict hierarchy.
 
     Returns:
-        A dict mapping type names to AaC model definitions.
+        Returns a list of found data items based on the search keys.
     """
-    ret_val = {}
-    for key, value in models.items():
-        if root_name in value.keys():
-            ret_val[key] = value
 
-    return ret_val
+    return search(definition.structure, search_keys)

@@ -1,18 +1,23 @@
 from unittest import TestCase
 from tempfile import NamedTemporaryFile
 
-from aac.plugins.plugin_execution import PluginExecutionStatusCode
+from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.plugins.specifications.specifications_impl import spec_validate
+
+from tests.helpers.assertion import assert_plugin_failure, assert_plugin_success
 
 
 class TestSpecifications(TestCase):
+    def setUp(self) -> None:
+        get_active_context(reload_context=True)
+
     def test_spec_validate(self):
         with NamedTemporaryFile("w") as temp_spec:
             temp_spec.write(VALID_SPEC)
             temp_spec.seek(0)
 
             result = spec_validate(temp_spec.name)
-            self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
+            assert_plugin_success(result)
 
     def test_spec_validate_fails_with_missing_requirement(self):
         with NamedTemporaryFile("w") as temp_spec:
@@ -20,7 +25,7 @@ class TestSpecifications(TestCase):
             temp_spec.seek(0)
 
             result = spec_validate(temp_spec.name)
-            self.assertEqual(result.status_code, PluginExecutionStatusCode.PLUGIN_FAILURE)
+            assert_plugin_failure(result)
             self.assertIn("Invalid requirement id 'SUB-3'", "\n".join(result.messages))
 
 

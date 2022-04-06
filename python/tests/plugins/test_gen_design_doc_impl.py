@@ -2,8 +2,9 @@ import os
 from tempfile import TemporaryDirectory
 from unittest import TestCase
 
-from aac.plugins.plugin_execution import PluginExecutionStatusCode
 from aac.plugins.gen_design_doc.gen_design_doc_impl import gen_design_doc
+
+from tests.helpers.assertion import assert_plugin_success
 
 
 class TestGenerateDesignDocumentPlugin(TestCase):
@@ -15,7 +16,7 @@ class TestGenerateDesignDocumentPlugin(TestCase):
                 arch_file.write(TEST_MODEL)
 
             result = gen_design_doc(test_model_file_name, temp_dir)
-            self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
+            assert_plugin_success(result)
 
             files = os.listdir(temp_dir)
             self.assertEqual(len(files), 2)
