@@ -13,7 +13,6 @@ from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 
 plugin_name = "start-lsp"
 
-logger: Optional[logging.Logger] = None
 server: Optional[LanguageServer] = None
 
 def start_lsp(dev: bool = False) -> PluginExecutionResult:
@@ -24,27 +23,16 @@ def start_lsp(dev: bool = False) -> PluginExecutionResult:
     """
 
     def start():
-        global server, logger
+        global server
 
         server = server or LanguageServer()
         setup_features(server)
 
-        _setup_logger(logging.DEBUG if dev else logging.INFO)
+        logger = logging.getLogger(__name__)
         logger.info("Starting the AaC LSP server")
 
         server.start_io()
 
-    with plugin_result("lsp", start) as result:
+    with plugin_result(plugin_name, start) as result:
         result.messages = [m for m in result.messages if m]
         return result
-
-
-def _setup_logger(log_level: int) -> None:
-    """Configure the logger.
-
-    Args:
-        log_level (int): The logging level to use for the logger.
-    """
-    global logger
-    logging.basicConfig(level=log_level)
-    logger = logging.getLogger(__name__)
