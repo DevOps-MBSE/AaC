@@ -1,4 +1,3 @@
-from cgi import test
 from unittest import TestCase
 
 from aac.lang.active_context_lifecycle_manager import get_active_context
