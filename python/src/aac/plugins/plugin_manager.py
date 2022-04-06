@@ -1,9 +1,12 @@
 """Provide access to plugins and plugin data."""
 
+from iteration_utilities import flatten
 from pluggy import PluginManager
 
 from aac import parser
+from aac.lang.definitions.definition import Definition
 from aac.plugins import hookspecs, PLUGIN_PROJECT_NAME
+from aac.plugins.validators import ValidatorPlugin
 
 
 def get_plugin_manager() -> PluginManager:
@@ -24,6 +27,12 @@ def get_plugin_manager() -> PluginManager:
         specifications,
     )
 
+    # Import Validation Plugins
+    from aac.plugins.validators import (
+        defined_references,
+        required_fields
+    )
+
     plugin_manager = PluginManager(PLUGIN_PROJECT_NAME)
     plugin_manager.add_hookspecs(hookspecs)
     plugin_manager.load_setuptools_entrypoints(PLUGIN_PROJECT_NAME)
@@ -37,10 +46,42 @@ def get_plugin_manager() -> PluginManager:
     plugin_manager.register(gen_plant_uml)
     plugin_manager.register(specifications)
 
+    # register "built-in" validation plugins
+    plugin_manager.register(defined_references)
+    plugin_manager.register(required_fields)
+
     return plugin_manager
 
 
-def get_plugin_model_definitions():
+def get_plugin_definitions() -> list[Definition]:
+    """
+    Gets a list of all the plugin-defined AaC models and definitions.
+
+    Returns:
+        A list of parsed definitions from all active plugins.
+    """
+    plugin_manager = get_plugin_manager()
+    plugin_definitions_as_yaml = plugin_manager.hook.get_plugin_aac_definitions()
+    plugin_definitions = []
+    for plugin_definition in plugin_definitions_as_yaml:
+        if len(plugin_definition) > 0:
+            plugin_definitions.append(parser.parse(plugin_definition))
+
+    return list(flatten(plugin_definitions))
+
+
+def get_validator_plugins() -> list[ValidatorPlugin]:
+    """
+    Gets a list of registered validator plugins and metadata.
+
+    Returns:
+        A list of validator plugins that are currently registered.
+    """
+    plugin_manager = get_plugin_manager()
+    return plugin_manager.hook.register_validators()
+
+
+def get_plugin_model_definitions() -> dict:
     """
     Gets all a list of all the plugin-defined AaC models and definitions.
 
@@ -53,7 +94,8 @@ def get_plugin_model_definitions():
     plugin_extensions = {}
     for plugin_ext in plugin_models_yaml:
         if len(plugin_ext) > 0:
-            models = parser.parse(plugin_ext)
-            plugin_extensions = models.definition | plugin_extensions
+            parsed_definitions = parser.parse(plugin_ext)
+            definitions_dict = dict(map(lambda definition: (definition.name, definition.structure), parsed_definitions))
+            plugin_extensions = definitions_dict | plugin_extensions
 
     return plugin_extensions

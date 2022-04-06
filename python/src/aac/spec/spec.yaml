@@ -49,6 +49,14 @@ data:
         the specification of any plugins you may have installed.
 
         You can extend any 'enum' and 'data' definition.
+    - name: validation
+      type: Validation
+      description: |
+        A reference to a validation plugin. Validation plugins provide verification and validation
+        for the definition to which they are attached and any uses of that definition, depending
+        on the validation plugins referenced by it.
+
+        Validators are referenced by name.
 ---
 data:
   name: enum
@@ -125,6 +133,58 @@ data:
     - add
 ---
 data:
+  name: Validation
+  fields:
+    - name: name
+      type: string
+      description: |
+        The name of the validation rule and plugin.
+    - name: description
+      type: string
+      description: |
+        A high-level description of the validation plugin.
+    - name: behavior
+      type: Behavior[]
+      description: |
+        A list of behaviors that the validation plugin will perform.
+  required:
+    - name
+    - description
+    - behavior
+  validation:
+    - name: Validation definition has an implementation
+---
+data:
+  name: ValidationReference
+  fields:
+    - name: name
+      type: string
+      description: |
+        The name of the validation definition.
+    - name: arguments
+      type: string[]
+      description: |
+        A list of arguments to pass to the validator.
+  required:
+    - name
+---
+data:
+  name: ValidatorInput
+  fields:
+    - name: name
+      type: string
+      description: |
+        The name of the input to the validation rule and plugin.
+---
+data:
+  name: ValidatorOutput
+  fields:
+    - name: name
+      type: string
+      description: |
+        The name of the output from the validation rule and plugin.
+---
+data:
   name: Scenario
   fields:
     - name: scenario
@@ -149,7 +209,7 @@ data:
     - name: then
       type: string[]
       description: |
-        A list of postconditions that will be true once the system has completed
+        A list of post conditions that will be true once the system has completed
         its action based on the triggers.
   required:
     - scenario
@@ -199,6 +259,8 @@ data:
   required:
     - name
     - type
+  validation:
+    - name: Type references exist
 ---
 data:
   name: data
@@ -216,9 +278,15 @@ data:
       description: |
         The list of names of all the fields that are required for the
         definition.
+    - name: validation
+      type: ValidationReference[]
+      description: |
+        References and additional arguments for validations to apply to the definition.
   required:
     - name
     - fields
+  validation:
+    - name: Required fields are present
 ---
 data:
   name: Behavior
@@ -271,7 +339,7 @@ data:
       type: string
       description: |
         An explanatory description for the model including what the
-        component/system is modeleing and any other relevant information.
+        component/system is modeling and any other relevant information.
     - name: components
       type: Field[]
       description: |
@@ -301,7 +369,7 @@ data:
       type: string
       description: |
         An explanatory description of the use case to include what purpose the
-        use case serves, design ideas when fullfilling the use case, etc.
+        use case serves, design ideas when fulfilling the use case, etc.
     - name: participants
       type: Field[]
       description: |
@@ -330,12 +398,12 @@ data:
     - name: source
       type: string
       description: |
-        The source for the step. This should be the name of a particpant - i.e.
+        The source for the step. This should be the name of a participant - i.e.
         a modeled system component.
     - name: target
       type: string
       description: |
-        The target for the step. This should be the name of a particpant - i.e.
+        The target for the step. This should be the name of a participant - i.e.
         a modeled system component.
     - name: action
       type: string

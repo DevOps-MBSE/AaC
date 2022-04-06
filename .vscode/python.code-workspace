@@ -18,9 +18,17 @@
         ],
         "python.testing.pytestEnabled": false,
         "python.testing.unittestEnabled": true,
-        "python.pythonPath": "python/venv/bin/python",
         "python.formatting.blackArgs": [
             "--line-length=127"
+        ],
+        "cSpell.enabled": true,
+        "cSpell.words": [
+            "pluggy",
+            "protobuf",
+            "puml",
+            "pygls",
+            "pythonic",
+            "usecase"
         ]
     },
     "launch": {

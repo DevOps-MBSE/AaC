@@ -16,7 +16,8 @@ from aac.plugins.gen_plant_uml.gen_plant_uml_impl import (
     _get_generated_file_name,
     _get_formatted_definition_name,
 )
-from aac.plugins.plugin_execution import PluginExecutionStatusCode
+
+from tests.helpers.assertion import assert_plugin_success
 from tests.helpers.io import temporary_test_file
 from tests.helpers.plugins import check_generated_file_contents, YAML_FILE_EXTENSION
 
@@ -67,8 +68,8 @@ class TestGenPlantUml(TestCase):
     def test_puml_component_diagram_to_console(self):
         with temporary_test_file(TEST_PUML_ARCH_YAML, suffix=YAML_FILE_EXTENSION) as plugin_yaml:
             result = puml_component(plugin_yaml.name)
-            self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
-            self._check_component_diagram_testsystem(result.output())
+            assert_plugin_success(result)
+            self._check_component_diagram_testsystem(result.get_messages_as_string())
 
     def test_puml_component_diagram_to_file(self):
         with (TemporaryDirectory() as temp_directory,
@@ -76,12 +77,12 @@ class TestGenPlantUml(TestCase):
             result = puml_component(plugin_yaml.name, temp_directory)
 
             full_output_dir = os.path.join(temp_directory, COMPONENT_STRING)
-            self.assertIn(full_output_dir, result.output())
-            self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
+            self.assertIn(full_output_dir, result.get_messages_as_string())
+            assert_plugin_success(result)
 
             expected_puml_file_paths = [
                 _get_generated_file_name(plugin_yaml.name, COMPONENT_STRING, name)
-                for name in [TEST_PUML_SYSTEM_NAME, TEST_PUML_SERVICE_ONE_TYPE, TEST_PUML_SERVICE_TWO_TYPE]
+                for name in [TEST_PUML_SYSTEM_TYPE, TEST_PUML_SERVICE_ONE_TYPE, TEST_PUML_SERVICE_TWO_TYPE]
             ]
             temp_directory_files = os.listdir(full_output_dir)
             for path in expected_puml_file_paths:
@@ -94,8 +95,8 @@ class TestGenPlantUml(TestCase):
     def test_puml_object_diagram_to_console(self):
         with temporary_test_file(TEST_PUML_ARCH_YAML, suffix=YAML_FILE_EXTENSION) as plugin_yaml:
             result = puml_object(plugin_yaml.name)
-            self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
-            self._check_object_diagram_content(result.output())
+            assert_plugin_success(result)
+            self._check_object_diagram_content(result.get_messages_as_string())
 
     def test_puml_object_diagram_to_file(self):
         with (TemporaryDirectory() as temp_directory,
@@ -103,8 +104,8 @@ class TestGenPlantUml(TestCase):
             full_output_dir = os.path.join(temp_directory, OBJECT_STRING)
 
             result = puml_object(plugin_yaml.name, temp_directory)
-            self.assertIn(full_output_dir, result.output())
-            self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
+            self.assertIn(full_output_dir, result.get_messages_as_string())
+            assert_plugin_success(result)
 
             temp_directory_files = os.listdir(full_output_dir)
 
@@ -117,8 +118,8 @@ class TestGenPlantUml(TestCase):
     def test_puml_sequence_diagram_to_console(self):
         with temporary_test_file(TEST_PUML_ARCH_YAML, suffix=YAML_FILE_EXTENSION) as plugin_yaml:
             result = puml_sequence(plugin_yaml.name)
-            self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
-            self._check_sequence_diagram_usecase_one(result.output())
+            assert_plugin_success(result)
+            self._check_sequence_diagram_usecase_one(result.get_messages_as_string())
 
     def test_puml_sequence_diagram_to_file(self):
         with (TemporaryDirectory() as temp_directory,
@@ -126,8 +127,8 @@ class TestGenPlantUml(TestCase):
             result = puml_sequence(plugin_yaml.name, temp_directory)
 
             full_output_dir = os.path.join(temp_directory, SEQUENCE_STRING)
-            self.assertIn(full_output_dir, result.output())
-            self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
+            self.assertIn(full_output_dir, result.get_messages_as_string())
+            assert_plugin_success(result)
 
             expected_puml_file_paths = [
                 _get_generated_file_name(plugin_yaml.name, SEQUENCE_STRING, name)
@@ -166,7 +167,7 @@ class TestGenPlantUml(TestCase):
         self._assert_diagram_contains_uml_boilerplate(component_diagram_content_string)
         self._check_component_diagram_serviceone(component_diagram_content_string)
         self._check_component_diagram_servicetwo(component_diagram_content_string)
-        self.assertIn(f"package \"{TEST_PUML_SYSTEM_NAME}\"", component_diagram_content_string)
+        self.assertIn(f"package \"{TEST_PUML_SYSTEM_TYPE}\"", component_diagram_content_string)
 
     def _check_component_diagram_serviceone(self, component_diagram_content_string: str):
         self._assert_diagram_contains_uml_boilerplate(component_diagram_content_string)
@@ -199,11 +200,11 @@ class TestGenPlantUml(TestCase):
     def _check_object_diagram_content(self, object_diagram_content_string: str):
         self._assert_diagram_contains_uml_boilerplate(object_diagram_content_string)
         self._assert_object_diagram_object(object_diagram_content_string, [
-            TEST_PUML_SYSTEM_NAME, TEST_PUML_SERVICE_ONE_TYPE, TEST_PUML_SERVICE_TWO_TYPE
+            TEST_PUML_SYSTEM_TYPE, TEST_PUML_SERVICE_ONE_TYPE, TEST_PUML_SERVICE_TWO_TYPE
         ])
         self._assert_object_diagram_object_relations(object_diagram_content_string, "*--", [
-            {"left": TEST_PUML_SYSTEM_NAME, "right": TEST_PUML_SERVICE_ONE_TYPE},
-            {"left": TEST_PUML_SYSTEM_NAME, "right": TEST_PUML_SERVICE_TWO_TYPE},
+            {"left": TEST_PUML_SYSTEM_TYPE, "right": TEST_PUML_SERVICE_ONE_TYPE},
+            {"left": TEST_PUML_SYSTEM_TYPE, "right": TEST_PUML_SERVICE_TWO_TYPE},
         ])
 
     def _assert_object_diagram_object(self, content: str, objects: list[str]):
@@ -270,7 +271,7 @@ TEST_PUML_USE_CASE_TWO_TITLE = "Request/response flow usecase two."
 
 TEST_PUML_ARCH_YAML = f"""
 model:
-  name: {TEST_PUML_SYSTEM_NAME}
+  name: {TEST_PUML_SYSTEM_TYPE}
   description: A simple distributed system model
   components:
     - name: {TEST_PUML_SERVICE_ONE_NAME}

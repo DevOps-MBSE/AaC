@@ -3,7 +3,7 @@ tasks:
     init: |
       cd vscode_extension/
       yarn install
-    command: yarn compile
+    command: cd vscode_extension/; yarn compile
 
   - name: Python Virtual Environment
     init: |
@@ -12,7 +12,7 @@ tasks:
       python3.9 -m pip install --upgrade pip
       source venv/bin/activate
       pip install -e .[all]
-    command: source venv/bin/activate # Always launch a console with our virtual env
+    command: cd python/; source venv/bin/activate # Always launch a console with our virtual env
 
 vscode:
   extensions:
@@ -22,6 +22,7 @@ vscode:
     - ms-python.python
     - samuelcolvin.jinjahtml
     - vscode.typescript
+    - streetsidesoftware.code-spell-checker
 
 image:
   file: .gitpod.Dockerfile
