@@ -48,18 +48,7 @@ def run_cli():
 
 CORE_SPEC_COMMAND_NAME = "aac-core-spec"
 START_LSP_COMMAND_NAME = "start-lsp"
-VERSION_COMMAND_NAME = "version"
 VALIDATE_COMMAND_NAME = "validate"
-
-
-def _version_cmd() -> PluginExecutionResult:
-    """Run the built-in version command."""
-
-    def get_version() -> str:
-        return __version__
-
-    with plugin_result(VERSION_COMMAND_NAME, get_version) as result:
-        return result
 
 
 def _validate_cmd(model_file: str) -> PluginExecutionResult:
@@ -95,11 +84,6 @@ def _setup_arg_parser(
             "Ensures the AaC yaml is valid per the AaC core spec",
             _validate_cmd,
             [AacCommandArgument("model_file", "The path to the AaC model yaml file to validate")],
-        ),
-        AacCommand(
-            VERSION_COMMAND_NAME,
-            "Outputs Architecture-as-Code Python package version",
-            _version_cmd,
         ),
         AacCommand(
             CORE_SPEC_COMMAND_NAME,

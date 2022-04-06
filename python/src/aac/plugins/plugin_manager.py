@@ -16,6 +16,11 @@ def get_plugin_manager() -> PluginManager:
     Returns:
         The plugin manager.
     """
+    # Import built-in commands
+    from aac.cli.builtin_commands import (
+        version,
+    )
+
     # Import plugins within the function to prevent circular imports and partial initialization
     from aac.plugins import (
         gen_json,
@@ -37,6 +42,9 @@ def get_plugin_manager() -> PluginManager:
     plugin_manager = PluginManager(PLUGIN_PROJECT_NAME)
     plugin_manager.add_hookspecs(hookspecs)
     plugin_manager.load_setuptools_entrypoints(PLUGIN_PROJECT_NAME)
+
+    # register "built-in" commands
+    plugin_manager.register(version)
 
     # register "built-in" plugins
     plugin_manager.register(gen_json)
