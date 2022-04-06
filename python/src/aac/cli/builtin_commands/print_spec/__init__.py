@@ -4,7 +4,7 @@
 
 from aac.plugins import hookimpl
 from aac.cli.aac_command import AacCommand
-from aac.cli.builtin_commands.print_spec.print_spec_impl import print_spec
+from aac.cli.builtin_commands.print_spec.print_spec_impl import print_spec, print_active_context
 
 
 @hookimpl
@@ -20,9 +20,14 @@ def get_commands() -> list[AacCommand]:
 
     plugin_commands = [
         AacCommand(
-            "aac-core-spec",
+            "print-spec",
             "Print the AaC model describing core AaC data types and enumerations.",
             print_spec
+        ),
+        AacCommand(
+            "print-active-context",
+            "Print the AaC active language context including data types and enumerations added by plugins.",
+            print_active_context
         ),
     ]
 
