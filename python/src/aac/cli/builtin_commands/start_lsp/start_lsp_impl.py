@@ -15,6 +15,7 @@ plugin_name = "start-lsp"
 
 server: Optional[LanguageServer] = None
 
+
 def start_lsp(dev: bool = False) -> PluginExecutionResult:
     """Start the LSP server.
 

@@ -7,10 +7,7 @@ from typing import Callable
 
 from pluggy import PluginManager
 
-from aac.cli.aac_command import AacCommand, AacCommandArgument
 from aac.plugins.plugin_manager import get_plugin_manager
-from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
-from aac.spec.core import get_aac_spec_as_yaml
 
 
 def run_cli():
@@ -41,10 +38,6 @@ def run_cli():
             print(f"{result.name}: {result.status_code.name.lower()}\n\n" + "\n".join(result.messages))
             if not result.is_success():
                 sys.exit(result.status_code.value)
-
-
-def _core_spec_cmd() -> PluginExecutionResult:
-    """Run the built-in aac-core-spec command."""
 
 
 def _setup_arg_parser(
