@@ -43,13 +43,8 @@ def run_cli():
                 sys.exit(result.status_code.value)
 
 
-CORE_SPEC_COMMAND_NAME = "aac-core-spec"
-
-
 def _core_spec_cmd() -> PluginExecutionResult:
     """Run the built-in aac-core-spec command."""
-    with plugin_result(CORE_SPEC_COMMAND_NAME, get_aac_spec_as_yaml) as result:
-        return result
 
 
 def _setup_arg_parser(
@@ -62,16 +57,8 @@ def _setup_arg_parser(
     command_parser = arg_parser.add_subparsers(dest="command")
 
     # Built-in commands
-    aac_commands = [
-        AacCommand(
-            CORE_SPEC_COMMAND_NAME,
-            "Prints the AaC model describing core AaC data types and enumerations",
-            _core_spec_cmd,
-        ),
-    ]
-
     results = plugin_manager.hook.get_commands()
-    aac_and_plugin_commands = aac_commands + list(itertools.chain(*results))
+    aac_and_plugin_commands = list(itertools.chain(*results))
 
     for command in aac_and_plugin_commands:
         command_subparser = command_parser.add_parser(command.name, help=command.description)
