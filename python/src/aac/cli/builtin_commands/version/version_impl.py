@@ -9,9 +9,7 @@ plugin_name = "version"
 
 
 def version() -> PluginExecutionResult:
-    """
-    Print the AaC package version.
-    """
+    """Print the AaC package version."""
     def get_current_version():
         return __version__
 

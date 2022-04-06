@@ -8,7 +8,7 @@ plugin_name = "help-dump"
 def help_dump() -> PluginExecutionResult:
     """
     Produce a formatted string containing all commands, their arguments, and each of their descriptions.
-.
+
     Returns:
         help_output (str): The formatted string with all commands, etc.
     """

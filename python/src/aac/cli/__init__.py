@@ -7,13 +7,11 @@ from typing import Callable
 
 from pluggy import PluginManager
 
-from aac import __version__
 from aac.cli.aac_command import AacCommand, AacCommandArgument
 from aac.lang.server import start_lsp
 from aac.plugins.plugin_manager import get_plugin_manager
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 from aac.spec.core import get_aac_spec_as_yaml
-from aac.validate import validated_source
 
 
 def run_cli():
