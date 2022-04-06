@@ -1,8 +1,6 @@
 """The Architecture-as-Code Language Server."""
 
-import logging
-from typing import Optional
-
+from pygls.server import LanguageServer
 import pygls.lsp.methods as methods
 
 from pygls.lsp import (
@@ -17,37 +15,8 @@ from pygls.lsp import (
     InitializeResult,
     ServerCapabilities,
 )
-from pygls.server import LanguageServer
 
 from aac.lang.active_context_lifecycle_manager import get_active_context
-from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
-
-
-logger: Optional[logging.Logger] = None
-server: Optional[LanguageServer] = None
-
-
-def start_lsp(dev: bool = False) -> PluginExecutionResult:
-    """Start the LSP server.
-
-    Args:
-        dev (bool): Whether to start the server and setup logging for development. (optional)
-    """
-
-    def start():
-        global server, logger
-
-        server = server or LanguageServer()
-        setup_features(server)
-
-        _setup_logger(logging.DEBUG if dev else logging.INFO)
-        logger.info("Starting the AaC LSP server")
-
-        server.start_io()
-
-    with plugin_result("lsp", start) as result:
-        result.messages = [m for m in result.messages if m]
-        return result
 
 
 def setup_features(server: LanguageServer) -> None:
@@ -83,14 +52,3 @@ def setup_features(server: LanguageServer) -> None:
                 for root_field in root_fields
             ],
         )
-
-
-def _setup_logger(log_level: int) -> None:
-    """Configure the logger.
-
-    Args:
-        log_level (int): The logging level to use for the logger.
-    """
-    global logger
-    logging.basicConfig(level=log_level)
-    logger = logging.getLogger(__name__)
