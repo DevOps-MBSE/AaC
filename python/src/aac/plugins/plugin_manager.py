@@ -18,6 +18,7 @@ def get_plugin_manager() -> PluginManager:
     """
     # Import built-in commands
     from aac.cli.builtin_commands import (
+        validate,
         version,
     )
 
@@ -44,6 +45,7 @@ def get_plugin_manager() -> PluginManager:
     plugin_manager.load_setuptools_entrypoints(PLUGIN_PROJECT_NAME)
 
     # register "built-in" commands
+    plugin_manager.register(validate)
     plugin_manager.register(version)
 
     # register "built-in" plugins

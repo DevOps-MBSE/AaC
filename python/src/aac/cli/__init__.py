@@ -48,18 +48,6 @@ def run_cli():
 
 CORE_SPEC_COMMAND_NAME = "aac-core-spec"
 START_LSP_COMMAND_NAME = "start-lsp"
-VALIDATE_COMMAND_NAME = "validate"
-
-
-def _validate_cmd(model_file: str) -> PluginExecutionResult:
-    """Run the built-in validate command."""
-
-    def validate_model() -> str:
-        with validated_source(model_file):
-            return f"{model_file} is valid"
-
-    with plugin_result(VALIDATE_COMMAND_NAME, validate_model) as result:
-        return result
 
 
 def _core_spec_cmd() -> PluginExecutionResult:
@@ -79,12 +67,6 @@ def _setup_arg_parser(
 
     # Built-in commands
     aac_commands = [
-        AacCommand(
-            VALIDATE_COMMAND_NAME,
-            "Ensures the AaC yaml is valid per the AaC core spec",
-            _validate_cmd,
-            [AacCommandArgument("model_file", "The path to the AaC model yaml file to validate")],
-        ),
         AacCommand(
             CORE_SPEC_COMMAND_NAME,
             "Prints the AaC model describing core AaC data types and enumerations",
