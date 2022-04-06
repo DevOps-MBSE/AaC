@@ -56,7 +56,7 @@ def _validate_definitions(user_definitions: list[Definition]) -> ValidationResul
     def validate_each_definition(definition: Definition) -> list[ValidatorResult]:
         return _validate_definition(definition, registered_validators, active_context)
 
-    validator_results = list(flatten(map(validate_each_definition, user_definitions)))
+    validator_results = list(flatten(map(validate_each_definition, active_context.definitions)))
     validator_messages = []
     invalid_results = []
 
