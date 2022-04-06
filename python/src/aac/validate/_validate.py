@@ -45,7 +45,7 @@ def _with_validation(user_definitions: list[Definition]) -> ValidationResult:
     if result.is_valid:
         return result
     else:
-        raise ValidationError("Failed to validate content with errors:", ".\n".join(result.messages))
+        raise ValidationError("Failed to validate content with errors:", *result.messages)
 
 
 def _validate_definitions(user_definitions: list[Definition]) -> ValidationResult:
