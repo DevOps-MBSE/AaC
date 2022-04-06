@@ -47,21 +47,6 @@ def get_aac_spec_as_yaml() -> str:
     return get_resource_file_contents(__package__, CORE_SPEC_FILE_NAME)
 
 
-def get_aac_active_context_as_yaml() -> str:
-    """Get the active context in YAML.
-
-    The active context is a superset of the core spec but also includes any definitions defined by
-    loaded plugins, etc.
-
-    See get_aac_spec_as_yaml() to get just the core AaC spec as a YAML string.
-
-    Returns:
-        Return a string containing YAML for the currently active context.
-    """
-    # TODO: Fill this in when we can.
-    return f"Not implemented!\n{format_as_yaml({}.values())}"
-
-
 def get_primitives(reload: bool = False) -> list[str]:
     """Gets the list of primitives as defined in the AaC model specification.
 
