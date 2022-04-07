@@ -7,13 +7,13 @@ from aac.plugins.plugin_manager import get_validator_plugins
 from aac.plugins.validators import ValidatorResult, ValidatorPlugin
 
 
-def validate_validator_implementations(definition_under_test: Definition, target_sub_definition: Definition, active_context: LanguageContext, **validation_kwargs) -> ValidatorResult:
+def validate_validator_implementations(definition_under_test: Definition, target_schema_definition: Definition, active_context: LanguageContext, **validation_kwargs) -> ValidatorResult:
     """
     Validates that the validation definition has a corresponding registered ValidatorPlugin.
 
     Args:
         definition_under_test (Definition): The definition that's being validate. (Root validation definitions)
-        target_sub_definition (Definition): A definition with applicable validation. ("Validation" definition)
+        target_schema_definition (Definition): A definition with applicable validation. ("Validation" definition)
         active_context (LanguageContext): The active context.
 
     Returns:

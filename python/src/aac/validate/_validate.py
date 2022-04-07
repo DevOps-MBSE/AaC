@@ -94,7 +94,7 @@ def _validate_definition(
 
 
 def _apply_validator(
-    definition_structure_dict: dict, target_sub_definition: Definition, context: LanguageContext, validator_plugin: ValidatorPlugin
+    definition_structure_dict: dict, target_schema_definition: Definition, context: LanguageContext, validator_plugin: ValidatorPlugin
 ) -> ValidatorResult:
     """Executes the validator callback on the applicable dictionary structure or substructure."""
     defined_validations = target_sub_definition.get_validation()

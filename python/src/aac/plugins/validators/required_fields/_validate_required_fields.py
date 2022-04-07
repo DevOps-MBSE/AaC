@@ -6,13 +6,13 @@ from aac.lang.definitions.structure import get_substructures_by_type
 from aac.plugins.validators import ValidatorResult
 
 
-def validate_required_fields(definition_under_test: Definition, target_sub_definition: Definition, active_context: LanguageContext, **validation_kwargs) -> ValidatorResult:
+def validate_required_fields(definition_under_test: Definition, target_schema_definition: Definition, active_context: LanguageContext, **validation_kwargs) -> ValidatorResult:
     """
     Validates that the definition has all required fields populated.
 
     Args:
         definition_under_test (Definition): The definition that's being validated.
-        target_sub_definition (Definition): A definition with applicable validation.
+        target_schema_definition (Definition): A definition with applicable validation.
         active_context (LanguageContext): The active context.
 
     Returns:
