@@ -12,7 +12,7 @@ def validate_validator_implementations(definition_under_test: Definition, target
     Validates that the validation definition has a corresponding registered ValidatorPlugin.
 
     Args:
-        definition_under_test (Definition): The definition that's being validate. (Root validation definitions)
+        definition_under_test (Definition): The definition that's being validated. (Root validation definitions)
         target_schema_definition (Definition): A definition with applicable validation. ("Validation" definition)
         active_context (LanguageContext): The active context.
 
