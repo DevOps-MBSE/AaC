@@ -36,7 +36,7 @@ def validate_references(definition_under_test: Definition, target_schema_definit
             error_messages.append(missing_field_in_dictionary)
             logging.debug(missing_field_in_dictionary)
 
-    dicts_to_test = get_substructures_by_type(definition_under_test, target_sub_definition, active_context)
+    dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, active_context)
     list(map(validate_dict, dicts_to_test))
 
     return ValidatorResult(error_messages, len(error_messages) == 0)

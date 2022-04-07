@@ -42,7 +42,7 @@ def validate_validator_implementations(definition_under_test: Definition, target
             error_messages.append(registered_plugin_names)
             logging.debug(registered_plugin_names)
 
-    dicts_to_test = get_substructures_by_type(definition_under_test, target_sub_definition, active_context)
+    dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, active_context)
     list(map(validate_dict, dicts_to_test))
 
     return ValidatorResult(error_messages, len(error_messages) == 0)
