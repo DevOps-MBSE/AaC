@@ -34,9 +34,9 @@ class TestDefinedReferencesPlugin(TestCase):
 
         test_active_context = get_active_context(reload_context=True)
         test_active_context.add_definition_to_context(test_definition)
-        target_sub_definition = get_definition_by_name("Field", test_active_context.definitions)
+        target_schema_definition = get_definition_by_name("Field", test_active_context.definitions)
 
-        actual_result = validate_references(test_definition, target_sub_definition, test_active_context)
+        actual_result = validate_references(test_definition, target_schema_definition, test_active_context)
 
         self.assertEqual(expected_result, actual_result)
 
