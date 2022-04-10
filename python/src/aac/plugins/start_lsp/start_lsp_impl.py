@@ -16,12 +16,8 @@ plugin_name = "start-lsp"
 server: Optional[LanguageServer] = None
 
 
-def start_lsp(dev: bool = False) -> PluginExecutionResult:
-    """Start the LSP server.
-
-    Args:
-        dev (bool): Whether to start the server and setup logging for development. (optional)
-    """
+def start_lsp() -> PluginExecutionResult:
+    """Start the IO LSP server."""
 
     def start():
         global server

@@ -5,11 +5,6 @@ model:
     - name: start-lsp
       type: command
       description: Start the AaC Language Server Protocol (LSP) server
-      input:
-        - name: --dev
-          type: bool
-          python_type: bool
-          description: Start the server in development mode.
       acceptance:
         - scenario: Start the LSP server
           given:
@@ -18,11 +13,3 @@ model:
             - The aac application is run with the start-lsp command.
           then:
             - The AaC LSP server is started.
-        - scenario: Start the LSP server in development mode
-          given:
-            - The LSP server is not currently running.
-          when:
-            - The aac application is run with the start-lsp command.
-            - The --dev flag is passed to the start-lsp command.
-          then:
-            - The AaC LSP server is started in development mode.
