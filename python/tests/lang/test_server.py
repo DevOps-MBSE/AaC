@@ -1,5 +1,4 @@
 from unittest import TestCase
-from unittest.mock import patch
 
 from pygls import uris
 from pygls.lsp import methods
@@ -14,7 +13,6 @@ from pygls.lsp.types import (
 )
 
 from aac.lang.active_context_lifecycle_manager import get_active_context
-from aac.plugins.start_lsp.start_lsp_impl import start_lsp
 
 from tests.lang.LspTestClient import LspTestClient
 
@@ -32,12 +30,6 @@ class TestLspServer(TestCase):
 
     def tearDown(self):
         self.client.stop()
-
-    @patch("aac.plugins.start_lsp.start_lsp_impl.server")
-    def test_starts_io_server_when_not_in_dev_mode(self, server):
-        result = start_lsp(dev=False)
-        self.assertTrue(result.is_success())
-        self.assertTrue(server.start_io.called)
 
     def test_handles_hover_request(self):
         res: Hover = self.client.send_request(
