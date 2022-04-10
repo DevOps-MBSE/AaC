@@ -1,7 +1,10 @@
+import json
+
 from unittest import TestCase
 
-from aac.plugins.help_dump.help_dump_impl import help_dump, _format_command, _get_all_commands
 from aac.cli.aac_command import AacCommand, AacCommandArgument
+from aac.cli.aac_command_encoder import AacCommandEncoder, AacCommandArgumentEncoder
+from aac.plugins.help_dump.help_dump_impl import help_dump, _get_all_commands
 
 from tests.helpers.assertion import assert_plugin_success
 
@@ -20,7 +23,7 @@ class TestHelpDump(TestCase):
 
         for i in range(3):
             expected = self.expected_formatted_output(command_name, command_description, command_arguments[:i])
-            actual = _format_command(AacCommand(command_name, command_description, lambda: None, command_arguments[:i]))
+            actual = json.dumps(AacCommandEncoder().default(AacCommand(command_name, command_description, lambda: None, command_arguments[:i])))
 
             self.assertEqual(expected, actual)
 
@@ -35,16 +38,10 @@ class TestHelpDump(TestCase):
             )
 
     def expected_formatted_output(self, name, description, arguments):
-        return self.expected_formatted_command_string(
-            name,
-            description,
-            len(arguments),
-            [self.expected_formatted_command_argument_string(arg.name, arg.description, arg.data_type) for arg in arguments]
+        return json.dumps(
+            {
+                "name": name,
+                "description": description,
+                "arguments": [AacCommandArgumentEncoder().default(arg) for arg in arguments]
+            }
         )
-
-    def expected_formatted_command_string(self, command_name, command_description, num_args, command_arguments_strings):
-        command_arguments_string = ("\n" if num_args > 0 else "") + "\n".join(command_arguments_strings)
-        return f"{command_name}::{command_description}::{num_args}{command_arguments_string}"
-
-    def expected_formatted_command_argument_string(self, argument_name, argument_description, argument_type):
-        return f"{argument_name}::{argument_description}::{argument_type}"
