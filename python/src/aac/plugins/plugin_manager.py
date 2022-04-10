@@ -18,8 +18,6 @@ def get_plugin_manager() -> PluginManager:
     """
     # Import built-in commands
     from aac.cli.builtin_commands import (
-        print_spec,
-        start_lsp,
         validate,
         version,
     )
@@ -33,6 +31,8 @@ def get_plugin_manager() -> PluginManager:
         gen_gherkin_behaviors,
         gen_plant_uml,
         specifications,
+        print_spec,
+        start_lsp,
         help_dump,
     )
 
@@ -47,8 +47,6 @@ def get_plugin_manager() -> PluginManager:
     plugin_manager.load_setuptools_entrypoints(PLUGIN_PROJECT_NAME)
 
     # register "built-in" commands
-    plugin_manager.register(print_spec)
-    plugin_manager.register(start_lsp)
     plugin_manager.register(validate)
     plugin_manager.register(version)
 
@@ -60,6 +58,8 @@ def get_plugin_manager() -> PluginManager:
     plugin_manager.register(gen_gherkin_behaviors)
     plugin_manager.register(gen_plant_uml)
     plugin_manager.register(specifications)
+    plugin_manager.register(print_spec)
+    plugin_manager.register(start_lsp)
     plugin_manager.register(help_dump)
 
     # register "built-in" validation plugins
