@@ -1,0 +1,15 @@
+model:
+  name: start-lsp
+  description: Start the LSP server
+  behavior:
+    - name: start-lsp
+      type: command
+      description: Start the AaC Language Server Protocol (LSP) server
+      acceptance:
+        - scenario: Start the LSP server
+          given:
+            - The LSP server is not currently running.
+          when:
+            - The aac application is run with the start-lsp command.
+          then:
+            - The AaC LSP server is started.
