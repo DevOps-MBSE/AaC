@@ -6,9 +6,6 @@ from typing import Optional
 import pygls.lsp.methods as methods
 
 from pygls.lsp import (
-    CompletionItem,
-    CompletionItemKind,
-    CompletionList,
     CompletionOptions,
     CompletionParams,
     Hover,
@@ -20,11 +17,15 @@ from pygls.lsp import (
 from pygls.server import LanguageServer
 
 from aac.lang.active_context_lifecycle_manager import get_active_context
+from aac.lang.language_context import LanguageContext
+from aac.lang.lsp.code_completion_provider import CodeCompletionProvider
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 
 
-logger: Optional[logging.Logger] = None
-server: Optional[LanguageServer] = None
+LOGGER: Optional[logging.Logger] = None
+SERVER: Optional[LanguageServer] = None
+ACTIVE_CONTEXT: Optional[LanguageContext] = None
+COMPLETION_PROVIDER: Optional[CodeCompletionProvider] = None
 
 
 def start_lsp(dev: bool = False) -> PluginExecutionResult:
@@ -35,15 +36,17 @@ def start_lsp(dev: bool = False) -> PluginExecutionResult:
     """
 
     def start():
-        global server, logger
+        global SERVER, LOGGER, ACTIVE_CONTEXT
 
-        server = server or LanguageServer()
-        setup_features(server)
+        SERVER = SERVER or LanguageServer()
+        setup_features(SERVER)
+        ACTIVE_CONTEXT = get_active_context()
 
         _setup_logger(logging.DEBUG if dev else logging.INFO)
-        logger.info("Starting the AaC LSP server")
+        LOGGER.info("Starting the AaC LSP server")
 
-        server.start_io()
+        # server.start_io()
+        SERVER.start_tcp("0.0.0.0", "5007")
 
     with plugin_result("lsp", start) as result:
         result.messages = [m for m in result.messages if m]
@@ -56,6 +59,7 @@ def setup_features(server: LanguageServer) -> None:
     Args:
         server (LanguageServer): The language server for which to configure the available features.
     """
+    global COMPLETION_PROVIDER
 
     @server.feature(methods.INITIALIZE)
     async def handle_initialize(ls: LanguageServer, params: InitializeParams):
@@ -67,22 +71,16 @@ def setup_features(server: LanguageServer) -> None:
         """Handle a hover request."""
         return Hover(contents="Hello from your friendly AaC LSP server!")
 
-    @server.feature(methods.COMPLETION, CompletionOptions(all_commit_characters=[":"]))
+    COMPLETION_PROVIDER = CodeCompletionProvider()
+    trigger_and_commit_chars = COMPLETION_PROVIDER.get_trigger_characters()
+
+    @server.feature(methods.COMPLETION, CompletionOptions(trigger_characters=trigger_and_commit_chars))
     async def handle_completion(ls: LanguageServer, params: CompletionParams):
         """Handle a completion request."""
-        root_fields = get_active_context().get_root_fields()
-        return CompletionList(
-            is_incomplete=False,
-            items=[
-                CompletionItem(
-                    label=root_field.get("name"),
-                    kind=CompletionItemKind.Struct,
-                    documentation=root_field.get("description"),
-                    commit_characters=[":"],
-                )
-                for root_field in root_fields
-            ],
-        )
+        logging.debug(f"Code completion request received: {params.context.trigger_character}")
+        completion_results = COMPLETION_PROVIDER.handle_code_completion(ls, params)
+        logging.debug(f"Completion results: {completion_results}")
+        return completion_results
 
 
 def _setup_logger(log_level: int) -> None:
@@ -91,6 +89,6 @@ def _setup_logger(log_level: int) -> None:
     Args:
         log_level (int): The logging level to use for the logger.
     """
-    global logger
+    global LOGGER
     logging.basicConfig(level=log_level)
-    logger = logging.getLogger(__name__)
+    LOGGER = logging.getLogger(__name__)
