@@ -2,7 +2,7 @@
 
 import logging
 from typing import Optional
-
+from pygls.server import LanguageServer
 import pygls.lsp.methods as methods
 
 from pygls.lsp import (
@@ -14,7 +14,6 @@ from pygls.lsp import (
     InitializeResult,
     ServerCapabilities,
 )
-from pygls.server import LanguageServer
 
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.language_context import LanguageContext

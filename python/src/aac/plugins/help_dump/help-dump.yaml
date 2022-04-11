@@ -1,0 +1,24 @@
+model:
+  name: help-dump
+  description: |
+    An Architecture-as-Code plugin that produces a consistently-formatted representation of all the commands, command
+    arguments, and descriptions for each.
+  behavior:
+    - name: help-dump
+      type: command
+      description: |
+        Produce a formatted string containing all commands, their arguments, and each of their descriptions.
+      output:
+        - name: help_output
+          type: string
+          python_type: str
+          description: The formatted string with all commands, etc.
+      acceptance:
+        - scenario: Output formatted help string.
+          given:
+            - All neccessary plugins are loaded.
+          when:
+            - The aac application is run with the help-dump command.
+          then:
+            - A string representation of all available commands, their arguments, and descriptions for each will be printed as
+              {{help-dump.output.help_output}}.

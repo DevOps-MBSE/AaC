@@ -1,4 +1,5 @@
 """The Architecture-as-Code tool."""
+
 import logging
 
 __version__ = "0.0.5"

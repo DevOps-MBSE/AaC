@@ -8,12 +8,9 @@ from typing import Callable
 from pluggy import PluginManager
 
 from aac import __version__
-from aac.AacCommand import AacCommand, AacCommandArgument
+from aac.cli.aac_command import AacCommand, AacCommandArgument
 from aac.lang.lsp.server import start_lsp
 from aac.plugins.plugin_manager import get_plugin_manager
-from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
-from aac.spec.core import get_aac_spec_as_yaml
-from aac.validate import validated_source
 
 
 def run_cli():
@@ -46,39 +43,6 @@ def run_cli():
                 sys.exit(result.status_code.value)
 
 
-CORE_SPEC_COMMAND_NAME = "aac-core-spec"
-START_LSP_COMMAND_NAME = "start-lsp"
-VERSION_COMMAND_NAME = "version"
-VALIDATE_COMMAND_NAME = "validate"
-
-
-def _version_cmd() -> PluginExecutionResult:
-    """Run the built-in version command."""
-
-    def get_version() -> str:
-        return __version__
-
-    with plugin_result(VERSION_COMMAND_NAME, get_version) as result:
-        return result
-
-
-def _validate_cmd(model_file: str) -> PluginExecutionResult:
-    """Run the built-in validate command."""
-
-    def validate_model() -> str:
-        with validated_source(model_file):
-            return f"{model_file} is valid"
-
-    with plugin_result(VALIDATE_COMMAND_NAME, validate_model) as result:
-        return result
-
-
-def _core_spec_cmd() -> PluginExecutionResult:
-    """Run the built-in aac-core-spec command."""
-    with plugin_result(CORE_SPEC_COMMAND_NAME, get_aac_spec_as_yaml) as result:
-        return result
-
-
 def _setup_arg_parser(
     plugin_manager: PluginManager,
 ) -> tuple[argparse.ArgumentParser, list[Callable]]:
@@ -89,33 +53,8 @@ def _setup_arg_parser(
     command_parser = arg_parser.add_subparsers(dest="command")
 
     # Built-in commands
-    aac_commands = [
-        AacCommand(
-            VALIDATE_COMMAND_NAME,
-            "Ensures the AaC yaml is valid per the AaC core spec",
-            _validate_cmd,
-            [AacCommandArgument("model_file", "The path to the AaC model yaml file to validate")],
-        ),
-        AacCommand(
-            VERSION_COMMAND_NAME,
-            "Outputs Architecture-as-Code Python package version",
-            _version_cmd,
-        ),
-        AacCommand(
-            CORE_SPEC_COMMAND_NAME,
-            "Prints the AaC model describing core AaC data types and enumerations",
-            _core_spec_cmd,
-        ),
-        AacCommand(
-            START_LSP_COMMAND_NAME,
-            "Start the AaC Language Server Protocol (LSP) server",
-            start_lsp,
-            [AacCommandArgument("--dev", "Start the server in development mode.", action="store_true")],
-        ),
-    ]
-
     results = plugin_manager.hook.get_commands()
-    aac_and_plugin_commands = aac_commands + list(itertools.chain(*results))
+    aac_and_plugin_commands = list(itertools.chain(*results))
 
     for command in aac_and_plugin_commands:
         command_subparser = command_parser.add_parser(command.name, help=command.description)
