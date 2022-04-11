@@ -21,7 +21,7 @@ def help_dump() -> PluginExecutionResult:
     """
 
     def get_command_info():
-        return "\n".join([json.dumps(encoder.default(command)) for command in _get_all_commands()])
+        return json.dumps([encoder.default(command) for command in _get_all_commands()])
 
     encoder = AacCommandEncoder()
     with plugin_result(plugin_name, get_command_info) as result:
