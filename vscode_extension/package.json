@@ -65,7 +65,8 @@
                     "aac",
                     "Architecture-as-Code",
                     "AaC"
-                ]
+                ],
+                "configuration": "./aac-language-configuration.json"
             }
         ]
     },
