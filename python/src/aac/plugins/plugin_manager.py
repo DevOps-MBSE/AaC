@@ -16,6 +16,12 @@ def get_plugin_manager() -> PluginManager:
     Returns:
         The plugin manager.
     """
+    # Import built-in commands
+    from aac.cli.builtin_commands import (
+        validate,
+        version,
+    )
+
     # Import plugins within the function to prevent circular imports and partial initialization
     from aac.plugins import (
         gen_json,
@@ -25,6 +31,9 @@ def get_plugin_manager() -> PluginManager:
         gen_gherkin_behaviors,
         gen_plant_uml,
         specifications,
+        print_spec,
+        start_lsp,
+        help_dump,
     )
 
     # Import Validation Plugins
@@ -39,6 +48,10 @@ def get_plugin_manager() -> PluginManager:
     plugin_manager.add_hookspecs(hookspecs)
     plugin_manager.load_setuptools_entrypoints(PLUGIN_PROJECT_NAME)
 
+    # register "built-in" commands
+    plugin_manager.register(validate)
+    plugin_manager.register(version)
+
     # register "built-in" plugins
     plugin_manager.register(gen_json)
     plugin_manager.register(gen_plugin)
@@ -47,6 +60,9 @@ def get_plugin_manager() -> PluginManager:
     plugin_manager.register(gen_gherkin_behaviors)
     plugin_manager.register(gen_plant_uml)
     plugin_manager.register(specifications)
+    plugin_manager.register(print_spec)
+    plugin_manager.register(start_lsp)
+    plugin_manager.register(help_dump)
 
     # register "built-in" validation plugins
     plugin_manager.register(defined_references)
@@ -92,7 +108,6 @@ def get_plugin_model_definitions() -> dict:
     Returns:
         A list of plugin defined models.
     """
-
     plugin_manager = get_plugin_manager()
     plugin_models_yaml = plugin_manager.hook.get_plugin_aac_definitions()
     plugin_extensions = {}

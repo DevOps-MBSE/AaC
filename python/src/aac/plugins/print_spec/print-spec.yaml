@@ -1,0 +1,13 @@
+model:
+  name: aac-core-spec
+  description: Print the AaC core specification
+  behavior:
+    - name: aac-core-spec
+      type: command
+      description: Print the AaC model describing core AaC data types and enumerations
+      acceptance:
+        - scenario: Print the AaC Core specification
+          when:
+            - The aac application is run with the aac-core-spec command.
+          then:
+            - The AaC core specification is written to the console.

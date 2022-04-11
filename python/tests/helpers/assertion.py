@@ -35,6 +35,16 @@ def assert_general_failure(plugin_result: PluginExecutionResult):
     _assert_plugin_state(plugin_result, PluginExecutionStatusCode.GENERAL_FAILURE)
 
 
+def assert_validation_failure(plugin_result: PluginExecutionResult):
+    """
+    Asserts that the plugin result indicates a validation failure status.
+
+    In the event that the plugin status does not match the expected value,
+    print the error messages in the assertion message.
+    """
+    _assert_plugin_state(plugin_result, PluginExecutionStatusCode.VALIDATION_FAILURE)
+
+
 def _assert_plugin_state(plugin_result: PluginExecutionResult, code: PluginExecutionStatusCode):
     if plugin_result.status_code != code:
         raise AssertionError(f"PluginResult did not return {code} as expected. Messages:\n{plugin_result.messages}")
