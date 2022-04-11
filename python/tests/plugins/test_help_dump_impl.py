@@ -23,9 +23,9 @@ class TestHelpDump(TestCase):
 
         for i in range(3):
             expected = self.expected_formatted_output(command_name, command_description, command_arguments[:i])
-            actual = json.dumps(AacCommandEncoder().default(AacCommand(command_name, command_description, lambda: None, command_arguments[:i])))
+            actual = AacCommandEncoder().default(AacCommand(command_name, command_description, lambda: None, command_arguments[:i]))
 
-            self.assertEqual(expected, actual)
+            self.assertDictEqual(expected, actual)
 
     def test_help_dump_prints_first_party_commands(self):
         result = help_dump()
@@ -33,15 +33,13 @@ class TestHelpDump(TestCase):
 
         for command in _get_all_commands():
             self.assertIn(
-                self.expected_formatted_output(command.name, command.description, command.arguments),
+                json.dumps(self.expected_formatted_output(command.name, command.description, command.arguments)),
                 result.get_messages_as_string()
             )
 
     def expected_formatted_output(self, name, description, arguments):
-        return json.dumps(
-            {
-                "name": name,
-                "description": description,
-                "arguments": [AacCommandArgumentEncoder().default(arg) for arg in arguments]
-            }
-        )
+        return {
+            "name": name,
+            "description": description,
+            "arguments": [AacCommandArgumentEncoder().default(arg) for arg in arguments]
+        }
