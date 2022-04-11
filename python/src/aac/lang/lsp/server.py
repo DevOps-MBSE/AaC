@@ -45,8 +45,7 @@ def start_lsp(dev: bool = False) -> PluginExecutionResult:
         _setup_logger(logging.DEBUG if dev else logging.INFO)
         LOGGER.info("Starting the AaC LSP server")
 
-        # server.start_io()
-        SERVER.start_tcp("0.0.0.0", "5007")
+        SERVER.start_io()
 
     with plugin_result("lsp", start) as result:
         result.messages = [m for m in result.messages if m]
