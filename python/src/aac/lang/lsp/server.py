@@ -77,7 +77,6 @@ def setup_features(server: LanguageServer) -> None:
     @server.feature(methods.COMPLETION, CompletionOptions(trigger_characters=trigger_and_commit_chars))
     async def handle_completion(ls: LanguageServer, params: CompletionParams):
         """Handle a completion request."""
-        logging.debug(f"Code completion request received: {params.context.trigger_character}")
         completion_results = COMPLETION_PROVIDER.handle_code_completion(ls, params)
         logging.debug(f"Completion results: {completion_results}")
         return completion_results
