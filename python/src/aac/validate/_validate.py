@@ -56,7 +56,7 @@ def _validate_definitions(user_definitions: list[Definition]) -> ValidationResul
     def validate_each_definition(definition: Definition) -> list[ValidatorResult]:
         return _validate_definition(definition, registered_validators, active_context)
 
-    validator_results = list(flatten(map(validate_each_definition, user_definitions)))
+    validator_results = list(flatten(map(validate_each_definition, active_context.definitions)))
     validator_messages = []
     invalid_results = []
 
@@ -80,24 +80,24 @@ def _validate_definition(
     sub_structure_definitions = get_definition_schema_components(definition, context)
     all_applicable_definitions = ancestor_definitions + sub_structure_definitions
 
-    for target_sub_definition in all_applicable_definitions:
-        sub_definition_validations = target_sub_definition.get_validation()
+    for target_schema_definition in all_applicable_definitions:
+        sub_definition_validations = target_schema_definition.get_validation()
 
         for validation in sub_definition_validations:
             validation_name = validation.get("name")
             validator_plugin = list(filter(lambda plugin: plugin.name == validation_name, applicable_validator_plugins))
 
             if validator_plugin:
-                validator_results.append(_apply_validator(definition, target_sub_definition, context, validator_plugin[0]))
+                validator_results.append(_apply_validator(definition, target_schema_definition, context, validator_plugin[0]))
 
     return validator_results
 
 
 def _apply_validator(
-    definition_structure_dict: dict, target_sub_definition: Definition, context: LanguageContext, validator_plugin: ValidatorPlugin
+    definition_structure_dict: dict, target_schema_definition: Definition, context: LanguageContext, validator_plugin: ValidatorPlugin
 ) -> ValidatorResult:
     """Executes the validator callback on the applicable dictionary structure or substructure."""
-    defined_validations = target_sub_definition.get_validation()
+    defined_validations = target_schema_definition.get_validation()
     validation_kwargs = {}
 
     for validation in defined_validations:
@@ -106,4 +106,4 @@ def _apply_validator(
         if defined_args:
             validation_kwargs[validation.name] = validation.arguments
 
-    return validator_plugin.validation_function(definition_structure_dict, target_sub_definition, context, **validation_kwargs)
+    return validator_plugin.validation_function(definition_structure_dict, target_schema_definition, context, **validation_kwargs)

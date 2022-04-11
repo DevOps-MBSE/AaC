@@ -39,7 +39,8 @@ def get_plugin_manager() -> PluginManager:
     # Import Validation Plugins
     from aac.plugins.validators import (
         defined_references,
-        required_fields
+        required_fields,
+        validator_implementation
     )
 
     plugin_manager = PluginManager(PLUGIN_PROJECT_NAME)
@@ -65,6 +66,7 @@ def get_plugin_manager() -> PluginManager:
     # register "built-in" validation plugins
     plugin_manager.register(defined_references)
     plugin_manager.register(required_fields)
+    plugin_manager.register(validator_implementation)
 
     return plugin_manager
 
