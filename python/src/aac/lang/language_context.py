@@ -204,7 +204,7 @@ class LanguageContext:
         if target_definition_extension_sub_dict.get(extension_field_name):
             target_definition_extension_sub_dict[extension_field_name] += extension_subtype_sub_dict.get("add")
         else:
-            logging.error(f"Attempted to apply an extension to the incorrect target. Extension name '{extension_definition.name}'")
+            logging.error(f"Attempted to apply an extension to the incorrect target. Extension name '{extension_definition.name}' target definition '{target_to_extend}'")
 
         if "required" in extension_subtype_sub_dict:
             target_definition_extension_sub_dict["required"] += extension_subtype_sub_dict.get("required") or []
