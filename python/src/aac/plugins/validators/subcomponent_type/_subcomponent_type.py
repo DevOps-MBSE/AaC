@@ -3,7 +3,8 @@ from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.structure import get_substructures_by_type
 from aac.plugins.validators import ValidatorResult
 
-def validate_subcompnent_types(definition_under_test: Definition, target_sub_definition: Definition, active_context: LanguageContext) -> ValidatorResult:
+
+def validate_subcomponent_types(definition_under_test: Definition, target_sub_definition: Definition, active_context: LanguageContext) -> ValidatorResult:
     """
     Validate that the subcomponents of the definition are models.
 
