@@ -8,14 +8,6 @@ from aac.plugins.validators.exclusive_fields import get_plugin_aac_definitions, 
 
 from tests.helpers.parsed_definitions import create_data_ext_definition, create_enum_ext_definition, create_field_entry
 
-TEST_IMPLEMENTING_DEFINITION_NAME = "TestDefinitionWhichImplementsTheRequiredFieldsDefinition"
-TEST_IMPLEMENTING_DEFINITION_FIELD_NAME = "field_name"
-TEST_SCHEMA_DEFINITION_NAME = "TestDefinitionWithRequiredFields"
-TEST_DEFINITION_FIELD_NAME = "DefinitionField"
-TEST_DEFINITION_ARRAY_FIELD_NAME = "DefinitionArrayField"
-TEST_PRIMITIVE_FIELD_NAME = "PrimitiveField"
-TEST_PRIMITIVE_ARRAY_FIELD_NAME = "PrimitiveArrayField"
-
 
 class TestDefinedReferencesPlugin(TestCase):
     def setUp(self) -> None:
