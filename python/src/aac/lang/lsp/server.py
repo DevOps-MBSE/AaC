@@ -18,7 +18,6 @@ from pygls.lsp import (
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.language_context import LanguageContext
 from aac.lang.lsp.code_completion_provider import CodeCompletionProvider
-from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 
 
 LOGGER: Optional[logging.Logger] = None
@@ -27,28 +26,22 @@ ACTIVE_CONTEXT: Optional[LanguageContext] = None
 COMPLETION_PROVIDER: Optional[CodeCompletionProvider] = None
 
 
-def start_lsp(dev: bool = False) -> PluginExecutionResult:
+def start_lsp(dev: bool = False):
     """Start the LSP server.
 
     Args:
         dev (bool): Whether to start the server and setup logging for development. (optional)
     """
+    global SERVER, LOGGER, ACTIVE_CONTEXT
 
-    def start():
-        global SERVER, LOGGER, ACTIVE_CONTEXT
+    SERVER = SERVER or LanguageServer()
+    setup_features(SERVER)
+    ACTIVE_CONTEXT = get_active_context()
 
-        SERVER = SERVER or LanguageServer()
-        setup_features(SERVER)
-        ACTIVE_CONTEXT = get_active_context()
+    _setup_logger(logging.DEBUG if dev else logging.INFO)
+    LOGGER.info("Starting the AaC LSP server")
 
-        _setup_logger(logging.DEBUG if dev else logging.INFO)
-        LOGGER.info("Starting the AaC LSP server")
-
-        SERVER.start_io()
-
-    with plugin_result("lsp", start) as result:
-        result.messages = [m for m in result.messages if m]
-        return result
+    SERVER.start_io()
 
 
 def setup_features(server: LanguageServer) -> None:
