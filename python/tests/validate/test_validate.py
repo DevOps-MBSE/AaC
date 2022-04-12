@@ -5,6 +5,8 @@ from aac.validate import validated_definitions, validated_source, ValidationErro
 
 from tests.helpers.parsed_definitions import (
     create_data_definition,
+    create_data_ext_definition,
+    create_enum_ext_definition,
     create_field_entry,
 )
 
@@ -57,6 +59,21 @@ class TestValidate(TestCase):
         self.assertEqual(ValidationError, type(exception))
         self.assertGreater(len(exception.args), 1)
         self.assertIn("required", exception.args[1].lower())
+
+    def test_validate_definitions_with_invalid_multiple_exclusive_fields(self):
+        test_field_entry = create_field_entry("TestField", "string")
+        test_combined_ext_definition = create_data_ext_definition("TestDataExt", "Behavior", [test_field_entry])
+        test_enum_definition = create_enum_ext_definition("TestEnumExt", "Primitives", ["val1", "val2"])
+        test_combined_ext_definition.structure["ext"]["enumExt"] = test_enum_definition.structure["ext"]["enumExt"]
+
+        with self.assertRaises(ValidationError) as error:
+            with validated_definitions([test_combined_ext_definition]):
+                pass
+
+        exception = error.exception
+        self.assertEqual(ValidationError, type(exception))
+        self.assertGreater(len(exception.args), 1)
+        self.assertIn("multiple", exception.args[1].lower())
 
     def test_multiple_validate_definitions_with_invalid_definition(self):
         invalid_fields_test_field = create_field_entry("MissingTestField")

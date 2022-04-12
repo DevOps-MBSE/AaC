@@ -47,7 +47,7 @@ class Definition:
 
         return required
 
-    def get_validation(self) -> list[dict]:
+    def get_validations(self) -> list[dict]:
         """Return a list of validation entries dictionaries if the definition has a validation field or an empty list if not."""
         fields = self.structure.get(self.get_root_key())
         validation = []

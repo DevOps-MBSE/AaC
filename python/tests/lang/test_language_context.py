@@ -16,8 +16,9 @@ from tests.helpers.parsed_definitions import (
 class TestLanguageContext(TestCase):
 
     def test_add_definition_to_context_with_extensions(self):
+        test_definition_field = create_field_entry("TestField", "string")
         test_definition_name = "myDef"
-        test_definition = create_data_definition(test_definition_name)
+        test_definition = create_data_definition(test_definition_name, [test_definition_field])
 
         data_ext_field_name = "extField"
         data_ext_field_type = "ExtField"
@@ -44,12 +45,12 @@ class TestLanguageContext(TestCase):
         self.assertIn(test_definition, active_context.definitions)
         self.assertIn(test_enum, active_context.definitions)
 
-        self.assertEqual(0, len(test_definition.structure["data"]["fields"]))
+        self.assertEqual(1, len(test_definition.structure["data"]["fields"]))
         self.assertEqual(2, len(test_enum.structure["enum"]["values"]))
 
         active_context.add_definition_to_context(test_definition_ext)
         context_modified_test_definition = get_definition_by_name(test_definition_name, active_context.definitions)
-        self.assertEqual(1, len(context_modified_test_definition.structure["data"]["fields"]))
+        self.assertEqual(2, len(context_modified_test_definition.structure["data"]["fields"]))
         self.assertIn(data_ext_field_name, context_modified_test_definition.to_yaml())
         self.assertIn(data_ext_field_type, context_modified_test_definition.to_yaml())
 
