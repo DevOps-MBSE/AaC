@@ -180,7 +180,11 @@ class LanguageContext:
         Args:
             extension_definition (Definition): The extension definition to apply to the context.
         """
-        target_to_extend = extension_definition.structure.get("ext").get("type")
+        target_to_extend = extension_definition.get_fields().get("type")
+
+        if not target_to_extend:
+            logging.error(f"Extension failed to define target, field 'type' is missing. {extension_definition.structure}")
+
         target_definition_to_extend = self.get_definition_by_name(target_to_extend)
 
         extension_type = ""
@@ -193,12 +197,14 @@ class LanguageContext:
             extension_field_name = "fields"
 
         ext_type = f"{extension_type}Ext"
-        target_definition_dict = target_definition_to_extend.structure
-        target_definition_extension_sub_dict = target_definition_dict.get(extension_type)
+        target_definition_extension_sub_dict = target_definition_to_extend.get_fields()
         extension_definition_fields = extension_definition.get_fields()
 
         extension_subtype_sub_dict = extension_definition_fields.get(ext_type)
-        target_definition_extension_sub_dict[extension_field_name] += extension_subtype_sub_dict.get("add")
+        if target_definition_extension_sub_dict.get(extension_field_name):
+            target_definition_extension_sub_dict[extension_field_name] += extension_subtype_sub_dict.get("add")
+        else:
+            logging.error(f"Attempted to apply an extension to the incorrect target. Extension name '{extension_definition.name}' target definition '{target_to_extend}'")
 
         if "required" in extension_subtype_sub_dict:
             target_definition_extension_sub_dict["required"] += extension_subtype_sub_dict.get("required") or []

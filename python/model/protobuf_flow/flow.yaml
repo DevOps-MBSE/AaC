@@ -1,6 +1,6 @@
 import:
   - ./System.yaml
-
+  - ./External.yaml
 usecase:
   name: Nominal flow of data through the system.
   description: Something happens.

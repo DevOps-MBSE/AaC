@@ -76,7 +76,7 @@ class TestCollectValidators(TestCase):
 
         field_definition = get_definition_by_name(target_definition_key, active_context.definitions)
 
-        expected_validations = field_definition.get_validation()
+        expected_validations = field_definition.get_validations()
         actual_result = get_applicable_validators_for_definition(field_definition, validation_plugins, active_context)
         actual_plugin_names = [plugin.name for plugin in actual_result]
 
