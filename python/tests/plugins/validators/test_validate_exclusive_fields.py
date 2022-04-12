@@ -9,7 +9,7 @@ from aac.plugins.validators.exclusive_fields import get_plugin_aac_definitions, 
 from tests.helpers.parsed_definitions import create_data_ext_definition, create_enum_ext_definition, create_field_entry
 
 
-class TestDefinedReferencesPlugin(TestCase):
+class TestExclusiveFieldsPlugin(TestCase):
     def setUp(self) -> None:
         get_active_context(reload_context=True)
 
