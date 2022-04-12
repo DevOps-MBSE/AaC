@@ -1,4 +1,3 @@
-
 import logging
 
 from aac.lang.language_context import LanguageContext
@@ -15,7 +14,7 @@ def validate_exclusive_fields(definition_under_test: Definition, target_schema_d
         definition_under_test (Definition): The definition that's being validated.
         target_schema_definition (Definition): A definition with applicable validation.
         active_context (LanguageContext): The active context.
-        *validation_args (string): The list of exclusive fields.
+        *validation_args (list[string]): The list of exclusive fields.
 
     Returns:
         A ValidatorResult containing any applicable error messages.
