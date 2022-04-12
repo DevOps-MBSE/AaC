@@ -6,7 +6,7 @@ from aac.parser import parse
 from aac.plugins.validators import ValidatorPlugin, ValidatorResult
 from aac.plugins.validators.exclusive_fields import get_plugin_aac_definitions, register_validators, validate_exclusive_fields
 
-from tests.helpers.parsed_definitions import create_data_definition, create_data_ext_definition, create_enum_ext_definition, create_field_entry
+from tests.helpers.parsed_definitions import create_data_ext_definition, create_enum_ext_definition, create_field_entry
 
 TEST_IMPLEMENTING_DEFINITION_NAME = "TestDefinitionWhichImplementsTheRequiredFieldsDefinition"
 TEST_IMPLEMENTING_DEFINITION_FIELD_NAME = "field_name"
