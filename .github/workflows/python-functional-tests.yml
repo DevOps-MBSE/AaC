@@ -92,7 +92,10 @@ jobs:
           run: python -m aac validate src/aac/spec/spec.yaml
 
         - name: Print out Core Spec
-          run: python -m aac aac-core-spec
+          run: python -m aac print-spec
+
+        - name: Print out active context
+          run: python -m aac print-active-context
 
         - name: Validate Example Model
           run: python -m aac validate model/flow/System.yaml
