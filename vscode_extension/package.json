@@ -33,9 +33,10 @@
                     "scope": "machine-overridable",
                     "type": "string",
                     "enum": [
-                        "0.0.5"
+                        "0.0.5",
+                        "0.1.0"
                     ],
-                    "default": "0.0.5",
+                    "default": "0.1.0",
                     "description": "The version of the installed AaC tool."
                 },
                 "aac.aacPath": {
