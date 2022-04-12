@@ -362,6 +362,8 @@ data:
         instances of the modeled entity to support horizontal scaling.
   required:
     - name
+  validation:
+    - name: Subcomponents are models
 ---
 data:
   name: usecase
