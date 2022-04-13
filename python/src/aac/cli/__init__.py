@@ -1,1 +1,1 @@
-"""The command line processor for aac."""
+"""Provides command line processing for the aac tool."""

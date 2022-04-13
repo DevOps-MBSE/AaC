@@ -16,7 +16,7 @@ SPACE_TRIGGER = " "
 
 @attrs
 class CodeCompletionProvider:
-    """Resolve various code compleetion triggers to specific code completion functions.
+    """Resolve various code completion triggers to specific code completion functions.
 
     Attributes:
         registered_completion_callbacks (dict[str, Callable]): The dict of trigger characters to corresponding code completion functions
