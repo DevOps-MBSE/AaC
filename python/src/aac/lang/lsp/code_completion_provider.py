@@ -37,7 +37,7 @@ class CodeCompletionProvider:
         trigger_character = params.context.trigger_character
 
         if not trigger_character:
-            source_document_content = ls.workspace.documents.get(params.text_document.uri).source.split(os.linesep)
+            source_document_content = _get_code_completion_parent_text_file(ls, params).split(os.linesep)
             trigger_character = source_document_content[params.position.line][params.position.character - 1]
 
         callback_function = self.completion_callbacks.get(trigger_character)
