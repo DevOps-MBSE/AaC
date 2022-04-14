@@ -14,7 +14,7 @@ model:
       description: This an event to be counted.
       input:
         - name: request
-          type: Behavior
+          type: Request
       output:
         - name: response
           type: Response
