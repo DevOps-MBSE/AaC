@@ -1,4 +1,4 @@
-"""The command line processor for aac."""
+"""The entry-point for the command line interface for the aac tool."""
 import argparse
 import inspect
 import itertools
@@ -35,7 +35,8 @@ def run_cli():
                 keyword_args[argument] = args_dict[argument]
 
             result = command.callback(**keyword_args)
-            print(f"{result.name}: {result.status_code.name.lower()}\n\n" + "\n".join(result.messages))
+            print(f"{result.name}: {result.status_code.name.lower()}\n\n{result.get_messages_as_string()}")
+
             if not result.is_success():
                 sys.exit(result.status_code.value)
 
