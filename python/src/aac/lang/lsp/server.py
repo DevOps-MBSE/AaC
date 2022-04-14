@@ -20,7 +20,6 @@ from aac.lang.language_context import LanguageContext
 from aac.lang.lsp.code_completion_provider import CodeCompletionProvider
 
 
-LOGGER: Optional[logging.Logger] = None
 SERVER: Optional[LanguageServer] = None
 ACTIVE_CONTEXT: Optional[LanguageContext] = None
 COMPLETION_PROVIDER: Optional[CodeCompletionProvider] = None
@@ -32,13 +31,13 @@ def start_lsp():
     Args:
         dev (bool): Whether to start the server and setup logging for development. (optional)
     """
-    global SERVER, LOGGER, ACTIVE_CONTEXT
+    global SERVER, ACTIVE_CONTEXT
 
     SERVER = SERVER or LanguageServer()
     setup_features(SERVER)
     ACTIVE_CONTEXT = get_active_context()
 
-    LOGGER.info("Starting the AaC LSP server")
+    logging.info("Starting the AaC LSP server")
 
     SERVER.start_io()
 
