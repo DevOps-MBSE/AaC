@@ -26,7 +26,7 @@ ACTIVE_CONTEXT: Optional[LanguageContext] = None
 COMPLETION_PROVIDER: Optional[CodeCompletionProvider] = None
 
 
-def start_lsp(dev: bool = False):
+def start_lsp():
     """Start the LSP server.
 
     Args:
@@ -38,7 +38,7 @@ def start_lsp(dev: bool = False):
     setup_features(SERVER)
     ACTIVE_CONTEXT = get_active_context()
 
-    _setup_logger(logging.DEBUG if dev else logging.INFO)
+    _setup_logger(logging.INFO)
     LOGGER.info("Starting the AaC LSP server")
 
     SERVER.start_io()
