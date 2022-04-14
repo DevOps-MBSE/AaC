@@ -38,7 +38,6 @@ def start_lsp():
     setup_features(SERVER)
     ACTIVE_CONTEXT = get_active_context()
 
-    _setup_logger(logging.INFO)
     LOGGER.info("Starting the AaC LSP server")
 
     SERVER.start_io()
@@ -71,14 +70,3 @@ def setup_features(server: LanguageServer) -> None:
         completion_results = COMPLETION_PROVIDER.handle_code_completion(ls, params)
         logging.debug(f"Completion results: {completion_results}")
         return completion_results
-
-
-def _setup_logger(log_level: int) -> None:
-    """Configure the logger.
-
-    Args:
-        log_level (int): The logging level to use for the logger.
-    """
-    global LOGGER
-    logging.basicConfig(level=log_level)
-    LOGGER = logging.getLogger(__name__)
