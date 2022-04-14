@@ -103,6 +103,11 @@ data:
         Note: Only one of 'enumExt' and 'dataExt' are valid per extension.
 
         See also, 'DataExtension'
+  validation:
+    - name: Mutually exclusive fields
+      arguments:
+        - dataExt
+        - enumExt
   required:
     - name
     - type
@@ -357,6 +362,8 @@ data:
         instances of the modeled entity to support horizontal scaling.
   required:
     - name
+  validation:
+    - name: Subcomponents are models
 ---
 data:
   name: usecase

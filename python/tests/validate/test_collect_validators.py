@@ -61,8 +61,10 @@ class TestCollectValidators(TestCase):
         data_validations = search_definition(data_definition, ["data", "validation"])
         field_definition = get_definition_by_name("Field", active_context.definitions)
         field_validations = search_definition(field_definition, ["data", "validation"])
+        model_definition = get_definition_by_name("model", active_context.definitions)
+        model_validations = search_definition(model_definition, ["data", "validation"])
 
-        expected_validations = data_validations + field_validations
+        expected_validations = data_validations + field_validations + model_validations
         actual_result = get_applicable_validators_for_definition(test_definition, validation_plugins, active_context)
 
         self.assertEqual(len(expected_validations), len(actual_result))
@@ -76,7 +78,7 @@ class TestCollectValidators(TestCase):
 
         field_definition = get_definition_by_name(target_definition_key, active_context.definitions)
 
-        expected_validations = field_definition.get_validation()
+        expected_validations = field_definition.get_validations()
         actual_result = get_applicable_validators_for_definition(field_definition, validation_plugins, active_context)
         actual_plugin_names = [plugin.name for plugin in actual_result]
 

@@ -81,7 +81,7 @@ def _validate_definition(
     all_applicable_definitions = ancestor_definitions + sub_structure_definitions
 
     for target_schema_definition in all_applicable_definitions:
-        sub_definition_validations = target_schema_definition.get_validation()
+        sub_definition_validations = target_schema_definition.get_validations()
 
         for validation in sub_definition_validations:
             validation_name = validation.get("name")
@@ -97,13 +97,9 @@ def _apply_validator(
     definition_structure_dict: dict, target_schema_definition: Definition, context: LanguageContext, validator_plugin: ValidatorPlugin
 ) -> ValidatorResult:
     """Executes the validator callback on the applicable dictionary structure or substructure."""
-    defined_validations = target_schema_definition.get_validation()
-    validation_kwargs = {}
+    defined_validations = target_schema_definition.get_validations()
 
     for validation in defined_validations:
-        defined_args = validation.get("arguments")
+        validation_args = validation.get("arguments") or []
 
-        if defined_args:
-            validation_kwargs[validation.name] = validation.arguments
-
-    return validator_plugin.validation_function(definition_structure_dict, target_schema_definition, context, **validation_kwargs)
+    return validator_plugin.validation_function(definition_structure_dict, target_schema_definition, context, *validation_args)

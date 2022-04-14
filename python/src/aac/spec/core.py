@@ -34,8 +34,11 @@ def get_aac_spec() -> list[Definition]:
 def get_aac_spec_as_yaml() -> str:
     """Get the base AaC spec in YAML.
 
-    Utility to provide the current base AaC model specification (including plugin extensions)
-    in an easy to read yaml format (just as it is defined internally).
+    Utility to provide the current base AaC model specification in an easy to read yaml format,
+    just as it is defined internally.
+
+    See get_aac_active_context_as_yaml() to get the core AaC spec and all extensions (including
+    those added by all loaded plugins) as a YAML string.
 
     Returns:
         Returns a string containing YAML for the current AaC spec.  Each model entry is separated
