@@ -103,7 +103,7 @@ class LanguageContext:
         else:
             return []
 
-    def get_primitives_definition(self) -> list[str]:
+    def get_primitives_definition(self) -> Optional[Definition]:
         """
         Return the primitive type definition in the LanguageContext.
 
@@ -172,6 +172,22 @@ class LanguageContext:
             definition_name = remove_list_type_indicator(definition_name)
 
         return self.definitions_name_dictionary.get(definition_name)
+
+    def get_definitions_by_root_key(self, root_key: str) -> list[Definition]:
+        """Return a subset of definitions with the given root key.
+
+        Args:
+            root_key (str): The root key to filter on.
+            definitions (list[Definition]): The list of parsed definitions to search.
+
+        Returns:
+            A list of definitions with the given root key.
+        """
+
+        def does_definition_root_match(definition: Definition) -> bool:
+            return root_key == definition.get_root_key()
+
+        return list(filter(does_definition_root_match, self.definitions))
 
     def _apply_extension_to_context(self, extension_definition: Definition) -> None:
         """

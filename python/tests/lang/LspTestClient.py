@@ -9,7 +9,7 @@ from pygls.lsp import methods
 from pygls.lsp.types import Model
 from pygls.server import LanguageServer
 
-from aac.lang.server import setup_features
+from aac.lang.lsp.server import setup_features
 
 
 DEFAULT_TIMEOUT_IN_SECONDS = 3
