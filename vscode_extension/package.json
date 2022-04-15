@@ -45,6 +45,16 @@
                     "default": "",
                     "pattern": "(\\\\?([^\\/]*[\\/])*)([^\\/]+)$",
                     "description": "The filesystem path to the aac CLI tool."
+                },
+                "aac.lsp.serverMode": {
+                    "scope": "machine-overridable",
+                    "type": "string",
+                    "enum": [
+                        "IO",
+                        "TCP"
+                    ],
+                    "default": "IO",
+                    "description": "The method of communication with the LSP server."
                 }
             }
         },
