@@ -8,8 +8,10 @@ from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 plugin_name = "start-lsp"
 
 
-def start_lsp() -> PluginExecutionResult:
+# Temporary until issue #227 is complete
+def start_lsp(host=None, port=None) -> PluginExecutionResult:
     """Start the IO LSP server."""
-    with plugin_result(plugin_name, lsp_server.start_lsp) as result:
+    # Temporary until issue #227 is complete
+    with plugin_result(plugin_name, lsp_server.start_lsp, host, port) as result:
         result.messages = [m for m in result.messages if m]
         return result
