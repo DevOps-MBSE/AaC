@@ -67,16 +67,17 @@ def _get_reference_completion_items(ls: LanguageServer, params: CompletionParams
 
     file_definitions = parse(_get_code_completion_parent_text_file(ls, params))
     file_data_references = _convert_definitions_to_name_description_dictionary(get_definitions_by_root_key("data", file_definitions))
+    available_references = primitive_references | data_definition_references | file_data_references
 
     return CompletionList(
         is_incomplete=False,
         items=[
             CompletionItem(
-                label=reference,
+                label=name,
                 kind=CompletionItemKind.Reference,
-                documentation=""
+                documentation=description
             )
-            for reference in primitive_references | data_definition_references | file_data_references
+            for name, description in available_references.items()
         ],
     )
 
