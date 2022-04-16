@@ -130,7 +130,8 @@ data:
       type: string
       description:  A description of the assembly.
     - name: location
-      descriptioN: The location for the deployment.
+      type: string
+      description: The location for the deployment.
     - name: parts
       type: PartRef[]
       description:  A list of parts that contribute to the deployment.
