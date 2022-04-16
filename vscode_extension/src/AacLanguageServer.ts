@@ -112,10 +112,16 @@ export class AacLanguageServerClient {
     }
 
     private getTcpServerOptions() {
-        const socket = net.connect({
-            host: getConfigurationItem("lsp.tcp.host"),
-            port: getConfigurationItem("lsp.tcp.port"),
-        })
+        const host = getConfigurationItem("lsp.tcp.host");
+        const port = getConfigurationItem("lsp.tcp.port");
+
+        const socket = net.connect(port, host);
+        socket.addListener("error", (err: Error) => {
+            let message = `Error connecting to server at ${host}:${port}. `;
+            message += (err.message.includes("ECONNREFUSED")) ? "Is the server running?" : err.message;
+            window.showErrorMessage(message);
+        });
+
         return Promise.resolve({
             writer: socket,
             reader: socket,
