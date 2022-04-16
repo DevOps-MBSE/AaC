@@ -23,10 +23,42 @@ def gen_bom(architecture_file: str, output_directory: str) -> PluginExecutionRes
         architecture_file (str): The yaml file containing the material models to generate the BOM.
         output_directory (str): The directory to write the generated BOM to.
     """
-    def _process_deployment(deployment: dict, context: str) -> list(dict()):
+    def _prepend_value(bom_item: dict, field: str, value: str) -> None:
+        # I'm assuming this will just change the dict passed in (as a side effect)
+        bom_item_field = bom_item[field]
+        new_value = f"{value} | {bom_item_field}"
+        bom_item[field] = new_value
+
+    def _process_deployment(deployment: dict, models: dict) -> list(dict()):
+        bom_items = []
+        deployment_name = deployment.get("name")
+        # 4) for each sub-deployment, add sub-assembly name to context and process recursively
+        for sub_deployment in deployment_dict.get("sub_deployments"):
+            sub_name = sub_deployment.get("name")
+            bom_items.append(_process_deployment(models.get(sub_name), models))
+
+        # 4) for each assembly, process assemblies recursively in a depth first manner
+        for assembly in deployment_dict.get("assemblies"):
+            assembly_name = assembly.get("name")
+            assembly_quantity = assembly.get("quantity")
+            bom_items.append(_process_assembly(models.get(assembly_name), assembly_quantity, models))
+
+        # 5) for each part in a deployment, generate a bom_item dict entry (be careful about quantities)
+        for part in deployment_dict.get("parts"):
+            part_name = part.get("name")
+            part_quantity = part.get("quantity")
+            bom_items.append(_process_part(models.get(part_name), part_quantity))
+
+        # 6) prepend deployment name to all context fields in bom_items
+        for item in bom_items:
+            _prepend_value(item, "context", deployment["name"])
+
+        return bom_items
+
+    def _process_assembly(assembly: dict, assembly_qty: int, models: dict, context: str) -> list(dict()):
         return [{"not": "real"}]
 
-    def _process_assembly(assembly: dict, context: str) -> list(dict()):
+    def _process_part(part: dict, part_qty: int, models:dict, context: str) -> list(dict()):
         return [{"not": "real"}]
 
     def to_bom_csv(architecture_file: str, output_directory: str) -> str:
@@ -41,7 +73,7 @@ def gen_bom(architecture_file: str, output_directory: str) -> PluginExecutionRes
             #      note:  this does not have to be of consistent depth for everything, so may need blanks in some cases
             #      note:  for now, let's just aggregate it into a single context field for simplicity
             bom_header = ["make", "model", "description", "unit_cost", "quantity", "total_cost", "location", "need_date", "context"]
-
+            bom_items = []
             # Initial algorithm thoughts
             # 1) get a list of the deployments
             deployment_types = get_models_by_type(models, "deployment")
@@ -49,11 +81,16 @@ def gen_bom(architecture_file: str, output_directory: str) -> PluginExecutionRes
             # 2) remove any deployment listed as a sub-deployment in another deployment to get the root deployment(s)
             deployment_names = list(deployment_types.keys())
             for root_deployment_name in deployment_types.keys():
-                # TODO figure out how to get
-                continue
+                deployment_dict = deployment_types.get(root_deployment_name)
+                for sub_deployment in deployment_dict.get("sub_deployments"):
+                    deployment_names.remove(sub_deployment.get("name"))
+
             # 3) loop through the root deployment list, keeping track of context by appending deployment names
-            # 4) for each deployment, process assemblies recursively in a depth first manner
-            # 5) for each part in an assembly, generate a bom_item dict entry (be careful about quantities in assembly and part refs)
+            print(deployment_names)
+            for deployment_name in deployment_names:
+                bom_items.append(_process_deployment(deployment_types.get(deployment_name), models, ""))
+                # note: algorithm notes continued in sub-function
+
 
             if output_directory:
                 if not os.path.exists(output_directory):

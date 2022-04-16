@@ -27,6 +27,9 @@ data:
   name: Part
   description: A material item used in a system (hardware, software, or service).
   fields:
+    - name: name
+      type: string
+      description:  Unique name of the part
     - name: make
       type: string
       description:  The source supplier
@@ -43,34 +46,34 @@ data:
       type: int
       description: The quoted or estimated lead time to receive the part once put on order (in days)
     - name: quote_type
-      type: QuoteSource
+      type: QuoteType
       description:  How the unit cost (and probably lead time) was obtained
-    - name: quote
+    - name: quote_source
       type: string
+      description:  Pointer to material supporting the unit cost. Quote type will have a bearing on field content.
   required:
+    - name
     - make
     - model
     - description
     - unit_cost
 ---
 enum:
-  name: QuoteSource
+  name: QuoteType
   values:
     - Engineering_Estimate
     - Vendor_Quote
     - Web_Reference
     - Furnished_Equipment
+    - Reuse
 ---
 data:
   name: PartRef
   description:  Reference to a part with quantity
   fields:
-    - name: make
+    - name: name
       type: string
-      description: Reference fo the make in another Part item.
-    - name: model
-      type: string
-      description: Reference to the model in another Part item.
+      description: Reference fo the name in a Part item.
     - name: quantity
       type: int
       description: The count of the parts to be used.
@@ -141,6 +144,13 @@ data:
     - name: sub_deployments
       type: DeploymentRef[]
       description: A list of deployments that contribute to the deployment.
+    - name: need_date
+      type: date
+      descriptioN: Optional field to define a needed material receive date.  This will override lower level need dates.
+  required:
+    - name
+    - description
+    - location
 ---
 data:
   name: DeploymentRef
@@ -149,15 +159,8 @@ data:
     - name: name
       type: string
       description: Reference fo the name in another Deployment item.
-    - name: quantity
-      type: int
-      description: The count of the assemblies to be used.
-    - name: need_date
-      type: date
-      descriptioN: Optional field to define a needed material receive date.
   required:
     - name
-    - quantity
 ---
 ext:
    name: MaterialRootItems
