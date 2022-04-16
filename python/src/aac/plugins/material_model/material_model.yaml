@@ -1,0 +1,171 @@
+model:
+  name: material_model
+  description: material_model is an Architecture-as-Code plugin that allows teams to define the material (hardware and software) configuration of their system.  Utilities are provided to help manage that material configuration.
+  behavior:
+    - name: gen-bom
+      type: command
+      description: Generate a Bill of Material from Arch-as-Code material models
+      input:
+        - name: architecture_file
+          type: string
+          python_type: str
+          description: The yaml file containing the material models to generate the BOM.
+        - name: output_directory
+          type: string
+          python_type: str
+          description: The directory to write the generated BOM to.
+      acceptance:
+        - scenario: Output BOM based on parts, assemblies, and deployments in the model.
+          given:
+            - The {{gen-bom.input.architecture_file}} contains a valid material model.
+          when:
+            - The aac app is run with the gen-bom command and a valid architecture file.
+          then:
+            - A BOM is generated and written to {{gen-bom.input.output_directory}}.
+---
+data:
+  name: Part
+  description: A material item used in a system (hardware, software, or service).
+  fields:
+    - name: make
+      type: string
+      description:  The source supplier
+    - name: model
+      type: string
+      description:  The source supplier's model number
+    - name: description
+      type: string
+      description:  A short description of the part
+    - name: unit_cost
+      type: number
+      description:  The cost of this item
+    - name: lead_time
+      type: int
+      description: The quoted or estimated lead time to receive the part once put on order (in days)
+    - name: quote_type
+      type: QuoteSource
+      description:  How the unit cost (and probably lead time) was obtained
+    - name: quote
+      type: string
+  required:
+    - make
+    - model
+    - description
+    - unit_cost
+---
+enum:
+  name: QuoteSource
+  values:
+    - Engineering_Estimate
+    - Vendor_Quote
+    - Web_Reference
+    - Furnished_Equipment
+---
+data:
+  name: PartRef
+  description:  Reference to a part with quantity
+  fields:
+    - name: make
+      type: string
+      description: Reference fo the make in another Part item.
+    - name: model
+      type: string
+      description: Reference to the model in another Part item.
+    - name: quantity
+      type: int
+      description: The count of the parts to be used.
+    - name: need_date
+      type: date
+      descriptioN: Optional field to define a needed material receive date, usually only applicable when defining deployments.
+  required:
+    - make
+    - model
+    - quantity
+---
+data:
+  name: Assembly
+  description: A collection of parts into a logical thing.
+  fields:
+    - name: name
+      type: string
+      description:  The unique name of the assembly.
+    - name: description
+      type: string
+      description:  A description of the assembly.
+    - name: parts
+      type: PartRef[]
+      description:  A list of parts that contribute to the assembly.
+    - name: sub-assemblies
+      type: AssemblyRef[]
+      description: A list of assemblies that contribute to the assembly.
+  required:
+    - name
+    - description
+---
+data:
+  name: AssemblyRef
+  description:  Reference to an assembly with quantity
+  fields:
+    - name: name
+      type: string
+      description: Reference fo the name in another Assembly item.
+    - name: quantity
+      type: int
+      description: The count of the assemblies to be used.
+    - name: need_date
+      type: date
+      descriptioN: Optional field to define a needed material receive date, usually only applicable when defining deployments.
+  required:
+    - name
+    - quantity
+---
+data:
+  name: Deployment
+  description: A collection of parts and assemblies to be deployed to one or more locations.
+  fields:
+    - name: name
+      type: string
+      description:  The unique name of the assembly.
+    - name: description
+      type: string
+      description:  A description of the assembly.
+    - name: location
+      descriptioN: The location for the deployment.
+    - name: parts
+      type: PartRef[]
+      description:  A list of parts that contribute to the deployment.
+    - name: assemblies
+      type: AssemblyRef[]
+      description: A list of assemblies that contribute to the deployment.
+    - name: sub_deployments
+      type: DeploymentRef[]
+      description: A list of deployments that contribute to the deployment.
+---
+data:
+  name: DeploymentRef
+  description:  Reference to an assembly with quantity
+  fields:
+    - name: name
+      type: string
+      description: Reference fo the name in another Deployment item.
+    - name: quantity
+      type: int
+      description: The count of the assemblies to be used.
+    - name: need_date
+      type: date
+      descriptioN: Optional field to define a needed material receive date.
+  required:
+    - name
+    - quantity
+---
+ext:
+   name: MaterialRootItems
+   type: root
+   dataExt:
+      add:
+        - name: part
+          type: Part
+        - name: assembly
+          type: Assembly
+        - name: deployment
+          type: Deployment
