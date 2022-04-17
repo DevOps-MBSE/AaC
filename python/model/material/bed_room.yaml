@@ -1,0 +1,10 @@
+
+
+deployment:
+  name: Bed_Room
+  description:  The place I'll hang out a lot.
+  assemblies:
+    - name: Sleeping_Area
+      quantity: 1
+    - name: Personal_Storage
+      quantity: 1

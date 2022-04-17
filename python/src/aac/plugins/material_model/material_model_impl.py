@@ -26,40 +26,86 @@ def gen_bom(architecture_file: str, output_directory: str) -> PluginExecutionRes
     def _prepend_value(bom_item: dict, field: str, value: str) -> None:
         # I'm assuming this will just change the dict passed in (as a side effect)
         bom_item_field = bom_item[field]
-        new_value = f"{value} | {bom_item_field}"
-        bom_item[field] = new_value
+        if len(bom_item_field) > 0:
+            bom_item[field] = f"{value} | {bom_item_field}"
+        else:
+            bom_item[field] = value
+
 
     def _process_deployment(deployment: dict, models: dict) -> list(dict()):
         bom_items = []
         deployment_name = deployment.get("name")
-        # 4) for each sub-deployment, add sub-assembly name to context and process recursively
-        for sub_deployment in deployment_dict.get("sub_deployments"):
-            sub_name = sub_deployment.get("name")
-            bom_items.append(_process_deployment(models.get(sub_name), models))
+        # for each sub-deployment, process recursively
+        for sub_deployment in deployment_dict.get("sub-deployments"):
+            bom_items.append(_process_deployment(models.get(sub_deployment["name"]), models))
 
-        # 4) for each assembly, process assemblies recursively in a depth first manner
-        for assembly in deployment_dict.get("assemblies"):
-            assembly_name = assembly.get("name")
-            assembly_quantity = assembly.get("quantity")
-            bom_items.append(_process_assembly(models.get(assembly_name), assembly_quantity, models))
+        # process each assembly_ref
+        for assembly_ref in deployment_dict.get("assemblies"):
+            assembly_items = _process_assembly(
+                models.get(assembly_ref["name"]), assembly_ref["quantity"], assembly_ref["need_date"], models)
 
-        # 5) for each part in a deployment, generate a bom_item dict entry (be careful about quantities)
-        for part in deployment_dict.get("parts"):
-            part_name = part.get("name")
-            part_quantity = part.get("quantity")
-            bom_items.append(_process_part(models.get(part_name), part_quantity))
+            # set need_date if included in the assembly_ref
+            if "need_date" in assembly_ref.keys():
+                for item in assembly_items:
+                    item["need_date"] = assembly_ref["need_date"]
 
-        # 6) prepend deployment name to all context fields in bom_items
+            # add assembly_items to the bom_items
+            bom_items.append(assembly_items)
+
+        # for each part in a deployment, generate a bom_item dict entry (be careful about quantities)
+        for part_ref in deployment_dict.get("parts"):
+            part_items = _process_part(models.get(part_ref["name"]), part_ref["quantity"])
+
+            # set need_date if included in the part_ref
+            if "need_date" in part_ref.keys():
+                for item in part_items:
+                    item["need_date"] = part_ref["need_date"]
+
+            # add parts to bom_items
+            bom_items.append(part_items)
+
+        # prepend deployment name to all context fields in bom_items
         for item in bom_items:
             _prepend_value(item, "context", deployment["name"])
 
         return bom_items
 
-    def _process_assembly(assembly: dict, assembly_qty: int, models: dict, context: str) -> list(dict()):
-        return [{"not": "real"}]
+    def _process_assembly(assembly: dict, assembly_qty: int, models: dict) -> list(dict()):
+        bom_items = []
+        # for each sub_assembly, process recursively
+        for sub_assembly_ref in assembly.get("assemblies"):
+            sub_assembly_items = _process_assembly(
+                models.get(sub_assembly_ref["name"]), assembly_qty * int(sub_assembly_ref["quantity"]), models)
 
-    def _process_part(part: dict, part_qty: int, models:dict, context: str) -> list(dict()):
-        return [{"not": "real"}]
+            # set need_date if included in the assembly_ref
+            if "need_date" in sub_assembly_ref.keys():
+                for item in sub_assembly_items:
+                    item["need_date"] = sub_assembly_ref["need_date"]
+
+            # add assembly_items to the bom_items
+            bom_items.append(sub_assembly_items)
+
+        # for each part, generate a bom_item dict entry (be careful about quantities)
+        for part_ref in assembly.get("parts"):
+            part_items = _process_part(models.get(part_ref["name"]), assembly_qty * int(part_ref["quantity"]))
+
+            # set need_date if included in the part_ref
+            if "need_date" in part_ref.keys():
+                for item in part_items:
+                    item["need_date"] = part_ref["need_date"]
+
+            # add parts to bom_items
+            bom_items.append(part_items)
+
+        # prepend assembly name to all context fields in bom_items
+        for item in bom_items:
+            _prepend_value(item, "context", assembly["name"])
+
+        return bom_items
+
+    def _process_part(part: dict, part_qty: int, models:dict) -> list(dict()):
+        return [{"make": part["make"], "model": part["model"], "description": part["description"],
+            "unit_cost": part["unit_cost"], "quantity": part_qty, "total_cost": number(part["unit_cost"]) * part_qty}]
 
     def to_bom_csv(architecture_file: str, output_directory: str) -> str:
         architecture_file_path = os.path.abspath(architecture_file)
@@ -74,23 +120,21 @@ def gen_bom(architecture_file: str, output_directory: str) -> PluginExecutionRes
             #      note:  for now, let's just aggregate it into a single context field for simplicity
             bom_header = ["make", "model", "description", "unit_cost", "quantity", "total_cost", "location", "need_date", "context"]
             bom_items = []
-            # Initial algorithm thoughts
-            # 1) get a list of the deployments
+
+            # get a list of the deployments
             deployment_types = get_models_by_type(models, "deployment")
 
-            # 2) remove any deployment listed as a sub-deployment in another deployment to get the root deployment(s)
+            # remove any deployment listed as a sub-deployment in another deployment to get the root deployment(s)
             deployment_names = list(deployment_types.keys())
             for root_deployment_name in deployment_types.keys():
                 deployment_dict = deployment_types.get(root_deployment_name)
-                for sub_deployment in deployment_dict.get("sub_deployments"):
+                for sub_deployment in deployment_dict.get("sub-deployments"):
                     deployment_names.remove(sub_deployment.get("name"))
 
-            # 3) loop through the root deployment list, keeping track of context by appending deployment names
+            # loop through the root deployment list, keeping track of context by appending deployment names
             print(deployment_names)
             for deployment_name in deployment_names:
                 bom_items.append(_process_deployment(deployment_types.get(deployment_name), models, ""))
-                # note: algorithm notes continued in sub-function
-
 
             if output_directory:
                 if not os.path.exists(output_directory):

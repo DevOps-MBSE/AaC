@@ -141,7 +141,7 @@ data:
     - name: assemblies
       type: AssemblyRef[]
       description: A list of assemblies that contribute to the deployment.
-    - name: sub_deployments
+    - name: sub-deployments
       type: DeploymentRef[]
       description: A list of deployments that contribute to the deployment.
     - name: need_date
@@ -167,9 +167,9 @@ ext:
    type: root
    dataExt:
       add:
-        - name: part
-          type: Part
-        - name: assembly
-          type: Assembly
-        - name: deployment
-          type: Deployment
+        - name: parts
+          type: Part[]
+        - name: assemblies
+          type: Assembly[]
+        - name: deployments
+          type: Deployment[]

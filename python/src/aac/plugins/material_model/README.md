@@ -88,13 +88,14 @@ And now we just have to do our research and define each of the parts we need to 
 
 ```amazon_parts.yaml```
 ```yaml
-part:
-    make: HUAOAO
-    model: Cork Coaster Set
-    descriptioN: Set of 12 plain cork coasters.
-    unit_cost: 7.19
-    quote_type: Web_Reference
-    quote: https://smile.amazon.com/Coaster-Absorbent-Resistant-Reusable-Coasters/dp/B08PZ15J2N/ref=sr_1_5?crid=2DPXL21PGC5Y5&keywords=cork+coasters&qid=1650115724&sprefix=cork+coasters%2Caps%2C123&sr=8-5
+parts:
+    - part:
+        make: HUAOAO
+        model: Cork Coaster Set
+        descriptioN: Set of 12 plain cork coasters.
+        unit_cost: 7.19
+        quote_type: Web_Reference
+        quote: https://smile.amazon.com/Coaster-Absorbent-Resistant-Reusable-Coasters/dp/B08PZ15J2N
 ```
 Now we rinse and repeat for the other deployments, assemblies, and parts we have identified and we will have our material model complete.  Be sure to go back and add in the import statements to ensure content references can be validated. With the model complete we can do some operations on it to ensure validity (i.e. no obvious errors in the definitions) or generate a Bill of Materials (BOM).
 

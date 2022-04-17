@@ -1,0 +1,10 @@
+
+
+deployment:
+  name: Kitchen
+  description:  The place I'll hang out a lot.
+  assemblies:
+    - name: Appliances
+      quantity: 1
+    - name: Cook_Ware
+      quantity: 1
