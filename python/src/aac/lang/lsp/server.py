@@ -25,8 +25,7 @@ ACTIVE_CONTEXT: Optional[LanguageContext] = None
 COMPLETION_PROVIDER: Optional[CodeCompletionProvider] = None
 
 
-# Temporary until issue #227 is complete
-def start_lsp(host=None, port=None):
+def start_lsp():
     """Start the LSP server."""
     global SERVER, ACTIVE_CONTEXT
 
@@ -36,11 +35,7 @@ def start_lsp(host=None, port=None):
 
     logging.info("Starting the AaC LSP server")
 
-    # Temporary until issue #227 is complete
-    if host and port:
-        SERVER.start_tcp(host, port)
-    else:
-        SERVER.start_io()
+    SERVER.start_io()
 
 
 def setup_features(server: LanguageServer) -> None:
