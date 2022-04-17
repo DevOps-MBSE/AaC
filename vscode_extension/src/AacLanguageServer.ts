@@ -5,8 +5,13 @@ import { ExtensionContext, window, workspace } from "vscode";
 import { LanguageClient, LanguageClientOptions, ServerOptions, StreamInfo, Trace } from "vscode-languageclient/node";
 import { assertTrue, execShell, getConfigurationItem, showMessageOnError, getSemanticVersionNumber } from "./helpers";
 
+enum LspServerMode {
+    IO = "IO",
+    TCP = "TCP",
+}
+
 const MIN_REQUIRED_PYTHON_VERSION = "3.9";
-const DEFAULT_LSP_SERVER_MODE = "IO";
+const DEFAULT_LSP_SERVER_MODE = LspServerMode.IO;
 
 export class AacLanguageServerClient {
     private static instance: AacLanguageServerClient;
@@ -87,7 +92,7 @@ export class AacLanguageServerClient {
 
     private getServerOptions(): ServerOptions | (() => Promise<StreamInfo>) {
         const lspServerMode = getConfigurationItem("lsp.serverMode");
-        if (lspServerMode === "TCP") {
+        if (lspServerMode === LspServerMode.TCP) {
             return this.getTcpServerOptions();
         }
 
