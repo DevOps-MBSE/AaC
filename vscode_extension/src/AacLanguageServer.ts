@@ -86,22 +86,16 @@ export class AacLanguageServerClient {
     }
 
     private getServerOptions(): ServerOptions | (() => Promise<StreamInfo>) {
-        let result;
-
         const lspServerMode = getConfigurationItem("lsp.serverMode");
-
-        // TODO: Do we have an enum we can use for this since we defined possible values in package.json
         if (lspServerMode === "TCP") {
-            result = this.getTcpServerOptions;
-        } else {
-            assertTrue(
-                lspServerMode === DEFAULT_LSP_SERVER_MODE,
-                `Unsupported LSP server mode selected: ${lspServerMode}. Defaulting to ${DEFAULT_LSP_SERVER_MODE}.`
-            );
-            result = this.getIoServerOptions();
+            return this.getTcpServerOptions();
         }
 
-        return result;
+        assertTrue(
+            lspServerMode === DEFAULT_LSP_SERVER_MODE,
+            `Unsupported LSP server mode selected: ${lspServerMode}. Defaulting to ${DEFAULT_LSP_SERVER_MODE}.`
+        );
+        return this.getIoServerOptions();
     }
 
     private getIoServerOptions(): ServerOptions {
@@ -111,7 +105,7 @@ export class AacLanguageServerClient {
         };
     }
 
-    private getTcpServerOptions() {
+    private getTcpServerOptions(): (() => Promise<StreamInfo>) {
         const host = getConfigurationItem("lsp.tcp.host");
         const port = getConfigurationItem("lsp.tcp.port");
 
@@ -122,7 +116,7 @@ export class AacLanguageServerClient {
             window.showErrorMessage(message);
         });
 
-        return Promise.resolve({
+        return () => Promise.resolve({
             writer: socket,
             reader: socket,
         });
