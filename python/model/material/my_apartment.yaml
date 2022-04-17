@@ -1,34 +1,33 @@
+deployment:
+  name: My_New_Apartment
+  description: The place I'm going to live.
+  location: Crystal Terrace Apartments Unit 1234
+  sub-deployments:
+    - name: Living_Room
+      quantity: 1
+    - name: Kitchen
+      quantity: 1
+---
+import:
+  - ./living_room.yaml
 
+deployment:
+  name: Living_Room
+  description:  The place I'll hang out a lot.
+  assemblies:
+    - name: Entertainment_System
+      quantity: 1
+    - name: Seating_Area
+      quantity: 1
+---
+import:
+  - ./kitchen.yaml
 
-deployments:
-  - name: My_New_Apartment
-    description: The place I'm going to live.
-    location: Crystal Terrace Apartments Unit 1234
-    sub-deployments:
-      - name: Living_Room
-        quantity: 1
-      - name: Kitchen
-        quantity: 1
-      - name: Bed_Room
-        quantity: 1
-  - name: Living_Room
-    description:  The place I'll hang out a lot.
-    assemblies:
-      - name: Entertainment_System
-        quantity: 1
-      - name: Seating_Area
-        quantity: 1
-  - name: Kitchen
-    description:  The place I'll hang out a lot.
-    assemblies:
-      - name: Appliances
-        quantity: 1
-      - name: Cook_Ware
-        quantity: 1
-  - name: Bed_Room
-    description:  The place I'll hang out a lot.
-    assemblies:
-      - name: Sleeping_Area
-        quantity: 1
-      - name: Personal_Storage
-        quantity: 1
+deployment:
+  name: Kitchen
+  description:  The place I'll hang out a lot.
+  assemblies:
+    - name: Appliances
+      quantity: 1
+    - name: Cook_Ware
+      quantity: 1

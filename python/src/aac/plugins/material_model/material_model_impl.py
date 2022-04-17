@@ -148,10 +148,11 @@ def gen_bom(architecture_file: str, output_directory: str) -> PluginExecutionRes
 
     status = PluginExecutionStatusCode.SUCCESS
     messages = []
-    for arch_file in architecture_files:
-        with plugin_result(plugin_name, to_bom_csv, arch_file, output_directory) as result:
-            messages += result.messages
-            if not result.is_success():
-                status = result.status_code
+
+    #for arch_file in architecture_files:
+    with plugin_result(plugin_name, to_bom_csv, architecture_file, output_directory) as result:
+        messages += result.messages
+        if not result.is_success():
+            status = result.status_code
 
     return PluginExecutionResult(plugin_name, status, messages)

@@ -167,9 +167,9 @@ ext:
    type: root
    dataExt:
       add:
-        - name: parts
-          type: Part[]
-        - name: assemblies
-          type: Assembly[]
-        - name: deployments
-          type: Deployment[]
+        - name: part
+          type: Part
+        - name: assembly
+          type: Assembly
+        - name: deployment
+          type: Deployment

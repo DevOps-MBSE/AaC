@@ -1,30 +1,36 @@
 import:
   - ./amazon_parts.yaml
+  - ./furniture_store.yaml
 
-assemblies:
-  - name: Seating_Area
-    description:  The place I'll hang out a lot.
-    parts:
-      - name: Couch
-        quantity: 1
-      - name: Arm_Chair
-        quantity: 1
-      - name: Coffee_Table
-        quantity: 1
-      - name: Side_Table
-        quantity: 2
-      - name: Table_Lamp
-        quantity: 2
-      - name: Coasters
-        quantity: 1
-  - name: Entertainment_System
-    description:  Mostly electronic toys
-    parts:
-      - name: TV
-        quantity: 1
-      - name: Sound_Bar
-        quantity: 1
-      - name: X_Box
-        quantity: 1
-      - name: Wifi_Router
-        quantity: 1
+assembly:
+  name: Seating_Area
+  description:  The place I'll hang out a lot.
+  parts:
+    - name: Couch
+      quantity: 1
+    - name: Arm_Chair
+      quantity: 1
+    - name: Coffee_Table
+      quantity: 1
+    - name: Side_Table
+      quantity: 2
+    - name: Table_Lamp
+      quantity: 2
+    - name: Coasters
+      quantity: 1
+---
+import:
+  - ./amazon_parts.yaml
+
+assembly:
+  name: Entertainment_System
+  description:  Mostly electronic toys
+  parts:
+    - name: TV
+      quantity: 1
+    - name: Sound_Bar
+      quantity: 1
+    - name: X_Box
+      quantity: 1
+    - name: Wifi_Router
+      quantity: 1
