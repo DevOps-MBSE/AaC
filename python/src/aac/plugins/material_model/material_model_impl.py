@@ -31,7 +31,6 @@ def gen_bom(architecture_file: str, output_directory: str) -> PluginExecutionRes
         else:
             bom_item[field] = value
 
-
     def _process_deployment(deployment: dict, models: dict) -> list(dict()):
         bom_items = []
         deployment_name = deployment.get("name")
