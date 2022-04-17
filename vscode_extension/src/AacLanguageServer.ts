@@ -6,12 +6,12 @@ import { LanguageClient, LanguageClientOptions, ServerOptions, StreamInfo, Trace
 import { assertTrue, execShell, getConfigurationItem, showMessageOnError, getSemanticVersionNumber } from "./helpers";
 
 enum LspServerMode {
-    Io = "IO",
-    Tcp = "TCP",
+    io = "IO",
+    tcp = "TCP",
 }
 
 const MIN_REQUIRED_PYTHON_VERSION = "3.9";
-const DEFAULT_LSP_SERVER_MODE = LspServerMode.Io;
+const DEFAULT_LSP_SERVER_MODE = LspServerMode.io;
 
 export class AacLanguageServerClient {
     private static instance: AacLanguageServerClient;
@@ -92,7 +92,7 @@ export class AacLanguageServerClient {
 
     private getServerOptions(): ServerOptions | (() => Promise<StreamInfo>) {
         const lspServerMode = getConfigurationItem("lsp.serverMode");
-        if (lspServerMode === LspServerMode.Tcp) {
+        if (lspServerMode === LspServerMode.tcp) {
             return this.getTcpServerOptions();
         }
 
