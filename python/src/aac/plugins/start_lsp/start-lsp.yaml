@@ -2,14 +2,35 @@ model:
   name: start-lsp
   description: Start the LSP server
   behavior:
-    - name: start-lsp
+    - name: start-lsp-io
       type: command
-      description: Start the AaC Language Server Protocol (LSP) server
+      description: Start the AaC Language Server Protocol (LSP) server in IO mode
       acceptance:
-        - scenario: Start the LSP server
+        - scenario: Start the LSP server in IO mode
           given:
             - The LSP server is not currently running.
           when:
-            - The aac application is run with the start-lsp command.
+            - The aac application is run with the start-lsp-io command.
           then:
-            - The AaC LSP server is started.
+            - The AaC LSP server is started in IO mode.
+            - Messages to and from the LSP occur over system IO
+    - name: start-lsp-tcp
+      type: command
+      description: Start the AaC Language Server Protocol (LSP) server in TCP mode
+      - name: --host
+        type: string
+        python_type: str
+        description: The host address to bind the TCP server to. Defaults to "127.0.0.1"
+      - name: --port
+        type: number
+        python_type: int
+        description: The host port to bing the TCP server to. Defaults to "5007"
+      acceptance:
+        - scenario: Start the LSP server in TCP mode
+          given:
+            - The LSP server is not currently running.
+          when:
+            - The aac application is run with the start-lsp-tcp command.
+          then:
+            - The AaC LSP server is started in TCP mode.
+            - Messages to and from the LSP occur over a TCP connection
