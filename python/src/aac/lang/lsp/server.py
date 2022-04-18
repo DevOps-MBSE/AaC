@@ -26,11 +26,7 @@ COMPLETION_PROVIDER: Optional[CodeCompletionProvider] = None
 
 
 def start_lsp():
-    """Start the LSP server.
-
-    Args:
-        dev (bool): Whether to start the server and setup logging for development. (optional)
-    """
+    """Start the LSP server."""
     global SERVER, ACTIVE_CONTEXT
 
     SERVER = SERVER or LanguageServer()
