@@ -9,7 +9,7 @@ from pygls.lsp import methods
 from pygls.lsp.types import Model
 from pygls.server import LanguageServer
 
-from aac.lang.lsp.server import setup_features
+from aac.lang.lsp.language_server import AacLanguageServer
 
 
 DEFAULT_TIMEOUT_IN_SECONDS = 3
@@ -21,7 +21,8 @@ class LspTestClient:
     The test client handles starting a test instance of the AaC LSP server and communicating with it.
 
     Attributes:
-        server (LanguageServer): A test version of the AaC LSP server.
+        aac_language_server (AacLanguageServer): The AaC server mana
+        server (AacLanguageServer): A test version of the AaC LSP server.
         client (LanguageServer): The client used for communicating with the AaC LSP server.
     """
 
@@ -32,6 +33,7 @@ class LspTestClient:
 
         self.server, self._server_thread = self._configure_ls(client_server_reader, server_client_writer)
         self.client, self._client_thread = self._configure_ls(server_client_reader, client_server_writer)
+        self.aac_language_server = AacLanguageServer(language_server=self.server)
 
     def _configure_ls(self, reader: int, writer: int):
         """Create, configure, and return a new LanguageServer and it's associated thread.
@@ -52,8 +54,6 @@ class LspTestClient:
         """Start the test LSP server and client."""
         self._server_thread.start()
         self.server.thread_id = self._server_thread.ident
-        setup_features(self.server)
-
         self._client_thread.start()
 
     def stop(self):
