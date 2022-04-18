@@ -17,14 +17,15 @@ model:
     - name: start-lsp-tcp
       type: command
       description: Start the AaC Language Server Protocol (LSP) server in TCP mode
-      - name: --host
-        type: string
-        python_type: str
-        description: The host address to bind the TCP server to. Defaults to "127.0.0.1"
-      - name: --port
-        type: number
-        python_type: int
-        description: The host port to bing the TCP server to. Defaults to "5007"
+      input:
+        - name: --host
+          type: string
+          python_type: str
+          description: The host address to bind the TCP server to. Defaults to "127.0.0.1"
+        - name: --port
+          type: number
+          python_type: int
+          description: The host port to bing the TCP server to. Defaults to "5007"
       acceptance:
         - scenario: Start the LSP server in TCP mode
           given:
