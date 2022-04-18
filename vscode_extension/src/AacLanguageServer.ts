@@ -1,9 +1,17 @@
 import * as fs from "fs";
-import { ExtensionContext, workspace } from "vscode";
-import { LanguageClient, LanguageClientOptions, ServerOptions, Trace } from "vscode-languageclient/node";
+import * as net from "net";
+
+import { ExtensionContext, window, workspace } from "vscode";
+import { LanguageClient, LanguageClientOptions, ServerOptions, StreamInfo, Trace } from "vscode-languageclient/node";
 import { assertTrue, execShell, getConfigurationItem, showMessageOnError, getSemanticVersionNumber } from "./helpers";
 
+enum LspServerMode {
+    io = "IO",
+    tcp = "TCP",
+}
+
 const MIN_REQUIRED_PYTHON_VERSION = "3.9";
+const DEFAULT_LSP_SERVER_MODE = LspServerMode.io;
 
 export class AacLanguageServerClient {
     private static instance: AacLanguageServerClient;
@@ -66,28 +74,57 @@ export class AacLanguageServerClient {
     }
 
     private assertLspServerIsReady(context: ExtensionContext): void {
-        const aacPath: string = this.getConfigurationItemFile("aacPath");
-        showMessageOnError(() => this.startLspClient(context, aacPath), 'Failed trying to start the server.');
+        showMessageOnError(() => this.startLspClient(context), 'Failed trying to start the server.');
         showMessageOnError(() => this.aacLspClient.onReady(), 'Failed waiting for the server to become ready.');
     }
 
-    private async startLspClient(context: ExtensionContext, aacPath: string): Promise<void> {
+    private async startLspClient(context: ExtensionContext): Promise<void> {
         if (this.aacLspClient) { return; }
         this.aacLspClient = new LanguageClient(
             "aac",
             "AaC Language Client",
-            this.getServerOptions(aacPath, "start-lsp"),
+            this.getServerOptions(),
             this.getClientOptions(),
         );
         this.aacLspClient.trace = Trace.Verbose;
         context.subscriptions.push(this.aacLspClient.start());
     }
 
-    private getServerOptions(command: string, ...args: string[]): ServerOptions {
+    private getServerOptions(): ServerOptions | (() => Promise<StreamInfo>) {
+        const lspServerMode = getConfigurationItem("lsp.serverMode");
+        if (lspServerMode === LspServerMode.tcp) {
+            return this.getTcpServerOptions();
+        }
+
+        assertTrue(
+            lspServerMode === DEFAULT_LSP_SERVER_MODE,
+            `Unsupported LSP server mode selected: ${lspServerMode}. Defaulting to ${DEFAULT_LSP_SERVER_MODE}.`
+        );
+        return this.getIoServerOptions();
+    }
+
+    private getIoServerOptions(): ServerOptions {
         return {
-            args,
-            command,
+            command: this.getConfigurationItemFile("aacPath"),
+            args: ["start-lsp"]
         };
+    }
+
+    private getTcpServerOptions(): (() => Promise<StreamInfo>) {
+        const host = getConfigurationItem("lsp.tcp.host");
+        const port = getConfigurationItem("lsp.tcp.port");
+
+        const socket = net.connect(port, host);
+        socket.addListener("error", (err: Error) => {
+            let message = `Error connecting to server at ${host}:${port}. `;
+            message += (err.message.includes("ECONNREFUSED")) ? "Is the server running?" : err.message;
+            window.showErrorMessage(message);
+        });
+
+        return () => Promise.resolve({
+            writer: socket,
+            reader: socket,
+        });
     }
 
     private getClientOptions(): LanguageClientOptions {

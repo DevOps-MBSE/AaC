@@ -45,6 +45,31 @@
                     "default": "",
                     "pattern": "(\\\\?([^\\/]*[\\/])*)([^\\/]+)$",
                     "description": "The filesystem path to the aac CLI tool."
+                },
+                "aac.lsp.serverMode": {
+                    "scope": "machine-overridable",
+                    "type": "string",
+                    "enum": [
+                        "IO",
+                        "TCP"
+                    ],
+                    "default": "IO",
+                    "description": "The method of communication with the LSP server."
+                },
+                "aac.lsp.tcp.host": {
+                    "scope": "machine-overridable",
+                    "type": "string",
+                    "pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
+                    "default": "127.0.0.1",
+                    "description": "The host to use for establishing a TCP connection with the LSP server."
+                },
+                "aac.lsp.tcp.port": {
+                    "scope": "machine-overridable",
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 65535,
+                    "default": 5007,
+                    "description": "The port to use for establishing a TCP connection with the LSP server."
                 }
             }
         },
