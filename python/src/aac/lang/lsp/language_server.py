@@ -5,8 +5,6 @@ import logging
 from typing import Optional
 from pygls.server import LanguageServer
 import pygls.lsp.methods as methods
-
-
 from pygls.lsp import (
     CompletionOptions,
     CompletionParams,
@@ -50,11 +48,7 @@ class AacLanguageServer:
         logging.debug("AaC LSP initialized.")
 
     def setup_features(self) -> None:
-        """Configure the server with the supported features.
-
-        Args:
-            server (LanguageServer): The language server for which to configure the available features.
-        """
+        """Configure the server with the supported features."""
         server = self.language_server
 
         @server.feature(methods.INITIALIZE)
