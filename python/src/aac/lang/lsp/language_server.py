@@ -4,7 +4,6 @@ from attr import attrib, attrs, validators
 import logging
 from typing import Optional
 from pygls.server import LanguageServer
-import pygls.lsp.methods as methods
 from pygls.lsp import (
     CompletionOptions,
     CompletionParams,
@@ -13,6 +12,7 @@ from pygls.lsp import (
     InitializeParams,
     InitializeResult,
     ServerCapabilities,
+    methods
 )
 
 from aac.lang.active_context_lifecycle_manager import get_initialized_language_context
