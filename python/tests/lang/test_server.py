@@ -10,7 +10,7 @@ from pygls.lsp.types import (
     Position,
 )
 
-from tests.lang.LspTestClient import LspTestClient
+from tests.lang.lsp_test_client import LspTestClient
 
 
 class TestLspServer(TestCase):
