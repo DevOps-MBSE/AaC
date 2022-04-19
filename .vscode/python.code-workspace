@@ -209,12 +209,22 @@
             "console": "integratedTerminal",
             "justMyCode": false
         }, {
-            "name": "Python: Start LSP Server",
+            "name": "Python: Start LSP Server IO",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
-                "start-lsp"
+                "start-lsp-io"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        }, {
+            "name": "Python: Start LSP Server TCP",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/aac/__main__.py",
+            "args": [
+                "start-lsp-tcp"
             ],
             "console": "integratedTerminal",
             "justMyCode": false
