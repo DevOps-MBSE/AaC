@@ -17,7 +17,7 @@ from pygls.lsp import (
     ServerCapabilities,
 )
 
-from aac.lang.active_context_lifecycle_manager import initialize_language_context
+from aac.lang.active_context_lifecycle_manager import get_initialized_language_context
 from aac.lang.language_context import LanguageContext
 from aac.lang.lsp.code_completion_provider import CodeCompletionProvider
 
@@ -42,11 +42,9 @@ class AacLanguageServer:
 
     def configure_lsp(self):
         """Configure and setup the LSP server so that it's ready to execute."""
+        self.language_context = get_initialized_language_context()
         self.language_server = self.language_server or LanguageServer()
-        self.language_context = self.language_context or LanguageContext()
         self.code_completion_provider = self.code_completion_provider or CodeCompletionProvider()
-
-        initialize_language_context(self.language_context)
         self.setup_features()
 
         logging.debug("AaC LSP initialized.")
