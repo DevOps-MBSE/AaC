@@ -3,7 +3,7 @@ import:
   - ./amazon_parts.yaml
 
 assembly:
-  - name: Appliances
+  name: Appliances
     description:  Things that make a kitchen work.
     parts:
       - name: Refrigerator
