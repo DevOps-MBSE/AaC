@@ -84,8 +84,7 @@
             {
                 "id": "aac",
                 "extensions": [
-                    ".aac",
-                    ".yaml"
+                    ".aac"
                 ],
                 "aliases": [
                     "aac",
@@ -93,6 +92,17 @@
                     "AaC"
                 ],
                 "configuration": "./aac-language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "aac",
+                "scopeName": "source.aac",
+                "path": "./syntaxes/aac.tmGrammar.plist"
+            }, {
+                "language": "aac",
+                "scopeName": "injection.aac.keywords",
+                "path": "./syntaxes/keywords.tmLanguage.plist"
             }
         ]
     },
