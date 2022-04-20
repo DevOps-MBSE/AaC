@@ -21,14 +21,14 @@ def get_active_context(reload_context: bool = False) -> LanguageContext:
     global ACTIVE_CONTEXT
 
     if not ACTIVE_CONTEXT or reload_context:
-        ACTIVE_CONTEXT = LanguageContext()
-        _init_active_context()
+        ACTIVE_CONTEXT = get_initialized_language_context()
 
     return ACTIVE_CONTEXT
 
 
-def _init_active_context() -> None:
-    """Initialize the active LanguageContext instance with definitions from the core spec and active plugins."""
-    active_context = get_active_context()
-    active_context.add_definitions_to_context(get_aac_spec())
-    active_context.add_definitions_to_context(get_plugin_definitions())
+def get_initialized_language_context() -> LanguageContext():
+    """Return a LanguageContext that has been initialized with the core AaC spec and active plugins."""
+    language_context = LanguageContext()
+    language_context.add_definitions_to_context(get_aac_spec())
+    language_context.add_definitions_to_context(get_plugin_definitions())
+    return language_context

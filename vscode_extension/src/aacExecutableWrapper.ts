@@ -112,7 +112,7 @@ async function execAacShellCommand(command: string, commandArgs: CommandArgument
         const { stdout, stderr } = await execShell([aac, command, ...commandArgsArray].join(" "), {});
         return stderr.length > 0 ? stderr : stdout;
     } catch (error: any) {
-        let errorMessage = error.stderr || error.stdout || "urecognized error";
+        let errorMessage = error.stderr || error.stdout || "unrecognized error";
 
         outputChannel.appendLine(`Failed to execute AaC command:\n${errorMessage}`);
         outputChannel.show(true);
