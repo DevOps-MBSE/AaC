@@ -61,11 +61,15 @@ def get_substructures_by_type(
     source_definition_root_key = source_definition.get_root_key()
     source_definition_fields = source_definition.get_fields()
 
-    # Return the whole definition dictionary if the desired substructure is the to the root type.
+    # Return the whole definition dictionary if the desired substructure is the root type.
     if source_definition_root_key == sub_schema_definition.name:
         substructure_instances = [source_definition_fields]
     else:
         source_definition_schema = get_definition_schema(source_definition, context)
-        _get_substructures(source_definition_schema, source_definition_fields)
+
+        if source_definition_schema:
+            _get_substructures(source_definition_schema, source_definition_fields)
+        else:
+            logging.error(f"Failed to find a schema definition for the key {source_definition_root_key}.")
 
     return substructure_instances
