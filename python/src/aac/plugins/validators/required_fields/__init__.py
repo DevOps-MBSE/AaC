@@ -1,4 +1,4 @@
-"""Validation plugin to ensure that each validation definition has a corresponding validation implementation."""
+"""Validation plugin to ensure that each definition has all required fields populated."""
 
 from aac.package_resources import get_resource_file_contents
 from aac.plugins import hookimpl
