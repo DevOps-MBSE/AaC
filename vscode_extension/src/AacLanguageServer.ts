@@ -106,7 +106,7 @@ export class AacLanguageServerClient {
     private getIoServerOptions(): ServerOptions {
         return {
             command: this.getConfigurationItemFile("aacPath"),
-            args: ["start-lsp"]
+            args: ["start-lsp-io"]
         };
     }
 
