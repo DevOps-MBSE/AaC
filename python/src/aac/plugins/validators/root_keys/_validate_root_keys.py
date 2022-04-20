@@ -3,7 +3,6 @@ import logging
 from aac.lang.language_context import LanguageContext
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.definitions.definition import Definition
-from aac.lang.definitions.structure import get_substructures_by_type
 from aac.plugins.validators import ValidatorResult
 
 

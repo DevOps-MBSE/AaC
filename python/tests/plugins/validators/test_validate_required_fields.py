@@ -1,9 +1,9 @@
 from unittest import TestCase
 
 from aac.lang.active_context_lifecycle_manager import get_active_context
-from aac.lang.definition_helpers import get_definition_by_name, get_definitions_by_root_key
+from aac.lang.definition_helpers import get_definitions_by_root_key
 from aac.parser import parse
-from aac.plugins.validators import ValidatorPlugin, ValidatorResult
+from aac.plugins.validators import ValidatorPlugin
 from aac.plugins.validators.required_fields import get_plugin_aac_definitions, register_validators, validate_required_fields
 from tests.helpers.assertion import assert_validator_result_failure, assert_validator_result_success
 
