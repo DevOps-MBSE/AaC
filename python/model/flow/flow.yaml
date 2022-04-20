@@ -1,5 +1,5 @@
 import:
-  - ./System.yaml
+  - ./System.aac
   - ./External.yaml
 usecase:
   name: Nominal flow of data through the system.
@@ -20,7 +20,7 @@ usecase:
       action: response
 ---
 import:
-  - ./System.yaml
+  - ./System.aac
   - ./ServiceOne.yaml
   - ./Subsystem.yaml
   - ./ServiceThree.yaml
