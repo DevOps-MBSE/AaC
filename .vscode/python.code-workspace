@@ -205,7 +205,8 @@
             "name": "Python: Unit Tests",
             "type": "python",
             "request": "launch",
-            "program": "nose2 -c ${workspaceFolder}/tox.ini",
+            "program": "nose2",
+            "args": ["-c", "${workspaceFolder}/tox.ini"],
             "console": "integratedTerminal",
             "justMyCode": false
         }, {
