@@ -25,7 +25,7 @@ import:
 
 deployment:
   name: Kitchen
-  description:  The place I'll hang out a lot.
+  description:  Where I'll cook my food.
   assemblies:
     - name: Appliances
       quantity: 1

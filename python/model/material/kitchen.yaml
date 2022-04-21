@@ -4,18 +4,18 @@ import:
 
 assembly:
   name: Appliances
-    description:  Things that make a kitchen work.
-    parts:
-      - name: Refrigerator
-        quantity: 1
-      - name: Stove
-        quantity: 1
-      - name: Dish_Washer
-        quantity: 1
-      - name: Coffee_Pot
-        quantity: 1
-      - name: Blender
-        quantity: 1
+  description: Things that make a kitchen work.
+  parts:
+    - name: Refrigerator
+      quantity: 1
+    - name: Stove
+      quantity: 1
+    - name: Dish_Washer
+      quantity: 1
+    - name: Coffee_Pot
+      quantity: 1
+    - name: Blender
+      quantity: 1
 ---
 import:
   - ./amazon_parts.yaml
