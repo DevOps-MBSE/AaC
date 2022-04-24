@@ -17,23 +17,23 @@ validation:
             - The ValidatorInput content consists of valid AaC definitions.
             - The ValidatorInput contains some AaC definition that has a root key defined by the 'root' definition in the core specification.
           when:
-            - The input is validation
+            - The ValidatorInput is validated
           then:
             - The ValidatorOutput does not indicate any errors
             - The ValidatorOutput does not indicate any warnings
-            - The ValidatorOutput indicates the validator plugin under test is valid
+            - The ValidatorOutput indicates the definition under test is valid
         - scenario: Successfully validate an extended root key
           given:
             - The ValidatorInput content consists of valid AaC definitions.
             - The ValidatorInput content of an extension definition that adds a new root key.
             - The ValidatorInput contains some AaC definition that has a root key that has been added to the 'root' definition in the core specification.
           when:
-            - The input is validation
+            - The ValidatorInput is validated
           then:
             - The ValidatorOutput does not indicate any errors
             - The ValidatorOutput does not indicate any warnings
-            - The ValidatorOutput indicates the validator plugin under test is valid
-        - scenario: Fail to validate definition references
+            - The ValidatorOutput indicates the definition under test is valid
+        - scenario: Fail to validate definitions that reference keys that are not defined by the 'root' definition
           given:
             - The ValidatorInput content consists of otherwise valid AaC definitions.
             - The ValidatorInput contains at least one AaC definition that has a root key not defined by the 'root' definition in the core specification.
@@ -41,4 +41,4 @@ validation:
             - The ValidatorInput is validated
           then:
             - The ValidatorOutput has errors
-            - The ValidatorOutput errors indicate that there the root key is not defined in the root keys definition.
+            - The ValidatorOutput errors indicate that the root key is not defined in the root keys definition.

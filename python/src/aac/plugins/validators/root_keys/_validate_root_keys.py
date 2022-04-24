@@ -19,12 +19,11 @@ def validate_root_keys(definition_under_test: Definition, target_schema_definiti
         A ValidatorResult containing any applicable error messages.
     """
     error_messages = []
-    active_context_keys = get_active_context().get_root_keys()
+    active_context_root_keys = get_active_context().get_root_keys()
 
-    # We're expecting only full definition dicts -- so the root key is the first value
     root_key = definition_under_test.get_root_key()
 
-    if root_key not in active_context_keys:
+    if root_key not in active_context_root_keys:
         undefined_reference_error_message = f"Undefined root key '{root_key}' in definition '{definition_under_test.name}'. Valid root keys {active_context_keys}"
         error_messages.append(undefined_reference_error_message)
         logging.debug(undefined_reference_error_message)

@@ -40,7 +40,7 @@ class TestRequiredFieldsPlugin(TestCase):
     def test_validate_required_fields_no_missing_required_fields_for_model_definition(self):
         test_active_context = get_active_context(reload_context=True)
 
-        test_field_entry = create_behavior_entry("TestBehavior")
+        test_behavior_entry = create_behavior_entry("TestBehavior")
         test_model_definition = create_model_definition("TestModel", behavior=[test_field_entry])
 
         required_fields_definition = test_active_context.get_definition_by_name(test_model_definition.get_root_key())
@@ -57,4 +57,4 @@ class TestRequiredFieldsPlugin(TestCase):
         required_fields_definition = test_active_context.get_definition_by_name(test_data_definition.get_root_key())
         actual_result = validate_required_fields(test_data_definition, required_fields_definition, test_active_context)
 
-        assert_validator_result_failure(actual_result, "name", "field", "required", "missing")
+        assert_validator_result_failure(actual_result, "name", "field", "populated", "missing")
