@@ -41,7 +41,7 @@ class TestRequiredFieldsPlugin(TestCase):
         test_active_context = get_active_context(reload_context=True)
 
         test_behavior_entry = create_behavior_entry("TestBehavior")
-        test_model_definition = create_model_definition("TestModel", behavior=[test_field_entry])
+        test_model_definition = create_model_definition("TestModel", behavior=[test_behavior_entry])
 
         required_fields_definition = test_active_context.get_definition_by_name(test_model_definition.get_root_key())
         actual_result = validate_required_fields(test_model_definition, required_fields_definition, test_active_context)

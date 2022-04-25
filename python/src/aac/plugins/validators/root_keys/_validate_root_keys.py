@@ -24,7 +24,7 @@ def validate_root_keys(definition_under_test: Definition, target_schema_definiti
     root_key = definition_under_test.get_root_key()
 
     if root_key not in active_context_root_keys:
-        undefined_reference_error_message = f"Undefined root key '{root_key}' in definition '{definition_under_test.name}'. Valid root keys {active_context_keys}"
+        undefined_reference_error_message = f"Undefined root key '{root_key}' in definition '{definition_under_test.name}'. Valid root keys {active_context_root_keys}"
         error_messages.append(undefined_reference_error_message)
         logging.debug(undefined_reference_error_message)
 
