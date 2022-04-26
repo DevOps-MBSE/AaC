@@ -12,6 +12,9 @@ from pygls.lsp import (
     InitializeParams,
     InitializeResult,
     ServerCapabilities,
+    DidChangeTextDocumentParams,
+    DidCloseTextDocumentParams,
+    DidOpenTextDocumentParams,
     methods
 )
 
@@ -50,6 +53,21 @@ class AacLanguageServer:
     def setup_features(self) -> None:
         """Configure the server with the supported features."""
         server = self.language_server
+
+        @server.feature(methods.TEXT_DOCUMENT_DID_CHANGE)
+        def did_change(ls, params: DidChangeTextDocumentParams):
+            """Text document did change notification."""
+            logging.debug(f"Text document changed {params.text_document.uri}.")
+
+        @server.feature(methods.TEXT_DOCUMENT_DID_CLOSE)
+        def did_close(server: LanguageServer, params: DidCloseTextDocumentParams):
+            """Text document did close notification."""
+            logging.debug(f"Text document closed {params.text_document.uri}.")
+
+        @server.feature(methods.TEXT_DOCUMENT_DID_OPEN)
+        async def did_open(ls, params: DidOpenTextDocumentParams):
+            """Text document did open notification."""
+            logging.debug(f"Text document opened {params.text_document.uri}.")
 
         @server.feature(methods.INITIALIZE)
         async def handle_initialize(ls: LanguageServer, params: InitializeParams):
