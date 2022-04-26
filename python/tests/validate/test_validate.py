@@ -1,6 +1,7 @@
 from unittest import TestCase
 
 from aac.lang.active_context_lifecycle_manager import get_active_context
+from aac.lang.definitions.definition import Definition
 from aac.validate import validated_definitions, validated_source, ValidationError
 
 from tests.helpers.parsed_definitions import (
@@ -81,8 +82,16 @@ class TestValidate(TestCase):
         invalid_reference_test_field = create_field_entry("BadRefTestField", "striiiing")
         invalid_data_definition = create_data_definition("InvalidData", [invalid_fields_test_field, invalid_reference_test_field])
 
+        fake_root_key = "not_a_root_key"
+        test_definition_dict = {
+            fake_root_key: {
+                "name": "Test",
+            }
+        }
+        invalid_root_key_definition = Definition("Test", "", [], test_definition_dict)
+
         with self.assertRaises(ValidationError) as error:
-            with validated_definitions([invalid_data_definition]):
+            with validated_definitions([invalid_data_definition, invalid_root_key_definition]):
                 pass
 
         exception = error.exception
@@ -91,3 +100,5 @@ class TestValidate(TestCase):
         self.assertGreater(len(exception.args), 2)
         self.assertIn("undefined", error_messages)
         self.assertIn("missing", error_messages)
+        self.assertIn("root", error_messages)
+        self.assertIn(fake_root_key, error_messages)

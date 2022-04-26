@@ -9,7 +9,7 @@ from aac.lang.language_context import LanguageContext
 
 
 def get_substructures_by_type(
-    source_definition: Definition, sub_schema_definition: Definition, context: LanguageContext
+    source_definition: Definition, target_schema_definition: Definition, context: LanguageContext
 ) -> list[dict]:
     """
     Return a list of dictionaries that represent instances of the sub-definition type within the source definition.
@@ -20,7 +20,7 @@ def get_substructures_by_type(
 
     Args:
         source_definition (Definition): The definition to search through
-        sub_schema_definition (Definition): Defines the target schema to extract from the source definition
+        target_schema_definition (Definition): Defines the target schema to extract from the source definition
         context (LanguageContext): The language context, used to navigate the structure and lookup definitions
 
     Returns:
@@ -29,7 +29,7 @@ def get_substructures_by_type(
     substructure_instances = []
 
     def _get_substructures(schema_definition: Definition, definition_dict: dict):
-        if schema_definition.name == sub_schema_definition.name:
+        if schema_definition.name == target_schema_definition.name:
             substructure_instances.append(definition_dict)
 
         schema_defined_fields = schema_definition.get_fields().get("fields")
@@ -38,14 +38,11 @@ def get_substructures_by_type(
 
         for field_name in sorted(field_names_to_traverse):
             field_type = schema_defined_fields_dict.get(field_name).get("type")
+            field_schema_definition = context.get_definition_by_name(field_type)
 
-            if context.is_definition_type(field_type):
-                field_type_definition = context.get_definition_by_name(field_type)
-                field_content = definition_dict.get(field_name)
+            if field_schema_definition and not field_schema_definition.is_enum():
+                field_content = definition_dict.get(field_name) or []
 
-                # Skip empty fields and enums
-                if not field_content or field_type_definition.is_enum():
-                    continue
                 # If the field type isn't an array type, package it as a one element list.
                 if not is_array_type(field_type):
                     field_content = [field_content]
@@ -56,16 +53,20 @@ def get_substructures_by_type(
                     continue
 
                 for field in field_content:
-                    _get_substructures(field_type_definition, field)
+                    _get_substructures(field_schema_definition, field)
 
     source_definition_root_key = source_definition.get_root_key()
     source_definition_fields = source_definition.get_fields()
 
-    # Return the whole definition dictionary if the desired substructure is the to the root type.
-    if source_definition_root_key == sub_schema_definition.name:
+    # Return the whole definition dictionary if the desired substructure is the root type.
+    if source_definition_root_key == target_schema_definition.name:
         substructure_instances = [source_definition_fields]
     else:
         source_definition_schema = get_definition_schema(source_definition, context)
-        _get_substructures(source_definition_schema, source_definition_fields)
+
+        if source_definition_schema:
+            _get_substructures(source_definition_schema, source_definition_fields)
+        else:
+            logging.error(f"Failed to find a schema definition for the key {source_definition_root_key}.")
 
     return substructure_instances

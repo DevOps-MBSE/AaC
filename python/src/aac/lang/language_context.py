@@ -222,5 +222,13 @@ class LanguageContext:
         else:
             logging.error(f"Attempted to apply an extension to the incorrect target. Extension name '{extension_definition.name}' target definition '{target_to_extend}'")
 
-        if "required" in extension_subtype_sub_dict:
-            target_definition_extension_sub_dict["required"] += extension_subtype_sub_dict.get("required") or []
+        _add_extension_required_fields_to_defintion(target_definition_extension_sub_dict, extension_subtype_sub_dict)
+
+
+def _add_extension_required_fields_to_defintion(target_definition_sub_dict, extension_dictionary_sub_dict):
+    if "required" in extension_dictionary_sub_dict:
+
+        if "required" not in target_definition_sub_dict:
+            target_definition_sub_dict["required"] = []
+
+        target_definition_sub_dict["required"] += extension_dictionary_sub_dict.get("required") or []
