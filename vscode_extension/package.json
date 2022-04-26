@@ -94,6 +94,14 @@
                 ],
                 "configuration": "./aac-language-configuration.json"
             }
+        ],
+        "grammars": [
+            {
+                "language": "aac",
+                "scopeName": "injection.aac.keywords",
+                "path": "./syntaxes/keywords.tmLanguage.plist",
+                "injectTo": ["source.yaml"]
+            }
         ]
     },
     "extensionKind": [

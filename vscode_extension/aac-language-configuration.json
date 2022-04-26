@@ -35,4 +35,4 @@
       "decreaseIndentPattern": "^\\s*\\}$"
     },
     "wordPattern": "(^.?[^\\s]+)+|([^\\s\n={[][\\w\\-\\.\/$%&*:\"']+)"
-  }
+}
