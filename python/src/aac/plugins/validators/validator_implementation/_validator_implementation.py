@@ -7,14 +7,14 @@ from aac.plugins.plugin_manager import get_validator_plugins
 from aac.plugins.validators import ValidatorResult, ValidatorPlugin
 
 
-def validate_validator_implementations(definition_under_test: Definition, target_schema_definition: Definition, active_context: LanguageContext, *validation_args) -> ValidatorResult:
+def validate_validator_implementations(definition_under_test: Definition, target_schema_definition: Definition, language_context: LanguageContext, *validation_args) -> ValidatorResult:
     """
     Validates that the validation definition has a corresponding registered ValidatorPlugin.
 
     Args:
         definition_under_test (Definition): The definition that's being validated. (Root validation definitions)
         target_schema_definition (Definition): A definition with applicable validation. ("Validation" definition)
-        active_context (LanguageContext): The active context.
+        language_context (LanguageContext): The language context.
 
     Returns:
         A ValidatorResult containing any applicable error messages.
@@ -42,7 +42,7 @@ def validate_validator_implementations(definition_under_test: Definition, target
             error_messages.append(registered_plugin_names)
             logging.debug(registered_plugin_names)
 
-    dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, active_context)
+    dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)
     list(map(validate_dict, dicts_to_test))
 
     return ValidatorResult(error_messages, len(error_messages) == 0)

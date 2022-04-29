@@ -6,14 +6,14 @@ from aac.lang.definitions.structure import get_substructures_by_type
 from aac.plugins.validators import ValidatorResult
 
 
-def validate_subcomponent_types(definition_under_test: Definition, target_schema_definition: Definition, active_context: LanguageContext) -> ValidatorResult:
+def validate_subcomponent_types(definition_under_test: Definition, target_schema_definition: Definition, language_context: LanguageContext) -> ValidatorResult:
     """
     Validate that the subcomponents of the definition are models.
 
     Args:
         definition_under_test (Definition): The definition that's being validated. (Root validation definitions)
         target_schema_definition (Definition): A definition with applicable validation. ("Validation" definition)
-        active_context (LanguageContext): The active context.
+        language_context (LanguageContext): The language context.
 
     Returns:
         A ValidatorResult containing any applicable error messages.
@@ -25,7 +25,7 @@ def validate_subcomponent_types(definition_under_test: Definition, target_schema
 
         for component in subcomponents:
             component_type = component.get("type")
-            definition = active_context.get_definition_by_name(component_type)
+            definition = language_context.get_definition_by_name(component_type)
 
             expected_type = "model"
             actual_type = definition and definition.get_root_key()
@@ -37,7 +37,7 @@ def validate_subcomponent_types(definition_under_test: Definition, target_schema
                 error_messages.append(incorrect_subcomponent_type)
                 logging.debug(incorrect_subcomponent_type)
 
-    dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, active_context)
+    dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)
     list(map(validate_model_subcomponents, dicts_to_test))
 
     return ValidatorResult(error_messages, len(error_messages) == 0)
