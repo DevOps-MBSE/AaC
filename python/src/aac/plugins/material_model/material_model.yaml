@@ -1,28 +1,3 @@
-model:
-  name: material_model
-  description: material_model is an Architecture-as-Code plugin that allows teams to define the material (hardware and software) configuration of their system.  Utilities are provided to help manage that material configuration.
-  behavior:
-    - name: gen-bom
-      type: command
-      description: Generate a Bill of Material from Arch-as-Code material models
-      input:
-        - name: architecture_file
-          type: string
-          python_type: str
-          description: The yaml file containing the material models to generate the BOM.
-        - name: output_directory
-          type: string
-          python_type: str
-          description: The directory to write the generated BOM to.
-      acceptance:
-        - scenario: Output BOM based on parts, assemblies, and deployments in the model.
-          given:
-            - The {{gen-bom.input.architecture_file}} contains a valid material model.
-          when:
-            - The aac app is run with the gen-bom command and a valid architecture file.
-          then:
-            - A BOM is generated and written to {{gen-bom.input.output_directory}}.
----
 data:
   name: Part
   description: A material item used in a system (hardware, software, or service).
@@ -77,12 +52,8 @@ data:
     - name: quantity
       type: int
       description: The count of the parts to be used.
-    - name: need_date
-      type: date
-      descriptioN: Optional field to define a needed material receive date, usually only applicable when defining deployments.
   required:
-    - make
-    - model
+    - name
     - quantity
 ---
 data:
@@ -115,9 +86,6 @@ data:
     - name: quantity
       type: int
       description: The count of the assemblies to be used.
-    - name: need_date
-      type: date
-      descriptioN: Optional field to define a needed material receive date, usually only applicable when defining deployments.
   required:
     - name
     - quantity
@@ -146,7 +114,7 @@ data:
       description: A list of deployments that contribute to the deployment.
     - name: need_date
       type: date
-      descriptioN: Optional field to define a needed material receive date.  This will override lower level need dates.
+      descriptioN: Optional field to define a needed material receive date.
   required:
     - name
     - description
@@ -154,13 +122,17 @@ data:
 ---
 data:
   name: DeploymentRef
-  description:  Reference to an assembly with quantity
+  description:  Reference to a deployment with quantity
   fields:
     - name: name
       type: string
       description: Reference fo the name in another Deployment item.
+    - name: quantity
+      type: int
+      description: The number of deployments to include. 
   required:
     - name
+    - quantity
 ---
 ext:
    name: MaterialRootItems
