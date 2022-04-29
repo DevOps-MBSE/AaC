@@ -1,3 +1,7 @@
+model:
+  name: material-model
+  description: material-model is an Architecture-as-Code plugin that allows a user to model the physical design of a system.
+---
 data:
   name: Part
   description: A material item used in a system (hardware, software, or service).
@@ -129,7 +133,7 @@ data:
       description: Reference fo the name in another Deployment item.
     - name: quantity
       type: int
-      description: The number of deployments to include. 
+      description: The number of deployments to include.
   required:
     - name
     - quantity
