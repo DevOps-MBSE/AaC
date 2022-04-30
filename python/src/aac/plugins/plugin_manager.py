@@ -35,6 +35,7 @@ def get_plugin_manager() -> PluginManager:
         start_lsp,
         help_dump,
         material_model,
+        reporting,
     )
 
     # Import Validation Plugins
@@ -67,6 +68,8 @@ def get_plugin_manager() -> PluginManager:
     plugin_manager.register(start_lsp)
     plugin_manager.register(help_dump)
     plugin_manager.register(material_model)
+    plugin_manager.register(reporting)
+
 
     # register "built-in" validation plugins
     plugin_manager.register(defined_references)

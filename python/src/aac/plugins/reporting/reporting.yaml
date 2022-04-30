@@ -1,5 +1,5 @@
 model:
-  name: aac-reporting
+  name: reporting
   description: aac-reporting is an Architecture-as-Code plugin that allows the user to define and generate reports from a model.
   behavior:
     - name: report
@@ -48,7 +48,7 @@ data:
   name: Report
   description: A report definition for interrogating AaC models.
   fields:
-    - name: title
+    - name: name
       type: string
       description: The title of the report.
     - name: description
@@ -64,7 +64,7 @@ data:
       type: CrossRef[]
       description: Defines relationships between AaC data types to be traversed by the report generator.
   required:
-    - title
+    - name
     - get
 ---
 data:

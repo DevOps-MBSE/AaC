@@ -1,0 +1,20 @@
+report:
+  name: Parts List
+  description: A list of all parts for the apartment.
+  get:
+    - name: part make
+      description: The vendor of the part.
+      source_type: Part
+      source_field_name: make
+    - name: part model
+      description: The manufacturer model identifier.
+      source_type: Part
+      source_field_name: model
+    - name: part unit cost
+      description: What the part costs.
+      source_type: Part
+      source_field_name: unit_cost
+    - name: part description
+      description: The manufacturer description of the part.
+      source_type: Part
+      source_field_name: description
