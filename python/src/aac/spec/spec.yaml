@@ -291,6 +291,7 @@ data:
     - name
     - fields
   validation:
+    - name: Root key is defined
     - name: Required fields are present
 ---
 data:

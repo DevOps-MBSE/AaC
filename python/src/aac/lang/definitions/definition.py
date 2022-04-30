@@ -75,10 +75,6 @@ class Definition:
         """Returns true if the definition is an enum definition."""
         return self.get_root_key() == "enum"
 
-    def is_data(self) -> bool:
-        """Returns true if the definition is a data definition."""
-        return self.get_root_key() == "data"
-
     def to_yaml(self) -> str:
         """Return a yaml string based on the current state of the definition including extensions."""
         return yaml.dump(self.structure, sort_keys=False)

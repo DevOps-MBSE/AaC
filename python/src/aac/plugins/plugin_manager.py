@@ -34,6 +34,7 @@ def get_plugin_manager() -> PluginManager:
         print_spec,
         start_lsp,
         help_dump,
+        material_model,
     )
 
     # Import Validation Plugins
@@ -43,6 +44,7 @@ def get_plugin_manager() -> PluginManager:
         validator_implementation,
         exclusive_fields,
         subcomponent_type,
+        root_keys,
     )
 
     plugin_manager = PluginManager(PLUGIN_PROJECT_NAME)
@@ -64,6 +66,7 @@ def get_plugin_manager() -> PluginManager:
     plugin_manager.register(print_spec)
     plugin_manager.register(start_lsp)
     plugin_manager.register(help_dump)
+    plugin_manager.register(material_model)
 
     # register "built-in" validation plugins
     plugin_manager.register(defined_references)
@@ -71,6 +74,7 @@ def get_plugin_manager() -> PluginManager:
     plugin_manager.register(validator_implementation)
     plugin_manager.register(exclusive_fields)
     plugin_manager.register(subcomponent_type)
+    plugin_manager.register(root_keys)
 
     return plugin_manager
 

@@ -43,12 +43,18 @@ def get_schema_defined_fields(source_definition: Definition, context: LanguageCo
     """Return a dictionary of the schema defined fields where the key is the field name and the value is the field dict."""
     schema_defined_fields = {}
     schema_defintion = get_definition_schema(source_definition, context)
-    schema_definition_fields = schema_defintion.get_fields()
 
-    if "fields" not in schema_definition_fields:
-        logging.error(f"Definition schema '{schema_defintion.name}' does not specify any defined fields.")
+    schema_definition_fields = []
+    if schema_defintion:
+        schema_definition_fields = schema_defintion.get_fields()
+
+        if "fields" not in schema_definition_fields:
+            logging.error(f"Definition schema '{schema_defintion.name}' does not specify any defined fields.")
+        else:
+            schema_defined_fields = {field.get("name"): field for field in schema_definition_fields.get("fields")}
+
     else:
-        schema_defined_fields = {field.get("name"): field for field in schema_definition_fields.get("fields")}
+        logging.error(f"Failed to find schema for definition key: {source_definition.get_root_key()}")
 
     return schema_defined_fields
 

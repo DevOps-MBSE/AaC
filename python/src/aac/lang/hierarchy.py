@@ -16,6 +16,11 @@ def get_definition_ancestry(definition: Definition, context: LanguageContext) ->
     found_self_defined_ancestor = False
     ancestor_definition = definition
 
+    # If the definition key isn't defined, return the data definition as the only ancestor.
+    if ancestor_definition.get_root_key() not in context.get_root_keys():
+        ancestors_list.append(get_root_definition_by_key("data", context.definitions))
+        found_self_defined_ancestor = True
+
     # Loop until we get to the root definition defining itself.
     while not found_self_defined_ancestor:
         found_self_defined_ancestor = (ancestor_definition.name == ancestor_definition.get_root_key())
@@ -52,4 +57,4 @@ def get_root_definition_by_key(root_key: str, parsed_definitions: list[Definitio
         if root_key_count > 1:
             logging.error(f"Found multiple fields when only expected to find one.\nField name: {root_key}\nReturned Fields:{root_key_fields}")
 
-    return get_definition_by_name(root_key_field.get("type"), parsed_definitions)
+        return get_definition_by_name(root_key_field.get("type"), parsed_definitions)

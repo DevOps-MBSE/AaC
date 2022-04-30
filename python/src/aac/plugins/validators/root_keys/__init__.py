@@ -1,11 +1,12 @@
-"""Validation plugin to ensure that each definition has all required fields populated."""
+"""Validation plugin to ensure that each definition has a valid, defined root key."""
 
 from aac.package_resources import get_resource_file_contents
 from aac.plugins import hookimpl
 from aac.plugins.validators import ValidatorPlugin, get_validation_definition_from_plugin_definitions
-from aac.plugins.validators.required_fields._validate_required_fields import validate_required_fields
 
-PLUGIN_YAML_FILE = "required_fields.yaml"
+from aac.plugins.validators.root_keys._validate_root_keys import validate_root_keys
+
+PLUGIN_YAML_FILE = "root_keys.yaml"
 
 
 @hookimpl
@@ -28,4 +29,4 @@ def register_validators() -> ValidatorPlugin:
         A collection of data necessary to manage and execute validation plugins.
     """
     validation_definition = get_validation_definition_from_plugin_definitions(get_plugin_aac_definitions())
-    return ValidatorPlugin(validation_definition.name, validation_definition, validate_required_fields)
+    return ValidatorPlugin(validation_definition.name, validation_definition, validate_root_keys)

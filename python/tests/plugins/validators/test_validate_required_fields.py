@@ -1,12 +1,13 @@
 from unittest import TestCase
 
 from aac.lang.active_context_lifecycle_manager import get_active_context
-from aac.lang.definition_helpers import get_definition_by_name, get_definitions_by_root_key
+from aac.lang.definition_helpers import get_definitions_by_root_key
 from aac.parser import parse
-from aac.plugins.validators import ValidatorPlugin, ValidatorResult
+from aac.plugins.validators import ValidatorPlugin
 from aac.plugins.validators.required_fields import get_plugin_aac_definitions, register_validators, validate_required_fields
+from tests.helpers.assertion import assert_validator_result_failure, assert_validator_result_success
 
-from tests.helpers.parsed_definitions import create_data_definition, create_field_entry
+from tests.helpers.parsed_definitions import create_behavior_entry, create_data_definition, create_field_entry, create_model_definition
 
 
 class TestRequiredFieldsPlugin(TestCase):
@@ -25,18 +26,27 @@ class TestRequiredFieldsPlugin(TestCase):
         self.assertEqual(expected_validator_plugin.name, actual_validator_plugin.name)
         self.assertEqual(expected_validator_plugin.definition, actual_validator_plugin.definition)
 
-    def test_validate_required_fields_no_missing_required_fields(self):
+    def test_validate_required_fields_no_missing_required_fields_for_data_definition(self):
         test_active_context = get_active_context(reload_context=True)
 
         test_field_entry = create_field_entry("TestField", "string")
         test_data_definition = create_data_definition("TestData", [test_field_entry])
-        required_fields_definition = get_definition_by_name("data", test_active_context.definitions)
 
-        expected_result = ValidatorResult([], True)
-
+        required_fields_definition = test_active_context.get_definition_by_name(test_data_definition.get_root_key())
         actual_result = validate_required_fields(test_data_definition, required_fields_definition, test_active_context)
 
-        self.assertEqual(expected_result, actual_result)
+        assert_validator_result_success(actual_result)
+
+    def test_validate_required_fields_no_missing_required_fields_for_model_definition(self):
+        test_active_context = get_active_context(reload_context=True)
+
+        test_behavior_entry = create_behavior_entry("TestBehavior")
+        test_model_definition = create_model_definition("TestModel", behavior=[test_behavior_entry])
+
+        required_fields_definition = test_active_context.get_definition_by_name(test_model_definition.get_root_key())
+        actual_result = validate_required_fields(test_model_definition, required_fields_definition, test_active_context)
+
+        assert_validator_result_success(actual_result)
 
     def test_validate_required_fields_with_missing_name_empty_fields(self):
         test_active_context = get_active_context(reload_context=True)
@@ -44,17 +54,7 @@ class TestRequiredFieldsPlugin(TestCase):
         test_data_definition = create_data_definition("TestData")
         del test_data_definition.structure["data"]["name"]
 
-        required_fields_definition = get_definition_by_name("data", test_active_context.definitions)
-
-        expected_result = ValidatorResult(["required", "missing"], False)
-
+        required_fields_definition = test_active_context.get_definition_by_name(test_data_definition.get_root_key())
         actual_result = validate_required_fields(test_data_definition, required_fields_definition, test_active_context)
 
-        self.assertEqual(expected_result.is_valid, actual_result.is_valid)
-        self.assertEqual(len(expected_result.messages), len(actual_result.messages))
-        actual_result_message = actual_result.get_messages_as_string()
-
-        self.assertIn("name", actual_result_message)
-        self.assertIn("missing", actual_result_message)
-        self.assertIn("field", actual_result_message)
-        self.assertIn("populated", actual_result_message)
+        assert_validator_result_failure(actual_result, "name", "field", "populated", "missing")
