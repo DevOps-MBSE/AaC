@@ -1,0 +1,34 @@
+import:
+  - ./apartment_provided.yaml
+  - ./amazon_parts.yaml
+
+assembly:
+  name: Appliances
+  description: Things that make a kitchen work.
+  parts:
+    - name: Refrigerator
+      quantity: 1
+    - name: Stove
+      quantity: 1
+    - name: Dish_Washer
+      quantity: 1
+    - name: Coffee_Pot
+      quantity: 1
+    - name: Blender
+      quantity: 1
+---
+import:
+  - ./amazon_parts.yaml
+
+assembly:
+  name: Cook_Ware
+  description:  Pots, pans, and such.
+  parts:
+    - name: Pans
+      quantity: 1
+    - name: Dishes
+      quantity: 1
+    - name: Utensils
+      quantity: 1
+    - name: Silverware
+      quantity: 1

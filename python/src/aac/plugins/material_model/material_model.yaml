@@ -1,0 +1,151 @@
+model:
+  name: material-model
+  description: material-model is an Architecture-as-Code plugin that allows a user to model the physical design of a system.
+---
+data:
+  name: Part
+  description: A material item used in a system (hardware, software, or service).
+  fields:
+    - name: name
+      type: string
+      description:  Unique name of the part
+    - name: make
+      type: string
+      description:  The source supplier
+    - name: model
+      type: string
+      description:  The source supplier's model number
+    - name: description
+      type: string
+      description:  A short description of the part
+    - name: unit_cost
+      type: number
+      description:  The cost of this item
+    - name: lead_time
+      type: int
+      description: The quoted or estimated lead time to receive the part once put on order (in days)
+    - name: quote_type
+      type: QuoteType
+      description:  How the unit cost (and probably lead time) was obtained
+    - name: quote_source
+      type: string
+      description:  Pointer to material supporting the unit cost. Quote type will have a bearing on field content.
+  required:
+    - name
+    - make
+    - model
+    - description
+    - unit_cost
+---
+enum:
+  name: QuoteType
+  values:
+    - Engineering_Estimate
+    - Vendor_Quote
+    - Web_Reference
+    - Furnished_Equipment
+    - Reuse
+---
+data:
+  name: PartRef
+  description:  Reference to a part with quantity
+  fields:
+    - name: name
+      type: string
+      description: Reference fo the name in a Part item.
+    - name: quantity
+      type: int
+      description: The count of the parts to be used.
+  required:
+    - name
+    - quantity
+---
+data:
+  name: Assembly
+  description: A collection of parts into a logical thing.
+  fields:
+    - name: name
+      type: string
+      description:  The unique name of the assembly.
+    - name: description
+      type: string
+      description:  A description of the assembly.
+    - name: parts
+      type: PartRef[]
+      description:  A list of parts that contribute to the assembly.
+    - name: sub-assemblies
+      type: AssemblyRef[]
+      description: A list of assemblies that contribute to the assembly.
+  required:
+    - name
+    - description
+---
+data:
+  name: AssemblyRef
+  description:  Reference to an assembly with quantity
+  fields:
+    - name: name
+      type: string
+      description: Reference fo the name in another Assembly item.
+    - name: quantity
+      type: int
+      description: The count of the assemblies to be used.
+  required:
+    - name
+    - quantity
+---
+data:
+  name: Deployment
+  description: A collection of parts and assemblies to be deployed to one or more locations.
+  fields:
+    - name: name
+      type: string
+      description:  The unique name of the assembly.
+    - name: description
+      type: string
+      description:  A description of the assembly.
+    - name: location
+      type: string
+      description: The location for the deployment.
+    - name: parts
+      type: PartRef[]
+      description:  A list of parts that contribute to the deployment.
+    - name: assemblies
+      type: AssemblyRef[]
+      description: A list of assemblies that contribute to the deployment.
+    - name: sub-deployments
+      type: DeploymentRef[]
+      description: A list of deployments that contribute to the deployment.
+    - name: need_date
+      type: date
+      descriptioN: Optional field to define a needed material receive date.
+  required:
+    - name
+    - description
+    - location
+---
+data:
+  name: DeploymentRef
+  description:  Reference to a deployment with quantity
+  fields:
+    - name: name
+      type: string
+      description: Reference fo the name in another Deployment item.
+    - name: quantity
+      type: int
+      description: The number of deployments to include.
+  required:
+    - name
+    - quantity
+---
+ext:
+   name: MaterialRootItems
+   type: root
+   dataExt:
+      add:
+        - name: part
+          type: Part
+        - name: assembly
+          type: Assembly
+        - name: deployment
+          type: Deployment
