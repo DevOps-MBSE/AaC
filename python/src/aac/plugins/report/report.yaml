@@ -53,7 +53,7 @@ data:
       description: The title of the report.
     - name: description
       type: string
-      descriptioN: A description of the report.
+      description: A description of the report.
     - name: get
       type: DataField[]
       description: Report fields taken directly from data model fields.
