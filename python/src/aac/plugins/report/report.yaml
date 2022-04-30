@@ -1,0 +1,150 @@
+model:
+  name: aac-reporting
+  description: aac-reporting is an Architecture-as-Code plugin that allows the user to define and generate reports from a model.
+  behavior:
+    - name: report
+      type: command
+      description: Generate YAML output from an Arch-as-Code report definition.
+      input:
+        - name: architecture_file
+          type: string
+          python_type: str
+          description: The yaml file containing the report model.
+        - name: output_file
+          type: string
+          python_type: str
+          description: The file to write the generated YAML report.
+      acceptance:
+        - scenario: Output YAML report data as defined in the input report model.
+          given:
+            - The {{report.input.architecture_file}} contains a valid report definition.
+          when:
+            - The aac app is run with the report command and a valid report definition file.
+          then:
+            - YAML is written to {{report.input.output_file}}.
+    - name: report-csv
+      type: command
+      description: Generate CSV output from an Arch-as-Code report definition.
+      input:
+        - name: architecture_file
+          type: string
+          python_type: str
+          description: The yaml file containing the report model.
+        - name: output_file
+          type: string
+          python_type: str
+          description: The file to write the generated CSV report.
+      acceptance:
+        - scenario: Output CSV report data as defined in the input report model.
+          given:
+            - The {{report-csv.input.architecture_file}} contains a valid report definition.
+          when:
+            - The aac app is run with the report-csv command and a valid report definition file.
+          then:
+            - CSV is written to {{report-csv.input.output_file}}.
+            - First line of file is report field names as a header line.
+---
+data:
+  name: Report
+  description: A report definition for interrogating AaC models.
+  fields:
+    - name: title
+      type: string
+      description: The title of the report.
+    - name: description
+      type: string
+      descriptioN: A description of the report.
+    - name: get
+      type: DataField[]
+      description: Report fields taken directly from data model fields.
+    - name: calculate
+      type: CalculatedField[]
+      description: Report fields generated using a formula and content from fields defined under 'get'.
+    - name: cross-refs
+      type: CrossRef[]
+      description: Defines relationships between AaC data types to be traversed by the report generator.
+  required:
+    - title
+    - get
+    - calculate
+    - cross-refs
+---
+data:
+  name: DataField
+  description: Defines a report field value which is taken directly from an AaC data model.
+  fields:
+    - name: name
+      type: string
+      description: The name of the report field.  This may be used as the column heading in a report.
+    - name: description
+      type: string
+      description: A description of the report field.
+    - name: source_type
+      type: string
+      description: The name of the AaC data model to extract the reported information.
+    - name: source_field_name
+      type: string
+      description: The name of the field as defined in the type's AaC data model.
+    - name: order
+      type: int
+      description: Optional field defining the sequence in which the data field should be formatted in a report.
+    - name: hidden
+      type: bool
+      description: Optional field that allows the field to be suppressed from report output.  Default is false.
+  required:
+    - name
+    - source_type
+    - source_field_name
+---
+data:
+  name: CalculatedField
+  description: Defines a report field value which is calculated from DataField entries in a report.
+  fields:
+    - name: name
+      type: string
+      description: The name of the report field.  This may be used as the column heading in a report.
+    - name: description
+      type: string
+      description: A description of the report field.
+    - name: formula
+      type: string
+      description: The calculation performed to generate the field content.
+    - name: order
+      type: int
+      description: Optional field defining the sequence in which the data field should be formatted in a report.
+    - name: hidden
+      type: bool
+      description: Optional field that allows the field to be suppressed from report output.  Default is false.
+  required:
+    - name
+    - formula
+---
+data:
+  name: CrossRef
+  description: Defines a type references in the AaC data model to be traversed when generating the report.
+  fields:
+    - name: source_type
+      type: string
+      description: The name of the source data model type.
+    - name: source_field_name
+      type: string
+      description: The name of the field in the source data model type.
+    - name: target_type
+      type: string
+      description: The name of the target data model type.
+    - name: target_field_name
+      type: string
+      description: The name of the field in the target data model type.
+  required:
+    - source_type
+    - source_field_name
+    - target_type
+    - target_field_name
+---
+ext:
+  name: addReportToRoot
+  type: root
+  dataExt:
+    add:
+      - name: report
+        type: Report
