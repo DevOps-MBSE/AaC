@@ -66,8 +66,6 @@ data:
   required:
     - title
     - get
-    - calculate
-    - cross-refs
 ---
 data:
   name: DataField
