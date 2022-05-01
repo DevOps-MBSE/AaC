@@ -54,7 +54,7 @@ data:
     - name: description
       type: string
       description: A description of the report.
-    - name: get
+    - name: retrieve
       type: DataField[]
       description: Report fields taken directly from data model fields.
     - name: calculate
@@ -65,7 +65,7 @@ data:
       description: Defines relationships between AaC data types to be traversed by the report generator.
   required:
     - name
-    - get
+    - retrieve
 ---
 data:
   name: DataField

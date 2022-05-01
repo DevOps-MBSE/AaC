@@ -28,6 +28,7 @@ runtime_dependencies = [
     "Jinja2 >= 3.0",
     "MarkupSafe >= 2.0",
     "pygls >= 0.11",
+    "flatdict >= 4.0.1",
 ]
 
 development_dependencies = [

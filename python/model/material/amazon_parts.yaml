@@ -2,7 +2,7 @@ part:
   name: Coasters
   make: HUAOAO
   model: Cork Coaster Set
-  descriptioN: Set of 12 plain cork coasters.
+  description: Set of 12 plain cork coasters.
   unit_cost: 7.19
   quote_type: Web_Reference
   quote: https://smile.amazon.com/Coaster-Absorbent-Resistant-Reusable-Coasters/dp/B08PZ15J2N
