@@ -6,14 +6,14 @@ from aac.lang.definitions.definition import Definition
 from aac.plugins.validators import ValidatorResult
 
 
-def validate_root_keys(definition_under_test: Definition, target_schema_definition: Definition, active_context: LanguageContext, *validation_args) -> ValidatorResult:
+def validate_root_keys(definition_under_test: Definition, target_schema_definition: Definition, language_context: LanguageContext, *validation_args) -> ValidatorResult:
     """
     Validates that the definition root key is defined by the root definition.
 
     Args:
         definition_under_test (Definition): The definition that's being validated.
         target_schema_definition (Definition): A definition with applicable validation.
-        active_context (LanguageContext): The active context.
+        language_context (LanguageContext): The language context.
 
     Returns:
         A ValidatorResult containing any applicable error messages.

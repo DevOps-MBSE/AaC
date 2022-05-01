@@ -34,9 +34,10 @@
                     "type": "string",
                     "enum": [
                         "0.0.5",
-                        "0.1.0"
+                        "0.1.0",
+                        "0.1.1"
                     ],
-                    "default": "0.1.0",
+                    "default": "0.1.1",
                     "description": "The version of the installed AaC tool."
                 },
                 "aac.aacPath": {
