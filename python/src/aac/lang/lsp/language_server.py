@@ -1,6 +1,8 @@
 """The Architecture-as-Code Language Server."""
 
+import os
 from attr import Factory, attrib, attrs, validators
+import difflib
 import logging
 from typing import Optional
 from pygls.server import LanguageServer
@@ -57,6 +59,8 @@ class AacLanguageServer:
         @server.feature(methods.TEXT_DOCUMENT_DID_OPEN)
         async def did_open(ls, params: DidOpenTextDocumentParams):
             """Text document did open notification."""
+            logging.info(f"Text document opened by LSP client {params.text_document.uri}.")
+
             file_uri = params.text_document.uri
             managed_file = self.workspace_files.get(file_uri)
 
@@ -67,26 +71,33 @@ class AacLanguageServer:
             managed_file.is_client_managed = True
             _, file_path = file_uri.split("file://")
             self.language_context.add_definitions_to_context(parse(file_path))
-            logging.info(f"Text document opened by LSP client {file_uri}.")
 
         @server.feature(methods.TEXT_DOCUMENT_DID_CLOSE)
         def did_close(server: LanguageServer, params: DidCloseTextDocumentParams):
             """Text document did close notification."""
+            logging.info(f"Text document closed by LSP client {params.text_document.uri}.")
+
             file_uri = params.text_document.uri
             managed_file = self.workspace_files.get(file_uri)
             managed_file.is_client_managed = False
-            logging.info(f"Text document closed by LSP client {file_uri}.")
 
         @server.feature(methods.TEXT_DOCUMENT_DID_CHANGE)
         def did_change(ls, params: DidChangeTextDocumentParams):
             """Text document did change notification."""
-            file_uri = params.text_document.uri
-            _, file_path = file_uri.split("file://")
-            affected_definitions = self.language_context.get_definitions_by_file_uri(file_path)
-            altered_definition_names = [definition.name for definition in affected_definitions]
-            logging.info(f"Definitions identified to update due to doc change: {altered_definition_names}")
-
             logging.info(f"Text document altered by LSP client {params.text_document.uri}.")
+
+            file_content = params.content_changes[0].text
+            altered_definitions = parse(file_content)
+
+            for altered_definition in altered_definitions:
+                # At the moment we have to rely on definition names, but we'll need to update definitions based on file URI
+                old_definition = self.language_context.get_definition_by_name(altered_definition.name)
+                old_definition_lines = old_definition.to_yaml().split(os.linesep)
+                altered_definition_lines = altered_definition.to_yaml().split(os.linesep)
+                changes = "\n".join(list(difflib.ndiff(old_definition_lines, altered_definition_lines))).strip()
+                logging.info(f"Updating definition: {old_definition.name}.\n Differences:\n{changes}")
+
+            self.language_context.update_definitions_in_context(altered_definitions)
 
         @server.feature(methods.HOVER)
         async def handle_hover(ls: LanguageServer, params: HoverParams):
