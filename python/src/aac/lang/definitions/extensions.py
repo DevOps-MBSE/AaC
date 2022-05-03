@@ -13,14 +13,10 @@ def apply_extension_to_definition(extension_definition: Definition, target_defin
         extension_definition (Definition): The extension definition to apply to the context.
         target_definition (Definition): The extension definition to apply to the context.
     """
-    extension_type = "enum" if extension_definition.is_enum_extension() else "data"
-    extension_field_name = "values" if extension_definition.is_enum_extension() else "fields"
-
-    ext_type = f"{extension_type}Ext"
     target_definition_extension_sub_dict = target_definition.get_fields()
-    extension_definition_fields = extension_definition.get_fields()
+    extension_subtype_sub_dict = _get_extension_subtype_dict(extension_definition)
+    extension_field_name = _get_extension_field_name(extension_definition)
 
-    extension_subtype_sub_dict = extension_definition_fields.get(ext_type)
     if target_definition_extension_sub_dict.get(extension_field_name):
         target_definition_extension_sub_dict[extension_field_name] += extension_subtype_sub_dict.get("add")
     else:
@@ -37,20 +33,32 @@ def remove_extension_from_definition(extension_definition: Definition, target_de
         extension_definition (Definition): The extension definition to apply to the context.
         target_definition (Definition): The extension definition to apply to the context.
     """
-    extension_type = "enum" if extension_definition.is_enum_extension() else "data"
-    extension_field_name = "values" if extension_definition.is_enum_extension() else "fields"
-
-    ext_type = f"{extension_type}Ext"
     target_definition_extension_sub_dict = target_definition.get_fields()
-    extension_definition_fields = extension_definition.get_fields()
+    extension_subtype_sub_dict = _get_extension_subtype_dict(extension_definition)
+    extension_field_name = _get_extension_field_name(extension_definition)
 
-    extension_subtype_sub_dict = extension_definition_fields.get(ext_type)
     if target_definition_extension_sub_dict.get(extension_field_name):
-        target_definition_extension_sub_dict[extension_field_name].remove(extension_subtype_sub_dict.get("add"))
+        elements_to_remove = extension_subtype_sub_dict.get("add")
+        if not isinstance(elements_to_remove, list):
+            elements_to_remove = [elements_to_remove]
+
+        for element_to_remove in elements_to_remove:
+            target_definition_extension_sub_dict[extension_field_name].remove(element_to_remove)
     else:
-        logging.error(f"Attempted to apply an extension to the incorrect target. Extension name '{extension_definition.name}' target definition '{target_definition.name}'")
+        logging.error(f"Attempted to remove a missing extension field from target. Extension name '{extension_definition.name}' target definition '{target_definition.name}'")
 
     _remove_extension_required_fields_to_defintion(target_definition_extension_sub_dict, extension_subtype_sub_dict)
+
+
+def _get_extension_subtype_dict(extension_definition: Definition) -> dict:
+    extension_definition_fields = extension_definition.get_fields()
+    extension_type = "enum" if extension_definition.is_enum_extension() else "data"
+    ext_type = f"{extension_type}Ext"
+    return extension_definition_fields.get(ext_type)
+
+
+def _get_extension_field_name(extension_definition: Definition) -> str:
+    return "values" if extension_definition.is_enum_extension() else "fields"
 
 
 def _add_extension_required_fields_to_defintion(target_definition_sub_dict, extension_dictionary_sub_dict):
@@ -64,8 +72,12 @@ def _add_extension_required_fields_to_defintion(target_definition_sub_dict, exte
 
 def _remove_extension_required_fields_to_defintion(target_definition_sub_dict, extension_dictionary_sub_dict):
     if "required" in extension_dictionary_sub_dict:
+        required_fields = extension_dictionary_sub_dict.get("required") or []
 
-        if "required" not in target_definition_sub_dict:
-            target_definition_sub_dict["required"] = []
+        for required_field in required_fields:
+            target_definition_required_fields = target_definition_sub_dict.get("required")
 
-        target_definition_sub_dict["required"] += extension_dictionary_sub_dict.get("required") or []
+            if required_field in target_definition_required_fields:
+                target_definition_required_fields.remove(required_field)
+            else:
+                logging.error(f"Extension-applied required field '{required_field}' is not present in target dictionary: '{target_definition_sub_dict}'")
