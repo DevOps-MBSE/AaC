@@ -76,10 +76,10 @@ class LanguageContext:
 
     def remove_definition_from_context(self, definition: Definition):
         """
-        Add the Definition to the list of definitions in the LanguageContext.
+        Remove the Definition from the list of definitions in the LanguageContext.
 
         Args:
-            definition: The Definition to add to the context.
+            definition: The Definition to remove from the context.
         """
         if definition.name in self.definitions_name_dictionary:
             self.definitions_name_dictionary.pop(definition.name)
@@ -95,7 +95,7 @@ class LanguageContext:
 
     def remove_definitions_from_context(self, definitions: list[Definition]):
         """
-        Add the list of Definitions to the list of definitions in the LanguageContext, any extensions are added last.
+        Remove the list of Definitions from the list of definitions in the LanguageContext, any extensions are removed last.
 
         Args:
             definitions: The list of Definitions to add to the context.

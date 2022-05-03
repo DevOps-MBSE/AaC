@@ -1,4 +1,4 @@
-"""Module for dealign with Definitions and Extensions."""
+"""Module for handling Definitions and Extensions."""
 
 import logging
 

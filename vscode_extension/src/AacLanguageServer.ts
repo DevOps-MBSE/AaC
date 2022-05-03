@@ -151,9 +151,7 @@ export class AacLanguageServerClient {
             diagnosticCollectionName: "aac",
             outputChannelName: "Architecture-as-Code Language Server",
             synchronize: {
-                fileEvents: [
-                    workspace.createFileSystemWatcher("**/.aac"),
-                ],
+                fileEvents: workspace.createFileSystemWatcher("**/.aac")
             }
         };
     }
