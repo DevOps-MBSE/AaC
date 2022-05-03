@@ -98,7 +98,7 @@ class LanguageContext:
         Remove the list of Definitions from the list of definitions in the LanguageContext, any extensions are removed last.
 
         Args:
-            definitions: The list of Definitions to add to the context.
+            definitions: The list of Definitions to remove from the context.
         """
         extension_definitions = get_definitions_by_root_key("ext", definitions)
 
