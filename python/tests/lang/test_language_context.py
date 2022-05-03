@@ -16,7 +16,7 @@ from tests.helpers.parsed_definitions import (
 
 class TestLanguageContext(TestCase):
 
-    def test_add_definition_to_context_with_extensions(self):
+    def test_add_definitions_to_context_with_extensions(self):
         test_definition_field = create_field_entry("TestField", "string")
         test_definition_name = "myDef"
         test_definition = create_data_definition(test_definition_name, [test_definition_field])
@@ -37,10 +37,7 @@ class TestLanguageContext(TestCase):
         language_context = LanguageContext()
         self.assertEqual(0, len(language_context.definitions))
 
-        language_context.add_definition_to_context(test_definition)
-        self.assertEqual(1, len(language_context.definitions))
-
-        language_context.add_definition_to_context(test_enum)
+        language_context.add_definitions_to_context([test_definition, test_enum])
         self.assertEqual(2, len(language_context.definitions))
 
         self.assertIn(test_definition, language_context.definitions)
@@ -60,18 +57,18 @@ class TestLanguageContext(TestCase):
         self.assertEqual(3, len(context_modified_test_enum.structure["enum"]["values"]))
         self.assertIn(test_enum_ext_value, context_modified_test_enum.to_yaml())
 
-    def test_remove_definition_from_context(self):
+    def test_remove_definitions_from_context(self):
         test_definition_field = create_field_entry("TestField", "string")
-        test_definition_name = "myDef"
-        test_definition = create_data_definition(test_definition_name, [test_definition_field])
+        test_definition_one = create_data_definition("Test1", [test_definition_field])
+        test_definition_two = create_data_definition("Test2", [test_definition_field])
 
         language_context = get_initialized_language_context(core_spec_only=True)
         core_spec_definition_count = len(language_context.definitions)
 
-        language_context.add_definition_to_context(test_definition)
-        self.assertEqual(core_spec_definition_count + 1, len(language_context.definitions))
+        language_context.add_definitions_to_context([test_definition_one, test_definition_two])
+        self.assertEqual(core_spec_definition_count + 2, len(language_context.definitions))
 
-        language_context.remove_definition_from_context(test_definition)
+        language_context.remove_definitions_from_context([test_definition_one, test_definition_two])
         self.assertEqual(core_spec_definition_count, len(language_context.definitions))
 
     def test_update_definition_in_context(self):
