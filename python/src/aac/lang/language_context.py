@@ -79,7 +79,7 @@ class LanguageContext:
         Remove the Definition from the list of definitions in the LanguageContext.
 
         Args:
-            definition: The Definition to remove from the context.
+            definition (Definition): The Definition to remove from the context.
         """
         if definition.name in self.definitions_name_dictionary:
             self.definitions_name_dictionary.pop(definition.name)
@@ -98,7 +98,7 @@ class LanguageContext:
         Remove the list of Definitions from the list of definitions in the LanguageContext, any extensions are removed last.
 
         Args:
-            definitions: The list of Definitions to remove from the context.
+            definitions (list[Definition]): The list of Definitions to remove from the context.
         """
         extension_definitions = get_definitions_by_root_key("ext", definitions)
 
@@ -114,7 +114,7 @@ class LanguageContext:
         Update the Definition in the list of definitions in the LanguageContext, if it exists.
 
         Args:
-            definition: The Definition to update in the context.
+            definition (Definition): The Definition to update in the context.
         """
 
         if definition.name in self.definitions_name_dictionary:

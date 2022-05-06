@@ -33,7 +33,7 @@ export class AacLanguageServerClient {
 
         this.assertAacToolIsAvailable();
 
-        showMessageOnError(() => this.startLspClient(context), 'Failed trying to start the server.');
+        showMessageOnError(() => this.startLspClient(context), "Failed trying to start the server.");
         this.onClientReady();
     }
 
@@ -52,8 +52,8 @@ export class AacLanguageServerClient {
             this.aacLspClient.onReady();
 
             workspace.findFiles("**/*.aac").then(files => {
-                for (var fileIndex in files){
-                    var file = files[fileIndex];
+                for (const fileIndex in files) {
+                    const file = files[fileIndex];
                     workspace.openTextDocument(file.path);
                 }
             });
