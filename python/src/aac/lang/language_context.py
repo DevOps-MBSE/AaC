@@ -83,15 +83,17 @@ class LanguageContext:
         """
         if definition.name in self.definitions_name_dictionary:
             self.definitions_name_dictionary.pop(definition.name)
-            self.definitions.remove(definition)
+
+            if definition.is_extension():
+                self._remove_extension_from_context(definition)
+            else:
+                self.definitions.remove(definition)
+
         else:
             definitions_in_context = self.get_defined_types()
             logging.error(
                 f"Definition not present in context, can't be removed. '{definition.name}' not in '{definitions_in_context}'"
             )
-
-        if definition.is_extension():
-            self._remove_extension_from_context(definition)
 
     def remove_definitions_from_context(self, definitions: list[Definition]):
         """
@@ -119,23 +121,25 @@ class LanguageContext:
 
         if definition.name in self.definitions_name_dictionary:
             old_definition = self.definitions_name_dictionary.get(definition.name)
-            self.remove_definition_from_context(old_definition)
-            self.add_definition_to_context(definition)
+
+            if definition.is_extension():
+                self._remove_extension_from_context(old_definition)
+                self._apply_extension_to_context(definition)
+            else:
+                self.remove_definition_from_context(old_definition)
+                self.add_definition_to_context(definition)
         else:
             definitions_in_context = self.get_defined_types()
             logging.error(
                 f"Definition not present in context, can't be updated. '{definition.name}' not in '{definitions_in_context}'"
             )
 
-        if definition.is_extension():
-            self._remove_extension_from_context(definition)
-
     def update_definitions_in_context(self, definitions: list[Definition]):
         """
         Update the list of Definitions in the list of definitions in the LanguageContext, any extensions are added last.
 
         Args:
-            definitions: The list of Definitions to update in the context.
+            definitions (list[Definition]): The list of Definitions to update in the context.
         """
         extension_definitions = get_definitions_by_root_key("ext", definitions)
 
