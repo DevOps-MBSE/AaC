@@ -3,7 +3,7 @@ from unittest import TestCase
 from unittest.mock import patch
 from tempfile import TemporaryDirectory, NamedTemporaryFile
 from nose2.tools import params
-
+from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.plugins.plugin_execution import plugin_result
 from aac.plugins.gen_protobuf.gen_protobuf_impl import (
     gen_protobuf,
@@ -13,10 +13,15 @@ from aac.plugins.gen_protobuf.gen_protobuf_impl import (
 
 from tests.helpers.assertion import assert_plugin_failure, assert_plugin_success
 from tests.helpers.io import temporary_test_file
+from tests.helpers.parsed_definitions import create_enum_definition, create_field_entry, create_data_definition
 
 
 class TestGenerateProtobufPlugin(TestCase):
-    def test_gen_protobuf(self):
+    def setUp(self):
+        get_active_context(reload_context=True)
+
+
+
         with TemporaryDirectory() as temp_dir, temporary_test_file(TEST_ARCH_YAML_STRING) as temp_arch_file:
             with plugin_result("", gen_protobuf, temp_arch_file.name, temp_dir) as result:
                 pass
@@ -110,24 +115,35 @@ class TestGenerateProtobufPlugin(TestCase):
             "file_type": "data",
             "fields": [{"name": "msg", "type": "int64", "optional": True, "repeat": False}],
         }
-        test_model = {
-            "DataA": {"data": {"name": "DataA", "fields": [{"name": "msg", "type": "number", "protobuf_type": "int64"}]}}
-        }
+        test_message_field_name = "msg"
+        test_message_field_type = "number"
+        test_message_field_prototype = "int64"
+        test_message_field = create_field_entry(test_message_field_name, test_message_field_type)
+        test_message_field["protobuf_type"] = test_message_field_prototype
 
-        actual_result = _collect_template_generation_properties(test_model)
+        test_message_name = "DataA"
+        test_message_definition = create_data_definition(test_message_name, [test_message_field])
+
+        actual_result = _collect_template_generation_properties({test_message_definition.name: test_message_definition})
         self.assertDictEqual(expected_result, actual_result[0])
 
     def test__generate_protobuf_details_from_data_message_model_wth_repeated_fields(self):
         expected_result = {
             "name": "DataA",
             "file_type": "data",
-            "fields": [{"name": "msg", "type": "int64", "optional": True, "repeat": True}],
-        }
-        test_model = {
-            "DataA": {"data": {"name": "DataA", "fields": [{"name": "msg", "type": "number[]", "protobuf_type": "int64"}]}}
+            "fields": [{"name": "msg", "type": "int64", "optional": True, "repeat": False}],
         }
 
-        actual_result = _collect_template_generation_properties(test_model)
+        test_message_field_name = "msg"
+        test_message_field_type = "number"
+        test_message_field_prototype = "int64"
+        test_message_field = create_field_entry(test_message_field_name, test_message_field_type)
+        test_message_field["protobuf_type"] = test_message_field_prototype
+
+        test_message_name = "DataA"
+        test_message_definition = create_data_definition(test_message_name, [test_message_field])
+
+        actual_result = _collect_template_generation_properties({test_message_definition.name: test_message_definition})
         self.assertDictEqual(expected_result, actual_result[0])
 
     def test__generate_protobuf_details_from_data_message_model_with_required_fields(self):
@@ -139,20 +155,23 @@ class TestGenerateProtobufPlugin(TestCase):
                 {"name": "msg", "type": "string", "optional": False, "repeat": False},
             ],
         }
-        test_model = {
-            "DataA": {
-                "data": {
-                    "name": "DataA",
-                    "fields": [
-                        {"name": "id", "type": "number", "protobuf_type": "int64"},
-                        {"name": "msg", "type": "string", "protobuf_type": "string"},
-                    ],
-                    "required": ["msg"],
-                }
-            }
-        }
 
-        actual_result = _collect_template_generation_properties(test_model)
+        test_message_field_name = "msg"
+        test_message_field_type = "string"
+        test_message_field_prototype = "string"
+        test_message_field = create_field_entry(test_message_field_name, test_message_field_type)
+        test_message_field["protobuf_type"] = test_message_field_prototype
+
+        test_id_field_name = "id"
+        test_id_field_type = "number"
+        test_id_field_prototype = "int64"
+        test_id_field = create_field_entry(test_id_field_name, test_id_field_type)
+        test_id_field["protobuf_type"] = test_id_field_prototype
+
+        test_message_name = "DataA"
+        test_message_definition = create_data_definition(test_message_name, [test_id_field, test_message_field], [test_message_field_name])
+
+        actual_result = _collect_template_generation_properties({test_message_definition.name: test_message_definition})
         self.assertDictEqual(expected_result, actual_result[0])
 
     def test__generate_protobuf_details_from_data_message_model_with_nested_types_and_imports(self):
@@ -173,20 +192,30 @@ class TestGenerateProtobufPlugin(TestCase):
             },
         ]
 
-        test_model = {
-            "DataA": {
-                "data": {
-                    "name": "DataA",
-                    "fields": [
-                        {"name": "metadata", "type": "DataB"},
-                        {"name": "msg", "type": "string", "protobuf_type": "string"},
-                    ],
-                }
-            },
-            "DataB": {"data": {"name": "DataB", "fields": [{"name": "id", "type": "number", "protobuf_type": "int64"}]}},
-        }
+        test_message_a_name = "DataA"
+        test_message_b_name = "DataB"
 
-        actual_result = _collect_template_generation_properties(test_model)
+        test_message_field_name = "msg"
+        test_message_field_type = "string"
+        test_message_field_prototype = "string"
+        test_message_field = create_field_entry(test_message_field_name, test_message_field_type)
+        test_message_field["protobuf_type"] = test_message_field_prototype
+
+        test_metadata_field_name = "metadata"
+        test_metadata_field_type = test_message_b_name
+        test_metadata_field = create_field_entry(test_metadata_field_name, test_metadata_field_type)
+
+        test_id_field_name = "id"
+        test_id_field_type = "number"
+        test_id_field_prototype = "int64"
+        test_id_field = create_field_entry(test_id_field_name, test_id_field_type)
+        test_id_field["protobuf_type"] = test_id_field_prototype
+
+        test_message_a_definition = create_data_definition(test_message_a_name, [test_metadata_field, test_message_field])
+        test_message_b_definition = create_data_definition(test_message_b_name, [test_id_field])
+
+        test_definitions_dict = {d.name: d for d in [test_message_a_definition, test_message_b_definition]}
+        actual_result = _collect_template_generation_properties(test_definitions_dict)
         for i in range(len(actual_result)):
             self.assertDictEqual(expected_result[i], actual_result[i])
 
@@ -204,20 +233,24 @@ class TestGenerateProtobufPlugin(TestCase):
             {"name": "Enum", "file_type": "enum", "enums": ["VAL_1", "VAL_2"]},
         ]
 
-        test_model = {
-            "DataA": {
-                "data": {
-                    "name": "DataA",
-                    "fields": [
-                        {"name": "message_type", "type": "Enum"},
-                        {"name": "msg", "type": "string", "protobuf_type": "string"},
-                    ],
-                }
-            },
-            "Enum": {"enum": {"name": "Enum", "values": ["val_1", "val_2"]}},
-        }
+        test_enum_name = "Enum"
+        test_enum_definition = create_enum_definition(test_enum_name, ["VAL_1", "VAL_2"])
 
-        actual_result = _collect_template_generation_properties(test_model)
+        test_message_field_name = "msg"
+        test_message_field_type = "string"
+        test_message_field_prototype = "string"
+        test_message_field = create_field_entry(test_message_field_name, test_message_field_type)
+        test_message_field["protobuf_type"] = test_message_field_prototype
+
+        test_message_type_field_name = "message_type"
+        test_message_type_field_type = test_enum_name
+        test_message_type_field = create_field_entry(test_message_type_field_name, test_message_type_field_type)
+
+        test_message_a_name = "DataA"
+        test_message_a_definition = create_data_definition(test_message_a_name, [test_message_type_field, test_message_field])
+
+        test_definitions_dict = {d.name: d for d in [test_message_a_definition, test_enum_definition]}
+        actual_result = _collect_template_generation_properties(test_definitions_dict)
         for i in range(len(actual_result)):
             self.assertDictEqual(expected_result[i], actual_result[i])
 
