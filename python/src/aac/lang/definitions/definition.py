@@ -28,7 +28,13 @@ class Definition:
         return list(self.structure.keys())[0]
 
     def get_fields(self) -> dict[str, dict]:
-        """Return a dictionary of the top-level fields that are populated in the defintion by field name to field dictionaries."""
+        """
+        Return a dictionary of the top-level fields that are populated in the defintion where the key is the field name.
+
+        Schema/data definitions will return their top-level fields, including a "fields" field. Because schema/data
+        is self-defining, it may be easy to confuse the intention of this function and assume that it will returns the
+        entries in a schema/data definition's `fields` field, which is not the case.
+        """
         fields = self.structure.get(self.get_root_key())
 
         if not fields:
