@@ -53,7 +53,7 @@ A simple model for an EchoService is provided here for reference.  Cut and paste
 file called EchoService.yaml.
 *Note: This is using a little yaml trick to concatenate the content of two yaml files into a single file.*
 ```yaml
-data:
+schema:
   name: Message
   fields:
   - name: body
@@ -89,23 +89,23 @@ Now you can run AaC against your model.
 aac validate EchoService.yaml
 ```
 
-AaC has some core "root types" for you to work with.  You can see the root types of **data** and **model** used in the example above.
+AaC has some core "root types" for you to work with.  You can see the root types of `schema:` and `model:` used in the example above.
 The AaC core root types are:
-- data: Allows you to model data types used within your system as named types with fields.
-- enum: Allows you to model enumerated types (types with only specific values allowed).
-- model: Allows you to model the behavioral elements of your system.  These can be abstract or concrete.
-- usecase: Allows you to model the sequence of interactions between your models.
-- ext: Allows you to easily extend the AaC model itself and tailor things to your needs.
+- `schema:` Allows you to model data types used within your system as named types with fields.
+- `enum:` Allows you to model enumerated types (types with only specific values allowed).
+- `model:` Allows you to model the behavioral elements of your system.  These can be abstract or concrete.
+- `usecase:` Allows you to model the sequence of interactions between your models.
+- `ext:` Allows you to easily extend the AaC model itself and tailor things to your needs.
 
 Although you can use the yaml trick above when modelling your system, it would be better to keep things more
 structured and organized.  To help with this AaC allows you to define each item you model in a separate file and
-then import it as needed.  To do this just put an **import** at the root of your model file.
+then import it as needed.  To do this just put an `import` at the root of your model file.
 
 Here's an example of the EchoService broken into two files:
 - Message.yaml
 
     ```yaml
-    data:
+    schema:
     name: Message
     fields:
     - name: body

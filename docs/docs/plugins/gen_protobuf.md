@@ -26,9 +26,9 @@ Command arguments:
 ## Plugin Extensions & Definitions
 In order to use this plugin, you'll have to extend your models to provide necessary contextual information for the protobuf generator.
 
-Protobuf messages will only be generated for `data:` definitions that are referenced in `model:behavior:` fields: `input:` and `output:`.
+Protobuf messages will only be generated for `schema:` definitions that are referenced in `model:behavior:` fields: `input:` and `output:`.
 
-If you nest a `data:` field in another `data:` definition, then you do not need to set the `protobuf_type` attribute for the field since it will be ignored and a protobuf message will be generated for the nested data type and included into the generated protobuf messages.
+If you nest a `schema:` field in another `schema:` definition, then you do not need to set the `protobuf_type` attribute for the field since it will be ignored and a protobuf message will be generated for the nested data type and included into the generated protobuf messages.
 
 ### Enum - ProtobufFieldRepeat
 A new enum has been added, `ProtobufFieldRepeat`, which provides a set of enum values that represent whether a field can have multiple (repeated) entries.
@@ -40,13 +40,13 @@ This new enum in `fields:` allows the user to define that the field is repeating
 ### Example Implementation
 Before gen-protobuf plugin:
 ```yaml
-data:
+schema:
   name: DataA
   fields:
   - name: msg
     type: string
 ---
-data:
+schema:
   name: DataB
   fields:
   - name: id_number
@@ -59,14 +59,14 @@ data:
 
 After gen-protobuf plugin:
 ```yaml
-data:
+schema:
   name: DataA
   fields:
   - name: msg
     type: string
     protobuf_type: string
 ---
-data:
+schema:
   name: DataB
   fields:
   - name: id_number
