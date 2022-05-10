@@ -9,7 +9,7 @@ syntax = "proto3"
 import "{{import_name}}"
 {% endfor %}
 {% endif -%}
-{% if file_type == "data" -%}
+{% if file_type == "schema" -%}
 message {{name}} {
   {%- for field in fields %}
   {%if field.repeat%}repeated {%elif field.optional%}optional {%endif-%} {{field.type}} {{field.name}} = {{loop.index}};
