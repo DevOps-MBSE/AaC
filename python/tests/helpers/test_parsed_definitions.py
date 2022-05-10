@@ -30,7 +30,7 @@ class TestArchParsedDefinitions(TestCase):
 
         expected_yaml = "\n".join(
             [
-                "data:",
+                "schema:",
                 f"  name: {data_name}",
                 "  fields: []",
                 "  required: []",
@@ -50,7 +50,7 @@ class TestArchParsedDefinitions(TestCase):
 
         expected_yaml = "\n".join(
             [
-                "data:",
+                "schema:",
                 f"  name: {data_name}",
                 "  fields:",
                 f"  - name: {field1_name}",
@@ -78,7 +78,7 @@ class TestArchParsedDefinitions(TestCase):
 
         expected_yaml = "\n".join(
             [
-                "data:",
+                "schema:",
                 f"  name: {data_name}",
                 "  fields: []",
                 "  required: []",

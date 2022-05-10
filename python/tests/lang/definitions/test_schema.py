@@ -49,7 +49,7 @@ class TestDefinitionSchemas(TestCase):
 
     def test_get_definition_root_schema_with_self_defined_data(self):
         test_context = get_core_spec_context()
-        test_definition = test_context.get_definition_by_name("data")
+        test_definition = test_context.get_definition_by_name("schema")
 
         expected_result = test_definition
         actual_result = get_definition_schema(test_definition, test_context)
@@ -61,7 +61,7 @@ class TestDefinitionSchemas(TestCase):
         test_definition = create_data_definition("TestData")
         test_context.add_definition_to_context(test_definition)
 
-        expected_result = test_context.get_definition_by_name("data")
+        expected_result = test_context.get_definition_by_name("schema")
         actual_result = get_definition_schema(test_definition, test_context)
 
         self.assertEqual(expected_result, actual_result)
@@ -91,7 +91,7 @@ class TestDefinitionSchemas(TestCase):
         test_definition = create_data_definition("TestData")
         test_context.add_definition_to_context(test_definition)
 
-        expected_fields = test_context.get_definition_by_name("data").get_fields().get("fields")
+        expected_fields = test_context.get_definition_by_name("schema").get_fields().get("fields")
         expected_result = {field.get("name"): field for field in expected_fields}
         actual_result = get_schema_defined_fields(test_definition, test_context)
 
@@ -111,7 +111,7 @@ class TestDefinitionSchemas(TestCase):
     def test_get_definition_schema_components_with_data(self):
         test_context = get_core_spec_context()
 
-        data_definition = test_context.get_definition_by_name("data")
+        data_definition = test_context.get_definition_by_name("schema")
 
         # Per the core spec, we'd expect Field and ValidationReference
         field_definition = test_context.get_definition_by_name("Field")

@@ -30,11 +30,11 @@ class TestDefinitionHelpers(TestCase):
             return definition.get_root_key() == root_key
 
         aac_core_definitions = core.get_aac_spec()
-        data_definitions = list(filter(lambda definition: filter_by_root(definition, "data"), aac_core_definitions))
+        data_definitions = list(filter(lambda definition: filter_by_root(definition, "schema"), aac_core_definitions))
         enum_definitions = list(filter(lambda definition: filter_by_root(definition, "enum"), aac_core_definitions))
         model_definitions = list(filter(lambda definition: filter_by_root(definition, "model"), aac_core_definitions))
 
-        self.assertEqual(len(get_definitions_by_root_key("data", aac_core_definitions)), len(data_definitions))
+        self.assertEqual(len(get_definitions_by_root_key("schema", aac_core_definitions)), len(data_definitions))
         self.assertEqual(len(get_definitions_by_root_key("enum", aac_core_definitions)), len(enum_definitions))
         self.assertEqual(len(get_definitions_by_root_key("model", aac_core_definitions)), len(model_definitions))
 
@@ -43,7 +43,7 @@ class TestDefinitionHelpers(TestCase):
         Unit test for the definition_helpers.search method.
         """
         data_entry = {
-            "data": {
+            "schema": {
                 "fields": [
                     {"name": "name", "type": "string"},
                     {"name": "type", "type": "BehaviorType"},
@@ -67,7 +67,7 @@ class TestDefinitionHelpers(TestCase):
             "Field[]",
             "Scenario[]",
         ]
-        data_model_types = search(data_entry, ["data", "fields", "type"])
+        data_model_types = search(data_entry, ["schema", "fields", "type"])
 
         self.assertCountEqual(data_model_types, expected)
 
@@ -76,7 +76,7 @@ class TestDefinitionHelpers(TestCase):
         test_model = create_model_definition("TestModel")
 
         model_definition = get_definition_by_name("model", text_context.definitions)
-        expected_fields = search_definition(model_definition, ["data", "fields"])
+        expected_fields = search_definition(model_definition, ["schema", "fields"])
         self.assertGreater(len(expected_fields), 1)
 
         actual_result = get_definition_fields_and_types(test_model, text_context.definitions)

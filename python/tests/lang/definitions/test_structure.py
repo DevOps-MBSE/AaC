@@ -67,7 +67,7 @@ class TestDefinitionStructures(TestCase):
     def test_get_definition_schema_components_with_data(self):
         test_context = get_core_spec_context()
 
-        data_definition = test_context.get_definition_by_name("data")
+        data_definition = test_context.get_definition_by_name("schema")
 
         # Per the core spec, we'd expect Field and ValidationReference
         field_definition = test_context.get_definition_by_name("Field")

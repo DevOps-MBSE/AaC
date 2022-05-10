@@ -52,7 +52,7 @@ class TestRequiredFieldsPlugin(TestCase):
         test_active_context = get_active_context(reload_context=True)
 
         test_data_definition = create_data_definition("TestData")
-        del test_data_definition.structure["data"]["name"]
+        del test_data_definition.structure["schema"]["name"]
 
         required_fields_definition = test_active_context.get_definition_by_name(test_data_definition.get_root_key())
         actual_result = validate_required_fields(test_data_definition, required_fields_definition, test_active_context)

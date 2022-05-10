@@ -38,7 +38,7 @@ class TestArchParser(TestCase):
 
             first, second, *_ = parsed_definition.lexemes
             self.assertEqual(first.source, test_yaml.name)
-            self.assertEqual(first.value, "data")
+            self.assertEqual(first.value, "schema")
             self.assertEqual(first.location, SourceLocation(0, 0, 0, 4))
 
             self.assertEqual(second.source, test_yaml.name)
@@ -64,7 +64,7 @@ class TestArchParser(TestCase):
             enum_status_definition = definition_helpers.get_definition_by_name("Status", parsed_models)
             model_echosvc_definition = definition_helpers.get_definition_by_name("EchoService", parsed_models)
 
-            self.check_model_name(data_message_definition.structure, "Message", "data")
+            self.check_model_name(data_message_definition.structure, "Message", "schema")
             self.check_model_name(enum_status_definition.structure, "Status", "enum")
             self.check_model_name(model_echosvc_definition.structure, "EchoService", "model")
 
@@ -95,7 +95,7 @@ class TestArchParser(TestCase):
 
 
 TEST_IMPORTED_MODEL_FILE_CONTENTS = """
-data:
+schema:
   name: Message
   fields:
   - name: body

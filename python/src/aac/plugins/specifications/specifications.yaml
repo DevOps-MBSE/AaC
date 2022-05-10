@@ -49,7 +49,7 @@ ext:
       - name: requirements
         type: RequirementReference
 ---
-data:
+schema:
   name: Specification
   fields:
     - name: name
@@ -63,7 +63,7 @@ data:
   required:
     - name
 ---
-data:
+schema:
   name: SpecSection
   fields:
     - name: name
@@ -75,7 +75,7 @@ data:
   required:
     - name
 ---
-data:
+schema:
   name: Requirement
   fields:
     - name: id
@@ -90,7 +90,7 @@ data:
     - id
     - shall
 ---
-data:
+schema:
   name: RequirementAttribute
   fields:
     - name: name
@@ -101,7 +101,7 @@ data:
     - name
     - value
 ---
-data:
+schema:
   name: RequirementReference
   fields:
     - name: ids

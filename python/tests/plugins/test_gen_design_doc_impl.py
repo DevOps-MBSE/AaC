@@ -34,7 +34,7 @@ class TestGenerateDesignDocumentPlugin(TestCase):
     def assert_headings(self, markdown: str) -> None:
         patterns = [
             "test_model",
-            "Data",
+            "schema",
             "Model",
             "Use Cases",
             "Behavior",
@@ -73,7 +73,7 @@ class TestGenerateDesignDocumentPlugin(TestCase):
 
 
 TEST_MODEL = """
-data:
+schema:
   name: Point
   fields:
     - name: x

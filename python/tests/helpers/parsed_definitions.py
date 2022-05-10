@@ -135,7 +135,7 @@ def create_data_definition(name: str, fields: list[dict] = [], required: list[st
         VALIDATION_STRING: validation,
     }
 
-    return _create_parsed_defintion("data", definition_dict)
+    return _create_parsed_defintion("schema", definition_dict)
 
 
 def create_usecase_definition(name: str, description: str, participants: list[dict] = [], steps: list[dict] = []):

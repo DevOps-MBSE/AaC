@@ -99,7 +99,7 @@ def get_definition_fields_and_types(
 ) -> dict[str, Definition]:
     """Return a list of field names mapped to their definition types."""
     root_definition = get_definition_by_name("root", context_definitions)
-    root_fields = search_definition(root_definition, ["data", "fields"])
+    root_fields = search_definition(root_definition, ["schema", "fields"])
     roots_dict = {field.get("name"): field.get("type") for field in root_fields}
     root_definition_name = roots_dict.get(parsed_definition.get_root_key())
 

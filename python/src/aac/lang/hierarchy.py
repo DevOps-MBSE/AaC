@@ -18,7 +18,7 @@ def get_definition_ancestry(definition: Definition, context: LanguageContext) ->
 
     # If the definition key isn't defined, return the data definition as the only ancestor.
     if ancestor_definition.get_root_key() not in context.get_root_keys():
-        ancestors_list.append(get_root_definition_by_key("data", context.definitions))
+        ancestors_list.append(get_root_definition_by_key("schema", context.definitions))
         found_self_defined_ancestor = True
 
     # Loop until we get to the root definition defining itself.
@@ -43,7 +43,7 @@ def get_root_definition_by_key(root_key: str, parsed_definitions: list[Definitio
         An optional Definition that defines the structure of the root key.
     """
     root_definition = get_definition_by_name("root", parsed_definitions)
-    root_fields = search_definition(root_definition, ["data", "fields"])
+    root_fields = search_definition(root_definition, ["schema", "fields"])
 
     root_key_fields = list(filter(lambda field: (field.get("name") == root_key), root_fields))
     root_key_count = len(root_key_fields)

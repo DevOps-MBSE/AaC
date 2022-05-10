@@ -45,7 +45,7 @@ def _run_spec_validation(parsed_model: dict):
         refs = []
         refs.extend(search(parsed_model[model_name], ["spec", "requirements", "parent", "ids"]))
         refs.extend(search(parsed_model[model_name], ["model", "behavior", "requirements", "ids"]))
-        refs.extend(search(parsed_model[model_name], ["data", "requirements", "ids"]))
+        refs.extend(search(parsed_model[model_name], ["schema", "requirements", "ids"]))
         if refs:
             requirement_refs[model_name] = refs
 

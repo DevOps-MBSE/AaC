@@ -18,7 +18,7 @@ class TestLangHierarchy(TestCase):
 
         actual_result = get_definition_ancestry(data_definition, test_context)
         expected_result = [
-            get_definition_by_name("data", test_context.definitions),
+            get_definition_by_name("schema", test_context.definitions),
             get_definition_by_name(data_definition.name, test_context.definitions),
         ]
 
@@ -32,7 +32,7 @@ class TestLangHierarchy(TestCase):
 
         actual_result = get_definition_ancestry(enum_definition, test_context)
         expected_result = [
-            get_definition_by_name("data", test_context.definitions),
+            get_definition_by_name("schema", test_context.definitions),
             get_definition_by_name("enum", test_context.definitions),
             get_definition_by_name(enum_definition.name, test_context.definitions),
         ]
@@ -40,7 +40,7 @@ class TestLangHierarchy(TestCase):
         self.assertListEqual(expected_result, actual_result)
 
     def test_get_root_structure_by_key_data_definition(self):
-        target_definition_key = "data"
+        target_definition_key = "schema"
 
         active_context = get_active_context(reload_context=True)
 

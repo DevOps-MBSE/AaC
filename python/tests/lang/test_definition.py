@@ -12,7 +12,7 @@ from tests.helpers.parsed_definitions import (
 class TestDefinition(TestCase):
     def test_get_fields_with_empty_no_top_level_fields(self):
         test_definition = create_data_definition("EmptyData")
-        test_definition.structure["data"] = {}
+        test_definition.structure["schema"] = {}
 
         actual_result = test_definition.get_fields()
 
@@ -46,7 +46,7 @@ class TestDefinition(TestCase):
         self.assertFalse(test_definition.is_enum())
 
     def test_is_extension_true(self):
-        test_definition = create_data_ext_definition("Test", "data")
+        test_definition = create_data_ext_definition("Test", "schema")
         self.assertTrue(test_definition.is_extension())
 
     def test_is_extension_false(self):
@@ -54,7 +54,7 @@ class TestDefinition(TestCase):
         self.assertFalse(test_definition.is_extension())
 
     def test_is_data_extension_true(self):
-        test_definition = create_data_ext_definition("Test", "data")
+        test_definition = create_data_ext_definition("Test", "schema")
         self.assertTrue(test_definition.is_data_extension())
 
     def test_is_data_extension_false(self):
@@ -66,5 +66,5 @@ class TestDefinition(TestCase):
         self.assertTrue(test_definition.is_enum_extension())
 
     def test_is_enum_extension_false(self):
-        test_definition = create_data_ext_definition("Test", "data")
+        test_definition = create_data_ext_definition("Test", "schema")
         self.assertFalse(test_definition.is_enum_extension())

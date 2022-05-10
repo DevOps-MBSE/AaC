@@ -127,7 +127,7 @@ model:
           then:
             - The application raises an exception.
 ---
-data:
+schema:
   name: ParserResult
   fields:
     - name: models
@@ -139,7 +139,7 @@ data:
     - name: errorMsg
       type: string[]
 ---
-data:
+schema:
   name: ModelMap
   fields:
     - name: name
@@ -147,7 +147,7 @@ data:
     - name: model
       type: model
 ---
-data:
+schema:
   name: DataMap
   fields:
     - name: name
@@ -155,7 +155,7 @@ data:
     - name: data
       type: data
 ---
-data:
+schema:
   name: EnumMap
   fields:
     - name: name
@@ -254,7 +254,7 @@ model:
             - The {{parse.output.enums}}  is empty.
             - The {{parse.output.errorMsg}} is empty.
 ---
-data:
+schema:
   name: ValidationResult
   fields:
     - name: isValid

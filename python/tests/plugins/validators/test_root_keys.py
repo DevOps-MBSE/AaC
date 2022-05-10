@@ -34,7 +34,7 @@ class TestRootKeysValidator(TestCase):
         test_active_context = get_active_context()
         test_active_context.add_definition_to_context(test_definition)
 
-        target_schema_definition = get_definition_by_name("data", test_active_context.definitions)
+        target_schema_definition = get_definition_by_name("schema", test_active_context.definitions)
         actual_result = validate_root_keys(test_definition, target_schema_definition, test_active_context)
 
         assert_validator_result_success(actual_result)
@@ -71,7 +71,7 @@ class TestRootKeysValidator(TestCase):
         test_active_context = get_active_context()
         test_active_context.add_definitions_to_context([test_definition, root_key_extension])
 
-        target_schema_definition = get_definition_by_name("data", test_active_context.definitions)
+        target_schema_definition = get_definition_by_name("schema", test_active_context.definitions)
         actual_result = validate_root_keys(test_definition, target_schema_definition, test_active_context)
 
         assert_validator_result_success(actual_result)

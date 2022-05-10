@@ -99,7 +99,7 @@ class LanguageContext:
         root_definition = self.get_definition_by_name("root")
 
         if root_definition:
-            return search_definition(root_definition, ["data", "fields"])
+            return search_definition(root_definition, ["schema", "fields"])
         else:
             return []
 
@@ -209,7 +209,7 @@ class LanguageContext:
             extension_type = "enum"
             extension_field_name = "values"
         else:
-            extension_type = "data"
+            extension_type = "schema"
             extension_field_name = "fields"
 
         ext_type = f"{extension_type}Ext"
