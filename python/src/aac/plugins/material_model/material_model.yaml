@@ -50,9 +50,9 @@ data:
   name: PartRef
   description:  Reference to a part with quantity
   fields:
-    - name: name
-      type: string
-      description: Reference fo the name in a Part item.
+    - name: ref
+      type: reference
+      description: Reference to a defined part.
     - name: quantity
       type: int
       description: The count of the parts to be used.
@@ -84,9 +84,9 @@ data:
   name: AssemblyRef
   description:  Reference to an assembly with quantity
   fields:
-    - name: name
-      type: string
-      description: Reference fo the name in another Assembly item.
+    - name: ref
+      type: reference
+      description: Reference to a defined assembly item.
     - name: quantity
       type: int
       description: The count of the assemblies to be used.
@@ -128,9 +128,9 @@ data:
   name: DeploymentRef
   description:  Reference to a deployment with quantity
   fields:
-    - name: name
-      type: string
-      description: Reference fo the name in another Deployment item.
+    - name: ref
+      type: reference
+      description: Reference to another Deployment item.
     - name: quantity
       type: int
       description: The number of deployments to include.

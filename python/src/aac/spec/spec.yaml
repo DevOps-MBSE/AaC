@@ -239,6 +239,7 @@ enum:
     - date
     - file
     - map
+    - reference
 ---
 data:
   name: Field

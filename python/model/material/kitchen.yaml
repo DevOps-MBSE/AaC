@@ -6,15 +6,15 @@ assembly:
   name: Appliances
   description: Things that make a kitchen work.
   parts:
-    - name: Refrigerator
+    - ref: part.[name=Refrigerator]
       quantity: 1
-    - name: Stove
+    - ref: part.[name=Stove]
       quantity: 1
-    - name: Dish_Washer
+    - ref: part.[name=Dish_Washer]
       quantity: 1
-    - name: Coffee_Pot
+    - ref: part.[name=Coffee_Pot]
       quantity: 1
-    - name: Blender
+    - ref: part.[name=Blender]
       quantity: 1
 ---
 import:
@@ -24,11 +24,11 @@ assembly:
   name: Cook_Ware
   description:  Pots, pans, and such.
   parts:
-    - name: Pans
+    - name: part.[name=Pans]
       quantity: 1
-    - name: Dishes
+    - name: part.[name=Dishes]
       quantity: 1
-    - name: Utensils
+    - name: part.[name=Utensils]
       quantity: 1
-    - name: Silverware
+    - name: part.[name=Silverware]
       quantity: 1

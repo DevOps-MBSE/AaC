@@ -6,17 +6,17 @@ assembly:
   name: Seating_Area
   description:  The place I'll hang out a lot.
   parts:
-    - name: Couch
+    - name: part.[name=Couch]
       quantity: 1
-    - name: Arm_Chair
+    - name: part.[name=Arm_Chair]
       quantity: 1
-    - name: Coffee_Table
+    - name: part.[name=Coffee_Table]
       quantity: 1
-    - name: Side_Table
+    - name: part.[name=Side_Table]
       quantity: 2
-    - name: Table_Lamp
+    - name: part.[name=Table_Lamp]
       quantity: 2
-    - name: Coasters
+    - name: part.[name=Coasters]
       quantity: 1
 ---
 import:
@@ -26,11 +26,11 @@ assembly:
   name: Entertainment_System
   description:  Mostly electronic toys
   parts:
-    - name: TV
+    - name: part.[name=TV]
       quantity: 1
-    - name: Sound_Bar
+    - name: part.[name=Sound_Bar]
       quantity: 1
-    - name: X_Box
+    - name: part.[name=X_Box]
       quantity: 1
-    - name: Wifi_Router
+    - name: part.[name=Wifi_Router]
       quantity: 1
