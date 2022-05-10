@@ -8,7 +8,7 @@ from aac.plugins.plugin_execution import plugin_result
 from aac.plugins.gen_protobuf.gen_protobuf_impl import (
     gen_protobuf,
     _convert_camel_case_to_snake_case,
-    _collect_template_generation_properties,
+    _get_template_generation_properties,
 )
 
 from tests.helpers.assertion import assert_plugin_failure, assert_plugin_success
@@ -20,8 +20,7 @@ class TestGenerateProtobufPlugin(TestCase):
     def setUp(self):
         get_active_context(reload_context=True)
 
-
-
+    def test_gen_protobuf(self):
         with TemporaryDirectory() as temp_dir, temporary_test_file(TEST_ARCH_YAML_STRING) as temp_arch_file:
             with plugin_result("", gen_protobuf, temp_arch_file.name, temp_dir) as result:
                 pass
@@ -124,7 +123,7 @@ class TestGenerateProtobufPlugin(TestCase):
         test_message_name = "DataA"
         test_message_definition = create_data_definition(test_message_name, [test_message_field])
 
-        actual_result = _collect_template_generation_properties({test_message_definition.name: test_message_definition})
+        actual_result = _get_template_generation_properties({test_message_definition.name: test_message_definition})
         self.assertDictEqual(expected_result, actual_result[0])
 
     def test__generate_protobuf_details_from_data_message_model_wth_repeated_fields(self):
@@ -143,7 +142,7 @@ class TestGenerateProtobufPlugin(TestCase):
         test_message_name = "DataA"
         test_message_definition = create_data_definition(test_message_name, [test_message_field])
 
-        actual_result = _collect_template_generation_properties({test_message_definition.name: test_message_definition})
+        actual_result = _get_template_generation_properties({test_message_definition.name: test_message_definition})
         self.assertDictEqual(expected_result, actual_result[0])
 
     def test__generate_protobuf_details_from_data_message_model_with_required_fields(self):
@@ -169,9 +168,11 @@ class TestGenerateProtobufPlugin(TestCase):
         test_id_field["protobuf_type"] = test_id_field_prototype
 
         test_message_name = "DataA"
-        test_message_definition = create_data_definition(test_message_name, [test_id_field, test_message_field], [test_message_field_name])
+        test_message_definition = create_data_definition(
+            test_message_name, [test_id_field, test_message_field], [test_message_field_name]
+        )
 
-        actual_result = _collect_template_generation_properties({test_message_definition.name: test_message_definition})
+        actual_result = _get_template_generation_properties({test_message_definition.name: test_message_definition})
         self.assertDictEqual(expected_result, actual_result[0])
 
     def test__generate_protobuf_details_from_data_message_model_with_nested_types_and_imports(self):
@@ -215,7 +216,7 @@ class TestGenerateProtobufPlugin(TestCase):
         test_message_b_definition = create_data_definition(test_message_b_name, [test_id_field])
 
         test_definitions_dict = {d.name: d for d in [test_message_a_definition, test_message_b_definition]}
-        actual_result = _collect_template_generation_properties(test_definitions_dict)
+        actual_result = _get_template_generation_properties(test_definitions_dict)
         for i in range(len(actual_result)):
             self.assertDictEqual(expected_result[i], actual_result[i])
 
@@ -250,7 +251,7 @@ class TestGenerateProtobufPlugin(TestCase):
         test_message_a_definition = create_data_definition(test_message_a_name, [test_message_type_field, test_message_field])
 
         test_definitions_dict = {d.name: d for d in [test_message_a_definition, test_enum_definition]}
-        actual_result = _collect_template_generation_properties(test_definitions_dict)
+        actual_result = _get_template_generation_properties(test_definitions_dict)
         for i in range(len(actual_result)):
             self.assertDictEqual(expected_result[i], actual_result[i])
 

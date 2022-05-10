@@ -10,6 +10,7 @@ from aac.lang.definitions.arrays import is_array_type
 from aac.lang.definition_helpers import get_definitions_by_root_key
 from aac.lang.definitions.search import search_definition
 from aac.lang.active_context_lifecycle_manager import get_active_context
+from aac.lang.language_context import LanguageContext
 from aac.plugins import PluginError
 from aac.plugins.plugin_execution import (
     PluginExecutionResult,
@@ -24,8 +25,6 @@ from aac.template_engine import (
 from aac.validate import validated_source
 
 plugin_name = "gen-protobuf"
-
-ACTIVE_CONTEXT = get_active_context()
 
 
 def gen_protobuf(architecture_file: str, output_directory: str) -> PluginExecutionResult:
@@ -59,7 +58,7 @@ def generate_protobuf_messages(architecture_file: str, output_directory: str) ->
         model_definitions = get_definitions_by_root_key("model", validated_definitions)
 
         model_interface_messages = _get_model_interface_data_structures(model_definitions)
-        message_template_properties = _collect_template_generation_properties(model_interface_messages)
+        message_template_properties = _get_template_generation_properties(model_interface_messages)
 
         generated_template_messages = _generate_protobuf_messages(loaded_templates, message_template_properties)
 
@@ -78,34 +77,71 @@ def _get_model_interface_data_structures(model_definitions: list[Definition]) ->
     Returns:
         A dict of data message type keys to data message parsed model values
     """
-    interface_message_types = set()
+    interface_message_definitions = {}
     for model in model_definitions:
-        model_behavior_keys = ["model", "behavior"]
+        interface_message_definitions.update(_get_model_behavior_input_output_definitions(model))
 
-        model_interface_messages = []
-        model_interface_messages += search_definition(model, model_behavior_keys + ["input"])
-        model_interface_messages += search_definition(model, model_behavior_keys + ["output"])
+    active_context = get_active_context()
 
-        interface_message_types.update([message.get("type") for message in model_interface_messages])
+    all_message_definitions = {}
+    all_message_definitions.update(interface_message_definitions)
 
-    # For each interface message type, get the list of AaC structures that compose those messages
-    interface_message_substructure_types = set()
-    for interface_message_type in interface_message_types:
-        interface_message_type_definition = ACTIVE_CONTEXT.get_definition_by_name(interface_message_type)
+    for message_definition in interface_message_definitions.values():
+        if not message_definition.is_enum():
+            message_sub_structures = _get_embedded_data_structures(message_definition, active_context)
+            all_message_definitions.update(message_sub_structures)
 
-        if interface_message_type_definition:
-            interface_message_substructure_names = [field.get("type") for field in interface_message_type_definition.get_fields().get("fields")]
-            interface_message_substructure_types.update(interface_message_substructure_names)
+    return all_message_definitions
+
+
+def _get_model_behavior_input_output_definitions(model_definition: Definition) -> dict[str, Definition]:
+    """Return a list of definitions that are defined in the input and output of model behavior's."""
+    model_behavior_keys = ["model", "behavior"]
+
+    model_interface_messages = []
+    model_interface_messages += search_definition(model_definition, model_behavior_keys + ["input"])
+    model_interface_messages += search_definition(model_definition, model_behavior_keys + ["output"])
+    model_interface_message_names = [field.get("type") for field in model_interface_messages]
+
+    active_context = get_active_context()
+    interface_definitions = [active_context.get_definition_by_name(name) for name in model_interface_message_names]
+
+    return {interface_def.name: interface_def for interface_def in interface_definitions}
+
+
+def _get_embedded_data_structures(schema_definition: Definition, active_context: LanguageContext) -> dict[str, Definition]:
+    """Recurses through a definition's structure and returns all schema definition structures that make up the definition."""
+
+    interface_message_substructures = {}
+    definition_names_to_traverse = set([field.get("type") for field in schema_definition.get_fields().get("fields")])
+
+    while len(definition_names_to_traverse) > 0:
+        target_definition_name = definition_names_to_traverse.pop()
+        target_definition = active_context.get_definition_by_name(target_definition_name)
+
+        if target_definition:
+
+            if target_definition.name not in interface_message_substructures:
+                interface_message_substructures[target_definition.name] = target_definition
+
+                if not active_context.is_enum_type(target_definition.name):
+                    target_definition_field_types = [
+                        field.get("type") for field in target_definition.get_fields().get("fields")
+                    ]
+
+                    # filter out already visited definitions
+                    filtered_target_field_types = list(
+                        filter(lambda type: type not in interface_message_substructures, target_definition_field_types)
+                    )
+                    definition_names_to_traverse.update(filtered_target_field_types)
+
         else:
-            logging.error(f"Failed to find definition for type '{interface_message_type}'")
+            logging.error(f"Failed to find definition for type '{target_definition_name}'")
 
-    interface_message_types.update(interface_message_substructure_types)
-    definition_messages_types = list(filter(lambda name: not ACTIVE_CONTEXT.is_primitive_type(name), interface_message_types))
-
-    return {data_message_type: ACTIVE_CONTEXT.get_definition_by_name(data_message_type) for data_message_type in definition_messages_types}
+    return interface_message_substructures
 
 
-def _collect_template_generation_properties(interface_structures: dict[str, Definition]) -> list[dict]:
+def _get_template_generation_properties(interface_structures: dict[str, Definition]) -> list[dict]:
     """
     Analyzes data and enum models and produces a list of template property dictionaries for each protobuf file to generate.
 
