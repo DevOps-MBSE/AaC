@@ -18,7 +18,7 @@ from tests.helpers.parsed_definitions import (
 
 class TestCollectValidators(TestCase):
     def test_get_applicable_validators_for_empty_data_definition(self):
-        test_definition = create_schema_definition("Empty Data")
+        test_definition = create_schema_definition("Empty Schema")
         active_context = get_active_context(reload_context=True)
 
         validation_plugins = get_validator_plugins()

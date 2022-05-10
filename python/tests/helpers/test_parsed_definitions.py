@@ -174,8 +174,8 @@ class TestArchParsedDefinitions(TestCase):
         self.assertEqual(expected_yaml.strip(), parsed_definition.content.strip())
 
     def test_create_data_ext_definition(self):
-        name = "Test Data Extension"
-        type = "Other Data Type"
+        name = "Test Schema Extension"
+        type = "Other Schema Type"
         schemaExt1_name = "Ext1 Name"
         schemaExt1_description = "Ext1 Description"
         schemaExt1_type = "Ext1 Type"
