@@ -23,7 +23,6 @@ import:
   - ./System.yaml
   - ./Services.yaml
   - ./Subsystem.yaml
-
 usecase:
   name: Nominal flow within the system.
   description:

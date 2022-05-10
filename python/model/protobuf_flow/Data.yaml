@@ -1,11 +1,15 @@
+import:
+  - ./GoogleAuthApi.yaml
 data:
   name: DataA
   fields:
+  - name: authentication
+    type: Authentication
+    description: System boundary authentication information.
   - name: metadata
     type: MessageMetadataData
   - name: msg
     type: string
-    protobuf_type: string
   - name: message_type
     type: MessageType
   required:
@@ -18,7 +22,6 @@ data:
     type: MessageMetadataData
   - name: transformed_msg
     type: string
-    protobuf_type: string
   required:
   - metadata
   - transformed_msg
@@ -29,8 +32,7 @@ data:
   - name: metadata
     type: MessageMetadataData
   - name: code
-    type: number[]
-    protobuf_type: fixed64
+    type: fixed64[]
   required:
   - metadata
 ---
@@ -41,7 +43,6 @@ data:
     type: MessageMetadataData
   - name: msg
     type: string
-    protobuf_type: string
   required:
   - metadata
 ---
@@ -49,8 +50,7 @@ data:
   name: MessageMetadataData
   fields:
   - name: message_id
-    type: number
-    protobuf_type: int64
+    type: int64[]
   required:
   - message_id
 ---
