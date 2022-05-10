@@ -6,7 +6,7 @@
 import logging
 
 from aac.lang.definitions.definition import Definition
-from aac.lang.definitions.arrays import is_array_type
+from aac.lang.definitions.type import is_array_type, remove_list_type_indicator
 from aac.lang.definition_helpers import get_definitions_by_root_key
 from aac.lang.definitions.search import search_definition
 from aac.lang.active_context_lifecycle_manager import get_active_context
@@ -235,12 +235,13 @@ def _get_data_model_properties(interface_structures: dict[str, Definition], data
         proto_field_type = None
 
         field_type = field.get("type")
+        sanitized_field_type = remove_list_type_indicator(field_type)
         field_proto_type = field.get("protobuf_type")
-        if field_type in interface_structures:
+        if sanitized_field_type in interface_structures:
             proto_field_type = field_type
 
             # This is the last time we have access to the other model, calculate its future protobuf file name here
-            model_to_import = interface_structures.get(field_type)
+            model_to_import = interface_structures.get(sanitized_field_type)
             message_imports.append(_convert_message_name_to_file_name(model_to_import.name))
 
         else:

@@ -6,7 +6,7 @@ import copy
 import logging
 
 from aac.lang.definitions.definition import Definition
-from aac.lang.definitions.arrays import is_array_type, remove_list_type_indicator
+from aac.lang.definitions.type import is_array_type, remove_list_type_indicator
 from aac.lang.definitions.search import search_definition
 from aac.lang.definition_helpers import (
     get_definitions_by_root_key,
