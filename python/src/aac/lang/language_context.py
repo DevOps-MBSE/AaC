@@ -134,6 +134,28 @@ class LanguageContext:
         """
         return list(map(lambda definition: definition.name, self.definitions))
 
+    def is_enum_type(self, type: str) -> bool:
+        """
+        Returns a boolean indicating if the type is defined and as an enum.
+
+        This method is helpful for discerning the type of a definition by its name. This is
+        functionally equivalent to getting the definition by name from the context and then
+        running the `Definition` method `is_enum()`
+
+        Args:
+            type (str): The enum's type string.
+
+        Returns:
+            A boolean indicating if the string matches an enum type defined in the context.
+        """
+        defintion = self.get_definition_by_name(type)
+
+        is_enum_type = False
+        if defintion:
+            is_enum_type = defintion.is_enum()
+
+        return is_enum_type
+
     def is_primitive_type(self, type: str) -> bool:
         """
         Returns a boolean indicating if the type is defined as a primitive type.
@@ -171,7 +193,12 @@ class LanguageContext:
         if is_array_type(definition_name):
             definition_name = remove_list_type_indicator(definition_name)
 
-        return self.definitions_name_dictionary.get(definition_name)
+        definition_to_return = self.definitions_name_dictionary.get(definition_name)
+
+        if not definition_to_return:
+            logging.info(f"Failed to find the definition named '{definition_name}' in the context.")
+
+        return definition_to_return
 
     def get_definitions_by_root_key(self, root_key: str) -> list[Definition]:
         """Return a subset of definitions with the given root key.
@@ -220,7 +247,9 @@ class LanguageContext:
         if target_definition_extension_sub_dict.get(extension_field_name):
             target_definition_extension_sub_dict[extension_field_name] += extension_subtype_sub_dict.get("add")
         else:
-            logging.error(f"Attempted to apply an extension to the incorrect target. Extension name '{extension_definition.name}' target definition '{target_to_extend}'")
+            logging.error(
+                f"Attempted to apply an extension to the incorrect target. Extension name '{extension_definition.name}' target definition '{target_to_extend}'"
+            )
 
         _add_extension_required_fields_to_defintion(target_definition_extension_sub_dict, extension_subtype_sub_dict)
 
