@@ -272,7 +272,7 @@ ext:
 ext:
   name: addCountToValidationResult
   type: ValidationResult
-  dataExt:
+  schemaExt:
     add:
       - name: errCount
         type: int

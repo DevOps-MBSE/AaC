@@ -141,7 +141,7 @@ schema:
 ext:
    name: MaterialRootItems
    type: root
-   dataExt:
+   schemaExt:
       add:
         - name: part
           type: Part

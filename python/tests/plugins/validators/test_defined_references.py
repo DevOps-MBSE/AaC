@@ -7,7 +7,7 @@ from aac.plugins.validators import ValidatorPlugin, ValidatorResult
 from aac.plugins.validators.defined_references import get_plugin_aac_definitions, register_validators, validate_references
 from tests.helpers.context import get_core_spec_context
 
-from tests.helpers.parsed_definitions import create_data_definition, create_field_entry
+from tests.helpers.parsed_definitions import create_schema_definition, create_field_entry
 
 
 class TestDefinedReferencesPlugin(TestCase):
@@ -28,7 +28,7 @@ class TestDefinedReferencesPlugin(TestCase):
 
     def test_validate_references_valid_references(self):
         test_primitive_reference_field = create_field_entry("ValidPrimitiveField", "string")
-        test_definition = create_data_definition("TestData", [test_primitive_reference_field])
+        test_definition = create_schema_definition("TestData", [test_primitive_reference_field])
 
         expected_result = ValidatorResult([], True)
 
@@ -45,7 +45,7 @@ class TestDefinedReferencesPlugin(TestCase):
         invalid_definition_type = "ThisTypeStringWontAppearInTheCoreSpecIHope"
 
         test_invalid_definition_reference_field = create_field_entry("InvalidBehaviorField", invalid_definition_type)
-        test_invalid_data_defintion = create_data_definition("InvalidData", fields=[test_invalid_definition_reference_field])
+        test_invalid_data_defintion = create_schema_definition("InvalidData", fields=[test_invalid_definition_reference_field])
 
         invalid_reference_error_message = ""
         expected_result = ValidatorResult([invalid_reference_error_message], False)
@@ -64,7 +64,7 @@ class TestDefinedReferencesPlugin(TestCase):
         invalid_primitive_type = "striiiiing"
 
         test_invalid_primitive_reference_field = create_field_entry("InvalidPrimitiveField", invalid_primitive_type)
-        test_invalid_data_defintion = create_data_definition("InvalidData", fields=[test_invalid_primitive_reference_field])
+        test_invalid_data_defintion = create_schema_definition("InvalidData", fields=[test_invalid_primitive_reference_field])
 
         invalid_reference_error_message = ""
         expected_result = ValidatorResult([invalid_reference_error_message], False)

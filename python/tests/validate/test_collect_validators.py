@@ -8,7 +8,7 @@ from aac.validate import get_applicable_validators_for_definition
 from aac.validate._collect_validators import _get_validation_entries, _get_validator_plugin_by_name
 
 from tests.helpers.parsed_definitions import (
-    create_data_definition,
+    create_schema_definition,
     create_enum_definition,
     create_field_entry,
     create_model_definition,
@@ -18,7 +18,7 @@ from tests.helpers.parsed_definitions import (
 
 class TestCollectValidators(TestCase):
     def test_get_applicable_validators_for_empty_data_definition(self):
-        test_definition = create_data_definition("Empty Data")
+        test_definition = create_schema_definition("Empty Data")
         active_context = get_active_context(reload_context=True)
 
         validation_plugins = get_validator_plugins()
@@ -35,7 +35,7 @@ class TestCollectValidators(TestCase):
 
     def test_get_applicable_validators_for_data_definition(self):
         test_field = create_field_entry("TestField", "string")
-        test_definition = create_data_definition("DataWithField", fields=[test_field])
+        test_definition = create_schema_definition("DataWithField", fields=[test_field])
         active_context = get_active_context(reload_context=True)
 
         validation_plugins = get_validator_plugins()
@@ -107,7 +107,7 @@ class TestCollectValidators(TestCase):
         validation2_name = "Test Validation 2"
         validation1_entry = create_validation_entry(validation1_name)
         validation2_entry = create_validation_entry(validation2_name)
-        data_definition_with_validation = create_data_definition("name", validation=[validation1_entry, validation2_entry])
+        data_definition_with_validation = create_schema_definition("name", validation=[validation1_entry, validation2_entry])
 
         expected_result = [validation1_entry, validation2_entry]
         actual_result = _get_validation_entries(data_definition_with_validation)

@@ -7,7 +7,7 @@ from aac.plugins.validators import ValidatorPlugin
 from aac.plugins.validators.required_fields import get_plugin_aac_definitions, register_validators, validate_required_fields
 from tests.helpers.assertion import assert_validator_result_failure, assert_validator_result_success
 
-from tests.helpers.parsed_definitions import create_behavior_entry, create_data_definition, create_field_entry, create_model_definition
+from tests.helpers.parsed_definitions import create_behavior_entry, create_schema_definition, create_field_entry, create_model_definition
 
 
 class TestRequiredFieldsPlugin(TestCase):
@@ -30,7 +30,7 @@ class TestRequiredFieldsPlugin(TestCase):
         test_active_context = get_active_context(reload_context=True)
 
         test_field_entry = create_field_entry("TestField", "string")
-        test_data_definition = create_data_definition("TestData", [test_field_entry])
+        test_data_definition = create_schema_definition("TestData", [test_field_entry])
 
         required_fields_definition = test_active_context.get_definition_by_name(test_data_definition.get_root_key())
         actual_result = validate_required_fields(test_data_definition, required_fields_definition, test_active_context)
@@ -51,7 +51,7 @@ class TestRequiredFieldsPlugin(TestCase):
     def test_validate_required_fields_with_missing_name_empty_fields(self):
         test_active_context = get_active_context(reload_context=True)
 
-        test_data_definition = create_data_definition("TestData")
+        test_data_definition = create_schema_definition("TestData")
         del test_data_definition.structure["schema"]["name"]
 
         required_fields_definition = test_active_context.get_definition_by_name(test_data_definition.get_root_key())

@@ -8,8 +8,8 @@ from unittest import TestCase
 from aac.parser import parse
 
 from tests.helpers.parsed_definitions import (
-    create_data_definition,
-    create_data_ext_definition,
+    create_schema_definition,
+    create_schema_ext_definition,
     create_enum_definition,
     create_enum_ext_definition,
     create_field_entry,
@@ -38,7 +38,7 @@ class TestArchParsedDefinitions(TestCase):
             ]
         )
 
-        parsed_definition = create_data_definition(name=data_name)
+        parsed_definition = create_schema_definition(name=data_name)
 
         self.assertEqual(expected_yaml.strip(), parsed_definition.content.strip())
 
@@ -65,7 +65,7 @@ class TestArchParsedDefinitions(TestCase):
         field1_definition = create_field_entry(field1_name, field1_type, field1_description)
 
         expected_parsed_definition = parse(expected_yaml)[0]
-        actual_parsed_definition = create_data_definition(name=data_name, fields=[field1_definition], required=[field1_name])
+        actual_parsed_definition = create_schema_definition(name=data_name, fields=[field1_definition], required=[field1_name])
 
         self.assertEqual(expected_yaml.strip(), actual_parsed_definition.content.strip())
         self.assertEqual(expected_parsed_definition.name, actual_parsed_definition.name)
@@ -89,7 +89,7 @@ class TestArchParsedDefinitions(TestCase):
         )
 
         validation_entry = create_validation_entry(validation_name)
-        parsed_definition = create_data_definition(name=data_name, validation=[validation_entry])
+        parsed_definition = create_schema_definition(name=data_name, validation=[validation_entry])
 
         self.assertEqual(expected_yaml.strip(), parsed_definition.content.strip())
 
@@ -176,26 +176,26 @@ class TestArchParsedDefinitions(TestCase):
     def test_create_data_ext_definition(self):
         name = "Test Data Extension"
         type = "Other Data Type"
-        dataExt1_name = "Ext1 Name"
-        dataExt1_description = "Ext1 Description"
-        dataExt1_type = "Ext1 Type"
-        dataExt1 = create_field_entry(dataExt1_name, dataExt1_type, dataExt1_description)
+        schemaExt1_name = "Ext1 Name"
+        schemaExt1_description = "Ext1 Description"
+        schemaExt1_type = "Ext1 Type"
+        schemaExt1 = create_field_entry(schemaExt1_name, schemaExt1_type, schemaExt1_description)
 
         expected_yaml = "\n".join(
             [
                 "ext:",
                 f"  name: {name}",
                 f"  type: {type}",
-                "  dataExt:",
+                "  schemaExt:",
                 "    add:",
-                f"    - name: {dataExt1_name}",
-                f"      type: {dataExt1_type}",
-                f"      description: {dataExt1_description}",
+                f"    - name: {schemaExt1_name}",
+                f"      type: {schemaExt1_type}",
+                f"      description: {schemaExt1_description}",
                 "    required: []",
             ]
         )
 
-        parsed_definition = create_data_ext_definition(name, type=type, fields=[dataExt1])
+        parsed_definition = create_schema_ext_definition(name, type=type, fields=[schemaExt1])
 
         self.assertEqual(expected_yaml.strip(), parsed_definition.content.strip())
 

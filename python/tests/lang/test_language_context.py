@@ -5,8 +5,8 @@ from aac.lang.language_context import LanguageContext
 from aac.spec import get_aac_spec, get_primitives, get_root_keys
 
 from tests.helpers.parsed_definitions import (
-    create_data_definition,
-    create_data_ext_definition,
+    create_schema_definition,
+    create_schema_ext_definition,
     create_enum_definition,
     create_enum_ext_definition,
     create_field_entry,
@@ -18,12 +18,12 @@ class TestLanguageContext(TestCase):
     def test_add_definition_to_context_with_extensions(self):
         test_definition_field = create_field_entry("TestField", "string")
         test_definition_name = "myDef"
-        test_definition = create_data_definition(test_definition_name, [test_definition_field])
+        test_definition = create_schema_definition(test_definition_name, [test_definition_field])
 
         data_ext_field_name = "extField"
         data_ext_field_type = "ExtField"
         ext_field = create_field_entry(data_ext_field_name, data_ext_field_type)
-        test_definition_ext = create_data_ext_definition("myDefExt", test_definition_name, [ext_field])
+        test_definition_ext = create_schema_ext_definition("myDefExt", test_definition_name, [ext_field])
 
         enum_val1 = "val1"
         enum_val2 = "val2"

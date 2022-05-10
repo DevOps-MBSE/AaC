@@ -39,36 +39,26 @@ class Definition:
 
     def get_required(self) -> list[str]:
         """Return a list of field names if the definition has a required field."""
-        fields = self.structure.get(self.get_root_key())
-        required = []
-
-        if "required" in fields:
-            required = fields.get("required")
-
-        return required
+        fields = self.get_fields()
+        return fields.get("required") or []
 
     def get_validations(self) -> list[dict]:
-        """Return a list of validation entries dictionaries if the definition has a validation field or an empty list if not."""
-        fields = self.structure.get(self.get_root_key())
-        validation = []
-
-        if "validation" in fields:
-            validation = fields.get("validation")
-
-        return validation
+        """Return a list of validation entry dictionaries if the definition has a validation field or an empty list if not."""
+        fields = self.get_fields()
+        return fields.get("validation") or []
 
     def is_extension(self) -> bool:
         """Returns true if the definition is an extension definition."""
         return self.get_root_key() == "ext"
 
-    def is_data_extension(self) -> bool:
-        """Returns true if the definition is a data extension definition."""
-        definition = self.structure.get("ext")
-        return "dataExt" in definition and isinstance(definition["dataExt"], dict)
+    def is_schema_extension(self) -> bool:
+        """Returns true if the definition is a schema extension definition."""
+        definition = self.get_fields()
+        return "schemaExt" in definition and isinstance(definition["schemaExt"], dict)
 
     def is_enum_extension(self) -> bool:
         """Returns true if the definition is an enum extension definition."""
-        definition = self.structure.get("ext")
+        definition = self.get_fields()
         return "enumExt" in definition and isinstance(definition["enumExt"], dict)
 
     def is_enum(self) -> bool:

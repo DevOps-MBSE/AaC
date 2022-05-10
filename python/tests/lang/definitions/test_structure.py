@@ -6,7 +6,7 @@ from aac.lang.definitions.schema import get_definition_schema_components
 from tests.helpers.context import get_core_spec_context
 from tests.helpers.parsed_definitions import (
     create_behavior_entry,
-    create_data_definition,
+    create_schema_definition,
     create_field_entry,
     create_model_definition,
     create_scenario_entry,
@@ -20,7 +20,7 @@ class TestDefinitionStructures(TestCase):
 
         test_string_field_entry = create_field_entry("TestStringField", "string")
         test_file_field_entry = create_field_entry("TestFileField", "file")
-        test_data_definition = create_data_definition("TestData", fields=[test_string_field_entry, test_file_field_entry])
+        test_data_definition = create_schema_definition("TestData", fields=[test_string_field_entry, test_file_field_entry])
 
         test_context.add_definition_to_context(test_data_definition)
 

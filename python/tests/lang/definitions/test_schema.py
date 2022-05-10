@@ -6,7 +6,7 @@ from aac.spec import get_root_fields
 
 from tests.helpers.context import get_core_spec_context
 from tests.helpers.parsed_definitions import (
-    create_data_definition,
+    create_schema_definition,
     create_enum_definition,
     create_model_definition,
 )
@@ -58,7 +58,7 @@ class TestDefinitionSchemas(TestCase):
 
     def test_get_definition_root_schema_with_user_defined_data(self):
         test_context = get_core_spec_context()
-        test_definition = create_data_definition("TestData")
+        test_definition = create_schema_definition("TestData")
         test_context.add_definition_to_context(test_definition)
 
         expected_result = test_context.get_definition_by_name("schema")
@@ -88,7 +88,7 @@ class TestDefinitionSchemas(TestCase):
 
     def test_get_schema_defined_fields_with_user_defined_data(self):
         test_context = get_core_spec_context()
-        test_definition = create_data_definition("TestData")
+        test_definition = create_schema_definition("TestData")
         test_context.add_definition_to_context(test_definition)
 
         expected_fields = test_context.get_definition_by_name("schema").get_fields().get("fields")

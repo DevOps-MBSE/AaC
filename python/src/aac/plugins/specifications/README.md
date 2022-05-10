@@ -39,7 +39,7 @@ TODO: Add descriptive information about addSpecificationToRoot
 
 ```yaml
 ext:
-  dataExt:
+  schemaExt:
     add:
     - name: spec
       type: Specification
@@ -54,7 +54,7 @@ TODO: Add descriptive information about addSpecTraceToBehavior
 
 ```yaml
 ext:
-  dataExt:
+  schemaExt:
     add:
     - name: requirements
       type: RequirementReference[]
@@ -69,7 +69,7 @@ TODO: Add descriptive information about addSpecTraceToData
 
 ```yaml
 ext:
-  dataExt:
+  schemaExt:
     add:
     - name: requirements
       type: RequirementReference[]

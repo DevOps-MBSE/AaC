@@ -48,7 +48,7 @@ schema:
         information to a model that isn't included in the core specification or
         the specification of any plugins you may have installed.
 
-        You can extend any 'enum' and 'data' definition.
+        You can extend any 'enum' and 'schema' definition.
     - name: validation
       type: Validation
       description: |
@@ -83,7 +83,7 @@ schema:
     - name: type
       type: string
       description: |
-        The name of the 'data' or 'enum' definition that this definition is
+        The name of the 'schema' or 'enum' definition that this definition is
         extending.
     - name: enumExt
       type: EnumExtension
@@ -91,22 +91,22 @@ schema:
         If extending an 'enum' definition, this represents a list of the items
         to add to the 'enum's 'values' property.
 
-        Note: Only one of 'enumExt' and 'dataExt' are valid per extension.
+        Note: Only one of 'enumExt' and 'schemaExt' are valid per extension.
 
         See also, 'EnumExtension'
-    - name: dataExt
-      type: DataExtension
+    - name: schemaExt
+      type: SchemaExtension
       description: |
-        If extending an 'data' definition, this represents a list of the items
-        to add to the 'data's 'fields' property.
+        If extending an 'schema' definition, this represents a list of the items
+        to add to the 'schema's 'fields' property.
 
-        Note: Only one of 'enumExt' and 'dataExt' are valid per extension.
+        Note: Only one of 'enumExt' and 'schemaExt' are valid per extension.
 
-        See also, 'DataExtension'
+        See also, 'SchemaExtension'
   validation:
     - name: Mutually exclusive fields
       arguments:
-        - dataExt
+        - schemaExt
         - enumExt
   required:
     - name
@@ -123,12 +123,12 @@ schema:
     - add
 ---
 schema:
-  name: DataExtension
+  name: SchemaExtension
   fields:
     - name: add
       type: Field[]
       description: |
-        The list of fields to add to a 'data' extension.
+        The list of fields to add to a 'schema' extension.
     - name: required
       type: string[]
       description: |
@@ -273,7 +273,7 @@ schema:
     - name: name
       type: string
       description: |
-        The name of the data definition.
+        The name of the schema definition.
     - name: fields
       type: Field[]
       description: |

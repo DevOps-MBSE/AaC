@@ -39,11 +39,11 @@ class TestArchParser(TestCase):
             first, second, *_ = parsed_definition.lexemes
             self.assertEqual(first.source, test_yaml.name)
             self.assertEqual(first.value, "schema")
-            self.assertEqual(first.location, SourceLocation(0, 0, 0, 4))
+            self.assertEqual(first.location, SourceLocation(0, 0, 0, 6))
 
             self.assertEqual(second.source, test_yaml.name)
             self.assertEqual(second.value, "name")
-            self.assertEqual(second.location, SourceLocation(1, 2, 8, 4))
+            self.assertEqual(second.location, SourceLocation(1, 2, 10, 4))
 
     def test_can_handle_string_or_path_sources(self):
         self.assertEqual(TEST_MODEL_FILE, get_yaml_from_source(TEST_MODEL_FILE))
