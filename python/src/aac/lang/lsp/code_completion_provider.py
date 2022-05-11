@@ -63,10 +63,10 @@ def _get_reference_completion_items(ls: LanguageServer, params: CompletionParams
     if primitives_definition:
         primitive_references = {field: "Primitive type" for field in active_context.get_primitive_types()}
 
-    data_definition_references = _convert_definitions_to_name_description_dictionary(active_context.get_definitions_by_root_key("schema"))
+    data_definition_references = _convert_definitions_to_name_description_dict(active_context.get_definitions_by_root_key("schema"))
 
     file_definitions = parse(_get_code_completion_parent_text_file(ls, params))
-    file_data_references = _convert_definitions_to_name_description_dictionary(get_definitions_by_root_key("schema", file_definitions))
+    file_data_references = _convert_definitions_to_name_description_dict(get_definitions_by_root_key("schema", file_definitions))
     available_references = primitive_references | data_definition_references | file_data_references
 
     return CompletionList(
@@ -86,5 +86,5 @@ def _get_code_completion_parent_text_file(ls: LanguageServer, params: Completion
     return ls.workspace.documents.get(params.text_document.uri).source
 
 
-def _convert_definitions_to_name_description_dictionary(definitions: list[Definition]) -> dict:
-    return {definition.name: definition.get_fields().get("description") or "" for definition in definitions}
+def _convert_definitions_to_name_description_dict(definitions: list[Definition]) -> dict:
+    return {definition.name: definition.get_top_level_fields().get("description") or "" for definition in definitions}

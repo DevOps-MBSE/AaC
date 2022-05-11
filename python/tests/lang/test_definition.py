@@ -14,7 +14,7 @@ class TestDefinition(TestCase):
         test_definition = create_schema_definition("EmptyData")
         test_definition.structure["schema"] = {}
 
-        actual_result = test_definition.get_fields()
+        actual_result = test_definition.get_top_level_fields()
 
         self.assertEqual({}, actual_result)
 

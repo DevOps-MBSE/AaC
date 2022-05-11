@@ -196,7 +196,7 @@ class LanguageContext:
         Args:
             extension_definition (Definition): The extension definition to apply to the context.
         """
-        target_to_extend = extension_definition.get_fields().get("type")
+        target_to_extend = extension_definition.get_top_level_fields().get("type")
 
         if not target_to_extend:
             logging.error(f"Extension failed to define target, field 'type' is missing. {extension_definition.structure}")
@@ -213,8 +213,8 @@ class LanguageContext:
             extension_field_name = "fields"
 
         ext_type = f"{extension_type}Ext"
-        target_definition_extension_sub_dict = target_definition_to_extend.get_fields()
-        extension_definition_fields = extension_definition.get_fields()
+        target_definition_extension_sub_dict = target_definition_to_extend.get_top_level_fields()
+        extension_definition_fields = extension_definition.get_top_level_fields()
 
         extension_subtype_sub_dict = extension_definition_fields.get(ext_type)
         if target_definition_extension_sub_dict.get(extension_field_name):

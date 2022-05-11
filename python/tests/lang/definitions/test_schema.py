@@ -91,7 +91,7 @@ class TestDefinitionSchemas(TestCase):
         test_definition = create_schema_definition("TestData")
         test_context.add_definition_to_context(test_definition)
 
-        expected_fields = test_context.get_definition_by_name("schema").get_fields().get("fields")
+        expected_fields = test_context.get_definition_by_name("schema").get_top_level_fields().get("fields")
         expected_result = {field.get("name"): field for field in expected_fields}
         actual_result = get_schema_defined_fields(test_definition, test_context)
 
@@ -102,7 +102,7 @@ class TestDefinitionSchemas(TestCase):
         test_definition = create_model_definition("TestModel")
         test_context.add_definition_to_context(test_definition)
 
-        expected_fields = test_context.get_definition_by_name("model").get_fields().get("fields")
+        expected_fields = test_context.get_definition_by_name("model").get_top_level_fields().get("fields")
         expected_result = {field.get("name"): field for field in expected_fields}
         actual_result = get_schema_defined_fields(test_definition, test_context)
 
