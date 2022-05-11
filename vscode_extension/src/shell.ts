@@ -1,4 +1,4 @@
-import { exec, ExecOptions } from 'child_process';
+import { exec, ExecOptions } from "child_process";
 import { StringDecoder } from "string_decoder";
 
 /**
