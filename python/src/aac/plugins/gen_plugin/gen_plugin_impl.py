@@ -333,10 +333,10 @@ def _gather_plugin_aac_definitions(parsed_models: dict[str, dict]) -> list[dict]
         A list of AaC definitions provided by the plugin
     """
     extension_definitions = list(get_models_by_type(parsed_models, "ext").values())
-    data_definitions = list(get_models_by_type(parsed_models, "schema").values())
+    schema_definitions = list(get_models_by_type(parsed_models, "schema").values())
     enum_definitions = list(get_models_by_type(parsed_models, "enum").values())
 
-    return extension_definitions + data_definitions + enum_definitions
+    return extension_definitions + schema_definitions + enum_definitions
 
 
 def _add_definitions_yaml_string(model: dict) -> dict:

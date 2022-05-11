@@ -25,61 +25,61 @@ class TestArchParsedDefinitions(TestCase):
     Unit test class for testing helper parsed_definitions module.
     """
 
-    def test_create_data_definition_without_fields_or_required(self):
-        data_name = "Test Name"
+    def test_create_schema_definition_without_fields_or_required(self):
+        definition_name = "Test Name"
 
         expected_yaml = "\n".join(
             [
                 "schema:",
-                f"  name: {data_name}",
+                f"  name: {definition_name}",
                 "  fields: []",
                 "  required: []",
                 "  validation: []",
             ]
         )
 
-        parsed_definition = create_schema_definition(name=data_name)
+        parsed_definition = create_schema_definition(name=definition_name)
 
         self.assertEqual(expected_yaml.strip(), parsed_definition.content.strip())
 
-    def test_create_data_definition_with_fields_and_required(self):
-        data_name = "Test Name"
-        field1_name = "field1"
-        field1_description = "description for field 1"
-        field1_type = "Type1"
+    def test_create_schema_definition_with_fields_and_required(self):
+        definition_name = "Test Name"
+        field_name = "field1"
+        field_description = "description for field 1"
+        field_type = "Type1"
 
         expected_yaml = "\n".join(
             [
                 "schema:",
-                f"  name: {data_name}",
+                f"  name: {definition_name}",
                 "  fields:",
-                f"  - name: {field1_name}",
-                f"    type: {field1_type}",
-                f"    description: {field1_description}",
+                f"  - name: {field_name}",
+                f"    type: {field_type}",
+                f"    description: {field_description}",
                 "  required:",
-                f"  - {field1_name}",
+                f"  - {field_name}",
                 "  validation: []",
             ]
         )
 
-        field1_definition = create_field_entry(field1_name, field1_type, field1_description)
+        field_definition = create_field_entry(field_name, field_type, field_description)
 
         expected_parsed_definition = parse(expected_yaml)[0]
-        actual_parsed_definition = create_schema_definition(name=data_name, fields=[field1_definition], required=[field1_name])
+        actual_parsed_definition = create_schema_definition(name=definition_name, fields=[field_definition], required=[field_name])
 
         self.assertEqual(expected_yaml.strip(), actual_parsed_definition.content.strip())
         self.assertEqual(expected_parsed_definition.name, actual_parsed_definition.name)
         self.assertEqual(expected_parsed_definition.structure, actual_parsed_definition.structure)
         self.assertDictEqual(expected_parsed_definition.structure, actual_parsed_definition.structure)
 
-    def test_create_data_definition_with_validation(self):
-        data_name = "Test Name"
+    def test_create_schema_definition_with_validation(self):
+        definition_name = "Test Name"
         validation_name = "Test Validation"
 
         expected_yaml = "\n".join(
             [
                 "schema:",
-                f"  name: {data_name}",
+                f"  name: {definition_name}",
                 "  fields: []",
                 "  required: []",
                 "  validation:",
@@ -89,7 +89,7 @@ class TestArchParsedDefinitions(TestCase):
         )
 
         validation_entry = create_validation_entry(validation_name)
-        parsed_definition = create_schema_definition(name=data_name, validation=[validation_entry])
+        parsed_definition = create_schema_definition(name=definition_name, validation=[validation_entry])
 
         self.assertEqual(expected_yaml.strip(), parsed_definition.content.strip())
 
@@ -173,13 +173,13 @@ class TestArchParsedDefinitions(TestCase):
 
         self.assertEqual(expected_yaml.strip(), parsed_definition.content.strip())
 
-    def test_create_data_ext_definition(self):
+    def test_create_schema_ext_definition(self):
         name = "Test Schema Extension"
         type = "Other Schema Type"
-        schemaExt1_name = "Ext1 Name"
-        schemaExt1_description = "Ext1 Description"
-        schemaExt1_type = "Ext1 Type"
-        schemaExt1 = create_field_entry(schemaExt1_name, schemaExt1_type, schemaExt1_description)
+        schemaExt_name = "Ext1 Name"
+        schemaExt_description = "Ext1 Description"
+        schemaExt_type = "Ext1 Type"
+        schemaExt = create_field_entry(schemaExt_name, schemaExt_type, schemaExt_description)
 
         expected_yaml = "\n".join(
             [
@@ -188,14 +188,14 @@ class TestArchParsedDefinitions(TestCase):
                 f"  type: {type}",
                 "  schemaExt:",
                 "    add:",
-                f"    - name: {schemaExt1_name}",
-                f"      type: {schemaExt1_type}",
-                f"      description: {schemaExt1_description}",
+                f"    - name: {schemaExt_name}",
+                f"      type: {schemaExt_type}",
+                f"      description: {schemaExt_description}",
                 "    required: []",
             ]
         )
 
-        parsed_definition = create_schema_ext_definition(name, type=type, fields=[schemaExt1])
+        parsed_definition = create_schema_ext_definition(name, type=type, fields=[schemaExt])
 
         self.assertEqual(expected_yaml.strip(), parsed_definition.content.strip())
 

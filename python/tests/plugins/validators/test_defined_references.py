@@ -45,15 +45,15 @@ class TestDefinedReferencesPlugin(TestCase):
         invalid_definition_type = "ThisTypeStringWontAppearInTheCoreSpecIHope"
 
         test_invalid_definition_reference_field = create_field_entry("InvalidBehaviorField", invalid_definition_type)
-        test_invalid_data_defintion = create_schema_definition("InvalidData", fields=[test_invalid_definition_reference_field])
+        test_invalid_schema_defintion = create_schema_definition("InvalidSchema", fields=[test_invalid_definition_reference_field])
 
         invalid_reference_error_message = ""
         expected_result = ValidatorResult([invalid_reference_error_message], False)
 
-        test_active_context = get_core_spec_context([test_invalid_data_defintion])
+        test_active_context = get_core_spec_context([test_invalid_schema_defintion])
         field_definition = test_active_context.get_definition_by_name("Field")
 
-        actual_result = validate_references(test_invalid_data_defintion, field_definition, test_active_context)
+        actual_result = validate_references(test_invalid_schema_defintion, field_definition, test_active_context)
 
         self.assertEqual(expected_result.is_valid, actual_result.is_valid)
         self.assertIn("Undefined", "\n".join(actual_result.messages))
@@ -64,15 +64,15 @@ class TestDefinedReferencesPlugin(TestCase):
         invalid_primitive_type = "striiiiing"
 
         test_invalid_primitive_reference_field = create_field_entry("InvalidPrimitiveField", invalid_primitive_type)
-        test_invalid_data_defintion = create_schema_definition("InvalidData", fields=[test_invalid_primitive_reference_field])
+        test_invalid_schema_defintion = create_schema_definition("InvalidSchema", fields=[test_invalid_primitive_reference_field])
 
         invalid_reference_error_message = ""
         expected_result = ValidatorResult([invalid_reference_error_message], False)
 
-        test_active_context = get_core_spec_context([test_invalid_data_defintion])
+        test_active_context = get_core_spec_context([test_invalid_schema_defintion])
         field_definition = test_active_context.get_definition_by_name("Field")
 
-        actual_result = validate_references(test_invalid_data_defintion, field_definition, test_active_context)
+        actual_result = validate_references(test_invalid_schema_defintion, field_definition, test_active_context)
 
         self.assertEqual(expected_result.is_valid, actual_result.is_valid)
         self.assertIn("Undefined", "\n".join(actual_result.messages))

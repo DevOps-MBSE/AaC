@@ -20,9 +20,9 @@ class TestLanguageContext(TestCase):
         test_definition_name = "myDef"
         test_definition = create_schema_definition(test_definition_name, [test_definition_field])
 
-        data_ext_field_name = "extField"
-        data_ext_field_type = "ExtField"
-        ext_field = create_field_entry(data_ext_field_name, data_ext_field_type)
+        schema_ext_field_name = "extField"
+        schema_ext_field_type = "ExtField"
+        ext_field = create_field_entry(schema_ext_field_name, schema_ext_field_type)
         test_definition_ext = create_schema_ext_definition("myDefExt", test_definition_name, [ext_field])
 
         enum_val1 = "val1"
@@ -51,8 +51,8 @@ class TestLanguageContext(TestCase):
         active_context.add_definition_to_context(test_definition_ext)
         context_modified_test_definition = get_definition_by_name(test_definition_name, active_context.definitions)
         self.assertEqual(2, len(context_modified_test_definition.structure["schema"]["fields"]))
-        self.assertIn(data_ext_field_name, context_modified_test_definition.to_yaml())
-        self.assertIn(data_ext_field_type, context_modified_test_definition.to_yaml())
+        self.assertIn(schema_ext_field_name, context_modified_test_definition.to_yaml())
+        self.assertIn(schema_ext_field_type, context_modified_test_definition.to_yaml())
 
         active_context.add_definition_to_context(test_enum_ext)
         context_modified_test_enum = get_definition_by_name(test_enum_name, active_context.definitions)

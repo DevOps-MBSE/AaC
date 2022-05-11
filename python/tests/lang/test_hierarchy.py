@@ -10,16 +10,16 @@ from tests.helpers.parsed_definitions import create_schema_definition, create_en
 
 class TestLangHierarchy(TestCase):
 
-    def test_get_definition_ancestry_data_definition(self):
+    def test_get_definition_ancestry_schema_definition(self):
         test_context = get_active_context(reload_context=True)
 
-        data_definition = create_schema_definition("Data1")
-        test_context.add_definition_to_context(data_definition)
+        schema_definition = create_schema_definition("TestDefinition")
+        test_context.add_definition_to_context(schema_definition)
 
-        actual_result = get_definition_ancestry(data_definition, test_context)
+        actual_result = get_definition_ancestry(schema_definition, test_context)
         expected_result = [
             get_definition_by_name("schema", test_context.definitions),
-            get_definition_by_name(data_definition.name, test_context.definitions),
+            get_definition_by_name(schema_definition.name, test_context.definitions),
         ]
 
         self.assertListEqual(expected_result, actual_result)
@@ -39,7 +39,7 @@ class TestLangHierarchy(TestCase):
 
         self.assertListEqual(expected_result, actual_result)
 
-    def test_get_root_structure_by_key_data_definition(self):
+    def test_get_root_structure_by_key_schema_definition(self):
         target_definition_key = "schema"
 
         active_context = get_active_context(reload_context=True)

@@ -60,11 +60,11 @@ class TestArchParser(TestCase):
         ):
 
             parsed_models = parse(test_yaml.name)
-            data_message_definition = definition_helpers.get_definition_by_name("Message", parsed_models)
+            schema_message_definition = definition_helpers.get_definition_by_name("Message", parsed_models)
             enum_status_definition = definition_helpers.get_definition_by_name("Status", parsed_models)
             model_echosvc_definition = definition_helpers.get_definition_by_name("EchoService", parsed_models)
 
-            self.check_model_name(data_message_definition.structure, "Message", "schema")
+            self.check_model_name(schema_message_definition.structure, "Message", "schema")
             self.check_model_name(enum_status_definition.structure, "Status", "enum")
             self.check_model_name(model_echosvc_definition.structure, "EchoService", "model")
 

@@ -53,11 +53,11 @@ class TestDefinition(TestCase):
         test_definition = create_schema_definition("Test")
         self.assertFalse(test_definition.is_extension())
 
-    def test_is_data_extension_true(self):
+    def test_is_schema_extension_true(self):
         test_definition = create_schema_ext_definition("Test", "schema")
         self.assertTrue(test_definition.is_schema_extension())
 
-    def test_is_data_extension_false(self):
+    def test_is_schema_extension_false(self):
         test_definition = create_enum_ext_definition("Test", "Primitives")
         self.assertFalse(test_definition.is_schema_extension())
 

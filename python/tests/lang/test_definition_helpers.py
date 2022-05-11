@@ -30,11 +30,11 @@ class TestDefinitionHelpers(TestCase):
             return definition.get_root_key() == root_key
 
         aac_core_definitions = core.get_aac_spec()
-        data_definitions = list(filter(lambda definition: filter_by_root(definition, "schema"), aac_core_definitions))
+        schema_definitions = list(filter(lambda definition: filter_by_root(definition, "schema"), aac_core_definitions))
         enum_definitions = list(filter(lambda definition: filter_by_root(definition, "enum"), aac_core_definitions))
         model_definitions = list(filter(lambda definition: filter_by_root(definition, "model"), aac_core_definitions))
 
-        self.assertEqual(len(get_definitions_by_root_key("schema", aac_core_definitions)), len(data_definitions))
+        self.assertEqual(len(get_definitions_by_root_key("schema", aac_core_definitions)), len(schema_definitions))
         self.assertEqual(len(get_definitions_by_root_key("enum", aac_core_definitions)), len(enum_definitions))
         self.assertEqual(len(get_definitions_by_root_key("model", aac_core_definitions)), len(model_definitions))
 
@@ -42,7 +42,7 @@ class TestDefinitionHelpers(TestCase):
         """
         Unit test for the definition_helpers.search method.
         """
-        data_entry = {
+        schema_entry = {
             "schema": {
                 "fields": [
                     {"name": "name", "type": "string"},
@@ -67,9 +67,9 @@ class TestDefinitionHelpers(TestCase):
             "Field[]",
             "Scenario[]",
         ]
-        data_model_types = search(data_entry, ["schema", "fields", "type"])
+        schema_field_types = search(schema_entry, ["schema", "fields", "type"])
 
-        self.assertCountEqual(data_model_types, expected)
+        self.assertCountEqual(schema_field_types, expected)
 
     def test_get_definition_field_types_model_type(self):
         text_context = get_active_context(reload_context=True)

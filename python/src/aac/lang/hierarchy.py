@@ -16,7 +16,7 @@ def get_definition_ancestry(definition: Definition, context: LanguageContext) ->
     found_self_defined_ancestor = False
     ancestor_definition = definition
 
-    # If the definition key isn't defined, return the data definition as the only ancestor.
+    # If the definition key isn't defined, return the schema definition as the only ancestor.
     if ancestor_definition.get_root_key() not in context.get_root_keys():
         ancestors_list.append(get_root_definition_by_key("schema", context.definitions))
         found_self_defined_ancestor = True

@@ -12,7 +12,7 @@ def get_models_by_type(models: dict[str, dict], root_name: str) -> dict[str, dic
     """Gets subset of models of a specific root name.
 
     The aac.parser.parse() function returns a dict of all parsed types.  Sometimes it is
-    useful to only work with certain roots (i.e. model or data).  This utility
+    useful to only work with certain roots (i.e. model or schema).  This utility
     method allows a setup of parsed models to be "filtered" to a specific root name.
 
     Args:
@@ -34,7 +34,7 @@ def get_definitions_by_root_key(root_key: str, definitions: list[Definition]) ->
     """Return a subset of definitions with the given root key.
 
     The aac.parser.parse() function returns a dict of all parsed types.  Sometimes it is
-    useful to only work with certain roots (i.e. model or data).  This utility
+    useful to only work with certain roots (i.e. model or schema).  This utility
     method allows a setup of parsed definitions to be "filtered" to a specific root key.
 
     Args:
