@@ -1,16 +1,14 @@
 """The Language Context manages the highly-contextual AaC DSL."""
 
-from typing import Optional
 from attr import Factory, attrib, attrs, validators
+from typing import Optional
 import copy
 import logging
 
 from aac.lang.definitions.definition import Definition
-from aac.lang.definitions.type import is_array_type, remove_list_type_indicator
 from aac.lang.definitions.search import search_definition
-from aac.lang.definition_helpers import (
-    get_definitions_by_root_key,
-)
+from aac.lang.definitions.type import is_array_type, remove_list_type_indicator
+from aac.lang.definition_helpers import get_definitions_by_root_key
 
 
 @attrs(slots=True, auto_attribs=True)
@@ -55,7 +53,12 @@ class LanguageContext:
             )
 
         if definition.is_extension():
-            self._apply_extension_to_context(definition)
+            target_definition_name = definition.get_fields().get("type")
+            target_definition = self.get_definition_by_name(target_definition_name)
+            if target_definition:
+                _apply_extension_to_target_definition(target_definition, definition)
+            else:
+                logging.error(f"Extension failed to define target, field 'type' is missing. {definition.structure}")
 
     def add_definitions_to_context(self, definitions: list[Definition]):
         """
@@ -216,45 +219,65 @@ class LanguageContext:
 
         return list(filter(does_definition_root_match, self.definitions))
 
-    def _apply_extension_to_context(self, extension_definition: Definition) -> None:
-        """
-        Apply the extension to the definitions it modifies in the LanguageContext.
 
-        Args:
-            extension_definition (Definition): The extension definition to apply to the context.
-        """
-        target_to_extend = extension_definition.get_fields().get("type")
+def _apply_extension_to_target_definition(target_definition_to_extend: Definition, extension_definition: Definition) -> None:
+    """
+    Apply the extension to the definitions it modifies.
 
-        if not target_to_extend:
-            logging.error(f"Extension failed to define target, field 'type' is missing. {extension_definition.structure}")
+    Args:
+        target_definition_to_extend (Definition): The extension definition to extend.
+        extension_definition (Definition): The extension definition to apply to the target definition.
+    """
+    extension_type = ""
+    extension_field_name = ""
+    if extension_definition.is_enum_extension():
+        extension_type = "enum"
+        extension_field_name = "values"
+    else:
+        extension_type = "data"
+        extension_field_name = "fields"
 
-        target_definition_to_extend = self.get_definition_by_name(target_to_extend)
+    ext_type = f"{extension_type}Ext"
+    target_definition_fields_dict = target_definition_to_extend.get_fields()
+    extension_definition_fields_dict = extension_definition.get_fields()
+    extension_additional_values_dict = extension_definition_fields_dict.get(ext_type)
 
-        extension_type = ""
-        extension_field_name = ""
+    if target_definition_fields_dict.get(extension_field_name):
+        updated_values = []
+        original_values = target_definition_fields_dict.get(extension_field_name) or []
+        new_values = extension_additional_values_dict.get("add") or []
         if extension_definition.is_enum_extension():
-            extension_type = "enum"
-            extension_field_name = "values"
+            updated_values = _get_extended_enum_values(original_values, new_values)
         else:
-            extension_type = "data"
-            extension_field_name = "fields"
+            updated_values = _get_extended_data_fields(original_values, new_values)
 
-        ext_type = f"{extension_type}Ext"
-        target_definition_extension_sub_dict = target_definition_to_extend.get_fields()
-        extension_definition_fields = extension_definition.get_fields()
+        target_definition_fields_dict[extension_field_name] = updated_values
+    else:
+        logging.error(
+            f"Attempted to apply an extension to the incorrect target. Extension name '{extension_definition.name}' target definition '{target_definition_to_extend.name}'"
+        )
 
-        extension_subtype_sub_dict = extension_definition_fields.get(ext_type)
-        if target_definition_extension_sub_dict.get(extension_field_name):
-            target_definition_extension_sub_dict[extension_field_name] += extension_subtype_sub_dict.get("add")
-        else:
-            logging.error(
-                f"Attempted to apply an extension to the incorrect target. Extension name '{extension_definition.name}' target definition '{target_to_extend}'"
-            )
+    _add_extension_required_fields_to_defintion(target_definition_fields_dict, extension_additional_values_dict)
 
-        _add_extension_required_fields_to_defintion(target_definition_extension_sub_dict, extension_subtype_sub_dict)
+
+def _get_extended_enum_values(original_values: list, new_values: list) -> list:
+    """Return a unique list of the original and new enum values together."""
+    updated_values = {value: value for value in original_values}
+    new_values = {value: value for value in new_values}
+    updated_values.update(new_values)
+    return list(updated_values.values())
+
+
+def _get_extended_data_fields(original_values: list, new_values: list):
+    """Return a unique list of the original and new data fields together."""
+    updated_values = {value.get("name"): value for value in original_values}
+    new_values = {value.get("name"): value for value in new_values}
+    updated_values.update(new_values)
+    return list(updated_values.values())
 
 
 def _add_extension_required_fields_to_defintion(target_definition_sub_dict, extension_dictionary_sub_dict):
+    """Add the extension's additional required fields to the target definition."""
     if "required" in extension_dictionary_sub_dict:
 
         if "required" not in target_definition_sub_dict:

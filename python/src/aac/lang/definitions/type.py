@@ -1,5 +1,6 @@
 """Functions for managing and interacting with definition arrays."""
 
+
 def remove_list_type_indicator(list_type: str) -> str:
     """Return the AaC type without any trailing list indicator characters '[]'."""
     return_type = list_type
