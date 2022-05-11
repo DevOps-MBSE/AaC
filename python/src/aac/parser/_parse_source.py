@@ -44,7 +44,7 @@ def parse(source: str) -> list[Definition]:
 
     parsed_definitions = []
     for name, definition in definitions.items():
-        parsed_definitions.append(Definition(name, contents, get_lexemes_for_definition(contents), definition))
+        parsed_definitions.append(Definition(name, contents, source, get_lexemes_for_definition(contents), definition))
 
     return parsed_definitions
 
