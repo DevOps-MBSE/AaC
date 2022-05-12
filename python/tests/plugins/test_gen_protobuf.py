@@ -15,7 +15,7 @@ from aac.plugins.gen_protobuf.gen_protobuf_impl import (
 
 from tests.helpers.assertion import assert_plugin_failure, assert_plugin_success
 from tests.helpers.io import temporary_test_file
-from tests.helpers.parsed_definitions import create_enum_definition, create_field_entry, create_data_definition
+from tests.helpers.parsed_definitions import create_enum_definition, create_field_entry, create_schema_definition
 
 
 class TestGenerateProtobufPlugin(TestCase):
@@ -124,7 +124,7 @@ class TestGenerateProtobufPlugin(TestCase):
         test_message_field = create_field_entry(test_message_field_name, test_message_field_type)
 
         test_message_name = "DataA"
-        test_message_definition = create_data_definition(test_message_name, [test_message_field])
+        test_message_definition = create_schema_definition(test_message_name, [test_message_field])
 
         actual_result = _get_message_template_properties({test_message_definition.name: test_message_definition})
         self.assertDictEqual(expected_result, actual_result[0])
@@ -143,7 +143,7 @@ class TestGenerateProtobufPlugin(TestCase):
         test_message_field = create_field_entry(test_message_field_name, test_message_field_type)
 
         test_message_name = "DataA"
-        test_message_definition = create_data_definition(test_message_name, [test_message_field])
+        test_message_definition = create_schema_definition(test_message_name, [test_message_field])
 
         actual_result = _get_message_template_properties({test_message_definition.name: test_message_definition})
         self.assertDictEqual(expected_result, actual_result[0])
@@ -169,7 +169,7 @@ class TestGenerateProtobufPlugin(TestCase):
         test_id_field = create_field_entry(test_id_field_name, test_id_field_type)
 
         test_message_name = "DataA"
-        test_message_definition = create_data_definition(
+        test_message_definition = create_schema_definition(
             test_message_name, [test_id_field, test_message_field], [test_message_field_name]
         )
 
@@ -212,8 +212,8 @@ class TestGenerateProtobufPlugin(TestCase):
         test_id_field_type = "int64"
         test_id_field = create_field_entry(test_id_field_name, test_id_field_type)
 
-        test_message_a_definition = create_data_definition(test_message_a_name, [test_metadata_field, test_message_field])
-        test_message_b_definition = create_data_definition(test_message_b_name, [test_id_field])
+        test_message_a_definition = create_schema_definition(test_message_a_name, [test_metadata_field, test_message_field])
+        test_message_b_definition = create_schema_definition(test_message_b_name, [test_id_field])
 
         test_definitions_dict = {d.name: d for d in [test_message_a_definition, test_message_b_definition]}
         actual_result = _get_message_template_properties(test_definitions_dict)
@@ -252,7 +252,7 @@ class TestGenerateProtobufPlugin(TestCase):
         test_message_type_field = create_field_entry(test_message_type_field_name, test_message_type_field_type)
 
         test_message_a_name = "DataA"
-        test_message_a_definition = create_data_definition(test_message_a_name, [test_message_type_field, test_message_field])
+        test_message_a_definition = create_schema_definition(test_message_a_name, [test_message_type_field, test_message_field])
 
         test_definitions =  test_message_a_definition, test_enum_definition
         get_active_context().add_definitions_to_context(test_definitions)

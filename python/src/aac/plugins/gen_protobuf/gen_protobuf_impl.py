@@ -116,7 +116,7 @@ def _get_embedded_data_structures(schema_definition: Definition, active_context:
     """Return a dict of schema definition structures that make up the structure of the definition."""
 
     interface_message_substructures = {}
-    definition_names_to_traverse = set([field.get("type") for field in schema_definition.get_fields().get("fields")])
+    definition_names_to_traverse = set([field.get("type") for field in schema_definition.get_top_level_fields().get("fields")])
 
     while len(definition_names_to_traverse) > 0:
         target_definition_name = definition_names_to_traverse.pop()
@@ -129,7 +129,7 @@ def _get_embedded_data_structures(schema_definition: Definition, active_context:
 
                 if not active_context.is_enum_type(target_definition.name):
                     target_definition_field_types = [
-                        field.get("type") for field in target_definition.get_fields().get("fields")
+                        field.get("type") for field in target_definition.get_top_level_fields().get("fields")
                     ]
 
                     # filter out already visited definitions
@@ -184,7 +184,7 @@ def _to_template_properties_dict(
         A dictionary containing the properties in a consistent structure.
     """
     active_context = get_active_context()
-    file_type = "enum" if active_context.is_enum_type(name) else "data"
+    file_type = "enum" if active_context.is_enum_type(name) else "schema"
 
     return {
         "name": name,
@@ -205,7 +205,7 @@ def _get_enum_properties(enum_definition: Definition) -> dict[str, any]:
     Returns:
          A dictionary containing the template generation properties.
     """
-    enum_values = [enum.upper() for enum in enum_definition.get_fields().get("values")]
+    enum_values = [enum.upper() for enum in enum_definition.get_top_level_fields().get("values")]
     return _to_template_properties_dict(enum_definition.name, enums=enum_values)
 
 
@@ -221,7 +221,7 @@ def _get_data_model_properties(interface_structures: dict[str, Definition], data
          A dictionary containing the template generation properties.
     """
     active_context = get_active_context()
-    definition_fields = data_definition.get_fields()
+    definition_fields = data_definition.get_top_level_fields()
     structure_fields = definition_fields.get("fields")
 
     message_fields = []

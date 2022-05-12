@@ -234,7 +234,7 @@ def _apply_extension_to_target_definition(target_definition_to_extend: Definitio
         extension_type = "enum"
         extension_field_name = "values"
     else:
-        extension_type = "data"
+        extension_type = "schema"
         extension_field_name = "fields"
 
     ext_type = f"{extension_type}Ext"
