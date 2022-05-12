@@ -54,13 +54,14 @@ def generate_protobuf_messages(architecture_file: str, output_directory: str) ->
     with validated_source(architecture_file) as validation_result:
         loaded_templates = load_default_templates("gen_protobuf")
 
+        # Get the validated model definitions
         validated_definitions = validation_result.definitions
         model_definitions = get_definitions_by_root_key("model", validated_definitions)
 
         model_interface_messages = _get_model_interface_data_structures(model_definitions)
-        message_template_properties = _get_template_generation_properties(model_interface_messages)
+        protobuf_message_template_properties = _get_message_template_properties(model_interface_messages)
 
-        generated_template_messages = _generate_protobuf_messages(loaded_templates, message_template_properties)
+        generated_template_messages = _generate_protobuf_messages(loaded_templates, protobuf_message_template_properties)
 
         write_generated_templates_to_file(generated_template_messages, output_directory)
 
@@ -69,7 +70,9 @@ def generate_protobuf_messages(architecture_file: str, output_directory: str) ->
 
 def _get_model_interface_data_structures(model_definitions: list[Definition]) -> dict[str, Definition]:
     """
-    Collect all data and enum definitions that are referenced as interface messages or as a nested type within an interface message.
+    Return a dict of definitions that are referenced as interface messages or as a nested type within an interface message.
+
+    Model interface definitions are any definitions that are referenced as input or output for a model's behavior.
 
     Args:
         model_definitions: A list of model definitions to parse for interface messages
@@ -110,7 +113,7 @@ def _get_model_behavior_input_output_definitions(model_definition: Definition) -
 
 
 def _get_embedded_data_structures(schema_definition: Definition, active_context: LanguageContext) -> dict[str, Definition]:
-    """Recurses through a definition's structure and returns all schema definition structures that make up the definition."""
+    """Return a dict of schema definition structures that make up the structure of the definition."""
 
     interface_message_substructures = {}
     definition_names_to_traverse = set([field.get("type") for field in schema_definition.get_fields().get("fields")])
@@ -141,7 +144,7 @@ def _get_embedded_data_structures(schema_definition: Definition, active_context:
     return interface_message_substructures
 
 
-def _get_template_generation_properties(interface_structures: dict[str, Definition]) -> list[dict]:
+def _get_message_template_properties(interface_structures: dict[str, Definition]) -> list[dict]:
     """
     Analyzes data and enum models and produces a list of template property dictionaries for each protobuf file to generate.
 
@@ -153,10 +156,7 @@ def _get_template_generation_properties(interface_structures: dict[str, Definiti
     """
 
     template_properties_list = []
-    for def_name, definition in interface_structures.items():
-
-        if not definition:
-            logging.error(f"This dude -> '{def_name}'")
+    for definition in interface_structures.values():
 
         if definition.is_enum():
             template_properties_list.append(_get_enum_properties(definition))
@@ -167,14 +167,14 @@ def _get_template_generation_properties(interface_structures: dict[str, Definiti
     return template_properties_list
 
 
-def _properties_dict(
-    name: str, definition_type: str, enums: list[str] = [], fields: list[dict] = [], imports: list[str] = []
+def _to_template_properties_dict(
+    name: str, enums: list[str] = [], fields: list[dict] = [], imports: list[str] = []
 ) -> dict[str, any]:
     """
-    Provides a consistent dictionary structure for model properties.
+    Return the template model properties dictionary for the provided arguments.
 
     Args:
-        name (str): The name of the model/enum
+        name (str): The name of the definition/message
         definition_type (str): The definition type
         enums (list): A list of enum values
         fields (list): A list of model fields
@@ -183,20 +183,16 @@ def _properties_dict(
     Returns:
         A dictionary containing the properties in a consistent structure.
     """
+    active_context = get_active_context()
+    file_type = "enum" if active_context.is_enum_type(name) else "data"
 
-    properties = {
+    return {
         "name": name,
-        "file_type": definition_type,
+        "file_type": file_type,
+        "enums": enums,
+        "fields": fields,
+        "imports": imports
     }
-
-    if enums:
-        properties["enums"] = enums
-    if fields:
-        properties["fields"] = fields
-    if imports:
-        properties["imports"] = imports
-
-    return properties
 
 
 def _get_enum_properties(enum_definition: Definition) -> dict[str, any]:
@@ -210,7 +206,7 @@ def _get_enum_properties(enum_definition: Definition) -> dict[str, any]:
          A dictionary containing the template generation properties.
     """
     enum_values = [enum.upper() for enum in enum_definition.get_fields().get("values")]
-    return _properties_dict(enum_definition.name, "enum", enums=enum_values)
+    return _to_template_properties_dict(enum_definition.name, enums=enum_values)
 
 
 def _get_data_model_properties(interface_structures: dict[str, Definition], data_definition: Definition) -> dict[str, any]:
@@ -224,40 +220,37 @@ def _get_data_model_properties(interface_structures: dict[str, Definition], data
     Returns:
          A dictionary containing the template generation properties.
     """
+    active_context = get_active_context()
     definition_fields = data_definition.get_fields()
-    required_fields = definition_fields.get("required") or []
     structure_fields = definition_fields.get("fields")
 
     message_fields = []
     message_imports = []
     for field in structure_fields:
         proto_field_name = field.get("name")
-        proto_field_type = None
-
-        field_type = field.get("type")
-        sanitized_field_type = remove_list_type_indicator(field_type)
-        field_proto_type = field.get("protobuf_type")
-        if sanitized_field_type in interface_structures:
-            proto_field_type = field_type
-
-            # This is the last time we have access to the other model, calculate its future protobuf file name here
-            model_to_import = interface_structures.get(sanitized_field_type)
-            message_imports.append(_convert_message_name_to_file_name(model_to_import.name))
-
-        else:
-            # If the referenced type isn't a user-defined type, then set the primitive type prioritizing `protobuf_type` before `type`
-            proto_field_type = field_proto_type or field_type
+        proto_field_type = field.get("type")
+        sanitized_proto_field_type = remove_list_type_indicator(proto_field_type)
 
         message_fields.append(
             {
                 "name": proto_field_name,
-                "type": proto_field_type,
-                "optional": proto_field_name not in required_fields,
-                "repeat": is_array_type(field_type),
+                "type": sanitized_proto_field_type,
+                "repeat": is_array_type(proto_field_type),
             }
         )
 
-    return _properties_dict(data_definition.name, "data", fields=message_fields, imports=message_imports)
+        if sanitized_proto_field_type in interface_structures:
+            definition_to_import = interface_structures.get(sanitized_proto_field_type)
+            message_imports.append(_convert_message_name_to_file_name(definition_to_import.name))
+
+        elif not active_context.is_primitive_type(sanitized_proto_field_type):
+            bad_message_type = sanitized_proto_field_type
+            identified_interface_types = list(interface_structures.keys())
+            error_message = f"Referenced message type '{bad_message_type}' isn't in the identified interface messages and data structures: {identified_interface_types}."
+            logging.error(error_message)
+            raise GenerateProtobufException(error_message)
+
+    return _to_template_properties_dict(data_definition.name, fields=message_fields, imports=message_imports)
 
 
 def _generate_protobuf_messages(protobuf_message_templates: list, properties: list[dict]) -> list[TemplateOutputFile]:
