@@ -1,7 +1,7 @@
 import:
   - ./MathFunction.yaml
   - ../spec/Calculator_IRS.yaml
-data:
+schema:
   name: MathRequest
   requirements:
     ids:

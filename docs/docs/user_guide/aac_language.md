@@ -13,9 +13,9 @@ This has not yet been written.
 
 Describe the use of imports.
 
-## Data
+## Schema
 
-Describe modeling data within a system.
+Describe modeling data structures and self-defined language structures within a system.
 
 ## Enum
 

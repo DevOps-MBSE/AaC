@@ -289,13 +289,13 @@ def _generate_protobuf_messages(protobuf_message_templates: list, properties: li
 
 def _convert_message_name_to_file_name(message_name: str) -> str:
     """
-    Convert a `data:` definition's name into an opinionated and stylized protobuf 3 file name.
+    Convert a `schema:` definition's name into an opinionated and stylized protobuf 3 file name.
 
     File and general structure style will follow the google protobuf style which can be found at
         https://developers.google.com/protocol-buffers/docs/style
 
     Args:
-        message_name: the name of a `data:` definition to convert to a protobuf file name
+        message_name: the name of a `schema:` definition to convert to a protobuf file name
 
     Returns:
         A protobuf file name string

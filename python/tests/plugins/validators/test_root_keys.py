@@ -9,7 +9,7 @@ from aac.plugins.validators import ValidatorPlugin
 from aac.plugins.validators.root_keys import get_plugin_aac_definitions, register_validators, validate_root_keys
 
 from tests.helpers.assertion import assert_validator_result_success, assert_validator_result_failure
-from tests.helpers.parsed_definitions import create_data_definition, create_data_ext_definition, create_field_entry
+from tests.helpers.parsed_definitions import create_schema_definition, create_schema_ext_definition, create_field_entry
 
 
 class TestRootKeysValidator(TestCase):
@@ -31,12 +31,12 @@ class TestRootKeysValidator(TestCase):
 
     def test_validate_root_keys_valid_key(self):
         test_primitive_reference_field = create_field_entry("ValidPrimitiveField", "string")
-        test_definition = create_data_definition("TestData", [test_primitive_reference_field])
+        test_definition = create_schema_definition("TestData", [test_primitive_reference_field])
 
         test_active_context = get_active_context()
         test_active_context.add_definition_to_context(test_definition)
 
-        target_schema_definition = get_definition_by_name("data", test_active_context.definitions)
+        target_schema_definition = get_definition_by_name("schema", test_active_context.definitions)
         actual_result = validate_root_keys(test_definition, target_schema_definition, test_active_context)
 
         assert_validator_result_success(actual_result)
@@ -69,11 +69,11 @@ class TestRootKeysValidator(TestCase):
         test_definition = Definition("Test", "", [], test_definition_dict)
 
         new_root_field = create_field_entry(fake_extended_root_key, fake_extended_root_key)
-        root_key_extension = create_data_ext_definition("NewRootKeys", "root", [new_root_field])
+        root_key_extension = create_schema_ext_definition("NewRootKeys", "root", [new_root_field])
         test_active_context = get_active_context()
         test_active_context.add_definitions_to_context([test_definition, root_key_extension])
 
-        target_schema_definition = get_definition_by_name("data", test_active_context.definitions)
+        target_schema_definition = get_definition_by_name("schema", test_active_context.definitions)
         actual_result = validate_root_keys(test_definition, target_schema_definition, test_active_context)
 
         assert_validator_result_success(actual_result)

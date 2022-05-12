@@ -5,7 +5,7 @@ It is not uncommon for material decisions to drive significant cost or complexit
 model plug-in allows you to define a organized structure for your material within a rigorously configuration
 managed environment.  Hopefully this simplifies and improves on the "huge spreadsheet approach" used by some teams.
 
-There are 3 primary data types to understand when modeling material:
+There are 3 primary schema types to understand when modeling material:
 - Part: This is a material line item you may find in a vendor quote.  It may represent
 hardware, software, or services.  It may have a cost or be free (i.e. Open Source Software).
 - Assembly:  This is a collection of parts that make up a logical "thing" in your material design.  It gives you

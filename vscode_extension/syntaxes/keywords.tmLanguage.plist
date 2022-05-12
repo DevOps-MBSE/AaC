@@ -25,7 +25,7 @@
                 <string>(?x)
                 \b(
                 root | enum | extension | EnumExtension | DataExtension | Validation | ValidationReference | ValidatorInput | ValidatorOutput
-                | Scenario | BehaviorType | Primitives | Field | data | Behavior | model | usecase | Step | Branch | import | ext | validation
+                | Scenario | BehaviorType | Primitives | Field | schema | Behavior | model | usecase | Step | Branch | import | ext | validation
                 | name | values | type | enumExt | dataExt | add | required | description | behavior | arguments | scenario | tags | given
                 | when | then | fields | input | output | acceptance | components | behavior | state | participants | steps | step | source
                 | target | action | if | else | loop | condition

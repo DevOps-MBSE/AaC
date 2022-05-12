@@ -2,7 +2,7 @@ model:
   name: material-model
   description: material-model is an Architecture-as-Code plugin that allows a user to model the physical design of a system.
 ---
-data:
+schema:
   name: Part
   description: A material item used in a system (hardware, software, or service).
   fields:
@@ -46,7 +46,7 @@ enum:
     - Furnished_Equipment
     - Reuse
 ---
-data:
+schema:
   name: PartRef
   description:  Reference to a part with quantity
   fields:
@@ -60,7 +60,7 @@ data:
     - name
     - quantity
 ---
-data:
+schema:
   name: Assembly
   description: A collection of parts into a logical thing.
   fields:
@@ -80,7 +80,7 @@ data:
     - name
     - description
 ---
-data:
+schema:
   name: AssemblyRef
   description:  Reference to an assembly with quantity
   fields:
@@ -94,7 +94,7 @@ data:
     - name
     - quantity
 ---
-data:
+schema:
   name: Deployment
   description: A collection of parts and assemblies to be deployed to one or more locations.
   fields:
@@ -124,7 +124,7 @@ data:
     - description
     - location
 ---
-data:
+schema:
   name: DeploymentRef
   description:  Reference to a deployment with quantity
   fields:
@@ -141,7 +141,7 @@ data:
 ext:
    name: MaterialRootItems
    type: root
-   dataExt:
+   schemaExt:
       add:
         - name: part
           type: Part

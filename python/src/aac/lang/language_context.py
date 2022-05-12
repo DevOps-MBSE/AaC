@@ -53,7 +53,7 @@ class LanguageContext:
             )
 
         if definition.is_extension():
-            target_definition_name = definition.get_fields().get("type")
+            target_definition_name = definition.get_top_level_fields().get("type")
             target_definition = self.get_definition_by_name(target_definition_name)
             if target_definition:
                 _apply_extension_to_target_definition(target_definition, definition)
@@ -102,7 +102,7 @@ class LanguageContext:
         root_definition = self.get_definition_by_name("root")
 
         if root_definition:
-            return search_definition(root_definition, ["data", "fields"])
+            return search_definition(root_definition, ["schema", "fields"])
         else:
             return []
 
@@ -238,8 +238,8 @@ def _apply_extension_to_target_definition(target_definition_to_extend: Definitio
         extension_field_name = "fields"
 
     ext_type = f"{extension_type}Ext"
-    target_definition_fields_dict = target_definition_to_extend.get_fields()
-    extension_definition_fields_dict = extension_definition.get_fields()
+    target_definition_fields_dict = target_definition_to_extend.get_top_level_fields()
+    extension_definition_fields_dict = extension_definition.get_top_level_fields()
     extension_additional_values_dict = extension_definition_fields_dict.get(ext_type)
 
     if target_definition_fields_dict.get(extension_field_name):

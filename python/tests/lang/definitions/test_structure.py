@@ -6,7 +6,7 @@ from aac.lang.definitions.schema import get_definition_schema_components
 from tests.helpers.context import get_core_spec_context
 from tests.helpers.parsed_definitions import (
     create_behavior_entry,
-    create_data_definition,
+    create_schema_definition,
     create_field_entry,
     create_model_definition,
     create_scenario_entry,
@@ -20,14 +20,14 @@ class TestDefinitionStructures(TestCase):
 
         test_string_field_entry = create_field_entry("TestStringField", "string")
         test_file_field_entry = create_field_entry("TestFileField", "file")
-        test_data_definition = create_data_definition("TestData", fields=[test_string_field_entry, test_file_field_entry])
+        test_schema_definition = create_schema_definition("TestData", fields=[test_string_field_entry, test_file_field_entry])
 
-        test_context.add_definition_to_context(test_data_definition)
+        test_context.add_definition_to_context(test_schema_definition)
 
         field_definition = test_context.get_definition_by_name("Field")
         expected_field_definitions = [test_string_field_entry, test_file_field_entry]
 
-        actual_field_definitions = get_substructures_by_type(test_data_definition, field_definition, test_context)
+        actual_field_definitions = get_substructures_by_type(test_schema_definition, field_definition, test_context)
 
         self.assertListEqual(expected_field_definitions, actual_field_definitions)
 
@@ -67,14 +67,14 @@ class TestDefinitionStructures(TestCase):
     def test_get_definition_schema_components_with_data(self):
         test_context = get_core_spec_context()
 
-        data_definition = test_context.get_definition_by_name("data")
+        schema_definition = test_context.get_definition_by_name("schema")
 
         # Per the core spec, we'd expect Field and ValidationReference
         field_definition = test_context.get_definition_by_name("Field")
         validation_reference_definition = test_context.get_definition_by_name("ValidationReference")
 
         expected_definitions = [field_definition, validation_reference_definition]
-        actual_definitions = get_definition_schema_components(data_definition, test_context)
+        actual_definitions = get_definition_schema_components(schema_definition, test_context)
 
         self.assertEqual(len(actual_definitions), 2)
         self.assertListEqual(expected_definitions, actual_definitions)
