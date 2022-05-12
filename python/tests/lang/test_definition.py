@@ -1,8 +1,8 @@
 from unittest import TestCase
 
 from tests.helpers.parsed_definitions import (
-    create_data_definition,
-    create_data_ext_definition,
+    create_schema_definition,
+    create_schema_ext_definition,
     create_enum_definition,
     create_enum_ext_definition,
     create_field_entry,
@@ -11,15 +11,15 @@ from tests.helpers.parsed_definitions import (
 
 class TestDefinition(TestCase):
     def test_get_fields_with_empty_no_top_level_fields(self):
-        test_definition = create_data_definition("EmptyData")
-        test_definition.structure["data"] = {}
+        test_definition = create_schema_definition("EmptyData")
+        test_definition.structure["schema"] = {}
 
-        actual_result = test_definition.get_fields()
+        actual_result = test_definition.get_top_level_fields()
 
         self.assertEqual({}, actual_result)
 
     def test_get_required_with_no_required_entries(self):
-        test_definition = create_data_definition("EmptyData")
+        test_definition = create_schema_definition("EmptyData")
 
         actual_result = test_definition.get_required()
 
@@ -30,7 +30,7 @@ class TestDefinition(TestCase):
         test_required_sub_field_two = create_field_entry("ReqSubField2", "string")
         test_fields = [test_required_sub_field_one, test_required_sub_field_two]
         test_required = [test_required_sub_field_one.get("name"), test_required_sub_field_two.get("name")]
-        test_definition = create_data_definition("TestData", fields=test_fields, required=test_required)
+        test_definition = create_schema_definition("TestData", fields=test_fields, required=test_required)
 
         actual_result = test_definition.get_required()
         expected_result = [test_required_sub_field_one.get("name"), test_required_sub_field_two.get("name")]
@@ -42,29 +42,29 @@ class TestDefinition(TestCase):
         self.assertTrue(test_definition.is_enum())
 
     def test_is_enum_false(self):
-        test_definition = create_data_definition("Test")
+        test_definition = create_schema_definition("Test")
         self.assertFalse(test_definition.is_enum())
 
     def test_is_extension_true(self):
-        test_definition = create_data_ext_definition("Test", "data")
+        test_definition = create_schema_ext_definition("Test", "schema")
         self.assertTrue(test_definition.is_extension())
 
     def test_is_extension_false(self):
-        test_definition = create_data_definition("Test")
+        test_definition = create_schema_definition("Test")
         self.assertFalse(test_definition.is_extension())
 
-    def test_is_data_extension_true(self):
-        test_definition = create_data_ext_definition("Test", "data")
-        self.assertTrue(test_definition.is_data_extension())
+    def test_is_schema_extension_true(self):
+        test_definition = create_schema_ext_definition("Test", "schema")
+        self.assertTrue(test_definition.is_schema_extension())
 
-    def test_is_data_extension_false(self):
+    def test_is_schema_extension_false(self):
         test_definition = create_enum_ext_definition("Test", "Primitives")
-        self.assertFalse(test_definition.is_data_extension())
+        self.assertFalse(test_definition.is_schema_extension())
 
     def test_is_enum_extension_true(self):
         test_definition = create_enum_ext_definition("Test", "Primitives")
         self.assertTrue(test_definition.is_enum_extension())
 
     def test_is_enum_extension_false(self):
-        test_definition = create_data_ext_definition("Test", "data")
+        test_definition = create_schema_ext_definition("Test", "schema")
         self.assertFalse(test_definition.is_enum_extension())

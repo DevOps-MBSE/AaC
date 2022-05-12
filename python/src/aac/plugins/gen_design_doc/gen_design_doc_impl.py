@@ -68,7 +68,7 @@ def _make_template_properties(parsed_definitions: list[Definition], arch_file: s
     title = _get_document_title(arch_file)
     models = _get_and_prepare_definitions_by_type(parsed_definitions, "model")
     usecases = _get_and_prepare_definitions_by_type(parsed_definitions, "usecase")
-    interfaces = _get_and_prepare_definitions_by_type(parsed_definitions, "data")
+    interfaces = _get_and_prepare_definitions_by_type(parsed_definitions, "schema")
     return {
         "title": title,
         "models": models,

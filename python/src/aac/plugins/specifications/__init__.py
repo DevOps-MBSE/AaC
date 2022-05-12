@@ -40,6 +40,6 @@ def get_plugin_aac_definitions() -> str:
     Return data and ext definitions to apply to the AaC base.
 
     Returns:
-        string representing yaml extensions and data definitions employed by the plugin
+        string representing yaml extensions and definitions defined by the plugin
     """
     return get_resource_file_contents(__package__, "specifications.yaml")

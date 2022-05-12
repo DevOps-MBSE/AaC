@@ -65,7 +65,7 @@ def _collect_data_and_enum_definitions(parsed_models: dict) -> dict[str, dict]:
     def collect_nested_types(interface_data_message_types: list[str]):
         nested_types = []
         for message_type in interface_data_message_types:
-            data_model = parsed_models[message_type]["data"]
+            data_model = parsed_models[message_type]["schema"]
 
             for field in data_model.get("fields"):
                 field_type = field.get("type")
@@ -106,7 +106,7 @@ def _collect_template_generation_properties(data_and_enum_models: dict) -> list[
 
     template_properties_list = []
     for data_or_enum_message_model in data_and_enum_models.values():
-        data_model = data_or_enum_message_model.get("data")
+        data_model = data_or_enum_message_model.get("schema")
         enum_model = data_or_enum_message_model.get("enum")
 
         if data_model:
@@ -193,7 +193,7 @@ def _get_data_model_properties(data_and_enum_models: dict, data_model: dict) -> 
 
             # This is the last time we have access to the other model, calculate its future protobuf file name here
             model_to_import = data_and_enum_models.get(field_type)
-            model_to_import = model_to_import.get("data") or model_to_import.get("enum")
+            model_to_import = model_to_import.get("schema") or model_to_import.get("enum")
             message_imports.append(_convert_message_name_to_file_name(model_to_import.get("name")))
 
         else:
@@ -209,7 +209,7 @@ def _get_data_model_properties(data_and_enum_models: dict, data_model: dict) -> 
             }
         )
 
-    return _properties_dict(data_name, "data", fields=message_fields, imports=message_imports)
+    return _properties_dict(data_name, "schema", fields=message_fields, imports=message_imports)
 
 
 def _generate_protobuf_messages(protobuf_message_templates: list, properties: list[dict]) -> list[TemplateOutputFile]:
@@ -248,13 +248,13 @@ def _generate_protobuf_messages(protobuf_message_templates: list, properties: li
 
 def _convert_message_name_to_file_name(message_name: str) -> str:
     """
-    Convert a `data:` definition's name into an opinionated and stylized protobuf 3 file name.
+    Convert a `schema:` definition's name into an opinionated and stylized protobuf 3 file name.
 
     File and general structure style will follow the google protobuf style which can be found at
         https://developers.google.com/protocol-buffers/docs/style
 
     Args:
-        message_name: the name of a `data:` definition to convert to a protobuf file name
+        message_name: the name of a `schema:` definition to convert to a protobuf file name
 
     Returns:
         A protobuf file name string

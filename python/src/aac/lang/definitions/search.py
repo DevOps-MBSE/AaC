@@ -17,7 +17,7 @@ def search(model: dict[str, Any], search_keys: list[str]) -> list:
         Typical usage example:
         Let's say you have a dict structure parsed from the following AaC yaml.
 
-            data:
+            schema:
             name: MyData
             fields:
                 - name: one
@@ -30,13 +30,13 @@ def search(model: dict[str, Any], search_keys: list[str]) -> list:
         You know the structure of the specification and need to iterate through each field.
         The search utility method simplifies that for you.
 
-            for field in definition_helpers.search(my_model, ["data", "fields"]):
+            for field in definition_helpers.search(my_model, ["schema", "fields"]):
                 print(f"field_name: {field["name"]} field_type {field["type"]}")
 
         The above example demonstrates a complex type being returned as a dict.  Search will also
         provide direct access to simple types in the model.
 
-            for field_name in definition_helpers.search(my_model, ["data", "fields", "name"]):
+            for field_name in definition_helpers.search(my_model, ["schema", "fields", "name"]):
                 print(f"field_name: {field_name}")
 
     Args:
@@ -110,7 +110,7 @@ def search_definition(definition: Definition, search_keys: list[str]) -> list:
         Typical usage example:
         Let's say you have a definition structure parsed from the following AaC yaml.
 
-            data:
+            schema:
               name: MyData
               fields:
                   - name: one
@@ -123,13 +123,13 @@ def search_definition(definition: Definition, search_keys: list[str]) -> list:
         You know the structure of the specification and need to iterate through each field.
         The search utility method simplifies that for you.
 
-            for field in definition_helpers.search(my_model, ["data", "fields"]):
+            for field in definition_helpers.search(my_model, ["schema", "fields"]):
                 print(f"field_name: {field["name"]} field_type {field["type"]}")
 
         The above example demonstrates a complex type being returned as a dict.  Search will also
         provide direct access to simple types in the model.
 
-            for field_name in definition_helpers.search(my_definition, ["data", "fields", "name"]):
+            for field_name in definition_helpers.search(my_definition, ["schema", "fields", "name"]):
                 print(f"field_name: {field_name}")
 
     Args:

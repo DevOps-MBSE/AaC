@@ -56,8 +56,8 @@ def _get_validation_entries(definition: Definition) -> list[dict]:
     validations = {}
 
     # Currently validations are only registered in `data` root definitions.
-    if definition.get_root_key() == "data":
-        validations = search_definition(definition, ["data", "validation"])
+    if definition.get_root_key() == "schema":
+        validations = search_definition(definition, ["schema", "validation"])
 
     return validations
 

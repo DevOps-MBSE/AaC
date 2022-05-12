@@ -5,8 +5,8 @@ from aac.lang.language_context import LanguageContext
 from aac.spec import get_aac_spec, get_primitives, get_root_keys
 
 from tests.helpers.parsed_definitions import (
-    create_data_definition,
-    create_data_ext_definition,
+    create_schema_definition,
+    create_schema_ext_definition,
     create_enum_definition,
     create_enum_ext_definition,
     create_field_entry,
@@ -18,12 +18,12 @@ class TestLanguageContext(TestCase):
     def test_add_definition_to_context_with_extensions(self):
         test_definition_field = create_field_entry("TestField", "string")
         test_definition_name = "myDef"
-        test_definition = create_data_definition(test_definition_name, [test_definition_field])
+        test_definition = create_schema_definition(test_definition_name, [test_definition_field])
 
-        data_ext_field_name = "extField"
-        data_ext_field_type = "ExtField"
-        ext_field = create_field_entry(data_ext_field_name, data_ext_field_type)
-        test_definition_ext = create_data_ext_definition("myDefExt", test_definition_name, [ext_field])
+        schema_ext_field_name = "extField"
+        schema_ext_field_type = "ExtField"
+        ext_field = create_field_entry(schema_ext_field_name, schema_ext_field_type)
+        test_definition_ext = create_schema_ext_definition("myDefExt", test_definition_name, [ext_field])
 
         enum_val1 = "val1"
         enum_val2 = "val2"
@@ -45,14 +45,14 @@ class TestLanguageContext(TestCase):
         self.assertIn(test_definition, active_context.definitions)
         self.assertIn(test_enum, active_context.definitions)
 
-        self.assertEqual(1, len(test_definition.structure["data"]["fields"]))
+        self.assertEqual(1, len(test_definition.structure["schema"]["fields"]))
         self.assertEqual(2, len(test_enum.structure["enum"]["values"]))
 
         active_context.add_definition_to_context(test_definition_ext)
         context_modified_test_definition = get_definition_by_name(test_definition_name, active_context.definitions)
-        self.assertEqual(2, len(context_modified_test_definition.structure["data"]["fields"]))
-        self.assertIn(data_ext_field_name, context_modified_test_definition.to_yaml())
-        self.assertIn(data_ext_field_type, context_modified_test_definition.to_yaml())
+        self.assertEqual(2, len(context_modified_test_definition.structure["schema"]["fields"]))
+        self.assertIn(schema_ext_field_name, context_modified_test_definition.to_yaml())
+        self.assertIn(schema_ext_field_type, context_modified_test_definition.to_yaml())
 
         active_context.add_definition_to_context(test_enum_ext)
         context_modified_test_enum = get_definition_by_name(test_enum_name, active_context.definitions)
@@ -88,7 +88,7 @@ class TestLanguageContext(TestCase):
         core_spec = get_aac_spec()
         test_context = LanguageContext(core_spec)
 
-        self.assertTrue(test_context.is_definition_type("data"))
+        self.assertTrue(test_context.is_definition_type("schema"))
         self.assertFalse(test_context.is_definition_type("daaaaaaaaaata"))
 
     def test_get_root_keys(self):

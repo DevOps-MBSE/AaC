@@ -50,7 +50,7 @@ enum:
 ext:
    name: PythonTypeField
    type: Field
-   dataExt:
+   schemaExt:
       add:
         - name: python_type
           type: PythonDataType
