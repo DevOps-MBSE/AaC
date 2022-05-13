@@ -276,7 +276,7 @@ class LanguageContext:
         """
 
         def does_definition_source_uri_match(definition: Definition) -> bool:
-            return file_uri == definition.lexemes[0].source
+            return file_uri == definition.source_uri
 
         return list(filter(does_definition_source_uri_match, self.definitions))
 
