@@ -13,7 +13,7 @@ def apply_extension_to_definition(extension_definition: Definition, target_defin
         extension_definition (Definition): The extension definition to apply to the context.
         target_definition (Definition): The definition to in the context to which to apply the extension.
     """
-    target_definition_fields = target_definition.get_fields()
+    target_definition_fields = target_definition.get_top_level_fields()
     extension_additional_content = _get_extension_additional_content_dict(extension_definition)
     extension_field_name = _get_extension_field_name(extension_definition)
 
@@ -35,7 +35,7 @@ def remove_extension_from_definition(extension_definition: Definition, target_de
         extension_definition (Definition): The extension definition to apply to the context.
         target_definition (Definition): The extension definition to apply to the context.
     """
-    target_definition_fields = target_definition.get_fields()
+    target_definition_fields = target_definition.get_top_level_fields()
     extension_additional_content = _get_extension_additional_content_dict(extension_definition)
     extension_field_name = _get_extension_field_name(extension_definition)
 
@@ -56,8 +56,8 @@ def remove_extension_from_definition(extension_definition: Definition, target_de
 
 def _get_extension_additional_content_dict(extension_definition: Definition) -> dict:
     """Return the extension's additive information fields based on the extension's sub-type (enumExt/dataExt)."""
-    extension_definition_fields = extension_definition.get_fields()
-    extension_type = "enum" if extension_definition.is_enum_extension() else "data"
+    extension_definition_fields = extension_definition.get_top_level_fields()
+    extension_type = "enum" if extension_definition.is_enum_extension() else "schema"
     ext_type = f"{extension_type}Ext"
     return extension_definition_fields.get(ext_type)
 

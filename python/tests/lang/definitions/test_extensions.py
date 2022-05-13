@@ -3,8 +3,8 @@ from aac.lang.active_context_lifecycle_manager import get_initialized_language_c
 from aac.lang.definitions.extensions import apply_extension_to_definition, remove_extension_from_definition
 
 from tests.helpers.parsed_definitions import (
-    create_data_definition,
-    create_data_ext_definition,
+    create_schema_definition,
+    create_schema_ext_definition,
     create_enum_definition,
     create_enum_ext_definition,
     create_field_entry,
@@ -16,12 +16,12 @@ class TestDefinitionExtensions(TestCase):
     def test_apply_and_remove_extension_from_definition(self):
         test_definition_field = create_field_entry("TestField", "string")
         test_definition_name = "myDef"
-        test_definition = create_data_definition(test_definition_name, [test_definition_field])
+        test_definition = create_schema_definition(test_definition_name, [test_definition_field])
 
         data_ext_field_name = "extField"
         data_ext_field_type = "ExtField"
         ext_field = create_field_entry(data_ext_field_name, data_ext_field_type)
-        test_definition_ext = create_data_ext_definition("myDefExt", test_definition_name, [ext_field], [data_ext_field_name])
+        test_definition_ext = create_schema_ext_definition("myDefExt", test_definition_name, [ext_field], [data_ext_field_name])
 
         enum_val1 = "val1"
         enum_val2 = "val2"
@@ -37,16 +37,16 @@ class TestDefinitionExtensions(TestCase):
         self.assertIn(test_definition, language_context.definitions)
         self.assertIn(test_enum, language_context.definitions)
 
-        self.assertEqual(1, len(test_definition.structure["data"]["fields"]))
-        self.assertEqual(0, len(test_definition.structure["data"]["required"]))
+        self.assertEqual(1, len(test_definition.structure["schema"]["fields"]))
+        self.assertEqual(0, len(test_definition.structure["schema"]["required"]))
         self.assertEqual(2, len(test_enum.structure["enum"]["values"]))
 
         apply_extension_to_definition(test_definition_ext, test_definition)
         apply_extension_to_definition(test_enum_ext, test_enum)
 
         # Assert Altered Extension State
-        self.assertEqual(2, len(test_definition.structure["data"]["fields"]))
-        self.assertEqual(1, len(test_definition.structure["data"]["required"]))
+        self.assertEqual(2, len(test_definition.structure["schema"]["fields"]))
+        self.assertEqual(1, len(test_definition.structure["schema"]["required"]))
         self.assertIn(data_ext_field_name, test_definition.to_yaml())
         self.assertIn(data_ext_field_type, test_definition.to_yaml())
 
@@ -57,8 +57,8 @@ class TestDefinitionExtensions(TestCase):
         remove_extension_from_definition(test_enum_ext, test_enum)
 
         # Assert Removed Extension State
-        self.assertEqual(1, len(test_definition.structure["data"]["fields"]))
-        self.assertEqual(0, len(test_definition.structure["data"]["required"]))
+        self.assertEqual(1, len(test_definition.structure["schema"]["fields"]))
+        self.assertEqual(0, len(test_definition.structure["schema"]["required"]))
         self.assertNotIn(data_ext_field_name, test_definition.to_yaml())
         self.assertNotIn(data_ext_field_type, test_definition.to_yaml())
 
