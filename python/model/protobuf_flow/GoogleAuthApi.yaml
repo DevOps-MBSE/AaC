@@ -1,5 +1,5 @@
 ---
-data:
+schema:
   name: Authentication
   description: |
     `Authentication` defines the authentication configuration for API methods
@@ -36,7 +36,7 @@ data:
     type: AuthProvider[]
     description: Defines a set of authentication providers that a service supports.
 ---
-data:
+schema:
   name: AuthenticationRule
   description: |
     Authentication rules for the service.
@@ -74,7 +74,7 @@ data:
     type: AuthRequirement[]
     description: Requirements for additional authentication providers.
 ---
-data:
+schema:
   name: JwtLocation
   description: |
     Specifies a location to extract JWT from an API request.
@@ -108,7 +108,7 @@ data:
         - header
         - query
 ---
-data:
+schema:
   name: AuthProvider
   description: |
     Configuration for an authentication provider, including support for
@@ -199,7 +199,7 @@ data:
          - header: x-goog-iap-jwt-assertion
          - query: access_token
 ---
-data:
+schema:
   name: OAuthRequirements
   description: |
     OAuth scopes are a way to define data and permissions on data. For example,
@@ -235,7 +235,7 @@ data:
         canonical_scopes: https://www.googleapis.com/auth/calendar,
                           https://www.googleapis.com/auth/calendar.read
 ---
-data:
+schema:
   name: AuthRequirement
   description: |
     User-defined authentication requirements, including support for
