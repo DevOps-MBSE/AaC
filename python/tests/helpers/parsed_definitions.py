@@ -126,8 +126,8 @@ def create_enum_definition(name: str, values: list[str]):
     return _create_parsed_defintion("enum", definition_dict)
 
 
-def create_data_definition(name: str, fields: list[dict] = [], required: list[str] = [], validation: list[dict] = []):
-    """Return a simulated data definition."""
+def create_schema_definition(name: str, fields: list[dict] = [], required: list[str] = [], validation: list[dict] = []):
+    """Return a simulated schema definition."""
     definition_dict = {
         NAME_STRING: name,
         FIELDS_STRING: fields,
@@ -135,7 +135,7 @@ def create_data_definition(name: str, fields: list[dict] = [], required: list[st
         VALIDATION_STRING: validation,
     }
 
-    return _create_parsed_defintion("data", definition_dict)
+    return _create_parsed_defintion("schema", definition_dict)
 
 
 def create_usecase_definition(name: str, description: str, participants: list[dict] = [], steps: list[dict] = []):
@@ -165,12 +165,12 @@ def create_model_definition(
     return _create_parsed_defintion("model", definition_dict)
 
 
-def create_data_ext_definition(name: str, type: str, fields: list[dict] = [], required: list[dict] = []):
-    """Return a simulated data extension definition."""
+def create_schema_ext_definition(name: str, type: str, fields: list[dict] = [], required: list[dict] = []):
+    """Return a simulated schema extension definition."""
     definition_dict = {
         NAME_STRING: name,
         TYPE_STRING: type,
-        "dataExt": {
+        "schemaExt": {
             ADD_STRING: fields,
             REQUIRED_STRING: required,
         },
@@ -180,7 +180,7 @@ def create_data_ext_definition(name: str, type: str, fields: list[dict] = [], re
 
 
 def create_enum_ext_definition(name: str, type: str, values: list[str] = []):
-    """Return a simulated data extension definition."""
+    """Return a simulated enum extension definition."""
     definition_dict = {
         NAME_STRING: name,
         TYPE_STRING: type,

@@ -4,7 +4,7 @@ from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.plugins.validators import ValidatorResult
 from aac.plugins.validators.subcomponent_type._subcomponent_type import validate_subcomponent_types
 
-from tests.helpers.parsed_definitions import create_data_definition, create_field_entry, create_model_definition
+from tests.helpers.parsed_definitions import create_schema_definition, create_field_entry, create_model_definition
 
 
 class TestValidationSubcomponentTypes(TestCase):
@@ -49,7 +49,7 @@ class TestValidationSubcomponentTypes(TestCase):
         test_active_context = get_active_context()
 
         model_name = "A model"
-        invalid_subcomponent = create_data_definition("invalid subcomponent")
+        invalid_subcomponent = create_schema_definition("invalid subcomponent")
         definition_with_invalid_subcomponents = create_model_definition(
             model_name,
             components=[create_field_entry("a", invalid_subcomponent.name)],

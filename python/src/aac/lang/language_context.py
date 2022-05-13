@@ -176,7 +176,7 @@ class LanguageContext:
         root_definition = self.get_definition_by_name("root")
 
         if root_definition:
-            return search_definition(root_definition, ["data", "fields"])
+            return search_definition(root_definition, ["schema", "fields"])
         else:
             return []
 
@@ -287,7 +287,7 @@ class LanguageContext:
         Args:
             extension_definition (Definition): The extension definition to apply to the context.
         """
-        target_to_extend = extension_definition.get_fields().get("type")
+        target_to_extend = extension_definition.get_top_level_fields().get("type")
 
         if not target_to_extend:
             logging.error(f"Extension failed to define target, field 'type' is missing. {extension_definition.structure}")
@@ -302,7 +302,7 @@ class LanguageContext:
         Args:
             extension_definition (Definition): The extension definition to remove from the context.
         """
-        target_to_extend = extension_definition.get_fields().get("type")
+        target_to_extend = extension_definition.get_top_level_fields().get("type")
 
         if not target_to_extend:
             logging.error(f"Extension failed to define target, field 'type' is missing. {extension_definition.structure}")

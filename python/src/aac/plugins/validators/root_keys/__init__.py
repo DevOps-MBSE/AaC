@@ -15,7 +15,7 @@ def get_plugin_aac_definitions() -> str:
     Return the plugins Aac definitions.
 
     Returns:
-         string representing yaml extensions and data definitions employed by the plugin
+         string representing yaml extensions and definitions defined by the plugin
     """
     return get_resource_file_contents(__package__, PLUGIN_YAML_FILE)
 

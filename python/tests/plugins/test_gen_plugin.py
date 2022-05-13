@@ -264,7 +264,7 @@ enum:
 ext:
    name: ProtobufTypeField
    type: Field
-   dataExt:
+   schemaExt:
       add:
         - name: protobuf_type
           type: ProtobufDataType

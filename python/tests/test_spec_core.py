@@ -3,7 +3,7 @@ from unittest import TestCase
 from aac.spec import core
 
 
-EXPECTED_ROOT_KEY_NAMES = ["import", "enum", "data", "model", "usecase", "ext", "validation"]
+EXPECTED_ROOT_KEY_NAMES = ["import", "enum", "schema", "model", "usecase", "ext", "validation"]
 
 
 class TestSpecCore(TestCase):

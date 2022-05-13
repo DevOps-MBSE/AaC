@@ -107,11 +107,11 @@ class TestGenerateProtobufPlugin(TestCase):
     def test__generate_protobuf_details_from_data_message_model(self):
         expected_result = {
             "name": "DataA",
-            "file_type": "data",
+            "file_type": "schema",
             "fields": [{"name": "msg", "type": "int64", "optional": True, "repeat": False}],
         }
         test_model = {
-            "DataA": {"data": {"name": "DataA", "fields": [{"name": "msg", "type": "number", "protobuf_type": "int64"}]}}
+            "DataA": {"schema": {"name": "DataA", "fields": [{"name": "msg", "type": "number", "protobuf_type": "int64"}]}}
         }
 
         actual_result = _collect_template_generation_properties(test_model)
@@ -120,11 +120,11 @@ class TestGenerateProtobufPlugin(TestCase):
     def test__generate_protobuf_details_from_data_message_model_wth_repeated_fields(self):
         expected_result = {
             "name": "DataA",
-            "file_type": "data",
+            "file_type": "schema",
             "fields": [{"name": "msg", "type": "int64", "optional": True, "repeat": True}],
         }
         test_model = {
-            "DataA": {"data": {"name": "DataA", "fields": [{"name": "msg", "type": "number[]", "protobuf_type": "int64"}]}}
+            "DataA": {"schema": {"name": "DataA", "fields": [{"name": "msg", "type": "number[]", "protobuf_type": "int64"}]}}
         }
 
         actual_result = _collect_template_generation_properties(test_model)
@@ -133,7 +133,7 @@ class TestGenerateProtobufPlugin(TestCase):
     def test__generate_protobuf_details_from_data_message_model_with_required_fields(self):
         expected_result = {
             "name": "DataA",
-            "file_type": "data",
+            "file_type": "schema",
             "fields": [
                 {"name": "id", "type": "int64", "optional": True, "repeat": False},
                 {"name": "msg", "type": "string", "optional": False, "repeat": False},
@@ -141,7 +141,7 @@ class TestGenerateProtobufPlugin(TestCase):
         }
         test_model = {
             "DataA": {
-                "data": {
+                "schema": {
                     "name": "DataA",
                     "fields": [
                         {"name": "id", "type": "number", "protobuf_type": "int64"},
@@ -159,7 +159,7 @@ class TestGenerateProtobufPlugin(TestCase):
         expected_result = [
             {
                 "name": "DataA",
-                "file_type": "data",
+                "file_type": "schema",
                 "fields": [
                     {"name": "metadata", "type": "DataB", "optional": True, "repeat": False},
                     {"name": "msg", "type": "string", "optional": True, "repeat": False},
@@ -168,14 +168,14 @@ class TestGenerateProtobufPlugin(TestCase):
             },
             {
                 "name": "DataB",
-                "file_type": "data",
+                "file_type": "schema",
                 "fields": [{"name": "id", "type": "int64", "optional": True, "repeat": False}],
             },
         ]
 
         test_model = {
             "DataA": {
-                "data": {
+                "schema": {
                     "name": "DataA",
                     "fields": [
                         {"name": "metadata", "type": "DataB"},
@@ -183,7 +183,7 @@ class TestGenerateProtobufPlugin(TestCase):
                     ],
                 }
             },
-            "DataB": {"data": {"name": "DataB", "fields": [{"name": "id", "type": "number", "protobuf_type": "int64"}]}},
+            "DataB": {"schema": {"name": "DataB", "fields": [{"name": "id", "type": "number", "protobuf_type": "int64"}]}},
         }
 
         actual_result = _collect_template_generation_properties(test_model)
@@ -194,7 +194,7 @@ class TestGenerateProtobufPlugin(TestCase):
         expected_result = [
             {
                 "name": "DataA",
-                "file_type": "data",
+                "file_type": "schema",
                 "fields": [
                     {"name": "message_type", "type": "Enum", "optional": True, "repeat": False},
                     {"name": "msg", "type": "string", "optional": True, "repeat": False},
@@ -206,7 +206,7 @@ class TestGenerateProtobufPlugin(TestCase):
 
         test_model = {
             "DataA": {
-                "data": {
+                "schema": {
                     "name": "DataA",
                     "fields": [
                         {"name": "message_type", "type": "Enum"},
@@ -290,7 +290,7 @@ model:
           then:
             - The user receives a response with DataC
 ---
-data:
+schema:
   name: DataA
   fields:
   - name: metadata
@@ -303,7 +303,7 @@ data:
   required:
   - metadata
 ---
-data:
+schema:
   name: DataB
   fields:
   - name: metadata
@@ -315,7 +315,7 @@ data:
   - metadata
   - transformed_msg
 ---
-data:
+schema:
   name: DataC
   fields:
   - name: metadata
@@ -326,7 +326,7 @@ data:
   required:
   - metadata
 ---
-data:
+schema:
   name: MessageMetadataData
   fields:
   - name: message_id

@@ -352,19 +352,19 @@ model:
             - {TEST_PUML_SERVICE_TWO_TYPE} processes the request into a {TEST_PUML_DATA_C_TYPE} response
             - {TEST_PUML_SERVICE_TWO_TYPE} returns the {TEST_PUML_DATA_C_TYPE} response
 ---
-data:
+schema:
   name: {TEST_PUML_DATA_A_TYPE}
   fields:
   - name: msg
     type: string
 ---
-data:
+schema:
   name: {TEST_PUML_DATA_B_TYPE}
   fields:
   - name: msg
     type: string
 ---
-data:
+schema:
   name: {TEST_PUML_DATA_C_TYPE}
   fields:
   - name: msg

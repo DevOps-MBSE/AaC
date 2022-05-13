@@ -6,7 +6,7 @@ from aac.parser import parse
 from aac.plugins.validators import ValidatorPlugin, ValidatorResult
 from aac.plugins.validators.exclusive_fields import get_plugin_aac_definitions, register_validators, validate_exclusive_fields
 
-from tests.helpers.parsed_definitions import create_data_ext_definition, create_enum_ext_definition, create_field_entry
+from tests.helpers.parsed_definitions import create_schema_ext_definition, create_enum_ext_definition, create_field_entry
 
 
 class TestExclusiveFieldsPlugin(TestCase):
@@ -31,15 +31,15 @@ class TestExclusiveFieldsPlugin(TestCase):
         test_active_context = get_active_context()
 
         test_field_entry = create_field_entry("TestField", "string")
-        test_data_definition = create_data_ext_definition("TestDataExt", "data", [test_field_entry])
-        del test_data_definition.structure["ext"]["dataExt"]
+        test_definition = create_schema_ext_definition("TestSchemaExt", "schema", [test_field_entry])
+        del test_definition.structure["ext"]["schemaExt"]
 
         ext_schema = get_definition_by_name("extension", test_active_context.definitions)
         ext_schema_args = ext_schema.get_validations()[0].get("arguments")
 
         expected_result = ValidatorResult([], True)
 
-        actual_result = validate_exclusive_fields(test_data_definition, ext_schema, test_active_context, *ext_schema_args)
+        actual_result = validate_exclusive_fields(test_definition, ext_schema, test_active_context, *ext_schema_args)
 
         self.assertEqual(expected_result, actual_result)
 
@@ -47,14 +47,14 @@ class TestExclusiveFieldsPlugin(TestCase):
         test_active_context = get_active_context()
 
         test_field_entry = create_field_entry("TestField", "string")
-        test_data_definition = create_data_ext_definition("TestDataExt", "data", [test_field_entry])
+        test_definition = create_schema_ext_definition("TestSchemaExt", "schema", [test_field_entry])
 
         ext_schema = get_definition_by_name("extension", test_active_context.definitions)
         ext_schema_args = ext_schema.get_validations()[0].get("arguments")
 
         expected_result = ValidatorResult([], True)
 
-        actual_result = validate_exclusive_fields(test_data_definition, ext_schema, test_active_context, *ext_schema_args)
+        actual_result = validate_exclusive_fields(test_definition, ext_schema, test_active_context, *ext_schema_args)
 
         self.assertEqual(expected_result, actual_result)
 
@@ -62,7 +62,7 @@ class TestExclusiveFieldsPlugin(TestCase):
         test_active_context = get_active_context()
 
         test_field_entry = create_field_entry("TestField", "string")
-        test_combined_ext_definition = create_data_ext_definition("TestDataExt", "data", [test_field_entry])
+        test_combined_ext_definition = create_schema_ext_definition("TestSchemaExt", "schema", [test_field_entry])
         test_enum_definition = create_enum_ext_definition("TestEnumExt", "Primitives", ["val1", "val2"])
         test_combined_ext_definition.structure["ext"]["enumExt"] = test_enum_definition.structure["ext"]["enumExt"]
 

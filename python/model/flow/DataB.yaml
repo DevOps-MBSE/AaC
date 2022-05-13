@@ -1,4 +1,4 @@
-data: 
+schema:
   name: DataB
   fields:
   - name: msg
