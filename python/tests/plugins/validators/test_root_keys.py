@@ -46,7 +46,7 @@ class TestRootKeysValidator(TestCase):
                 "name": "Test",
             }
         }
-        test_definition = Definition("Test", "", [], test_definition_dict)
+        test_definition = Definition("Test", "", "", [], test_definition_dict)
 
         test_active_context = get_active_context()
         test_active_context.add_definition_to_context(test_definition)
@@ -64,7 +64,7 @@ class TestRootKeysValidator(TestCase):
             }
         }
 
-        test_definition = Definition("Test", "", [], test_definition_dict)
+        test_definition = Definition("Test", "", "", [], test_definition_dict)
 
         new_root_field = create_field_entry(fake_extended_root_key, fake_extended_root_key)
         root_key_extension = create_schema_ext_definition("NewRootKeys", "root", [new_root_field])
