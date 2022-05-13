@@ -46,7 +46,7 @@ def get_schema_defined_fields(source_definition: Definition, context: LanguageCo
 
     schema_definition_fields = []
     if schema_defintion:
-        schema_definition_fields = schema_defintion.get_fields()
+        schema_definition_fields = schema_defintion.get_top_level_fields()
 
         if "fields" not in schema_definition_fields:
             logging.error(f"Definition schema '{schema_defintion.name}' does not specify any defined fields.")
@@ -91,7 +91,7 @@ def get_definition_schema_components(source_definition: Definition, context: Lan
                 substructure_definitions[field_type] = field_definition
 
                 if not field_definition.is_enum():
-                    _get_sub_definitions(field_definition, field_definition.get_fields().get("fields"))
+                    _get_sub_definitions(field_definition, field_definition.get_top_level_fields().get("fields"))
 
     top_level_fields = list(get_schema_defined_fields(source_definition, context).values())
     _get_sub_definitions(source_definition, top_level_fields)

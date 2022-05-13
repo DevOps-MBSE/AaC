@@ -101,4 +101,4 @@ def get_root_fields(reload: bool = False) -> list[dict]:
     aac_definitions = get_aac_spec()
     root_definition = get_definition_by_name("root", aac_definitions)
 
-    return search_definition(root_definition, ["data", "fields"])
+    return search_definition(root_definition, ["schema", "fields"])

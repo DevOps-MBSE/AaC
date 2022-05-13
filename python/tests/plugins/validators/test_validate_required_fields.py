@@ -7,7 +7,7 @@ from aac.plugins.validators import ValidatorPlugin
 from aac.plugins.validators.required_fields import get_plugin_aac_definitions, register_validators, validate_required_fields
 from tests.helpers.assertion import assert_validator_result_failure, assert_validator_result_success
 
-from tests.helpers.parsed_definitions import create_behavior_entry, create_data_definition, create_field_entry, create_model_definition
+from tests.helpers.parsed_definitions import create_behavior_entry, create_schema_definition, create_field_entry, create_model_definition
 
 
 class TestRequiredFieldsPlugin(TestCase):
@@ -26,14 +26,14 @@ class TestRequiredFieldsPlugin(TestCase):
         self.assertEqual(expected_validator_plugin.name, actual_validator_plugin.name)
         self.assertEqual(expected_validator_plugin.definition, actual_validator_plugin.definition)
 
-    def test_validate_required_fields_no_missing_required_fields_for_data_definition(self):
+    def test_validate_required_fields_not_missing_required_fields_for_schema_definition(self):
         test_active_context = get_active_context(reload_context=True)
 
         test_field_entry = create_field_entry("TestField", "string")
-        test_data_definition = create_data_definition("TestData", [test_field_entry])
+        test_definition = create_schema_definition("TestData", [test_field_entry])
 
-        required_fields_definition = test_active_context.get_definition_by_name(test_data_definition.get_root_key())
-        actual_result = validate_required_fields(test_data_definition, required_fields_definition, test_active_context)
+        required_fields_definition = test_active_context.get_definition_by_name(test_definition.get_root_key())
+        actual_result = validate_required_fields(test_definition, required_fields_definition, test_active_context)
 
         assert_validator_result_success(actual_result)
 
@@ -51,10 +51,10 @@ class TestRequiredFieldsPlugin(TestCase):
     def test_validate_required_fields_with_missing_name_empty_fields(self):
         test_active_context = get_active_context(reload_context=True)
 
-        test_data_definition = create_data_definition("TestData")
-        del test_data_definition.structure["data"]["name"]
+        test_definition = create_schema_definition("TestData")
+        del test_definition.structure["schema"]["name"]
 
-        required_fields_definition = test_active_context.get_definition_by_name(test_data_definition.get_root_key())
-        actual_result = validate_required_fields(test_data_definition, required_fields_definition, test_active_context)
+        required_fields_definition = test_active_context.get_definition_by_name(test_definition.get_root_key())
+        actual_result = validate_required_fields(test_definition, required_fields_definition, test_active_context)
 
         assert_validator_result_failure(actual_result, "name", "field", "populated", "missing")

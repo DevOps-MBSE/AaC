@@ -38,12 +38,12 @@ class TestArchParser(TestCase):
 
             first, second, *_ = parsed_definition.lexemes
             self.assertEqual(first.source, test_yaml.name)
-            self.assertEqual(first.value, "data")
-            self.assertEqual(first.location, SourceLocation(0, 0, 0, 4))
+            self.assertEqual(first.value, "schema")
+            self.assertEqual(first.location, SourceLocation(0, 0, 0, 6))
 
             self.assertEqual(second.source, test_yaml.name)
             self.assertEqual(second.value, "name")
-            self.assertEqual(second.location, SourceLocation(1, 2, 8, 4))
+            self.assertEqual(second.location, SourceLocation(1, 2, 10, 4))
 
     def test_can_handle_string_or_path_sources(self):
         self.assertEqual(TEST_MODEL_FILE, get_yaml_from_source(TEST_MODEL_FILE))
@@ -60,11 +60,11 @@ class TestArchParser(TestCase):
         ):
 
             parsed_models = parse(test_yaml.name)
-            data_message_definition = definition_helpers.get_definition_by_name("Message", parsed_models)
+            schema_message_definition = definition_helpers.get_definition_by_name("Message", parsed_models)
             enum_status_definition = definition_helpers.get_definition_by_name("Status", parsed_models)
             model_echosvc_definition = definition_helpers.get_definition_by_name("EchoService", parsed_models)
 
-            self.check_model_name(data_message_definition.structure, "Message", "data")
+            self.check_model_name(schema_message_definition.structure, "Message", "schema")
             self.check_model_name(enum_status_definition.structure, "Status", "enum")
             self.check_model_name(model_echosvc_definition.structure, "EchoService", "model")
 
@@ -95,7 +95,7 @@ class TestArchParser(TestCase):
 
 
 TEST_IMPORTED_MODEL_FILE_CONTENTS = """
-data:
+schema:
   name: Message
   fields:
   - name: body

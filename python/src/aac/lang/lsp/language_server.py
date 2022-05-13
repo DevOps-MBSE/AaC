@@ -1,6 +1,8 @@
 """The Architecture-as-Code Language Server."""
 
-from attr import attrib, attrs, validators
+import os
+from attr import Factory, attrib, attrs, validators
+import difflib
 import logging
 from typing import Optional
 from pygls.server import LanguageServer
@@ -9,14 +11,17 @@ from pygls.lsp import (
     CompletionParams,
     Hover,
     HoverParams,
-    InitializeParams,
-    InitializeResult,
-    ServerCapabilities,
+    TextDocumentSyncKind,
+    DidChangeTextDocumentParams,
+    DidCloseTextDocumentParams,
+    DidOpenTextDocumentParams,
     methods
 )
 
+from aac.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_initialized_language_context
 from aac.lang.language_context import LanguageContext
+from aac.lang.lsp.managed_workspace_file import ManagedWorkspaceFile
 from aac.lang.lsp.code_completion_provider import CodeCompletionProvider
 
 
@@ -33,6 +38,7 @@ class AacLanguageServer:
     language_server: Optional[LanguageServer] = attrib(default=None, validator=validators.instance_of((type(None), LanguageServer)))
     language_context: Optional[LanguageContext] = attrib(default=None, validator=validators.instance_of((type(None), LanguageContext)))
     code_completion_provider: Optional[CodeCompletionProvider] = attrib(default=None, validator=validators.instance_of((type(None), CodeCompletionProvider)))
+    workspace_files: dict[str, ManagedWorkspaceFile] = attrib(default=Factory(dict), validator=validators.instance_of(dict))
 
     def __attrs_post_init__(self):
         """Post init hook for attrs classes."""
@@ -45,16 +51,53 @@ class AacLanguageServer:
         self.code_completion_provider = self.code_completion_provider or CodeCompletionProvider()
         self.setup_features()
 
-        logging.debug("AaC LSP initialized.")
-
     def setup_features(self) -> None:
         """Configure the server with the supported features."""
         server = self.language_server
+        server.sync_kind = TextDocumentSyncKind.FULL
 
-        @server.feature(methods.INITIALIZE)
-        async def handle_initialize(ls: LanguageServer, params: InitializeParams):
-            """Handle initialize request."""
-            return InitializeResult(capabilities=ServerCapabilities(hover_provider=True))
+        @server.feature(methods.TEXT_DOCUMENT_DID_OPEN)
+        async def did_open(ls, params: DidOpenTextDocumentParams):
+            """Text document did open notification."""
+            logging.info(f"Text document opened by LSP client {params.text_document.uri}.")
+
+            file_uri = params.text_document.uri
+            managed_file = self.workspace_files.get(file_uri)
+
+            if not managed_file:
+                managed_file = ManagedWorkspaceFile(file_uri)
+                self.workspace_files[file_uri] = managed_file
+
+            managed_file.is_client_managed = True
+            _, file_path = file_uri.split("file://")
+            self.language_context.add_definitions_to_context(parse(file_path))
+
+        @server.feature(methods.TEXT_DOCUMENT_DID_CLOSE)
+        def did_close(server: LanguageServer, params: DidCloseTextDocumentParams):
+            """Text document did close notification."""
+            logging.info(f"Text document closed by LSP client {params.text_document.uri}.")
+
+            file_uri = params.text_document.uri
+            managed_file = self.workspace_files.get(file_uri)
+            managed_file.is_client_managed = False
+
+        @server.feature(methods.TEXT_DOCUMENT_DID_CHANGE)
+        def did_change(ls, params: DidChangeTextDocumentParams):
+            """Text document did change notification."""
+            logging.info(f"Text document altered by LSP client {params.text_document.uri}.")
+
+            file_content = params.content_changes[0].text
+            altered_definitions = parse(file_content)
+
+            for altered_definition in altered_definitions:
+                # At the moment we have to rely on definition names, but we'll need to update definitions based on file URI
+                old_definition = self.language_context.get_definition_by_name(altered_definition.name)
+                old_definition_lines = old_definition.to_yaml().split(os.linesep)
+                altered_definition_lines = altered_definition.to_yaml().split(os.linesep)
+                changes = "\n".join(list(difflib.ndiff(old_definition_lines, altered_definition_lines))).strip()
+                logging.info(f"Updating definition: {old_definition.name}.\n Differences:\n{changes}")
+
+            self.language_context.update_definitions_in_context(altered_definitions)
 
         @server.feature(methods.HOVER)
         async def handle_hover(ls: LanguageServer, params: HoverParams):

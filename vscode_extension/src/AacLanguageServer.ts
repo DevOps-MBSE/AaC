@@ -3,7 +3,9 @@ import * as net from "net";
 
 import { ExtensionContext, window, workspace } from "vscode";
 import { LanguageClient, LanguageClientOptions, ServerOptions, StreamInfo, Trace } from "vscode-languageclient/node";
-import { assertTrue, execShell, getConfigurationItem, showMessageOnError, getSemanticVersionNumber } from "./helpers";
+import { getConfigurationItem } from "./configuration";
+import { execShell } from "./shell";
+import { assertTrue, showMessageOnError, getSemanticVersionNumber } from "./helpers";
 
 enum LspServerMode {
     io = "IO",
@@ -28,8 +30,11 @@ export class AacLanguageServerClient {
     }
 
     public startLanguageServer(context: ExtensionContext): void {
+
         this.assertAacToolIsAvailable();
-        this.assertLspServerIsReady(context);
+
+        showMessageOnError(() => this.startLspClient(context), "Failed trying to start the server.");
+        this.onClientReady();
     }
 
     public shutdownServer(): void {
@@ -40,6 +45,21 @@ export class AacLanguageServerClient {
         const pythonPath = this.getConfigurationItemFile("pythonPath");
         this.assertCorrectPythonVersionIsInstalled(pythonPath);
         this.assertCorrectAacVersionIsInstalled(pythonPath);
+    }
+
+    private onClientReady(): any {
+        try {
+            this.aacLspClient.onReady();
+
+            workspace.findFiles("**/*.aac").then(files => {
+                for (const fileIndex in files) {
+                    const file = files[fileIndex];
+                    workspace.openTextDocument(file.path);
+                }
+            });
+        } catch (onFailure) {
+            window.showErrorMessage(`Failed waiting for the server to become ready.\n${onFailure}`);
+        }
     }
 
     private getConfigurationItemFile(name: string): string {
@@ -71,11 +91,6 @@ export class AacLanguageServerClient {
         const aacVersionPattern = new RegExp(`aac==${expectedAacVersion}|-e git.*egg=aac`, "ig");
         const actualAacVersion = resolve.stdout.match(aacVersionPattern)?.pop();
         assertTrue(!!actualAacVersion, `The installed aac version is ${actualAacVersion} which is unsupported.`);
-    }
-
-    private assertLspServerIsReady(context: ExtensionContext): void {
-        showMessageOnError(() => this.startLspClient(context), 'Failed trying to start the server.');
-        showMessageOnError(() => this.aacLspClient.onReady(), 'Failed waiting for the server to become ready.');
     }
 
     private async startLspClient(context: ExtensionContext): Promise<void> {
@@ -136,7 +151,7 @@ export class AacLanguageServerClient {
             diagnosticCollectionName: "aac",
             outputChannelName: "Architecture-as-Code Language Server",
             synchronize: {
-                fileEvents: workspace.createFileSystemWatcher("**/.clientrc"),
+                fileEvents: workspace.createFileSystemWatcher("**/.aac")
             }
         };
     }

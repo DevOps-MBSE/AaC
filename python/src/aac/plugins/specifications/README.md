@@ -39,7 +39,7 @@ TODO: Add descriptive information about addSpecificationToRoot
 
 ```yaml
 ext:
-  dataExt:
+  schemaExt:
     add:
     - name: spec
       type: Specification
@@ -54,7 +54,7 @@ TODO: Add descriptive information about addSpecTraceToBehavior
 
 ```yaml
 ext:
-  dataExt:
+  schemaExt:
     add:
     - name: requirements
       type: RequirementReference[]
@@ -69,21 +69,21 @@ TODO: Add descriptive information about addSpecTraceToData
 
 ```yaml
 ext:
-  dataExt:
+  schemaExt:
     add:
     - name: requirements
       type: RequirementReference[]
   name: addSpecTraceToData
-  type: data
+  type: schema
 
 ```
 
-### Data - Specification
+### Schema - Specification
 
 TODO: Add descriptive information about Specification
 
 ```yaml
-data:
+schema:
   fields:
   - name: name
     type: string
@@ -99,12 +99,12 @@ data:
 
 ```
 
-### Data - SpecSection
+### Schema - SpecSection
 
 TODO: Add descriptive information about SpecSection
 
 ```yaml
-data:
+schema:
   fields:
   - name: name
     type: string
@@ -118,12 +118,12 @@ data:
 
 ```
 
-### Data - Requirement
+### Schema - Requirement
 
 TODO: Add descriptive information about Requirement
 
 ```yaml
-data:
+schema:
   fields:
   - name: id
     type: string
@@ -140,12 +140,12 @@ data:
 
 ```
 
-### Data - RequirementAttribute
+### Schema - RequirementAttribute
 
 TODO: Add descriptive information about RequirementAttribute
 
 ```yaml
-data:
+schema:
   fields:
   - name: name
     type: string
@@ -158,12 +158,12 @@ data:
 
 ```
 
-### Data - RequirementReference
+### Schema - RequirementReference
 
 TODO: Add descriptive information about RequirementReference
 
 ```yaml
-data:
+schema:
   fields:
   - name: ids
     type: string[]

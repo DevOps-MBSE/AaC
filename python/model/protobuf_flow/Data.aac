@@ -1,4 +1,4 @@
-data:
+schema:
   name: DataA
   fields:
   - name: metadata
@@ -11,7 +11,7 @@ data:
   required:
   - metadata
 ---
-data:
+schema:
   name: DataB
   fields:
   - name: metadata
@@ -23,7 +23,7 @@ data:
   - metadata
   - transformed_msg
 ---
-data:
+schema:
   name: DataC
   fields:
   - name: metadata
@@ -34,7 +34,7 @@ data:
   required:
   - metadata
 ---
-data:
+schema:
   name: DataD
   fields:
   - name: metadata
@@ -45,7 +45,7 @@ data:
   required:
   - metadata
 ---
-data:
+schema:
   name: MessageMetadataData
   fields:
   - name: message_id

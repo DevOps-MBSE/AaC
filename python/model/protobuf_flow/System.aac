@@ -1,8 +1,8 @@
 import:
-  - ./Data.yaml
-  - ./Services.yaml
-  - ./Subsystem.yaml
-  - ./External.yaml
+  - ./Data.aac
+  - ./Services.aac
+  - ./Subsystem.aac
+  - ./External.aac
 model:
   name: System
   description: A simple distributed system model

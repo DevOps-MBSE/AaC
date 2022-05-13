@@ -8,7 +8,7 @@ from aac.validate import get_applicable_validators_for_definition
 from aac.validate._collect_validators import _get_validation_entries, _get_validator_plugin_by_name
 
 from tests.helpers.parsed_definitions import (
-    create_data_definition,
+    create_schema_definition,
     create_enum_definition,
     create_field_entry,
     create_model_definition,
@@ -17,35 +17,35 @@ from tests.helpers.parsed_definitions import (
 
 
 class TestCollectValidators(TestCase):
-    def test_get_applicable_validators_for_empty_data_definition(self):
-        test_definition = create_data_definition("Empty Data")
+    def test_get_applicable_validators_for_empty_schema_definition(self):
+        test_definition = create_schema_definition("Empty Schema")
         active_context = get_active_context(reload_context=True)
 
         validation_plugins = get_validator_plugins()
 
-        data_definition = active_context.get_definition_by_name("data")
+        schema_definition = active_context.get_definition_by_name("schema")
         field_definition = active_context.get_definition_by_name("Field")
 
-        expected_data_validations = search_definition(data_definition, ["data", "validation"])
-        expected_field_validations = search_definition(field_definition, ["data", "validation"])
-        expected_validations = expected_data_validations + expected_field_validations
+        expected_schema_validations = search_definition(schema_definition, ["schema", "validation"])
+        expected_field_validations = search_definition(field_definition, ["schema", "validation"])
+        expected_validations = expected_schema_validations + expected_field_validations
         actual_result = get_applicable_validators_for_definition(test_definition, validation_plugins, active_context)
 
         self.assertEqual(len(expected_validations), len(actual_result))
 
-    def test_get_applicable_validators_for_data_definition(self):
+    def test_get_applicable_validators_for_schema_definition(self):
         test_field = create_field_entry("TestField", "string")
-        test_definition = create_data_definition("DataWithField", fields=[test_field])
+        test_definition = create_schema_definition("DataWithField", fields=[test_field])
         active_context = get_active_context(reload_context=True)
 
         validation_plugins = get_validator_plugins()
 
-        data_definition = get_definition_by_name("data", active_context.definitions)
-        data_validations = search_definition(data_definition, ["data", "validation"])
+        schema_definition = get_definition_by_name("schema", active_context.definitions)
+        schema_validations = search_definition(schema_definition, ["schema", "validation"])
         field_definition = get_definition_by_name("Field", active_context.definitions)
-        field_validations = search_definition(field_definition, ["data", "validation"])
+        field_validations = search_definition(field_definition, ["schema", "validation"])
 
-        expected_validations = data_validations + field_validations
+        expected_validations = schema_validations + field_validations
         actual_result = get_applicable_validators_for_definition(test_definition, validation_plugins, active_context)
 
         self.assertEqual(len(expected_validations), len(actual_result))
@@ -57,14 +57,14 @@ class TestCollectValidators(TestCase):
 
         validation_plugins = get_validator_plugins()
 
-        data_definition = get_definition_by_name("data", active_context.definitions)
-        data_validations = search_definition(data_definition, ["data", "validation"])
+        schema_definition = get_definition_by_name("schema", active_context.definitions)
+        schema_validations = search_definition(schema_definition, ["schema", "validation"])
         field_definition = get_definition_by_name("Field", active_context.definitions)
-        field_validations = search_definition(field_definition, ["data", "validation"])
+        field_validations = search_definition(field_definition, ["schema", "validation"])
         model_definition = get_definition_by_name("model", active_context.definitions)
-        model_validations = search_definition(model_definition, ["data", "validation"])
+        model_validations = search_definition(model_definition, ["schema", "validation"])
 
-        expected_validations = data_validations + field_validations + model_validations
+        expected_validations = schema_validations + field_validations + model_validations
         actual_result = get_applicable_validators_for_definition(test_definition, validation_plugins, active_context)
 
         self.assertEqual(len(expected_validations), len(actual_result))
@@ -86,15 +86,15 @@ class TestCollectValidators(TestCase):
         for expected_validation in expected_validations:
             self.assertIn(expected_validation.get("name"), actual_plugin_names)
 
-    def test_get_applicable_validators_for_definition_enum_returns_data_validator(self):
+    def test_get_applicable_validators_for_definition_enum_returns_schema_validator(self):
         active_context = get_active_context(reload_context=True)
 
         validation_plugins = get_validator_plugins()
 
         enum_definition = create_enum_definition("Test Enum", ["val1", "val2"])
-        data_definition = get_definition_by_name("data", active_context.definitions)
+        schema_definition = get_definition_by_name("schema", active_context.definitions)
 
-        expected_validations = search_definition(data_definition, ["data", "validation"])
+        expected_validations = search_definition(schema_definition, ["schema", "validation"])
         actual_result = get_applicable_validators_for_definition(enum_definition, validation_plugins, active_context)
         actual_plugin_names = [plugin.name for plugin in actual_result]
 
@@ -107,10 +107,10 @@ class TestCollectValidators(TestCase):
         validation2_name = "Test Validation 2"
         validation1_entry = create_validation_entry(validation1_name)
         validation2_entry = create_validation_entry(validation2_name)
-        data_definition_with_validation = create_data_definition("name", validation=[validation1_entry, validation2_entry])
+        schema_definition_with_validation = create_schema_definition("name", validation=[validation1_entry, validation2_entry])
 
         expected_result = [validation1_entry, validation2_entry]
-        actual_result = _get_validation_entries(data_definition_with_validation)
+        actual_result = _get_validation_entries(schema_definition_with_validation)
 
         self.assertListEqual(expected_result, actual_result)
 

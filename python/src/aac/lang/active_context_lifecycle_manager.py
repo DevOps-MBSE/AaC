@@ -26,9 +26,17 @@ def get_active_context(reload_context: bool = False) -> LanguageContext:
     return ACTIVE_CONTEXT
 
 
-def get_initialized_language_context() -> LanguageContext():
-    """Return a LanguageContext that has been initialized with the core AaC spec and active plugins."""
+def get_initialized_language_context(core_spec_only: bool = False) -> LanguageContext:
+    """
+    Return a LanguageContext that has been initialized with the core AaC spec and active plugins.
+
+    Args:
+        core_spec_only (bool): True if only the LanguageContext should be populated with only the core spec
+    """
     language_context = LanguageContext()
     language_context.add_definitions_to_context(get_aac_spec())
-    language_context.add_definitions_to_context(get_plugin_definitions())
+
+    if not core_spec_only:
+        language_context.add_definitions_to_context(get_plugin_definitions())
+
     return language_context
