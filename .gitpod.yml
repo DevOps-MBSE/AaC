@@ -3,7 +3,8 @@ tasks:
     init: |
       cd vscode_extension/
       yarn install
-    command: cd vscode_extension/; yarn compile
+      yarn compile
+    command: cd vscode_extension/; yarn watch
 
   - name: Python Virtual Environment
     init: |

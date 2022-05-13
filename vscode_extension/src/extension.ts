@@ -11,10 +11,7 @@ export function activate(context: ExtensionContext) {
 
     getAaCVersion().then(installedAaCVersion => {
         if (installedAaCVersion) {
-            aacLspClient.startLanguageServer(context);
-            context.subscriptions.push(
-                commands.registerCommand(EXECUTE_AAC_COMMAND_NAME, executeAacCommand)
-            );
+            activatePlugin(context);
         } else {
             const missingAacMessage = "Please install AaC locally to activate these plugin features.\n 'pip install aac'";
 
@@ -22,6 +19,13 @@ export function activate(context: ExtensionContext) {
             window.showErrorMessage(missingAacMessage);
         }
     });
+}
+
+function activatePlugin(context: ExtensionContext) {
+    aacLspClient.startLanguageServer(context);
+    context.subscriptions.push(
+        commands.registerCommand(EXECUTE_AAC_COMMAND_NAME, executeAacCommand)
+    );
 }
 
 export function deactivate(): void {

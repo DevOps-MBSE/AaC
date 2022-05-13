@@ -1,5 +1,5 @@
 import:
-  - ./Data.yaml
+  - ./Data.aac
 model:
   name: ServiceOne
   behavior:
@@ -21,7 +21,7 @@ model:
             - The user receives a DataB response
 ---
 import:
-  - ./Data.yaml
+  - ./Data.aac
 model:
   name: ServiceTwo
   behavior:
@@ -43,7 +43,7 @@ model:
             - The user receives a response with DataC
 ---
 import:
-  - ./Data.yaml
+  - ./Data.aac
 model:
   name: ServiceThree
   behavior:

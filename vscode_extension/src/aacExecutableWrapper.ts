@@ -1,4 +1,5 @@
-import { execShell, getConfigurationItem } from "./helpers";
+import { execShell } from "./shell";
+import { getConfigurationItem } from "./configuration";
 import { getOutputChannel } from "./outputChannel";
 import { window, QuickPickOptions, InputBoxOptions, OpenDialogOptions, Uri } from 'vscode';
 
