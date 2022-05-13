@@ -31,7 +31,7 @@ def validate_required_fields(definition_under_test: Definition, target_schema_de
                 error_messages.append(missing_required_field)
                 logging.debug(missing_required_field)
             # Rely on python truthy to test for empty arrays, strings, or undefined fields.
-            elif not dict_to_validate.get(required_field):
+            elif dict_to_validate.get(required_field) is None:
                 unpopulated_required_field = f"Required field '{required_field}' is not populated in: {dict_to_validate}"
                 error_messages.append(unpopulated_required_field)
                 logging.debug(unpopulated_required_field)
