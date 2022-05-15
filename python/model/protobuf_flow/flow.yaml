@@ -39,7 +39,7 @@ usecase:
     - step: The system has been invoked to doFlow which triggers scv1
       source: system
       target: svc1
-      action: ProcessDataA
+      action: ProcessUserRequest
     - step: svc1 completes and calls subsystem to continue the flow
       source: svc1
       target: subsystem

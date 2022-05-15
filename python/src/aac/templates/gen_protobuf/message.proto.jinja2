@@ -4,19 +4,32 @@
 
 syntax = "proto3"
 
+{% if options -%}
+{% for option_entry in options -%}
+option {{option_entry.key}} = {{option_entry.value}};
+{% endfor %}
+{% endif -%}
+
 {% if imports -%}
 {% for import_name in imports -%}
 import "{{import_name}}"
 {% endfor %}
 {% endif -%}
+
+{% if message_description -%}
+  {{message_description}}
+{% endif -%}
 {% if file_type == "schema" -%}
-message {{name}} {
+message {{message_name}} {
   {%- for field in fields %}
-  {%if field.repeat%}repeated {%elif field.optional%}optional {%endif-%} {{field.type}} {{field.name}} = {{loop.index}};
+  {% if field.description %}
+  {{field.description}}
+  {%- endif %}
+  {% if field.repeat%}repeated {% endif -%}{{field.type}} {{field.name}} = {{loop.index}};
   {%- endfor %}
 }
 {%- elif file_type == "enum" -%}
-enum {{name}} {
+enum {{message_name}} {
   {%- for enum in enums %}
   {{enum}} = {{loop.index}};
   {%- endfor %}

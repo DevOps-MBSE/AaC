@@ -1,7 +1,14 @@
 import:
   - ./GoogleAuthApi.yaml
 schema:
-  name: DataA
+  name: UserRequest
+  description: |
+    User request with google authentication content.
+  protobuf_message_options:
+    - key: java_package
+      value: "com.example.foo"
+    - key: java_multiple_files
+      value: false
   fields:
   - name: authentication
     type: Authentication
@@ -20,11 +27,10 @@ schema:
   fields:
   - name: metadata
     type: MessageMetadataData
-  - name: transformed_msg
-    type: string
+  - name: some_key_value_pair
+    type: Map<String, String>
   required:
   - metadata
-  - transformed_msg
 ---
 schema:
   name: DataC
@@ -56,7 +62,14 @@ schema:
 ---
 enum:
   name: MessageType
+  description: |
+    Enums for the various supported message types.
   values:
   - type_1
   - type_2
   - type_3
+---
+map:
+  name: Map<String, String>
+  key_type: string
+  value_type: string

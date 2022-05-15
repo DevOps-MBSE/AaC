@@ -16,10 +16,10 @@ model:
   behavior:
     - name: doFlow
       type: request-response
-      description:  process DataA and respond with DataD
+      description:  process UserRequest and respond with DataD
       input:
         - name: in
-          type: DataA
+          type: UserRequest
       output:
         - name: out
           type: DataD
