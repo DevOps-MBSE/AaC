@@ -48,7 +48,7 @@ ext:
    schemaExt:
       add:
         - name: protobuf_message_options
-          type: MapEntry[]
+          type: KeyValuePair[]
 ---
 ext:
    name: EnumMessageOptions
@@ -56,4 +56,4 @@ ext:
    schemaExt:
       add:
         - name: protobuf_message_options
-          type: MapEntry[]
+          type: KeyValuePair[]
