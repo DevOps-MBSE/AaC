@@ -68,10 +68,11 @@ class LanguageContext:
             definitions: The list of Definitions to add to the context.
         """
         extension_definitions = get_definitions_by_root_key("ext", definitions)
+        extension_definition_names = [ext.name for ext in extension_definitions]
+        non_extension_definitions = list(filter(lambda definition: definition.name not in extension_definition_names, definitions))
 
-        for definition in definitions:
-            if definition not in extension_definitions:
-                self.add_definition_to_context(definition)
+        for definition in non_extension_definitions:
+            self.add_definition_to_context(definition)
 
         for extension_definitions in extension_definitions:
             self.add_definition_to_context(extension_definitions)
@@ -242,14 +243,14 @@ def _apply_extension_to_target_definition(target_definition_to_extend: Definitio
     extension_definition_fields_dict = extension_definition.get_top_level_fields()
     extension_additional_values_dict = extension_definition_fields_dict.get(ext_type)
 
-    if target_definition_fields_dict.get(extension_field_name):
+    original_field_values = target_definition_fields_dict.get(extension_field_name)
+    if original_field_values is not None:
         updated_values = []
-        original_values = target_definition_fields_dict.get(extension_field_name) or []
         new_values = extension_additional_values_dict.get("add") or []
         if extension_definition.is_enum_extension():
-            updated_values = _get_extended_enum_values(original_values, new_values)
+            updated_values = _get_extended_enum_values(original_field_values, new_values)
         else:
-            updated_values = _get_extended_data_fields(original_values, new_values)
+            updated_values = _get_extended_data_fields(original_field_values, new_values)
 
         target_definition_fields_dict[extension_field_name] = updated_values
     else:
@@ -268,12 +269,13 @@ def _get_extended_enum_values(original_values: list, new_values: list) -> list:
     return list(updated_values.values())
 
 
-def _get_extended_data_fields(original_values: list, new_values: list):
+def _get_extended_data_fields(original_fields: list, new_fields: list):
     """Return a unique list of the original and new data fields together."""
-    updated_values = {value.get("name"): value for value in original_values}
-    new_values = {value.get("name"): value for value in new_values}
-    updated_values.update(new_values)
-    return list(updated_values.values())
+    updated_fields_dict = {value.get("name"): value for value in original_fields}
+    unique_new_fields = list(filter(lambda field: field.get("name") not in updated_fields_dict.keys(), new_fields))
+    new_fields_dict = {value.get("name"): value for value in unique_new_fields}
+    updated_fields_dict.update(new_fields_dict)
+    return list(updated_fields_dict.values())
 
 
 def _add_extension_required_fields_to_defintion(target_definition_sub_dict, extension_dictionary_sub_dict):
