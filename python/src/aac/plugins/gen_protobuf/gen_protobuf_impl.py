@@ -128,7 +128,7 @@ def _get_embedded_data_structures(schema_definition: Definition, active_context:
             if target_definition.name not in interface_message_substructures:
                 interface_message_substructures[target_definition.name] = target_definition
 
-                if not active_context.is_enum_type(target_definition.name):
+                if target_definition.is_schema():
                     target_definition_field_types = [
                         field.get("type") for field in target_definition.get_top_level_fields().get("fields")
                     ]
@@ -162,7 +162,7 @@ def _get_message_template_properties(interface_structures: dict[str, Definition]
         if definition.is_enum():
             template_properties_list.append(_get_enum_properties(definition))
 
-        else:
+        elif definition.is_schema():
             template_properties_list.append(_get_data_model_properties(interface_structures, definition))
 
     return template_properties_list
@@ -188,6 +188,15 @@ def _to_template_properties_dict(
     """
     active_context = get_active_context()
     file_type = "enum" if active_context.is_enum_type(name) else "schema"
+
+    # Check if the value is a string, then format the string value it properly for protobuf.
+    for option_entry in options:
+        option_value = option_entry.get("value")
+
+        if type(option_value) is str:
+            option_entry["value"] = f'"{option_value}"'
+        elif type(option_value) is bool:
+            option_entry["value"] = str(option_value).lower()
 
     return {
         "message_name": name,
@@ -350,10 +359,6 @@ def _convert_description_to_protobuf_comment(description: str) -> str:
     The returned string is expected to slot into a template multitine comment like such:
         1. The first line isn't indented or starred
         2. every subsequent line break is indented and starred
-    ```
-    /* {_convert_description_to_protobuf_comment(description)}
-    */
-    ```
     """
     if description:
         space_indent = "  "

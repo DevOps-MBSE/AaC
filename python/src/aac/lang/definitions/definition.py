@@ -67,6 +67,10 @@ class Definition:
         definition = self.get_top_level_fields()
         return "enumExt" in definition and isinstance(definition["enumExt"], dict)
 
+    def is_schema(self) -> bool:
+        """Returns true if the definition is a schema definition."""
+        return self.get_root_key() == "schema"
+
     def is_enum(self) -> bool:
         """Returns true if the definition is an enum definition."""
         return self.get_root_key() == "enum"
