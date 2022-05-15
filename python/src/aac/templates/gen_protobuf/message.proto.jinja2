@@ -6,7 +6,7 @@ syntax = "proto3"
 
 {% if options -%}
 {% for option_entry in options -%}
-option {{option_entry.key}} = {{option_entry.value}};
+option {{option_entry.key}} = {{option_entry.value|safe}};
 {% endfor %}
 {% endif -%}
 
