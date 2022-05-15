@@ -1,7 +1,9 @@
 import logging
+from typing import Any
 
 from aac.lang.language_context import LanguageContext
 from aac.lang.definitions.definition import Definition
+from aac.lang.definitions.type import is_array_type
 from aac.lang.definitions.structure import get_substructures_by_type
 from aac.plugins.validators import ValidatorResult
 
@@ -19,20 +21,22 @@ def validate_required_fields(definition_under_test: Definition, target_schema_de
         A ValidatorResult containing any applicable error messages.
     """
     error_messages = []
+    schema_required_field_names = target_schema_definition.get_required()
+    schema_defined_fields_as_list = target_schema_definition.get_top_level_fields().get("fields")
+    schema_defined_fields_as_dict = {field.get("name"): field for field in schema_defined_fields_as_list}
 
     def validate_dict(dict_to_validate: dict) -> list[str]:
+        for required_field_name in schema_required_field_names:
+            field_value = dict_to_validate.get(required_field_name)
+            field_type = schema_defined_fields_as_dict.get(required_field_name).get("type")
 
-        required_fields = target_schema_definition.get_required()
-
-        for required_field in required_fields:
-
-            if required_field not in dict_to_validate:
-                missing_required_field = f"Required field '{required_field}' missing from: {dict_to_validate}"
+            if field_value is None:
+                missing_required_field = f"Required field '{required_field_name}' missing from: {dict_to_validate}"
                 error_messages.append(missing_required_field)
                 logging.debug(missing_required_field)
-            # Rely on python truthy to test for empty arrays, strings, or undefined fields.
-            elif dict_to_validate.get(required_field) is None:
-                unpopulated_required_field = f"Required field '{required_field}' is not populated in: {dict_to_validate}"
+
+            elif not _is_field_populated(field_type, field_value):
+                unpopulated_required_field = f"Required field '{required_field_name}' is not populated in: {dict_to_validate}"
                 error_messages.append(unpopulated_required_field)
                 logging.debug(unpopulated_required_field)
 
@@ -40,3 +44,16 @@ def validate_required_fields(definition_under_test: Definition, target_schema_de
     list(map(validate_dict, dicts_to_test))
 
     return ValidatorResult(error_messages, len(error_messages) == 0)
+
+
+def _is_field_populated(field_type: str, field_value: Any) -> bool:
+    """Return a boolean indicating is the field is considered 'populated'."""
+    is_field_array_type = is_array_type(field_type)
+    is_field_populated = False
+
+    if is_field_array_type:
+        is_field_populated = len(field_value) > 0
+    else:
+        is_field_populated = field_type is not None
+
+    return is_field_populated
