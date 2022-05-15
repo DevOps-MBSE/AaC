@@ -11,9 +11,12 @@ from tests.helpers.parsed_definitions import (
 
 
 class TestValidateDefinition(TestCase):
+    def setUp(self) -> None:
+        get_active_context(reload_context=True)
+
     def test__validate_definition_schema_with_valid_field(self):
         test_field = create_field_entry("TestField", "string")
-        test_definition = create_schema_definition("Empty Schema", [test_field])
+        test_definition = create_schema_definition("Empty Schema", fields=[test_field])
         test_context = get_active_context(reload_context=True)
 
         validation_plugins = get_validator_plugins()
@@ -27,7 +30,7 @@ class TestValidateDefinition(TestCase):
 
     def test__validate_definition_schema_with_invalid_field(self):
         test_field = create_field_entry("TestField", "striiiiing")
-        test_definition = create_schema_definition("Empty Schema", [test_field])
+        test_definition = create_schema_definition("Empty Schema", fields=[test_field])
         test_context = get_active_context(reload_context=True)
 
         validation_plugins = get_validator_plugins()

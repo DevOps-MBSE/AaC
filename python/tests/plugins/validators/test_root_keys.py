@@ -31,7 +31,7 @@ class TestRootKeysValidator(TestCase):
 
     def test_validate_root_keys_valid_key(self):
         test_primitive_reference_field = create_field_entry("ValidPrimitiveField", "string")
-        test_definition = create_schema_definition("TestData", [test_primitive_reference_field])
+        test_definition = create_schema_definition("TestData", fields=[test_primitive_reference_field])
 
         test_active_context = get_active_context()
         test_active_context.add_definition_to_context(test_definition)
@@ -69,7 +69,7 @@ class TestRootKeysValidator(TestCase):
         test_definition = Definition("Test", "", [], test_definition_dict)
 
         new_root_field = create_field_entry(fake_extended_root_key, fake_extended_root_key)
-        root_key_extension = create_schema_ext_definition("NewRootKeys", "root", [new_root_field])
+        root_key_extension = create_schema_ext_definition("NewRootKeys", "root", fields=[new_root_field])
         test_active_context = get_active_context()
         test_active_context.add_definitions_to_context([test_definition, root_key_extension])
 

@@ -3,7 +3,7 @@ from unittest import TestCase
 from aac.spec import core
 
 
-EXPECTED_ROOT_KEY_NAMES = ["import", "enum", "schema", "model", "usecase", "ext", "validation"]
+EXPECTED_ROOT_KEY_NAMES = ["import", "enum", "schema", "map", "model", "usecase", "ext", "validation"]
 
 
 class TestSpecCore(TestCase):
@@ -11,7 +11,7 @@ class TestSpecCore(TestCase):
         """
         Unit test for the core.get_primitive method.
         """
-        expected_results = ["int", "number", "string", "bool", "file", "date", "map"]
+        expected_results = ["int", "number", "string", "bool", "file", "date"]
 
         result = core.get_primitives()
 

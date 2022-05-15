@@ -31,7 +31,7 @@ class TestExclusiveFieldsPlugin(TestCase):
         test_active_context = get_active_context()
 
         test_field_entry = create_field_entry("TestField", "string")
-        test_definition = create_schema_ext_definition("TestSchemaExt", "schema", [test_field_entry])
+        test_definition = create_schema_ext_definition("TestSchemaExt", "schema", fields=[test_field_entry])
         del test_definition.structure["ext"]["schemaExt"]
 
         ext_schema = get_definition_by_name("extension", test_active_context.definitions)
@@ -47,7 +47,7 @@ class TestExclusiveFieldsPlugin(TestCase):
         test_active_context = get_active_context()
 
         test_field_entry = create_field_entry("TestField", "string")
-        test_definition = create_schema_ext_definition("TestSchemaExt", "schema", [test_field_entry])
+        test_definition = create_schema_ext_definition("TestSchemaExt", "schema", fields=[test_field_entry])
 
         ext_schema = get_definition_by_name("extension", test_active_context.definitions)
         ext_schema_args = ext_schema.get_validations()[0].get("arguments")
@@ -62,8 +62,8 @@ class TestExclusiveFieldsPlugin(TestCase):
         test_active_context = get_active_context()
 
         test_field_entry = create_field_entry("TestField", "string")
-        test_combined_ext_definition = create_schema_ext_definition("TestSchemaExt", "schema", [test_field_entry])
-        test_enum_definition = create_enum_ext_definition("TestEnumExt", "Primitives", ["val1", "val2"])
+        test_combined_ext_definition = create_schema_ext_definition("TestSchemaExt", "schema", fields=[test_field_entry])
+        test_enum_definition = create_enum_ext_definition("TestEnumExt", "Primitives", values=["val1", "val2"])
         test_combined_ext_definition.structure["ext"]["enumExt"] = test_enum_definition.structure["ext"]["enumExt"]
 
         ext_schema = get_definition_by_name("extension", test_active_context.definitions)

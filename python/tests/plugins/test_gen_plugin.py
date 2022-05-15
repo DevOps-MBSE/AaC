@@ -282,7 +282,7 @@ model:
         - name: archFile
           type: file
         - name: parsed_model
-          type: map
+          type: Map
       acceptance:
         - scenario: Valid spec traces are modeled.
           given:
@@ -315,7 +315,7 @@ model:
         - name: archFile
           type: file
         - name: parsed_model
-          type: map
+          type: Map
       acceptance:
         - scenario: Valid spec traces are modeled.
           given:

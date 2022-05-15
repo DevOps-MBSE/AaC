@@ -17,13 +17,13 @@ class TestLanguageContext(TestCase):
     def test_add_definition_to_context_with_extensions(self):
         test_definition_field = create_field_entry("TestField", "string")
         test_definition_name = "myDef"
-        test_definition = create_schema_definition(test_definition_name, [test_definition_field])
+        test_definition = create_schema_definition(test_definition_name, fields=[test_definition_field])
 
         data_ext_field_name = "extField"
         data_ext_field_type = "ExtField"
         ext_field = create_field_entry(data_ext_field_name, data_ext_field_type)
         # Adding test_definition_field from the data definition above to simulate extending a definition with a duplicate value
-        test_definition_ext = create_schema_ext_definition("mySchemaExt", test_definition_name, [ext_field, test_definition_field])
+        test_definition_ext = create_schema_ext_definition("mySchemaExt", test_definition_name, fields=[ext_field, test_definition_field])
 
         enum_val1 = "val1"
         enum_val2 = "val2"
@@ -32,7 +32,7 @@ class TestLanguageContext(TestCase):
 
         test_enum_ext_value = "extVal"
         # Adding enum_val1 from the enum above to simulate extending an enum with a duplicate value
-        test_enum_ext = create_enum_ext_definition("myEnumExt", test_enum_name, [test_enum_ext_value, enum_val1])
+        test_enum_ext = create_enum_ext_definition("myEnumExt", test_enum_name, values=[test_enum_ext_value, enum_val1])
 
         active_context = LanguageContext()
         self.assertEqual(0, len(active_context.definitions))

@@ -1,4 +1,3 @@
-
 """
 Unit tests for the testing helper parsed_definitions module.
 """
@@ -32,6 +31,7 @@ class TestArchParsedDefinitions(TestCase):
             [
                 "schema:",
                 f"  name: {definition_name}",
+                "  description: ''",
                 "  fields: []",
                 "  required: []",
                 "  validation: []",
@@ -44,6 +44,7 @@ class TestArchParsedDefinitions(TestCase):
 
     def test_create_schema_definition_with_fields_and_required(self):
         definition_name = "Test Name"
+        definition_description = "Some description content for the definition"
         field_name = "field1"
         field_description = "description for field 1"
         field_type = "Type1"
@@ -52,6 +53,7 @@ class TestArchParsedDefinitions(TestCase):
             [
                 "schema:",
                 f"  name: {definition_name}",
+                f"  description: {definition_description}",
                 "  fields:",
                 f"  - name: {field_name}",
                 f"    type: {field_type}",
@@ -65,7 +67,9 @@ class TestArchParsedDefinitions(TestCase):
         field_definition = create_field_entry(field_name, field_type, field_description)
 
         expected_parsed_definition = parse(expected_yaml)[0]
-        actual_parsed_definition = create_schema_definition(name=definition_name, fields=[field_definition], required=[field_name])
+        actual_parsed_definition = create_schema_definition(
+            name=definition_name, description=definition_description, fields=[field_definition], required=[field_name]
+        )
 
         self.assertEqual(expected_yaml.strip(), actual_parsed_definition.content.strip())
         self.assertEqual(expected_parsed_definition.name, actual_parsed_definition.name)
@@ -75,21 +79,25 @@ class TestArchParsedDefinitions(TestCase):
     def test_create_schema_definition_with_validation(self):
         definition_name = "Test Name"
         validation_name = "Test Validation"
+        description = "Test Description"
 
         expected_yaml = "\n".join(
             [
                 "schema:",
                 f"  name: {definition_name}",
+                f"  description: {description}",
                 "  fields: []",
                 "  required: []",
                 "  validation:",
                 f"  - name: {validation_name}",
-                "    arguments: []"
+                "    arguments: []",
             ]
         )
 
         validation_entry = create_validation_entry(validation_name)
-        parsed_definition = create_schema_definition(name=definition_name, validation=[validation_entry])
+        parsed_definition = create_schema_definition(
+            name=definition_name, description=description, validation=[validation_entry]
+        )
 
         self.assertEqual(expected_yaml.strip(), parsed_definition.content.strip())
 
@@ -176,6 +184,7 @@ class TestArchParsedDefinitions(TestCase):
     def test_create_schema_ext_definition(self):
         name = "Test Schema Extension"
         type = "Other Schema Type"
+        description = "Some description content"
         schemaExt_name = "Ext1 Name"
         schemaExt_description = "Ext1 Description"
         schemaExt_type = "Ext1 Type"
@@ -186,6 +195,7 @@ class TestArchParsedDefinitions(TestCase):
                 "ext:",
                 f"  name: {name}",
                 f"  type: {type}",
+                f"  description: {description}",
                 "  schemaExt:",
                 "    add:",
                 f"    - name: {schemaExt_name}",
@@ -195,13 +205,14 @@ class TestArchParsedDefinitions(TestCase):
             ]
         )
 
-        parsed_definition = create_schema_ext_definition(name, type=type, fields=[schemaExt])
+        parsed_definition = create_schema_ext_definition(name, type=type, description=description, fields=[schemaExt])
 
         self.assertEqual(expected_yaml.strip(), parsed_definition.content.strip())
 
     def test_create_enum_ext_definition(self):
         name = "Test Enum Extension"
         type = "Other Enum Type"
+        description = "Some description content"
         value1 = "value1"
 
         expected_yaml = "\n".join(
@@ -209,12 +220,13 @@ class TestArchParsedDefinitions(TestCase):
                 "ext:",
                 f"  name: {name}",
                 f"  type: {type}",
+                f"  description: {description}",
                 "  enumExt:",
                 "    add:",
                 f"    - {value1}",
             ]
         )
 
-        parsed_definition = create_enum_ext_definition(name, type=type, values=[value1])
+        parsed_definition = create_enum_ext_definition(name, type=type, description=description, values=[value1])
 
         self.assertEqual(expected_yaml.strip(), parsed_definition.content.strip())
