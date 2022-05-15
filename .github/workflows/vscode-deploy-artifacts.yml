@@ -1,0 +1,30 @@
+name: Deploy Python Artifacts
+
+on:
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: ./vscode_extension
+
+jobs:
+  build_deployment_artifacts:
+    name: Build Artifacts
+    uses: jondavid-black/AaC/.github/workflows/vscode-build-artifacts.yml@02102c9eeeed9f2ba16a850c0e7a25c7c49aaf33
+
+  deploy_artifacts:
+    name: Deploy Artifacts
+    runs-on: ubuntu-latest
+    needs: build_deployment_artifacts
+    steps:
+      - name: Extension Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: aac.vsix
+          path: vscode_extension/aac.vsix
+
+      - name: Publish extension to VSCode Marketplace
+        run: echo test
+
+      - name: Publish extension to OpenVSX Registery
+        run: echo test2
