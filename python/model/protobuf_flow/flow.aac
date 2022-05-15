@@ -1,6 +1,6 @@
 import:
-  - ./System.yaml
-  - ./External.yaml
+  - ./System.aac
+  - ./External.aac
 usecase:
   name: Nominal flow of data through the system.
   description: Something happens.
@@ -20,9 +20,9 @@ usecase:
       action: response
 ---
 import:
-  - ./System.yaml
-  - ./Services.yaml
-  - ./Subsystem.yaml
+  - ./System.aac
+  - ./Services.aac
+  - ./Subsystem.aac
 usecase:
   name: Nominal flow within the system.
   description:

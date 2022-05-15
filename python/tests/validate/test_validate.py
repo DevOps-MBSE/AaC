@@ -18,7 +18,7 @@ class TestValidate(TestCase):
 
     def test_validate_source_with_valid_definition(self):
         test_field = create_field_entry("TestField", "string")
-        test_definition = create_schema_definition("Empty Schema", fields=[test_field])
+        test_definition = create_schema_definition("Test", fields=[test_field])
 
         actual_result = None
         with validated_source(test_definition.to_yaml()) as result:
@@ -28,7 +28,7 @@ class TestValidate(TestCase):
 
     def test_validate_definitions_with_valid_definition(self):
         test_field = create_field_entry("TestField", "string")
-        test_definition = create_schema_definition("Empty Schema", fields=[test_field])
+        test_definition = create_schema_definition("Test", fields=[test_field])
 
         actual_result = None
         with validated_definitions([test_definition]) as result:
@@ -38,7 +38,7 @@ class TestValidate(TestCase):
 
     def test_validate_definitions_with_invalid_reference_definition(self):
         test_field = create_field_entry("TestField", "striiiing")
-        test_definition = create_schema_definition("Empty Schema", fields=[test_field])
+        test_definition = create_schema_definition("InvalidTest", fields=[test_field])
 
         with self.assertRaises(ValidationError) as error:
             with validated_definitions([test_definition]):

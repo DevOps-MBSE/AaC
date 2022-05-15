@@ -77,6 +77,82 @@ class LanguageContext:
         for extension_definitions in extension_definitions:
             self.add_definition_to_context(extension_definitions)
 
+    def remove_definition_from_context(self, definition: Definition):
+        """
+        Remove the Definition from the list of definitions in the LanguageContext.
+
+        Args:
+            definition (Definition): The Definition to remove from the context.
+        """
+        if definition.name in self.definitions_name_dictionary:
+            self.definitions_name_dictionary.pop(definition.name)
+
+            if definition.is_extension():
+                self._remove_extension_from_context(definition)
+            else:
+                self.definitions.remove(definition)
+
+        else:
+            definitions_in_context = self.get_defined_types()
+            logging.error(
+                f"Definition not present in context, can't be removed. '{definition.name}' not in '{definitions_in_context}'"
+            )
+
+    def remove_definitions_from_context(self, definitions: list[Definition]):
+        """
+        Remove the list of Definitions from the list of definitions in the LanguageContext, any extensions are removed last.
+
+        Args:
+            definitions (list[Definition]): The list of Definitions to remove from the context.
+        """
+        extension_definitions = get_definitions_by_root_key("ext", definitions)
+
+        for definition in definitions:
+            if definition not in extension_definitions:
+                self.remove_definition_from_context(definition)
+
+        for extension_definitions in extension_definitions:
+            self.remove_definition_from_context(extension_definitions)
+
+    def update_definition_in_context(self, definition: Definition):
+        """
+        Update the Definition in the list of definitions in the LanguageContext, if it exists.
+
+        Args:
+            definition (Definition): The Definition to update in the context.
+        """
+
+        if definition.name in self.definitions_name_dictionary:
+            old_definition = self.definitions_name_dictionary.get(definition.name)
+
+            if definition.is_extension():
+                self._remove_extension_from_context(old_definition)
+                self._apply_extension_to_context(definition)
+            else:
+                self.remove_definition_from_context(old_definition)
+                self.add_definition_to_context(definition)
+        else:
+            definitions_in_context = self.get_defined_types()
+            logging.error(
+                f"Definition not present in context, can't be updated. '{definition.name}' not in '{definitions_in_context}'"
+            )
+
+    def update_definitions_in_context(self, definitions: list[Definition]):
+        """
+        Update the list of Definitions in the list of definitions in the LanguageContext, any extensions are added last.
+
+        Args:
+            definitions (list[Definition]): The list of Definitions to update in the context.
+        """
+        extension_definitions = get_definitions_by_root_key("ext", definitions)
+
+        for definition in definitions:
+            if definition not in extension_definitions:
+                self.update_definition_in_context(definition)
+
+        for extension_definitions in extension_definitions:
+            self.update_definition_in_context(extension_definitions)
+
     def get_root_keys(self) -> list[str]:
         """
         Get the list of root keys as defined in the LanguageContext.
@@ -209,7 +285,6 @@ class LanguageContext:
 
         Args:
             root_key (str): The root key to filter on.
-            definitions (list[Definition]): The list of parsed definitions to search.
 
         Returns:
             A list of definitions with the given root key.
@@ -219,6 +294,21 @@ class LanguageContext:
             return root_key == definition.get_root_key()
 
         return list(filter(does_definition_root_match, self.definitions))
+
+    def get_definitions_by_file_uri(self, file_uri: str) -> list[Definition]:
+        """Return a subset of definitions that are sourced from the target file URI.
+
+        Args:
+            file_uri (str): The source file URI to filter on.
+
+        Returns:
+            A list of definitions belonging to the target file.
+        """
+
+        def does_definition_source_uri_match(definition: Definition) -> bool:
+            return file_uri == definition.lexemes[0].source
+
+        return list(filter(does_definition_source_uri_match, self.definitions))
 
 
 def _apply_extension_to_target_definition(target_definition_to_extend: Definition, extension_definition: Definition) -> None:
