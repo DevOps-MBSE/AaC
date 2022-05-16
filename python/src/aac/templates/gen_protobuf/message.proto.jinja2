@@ -17,13 +17,13 @@ import "{{import_name}}"
 {% endif -%}
 
 {% if message_description -%}
-  {{message_description}}
+  {{message_description|safe}}
 {% endif -%}
 {% if file_type == "schema" -%}
 message {{message_name}} {
   {%- for field in fields %}
   {% if field.description %}
-  {{field.description}}
+  {{field.description|safe}}
   {%- endif %}
   {% if field.repeat%}repeated {% endif -%}{{field.type}} {{field.name}} = {{loop.index}};
   {%- endfor %}

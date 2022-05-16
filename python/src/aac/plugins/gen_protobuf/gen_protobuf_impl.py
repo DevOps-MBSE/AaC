@@ -128,7 +128,7 @@ def _get_embedded_data_structures(schema_definition: Definition, active_context:
             if target_definition.name not in interface_message_substructures:
                 interface_message_substructures[target_definition.name] = target_definition
 
-             if target_definition.is_schema():
+            if target_definition.is_schema():
                 target_definition_field_types = [
                     field.get("type") for field in target_definition.get_top_level_fields().get("fields")
                 ]
@@ -279,7 +279,11 @@ def _get_data_model_properties(interface_structures: dict[str, Definition], data
             raise GenerateProtobufException(error_message)
 
     return _to_template_properties_dict(
-        definition_name, definition_description_as_proto_comment, fields=message_fields, imports=message_imports, options=definition_options
+        definition_name,
+        definition_description_as_proto_comment,
+        fields=message_fields,
+        imports=message_imports,
+        options=definition_options,
     )
 
 
@@ -371,20 +375,18 @@ def _convert_description_to_protobuf_comment(description: str) -> str:
             comment_line = description_newlines[i]
 
             comment_newline_value = os.linesep
-            comment_line_prefix = f"{space_indent}* "
+            comment_line_prefix = f"{space_indent} * "
 
             # if the first line in the description, don't add a line prefix
             if i == 0:
                 comment_line_prefix = ""
 
             # if the final line in the description, don't add a line seperator
-            elif i == len(description_newlines):
-                comment_newline_value = ""
+            elif i == len(description_newlines) - 1:
+                comment_newline_value = " */"
 
             sanitized_line = comment_line.strip()
             formatted_multiline_comment += f"{comment_line_prefix}{sanitized_line}{comment_newline_value}"
-
-        formatted_multiline_comment += " */"
     else:
         formatted_multiline_comment = ""
 
