@@ -32,11 +32,10 @@ def parse(source: str) -> list[Definition]:
     def get_lexemes_for_definition(contents):
         yaml_source = path.abspath(source) if path.lexists(source) else "<string>"
         lexemes = []
-        tokens = [token for token in yaml.scan(contents, Loader=yaml.SafeLoader)]
+        tokens = [token for token in yaml.scan(contents, Loader=yaml.SafeLoader) if hasattr(token, "value")]
         for token in tokens:
-            if hasattr(token, "value"):
-                location = mark_to_source_location(token.start_mark, token.end_mark)
-                lexemes.append(Lexeme(location, yaml_source, token.value))
+            location = mark_to_source_location(token.start_mark, token.end_mark)
+            lexemes.append(Lexeme(location, yaml_source, token.value))
         return lexemes
 
     contents = get_yaml_from_source(source)
@@ -179,10 +178,8 @@ def _read_file_content(arch_file: str) -> str:
         The contents of the file as a string.
     """
     arch_file_path = arch_file
-    content = ""
     with open(arch_file_path, "r") as file:
-        content = file.read()
-    return content
+        return file.read()
 
 
 def _get_files_to_process(arch_file_path: str) -> list[str]:
@@ -194,18 +191,12 @@ def _get_files_to_process(arch_file_path: str) -> list[str]:
     ret_val = [arch_file_path]
     content = _read_file_content(arch_file_path)
     roots = _parse_yaml(arch_file_path, content)
-    for root in roots:
-        if "import" in root.keys():
-            for imp in root["import"]:
-                # parse the imported files
-                parse_path = ""
-                if imp.startswith("."):
-                    # handle relative path
-                    arch_file_dir = path.dirname(path.realpath(arch_file_path))
-                    parse_path = path.join(arch_file_dir, imp)
-                else:
-                    parse_path = imp
-                for append_me in _get_files_to_process(parse_path):
-                    ret_val.append(append_me)
+    roots_with_imports = filter(lambda r: "import" in r.keys(), roots)
+
+    for root in roots_with_imports:
+        for imp in root["import"]:
+            arch_file_dir = path.dirname(path.realpath(arch_file_path))
+            parse_path = path.join(arch_file_dir, imp.removeprefix(f".{path.sep}"))
+            ret_val.extend(_get_files_to_process(parse_path))
 
     return ret_val
