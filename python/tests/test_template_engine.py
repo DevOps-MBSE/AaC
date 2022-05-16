@@ -13,6 +13,8 @@ from aac.template_engine import (
     write_generated_templates_to_file,
 )
 
+from tests.helpers.io import temporary_test_file
+
 
 class TestTemplateEngine(TestCase):
     def test_load_templates(self):
@@ -103,3 +105,18 @@ class TestTemplateEngine(TestCase):
             test_file = os.path.join(temp_dir, test_template.parent_dir, test_template.file_name)
             with open(test_file) as file:
                 self.assertEqual(test_template.content, file.read())
+
+    def test_does_not_overwrite_existing_file_with_overwrite_false(self):
+        content = "original content"
+        new_content = "new content"
+        test_template = TemplateOutputFile(template_name="test-template", content=new_content, overwrite=False)
+
+        with TemporaryDirectory() as temp_dir, temporary_test_file(content, dir=temp_dir) as test_file:
+            test_template.file_name = test_file.name
+
+            self.assertFalse(test_template.overwrite)
+
+            write_generated_templates_to_file([test_template], temp_dir)
+
+            with open(test_file.name) as file:
+                self.assertNotEqual(file.read(), new_content)
