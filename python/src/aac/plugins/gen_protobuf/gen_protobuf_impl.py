@@ -128,16 +128,16 @@ def _get_embedded_data_structures(schema_definition: Definition, active_context:
             if target_definition.name not in interface_message_substructures:
                 interface_message_substructures[target_definition.name] = target_definition
 
-                if target_definition.is_schema():
-                    target_definition_field_types = [
-                        field.get("type") for field in target_definition.get_top_level_fields().get("fields")
-                    ]
+             if target_definition.is_schema():
+                target_definition_field_types = [
+                    field.get("type") for field in target_definition.get_top_level_fields().get("fields")
+                ]
 
-                    # filter out already visited definitions
-                    filtered_target_field_types = list(
-                        filter(lambda type: type not in interface_message_substructures, target_definition_field_types)
-                    )
-                    definition_names_to_traverse.update(filtered_target_field_types)
+                # filter out already visited definitions
+                filtered_target_field_types = list(
+                    filter(lambda type: type not in interface_message_substructures, target_definition_field_types)
+                )
+                definition_names_to_traverse.update(filtered_target_field_types)
 
         else:
             logging.error(f"Failed to find definition for type '{target_definition_name}'")

@@ -27,8 +27,8 @@ schema:
   fields:
   - name: metadata
     type: MessageMetadataData
-  - name: some_key_value_pair
-    type: Map<String, String>
+  - name: transformed_msg
+    type: string
   required:
   - metadata
 ---
@@ -68,8 +68,3 @@ enum:
   - type_1
   - type_2
   - type_3
----
-map:
-  name: Map<String, String>
-  key_type: string
-  value_type: string
