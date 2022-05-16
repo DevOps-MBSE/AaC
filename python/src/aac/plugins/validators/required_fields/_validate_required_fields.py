@@ -53,7 +53,9 @@ def _is_field_populated(field_type: str, field_value: Any) -> bool:
 
     if is_field_array_type:
         is_field_populated = len(field_value) > 0
-    else:
-        is_field_populated = field_type is not None
+    elif type(field_value) is bool:
+        is_field_populated = field_value is not None
+    elif field_value:
+        is_field_populated = True
 
     return is_field_populated

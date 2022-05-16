@@ -1,10 +1,12 @@
 from unittest import TestCase
+from typing import Any
 
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.definition_helpers import get_definitions_by_root_key
 from aac.parser import parse
 from aac.plugins.validators import ValidatorPlugin
 from aac.plugins.validators.required_fields import get_plugin_aac_definitions, register_validators, validate_required_fields
+from aac.plugins.validators.required_fields._validate_required_fields import _is_field_populated
 from tests.helpers.assertion import assert_validator_result_failure, assert_validator_result_success
 
 from tests.helpers.parsed_definitions import create_behavior_entry, create_schema_definition, create_field_entry, create_model_definition
@@ -68,3 +70,23 @@ class TestRequiredFieldsPlugin(TestCase):
         actual_result = validate_required_fields(test_definition, required_fields_definition, test_active_context)
 
         assert_validator_result_failure(actual_result, "fields", "not populated")
+
+    def test_is_field_populated(self):
+
+        def param_test_is_field_populated(expected_value: bool, field_type: str, field_value: Any):
+            actual_result = _is_field_populated(field_type, field_value)
+            self.assertEqual((expected_value, field_type, field_value), (actual_result, field_type, field_value))
+
+        params = [
+            (True, "string", "Non-empty string"),
+            (False, "string", ""),
+            (False, "string", None),
+            (True, "int", 1),
+            (False, "int", None),
+            (True, "bool", True),
+            (True, "bool", False),
+            (False, "bool", None),
+        ]
+
+        for param in params:
+            param_test_is_field_populated(*param)
