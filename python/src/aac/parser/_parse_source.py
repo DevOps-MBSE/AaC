@@ -44,7 +44,8 @@ def parse(source: str) -> list[Definition]:
 
     parsed_definitions = []
     for name, definition in definitions.items():
-        parsed_definitions.append(Definition(name, contents, source, get_lexemes_for_definition(contents), definition))
+        uri, definition = list(definition.items())[0]
+        parsed_definitions.append(Definition(name, contents, uri, get_lexemes_for_definition(contents), definition))
 
     return parsed_definitions
 
@@ -78,9 +79,11 @@ def _parse_file(arch_file: str) -> dict[str, dict]:
     parsed_models: dict[str, dict] = {}
 
     files = _get_files_to_process(arch_file)
+
     for file in files:
         contents = _read_file_content(file)
-        parsed_models = parsed_models | _parse_str(arch_file, contents)
+        parsed_models = parsed_models | _parse_str(file, contents)
+
     return parsed_models
 
 
@@ -95,16 +98,18 @@ def _parse_str(source: str, model_content: str) -> dict[str, dict]:
         A dictionary of the parsed model(s). The key is the type name from the model and the
         value is the parsed model root.
     """
-    parsed_models = {}
+    parsed_models: dict[str, dict] = {}
 
     roots = _parse_yaml(source, model_content)
+
     for root in roots:
         if "import" in root:
             del root["import"]
 
         root_type, *_ = root.keys()
         root_name = root.get(root_type).get("name")
-        parsed_models = parsed_models | {root_name: root}
+        parsed_models = parsed_models | {root_name: {source: root}}
+
     return parsed_models
 
 
