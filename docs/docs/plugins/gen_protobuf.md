@@ -26,7 +26,7 @@ Command arguments:
 ## Plugin Extensions & Definitions
 In order to use this plugin, you'll have to extend your models to provide necessary contextual information for the protobuf generator to identify interfaces and data structures.
 
-Protobuf messages will only be generated for data structures identified as interface messages between models. This requires that the modeled systems include behaviors and defined inputs and outputs. `schema:` definitions that are referenced in `model:behavior:` fields: `input:` and `output:` are identified as interface messages. Any substructure or embedded enum in the interface messages will also be included in the generated protobuf messages -- so you can nest `schema` definitions for complex user-defined messages.
+Protobuf messages will only be generated for data structures identified as interface messages between models. This requires that the modeled systems and components include behaviors with defined inputs and outputs. `schema:` definitions that are referenced in `model:behavior:` fields: `input:` and `output:` are identified as interface messages. Any substructure or embedded enum in the interface messages will also be included in the generated protobuf messages -- so you can nest `schema` definitions for complex user-defined messages.
 
 # Protobuf 3 Features
 
@@ -50,7 +50,20 @@ Feature Implementation:
 
 ## Scalar Values
 All primitive/scalar [protobuf3 value types](https://developers.google.com/protocol-buffers/docs/proto3#scalar) are supported.
-The full list can be found in the plugin's definition, `ProtobufPrimitiveTypesExtension`.
+The full list can be found in the plugin's definition, [`ProtobufPrimitiveTypesExtension`](https://github.com/jondavid-black/AaC/blob/main/python/src/aac/plugins/gen_protobuf/gen_protobuf.yaml).
+
+The scalar values are added to the `Primitives` defintion and can be used inline very easily.
+```yaml
+schema:
+  name: SomeDataMessage
+  fields:
+    - name: some_data
+      type: string # String is already defined as a type in the core AaC DSL
+      description: Some description for some_data
+    - name: some_numbers
+      type: fixed64[] # The fixed64 type is supplied by this plugin
+      description: A description for some_numbers
+```
 
 ## User-defined Message Types
 This plugin generates protobuf [user-defined](https://developers.google.com/protocol-buffers/docs/proto3#adding_more_message_types) messages, one per file, for every non-primitive type referenced. For each `schema:` definition identified as an interface message, or a substructure of an interface messages, a user-defined message type is generated.
@@ -133,13 +146,8 @@ enum MessageType {
 [OneOf](https://developers.google.com/protocol-buffers/docs/proto3#oneof) is not currently implemented
 
 ## Maps
-Protobuf 3 supports complex, non-scalar datatypes like [maps](https://developers.google.com/protocol-buffers/docs/proto3#maps). AaC leverages it's built-in Map definition to generate protobuf `Map` types.
+Protobuf 3 [maps](https://developers.google.com/protocol-buffers/docs/proto3#maps) aren't currently implemented.
 
-If you want to generate a message field as a `Map` type, you'll need to declare a custom `Map` definition with the key and value types. An example declaration would look like:
-
-```yaml
-
-```
 
 [Maps Backwards compatibility](https://developers.google.com/protocol-buffers/docs/proto3#backwards_compatibility)
 
