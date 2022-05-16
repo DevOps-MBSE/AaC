@@ -256,7 +256,7 @@ def _get_data_model_properties(interface_structures: dict[str, Definition], data
         proto_field_description = field.get("description") or ""
         proto_field_type = field.get("type")
         sanitized_proto_field_type = remove_list_type_indicator(proto_field_type)
-        description_as_proto_comment = _convert_description_to_protobuf_comment(proto_field_description)
+        description_as_proto_comment = _convert_description_to_protobuf_comment(proto_field_description, 1)
 
         message_fields.append(
             {
@@ -356,7 +356,7 @@ def _convert_camel_case_to_snake_case(camel_case_str: str) -> str:
     return snake_case_str
 
 
-def _convert_description_to_protobuf_comment(description: str) -> str:
+def _convert_description_to_protobuf_comment(description: str, indent_level: int = 0) -> str:
     """
     Return the description as a protobuf multiline comment.
 
@@ -364,8 +364,10 @@ def _convert_description_to_protobuf_comment(description: str) -> str:
         1. The first line isn't indented or starred
         2. every subsequent line break is indented and starred
     """
+    space_indent = "  "
+    additional_space_indent = space_indent * indent_level
+
     if description:
-        space_indent = "  "
         formatted_multiline_comment = ""
         description_newlines = description.splitlines()
 
@@ -375,7 +377,7 @@ def _convert_description_to_protobuf_comment(description: str) -> str:
             comment_line = description_newlines[i]
 
             comment_newline_value = os.linesep
-            comment_line_prefix = f"{space_indent} * "
+            comment_line_prefix = f"{additional_space_indent} * "
 
             # if the first line in the description, don't add a line prefix
             if i == 0:
