@@ -384,7 +384,7 @@ def _convert_description_to_protobuf_comment(description: str, indent_level: int
                 comment_line_prefix = ""
 
             # if the final line in the description, don't add a line seperator
-            elif i == len(description_newlines) - 1:
+            if i == len(description_newlines) - 1:
                 comment_newline_value = " */"
 
             sanitized_line = comment_line.strip()
