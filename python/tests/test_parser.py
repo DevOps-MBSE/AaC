@@ -3,7 +3,6 @@ from tempfile import TemporaryDirectory
 from unittest import TestCase
 
 from aac.lang import definition_helpers
-from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.source_location import SourceLocation
 from aac.parser import parse, get_yaml_from_source
 from aac.parser import ParserError
