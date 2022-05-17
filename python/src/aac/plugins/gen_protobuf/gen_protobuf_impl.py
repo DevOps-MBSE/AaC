@@ -387,8 +387,7 @@ def _convert_description_to_protobuf_comment(description: str, indent_level: int
             if i == len(description_newlines) - 1:
                 comment_newline_value = " */"
 
-            sanitized_line = comment_line.strip()
-            formatted_multiline_comment += f"{comment_line_prefix}{sanitized_line}{comment_newline_value}"
+            formatted_multiline_comment += f"{comment_line_prefix}{comment_line}{comment_newline_value}"
     else:
         formatted_multiline_comment = ""
 
