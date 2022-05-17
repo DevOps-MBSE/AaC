@@ -76,7 +76,7 @@ def _get_model_interface_data_structures(model_definitions: list[Definition]) ->
     Model interface definitions are any definitions that are referenced as input or output for a model's behavior.
 
     Args:
-        model_definitions: A list of model definitions to parse for interface messages
+        model_definitions (list[Definition]): A list of model definitions to parse for interface messages.
 
     Returns:
         A dict of data message type keys to data message parsed model values
@@ -231,7 +231,7 @@ def _get_enum_properties(enum_definition: Definition) -> dict[str, any]:
 
 def _get_schema_properties(interface_structures: dict[str, Definition], data_definition: Definition) -> dict[str, any]:
     """
-    Analyzes a data model definition and returns a properties dictionary for template generation.
+    Analyzes a schema definition and returns a properties dictionary for template generation.
 
     Args:
         data_and_enum_models (dict): A list of data model and enum defintions for enum/data model reference lookup

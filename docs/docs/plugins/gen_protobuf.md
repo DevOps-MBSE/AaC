@@ -19,19 +19,19 @@ Command arguments:
 
 `-h, --help` - Shows a help message
 
-`architecture_file` - The Architecture-as-Code file containing the root system model that you want to generate messages for.
+`architecture_file` - The Architecture-as-Code file containing the root system definition for which you want to generate Protobuf messages.
 
 `output_directory` - The directory to write the generated Protobuf messages to.
 
 ## Plugin Extensions & Definitions
-In order to use this plugin, you'll have to extend your models to provide necessary contextual information for the protobuf generator to identify interfaces and data structures.
+In order to use this plugin, you'll have to extend your `model`s to provide necessary contextual information for the Protobuf generator to identify interfaces and data structures.
 
-Protobuf messages will only be generated for data structures identified as interface messages between models. This requires that the modeled systems and components include behaviors with defined inputs and outputs. `schema:` definitions that are referenced in `model:behavior:` fields: `input:` and `output:` are identified as interface messages. Any substructure or embedded enum in the interface messages will also be included in the generated protobuf messages -- so you can nest `schema` definitions for complex user-defined messages.
+Protobuf messages will only be generated for data structures identified as interface messages between `model`s. This requires that the modeled systems and components include behaviors with defined inputs and outputs. `schema:` definitions that are referenced in `model:behavior:` fields: `input:` and `output:` are identified as interface messages. Any substructure or embedded `enum` in the interface messages will also be included in the generated Protobuf messages -- so you can nest `schema` definitions for complex user-defined messages.
 
 # Protobuf 3 Features
 
 Feature Implementation:
-| Feature | Implemented |
+| Feature | Implementation Status |
 |---------|-------------|
 | [Scalar Values](#scalar-values) | ✅ Implemented |
 | [User-defined Message Types](#user-defined-message-types) | ✅ Implemented |
@@ -45,11 +45,11 @@ Feature Implementation:
 | [Packages](#packages) | ❌ Not Implemented |
 | [Defining Services](#defining-services) | ❌ Not Implemented |
 | [Options](#options) | ✅ Implemented |
-| [Optional Keyword](#optional-keywrod) | ❗️❌❗️ Won't Implement |
+| [Optional Keyword](#optional-keyword) | ❗️❌❗️ Won't Implement |
 
 
 ## Scalar Values
-All primitive/scalar [protobuf3 value types](https://developers.google.com/protocol-buffers/docs/proto3#scalar) are supported.
+All primitive/scalar [Protobuf 3 value types](https://developers.google.com/protocol-buffers/docs/proto3#scalar) types are supported.
 The full list can be found in the plugin's definition, [`ProtobufPrimitiveTypesExtension`](https://github.com/jondavid-black/AaC/blob/main/python/src/aac/plugins/gen_protobuf/gen_protobuf.yaml).
 
 The scalar values are added to the `Primitives` defintion and can be used inline very easily.
@@ -66,16 +66,16 @@ schema:
 ```
 
 ## User-defined Message Types
-This plugin generates protobuf [user-defined](https://developers.google.com/protocol-buffers/docs/proto3#adding_more_message_types) messages, one per file, for every non-primitive type referenced. For each `schema:` definition identified as an interface message, or a substructure of an interface messages, a user-defined message type is generated.
+This plugin generates Protobuf [user-defined](https://developers.google.com/protocol-buffers/docs/proto3#adding_more_message_types) messages, one per file, for every non-primitive type referenced. For each `schema:` definition identified as an interface message, or a substructure of an interface messages, a user-defined message type is generated.
 
 ## Embedded Comments
-This plugin leverages a `description` field in AaC models to generate corresponding [comments](https://developers.google.com/protocol-buffers/docs/proto3#adding_comments) in the protobuf messages.
+This plugin leverages the `description` field in AaC models to generate corresponding [comments](https://developers.google.com/protocol-buffers/docs/proto3#adding_comments) in the Protobuf messages.
 
-`schema:` and `enum:` definitions support generating comments for protobuf messages by populating those definition's top-level description field.
+`schema:` and `enum:` definitions support generating comments for Protobuf messages by populating those definition's top-level `description` field.
 
 Only `schema:` definitions allow for field/value level comments. These comments are populated by defining the `description` field in the `fields` entries of a `schema:` definition.
 
-An example of embedding comments in the protobuf message looks like:
+An example of embedding comments in the Protobuf message looks like:
 ```yaml
 schema:
   name: SomeDataMessage
@@ -158,7 +158,7 @@ Protobuf 3 [maps](https://developers.google.com/protocol-buffers/docs/proto3#map
 [Defining Services](https://developers.google.com/protocol-buffers/docs/proto3#services) is not currently implemented.
 
 ## Options
-Protobuf allows for special [options](https://developers.google.com/protocol-buffers/docs/proto3#options) that provide customization and context for the protobuf tooling. Users can specify options for protobuf messages by defining the field `protobuf_message_options` in `schema:` or `enum:`
+Protobuf allows for special [options](https://developers.google.com/protocol-buffers/docs/proto3#options) that provide customization and context for the Protobuf tooling. Users can specify options for Protobuf messages by defining the field `protobuf_message_options` in `schema:` or `enum:`
 definitions.
 
 An example use of options would look like:
@@ -192,6 +192,6 @@ message SomeDataMessage {
 ```
 
 ## Optional Keyword
-Protobuf 3.15 implemented the `optional` keyword, however, the `optional` keyword is considered a anti-pattern in protobuf 3 messages, because all fields are inherently optional in protobuf 3 messages.
+Protobuf 3.15 implemented the `optional` keyword, however, the `optional` keyword is considered a anti-pattern in Protobuf 3 messages, because all fields are inherently optional in Protobuf 3 messages.
 
-Because optional keywords are anti-patterns, and are used for VERY specific cases, we currently don't plan to implement the `optional` keyword for generated protobuf 3 messages.
+Because optional keywords are anti-patterns, and are used for VERY specific cases, we currently don't plan to implement the `optional` keyword for generated Protobuf 3 messages.
