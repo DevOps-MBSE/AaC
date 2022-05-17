@@ -216,7 +216,7 @@ class LanguageContext:
 
     def is_enum_type(self, type: str) -> bool:
         """
-        Returns a boolean indicating if the type is defined and as an enum.
+        Returns a boolean indicating if the type is defined and if it's defined as an enum.
 
         This method is helpful for discerning the type of a definition by its name. This is
         functionally equivalent to getting the definition by name from the context and then
@@ -352,7 +352,7 @@ def _apply_extension_to_target_definition(target_definition_to_extend: Definitio
 
 
 def _get_extended_enum_values(original_values: list, new_values: list) -> list:
-    """Return a unique list of the original and new enum values together."""
+    """Return a list of all unique original and new enum values combined together."""
     updated_values = {value: value for value in original_values}
     new_values = {value: value for value in new_values}
     updated_values.update(new_values)
@@ -360,7 +360,7 @@ def _get_extended_enum_values(original_values: list, new_values: list) -> list:
 
 
 def _get_extended_data_fields(original_fields: list, new_fields: list):
-    """Return a unique list of the original and new data fields together."""
+    """Return a list of all unique original and new data fields combined together."""
     updated_fields_dict = {value.get("name"): value for value in original_fields}
     unique_new_fields = list(filter(lambda field: field.get("name") not in updated_fields_dict.keys(), new_fields))
     new_fields_dict = {value.get("name"): value for value in unique_new_fields}
