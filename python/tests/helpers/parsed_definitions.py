@@ -208,5 +208,5 @@ def _create_parsed_defintion(root_key: str, definition_structure: dict):
     definition_dict = {root_key: definition_structure}
 
     return Definition(
-        name=name, content=yaml.dump(definition_dict, sort_keys=False), lexemes=[], structure=definition_dict
+        name=name, content=yaml.dump(definition_dict, sort_keys=False), source_uri="<test>", lexemes=[], structure=definition_dict
     )

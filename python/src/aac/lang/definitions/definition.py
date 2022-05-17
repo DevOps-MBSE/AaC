@@ -20,6 +20,7 @@ class Definition:
 
     name: str = attrib(validator=validators.instance_of(str))
     content: str = attrib(validator=validators.instance_of(str))
+    source_uri: str = attrib(validator=validators.instance_of(str))
     lexemes: list[Lexeme] = attrib(default=Factory(list), validator=validators.instance_of(list))
     structure: dict = attrib(default=Factory(dict), validator=validators.instance_of(dict))
 

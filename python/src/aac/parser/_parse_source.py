@@ -32,11 +32,10 @@ def parse(source: str) -> list[Definition]:
     def get_lexemes_for_definition(contents):
         yaml_source = path.abspath(source) if path.lexists(source) else "<string>"
         lexemes = []
-        tokens = [token for token in yaml.scan(contents, Loader=yaml.SafeLoader)]
+        tokens = [token for token in yaml.scan(contents, Loader=yaml.SafeLoader) if hasattr(token, "value")]
         for token in tokens:
-            if hasattr(token, "value"):
-                location = mark_to_source_location(token.start_mark, token.end_mark)
-                lexemes.append(Lexeme(location, yaml_source, token.value))
+            location = mark_to_source_location(token.start_mark, token.end_mark)
+            lexemes.append(Lexeme(location, yaml_source, token.value))
         return lexemes
 
     contents = get_yaml_from_source(source)
@@ -44,7 +43,8 @@ def parse(source: str) -> list[Definition]:
 
     parsed_definitions = []
     for name, definition in definitions.items():
-        parsed_definitions.append(Definition(name, contents, get_lexemes_for_definition(contents), definition))
+        uri, definition = list(definition.items())[0]
+        parsed_definitions.append(Definition(name, contents, uri, get_lexemes_for_definition(contents), definition))
 
     return parsed_definitions
 
@@ -78,9 +78,11 @@ def _parse_file(arch_file: str) -> dict[str, dict]:
     parsed_models: dict[str, dict] = {}
 
     files = _get_files_to_process(arch_file)
+
     for file in files:
         contents = _read_file_content(file)
-        parsed_models = parsed_models | _parse_str(arch_file, contents)
+        parsed_models = parsed_models | _parse_str(file, contents)
+
     return parsed_models
 
 
@@ -95,16 +97,18 @@ def _parse_str(source: str, model_content: str) -> dict[str, dict]:
         A dictionary of the parsed model(s). The key is the type name from the model and the
         value is the parsed model root.
     """
-    parsed_models = {}
+    parsed_models: dict[str, dict] = {}
 
     roots = _parse_yaml(source, model_content)
+
     for root in roots:
         if "import" in root:
             del root["import"]
 
         root_type, *_ = root.keys()
         root_name = root.get(root_type).get("name")
-        parsed_models = parsed_models | {root_name: root}
+        parsed_models = parsed_models | {root_name: {source: root}}
+
     return parsed_models
 
 
@@ -174,10 +178,8 @@ def _read_file_content(arch_file: str) -> str:
         The contents of the file as a string.
     """
     arch_file_path = arch_file
-    content = ""
     with open(arch_file_path, "r") as file:
-        content = file.read()
-    return content
+        return file.read()
 
 
 def _get_files_to_process(arch_file_path: str) -> list[str]:
@@ -189,18 +191,12 @@ def _get_files_to_process(arch_file_path: str) -> list[str]:
     ret_val = [arch_file_path]
     content = _read_file_content(arch_file_path)
     roots = _parse_yaml(arch_file_path, content)
-    for root in roots:
-        if "import" in root.keys():
-            for imp in root["import"]:
-                # parse the imported files
-                parse_path = ""
-                if imp.startswith("."):
-                    # handle relative path
-                    arch_file_dir = path.dirname(path.realpath(arch_file_path))
-                    parse_path = path.join(arch_file_dir, imp)
-                else:
-                    parse_path = imp
-                for append_me in _get_files_to_process(parse_path):
-                    ret_val.append(append_me)
+    roots_with_imports = filter(lambda r: "import" in r.keys(), roots)
+
+    for root in roots_with_imports:
+        for imp in root["import"]:
+            arch_file_dir = path.dirname(path.realpath(arch_file_path))
+            parse_path = path.join(arch_file_dir, imp.removeprefix(f".{path.sep}"))
+            ret_val.extend(_get_files_to_process(parse_path))
 
     return ret_val

@@ -88,7 +88,7 @@ class TestValidate(TestCase):
                 "name": "Test",
             }
         }
-        invalid_root_key_definition = Definition("Test", "", [], test_definition_dict)
+        invalid_root_key_definition = Definition("Test", "", "", [], test_definition_dict)
 
         with self.assertRaises(ValidationError) as error:
             with validated_definitions([invalid_data_definition, invalid_root_key_definition]):
