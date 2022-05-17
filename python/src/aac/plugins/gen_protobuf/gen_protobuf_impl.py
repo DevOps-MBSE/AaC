@@ -163,7 +163,7 @@ def _get_message_template_properties(interface_structures: dict[str, Definition]
             template_properties_list.append(_get_enum_properties(definition))
 
         elif definition.is_schema():
-            template_properties_list.append(_get_data_model_properties(interface_structures, definition))
+            template_properties_list.append(_get_schema_properties(interface_structures, definition))
 
     return template_properties_list
 
@@ -229,7 +229,7 @@ def _get_enum_properties(enum_definition: Definition) -> dict[str, any]:
     return _to_template_properties_dict(enum_name, description_as_proto_comment, enums=enum_values, options=definition_options)
 
 
-def _get_data_model_properties(interface_structures: dict[str, Definition], data_definition: Definition) -> dict[str, any]:
+def _get_schema_properties(interface_structures: dict[str, Definition], data_definition: Definition) -> dict[str, any]:
     """
     Analyzes a data model definition and returns a properties dictionary for template generation.
 
