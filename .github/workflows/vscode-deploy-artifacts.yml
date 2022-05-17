@@ -23,8 +23,17 @@ jobs:
           name: aac.vsix
           path: vscode_extension/aac.vsix
 
-      - name: Publish extension to VSCode Marketplace
-        run: echo test
+      # - name: Publish to Visual Studio Marketplace
+      #   uses: HaaLeo/publish-vscode-extension@v1
+      #   with:
+      #     pat: ${{ secrets.VS_MARKETPLACE_TOKEN }}
+      #     registryUrl: https://marketplace.visualstudio.com
+      #     extensionFile: vscode_extension/aac.vsix
 
-      - name: Publish extension to OpenVSX Registery
-        run: echo test2
+      - name: Publish to Open VSX Registry
+        uses: HaaLeo/publish-vscode-extension@v1
+        id: publishToOpenVSX
+        with:
+          pat: ${{ secrets.OPEN_VSX_TOKEN }}
+          extensionFile: vscode_extension/aac.vsix
+
