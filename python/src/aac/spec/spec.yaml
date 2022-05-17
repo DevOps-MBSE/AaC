@@ -458,7 +458,7 @@ schema:
   fields:
     - name: name
       type: string
-      description: The name of the Map<T, T> type
+      description: The name of the Map type
     - name: key_type
       type: string
       description: The key type for elements in the map.

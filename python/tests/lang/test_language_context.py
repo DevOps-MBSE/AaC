@@ -20,9 +20,9 @@ class TestLanguageContext(TestCase):
         test_definition_name = "myDef"
         test_definition = create_schema_definition(test_definition_name, fields=[test_definition_field])
 
-        data_ext_field_name = "extField"
-        data_ext_field_type = "ExtField"
-        ext_field = create_field_entry(data_ext_field_name, data_ext_field_type)
+        schema_ext_field_name = "extField"
+        schema_ext_field_type = "ExtField"
+        ext_field = create_field_entry(schema_ext_field_name, schema_ext_field_type)
         # Adding test_definition_field from the data definition above to simulate extending a definition with a duplicate value
         test_definition_ext = create_schema_ext_definition("mySchemaExt", test_definition_name, fields=[ext_field, test_definition_field])
 
@@ -52,8 +52,8 @@ class TestLanguageContext(TestCase):
         language_context.add_definitions_to_context([test_definition_ext, test_enum_ext])
         context_modified_test_definition = language_context.get_definition_by_name(test_definition_name)
         self.assertEqual(2, len(context_modified_test_definition.structure["schema"]["fields"]))
-        self.assertIn(data_ext_field_name, context_modified_test_definition.to_yaml())
-        self.assertIn(data_ext_field_type, context_modified_test_definition.to_yaml())
+        self.assertIn(schema_ext_field_name, context_modified_test_definition.to_yaml())
+        self.assertIn(schema_ext_field_type, context_modified_test_definition.to_yaml())
 
         context_modified_test_enum = language_context.get_definition_by_name(test_enum_name)
         self.assertEqual(3, len(context_modified_test_enum.structure["enum"]["values"]))
