@@ -3,11 +3,11 @@ import:
 model:
   name: ServiceOne
   behavior:
-    - name: ProcessDataA
+    - name: ProcessUserRequest
       type: request-response
       input:
         - name: in
-          type: DataA
+          type: UserRequest
       output:
         - name: out
           type: DataB
@@ -16,7 +16,7 @@ model:
           given:
             - ServiceOne is running.
           when:
-            - The user sends a DataA request
+            - The user sends a UserRequest request
           then:
             - The user receives a DataB response
 ---

@@ -1,7 +1,6 @@
 from unittest import TestCase
-from aac.lang.active_context_lifecycle_manager import get_initialized_language_context
-from aac.lang.definition_helpers import get_definition_by_name
 
+from aac.lang.active_context_lifecycle_manager import get_initialized_language_context
 from aac.lang.language_context import LanguageContext
 from aac.spec import get_aac_spec, get_primitives, get_root_keys
 
@@ -19,12 +18,13 @@ class TestLanguageContext(TestCase):
     def test_add_definitions_to_context_with_extensions(self):
         test_definition_field = create_field_entry("TestField", "string")
         test_definition_name = "myDef"
-        test_definition = create_schema_definition(test_definition_name, [test_definition_field])
+        test_definition = create_schema_definition(test_definition_name, fields=[test_definition_field])
 
         schema_ext_field_name = "extField"
         schema_ext_field_type = "ExtField"
         ext_field = create_field_entry(schema_ext_field_name, schema_ext_field_type)
-        test_definition_ext = create_schema_ext_definition("myDefExt", test_definition_name, [ext_field])
+        # Adding test_definition_field from the data definition above to simulate extending a definition with a duplicate value
+        test_definition_ext = create_schema_ext_definition("mySchemaExt", test_definition_name, fields=[ext_field, test_definition_field])
 
         enum_val1 = "val1"
         enum_val2 = "val2"
@@ -32,7 +32,8 @@ class TestLanguageContext(TestCase):
         test_enum = create_enum_definition(test_enum_name, [enum_val1, enum_val2])
 
         test_enum_ext_value = "extVal"
-        test_enum_ext = create_enum_ext_definition("myEnumExt", test_enum_name, [test_enum_ext_value])
+        # Adding enum_val1 from the enum above to simulate extending an enum with a duplicate value
+        test_enum_ext = create_enum_ext_definition("myEnumExt", test_enum_name, values=[test_enum_ext_value, enum_val1])
 
         language_context = LanguageContext()
         self.assertEqual(0, len(language_context.definitions))
@@ -43,24 +44,25 @@ class TestLanguageContext(TestCase):
         self.assertIn(test_definition, language_context.definitions)
         self.assertIn(test_enum, language_context.definitions)
 
+        # Assert pre-extension state
         self.assertEqual(1, len(test_definition.structure["schema"]["fields"]))
         self.assertEqual(2, len(test_enum.structure["enum"]["values"]))
 
-        language_context.add_definition_to_context(test_definition_ext)
+        # Assert post-extension state
+        language_context.add_definitions_to_context([test_definition_ext, test_enum_ext])
         context_modified_test_definition = language_context.get_definition_by_name(test_definition_name)
         self.assertEqual(2, len(context_modified_test_definition.structure["schema"]["fields"]))
         self.assertIn(schema_ext_field_name, context_modified_test_definition.to_yaml())
         self.assertIn(schema_ext_field_type, context_modified_test_definition.to_yaml())
 
-        language_context.add_definition_to_context(test_enum_ext)
-        context_modified_test_enum = get_definition_by_name(test_enum_name, language_context.definitions)
+        context_modified_test_enum = language_context.get_definition_by_name(test_enum_name)
         self.assertEqual(3, len(context_modified_test_enum.structure["enum"]["values"]))
         self.assertIn(test_enum_ext_value, context_modified_test_enum.to_yaml())
 
     def test_remove_definitions_from_context(self):
         test_definition_field = create_field_entry("TestField", "string")
-        test_definition_one = create_schema_definition("Test1", [test_definition_field])
-        test_definition_two = create_schema_definition("Test2", [test_definition_field])
+        test_definition_one = create_schema_definition("Test1", fields=[test_definition_field])
+        test_definition_two = create_schema_definition("Test2", fields=[test_definition_field])
 
         language_context = get_initialized_language_context(core_spec_only=True)
         core_spec_definition_count = len(language_context.definitions)
@@ -74,7 +76,7 @@ class TestLanguageContext(TestCase):
     def test_update_definition_in_context(self):
         test_definition_field = create_field_entry("TestField", "string")
         test_definition_name = "myDef"
-        test_definition = create_schema_definition(test_definition_name, [test_definition_field])
+        test_definition = create_schema_definition(test_definition_name, fields=[test_definition_field])
 
         language_context = get_initialized_language_context(core_spec_only=True)
         language_context.add_definition_to_context(test_definition)

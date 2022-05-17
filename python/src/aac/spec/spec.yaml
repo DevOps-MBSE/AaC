@@ -25,6 +25,14 @@ schema:
 
         A 'schema' definition can alternatively be thought as a defining the
         data structure of a definition.
+    - name: map
+      type: Map
+      description: |
+        A definition that represents a key-value pair. Used to define Maps
+        and the types for the keys and values.
+
+        An example use of Map would be to declare a key-value data structure
+        with keys of type A and values of type B.
     - name: model
       type: model
       description: |
@@ -238,7 +246,6 @@ enum:
     - bool
     - date
     - file
-    - map
 ---
 schema:
   name: Field
@@ -444,3 +451,39 @@ schema:
   required:
     - condition
     - steps
+---
+schema:
+  name: Map
+  description: Defines a map/key-value pair data structure, and the typing.
+  fields:
+    - name: name
+      type: string
+      description: The name of the Map type
+    - name: key_type
+      type: string
+      description: The key type for elements in the map.
+    - name: value_type
+      type: string
+      description: The value type for elements in the map.
+  validation:
+    - name: Required fields are present
+  required:
+    - name
+    - key_type
+    - value_type
+---
+schema:
+  name: KeyValuePair
+  description: Defines a key-value pair, use in list to create key-value pairs in AaC.
+  fields:
+    - name: key
+      type: string
+      description: The key map entry.
+    - name: value
+      type: string
+      description: The value map entry.
+  validation:
+    - name: Required fields are present
+  required:
+    - key
+    - value

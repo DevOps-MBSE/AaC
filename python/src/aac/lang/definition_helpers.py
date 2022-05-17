@@ -4,7 +4,7 @@ import logging
 from typing import Optional
 
 from aac.lang.definitions.definition import Definition
-from aac.lang.definitions.arrays import remove_list_type_indicator
+from aac.lang.definitions.type import remove_list_type_indicator
 from aac.lang.definitions.search import search_definition
 
 

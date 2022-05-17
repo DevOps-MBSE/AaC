@@ -1,17 +1,14 @@
 """The Language Context manages the highly-contextual AaC DSL."""
 
-from typing import Optional
 from attr import Factory, attrib, attrs, validators
+from typing import Optional
 import copy
 import logging
 
 from aac.lang.definitions.definition import Definition
-from aac.lang.definitions.arrays import is_array_type, remove_list_type_indicator
-from aac.lang.definitions.extensions import apply_extension_to_definition, remove_extension_from_definition
 from aac.lang.definitions.search import search_definition
-from aac.lang.definition_helpers import (
-    get_definitions_by_root_key,
-)
+from aac.lang.definitions.type import is_array_type, remove_list_type_indicator
+from aac.lang.definition_helpers import get_definitions_by_root_key
 
 
 @attrs(slots=True, auto_attribs=True)
@@ -56,7 +53,12 @@ class LanguageContext:
             )
 
         if definition.is_extension():
-            self._apply_extension_to_context(definition)
+            target_definition_name = definition.get_top_level_fields().get("type")
+            target_definition = self.get_definition_by_name(target_definition_name)
+            if target_definition:
+                _apply_extension_to_target_definition(target_definition, definition)
+            else:
+                logging.error(f"Extension failed to define target, field 'type' is missing. {definition.structure}")
 
     def add_definitions_to_context(self, definitions: list[Definition]):
         """
@@ -66,10 +68,11 @@ class LanguageContext:
             definitions: The list of Definitions to add to the context.
         """
         extension_definitions = get_definitions_by_root_key("ext", definitions)
+        extension_definition_names = [ext.name for ext in extension_definitions]
+        non_extension_definitions = list(filter(lambda definition: definition.name not in extension_definition_names, definitions))
 
-        for definition in definitions:
-            if definition not in extension_definitions:
-                self.add_definition_to_context(definition)
+        for definition in non_extension_definitions:
+            self.add_definition_to_context(definition)
 
         for extension_definitions in extension_definitions:
             self.add_definition_to_context(extension_definitions)
@@ -211,6 +214,28 @@ class LanguageContext:
         """
         return list(map(lambda definition: definition.name, self.definitions))
 
+    def is_enum_type(self, type: str) -> bool:
+        """
+        Returns a boolean indicating if the type is defined and if it's defined as an enum.
+
+        This method is helpful for discerning the type of a definition by its name. This is
+        functionally equivalent to getting the definition by name from the context and then
+        running the `Definition` method `is_enum()`
+
+        Args:
+            type (str): The enum's type string.
+
+        Returns:
+            A boolean indicating if the string matches an enum type defined in the context.
+        """
+        defintion = self.get_definition_by_name(type)
+
+        is_enum_type = False
+        if defintion:
+            is_enum_type = defintion.is_enum()
+
+        return is_enum_type
+
     def is_primitive_type(self, type: str) -> bool:
         """
         Returns a boolean indicating if the type is defined as a primitive type.
@@ -248,7 +273,12 @@ class LanguageContext:
         if is_array_type(definition_name):
             definition_name = remove_list_type_indicator(definition_name)
 
-        return self.definitions_name_dictionary.get(definition_name)
+        definition_to_return = self.definitions_name_dictionary.get(definition_name)
+
+        if not definition_to_return:
+            logging.info(f"Failed to find the definition named '{definition_name}' in the context.")
+
+        return definition_to_return
 
     def get_definitions_by_root_key(self, root_key: str) -> list[Definition]:
         """Return a subset of definitions with the given root key.
@@ -280,32 +310,69 @@ class LanguageContext:
 
         return list(filter(does_definition_source_uri_match, self.definitions))
 
-    def _apply_extension_to_context(self, extension_definition: Definition) -> None:
-        """
-        Apply the extension to the definitions it modifies in the LanguageContext.
 
-        Args:
-            extension_definition (Definition): The extension definition to apply to the context.
-        """
-        target_to_extend = extension_definition.get_top_level_fields().get("type")
+def _apply_extension_to_target_definition(target_definition_to_extend: Definition, extension_definition: Definition) -> None:
+    """
+    Apply the extension to the definitions it modifies.
 
-        if not target_to_extend:
-            logging.error(f"Extension failed to define target, field 'type' is missing. {extension_definition.structure}")
+    Args:
+        target_definition_to_extend (Definition): The extension definition to extend.
+        extension_definition (Definition): The extension definition to apply to the target definition.
+    """
+    extension_type = ""
+    extension_field_name = ""
+    if extension_definition.is_enum_extension():
+        extension_type = "enum"
+        extension_field_name = "values"
+    else:
+        extension_type = "schema"
+        extension_field_name = "fields"
 
-        target_definition_to_extend = self.get_definition_by_name(target_to_extend)
-        apply_extension_to_definition(extension_definition, target_definition_to_extend)
+    ext_type = f"{extension_type}Ext"
+    target_definition_fields_dict = target_definition_to_extend.get_top_level_fields()
+    extension_definition_fields_dict = extension_definition.get_top_level_fields()
+    extension_additional_values_dict = extension_definition_fields_dict.get(ext_type)
 
-    def _remove_extension_from_context(self, extension_definition: Definition) -> None:
-        """
-        Remove the extension from the definition it modifies in the LanguageContext.
+    original_field_values = target_definition_fields_dict.get(extension_field_name)
+    if original_field_values is not None:
+        updated_values = []
+        new_values = extension_additional_values_dict.get("add") or []
+        if extension_definition.is_enum_extension():
+            updated_values = _get_extended_enum_values(original_field_values, new_values)
+        else:
+            updated_values = _get_extended_data_fields(original_field_values, new_values)
 
-        Args:
-            extension_definition (Definition): The extension definition to remove from the context.
-        """
-        target_to_extend = extension_definition.get_top_level_fields().get("type")
+        target_definition_fields_dict[extension_field_name] = updated_values
+    else:
+        logging.error(
+            f"Attempted to apply an extension to the incorrect target. Extension name '{extension_definition.name}' target definition '{target_definition_to_extend.name}'"
+        )
 
-        if not target_to_extend:
-            logging.error(f"Extension failed to define target, field 'type' is missing. {extension_definition.structure}")
+    _add_extension_required_fields_to_defintion(target_definition_fields_dict, extension_additional_values_dict)
 
-        target_definition_to_extend = self.get_definition_by_name(target_to_extend)
-        remove_extension_from_definition(extension_definition, target_definition_to_extend)
+
+def _get_extended_enum_values(original_values: list, new_values: list) -> list:
+    """Return a list of all unique original and new enum values combined together."""
+    updated_values = {value: value for value in original_values}
+    new_values = {value: value for value in new_values}
+    updated_values.update(new_values)
+    return list(updated_values.values())
+
+
+def _get_extended_data_fields(original_fields: list, new_fields: list):
+    """Return a list of all unique original and new data fields combined together."""
+    updated_fields_dict = {value.get("name"): value for value in original_fields}
+    unique_new_fields = list(filter(lambda field: field.get("name") not in updated_fields_dict.keys(), new_fields))
+    new_fields_dict = {value.get("name"): value for value in unique_new_fields}
+    updated_fields_dict.update(new_fields_dict)
+    return list(updated_fields_dict.values())
+
+
+def _add_extension_required_fields_to_defintion(target_definition_sub_dict, extension_dictionary_sub_dict):
+    """Add the extension's additional required fields to the target definition."""
+    if "required" in extension_dictionary_sub_dict:
+
+        if "required" not in target_definition_sub_dict:
+            target_definition_sub_dict["required"] = []
+
+        target_definition_sub_dict["required"] += extension_dictionary_sub_dict.get("required") or []

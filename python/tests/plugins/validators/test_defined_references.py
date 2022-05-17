@@ -28,7 +28,7 @@ class TestDefinedReferencesPlugin(TestCase):
 
     def test_validate_references_valid_references(self):
         test_primitive_reference_field = create_field_entry("ValidPrimitiveField", "string")
-        test_definition = create_schema_definition("TestData", [test_primitive_reference_field])
+        test_definition = create_schema_definition("TestData", fields=[test_primitive_reference_field])
 
         expected_result = ValidatorResult([], True)
 

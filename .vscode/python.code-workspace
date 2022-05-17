@@ -171,7 +171,7 @@
             "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "gen-protobuf",
-                "${workspaceFolder}/model/protobuf_flow/System.yaml",
+                "${workspaceFolder}/model/protobuf_flow/System.aac",
                 "build/"
             ],
             "console": "integratedTerminal",
