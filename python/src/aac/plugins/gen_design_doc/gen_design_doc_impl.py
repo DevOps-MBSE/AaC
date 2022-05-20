@@ -14,8 +14,9 @@ from aac.plugins.plugin_execution import (
 from aac.template_engine import (
     TemplateOutputFile,
     generate_template,
-    load_default_templates,
+    load_templates,
     write_generated_templates_to_file,
+    __package__ as template_engine_package,
 )
 from aac.validate import validated_source
 
@@ -38,7 +39,7 @@ def gen_design_doc(architecture_files: str, output_directory: str, template_file
         first_arch_file, *other_arch_files = architecture_files.split(",")
         parsed_models = _get_parsed_models([first_arch_file] + other_arch_files)
 
-        loaded_templates = load_default_templates("gen_design_doc")
+        loaded_templates = load_templates(template_engine_package, "templates/gen_design_doc")
         template_file_name = os.path.basename(template_file or default_template_file)
 
         selected_template, *_ = [t for t in loaded_templates if template_file_name == t.name]

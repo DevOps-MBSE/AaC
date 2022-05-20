@@ -12,8 +12,9 @@ from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 from aac.validate import validated_source
 from aac.template_engine import (
     generate_templates,
-    load_default_templates,
+    load_templates,
     write_generated_templates_to_file,
+    __package__ as template_engine_package,
 )
 
 plugin_name = "gen_plant_uml"
@@ -189,7 +190,7 @@ def _generate_diagram_to_file(
     with validated_source(architecture_file_path) as result:
         template_properties = property_generator(convert_parsed_definitions_to_dict_definition(result.definitions))
         templates = [
-            (props.get("filename"), generate_templates(load_default_templates(f"{plugin_name}/{puml_type}"), props))
+            (props.get("filename"), generate_templates(load_templates(template_engine_package, f"templates/{plugin_name}/{puml_type}"), props))
             for props in template_properties
         ]
 

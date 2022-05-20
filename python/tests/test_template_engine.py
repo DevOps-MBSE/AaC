@@ -9,8 +9,9 @@ from aac.template_engine import (
     generate_template_as_string,
     generate_template,
     generate_templates_as_strings,
-    load_default_templates,
+    load_templates,
     write_generated_templates_to_file,
+    __package__ as template_engine_package,
 )
 
 from tests.helpers.io import temporary_test_file
@@ -18,7 +19,7 @@ from tests.helpers.io import temporary_test_file
 
 class TestTemplateEngine(TestCase):
     def test_load_templates(self):
-        templates = load_default_templates("genplug")
+        templates = load_templates(template_engine_package, "templates/genplug")
         self.assertGreater(len(templates), 0)
 
     def test_generate_template(self):

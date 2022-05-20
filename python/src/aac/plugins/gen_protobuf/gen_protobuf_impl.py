@@ -20,8 +20,9 @@ from aac.plugins.plugin_execution import (
 from aac.template_engine import (
     TemplateOutputFile,
     generate_template,
-    load_default_templates,
+    load_templates,
     write_generated_templates_to_file,
+    __package__ as template_engine_package,
 )
 from aac.validate import validated_source
 
@@ -53,7 +54,7 @@ def generate_protobuf_messages(architecture_file: str, output_directory: str) ->
 
     # Validate the source AaC file and its contents
     with validated_source(architecture_file) as validation_result:
-        loaded_templates = load_default_templates("gen_protobuf")
+        loaded_templates = load_templates(template_engine_package, "templates/gen_protobuf")
 
         # Get the validated model definitions
         validated_definitions = validation_result.definitions

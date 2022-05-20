@@ -30,20 +30,6 @@ def load_templates(package_name: str, template_directory: str = "templates") -> 
     return _load_templates_from_env(env)
 
 
-def load_default_templates(group_dir_name: str) -> list[Template]:
-    """
-    Load default templates embedded in the AaC project based on a template group-name.
-
-    Args:
-        group_dir_name: name of the templates sub-directory to load templates from.
-
-    Returns:
-        list of loaded templates
-    """
-
-    return load_templates(__package__, f"templates/{group_dir_name}")
-
-
 def generate_templates(templates: list[Template], properties: dict[str, str]) -> dict[str, TemplateOutputFile]:
     """
     Compile a list of Jinja2 Templates with a dict of template properties into a dict of template name to compiled template content.
