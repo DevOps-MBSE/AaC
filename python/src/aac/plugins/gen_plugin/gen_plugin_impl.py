@@ -17,7 +17,6 @@ from aac.template_engine import (
     generate_templates,
     load_templates,
     write_generated_templates_to_file,
-    __package__ as template_engine_package,
 )
 from aac.plugins import OperationCancelled
 from aac.plugins.gen_plugin.GeneratePluginException import GeneratePluginException
@@ -145,8 +144,7 @@ def _get_template_parent_directories(plugin_type: str, architecture_file_path: s
 
 def _generate_template_files(plugin_type: str, template_properties: dict) -> dict[str, TemplateOutputFile]:
     """Generates the Jinja2 templates with the template properties."""
-    template_directory_name = f"genplug/{plugin_type}_party"
-    return generate_templates(load_templates(template_engine_package, f"templates/{template_directory_name}"), template_properties)
+    return generate_templates(load_templates(__package__, f"templates/{plugin_type}_party"), template_properties)
 
 
 def _prepare_and_generate_plugin_files(
