@@ -16,7 +16,6 @@ from aac.template_engine import (
     generate_template,
     load_templates,
     write_generated_templates_to_file,
-    __package__ as template_engine_package,
 )
 from aac.validate import validated_source
 
@@ -34,7 +33,7 @@ def gen_gherkin_behaviors(architecture_file: str, output_directory: str) -> Plug
 
     def generate_gherkin():
         with validated_source(architecture_file) as validation_result:
-            loaded_templates = load_templates(template_engine_package, "templates/gen_gherkin_behaviors")
+            loaded_templates = load_templates(__package__, ".")
             definitions_dictionary = convert_parsed_definitions_to_dict_definition(validation_result.definitions)
 
             message_template_properties = _get_template_properties(definitions_dictionary)
