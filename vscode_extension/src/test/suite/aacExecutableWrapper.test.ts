@@ -1,7 +1,6 @@
 import * as assert from "assert";
 
 import * as aacWrapper from "../../aacExecutableWrapper";
-import * as helpers from "../../helpers";
 import * as configuration from "../../configuration";
 
 suite("AaC Executable Wrapper Test Suite", () => {
