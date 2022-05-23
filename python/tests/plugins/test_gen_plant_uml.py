@@ -4,6 +4,7 @@ from tempfile import TemporaryDirectory
 from typing import Callable
 from unittest import TestCase
 
+from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.plugins.gen_plant_uml.gen_plant_uml_impl import (
     COMPONENT_STRING,
     OBJECT_STRING,
@@ -23,6 +24,9 @@ from tests.helpers.plugins import check_generated_file_contents, YAML_FILE_EXTEN
 
 
 class TestGenPlantUml(TestCase):
+    def setUp(self):
+        get_active_context(reload_context=True)
+
     def test_formatted_definition_name(self):
         self.assertEqual(_get_formatted_definition_name(""), "")
         self.assertEqual(_get_formatted_definition_name("name"), "name")

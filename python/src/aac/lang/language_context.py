@@ -7,7 +7,7 @@ import logging
 
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.search import search_definition
-from aac.lang.definitions.type import is_array_type, remove_list_type_indicator
+from aac.lang.definitions.type import remove_list_type_indicator
 from aac.lang.definition_helpers import get_definitions_by_root_key
 
 
@@ -270,13 +270,15 @@ class LanguageContext:
         Returns:
             The definition corresponding to the name, or None if not found.
         """
-        if is_array_type(definition_name):
+        definition_to_return = None
+        if definition_name:
             definition_name = remove_list_type_indicator(definition_name)
+            definition_to_return = self.definitions_name_dictionary.get(definition_name)
 
-        definition_to_return = self.definitions_name_dictionary.get(definition_name)
-
-        if not definition_to_return:
-            logging.info(f"Failed to find the definition named '{definition_name}' in the context.")
+            if not definition_to_return:
+                logging.info(f"Failed to find the definition named '{definition_name}' in the context.")
+        else:
+            logging.error(f"No definition name was provided to {self.get_definition_by_name.__name__}")
 
         return definition_to_return
 
