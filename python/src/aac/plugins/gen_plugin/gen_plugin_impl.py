@@ -66,7 +66,7 @@ def _generate_plugin_files_to_directory(architecture_file_path: str, plugin_outp
     with validated_source(architecture_file_path) as validation_result:
         definitions = validation_result.definitions
         templates = list(_prepare_and_generate_plugin_files(definitions, plugin_type, architecture_file_path).values())
-        write_generated_templates_to_file(templates, plugin_output_directory)
+        write_generated_templates_to_file(templates)
         return f"Successfully created a {plugin_type}-party plugin in {plugin_output_directory}"
 
 
@@ -87,7 +87,6 @@ def _is_plugin_in_aac_repository(architecture_file_path: str) -> bool:
 def _apply_output_template_properties(
     output_files: list[TemplateOutputFile],
     overwite_files: list[str],
-    parent_directories: dict[str, str],
     plugin_implementation_name,
 ):
     """
@@ -96,7 +95,6 @@ def _apply_output_template_properties(
     Args:
         output_files (list[TemplateOutputFile]): The generated files to apply the settings to (this mutates output_files)
         overwite_files (list[str]): A list of template files that can be overwritten
-        parent_directories (dict[str, str]): A dictionary of directories to generate the output files under
         plugin_implementation_name: The plugin's implementation name
     """
 
@@ -106,13 +104,9 @@ def _apply_output_template_properties(
     def set_filename_value(output_file: TemplateOutputFile):
         output_file.file_name = _convert_template_name_to_file_name(output_file.template_name, plugin_implementation_name)
 
-    def set_parent_directory_value(output_file: TemplateOutputFile):
-        output_file.parent_dir = parent_directories.get(output_file.template_name) or output_file.parent_dir
-
     for output_file in output_files.values():
         set_overwrite_value(output_file)
         set_filename_value(output_file)
-        set_parent_directory_value(output_file)
 
 
 def _get_overwriteable_templates() -> list[str]:
@@ -120,7 +114,7 @@ def _get_overwriteable_templates() -> list[str]:
     return ["setup.py.jinja2"]
 
 
-def _get_template_parent_directories(plugin_type: str, architecture_file_path: str, plugin_name: str) -> dict[str, str]:
+def _get_template_output_directories(plugin_type: str, architecture_file_path: str, plugin_name: str) -> dict[str, str]:
     """Returns a manually maintained list of templates and their parent directories."""
 
     architecture_file_directory_path = path.dirname(architecture_file_path)
@@ -134,17 +128,20 @@ def _get_template_parent_directories(plugin_type: str, architecture_file_path: s
 
     # Third party files are generated a level belowthe architecture file
     third_party_directories = {
+        "test_plugin_impl.py.jinja2": "tests",
         "plugin_impl.py.jinja2": plugin_name,
         "__init__.py.jinja2": plugin_name,
-        "test_plugin_impl.py.jinja2": "tests",
+        "README.md.jinja2": plugin_name,
+        "setup.py.jinja2": plugin_name,
+        "tox.ini.jinja2": plugin_name,
     }
 
     return first_party_directories if plugin_type == PLUGIN_TYPE_FIRST_STRING else third_party_directories
 
 
-def _generate_template_files(plugin_type: str, template_properties: dict) -> dict[str, TemplateOutputFile]:
+def _generate_template_files(plugin_type: str, output_directories: dict, template_properties: dict) -> dict[str, TemplateOutputFile]:
     """Generates the Jinja2 templates with the template properties."""
-    return generate_templates(load_templates(__package__, f"templates/{plugin_type}_party"), template_properties)
+    return generate_templates(load_templates(__package__, f"templates/{plugin_type}_party"), output_directories, template_properties)
 
 
 def _prepare_and_generate_plugin_files(
@@ -172,16 +169,15 @@ def _prepare_and_generate_plugin_files(
 
     plugin_implementation_name = _convert_to_implementation_name(plugin_name)
     templates_to_overwrite = _get_overwriteable_templates()
-    template_parent_directories = _get_template_parent_directories(
-        plugin_type, architecture_file_path, plugin_implementation_name
+    template_output_directories = _get_template_output_directories(
+        plugin_type, architecture_file_path, plugin_implementation_name,
     )
 
-    generated_templates = _generate_template_files(plugin_type, template_properties)
+    generated_templates = _generate_template_files(plugin_type, template_output_directories, template_properties)
 
     _apply_output_template_properties(
         generated_templates,
         templates_to_overwrite,
-        template_parent_directories,
         plugin_implementation_name,
     )
 

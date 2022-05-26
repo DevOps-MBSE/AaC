@@ -64,7 +64,8 @@ def generate_protobuf_messages(architecture_file: str, output_directory: str) ->
 
         generated_template_messages = _generate_protobuf_messages(loaded_templates, protobuf_message_template_properties)
 
-        write_generated_templates_to_file(generated_template_messages, output_directory)
+        # TODO: Add output_directory
+        write_generated_templates_to_file(generated_template_messages)
 
         return f"Successfully generated templates to directory: {output_directory}"
 

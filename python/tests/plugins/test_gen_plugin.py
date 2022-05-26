@@ -63,17 +63,16 @@ class TestGenPlugin(TestCase):
 
             self.assertEqual(len(os.listdir(temp_directory)), 0)
 
-            with temporary_test_file(
-                TEST_PLUGIN_YAML_STRING,
-                dir=temp_directory,
-            ) as plugin_yaml:
+            with temporary_test_file(TEST_PLUGIN_YAML_STRING, dir=temp_directory) as plugin_yaml:
                 is_user_desired_output_dir.return_value = True
                 result = generate_plugin(plugin_yaml.name)
 
                 assert_plugin_success(result)
 
                 generated_plugin_files = os.listdir(temp_directory)
-                self.assertEqual(len(generated_plugin_files), 6)
+                self.assertEqual(len(generated_plugin_files), 3)
+                self.assertEqual(len(os.listdir(os.path.join(temp_directory, "tests"))), 1)
+                self.assertEqual(len(os.listdir(os.path.join(temp_directory, "aac_gen_protobuf"))), 5)
                 self.assertIn(os.path.basename(plugin_yaml.name), generated_plugin_files)
                 self.assertIn(f"{TEST_PLUGIN_NAME}", generated_plugin_files)
 
@@ -127,16 +126,16 @@ class TestGenPlugin(TestCase):
             self.assertEqual(expected_filename, actual_filename)
 
     def test_prepare_and_generate_plugin_files(self):
-        with validated_source(TEST_PLUGIN_YAML_STRING) as result:
+        with temporary_test_file(TEST_PLUGIN_YAML_STRING) as test_yaml, validated_source(TEST_PLUGIN_YAML_STRING) as result:
             plugin_name = "aac_gen_protobuf"
 
-            generated_templates = _prepare_and_generate_plugin_files(result.definitions, PLUGIN_TYPE_THIRD_STRING, "")
+            generated_templates = _prepare_and_generate_plugin_files(result.definitions, PLUGIN_TYPE_THIRD_STRING, test_yaml.name)
 
             generated_template_names = []
-            generated_template_parent_directories = []
+            generated_template_output_directories = []
             for template in generated_templates.values():
                 generated_template_names.append(template.file_name)
-                generated_template_parent_directories.append(template.parent_dir)
+                generated_template_output_directories.append(template.output_directory)
 
             # Check that the files don't have "-" in the name
             for name in generated_template_names:
@@ -145,7 +144,7 @@ class TestGenPlugin(TestCase):
             # Check that the expected files and directories were created and named correctly
             num_generated_templates = len(generated_templates)
             self.assertEqual(len(generated_template_names), num_generated_templates)
-            self.assertEqual(len(generated_template_parent_directories), num_generated_templates)
+            self.assertEqual(len(generated_template_output_directories), num_generated_templates)
 
             # Assert that the expected template files were generated
             self.assertIn("README.md", generated_template_names)
@@ -155,7 +154,7 @@ class TestGenPlugin(TestCase):
             self.assertIn(f"{plugin_name}_impl.py", generated_template_names)
             self.assertIn(f"test_{plugin_name}_impl.py", generated_template_names)
 
-            self.assertIn("tests", generated_template_parent_directories)
+            self.assertIn("tests", generated_template_output_directories)
 
             # Assert that some expected content is present
             generated_plugin_file_contents = generated_templates.get(INIT_TEMPLATE_NAME).content
@@ -175,8 +174,8 @@ class TestGenPlugin(TestCase):
             generated_plugin_impl_test_file_contents = generated_templates.get(PLUGIN_IMPL_TEST_TEMPLATE_NAME).content
             self.assertIn("TestAacGenProtobuf(TestCase)", generated_plugin_impl_test_file_contents)
 
-            generated_plugin_impl_test_file_parent_dir = generated_templates.get(PLUGIN_IMPL_TEST_TEMPLATE_NAME).parent_dir
-            self.assertEqual(generated_plugin_impl_test_file_parent_dir, "tests")
+            generated_plugin_impl_test_file_output_directory = generated_templates.get(PLUGIN_IMPL_TEST_TEMPLATE_NAME).output_directory
+            self.assertEqual(generated_plugin_impl_test_file_output_directory, "tests")
 
             generated_readme_file_contents = generated_templates.get(README_TEMPLATE_NAME).content
             self.assertIn("# aac-gen-protobuf", generated_readme_file_contents)
