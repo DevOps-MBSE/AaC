@@ -1,0 +1,57 @@
+import:
+  - ./AlarmClock.yaml
+  - ./external.yaml
+usecase:
+  name: Set Alarm Time
+  description: The user sets the time for the alarm clock.
+  participants:
+    - name: user
+      type: Person
+    - name: alarm
+      type: AlarmClock
+    - name: timer
+      type: ClockTimer
+  steps:
+    - step: The user sets the time on system.
+      source: user
+      target: alarm
+      action: setAlarm
+    - step: The alarm clock stores the time in the timer
+      source: alarm
+      target: timer
+      action: setTime
+---
+import:
+  - ./AlarmClock.yaml
+  - ./external.yaml
+usecase:
+  name: Trigger Alarm
+  description: The alarm emits a noise at the user-specified time
+  participants:
+    - name: user
+      type: Person
+    - name: alarmClock
+      type: AlarmClock
+    - name: timer
+      type: ClockTimer
+    - name: timer
+      type: ClockTimer
+    - name: clock
+      type: Clock
+  steps:
+    - step: The clock emits the current time to the timer
+      source: clock
+      target: timer
+      action: emitCurrentTime
+    - step: The timer emits an alarm notification to the alarm
+      source: timer
+      target: alarm
+      action: emitAlarmTrigger
+    - step: The alarm is activated to emit a noise from the AlarmClock speaker
+      source: alarm
+      target: alarmClock
+      action: triggerSpeaker
+    - step: The alarm speaker emits the alarm noise to the user
+      source: alarmClock
+      target: user
+      action: emitAlarmNoise

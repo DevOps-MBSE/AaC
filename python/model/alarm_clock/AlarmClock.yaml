@@ -1,0 +1,70 @@
+import:
+  - ./structures.yaml
+model:
+  name: AlarmClock
+  description: A simple alarm clock
+  components:
+    - name: clock
+      type: Clock
+    - name: timer
+      type: ClockTimer
+    - name: alarm
+      type: ClockAlarm
+  behavior:
+    - name: setAlarm
+      type: request-response
+      description: Set the alarm timer
+      input:
+        - name: targetTime
+          type: TimestampDataStructure
+      acceptance:
+        - scenario: setTimer
+          when:
+            - The user sets the alarm timer
+          then:
+            - The alarm is triggered when the clock reaches the specified time
+---
+model:
+  name: Clock
+  description: A simple clock that keeps track of the current time
+  behavior:
+    - name: getTime
+      type: timer
+      description: Get the current time
+      output:
+        - name: currentTime
+          type: TimestampDataStructure
+---
+model:
+  name: ClockTimer
+  description: A simple timer that can be set to a target time.
+  behavior:
+    - name: setTime
+      type: request-response
+      description: Set the target time for the timer
+      input:
+        - name: targetTime
+          type: TimestampDataStructure
+    - name: triggerTimer
+      type: timer
+      description: Dispatch the TimerAlertDataStructure when the current time matches the target time
+      input:
+        - name: currentTime
+          type: TimestampDataStructure
+      output:
+        - name: timerAlert
+          type: TimerAlertDataStructure
+---
+model:
+  name: ClockAlarm
+  description: A simple alarm that produces noise.
+  behavior:
+    - name: triggerAlarm
+      type: request-response
+      description: Trigger the alarm noise when a TimerAlertDataStructure is received.
+      input:
+        - name: timerAlert
+          type: TimerAlertDataStructure
+      output:
+        - name: alarmNoise
+          type: AlarmNoise

@@ -1,0 +1,80 @@
+schema:
+  name: TimerAlertDataStructure
+  description: Data structure for timer alerts.
+  fields:
+    - name: triggeredTime
+      type: TimestampDataStructure
+    - name: alarmNoise
+      type: AlarmNoise
+---
+schema:
+  name: TimestampDataStructure
+  fields:
+    - name: hour
+      type: int
+    - name: minute
+      type: int
+    - name: second
+      type: int
+    - name: year
+      type: int
+    - name: month
+      type: int
+    - name: day
+      type: int
+    - name: timezone
+      type: TimezoneOffset
+---
+enum:
+  name: TimezoneOffset
+  description: List of timezone offsets all values are -/+ from GMT
+  values:
+    - "-12:00"
+    - "-11:00"
+    - "-10:00"
+    - "-09:50"
+    - "-09:00"
+    - "-08:00"
+    - "-07:00"
+    - "-06:00"
+    - "-05:00"
+    - "-04:50"
+    - "-04:00"
+    - "-03:50"
+    - "-03:00"
+    - "-02:00"
+    - "-01:00"
+    - "+00:00"
+    - "+01:00"
+    - "+02:00"
+    - "+03:00"
+    - "+03:50"
+    - "+04:00"
+    - "+04:50"
+    - "+05:00"
+    - "+05:50"
+    - "+05:75"
+    - "+06:00"
+    - "+06:50"
+    - "+07:00"
+    - "+08:00"
+    - "+08:75"
+    - "+09:00"
+    - "+09:50"
+    - "+10:00"
+    - "+10:50"
+    - "+11:00"
+    - "+11:50"
+    - "+12:00"
+    - "+12:75"
+    - "+13:00"
+    - "+14:00"
+---
+enum:
+  name: AlarmNoise
+  description: List of available alarm noises
+  values:
+    - "Sonic Boom"
+    - "Siren"
+    - "Klaxon"
+    - "Dog Barking"
