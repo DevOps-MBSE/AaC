@@ -43,13 +43,10 @@ def puml_component(architecture_file: str, output_directory: Optional[str] = Non
         for model_definition in model_definitions:
             root_model_name = model_definition.name
             model_properties = _get_model_content(model_definition, set())
+            filename = _get_generated_file_name(architecture_file, COMPONENT_STRING, root_model_name, output_directory)
             models.append({
-                "filename": _get_generated_file_name(
-                    architecture_file,
-                    COMPONENT_STRING,
-                    root_model_name,
-                    output_directory,
-                ),
+                "filename": filename,
+                "title": model_definition.name,
                 "models": [model_properties],
             })
 
@@ -157,9 +154,11 @@ def puml_object(architecture_file: str, output_directory: Optional[str] = None) 
             for child in object_compositions.get(parent, {}):
                 object_hierarchies.append({"parent": parent, "child": child})
 
+        title, _ = os.path.splitext(os.path.basename(architecture_file))
         return [
             {
                 "filename": _get_generated_file_name(architecture_file, OBJECT_STRING, architecture_file, output_directory),
+                "title": title,
                 "objects": object_declarations,
                 "object_hierarchies": object_hierarchies,
             }
