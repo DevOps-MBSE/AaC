@@ -6,8 +6,10 @@
 import os
 from typing import Callable, Optional
 
-from aac.lang.definition_helpers import get_models_by_type, convert_parsed_definitions_to_dict_definition
-from aac.lang.definitions.search import search
+from aac.lang.active_context_lifecycle_manager import get_active_context
+from aac.lang.definition_helpers import get_definitions_by_root_key
+from aac.lang.definitions.definition import Definition
+from aac.lang.definitions.search import search_definition
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 from aac.validate import validated_source
 from aac.template_engine import (
@@ -34,12 +36,13 @@ def puml_component(architecture_file: str, output_directory: Optional[str] = Non
     """
     architecture_file_path = os.path.abspath(architecture_file)
 
-    def generate_component_diagram(models: dict):
-        model_types = get_models_by_type(models, "model")
+    def generate_component_diagram(definitions: list[Definition]):
+        model_definitions = get_definitions_by_root_key("model", definitions)
 
         models = []
-        for root_model_name in model_types.keys():
-            model_properties = _get_model_content(model_types.get(root_model_name, {}), model_types, set())
+        for model_definition in model_definitions:
+            root_model_name = model_definition.name
+            model_properties = _get_model_content(model_definition, set())
             models.append({
                 "filename": _get_generated_file_name(
                     architecture_file,
@@ -73,16 +76,18 @@ def puml_sequence(architecture_file: str, output_directory: Optional[str] = None
     """
     architecture_file_path = os.path.abspath(architecture_file)
 
-    def generate_sequence_diagram(models: dict):
-        use_case_types = get_models_by_type(models, "usecase")
+    def generate_sequence_diagram(definitions: list[Definition]):
+        usecase_definitions = get_definitions_by_root_key("usecase", definitions)
 
         properties = []
-        participants = []
-        sequences = []
 
-        for use_case_title in use_case_types.keys():
+        for usecase_definition in usecase_definitions:
+            participants = []
+            sequences = []
+
+            use_case_title = usecase_definition.name
             # declare participants
-            usecase_participants = search(use_case_types.get(use_case_title), ["usecase", "participants"])
+            usecase_participants = search_definition(usecase_definition, ["usecase", "participants"])
             for usecase_participant in usecase_participants:  # each participant is a field type
                 participants.append(
                     {
@@ -92,7 +97,7 @@ def puml_sequence(architecture_file: str, output_directory: Optional[str] = None
                 )
 
             # process steps
-            steps = search(use_case_types[use_case_title], ["usecase", "steps"])
+            steps = search_definition(usecase_definition, ["usecase", "steps"])
             for step in steps:  # each step of a step type
                 sequences.append(
                     {
@@ -132,15 +137,16 @@ def puml_object(architecture_file: str, output_directory: Optional[str] = None) 
     """
     architecture_file_path = os.path.abspath(architecture_file)
 
-    def generate_object_diagram(models: dict):
-        model_types = get_models_by_type(models, "model")
+    def generate_object_diagram(definitions: list[Definition]):
+        model_definitions = get_definitions_by_root_key("model", definitions)
 
         object_declarations = []
         object_compositions = {}
-        for model_name in model_types.keys():
+        for model_definition in model_definitions:
+            model_name = model_definition.name
             object_declarations.append(model_name)
 
-            for component in search(model_types[model_name], ["model", "components", "type"]):
+            for component in search_definition(model_definition, ["model", "components", "type"]):
                 if model_name not in object_compositions:
                     object_compositions[model_name] = set()
 
@@ -153,7 +159,7 @@ def puml_object(architecture_file: str, output_directory: Optional[str] = None) 
 
         return [
             {
-                "filename": _get_generated_file_name(architecture_file, OBJECT_STRING, "", output_directory),
+                "filename": _get_generated_file_name(architecture_file, OBJECT_STRING, architecture_file, output_directory),
                 "objects": object_declarations,
                 "object_hierarchies": object_hierarchies,
             }
@@ -187,7 +193,7 @@ def _generate_diagram_to_file(
         Result message string
     """
     with validated_source(architecture_file_path) as result:
-        template_properties = property_generator(convert_parsed_definitions_to_dict_definition(result.definitions))
+        template_properties = property_generator(result.definitions)
         templates = [
             (props.get("filename"), generate_templates(load_default_templates(f"{plugin_name}/{puml_type}"), props))
             for props in template_properties
@@ -211,22 +217,22 @@ def _generate_diagram_to_file(
             return "\n".join(messages)
 
 
-def _get_model_content(model: dict, model_types: dict, defined_interfaces: set) -> dict:
+def _get_model_content(model: Definition, defined_interfaces: set) -> dict:
     """Return content from the specific model relevant to creating a PlantUML diagram.
 
     Args:
-        model (dict): The model from which to extract the needed properties.
-        model_types (dict): ???
+        model (Definition): The model definition from which to extract the needed properties.
         defined_interfaces (set): A collection of inputs and outputs for the model.
 
     Returns:
         A dictionary containing the model's name, interfaces, components, inputs, and outputs.
     """
-    model_name = model.get("model", {}).get("name")
+    active_context = get_active_context()
+    model_name = model.name
     model_interfaces = set()
 
     # define UML interface for each input
-    inputs = search(model, ["model", "behavior", "input"])
+    inputs = search_definition(model, ["model", "behavior", "input"])
     model_inputs = []
     for input in inputs:
         input_name = input.get("name")
@@ -242,7 +248,7 @@ def _get_model_content(model: dict, model_types: dict, defined_interfaces: set) 
             model_interfaces.add(input_type)
 
     # define UML interface for each output
-    outputs = search(model, ["model", "behavior", "output"])
+    outputs = search_definition(model, ["model", "behavior", "output"])
     model_outputs = []
     for output in outputs:
         output_name = output.get("name")
@@ -258,12 +264,12 @@ def _get_model_content(model: dict, model_types: dict, defined_interfaces: set) 
             model_interfaces.add(output_type)
 
     # define UML package for each component
-    components = search(model, ["model", "components"])
+    components = search_definition(model, ["model", "components"])
     model_components = []
 
     for component in components:
         component_type = component.get("type")
-        model_components.append(_get_model_content(model_types.get(component_type), model_types, set()))
+        model_components.append(_get_model_content(active_context.get_definition_by_name(component_type), set()))
 
     return {
         "name": model_name,
