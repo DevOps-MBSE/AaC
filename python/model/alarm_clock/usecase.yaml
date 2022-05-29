@@ -34,8 +34,6 @@ usecase:
       type: AlarmClock
     - name: timer
       type: ClockTimer
-    - name: timer
-      type: ClockTimer
     - name: clock
       type: Clock
   steps:

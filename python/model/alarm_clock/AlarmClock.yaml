@@ -38,6 +38,10 @@ model:
 model:
   name: ClockTimer
   description: A simple timer that can be set to a target time.
+  state:
+    - name: targetTime
+      type: TimestampDataStructure
+      description: The target timestamp indicating when to fire the alarm alert.
   behavior:
     - name: setTime
       type: request-response
