@@ -7,11 +7,8 @@ from jinja2 import Template
 
 from aac.lang.definition_helpers import get_definitions_by_root_key
 from aac.lang.definitions.definition import Definition
-from aac.plugins.plugin_execution import (
-    PluginExecutionResult,
-    plugin_result,
-)
-from aac.template_engine import (
+from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
+from aac.templates.engine import (
     TemplateOutputFile,
     generate_template,
     load_templates,

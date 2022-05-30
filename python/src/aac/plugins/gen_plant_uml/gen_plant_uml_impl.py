@@ -10,7 +10,7 @@ from aac.lang.definition_helpers import get_models_by_type, convert_parsed_defin
 from aac.lang.definitions.search import search
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 from aac.validate import validated_source
-from aac.template_engine import (
+from aac.templates.engine import (
     generate_templates,
     load_templates,
     write_generated_templates_to_file,

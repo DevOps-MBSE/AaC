@@ -4,7 +4,7 @@ from unittest import TestCase
 
 from jinja2 import Template
 
-from aac.template_engine import (
+from aac.templates.engine import (
     TemplateOutputFile,
     generate_template_as_string,
     generate_template,

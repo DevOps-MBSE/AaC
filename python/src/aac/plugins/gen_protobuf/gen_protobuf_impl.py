@@ -13,11 +13,8 @@ from aac.lang.definitions.search import search_definition
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.language_context import LanguageContext
 from aac.plugins import PluginError
-from aac.plugins.plugin_execution import (
-    PluginExecutionResult,
-    plugin_result,
-)
-from aac.template_engine import (
+from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
+from aac.templates.engine import (
     TemplateOutputFile,
     generate_template,
     load_templates,

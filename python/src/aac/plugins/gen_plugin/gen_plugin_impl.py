@@ -12,7 +12,7 @@ from os import path
 from aac.lang.definition_helpers import convert_parsed_definitions_to_dict_definition, get_models_by_type
 from aac.lang.definitions.search import search
 from aac.lang.definitions.definition import Definition
-from aac.template_engine import (
+from aac.templates.engine import (
     TemplateOutputFile,
     generate_templates,
     load_templates,

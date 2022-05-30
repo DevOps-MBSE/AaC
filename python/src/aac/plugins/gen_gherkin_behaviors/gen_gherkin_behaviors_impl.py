@@ -7,11 +7,8 @@ from iteration_utilities import flatten
 
 from aac.lang.definition_helpers import get_models_by_type, convert_parsed_definitions_to_dict_definition
 from aac.plugins import PluginError
-from aac.plugins.plugin_execution import (
-    PluginExecutionResult,
-    plugin_result,
-)
-from aac.template_engine import (
+from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
+from aac.templates.engine import (
     TemplateOutputFile,
     generate_template,
     load_templates,
