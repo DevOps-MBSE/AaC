@@ -6,15 +6,18 @@
 {{print_components(component, indent_level + 1)}}
 {% endfor -%}
 {{space(indent_level)}}}
-{%- else %}
-{% for input in model.inputs -%}
-{{space(indent_level)}}{{input.type}} -> [{{input.target}}] : {{input.name}}
-{% endfor -%}
+
+{% else -%}
+{{space(indent_level)}}component "{{model.name}}"
+{% endif -%}
+
+{%- for input in model.inputs -%}
+{{space(indent_level)}}{{input.type}} -> {{input.target}} : {{input.name}}
+{%- endfor -%}
 
 {%- for output in model.outputs -%}
-{{space(indent_level)}}[{{output.source}}] -> {{output.type}} : {{output.name}}
-{%- endfor %}
-{%- endif -%}
+{{space(indent_level)}}{{output.source}} -> {{output.type}} : {{output.name}}
+{%- endfor -%}
 
 {%- endmacro -%}
 
@@ -22,6 +25,5 @@
 title {{title}} Component Diagram
 {% for model in models -%}
 {{print_components(model, 0)}}
-{%- endfor %}
-
+{%- endfor -%}
 @enduml
