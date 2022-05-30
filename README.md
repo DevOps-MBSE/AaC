@@ -154,10 +154,16 @@ But new plugins are being created to deliver more functionality.  Over time ther
 available to use the AaC model to auto-generate content for reviews, documentation, and even system
 development and deployment.
 
-## Example AaC Template Repository
-We have a [Github Template Repository]() that's setup to allow users exploring AaC to immediately begin interacting with an example model and the AaC python package. You can access that template repository here: https://github.com/Coffee2Bits/AaC-User-Template-Repository
+## User Documentation
+For users who would like more detailed documentation on leveraging AaC can find it in our Github pages user documentation here: https://jondavid-black.github.io/AaC/docs/user_guide
 
-## AaC Plugins
+## Example AaC Template Repository
+We have a [Github Template Repository](https://github.com/Coffee2Bits/AaC-User-Template-Repository) that's setup to allow users exploring AaC to immediately create an AaC-ready github repository. The repository is pre-populated with a simple example model and Github Action workflow.
+
+## Developer Documentation
+Contributors, developers, or just generally interested parties who would like to understand the more technical underpinnings of AaC are welcome to read the project and developer documentation found in our Github pages documentation here: https://jondavid-black.github.io/AaC/docs/dev_guide
+
+## Driving Value with AaC Plugins
 A simple example of one of the plugins mentioned above is the Plant UML plugin in the /plugins/aac-plantuml directory
 of this repository.  This plugin allows you to generate component diagrams, object diagrams, and sequence
 diagrams from the AaC model of your system.  You can test this yourself by using the models in the /model
@@ -186,9 +192,3 @@ that plugin so you can build your own plugin for your own need.
     - From your plugin directory run '''python -m twine upload dist/*'''
 
 We're working on other functionality so keep an eye out for new updates.
-
-## User Documentation
-For users who would like more detailed documentation on leveraging AaC can find it in our Github pages user documentation here: https://jondavid-black.github.io/AaC/docs/user_guide
-
-## Developer Documentation
-Contributors, developers, or just generally interested parties who would like to understand the more technical underpinnings of AaC are welcome to read the project and developer documentation found in our Github pages documentation here: https://jondavid-black.github.io/AaC/docs/dev_guide
