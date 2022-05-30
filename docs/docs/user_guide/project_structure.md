@@ -1,12 +1,79 @@
 # Basic Project Structure
-AaC is unopinionated about project structures, so they can be very flexible. However, we do suggest storing models in an organized project directory structure, like maintaining all AaC files under a top, or near-top level directory `src/`. An example project might look like:
+AaC is unopinionated about project structures, so they can be very flexible. However, we do suggest storing models in an organized project directory structure, such as maintaining all AaC files under a top, or near-top level directory `src/`. An example project might look like:
 ```
 src/system/system.yaml
-src/system/external_messages.yaml
+src/external/external_interface_messages.yaml
+src/external/external_actors.yaml
 src/service_one/service_one.yaml
 src/service_one/service_one_misc_definitions.yaml
 src/service_two/service_two.yaml
 ...
+```
+
+## Anatomy of an AaC file
+Since AaC leverages YAML for its DSL, there are very few restrictions on how to store and organize AaC files and AaC definitions. The main consideration is that every AaC definition must have be defined in its own YAML document _or_ YAML file.
+
+YAML provides a keyword/symbol `---` to denote a logical document separator for multiple YAML documents within in a YAML file. This means that if we store multiple AaC definitions in the same file, they must be separated using the `---` symbol. If they aren't separated correctly then the AaC file will not be recognized as valid YAML.
+
+These two examples are equivalent and both valid:
+_schemas.yaml_
+```yaml
+schema:
+    name: Schema1
+    fields:
+        - name: integer
+          type: int
+---
+schema:
+    name: Schema2
+    fields:
+        - name: string
+          type: string
+```
+
+is therefore equivalent to
+
+_schema1.yaml_
+```yaml
+schema:
+    name: Schema1
+    fields:
+        - name: integer
+          type: int
+```
+_schema2.yaml_
+```yaml
+schema:
+    name: Schema2
+    fields:
+        - name: string
+          type: string
+```
+
+## Referencing AaC structures across files
+Another consideration when deciding how to organize AaC definitions is which definitions reference each other. If `definition A` references `definition B`, then both definitions will need to be either declared in the same AaC file or `definition A` will need to define imports including the relative path to the file containing `definition B`.
+
+For example, `schemaA` references `schemaB`, but both definitions are in separate files.
+
+_schemaA.yaml_
+```yaml
+import:
+  - ./schemaB.yaml
+schema:
+    name: schemaA
+    fields:
+        - name: sub-datastructure
+          type: schemaB
+        - name: integer
+          type: int
+```
+_schemaB.yaml_
+```yaml
+schema:
+    name: schemaB
+    fields:
+        - name: string
+          type: string
 ```
 
 ## Embedding AaC files alongside your implementation
