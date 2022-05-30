@@ -1,5 +1,5 @@
 import:
-  - ./AlarmClock.yaml
+  - ./alarm_clock.yaml
   - ./external.yaml
 usecase:
   name: Set Alarm Time
@@ -22,7 +22,7 @@ usecase:
       action: setTime
 ---
 import:
-  - ./AlarmClock.yaml
+  - ./alarm_clock.yaml
   - ./external.yaml
 usecase:
   name: Trigger Alarm
