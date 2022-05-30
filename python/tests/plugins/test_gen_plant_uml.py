@@ -174,15 +174,15 @@ class TestGenPlantUml(TestCase):
     def _check_component_diagram_serviceone(self, component_diagram_content_string: str):
         self._assert_diagram_contains_uml_boilerplate(component_diagram_content_string)
         self._assert_component_diagram_relations(component_diagram_content_string, "->", [
-            {"left": TEST_PUML_DATA_A_TYPE, "right": f"[{TEST_PUML_SERVICE_ONE_TYPE}]", "name": "in"},
-            {"left": f"[{TEST_PUML_SERVICE_ONE_TYPE}]", "right": TEST_PUML_DATA_B_TYPE, "name": "out"},
+            {"left": TEST_PUML_DATA_A_TYPE, "right": f"{TEST_PUML_SERVICE_ONE_TYPE}", "name": "in"},
+            {"left": f"{TEST_PUML_SERVICE_ONE_TYPE}", "right": TEST_PUML_DATA_B_TYPE, "name": "out"},
         ])
 
     def _check_component_diagram_servicetwo(self, component_diagram_content_string: str):
         self._assert_diagram_contains_uml_boilerplate(component_diagram_content_string)
         self._assert_component_diagram_relations(component_diagram_content_string, "->", [
-            {"left": TEST_PUML_DATA_B_TYPE, "right": f"[{TEST_PUML_SERVICE_TWO_TYPE}]", "name": "in"},
-            {"left": f"[{TEST_PUML_SERVICE_TWO_TYPE}]", "right": TEST_PUML_DATA_C_TYPE, "name": "out"},
+            {"left": TEST_PUML_DATA_B_TYPE, "right": f"{TEST_PUML_SERVICE_TWO_TYPE}", "name": "in"},
+            {"left": f"{TEST_PUML_SERVICE_TWO_TYPE}", "right": TEST_PUML_DATA_C_TYPE, "name": "out"},
         ])
 
     def _assert_component_diagram_relations(self, content: str, relation: str, links: list[dict[str, str]]):
