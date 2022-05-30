@@ -13,11 +13,11 @@
 
 {%- for input in model.inputs -%}
 {{space(indent_level)}}{{input.type}} -> {{input.target}} : {{input.name}}
-{%- endfor -%}
+{% endfor -%}
 
 {%- for output in model.outputs -%}
 {{space(indent_level)}}{{output.source}} -> {{output.type}} : {{output.name}}
-{%- endfor -%}
+{% endfor -%}
 
 {%- endmacro -%}
 
