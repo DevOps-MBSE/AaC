@@ -7,10 +7,10 @@ permalink: docs/user_guide
 ---
 
 # What is Architecture-as-Code?
-Architecture-as-Code (AaC) is a distinctly different take on Model-Based System Engineering (MBSE) that allows a system modeller to define a system in simple yaml. This approach allows engineers to apply rigorous configuration management to their baselines and to leverage modern software development tools and practices, such as Continuous Integration and automated quality gates, to modeled systems, environments, products, or whatever it is that you're modeling with AaC.
+Architecture-as-Code (AaC) is a distinctly different take on Model-Based System Engineering (MBSE) that allows system modellers to define a system in simple plain-text YAML that can be leveraged to drive value and design consensus with developers. AaC's approach to storing models as YAML allows engineers to apply tools and practices that were previously only the domain of software development teams including rigorous configuration management of their baselines, automated quality and testing gates, automated artifact generation, and automated deployment of artifacts.
 
 ## Who is AaC for?
-While "code" is in the name, AaC isn't solely for coders, programmers, or software engineers. Instead, AaC is intended to be a single-source of truth shared between all development stakeholders including those who have a hand in designing, implementing, or auditing a modeled system. Following this desire, AaC provides several interfaces for interacting with the language and tool set.
+While "code" is in the name, AaC isn't solely for coders, programmers, or software engineers. Instead, AaC is intended to be a single-source of truth shared between all stakeholders from design to implementation and auditing. Towards this goal, AaC provides several interfaces for interacting with the language and tool set.
 
 |Interface|Implementation Status| References |
 |---------|---------------------|------------|
@@ -19,7 +19,7 @@ While "code" is in the name, AaC isn't solely for coders, programmers, or softwa
 | Visualization | ❌ In-progress | N/A |
 
 # Getting started
-Not sure where to start? We've got you covered; just checkout
+Not sure where to start with AaC? We've got you covered; just checkout
 [Getting Started](./getting_started)!
 
 # AaC DSL Overview
@@ -27,10 +27,11 @@ The AaC DSL's focus on extensibility can make the language difficult to pickup w
 [Overview of the AaC DSL](./aac_language) for an overview and intro to the AaC DSL.
 
 # Project Structure and Good Practices
+Ready to start creating more than a few definitions in a file? Checkout how our notes on organizing more complex AaC projects.
 [AaC Project and File Structure](./project_structure)
 
 # Decomposing models and systems in AaC
-[Decomposing system in AaC](./decomposing_systems)
+[Decomposing systems in AaC](./decomposing_systems)
 
 # Leveraging AaC in VCS and CI/CD Environments
 AaC's use of plain-text YAML representation allows AaC users to leverage version control software tools such as Git and Continuous Integration/Continuous Delivery practices for extremely high levels of automation.
@@ -39,3 +40,6 @@ AaC's use of plain-text YAML representation allows AaC users to leverage version
 # Glossary
 For all of those acronyms or ambiguous words we use.
 [AaC Glossary](./glossary)
+
+# Big Thanks!
+We want to extend a big thanks to the [CEACIDE team](https://northropgrumman.github.io/jellyfish/) for pioneering most of ideas behind AaC, and for providing us with some great documentation examples.
