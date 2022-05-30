@@ -87,17 +87,17 @@ def _is_plugin_in_aac_repository(architecture_file_path: str) -> bool:
 def _apply_output_template_properties(
     output_files: list[TemplateOutputFile],
     overwite_files: list[str],
-    parent_directories: dict[str, str],
+    output_directories: dict[str, str],
     plugin_implementation_name,
 ):
     """
     Apply post-generation settings to the files prior to them being written to the filesystem.
 
     Args:
-        output_files (list[TemplateOutputFile]): The generated files to apply the settings to (this mutates output_files)
-        overwite_files (list[str]): A list of template files that can be overwritten
-        parent_directories (dict[str, str]): A dictionary of directories to generate the output files under
-        plugin_implementation_name: The plugin's implementation name
+        output_files (list[TemplateOutputFile]): The generated files to apply the settings to (this mutates output_files).
+        overwite_files (list[str]): A list of template files that can be overwritten.
+        output_directories (dict[str, str]): A dictionary of directories in which to generate the output files.
+        plugin_implementation_name: The plugin's implementation name.
     """
 
     def set_overwrite_value(output_file: TemplateOutputFile):
@@ -106,13 +106,13 @@ def _apply_output_template_properties(
     def set_filename_value(output_file: TemplateOutputFile):
         output_file.file_name = _convert_template_name_to_file_name(output_file.template_name, plugin_implementation_name)
 
-    def set_parent_directory_value(output_file: TemplateOutputFile):
-        output_file.parent_dir = parent_directories.get(output_file.template_name) or output_file.parent_dir
+    def set_output_directory_value(output_file: TemplateOutputFile):
+        output_file.output_directory = output_directories.get(output_file.template_name) or output_file.output_directory
 
     for output_file in output_files.values():
         set_overwrite_value(output_file)
         set_filename_value(output_file)
-        set_parent_directory_value(output_file)
+        set_output_directory_value(output_file)
 
 
 def _get_overwriteable_templates() -> list[str]:
@@ -120,8 +120,8 @@ def _get_overwriteable_templates() -> list[str]:
     return ["setup.py.jinja2"]
 
 
-def _get_template_parent_directories(plugin_type: str, architecture_file_path: str, plugin_name: str) -> dict[str, str]:
-    """Returns a manually maintained list of templates and their parent directories."""
+def _get_template_output_directories(plugin_type: str, architecture_file_path: str, plugin_name: str) -> dict[str, str]:
+    """Returns a manually maintained list of templates and their output directories."""
 
     architecture_file_directory_path = path.dirname(architecture_file_path)
 
@@ -172,7 +172,7 @@ def _prepare_and_generate_plugin_files(
 
     plugin_implementation_name = _convert_to_implementation_name(plugin_name)
     templates_to_overwrite = _get_overwriteable_templates()
-    template_parent_directories = _get_template_parent_directories(
+    template_output_directories = _get_template_output_directories(
         plugin_type, architecture_file_path, plugin_implementation_name
     )
 
@@ -181,7 +181,7 @@ def _prepare_and_generate_plugin_files(
     _apply_output_template_properties(
         generated_templates,
         templates_to_overwrite,
-        template_parent_directories,
+        template_output_directories,
         plugin_implementation_name,
     )
 
@@ -224,7 +224,8 @@ def _gather_template_properties(parsed_models: dict[str, dict], architecture_fil
 
     architecture_file = {
         "name": path.basename(architecture_file_path),
-        "parent_directory_name": path.basename(path.dirname(architecture_file_path)),
+        # TODO(Cameron): May need to fix package name
+        "package_name": path.basename(path.dirname(architecture_file_path)),
     }
 
     template_properties = {

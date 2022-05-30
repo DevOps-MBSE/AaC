@@ -79,7 +79,14 @@ def generate_template(template: Template, properties: dict[str, str]) -> Templat
     Returns:
         Compiled/Rendered template as a TemplateOutputFile object
     """
-    return TemplateOutputFile(template.name, generate_template_as_string(template, properties), False)
+    # TODO(Cameron): Make output_directory a required parameter
+    output_directory=""
+    return TemplateOutputFile(
+        output_directory=output_directory,
+        template_name=template.name,
+        content=generate_template_as_string(template, properties),
+        overwrite=False,
+    )
 
 
 def generate_template_as_string(template: Template, properties: dict[str, str]) -> str:
@@ -121,11 +128,11 @@ def _get_template_output_directory(
     output_directory: str, generated_file: TemplateOutputFile
 ) -> str:
     def _should_output_to_plugin_root_directory(output_file: TemplateOutputFile) -> bool:
-        return output_file.parent_dir == "."
+        return output_file.output_directory == "."
 
     output_dir = output_directory
     if not _should_output_to_plugin_root_directory(generated_file):
-        output_dir = os.path.join(output_directory, generated_file.parent_dir)
+        output_dir = os.path.join(output_directory, generated_file.output_directory)
         _ensure_directory_exists(output_dir)
 
     return output_dir
@@ -161,7 +168,7 @@ class TemplateOutputFile:
     Class containing all of the relevant information necessary to handle writing templates to files.
 
     Attributes:
-        parent_dir (str): The directory in which to generate the file (defaults to the plugin root directory).
+        output_directory (str): The directory in which to generate the file.
         template_name (str): The name of the jinja2 template the generated content is based on
         content (str): The generated content
         overwrite (bool): A boolean to indicate if this template output should overwrite any existing files with the same name.
@@ -169,7 +176,7 @@ class TemplateOutputFile:
         file_name: This attribute is not exposed in the constructor. It's up to the user to set the filename.
     """
 
-    parent_dir: str = attrib(validator=validators.instance_of(str), default=".", kw_only=True)
+    output_directory: str = attrib(validator=validators.instance_of(str))
     template_name: str = attrib(validator=validators.instance_of(str))
     file_name: str = attrib(validator=validators.instance_of(str), default="", init=False)
     content: str = attrib(validator=validators.instance_of(str))
