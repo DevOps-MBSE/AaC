@@ -1,3 +1,10 @@
+---
+layout: default
+title: Glossary
+parent: AaC User's Guide
+nav_order: 6
+---
+
 # Glossary
 
 | Term | Description/Meaning |

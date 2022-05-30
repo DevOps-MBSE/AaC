@@ -1,3 +1,9 @@
+---
+layout: default
+title: Decomposing Systems and Models in AaC
+parent: AaC User's Guide
+nav_order: 4
+---
 # 4. Defining Data Structure
 ## Defining Simple Data Structures
 Defining data structures in AaC is fairly simple; any definition that starts with the key `schema` defines a data structure.

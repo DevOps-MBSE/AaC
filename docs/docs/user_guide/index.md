@@ -14,26 +14,28 @@ While "code" is in the name, AaC isn't solely for coders, programmers, or softwa
 
 |Interface|Implementation Status| References |
 |---------|---------------------|------------|
-| Command-line Interface | ✅ Implemented | N/A |
+| Command-line Interface | ✅ Implemented | [AaC Command Line Interface](./aac_cli)
 | Application Programming Interface | ✅ Implemented (Python)  | N/A |
 | Visualization | ❌ In-progress | N/A |
 
 # Getting started
-[Getting Started]({% post_url getting_started %})
+Not sure where to start? We've got you covered; just checkout
+[Getting Started](./getting_started)!
 
 # AaC DSL Overview
 The AaC DSL's focus on extensibility can make the language difficult to pickup without context. Checkout out the
-[Overview of the AaC DSL]({% post_url aac_language %}) for an overview and intro to the AaC DSL.
+[Overview of the AaC DSL](./aac_language) for an overview and intro to the AaC DSL.
 
 # Project Structure and Good Practices
+[AaC Project and File Structure](./project_structure)
 
 # Decomposing models and systems in AaC
-
+[Decomposing system in AaC](./decomposing_systems)
 
 # Leveraging AaC in VCS and CI/CD Environments
 AaC's use of plain-text YAML representation allows AaC users to leverage version control software tools such as Git and Continuous Integration/Continuous Delivery practices for extremely high levels of automation.
-[AaC and GitOps]({% post_url aac_gitops %})
+[AaC and GitOps](./aac_gitops)
 
 # Glossary
 For all of those acronyms or ambiguous words we use.
-[AaC Glossary]({% post_url glossary %})
+[AaC Glossary](./glossary)

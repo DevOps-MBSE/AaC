@@ -1,3 +1,9 @@
+---
+layout: default
+title: AaC Project Structure
+parent: AaC User's Guide
+nav_order: 3
+---
 # Basic Project Structure
 AaC is unopinionated about project structures, so they can be very flexible. However, we do suggest storing models in an organized project directory structure, such as maintaining all AaC files under a top, or near-top level directory `src/`. An example project might look like:
 ```

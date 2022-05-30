@@ -1,6 +1,7 @@
 ---
 layout: default
-title: AaC User's Guide
+title: Getting Started with AaC
+parent: AaC User's Guide
 nav_order: 1
 has_children: false
 ---
