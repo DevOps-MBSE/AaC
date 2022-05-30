@@ -46,7 +46,9 @@ Plant UML in the plugins folder of the repository and more info below.
 
 ## Using AaC to Model Your System
 AaC is written in python to help make it more approachable for casual users and easily extensible for
-power users.  You will need Python 3.9 or later to run AaC.
+power users.
+
+**You will need Python 3.9 or later to run AaC.**
 
 To install AaC on Linux or Windows:
 ```bash
@@ -96,11 +98,11 @@ aac validate EchoService.yaml
 
 AaC has some core "root types" for you to work with.  You can see the root types of `schema` and `model` used in the example above.
 The AaC core root types are:
-- schema: Allows you to model data types used within your system as named types with fields.
-- enum: Allows you to model enumerated types (types with only specific values allowed).
-- model: Allows you to model the behavioral elements of your system.  These can be abstract or concrete.
-- usecase: Allows you to model the sequence of interactions between your models.
-- ext: Allows you to easily extend the AaC model itself and tailor things to your needs.
+- schema: Allows you to model data structures used within your system as user-defined types.
+- enum: Allows you to model enumerated values (types with only specific values allowed).
+- model: Allows you to model the components of your system and their interfaces.  These can be abstract or concrete.
+- usecase: Allows you to model the behavior and interactions between your models.
+- ext: Allows you to easily extend the AaC DSL itself and tailor it to your needs.
 
 Although you can use the yaml trick above when modelling your system, it would be better to keep things more
 structured and organized.  To help with this AaC allows you to define each item you model in a separate file and
@@ -185,5 +187,8 @@ that plugin so you can build your own plugin for your own need.
 
 We're working on other functionality so keep an eye out for new updates.
 
+## User Documentation
+For users who would like more detailed documentation on leveraging AaC can find it in our Github pages user documentation here: https://jondavid-black.github.io/AaC/docs/user_guide
+
 ## Developer Documentation
-Our project and developer documentation can be found in our Github pages documentation here: https://jondavid-black.github.io/AaC/docs/dev_guide
+Contributors, developers, or just generally interested parties who would like to understand the more technical underpinnings of AaC are welcome to read the project and developer documentation found in our Github pages documentation here: https://jondavid-black.github.io/AaC/docs/dev_guide
