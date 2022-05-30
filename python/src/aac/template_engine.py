@@ -30,14 +30,13 @@ def load_templates(package_name: str, template_directory: str = "templates") -> 
     return _load_templates_from_env(env)
 
 
-def generate_templates(templates: list[Template], output_directories: dict[str, str], properties: dict[str, str]) -> dict[str, TemplateOutputFile]:
+def generate_templates(templates: list[Template], properties: dict[str, str]) -> dict[str, TemplateOutputFile]:
     """
     Compile a list of Jinja2 Templates with a dict of template properties into a dict of template name to compiled template content.
 
     Args:
-        templates (list[Template]): list of Jinja2 templates to compile.
-        output_directories (dict[str, str]): The output directories in which to generate the files.
-        properties (dict[str, str]): Dict of properties to use when compiling the templates
+        templates: list of Jinja2 templates to compile.
+        properties: Dict of properties to use when compiling the templates
 
     Returns:
         Dict of template names to TemplateOutputFile objects
@@ -45,7 +44,7 @@ def generate_templates(templates: list[Template], output_directories: dict[str, 
     generated_templates = {}
     for template in templates:
         template_id = template.name
-        generated_templates[template_id] = generate_template(template, output_directories.get(template_id), properties)
+        generated_templates[template_id] = generate_template(template, properties)
 
     return generated_templates
 
@@ -69,24 +68,18 @@ def generate_templates_as_strings(templates: list[Template], properties: dict[st
     return generated_templates
 
 
-def generate_template(template: Template, output_directory: str, properties: dict[str, str]) -> TemplateOutputFile:
+def generate_template(template: Template, properties: dict[str, str]) -> TemplateOutputFile:
     """
     Compile a Jinja2 Template object to a TemplateOutputFile object.
 
     Args:
-        template (Template): Jinja2 template to compile.
-        output_directory (str): The directory in which to generate the output file.
-        properties (dict[str, str]): Dict of properties to use when compiling the template.
+        template: Jinja2 template to compile.
+        properties: Dict of properties to use when compiling the template
 
     Returns:
         Compiled/Rendered template as a TemplateOutputFile object
     """
-    return TemplateOutputFile(
-        output_directory=output_directory,
-        template_name=template.name,
-        content=generate_template_as_string(template, properties),
-        overwrite=False
-    )
+    return TemplateOutputFile(template.name, generate_template_as_string(template, properties), False)
 
 
 def generate_template_as_string(template: Template, properties: dict[str, str]) -> str:
@@ -103,22 +96,44 @@ def generate_template_as_string(template: Template, properties: dict[str, str]) 
     return template.render(properties)
 
 
-def write_generated_templates_to_file(generated_files: list[TemplateOutputFile]) -> None:
+def write_generated_templates_to_file(
+    generated_files: list[TemplateOutputFile], output_directory: str
+) -> None:
     """
     Write a list of generated files to the target directory.
 
     Args:
         generated_files: list of generated files to write to the filesystem
+        output_directory: the directory to write the generated files to.
     """
 
+    _ensure_directory_exists(output_directory)
     for generated_file in generated_files:
-        os.makedirs(generated_file.output_directory, exist_ok=True)
         _write_file(
-            generated_file.output_directory,
+            _get_template_output_directory(output_directory, generated_file),
             generated_file.file_name,
             generated_file.content,
             generated_file.overwrite,
         )
+
+
+def _get_template_output_directory(
+    output_directory: str, generated_file: TemplateOutputFile
+) -> str:
+    def _should_output_to_plugin_root_directory(output_file: TemplateOutputFile) -> bool:
+        return output_file.parent_dir == "."
+
+    output_dir = output_directory
+    if not _should_output_to_plugin_root_directory(generated_file):
+        output_dir = os.path.join(output_directory, generated_file.parent_dir)
+        _ensure_directory_exists(output_dir)
+
+    return output_dir
+
+
+def _ensure_directory_exists(path: str) -> None:
+    if not os.path.exists(path):
+        os.makedirs(path)
 
 
 def _write_file(path: str, file_name: str, content: str, overwrite: bool) -> None:
@@ -146,7 +161,7 @@ class TemplateOutputFile:
     Class containing all of the relevant information necessary to handle writing templates to files.
 
     Attributes:
-        output_directory (str): The directory in which to generate the file.
+        parent_dir (str): The directory in which to generate the file (defaults to the plugin root directory).
         template_name (str): The name of the jinja2 template the generated content is based on
         content (str): The generated content
         overwrite (bool): A boolean to indicate if this template output should overwrite any existing files with the same name.
@@ -154,7 +169,7 @@ class TemplateOutputFile:
         file_name: This attribute is not exposed in the constructor. It's up to the user to set the filename.
     """
 
-    output_directory: str = attrib(validator=validators.instance_of(str))
+    parent_dir: str = attrib(validator=validators.instance_of(str), default=".", kw_only=True)
     template_name: str = attrib(validator=validators.instance_of(str))
     file_name: str = attrib(validator=validators.instance_of(str), default="", init=False)
     content: str = attrib(validator=validators.instance_of(str))
