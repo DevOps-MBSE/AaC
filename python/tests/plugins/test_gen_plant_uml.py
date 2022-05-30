@@ -46,26 +46,21 @@ class TestGenPlantUml(TestCase):
         )
 
     def test_generated_file_name(self):
-        orig_output_dir = "/tmp/some/dir/"
         new_output_dir = "/dir/some/tmp/"
         new_relative_dir = "tmp/"
         file_name = "test_arch_file"
-        full_file_name = f"{orig_output_dir}{file_name}{PLANT_UML_FILE_EXTENSION}"
         definition_name = "My test definition name."
         formatted_definition_name = _get_formatted_definition_name(definition_name)
 
         puml_types = [COMPONENT_STRING, OBJECT_STRING, SEQUENCE_STRING]
+        filename = _convert_aac_filepath_to_filename(file_name)
         for puml_type in puml_types:
             self.assertEqual(
-                _get_generated_file_name(full_file_name, puml_type, definition_name),
-                os.path.join(orig_output_dir, puml_type, f"{file_name}_{formatted_definition_name}{PLANT_UML_FILE_EXTENSION}"),
-            )
-            self.assertEqual(
-                _get_generated_file_name(full_file_name, puml_type, definition_name, new_output_dir),
+                _get_generated_file_name(filename, puml_type, definition_name, new_output_dir),
                 os.path.join(new_output_dir, puml_type, f"{file_name}_{formatted_definition_name}{PLANT_UML_FILE_EXTENSION}"),
             )
             self.assertEqual(
-                _get_generated_file_name(full_file_name, puml_type, definition_name, new_relative_dir),
+                _get_generated_file_name(filename, puml_type, definition_name, new_relative_dir),
                 os.path.join(new_relative_dir, puml_type, f"{file_name}_{formatted_definition_name}{PLANT_UML_FILE_EXTENSION}"),
             )
 
@@ -84,8 +79,9 @@ class TestGenPlantUml(TestCase):
             self.assertIn(full_output_dir, result.get_messages_as_string())
             assert_plugin_success(result)
 
+            filename = _convert_aac_filepath_to_filename(plugin_yaml.name)
             expected_puml_file_paths = [
-                _get_generated_file_name(plugin_yaml.name, COMPONENT_STRING, name)
+                _get_generated_file_name(filename, COMPONENT_STRING, name, temp_directory)
                 for name in [TEST_PUML_SYSTEM_TYPE, TEST_PUML_SERVICE_ONE_TYPE, TEST_PUML_SERVICE_TWO_TYPE]
             ]
             temp_directory_files = os.listdir(full_output_dir)
@@ -113,7 +109,8 @@ class TestGenPlantUml(TestCase):
 
             temp_directory_files = os.listdir(full_output_dir)
 
-            expected_puml_file_path = _get_generated_file_name(plugin_yaml.name, OBJECT_STRING, "")
+            filename = _convert_aac_filepath_to_filename(plugin_yaml.name)
+            expected_puml_file_path = _get_generated_file_name(filename, OBJECT_STRING, filename, temp_directory)
             self.assertIn(os.path.basename(expected_puml_file_path), temp_directory_files)
 
             with open(expected_puml_file_path) as generated_puml_file:
@@ -134,8 +131,9 @@ class TestGenPlantUml(TestCase):
             self.assertIn(full_output_dir, result.get_messages_as_string())
             assert_plugin_success(result)
 
+            filename = _convert_aac_filepath_to_filename(plugin_yaml.name)
             expected_puml_file_paths = [
-                _get_generated_file_name(plugin_yaml.name, SEQUENCE_STRING, name)
+                _get_generated_file_name(filename, SEQUENCE_STRING, name, temp_directory)
                 for name in [TEST_PUML_USE_CASE_ONE_TITLE, TEST_PUML_USE_CASE_TWO_TITLE]
             ]
             temp_directory_files = os.listdir(full_output_dir)
@@ -171,13 +169,10 @@ class TestGenPlantUml(TestCase):
         self._assert_diagram_contains_uml_boilerplate(component_diagram_content_string)
         self._check_component_diagram_serviceone(component_diagram_content_string)
         self._check_component_diagram_servicetwo(component_diagram_content_string)
-        self.assertIn(f"package \"{TEST_PUML_SYSTEM_TYPE}\"", component_diagram_content_string)
+        self.assertIn(f"component \"{TEST_PUML_SYSTEM_TYPE}\"", component_diagram_content_string)
 
     def _check_component_diagram_serviceone(self, component_diagram_content_string: str):
         self._assert_diagram_contains_uml_boilerplate(component_diagram_content_string)
-        self._assert_component_diagram_interface(component_diagram_content_string, [
-            TEST_PUML_DATA_A_TYPE, TEST_PUML_DATA_B_TYPE
-        ])
         self._assert_component_diagram_relations(component_diagram_content_string, "->", [
             {"left": TEST_PUML_DATA_A_TYPE, "right": f"[{TEST_PUML_SERVICE_ONE_TYPE}]", "name": "in"},
             {"left": f"[{TEST_PUML_SERVICE_ONE_TYPE}]", "right": TEST_PUML_DATA_B_TYPE, "name": "out"},
@@ -185,17 +180,10 @@ class TestGenPlantUml(TestCase):
 
     def _check_component_diagram_servicetwo(self, component_diagram_content_string: str):
         self._assert_diagram_contains_uml_boilerplate(component_diagram_content_string)
-        self._assert_component_diagram_interface(component_diagram_content_string, [
-            TEST_PUML_DATA_B_TYPE, TEST_PUML_DATA_C_TYPE
-        ])
         self._assert_component_diagram_relations(component_diagram_content_string, "->", [
             {"left": TEST_PUML_DATA_B_TYPE, "right": f"[{TEST_PUML_SERVICE_TWO_TYPE}]", "name": "in"},
             {"left": f"[{TEST_PUML_SERVICE_TWO_TYPE}]", "right": TEST_PUML_DATA_C_TYPE, "name": "out"},
         ])
-
-    def _assert_component_diagram_interface(self, content: str, interfaces: list[str]):
-        for interface in interfaces:
-            self.assertIn(f"interface {interface}", content)
 
     def _assert_component_diagram_relations(self, content: str, relation: str, links: list[dict[str, str]]):
         for link in links:
@@ -255,6 +243,11 @@ class TestGenPlantUml(TestCase):
     def _assert_diagram_contains_uml_boilerplate(self, puml_file):
         self.assertIn("@startuml", puml_file)
         self.assertIn("@enduml", puml_file)
+
+
+def _convert_aac_filepath_to_filename(filepath: str) -> str:
+    aac_file_name, _ = os.path.splitext(os.path.basename(filepath))
+    return aac_file_name
 
 
 TEST_PUML_SYSTEM_NAME = "Test-System"

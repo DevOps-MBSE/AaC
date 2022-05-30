@@ -43,7 +43,8 @@ def puml_component(architecture_file: str, output_directory: Optional[str] = Non
         for model_definition in model_definitions:
             root_model_name = model_definition.name
             model_properties = _get_model_content(model_definition, set())
-            filename = _get_generated_file_name(architecture_file, COMPONENT_STRING, root_model_name, output_directory)
+            aac_file_name = _extract_aac_file_name(architecture_file)
+            filename = _get_generated_file_name(aac_file_name, COMPONENT_STRING, root_model_name, output_directory)
             models.append({
                 "filename": filename,
                 "title": model_definition.name,
@@ -104,8 +105,9 @@ def puml_sequence(architecture_file: str, output_directory: Optional[str] = None
                     }
                 )
 
+            aac_file_name = _extract_aac_file_name(architecture_file)
             properties.append({
-                "filename": _get_generated_file_name(architecture_file, SEQUENCE_STRING, use_case_title, output_directory),
+                "filename": _get_generated_file_name(aac_file_name, SEQUENCE_STRING, use_case_title, output_directory),
                 "title": use_case_title,
                 "participants": participants,
                 "sequences": sequences,
@@ -154,11 +156,10 @@ def puml_object(architecture_file: str, output_directory: Optional[str] = None) 
             for child in object_compositions.get(parent, {}):
                 object_hierarchies.append({"parent": parent, "child": child})
 
-        title, _ = os.path.splitext(os.path.basename(architecture_file))
+        aac_file_name = _extract_aac_file_name(architecture_file)
         return [
             {
-                "filename": _get_generated_file_name(architecture_file, OBJECT_STRING, architecture_file, output_directory),
-                "title": title,
+                "filename": _get_generated_file_name(aac_file_name, OBJECT_STRING, aac_file_name, output_directory),
                 "objects": object_declarations,
                 "object_hierarchies": object_hierarchies,
             }
@@ -280,13 +281,12 @@ def _get_model_content(model: Definition, defined_interfaces: set) -> dict:
 
 
 def _get_generated_file_name(
-    architecture_file: str, puml_type: str, definition_name: str, output_directory: Optional[str] = None
+    architecture_file_name: str, puml_type: str, definition_name: str, output_directory: Optional[str] = ""
 ) -> str:
     """Return the generated file name for the specified definition in the architecture file.
 
     Args:
-        architecture_file (str): The AaC file in which the definition from which to generate a
-                                 PlantUML diagram is stored.
+        architecture_file_name (str): The AaC filename sans extension.
         puml_type (str): The type of PlantUML diagram to create.
         definition_name (str): The name of the AaC definition.
         output_directory (Optional[str]): The directory in which to generate the PlantUML diagram.
@@ -295,11 +295,10 @@ def _get_generated_file_name(
         The file name into which the generated PlantUML diagram(s) should be generated for the
         provided definition.
     """
-    dir_name, base_name = os.path.split(architecture_file)
-    file_name, _ = os.path.splitext(base_name)
+    file_name = architecture_file_name.lower()
     definition_name = definition_name.lower()
     return os.path.join(
-        output_directory or dir_name,
+        output_directory or "",
         puml_type,
         f"{file_name}_{_get_formatted_definition_name(definition_name)}{PLANT_UML_FILE_EXTENSION}",
     )
@@ -318,3 +317,9 @@ def _get_formatted_definition_name(definition_name: str) -> str:
     for char in FILE_NAME_CHARACTERS_TO_REPLACE:
         name = name.replace(char, "")
     return name
+
+
+def _extract_aac_file_name(architecture_file: str) -> str:
+    """Return the filename sans extension and path from the architecture file."""
+    aac_file_name, _ = os.path.splitext(os.path.basename(architecture_file))
+    return aac_file_name
