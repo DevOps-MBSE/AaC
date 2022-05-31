@@ -2,15 +2,15 @@ import os
 from tempfile import TemporaryDirectory
 from unittest import TestCase
 
-from tests.helpers.io import temporary_test_file
-
 from aac.lang import definition_helpers
 from aac.lang.definitions.source_location import SourceLocation
 from aac.parser import parse, get_yaml_from_source
 from aac.parser import ParserError
 
+from tests.helpers.io import temporary_test_file
 
-class TestArchParser(TestCase):
+
+class TestParser(TestCase):
     def get_test_model(self, import1: str = "a.yaml", import2: str = "b.yaml"):
         return TEST_MODEL_FILE.format(os.path.basename(import1), os.path.basename(import2)).strip()
 
@@ -56,10 +56,13 @@ class TestArchParser(TestCase):
             TemporaryDirectory() as temp_dir,
             temporary_test_file(TEST_IMPORTED_MODEL_FILE_CONTENTS, dir=temp_dir, suffix=".yaml") as import1,
             temporary_test_file(TEST_SECONDARY_IMPORTED_MODEL_FILE_CONTENTS, dir=temp_dir, suffix=".yaml") as import2,
-            temporary_test_file(self.get_test_model(import1.name, import2.name), dir=temp_dir) as test_yaml,
+            temporary_test_file(self.get_test_model(import1.name, import2.name), dir=temp_dir, suffix=".yaml") as test_yaml,
         ):
 
             parsed_models = parse(test_yaml.name)
+
+            self.assertEqual(len(parsed_models), 3)
+
             schema_message_definition = definition_helpers.get_definition_by_name("Message", parsed_models)
             enum_status_definition = definition_helpers.get_definition_by_name("Status", parsed_models)
             model_echosvc_definition = definition_helpers.get_definition_by_name("EchoService", parsed_models)
@@ -67,6 +70,11 @@ class TestArchParser(TestCase):
             self.check_model_name(schema_message_definition.structure, "Message", "schema")
             self.check_model_name(enum_status_definition.structure, "Status", "enum")
             self.check_model_name(model_echosvc_definition.structure, "EchoService", "model")
+
+            # For some reason MacOS prepends /private to temporary files/directories
+            self.assertEqual(schema_message_definition.source_uri.removeprefix("/private"), import1.name)
+            self.assertEqual(enum_status_definition.source_uri.removeprefix("/private"), import2.name)
+            self.assertEqual(model_echosvc_definition.source_uri.removeprefix("/private"), test_yaml.name)
 
             first, second, *_ = model_echosvc_definition.lexemes
             self.assertEqual(first.source, test_yaml.name)

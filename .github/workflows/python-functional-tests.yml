@@ -101,4 +101,4 @@ jobs:
           run: python -m aac validate model/flow/System.yaml
 
         - name: Create PlantUML Component Diagram
-          run: python -m aac puml-object model/flow/System.yaml
+          run: python -m aac puml-object model/flow/System.yaml output/

@@ -25,17 +25,27 @@ def validate_subcomponent_types(definition_under_test: Definition, target_schema
 
         for component in subcomponents:
             component_type = component.get("type")
-            definition = language_context.get_definition_by_name(component_type)
 
-            expected_type = "model"
-            actual_type = definition and definition.get_root_key()
-            if definition and actual_type != expected_type:
-                incorrect_subcomponent_type = (
-                    f"Expected '{expected_type}' as the subcomponent type but found '{component_type}' with type "
-                    f"'{actual_type}' in: {dict_to_validate}"
+            if component_type:
+                definition = language_context.get_definition_by_name(component_type)
+
+                expected_type = "model"
+                actual_type = definition and definition.get_root_key()
+                if definition and actual_type != expected_type:
+                    incorrect_subcomponent_type = (
+                        f"Expected '{expected_type}' as the subcomponent type but found '{component_type}' with type "
+                        f"'{actual_type}' in: {dict_to_validate}"
+                    )
+                    error_messages.append(incorrect_subcomponent_type)
+                    logging.debug(incorrect_subcomponent_type)
+            else:
+                component_name = component.get("name")
+                component_missing_type = (
+                    f"Expected component '{component_name}' to have the field 'type', but was not present. Bad component:"
+                    f"{component}"
                 )
-                error_messages.append(incorrect_subcomponent_type)
-                logging.debug(incorrect_subcomponent_type)
+                error_messages.append(component_missing_type)
+                logging.debug(component_missing_type)
 
     dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)
     list(map(validate_model_subcomponents, dicts_to_test))

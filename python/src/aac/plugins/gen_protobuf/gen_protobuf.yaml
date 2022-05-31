@@ -23,27 +23,37 @@ model:
           then:
             - Protobuf messages are written to {{gen-protobuf.input.output_directory}}.
 ---
-enum:
-  name: ProtobufDataType
-  values:
-    - double
-    - float
-    - int32
-    - int64
-    - uint32
-    - uint64
-    - sint32
-    - sint64
-    - fixed32
-    - fixed64
-    - bool
-    - string
-    - bytes
+ext:
+  name: ProtobufPrimitiveTypesExtension
+  type: Primitives
+  enumExt:
+    add:
+      - double
+      - float
+      - int32
+      - int64
+      - uint32
+      - uint64
+      - sint32
+      - sint64
+      - fixed32
+      - fixed64
+      - bool
+      - string
+      - bytes
 ---
 ext:
-   name: ProtobufTypeField
-   type: Field
+   name: SchemaMessageOptions
+   type: schema
    schemaExt:
       add:
-        - name: protobuf_type
-          type: ProtobufDataType
+        - name: protobuf_message_options
+          type: KeyValuePair[]
+---
+ext:
+   name: EnumMessageOptions
+   type: enum
+   schemaExt:
+      add:
+        - name: protobuf_message_options
+          type: KeyValuePair[]

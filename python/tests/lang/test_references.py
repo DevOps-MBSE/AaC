@@ -21,7 +21,7 @@ class TestLangReferences(TestCase):
 
         unrelated_definition = "Unrelated Def"
         unrelated_definition_field = create_field_entry("Other Field", "OtherFieldType")
-        unrelated_definition = create_schema_definition(unrelated_definition, [unrelated_definition_field])
+        unrelated_definition = create_schema_definition(unrelated_definition, fields=[unrelated_definition_field])
 
         expected_references = [reference_definition1, reference_definition2]
         definitions_to_search = expected_references + [unrelated_definition, source_definition]

@@ -39,7 +39,7 @@ AaC is a self-defining solution. At the heart of the AaC application is a defini
 This model is used in validation of itself.  Core data types are purposefully simple and can be
 extended by a user.
 
-AaC is designed with extensibility in mind.  The built-in functionallity is intentionally minimized.
+AaC is designed with extensibility in mind.  The built-in functionality is intentionally minimized.
 AaC uses a plug-in system to extend the base capability.  To further simplify this, AaC includes a
 built-in command to generate new plugins from an AaC model.  There is an example of this for
 Plant UML in the plugins folder of the repository and more info below.
@@ -58,7 +58,7 @@ A simple model for an EchoService is provided here for reference.  Cut and paste
 file called EchoService.yaml.
 *Note: This is using a little yaml trick to concatenate the content of two yaml files into a single file.*
 ```yaml
-data:
+schema:
   name: Message
   fields:
   - name: body
@@ -94,9 +94,9 @@ Now you can run AaC against your model.
 aac validate EchoService.yaml
 ```
 
-AaC has some core "root types" for you to work with.  You can see the root types of **data** and **model** used in the example above.
+AaC has some core "root types" for you to work with.  You can see the root types of `schema` and `model` used in the example above.
 The AaC core root types are:
-- data: Allows you to model data types used within your system as named types with fields.
+- schema: Allows you to model data types used within your system as named types with fields.
 - enum: Allows you to model enumerated types (types with only specific values allowed).
 - model: Allows you to model the behavioral elements of your system.  These can be abstract or concrete.
 - usecase: Allows you to model the sequence of interactions between your models.
@@ -109,7 +109,7 @@ then import it as needed.  To do this just put an **import** at the root of your
 Here's an example of the EchoService broken into two files:
 - Message.yaml
     ```yaml
-    data:
+    schema:
     name: Message
     fields:
     - name: body
@@ -183,7 +183,7 @@ that plugin so you can build your own plugin for your own need.
     - From your plugin directory run '''python -m build'''
     - From your plugin directory run '''python -m twine upload dist/*'''
 
-We're working on other functionallity so keep an eye out for new updates.
+We're working on other functionality so keep an eye out for new updates.
 
 ## Developer Documentation
 Our project and developer documentation can be found in our Github pages documentation here: https://jondavid-black.github.io/AaC/docs/dev_guide

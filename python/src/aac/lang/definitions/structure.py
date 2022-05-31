@@ -2,7 +2,7 @@
 
 import logging
 
-from aac.lang.definitions.arrays import is_array_type
+from aac.lang.definitions.type import is_array_type
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.schema import get_definition_schema
 from aac.lang.language_context import LanguageContext

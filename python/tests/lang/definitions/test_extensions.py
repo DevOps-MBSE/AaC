@@ -16,20 +16,20 @@ class TestDefinitionExtensions(TestCase):
     def test_apply_and_remove_extension_from_definition(self):
         test_definition_field = create_field_entry("TestField", "string")
         test_definition_name = "myDef"
-        test_definition = create_schema_definition(test_definition_name, [test_definition_field])
+        test_definition = create_schema_definition(test_definition_name, fields=[test_definition_field])
 
         data_ext_field_name = "extField"
         data_ext_field_type = "ExtField"
         ext_field = create_field_entry(data_ext_field_name, data_ext_field_type)
-        test_definition_ext = create_schema_ext_definition("myDefExt", test_definition_name, [ext_field], [data_ext_field_name])
+        test_definition_ext = create_schema_ext_definition("myDefExt", test_definition_name, fields=[ext_field], required=[data_ext_field_name])
 
         enum_val1 = "val1"
         enum_val2 = "val2"
         test_enum_name = "myEnum"
-        test_enum = create_enum_definition(test_enum_name, [enum_val1, enum_val2])
+        test_enum = create_enum_definition(test_enum_name, values=[enum_val1, enum_val2])
 
         test_enum_ext_value = "extVal"
-        test_enum_ext = create_enum_ext_definition("myEnumExt", test_enum_name, [test_enum_ext_value])
+        test_enum_ext = create_enum_ext_definition("myEnumExt", test_enum_name, values=[test_enum_ext_value])
 
         language_context = get_initialized_language_context(core_spec_only=True)
         language_context.add_definitions_to_context([test_definition, test_enum])
