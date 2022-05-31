@@ -57,10 +57,6 @@ class TestGenPlantUml(TestCase):
         puml_types = [COMPONENT_STRING, OBJECT_STRING, SEQUENCE_STRING]
         for puml_type in puml_types:
             self.assertEqual(
-                _get_generated_file_name(full_file_name, puml_type, definition_name),
-                os.path.join(orig_output_dir, puml_type, f"{file_name}_{formatted_definition_name}{PLANT_UML_FILE_EXTENSION}"),
-            )
-            self.assertEqual(
                 _get_generated_file_name(full_file_name, puml_type, definition_name, new_output_dir),
                 os.path.join(new_output_dir, puml_type, f"{file_name}_{formatted_definition_name}{PLANT_UML_FILE_EXTENSION}"),
             )
@@ -68,12 +64,6 @@ class TestGenPlantUml(TestCase):
                 _get_generated_file_name(full_file_name, puml_type, definition_name, new_relative_dir),
                 os.path.join(new_relative_dir, puml_type, f"{file_name}_{formatted_definition_name}{PLANT_UML_FILE_EXTENSION}"),
             )
-
-    def test_puml_component_diagram_to_console(self):
-        with temporary_test_file(TEST_PUML_ARCH_YAML, suffix=YAML_FILE_EXTENSION) as plugin_yaml:
-            result = puml_component(plugin_yaml.name)
-            assert_plugin_success(result)
-            self._check_component_diagram_testsystem(result.get_messages_as_string())
 
     def test_puml_component_diagram_to_file(self):
         with (TemporaryDirectory() as temp_directory,
@@ -85,7 +75,7 @@ class TestGenPlantUml(TestCase):
             assert_plugin_success(result)
 
             expected_puml_file_paths = [
-                _get_generated_file_name(plugin_yaml.name, COMPONENT_STRING, name)
+                _get_generated_file_name(plugin_yaml.name, COMPONENT_STRING, name, temp_directory)
                 for name in [TEST_PUML_SYSTEM_TYPE, TEST_PUML_SERVICE_ONE_TYPE, TEST_PUML_SERVICE_TWO_TYPE]
             ]
             temp_directory_files = os.listdir(full_output_dir)
@@ -95,12 +85,6 @@ class TestGenPlantUml(TestCase):
 
                 parts = os.path.splitext(basename)[0].replace("-", "").split("_")
                 check_generated_file_contents(path, self._get_checker_from_filepath(parts[-1], COMPONENT_STRING))
-
-    def test_puml_object_diagram_to_console(self):
-        with temporary_test_file(TEST_PUML_ARCH_YAML, suffix=YAML_FILE_EXTENSION) as plugin_yaml:
-            result = puml_object(plugin_yaml.name)
-            assert_plugin_success(result)
-            self._check_object_diagram_content(result.get_messages_as_string())
 
     def test_puml_object_diagram_to_file(self):
         with (TemporaryDirectory() as temp_directory,
@@ -113,17 +97,11 @@ class TestGenPlantUml(TestCase):
 
             temp_directory_files = os.listdir(full_output_dir)
 
-            expected_puml_file_path = _get_generated_file_name(plugin_yaml.name, OBJECT_STRING, "")
+            expected_puml_file_path = _get_generated_file_name(plugin_yaml.name, OBJECT_STRING, "", temp_directory)
             self.assertIn(os.path.basename(expected_puml_file_path), temp_directory_files)
 
             with open(expected_puml_file_path) as generated_puml_file:
                 self._check_object_diagram_content(generated_puml_file.read())
-
-    def test_puml_sequence_diagram_to_console(self):
-        with temporary_test_file(TEST_PUML_ARCH_YAML, suffix=YAML_FILE_EXTENSION) as plugin_yaml:
-            result = puml_sequence(plugin_yaml.name)
-            assert_plugin_success(result)
-            self._check_sequence_diagram_usecase_one(result.get_messages_as_string())
 
     def test_puml_sequence_diagram_to_file(self):
         with (TemporaryDirectory() as temp_directory,
@@ -135,7 +113,7 @@ class TestGenPlantUml(TestCase):
             assert_plugin_success(result)
 
             expected_puml_file_paths = [
-                _get_generated_file_name(plugin_yaml.name, SEQUENCE_STRING, name)
+                _get_generated_file_name(plugin_yaml.name, SEQUENCE_STRING, name, temp_directory)
                 for name in [TEST_PUML_USE_CASE_ONE_TITLE, TEST_PUML_USE_CASE_TWO_TITLE]
             ]
             temp_directory_files = os.listdir(full_output_dir)

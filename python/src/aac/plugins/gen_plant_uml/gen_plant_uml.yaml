@@ -10,7 +10,7 @@ model:
           type: string
           python_type: str
           description: Path to a yaml file containing an AaC usecase from which to generate a Plant UML component diagram.
-        - name: --output_directory
+        - name: output_directory
           type: string
           python_type: str
           description: Output directory for the PlantUML (.puml) diagram file
@@ -25,7 +25,7 @@ model:
         - scenario: Output PlantUML component diagram to file.
           given:
             - The {{puml.input.architecture_file}} contains a valid model.
-            - The positional argument {{puml.input.--output_directory}} contains a valid filepath.
+            - The positional argument {{puml.input.output_directory}} contains a valid filepath.
           when:
             - The aac app is run with the puml-component command.
           then:
@@ -38,7 +38,7 @@ model:
           type: string
           python_type: str
           description: Path to a yaml file containing an AaC usecase from which to generate a Plant UML sequence diagram.
-        - name: --output_directory
+        - name: output_directory
           type: string
           python_type: str
           description: Output directory for the PlantUML (.puml) diagram file
@@ -53,7 +53,7 @@ model:
         - scenario: Output PlantUML sequence diagram to file.
           given:
             - The {{puml.input.architecture_file}} contains a valid model.
-            - The positional argument {{puml.input.--output_directory}} contains a valid filepath.
+            - The positional argument {{puml.input.output_directory}} contains a valid filepath.
           when:
             - The aac app is run with the puml-sequence command.
           then:
@@ -66,7 +66,7 @@ model:
           type: string
           python_type: str
           description: Path to a yaml file containing an AaC usecase from which to generate a Plant UML object diagram.
-        - name: --output_directory
+        - name: output_directory
           type: string
           python_type: str
           description: Output directory for the PlantUML (.puml) diagram file
@@ -81,7 +81,7 @@ model:
         - scenario: Output PlantUML object diagram to file.
           given:
             - The {{puml.input.architecture_file}} contains a valid model.
-            - The positional argument {{puml.input.--output_directory}} contains a valid filepath.
+            - The positional argument {{puml.input.output_directory}} contains a valid filepath.
           when:
             - The aac app is run with the puml-object command.
           then:

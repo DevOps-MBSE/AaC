@@ -408,10 +408,10 @@ schema:
     - name: state
       type: Field[]
       description: |
-        A list of data items representing internal state of the modeled
-        entity. State is visible within the model but is not
-        visible to other models. State may be visible between multiple
-        instances of the modeled entity to support horizontal scaling.
+        A list of data items representing internal state of the modeled entity.
+        State is visible within the model but is not visible to other models.
+        State may be visible between multiple instances of the modeled entity to
+        support horizontal scaling.
   required:
     - name
   validation:

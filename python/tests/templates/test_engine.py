@@ -4,31 +4,37 @@ from unittest import TestCase
 
 from jinja2 import Template
 
-from aac.template_engine import (
+from aac.templates.engine import (
     TemplateOutputFile,
     generate_template_as_string,
     generate_template,
     generate_templates_as_strings,
-    load_default_templates,
+    load_templates,
     write_generated_templates_to_file,
 )
+from aac.plugins.gen_plugin import __package__ as gen_plugin_package
 
 from tests.helpers.io import temporary_test_file
 
 
 class TestTemplateEngine(TestCase):
     def test_load_templates(self):
-        templates = load_default_templates("genplug")
+        templates = load_templates(gen_plugin_package)
         self.assertGreater(len(templates), 0)
 
     def test_generate_template(self):
-        expected_output = TemplateOutputFile("template.py", "my first name is John and my last name is Doe", False)
+        expected_output = TemplateOutputFile(
+            output_directory="",
+            template_name="template.py",
+            content="my first name is John and my last name is Doe",
+            overwrite=False,
+        )
 
         template = Template("my first name is {{name.first}} and my last name is {{name.last}}")
         template.name = "template.py"  # This would have been set by the template loader
         properties = {"name": {"first": "John", "last": "Doe"}}
 
-        actual_output = generate_template(template, properties)
+        actual_output = generate_template(template, "", properties)
 
         self.assertEqual(expected_output, actual_output)
 
@@ -63,16 +69,26 @@ class TestTemplateEngine(TestCase):
         self.assertEqual(expected_strings[1], actual_strings.get(templates[1].name))
 
     def test_write_generated_templates_to_file(self):
-        test_template_one = TemplateOutputFile("myTemplate.test", "This is the sample content in my template", True)
-        test_template_one.file_name = "temp1"
-
-        test_template_two = TemplateOutputFile("myOtherTemplate.test", "This is the other sample content in my template", True)
-        test_template_two.file_name = "temp2"
-
-        templates = [test_template_one, test_template_two]
-
         with TemporaryDirectory() as temp_directory:
-            write_generated_templates_to_file(templates, temp_directory)
+            test_template_one = TemplateOutputFile(
+                output_directory=temp_directory,
+                template_name="myTemplate.test",
+                content="This is the sample content in my template",
+                overwrite=True,
+            )
+            test_template_one.file_name = "temp1"
+
+            test_template_two = TemplateOutputFile(
+                output_directory=temp_directory,
+                template_name="myOtherTemplate.test",
+                content="This is the other sample content in my template",
+                overwrite=True,
+            )
+            test_template_two.file_name = "temp2"
+
+            templates = [test_template_one, test_template_two]
+
+            write_generated_templates_to_file(templates)
             temp_directory_files = os.listdir(temp_directory)
 
             self.assertEqual(len(templates), len(temp_directory_files))
@@ -86,37 +102,45 @@ class TestTemplateEngine(TestCase):
                     self.assertEqual(expected_template.content, file.read())
 
     def test_write_generated_templates_to_file_in_directory(self):
-        test_template = TemplateOutputFile(
-            "template.test", "The sample content.", False, parent_dir="tests"
-        )
-        test_template.file_name = "temp"
-
-        self.assertIsNotNone(test_template)
-        self.assertEqual(test_template.file_name, "temp")
-        self.assertEqual(test_template.parent_dir, "tests")
-
         with TemporaryDirectory() as temp_dir:
-            write_generated_templates_to_file([test_template], temp_dir)
+            output_subdirectory = os.path.join(temp_dir, "tests")
+            test_template = TemplateOutputFile(
+                output_directory=output_subdirectory,
+                template_name="template.test",
+                content="The sample content.",
+                overwrite=False,
+            )
+            test_template.file_name = "temp"
+
+            self.assertIsNotNone(test_template)
+            self.assertEqual(test_template.file_name, "temp")
+
+            write_generated_templates_to_file([test_template])
             temp_dir_files = os.listdir(temp_dir)
 
             self.assertEqual(len(temp_dir_files), 1)
-            self.assertIn(test_template.parent_dir, temp_dir_files)
+            self.assertIn(temp_dir_files[0], test_template.output_directory)
 
-            test_file = os.path.join(temp_dir, test_template.parent_dir, test_template.file_name)
+            test_file = os.path.join(test_template.output_directory, test_template.file_name)
             with open(test_file) as file:
                 self.assertEqual(test_template.content, file.read())
 
     def test_does_not_overwrite_existing_file_with_overwrite_false(self):
         content = "original content"
         new_content = "new content"
-        test_template = TemplateOutputFile(template_name="test-template", content=new_content, overwrite=False)
-
         with TemporaryDirectory() as temp_dir, temporary_test_file(content, dir=temp_dir) as test_file:
+            test_template = TemplateOutputFile(
+                output_directory=temp_dir,
+                template_name="test-template",
+                content=new_content,
+                overwrite=False,
+            )
+
             test_template.file_name = test_file.name
 
             self.assertFalse(test_template.overwrite)
 
-            write_generated_templates_to_file([test_template], temp_dir)
+            write_generated_templates_to_file([test_template])
 
             with open(test_file.name) as file:
                 self.assertNotEqual(file.read(), new_content)

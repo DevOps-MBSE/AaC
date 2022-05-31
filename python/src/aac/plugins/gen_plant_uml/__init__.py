@@ -24,7 +24,7 @@ def get_commands() -> list[AacCommand]:
             "Path to a yaml file containing an AaC usecase from which to generate a Plant UML component diagram.",
         ),
         AacCommandArgument(
-            "--output_directory",
+            "output_directory",
             "Output directory for the PlantUML (.puml) diagram file",
         )
     ]
@@ -34,7 +34,7 @@ def get_commands() -> list[AacCommand]:
             "Path to a yaml file containing an AaC usecase from which to generate a Plant UML sequence diagram.",
         ),
         AacCommandArgument(
-            "--output_directory",
+            "output_directory",
             "Output directory for the PlantUML (.puml) diagram file",
         )
     ]
@@ -44,7 +44,7 @@ def get_commands() -> list[AacCommand]:
             "Path to a yaml file containing an AaC usecase from which to generate a Plant UML object diagram.",
         ),
         AacCommandArgument(
-            "--output_directory",
+            "output_directory",
             "Output directory for the PlantUML (.puml) diagram file",
         )
     ]

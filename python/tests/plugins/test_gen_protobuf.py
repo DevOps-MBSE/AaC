@@ -119,13 +119,13 @@ class TestGenerateProtobufPlugin(TestCase):
                 self.assertIn("TYPE_2", message_type_proto_file_contents)
                 self.assertIn("TYPE_3", message_type_proto_file_contents)
 
-    @patch("aac.plugins.gen_protobuf.gen_protobuf_impl.load_default_templates")
-    def test_gen_protobuf_fails_with_multiple_message_templates(self, load_default_templates):
+    @patch("aac.plugins.gen_protobuf.gen_protobuf_impl.load_templates")
+    def test_gen_protobuf_fails_with_multiple_message_templates(self, load_templates):
         with TemporaryDirectory() as temp_dir, NamedTemporaryFile("w") as arch_file:
             arch_file.write(TEST_ARCH_YAML_STRING)
             arch_file.seek(0)
 
-            load_default_templates.return_value = ["a", "b"]
+            load_templates.return_value = ["a", "b"]
             result = gen_protobuf(arch_file.name, temp_dir)
             assert_plugin_failure(result)
 
