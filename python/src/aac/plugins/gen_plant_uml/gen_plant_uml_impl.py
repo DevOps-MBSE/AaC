@@ -187,7 +187,8 @@ def _generate_diagram_to_file(
         Result message string
     """
     with validated_source(architecture_file_path) as result:
-        output_directories = {f"{puml_type}_diagram.puml.jinja2": os.path.join(output_directory, puml_type)}
+        full_output_path = os.path.join(output_directory, puml_type)
+        output_directories = {f"{puml_type}_diagram.puml.jinja2": full_output_path}
         template_properties = property_generator(convert_parsed_definitions_to_dict_definition(result.definitions))
         templates = [
             (props.get("filename"), generate_templates(load_templates(__package__, f"templates/{puml_type}"), output_directories, props))
@@ -203,7 +204,7 @@ def _generate_diagram_to_file(
 
         if output_directory:
             write_generated_templates_to_file(generated_templates)
-            return f"Wrote PUML {puml_type} diagram(s) to {output_directories}."
+            return f"Wrote PUML {puml_type} diagram(s) to {full_output_path}."
         else:
             messages = []
             for generated_template in generated_templates:
