@@ -26,20 +26,17 @@ Not sure where to start with AaC? We've got you covered; just checkout
 The AaC DSL's focus on extensibility can make the language difficult to pickup without context. Checkout out the
 [Overview of the AaC DSL](./aac_language) for an overview and intro to the AaC DSL.
 
-# Project Structure and Good Practices
+# AaC Project Structure
 Ready to start creating more than a few definitions in a file? Checkout how our notes on organizing more complex AaC projects.
 [AaC Project and File Structure](./project_structure)
 
-# Decomposing Models and Systems in AaC
-[Decomposing systems in AaC](./decomposing_systems)
-
-# Leveraging AaC in VCS and CI/CD Environments
+# Leveraging AaC with Version-Control Software and CI/CD Environments
 AaC's use of plain-text YAML representation allows AaC users to leverage version control software tools such as Git and Continuous Integration/Continuous Delivery practices for extremely high levels of automation.
 [AaC and GitOps](./aac_gitops)
 
 # Glossary
-For all of those acronyms or ambiguous words we use.
-[AaC Glossary](./glossary)
+For all of those acronyms or ambiguous words we use, checkout out the
+[AaC Glossary.](./glossary)
 
 # Big Thanks!
 We want to extend a big thanks to the [CEACIDE team](https://northropgrumman.github.io/jellyfish/) for pioneering most of ideas behind AaC, and for providing us with some great documentation examples.
