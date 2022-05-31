@@ -113,34 +113,14 @@ def write_generated_templates_to_file(
         generated_files: list of generated files to write to the filesystem
         output_directory: the directory to write the generated files to.
     """
-
-    _ensure_directory_exists(output_directory)
     for generated_file in generated_files:
+        os.makedirs(generated_file.output_directory)
         _write_file(
-            _get_template_output_directory(output_directory, generated_file),
+            generated_file.output_directory,
             generated_file.file_name,
             generated_file.content,
             generated_file.overwrite,
         )
-
-
-def _get_template_output_directory(
-    output_directory: str, generated_file: TemplateOutputFile
-) -> str:
-    def _should_output_to_plugin_root_directory(output_file: TemplateOutputFile) -> bool:
-        return output_file.output_directory == "."
-
-    output_dir = output_directory
-    if not _should_output_to_plugin_root_directory(generated_file):
-        output_dir = os.path.join(output_directory, generated_file.output_directory)
-        _ensure_directory_exists(output_dir)
-
-    return output_dir
-
-
-def _ensure_directory_exists(path: str) -> None:
-    if not os.path.exists(path):
-        os.makedirs(path)
 
 
 def _write_file(path: str, file_name: str, content: str, overwrite: bool) -> None:
