@@ -10,7 +10,7 @@ defaults:
 jobs:
   build_deployment_artifacts:
     name: Build Artifacts
-    uses: jondavid-black/AaC/.github/workflows/vscode-build-artifacts.yml@02102c9eeeed9f2ba16a850c0e7a25c7c49aaf33
+    uses: jondavid-black/AaC/.github/workflows/vscode-build-artifacts.yml@923464a8542c6cfa46018b45f50f1ffc455d5de9
 
   deploy_artifacts:
     name: Deploy Artifacts
