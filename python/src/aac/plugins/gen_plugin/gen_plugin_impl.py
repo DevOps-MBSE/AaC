@@ -215,7 +215,6 @@ def _gather_template_properties(parsed_models: dict[str, dict], architecture_fil
 
     architecture_file = {
         "name": path.basename(architecture_file_path),
-        # TODO(Cameron): May need to fix package name
         "package_name": path.basename(path.dirname(architecture_file_path)),
     }
 
