@@ -18,7 +18,7 @@ While "code" is in the name, AaC isn't solely for coders, programmers, or softwa
 | Application Programming Interface | ✅ Implemented (Python)  | N/A |
 | Visualization | ❌ In-progress | N/A |
 
-# Getting started
+# Getting Started
 Not sure where to start with AaC? We've got you covered; just checkout
 [Getting Started](./getting_started)!
 
@@ -30,7 +30,7 @@ The AaC DSL's focus on extensibility can make the language difficult to pickup w
 Ready to start creating more than a few definitions in a file? Checkout how our notes on organizing more complex AaC projects.
 [AaC Project and File Structure](./project_structure)
 
-# Decomposing models and systems in AaC
+# Decomposing Models and Systems in AaC
 [Decomposing systems in AaC](./decomposing_systems)
 
 # Leveraging AaC in VCS and CI/CD Environments

@@ -45,7 +45,7 @@ built-in command to generate new plugins from an AaC model.  There is an example
 Plant UML in the plugins folder of the repository and more info below.
 
 ## Using AaC to Model Your System
-AaC is written in python to help make it more approachable for casual users and easily extensible for
+AaC is written in Python to help make it more approachable for casual users and easily extensible for
 power users.
 
 **You will need Python 3.9 or later to run AaC.**

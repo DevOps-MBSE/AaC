@@ -66,9 +66,9 @@ Because the AaC DSL is self-defining and requires some foundational DSL structur
 
 The core spec can be found in the AaC Python package, or [here](https://github.com/jondavid-black/AaC/blob/main/python/src/aac/spec/spec.yaml).  The core spec defines a number of foundational aspects of the AaC DSL including which keys can be used as root keys and the structures of `schema`, `model`, `usecase`, `extension`, `validation`, and other basic language structures.
 
-The core spec can also be retrieved from the AaC python package via the `print-spec` command.
+The core spec can also be retrieved from the AaC Python package via the `print-spec` command.
 
 ### Extended DSL
 In order to support a fully-extensible tool and DSL, the AaC DSL incorporates definitions from a number of contextual sources including user AaC files, shared/library AaC files, and plugins. When you run AaC commands such as `validate`, then the AaC package incorporates the superset of definitions from actively installed plugins, user-defined AaC files, and the core spec in order to create an extended DSL context. This is important because some plugins, such as the Generate Protobuf plugin, provide a set of [additional protobuf primitive types](https://github.com/jondavid-black/AaC/blob/bbe61782720d5958e2794308d7fe397fc6398bd3/python/src/aac/plugins/gen_protobuf/gen_protobuf.yaml#L26-L43) which allows users to define Protobuf-specific types for data structure fields.
 
-The extended DSL, referred to as the active context, can be retrieved from the AaC python package via the `print-active-context` command. If you were to compare the output of the core spec and the active context commands it should be more readily apparent how the AaC DSL can be extended to suite the needs of user-feature developers and AaC users.
+The extended DSL, referred to as the active context, can be retrieved from the AaC Python package via the `print-active-context` command. If you were to compare the output of the core spec and the active context commands it should be more readily apparent how the AaC DSL can be extended to suite the needs of user-feature developers and AaC users.

@@ -13,9 +13,12 @@ We have a [Github Template Repository](https://github.com/Coffee2Bits/AaC-User-T
 
 The repository is pre-populated with a simple example model and Github Action workflow. All that you have to do is hit the "Use this Template" button at the top of the template repository. ![Use this Template Button Picture](/assets/images/github/github_repo_template_button.png)
 
+Alternatively, if you're opposed to visiting the template repository and searching for the template button, you can just click this one.
+
+[Generate my AaC Github Repo](https://github.com/Coffee2Bits/AaC-User-Template-Repository/generate){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
 
 ## Installing AaC
-If you're not using a prepared environment, then you will need to install AaC and its python dependencies. AaC is written in Python to help make it more approachable for casual users and easily extensible for power users.
+If you're not using a prepared environment, then you will need to install AaC and itsPythondependencies. AaC is written in Python to help make it more approachable for casual users and easily extensible for power users.
 **You will need Python 3.9 or later to run AaC.**
 
 To install AaC on Linux, Windows, or macOS:

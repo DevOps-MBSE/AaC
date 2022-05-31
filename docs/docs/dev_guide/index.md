@@ -8,7 +8,7 @@ permalink: docs/dev_guide
 
 # Getting started
 ## VSCode Workspaces
-Because this repository houses both a Python and TypeScript project, we're using [VSCode Workspaces](https://code.visualstudio.com/docs/editor/workspaces) to separate and present two different projects and experiences. When you first open the project in VSCode, you will see the entirety of it, however, if you open say the python workspace then the VSCode instance will reload and now the visible files, IDE configuration, and the configured tasks will now pertain only to the python package. The same is true for the vscode_extension workspace and its TypeScript configuration.
+Because this repository houses both a Python and TypeScript project, we're using [VSCode Workspaces](https://code.visualstudio.com/docs/editor/workspaces) to separate and present two different projects and experiences. When you first open the project in VSCode, you will see the entirety of it, however, if you open say the Python workspace then the VSCode instance will reload and now the visible files, IDE configuration, and the configured tasks will now pertain only to the Python package. The same is true for the vscode_extension workspace and its TypeScript configuration.
 
 You can open a workspace in VSCode by:
 1. Hitting the `f1` key
@@ -40,10 +40,10 @@ Developing the VSCode extension in linux environments may require the installing
     * libgbm-dev
 
 ### Developing the AaC Python Package
-The AaC python package, its source code, and its configuration are all found in the `python/` directory.
+The AaC Python package, its source code, and its configuration are all found in the `python/` directory.
 
 #### Installing AaC Python Package
-We expect python developers to use a virtual environment when developing the AaC package, and so the project is configured only for use with virtual environments.
+We expect Python developers to use a virtual environment when developing the AaC package, and so the project is configured only for use with virtual environments.
 
 Create a new environment:
 ```bash
@@ -101,7 +101,7 @@ pip install -e .[all]
 ```
 
 #### Testing the Python Package
-To run tests, make sure you've set up your dependencies using `pip install -e .[test]` or `pip install -e .[all]`. Then, from the root of the python project, run the following shell command (from within your virtual environment).
+To run tests, make sure you've set up your dependencies using `pip install -e .[test]` or `pip install -e .[all]`. Then, from the root of the Python project, run the following shell command (from within your virtual environment).
 
 ```bash
 $ tox
@@ -110,7 +110,7 @@ $ tox
 Additionally, to get an HTML code coverage report, update the `tox` command to include the following flags: `tox -- --coverage-report html`
 
 #### VSCode Unit Test Support for Python
-The python plugin for VSCode supports the `unittest` python library, and not the `nose2` framework that we use. The impact is fairly minimal, but python unit tests using the `nose2` parameterized test feature will not run correctly from within the VSCode IDE since it fails to recognize the `nose2` parameterized tests as parameterized tests causing them to fail.
+The Python plugin for VSCode supports the `unittest` Python library, and not the `nose2` framework that we use. The impact is fairly minimal, but Python unit tests using the `nose2` parameterized test feature will not run correctly from within the VSCode IDE since it fails to recognize the `nose2` parameterized tests as parameterized tests causing them to fail.
 
 To get around this, you can run all the tests from the terminal using the above `tox` commands.
 

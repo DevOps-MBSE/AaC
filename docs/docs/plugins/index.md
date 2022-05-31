@@ -26,7 +26,7 @@ AaC includes a built-in command to help you extend AaC by creating your own plug
 aac gen-plugin <path/to/aac_plugin_model.yaml>
 ```
 
-The plugin generator does support generating first-party and third-party plugins. The generator uses the path of AaC plugin file to identify if it is within an AaC repository, if the path contains "src/aac/plugins/" then the plugin is classified as being a first-party plugin. Otherwise, if the path doesn't contain "src/aac/plugins/" then the plugin is assumed to be third-party and is generated with an independent python project skeleton.
+The plugin generator does support generating first-party and third-party plugins. The generator uses the path of AaC plugin file to identify if it is within an AaC repository, if the path contains "src/aac/plugins/" then the plugin is classified as being a first-party plugin. Otherwise, if the path doesn't contain "src/aac/plugins/" then the plugin is assumed to be third-party and is generated with an independent Python project skeleton.
 
 ## Third Party Plugins
 
