@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from aac.plugins.plugin_execution import PluginExecutionStatusCode
 {%- set comma_joiner = joiner(", ") %}
-from aac.plugins.{{architecture_file.parent_directory_name}}.{{plugin.implementation_name}}_impl import {% for command in commands -%}{{comma_joiner()}}{{command.implementation_name}}{%- endfor %}
+from aac.plugins.{{architecture_file.package_name}}.{{plugin.implementation_name}}_impl import {% for command in commands -%}{{comma_joiner()}}{{command.implementation_name}}{%- endfor %}
 
 
 class Test{{plugin.name | title | replace('-', '')}}(TestCase):

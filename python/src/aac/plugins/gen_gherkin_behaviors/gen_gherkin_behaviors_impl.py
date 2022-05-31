@@ -7,14 +7,11 @@ from iteration_utilities import flatten
 
 from aac.lang.definition_helpers import get_models_by_type, convert_parsed_definitions_to_dict_definition
 from aac.plugins import PluginError
-from aac.plugins.plugin_execution import (
-    PluginExecutionResult,
-    plugin_result,
-)
-from aac.template_engine import (
+from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
+from aac.templates.engine import (
     TemplateOutputFile,
     generate_template,
-    load_default_templates,
+    load_templates,
     write_generated_templates_to_file,
 )
 from aac.validate import validated_source
@@ -33,13 +30,13 @@ def gen_gherkin_behaviors(architecture_file: str, output_directory: str) -> Plug
 
     def generate_gherkin():
         with validated_source(architecture_file) as validation_result:
-            loaded_templates = load_default_templates("gen_gherkin_behaviors")
+            loaded_templates = load_templates(__package__, ".")
             definitions_dictionary = convert_parsed_definitions_to_dict_definition(validation_result.definitions)
 
             message_template_properties = _get_template_properties(definitions_dictionary)
-            generated_template_messages = _generate_gherkin_feature_files(loaded_templates, message_template_properties)
+            generated_template_messages = _generate_gherkin_feature_files(loaded_templates, output_directory, message_template_properties)
 
-            write_generated_templates_to_file(generated_template_messages, output_directory)
+            write_generated_templates_to_file(generated_template_messages)
 
             return f"Successfully generated templates to directory: {output_directory}"
 
@@ -126,22 +123,23 @@ def _get_template_properties(parsed_models: dict) -> dict[str, dict]:
     return list(flatten(map(collect_model_behavior_properties, collect_models(parsed_models).values())))
 
 
-def _generate_gherkin_feature_files(gherkin_templates: list, properties_list: list[dict]) -> list[TemplateOutputFile]:
+def _generate_gherkin_feature_files(gherkin_templates: list, output_directory: str, properties_list: list[dict]) -> list[TemplateOutputFile]:
     """
     Compile templates with variable properties information.
 
     Args:
-        gherkin_templates: templates to generate against. (Should only be one template)
-        properties_list: a list of template property dictionaries
+        gherkin_templates (list): Templates to generate against. (Should only be one template).
+        output_directory (str): The directory in which to generate the gherkin file.
+        properties_list (list[dict]): A list of template property dictionaries.
 
     Returns:
-        list of template information dictionaries
+        List of template information dictionaries
     """
 
     def generate_file(properties: dict) -> TemplateOutputFile:
         feature_name = properties.get("feature").get("name")
 
-        generated_file = generate_template(gherkin_template, properties)
+        generated_file = generate_template(gherkin_template, output_directory, properties)
         generated_file.file_name = _create_gherkin_feature_file_name(feature_name)
         generated_file.overwrite = False
 

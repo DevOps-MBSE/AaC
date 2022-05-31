@@ -71,9 +71,10 @@ class TestParser(TestCase):
             self.check_model_name(enum_status_definition.structure, "Status", "enum")
             self.check_model_name(model_echosvc_definition.structure, "EchoService", "model")
 
-            self.assertEqual(schema_message_definition.source_uri, import1.name)
-            self.assertEqual(enum_status_definition.source_uri, import2.name)
-            self.assertEqual(model_echosvc_definition.source_uri, test_yaml.name)
+            # For some reason MacOS prepends /private to temporary files/directories
+            self.assertEqual(schema_message_definition.source_uri.removeprefix("/private"), import1.name)
+            self.assertEqual(enum_status_definition.source_uri.removeprefix("/private"), import2.name)
+            self.assertEqual(model_echosvc_definition.source_uri.removeprefix("/private"), test_yaml.name)
 
             first, second, *_ = model_echosvc_definition.lexemes
             self.assertEqual(first.source, test_yaml.name)
