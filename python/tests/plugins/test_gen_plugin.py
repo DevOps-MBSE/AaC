@@ -63,10 +63,7 @@ class TestGenPlugin(TestCase):
 
             self.assertEqual(len(os.listdir(temp_directory)), 0)
 
-            with temporary_test_file(
-                TEST_PLUGIN_YAML_STRING,
-                dir=temp_directory,
-            ) as plugin_yaml:
+            with temporary_test_file(TEST_PLUGIN_YAML_STRING, dir=temp_directory) as plugin_yaml:
                 is_user_desired_output_dir.return_value = True
                 result = generate_plugin(plugin_yaml.name)
 
@@ -130,7 +127,7 @@ class TestGenPlugin(TestCase):
         with validated_source(TEST_PLUGIN_YAML_STRING) as result:
             plugin_name = "aac_gen_protobuf"
 
-            generated_templates = _prepare_and_generate_plugin_files(result.definitions, PLUGIN_TYPE_THIRD_STRING, "")
+            generated_templates = _prepare_and_generate_plugin_files(result.definitions, PLUGIN_TYPE_THIRD_STRING, "", "")
 
             generated_template_names = []
             generated_template_output_directories = []
@@ -197,14 +194,13 @@ class TestGenPlugin(TestCase):
             self.assertIn("fail_under = 80.00", generated_tox_config_file_contents)
 
     def test__prepare_and_generate_plugin_files_errors_on_multiple_models(self):
-        with validated_source(
-            f"{TEST_PLUGIN_YAML_STRING}\n---\n{SECONDARY_MODEL_YAML_DEFINITION}",
-        ) as result:
+        with validated_source(f"{TEST_PLUGIN_YAML_STRING}\n---\n{SECONDARY_MODEL_YAML_DEFINITION}") as result:
             self.assertRaises(
                 GeneratePluginException,
                 _prepare_and_generate_plugin_files,
                 result.definitions,
                 PLUGIN_TYPE_THIRD_STRING,
+                "",
                 "",
             )
 

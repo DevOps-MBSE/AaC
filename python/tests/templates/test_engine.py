@@ -34,7 +34,7 @@ class TestTemplateEngine(TestCase):
         template.name = "template.py"  # This would have been set by the template loader
         properties = {"name": {"first": "John", "last": "Doe"}}
 
-        actual_output = generate_template(template, properties)
+        actual_output = generate_template(template, "", properties)
 
         self.assertEqual(expected_output, actual_output)
 
@@ -88,7 +88,7 @@ class TestTemplateEngine(TestCase):
 
             templates = [test_template_one, test_template_two]
 
-            write_generated_templates_to_file(templates, temp_directory)
+            write_generated_templates_to_file(templates)
             temp_directory_files = os.listdir(temp_directory)
 
             self.assertEqual(len(templates), len(temp_directory_files))
@@ -102,26 +102,26 @@ class TestTemplateEngine(TestCase):
                     self.assertEqual(expected_template.content, file.read())
 
     def test_write_generated_templates_to_file_in_directory(self):
-        test_template = TemplateOutputFile(
-            output_directory="tests",
-            template_name="template.test",
-            content="The sample content.",
-            overwrite=False,
-        )
-        test_template.file_name = "temp"
-
-        self.assertIsNotNone(test_template)
-        self.assertEqual(test_template.file_name, "temp")
-        self.assertEqual(test_template.output_directory, "tests")
-
         with TemporaryDirectory() as temp_dir:
-            write_generated_templates_to_file([test_template], temp_dir)
+            output_subdirectory = os.path.join(temp_dir, "tests")
+            test_template = TemplateOutputFile(
+                output_directory=output_subdirectory,
+                template_name="template.test",
+                content="The sample content.",
+                overwrite=False,
+            )
+            test_template.file_name = "temp"
+
+            self.assertIsNotNone(test_template)
+            self.assertEqual(test_template.file_name, "temp")
+
+            write_generated_templates_to_file([test_template])
             temp_dir_files = os.listdir(temp_dir)
 
             self.assertEqual(len(temp_dir_files), 1)
-            self.assertIn(test_template.output_directory, temp_dir_files)
+            self.assertIn(temp_dir_files[0], test_template.output_directory)
 
-            test_file = os.path.join(temp_dir, test_template.output_directory, test_template.file_name)
+            test_file = os.path.join(test_template.output_directory, test_template.file_name)
             with open(test_file) as file:
                 self.assertEqual(test_template.content, file.read())
 
@@ -140,7 +140,7 @@ class TestTemplateEngine(TestCase):
 
             self.assertFalse(test_template.overwrite)
 
-            write_generated_templates_to_file([test_template], temp_dir)
+            write_generated_templates_to_file([test_template])
 
             with open(test_file.name) as file:
                 self.assertNotEqual(file.read(), new_content)

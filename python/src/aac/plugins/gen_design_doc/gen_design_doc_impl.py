@@ -1,6 +1,7 @@
 """AaC Plugin implementation module for the aac-gen-design-doc plugin."""
 
 import os
+from typing import Optional
 
 from iteration_utilities import flatten
 from jinja2 import Template
@@ -20,7 +21,7 @@ plugin_name = "gen-design-doc"
 default_template_file = "templates/system-design-doc.md.jinja2"
 
 
-def gen_design_doc(architecture_files: str, output_directory: str, template_file: str = None) -> PluginExecutionResult:
+def gen_design_doc(architecture_files: str, output_directory: str, template_file: Optional[str] = None) -> PluginExecutionResult:
     """
     Generate a System Design Document from Architecture-as-Code models.
 
@@ -43,8 +44,8 @@ def gen_design_doc(architecture_files: str, output_directory: str, template_file
         output_filespec = _get_output_filespec(first_arch_file, _get_output_file_extension(template_file_name))
 
         template_properties = _make_template_properties(parsed_models, first_arch_file)
-        generated_document = _generate_system_doc(output_filespec, selected_template, template_properties)
-        write_generated_templates_to_file([generated_document], output_directory)
+        generated_document = _generate_system_doc(output_filespec, selected_template, output_directory, template_properties)
+        write_generated_templates_to_file([generated_document])
 
         return f"Wrote system design document to {os.path.join(output_directory, output_filespec)}"
 
@@ -93,8 +94,8 @@ def _get_and_prepare_definitions_by_type(parsed_definitions: Definition, aac_typ
     return [definition.structure for definition in filtered_definitions]
 
 
-def _generate_system_doc(output_filespec: str, selected_template: Template, template_properties: dict) -> TemplateOutputFile:
-    template = generate_template(selected_template, template_properties)
+def _generate_system_doc(output_filespec: str, selected_template: Template, output_directory: str, template_properties: dict) -> TemplateOutputFile:
+    template = generate_template(selected_template, output_directory, template_properties)
 
     template.file_name = output_filespec
     template.overwrite = True

@@ -30,13 +30,14 @@ def load_templates(package_name: str, template_directory: str = "templates") -> 
     return _load_templates_from_env(env)
 
 
-def generate_templates(templates: list[Template], properties: dict[str, str]) -> dict[str, TemplateOutputFile]:
+def generate_templates(templates: list[Template], output_directories: dict[str, str], properties: dict[str, str]) -> dict[str, TemplateOutputFile]:
     """
     Compile a list of Jinja2 Templates with a dict of template properties into a dict of template name to compiled template content.
 
     Args:
         templates: list of Jinja2 templates to compile.
-        properties: Dict of properties to use when compiling the templates
+        output_directories: The directories in which to generate the files.
+        properties: Dict of properties to use when compiling the templates.
 
     Returns:
         Dict of template names to TemplateOutputFile objects
@@ -44,7 +45,7 @@ def generate_templates(templates: list[Template], properties: dict[str, str]) ->
     generated_templates = {}
     for template in templates:
         template_id = template.name
-        generated_templates[template_id] = generate_template(template, properties)
+        generated_templates[template_id] = generate_template(template, output_directories.get(template_id), properties)
 
     return generated_templates
 
@@ -68,19 +69,18 @@ def generate_templates_as_strings(templates: list[Template], properties: dict[st
     return generated_templates
 
 
-def generate_template(template: Template, properties: dict[str, str]) -> TemplateOutputFile:
+def generate_template(template: Template, output_directory: str, properties: dict[str, str]) -> TemplateOutputFile:
     """
     Compile a Jinja2 Template object to a TemplateOutputFile object.
 
     Args:
-        template: Jinja2 template to compile.
-        properties: Dict of properties to use when compiling the template
+        template (Template): Jinja2 template to compile.
+        output_directory (str): The directory in which to generate the gherkin file.
+        properties (dict[str, str]): Dict of properties to use when compiling the template.
 
     Returns:
         Compiled/Rendered template as a TemplateOutputFile object
     """
-    # TODO(Cameron): Make output_directory a required parameter
-    output_directory=""
     return TemplateOutputFile(
         output_directory=output_directory,
         template_name=template.name,
@@ -111,7 +111,7 @@ def write_generated_templates_to_file(generated_files: list[TemplateOutputFile])
         generated_files: list of generated files to write to the filesystem
     """
     for generated_file in generated_files:
-        os.makedirs(generated_file.output_directory)
+        os.makedirs(generated_file.output_directory, exist_ok=True)
         _write_file(
             generated_file.output_directory,
             generated_file.file_name,
