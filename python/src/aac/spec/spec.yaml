@@ -80,6 +80,11 @@ schema:
   required:
     - name
     - values
+  validation:
+    - name: Required fields are present
+      arguments:
+        - name
+        - values
 ---
 schema:
   name: extension
@@ -116,6 +121,10 @@ schema:
       arguments:
         - schemaExt
         - enumExt
+    - name: Required fields are present
+      arguments:
+        - name
+        - type
   required:
     - name
     - type
@@ -129,6 +138,10 @@ schema:
         The list of values to add to an 'enum' extension.
   required:
     - add
+  validation:
+    - name: Required fields are present
+      arguments:
+        - add
 ---
 schema:
   name: SchemaExtension
@@ -144,6 +157,10 @@ schema:
         extended definition.
   required:
     - add
+  validation:
+    - name: Required fields are present
+      arguments:
+        - add
 ---
 schema:
   name: Validation
@@ -166,6 +183,11 @@ schema:
     - behavior
   validation:
     - name: Validation definition has an implementation
+    - name: Required fields are present
+      arguments:
+        - name
+        - description
+        - behavior
 ---
 schema:
   name: ValidationReference
@@ -180,6 +202,10 @@ schema:
         A list of arguments to pass to the validator.
   required:
     - name
+  validation:
+    - name: Required fields are present
+      arguments:
+        - name
 ---
 schema:
   name: ValidatorInput
@@ -228,6 +254,12 @@ schema:
     - scenario
     - when
     - then
+  validation:
+    - name: Required fields are present
+      arguments:
+        - scenario
+        - when
+        - then
 ---
 enum:
   name: BehaviorType
@@ -273,6 +305,10 @@ schema:
     - type
   validation:
     - name: Type references exist
+    - name: Required fields are present
+      arguments:
+        - name
+        - type
 ---
 schema:
   name: schema
@@ -300,6 +336,9 @@ schema:
   validation:
     - name: Root key is defined
     - name: Required fields are present
+      arguments:
+        - name
+        - fields
 ---
 schema:
   name: Behavior
@@ -340,6 +379,11 @@ schema:
   required:
     - name
     - type
+  validation:
+    - name: Required fields are present
+      arguments:
+        - name
+        - type
 ---
 schema:
   name: model
@@ -372,6 +416,9 @@ schema:
     - name
   validation:
     - name: Subcomponents are models
+    - name: Required fields are present
+      arguments:
+        - name
 ---
 schema:
   name: usecase
@@ -402,6 +449,12 @@ schema:
     - name
     - participants
     - steps
+  validation:
+    - name: Required fields are present
+      arguments:
+        - name
+        - participants
+        - steps
 ---
 schema:
   name: Step
@@ -451,6 +504,11 @@ schema:
   required:
     - condition
     - steps
+  validation:
+    - name: Required fields are present
+      arguments:
+        - condition
+        - steps
 ---
 schema:
   name: Map
@@ -465,12 +523,16 @@ schema:
     - name: value_type
       type: string
       description: The value type for elements in the map.
-  validation:
-    - name: Required fields are present
   required:
     - name
     - key_type
     - value_type
+  validation:
+    - name: Required fields are present
+      arguments:
+        - name
+        - key_type
+        - value_type
 ---
 schema:
   name: KeyValuePair
@@ -482,8 +544,11 @@ schema:
     - name: value
       type: string
       description: The value map entry.
-  validation:
-    - name: Required fields are present
   required:
     - key
     - value
+  validation:
+    - name: Required fields are present
+      arguments:
+        - key
+        - value
