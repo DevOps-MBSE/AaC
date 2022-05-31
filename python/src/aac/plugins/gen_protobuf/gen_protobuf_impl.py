@@ -13,14 +13,11 @@ from aac.lang.definitions.search import search_definition
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.language_context import LanguageContext
 from aac.plugins import PluginError
-from aac.plugins.plugin_execution import (
-    PluginExecutionResult,
-    plugin_result,
-)
-from aac.template_engine import (
+from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
+from aac.templates.engine import (
     TemplateOutputFile,
     generate_template,
-    load_default_templates,
+    load_templates,
     write_generated_templates_to_file,
 )
 from aac.validate import validated_source
@@ -53,7 +50,7 @@ def generate_protobuf_messages(architecture_file: str, output_directory: str) ->
 
     # Validate the source AaC file and its contents
     with validated_source(architecture_file) as validation_result:
-        loaded_templates = load_default_templates("gen_protobuf")
+        loaded_templates = load_templates(__package__, ".")
 
         # Get the validated model definitions
         validated_definitions = validation_result.definitions
@@ -62,9 +59,13 @@ def generate_protobuf_messages(architecture_file: str, output_directory: str) ->
         model_interface_messages = _get_model_interface_data_structures(model_definitions)
         protobuf_message_template_properties = _get_message_template_properties(model_interface_messages)
 
-        generated_template_messages = _generate_protobuf_messages(loaded_templates, protobuf_message_template_properties)
+        generated_template_messages = _generate_protobuf_messages(
+            loaded_templates,
+            output_directory,
+            protobuf_message_template_properties,
+        )
 
-        write_generated_templates_to_file(generated_template_messages, output_directory)
+        write_generated_templates_to_file(generated_template_messages)
 
         return f"Successfully generated templates to directory: {output_directory}"
 
@@ -274,7 +275,10 @@ def _get_schema_properties(interface_structures: dict[str, Definition], data_def
         elif not active_context.is_primitive_type(sanitized_proto_field_type):
             bad_message_type = sanitized_proto_field_type
             identified_interface_types = list(interface_structures.keys())
-            error_message = f"Referenced message type '{bad_message_type}' isn't in the identified interface messages and data structures: {identified_interface_types}."
+            error_message = (
+                f"Referenced message type '{bad_message_type}' isn't in the identified interface messages and data "
+                f"structures: {identified_interface_types}."
+            )
             logging.error(error_message)
             raise GenerateProtobufException(error_message)
 
@@ -287,7 +291,9 @@ def _get_schema_properties(interface_structures: dict[str, Definition], data_def
     )
 
 
-def _generate_protobuf_messages(protobuf_message_templates: list, properties: list[dict]) -> list[TemplateOutputFile]:
+def _generate_protobuf_messages(
+    protobuf_message_templates: list, output_directory: str, properties: list[dict]
+) -> list[TemplateOutputFile]:
     """
     Compile templates and with variable properties information.
 
@@ -295,15 +301,15 @@ def _generate_protobuf_messages(protobuf_message_templates: list, properties: li
         https://developers.google.com/protocol-buffers/docs/style
 
     Args:
-        protobuf_message_templates: templates to generate against. (Should only be one template)
-        properties: a list of dicts of properties
+        protobuf_message_templates (list): Templates to generate against. (Should only be one template)
+        properties (list[dict]): A list of dicts of properties
 
     Returns:
-        list of template information dictionaries.
+        List of template information dictionaries.
     """
 
     def generate_protobuf_message_from_template(properties) -> TemplateOutputFile:
-        generated_template = generate_template(protobuf_template, properties)
+        generated_template = generate_template(protobuf_template, output_directory, properties)
         generated_template.file_name = _convert_message_name_to_file_name(properties.get("message_name"))
         generated_template.overwrite = True  # Protobuf files shouldn't be modified by the user, and so should always overwrite
         return generated_template
