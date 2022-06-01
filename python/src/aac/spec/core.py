@@ -9,7 +9,7 @@ from aac.parser import parse
 PRIMITIVES: list[str] = []
 ROOT_NAMES: list[str] = []
 AAC_CORE_SPEC_DEFINITIONS: list[Definition] = []
-CORE_SPEC_FILE_NAME = "spec.yaml"
+CORE_SPEC_FILE_NAME = "spec.aac"
 
 
 def get_aac_spec() -> list[Definition]:
