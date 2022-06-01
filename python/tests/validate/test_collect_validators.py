@@ -107,7 +107,7 @@ class TestCollectValidators(TestCase):
         validation2_name = "Test Validation 2"
         validation1_entry = create_validation_entry(validation1_name)
         validation2_entry = create_validation_entry(validation2_name)
-        schema_definition_with_validation = create_schema_definition("name", validation=[validation1_entry, validation2_entry])
+        schema_definition_with_validation = create_schema_definition("name", validations=[validation1_entry, validation2_entry])
 
         expected_result = [validation1_entry, validation2_entry]
         actual_result = _get_validation_entries(schema_definition_with_validation)

@@ -96,7 +96,7 @@ class TestArchParsedDefinitions(TestCase):
 
         validation_entry = create_validation_entry(validation_name)
         parsed_definition = create_schema_definition(
-            name=definition_name, description=description, validation=[validation_entry]
+            name=definition_name, description=description, validations=[validation_entry]
         )
 
         self.assertEqual(expected_yaml.strip(), parsed_definition.content.strip())
