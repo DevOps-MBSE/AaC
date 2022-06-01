@@ -31,6 +31,8 @@ TYPE_STRING = "type"
 VALIDATION_STRING = "validation"
 WHEN_STRING = "when"
 
+REQUIRED_VALIDATION_STRING = "Required fields are present"
+
 
 def create_field_entry(name: str, type: str = "", description: str = "") -> dict:
     """
@@ -126,13 +128,12 @@ def create_enum_definition(name: str, values: list[str]):
     return _create_parsed_defintion("enum", definition_dict)
 
 
-def create_schema_definition(name: str, description: str = "", fields: list[dict] = [], required: list[str] = [], validations: list[dict] = []):
+def create_schema_definition(name: str, description: str = "", fields: list[dict] = [], validations: list[dict] = []):
     """Return a simulated schema definition."""
     definition_dict = {
         NAME_STRING: name,
         DESCRIPTION_STRING: description,
         FIELDS_STRING: fields,
-        REQUIRED_STRING: required,
         VALIDATION_STRING: validations,
     }
 

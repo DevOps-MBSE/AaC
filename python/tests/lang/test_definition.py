@@ -1,11 +1,13 @@
 from unittest import TestCase
 
 from tests.helpers.parsed_definitions import (
+    REQUIRED_VALIDATION_STRING,
     create_schema_definition,
     create_schema_ext_definition,
     create_enum_definition,
     create_enum_ext_definition,
     create_field_entry,
+    create_validation_entry,
 )
 
 
@@ -30,7 +32,8 @@ class TestDefinition(TestCase):
         test_required_sub_field_two = create_field_entry("ReqSubField2", "string")
         test_fields = [test_required_sub_field_one, test_required_sub_field_two]
         test_required = [test_required_sub_field_one.get("name"), test_required_sub_field_two.get("name")]
-        test_definition = create_schema_definition("TestData", fields=test_fields, required=test_required)
+        required_fields_validator = create_validation_entry(REQUIRED_VALIDATION_STRING, test_required)
+        test_definition = create_schema_definition("TestData", fields=test_fields, validations=[required_fields_validator])
 
         actual_result = test_definition.get_required()
         expected_result = [test_required_sub_field_one.get("name"), test_required_sub_field_two.get("name")]

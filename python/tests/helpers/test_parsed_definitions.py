@@ -7,6 +7,7 @@ from unittest import TestCase
 from aac.parser import parse
 
 from tests.helpers.parsed_definitions import (
+    REQUIRED_VALIDATION_STRING,
     create_schema_definition,
     create_schema_ext_definition,
     create_enum_definition,
@@ -67,8 +68,9 @@ class TestArchParsedDefinitions(TestCase):
         field_definition = create_field_entry(field_name, field_type, field_description)
 
         expected_parsed_definition = parse(expected_yaml)[0]
+        required_field_validator = create_validation_entry(REQUIRED_VALIDATION_STRING, [field_name])
         actual_parsed_definition = create_schema_definition(
-            name=definition_name, description=definition_description, fields=[field_definition], required=[field_name]
+            name=definition_name, description=definition_description, fields=[field_definition], validations=[required_field_validator]
         )
 
         self.assertEqual(expected_yaml.strip(), actual_parsed_definition.content.strip())
