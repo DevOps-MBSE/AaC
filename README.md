@@ -191,4 +191,4 @@ that plugin so you can build your own plugin for your own need.
     - From your plugin directory run '''python -m build'''
     - From your plugin directory run '''python -m twine upload dist/*'''
 
-We're working on other functionality so keep an eye out for new updates.
+We're also actively working on other functionality so keep an eye out for new updates.
