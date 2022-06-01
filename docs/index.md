@@ -8,7 +8,7 @@ permalink: /
 
 # Architecture-as-Code (AaC)
 
-[Get started now](docs/userguide){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 } [View it on GitHub](https://github.com/jondavid-black/AaC){: .btn .fs-5 .mb-4 .mb-md-0 }
+[Get started now](docs/user_guide){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 } [View it on GitHub](https://github.com/jondavid-black/AaC){: .btn .fs-5 .mb-4 .mb-md-0 }
 
 ## What is Architecture-as-Code (AaC)?
 
@@ -22,11 +22,11 @@ The contributors embrace open source, so you may see us "making sausage" for a b
 documentation when we believe AaC is production ready.  Until then, feel free to experiment and explore with us.
 
 ### The AaC Modeling Language
-      
+
 AaC is a distinctly different take on Model-Based System Engineering (MBSE) that allows a
-system modeller to define a system in code (yaml).  AaC defines the Architecture-as-Code 
+system modeler to define a system in code (YAML).  AaC defines the Architecture-as-Code
 modeling language specification based upon ideas from the DevOps Infrastructure-as-Code (IaC).
-IaC streamlines the flow from Development to Operations. AaC was created to streamline the flow from 
+IaC streamlines the flow from Development to Operations. AaC was created to streamline the flow from
 System Engineering to Development.
 
 The AaC model enables system modelers to maintain collection of machine and human readable plain-text YAML files that will enable new
@@ -37,7 +37,7 @@ environments.
 
 ### AaC Motivation
 
-Our team has spent many years engineering, building, testing, and delivering complex systems. In 
+Our team has spent many years engineering, building, testing, and delivering complex systems. In
 that time we've seen an enormous amount of effort and money put into system modelling. We understand the potential
 value of Model-Based System Engineering (MBSE) and want to help realize that potential.  Unfortunately,
 it is common to see an MBSE solution become an "Ivory Tower" effort where system modelers
@@ -47,8 +47,8 @@ Another common MBSE implementation outcome we observe is added complexity to the
 injecting cumbersome (and expensive) MBSE dependencies into their development and delivery process which becomes an impediment. The
 creators of AaC are committed to the principles of DevOps and believe that MBSE "done right" can improve
 the professional experience of System Engineers, System Testers, System Developers, and System Integrators.
-Efficiencies in the system delivery lifecycle can be achieved by knocking down the "wall of confusion" and optimizing 
-around DevOps principles of system thinking / flow, feedback, and continuous improvement through learning and experimentation. 
+Efficiencies in the system delivery lifecycle can be achieved by knocking down the "wall of confusion" and optimizing
+around DevOps principles of system thinking / flow, feedback, and continuous improvement through learning and experimentation.
 
 The AaC modeling approach builds upon the concept of Infrastructure-as-Code with the idea to create an
 "Architecture-as-Code" approach to system engineering and modeling. By utilizing this "Architecture-as-Code"
@@ -73,13 +73,13 @@ In short, we wanted to have an architectural artifact that can be:
 
 ### Our Hypothesis
 
-- We believe that: 
+- We believe that:
     - buiding a MBSE solution that embraces DevOps principles
- - for 
+ - for
     - System Engineers - e.g. domain experts, architects
     - System Testers - e.g. quality, compliance
     - and System Developers - e.g. implementation, delivery
- - will achieve 
+ - will achieve
     - higher quality MBSE products
     - higher quality system deliveries
     - better small batch Agile planning / execution for cross-functional teams
@@ -95,13 +95,13 @@ We know we are successful when we see:
 We believe we can discover new ways to define, deliver, and evolve complex systems using Architecture-as-Code.
 
 ### The Command Line Interface
-      
+
 AaC is also the name of the modular command line interface (CLI) that can parse a Architecture-as-Code model
 and produce artifacts from it. The CLI has an extensible command library that currently contains commands that
 can verify syntax and patterns, generate code and produce static reports.
 
 The entire AaC product is extensible so you can use only the features you want.  AaC is purposefully small.
-Additional functionallity is achieved through installing plugins.
+Additional functionality is achieved through installing plugins.
 
 ### The Graphical User Interface
 
@@ -110,7 +110,7 @@ with stakeholders to determine the best way to provide them value quickly.  Stay
 
 ### AaC is Extensible
 
-AaC is designed with extensibility in mind.  The built-in functionallity is intentionally minimized.
+AaC is designed with extensibility in mind.  The built-in functionality is intentionally minimized.
 AaC uses a plug-in system to extend the base capability.  To further simplify this, AaC includes a
 built-in command to generate new plugins from an AaC model.  There is an example of this for
 Plant UML in the plugins folder of the repository.
