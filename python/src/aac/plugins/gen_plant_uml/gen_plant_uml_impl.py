@@ -44,9 +44,9 @@ def puml_component(architecture_file: str, output_directory: str) -> PluginExecu
             root_model_name = model_definition.name
             model_properties = _get_model_content(model_definition, set())
             aac_file_name = _extract_aac_file_name(architecture_file)
-            filename = _get_generated_file_name(aac_file_name, COMPONENT_STRING, root_model_name, output_directory)
+            generated_file_name = _get_generated_file_name(aac_file_name, COMPONENT_STRING, root_model_name, output_directory)
             models.append({
-                "filename": filename,
+                "filename": generated_file_name,
                 "title": model_definition.name,
                 "models": [model_properties],
             })

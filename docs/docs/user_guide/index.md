@@ -7,7 +7,7 @@ permalink: docs/user_guide
 ---
 
 # What is Architecture-as-Code?
-Architecture-as-Code (AaC) is a distinctly different take on Model-Based System Engineering (MBSE) that allows system modellers to define a system in simple plain-text YAML that can be leveraged to drive value and design consensus with developers. AaC's approach to storing models as YAML allows engineers to apply tools and practices that were previously only the domain of software development teams including rigorous configuration management of their baselines, automated quality and testing gates, automated artifact generation, and automated deployment of artifacts.
+Architecture-as-Code (AaC) is a distinctly different take on Model-Based System Engineering (MBSE) that allows system modellers to define a system in simple plain-text YAML that can be leveraged to drive value and design consensus with developers. AaC's approach to storing models as YAML allows engineers to apply tools and practices including rigorous configuration management of their baselines, automated quality and testing gates, automated artifact generation, and automated deployment of artifacts which were previously only the domain of software development teams.
 
 ## Who is AaC for?
 While "code" is in the name, AaC isn't solely for coders, programmers, or software engineers. Instead, AaC is intended to be a single-source of truth shared between all stakeholders from design to implementation and auditing. Towards this goal, AaC provides several interfaces for interacting with the language and tool set.
@@ -31,11 +31,11 @@ Ready to start creating more than a few definitions in a file? Checkout how our 
 [AaC Project and File Structure](./project_structure)
 
 # Leveraging AaC with Version-Control Software and CI/CD Environments
-AaC's use of plain-text YAML representation allows AaC users to leverage version control software tools such as Git and Continuous Integration/Continuous Delivery practices for extremely high levels of automation.
+AaC's use of plain-text YAML representation allows AaC users to leverage version control software tools (such as Git) and Continuous Integration/Continuous Delivery practices for extremely high levels of automation.
 [AaC and GitOps](./aac_gitops)
 
 # Glossary
-For all of those acronyms or ambiguous words we use, checkout out the
+While we strive to be clear by avoiding the overuse of jargon, we do reference a few things that may not be clear, at first. For context on all of those acronyms or ambiguous words we use, check out the
 [AaC Glossary.](./glossary)
 
 # Big Thanks!

@@ -18,3 +18,4 @@ nav_order: 6
 | DSL | Domain-Specific Language |
 | PyPI | [The Python Package Index](https://pypi.org/) |
 | schema | [a structured framework or plan](https://www.merriam-webster.com/dictionary/schema) |
+| root key | A top-level key used for defining an AaC definition. |
