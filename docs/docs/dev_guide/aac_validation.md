@@ -15,7 +15,7 @@ Validation rules in AaC are defined with the `validation` definition, which are 
 The overall validation mechanism follows this flow:
 1. A definition is identified as needing to be validated
 2. The definition is parsed for any nested AaC structures
-  a. For example a `schema` would be identified as having the structure `Field` as a component
+  a. For example, fields in `schema.fields` will trigger the `Field` schema's validation rules.  
 3. For all of identified AaC structures, each is checked for any `validation` entries
 4. For each `validation` entry -- the corresponding `schema` for the substructure and the definition being validated are passed to the corresponding validator plugin
   a. Every instance of `Field` in our example `schema` definition is validated against the rule `Type references exist`
