@@ -24,7 +24,7 @@ documentation when we believe AaC is production ready.  Until then, feel free to
 ### The AaC Modeling Language
 
 AaC is a distinctly different take on Model-Based System Engineering (MBSE) that allows a
-system modeller to define a system in code (yaml).  AaC defines the Architecture-as-Code
+system modeler to define a system in code (YAML).  AaC defines the Architecture-as-Code
 modeling language specification based upon ideas from the DevOps Infrastructure-as-Code (IaC).
 IaC streamlines the flow from Development to Operations. AaC was created to streamline the flow from
 System Engineering to Development.

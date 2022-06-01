@@ -18,7 +18,7 @@ Alternatively, if you're opposed to visiting the template repository and searchi
 [Generate my AaC Github Repo](https://github.com/Coffee2Bits/AaC-User-Template-Repository/generate){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
 
 ## Installing AaC
-If you're not using a prepared environment, then you will need to install AaC and itsPythondependencies. AaC is written in Python to help make it more approachable for casual users and easily extensible for power users.
+If you're not using a prepared environment, then you will need to install AaC and its Python dependencies. AaC is written in Python to help make it more approachable for casual users and easily extensible for power users.
 **You will need Python 3.9 or later to run AaC.**
 
 To install AaC on Linux, Windows, or macOS:
@@ -74,7 +74,7 @@ aac --help
 ```
 
 # Using AaC to Model Your System
-The general pattern for decomposing whatever you want to model in AaC is begin by asking a few questions of the system, and correlate what aspects you want to define to corresponding AaC yaml entries, often referred to as AaC definitions.
+The general pattern for decomposing whatever you want to model in AaC is begin by asking a few questions of the system, and correlate what aspects you want to define to corresponding AaC YAML entries, also referred to as AaC definitions.
 
 For example:
 * If you want to define a thing you would create a `model` definition
@@ -95,7 +95,7 @@ model:
 Now, if you run the validation command:
 `aac validate src/model/alarm_clock.yaml` you'll see a message indicating that your model is valid.
 
-That's fairly simplistic, let's decompose our alarm clock system into components -- what parts make up our alarm clock? Let's say that there are three parts to our alarm clock, the internal clock, the timer for the alarm, and the alarm itself. We can define those three components as models that are components of our `AlarmClock` model like such:
+That's fairly simplistic, let's decompose our alarm clock system into components -- what parts make up our alarm clock? Let's say that there are three parts to our alarm clock, the internal clock, the timer for the alarm, and the alarm itself. We can define those three components as models that are components of our `AlarmClock` model like so:
 
 _src/model/alarm_clock.yaml_
 ```yaml
@@ -148,7 +148,7 @@ Now that we have a basic alarm clock and some components, we can start defining 
 _src/model/data_structures.yaml_
 ```yaml
 schema:
-  name: TimestampDataStructure
+  name: Timestamp
   fields:
     - name: hour
       type: int
@@ -175,12 +175,12 @@ model:
   description: A simple timer that can be set to a target time.
   state:
     - name: targetTime
-      type: TimestampDataStructure
+      type: Timestamp
       description: The target timestamp indicating when to fire an alert to the alarm component.
 ```
 
 # Defining Model Interfaces
-Data structures are also used when defining interfaces between models/components of your system. What these interfaces translate to is highly dependent on your needs and which plugins you're using. For instance, the GenProtobuf plugin identifies the data structures defined in `model.behavior` fields and generates Protobuf3 equivalent messages of those data structures for use in software messaging/communication.
+Data structures are also used when defining interfaces between models/components of your system. What these interfaces translate to is highly dependent upon your needs and which plugins you're using. For instance, the GenProtobuf plugin identifies the data structures defined in `model.behavior` fields and generates Protobuf3 equivalent messages of those data structures for use in software messaging/communication.
 
 If we return to our alarm clock example, then we can define the interface to our alarm system. In this example we'll re-use the timestamp data structure for simplicity since it fairly represents the data that we'd expect a user to provide to an alarm clock:
 

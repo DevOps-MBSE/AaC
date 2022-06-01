@@ -30,20 +30,19 @@ optional arguments:
   -h, --help                  show this help message and exit
 ```
 
-Executing the help command via the CLI via `aac -h` will return the list of available plugin commands based on the currently installed plugin. Each plugin command that's listed can be further interrogated by using the help flag after the command name `aac <command> -h`, which will return all of the arguments for that particular command.
+Executing the help command via the CLI via `aac -h` will return the list of available plugin commands based on the currently installed plugins. Each plugin command that's listed can be further interrogated by using the help flag after the command name `aac <command> -h`, which will return all of the arguments for that particular command.
 
-For example, if I wanted to see what the options and arguments for the `puml-sequence` it would look something like:
+For example, if I wanted to see what the options and arguments for the `puml-sequence` command it would look something like:
 ```
 $ aac puml-sequence -h
-usage: aac puml-sequence [-h] [--output_directory OUTPUT_DIRECTORY] architecture_file
+usage: aac puml-sequence [-h] architecture_file output_directory
 
 positional arguments:
-  architecture_file     Path to a yaml file containing an AaC usecase from which to generate a Plant UML sequence diagram.
+  architecture_file  Path to a yaml file containing an AaC usecase from which to generate a Plant UML sequence diagram.
+  output_directory   Output directory for the PlantUML (.puml) diagram file
 
 optional arguments:
-  -h, --help            show this help message and exit
-  --output_directory OUTPUT_DIRECTORY
-                        Output directory for the PlantUML (.puml) diagram file
+  -h, --help         show this help message and exit
 ```
 
 *If you expect to see a command that's not present, it's likely that the plugin providing the command has not been installed correctly.*

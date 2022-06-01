@@ -1,14 +1,14 @@
 schema:
-  name: TimerAlertDataStructure
+  name: TimerAlert
   description: Data structure for timer alerts.
   fields:
     - name: triggeredTime
-      type: TimestampDataStructure
+      type: Timestamp
     - name: alarmNoise
       type: AlarmNoise
 ---
 schema:
-  name: TimestampDataStructure
+  name: Timestamp
   fields:
     - name: hour
       type: int

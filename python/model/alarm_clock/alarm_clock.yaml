@@ -16,7 +16,7 @@ model:
       description: Set the alarm timer
       input:
         - name: targetTime
-          type: TimestampDataStructure
+          type: Timestamp
       acceptance:
         - scenario: setTimer
           when:
@@ -33,14 +33,14 @@ model:
       description: Get the current time
       output:
         - name: currentTime
-          type: TimestampDataStructure
+          type: Timestamp
 ---
 model:
   name: ClockTimer
   description: A simple timer that can be set to a target time.
   state:
     - name: targetTime
-      type: TimestampDataStructure
+      type: Timestamp
       description: The target timestamp indicating when to fire the alarm alert.
   behavior:
     - name: setTime
@@ -48,16 +48,16 @@ model:
       description: Set the target time for the timer
       input:
         - name: targetTime
-          type: TimestampDataStructure
+          type: Timestamp
     - name: triggerTimer
       type: timer
-      description: Dispatch the TimerAlertDataStructure when the current time matches the target time
+      description: Dispatch the TimerAlert when the current time matches the target time
       input:
         - name: currentTime
-          type: TimestampDataStructure
+          type: Timestamp
       output:
         - name: timerAlert
-          type: TimerAlertDataStructure
+          type: TimerAlert
 ---
 model:
   name: ClockAlarm
@@ -65,10 +65,10 @@ model:
   behavior:
     - name: triggerAlarm
       type: request-response
-      description: Trigger the alarm noise when a TimerAlertDataStructure is received.
+      description: Trigger the alarm noise when a TimerAlert is received.
       input:
         - name: timerAlert
-          type: TimerAlertDataStructure
+          type: TimerAlert
       output:
         - name: alarmNoise
           type: AlarmNoise
