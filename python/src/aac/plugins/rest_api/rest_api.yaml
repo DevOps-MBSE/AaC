@@ -11,7 +11,7 @@ model:
           python_type: str
           description: Set the hostname of the service. Useful for operating behind proxies.
         - name: --port
-          type: integer
+          type: int
           python_type: int
           description: The port to bing the RESTful service to.
       acceptance:

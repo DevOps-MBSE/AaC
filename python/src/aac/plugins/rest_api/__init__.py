@@ -33,3 +33,15 @@ def get_commands() -> list[AacCommand]:
     ]
 
     return plugin_commands
+
+
+@hookimpl
+def get_plugin_aac_definitions() -> str:
+    """
+    Return the plugins Aac definitions.
+
+    Returns:
+         string representing yaml extensions and definitions defined by the plugin
+    """
+
+    return get_resource_file_contents(__package__, "rest_api.yaml")

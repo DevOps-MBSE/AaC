@@ -1,6 +1,5 @@
 from unittest import TestCase
 
-import json
 from fastapi.testclient import TestClient
 
 from aac.lang.active_context_lifecycle_manager import get_active_context
