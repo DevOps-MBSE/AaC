@@ -75,18 +75,15 @@ def _get_extension_field_name(extension_definition: Definition) -> str:
     return "values" if extension_definition.is_enum_extension() else "fields"
 
 
-def _combine_enum_values(original_values: list, new_values: list) -> list:
+def _combine_enum_values(original_values: list[str], new_values: list[str]) -> list[str]:
     """Return a list of all unique original and new enum values combined together."""
-    updated_values = {value: value for value in original_values}
-    new_values = {value: value for value in new_values}
-    updated_values.update(new_values)
-    return list(updated_values.values())
+    return list(set(original_values + new_values))
 
 
-def _combine_schema_fields(original_fields: list, new_fields: list):
+def _combine_schema_fields(original_fields: list[dict], new_fields: list[dict]) -> list[dict]:
     """Return a list of all unique original and new data fields combined together."""
     updated_fields_dict = {value.get("name"): value for value in original_fields}
-    unique_new_fields = list(filter(lambda field: field.get("name") not in updated_fields_dict.keys(), new_fields))
+    unique_new_fields = [field.get("name") for field in new_fields if field.get("name") not in updated_fields_dict.keys()]
     new_fields_dict = {value.get("name"): value for value in unique_new_fields}
     updated_fields_dict.update(new_fields_dict)
     return list(updated_fields_dict.values())
