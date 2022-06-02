@@ -102,6 +102,7 @@ def _apply_validator(
     defined_validations = target_schema_definition.get_validations()
 
     for validation in defined_validations:
-        validation_args = validation.get("arguments") or []
+        if validation.get("name") == validator_plugin.name:
+            validation_args = validation.get("arguments") or []
 
     return validator_plugin.validation_function(definition, target_schema_definition, context, *validation_args)
