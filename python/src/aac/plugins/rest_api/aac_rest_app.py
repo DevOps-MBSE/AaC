@@ -6,11 +6,6 @@ from aac.lang.active_context_lifecycle_manager import get_active_context
 app = FastAPI()
 
 
-@app.get("/")
-def home():
-    return {"Hello": "World"}
-
-
 @app.get("/files")
 def get_files():
     """Return a list of all files contributing definitions to the active context."""
