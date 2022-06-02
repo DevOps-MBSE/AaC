@@ -1,0 +1,31 @@
+model:
+  name: aac-rest-api
+  description: Provides a RESTful API for managing and interacting with the AaC Python package.
+  behavior:
+    - name: rest-api
+      type: command
+      description: Start a RESTful interface for interacting with and managing AaC.
+      input:
+        - name: --host
+          type: string
+          python_type: str
+          description: Set the hostname of the service. Useful for operating behind proxies.
+        - name: --port
+          type: integer
+          python_type: int
+          description: The port to bing the RESTful service to.
+      acceptance:
+        - scenario: Start the RESTful API without arguments
+          when:
+            - The aac app is run with the rest-api command.
+          then:
+            - The RESTful API is accessible on the default port value
+        - scenario: Start the RESTful API with arguments
+          given:
+            - The {{rest-api.input.--host}} contains a valid hostname.
+            - The {{rest-api.input.--port}} contains a valid, open port.
+          when:
+            - The aac app is run with the rest-api command.
+          then:
+            - The RESTful API is accessible on the port specified by the port argument
+            - The RESTful API returns links to itself with the hostname specified by the host argument
