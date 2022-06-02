@@ -17,24 +17,27 @@ class TestLanguageContext(TestCase):
 
     ENUM_VALUE_EXAMPLE_ONE = "valueOne"
     ENUM_VALUE_EXAMPLE_TWO = "valueTwo"
+    TEST_FIELD_DEFINITION_NAME = "TestField"
     TEST_SCHEMA_DEFINITION_NAME = "TestSchema"
+    TEST_ENUM_DEFINITION_NAME = "TestEnum"
+    TEST_SCHEMA_EXT_DEFINITION_NAME = "TestSchemaExtension"
+    TEST_ENUM_EXT_DEFINITION_NAME = "TestEnumExtension"
 
     def test_add_definitions_to_context_with_extensions(self):
-        test_definition_field = create_field_entry("myDefField", "string")
+        test_definition_field = create_field_entry(self.TEST_FIELD_DEFINITION_NAME, "string")
         test_definition = create_schema_definition(self.TEST_SCHEMA_DEFINITION_NAME, fields=[test_definition_field])
 
         schema_ext_field_name = "extField"
         schema_ext_field_type = "ExtField"
         ext_field = create_field_entry(schema_ext_field_name, schema_ext_field_type)
         # Adding test_definition_field from the data definition above to simulate extending a definition with a duplicate value
-        test_definition_ext = create_schema_ext_definition("mySchemaExt", self.TEST_SCHEMA_DEFINITION_NAME, fields=[ext_field, test_definition_field])
+        test_definition_ext = create_schema_ext_definition(self.TEST_SCHEMA_EXT_DEFINITION_NAME, self.TEST_SCHEMA_DEFINITION_NAME, fields=[ext_field, test_definition_field])
 
-        test_enum_name = "myEnum"
-        test_enum = create_enum_definition(test_enum_name, [self.ENUM_VALUE_EXAMPLE_ONE, self.ENUM_VALUE_EXAMPLE_TWO])
+        test_enum = create_enum_definition(self.TEST_ENUM_DEFINITION_NAME, [self.ENUM_VALUE_EXAMPLE_ONE, self.ENUM_VALUE_EXAMPLE_TWO])
 
         test_enum_ext_value = "extVal"
         # Adding self.ENUM_VALUE_EXAMPLE_ONE from the enum above to simulate extending an enum with a duplicate value
-        test_enum_ext = create_enum_ext_definition("myEnumExt", test_enum_name, values=[test_enum_ext_value, self.ENUM_VALUE_EXAMPLE_ONE])
+        test_enum_ext = create_enum_ext_definition(self.TEST_ENUM_EXT_DEFINITION_NAME, self.TEST_ENUM_DEFINITION_NAME, values=[test_enum_ext_value, self.ENUM_VALUE_EXAMPLE_ONE])
 
         language_context = LanguageContext()
         self.assertEqual(0, len(language_context.definitions))
@@ -56,12 +59,12 @@ class TestLanguageContext(TestCase):
         self.assertIn(schema_ext_field_name, context_modified_test_definition.to_yaml())
         self.assertIn(schema_ext_field_type, context_modified_test_definition.to_yaml())
 
-        context_modified_test_enum = language_context.get_definition_by_name(test_enum_name)
+        context_modified_test_enum = language_context.get_definition_by_name(self.TEST_ENUM_DEFINITION_NAME)
         self.assertEqual(3, len(context_modified_test_enum.structure["enum"]["values"]))
         self.assertIn(test_enum_ext_value, context_modified_test_enum.to_yaml())
 
     def test_remove_definitions_from_context(self):
-        test_definition_field = create_field_entry("TestField", "string")
+        test_definition_field = create_field_entry(self.TEST_FIELD_DEFINITION_NAME, "string")
         test_definition_one = create_schema_definition("Test1", fields=[test_definition_field])
         test_definition_two = create_schema_definition("Test2", fields=[test_definition_field])
 
@@ -75,7 +78,7 @@ class TestLanguageContext(TestCase):
         self.assertEqual(core_spec_definition_count, len(language_context.definitions))
 
     def test_update_definition_in_context(self):
-        test_definition_field = create_field_entry("TestField", "string")
+        test_definition_field = create_field_entry(self.TEST_FIELD_DEFINITION_NAME, "string")
         test_definition = create_schema_definition(self.TEST_SCHEMA_DEFINITION_NAME, fields=[test_definition_field])
 
         language_context = get_initialized_language_context(core_spec_only=True)
@@ -94,10 +97,10 @@ class TestLanguageContext(TestCase):
     def test_remove_extension_definition_from_context(self):
         target_schema_definition_name = "model"
         target_enum_definition_name = "Primitives"
-        schema_extension_field_name = "TestField"
+        schema_extension_field_name = self.TEST_FIELD_DEFINITION_NAME
         schema_extension_field = create_field_entry(schema_extension_field_name, "string")
-        test_schema_extension = create_schema_ext_definition("SchemaExt", target_schema_definition_name, fields=[schema_extension_field], required=[schema_extension_field_name])
-        test_enum_extension = create_enum_ext_definition("PrimExt", target_enum_definition_name, values=[self.ENUM_VALUE_EXAMPLE_ONE, self.ENUM_VALUE_EXAMPLE_TWO])
+        test_schema_extension = create_schema_ext_definition(self.TEST_SCHEMA_EXT_DEFINITION_NAME, target_schema_definition_name, fields=[schema_extension_field], required=[schema_extension_field_name])
+        test_enum_extension = create_enum_ext_definition(self.TEST_ENUM_EXT_DEFINITION_NAME, target_enum_definition_name, values=[self.ENUM_VALUE_EXAMPLE_ONE, self.ENUM_VALUE_EXAMPLE_TWO])
 
         language_context = get_initialized_language_context(core_spec_only=True)
         language_context.add_definitions_to_context([test_enum_extension, test_schema_extension])
@@ -128,10 +131,10 @@ class TestLanguageContext(TestCase):
     def test_update_extension_definition_in_context(self):
         target_schema_definition_name = "model"
         target_enum_definition_name = "Primitives"
-        schema_extension_field_name = "TestField"
+        schema_extension_field_name = self.TEST_FIELD_DEFINITION_NAME
         schema_extension_field = create_field_entry(schema_extension_field_name, "string")
-        test_schema_extension = create_schema_ext_definition("SchemaExt", target_schema_definition_name, fields=[schema_extension_field], required=[schema_extension_field_name])
-        test_enum_extension = create_enum_ext_definition("PrimExt", target_enum_definition_name, values=[self.ENUM_VALUE_EXAMPLE_ONE, self.ENUM_VALUE_EXAMPLE_TWO])
+        test_schema_extension = create_schema_ext_definition(self.TEST_SCHEMA_EXT_DEFINITION_NAME, target_schema_definition_name, fields=[schema_extension_field], required=[schema_extension_field_name])
+        test_enum_extension = create_enum_ext_definition(self.TEST_ENUM_EXT_DEFINITION_NAME, target_enum_definition_name, values=[self.ENUM_VALUE_EXAMPLE_ONE, self.ENUM_VALUE_EXAMPLE_TWO])
 
         language_context = get_initialized_language_context(core_spec_only=True)
         language_context.add_definitions_to_context([test_enum_extension, test_schema_extension])
