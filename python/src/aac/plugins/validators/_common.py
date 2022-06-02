@@ -11,13 +11,13 @@ def get_validation_definition_from_plugin_definitions(plugin_definitions_string:
     Parses the validation definition sourced from a validator plugin's definitions.
 
     Args:
-        source_name (str): A name for the file source - necessary for error messages
         plugin_definitions_string (str): The definitions as a yaml string
 
     Returns:
         The validation definition for the plugin.
     """
-    parsed_validator_definitions = parse(plugin_definitions_string)
+    # Temporary fix until plugins can provide better contextual information.
+    parsed_validator_definitions = parse(plugin_definitions_string, "plugins.yaml")
     validation_definitions = get_definitions_by_root_key("validation", parsed_validator_definitions)
 
     if len(validation_definitions) != 1:
