@@ -28,6 +28,11 @@ runtime_dependencies = [
     "Jinja2 >= 3.0",
     "MarkupSafe >= 2.0",
     "pygls >= 0.11",
+    "fastapi >= 0.78",
+    "starlette >= 0.19",
+    "anyio < 5, >= 3.4.0",
+    "sniffio >= 1.1",
+    "uvicorn >= 0.17.6"
 ]
 
 development_dependencies = [
