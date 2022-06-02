@@ -83,7 +83,7 @@ def _combine_enum_values(original_values: list[str], new_values: list[str]) -> l
 def _combine_schema_fields(original_fields: list[dict], new_fields: list[dict]) -> list[dict]:
     """Return a list of all unique original and new data fields combined together."""
     updated_fields_dict = {value.get("name"): value for value in original_fields}
-    unique_new_fields = [field.get("name") for field in new_fields if field.get("name") not in updated_fields_dict.keys()]
+    unique_new_fields = [field for field in new_fields if field.get("name") not in updated_fields_dict.keys()]
     new_fields_dict = {value.get("name"): value for value in unique_new_fields}
     updated_fields_dict.update(new_fields_dict)
     return list(updated_fields_dict.values())
