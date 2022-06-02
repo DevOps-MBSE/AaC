@@ -8,6 +8,7 @@ to find a certain type in a model by just looking for that key.
 from os import path
 import yaml
 from yaml.parser import ParserError as YAMLParserError
+from typing import Optional
 
 from aac.parser._parser_error import ParserError
 from aac.lang.definitions.definition import Definition
@@ -15,11 +16,12 @@ from aac.lang.definitions.lexeme import Lexeme
 from aac.lang.definitions.source_location import SourceLocation
 
 
-def parse(source: str) -> list[Definition]:
+def parse(source: str, source_uri: Optional[str] = None) -> list[Definition]:
     """Parse the Architecture-as-Code (AaC) definition(s) from the provided source.
 
     Args:
         source (str): Must be either a file path to an AaC yaml file or a string containing AaC definitions.
+        source_uri (Optional[str]): Overrides and sets the source_uri for AaC sources that are passed in as strings.
 
     Returns:
         A list of Definition objects containing the internal representation of the definition and metadata
@@ -39,12 +41,13 @@ def parse(source: str) -> list[Definition]:
         return lexemes
 
     contents = get_yaml_from_source(source)
-    definitions = _parse_file(source) if path.lexists(source) else _parse_str(source, contents)
+    definition_dicts = _parse_file(source) if path.lexists(source) else _parse_str(source, contents)
 
     parsed_definitions = []
-    for name, definition in definitions.items():
-        uri, definition = list(definition.items())[0]
-        parsed_definitions.append(Definition(name, contents, uri, get_lexemes_for_definition(contents), definition))
+    for name, definition_dict in definition_dicts.items():
+        uri, definition_dict = list(definition_dict.items())[0]
+        definition_uri = source_uri or uri
+        parsed_definitions.append(Definition(name, contents, definition_uri, get_lexemes_for_definition(contents), definition_dict))
 
     return parsed_definitions
 
