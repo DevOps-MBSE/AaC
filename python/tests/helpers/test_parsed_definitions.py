@@ -7,7 +7,7 @@ from unittest import TestCase
 from aac.parser import parse
 
 from tests.helpers.parsed_definitions import (
-    REQUIRED_VALIDATION_STRING,
+    REQUIRED_FIELDS_VALIDATION_STRING,
     create_schema_definition,
     create_schema_ext_definition,
     create_enum_definition,
@@ -34,7 +34,6 @@ class TestArchParsedDefinitions(TestCase):
                 f"  name: {definition_name}",
                 "  description: ''",
                 "  fields: []",
-                "  required: []",
                 "  validation: []",
             ]
         )
@@ -59,16 +58,17 @@ class TestArchParsedDefinitions(TestCase):
                 f"  - name: {field_name}",
                 f"    type: {field_type}",
                 f"    description: {field_description}",
-                "  required:",
-                f"  - {field_name}",
-                "  validation: []",
+                "  validation:",
+                f"  - name: {REQUIRED_FIELDS_VALIDATION_STRING}",
+                "    arguments:",
+                f"    - {field_name}"
             ]
         )
 
         field_definition = create_field_entry(field_name, field_type, field_description)
 
         expected_parsed_definition = parse(expected_yaml)[0]
-        required_field_validator = create_validation_entry(REQUIRED_VALIDATION_STRING, [field_name])
+        required_field_validator = create_validation_entry(REQUIRED_FIELDS_VALIDATION_STRING, [field_name])
         actual_parsed_definition = create_schema_definition(
             name=definition_name, description=definition_description, fields=[field_definition], validations=[required_field_validator]
         )
@@ -89,7 +89,6 @@ class TestArchParsedDefinitions(TestCase):
                 f"  name: {definition_name}",
                 f"  description: {description}",
                 "  fields: []",
-                "  required: []",
                 "  validation:",
                 f"  - name: {validation_name}",
                 "    arguments: []",
