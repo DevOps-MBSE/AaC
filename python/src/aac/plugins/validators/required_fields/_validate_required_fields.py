@@ -21,7 +21,7 @@ def validate_required_fields(definition_under_test: Definition, target_schema_de
         A ValidatorResult containing any applicable error messages.
     """
     error_messages = []
-    schema_required_field_names = target_schema_definition.get_required()
+    schema_required_field_names = validation_args
     schema_defined_fields_as_list = target_schema_definition.get_top_level_fields().get("fields")
     schema_defined_fields_as_dict = {field.get("name"): field for field in schema_defined_fields_as_list}
 
