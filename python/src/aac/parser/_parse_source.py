@@ -21,7 +21,7 @@ def parse(source: str, source_uri: Optional[str] = None) -> list[Definition]:
 
     Args:
         source (str): Must be either a file path to an AaC yaml file or a string containing AaC definitions.
-        source_uri (Optional[str]): Overrides and sets the source_uri for AaC sources that are passed in as strings.
+        source_uri (Optional[str]): Overrides and sets the source_uri
 
     Returns:
         A list of Definition objects containing the internal representation of the definition and metadata
