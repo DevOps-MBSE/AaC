@@ -57,7 +57,7 @@ class TestRequiredFieldsPlugin(TestCase):
         del test_definition.structure["schema"]["name"]
 
         required_fields_definition = test_active_context.get_definition_by_name(test_definition.get_root_key())
-        actual_result = validate_required_fields(test_definition, required_fields_definition, test_active_context)
+        actual_result = validate_required_fields(test_definition, required_fields_definition, test_active_context, *required_fields_definition.get_required())
 
         assert_validator_result_failure(actual_result, "name", "field", "populated", "missing")
 
@@ -67,7 +67,7 @@ class TestRequiredFieldsPlugin(TestCase):
         test_definition = create_schema_definition("TestData")
 
         required_fields_definition = test_active_context.get_definition_by_name(test_definition.get_root_key())
-        actual_result = validate_required_fields(test_definition, required_fields_definition, test_active_context)
+        actual_result = validate_required_fields(test_definition, required_fields_definition, test_active_context, *required_fields_definition.get_required())
 
         assert_validator_result_failure(actual_result, "fields", "not populated")
 
