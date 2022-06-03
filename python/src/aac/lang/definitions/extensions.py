@@ -4,6 +4,9 @@ import logging
 
 from aac.lang.definitions.definition import Definition
 
+# TODO(Cameron): I want this to live in the required_fields package but putting it there is causing circular import errors.
+REQUIRED_FIELDS_VALIDATION_STRING = "Required fields are present"
+
 
 def apply_extension_to_definition(extension_definition: Definition, target_definition: Definition) -> None:
     """
@@ -106,18 +109,32 @@ def _remove_schema_fields(target_fields: list, fields_to_remove: list):
 def _add_extension_required_fields_to_defintion(target_definition_fields: dict, extension_additional_content_fields: dict) -> None:
     """Add any additional required fields from the extension to the target definition."""
     extension_required_fields = extension_additional_content_fields.get("required")
+    definition_validations = target_definition_fields.get("validation") or []
+
+    if not definition_validations:
+        target_definition_fields["validation"] = []
+
+    required_fields_validation, *_ = (
+        [validation for validation in definition_validations if validation.get("name") == REQUIRED_FIELDS_VALIDATION_STRING]
+        or [{"name": REQUIRED_FIELDS_VALIDATION_STRING, "arguments": []}]
+    )
 
     if extension_required_fields:
-        if "required" not in target_definition_fields:
-            target_definition_fields["required"] = []
+        if REQUIRED_FIELDS_VALIDATION_STRING not in [validation.get("name") for validation in definition_validations]:
+            target_definition_fields["validation"].append(required_fields_validation)
 
-        target_definition_fields["required"] += extension_required_fields
+        required_fields_validation["arguments"] += extension_required_fields
 
 
 def _remove_extension_required_fields_to_defintion(target_definition_fields: dict, extension_additional_content_fields: dict) -> None:
     """Remove the extension's required fields from the target definition's required fields."""
+    target_required_fields = []
     extension_required_fields = extension_additional_content_fields.get("required") or []
-    target_required_fields = target_definition_fields.get("required") or []
+    definition_validations = target_definition_fields.get("validation") or []
+
+    if definition_validations:
+        required_fields_validation, *_ = [validation for validation in definition_validations if validation.get("name") == REQUIRED_FIELDS_VALIDATION_STRING]
+        target_required_fields = required_fields_validation.get("arguments")
 
     for required_field in extension_required_fields:
         if required_field in target_required_fields:

@@ -46,9 +46,10 @@ class TestDefinitionExtensions(TestCase):
         apply_extension_to_definition(test_enum_ext, test_enum)
 
         # Assert Altered Extension State
+        required_fields_validation, *_ = [validation for validation in test_schema.structure["schema"]["validation"]]
         self.assertEqual(2, len(test_schema.structure["schema"]["fields"]))
-        self.assertIn(REQUIRED_FIELDS_VALIDATION_STRING, test_schema.structure["schema"]["validation"])
-        self.assertEqual(1, len(test_schema.structure["schema"]["validation"][REQUIRED_FIELDS_VALIDATION_STRING]["arguments"]))
+        self.assertEqual(REQUIRED_FIELDS_VALIDATION_STRING, required_fields_validation.get("name"))
+        self.assertEqual(1, len(required_fields_validation.get("arguments")))
         self.assertIn(schema_ext_field_name, test_schema.to_yaml())
         self.assertIn(schema_ext_field_type, test_schema.to_yaml())
 
