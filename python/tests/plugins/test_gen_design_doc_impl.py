@@ -27,7 +27,7 @@ class TestGenerateDesignDocumentPlugin(TestCase):
             with open(f"{temp_dir}/{test_design_doc_file_name}", "r") as design_doc:
                 markdown = design_doc.read()
                 self.assert_headings(markdown)
-                self.assert_data(markdown)
+                self.assert_schema(markdown)
                 self.assert_model(markdown)
                 self.assert_use_case(markdown)
 
@@ -44,9 +44,9 @@ class TestGenerateDesignDocumentPlugin(TestCase):
 
         [self.assertIn(f"# {name}", markdown) for name in patterns]
 
-    def assert_data(self, markdown: str) -> None:
-        names = ["x", "y", "z"]
-        required = [n for n in names if n != "z"]
+    def assert_schema(self, markdown: str) -> None:
+        names = ["x", "y", "z", "i", "j", "direction"]
+        required = [n for n in names if n != "direction"]
         [
             self.assertIn(f"number {n}{' (required)' if n in required else ''}", markdown)
             for n in names
@@ -74,6 +74,22 @@ class TestGenerateDesignDocumentPlugin(TestCase):
 
 TEST_MODEL = """
 schema:
+  name: Vector
+  fields:
+    - name: i
+      type: number
+    - name: j
+      type: number
+    - name: direction
+      type: number
+      description: If direction is not provided, it will default to 1.
+  validation:
+    - name: Required fields are present
+      arguments:
+        - i
+        - j
+---
+schema:
   name: Point
   fields:
     - name: x
@@ -82,9 +98,12 @@ schema:
       type: number
     - name: z
       type: number
-  required:
-    - x
-    - y
+  validation:
+    - name: Required fields are present
+      arguments:
+        - x
+        - y
+        - z
 ---
 model:
   name: test model
@@ -101,27 +120,31 @@ model:
       output:
         - name: gamma
           type: number
+        - name: delta
+          type: Vector
       acceptance:
         - scenario: move from point alpha to point beta
           given:
-            - Point alpha is (1, 2)
-            - Point beta is (2, 3)
+            - Point alpha is (1, 2, 3)
+            - Point beta is (2, 3, 4)
             - I am at point alpha
           when:
             - I move from point alpha to point beta
           then:
             - I am at point beta
             - publish gamma: the time it took me to finish
+            - publish delta: some vector
         - scenario: move from point beta back to point alpha
           given:
-            - Point alpha is (1, 2)
-            - Point beta is (2, 3)
+            - Point alpha is (1, 2, 3)
+            - Point beta is (2, 3, 4)
             - I am at point beta
           when:
             - I move from point beta to point alpha
           then:
             - I am at point alpha
             - publish gamma: the time it took me to finsh
+            - publish delta: some vector
 ---
 usecase:
   name: move an item
