@@ -315,8 +315,10 @@ schema:
     type: string
   - name: message_type
     type: MessageType
-  required:
-  - metadata
+  validation:
+    - name: Required fields are present
+      arguments:
+        - metadata
 ---
 schema:
   name: DataB
@@ -330,9 +332,11 @@ schema:
     type: MessageMetadataData
   - name: transformed_msg
     type: string
-  required:
-  - metadata
-  - transformed_msg
+  validation:
+    - name: Required fields are present
+      arguments:
+        - metadata
+        - transformed_msg
 ---
 schema:
   name: DataC
@@ -341,16 +345,20 @@ schema:
     type: MessageMetadataData
   - name: code
     type: fixed64[]
-  required:
-  - metadata
+  validation:
+    - name: Required fields are present
+      arguments:
+        - metadata
 ---
 schema:
   name: MessageMetadataData
   fields:
   - name: message_id
     type: int64
-  required:
-  - message_id
+  validation:
+    - name: Required fields are present
+      arguments:
+        - message_id
 ---
 enum:
   name: MessageType
