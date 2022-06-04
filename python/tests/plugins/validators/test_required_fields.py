@@ -7,9 +7,14 @@ from aac.parser import parse
 from aac.plugins.validators import ValidatorPlugin
 from aac.plugins.validators.required_fields import get_plugin_aac_definitions, register_validators, validate_required_fields
 from aac.plugins.validators.required_fields._validate_required_fields import _is_field_populated
-from tests.helpers.assertion import assert_validator_result_failure, assert_validator_result_success
 
-from tests.helpers.parsed_definitions import create_behavior_entry, create_schema_definition, create_field_entry, create_model_definition
+from tests.helpers.assertion import assert_validator_result_failure, assert_validator_result_success
+from tests.helpers.parsed_definitions import (
+    create_behavior_entry,
+    create_schema_definition,
+    create_field_entry,
+    create_model_definition,
+)
 
 
 class TestRequiredFieldsPlugin(TestCase):
