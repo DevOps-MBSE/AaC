@@ -31,14 +31,14 @@ jobs:
     - name: Is Coverage Report Version?
       id: coverage_report
       run: |
-        if [$matrix.py_version == '3.9.13']
+        if [$VERSION == '3.9.13']
         then
             echo "::set-output name=coverage_report_args::-- --coverage-report html"
         else
             echo "::set-output name=coverage_report_args::"
         fi
       env:
-        REF: ${{ matrix.py_version }}
+        VERSION: ${{ matrix.py_version }}
 
     - name: Run Tox Tests
       run: tox -e $(echo py${{ matrix.py_version }} | awk -F "." '{print $1$2;}') ${{ steps.coverage_report.outputs.coverage_report_args }}
