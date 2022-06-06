@@ -6,11 +6,11 @@ on:
 jobs:
   build_python_artifacts:
     name: Build Python Artifacts
-    uses: jondavid-black/AaC/.github/workflows/python-build-artifacts.yml@d96207706dddd99eb7778982ccbb0c572bb5f8a1
+    uses: jondavid-black/AaC/.github/workflows/python-build-artifacts.yml@49180fb18c8e51afd76f0364db9b220969fa03df
 
   build_deployment_artifacts:
     name: Build VSCode Artifacts
-    uses: jondavid-black/AaC/.github/workflows/vscode-build-artifacts.yml@d96207706dddd99eb7778982ccbb0c572bb5f8a1
+    uses: jondavid-black/AaC/.github/workflows/vscode-build-artifacts.yml@49180fb18c8e51afd76f0364db9b220969fa03df
     needs: build_python_artifacts
 
   deploy_artifacts:
