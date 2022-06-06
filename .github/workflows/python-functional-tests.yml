@@ -16,9 +16,6 @@ jobs:
       matrix:
         py_version: ["3.9", "3.10.4"]
 
-    outputs:
-      wheel_name: ${{ steps.wheel_artifact.outputs.wheel_name }}
-
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v2
@@ -56,6 +53,9 @@ jobs:
   os_test_matrix_setup:
     name: OS Test Matrix Setup
     runs-on: ubuntu-latest
+
+    outputs:
+      wheel_name: ${{ steps.wheel_artifact.outputs.wheel_name }}
 
     steps:
       - name: Download Python Wheel
