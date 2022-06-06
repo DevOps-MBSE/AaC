@@ -5,7 +5,12 @@ from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.definition_helpers import get_definitions_by_root_key
 from aac.parser import parse
 from aac.plugins.validators import ValidatorPlugin
-from aac.plugins.validators.required_fields import get_plugin_aac_definitions, register_validators, validate_required_fields
+from aac.plugins.validators.required_fields import (
+    get_plugin_aac_definitions,
+    register_validators,
+    validate_required_fields,
+    get_required_fields,
+)
 from aac.plugins.validators.required_fields._validate_required_fields import _is_field_populated
 
 from tests.helpers.assertion import assert_validator_result_failure, assert_validator_result_success
@@ -62,7 +67,8 @@ class TestRequiredFieldsPlugin(TestCase):
         del test_definition.structure["schema"]["name"]
 
         required_fields_definition = test_active_context.get_definition_by_name(test_definition.get_root_key())
-        actual_result = validate_required_fields(test_definition, required_fields_definition, test_active_context, *required_fields_definition.get_required())
+        required_fields = get_required_fields(required_fields_definition)
+        actual_result = validate_required_fields(test_definition, required_fields_definition, test_active_context, *required_fields)
 
         assert_validator_result_failure(actual_result, "name", "field", "populated", "missing")
 
@@ -72,7 +78,8 @@ class TestRequiredFieldsPlugin(TestCase):
         test_definition = create_schema_definition("TestData")
 
         required_fields_definition = test_active_context.get_definition_by_name(test_definition.get_root_key())
-        actual_result = validate_required_fields(test_definition, required_fields_definition, test_active_context, *required_fields_definition.get_required())
+        required_fields = get_required_fields(required_fields_definition)
+        actual_result = validate_required_fields(test_definition, required_fields_definition, test_active_context, *required_fields)
 
         assert_validator_result_failure(actual_result, "fields", "not populated")
 

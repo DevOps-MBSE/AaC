@@ -9,6 +9,7 @@ from jinja2 import Template
 from aac.lang.definition_helpers import get_definitions_by_root_key
 from aac.lang.definitions.definition import Definition
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
+from aac.plugins.validators.required_fields import get_required_fields
 from aac.templates.engine import (
     TemplateOutputFile,
     generate_template,
@@ -97,7 +98,7 @@ def _get_and_prepare_definitions_by_type(parsed_definitions: list[Definition], a
 
 
 def _get_required_fields_for_definitions(parsed_definitions: list[Definition]) -> list[dict]:
-    return [{definition.name: definition.get_required()} for definition in parsed_definitions]
+    return [{definition.name: get_required_fields(definition)} for definition in parsed_definitions]
 
 
 def _generate_system_doc(output_filespec: str, selected_template: Template, output_directory: str, template_properties: dict) -> TemplateOutputFile:

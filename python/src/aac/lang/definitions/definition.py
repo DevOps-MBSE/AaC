@@ -44,13 +44,6 @@ class Definition:
 
         return fields
 
-    def get_required(self) -> list[str]:
-        """Return a list of field names if the definition has a required field."""
-        # TODO(Cameron): I want the validator name defined in the required_fields package but it's
-        # causing a circular import error.
-        required_validation = [v for v in self.get_validations() if v.get("name") == "Required fields are present"]
-        return required_validation and required_validation[0].get("arguments") or []
-
     def get_validations(self) -> list[dict]:
         """Return a list of validation entry dictionaries if the definition has a validation field or an empty list if not."""
         fields = self.get_top_level_fields()
