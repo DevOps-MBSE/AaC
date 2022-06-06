@@ -1,0 +1,134 @@
+name: Python Tests
+
+on:
+  workflow_call:
+
+defaults:
+  run:
+    working-directory: ./python
+
+jobs:
+  python_tests:
+    name: Python ${{ matrix.py_version }} Tests
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        py_version: ["3.9.13", "3.10.4"]
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python ${{ matrix.py_version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.py_version }}
+
+    - name: Install the AaC Package
+      run: pip install -e .[all]
+
+    - name: Is Coverage Report Version?
+      id: coverage_report
+      run: |
+        if [$matrix.py_version == '3.9.13']
+        then
+            echo "::set-output name=coverage_report_args::-- --coverage-report html"
+        else
+            echo "::set-output name=coverage_report_args::"
+        fi
+      env:
+        REF: ${{ matrix.py_version }}
+
+    - name: Run Tox Tests
+      run: tox -e $(echo py${{ matrix.py_version }} | awk -F "." '{print $1$2;}') ${{ steps.coverage_report.outputs.coverage_report_args }}
+
+    - name: Upload Code Coverage Report
+      uses: actions/upload-artifact@v2
+      if: ${{ $matrix.py_version == '3.9.13' }}
+      with:
+        name: test-coverage-report
+        path: python/html_code_coverage/
+
+    - name: Validate Core Spec and Plugin Specs
+      run: |
+        find src -name spec.yaml -print0 | xargs -0 -n1 aac validate
+        find src/aac/plugins -name *.yaml -print0 | xargs -0 -n1 aac validate
+
+    - name: Test Gen-Plugin First-Party Plugin
+      run: |
+        mkdir -p src/aac/plugins/test_gen_protobuf/
+        cp  src/aac/plugins/gen_protobuf/gen_protobuf.yaml src/aac/plugins/test_gen_protobuf/gen_plugin_generation_test.yaml
+        echo y | aac gen-plugin src/aac/plugins/test_gen_protobuf/gen_plugin_generation_test.yaml
+        pip install .[all]
+
+    - name: Test Gen-Plugin Third-Party Plugin
+      run: |
+        mkdir gen_plugin_generation_test
+        cp  src/aac/plugins/gen_protobuf/gen_protobuf.yaml gen_plugin_generation_test
+        echo y | aac gen-plugin gen_plugin_generation_test/gen_protobuf.yaml
+        pip install .
+
+  os_test_matrix_setup:
+    name: OS Test Matrix Setup
+    runs-on: ubuntu-latest
+
+    outputs:
+      wheel_name: ${{ steps.wheel_artifact.outputs.wheel_name }}
+
+    steps:
+      - name: Download Python Wheel
+        uses: actions/download-artifact@v2
+        with:
+          name: aac_wheel
+          path: python/dist/
+
+      - name: Set Wheel Artifact Name
+        id: wheel_artifact
+        run: echo "::set-output name=wheel_name::$(basename $(ls dist/*.whl))"
+
+  os_test_matrix:
+      name: Python ${{ matrix.os }} Tests
+      needs: os_test_matrix_setup
+      runs-on: ${{ matrix.os }}
+
+      strategy:
+          matrix:
+            os: [ubuntu-latest, windows-latest]
+
+      steps:
+        - name: Checkout Repository
+          uses: actions/checkout@v2
+
+        - name: Set up Python 3.9
+          uses: actions/setup-python@v2
+          with:
+            python-version: 3.9
+
+        - name: Download Python Wheel
+          uses: actions/download-artifact@v2
+          id: download-wheel
+          with:
+            name: aac_wheel
+            path: python/dist/
+
+        - name: Install Wheel Distribution
+          run: pip install ${{steps.download-wheel.outputs.download-path}}/${{needs.os_test_matrix_setup.outputs.wheel_name}}
+
+        - name: Get Package Version
+          run: python -m aac version
+
+        - name: Validate Core Spec
+          run: python -m aac validate src/aac/spec/spec.yaml
+
+        - name: Print out Core Spec
+          run: python -m aac print-spec
+
+        - name: Print out active context
+          run: python -m aac print-active-context
+
+        - name: Validate Example Model
+          run: python -m aac validate model/flow/System.yaml
+
+        - name: Create PlantUML Component Diagram
+          run: python -m aac puml-object model/flow/System.yaml output/
