@@ -1,12 +1,17 @@
-name: Deploy Python Artifacts
+name: Deploy VSCode Artifacts
 
 on:
   pull_request:
 
 jobs:
+  build_python_artifacts:
+    name: Build Python Artifacts
+    uses: jondavid-black/AaC/.github/workflows/python-build-artifacts.yml@923464a8542c6cfa46018b45f50f1ffc455d5de9
+
   build_deployment_artifacts:
-    name: Build Artifacts
+    name: Build VSCode Artifacts
     uses: jondavid-black/AaC/.github/workflows/vscode-build-artifacts.yml@923464a8542c6cfa46018b45f50f1ffc455d5de9
+    needs: build_python_artifacts
 
   deploy_artifacts:
     name: Deploy Artifacts
@@ -26,6 +31,7 @@ jobs:
           pat: ${{ secrets.VS_MARKETPLACE_TOKEN }}
           registryUrl: https://marketplace.visualstudio.com
           extensionFile: vscode_extension/aac.vsix
+          yarn: true
 
       - name: Publish to Open VSX Registry
         uses: HaaLeo/publish-vscode-extension@v1
