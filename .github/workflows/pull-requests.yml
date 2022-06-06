@@ -7,14 +7,14 @@ on:
 jobs:
   build_python_artifacts:
     name: Python Build
-    uses: jondavid-black/AaC/.github/workflows/python-build-artifacts.yml@7a5f56d2bf41cbdf15e667247281022855ecfe1e
+    uses: jondavid-black/AaC/.github/workflows/python-build-artifacts.yml@9af8c1cba377d9afe2836df7cd410e04956993f7
 
   build_vscode_artifacts:
     name: VSCode Extension Build
     needs: build_python_artifacts
-    uses: jondavid-black/AaC/.github/workflows/vscode-build-artifacts.yml@7a5f56d2bf41cbdf15e667247281022855ecfe1e
+    uses: jondavid-black/AaC/.github/workflows/vscode-build-artifacts.yml@9af8c1cba377d9afe2836df7cd410e04956993f7
 
   python_tests:
     name: Python Tests
     needs: build_python_artifacts
-    uses: jondavid-black/AaC/.github/workflows/python-tests.yml@7a5f56d2bf41cbdf15e667247281022855ecfe1e
+    uses: jondavid-black/AaC/.github/workflows/python-tests.yml@9af8c1cba377d9afe2836df7cd410e04956993f7
