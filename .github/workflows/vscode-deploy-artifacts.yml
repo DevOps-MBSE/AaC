@@ -1,11 +1,7 @@
 name: Deploy Python Artifacts
 
 on:
-  workflow_dispatch:
-
-defaults:
-  run:
-    working-directory: ./vscode_extension
+  pull_request:
 
 jobs:
   build_deployment_artifacts:
@@ -37,4 +33,4 @@ jobs:
         with:
           pat: ${{ secrets.OPEN_VSX_TOKEN }}
           extensionFile: vscode_extension/aac.vsix
-
+          yarn: true
