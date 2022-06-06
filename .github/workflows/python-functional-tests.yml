@@ -9,8 +9,12 @@ defaults:
 
 jobs:
   python_functional_tests:
-    name: Python Package Functional Tests
+    name: Python Package Functional Tests ${{matrix.py_version}}
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        py_version: [3.9, 3.10, 3.11]
 
     outputs:
       wheel_name: ${{ steps.wheel_artifact.outputs.wheel_name }}
@@ -19,23 +23,16 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v2
 
-    - name: Set up Python 3.9
+    - name: Set up Python ${{matrix.py_version}}
       uses: actions/setup-python@v2
       with:
-        python-version: 3.9
+        python-version: ${{matrix.py_version}}
 
-    - name: Download Python Wheel
-      uses: actions/download-artifact@v2
-      with:
-        name: aac_wheel
-        path: python/dist/
+    - name: Install the AaC Package
+      run: pip install -e .[all]
 
-    - name: Set Wheel Artifact Name
-      id: wheel_artifact
-      run: echo "::set-output name=wheel_name::$(basename $(ls dist/*.whl))"
-
-    - name: Install Wheel Distribution
-      run: pip install dist/*.whl
+    - name: Run Tox Tests
+      run: tox -e ${{matrix.py_version}}
 
     - name: Validate Core Spec and Plugin Specs
       run: |
@@ -56,10 +53,24 @@ jobs:
         echo y | aac gen-plugin gen_plugin_generation_test/gen_protobuf.yaml
         pip install .
 
+  os_test_matrix_setup:
+    name: OS Test Matrix Setup
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download Python Wheel
+        uses: actions/download-artifact@v2
+        with:
+          name: aac_wheel
+          path: python/dist/
+
+      - name: Set Wheel Artifact Name
+        id: wheel_artifact
+        run: echo "::set-output name=wheel_name::$(basename $(ls dist/*.whl))"
 
   os_test_matrix:
       name: OS Test Matrix
-      needs: python_functional_tests
+      needs: os_test_matrix_setup
       runs-on: ${{matrix.os}}
 
       strategy:
@@ -83,7 +94,7 @@ jobs:
             path: python/dist/
 
         - name: Install Wheel Distribution
-          run: pip install ${{steps.download-wheel.outputs.download-path}}/${{needs.python_functional_tests.outputs.wheel_name}}
+          run: pip install ${{steps.download-wheel.outputs.download-path}}/${{needs.os_test_matrix_setup.outputs.wheel_name}}
 
         - name: Get Package Version
           run: python -m aac version
