@@ -1,5 +1,3 @@
-name: Python Tests
-
 on:
   workflow_call:
 
@@ -14,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        py_version: ["3.9.13", "3.10.4"]
+        py_version: ["3.9.0", "3.9.13", "3.10.4"]
 
     steps:
     - name: Checkout Repository
@@ -28,20 +26,12 @@ jobs:
     - name: Install the AaC Package
       run: pip install -e .[all]
 
-    - name: Is Coverage Report Version?
-      id: coverage_report
-      run: |
-        if [$VERSION == '3.9.13']
-        then
-            echo "::set-output name=coverage_report_args::-- --coverage-report html"
-        else
-            echo "::set-output name=coverage_report_args::"
-        fi
-      env:
-        VERSION: ${{ matrix.py_version }}
-
     - name: Run Tox Tests
-      run: tox -e $(echo py${{ matrix.py_version }} | awk -F "." '{print $1$2;}') ${{ steps.coverage_report.outputs.coverage_report_args }}
+      run: tox -e $(echo py${{ matrix.py_version }} | awk -F "." '{print $1$2;}')
+
+    - name: Run Tox Tests With Coverage
+      if: matrix.py_version == '3.9.13'
+      run: tox -e py39 -- --coverage-report html
 
     - name: Upload Code Coverage Report
       uses: actions/upload-artifact@v2
