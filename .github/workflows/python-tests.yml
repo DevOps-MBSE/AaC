@@ -45,7 +45,7 @@ jobs:
 
     - name: Upload Code Coverage Report
       uses: actions/upload-artifact@v2
-      if: ${{ $matrix.py_version == '3.9.13' }}
+      if: matrix.py_version == '3.9.13'
       with:
         name: test-coverage-report
         path: python/html_code_coverage/
