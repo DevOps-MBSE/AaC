@@ -22,7 +22,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: aac.vsix
-          path: vscode_extension/aac.vsix
+          path: vscode_extension/
 
       - name: Publish to Visual Studio Marketplace
         uses: HaaLeo/publish-vscode-extension@v1
