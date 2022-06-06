@@ -27,6 +27,7 @@ jobs:
       run: pip install -e .[all]
 
     - name: Run Tox Tests
+      if: matrix.py_version != '3.9.13'
       run: tox -e $(echo py${{ matrix.py_version }} | awk -F "." '{print $1$2;}')
 
     - name: Run Tox Tests With Coverage
