@@ -32,7 +32,7 @@ jobs:
       run: pip install -e .[all]
 
     - name: Run Tox Tests
-      run: tox -e ${{matrix.py_version}}
+      run: tox -e py${{matrix.py_version}}
 
     - name: Validate Core Spec and Plugin Specs
       run: |
