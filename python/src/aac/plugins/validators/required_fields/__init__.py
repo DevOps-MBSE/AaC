@@ -29,3 +29,6 @@ def register_validators() -> ValidatorPlugin:
     """
     validation_definition = get_validation_definition_from_plugin_definitions(get_plugin_aac_definitions())
     return ValidatorPlugin(validation_definition.name, validation_definition, validate_required_fields)
+
+
+REQUIRED_FIELDS_VALIDATION_STRING = register_validators().name

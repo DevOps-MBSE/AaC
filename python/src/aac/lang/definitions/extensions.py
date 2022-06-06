@@ -4,9 +4,6 @@ import logging
 
 from aac.lang.definitions.definition import Definition
 
-# TODO(Cameron): I want this to live in the required_fields package but putting it there is causing circular import errors.
-REQUIRED_FIELDS_VALIDATION_STRING = "Required fields are present"
-
 
 def apply_extension_to_definition(extension_definition: Definition, target_definition: Definition) -> None:
     """
@@ -114,6 +111,7 @@ def _add_extension_required_fields_to_defintion(target_definition_fields: dict, 
     if not definition_validations:
         target_definition_fields["validation"] = []
 
+    from aac.plugins.validators.required_fields import REQUIRED_FIELDS_VALIDATION_STRING
     required_fields_validation, *_ = (
         [validation for validation in definition_validations if validation.get("name") == REQUIRED_FIELDS_VALIDATION_STRING]
         or [{"name": REQUIRED_FIELDS_VALIDATION_STRING, "arguments": []}]
@@ -133,6 +131,7 @@ def _remove_extension_required_fields_to_defintion(target_definition_fields: dic
     definition_validations = target_definition_fields.get("validation") or []
 
     if definition_validations:
+        from aac.plugins.validators.required_fields import REQUIRED_FIELDS_VALIDATION_STRING
         required_fields_validation, *_ = [validation for validation in definition_validations if validation.get("name") == REQUIRED_FIELDS_VALIDATION_STRING]
         target_required_fields = required_fields_validation.get("arguments")
 
