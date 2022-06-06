@@ -1,7 +1,7 @@
 name: Deploy VSCode Artifacts
 
 on:
-  pull_request:
+  workflow_dispatch:
 
 jobs:
   build_python_artifacts:
