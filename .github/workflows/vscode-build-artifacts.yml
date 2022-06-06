@@ -8,9 +8,15 @@ defaults:
     working-directory: ./vscode_extension
 
 jobs:
+  build_python_artifacts:
+    name: Build Python Artifacts
+    uses: jondavid-black/AaC/.github/workflows/python-build-artifacts.yml@d96207706dddd99eb7778982ccbb0c572bb5f8a1
+
   build_vscode_artifacts:
     name: Build Extension Artifacts
     runs-on: ubuntu-latest
+    needs: build_python_artifacts
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
