@@ -61,7 +61,7 @@ jobs:
         pip install .
 
   os_test_matrix_setup:
-    name: OS Test Matrix Setup
+    name: Setup OS Test Matrix
     runs-on: ubuntu-latest
 
     outputs:
