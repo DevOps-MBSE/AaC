@@ -1,5 +1,3 @@
-name: Python Functional Tests
-
 on:
   workflow_call:
 
@@ -8,34 +6,40 @@ defaults:
     working-directory: ./python
 
 jobs:
-  python_functional_tests:
-    name: Python Package Functional Tests
+  python_tests:
+    name: Python ${{ matrix.py_version }} Tests
     runs-on: ubuntu-latest
 
-    outputs:
-      wheel_name: ${{ steps.wheel_artifact.outputs.wheel_name }}
+    strategy:
+      matrix:
+        py_version: ["3.9.0", "3.9.13", "3.10.5"]
 
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v2
 
-    - name: Set up Python 3.9
+    - name: Set up Python ${{ matrix.py_version }}
       uses: actions/setup-python@v2
       with:
-        python-version: 3.9
+        python-version: ${{ matrix.py_version }}
 
-    - name: Download Python Wheel
-      uses: actions/download-artifact@v2
+    - name: Install the AaC Package
+      run: pip install -e .[all]
+
+    - name: Run Tox Tests
+      if: matrix.py_version != '3.9.13'
+      run: tox -e $(echo py${{ matrix.py_version }} | awk -F "." '{print $1$2;}')
+
+    - name: Run Tox Tests With Coverage
+      if: matrix.py_version == '3.9.13'
+      run: tox -e py39 -- --coverage-report html
+
+    - name: Upload Code Coverage Report
+      uses: actions/upload-artifact@v2
+      if: matrix.py_version == '3.9.13'
       with:
-        name: aac_wheel
-        path: python/dist/
-
-    - name: Set Wheel Artifact Name
-      id: wheel_artifact
-      run: echo "::set-output name=wheel_name::$(basename $(ls dist/*.whl))"
-
-    - name: Install Wheel Distribution
-      run: pip install dist/*.whl
+        name: test-coverage-report
+        path: python/html_code_coverage/
 
     - name: Validate Core Spec and Plugin Specs
       run: |
@@ -56,11 +60,28 @@ jobs:
         echo y | aac gen-plugin gen_plugin_generation_test/gen_protobuf.yaml
         pip install .
 
+  os_test_matrix_setup:
+    name: Setup OS Test Matrix
+    runs-on: ubuntu-latest
+
+    outputs:
+      wheel_name: ${{ steps.wheel_artifact.outputs.wheel_name }}
+
+    steps:
+      - name: Download Python Wheel
+        uses: actions/download-artifact@v2
+        with:
+          name: aac_wheel
+          path: python/dist/
+
+      - name: Set Wheel Artifact Name
+        id: wheel_artifact
+        run: echo "::set-output name=wheel_name::$(basename $(ls dist/*.whl))"
 
   os_test_matrix:
-      name: OS Test Matrix
-      needs: python_functional_tests
-      runs-on: ${{matrix.os}}
+      name: Python ${{ matrix.os }} Tests
+      needs: os_test_matrix_setup
+      runs-on: ${{ matrix.os }}
 
       strategy:
           matrix:
@@ -83,7 +104,7 @@ jobs:
             path: python/dist/
 
         - name: Install Wheel Distribution
-          run: pip install ${{steps.download-wheel.outputs.download-path}}/${{needs.python_functional_tests.outputs.wheel_name}}
+          run: pip install ${{steps.download-wheel.outputs.download-path}}/${{needs.os_test_matrix_setup.outputs.wheel_name}}
 
         - name: Get Package Version
           run: python -m aac version
