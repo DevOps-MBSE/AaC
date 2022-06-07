@@ -166,7 +166,7 @@ def create_model_definition(
     return _create_parsed_defintion("model", definition_dict)
 
 
-def create_schema_ext_definition(name: str, type: str, description: str = "", fields: list[dict] = [], required: list[dict] = []):
+def create_schema_ext_definition(name: str, type: str, description: str = "", fields: list[dict] = [], required: list[str] = []):
     """Return a simulated schema extension definition."""
     definition_dict = {
         NAME_STRING: name,
