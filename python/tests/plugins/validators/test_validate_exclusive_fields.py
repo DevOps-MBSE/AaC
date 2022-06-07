@@ -14,7 +14,6 @@ class TestExclusiveFieldsPlugin(TestCase):
         get_active_context(reload_context=True)
 
     def test_module_register_validators(self):
-        test_active_context = get_active_context()
         actual_validator_plugin = register_validators()
 
         validation_definitions = get_definitions_by_root_key("validation", parse(get_plugin_aac_definitions()))
@@ -22,7 +21,7 @@ class TestExclusiveFieldsPlugin(TestCase):
 
         expected_validation_name = "Mutually exclusive fields"
         expected_validator_plugin = ValidatorPlugin(
-            name=expected_validation_name, definition=test_active_context.get_definition_by_name(expected_validation_name), validation_function=(lambda x: x)
+            name=expected_validation_name, definition=validation_definitions[0], validation_function=(lambda x: x)
         )
         self.assertEqual(expected_validator_plugin.name, actual_validator_plugin.name)
         self.assertEqual(expected_validator_plugin.definition, actual_validator_plugin.definition)
