@@ -16,7 +16,6 @@ def get_validation_definition_from_plugin_definitions(plugin_definitions_string:
     Returns:
         The validation definition for the plugin.
     """
-    # Temporary fix until plugins can provide better contextual information.
     parsed_validator_definitions = parse(plugin_definitions_string)
     validation_definitions = get_definitions_by_root_key("validation", parsed_validator_definitions)
 
