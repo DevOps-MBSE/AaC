@@ -54,4 +54,4 @@ def get_plugin_aac_definitions() -> str:
          string representing yaml extensions and definitions defined by the plugin
     """
 
-    return get_resource_file_contents(__package__, "gen_design_doc.aac")
+    return get_resource_file_contents(__package__, "gen_design_doc.yaml")
