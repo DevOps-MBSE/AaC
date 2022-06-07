@@ -5,9 +5,9 @@ Unit tests for the testing helper parsed_definitions module.
 from unittest import TestCase
 
 from aac.parser import parse
+from aac.plugins.validators.required_fields import REQUIRED_FIELDS_VALIDATION_STRING
 
 from tests.helpers.parsed_definitions import (
-    REQUIRED_FIELDS_VALIDATION_STRING,
     create_schema_definition,
     create_schema_ext_definition,
     create_enum_definition,

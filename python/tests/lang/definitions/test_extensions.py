@@ -1,9 +1,9 @@
 from unittest import TestCase
 from aac.lang.active_context_lifecycle_manager import get_initialized_language_context
 from aac.lang.definitions.extensions import apply_extension_to_definition, remove_extension_from_definition
+from aac.plugins.validators.required_fields import REQUIRED_FIELDS_VALIDATION_STRING
 
 from tests.helpers.parsed_definitions import (
-    REQUIRED_FIELDS_VALIDATION_STRING,
     create_schema_definition,
     create_schema_ext_definition,
     create_enum_definition,

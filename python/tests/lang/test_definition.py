@@ -1,9 +1,8 @@
 from unittest import TestCase
 
-from aac.plugins.validators.required_fields import get_required_fields
+from aac.plugins.validators.required_fields import get_required_fields, REQUIRED_FIELDS_VALIDATION_STRING
 
 from tests.helpers.parsed_definitions import (
-    REQUIRED_FIELDS_VALIDATION_STRING,
     create_schema_definition,
     create_schema_ext_definition,
     create_enum_definition,

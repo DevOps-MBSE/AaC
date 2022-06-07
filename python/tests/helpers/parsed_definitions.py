@@ -31,8 +31,6 @@ TYPE_STRING = "type"
 VALIDATION_STRING = "validation"
 WHEN_STRING = "when"
 
-REQUIRED_FIELDS_VALIDATION_STRING = "Required fields are present"
-
 
 def create_field_entry(name: str, type: str = "", description: str = "") -> dict:
     """
