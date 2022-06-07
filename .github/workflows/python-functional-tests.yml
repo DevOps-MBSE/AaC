@@ -40,7 +40,6 @@ jobs:
     - name: Validate Core Spec and Plugin Specs
       run: |
         find src -name spec.aac -print0 | xargs -0 -n1 aac validate
-        find src/aac/plugins -name *.aac -print0 | xargs -0 -n1 aac validate
         find src/aac/plugins -name *.yaml -print0 | xargs -0 -n1 aac validate
 
     - name: Test Gen-Plugin First-Party Plugin
