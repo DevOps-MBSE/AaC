@@ -39,7 +39,7 @@ jobs:
 
     - name: Validate Core Spec and Plugin Specs
       run: |
-        find src -name spec.yaml -print0 | xargs -0 -n1 aac validate
+        find src -name spec.aac -print0 | xargs -0 -n1 aac validate
         find src/aac/plugins -name *.yaml -print0 | xargs -0 -n1 aac validate
 
     - name: Test Gen-Plugin First-Party Plugin
@@ -89,7 +89,7 @@ jobs:
           run: python -m aac version
 
         - name: Validate Core Spec
-          run: python -m aac validate src/aac/spec/spec.yaml
+          run: python -m aac validate src/aac/spec/spec.aac
 
         - name: Print out Core Spec
           run: python -m aac print-spec
