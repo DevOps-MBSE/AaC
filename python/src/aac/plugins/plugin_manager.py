@@ -35,6 +35,7 @@ def get_plugin_manager() -> PluginManager:
         start_lsp,
         help_dump,
         material_model,
+        rest_api,
     )
 
     # Import Validation Plugins
@@ -51,10 +52,6 @@ def get_plugin_manager() -> PluginManager:
     plugin_manager.add_hookspecs(hookspecs)
     plugin_manager.load_setuptools_entrypoints(PLUGIN_PROJECT_NAME)
 
-    # register "built-in" commands
-    plugin_manager.register(validate)
-    plugin_manager.register(version)
-
     # register "built-in" plugins
     plugin_manager.register(gen_json)
     plugin_manager.register(gen_plugin)
@@ -65,8 +62,13 @@ def get_plugin_manager() -> PluginManager:
     plugin_manager.register(specifications)
     plugin_manager.register(print_spec)
     plugin_manager.register(start_lsp)
-    plugin_manager.register(help_dump)
     plugin_manager.register(material_model)
+    plugin_manager.register(help_dump)
+    plugin_manager.register(rest_api)
+
+    # register "built-in" commands
+    plugin_manager.register(validate)
+    plugin_manager.register(version)
 
     # register "built-in" validation plugins
     plugin_manager.register(defined_references)
@@ -91,7 +93,9 @@ def get_plugin_definitions() -> list[Definition]:
     plugin_definitions = []
     for plugin_definition in plugin_definitions_as_yaml:
         if len(plugin_definition) > 0:
-            plugin_definitions.append(parser.parse(plugin_definition))
+            # Temporary setting until plugins can be updated to provide better contextual information
+            plugin_file_source_uri = "plugins.yaml"
+            plugin_definitions.append(parser.parse(plugin_definition, plugin_file_source_uri))
 
     return list(flatten(plugin_definitions))
 
