@@ -1,0 +1,42 @@
+name: Deploy VSCode Artifacts
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build_python_artifacts:
+    name: Build Python Artifacts
+    uses: ./.github/workflows/python-build-artifacts.yml
+
+  build_deployment_artifacts:
+    name: Build VSCode Artifacts
+    uses: ./.github/workflows/vscode-build-artifacts.yml
+    needs: build_python_artifacts
+
+  deploy_artifacts:
+    name: Deploy Artifacts
+    runs-on: ubuntu-latest
+    needs: build_deployment_artifacts
+    steps:
+      - name: Get Extension Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: aac.vsix
+          path: vscode_extension/
+
+      - name: Publish to Visual Studio Marketplace
+        uses: HaaLeo/publish-vscode-extension@v1
+        id: publishToMsMarket
+        with:
+          pat: ${{ secrets.VS_MARKETPLACE_TOKEN }}
+          registryUrl: https://marketplace.visualstudio.com
+          extensionFile: vscode_extension/aac.vsix
+          yarn: true
+
+      - name: Publish to Open VSX Registry
+        uses: HaaLeo/publish-vscode-extension@v1
+        id: publishToOpenVSX
+        with:
+          pat: ${{ secrets.OPEN_VSX_TOKEN }}
+          extensionFile: vscode_extension/aac.vsix
+          yarn: true

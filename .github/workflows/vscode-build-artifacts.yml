@@ -9,6 +9,7 @@ jobs:
   build_vscode_artifacts:
     name: Build Extension
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
