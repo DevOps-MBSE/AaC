@@ -111,14 +111,14 @@ def _add_extension_required_fields_to_defintion(target_definition_fields: dict, 
     if not definition_validations:
         target_definition_fields["validation"] = []
 
-    from aac.plugins.validators.required_fields import REQUIRED_FIELDS_VALIDATION_STRING
+    required_fields_validation = _get_required_fields_validation_string()
     required_fields_validation, *_ = (
-        [validation for validation in definition_validations if validation.get("name") == REQUIRED_FIELDS_VALIDATION_STRING]
-        or [{"name": REQUIRED_FIELDS_VALIDATION_STRING, "arguments": []}]
+        [validation for validation in definition_validations if validation.get("name") == required_fields_validation]
+        or [{"name": required_fields_validation, "arguments": []}]
     )
 
     if extension_required_fields:
-        if REQUIRED_FIELDS_VALIDATION_STRING not in [validation.get("name") for validation in definition_validations]:
+        if required_fields_validation not in [validation.get("name") for validation in definition_validations]:
             target_definition_fields["validation"].append(required_fields_validation)
 
         required_fields_validation["arguments"] += extension_required_fields
@@ -131,8 +131,10 @@ def _remove_extension_required_fields_to_defintion(target_definition_fields: dic
     definition_validations = target_definition_fields.get("validation") or []
 
     if definition_validations:
-        from aac.plugins.validators.required_fields import REQUIRED_FIELDS_VALIDATION_STRING
-        required_fields_validation, *_ = [validation for validation in definition_validations if validation.get("name") == REQUIRED_FIELDS_VALIDATION_STRING]
+        required_fields_validation_name = _get_required_fields_validation_string()
+        required_fields_validation, *_ = [
+            validation for validation in definition_validations if validation.get("name") == required_fields_validation_name
+        ]
         target_required_fields = required_fields_validation.get("arguments")
 
     for required_field in extension_required_fields:
@@ -142,3 +144,8 @@ def _remove_extension_required_fields_to_defintion(target_definition_fields: dic
             logging.error(
                 f"Extension-applied required field '{required_field}' is not present in target dictionary: '{target_definition_fields}'"
             )
+
+
+def _get_required_fields_validation_string() -> str:
+    from aac.plugins.validators.required_fields import REQUIRED_FIELDS_VALIDATION_STRING
+    return REQUIRED_FIELDS_VALIDATION_STRING
