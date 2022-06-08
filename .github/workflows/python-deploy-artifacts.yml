@@ -10,7 +10,7 @@ defaults:
 jobs:
   build_deployment_artifacts:
     name: Build Artifacts
-    uses: jondavid-black/AaC/.github/workflows/python-build-artifacts.yml@6dd57f6bc6f88f189c127d98a6d4864c7d5f81a0
+    uses: ./.github/workflows/python-build-artifacts.yml
 
   deploy_artifacts:
     name: Deploy Artifacts
