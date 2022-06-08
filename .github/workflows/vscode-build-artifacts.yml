@@ -1,5 +1,3 @@
-name: Build VSCode Extension Artifacts
-
 on:
   workflow_call:
 
@@ -9,7 +7,7 @@ defaults:
 
 jobs:
   build_vscode_artifacts:
-    name: Build Extension Artifacts
+    name: Build Extension
     runs-on: ubuntu-latest
 
     steps:
