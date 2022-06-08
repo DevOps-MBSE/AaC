@@ -7,14 +7,14 @@ on:
 jobs:
   build_python_artifacts:
     name: Python Build
-    uses: jondavid-black/AaC/.github/workflows/python-build-artifacts.yml
+    uses: ./.github/workflows/python-build-artifacts.yml
 
   build_vscode_artifacts:
     name: VSCode Ext. Build
     needs: build_python_artifacts
-    uses: jondavid-black/AaC/.github/workflows/vscode-build-artifacts.yml
+    uses: ./.github/workflows/vscode-build-artifacts.yml
 
   python_tests:
     name: Python Tests
     needs: build_python_artifacts
-    uses: jondavid-black/AaC/.github/workflows/python-tests.yml
+    uses: ./.github/workflows/python-tests.yml
