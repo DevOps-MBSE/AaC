@@ -106,35 +106,26 @@ def _remove_schema_fields(target_fields: list, fields_to_remove: list):
 def _add_extension_required_fields_to_defintion(target_definition_fields: dict, extension_additional_content_fields: dict) -> None:
     """Add any additional required fields from the extension to the target definition."""
     extension_required_fields = extension_additional_content_fields.get("required")
-    definition_validations = target_definition_fields.get("validation") or []
+    definition_validations = _get_definition_validations(target_definition_fields)
 
     if not definition_validations:
         target_definition_fields["validation"] = []
 
-    required_fields_validation = _get_required_fields_validation_string()
-    required_fields_validation, *_ = (
-        [validation for validation in definition_validations if validation.get("name") == required_fields_validation]
-        or [{"name": required_fields_validation, "arguments": []}]
-    )
-
-    if extension_required_fields:
-        if required_fields_validation not in [validation.get("name") for validation in definition_validations]:
-            target_definition_fields["validation"].append(required_fields_validation)
-
-        required_fields_validation["arguments"] += extension_required_fields
+    required_fields_validation = _get_required_fields_validation_for_definition(target_definition_fields)
+    validation_names = _get_validation_names_for_definition(target_definition_fields)
+    if extension_required_fields and required_fields_validation not in validation_names:
+        target_definition_fields["validation"].append(required_fields_validation)
+        required_fields_validation["arguments"].extend(extension_required_fields)
 
 
 def _remove_extension_required_fields_to_defintion(target_definition_fields: dict, extension_additional_content_fields: dict) -> None:
     """Remove the extension's required fields from the target definition's required fields."""
     target_required_fields = []
+    definition_validations = _get_definition_validations(target_definition_fields)
     extension_required_fields = extension_additional_content_fields.get("required") or []
-    definition_validations = target_definition_fields.get("validation") or []
 
     if definition_validations:
-        required_fields_validation_name = _get_required_fields_validation_string()
-        required_fields_validation, *_ = [
-            validation for validation in definition_validations if validation.get("name") == required_fields_validation_name
-        ]
+        required_fields_validation = _get_required_fields_validation_for_definition(target_definition_fields)
         target_required_fields = required_fields_validation.get("arguments")
 
     for required_field in extension_required_fields:
@@ -147,5 +138,26 @@ def _remove_extension_required_fields_to_defintion(target_definition_fields: dic
 
 
 def _get_required_fields_validation_string() -> str:
+    """Return the name of the required fields validation."""
     from aac.plugins.validators.required_fields import REQUIRED_FIELDS_VALIDATION_STRING
     return REQUIRED_FIELDS_VALIDATION_STRING
+
+
+def _get_required_fields_validation_for_definition(definition_fields: dict) -> dict:
+    """Return the required fields validation on the specified definition."""
+    definition_validations = _get_definition_validations(definition_fields)
+    required_fields_validation_name = _get_required_fields_validation_string()
+    required_fields_validation = [v for v in definition_validations if v.get("name") == required_fields_validation_name]
+    empty_required_fields_validtaion = {"name": required_fields_validation_name, "arguments": []}
+
+    return required_fields_validation[0] if required_fields_validation else empty_required_fields_validtaion
+
+
+def _get_validation_names_for_definition(definition_fields: dict) -> list[str]:
+    """Return the names of the validations defined for the definition."""
+    return [validation.get("name") for validation in _get_definition_validations(definition_fields)]
+
+
+def _get_definition_validations(definition_fields: dict) -> list[dict]:
+    """Return the list of validation definitions for the specified definition."""
+    return definition_fields.get("validation") or []
