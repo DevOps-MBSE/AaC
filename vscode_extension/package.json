@@ -1,8 +1,9 @@
 {
     "name": "aac",
+    "publisher": "Arch-as-Code",
     "displayName": "Architecture As Code",
     "description": "A distinctly different take on Model-Based System Engineering (MBSE) that allows a system modeler to define a system in simple yaml",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "engines": {
         "vscode": "^1.60.0"
     },
