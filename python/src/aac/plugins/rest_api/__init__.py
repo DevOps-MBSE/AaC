@@ -5,7 +5,7 @@
 from aac.plugins import hookimpl
 from aac.cli.aac_command import AacCommand, AacCommandArgument
 from aac.package_resources import get_resource_file_contents
-from aac.plugins.rest_api.aac_rest_api_impl import rest_api
+from aac.plugins.rest_api.aac_rest_api_impl import rest_api, generate_api
 
 
 @hookimpl
@@ -23,12 +23,22 @@ def get_commands() -> list[AacCommand]:
         AacCommandArgument("--port", "The port to bing the RESTful service to."),
     ]
 
+    generate_api_arguments = [
+        AacCommandArgument("output_directory", "The output directory in which to write the AaC OpenAPI JSON file."),
+    ]
+
     plugin_commands = [
         AacCommand(
             "rest-api",
             "Start a RESTful interface for interacting with and managing AaC.",
             rest_api,
             rest_api_arguments
+        ),
+        AacCommand(
+            "generate-openapi",
+            "Write the OpenAPI schema to a JSON file.",
+            generate_api,
+            generate_api_arguments
         ),
     ]
 

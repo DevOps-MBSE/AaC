@@ -29,3 +29,17 @@ model:
           then:
             - The RESTful API is accessible on the port specified by the port argument
             - The RESTful API returns links to itself with the hostname specified by the host argument
+    - name: generate-openapi
+      type: command
+      description: Write the OpenAPI schema to a JSON file.
+      input:
+        - name: output_directory
+          type: string
+          python_type: str
+          description: The output directory in which to write the AaC OpenAPI JSON file
+      acceptance:
+        - scenario: Output the OpenAPI specification to file.
+          when:
+            - The aac app is run with the generate-openapi command.
+          then:
+            - The OpenAPI schema is written to the output directory in a JSON file.
