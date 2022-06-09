@@ -11,7 +11,6 @@ def get_validation_definition_from_plugin_definitions(plugin_definitions_string:
     Parses the validation definition sourced from a validator plugin's definitions.
 
     Args:
-        source_name (str): A name for the file source - necessary for error messages
         plugin_definitions_string (str): The definitions as a yaml string
 
     Returns:

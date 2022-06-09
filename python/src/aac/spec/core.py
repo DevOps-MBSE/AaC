@@ -26,7 +26,7 @@ def get_aac_spec() -> list[Definition]:
     global AAC_CORE_SPEC_DEFINITIONS
     if not len(AAC_CORE_SPEC_DEFINITIONS) > 0:
         core_spec_as_yaml = get_aac_spec_as_yaml()
-        AAC_CORE_SPEC_DEFINITIONS = parse(core_spec_as_yaml)
+        AAC_CORE_SPEC_DEFINITIONS = parse(core_spec_as_yaml, CORE_SPEC_FILE_NAME)
 
     return AAC_CORE_SPEC_DEFINITIONS
 

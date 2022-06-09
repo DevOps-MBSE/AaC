@@ -229,6 +229,16 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": false
+        }, {
+            "name": "Python: Start RESTful API",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/aac/__main__.py",
+            "args": [
+                "rest-api"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
         }],
         "compounds": []
     }
