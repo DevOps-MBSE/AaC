@@ -20,15 +20,15 @@ def rest_api(host: Optional[str], port: Optional[int]) -> PluginExecutionResult:
 
     Args:
         host (Optional[str]): Set the hostname of the service. Useful for operating behind proxies.
-        port (Optional[int]): The port to bing the RESTful service to.
+        port (Optional[int]): The port to which the RESTful service will be bound.
     """
     with plugin_result(plugin_name, _start_restful_service, host, port) as result:
         return result
 
 
-def _start_restful_service(host: Optional[str], port: Optional[int]) -> str:
+def _start_restful_service(host: Optional[str] = "0.0.0.0", port: Optional[int] = 8000) -> str:
     """Start the RESTful interface service."""
-    uvicorn.run(app, host=host or "0.0.0.0", port=port or 8000)
+    uvicorn.run(app, host=host, port=port)
     return "Successfully started and stopped the RESTful API."
 
 

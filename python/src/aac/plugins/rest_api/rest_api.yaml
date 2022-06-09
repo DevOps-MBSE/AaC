@@ -13,7 +13,7 @@ model:
         - name: --port
           type: int
           python_type: int
-          description: The port to bing the RESTful service to.
+          description: The port to which the RESTful service will be bound.
       acceptance:
         - scenario: Start the RESTful API without arguments
           when:
