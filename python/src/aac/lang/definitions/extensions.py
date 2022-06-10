@@ -112,8 +112,7 @@ def _add_extension_required_fields_to_defintion(target_definition_fields: dict, 
         target_definition_fields["validation"] = []
 
     required_fields_validation = _get_required_fields_validation_for_definition(target_definition_fields)
-    validation_names = _get_validation_names_for_definition(target_definition_fields)
-    if extension_required_fields and required_fields_validation not in validation_names:
+    if extension_required_fields:
         target_definition_fields["validation"].append(required_fields_validation)
         required_fields_validation["arguments"].extend(extension_required_fields)
 
@@ -151,11 +150,6 @@ def _get_required_fields_validation_for_definition(definition_fields: dict) -> d
     empty_required_fields_validtaion = {"name": required_fields_validation_name, "arguments": []}
 
     return required_fields_validation[0] if required_fields_validation else empty_required_fields_validtaion
-
-
-def _get_validation_names_for_definition(definition_fields: dict) -> list[str]:
-    """Return the names of the validations defined for the definition."""
-    return [validation.get("name") for validation in _get_definition_validations(definition_fields)]
 
 
 def _get_definition_validations(definition_fields: dict) -> list[dict]:
