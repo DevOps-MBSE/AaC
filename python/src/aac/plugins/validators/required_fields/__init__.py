@@ -33,7 +33,15 @@ def register_validators() -> ValidatorPlugin:
 
 
 def get_required_fields(definition: Definition) -> list[str]:
-    """Return a list of field names if the definition has a required field."""
+    """
+    Return a list of field names declared in the definition's Required Fields Validation.
+    
+    Args:
+        definition (Definition): The definition to search through
+        
+    Returns:
+        The list of field names declared as required fields in the definition.
+    """
     required_validation = [v for v in definition.get_validations() if v.get("name") == REQUIRED_FIELDS_VALIDATION_STRING]
     return required_validation and required_validation[0].get("arguments") or []
 

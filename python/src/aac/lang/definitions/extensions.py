@@ -147,9 +147,9 @@ def _get_required_fields_validation_for_definition(definition_fields: dict) -> d
     definition_validations = _get_definition_validations(definition_fields)
     required_fields_validation_name = _get_required_fields_validation_string()
     required_fields_validation = [v for v in definition_validations if v.get("name") == required_fields_validation_name]
-    empty_required_fields_validtaion = {"name": required_fields_validation_name, "arguments": []}
+    empty_required_fields_validation = {"name": required_fields_validation_name, "arguments": []}
 
-    return required_fields_validation[0] if required_fields_validation else empty_required_fields_validtaion
+    return required_fields_validation[0] if required_fields_validation else empty_required_fields_validation
 
 
 def _get_definition_validations(definition_fields: dict) -> list[dict]:
