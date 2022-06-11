@@ -7,7 +7,6 @@ from aac.lang.definitions.definition import Definition
 
 class DefinitionModel(BaseModel):
     """REST API Model for the Definition class."""
-
     name: str
     content: str
     source_uri: str
