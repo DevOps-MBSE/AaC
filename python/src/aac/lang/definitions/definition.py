@@ -14,6 +14,7 @@ class Definition:
     Attributes:
         name (str): The name of the definition
         content (str): The original source textual representation of the definition.
+        source_uri (str): The URI for the document containing the definition.
         lexemes (list[Lexeme]): A list of lexemes for each item in the parsed definition.
         structure (dict): The dictionary representation of the definition.
     """
