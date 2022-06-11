@@ -52,7 +52,7 @@ class TestAacRestApi(TestCase):
         for definition in definitions_to_lookup:
             response = self.test_client.get(f"/definitions/{definition.name}")
             actual_response = response.json()
-            expected_response = json.loads(to_definition_model(definition).toJSON())
+            expected_response = jsonable_encoder(to_definition_model(definition))
             self.assertEqual(HTTPStatus.OK, response.status_code)
             self.assertEqual(expected_response.get("name"), actual_response.get("name"))
             self.assertEqual(expected_response.get("source_uri"), actual_response.get("source_uri"))
