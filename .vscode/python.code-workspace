@@ -26,6 +26,7 @@
             "pluggy",
             "protobuf",
             "puml",
+            "pydantic",
             "pygls",
             "pythonic",
             "usecase"
