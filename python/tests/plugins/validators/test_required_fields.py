@@ -39,7 +39,7 @@ class TestRequiredFieldsPlugin(TestCase):
         self.assertEqual(expected_validator_plugin.definition, actual_validator_plugin.definition)
 
     def test_validate_required_fields_not_missing_required_fields_for_schema_definition(self):
-        test_active_context = get_active_context(reload_context=True)
+        test_active_context = get_active_context()
 
         test_field_entry = create_field_entry("TestField", "string")
         test_definition = create_schema_definition("TestData", fields=[test_field_entry])
@@ -50,7 +50,7 @@ class TestRequiredFieldsPlugin(TestCase):
         assert_validator_result_success(actual_result)
 
     def test_validate_required_fields_no_missing_required_fields_for_model_definition(self):
-        test_active_context = get_active_context(reload_context=True)
+        test_active_context = get_active_context()
 
         test_behavior_entry = create_behavior_entry("TestBehavior")
         test_model_definition = create_model_definition("TestModel", behavior=[test_behavior_entry])
@@ -61,7 +61,7 @@ class TestRequiredFieldsPlugin(TestCase):
         assert_validator_result_success(actual_result)
 
     def test_validate_required_fields_with_missing_name_empty_fields(self):
-        test_active_context = get_active_context(reload_context=True)
+        test_active_context = get_active_context()
 
         test_definition = create_schema_definition("TestData")
         del test_definition.structure["schema"]["name"]
@@ -73,7 +73,7 @@ class TestRequiredFieldsPlugin(TestCase):
         assert_validator_result_failure(actual_result, "name", "field", "populated", "missing")
 
     def test_validate_required_fields_with_missing_name_empty_array_field(self):
-        test_active_context = get_active_context(reload_context=True)
+        test_active_context = get_active_context()
 
         test_definition = create_schema_definition("TestData")
 
