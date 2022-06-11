@@ -29,10 +29,11 @@ def get_definitions():
 def get_definition_by_name(definition_name):
     """Returns a definition from active context by name, or HTTPStatus.NOT_FOUND not found if the definition doesn't exist."""
     definition = get_active_context().get_definition_by_name(definition_name)
+
     if not definition:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail=f"Definition {definition_name} not found in the context.")
-    else:
-        return to_definition_model(definition)
+
+    return to_definition_model(definition)
 
 
 @app.post("/definitions", status_code=HTTPStatus.NO_CONTENT)
@@ -76,12 +77,12 @@ def remove_definitions(definition_models: list[DefinitionModel]):
 
 @dataclass
 class _DiscoveredDefinitions:
-    present: list[str]
+    present: list[Definition]
     missing: list[str]
 
 
 def _get_definitions_from_definition_models(definition_models: list[DefinitionModel]) -> _DiscoveredDefinitions:
-    """Returns two lists in a tuple, one with definition names found in the context and one with missing definition names."""
+    """Returns two lists in a tuple, one with definitions found in the context and one with missing definition names."""
     active_context = get_active_context()
 
     present_definitions = []
