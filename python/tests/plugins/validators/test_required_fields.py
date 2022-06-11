@@ -17,6 +17,7 @@ from tests.helpers.assertion import assert_validator_result_failure, assert_vali
 from tests.helpers.parsed_definitions import (
     create_behavior_entry,
     create_schema_definition,
+    create_schema_ext_definition,
     create_field_entry,
     create_model_definition,
 )
@@ -82,6 +83,38 @@ class TestRequiredFieldsPlugin(TestCase):
         actual_result = validate_required_fields(test_definition, required_fields_definition, test_active_context, *required_fields)
 
         assert_validator_result_failure(actual_result, "fields", "not populated")
+
+    def test_validate_required_fields_added_by_extension(self):
+        test_active_context = get_active_context()
+
+        schema_field_name = "TestField1"
+        schema_field = create_field_entry(schema_field_name, "string")
+        test_definition = create_schema_definition("TestSchema", fields=[schema_field])
+
+        test_active_context.add_definition_to_context(test_definition)
+
+        required_fields_definition = test_active_context.get_definition_by_name(test_definition.name)
+        required_fields = get_required_fields(required_fields_definition)
+
+        self.assertEqual(len(required_fields), 0)
+
+        actual_result = validate_required_fields(test_definition, required_fields_definition, test_active_context, *required_fields)
+        assert_validator_result_success(actual_result)
+
+        schema_extension_field_name = "TestField2"
+        schema_extension_field = create_field_entry(schema_extension_field_name, "string")
+        test_extension = create_schema_ext_definition(f"{test_definition.name}Ext", test_definition.name, fields=[schema_extension_field], required=[schema_extension_field_name])
+
+        test_active_context.add_definition_to_context(test_extension)
+
+        required_fields_definition = test_active_context.get_definition_by_name(test_definition.name)
+        required_fields = get_required_fields(required_fields_definition)
+
+        self.assertEqual(len(required_fields), 1)
+        self.assertEqual(required_fields[0], schema_extension_field_name)
+
+        actual_result = validate_required_fields(test_definition, required_fields_definition, test_active_context, *required_fields)
+        assert_validator_result_success(actual_result)
 
     def test_is_field_populated(self):
 
