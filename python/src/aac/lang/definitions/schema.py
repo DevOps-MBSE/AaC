@@ -32,7 +32,7 @@ def get_root_schema_definitions(context: LanguageContext) -> dict[str, Definitio
             root_definition = context.get_definition_by_name(root_type)
 
             if not root_definition:
-                logging.error(f"Failed to find defintion named '{root_type}' for root key: {root_name}.")
+                logging.error(f"Failed to find definition named '{root_type}' for root key: {root_name}.")
             else:
                 root_definitions_dict[root_name] = root_definition
 
@@ -42,14 +42,14 @@ def get_root_schema_definitions(context: LanguageContext) -> dict[str, Definitio
 def get_schema_defined_fields(source_definition: Definition, context: LanguageContext) -> dict[str, dict]:
     """Return a dictionary of the schema defined fields where the key is the field name and the value is the field dict."""
     schema_defined_fields = {}
-    schema_defintion = get_definition_schema(source_definition, context)
+    schema_definition = get_definition_schema(source_definition, context)
 
     schema_definition_fields = []
-    if schema_defintion:
-        schema_definition_fields = schema_defintion.get_top_level_fields()
+    if schema_definition:
+        schema_definition_fields = schema_definition.get_top_level_fields()
 
         if "fields" not in schema_definition_fields:
-            logging.error(f"Definition schema '{schema_defintion.name}' does not specify any defined fields.")
+            logging.error(f"Definition schema '{schema_definition.name}' does not specify any defined fields.")
         else:
             schema_defined_fields = {field.get("name"): field for field in schema_definition_fields.get("fields")}
 

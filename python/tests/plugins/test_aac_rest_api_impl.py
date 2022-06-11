@@ -69,9 +69,9 @@ class TestAacRestApi(TestCase):
         active_context = get_active_context()
         initial_active_context_count = len(active_context.definitions)
 
-        test_model_defintion = create_model_definition("Model")
-        test_enum_defintion = create_enum_definition("SomeEnum", ["v1", "v2"])
-        test_definitions = [test_model_defintion, test_enum_defintion]
+        test_model_definition = create_model_definition("Model")
+        test_enum_definition = create_enum_definition("SomeEnum", ["v1", "v2"])
+        test_definitions = [test_model_definition, test_enum_definition]
 
         test_models = [to_definition_model(definition) for definition in test_definitions]
 
@@ -107,10 +107,10 @@ class TestAacRestApi(TestCase):
 
         self.assertEqual(HTTPStatus.NO_CONTENT, response.status_code)
 
-        updated_defintions = [test_context.get_definition_by_name(definition.name) for definition in test_definitions]
+        updated_definitions = [test_context.get_definition_by_name(definition.name) for definition in test_definitions]
 
-        self.assertIn(test_behavior_name, updated_defintions[0].to_yaml())
-        self.assertIn(additional_enum_value, updated_defintions[1].to_yaml())
+        self.assertIn(test_behavior_name, updated_definitions[0].to_yaml())
+        self.assertIn(additional_enum_value, updated_definitions[1].to_yaml())
 
     def test_update_definitions_not_found(self):
         test_enum_definition_name = "TestEnum"
@@ -146,10 +146,10 @@ class TestAacRestApi(TestCase):
 
         self.assertEqual(HTTPStatus.NO_CONTENT, response.status_code)
 
-        removed_defintions = [test_context.get_definition_by_name(definition.name) for definition in test_definitions]
+        removed_definitions = [test_context.get_definition_by_name(definition.name) for definition in test_definitions]
 
-        self.assertIsNone(removed_defintions[0])
-        self.assertIsNone(removed_defintions[1])
+        self.assertIsNone(removed_definitions[0])
+        self.assertIsNone(removed_definitions[1])
 
     def test_delete_definitions_not_found(self):
         test_enum_definition_name = "TestEnum"
