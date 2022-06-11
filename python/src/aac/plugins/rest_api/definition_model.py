@@ -1,6 +1,5 @@
 """Pydantic Version of the AaC Definition Class."""
 
-import json
 from pydantic import BaseModel
 
 from aac.lang.definitions.definition import Definition
@@ -13,12 +12,9 @@ class DefinitionModel(BaseModel):
     source_uri: str
     structure: dict
 
-    def toJSON(self):
-        return json.dumps(self.__dict__)
-
 
 def to_definition_model(definition: Definition) -> DefinitionModel:
-    """ """
+    """Return a DefinitionModel representation from a Definition object."""
     return DefinitionModel(
         name=definition.name,
         content=definition.content,
@@ -28,7 +24,7 @@ def to_definition_model(definition: Definition) -> DefinitionModel:
 
 
 def to_definition_class(definition_model: DefinitionModel) -> Definition:
-    """ """
+    """Return a Definition object from a DefinitionModel object."""
     definition = Definition(
         name=definition_model.name,
         content="",

@@ -53,7 +53,6 @@ def _write_openapi_spec_to_file(output_directory: str) -> str:
             openapi_version=app.openapi_version,
             description=app.description,
             routes=app.routes,
-            # openapi_prefix=app.openapi_prefix,
         ), output_file)
 
     return f"Successfully wrote the OpenAPI spec to {full_file_path}."
