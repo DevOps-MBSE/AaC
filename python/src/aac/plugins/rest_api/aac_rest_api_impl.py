@@ -32,7 +32,7 @@ def _start_restful_service(host: Optional[str] = "0.0.0.0", port: Optional[int] 
     return "Successfully started and stopped the RESTful API."
 
 
-def generate_api(output_directory: str) -> None:
+def generate_api_spec(output_directory: str) -> None:
     """
     Write the OpenAPI schema to a JSON file.
 

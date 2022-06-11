@@ -31,7 +31,5 @@ def to_definition_class(definition_model: DefinitionModel) -> Definition:
         source_uri="",
         structure=definition_model.structure
     )
-
     definition.content = definition.to_yaml()
-
     return definition
