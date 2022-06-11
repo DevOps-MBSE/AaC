@@ -1,4 +1,5 @@
 """Module for configuring and maintaining the restful application and its routes."""
+from dataclasses import dataclass
 from fastapi import FastAPI, HTTPException
 from http import HTTPStatus
 import yaml
@@ -46,24 +47,15 @@ def update_definitions(definition_models: list[DefinitionModel]) -> None:
     """Update the request body definitions in the active context."""
     active_context = get_active_context()
 
-    updated_definitions = []
-    missing_definitions = []
-    for model in definition_models:
-        old_definition = active_context.get_definition_by_name(model.name)
+    discovered_definitions = _get_definitions_from_definition_models(definition_models)
 
-        if old_definition:
-            new_content = yaml.dump(model.structure, sort_keys=False)
-            updated_definitions.append(Definition(model.name, new_content, old_definition.source_uri, [], model.structure))
-        else:
-            missing_definitions.append(model.name)
-
-    if len(missing_definitions) > 0:
+    if len(discovered_definitions.missing) > 0:
         raise HTTPException(
             status_code=HTTPStatus.NOT_FOUND,
-            detail=f"Definition(s) {missing_definitions} not found in the context; failed to update definitions.",
+            detail=f"Definition(s) {discovered_definitions.missing} not found in the context; failed to update definitions.",
         )
     else:
-        active_context.update_definitions_in_context(updated_definitions)
+        active_context.update_definitions_in_context(discovered_definitions.present)
 
 
 @app.delete("/definitions", status_code=HTTPStatus.NO_CONTENT)
@@ -71,21 +63,36 @@ def remove_definitions(definition_models: list[DefinitionModel]):
     """Remove the request body definitions from the active context."""
     active_context = get_active_context()
 
-    definitions_to_remove = []
+    discovered_definitions = _get_definitions_from_definition_models(definition_models)
+
+    if len(discovered_definitions.missing) > 0:
+        raise HTTPException(
+            status_code=HTTPStatus.NOT_FOUND,
+            detail=f"Definition(s) {discovered_definitions.missing} not found in the context; failed to delete definitions.",
+        )
+    else:
+        active_context.remove_definitions_from_context(discovered_definitions.present)
+
+
+@dataclass
+class _DiscoveredDefinitions:
+    present: list[str]
+    missing: list[str]
+
+
+def _get_definitions_from_definition_models(definition_models: list[DefinitionModel]) -> _DiscoveredDefinitions:
+    """Returns two lists in a tuple, one with definition names found in the context and one with missing definition names."""
+    active_context = get_active_context()
+
+    present_definitions = []
     missing_definitions = []
     for model in definition_models:
         old_definition = active_context.get_definition_by_name(model.name)
 
         if old_definition:
             new_content = yaml.dump(model.structure, sort_keys=False)
-            definitions_to_remove.append(Definition(model.name, new_content, old_definition.source_uri, [], model.structure))
+            present_definitions.append(Definition(model.name, new_content, old_definition.source_uri, [], model.structure))
         else:
             missing_definitions.append(model.name)
 
-    if len(missing_definitions) > 0:
-        raise HTTPException(
-            status_code=HTTPStatus.NOT_FOUND,
-            detail=f"Definition(s) {missing_definitions} not found in the context; failed to update definitions.",
-        )
-    else:
-        active_context.remove_definitions_from_context(definitions_to_remove)
+    return _DiscoveredDefinitions(present_definitions, missing_definitions)
