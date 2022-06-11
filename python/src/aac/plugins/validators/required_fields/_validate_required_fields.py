@@ -16,6 +16,7 @@ def validate_required_fields(definition_under_test: Definition, target_schema_de
         definition_under_test (Definition): The definition that's being validated.
         target_schema_definition (Definition): A definition with applicable validation.
         language_context (LanguageContext): The language context.
+        *validation_args: The names of the required fields.
 
     Returns:
         A ValidatorResult containing any applicable error messages.
