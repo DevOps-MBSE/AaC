@@ -4,9 +4,9 @@
 
 from fastapi.openapi.utils import get_openapi
 from typing import Optional
-import uvicorn
 import json
 import os
+import uvicorn
 
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 from aac.plugins.rest_api.aac_rest_app import app
@@ -46,13 +46,16 @@ def generate_api_spec(output_directory: str) -> None:
 def _write_openapi_spec_to_file(output_directory: str) -> str:
     full_file_path = os.path.join(output_directory, "AaC_OpenAPI_Schema.json")
 
-    with open(full_file_path, 'w') as output_file:
-        json.dump(get_openapi(
-            title=app.title,
-            version=app.version,
-            openapi_version=app.openapi_version,
-            description=app.description,
-            routes=app.routes,
-        ), output_file)
+    with open(full_file_path, "w") as output_file:
+        json.dump(
+            get_openapi(
+                title=app.title,
+                version=app.version,
+                openapi_version=app.openapi_version,
+                description=app.description,
+                routes=app.routes,
+            ),
+            output_file,
+        )
 
     return f"Successfully wrote the OpenAPI spec to {full_file_path}."
