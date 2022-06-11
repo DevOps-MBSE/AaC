@@ -29,7 +29,8 @@
             "pydantic",
             "pygls",
             "pythonic",
-            "usecase"
+            "usecase",
+            "uvicorn"
         ]
     },
     "launch": {
