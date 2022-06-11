@@ -3,7 +3,6 @@ from unittest import TestCase
 from aac.lang.active_context_lifecycle_manager import get_initialized_language_context
 from aac.lang.language_context import LanguageContext
 from aac.spec import get_aac_spec, get_primitives, get_root_keys
-from aac.plugins.validators.required_fields import get_required_fields
 
 from tests.helpers.parsed_definitions import (
     create_schema_definition,
@@ -115,7 +114,6 @@ class TestLanguageContext(TestCase):
 
         extended_schema_field_names = [field.get("name") for field in extended_schema_definition.get_top_level_fields().get("fields")]
         self.assertIn(schema_extension_field_name, extended_schema_field_names)
-        self.assertIn(schema_extension_field_name, get_required_fields(extended_schema_definition))
 
         language_context.remove_definitions_from_context([test_enum_extension, test_schema_extension])
         unextended_schema_definition = language_context.get_definition_by_name(target_schema_definition_name)
@@ -127,7 +125,6 @@ class TestLanguageContext(TestCase):
 
         unextended_schema_field_names = [field.get("name") for field in unextended_schema_definition.get_top_level_fields().get("fields")]
         self.assertNotIn(schema_extension_field_name, unextended_schema_field_names)
-        self.assertNotIn(schema_extension_field_name, get_required_fields(extended_schema_definition))
 
     def test_update_extension_definition_in_context(self):
         target_schema_definition_name = "model"
@@ -149,7 +146,6 @@ class TestLanguageContext(TestCase):
 
         extended_schema_field_names = [field.get("name") for field in extended_schema_definition.get_top_level_fields().get("fields")]
         self.assertIn(schema_extension_field_name, extended_schema_field_names)
-        self.assertIn(schema_extension_field_name, get_required_fields(extended_schema_definition))
 
         # Remove self.ENUM_VALUE_EXAMPLE_TWO from the enum extension
         test_enum_extension.structure["ext"]["enumExt"]["add"].remove(self.ENUM_VALUE_EXAMPLE_TWO)
@@ -169,7 +165,6 @@ class TestLanguageContext(TestCase):
 
         updated_schema_field_names = [field.get("name") for field in updated_schema_definition.get_top_level_fields().get("fields")]
         self.assertIn(additional_schema_extension_field_name, updated_schema_field_names)
-        self.assertIn(additional_schema_extension_field_name, get_required_fields(updated_schema_definition))
 
     def test_get_primitives_with_unextended_context(self):
         core_spec = get_aac_spec()
