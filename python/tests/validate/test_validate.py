@@ -1,9 +1,7 @@
-from unittest import TestCase
-
-from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.definitions.definition import Definition
 from aac.validate import validated_definitions, validated_source, ValidationError
 
+from tests.base_test_case import BaseTestCase
 from tests.helpers.parsed_definitions import (
     create_schema_definition,
     create_schema_ext_definition,
@@ -12,10 +10,7 @@ from tests.helpers.parsed_definitions import (
 )
 
 
-class TestValidate(TestCase):
-    def setUp(self) -> None:
-        get_active_context(reload_context=True)
-
+class TestValidate(BaseTestCase):
     def test_validate_source_with_valid_definition(self):
         test_field = create_field_entry("TestField", "string")
         test_definition = create_schema_definition("Test", fields=[test_field])

@@ -1,5 +1,3 @@
-from unittest import TestCase
-
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.definition_helpers import get_definition_by_name
 from aac.lang.definitions.search import search_definition
@@ -7,6 +5,7 @@ from aac.plugins.plugin_manager import get_validator_plugins
 from aac.validate import get_applicable_validators_for_definition
 from aac.validate._collect_validators import _get_validation_entries, _get_validator_plugin_by_name
 
+from tests.base_test_case import BaseTestCase
 from tests.helpers.parsed_definitions import (
     create_schema_definition,
     create_enum_definition,
@@ -16,7 +15,7 @@ from tests.helpers.parsed_definitions import (
 )
 
 
-class TestCollectValidators(TestCase):
+class TestCollectValidators(BaseTestCase):
     def test_get_applicable_validators_for_empty_schema_definition(self):
         test_definition = create_schema_definition("Empty Schema")
         active_context = get_active_context(reload_context=True)

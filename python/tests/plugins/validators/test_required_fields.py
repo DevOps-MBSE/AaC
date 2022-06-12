@@ -1,4 +1,3 @@
-from unittest import TestCase
 from typing import Any
 
 from aac.lang.active_context_lifecycle_manager import get_active_context
@@ -9,13 +8,11 @@ from aac.plugins.validators.required_fields import get_plugin_aac_definitions, r
 from aac.plugins.validators.required_fields._validate_required_fields import _is_field_populated
 from tests.helpers.assertion import assert_validator_result_failure, assert_validator_result_success
 
+from tests.base_test_case import BaseTestCase
 from tests.helpers.parsed_definitions import create_behavior_entry, create_schema_definition, create_field_entry, create_model_definition
 
 
-class TestRequiredFieldsPlugin(TestCase):
-    def setUp(self) -> None:
-        get_active_context(reload_context=True)
-
+class TestRequiredFieldsPlugin(BaseTestCase):
     def test_module_register_validators(self):
         actual_validator_plugin = register_validators()
 
