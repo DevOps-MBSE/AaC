@@ -1,5 +1,7 @@
+from typing import Optional
 from unittest import TestCase
 
+from pygls import uris
 from pygls.lsp import methods
 from pygls.lsp.types import ClientCapabilities, InitializeParams
 
@@ -24,3 +26,6 @@ class BaseLspTestCase(TestCase):
 
     def tearDown(self):
         self.client.stop()
+
+    def get_document(self, file_name) -> Optional[str]:
+        return uris.from_fs_path(file_name)

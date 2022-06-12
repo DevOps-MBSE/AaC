@@ -1,4 +1,3 @@
-from pygls import uris
 from pygls.lsp import methods
 from pygls.lsp.types import Hover, HoverParams, Position
 
@@ -10,13 +9,10 @@ class TestLspServer(BaseLspTestCase):
         res: Hover = self.client.send_request(
             methods.HOVER,
             HoverParams(
-                text_document={"uri": TEST_DOCUMENT_URI},
+                text_document={"uri": self.get_document("test.aac")},
                 position=Position(line=0, character=0),
             ),
         )
 
         self.assertSequenceEqual(list(res.keys()), ["contents"])
         self.assertIn("LSP server", res.get("contents"))
-
-
-TEST_DOCUMENT_URI = uris.from_fs_path(__file__)
