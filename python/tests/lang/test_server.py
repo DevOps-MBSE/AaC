@@ -1,34 +1,11 @@
-from unittest import TestCase
-
 from pygls import uris
 from pygls.lsp import methods
-from pygls.lsp.types import (
-    ClientCapabilities,
-    Hover,
-    HoverParams,
-    InitializeParams,
-    Position,
-)
+from pygls.lsp.types import Hover, HoverParams, Position
 
-from tests.lang.lsp_test_client import LspTestClient
+from tests.lang.base_lsp_test_case import BaseLspTestCase
 
 
-class TestLspServer(TestCase):
-    def setUp(self):
-        self.client = LspTestClient()
-        self.client.start()
-        res = self.client.send_request(
-            methods.INITIALIZE,
-            InitializeParams(
-                process_id=12345, root_uri="file://", capabilities=ClientCapabilities()
-            ),
-        )
-
-        self.assertIn("capabilities", res)
-
-    def tearDown(self):
-        self.client.stop()
-
+class TestLspServer(BaseLspTestCase):
     def test_handles_hover_request(self):
         res: Hover = self.client.send_request(
             methods.HOVER,
