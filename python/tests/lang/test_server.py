@@ -1,6 +1,5 @@
 from pygls.lsp import methods
 from pygls.lsp.types import Hover, HoverParams, Position
-from pygls.lsp.types.language_features.completion import CompletionContext, CompletionParams, CompletionTriggerKind
 
 from tests.lang.base_lsp_test_case import BaseLspTestCase
 
