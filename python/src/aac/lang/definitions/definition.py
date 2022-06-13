@@ -44,11 +44,6 @@ class Definition:
 
         return fields
 
-    def get_required(self) -> list[str]:
-        """Return a list of field names if the definition has a required field."""
-        fields = self.get_top_level_fields()
-        return fields.get("required") or []
-
     def get_validations(self) -> list[dict]:
         """Return a list of validation entry dictionaries if the definition has a validation field or an empty list if not."""
         fields = self.get_top_level_fields()

@@ -173,8 +173,10 @@ schema:
       type: string
     - name: some_numbers
       type: fixed64[]
-  required:
-    - some_data
+  validation:
+    - name: Required fields are present
+      arguments:
+        - some_data
 ```
 
 The corresponding output will look like:

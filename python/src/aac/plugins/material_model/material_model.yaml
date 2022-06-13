@@ -36,6 +36,14 @@ schema:
     - model
     - description
     - unit_cost
+  validation:
+    - name: Required fields are present
+      arguments:
+        - name
+        - make
+        - model
+        - description
+        - unit_cost
 ---
 enum:
   name: QuoteType
@@ -59,6 +67,11 @@ schema:
   required:
     - name
     - quantity
+  validation:
+    - name: Required fields are present
+      arguments:
+        - name
+        - quantity
 ---
 schema:
   name: Assembly
@@ -79,6 +92,11 @@ schema:
   required:
     - name
     - description
+  validation:
+    - name: Required fields are present
+      arguments:
+        - name
+        - description
 ---
 schema:
   name: AssemblyRef
@@ -93,6 +111,11 @@ schema:
   required:
     - name
     - quantity
+  validation:
+    - name: Required fields are present
+      arguments:
+        - name
+        - quantity
 ---
 schema:
   name: Deployment
@@ -123,6 +146,12 @@ schema:
     - name
     - description
     - location
+  validation:
+    - name: Required fields are present
+      arguments:
+        - name
+        - description
+        - location
 ---
 schema:
   name: DeploymentRef
@@ -137,6 +166,11 @@ schema:
   required:
     - name
     - quantity
+  validation:
+    - name: Required fields are present
+      arguments:
+        - name
+        - quantity
 ---
 ext:
    name: MaterialRootItems

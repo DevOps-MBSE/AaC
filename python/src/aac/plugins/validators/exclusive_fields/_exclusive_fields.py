@@ -14,7 +14,7 @@ def validate_exclusive_fields(definition_under_test: Definition, target_schema_d
         definition_under_test (Definition): The definition that's being validated.
         target_schema_definition (Definition): A definition with applicable validation.
         language_context (LanguageContext): The language context.
-        *validation_args (list[string]): The list of exclusive fields.
+        *validation_args (list[str]): The list of exclusive fields.
 
     Returns:
         A ValidatorResult containing any applicable error messages.

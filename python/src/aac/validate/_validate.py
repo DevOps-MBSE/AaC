@@ -1,5 +1,6 @@
 from contextlib import contextmanager
 from iteration_utilities import flatten
+from typing import Generator
 
 from aac.lang.language_context import LanguageContext
 from aac.lang.active_context_lifecycle_manager import get_active_context
@@ -15,7 +16,7 @@ from aac.validate._collect_validators import get_applicable_validators_for_defin
 
 
 @contextmanager
-def validated_definitions(user_definitions: list[Definition]) -> ValidationResult:
+def validated_definitions(user_definitions: list[Definition]) -> Generator[ValidationResult, None, None]:
     """Validate user-defined definitions along with the definitions in the ActiveContext.
 
     Args:
@@ -28,7 +29,7 @@ def validated_definitions(user_definitions: list[Definition]) -> ValidationResul
 
 
 @contextmanager
-def validated_source(source: str) -> ValidationResult:
+def validated_source(source: str) -> Generator[ValidationResult, None, None]:
     """Run validation on a string-based YAML definition or a YAML file.
 
     Args:
@@ -94,12 +95,14 @@ def _validate_definition(
 
 
 def _apply_validator(
-    definition_structure_dict: dict, target_schema_definition: Definition, context: LanguageContext, validator_plugin: ValidatorPlugin
+    definition: Definition, target_schema_definition: Definition, context: LanguageContext, validator_plugin: ValidatorPlugin
 ) -> ValidatorResult:
     """Executes the validator callback on the applicable dictionary structure or substructure."""
+    validation_args = []
     defined_validations = target_schema_definition.get_validations()
 
     for validation in defined_validations:
-        validation_args = validation.get("arguments") or []
+        if validation.get("name") == validator_plugin.name:
+            validation_args = validation.get("arguments") or []
 
-    return validator_plugin.validation_function(definition_structure_dict, target_schema_definition, context, *validation_args)
+    return validator_plugin.validation_function(definition, target_schema_definition, context, *validation_args)

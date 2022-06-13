@@ -16,19 +16,20 @@ def validate_required_fields(definition_under_test: Definition, target_schema_de
         definition_under_test (Definition): The definition that's being validated.
         target_schema_definition (Definition): A definition with applicable validation.
         language_context (LanguageContext): The language context.
+        *validation_args: The names of the required fields.
 
     Returns:
         A ValidatorResult containing any applicable error messages.
     """
     error_messages = []
-    schema_required_field_names = target_schema_definition.get_required()
-    schema_defined_fields_as_list = target_schema_definition.get_top_level_fields().get("fields")
+    required_field_names = validation_args
+    schema_defined_fields_as_list = target_schema_definition.get_top_level_fields().get("fields") or []
     schema_defined_fields_as_dict = {field.get("name"): field for field in schema_defined_fields_as_list}
 
-    def validate_dict(dict_to_validate: dict) -> list[str]:
-        for required_field_name in schema_required_field_names:
+    def validate_dict(dict_to_validate: dict) -> None:
+        for required_field_name in required_field_names:
             field_value = dict_to_validate.get(required_field_name)
-            field_type = schema_defined_fields_as_dict.get(required_field_name).get("type")
+            field_type = schema_defined_fields_as_dict.get(required_field_name, {}).get("type")
 
             if field_value is None:
                 missing_required_field = f"Required field '{required_field_name}' missing from: {dict_to_validate}"

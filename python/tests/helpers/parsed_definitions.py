@@ -126,14 +126,13 @@ def create_enum_definition(name: str, values: list[str]):
     return _create_parsed_defintion("enum", definition_dict)
 
 
-def create_schema_definition(name: str, description: str = "", fields: list[dict] = [], required: list[str] = [], validation: list[dict] = []):
+def create_schema_definition(name: str, description: str = "", fields: list[dict] = [], validations: list[dict] = []):
     """Return a simulated schema definition."""
     definition_dict = {
         NAME_STRING: name,
         DESCRIPTION_STRING: description,
         FIELDS_STRING: fields,
-        REQUIRED_STRING: required,
-        VALIDATION_STRING: validation,
+        VALIDATION_STRING: validations,
     }
 
     return _create_parsed_defintion("schema", definition_dict)

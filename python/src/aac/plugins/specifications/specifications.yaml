@@ -62,6 +62,10 @@ schema:
       type: Requirement[]
   required:
     - name
+  validation:
+    - name: Required fields are present
+      arguments:
+        - name
 ---
 schema:
   name: SpecSection
@@ -74,6 +78,10 @@ schema:
       type: Requirement[]
   required:
     - name
+  validation:
+    - name: Required fields are present
+      arguments:
+        - name
 ---
 schema:
   name: Requirement
@@ -89,6 +97,11 @@ schema:
   required:
     - id
     - shall
+  validation:
+    - name: Required fields are present
+      arguments:
+        - id
+        - shall
 ---
 schema:
   name: RequirementAttribute
@@ -100,6 +113,11 @@ schema:
   required:
     - name
     - value
+  validation:
+    - name: Required fields are present
+      arguments:
+        - name
+        - value
 ---
 schema:
   name: RequirementReference
@@ -108,3 +126,7 @@ schema:
       type: string[]
   required:
     - ids
+  validation:
+    - name: Required fields are present
+      arguments:
+        - ids

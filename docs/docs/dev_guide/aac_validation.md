@@ -15,7 +15,7 @@ Validation rules in AaC are defined with the `validation` definition, which are 
 The overall validation mechanism follows this flow:
 1. A definition is identified as needing to be validated
 2. The definition is parsed for any nested AaC structures
-  a. For example, fields in `schema.fields` will trigger the `Field` schema's validation rules.  
+  a. For example, fields in `schema.fields` will trigger the `Field` schema's validation rules.
 3. For all of identified AaC structures, each is checked for any `validation` entries
 4. For each `validation` entry -- the corresponding `schema` for the substructure and the definition being validated are passed to the corresponding validator plugin
   a. Every instance of `Field` in our example `schema` definition is validated against the rule `Type references exist`
@@ -97,12 +97,13 @@ schema:
       type: Behavior[]
       description: |
         A list of behaviors that the validation plugin will perform.
-  required:
-    - name
-    - description
-    - behavior
   validation:
     - name: Validation definition has an implementation
+    - name: Required fields are present
+      arguments:
+        - name
+        - description
+        - behavior
 ```
 
 # Validator Plugins
@@ -125,5 +126,3 @@ The internal logic of the function is up to the user, but the plugins generally 
 1. Extract all instances of the `target_schema_definition` from the `definition_under_test`
 2. For each instance of the target schema, which is represented as a dictionary, apply your validation specific logic
 3. If the definition under test doesn't meet the constraints of the validator, register and return an error message
-
-

@@ -114,7 +114,6 @@ class TestLanguageContext(TestCase):
 
         extended_schema_field_names = [field.get("name") for field in extended_schema_definition.get_top_level_fields().get("fields")]
         self.assertIn(schema_extension_field_name, extended_schema_field_names)
-        self.assertIn(schema_extension_field_name, extended_schema_definition.get_required())
 
         language_context.remove_definitions_from_context([test_enum_extension, test_schema_extension])
         unextended_schema_definition = language_context.get_definition_by_name(target_schema_definition_name)
@@ -126,7 +125,6 @@ class TestLanguageContext(TestCase):
 
         unextended_schema_field_names = [field.get("name") for field in unextended_schema_definition.get_top_level_fields().get("fields")]
         self.assertNotIn(schema_extension_field_name, unextended_schema_field_names)
-        self.assertNotIn(schema_extension_field_name, extended_schema_definition.get_required())
 
     def test_update_extension_definition_in_context(self):
         target_schema_definition_name = "model"
@@ -148,7 +146,6 @@ class TestLanguageContext(TestCase):
 
         extended_schema_field_names = [field.get("name") for field in extended_schema_definition.get_top_level_fields().get("fields")]
         self.assertIn(schema_extension_field_name, extended_schema_field_names)
-        self.assertIn(schema_extension_field_name, extended_schema_definition.get_required())
 
         # Remove self.ENUM_VALUE_EXAMPLE_TWO from the enum extension
         test_enum_extension.structure["ext"]["enumExt"]["add"].remove(self.ENUM_VALUE_EXAMPLE_TWO)
@@ -168,7 +165,6 @@ class TestLanguageContext(TestCase):
 
         updated_schema_field_names = [field.get("name") for field in updated_schema_definition.get_top_level_fields().get("fields")]
         self.assertIn(additional_schema_extension_field_name, updated_schema_field_names)
-        self.assertIn(additional_schema_extension_field_name, updated_schema_definition.get_required())
 
     def test_get_primitives_with_unextended_context(self):
         core_spec = get_aac_spec()
