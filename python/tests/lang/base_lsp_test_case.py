@@ -29,7 +29,8 @@ class BaseLspTestCase(TestCase):
     def tearDown(self):
         self.client.stop()
 
-    def get_document(self, file_name) -> Optional[str]:
+    def get_document(self, file_name: str) -> Optional[str]:
+        """Return a virtual document URI."""
         return uris.from_fs_path(file_name)
 
     def send_request(self, method: str, params: Optional[Model] = None, timeout: int = DEFAULT_TIMEOUT_IN_SECONDS):
