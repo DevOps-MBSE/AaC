@@ -20,7 +20,7 @@ class BaseLspTestCase(TestCase):
         res = self.client.send_request(
             methods.INITIALIZE,
             InitializeParams(
-                process_id=12345, root_uri="file://", capabilities=ClientCapabilities()
+                process_id=12345, root_uri=self.get_document("root.aac"), capabilities=ClientCapabilities()
             ),
         )
 
