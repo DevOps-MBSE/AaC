@@ -4,6 +4,7 @@ import os
 import asyncio
 
 from threading import Thread
+from typing import Optional
 
 from pygls.lsp import methods
 from pygls.lsp.types import Model
@@ -36,7 +37,8 @@ class LspTestClient:
         self.aac_language_server = AacLanguageServer(language_server=self.server)
 
     def _configure_ls(self, reader: int, writer: int):
-        """Create, configure, and return a new LanguageServer and it's associated thread.
+        """
+        Create, configure, and return a new LanguageServer and it's associated thread.
 
         Args:
             reader (int): The file descriptor used for reading standard input.
@@ -71,8 +73,9 @@ class LspTestClient:
             pass
         self._client_thread.join()
 
-    def send_request(self, method: str, params: Model = None, timeout: int = DEFAULT_TIMEOUT_IN_SECONDS):
-        """Send a request to the server.
+    def send_request(self, method: str, params: Optional[Model] = None, timeout: int = DEFAULT_TIMEOUT_IN_SECONDS):
+        """
+        Send a request to the server.
 
         Args:
             method (str): The LSP method to use for the request.
@@ -88,7 +91,8 @@ class LspTestClient:
         return self.client.lsp.send_request(method)
 
     def send_notification(self, method: str):
-        """Send a notification to the server.
+        """
+        Send a notification to the server.
 
         Args:
             method (str): The LSP method to use for the notification.
