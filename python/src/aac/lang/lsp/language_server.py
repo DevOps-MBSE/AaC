@@ -33,6 +33,7 @@ class AacLanguageServer:
         language_server (LanguageServer): The underlying pygls language server
         language_context (LanguageContext): The AaC LanguageContext for the language server
         code_completion_provider (CodeCompletionProvider): The provider for Code Completion Language Server features
+        workspace_files (dict[str, ManagedWorkspaceFile]): The files present in the workspace containing definitions.
     """
 
     language_server: Optional[LanguageServer] = attrib(default=None, validator=validators.instance_of((type(None), LanguageServer)))
@@ -53,11 +54,11 @@ class AacLanguageServer:
 
     def setup_features(self) -> None:
         """Configure the server with the supported features."""
-        server = self.language_server
+        server: LanguageServer = self.language_server
         server.sync_kind = TextDocumentSyncKind.FULL
 
         @server.feature(methods.TEXT_DOCUMENT_DID_OPEN)
-        async def did_open(ls, params: DidOpenTextDocumentParams):
+        async def did_open(ls: LanguageServer, params: DidOpenTextDocumentParams):
             """Text document did open notification."""
             logging.info(f"Text document opened by LSP client {params.text_document.uri}.")
 
@@ -70,10 +71,10 @@ class AacLanguageServer:
 
             managed_file.is_client_managed = True
             _, file_path = file_uri.split("file://")
-            self.language_context.add_definitions_to_context(parse(file_path))
+            self.language_context.add_definitions_to_context(parse(params.text_document.text, file_path))
 
         @server.feature(methods.TEXT_DOCUMENT_DID_CLOSE)
-        def did_close(server: LanguageServer, params: DidCloseTextDocumentParams):
+        async def did_close(ls: LanguageServer, params: DidCloseTextDocumentParams):
             """Text document did close notification."""
             logging.info(f"Text document closed by LSP client {params.text_document.uri}.")
 
@@ -82,7 +83,7 @@ class AacLanguageServer:
             managed_file.is_client_managed = False
 
         @server.feature(methods.TEXT_DOCUMENT_DID_CHANGE)
-        def did_change(ls, params: DidChangeTextDocumentParams):
+        async def did_change(ls: LanguageServer, params: DidChangeTextDocumentParams):
             """Text document did change notification."""
             logging.info(f"Text document altered by LSP client {params.text_document.uri}.")
 

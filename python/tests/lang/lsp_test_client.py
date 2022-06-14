@@ -80,8 +80,7 @@ class LspTestClient:
         Args:
             method (str): The LSP method to use for the request.
             params (Model): The parameters to send with the request. (optional)
-            timeout (int): The timeout to use when waiting for a result. If not passed,
-                           DEFAULT_TIMEOUT_IN_SECONDS is used.
+            timeout (int): The timeout to use when waiting for a result. If not passed, DEFAULT_TIMEOUT_IN_SECONDS is used.
 
         Returns:
             The LSP response for the sent request.
@@ -90,7 +89,7 @@ class LspTestClient:
             return self.client.lsp.send_request(method, params).result(timeout=timeout)
         return self.client.lsp.send_request(method)
 
-    def send_notification(self, method: str):
+    def send_notification(self, method: str, params: Optional[Model] = None):
         """
         Send a notification to the server.
 
@@ -100,4 +99,4 @@ class LspTestClient:
         Returns:
             The LSP response for the sent notification.
         """
-        return self.client.lsp.notify(method)
+        return self.client.lsp.notify(method, params)
