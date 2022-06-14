@@ -100,6 +100,16 @@ class BaseLspTestCase(BaseTestCase):
         """Return file_name as a file URI."""
         return uris.from_fs_path(file_name)
 
+    def hover(self, file_name: str, line: int = 0, character: int = 0) -> dict:
+        """Send a hover request and return the response."""
+        return self.client.send_request(
+            methods.HOVER,
+            HoverParams(
+                text_document=TextDocumentIdentifier(uri=self.to_uri(file_name)),
+                position=Position(line=line, character=character),
+            )
+        )
+
 
 @attrs(slots=True)
 class LspTestCaseError(RuntimeError):
