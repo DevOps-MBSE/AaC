@@ -39,6 +39,17 @@ jobs:
           name: api-documentation
           path: python/docs/build/html/
 
+      - name: Generate RESTful API Documentation
+        run: |
+          mkdir oasv3-spec
+          aac generate-openapi-spec oasv3-spec
+
+      - name: Upload RESTful API Documentation
+        uses: actions/upload-artifact@v2
+        with:
+          name: rest-api-documentation
+          path: python/oasv3-spec
+
       - name: Build distribution package
         run: python setup.py bdist_wheel
 
