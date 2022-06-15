@@ -8,6 +8,9 @@ from aac.lang.definitions.definition import Definition
 
 def get_definition_schema(source_definition: Definition, context: LanguageContext) -> Optional[Definition]:
     """Return the root definition schema for the source definition."""
+    if not isinstance(source_definition, Definition):
+        return None
+
     root_schema_definitions = get_root_schema_definitions(context)
     definition_root_key = source_definition.get_root_key()
     definition_schema = root_schema_definitions.get(definition_root_key)

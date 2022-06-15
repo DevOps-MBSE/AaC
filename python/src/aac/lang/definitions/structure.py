@@ -1,8 +1,8 @@
 """Functions that provide information about the structure of definitions."""
-
+import copy
 import logging
 
-from aac.lang.definitions.type import is_array_type
+from aac.lang.definitions.type import is_array_type, remove_list_type_indicator
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.schema import get_definition_schema
 from aac.lang.language_context import LanguageContext
@@ -70,3 +70,42 @@ def get_substructures_by_type(
             logging.error(f"Failed to find a schema definition for the key {source_definition_root_key}.")
 
     return substructure_instances
+
+
+def strip_undefined_fields_from_definition(definition: Definition, context: LanguageContext) -> Definition:
+    """
+    Strip any fields that aren't defined in the definition's schema and returns a stripped copy of the definition.
+
+    Args:
+        definition (Definition): The definition to strip undefined fields from
+        context (LanguageContext): The language context, used to navigate the structure and lookup definitions
+
+    Returns:
+        A copy of the original definition with undefined fields removed.
+    """
+    def _strip_fields(definition_dict: dict, dict_schema: definition):
+        defined_top_level_fields = dict_schema.get_top_level_fields().get("fields", {})
+        defined_top_level_fields_dict = {field.get("name"): field for field in defined_top_level_fields}
+        definition_dict_field_names = list(definition_dict.keys())
+
+        for field_name in definition_dict_field_names:
+            if field_name not in defined_top_level_fields_dict:
+                del definition_dict[field_name]
+            else:
+                field_schema_type = defined_top_level_fields_dict.get(field_name).get("type")
+                is_array_field = is_array_type(field_schema_type)
+
+                field_schema = context.get_definition_by_name(remove_list_type_indicator(field_schema_type))
+
+                if field_schema and not context.is_enum_type(field_schema_type):
+                    field_sub_dict = definition_dict.get(field_name)
+                    field_dicts = [entry for entry in field_sub_dict] if is_array_field else [field_sub_dict]
+
+                    for field_sub_dict in field_dicts:
+                        _strip_fields(field_sub_dict, field_schema)
+
+    stripped_definition = copy.deepcopy(definition)
+    definition_schema = get_definition_schema(definition, context)
+    definition_structure = stripped_definition.get_top_level_fields()
+    _strip_fields(definition_structure, definition_schema)
+    return stripped_definition

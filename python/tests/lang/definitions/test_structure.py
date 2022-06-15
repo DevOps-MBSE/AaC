@@ -1,6 +1,7 @@
+import copy
 from unittest import TestCase
 
-from aac.lang.definitions.structure import get_substructures_by_type
+from aac.lang.definitions.structure import get_substructures_by_type, strip_undefined_fields_from_definition
 from aac.lang.definitions.schema import get_definition_schema_components
 
 from tests.helpers.context import get_core_spec_context
@@ -98,3 +99,37 @@ class TestDefinitionStructures(TestCase):
         self.assertEqual(len(actual_definitions), len(expected_definitions))
         for actual_definition in actual_definitions:
             self.assertIn(actual_definition, expected_definitions)
+
+    def test_strip_undefined_fields_from_definition(self):
+        test_context = get_core_spec_context()
+        self.maxDiff = None
+
+        behavior_input = create_field_entry("BehaviorOutput")
+        behavior_output = create_field_entry("BehaviorInput")
+        model_behavior = create_behavior_entry("SomeBehavior", input=[behavior_input], output=[behavior_output])
+        model_component = create_field_entry("ModelComponent", "ModelComponent")
+        test_model = create_model_definition("ModelWithExtraFields", components=[model_component], behavior=[model_behavior])
+
+        expected_result = copy.deepcopy(test_model)
+
+        extra_top_level_field_name = "extra_top_level_field_name"
+        extra_top_level_field_value = "extra_top_level_field_value"
+
+        behavior_input_extra_field_name = "behavior_input_extra_field_name"
+        behavior_input_extra_field_value = "behavior_input_extra_field_value"
+
+        behavior_output_extra_field_name = "behavior_output_extra_field_name"
+        behavior_output_extra_field_value = "behavior_output_extra_field_value"
+
+        test_model.structure["model"][extra_top_level_field_name] = extra_top_level_field_value
+        test_model.structure["model"]["behavior"][0]["input"][0][behavior_input_extra_field_name] = behavior_input_extra_field_value
+        test_model.structure["model"]["behavior"][0]["output"][0][behavior_output_extra_field_name] = behavior_output_extra_field_value
+
+        actual_result = strip_undefined_fields_from_definition(test_model, test_context)
+        actual_result_yaml_dump = actual_result.to_yaml()
+
+        self.assertNotEqual(expected_result.to_yaml(), test_model.to_yaml())
+        self.assertDictEqual(expected_result.structure, actual_result.structure)
+
+        self.assertNotIn(extra_top_level_field_name, actual_result_yaml_dump)
+        self.assertNotIn(extra_top_level_field_value, actual_result_yaml_dump)
