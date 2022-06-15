@@ -215,7 +215,7 @@ def _get_enum_properties(enum_definition: Definition) -> dict[str, any]:
     Analyzes an enum definition and returns a properties dictionary for template generation.
 
     Args:
-        enum_definition (dict): An enum defintion as a dictionary
+        enum_definition (dict): An enum definition as a dictionary
 
     Returns:
          A dictionary containing the template generation properties.
@@ -235,8 +235,8 @@ def _get_schema_properties(interface_structures: dict[str, Definition], data_def
     Analyzes a schema definition and returns a properties dictionary for template generation.
 
     Args:
-        data_and_enum_models (dict): A list of data model and enum defintions for enum/data model reference lookup
-        data_model (dict): A data model defintion as a dictionary
+        data_and_enum_models (dict): A list of data model and enum definitions for enum/data model reference lookup
+        data_model (dict): A data model definition as a dictionary
 
     Returns:
          A dictionary containing the template generation properties.

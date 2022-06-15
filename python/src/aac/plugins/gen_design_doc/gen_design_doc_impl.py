@@ -9,6 +9,7 @@ from jinja2 import Template
 from aac.lang.definition_helpers import get_definitions_by_root_key
 from aac.lang.definitions.definition import Definition
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
+from aac.plugins.validators.required_fields import get_required_fields
 from aac.templates.engine import (
     TemplateOutputFile,
     generate_template,
@@ -67,11 +68,13 @@ def _make_template_properties(parsed_definitions: list[Definition], arch_file: s
     models = _get_and_prepare_definitions_by_type(parsed_definitions, "model")
     usecases = _get_and_prepare_definitions_by_type(parsed_definitions, "usecase")
     interfaces = _get_and_prepare_definitions_by_type(parsed_definitions, "schema")
+    required_fields = _get_required_fields_for_definitions(parsed_definitions)
     return {
         "title": title,
         "models": models,
         "usecases": usecases,
         "interfaces": interfaces,
+        "required": required_fields,
     }
 
 
@@ -89,9 +92,13 @@ def _get_output_file_extension(template_filespec: str) -> str:
     return extension
 
 
-def _get_and_prepare_definitions_by_type(parsed_definitions: Definition, aac_type: str) -> list:
+def _get_and_prepare_definitions_by_type(parsed_definitions: list[Definition], aac_type: str) -> list[dict]:
     filtered_definitions = get_definitions_by_root_key(aac_type, parsed_definitions)
     return [definition.structure for definition in filtered_definitions]
+
+
+def _get_required_fields_for_definitions(parsed_definitions: list[Definition]) -> list[dict]:
+    return [{definition.name: get_required_fields(definition)} for definition in parsed_definitions]
 
 
 def _generate_system_doc(output_filespec: str, selected_template: Template, output_directory: str, template_properties: dict) -> TemplateOutputFile:

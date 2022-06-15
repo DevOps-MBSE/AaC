@@ -1,6 +1,6 @@
 validation:
   name: Required fields are present
-  description: Verifies every field declared in the `required` section are present and populated
+  description: Verifies every field declared as required is present and populated
   behavior:
     - name: Verify that definition fields marked as required are populated.
       type: request-response
@@ -25,7 +25,8 @@ validation:
         - scenario: Fail to validate a definition's required fields
           given:
             - The ValidatorInput content consists of otherwise valid AaC definitions.
-            - The ValidatorInput contains at least one AaC definitions that references a definition that does not exist.
+            - The ValidatorInput contains at least one field that is required.
+            - The ValidatorInput contains at least one required field that is missing.
           when:
             - The ValidatorInput is validated
           then:

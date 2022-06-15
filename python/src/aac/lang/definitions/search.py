@@ -18,14 +18,16 @@ def search(model: dict[str, Any], search_keys: list[str]) -> list:
         Let's say you have a dict structure parsed from the following AaC yaml.
 
             schema:
-            name: MyData
-            fields:
-                - name: one
-                type: string
-                - name: two
-                type: string
-            required:
-                - one
+              name: MyData
+              fields:
+                  - name: one
+                    type: string
+                  - name: two
+                    type: string
+              validation:
+                - name: Required fields are present
+                  arguments:
+                    - one
 
         You know the structure of the specification and need to iterate through each field.
         The search utility method simplifies that for you.
@@ -113,11 +115,13 @@ def search_definition(definition: Definition, search_keys: list[str]) -> list:
             schema:
               name: MyData
               fields:
-                  - name: one
-                    type: string
-                  - name: two
-                    type: string
-              required:
+                - name: one
+                  type: string
+                - name: two
+                  type: string
+              validation:
+                - name: Required fields are present
+                  arguments:
                   - one
 
         You know the structure of the specification and need to iterate through each field.

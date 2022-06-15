@@ -16,6 +16,9 @@ from tests.helpers.parsed_definitions import (
 
 
 class TestCollectValidators(BaseTestCase):
+    def get_unique_validations(self, validations):
+        return set([validation.get("name") for validation in validations])
+
     def test_get_applicable_validators_for_empty_schema_definition(self):
         test_definition = create_schema_definition("Empty Schema")
         active_context = get_active_context(reload_context=True)
@@ -27,7 +30,7 @@ class TestCollectValidators(BaseTestCase):
 
         expected_schema_validations = search_definition(schema_definition, ["schema", "validation"])
         expected_field_validations = search_definition(field_definition, ["schema", "validation"])
-        expected_validations = expected_schema_validations + expected_field_validations
+        expected_validations = self.get_unique_validations(expected_schema_validations + expected_field_validations)
         actual_result = get_applicable_validators_for_definition(test_definition, validation_plugins, active_context)
 
         self.assertEqual(len(expected_validations), len(actual_result))
@@ -44,7 +47,7 @@ class TestCollectValidators(BaseTestCase):
         field_definition = get_definition_by_name("Field", active_context.definitions)
         field_validations = search_definition(field_definition, ["schema", "validation"])
 
-        expected_validations = schema_validations + field_validations
+        expected_validations = self.get_unique_validations(schema_validations + field_validations)
         actual_result = get_applicable_validators_for_definition(test_definition, validation_plugins, active_context)
 
         self.assertEqual(len(expected_validations), len(actual_result))
@@ -63,7 +66,7 @@ class TestCollectValidators(BaseTestCase):
         model_definition = get_definition_by_name("model", active_context.definitions)
         model_validations = search_definition(model_definition, ["schema", "validation"])
 
-        expected_validations = schema_validations + field_validations + model_validations
+        expected_validations = self.get_unique_validations(schema_validations + field_validations + model_validations)
         actual_result = get_applicable_validators_for_definition(test_definition, validation_plugins, active_context)
 
         self.assertEqual(len(expected_validations), len(actual_result))
@@ -106,7 +109,7 @@ class TestCollectValidators(BaseTestCase):
         validation2_name = "Test Validation 2"
         validation1_entry = create_validation_entry(validation1_name)
         validation2_entry = create_validation_entry(validation2_name)
-        schema_definition_with_validation = create_schema_definition("name", validation=[validation1_entry, validation2_entry])
+        schema_definition_with_validation = create_schema_definition("name", validations=[validation1_entry, validation2_entry])
 
         expected_result = [validation1_entry, validation2_entry]
         actual_result = _get_validation_entries(schema_definition_with_validation)

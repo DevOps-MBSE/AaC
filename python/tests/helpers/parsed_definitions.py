@@ -123,20 +123,19 @@ def create_enum_definition(name: str, values: list[str]):
 
     definition_dict = {NAME_STRING: name, "values": values}
 
-    return _create_parsed_defintion("enum", definition_dict)
+    return _create_parsed_definition("enum", definition_dict)
 
 
-def create_schema_definition(name: str, description: str = "", fields: list[dict] = [], required: list[str] = [], validation: list[dict] = []):
+def create_schema_definition(name: str, description: str = "", fields: list[dict] = [], validations: list[dict] = []):
     """Return a simulated schema definition."""
     definition_dict = {
         NAME_STRING: name,
         DESCRIPTION_STRING: description,
         FIELDS_STRING: fields,
-        REQUIRED_STRING: required,
-        VALIDATION_STRING: validation,
+        VALIDATION_STRING: validations,
     }
 
-    return _create_parsed_defintion("schema", definition_dict)
+    return _create_parsed_definition("schema", definition_dict)
 
 
 def create_usecase_definition(name: str, description: str, participants: list[dict] = [], steps: list[dict] = []):
@@ -148,7 +147,7 @@ def create_usecase_definition(name: str, description: str, participants: list[di
         STEPS_STRING: steps,
     }
 
-    return _create_parsed_defintion("usecase", definition_dict)
+    return _create_parsed_definition("usecase", definition_dict)
 
 
 def create_model_definition(
@@ -163,7 +162,7 @@ def create_model_definition(
         STATE_STRING: state,
     }
 
-    return _create_parsed_defintion("model", definition_dict)
+    return _create_parsed_definition("model", definition_dict)
 
 
 def create_schema_ext_definition(name: str, type: str, description: str = "", fields: list[dict] = [], required: list[str] = []):
@@ -178,7 +177,7 @@ def create_schema_ext_definition(name: str, type: str, description: str = "", fi
         },
     }
 
-    return _create_parsed_defintion("ext", definition_dict)
+    return _create_parsed_definition("ext", definition_dict)
 
 
 def create_enum_ext_definition(name: str, type: str, description: str = "", values: list[str] = []):
@@ -191,7 +190,7 @@ def create_enum_ext_definition(name: str, type: str, description: str = "", valu
             ADD_STRING: values,
         },
     }
-    return _create_parsed_defintion("ext", definition_dict)
+    return _create_parsed_definition("ext", definition_dict)
 
 
 def create_validation_definition(name: str, description: str = "", behavior: list[dict] = []):
@@ -202,10 +201,10 @@ def create_validation_definition(name: str, description: str = "", behavior: lis
         BEHAVIOR_STRING: behavior,
     }
 
-    return _create_parsed_defintion("validation", definition_dict)
+    return _create_parsed_definition("validation", definition_dict)
 
 
-def _create_parsed_defintion(root_key: str, definition_structure: dict):
+def _create_parsed_definition(root_key: str, definition_structure: dict):
     """The base Parsed Definition creation function."""
     name = (NAME_STRING in definition_structure and definition_structure[NAME_STRING]) or "undefined_name"
     definition_dict = {root_key: definition_structure}

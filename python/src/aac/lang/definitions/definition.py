@@ -14,6 +14,7 @@ class Definition:
     Attributes:
         name (str): The name of the definition
         content (str): The original source textual representation of the definition.
+        source_uri (str): The URI for the document containing the definition.
         lexemes (list[Lexeme]): A list of lexemes for each item in the parsed definition.
         structure (dict): The dictionary representation of the definition.
     """
@@ -30,7 +31,7 @@ class Definition:
 
     def get_top_level_fields(self) -> dict[str, dict]:
         """
-        Return a dictionary of the top-level fields that are populated in the defintion where the key is the field name.
+        Return a dictionary of the top-level fields that are populated in the definition where the key is the field name.
 
         Schema/data definitions will return their top-level fields, including a "fields" field. Because schema/data
         is self-defining, it may be easy to confuse the intention of this function and assume that it will returns the
@@ -43,11 +44,6 @@ class Definition:
             fields = {}
 
         return fields
-
-    def get_required(self) -> list[str]:
-        """Return a list of field names if the definition has a required field."""
-        fields = self.get_top_level_fields()
-        return fields.get("required") or []
 
     def get_validations(self) -> list[dict]:
         """Return a list of validation entry dictionaries if the definition has a validation field or an empty list if not."""

@@ -77,9 +77,11 @@ schema:
       type: string[]
       description: |
         A list of strings that encompass the enumeration's possible values.
-  required:
-    - name
-    - values
+  validation:
+    - name: Required fields are present
+      arguments:
+        - name
+        - values
 ---
 schema:
   name: extension
@@ -116,9 +118,10 @@ schema:
       arguments:
         - schemaExt
         - enumExt
-  required:
-    - name
-    - type
+    - name: Required fields are present
+      arguments:
+        - name
+        - type
 ---
 schema:
   name: EnumExtension
@@ -127,8 +130,10 @@ schema:
       type: string[]
       description: |
         The list of values to add to an 'enum' extension.
-  required:
-    - add
+  validation:
+    - name: Required fields are present
+      arguments:
+        - add
 ---
 schema:
   name: SchemaExtension
@@ -142,8 +147,10 @@ schema:
       description: |
         The list of names of all the additional fields that are required for the
         extended definition.
-  required:
-    - add
+  validation:
+    - name: Required fields are present
+      arguments:
+        - add
 ---
 schema:
   name: Validation
@@ -160,12 +167,13 @@ schema:
       type: Behavior[]
       description: |
         A list of behaviors that the validation plugin will perform.
-  required:
-    - name
-    - description
-    - behavior
   validation:
     - name: Validation definition has an implementation
+    - name: Required fields are present
+      arguments:
+        - name
+        - description
+        - behavior
 ---
 schema:
   name: ValidationReference
@@ -178,8 +186,10 @@ schema:
       type: string[]
       description: |
         A list of arguments to pass to the validator.
-  required:
-    - name
+  validation:
+    - name: Required fields are present
+      arguments:
+        - name
 ---
 schema:
   name: ValidatorInput
@@ -224,10 +234,12 @@ schema:
       description: |
         A list of post conditions that will be true once the system has completed
         its action based on the triggers.
-  required:
-    - scenario
-    - when
-    - then
+  validation:
+    - name: Required fields are present
+      arguments:
+        - scenario
+        - when
+        - then
 ---
 enum:
   name: BehaviorType
@@ -268,11 +280,12 @@ schema:
       description: |
         A description for the field to let users know what it's for and any
         other useful information.
-  required:
-    - name
-    - type
   validation:
     - name: Type references exist
+    - name: Required fields are present
+      arguments:
+        - name
+        - type
 ---
 schema:
   name: schema
@@ -285,21 +298,16 @@ schema:
       type: Field[]
       description: |
         A list of fields that make up the definition.
-    - name: required
-      type: string[]
-      description: |
-        The list of names of all the fields that are required for the
-        definition.
     - name: validation
       type: ValidationReference[]
       description: |
         References and additional arguments for validations to apply to the definition.
-  required:
-    - name
-    - fields
   validation:
     - name: Root key is defined
     - name: Required fields are present
+      arguments:
+        - name
+        - fields
 ---
 schema:
   name: Behavior
@@ -337,9 +345,11 @@ schema:
       description: |
         A list of scenarios that define the acceptance criteria to signify that
         the system is behaving as expected.
-  required:
-    - name
-    - type
+  validation:
+    - name: Required fields are present
+      arguments:
+        - name
+        - type
 ---
 schema:
   name: model
@@ -368,10 +378,11 @@ schema:
         State is visible within the model but is not visible to other models.
         State may be visible between multiple instances of the modeled entity to
         support horizontal scaling.
-  required:
-    - name
   validation:
     - name: Subcomponents are models
+    - name: Required fields are present
+      arguments:
+        - name
 ---
 schema:
   name: usecase
@@ -398,10 +409,12 @@ schema:
         A list of steps taken in the use case.
 
         See 'Step'
-  required:
-    - name
-    - participants
-    - steps
+  validation:
+    - name: Required fields are present
+      arguments:
+        - name
+        - participants
+        - steps
 ---
 schema:
   name: Step
@@ -448,9 +461,11 @@ schema:
       type: Step[]
       description: |
         A list of steps to perform if the condition for the branch is "true".
-  required:
-    - condition
-    - steps
+  validation:
+    - name: Required fields are present
+      arguments:
+        - condition
+        - steps
 ---
 schema:
   name: Map
@@ -467,10 +482,10 @@ schema:
       description: The value type for elements in the map.
   validation:
     - name: Required fields are present
-  required:
-    - name
-    - key_type
-    - value_type
+      arguments:
+        - name
+        - key_type
+        - value_type
 ---
 schema:
   name: KeyValuePair
@@ -484,6 +499,6 @@ schema:
       description: The value map entry.
   validation:
     - name: Required fields are present
-  required:
-    - key
-    - value
+      arguments:
+        - key
+        - value

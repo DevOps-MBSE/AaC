@@ -23,12 +23,16 @@
         ],
         "cSpell.enabled": true,
         "cSpell.words": [
+            "fastapi",
+            "jsonable",
             "pluggy",
             "protobuf",
             "puml",
+            "pydantic",
             "pygls",
             "pythonic",
-            "usecase"
+            "usecase",
+            "uvicorn"
         ]
     },
     "launch": {
