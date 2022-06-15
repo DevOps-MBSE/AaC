@@ -12,7 +12,7 @@ from pygls.lsp import (
     Hover,
     HoverParams,
     TextDocumentSyncKind,
-    DidChangeTextDocumentParams,
+    DidSaveTextDocumentParams,
     DidCloseTextDocumentParams,
     DidOpenTextDocumentParams,
     methods
@@ -20,6 +20,7 @@ from pygls.lsp import (
 
 from aac.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_initialized_language_context
+from aac.lang.definitions.structure import strip_undefined_fields_from_definition
 from aac.lang.language_context import LanguageContext
 from aac.lang.lsp.managed_workspace_file import ManagedWorkspaceFile
 from aac.lang.lsp.code_completion_provider import CodeCompletionProvider
@@ -81,23 +82,25 @@ class AacLanguageServer:
             managed_file = self.workspace_files.get(file_uri)
             managed_file.is_client_managed = False
 
-        @server.feature(methods.TEXT_DOCUMENT_DID_CHANGE)
-        def did_change(ls, params: DidChangeTextDocumentParams):
-            """Text document did change notification."""
+        @server.feature(methods.TEXT_DOCUMENT_DID_SAVE)
+        def on_save(ls, params: DidSaveTextDocumentParams):
+            """Text document did save notification."""
             logging.info(f"Text document altered by LSP client {params.text_document.uri}.")
 
             file_content = params.content_changes[0].text
             altered_definitions = parse(file_content)
 
+            sanitized_definitions = []
             for altered_definition in altered_definitions:
                 # At the moment we have to rely on definition names, but we'll need to update definitions based on file URI
                 old_definition = self.language_context.get_definition_by_name(altered_definition.name)
                 old_definition_lines = old_definition.to_yaml().split(os.linesep)
                 altered_definition_lines = altered_definition.to_yaml().split(os.linesep)
+                sanitized_definitions.append(strip_undefined_fields_from_definition(altered_definition))
                 changes = "\n".join(list(difflib.ndiff(old_definition_lines, altered_definition_lines))).strip()
                 logging.info(f"Updating definition: {old_definition.name}.\n Differences:\n{changes}")
 
-            self.language_context.update_definitions_in_context(altered_definitions)
+            self.language_context.update_definitions_in_context(sanitized_definitions)
 
         @server.feature(methods.HOVER)
         async def handle_hover(ls: LanguageServer, params: HoverParams):
