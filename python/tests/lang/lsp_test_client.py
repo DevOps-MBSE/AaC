@@ -8,7 +8,6 @@ from typing import Optional
 
 from pygls.lsp import methods
 from pygls.lsp.types import Model
-from pygls.server import LanguageServer
 
 from aac.lang.lsp.language_server import AacLanguageServer
 
@@ -34,7 +33,6 @@ class LspTestClient:
 
         self.server, self._server_thread = self._configure_ls(client_server_reader, server_client_writer)
         self.client, self._client_thread = self._configure_ls(server_client_reader, client_server_writer)
-        self.aac_language_server = AacLanguageServer(language_server=self.server)
 
     def _configure_ls(self, reader: int, writer: int):
         """
@@ -47,7 +45,7 @@ class LspTestClient:
         Returns:
             The newly created LanguageServer and it's associated thread.
         """
-        ls = LanguageServer(asyncio.new_event_loop())
+        ls = AacLanguageServer(loop=asyncio.new_event_loop())
         thread = Thread(target=ls.start_io, args=(os.fdopen(reader, "rb"), os.fdopen(writer, "wb")))
         thread.daemon = True
         return ls, thread
