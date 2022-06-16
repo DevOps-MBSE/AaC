@@ -1,5 +1,5 @@
 """Pydantic Version of the AaC Definition Class."""
-
+from typing import Optional
 from pydantic import BaseModel
 
 from aac.lang.definitions.definition import Definition
@@ -8,7 +8,7 @@ from aac.lang.definitions.definition import Definition
 class DefinitionModel(BaseModel):
     """REST API Model for the Definition class."""
     name: str
-    content: str
+    content: Optional[str] = ""
     source_uri: str
     structure: dict
 
