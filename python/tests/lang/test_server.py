@@ -1,6 +1,4 @@
-from unittest.mock import MagicMock, patch
-
-from aac.parser import parse
+from aac.lang.active_context_lifecycle_manager import get_active_context
 
 from tests.lang.base_lsp_test_case import BaseLspTestCase
 
@@ -10,13 +8,24 @@ class TestLspServer(BaseLspTestCase):
         super().setUp()
         self.document = self.create_document("test.aac", TEST_DOCUMENT_CONTENT)
 
-    @patch("aac.lang.language_context.LanguageContext.update_definitions_in_context")
-    def test_handles_content_changes(self, update_definitions: MagicMock):
+    def test_adds_definitions_when_opening_file(self):
+        self.create_document("added.aac", TEST_DOCUMENT_ADDITIONAL_CONTENT)
+
+        active_context = get_active_context()
+        self.assertIsNotNone(active_context.get_definition_by_name(TEST_ADDITIONAL_SCHEMA_NAME))
+        self.assertIsNotNone(active_context.get_definition_by_name(TEST_ADDITIONAL_MODEL_NAME))
+
+    def test_handles_content_changes(self):
         new_content = f"{TEST_DOCUMENT_CONTENT}---{TEST_DOCUMENT_ADDITIONAL_CONTENT}"
+
+        active_context = get_active_context()
+        self.assertIsNone(active_context.get_definition_by_name(TEST_ADDITIONAL_SCHEMA_NAME))
+        self.assertIsNone(active_context.get_definition_by_name(TEST_ADDITIONAL_MODEL_NAME))
+
         self.write_document(new_content)
 
-        self.assertEqual(new_content, self.read_document())
-        update_definitions.assert_called_once_with(parse(new_content))
+        self.assertIsNotNone(active_context.get_definition_by_name(TEST_ADDITIONAL_SCHEMA_NAME))
+        self.assertIsNotNone(active_context.get_definition_by_name(TEST_ADDITIONAL_MODEL_NAME))
 
     def test_handles_hover_request(self):
         res = self.hover(self.document.file_name)
@@ -25,6 +34,8 @@ class TestLspServer(BaseLspTestCase):
         self.assertIn("LSP server", res.get("contents"))
 
 
+TEST_ADDITIONAL_SCHEMA_NAME = "DataC"
+TEST_ADDITIONAL_MODEL_NAME = "ServiceTwo"
 TEST_DOCUMENT_CONTENT = """
 schema:
   name: DataA
@@ -67,16 +78,15 @@ model:
           then:
             - ServiceOne returns an error response code
 """
-
-TEST_DOCUMENT_ADDITIONAL_CONTENT = """
+TEST_DOCUMENT_ADDITIONAL_CONTENT = f"""
 schema:
-  name: DataC
+  name: {TEST_ADDITIONAL_SCHEMA_NAME}
   fields:
   - name: msg
     type: string
 ---
 model:
-  name: ServiceTwo
+  name: {TEST_ADDITIONAL_MODEL_NAME}
   behavior:
     - name: Process DataB Request
       type: request-response
