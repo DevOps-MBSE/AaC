@@ -1,7 +1,6 @@
 from fastapi.encoders import jsonable_encoder
 from fastapi.testclient import TestClient
 from http import HTTPStatus
-from unittest import TestCase
 import json
 
 from aac.lang.active_context_lifecycle_manager import get_active_context
@@ -9,14 +8,12 @@ from aac.plugins.rest_api.aac_rest_app import app
 from aac.plugins.rest_api.definition_model import to_definition_model
 from aac.spec import get_aac_spec
 
+from tests.base_test_case import BaseTestCase
 from tests.helpers.parsed_definitions import create_behavior_entry, create_model_definition, create_enum_definition
 
 
-class TestAacRestApi(TestCase):
+class TestAacRestApi(BaseTestCase):
     test_client = TestClient(app)
-
-    def setUp(self):
-        get_active_context(reload_context=True)
 
     def test_get_files(self):
         active_context = get_active_context()
