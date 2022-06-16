@@ -93,10 +93,15 @@ class AacLanguageServer:
             for altered_definition in altered_definitions:
                 # At the moment we have to rely on definition names, but we'll need to update definitions based on file URI
                 old_definition = self.language_context.get_definition_by_name(altered_definition.name)
-                old_definition_lines = old_definition.to_yaml().split(os.linesep)
-                altered_definition_lines = altered_definition.to_yaml().split(os.linesep)
-                changes = "\n".join(list(difflib.ndiff(old_definition_lines, altered_definition_lines))).strip()
-                logging.info(f"Updating definition: {old_definition.name}.\n Differences:\n{changes}")
+
+                if old_definition:
+                    old_definition_lines = old_definition.to_yaml().split(os.linesep)
+                    altered_definition_lines = altered_definition.to_yaml().split(os.linesep)
+                    changes = "\n".join(list(difflib.ndiff(old_definition_lines, altered_definition_lines))).strip()
+                    logging.info(f"Updating definition: {old_definition.name}.\n Differences:\n{changes}")
+                else:
+                    logging.info(f"Adding definition: {altered_definition.name}.")
+                    self.language_context.add_definition_to_context(altered_definition)
 
             self.language_context.update_definitions_in_context(altered_definitions)
 
