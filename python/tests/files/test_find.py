@@ -24,13 +24,13 @@ class TestFindFiles(TestCase):
         self.assertTrue(actual_result)
 
     def test_is_aac_file_with_invalid_yaml_file(self):
-        with temporary_test_file(INVALID_AAC_FILE_CONTENT, suffix=YAML_FILE_EXTENSION) as test_yaml:
+        with temporary_test_file(VALID_NON_AAC_YAML_CONTENT, suffix=YAML_FILE_EXTENSION) as test_yaml:
             actual_result = is_aac_file(test_yaml.name)
 
         self.assertFalse(actual_result)
 
     def test_is_aac_file_with_invalid_aac_file(self):
-        with temporary_test_file(INVALID_AAC_FILE_CONTENT, suffix=AAC_FILE_EXTENSION) as test_yaml:
+        with temporary_test_file(NON_YAML_FILE_CONTENT, suffix=AAC_FILE_EXTENSION) as test_yaml:
             actual_result = is_aac_file(test_yaml.name)
 
         self.assertFalse(actual_result)
@@ -49,24 +49,34 @@ class TestFindFiles(TestCase):
             _write_content_to_temp_file(l1_aac_file_aac, get_aac_spec_as_yaml())
 
             l1_invalid_file_aac = NamedTemporaryFile(dir=l1_temp_dir, suffix=AAC_FILE_EXTENSION, mode="w")
-            _write_content_to_temp_file(l1_invalid_file_aac, INVALID_AAC_FILE_CONTENT)
+            _write_content_to_temp_file(l1_invalid_file_aac, VALID_NON_AAC_YAML_CONTENT)
 
             with TemporaryDirectory(dir=l1_temp_dir) as l2_temp_dir:
                 l2_aac_file_yaml = NamedTemporaryFile(dir=l2_temp_dir, suffix=YAML_FILE_EXTENSION, mode="w")
                 _write_content_to_temp_file(l2_aac_file_yaml, get_aac_spec_as_yaml())
 
                 l2_invalid_file_yaml = NamedTemporaryFile(dir=l2_temp_dir, suffix=YAML_FILE_EXTENSION, mode="w")
-                _write_content_to_temp_file(l2_invalid_file_yaml, INVALID_AAC_FILE_CONTENT)
+                _write_content_to_temp_file(l2_invalid_file_yaml, VALID_NON_AAC_YAML_CONTENT)
 
                 with TemporaryDirectory(dir=l2_temp_dir) as l3_temp_dir:
                     l3_aac_file_aac = NamedTemporaryFile(dir=l3_temp_dir, suffix=AAC_FILE_EXTENSION, mode="w")
                     _write_content_to_temp_file(l3_aac_file_aac, get_aac_spec_as_yaml())
 
                     l3_invalid_file_aac = NamedTemporaryFile(dir=l3_temp_dir, suffix=AAC_FILE_EXTENSION, mode="w")
-                    _write_content_to_temp_file(l3_invalid_file_aac, INVALID_AAC_FILE_CONTENT)
+                    _write_content_to_temp_file(l3_invalid_file_aac, VALID_NON_AAC_YAML_CONTENT)
 
                     expected_result = [l1_aac_file_aac.name, l2_aac_file_yaml.name, l3_aac_file_aac.name]
                     actual_result = find_aac_files(l1_temp_dir)
+
+                    # Have to manually close the temp files here, otherwise their temp directory context managers will cause test errors.
+                    l1_aac_file_aac.close()
+                    l1_invalid_file_aac.close()
+
+                    l2_aac_file_yaml.close()
+                    l2_invalid_file_yaml.close()
+
+                    l3_aac_file_aac.close()
+                    l3_invalid_file_aac.close()
 
         self.assertListEqual(expected_result, actual_result)
         self.assertNotIn(l1_invalid_file_aac.name, actual_result)
@@ -79,7 +89,15 @@ def _write_content_to_temp_file(temp_file, content: str) -> None:
     temp_file.seek(0)
 
 
-INVALID_AAC_FILE_CONTENT = """
+NON_YAML_FILE_CONTENT = """
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
+voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat
+non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+"""
+
+VALID_NON_AAC_YAML_CONTENT = """
 apiVersion: xl-deploy/v1
 kind: Infrastructure
 spec:
