@@ -6,7 +6,7 @@ import yaml
 
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.definitions.definition import Definition
-from aac.plugins.rest_api.definition_model import DefinitionModel, to_definition_class, to_definition_model
+from aac.plugins.rest_api.models.definition_model import DefinitionModel, to_definition_class, to_definition_model
 
 app = FastAPI()
 
