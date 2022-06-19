@@ -1,3 +1,4 @@
+from asyncio.tasks import sleep
 from typing import Optional
 from unittest.async_case import IsolatedAsyncioTestCase
 
@@ -12,6 +13,12 @@ from tests.base_test_case import BaseTestCase
 from tests.helpers.lsp.text_document import TextDocument
 from tests.helpers.lsp.responses.hover_response import HoverResponse
 from tests.lang.lsp_test_client import LspTestClient
+
+
+# We have to sleep to give the server enough time to finish processing changes to the active
+# context, etc. Just awaiting the send_request function isn't enough since the request will get
+# sent and return.
+SLEEP_TIME = 1
 
 
 class BaseLspTestCase(BaseTestCase, IsolatedAsyncioTestCase):
@@ -54,6 +61,7 @@ class BaseLspTestCase(BaseTestCase, IsolatedAsyncioTestCase):
                 text_document=TextDocumentItem(uri=uri, language_id="aac", version=self.document.version, text=content)
             )
         )
+        await sleep(SLEEP_TIME)
 
         return self.document
 
@@ -65,6 +73,7 @@ class BaseLspTestCase(BaseTestCase, IsolatedAsyncioTestCase):
             methods.TEXT_DOCUMENT_DID_CLOSE,
             DidCloseTextDocumentParams(text_document=TextDocumentIdentifier(uri=self.to_uri(self.document.file_name)))
         )
+        await sleep(SLEEP_TIME)
 
     async def write_document(self, content: str) -> None:
         """
@@ -86,6 +95,7 @@ class BaseLspTestCase(BaseTestCase, IsolatedAsyncioTestCase):
                 content_changes=[{"text": content}]
             )
         )
+        await sleep(SLEEP_TIME)
 
     def read_document(self) -> str:
         """Return the document text."""
@@ -107,4 +117,5 @@ class BaseLspTestCase(BaseTestCase, IsolatedAsyncioTestCase):
                 position=Position(line=line, character=character),
             )
         )
+        await sleep(SLEEP_TIME)
         return HoverResponse(hover_response.result())
