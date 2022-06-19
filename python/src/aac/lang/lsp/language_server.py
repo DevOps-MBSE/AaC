@@ -98,21 +98,26 @@ async def did_change(ls: AacLanguageServer, params: DidChangeTextDocumentParams)
     logging.info(f"Text document altered by LSP client {params.text_document.uri}.")
 
     file_content = params.content_changes[0].text
-    altered_definitions = parse(file_content)
+    incoming_definitions = parse(file_content)
+    new_definitions = []
+    altered_definitions = []
 
-    for altered_definition in altered_definitions:
+    for incoming_definition in incoming_definitions:
         # At the moment we have to rely on definition names, but we'll need to update definitions based on file URI
-        old_definition = ls.language_context.get_definition_by_name(altered_definition.name)
+        old_definition = ls.language_context.get_definition_by_name(incoming_definition.name)
 
         if old_definition:
+            altered_definitions.append(incoming_definition)
+
             old_definition_lines = old_definition.to_yaml().split(os.linesep)
-            altered_definition_lines = altered_definition.to_yaml().split(os.linesep)
+            altered_definition_lines = incoming_definition.to_yaml().split(os.linesep)
             changes = "\n".join(list(difflib.ndiff(old_definition_lines, altered_definition_lines))).strip()
             logging.info(f"Updating definition: {old_definition.name}.\n Differences:\n{changes}")
         else:
-            logging.info(f"Adding definition: {altered_definition.name}.")
-            ls.language_context.add_definition_to_context(altered_definition)
+            logging.info(f"Adding definition: {incoming_definition.name}.")
+            new_definitions.append(incoming_definition)
 
+    ls.language_context.add_definitions_to_context(new_definitions)
     ls.language_context.update_definitions_in_context(altered_definitions)
 
 
