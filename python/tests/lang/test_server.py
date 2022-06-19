@@ -1,34 +1,38 @@
-from aac.lang.active_context_lifecycle_manager import get_active_context
+from asyncio import sleep
+from unittest.async_case import IsolatedAsyncioTestCase
 
 from tests.lang.base_lsp_test_case import BaseLspTestCase
 
 
-class TestLspServer(BaseLspTestCase):
-    def setUp(self) -> None:
-        super().setUp()
-        self.document = self.create_document("test.aac", TEST_DOCUMENT_CONTENT)
+class TestLspServer(BaseLspTestCase, IsolatedAsyncioTestCase):
+    async def asyncSetUp(self) -> None:
+        await super().asyncSetUp()
+        self.active_context = self.client.server.language_context
 
-    def test_adds_definitions_when_opening_file(self):
-        self.create_document("added.aac", TEST_DOCUMENT_ADDITIONAL_CONTENT)
+    async def test_adds_definitions_when_opening_file(self):
+        await self.create_document("added.aac", TEST_DOCUMENT_ADDITIONAL_CONTENT)
+        await sleep(1)
 
-        active_context = get_active_context()
-        self.assertIsNotNone(active_context.get_definition_by_name(TEST_ADDITIONAL_SCHEMA_NAME))
-        self.assertIsNotNone(active_context.get_definition_by_name(TEST_ADDITIONAL_MODEL_NAME))
+        self.assertIsNotNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_SCHEMA_NAME))
+        self.assertIsNotNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_MODEL_NAME))
 
-    def test_handles_content_changes(self):
-        new_content = f"{TEST_DOCUMENT_CONTENT}---{TEST_DOCUMENT_ADDITIONAL_CONTENT}"
+    async def test_handles_content_changes(self):
+        await self.create_document("test.aac", TEST_DOCUMENT_CONTENT)
+        await sleep(1)
 
-        active_context = get_active_context()
-        self.assertIsNone(active_context.get_definition_by_name(TEST_ADDITIONAL_SCHEMA_NAME))
-        self.assertIsNone(active_context.get_definition_by_name(TEST_ADDITIONAL_MODEL_NAME))
+        self.assertIsNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_SCHEMA_NAME))
+        self.assertIsNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_MODEL_NAME))
 
-        self.write_document(new_content)
+        await self.write_document(f"{TEST_DOCUMENT_CONTENT}---{TEST_DOCUMENT_ADDITIONAL_CONTENT}")
+        await sleep(1)
 
-        self.assertIsNotNone(active_context.get_definition_by_name(TEST_ADDITIONAL_SCHEMA_NAME))
-        self.assertIsNotNone(active_context.get_definition_by_name(TEST_ADDITIONAL_MODEL_NAME))
+        self.assertIsNotNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_SCHEMA_NAME))
+        self.assertIsNotNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_MODEL_NAME))
 
-    def test_handles_hover_request(self):
-        res = self.hover(self.document.file_name)
+    async def test_handles_hover_request(self):
+        await self.create_document("test.aac", TEST_DOCUMENT_CONTENT)
+
+        res = await self.hover(self.document.file_name)
 
         self.assertSequenceEqual(list(res.keys()), ["contents"])
         self.assertIn("LSP server", res.get("contents"))

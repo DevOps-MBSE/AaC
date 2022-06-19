@@ -50,18 +50,18 @@ class LspTestClient:
         thread.daemon = True
         return ls, thread
 
-    def start(self):
+    async def start(self):
         """Start the test LSP server and client."""
         self._server_thread.start()
         self.server.thread_id = self._server_thread.ident
         self._client_thread.start()
 
-    def stop(self):
+    async def stop(self):
         """Stop the test LSP server and client."""
-        shutdown_response = self.send_request(methods.SHUTDOWN).result(timeout=DEFAULT_TIMEOUT_IN_SECONDS)
+        shutdown_response = (await self.send_request(methods.SHUTDOWN)).result(timeout=DEFAULT_TIMEOUT_IN_SECONDS)
         assert shutdown_response is None
 
-        self.send_notification(methods.EXIT)
+        await self.send_notification(methods.EXIT)
         self._server_thread.join()
 
         self.client._stop_event.set()
@@ -71,7 +71,7 @@ class LspTestClient:
             pass
         self._client_thread.join()
 
-    def send_request(self, method: str, params: Optional[Model] = None, timeout: int = DEFAULT_TIMEOUT_IN_SECONDS):
+    async def send_request(self, method: str, params: Optional[Model] = None, timeout: int = DEFAULT_TIMEOUT_IN_SECONDS):
         """
         Send a request to the server.
 
@@ -84,17 +84,15 @@ class LspTestClient:
             The LSP response for the sent request.
         """
         if params:
-            return self.client.lsp.send_request(method, params).result(timeout=timeout)
+            return self.client.lsp.send_request(method, params)
         return self.client.lsp.send_request(method)
 
-    def send_notification(self, method: str, params: Optional[Model] = None):
+    async def send_notification(self, method: str, params: Optional[Model] = None) -> None:
         """
         Send a notification to the server.
 
         Args:
             method (str): The LSP method to use for the notification.
-
-        Returns:
-            The LSP response for the sent notification.
+            params (Optional[Model]): Optional parameters to send with the notification.
         """
-        return self.client.lsp.notify(method, params)
+        self.client.lsp.notify(method, params)

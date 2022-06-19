@@ -1,4 +1,5 @@
 from typing import Optional
+from unittest.async_case import IsolatedAsyncioTestCase
 from attr import attrib, attrs
 from attr.validators import instance_of
 
@@ -14,28 +15,27 @@ from tests.helpers.lsp.text_document import TextDocument
 from tests.lang.lsp_test_client import LspTestClient
 
 
-class BaseLspTestCase(BaseTestCase):
+class BaseLspTestCase(BaseTestCase, IsolatedAsyncioTestCase):
     """Base test case providing set up and tear down for LSP tests."""
 
     document: Optional[TextDocument] = None
 
-    def setUp(self) -> None:
-        super().setUp()
+    async def asyncSetUp(self) -> None:
+        await super().asyncSetUp()
 
         self.client = LspTestClient()
-        self.client.start()
-        res = self.client.send_request(
+        await self.client.start()
+        await self.client.send_request(
             methods.INITIALIZE,
             InitializeParams(process_id=12345, root_uri=self.to_uri("root.aac"), capabilities=ClientCapabilities()),
         )
 
-        self.assertIn("capabilities", res)
+    async def asyncTearDown(self):
+        await super().asyncTearDown()
+        await self.close_document()
+        await self.client.stop()
 
-    def tearDown(self):
-        self.close_document()
-        self.client.stop()
-
-    def create_document(self, file_name: str, content: str = "") -> TextDocument:
+    async def create_document(self, file_name: str, content: str = "") -> TextDocument:
         """
         Create a virtual document with the provided contents.
 
@@ -49,7 +49,7 @@ class BaseLspTestCase(BaseTestCase):
         self.document = TextDocument(file_name=file_name, content=content)
 
         uri = self.to_uri(file_name)
-        self.client.send_notification(
+        await self.client.send_notification(
             methods.TEXT_DOCUMENT_DID_OPEN,
             DidOpenTextDocumentParams(
                 text_document=TextDocumentItem(uri=uri, language_id="aac", version=self.document.version, text=content)
@@ -58,17 +58,17 @@ class BaseLspTestCase(BaseTestCase):
 
         return self.document
 
-    def close_document(self) -> None:
+    async def close_document(self) -> None:
         """Close the virtual document."""
         if self.document:
-            self.client.send_notification(
+            await self.client.send_notification(
                 methods.TEXT_DOCUMENT_DID_CLOSE,
                 DidCloseTextDocumentParams(text_document=TextDocumentIdentifier(uri=self.to_uri(self.document.file_name)))
             )
         else:
             raise LspTestCaseError("Could not close virtual document because there is no document.")
 
-    def write_document(self, content: str) -> None:
+    async def write_document(self, content: str) -> None:
         """
         Write the provided content to the virtual document.
 
@@ -78,7 +78,7 @@ class BaseLspTestCase(BaseTestCase):
         if self.document:
             self.document.version += 1
             self.document.write(content)
-            self.client.send_notification(
+            await self.client.send_notification(
                 methods.TEXT_DOCUMENT_DID_CHANGE,
                 DidChangeTextDocumentParams(
                     text_document=VersionedTextDocumentIdentifier(
@@ -100,15 +100,16 @@ class BaseLspTestCase(BaseTestCase):
         """Return file_name as a file URI."""
         return uris.from_fs_path(file_name)
 
-    def hover(self, file_name: str, line: int = 0, character: int = 0) -> dict:
+    async def hover(self, file_name: str, line: int = 0, character: int = 0):
         """Send a hover request and return the response."""
-        return self.client.send_request(
+        hover_response = await self.client.send_request(
             methods.HOVER,
             HoverParams(
                 text_document=TextDocumentIdentifier(uri=self.to_uri(file_name)),
                 position=Position(line=line, character=character),
             )
         )
+        return hover_response.result()
 
 
 @attrs(slots=True)
