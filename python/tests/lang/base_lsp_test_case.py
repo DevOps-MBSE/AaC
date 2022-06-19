@@ -5,12 +5,15 @@ from pygls import uris
 from pygls.lsp import methods
 from pygls.lsp.types import ClientCapabilities, InitializeParams
 from pygls.lsp.types.basic_structures import Position, TextDocumentIdentifier, TextDocumentItem, VersionedTextDocumentIdentifier
+from pygls.lsp.types.language_features.completion import CompletionContext, CompletionParams, CompletionTriggerKind
 from pygls.lsp.types.language_features.hover import HoverParams
 from pygls.lsp.types.workspace import DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams
+from aac.lang.lsp.code_completion_provider import SPACE_TRIGGER
 
 from tests.base_test_case import BaseTestCase
 from tests.helpers.lsp.text_document import TextDocument
 from tests.helpers.lsp.responses.hover_response import HoverResponse
+from tests.helpers.lsp.responses.completion_response import CompletionResponse
 from tests.lang.lsp_test_client import LspTestClient
 
 
@@ -100,11 +103,25 @@ class BaseLspTestCase(BaseTestCase, IsolatedAsyncioTestCase):
         """Send a hover request and return the response."""
         assert self.document, "Could not hover in virtual document because there is no document."
 
-        hover_response = await self.client.send_request(
+        response = await self.client.send_request(
             methods.HOVER,
             HoverParams(
                 text_document=TextDocumentIdentifier(uri=self.to_uri(file_name or self.document.file_name)),
                 position=Position(line=line, character=character),
             )
         )
-        return HoverResponse(hover_response.result())
+        return HoverResponse(response.result())
+
+    async def complete(self, file_name: Optional[str] = None, line: int = 0, character: int = 0, trigger_kind: CompletionTriggerKind = CompletionTriggerKind.TriggerCharacter, trigger_character: str = SPACE_TRIGGER) -> CompletionResponse:
+        assert self.document, "Could not complete in virtual document because there is no document."
+
+        response = await self.client.send_request(
+            methods.COMPLETION,
+            CompletionParams(
+                context=CompletionContext(trigger_kind=trigger_kind, trigger_character=trigger_character),
+                text_document=TextDocumentIdentifier(uri=self.to_uri(file_name or self.document.file_name)),
+                position=Position(line=line, character=character),
+            )
+        )
+
+        return CompletionResponse(response.result())

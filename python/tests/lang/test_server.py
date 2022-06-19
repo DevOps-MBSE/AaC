@@ -1,6 +1,9 @@
 from unittest.async_case import IsolatedAsyncioTestCase
 
+from aac.lang.lsp.code_completion_provider import SPACE_TRIGGER
+
 from tests.helpers.lsp.responses.hover_response import HoverResponse
+from tests.helpers.lsp.responses.completion_response import CompletionResponse
 from tests.lang.base_lsp_test_case import BaseLspTestCase
 
 
@@ -8,6 +11,7 @@ class TestLspServer(BaseLspTestCase, IsolatedAsyncioTestCase):
     async def asyncSetUp(self) -> None:
         await super().asyncSetUp()
         self.active_context = self.client.server.language_context
+        await self.create_document("test.aac", TEST_DOCUMENT_CONTENT)
 
     async def test_adds_definitions_when_opening_file(self):
         await self.create_document("added.aac", TEST_DOCUMENT_ADDITIONAL_CONTENT)
@@ -16,8 +20,6 @@ class TestLspServer(BaseLspTestCase, IsolatedAsyncioTestCase):
         self.assertIsNotNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_MODEL_NAME))
 
     async def test_handles_content_changes(self):
-        await self.create_document("test.aac", TEST_DOCUMENT_CONTENT)
-
         self.assertIsNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_SCHEMA_NAME))
         self.assertIsNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_MODEL_NAME))
 
@@ -27,11 +29,19 @@ class TestLspServer(BaseLspTestCase, IsolatedAsyncioTestCase):
         self.assertIsNotNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_MODEL_NAME))
 
     async def test_handles_hover_request(self):
-        await self.create_document("test.aac", TEST_DOCUMENT_CONTENT)
-
-        res: HoverResponse = await self.hover(self.document.file_name)
-
+        res: HoverResponse = await self.hover()
         self.assertIn("LSP server", res.get_content())
+
+    async def test_handles_completion_request(self):
+        new_content = f"{TEST_PARTIAL_CONTENT}{SPACE_TRIGGER}"
+        await self.write_document(new_content)
+
+        last_line_num = len(new_content.splitlines()) - 1
+        last_char_num = len(new_content.splitlines()[last_line_num]) - 1
+        res: CompletionResponse = await self.complete(line=last_line_num, character=last_char_num)
+
+        self.assertGreater(len(res.get_completion_items()), 0)
+        self.assertIsNotNone(res.get_completion_item_by_label("string"))
 
 
 TEST_ADDITIONAL_SCHEMA_NAME = "DataC"
@@ -106,4 +116,11 @@ model:
           then:
             - ServiceTwo processes the request into a DataC response
             - ServiceTwo returns the DataC response
+"""
+TEST_PARTIAL_CONTENT = f"""
+schema:
+  name: {TEST_ADDITIONAL_SCHEMA_NAME}
+  fields:
+  - name: msg
+    type:\
 """
