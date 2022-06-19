@@ -12,6 +12,7 @@ from pygls.lsp.types.workspace import DidChangeTextDocumentParams, DidCloseTextD
 
 from tests.base_test_case import BaseTestCase
 from tests.helpers.lsp.text_document import TextDocument
+from tests.helpers.lsp.hover import HoverResponse
 from tests.lang.lsp_test_client import LspTestClient
 
 
@@ -109,7 +110,7 @@ class BaseLspTestCase(BaseTestCase, IsolatedAsyncioTestCase):
                 position=Position(line=line, character=character),
             )
         )
-        return hover_response.result()
+        return HoverResponse(hover_response.result())
 
 
 @attrs(slots=True)

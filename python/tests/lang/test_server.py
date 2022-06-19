@@ -1,6 +1,7 @@
 from asyncio import sleep
 from unittest.async_case import IsolatedAsyncioTestCase
 
+from tests.helpers.lsp.hover import HoverResponse
 from tests.lang.base_lsp_test_case import BaseLspTestCase
 
 
@@ -32,10 +33,9 @@ class TestLspServer(BaseLspTestCase, IsolatedAsyncioTestCase):
     async def test_handles_hover_request(self):
         await self.create_document("test.aac", TEST_DOCUMENT_CONTENT)
 
-        res = await self.hover(self.document.file_name)
+        res: HoverResponse = await self.hover(self.document.file_name)
 
-        self.assertSequenceEqual(list(res.keys()), ["contents"])
-        self.assertIn("LSP server", res.get("contents"))
+        self.assertIn("LSP server", res.get_content())
 
 
 TEST_ADDITIONAL_SCHEMA_NAME = "DataC"
