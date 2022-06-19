@@ -3,6 +3,7 @@
 import os
 import asyncio
 
+from asyncio.tasks import sleep
 from threading import Thread
 from typing import Optional
 
@@ -12,6 +13,10 @@ from pygls.lsp.types import Model
 from aac.lang.lsp.language_server import AacLanguageServer
 
 
+# We have to sleep to give the server enough time to finish processing changes to the active
+# context, etc. Just awaiting the send_request function isn't enough since the request will get
+# sent and return.
+SLEEP_TIME = 1
 DEFAULT_TIMEOUT_IN_SECONDS = 3
 
 
@@ -71,21 +76,20 @@ class LspTestClient:
             pass
         self._client_thread.join()
 
-    async def send_request(self, method: str, params: Optional[Model] = None, timeout: int = DEFAULT_TIMEOUT_IN_SECONDS):
+    async def send_request(self, method: str, params: Optional[Model] = None):
         """
         Send a request to the server.
 
         Args:
             method (str): The LSP method to use for the request.
             params (Model): The parameters to send with the request. (optional)
-            timeout (int): The timeout to use when waiting for a result. If not passed, DEFAULT_TIMEOUT_IN_SECONDS is used.
 
         Returns:
             The LSP response for the sent request.
         """
-        if params:
-            return self.client.lsp.send_request(method, params)
-        return self.client.lsp.send_request(method)
+        response = self.client.lsp.send_request(method, params)
+        await sleep(SLEEP_TIME)
+        return response
 
     async def send_notification(self, method: str, params: Optional[Model] = None) -> None:
         """
@@ -96,3 +100,4 @@ class LspTestClient:
             params (Optional[Model]): Optional parameters to send with the notification.
         """
         self.client.lsp.notify(method, params)
+        await sleep(SLEEP_TIME)
