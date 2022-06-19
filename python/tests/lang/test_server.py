@@ -1,7 +1,7 @@
 from asyncio import sleep
 from unittest.async_case import IsolatedAsyncioTestCase
 
-from tests.helpers.lsp.hover import HoverResponse
+from tests.helpers.lsp.responses.hover_response import HoverResponse
 from tests.lang.base_lsp_test_case import BaseLspTestCase
 
 

@@ -1,7 +1,5 @@
 from typing import Optional
 from unittest.async_case import IsolatedAsyncioTestCase
-from attr import attrib, attrs
-from attr.validators import instance_of
 
 from pygls import uris
 from pygls.lsp import methods
@@ -12,7 +10,7 @@ from pygls.lsp.types.workspace import DidChangeTextDocumentParams, DidCloseTextD
 
 from tests.base_test_case import BaseTestCase
 from tests.helpers.lsp.text_document import TextDocument
-from tests.helpers.lsp.hover import HoverResponse
+from tests.helpers.lsp.responses.hover_response import HoverResponse
 from tests.lang.lsp_test_client import LspTestClient
 
 
@@ -61,13 +59,12 @@ class BaseLspTestCase(BaseTestCase, IsolatedAsyncioTestCase):
 
     async def close_document(self) -> None:
         """Close the virtual document."""
-        if self.document:
-            await self.client.send_notification(
-                methods.TEXT_DOCUMENT_DID_CLOSE,
-                DidCloseTextDocumentParams(text_document=TextDocumentIdentifier(uri=self.to_uri(self.document.file_name)))
-            )
-        else:
-            raise LspTestCaseError("Could not close virtual document because there is no document.")
+        assert self.document, "Could not close virtual document because there is no document."
+
+        await self.client.send_notification(
+            methods.TEXT_DOCUMENT_DID_CLOSE,
+            DidCloseTextDocumentParams(text_document=TextDocumentIdentifier(uri=self.to_uri(self.document.file_name)))
+        )
 
     async def write_document(self, content: str) -> None:
         """
@@ -76,45 +73,38 @@ class BaseLspTestCase(BaseTestCase, IsolatedAsyncioTestCase):
         Args:
             content (str): The content to write to the virtual document.
         """
-        if self.document:
-            self.document.version += 1
-            self.document.write(content)
-            await self.client.send_notification(
-                methods.TEXT_DOCUMENT_DID_CHANGE,
-                DidChangeTextDocumentParams(
-                    text_document=VersionedTextDocumentIdentifier(
-                        uri=self.to_uri(self.document.file_name), version=self.document.version
-                    ),
-                    content_changes=[{"text": content}]
-                )
+        assert self.document, "Could not write content to virtual document because there is no document."
+
+        self.document.version += 1
+        self.document.write(content)
+        await self.client.send_notification(
+            methods.TEXT_DOCUMENT_DID_CHANGE,
+            DidChangeTextDocumentParams(
+                text_document=VersionedTextDocumentIdentifier(
+                    uri=self.to_uri(self.document.file_name), version=self.document.version
+                ),
+                content_changes=[{"text": content}]
             )
-        else:
-            raise LspTestCaseError("Could not write content to virtual document because there is no document.")
+        )
 
     def read_document(self) -> str:
         """Return the document text."""
-        if self.document:
-            return self.document.read()
-        raise LspTestCaseError("Could not read content from virtual document because there is no document.")
+        assert self.document, "Could not read content from virtual document because there is no document."
+        return self.document.read()
 
     def to_uri(self, file_name: str) -> Optional[str]:
         """Return file_name as a file URI."""
         return uris.from_fs_path(file_name)
 
-    async def hover(self, file_name: str, line: int = 0, character: int = 0):
+    async def hover(self, file_name: Optional[str] = None, line: int = 0, character: int = 0) -> HoverResponse:
         """Send a hover request and return the response."""
+        assert self.document, "Could not hover in virtual document because there is no document."
+
         hover_response = await self.client.send_request(
             methods.HOVER,
             HoverParams(
-                text_document=TextDocumentIdentifier(uri=self.to_uri(file_name)),
+                text_document=TextDocumentIdentifier(uri=self.to_uri(file_name or self.document.file_name)),
                 position=Position(line=line, character=character),
             )
         )
         return HoverResponse(hover_response.result())
-
-
-@attrs(slots=True)
-class LspTestCaseError(RuntimeError):
-    """An error caused by an issue with the test case."""
-
-    message: str = attrib(validator=instance_of(str))
