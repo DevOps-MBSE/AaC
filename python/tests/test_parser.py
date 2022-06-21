@@ -4,8 +4,8 @@ from unittest import TestCase
 
 from aac.lang import definition_helpers
 from aac.lang.definitions.source_location import SourceLocation
-from aac.parser import parse, get_yaml_from_source
-from aac.parser import ParserError
+from aac.parser import parse, get_yaml_from_source, ParserError
+from aac.parser._parse_source import YAML_DOCUMENT_SEPARATOR, _add_yaml_document_separator
 
 from tests.helpers.io import temporary_test_file
 
@@ -36,14 +36,15 @@ class TestParser(TestCase):
 
             self.assertGreaterEqual(len(parsed_definition.lexemes), 2)
 
+            doc_separator_and_newline_length = len(YAML_DOCUMENT_SEPARATOR) + 1
             first, second, *_ = parsed_definition.lexemes
             self.assertEqual(first.source, test_yaml.name)
             self.assertEqual(first.value, "schema")
-            self.assertEqual(first.location, SourceLocation(0, 0, 0, 6))
+            self.assertEqual(first.location, SourceLocation(1, 0, doc_separator_and_newline_length, 6))
 
             self.assertEqual(second.source, test_yaml.name)
             self.assertEqual(second.value, "name")
-            self.assertEqual(second.location, SourceLocation(1, 2, 10, 4))
+            self.assertEqual(second.location, SourceLocation(2, 2, doc_separator_and_newline_length + 10, 4))
 
     def test_can_handle_string_or_path_sources(self):
         self.assertEqual(TEST_MODEL_FILE, get_yaml_from_source(TEST_MODEL_FILE))
@@ -76,15 +77,16 @@ class TestParser(TestCase):
             self.assertEqual(enum_status_definition.source_uri.removeprefix("/private"), import2.name)
             self.assertEqual(model_echosvc_definition.source_uri.removeprefix("/private"), test_yaml.name)
 
+            doc_separator_and_newline_length = len(YAML_DOCUMENT_SEPARATOR) + 1
             first, second, *_ = model_echosvc_definition.lexemes
             self.assertEqual(first.source, test_yaml.name)
             self.assertEqual(first.value, "import")
-            self.assertEqual(first.location, SourceLocation(0, 0, 0, 6))
+            self.assertEqual(first.location, SourceLocation(1, 0, doc_separator_and_newline_length, 6))
 
             import1_basename = os.path.basename(import1.name)
             self.assertEqual(second.source, test_yaml.name)
             self.assertEqual(second.value, f"./{import1_basename}")
-            self.assertEqual(second.location, SourceLocation(1, 4, 12, 2 + len(import1_basename)))
+            self.assertEqual(second.location, SourceLocation(2, 4, doc_separator_and_newline_length + 12, 2 + len(import1_basename)))
 
     def test_errors_when_parsing_invalid_yaml(self):
         content = "model: ]["
@@ -102,14 +104,14 @@ class TestParser(TestCase):
             self.check_parser_errors(test_yaml.name, "not YAML", content)
 
     def test_content_is_split_by_yaml_documents(self):
-        content = f"{TEST_IMPORTED_MODEL_FILE_CONTENTS}---{TEST_SECONDARY_IMPORTED_MODEL_FILE_CONTENTS}"
+        content = f"{TEST_IMPORTED_MODEL_FILE_CONTENTS}{YAML_DOCUMENT_SEPARATOR}{TEST_SECONDARY_IMPORTED_MODEL_FILE_CONTENTS}"
         parsed_definitions = parse(content, source_uri="<parser test>")
 
         self.assertEqual(len(parsed_definitions), 2)
 
         contents = [definition.content for definition in parsed_definitions]
-        self.assertIn(TEST_IMPORTED_MODEL_FILE_CONTENTS, contents)
-        self.assertIn(TEST_SECONDARY_IMPORTED_MODEL_FILE_CONTENTS, contents)
+        self.assertIn(_add_yaml_document_separator(TEST_IMPORTED_MODEL_FILE_CONTENTS), contents)
+        self.assertIn(_add_yaml_document_separator(TEST_SECONDARY_IMPORTED_MODEL_FILE_CONTENTS), contents)
 
 
 TEST_IMPORTED_MODEL_FILE_CONTENTS = """

@@ -16,6 +16,9 @@ from aac.lang.definitions.lexeme import Lexeme
 from aac.lang.definitions.source_location import SourceLocation
 
 
+YAML_DOCUMENT_SEPARATOR = "---"
+
+
 def parse(source: str, source_uri: Optional[str] = None) -> list[Definition]:
     """Parse the Architecture-as-Code (AaC) definition(s) from the provided source.
 
@@ -41,8 +44,8 @@ def parse(source: str, source_uri: Optional[str] = None) -> list[Definition]:
         return lexemes
 
     parsed_definitions = []
-    for doc in source.split("---"):
-        contents = get_yaml_from_source(doc)
+    for doc in source.split(YAML_DOCUMENT_SEPARATOR):
+        contents = _add_yaml_document_separator(get_yaml_from_source(doc))
         definition_dicts = _parse_file(doc) if path.lexists(doc) else _parse_str(doc, contents)
 
         for name, definition_dict in definition_dicts.items():
@@ -206,3 +209,8 @@ def _get_files_to_process(arch_file_path: str) -> list[str]:
             ret_val.extend(_get_files_to_process(parse_path))
 
     return ret_val
+
+
+def _add_yaml_document_separator(content: str) -> str:
+    """Add the YAML document separator to the content."""
+    return f"{YAML_DOCUMENT_SEPARATOR}\n{content}"
