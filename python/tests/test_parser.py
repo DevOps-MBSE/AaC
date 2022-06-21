@@ -101,6 +101,16 @@ class TestParser(TestCase):
         with temporary_test_file(content) as test_yaml:
             self.check_parser_errors(test_yaml.name, "not YAML", content)
 
+    def test_content_is_split_by_yaml_documents(self):
+        content = f"{TEST_IMPORTED_MODEL_FILE_CONTENTS}---{TEST_SECONDARY_IMPORTED_MODEL_FILE_CONTENTS}"
+        parsed_definitions = parse(content, source_uri="<parser test>")
+
+        self.assertEqual(len(parsed_definitions), 2)
+
+        contents = [definition.content for definition in parsed_definitions]
+        self.assertIn(TEST_IMPORTED_MODEL_FILE_CONTENTS, contents)
+        self.assertIn(TEST_SECONDARY_IMPORTED_MODEL_FILE_CONTENTS, contents)
+
 
 TEST_IMPORTED_MODEL_FILE_CONTENTS = """
 schema:
@@ -111,7 +121,6 @@ schema:
   - name: sender
     type: string
 """
-
 TEST_SECONDARY_IMPORTED_MODEL_FILE_CONTENTS = """
 enum:
   name: Status
@@ -119,7 +128,6 @@ enum:
     - sent
     - 'failed to send'
 """
-
 TEST_MODEL_FILE = """
 import:
   - ./{}

@@ -40,14 +40,17 @@ def parse(source: str, source_uri: Optional[str] = None) -> list[Definition]:
             lexemes.append(Lexeme(location, yaml_source, token.value))
         return lexemes
 
-    contents = get_yaml_from_source(source)
-    definition_dicts = _parse_file(source) if path.lexists(source) else _parse_str(source, contents)
-
     parsed_definitions = []
-    for name, definition_dict in definition_dicts.items():
-        uri, definition_dict = list(definition_dict.items())[0]
-        definition_uri = source_uri or uri
-        parsed_definitions.append(Definition(name, contents, definition_uri, get_lexemes_for_definition(contents), definition_dict))
+    for doc in source.split("---"):
+        contents = get_yaml_from_source(doc)
+        definition_dicts = _parse_file(doc) if path.lexists(doc) else _parse_str(doc, contents)
+
+        for name, definition_dict in definition_dicts.items():
+            uri, definition_dict = list(definition_dict.items())[0]
+            definition_uri = source_uri or uri
+            parsed_definitions.append(
+                Definition(name, contents, definition_uri, get_lexemes_for_definition(contents), definition_dict)
+            )
 
     return parsed_definitions
 
