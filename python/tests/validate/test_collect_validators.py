@@ -5,7 +5,7 @@ from aac.plugins.plugin_manager import get_validator_plugins
 from aac.validate import get_applicable_validators_for_definition
 from aac.validate._collect_validators import _get_validation_entries, _get_validator_plugin_by_name
 
-from tests.base_test_case import BaseTestCase
+from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.parsed_definitions import (
     create_schema_definition,
     create_enum_definition,
@@ -15,7 +15,7 @@ from tests.helpers.parsed_definitions import (
 )
 
 
-class TestCollectValidators(BaseTestCase):
+class TestCollectValidators(ActiveContextTestCase):
     def get_unique_validations(self, validations):
         return set([validation.get("name") for validation in validations])
 

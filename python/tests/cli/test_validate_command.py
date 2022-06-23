@@ -1,12 +1,12 @@
 from aac.cli.builtin_commands.validate.validate_impl import validate
 
-from tests.base_test_case import BaseTestCase
+from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.assertion import assert_plugin_success, assert_validation_failure
 from tests.helpers.parsed_definitions import create_behavior_entry, create_model_definition
 from tests.helpers.io import temporary_test_file
 
 
-class TestValidateCommand(BaseTestCase):
+class TestValidateCommand(ActiveContextTestCase):
     def test_validate_command_succeeds_with_valid_definition(self):
         valid_model = create_model_definition("Valid Model", "A valid model.")
         with temporary_test_file(valid_model.content) as valid_model_file:

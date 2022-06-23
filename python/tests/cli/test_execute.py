@@ -5,10 +5,10 @@ from unittest.mock import patch
 from aac import __version__ as aac_version
 from aac.cli.execute import run_cli
 
-from tests.base_test_case import BaseTestCase
+from tests.active_context_test_case import ActiveContextTestCase
 
 
-class TestExecute(BaseTestCase):
+class TestExecute(ActiveContextTestCase):
     @patch('argparse._sys.argv', ['aac', 'version'])
     def test_run_cli_version_command(self):
         captured_output = io.StringIO()

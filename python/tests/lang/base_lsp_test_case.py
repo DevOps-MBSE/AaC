@@ -10,14 +10,14 @@ from pygls.lsp.types.language_features.hover import HoverParams
 from pygls.lsp.types.workspace import DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams
 from aac.lang.lsp.code_completion_provider import SPACE_TRIGGER
 
-from tests.base_test_case import BaseTestCase
+from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.lsp.text_document import TextDocument
 from tests.helpers.lsp.responses.hover_response import HoverResponse
 from tests.helpers.lsp.responses.completion_response import CompletionResponse
 from tests.lang.lsp_test_client import LspTestClient
 
 
-class BaseLspTestCase(BaseTestCase, IsolatedAsyncioTestCase):
+class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
     """Base test case providing set up and tear down for LSP tests."""
 
     document: Optional[TextDocument] = None

@@ -2,14 +2,14 @@ from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.plugins.plugin_manager import get_validator_plugins
 from aac.validate._validate import _validate_definition
 
-from tests.base_test_case import BaseTestCase
+from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.parsed_definitions import (
     create_schema_definition,
     create_field_entry,
 )
 
 
-class TestValidateDefinition(BaseTestCase):
+class TestValidateDefinition(ActiveContextTestCase):
     def test__validate_definition_schema_with_valid_field(self):
         test_field = create_field_entry("TestField", "string")
         test_definition = create_schema_definition("Test", fields=[test_field])

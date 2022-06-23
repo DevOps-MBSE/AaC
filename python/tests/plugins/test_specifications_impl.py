@@ -2,11 +2,11 @@ from tempfile import NamedTemporaryFile
 
 from aac.plugins.specifications.specifications_impl import spec_validate
 
-from tests.base_test_case import BaseTestCase
+from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.assertion import assert_plugin_failure, assert_plugin_success
 
 
-class TestSpecifications(BaseTestCase):
+class TestSpecifications(ActiveContextTestCase):
     def test_spec_validate(self):
         with NamedTemporaryFile("w") as temp_spec:
             temp_spec.write(VALID_SPEC)

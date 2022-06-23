@@ -1,7 +1,7 @@
 from aac.lang.definitions.definition import Definition
 from aac.validate import validated_definitions, validated_source, ValidationError
 
-from tests.base_test_case import BaseTestCase
+from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.parsed_definitions import (
     create_schema_definition,
     create_schema_ext_definition,
@@ -10,7 +10,7 @@ from tests.helpers.parsed_definitions import (
 )
 
 
-class TestValidate(BaseTestCase):
+class TestValidate(ActiveContextTestCase):
     def test_validate_source_with_valid_definition(self):
         test_field = create_field_entry("TestField", "string")
         test_definition = create_schema_definition("Test", fields=[test_field])

@@ -4,12 +4,12 @@ from aac.parser import parse
 from aac.plugins.validators import ValidatorPlugin, ValidatorResult
 from aac.plugins.validators.defined_references import get_plugin_aac_definitions, register_validators, validate_references
 
-from tests.base_test_case import BaseTestCase
+from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.context import get_core_spec_context
 from tests.helpers.parsed_definitions import create_schema_definition, create_field_entry
 
 
-class TestDefinedReferencesPlugin(BaseTestCase):
+class TestDefinedReferencesPlugin(ActiveContextTestCase):
     def test_module_register_validators(self):
         actual_validator_plugin = register_validators()
 

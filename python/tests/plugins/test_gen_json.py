@@ -3,12 +3,12 @@ import os
 from aac.plugins.gen_json.gen_json_impl import print_json
 from aac.plugins.plugin_execution import PluginExecutionStatusCode
 
-from tests.base_test_case import BaseTestCase
+from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.assertion import assert_plugin_success
 from tests.helpers.io import temporary_test_file
 
 
-class TestGenJson(BaseTestCase):
+class TestGenJson(ActiveContextTestCase):
     def test_print_json_with_output_directory(self):
         with temporary_test_file(TEST_ARCH_YAML_STRING) as temp_arch_file:
             temp_dir = os.path.dirname(temp_arch_file.name)

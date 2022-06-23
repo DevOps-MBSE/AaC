@@ -1,12 +1,12 @@
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.plugins.validators.subcomponent_type._subcomponent_type import validate_subcomponent_types
 
-from tests.base_test_case import BaseTestCase
+from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.parsed_definitions import create_schema_definition, create_field_entry, create_model_definition
 from tests.helpers.assertion import assert_validator_result_failure, assert_validator_result_success
 
 
-class TestValidationSubcomponentTypes(BaseTestCase):
+class TestValidationSubcomponentTypes(ActiveContextTestCase):
     def test_validation_of_model_definition_with_no_subcomponents(self):
         test_active_context = get_active_context()
 

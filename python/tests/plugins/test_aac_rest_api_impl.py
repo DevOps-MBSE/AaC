@@ -8,11 +8,11 @@ from aac.plugins.rest_api.aac_rest_app import app
 from aac.plugins.rest_api.definition_model import to_definition_model
 from aac.spec import get_aac_spec
 
-from tests.base_test_case import BaseTestCase
+from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.parsed_definitions import create_behavior_entry, create_model_definition, create_enum_definition
 
 
-class TestAacRestApi(BaseTestCase):
+class TestAacRestApi(ActiveContextTestCase):
     test_client = TestClient(app)
 
     def test_get_files(self):
