@@ -14,6 +14,9 @@ class TestLspServer(BaseLspTestCase, IsolatedAsyncioTestCase):
         await self.create_document("test.aac", TEST_DOCUMENT_CONTENT)
 
     async def test_adds_definitions_when_opening_file(self):
+        self.assertIsNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_SCHEMA_NAME))             
+        self.assertIsNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_MODEL_NAME))
+        
         await self.create_document("added.aac", TEST_DOCUMENT_ADDITIONAL_CONTENT)
 
         self.assertIsNotNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_SCHEMA_NAME))

@@ -113,7 +113,7 @@ class BaseLspTestCase(BaseTestCase, IsolatedAsyncioTestCase):
         return HoverResponse(response.result())
 
     async def complete(self, file_name: Optional[str] = None, line: int = 0, character: int = 0, trigger_kind: CompletionTriggerKind = CompletionTriggerKind.TriggerCharacter, trigger_character: str = SPACE_TRIGGER) -> CompletionResponse:
-        assert self.document, "Could not complete in virtual document because there is no document."
+        assert self.document, "Could not execute code completion in virtual document because there is no document."
 
         response = await self.client.send_request(
             methods.COMPLETION,
