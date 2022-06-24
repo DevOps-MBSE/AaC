@@ -1,19 +1,15 @@
-from unittest import TestCase
-
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.definition_helpers import get_definition_by_name, get_definitions_by_root_key
 from aac.parser import parse
 from aac.plugins.validators import ValidatorPlugin, ValidatorResult
 from aac.plugins.validators.defined_references import get_plugin_aac_definitions, register_validators, validate_references
-from tests.helpers.context import get_core_spec_context
 
+from tests.active_context_test_case import ActiveContextTestCase
+from tests.helpers.context import get_core_spec_context
 from tests.helpers.parsed_definitions import create_schema_definition, create_field_entry
 
 
-class TestDefinedReferencesPlugin(TestCase):
-    def setUp(self) -> None:
-        get_active_context(reload_context=True)
-
+class TestDefinedReferencesPlugin(ActiveContextTestCase):
     def test_module_register_validators(self):
         actual_validator_plugin = register_validators()
 
