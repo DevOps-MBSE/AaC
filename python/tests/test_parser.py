@@ -3,14 +3,19 @@ from tempfile import TemporaryDirectory
 from unittest import TestCase
 
 from aac.lang import definition_helpers
+from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.source_location import SourceLocation
-from aac.parser import parse, get_yaml_from_source
-from aac.parser import ParserError
+from aac.parser import parse, ParserError
+from aac.parser._parse_source import YAML_DOCUMENT_SEPARATOR, _add_yaml_document_separator
 
 from tests.helpers.io import temporary_test_file
 
 
 class TestParser(TestCase):
+    def get_lexeme_values_for_definition(self, name: str, definitions: list[Definition]) -> list[str]:
+        lexemes = [definition.lexemes for definition in definitions if definition.name == name][0]
+        return [lexeme.value for lexeme in lexemes]
+
     def get_test_model(self, import1: str = "a.yaml", import2: str = "b.yaml"):
         return TEST_MODEL_FILE.format(os.path.basename(import1), os.path.basename(import2)).strip()
 
@@ -29,7 +34,7 @@ class TestParser(TestCase):
         self.assertEqual(cm.exception.source, filespec)
 
     def test_can_get_lexemes_from_parsed_architecture_file(self):
-        with temporary_test_file(TEST_IMPORTED_MODEL_FILE_CONTENTS.strip()) as test_yaml:
+        with temporary_test_file(TEST_MESSAGE_FILE_CONTENTS.strip()) as test_yaml:
             parsed_definitions = parse(test_yaml.name)
             self.assertEqual(1, len(parsed_definitions))
             parsed_definition = parsed_definitions[0]
@@ -45,18 +50,12 @@ class TestParser(TestCase):
             self.assertEqual(second.value, "name")
             self.assertEqual(second.location, SourceLocation(1, 2, 10, 4))
 
-    def test_can_handle_string_or_path_sources(self):
-        self.assertEqual(TEST_MODEL_FILE, get_yaml_from_source(TEST_MODEL_FILE))
-
-        with temporary_test_file(TEST_MODEL_FILE) as test_yaml:
-            self.assertEqual(TEST_MODEL_FILE, get_yaml_from_source(test_yaml.name))
-
     def test_can_handle_architecture_file_with_imports(self):
         with (
             TemporaryDirectory() as temp_dir,
-            temporary_test_file(TEST_IMPORTED_MODEL_FILE_CONTENTS, dir=temp_dir, suffix=".yaml") as import1,
-            temporary_test_file(TEST_SECONDARY_IMPORTED_MODEL_FILE_CONTENTS, dir=temp_dir, suffix=".yaml") as import2,
-            temporary_test_file(self.get_test_model(import1.name, import2.name), dir=temp_dir, suffix=".yaml") as test_yaml,
+            temporary_test_file(TEST_MESSAGE_FILE_CONTENTS, dir=temp_dir, suffix=".aac") as import1,
+            temporary_test_file(TEST_STATUS_FILE_CONTENTS, dir=temp_dir, suffix=".aac") as import2,
+            temporary_test_file(self.get_test_model(import1.name, import2.name), dir=temp_dir, suffix=".aac") as test_yaml,
         ):
 
             parsed_models = parse(test_yaml.name)
@@ -101,25 +100,77 @@ class TestParser(TestCase):
         with temporary_test_file(content) as test_yaml:
             self.check_parser_errors(test_yaml.name, "not YAML", content)
 
+    def test_content_is_split_by_yaml_documents(self):
+        content = f"{TEST_MESSAGE_FILE_CONTENTS}{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_FILE_CONTENTS}"
+        parsed_definitions = parse(content, source_uri="<parser test>")
 
-TEST_IMPORTED_MODEL_FILE_CONTENTS = """
+        self.assertEqual(len(parsed_definitions), 2)
+
+        contents = [definition.content for definition in parsed_definitions]
+        self.assertIn(TEST_MESSAGE_FILE_CONTENTS, contents)
+        self.assertIn(_add_yaml_document_separator(TEST_STATUS_FILE_CONTENTS), contents)
+
+    def test_file_content_is_split_by_yaml_documents(self):
+        content = f"{TEST_MESSAGE_FILE_CONTENTS}{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_FILE_CONTENTS}"
+        with temporary_test_file(content) as test_yaml:
+            parsed_definitions = parse(test_yaml.name)
+
+            self.assertEqual(len(parsed_definitions), 2)
+
+            contents = [definition.content for definition in parsed_definitions]
+            self.assertIn(TEST_MESSAGE_FILE_CONTENTS, contents)
+            self.assertIn(_add_yaml_document_separator(TEST_STATUS_FILE_CONTENTS), contents)
+
+    def test_lexemes_are_split_by_yaml_documents(self):
+        content = f"{TEST_MESSAGE_FILE_CONTENTS}{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_FILE_CONTENTS}"
+        parsed_definitions = parse(content, source_uri="<parser test>")
+
+        self.assertEqual(len(parsed_definitions), 2)
+
+        self.assertNotIn(TEST_STATUS_FILE_CONTENTS_NAME, self.get_lexeme_values_for_definition(TEST_MESSAGE_FILE_CONTENTS_NAME, parsed_definitions))
+        self.assertNotIn(TEST_MESSAGE_FILE_CONTENTS_NAME, self.get_lexeme_values_for_definition(TEST_STATUS_FILE_CONTENTS_NAME, parsed_definitions))
+
+    def test_file_lexemes_are_split_by_yaml_documents(self):
+        content = f"{TEST_MESSAGE_FILE_CONTENTS}{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_FILE_CONTENTS}"
+        with temporary_test_file(content) as test_yaml:
+            parsed_definitions = parse(test_yaml.name)
+
+            self.assertEqual(len(parsed_definitions), 2)
+
+            self.assertNotIn(TEST_STATUS_FILE_CONTENTS_NAME, self.get_lexeme_values_for_definition(TEST_MESSAGE_FILE_CONTENTS_NAME, parsed_definitions))
+            self.assertNotIn(TEST_MESSAGE_FILE_CONTENTS_NAME, self.get_lexeme_values_for_definition(TEST_STATUS_FILE_CONTENTS_NAME, parsed_definitions))
+
+    def test_does_not_add_doc_separator_if_not_already_present(self):
+        definition, *_ = parse(TEST_MESSAGE_FILE_CONTENTS, source_uri="<parser test>")
+        self.assertEqual(definition.content, TEST_MESSAGE_FILE_CONTENTS)
+
+        definitions = parse(f"{TEST_MESSAGE_FILE_CONTENTS}{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_FILE_CONTENTS}", source_uri="<parser test>")
+
+        message_definition, *_ = [definition for definition in definitions if definition.name == TEST_MESSAGE_FILE_CONTENTS_NAME]
+        self.assertFalse(message_definition.content.startswith(YAML_DOCUMENT_SEPARATOR))
+
+        status_definition, *_ = [definition for definition in definitions if definition.name == TEST_STATUS_FILE_CONTENTS_NAME]
+        self.assertTrue(status_definition.content.startswith(YAML_DOCUMENT_SEPARATOR))
+
+
+TEST_MESSAGE_FILE_CONTENTS_NAME = "Message"
+TEST_STATUS_FILE_CONTENTS_NAME = "Status"
+TEST_MESSAGE_FILE_CONTENTS = f"""
 schema:
-  name: Message
+  name: {TEST_MESSAGE_FILE_CONTENTS_NAME}
   fields:
   - name: body
     type: string
   - name: sender
     type: string
 """
-
-TEST_SECONDARY_IMPORTED_MODEL_FILE_CONTENTS = """
+TEST_STATUS_FILE_CONTENTS = f"""
 enum:
-  name: Status
+  name: {TEST_STATUS_FILE_CONTENTS_NAME}
   values:
     - sent
     - 'failed to send'
 """
-
 TEST_MODEL_FILE = """
 import:
   - ./{}
