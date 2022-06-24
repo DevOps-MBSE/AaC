@@ -5,7 +5,7 @@ from unittest import TestCase
 from aac.lang import definition_helpers
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.source_location import SourceLocation
-from aac.parser import parse, get_yaml_from_source, ParserError
+from aac.parser import parse, ParserError
 from aac.parser._parse_source import YAML_DOCUMENT_SEPARATOR, _add_yaml_document_separator
 
 from tests.helpers.io import temporary_test_file
@@ -50,12 +50,6 @@ class TestParser(TestCase):
             self.assertEqual(second.source, test_yaml.name)
             self.assertEqual(second.value, "name")
             self.assertEqual(second.location, SourceLocation(2, 2, doc_separator_and_newline_length + 10, 4))
-
-    def test_can_handle_string_or_path_sources(self):
-        self.assertEqual(TEST_MODEL_FILE, get_yaml_from_source(TEST_MODEL_FILE))
-
-        with temporary_test_file(TEST_MODEL_FILE) as test_yaml:
-            self.assertEqual(TEST_MODEL_FILE, get_yaml_from_source(test_yaml.name))
 
     def test_can_handle_architecture_file_with_imports(self):
         with (
