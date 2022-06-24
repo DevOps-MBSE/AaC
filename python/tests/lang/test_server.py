@@ -1,6 +1,7 @@
 from unittest.async_case import IsolatedAsyncioTestCase
 
 from aac.lang.lsp.code_completion_provider import SPACE_TRIGGER
+from tests.helpers.lsp.responses.goto_definition_response import GotoDefinitionResponse
 
 from tests.helpers.lsp.responses.hover_response import HoverResponse
 from tests.helpers.lsp.responses.completion_response import CompletionResponse
@@ -45,6 +46,12 @@ class TestLspServer(BaseLspTestCase, IsolatedAsyncioTestCase):
 
         self.assertGreater(len(res.get_completion_items()), 0)
         self.assertIsNotNone(res.get_completion_item_by_label("string"))
+
+    async def test_handles_goto_definition_when_definition_is_in_same_document_request(self):
+        res: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=20, character=16)
+        self.assertIsNotNone(res)
+
+        res.get_location()
 
 
 TEST_DOCUMENT_NAME = "test.aac"

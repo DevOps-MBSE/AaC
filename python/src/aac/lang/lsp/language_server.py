@@ -4,6 +4,7 @@ import os
 import difflib
 import logging
 from typing import Optional
+from pygls.lsp.types.language_features.definition import DefinitionParams
 from pygls.protocol import LanguageServerProtocol
 from pygls.server import LanguageServer
 from pygls.lsp import (
@@ -66,6 +67,7 @@ class AacLanguageServer(LanguageServer):
         completion_options = CompletionOptions(trigger_characters=trigger_and_commit_chars)
         self.feature(methods.COMPLETION, completion_options)(handle_completion)
         self.feature(methods.HOVER)(handle_hover)
+        self.feature(methods.DEFINITION)(handle_goto_definition)
 
 
 async def did_open(ls: AacLanguageServer, params: DidOpenTextDocumentParams):
@@ -131,3 +133,8 @@ async def handle_completion(ls: AacLanguageServer, params: CompletionParams):
 async def handle_hover(ls: AacLanguageServer, params: HoverParams):
     """Handle a hover request."""
     return Hover(contents="Hello from your friendly AaC LSP server!")
+
+
+async def handle_goto_definition(ls: AacLanguageServer, params: DefinitionParams):
+    """Handle a goto definition request."""
+    pass

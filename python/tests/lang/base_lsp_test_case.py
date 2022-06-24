@@ -6,6 +6,7 @@ from pygls.lsp import methods
 from pygls.lsp.types import ClientCapabilities, InitializeParams
 from pygls.lsp.types.basic_structures import Position, TextDocumentIdentifier, TextDocumentItem, VersionedTextDocumentIdentifier
 from pygls.lsp.types.language_features.completion import CompletionContext, CompletionParams, CompletionTriggerKind
+from pygls.lsp.types.language_features.definition import DefinitionParams
 from pygls.lsp.types.language_features.hover import HoverParams
 from pygls.lsp.types.workspace import DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams
 from aac.lang.lsp.code_completion_provider import SPACE_TRIGGER
@@ -14,6 +15,7 @@ from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.lsp.text_document import TextDocument
 from tests.helpers.lsp.responses.hover_response import HoverResponse
 from tests.helpers.lsp.responses.completion_response import CompletionResponse
+from tests.helpers.lsp.responses.goto_definition_response import GotoDefinitionResponse
 from tests.lang.lsp_test_client import LspTestClient
 
 
@@ -166,3 +168,26 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
             )
         )
         return CompletionResponse(response.result())
+
+    async def goto_definition(self, file_name: str, line: int = 0, character: int = 0) -> GotoDefinitionResponse:
+        """
+        Send a goto definition request and return the response.
+
+        Args:
+            file_name (str): The name of the virtual document in which to perform the goto definition action.
+            line (int): The line number (starting from 0) at which to perform the goto definition action.
+            character (int): The character number (starting from 0) at which to perform the goto definition action.
+
+        Returns:
+            A GotoDefinitionResponse that is returned from the LSP server.
+        """
+        assert self.documents.get(file_name), f"Could not goto definition from virtual document because there is no document named {file_name}."
+
+        response = await self.client.send_request(
+            methods.DEFINITION,
+            DefinitionParams(
+                text_document=TextDocumentIdentifier(uri=self.to_uri(file_name)),
+                position=Position(line=line, character=character),
+            )
+        )
+        return GotoDefinitionResponse(response.result())
