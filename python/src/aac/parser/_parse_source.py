@@ -46,13 +46,13 @@ def parse(source: str, source_uri: Optional[str] = None) -> list[Definition]:
     parsed_definitions = []
     for doc in source.split(YAML_DOCUMENT_SEPARATOR):
         contents = _add_yaml_document_separator(get_yaml_from_source(doc))
-        definition_dicts = _parse_file(doc) if path.lexists(doc) else _parse_str(doc, contents)
+        definition_structures = _parse_file(doc) if path.lexists(doc) else _parse_str(doc, contents)
 
-        for name, definition_dict in definition_dicts.items():
-            uri, definition_dict = list(definition_dict.items())[0]
+        for name, definition_structure in definition_structures.items():
+            uri, definition_structure = list(definition_structure.items())[0]
             definition_uri = source_uri or uri
             parsed_definitions.append(
-                Definition(name, contents, definition_uri, get_lexemes_for_definition(contents), definition_dict)
+                Definition(name, contents, definition_uri, get_lexemes_for_definition(contents), definition_structure)
             )
 
     return parsed_definitions
