@@ -82,11 +82,16 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
 
             root_type, *_ = root.keys()
             root_name = root.get(root_type).get("name")
-            contents = _add_yaml_document_separator(doc)
+            contents = _add_yaml_document_separator(doc) if _has_document_separator(model_content, doc) else doc
             lexemes = get_lexemes_for_definition(contents)
             definitions.append(Definition(root_name, contents, source, lexemes, root))
 
     return definitions
+
+
+def _has_document_separator(model_content: str, document: str) -> bool:
+    before, _, _ = model_content.partition(document)
+    return before.endswith(YAML_DOCUMENT_SEPARATOR)
 
 
 def _parse_yaml(source: str, content: str) -> dict:
@@ -181,5 +186,5 @@ def _get_files_to_process(arch_file_path: str) -> list[str]:
 
 def _add_yaml_document_separator(content: str) -> str:
     """Add the YAML document separator to the content."""
-    content = content.strip()
+    content = content.lstrip()
     return f"{YAML_DOCUMENT_SEPARATOR}\n{content}" if content else content

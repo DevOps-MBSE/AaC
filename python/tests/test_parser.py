@@ -41,15 +41,14 @@ class TestParser(TestCase):
 
             self.assertGreaterEqual(len(parsed_definition.lexemes), 2)
 
-            doc_separator_and_newline_length = len(YAML_DOCUMENT_SEPARATOR) + 1
             first, second, *_ = parsed_definition.lexemes
             self.assertEqual(first.source, test_yaml.name)
             self.assertEqual(first.value, "schema")
-            self.assertEqual(first.location, SourceLocation(1, 0, doc_separator_and_newline_length, 6))
+            self.assertEqual(first.location, SourceLocation(0, 0, 0, 6))
 
             self.assertEqual(second.source, test_yaml.name)
             self.assertEqual(second.value, "name")
-            self.assertEqual(second.location, SourceLocation(2, 2, doc_separator_and_newline_length + 10, 4))
+            self.assertEqual(second.location, SourceLocation(1, 2, 10, 4))
 
     def test_can_handle_architecture_file_with_imports(self):
         with (
@@ -76,16 +75,15 @@ class TestParser(TestCase):
             self.assertEqual(enum_status_definition.source_uri.removeprefix("/private"), import2.name)
             self.assertEqual(model_echosvc_definition.source_uri.removeprefix("/private"), test_yaml.name)
 
-            doc_separator_and_newline_length = len(YAML_DOCUMENT_SEPARATOR) + 1
             first, second, *_ = model_echosvc_definition.lexemes
             self.assertEqual(first.source, test_yaml.name)
             self.assertEqual(first.value, "import")
-            self.assertEqual(first.location, SourceLocation(1, 0, doc_separator_and_newline_length, 6))
+            self.assertEqual(first.location, SourceLocation(0, 0, 0, 6))
 
             import1_basename = os.path.basename(import1.name)
             self.assertEqual(second.source, test_yaml.name)
             self.assertEqual(second.value, f"./{import1_basename}")
-            self.assertEqual(second.location, SourceLocation(2, 4, doc_separator_and_newline_length + 12, 2 + len(import1_basename)))
+            self.assertEqual(second.location, SourceLocation(1, 4, 12, 2 + len(import1_basename)))
 
     def test_errors_when_parsing_invalid_yaml(self):
         content = "model: ]["
@@ -109,7 +107,7 @@ class TestParser(TestCase):
         self.assertEqual(len(parsed_definitions), 2)
 
         contents = [definition.content for definition in parsed_definitions]
-        self.assertIn(_add_yaml_document_separator(TEST_MESSAGE_FILE_CONTENTS), contents)
+        self.assertIn(TEST_MESSAGE_FILE_CONTENTS, contents)
         self.assertIn(_add_yaml_document_separator(TEST_STATUS_FILE_CONTENTS), contents)
 
     def test_file_content_is_split_by_yaml_documents(self):
@@ -120,7 +118,7 @@ class TestParser(TestCase):
             self.assertEqual(len(parsed_definitions), 2)
 
             contents = [definition.content for definition in parsed_definitions]
-            self.assertIn(_add_yaml_document_separator(TEST_MESSAGE_FILE_CONTENTS), contents)
+            self.assertIn(TEST_MESSAGE_FILE_CONTENTS, contents)
             self.assertIn(_add_yaml_document_separator(TEST_STATUS_FILE_CONTENTS), contents)
 
     def test_lexemes_are_split_by_yaml_documents(self):
@@ -141,6 +139,18 @@ class TestParser(TestCase):
 
             self.assertNotIn(TEST_STATUS_FILE_CONTENTS_NAME, self.get_lexeme_values_for_definition(TEST_MESSAGE_FILE_CONTENTS_NAME, parsed_definitions))
             self.assertNotIn(TEST_MESSAGE_FILE_CONTENTS_NAME, self.get_lexeme_values_for_definition(TEST_STATUS_FILE_CONTENTS_NAME, parsed_definitions))
+
+    def test_does_not_add_doc_separator_if_not_already_present(self):
+        definition, *_ = parse(TEST_MESSAGE_FILE_CONTENTS, source_uri="<parser test>")
+        self.assertEqual(definition.content, TEST_MESSAGE_FILE_CONTENTS)
+
+        definitions = parse(f"{TEST_MESSAGE_FILE_CONTENTS}{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_FILE_CONTENTS}", source_uri="<parser test>")
+
+        message_definition, *_ = [definition for definition in definitions if definition.name == TEST_MESSAGE_FILE_CONTENTS_NAME]
+        self.assertFalse(message_definition.content.startswith(YAML_DOCUMENT_SEPARATOR))
+
+        status_definition, *_ = [definition for definition in definitions if definition.name == TEST_STATUS_FILE_CONTENTS_NAME]
+        self.assertTrue(status_definition.content.startswith(YAML_DOCUMENT_SEPARATOR))
 
 
 TEST_MESSAGE_FILE_CONTENTS_NAME = "Message"
