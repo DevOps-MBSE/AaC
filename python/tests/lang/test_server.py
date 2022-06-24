@@ -1,45 +1,130 @@
-from unittest import TestCase
+from unittest.async_case import IsolatedAsyncioTestCase
 
-from pygls import uris
-from pygls.lsp import methods
-from pygls.lsp.types import (
-    ClientCapabilities,
-    Hover,
-    HoverParams,
-    InitializeParams,
-    Position,
-)
+from aac.lang.lsp.code_completion_provider import SPACE_TRIGGER
 
-from tests.lang.lsp_test_client import LspTestClient
+from tests.helpers.lsp.responses.hover_response import HoverResponse
+from tests.helpers.lsp.responses.completion_response import CompletionResponse
+from tests.lang.base_lsp_test_case import BaseLspTestCase
 
 
-class TestLspServer(TestCase):
-    def setUp(self):
-        self.client = LspTestClient()
-        self.client.start()
-        res = self.client.send_request(
-            methods.INITIALIZE,
-            InitializeParams(
-                process_id=12345, root_uri="file://", capabilities=ClientCapabilities()
-            ),
-        )
+class TestLspServer(BaseLspTestCase, IsolatedAsyncioTestCase):
+    async def asyncSetUp(self) -> None:
+        await super().asyncSetUp()
+        self.active_context = self.client.server.language_context
+        await self.create_document(TEST_DOCUMENT_NAME, TEST_DOCUMENT_CONTENT)
 
-        self.assertIn("capabilities", res)
+    async def test_adds_definitions_when_opening_file(self):
+        self.assertIsNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_SCHEMA_NAME))
+        self.assertIsNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_MODEL_NAME))
 
-    def tearDown(self):
-        self.client.stop()
+        await self.create_document("added.aac", TEST_DOCUMENT_ADDITIONAL_CONTENT)
 
-    def test_handles_hover_request(self):
-        res: Hover = self.client.send_request(
-            methods.HOVER,
-            HoverParams(
-                text_document={"uri": TEST_DOCUMENT_URI},
-                position=Position(line=0, character=0),
-            ),
-        )
+        self.assertIsNotNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_SCHEMA_NAME))
+        self.assertIsNotNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_MODEL_NAME))
 
-        self.assertSequenceEqual(list(res.keys()), ["contents"])
-        self.assertIn("LSP server", res.get("contents"))
+    async def test_handles_content_changes(self):
+        self.assertIsNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_SCHEMA_NAME))
+        self.assertIsNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_MODEL_NAME))
+
+        await self.write_document(TEST_DOCUMENT_NAME, f"{TEST_DOCUMENT_CONTENT}---{TEST_DOCUMENT_ADDITIONAL_CONTENT}")
+
+        self.assertIsNotNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_SCHEMA_NAME))
+        self.assertIsNotNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_MODEL_NAME))
+
+    async def test_handles_hover_request(self):
+        res: HoverResponse = await self.hover(TEST_DOCUMENT_NAME)
+        self.assertIn("LSP server", res.get_content())
+
+    async def test_handles_completion_request(self):
+        new_content = f"{TEST_PARTIAL_CONTENT}{SPACE_TRIGGER}"
+        await self.write_document(TEST_DOCUMENT_NAME, new_content)
+
+        last_line_num = len(new_content.splitlines()) - 1
+        last_char_num = len(new_content.splitlines()[last_line_num]) - 1
+        res: CompletionResponse = await self.complete(TEST_DOCUMENT_NAME, line=last_line_num, character=last_char_num)
+
+        self.assertGreater(len(res.get_completion_items()), 0)
+        self.assertIsNotNone(res.get_completion_item_by_label("string"))
 
 
-TEST_DOCUMENT_URI = uris.from_fs_path(__file__)
+TEST_DOCUMENT_NAME = "test.aac"
+TEST_ADDITIONAL_SCHEMA_NAME = "DataC"
+TEST_ADDITIONAL_MODEL_NAME = "ServiceTwo"
+TEST_DOCUMENT_CONTENT = """
+schema:
+  name: DataA
+  fields:
+  - name: msg
+    type: string
+---
+schema:
+  name: DataB
+  fields:
+  - name: msg
+    type: string
+---
+model:
+  name: ServiceOne
+  behavior:
+    - name: Process DataA Request
+      type: request-response
+      description: Process a DataA request and return a DataB response
+      input:
+        - name: in
+          type: DataA
+      output:
+        - name: out
+          type: DataB
+      acceptance:
+        - scenario: Receive DataA request and return DataB response
+          given:
+            - ServiceOne is running
+          when:
+            - ServiceOne receives a DataA request
+          then:
+            - ServiceOne processes the request into a DataB response
+            - ServiceOne returns the DataB response
+        - scenario: Receive invalid request
+          given:
+            - ServiceOne is running
+          when:
+            - ServiceOne receives request that isn't a DataA request
+          then:
+            - ServiceOne returns an error response code
+"""
+TEST_DOCUMENT_ADDITIONAL_CONTENT = f"""
+schema:
+  name: {TEST_ADDITIONAL_SCHEMA_NAME}
+  fields:
+  - name: msg
+    type: string
+---
+model:
+  name: {TEST_ADDITIONAL_MODEL_NAME}
+  behavior:
+    - name: Process DataB Request
+      type: request-response
+      description: Process a DataB request and return a DataC response
+      input:
+        - name: in
+          type: DataB
+      output:
+        - name: out
+          type: DataC
+      acceptance:
+        - scenario: Receive DataB request and return DataC response
+          given:
+            - ServiceTwo is running
+          when:
+            - ServiceTwo receives a DataB request
+          then:
+            - ServiceTwo processes the request into a DataC response
+            - ServiceTwo returns the DataC response
+"""
+TEST_PARTIAL_CONTENT = f"""
+schema:
+  name: {TEST_ADDITIONAL_SCHEMA_NAME}
+  fields:
+  - name: msg
+    type:\
+"""
