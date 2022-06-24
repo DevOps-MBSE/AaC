@@ -213,4 +213,4 @@ def _get_files_to_process(arch_file_path: str) -> list[str]:
 
 def _add_yaml_document_separator(content: str) -> str:
     """Add the YAML document separator to the content."""
-    return f"{YAML_DOCUMENT_SEPARATOR}\n{content}"
+    return f"{YAML_DOCUMENT_SEPARATOR}\n{content}" if content else content
