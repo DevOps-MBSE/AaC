@@ -3,6 +3,7 @@ from tempfile import TemporaryDirectory
 from unittest import TestCase
 
 from aac.lang import definition_helpers
+from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.source_location import SourceLocation
 from aac.parser import parse, get_yaml_from_source, ParserError
 from aac.parser._parse_source import YAML_DOCUMENT_SEPARATOR, _add_yaml_document_separator
@@ -11,6 +12,10 @@ from tests.helpers.io import temporary_test_file
 
 
 class TestParser(TestCase):
+    def get_lexeme_values_for_definition(self, name: str, definitions: list[Definition]) -> list[str]:
+        lexemes = [definition.lexemes for definition in definitions if definition.name == name][0]
+        return [lexeme.value for lexeme in lexemes]
+
     def get_test_model(self, import1: str = "a.yaml", import2: str = "b.yaml"):
         return TEST_MODEL_FILE.format(os.path.basename(import1), os.path.basename(import2)).strip()
 
@@ -113,18 +118,35 @@ class TestParser(TestCase):
         self.assertIn(_add_yaml_document_separator(TEST_MESSAGE_FILE_CONTENTS), contents)
         self.assertIn(_add_yaml_document_separator(TEST_STATUS_FILE_CONTENTS), contents)
 
-    def test_lexemes_are_split_by_yaml_documents(self):
-        def get_lexeme_values_for_definition(name: str) -> list[str]:
-            lexemes = [definition.lexemes for definition in parsed_definitions if definition.name == name][0]
-            return [lexeme.value for lexeme in lexemes]
+    def test_file_content_is_split_by_yaml_documents(self):
+        content = f"{TEST_MESSAGE_FILE_CONTENTS}{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_FILE_CONTENTS}"
+        with temporary_test_file(content) as test_yaml:
+            parsed_definitions = parse(test_yaml.name)
 
+            self.assertEqual(len(parsed_definitions), 2)
+
+            contents = [definition.content for definition in parsed_definitions]
+            self.assertIn(_add_yaml_document_separator(TEST_MESSAGE_FILE_CONTENTS), contents)
+            self.assertIn(_add_yaml_document_separator(TEST_STATUS_FILE_CONTENTS), contents)
+
+    def test_lexemes_are_split_by_yaml_documents(self):
         content = f"{TEST_MESSAGE_FILE_CONTENTS}{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_FILE_CONTENTS}"
         parsed_definitions = parse(content, source_uri="<parser test>")
 
         self.assertEqual(len(parsed_definitions), 2)
 
-        self.assertNotIn(TEST_STATUS_FILE_CONTENTS_NAME, get_lexeme_values_for_definition(TEST_MESSAGE_FILE_CONTENTS_NAME))
-        self.assertNotIn(TEST_MESSAGE_FILE_CONTENTS_NAME, get_lexeme_values_for_definition(TEST_STATUS_FILE_CONTENTS_NAME))
+        self.assertNotIn(TEST_STATUS_FILE_CONTENTS_NAME, self.get_lexeme_values_for_definition(TEST_MESSAGE_FILE_CONTENTS_NAME, parsed_definitions))
+        self.assertNotIn(TEST_MESSAGE_FILE_CONTENTS_NAME, self.get_lexeme_values_for_definition(TEST_STATUS_FILE_CONTENTS_NAME, parsed_definitions))
+
+    def test_file_lexemes_are_split_by_yaml_documents(self):
+        content = f"{TEST_MESSAGE_FILE_CONTENTS}{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_FILE_CONTENTS}"
+        with temporary_test_file(content) as test_yaml:
+            parsed_definitions = parse(test_yaml.name)
+
+            self.assertEqual(len(parsed_definitions), 2)
+
+            self.assertNotIn(TEST_STATUS_FILE_CONTENTS_NAME, self.get_lexeme_values_for_definition(TEST_MESSAGE_FILE_CONTENTS_NAME, parsed_definitions))
+            self.assertNotIn(TEST_MESSAGE_FILE_CONTENTS_NAME, self.get_lexeme_values_for_definition(TEST_STATUS_FILE_CONTENTS_NAME, parsed_definitions))
 
 
 TEST_MESSAGE_FILE_CONTENTS_NAME = "Message"
