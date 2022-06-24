@@ -59,8 +59,7 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
         model_content:  The YAML to parse
 
     Returns:
-        A dictionary of the parsed model(s). The key is the type name from the model and the
-        value is the parsed model root.
+        The AaC definitions that were built from the model contents.
     """
 
     def mark_to_source_location(start: yaml.error.Mark, end: yaml.error.Mark) -> SourceLocation:
