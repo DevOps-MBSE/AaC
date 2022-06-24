@@ -1,10 +1,10 @@
 from unittest.async_case import IsolatedAsyncioTestCase
 
-from aac.lang.lsp.code_completion_provider import SPACE_TRIGGER
-from tests.helpers.lsp.responses.goto_definition_response import GotoDefinitionResponse
+from aac.lang.lsp.providers.code_completion_provider import SPACE_TRIGGER
 
 from tests.helpers.lsp.responses.hover_response import HoverResponse
 from tests.helpers.lsp.responses.completion_response import CompletionResponse
+from tests.helpers.lsp.responses.goto_definition_response import GotoDefinitionResponse
 from tests.lang.base_lsp_test_case import BaseLspTestCase
 
 

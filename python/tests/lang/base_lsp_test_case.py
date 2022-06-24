@@ -9,7 +9,7 @@ from pygls.lsp.types.language_features.completion import CompletionContext, Comp
 from pygls.lsp.types.language_features.definition import DefinitionParams
 from pygls.lsp.types.language_features.hover import HoverParams
 from pygls.lsp.types.workspace import DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams
-from aac.lang.lsp.code_completion_provider import SPACE_TRIGGER
+from aac.lang.lsp.providers.code_completion_provider import SPACE_TRIGGER
 
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.lsp.text_document import TextDocument

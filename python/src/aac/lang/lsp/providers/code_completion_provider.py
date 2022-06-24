@@ -6,16 +6,18 @@ from attr import Factory, attrib, attrs, validators
 
 from pygls.lsp import CompletionParams, CompletionList, CompletionItem, CompletionItemKind
 from pygls.server import LanguageServer
+
 from aac.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.definition_helpers import get_definitions_by_root_key
 from aac.lang.definitions.definition import Definition
+from aac.lang.lsp.providers.lsp_provider import LspProvider
 
 SPACE_TRIGGER = " "
 
 
 @attrs
-class CodeCompletionProvider:
+class CodeCompletionProvider(LspProvider):
     """Resolve various code completion triggers to specific code completion functions.
 
     Attributes:
@@ -32,7 +34,7 @@ class CodeCompletionProvider:
         """Return a list of the currently registered trigger characters."""
         return list(self.completion_callbacks.keys())
 
-    def handle_code_completion(self, ls: LanguageServer, params: CompletionParams):
+    def handle_request(self, ls: LanguageServer, params: CompletionParams):
         """Resolve the trigger to the corresponding code completion function, then execute it."""
         trigger_character = params.context.trigger_character
 
