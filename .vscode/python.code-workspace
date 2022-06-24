@@ -23,6 +23,7 @@
         ],
         "cSpell.enabled": true,
         "cSpell.words": [
+            "attribs",
             "fastapi",
             "jsonable",
             "pluggy",
