@@ -29,7 +29,7 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
         await self.client.start()
         await self.client.send_request(
             methods.INITIALIZE,
-            InitializeParams(process_id=12345, root_uri=self.to_uri("root.aac"), capabilities=ClientCapabilities()),
+            InitializeParams(process_id=12345, capabilities=ClientCapabilities()),
         )
 
     async def asyncTearDown(self):
@@ -123,5 +123,4 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
                 position=Position(line=line, character=character),
             )
         )
-
         return CompletionResponse(response.result())
