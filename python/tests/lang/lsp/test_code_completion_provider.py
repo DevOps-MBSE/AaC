@@ -1,31 +1,56 @@
 from unittest.async_case import IsolatedAsyncioTestCase
 
+from pygls.lsp import methods
+from pygls.lsp.types.basic_structures import Position, TextDocumentIdentifier
+from pygls.lsp.types.language_features.completion import CompletionContext, CompletionParams, CompletionTriggerKind
+
+from aac.lang.lsp.providers.code_completion_provider import SPACE_TRIGGER
+
+from tests.helpers.lsp.responses.completion_response import CompletionResponse
 from tests.lang.base_lsp_test_case import BaseLspTestCase
 
 
-class TestLspServer(BaseLspTestCase, IsolatedAsyncioTestCase):
+class TestCodeCompletionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
     async def asyncSetUp(self) -> None:
         await super().asyncSetUp()
         self.active_context = self.client.server.language_context
         await self.create_document(TEST_DOCUMENT_NAME, TEST_DOCUMENT_CONTENT)
 
-    async def test_adds_definitions_when_opening_file(self):
-        self.assertIsNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_SCHEMA_NAME))
-        self.assertIsNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_MODEL_NAME))
+    async def complete(self, file_name: str, line: int = 0, character: int = 0, trigger_kind: CompletionTriggerKind = CompletionTriggerKind.TriggerCharacter, trigger_character: str = SPACE_TRIGGER) -> CompletionResponse:
+        """
+        Send a code completion request and return the response.
 
-        await self.create_document("added.aac", TEST_DOCUMENT_ADDITIONAL_CONTENT)
+        Args:
+            file_name (str): The name of the virtual document in which to perform the code completion action.
+            line (int): The line number (starting from 0) at which to perform the code completion action.
+            character (int): The character number (starting from 0) at which to perform the code completion action.
+            trigger_kind (CompletionTriggerKind): The action that triggered the code completion action.
+            trigger_caracter (str): The character that triggered/triggers the code completion action.
 
-        self.assertIsNotNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_SCHEMA_NAME))
-        self.assertIsNotNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_MODEL_NAME))
+        Returns:
+            A CompletionResponse that is returned from the LSP server.
+        """
+        return await self.build_request(
+            file_name,
+            CompletionResponse,
+            methods.COMPLETION,
+            CompletionParams(
+                context=CompletionContext(trigger_kind=trigger_kind, trigger_character=trigger_character),
+                text_document=TextDocumentIdentifier(uri=self.to_uri(file_name)),
+                position=Position(line=line, character=character),
+            ),
+        )
 
-    async def test_handles_content_changes(self):
-        self.assertIsNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_SCHEMA_NAME))
-        self.assertIsNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_MODEL_NAME))
+    async def test_handles_completion_request(self):
+        new_content = f"{TEST_PARTIAL_CONTENT}{SPACE_TRIGGER}"
+        await self.write_document(TEST_DOCUMENT_NAME, new_content)
 
-        await self.write_document(TEST_DOCUMENT_NAME, f"{TEST_DOCUMENT_CONTENT}---{TEST_DOCUMENT_ADDITIONAL_CONTENT}")
+        last_line_num = len(new_content.splitlines()) - 1
+        last_char_num = len(new_content.splitlines()[last_line_num]) - 1
+        res: CompletionResponse = await self.complete(TEST_DOCUMENT_NAME, line=last_line_num, character=last_char_num)
 
-        self.assertIsNotNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_SCHEMA_NAME))
-        self.assertIsNotNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_MODEL_NAME))
+        self.assertGreater(len(res.get_completion_items()), 0)
+        self.assertIsNotNone(res.get_completion_item_by_label("string"))
 
 
 TEST_DOCUMENT_NAME = "test.aac"

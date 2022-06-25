@@ -1,31 +1,44 @@
 from unittest.async_case import IsolatedAsyncioTestCase
 
+from pygls.lsp import methods
+from pygls.lsp.types.basic_structures import Position, TextDocumentIdentifier
+from pygls.lsp.types.language_features.hover import HoverParams
+
+from tests.helpers.lsp.responses.hover_response import HoverResponse
 from tests.lang.base_lsp_test_case import BaseLspTestCase
 
 
-class TestLspServer(BaseLspTestCase, IsolatedAsyncioTestCase):
+class TestHoverProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
     async def asyncSetUp(self) -> None:
         await super().asyncSetUp()
         self.active_context = self.client.server.language_context
         await self.create_document(TEST_DOCUMENT_NAME, TEST_DOCUMENT_CONTENT)
 
-    async def test_adds_definitions_when_opening_file(self):
-        self.assertIsNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_SCHEMA_NAME))
-        self.assertIsNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_MODEL_NAME))
+    async def hover(self, file_name: str, line: int = 0, character: int = 0) -> HoverResponse:
+        """
+        Send a hover request and return the response.
 
-        await self.create_document("added.aac", TEST_DOCUMENT_ADDITIONAL_CONTENT)
+        Args:
+            file_name (str): The name of the virtual document in which to perform the hover action.
+            line (int): The line number (starting from 0) at which to perform the hover action.
+            character (int): The character number (starting from 0) at which to perform the hover action.
 
-        self.assertIsNotNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_SCHEMA_NAME))
-        self.assertIsNotNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_MODEL_NAME))
+        Returns:
+            A HoverResponse that is returned from the LSP server.
+        """
+        return await self.build_request(
+            file_name,
+            HoverResponse,
+            methods.HOVER,
+            HoverParams(
+                text_document=TextDocumentIdentifier(uri=self.to_uri(file_name)),
+                position=Position(line=line, character=character),
+            ),
+        )
 
-    async def test_handles_content_changes(self):
-        self.assertIsNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_SCHEMA_NAME))
-        self.assertIsNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_MODEL_NAME))
-
-        await self.write_document(TEST_DOCUMENT_NAME, f"{TEST_DOCUMENT_CONTENT}---{TEST_DOCUMENT_ADDITIONAL_CONTENT}")
-
-        self.assertIsNotNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_SCHEMA_NAME))
-        self.assertIsNotNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_MODEL_NAME))
+    async def test_handles_hover_request(self):
+        res: HoverResponse = await self.hover(TEST_DOCUMENT_NAME)
+        self.assertIn("LSP server", res.get_content())
 
 
 TEST_DOCUMENT_NAME = "test.aac"
