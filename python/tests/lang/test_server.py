@@ -1,5 +1,8 @@
 from unittest.async_case import IsolatedAsyncioTestCase
 
+from pygls.lsp import methods
+from pygls.lsp.types.basic_structures import Position
+
 from aac.lang.lsp.providers.code_completion_provider import SPACE_TRIGGER
 
 from tests.helpers.lsp.responses.hover_response import HoverResponse
@@ -47,19 +50,55 @@ class TestLspServer(BaseLspTestCase, IsolatedAsyncioTestCase):
         self.assertGreater(len(res.get_completion_items()), 0)
         self.assertIsNotNone(res.get_completion_item_by_label("string"))
 
-    async def test_handles_goto_definition_when_definition_is_in_same_document_request(self):
-        res: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=20, character=16)
-        self.assertIsNotNone(res)
+    async def test_get_cursor_position(self):
+        goto_definition_provider = self.client.server.providers.get(methods.DEFINITION)
+        text_range, *rest = goto_definition_provider.get_ranges_containing_name(TEST_DOCUMENT_CONTENT, TEST_DOCUMENT_SCHEMA_NAME)
+        self.assertEqual(len(rest) + 1, TEST_DOCUMENT_CONTENT.count(TEST_DOCUMENT_SCHEMA_NAME))
 
-        res.get_location()
+        self.assertEqual(text_range.start, Position(line=2, character=8))
+        self.assertEqual(text_range.end, Position(line=2, character=8 + len(TEST_DOCUMENT_SCHEMA_NAME)))
+
+    async def test_get_named_location(self):
+        goto_definition_provider = self.client.server.providers.get(methods.DEFINITION)
+        location, *_ = goto_definition_provider.get_definition_location(
+            self.virtual_document_to_lsp_document(TEST_DOCUMENT_NAME),
+            Position(line=21, character=17),
+        )
+
+        self.assertEqual(location.range.start, Position(line=2, character=8))
+        self.assertEqual(location.range.end, Position(line=2, character=8 + len(TEST_DOCUMENT_SCHEMA_NAME)))
+
+    async def test_handles_goto_definition_request_when_cursor_at_definition(self):
+        goto_definition_provider = self.client.server.providers.get(methods.DEFINITION)
+        text_range, *_ = goto_definition_provider.get_ranges_containing_name(TEST_DOCUMENT_CONTENT, TEST_DOCUMENT_SCHEMA_NAME)
+        line = text_range.start.line
+        character = text_range.start.character
+        res: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=line, character=character)
+
+        location = res.get_location()
+        self.assertEqual(location.range.start, Position(line=line, character=character))
+        self.assertEqual(location.range.end, Position(line=line, character=character + len(TEST_DOCUMENT_SCHEMA_NAME)))
+
+    async def test_handles_goto_definition_request_when_definition_in_same_document(self):
+        goto_definition_provider = self.client.server.providers.get(methods.DEFINITION)
+        definition_range, text_range, *_ = goto_definition_provider.get_ranges_containing_name(TEST_DOCUMENT_CONTENT, TEST_DOCUMENT_SCHEMA_NAME)
+        line = text_range.start.line
+        character = text_range.start.character
+        res: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=line, character=character)
+
+        location = res.get_location()
+        self.assertEqual(location.range.start, Position(line=definition_range.start.line, character=definition_range.start.character))
+        self.assertEqual(location.range.end, Position(line=definition_range.end.line, character=definition_range.end.character))
 
 
 TEST_DOCUMENT_NAME = "test.aac"
+TEST_DOCUMENT_MODEL_NAME = "ServiceOne"
+TEST_DOCUMENT_SCHEMA_NAME = "DataA"
 TEST_ADDITIONAL_SCHEMA_NAME = "DataC"
 TEST_ADDITIONAL_MODEL_NAME = "ServiceTwo"
-TEST_DOCUMENT_CONTENT = """
+TEST_DOCUMENT_CONTENT = f"""
 schema:
-  name: DataA
+  name: {TEST_DOCUMENT_SCHEMA_NAME}
   fields:
   - name: msg
     type: string
@@ -71,14 +110,14 @@ schema:
     type: string
 ---
 model:
-  name: ServiceOne
+  name: {TEST_DOCUMENT_MODEL_NAME}
   behavior:
     - name: Process DataA Request
       type: request-response
       description: Process a DataA request and return a DataB response
       input:
         - name: in
-          type: DataA
+          type: {TEST_DOCUMENT_SCHEMA_NAME}
       output:
         - name: out
           type: DataB

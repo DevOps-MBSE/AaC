@@ -8,7 +8,10 @@ from pygls.lsp.types.basic_structures import Position, TextDocumentIdentifier, T
 from pygls.lsp.types.language_features.completion import CompletionContext, CompletionParams, CompletionTriggerKind
 from pygls.lsp.types.language_features.definition import DefinitionParams
 from pygls.lsp.types.language_features.hover import HoverParams
+from pygls.lsp.types.text_synchronization import TextDocumentSyncKind
 from pygls.lsp.types.workspace import DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams
+from pygls.workspace import Document
+
 from aac.lang.lsp.providers.code_completion_provider import SPACE_TRIGGER
 
 from tests.active_context_test_case import ActiveContextTestCase
@@ -119,6 +122,12 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
         """Return file_name as a file URI."""
         assert self.documents.get(file_name), f"Could not get virtual document URI because there is no document named {file_name}."
         return uris.from_fs_path(file_name)
+
+    def virtual_document_to_lsp_document(self, file_name: str) -> Document:
+        """Convert a virtual document to an LSP document."""
+        assert self.documents.get(file_name), f"Could not convert virtual document because there is no document named {file_name}."
+        document = self.documents.get(file_name)
+        return Document(uri=document.file_name, source=document.content, version=document.version, sync_kind=TextDocumentSyncKind.FULL)
 
     async def hover(self, file_name: str, line: int = 0, character: int = 0) -> HoverResponse:
         """
