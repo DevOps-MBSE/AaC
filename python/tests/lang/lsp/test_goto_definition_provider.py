@@ -101,6 +101,10 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         self.assertEqual(location.range.start, Position(line=definition_range.start.line, character=definition_range.start.character))
         self.assertEqual(location.range.end, Position(line=definition_range.end.line, character=definition_range.end.character))
 
+    async def test_no_results_when_nothing_under_cursor(self):
+        res: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME)
+        self.assertIsNone(res.get_location())
+
 
 TEST_DOCUMENT_NAME = "test.aac"
 TEST_DOCUMENT_MODEL_NAME = "ServiceOne"
