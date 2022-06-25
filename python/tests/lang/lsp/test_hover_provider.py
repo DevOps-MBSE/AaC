@@ -1,7 +1,6 @@
 from unittest.async_case import IsolatedAsyncioTestCase
 
 from pygls.lsp import methods
-from pygls.lsp.types.basic_structures import Position, TextDocumentIdentifier
 from pygls.lsp.types.language_features.hover import HoverParams
 
 from tests.helpers.lsp.responses.hover_response import HoverResponse
@@ -30,10 +29,7 @@ class TestHoverProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
             file_name,
             HoverResponse,
             methods.HOVER,
-            HoverParams(
-                text_document=TextDocumentIdentifier(uri=self.to_uri(file_name)),
-                position=Position(line=line, character=character),
-            ),
+            HoverParams(**self.build_text_document_position_params(file_name, line, character)),
         )
 
     async def test_handles_hover_request(self):

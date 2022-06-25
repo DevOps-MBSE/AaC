@@ -4,7 +4,7 @@ from unittest.async_case import IsolatedAsyncioTestCase
 from pygls import uris
 from pygls.lsp import methods
 from pygls.lsp.types import ClientCapabilities, InitializeParams
-from pygls.lsp.types.basic_structures import Model, TextDocumentIdentifier, TextDocumentItem, VersionedTextDocumentIdentifier
+from pygls.lsp.types.basic_structures import Model, Position, TextDocumentIdentifier, TextDocumentItem, VersionedTextDocumentIdentifier
 from pygls.lsp.types.text_synchronization import TextDocumentSyncKind
 from pygls.lsp.types.workspace import DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams
 from pygls.workspace import Document
@@ -120,6 +120,13 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
         assert self.documents.get(file_name), f"Could not convert virtual document because there is no document named {file_name}."
         document = self.documents.get(file_name)
         return Document(uri=document.file_name, source=document.content, version=document.version, sync_kind=TextDocumentSyncKind.FULL)
+
+    def build_text_document_position_params(self, file_name: str, line: int = 0, character: int = 0) -> dict:
+        """Return a dictionary that can be used as TextDocumentPositionParams in an LSP request."""
+        return {
+            "text_document": TextDocumentIdentifier(uri=self.to_uri(file_name)),
+            "position": Position(line=line, character=character),
+        }
 
     async def build_request(self, file_name: str, response_type: type, method: str, params: Model):
         self.assertIsNotNone(

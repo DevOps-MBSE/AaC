@@ -1,7 +1,6 @@
 from unittest.async_case import IsolatedAsyncioTestCase
 
 from pygls.lsp import methods
-from pygls.lsp.types.basic_structures import Position, TextDocumentIdentifier
 from pygls.lsp.types.language_features.completion import CompletionContext, CompletionParams, CompletionTriggerKind
 
 from aac.lang.lsp.providers.code_completion_provider import SPACE_TRIGGER
@@ -36,8 +35,7 @@ class TestCodeCompletionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
             methods.COMPLETION,
             CompletionParams(
                 context=CompletionContext(trigger_kind=trigger_kind, trigger_character=trigger_character),
-                text_document=TextDocumentIdentifier(uri=self.to_uri(file_name)),
-                position=Position(line=line, character=character),
+                **self.build_text_document_position_params(file_name, line, character)
             ),
         )
 

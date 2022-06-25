@@ -1,7 +1,7 @@
 from unittest.async_case import IsolatedAsyncioTestCase
 
 from pygls.lsp import methods
-from pygls.lsp.types.basic_structures import Position, TextDocumentIdentifier
+from pygls.lsp.types.basic_structures import Position
 from pygls.lsp.types.language_features.definition import DefinitionParams
 
 from aac.lang.lsp.providers.goto_definition_provider import GotoDefinitionProvider
@@ -36,10 +36,7 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
             file_name,
             GotoDefinitionResponse,
             methods.DEFINITION,
-            DefinitionParams(
-                text_document=TextDocumentIdentifier(uri=self.to_uri(file_name)),
-                position=Position(line=line, character=character),
-            )
+            DefinitionParams(**self.build_text_document_position_params(file_name, line, character)),
         )
 
     async def test_get_ranges_containing_name(self):
