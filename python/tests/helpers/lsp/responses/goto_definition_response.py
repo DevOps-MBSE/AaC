@@ -1,4 +1,4 @@
-from pygls.lsp.types.basic_structures import Location, LocationLink
+from pygls.lsp.types.basic_structures import Location
 from tests.helpers.lsp.responses.lsp_response import LspResponse
 
 

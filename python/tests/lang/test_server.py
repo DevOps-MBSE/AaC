@@ -4,6 +4,7 @@ from pygls.lsp import methods
 from pygls.lsp.types.basic_structures import Position
 
 from aac.lang.lsp.providers.code_completion_provider import SPACE_TRIGGER
+from aac.parser._parse_source import YAML_DOCUMENT_SEPARATOR
 
 from tests.helpers.lsp.responses.hover_response import HoverResponse
 from tests.helpers.lsp.responses.completion_response import CompletionResponse
@@ -60,8 +61,10 @@ class TestLspServer(BaseLspTestCase, IsolatedAsyncioTestCase):
 
     async def test_get_named_location(self):
         goto_definition_provider = self.client.server.providers.get(methods.DEFINITION)
+        document_uri = self.to_uri(TEST_DOCUMENT_NAME)
         location, *_ = goto_definition_provider.get_definition_location(
-            self.virtual_document_to_lsp_document(TEST_DOCUMENT_NAME),
+            {document_uri: self.virtual_document_to_lsp_document(TEST_DOCUMENT_NAME)},
+            document_uri,
             Position(line=21, character=17),
         )
 
@@ -87,6 +90,27 @@ class TestLspServer(BaseLspTestCase, IsolatedAsyncioTestCase):
         res: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=line, character=character)
 
         location = res.get_location()
+        self.assertEqual(location.range.start, Position(line=definition_range.start.line, character=definition_range.start.character))
+        self.assertEqual(location.range.end, Position(line=definition_range.end.line, character=definition_range.end.character))
+
+    async def test_handles_goto_definition_request_when_definition_in_different_document(self):
+        goto_definition_provider = self.client.server.providers.get(methods.DEFINITION)
+
+        added_content = f"{TEST_PARTIAL_CONTENT} {TEST_ADDITIONAL_SCHEMA_NAME}"
+        added_document = await self.create_document("added.aac", added_content)
+
+        new_test_document_content = f"{TEST_DOCUMENT_CONTENT}{YAML_DOCUMENT_SEPARATOR}{TEST_ADDITIONAL_MODEL_CONTENT}"
+        await self.write_document(TEST_DOCUMENT_NAME, new_test_document_content)
+
+        text_range, *_ = goto_definition_provider.get_ranges_containing_name(new_test_document_content, TEST_ADDITIONAL_SCHEMA_NAME)
+        line = text_range.start.line
+        character = text_range.start.character
+        res: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=line, character=character)
+
+        definition_range, *_ = goto_definition_provider.get_ranges_containing_name(added_content, TEST_ADDITIONAL_SCHEMA_NAME)
+
+        location = res.get_location()
+        self.assertEqual(location.uri, self.to_uri(added_document.file_name))
         self.assertEqual(location.range.start, Position(line=definition_range.start.line, character=definition_range.start.character))
         self.assertEqual(location.range.end, Position(line=definition_range.end.line, character=definition_range.end.character))
 
@@ -173,4 +197,23 @@ schema:
   fields:
   - name: msg
     type:\
+"""
+TEST_ADDITIONAL_MODEL_CONTENT = f"""
+model:
+  name: ServiceThree
+  behavior:
+    - name: Pass through
+      type: request-response
+      input:
+        - name: in
+          type: {TEST_ADDITIONAL_SCHEMA_NAME}
+      output:
+        - name: out
+          type: {TEST_ADDITIONAL_SCHEMA_NAME}
+      acceptance:
+        - scenario: Pass the data through, untouched
+          when:
+            - ServiceThree receives a {TEST_ADDITIONAL_SCHEMA_NAME} request
+          then:
+            - ServiceThree returns the {TEST_ADDITIONAL_SCHEMA_NAME} data in the response, untouched
 """
