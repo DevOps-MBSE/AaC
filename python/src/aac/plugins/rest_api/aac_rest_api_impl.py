@@ -5,9 +5,13 @@
 from fastapi.openapi.utils import get_openapi
 from typing import Optional
 import json
+import logging
 import os
 import uvicorn
 
+from aac.files.find import find_aac_files
+from aac.lang.active_context_lifecycle_manager import get_active_context
+from aac.parser import parse
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 from aac.plugins.rest_api.aac_rest_app import app
 
@@ -31,6 +35,16 @@ def rest_api(host: Optional[str] = "0.0.0.0", port: Optional[int] = 8000) -> Plu
 
 def _start_restful_service(host: str, port: int) -> str:
     """Start the RESTful interface service."""
+    current_working_dir = os.getcwd()
+    aac_files_in_workspace = find_aac_files(current_working_dir)
+
+    definitions_to_add = []
+    for file in aac_files_in_workspace:
+        definitions_to_add.extend(parse(file))
+
+    get_active_context().add_definitions_to_context(definitions_to_add)
+
+    logging.info(f"Starting REST API in {current_working_dir}. Identified the following files as AaC files: {aac_files_in_workspace}")
     uvicorn.run(app, host=host, port=port)
     return "Successfully started and stopped the RESTful API."
 
