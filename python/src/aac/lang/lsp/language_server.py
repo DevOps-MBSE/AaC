@@ -38,7 +38,7 @@ class AacLanguageServer(LanguageServer):
     """
 
     language_context: Optional[LanguageContext]
-    providers: dict[str, list[LspProvider]]
+    providers: dict[str, LspProvider]
     workspace_files: dict[str, ManagedWorkspaceFile]
 
     def __init__(self, language_context=None, providers={}, workspace_files={}, loop=None, protocol_cls=LanguageServerProtocol, max_workers: int = 2):
@@ -59,11 +59,8 @@ class AacLanguageServer(LanguageServer):
 
     def configure_providers(self):
         """Configure and setup the providers that make LSP functionality available for the AaC LSP server."""
-        if not self.providers.get(methods.COMPLETION):
-            self.providers[methods.COMPLETION] = CodeCompletionProvider()
-
-        if not self.providers.get(methods.DEFINITION):
-            self.providers[methods.DEFINITION] = GotoDefinitionProvider()
+        self.providers[methods.COMPLETION] = self.providers.get(methods.COMPLETION, CodeCompletionProvider())
+        self.providers[methods.DEFINITION] = self.providers.get(methods.DEFINITION, GotoDefinitionProvider())
 
     def setup_features(self) -> None:
         """Configure the server with the supported features."""
