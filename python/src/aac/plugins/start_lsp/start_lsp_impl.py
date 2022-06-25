@@ -12,7 +12,7 @@ plugin_name = "start-lsp"
 def start_lsp_io():
     """Start the LSP server in IO mode."""
     aac_language_server = AacLanguageServer()
-    return _start_lsp(aac_language_server.language_server.start_io)
+    return _start_lsp(aac_language_server.start_io)
 
 
 def start_lsp_tcp(host: str, port: int):
@@ -22,7 +22,7 @@ def start_lsp_tcp(host: str, port: int):
         "host": host or "127.0.0.1",
         "port": port or 5007
     }
-    return _start_lsp(aac_language_server.language_server.start_tcp, **function_kwargs)
+    return _start_lsp(aac_language_server.start_tcp, **function_kwargs)
 
 
 def _start_lsp(language_server_start_function: Callable, **start_function_kwargs) -> PluginExecutionResult:
