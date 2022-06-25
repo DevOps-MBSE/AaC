@@ -4,6 +4,7 @@ from pygls.lsp import methods
 from pygls.lsp.types.basic_structures import Position, TextDocumentIdentifier
 from pygls.lsp.types.language_features.definition import DefinitionParams
 
+from aac.lang.lsp.providers.goto_definition_provider import GotoDefinitionProvider
 from aac.parser._parse_source import YAML_DOCUMENT_SEPARATOR
 
 from tests.helpers.lsp.responses.goto_definition_response import GotoDefinitionResponse
@@ -11,9 +12,12 @@ from tests.lang.lsp.base_lsp_test_case import BaseLspTestCase
 
 
 class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
+    provider: GotoDefinitionProvider
+
     async def asyncSetUp(self) -> None:
         await super().asyncSetUp()
         self.active_context = self.client.server.language_context
+        self.provider = self.client.server.providers.get(methods.DEFINITION)
         await self.create_document(TEST_DOCUMENT_NAME, TEST_DOCUMENT_CONTENT)
 
     async def goto_definition(self, file_name: str, line: int = 0, character: int = 0) -> GotoDefinitionResponse:
@@ -39,17 +43,15 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         )
 
     async def test_get_ranges_containing_name(self):
-        goto_definition_provider = self.client.server.providers.get(methods.DEFINITION)
-        text_range, *rest = goto_definition_provider.get_ranges_containing_name(TEST_DOCUMENT_CONTENT, TEST_DOCUMENT_SCHEMA_NAME)
+        text_range, *rest = self.provider.get_ranges_containing_name(TEST_DOCUMENT_CONTENT, TEST_DOCUMENT_SCHEMA_NAME)
         self.assertEqual(len(rest) + 1, TEST_DOCUMENT_CONTENT.count(TEST_DOCUMENT_SCHEMA_NAME))
 
         self.assertEqual(text_range.start, Position(line=2, character=8))
         self.assertEqual(text_range.end, Position(line=2, character=8 + len(TEST_DOCUMENT_SCHEMA_NAME)))
 
     async def test_get_named_location(self):
-        goto_definition_provider = self.client.server.providers.get(methods.DEFINITION)
-        document_uri = self.to_uri(TEST_DOCUMENT_NAME)
-        location, *_ = goto_definition_provider.get_definition_location(
+        document_uri = self.to_uri(TEST_DOCUMENT_NAME) or ""
+        location, *_ = self.provider.get_definition_location(
             {document_uri: self.virtual_document_to_lsp_document(TEST_DOCUMENT_NAME)},
             document_uri,
             Position(line=21, character=17),
@@ -59,44 +61,43 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         self.assertEqual(location.range.end, Position(line=2, character=8 + len(TEST_DOCUMENT_SCHEMA_NAME)))
 
     async def test_handles_goto_definition_request_when_cursor_at_definition(self):
-        goto_definition_provider = self.client.server.providers.get(methods.DEFINITION)
-        text_range, *_ = goto_definition_provider.get_ranges_containing_name(TEST_DOCUMENT_CONTENT, TEST_DOCUMENT_SCHEMA_NAME)
+        text_range, *_ = self.provider.get_ranges_containing_name(TEST_DOCUMENT_CONTENT, TEST_DOCUMENT_SCHEMA_NAME)
         line = text_range.start.line
         character = text_range.start.character
         res: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=line, character=character)
 
         location = res.get_location()
+        self.assertIsNotNone(location)
         self.assertEqual(location.range.start, Position(line=line, character=character))
         self.assertEqual(location.range.end, Position(line=line, character=character + len(TEST_DOCUMENT_SCHEMA_NAME)))
 
     async def test_handles_goto_definition_request_when_definition_in_same_document(self):
-        goto_definition_provider = self.client.server.providers.get(methods.DEFINITION)
-        definition_range, text_range, *_ = goto_definition_provider.get_ranges_containing_name(TEST_DOCUMENT_CONTENT, TEST_DOCUMENT_SCHEMA_NAME)
+        definition_range, text_range, *_ = self.provider.get_ranges_containing_name(TEST_DOCUMENT_CONTENT, TEST_DOCUMENT_SCHEMA_NAME)
         line = text_range.start.line
         character = text_range.start.character
         res: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=line, character=character)
 
         location = res.get_location()
+        self.assertIsNotNone(location)
         self.assertEqual(location.range.start, Position(line=definition_range.start.line, character=definition_range.start.character))
         self.assertEqual(location.range.end, Position(line=definition_range.end.line, character=definition_range.end.character))
 
     async def test_handles_goto_definition_request_when_definition_in_different_document(self):
-        goto_definition_provider = self.client.server.providers.get(methods.DEFINITION)
-
         added_content = f"{TEST_PARTIAL_CONTENT} {TEST_ADDITIONAL_SCHEMA_NAME}"
         added_document = await self.create_document("added.aac", added_content)
 
         new_test_document_content = f"{TEST_DOCUMENT_CONTENT}{YAML_DOCUMENT_SEPARATOR}{TEST_ADDITIONAL_MODEL_CONTENT}"
         await self.write_document(TEST_DOCUMENT_NAME, new_test_document_content)
 
-        text_range, *_ = goto_definition_provider.get_ranges_containing_name(new_test_document_content, TEST_ADDITIONAL_SCHEMA_NAME)
+        text_range, *_ = self.provider.get_ranges_containing_name(new_test_document_content, TEST_ADDITIONAL_SCHEMA_NAME)
         line = text_range.start.line
         character = text_range.start.character
         res: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=line, character=character)
 
-        definition_range, *_ = goto_definition_provider.get_ranges_containing_name(added_content, TEST_ADDITIONAL_SCHEMA_NAME)
+        definition_range, *_ = self.provider.get_ranges_containing_name(added_content, TEST_ADDITIONAL_SCHEMA_NAME)
 
         location = res.get_location()
+        self.assertIsNotNone(location)
         self.assertEqual(location.uri, self.to_uri(added_document.file_name))
         self.assertEqual(location.range.start, Position(line=definition_range.start.line, character=definition_range.start.character))
         self.assertEqual(location.range.end, Position(line=definition_range.end.line, character=definition_range.end.character))
