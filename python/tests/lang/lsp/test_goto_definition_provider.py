@@ -28,16 +28,15 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         Returns:
             A GotoDefinitionResponse that is returned from the LSP server.
         """
-        assert self.documents.get(file_name), f"Could not goto definition from virtual document because there is no document named {file_name}."
-
-        response = await self.client.send_request(
+        return await self.build_request(
+            file_name,
+            GotoDefinitionResponse,
             methods.DEFINITION,
             DefinitionParams(
                 text_document=TextDocumentIdentifier(uri=self.to_uri(file_name)),
                 position=Position(line=line, character=character),
             )
         )
-        return GotoDefinitionResponse(response.result())
 
     async def test_get_ranges_containing_name(self):
         goto_definition_provider = self.client.server.providers.get(methods.DEFINITION)
