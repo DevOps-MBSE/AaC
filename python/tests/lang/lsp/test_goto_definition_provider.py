@@ -7,7 +7,7 @@ from pygls.lsp.types.language_features.definition import DefinitionParams
 from aac.parser._parse_source import YAML_DOCUMENT_SEPARATOR
 
 from tests.helpers.lsp.responses.goto_definition_response import GotoDefinitionResponse
-from tests.lang.base_lsp_test_case import BaseLspTestCase
+from tests.lang.lsp.base_lsp_test_case import BaseLspTestCase
 
 
 class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):

@@ -1,6 +1,6 @@
 from unittest.async_case import IsolatedAsyncioTestCase
 
-from tests.lang.base_lsp_test_case import BaseLspTestCase
+from tests.lang.lsp.base_lsp_test_case import BaseLspTestCase
 
 
 class TestLspServer(BaseLspTestCase, IsolatedAsyncioTestCase):
