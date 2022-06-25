@@ -10,6 +10,7 @@ import yaml
 from yaml.parser import ParserError as YAMLParserError
 from typing import Optional
 
+from aac.files.aac_file import AaCFile
 from aac.parser._parser_error import ParserError
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.lexeme import Lexeme
@@ -46,12 +47,12 @@ def _parse_file(arch_file: str) -> list[Definition]:
     definitions: list[Definition] = []
 
     for file in _get_files_to_process(arch_file):
-        definitions.extend(_parse_str(file, _read_file_content(file)))
+        definitions.extend(_parse_str(file, _read_file_content(file), arch_file))
 
     return definitions
 
 
-def _parse_str(source: str, model_content: str) -> list[Definition]:
+def _parse_str(source: str, model_content: str, source_uri: Optional[str] = None) -> list[Definition]:
     """Parse a string containing one or more YAML model definitions.
 
     Args:
@@ -61,7 +62,6 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
     Returns:
         The AaC definitions that were built from the model contents.
     """
-
     def mark_to_source_location(start: yaml.error.Mark, end: yaml.error.Mark) -> SourceLocation:
         return SourceLocation(start.line, start.column, start.index, end.column - start.column)
 
@@ -74,6 +74,7 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
             lexemes.append(Lexeme(location, yaml_source, token.value))
         return lexemes
 
+    source_files = {}
     definitions: list[Definition] = []
     for doc in model_content.split(YAML_DOCUMENT_SEPARATOR):
         for root in _parse_yaml(source, doc):
@@ -84,7 +85,14 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
             root_name = root.get(root_type).get("name")
             contents = _add_yaml_document_separator(doc) if _has_document_separator(model_content, doc) else doc
             lexemes = get_lexemes_for_definition(contents)
-            definitions.append(Definition(root_name, contents, source, lexemes, root))
+            source_file_uri = source_uri or DEFAULT_SOURCE_URI
+            source_file = source_files.get(source_uri)
+
+            if not source_file:
+                source_file = AaCFile(source_file_uri, True, True)
+                source_files[source_file_uri] = source_file
+
+            definitions.append(Definition(root_name, contents, source_file, lexemes, root))
 
     return definitions
 
