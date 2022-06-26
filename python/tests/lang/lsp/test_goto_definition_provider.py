@@ -4,6 +4,7 @@ from pygls.lsp import methods
 from pygls.lsp.types.basic_structures import Position
 from pygls.lsp.types.language_features.definition import DefinitionParams
 
+from aac.spec.core import get_aac_spec_as_yaml
 from aac.lang.lsp.providers.goto_definition_provider import GotoDefinitionProvider
 from aac.parser._parse_source import YAML_DOCUMENT_SEPARATOR
 
@@ -104,6 +105,21 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         self.assertEqual(location.uri, self.to_uri(added_document.file_name))
         self.assertEqual(location.range.start, Position(line=definition_range.start.line, character=definition_range.start.character))
         self.assertEqual(location.range.end, Position(line=definition_range.end.line, character=definition_range.end.character))
+
+    async def test_handles_goto_definition_for_root_keys(self):
+        await self.create_document("spec.aac", get_aac_spec_as_yaml())
+
+        res: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=1, character=1)
+        schema_definition_location, *_ = self.provider.get_definition_location(
+            {self.to_uri(file_name): self.virtual_document_to_lsp_document(file_name) for file_name in self.documents.keys()},
+            self.to_uri(TEST_DOCUMENT_NAME),
+            Position(line=1, character=1),
+        )
+
+        location = res.get_location()
+        self.assertIsNotNone(location)
+        self.assertIn(location.uri, self.to_uri(schema_definition_location.uri))
+        self.assertIn(location.range.json(), schema_definition_location.range.json())
 
     async def test_no_results_when_nothing_under_cursor(self):
         res: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME)

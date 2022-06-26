@@ -24,7 +24,7 @@ class GotoDefinitionProvider(LspProvider):
         locations = []
         for doc in documents.values():
             ranges = self.get_ranges_containing_name(doc.source, name)
-            definition_ranges = [text_range for text_range in ranges if f"name: {name}" in doc.source.splitlines()[text_range.start.line]]
+            definition_ranges = [text_range for text_range in ranges if f"name: {name}" == doc.source.splitlines()[text_range.start.line].strip()]
             locations.extend([Location(uri=doc.uri, range=definition_range) for definition_range in definition_ranges])
         return locations
 
