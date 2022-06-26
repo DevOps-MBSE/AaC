@@ -50,7 +50,7 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
         Returns:
             The new virtual document
         """
-        assert self.documents.get(file_name) is None, f"Virtual document {file_name} already exists"
+        self.assertIsNone(self.documents.get(file_name), f"Virtual document {file_name} already exists")
 
         self.documents[file_name] = TextDocument(file_name=file_name, content=content)
         document = self.documents.get(file_name)
@@ -72,7 +72,10 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
         Args:
             file_name (str): The name of the file to close.
         """
-        assert self.documents.get(file_name), f"Could not close virtual document because there is no document named {file_name}."
+        self.assertIsNotNone(
+            self.documents.get(file_name),
+            f"Could not close virtual document because there is no document named {file_name}."
+        )
 
         await self.client.send_notification(
             methods.TEXT_DOCUMENT_DID_CLOSE,
@@ -87,7 +90,10 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
             file_name (str): The name of the virtual document whose content will be written.
             content (str): The content to write to the virtual document.
         """
-        assert self.documents.get(file_name), f"Could not write content to virtual document because there is no document named {file_name}."
+        self.assertIsNotNone(
+            self.documents.get(file_name),
+            f"Could not write content to virtual document because there is no document named {file_name}."
+        )
 
         document = self.documents.get(file_name)
         document.version += 1
@@ -110,17 +116,26 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
         Returns:
             The content of the specified virtual document.
         """
-        assert self.documents.get(file_name), f"Could not read content from virtual document because there is no document named {file_name}."
+        self.assertIsNotNone(
+            self.documents.get(file_name),
+            f"Could not read content from virtual document because there is no document named {file_name}."
+        )
         return self.documents.get(file_name).read()
 
     def to_uri(self, file_name: str) -> Optional[str]:
         """Return file_name as a file URI."""
-        assert self.documents.get(file_name), f"Could not get virtual document URI because there is no document named {file_name}."
+        self.assertIsNotNone(
+            self.documents.get(file_name),
+            f"Could not get virtual document URI because there is no document named {file_name}."
+        )
         return uris.from_fs_path(file_name)
 
     def virtual_document_to_lsp_document(self, file_name: str) -> Document:
         """Convert a virtual document to an LSP document."""
-        assert self.documents.get(file_name), f"Could not convert virtual document because there is no document named {file_name}."
+        self.assertIsNotNone(
+            self.documents.get(file_name),
+            f"Could not convert virtual document because there is no document named {file_name}."
+        )
         document = self.documents.get(file_name)
         return Document(uri=document.file_name, source=document.content, version=document.version, sync_kind=TextDocumentSyncKind.FULL)
 
