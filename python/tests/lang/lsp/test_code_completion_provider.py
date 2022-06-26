@@ -6,7 +6,8 @@ from pygls.lsp.types.language_features.completion import CompletionContext, Comp
 from aac.lang.lsp.providers.code_completion_provider import SPACE_TRIGGER
 
 from tests.helpers.lsp.responses.completion_response import CompletionResponse
-from tests.lang.lsp.base_lsp_test_case import BaseLspTestCase, TEST_DOCUMENT_NAME, TEST_PARTIAL_CONTENT
+from tests.lang.lsp.base_lsp_test_case import BaseLspTestCase
+from tests.lang.lsp.definition_constants import TEST_DOCUMENT_NAME, TEST_PARTIAL_CONTENT
 
 
 class TestCodeCompletionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):

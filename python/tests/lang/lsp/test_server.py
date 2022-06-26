@@ -1,7 +1,7 @@
 from unittest.async_case import IsolatedAsyncioTestCase
 
-from tests.lang.lsp.base_lsp_test_case import (
-    BaseLspTestCase,
+from tests.lang.lsp.base_lsp_test_case import BaseLspTestCase
+from tests.lang.lsp.definition_constants import (
     TEST_DOCUMENT_NAME,
     TEST_DOCUMENT_CONTENT,
     TEST_DOCUMENT_ADDITIONAL_CONTENT,

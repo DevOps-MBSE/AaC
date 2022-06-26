@@ -4,7 +4,8 @@ from pygls.lsp import methods
 from pygls.lsp.types.language_features.hover import HoverParams
 
 from tests.helpers.lsp.responses.hover_response import HoverResponse
-from tests.lang.lsp.base_lsp_test_case import BaseLspTestCase, TEST_DOCUMENT_NAME
+from tests.lang.lsp.base_lsp_test_case import BaseLspTestCase
+from tests.lang.lsp.definition_constants import TEST_DOCUMENT_NAME
 
 
 class TestHoverProvider(BaseLspTestCase, IsolatedAsyncioTestCase):

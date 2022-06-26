@@ -9,8 +9,8 @@ from aac.lang.lsp.providers.goto_definition_provider import GotoDefinitionProvid
 from aac.parser._parse_source import YAML_DOCUMENT_SEPARATOR
 
 from tests.helpers.lsp.responses.goto_definition_response import GotoDefinitionResponse
-from tests.lang.lsp.base_lsp_test_case import (
-    BaseLspTestCase,
+from tests.lang.lsp.base_lsp_test_case import BaseLspTestCase
+from tests.lang.lsp.definition_constants import (
     TEST_DOCUMENT_NAME,
     TEST_DOCUMENT_CONTENT,
     TEST_DOCUMENT_SCHEMA_NAME,
