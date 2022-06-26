@@ -6,6 +6,7 @@ import json
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.plugins.rest_api.aac_rest_app import app
 from aac.plugins.rest_api.models.definition_model import to_definition_model
+from aac.plugins.rest_api.models.file_model import to_file_model
 from aac.spec import get_aac_spec
 
 from tests.active_context_test_case import ActiveContextTestCase
@@ -17,12 +18,12 @@ class TestAacRestApi(ActiveContextTestCase):
 
     def test_get_files(self):
         active_context = get_active_context()
-        expected_filenames = list({definition.source_uri for definition in active_context.definitions})
+        expected_result = [to_file_model(file) for file in active_context.get_files_in_context()]
 
         response = self.test_client.get("/files")
-        actual_response = response.json().get("files")
+        actual_result = response.json()
         self.assertEqual(HTTPStatus.OK, response.status_code)
-        self.assertListEqual(expected_filenames, actual_response)
+        self.assertListEqual(expected_result, actual_result)
 
     def test_get_definitions(self):
         self.maxDiff = None
@@ -39,14 +40,14 @@ class TestAacRestApi(ActiveContextTestCase):
         for definition in active_context.definitions:
             response_definition = [def_model for def_model in actual_response if def_model.get("name") == definition.name]
             self.assertEqual(definition.name, response_definition[0].get("name"))
-            self.assertEqual(definition.source_uri, response_definition[0].get("source_uri"))
+            self.assertEqual(definition.source.uri, response_definition[0].get("source_uri"))
 
     def test_get_definition_by_name(self):
         definitions_to_lookup = get_aac_spec()
         successfully_found_definitions = []
 
         for definition in definitions_to_lookup:
-            response = self.test_client.get(f"/definitions/{definition.name}")
+            response = self.test_client.get(f"/definition?name={definition.name}")
             actual_response = response.json()
             expected_response = jsonable_encoder(to_definition_model(definition))
             self.assertEqual(HTTPStatus.OK, response.status_code)

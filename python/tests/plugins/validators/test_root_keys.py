@@ -2,7 +2,6 @@ import logging
 
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.definition_helpers import get_definition_by_name, get_definitions_by_root_key
-from aac.lang.definitions.definition import Definition
 from aac.parser import parse
 from aac.plugins.validators import ValidatorPlugin
 from aac.plugins.validators.root_keys import get_plugin_aac_definitions, register_validators, validate_root_keys
@@ -43,12 +42,9 @@ class TestRootKeysValidator(ActiveContextTestCase):
 
     def test_validate_root_keys_invalid_key(self):
         fake_root_key = "not_a_root_key"
-        test_definition_dict = {
-            fake_root_key: {
-                "name": "Test",
-            }
-        }
-        test_definition = Definition("Test", "", "", [], test_definition_dict)
+        test_definition = create_schema_definition("Test")
+        test_definition.structure[fake_root_key] = test_definition.structure[test_definition.get_root_key()]
+        del test_definition.structure[test_definition.get_root_key()]
 
         test_active_context = get_active_context()
         test_active_context.add_definition_to_context(test_definition)
@@ -60,13 +56,9 @@ class TestRootKeysValidator(ActiveContextTestCase):
 
     def test_validate_root_keys_valid_extended_root_key(self):
         fake_extended_root_key = "extended_root_key"
-        test_definition_dict = {
-            fake_extended_root_key: {
-                "name": "Test",
-            }
-        }
-
-        test_definition = Definition("Test", "", "", [], test_definition_dict)
+        test_definition = create_schema_definition("Test")
+        test_definition.structure[fake_extended_root_key] = test_definition.structure[test_definition.get_root_key()]
+        del test_definition.structure[test_definition.get_root_key()]
 
         new_root_field = create_field_entry(fake_extended_root_key, fake_extended_root_key)
         root_key_extension = create_schema_ext_definition("NewRootKeys", "root", fields=[new_root_field])

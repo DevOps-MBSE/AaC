@@ -126,7 +126,7 @@ def _get_definitions_from_definition_models(definition_models: list[DefinitionMo
 
         if old_definition:
             new_content = yaml.dump(model.structure, sort_keys=False)
-            present_definitions.append(Definition(model.name, new_content, old_definition.source.uri, [], model.structure))
+            present_definitions.append(Definition(model.name, new_content, old_definition.source, [], model.structure))
         else:
             missing_definitions.append(model.name)
 

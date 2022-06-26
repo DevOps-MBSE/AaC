@@ -1,3 +1,7 @@
+from unittest import TestCase
+
+from aac.files.aac_file import AaCFile
+from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.definitions.definition import Definition
 from aac.validate import validated_definitions, validated_source, ValidationError
 
@@ -83,7 +87,8 @@ class TestValidate(ActiveContextTestCase):
                 "name": "Test",
             }
         }
-        invalid_root_key_definition = Definition("Test", "", "", [], test_definition_dict)
+        invalid_definition_source = AaCFile("<test>", True, False)
+        invalid_root_key_definition = Definition("Test", "", invalid_definition_source, [], test_definition_dict)
 
         with self.assertRaises(ValidationError) as error:
             with validated_definitions([invalid_data_definition, invalid_root_key_definition]):
