@@ -1,7 +1,4 @@
-from unittest import TestCase
-
 from aac.files.aac_file import AaCFile
-from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.definitions.definition import Definition
 from aac.validate import validated_definitions, validated_source, ValidationError
 
