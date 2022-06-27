@@ -3,6 +3,7 @@ import logging
 import os
 
 from aac.parser import parse, ParserError
+from aac.files.aac_file import AaCFile
 
 
 def find_aac_files(root_directory_to_search: str) -> list[str]:
@@ -16,7 +17,7 @@ def find_aac_files(root_directory_to_search: str) -> list[str]:
             for filename in filenames:
                 filepath = os.path.join(directory_path, filename)
                 if is_aac_file(filepath):
-                    aac_files.append(filepath)
+                    aac_files.append(AaCFile(filepath, True, False))
     else:
         logging.error(f"Root path '{root_dir_abs_path}' for AaC file discovery is not a directory.")
 
