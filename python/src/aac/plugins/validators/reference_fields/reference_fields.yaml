@@ -1,8 +1,8 @@
 validation:
-  name: Required fields are present
-  description: Verifies every field declared as required is present and populated
+  name: References are valid
+  description: Verifies every field declared as reference is properly formatted for processing
   behavior:
-    - name: Verify that definition fields marked as required are populated.
+    - name: Verify that reference fields properly formatted.
       type: request-response
       description:
       input:
@@ -12,23 +12,22 @@ validation:
         - name: results
           type: ValidatorOutput
       acceptance:
-        - scenario: Successfully Validate a definition's required fields
+        - scenario: Successfully Validate a definition's reference fields
           given:
             - The ValidatorInput content consists of valid AaC definitions.
-            - The ValidatorInput contains some AaC definitions that reference other definitions.
+            - The ValidatorInput contains some AaC fields that reference other definitions.
           when:
             - The input is validation
           then:
             - The ValidatorOutput does not indicate any errors
             - The ValidatorOutput does not indicate any warnings
             - The ValidatorOutput indicates the validator plugin under test is valid
-        - scenario: Fail to validate a definition's required fields
+        - scenario: Fail to validate a definition's reference fields
           given:
             - The ValidatorInput content consists of otherwise valid AaC definitions.
-            - The ValidatorInput contains at least one field that is required.
-            - The ValidatorInput contains at least one required field that is missing.
+            - The ValidatorInput contains at least one reference field that is incorrectly formatted.
           when:
             - The ValidatorInput is validated
           then:
             - The ValidatorOutput has errors
-            - The ValidatorOutput errors indicate that there are missing required fields
+            - The ValidatorOutput errors indicate that there are incorrectly formatted reference fields

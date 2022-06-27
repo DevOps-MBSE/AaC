@@ -1,4 +1,5 @@
 import logging
+import re
 from typing import Any
 
 from aac.lang.language_context import LanguageContext
@@ -22,24 +23,33 @@ def validate_reference_fields(definition_under_test: Definition, target_schema_d
         A ValidatorResult containing any applicable error messages.
     """
     error_messages = []
-    required_field_names = validation_args
+    reference_field_names = validation_args
     schema_defined_fields_as_list = target_schema_definition.get_top_level_fields().get("fields") or []
     schema_defined_fields_as_dict = {field.get("name"): field for field in schema_defined_fields_as_list}
 
     def validate_dict(dict_to_validate: dict) -> None:
-        for required_field_name in required_field_names:
-            field_value = dict_to_validate.get(required_field_name)
-            field_type = schema_defined_fields_as_dict.get(required_field_name, {}).get("type")
+        for reference_field_name in reference_field_names:
+            field_value = dict_to_validate.get(reference_field_name)
+            field_type = schema_defined_fields_as_dict.get(reference_field_name, {}).get("type")
 
-            if field_value is None:
-                missing_required_field = f"Required field '{required_field_name}' missing from: {dict_to_validate}"
-                error_messages.append(missing_required_field)
-                logging.debug(missing_required_field)
+            # field type must be reference
+            if field_type != "reference":
+                non_reference_field = f"Reference format validation cannot be performed on non-reference field '{reference_field_name}'.  Type is '{field_type}'"
+                error_messages.append(non_reference_field)
+                logging.debug(non_reference_field)
 
-            elif not _is_field_populated(field_type, field_value):
-                unpopulated_required_field = f"Required field '{required_field_name}' is not populated in: {dict_to_validate}"
-                error_messages.append(unpopulated_required_field)
-                logging.debug(unpopulated_required_field)
+            # field must not be empty
+            elif field_value is None:
+                missing_reference_field = f"Reference field '{reference_field_name}' value is missing"
+                error_messages.append(missing_reference_field)
+                logging.debug(missing_reference_field)
+
+            # field must be contain a parsable reference value
+            elif not _is_reference_parsable(field_value):
+                invalid_reference_format = f"Reference field '{reference_field_name}' is not properly formatted: {field_value}"
+                error_messages.append(invalid_reference_format)
+                logging.debug(invalid_reference_format)
+
 
     dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)
     list(map(validate_dict, dicts_to_test))
@@ -47,16 +57,25 @@ def validate_reference_fields(definition_under_test: Definition, target_schema_d
     return ValidatorResult(error_messages, len(error_messages) == 0)
 
 
-def _is_field_populated(field_type: str, field_value: Any) -> bool:
-    """Return a boolean indicating is the field is considered 'populated'."""
-    is_field_array_type = is_array_type(field_type)
-    is_field_populated = False
+def _is_reference_parsable(field_value: Any) -> bool:
+    """
+    Return a boolean indicating if the reference can be successfully parsed.
+    Reference fields contain a sequence of reference terms separated by a period.
+    Each reference term contains an identifier and an optional selector.  The identifier
+    is just a string correlating to a name in a schema structure.  Schema hierarchy is
+    traversed using dot notation (e.g. parent.child.grandchild).  The optional selector
+    is provided within parameters and contains a child field name and value (e.g. parent(name="MyModel")).
+    A reference is parsable if the reference convention is followed regardless of
+    whether the reference results in identification of a valid reference target.
+    """
+    # This assumes input is not None
 
-    if is_field_array_type:
-        is_field_populated = len(field_value) > 0
-    elif type(field_value) is bool:
-        is_field_populated = field_value is not None
-    elif field_value:
-        is_field_populated = True
+    found_invalid_segment = False
 
-    return is_field_populated
+    for segment in field_value.split('.'):
+
+        if not re.search(".*\(\w*\=\"?\w+\"?\)", segment):  # this regex needs work, it is too forgiving
+            # segment content consistent with segment formatting
+            found_invalid_segment = True
+
+    return not found_invalid_segment

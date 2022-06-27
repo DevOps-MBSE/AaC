@@ -46,4 +46,4 @@ def get_reference_fields(definition: Definition) -> list[str]:
     return reference_validation and reference_validation[0].get("arguments") or []
 
 
-REFERENCE_FIELDS_VALIDATION_STRING = reference_validators().name
+REFERENCE_FIELDS_VALIDATION_STRING = register_validators().name
