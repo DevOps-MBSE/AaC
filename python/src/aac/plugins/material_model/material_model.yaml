@@ -63,7 +63,7 @@ schema:
       arguments:
         - part-ref
         - quantity
-    - name: References are valid
+    - name: Reference target valid
       arguments:
         - part-ref
 ---
@@ -104,7 +104,7 @@ schema:
       arguments:
         - assembly-ref
         - quantity
-    - name: References are valid
+    - name: Reference target valid
       arguments:
         - assembly-ref
 ---
@@ -155,7 +155,7 @@ schema:
       arguments:
         - deployment-ref
         - quantity
-    - name: References are valid
+    - name: Reference format valid
       arguments:
         - deployment-ref
 ---

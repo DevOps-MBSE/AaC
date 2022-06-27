@@ -1,5 +1,5 @@
 validation:
-  name: References are valid
+  name: Reference format valid
   description: Verifies every field declared as reference is properly formatted for processing
   behavior:
     - name: Verify that reference fields properly formatted.

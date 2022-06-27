@@ -4,12 +4,13 @@ from typing import Any
 
 from aac.lang.language_context import LanguageContext
 from aac.lang.definitions.definition import Definition
+from aac.lang.definitions.search import search
 from aac.lang.definitions.type import is_array_type
 from aac.lang.definitions.structure import get_substructures_by_type
 from aac.plugins.validators import ValidatorResult
 
 
-def validate_reference_fields(definition_under_test: Definition, target_schema_definition: Definition, language_context: LanguageContext, *validation_args) -> ValidatorResult:
+def validate_reference_targets(definition_under_test: Definition, target_schema_definition: Definition, language_context: LanguageContext, *validation_args) -> ValidatorResult:
     """
     Validates that the content of all specified reference fields is properly formatted.
 
@@ -50,6 +51,12 @@ def validate_reference_fields(definition_under_test: Definition, target_schema_d
                 error_messages.append(invalid_reference_format)
                 logging.debug(invalid_reference_format)
 
+            # field must reference an existing target
+            elif not _reference_target_exists(reference_field_name, field_value, language_context):
+                invalid_reference_target = f"Reference field '{reference_field_name}' does not have a defined target: {field_value}"
+                error_messages.append(invalid_reference_target)
+                logging.debug(invalid_reference_target)
+
 
     dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)
     list(map(validate_dict, dicts_to_test))
@@ -79,3 +86,55 @@ def _is_reference_parsable(field_name: Any, field_value: Any) -> bool:
             found_invalid_segment = True
 
     return not found_invalid_segment
+
+def _reference_target_exists(field_name: Any, field_value: Any, language_context: LanguageContext) -> bool:
+    """
+    Return a boolean indicating if the reference target exists in the defined model.
+    """
+    # This assumes input is not None and is valid
+
+    # First get the root element and optional selector
+    segments = field_value.split('.')
+    root_segment = segments[0]
+    root, root_selector = _get_segment_content(segments[0])
+
+    # Now get all definitions of that root type as our basis of target search
+    search_space = language_context.get_definitions_by_root_key(root)
+    print(f"len(search_space) = {len(search_space)}")
+
+    keepers = []
+    # Next if there is a selector, remove all items that don't satisfy the selector
+    if root_selector:
+        field_name, field_value = root_selector.split("=")
+        field_value = field_value.strip('\"')  # remove quotes if they exist
+        for model in search_space:
+            selector_field_value = model.get_top_level_fields()[field_name]
+            print(f"comparing selector '{field_value}' with selector_field_value '{selector_field_value}'")
+            if selector_field_value == field_value:
+                keepers.append(model)
+                print(f"keeping model from selector, match!")
+
+        print(f"len(keepers) = {len(keepers)}")
+
+    return len(keepers) > 0
+
+
+def _process_segment(current_segment: str, future_segments: list(str), language_context: LanguageContext) -> list(Definition):
+    """
+    This should process segments recursively
+    """
+    # TODO refactor the above function into a recursive behavior that will work through segments
+    return []
+
+
+def _get_segment_content(segment: Any) -> tuple:
+    element = ""
+    selector = ""
+    if segment.find('(') :
+        element = segment.partition('(')[0]
+        selector = segment[segment.find('(')+1:segment.find(')')]
+
+    else:
+        element = segment
+
+    return element, selector

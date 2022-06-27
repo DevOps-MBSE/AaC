@@ -1,8 +1,8 @@
 validation:
-  name: Reference targets are valid
+  name: Reference target valid
   description: Verifies every field declared as reference are valid and reference an existing model element
   behavior:
-    - name: Verify that reference targets exist.
+    - name: Reference target valid
       type: request-response
       description:
       input:
@@ -15,19 +15,19 @@ validation:
         - scenario: Successfully Validate a definition's reference field targets
           given:
             - The ValidatorInput content consists of valid AaC definitions.
-            - The ValidatorInput contains some AaC fields that reference other definitions.
+            - The ValidatorInput contains some AaC fields that reference other existing definitions.
           when:
             - The input is validation
           then:
             - The ValidatorOutput does not indicate any errors
             - The ValidatorOutput does not indicate any warnings
             - The ValidatorOutput indicates the validator plugin under test is valid
-        - scenario: Fail to validate a definition's reference fields
+        - scenario: Fail to validate a definition's reference field targets
           given:
             - The ValidatorInput content consists of otherwise valid AaC definitions.
-            - The ValidatorInput contains at least one reference field that is incorrectly formatted.
+            - The ValidatorInput contains at least one reference field that references a non-existent target.
           when:
             - The ValidatorInput is validated
           then:
             - The ValidatorOutput has errors
-            - The ValidatorOutput errors indicate that there are incorrectly formatted reference fields
+            - The ValidatorOutput errors indicate that there are reference field targets
