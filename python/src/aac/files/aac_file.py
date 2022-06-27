@@ -2,7 +2,7 @@
 from attr import attrib, attrs, validators
 
 
-@attrs
+@attrs(eq=False)
 class AaCFile:
     """
     An Architecture-as-Code file containing AaC definitions.
@@ -15,3 +15,9 @@ class AaCFile:
     uri: str = attrib(validator=validators.instance_of(str))
     is_user_editable: bool = attrib(validator=validators.instance_of(bool))
     is_loaded_in_context: bool = attrib(validator=validators.instance_of(bool))
+
+    def __hash__(self):
+        return hash(self.uri)
+
+    def __eq__(self, obj):
+        return isinstance(obj, AaCFile) and obj.uri == self.uri
