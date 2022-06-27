@@ -32,7 +32,7 @@ def apply_extension_to_definition(extension_definition: Definition, target_defin
             f"Attempted to apply an extension to the incorrect target. Extension name '{extension_definition.name}' target definition '{target_definition.name}'"
         )
 
-    _add_extension_required_fields_to_defintion(target_definition_fields_dict, extension_additional_content)
+    _add_extension_required_fields_to_definition(target_definition_fields_dict, extension_additional_content)
 
 
 def remove_extension_from_definition(extension_definition: Definition, target_definition: Definition) -> None:
@@ -59,7 +59,7 @@ def remove_extension_from_definition(extension_definition: Definition, target_de
             f"Attempted to remove a missing extension field from target. Extension name '{extension_definition.name}' target definition '{target_definition.name}'"
         )
 
-    _remove_extension_required_fields_to_defintion(target_definition_fields, extension_additional_content)
+    _remove_extension_required_fields_to_definition(target_definition_fields, extension_additional_content)
 
 
 def _get_extension_additional_content_dict(extension_definition: Definition) -> dict:
@@ -103,7 +103,7 @@ def _remove_schema_fields(target_fields: list, fields_to_remove: list):
     return list(updated_fields_list.values())
 
 
-def _add_extension_required_fields_to_defintion(target_definition_fields: dict, extension_additional_content_fields: dict) -> None:
+def _add_extension_required_fields_to_definition(target_definition_fields: dict, extension_additional_content_fields: dict) -> None:
     """Add any additional required fields from the extension to the target definition."""
     extension_required_fields = extension_additional_content_fields.get("required")
     definition_validations = _get_definition_validations(target_definition_fields)
@@ -117,7 +117,7 @@ def _add_extension_required_fields_to_defintion(target_definition_fields: dict, 
         required_fields_validation["arguments"].extend(extension_required_fields)
 
 
-def _remove_extension_required_fields_to_defintion(target_definition_fields: dict, extension_additional_content_fields: dict) -> None:
+def _remove_extension_required_fields_to_definition(target_definition_fields: dict, extension_additional_content_fields: dict) -> None:
     """Remove the extension's required fields from the target definition's required fields."""
     target_required_fields = []
     definition_validations = _get_definition_validations(target_definition_fields)

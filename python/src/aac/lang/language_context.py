@@ -233,11 +233,11 @@ class LanguageContext:
         Returns:
             A boolean indicating if the string matches an enum type defined in the context.
         """
-        defintion = self.get_definition_by_name(type)
+        definition = self.get_definition_by_name(type)
 
         is_enum_type = False
-        if defintion:
-            is_enum_type = defintion.is_enum()
+        if definition:
+            is_enum_type = definition.is_enum()
 
         return is_enum_type
 

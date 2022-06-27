@@ -1,17 +1,14 @@
 import io
 import sys
-from unittest import TestCase
 from unittest.mock import patch
 
 from aac import __version__ as aac_version
 from aac.cli.execute import run_cli
-from aac.lang.active_context_lifecycle_manager import get_active_context
+
+from tests.active_context_test_case import ActiveContextTestCase
 
 
-class TestExecute(TestCase):
-    def setUp(self):
-        get_active_context(reload_context=True)
-
+class TestExecute(ActiveContextTestCase):
     @patch('argparse._sys.argv', ['aac', 'version'])
     def test_run_cli_version_command(self):
         captured_output = io.StringIO()

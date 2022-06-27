@@ -3,15 +3,20 @@
 import os
 import asyncio
 
+from asyncio.tasks import sleep
 from threading import Thread
+from typing import Optional
 
 from pygls.lsp import methods
 from pygls.lsp.types import Model
-from pygls.server import LanguageServer
 
 from aac.lang.lsp.language_server import AacLanguageServer
 
 
+# We have to sleep to give the server enough time to finish processing changes to the active
+# context, etc. Just awaiting the send_request function isn't enough since the request will get
+# sent and return.
+SLEEP_TIME = 1
 DEFAULT_TIMEOUT_IN_SECONDS = 3
 
 
@@ -33,10 +38,10 @@ class LspTestClient:
 
         self.server, self._server_thread = self._configure_ls(client_server_reader, server_client_writer)
         self.client, self._client_thread = self._configure_ls(server_client_reader, client_server_writer)
-        self.aac_language_server = AacLanguageServer(language_server=self.server)
 
     def _configure_ls(self, reader: int, writer: int):
-        """Create, configure, and return a new LanguageServer and it's associated thread.
+        """
+        Create, configure, and return a new LanguageServer and it's associated thread.
 
         Args:
             reader (int): The file descriptor used for reading standard input.
@@ -45,23 +50,23 @@ class LspTestClient:
         Returns:
             The newly created LanguageServer and it's associated thread.
         """
-        ls = LanguageServer(asyncio.new_event_loop())
+        ls = AacLanguageServer(loop=asyncio.new_event_loop())
         thread = Thread(target=ls.start_io, args=(os.fdopen(reader, "rb"), os.fdopen(writer, "wb")))
         thread.daemon = True
         return ls, thread
 
-    def start(self):
+    async def start(self):
         """Start the test LSP server and client."""
         self._server_thread.start()
         self.server.thread_id = self._server_thread.ident
         self._client_thread.start()
 
-    def stop(self):
+    async def stop(self):
         """Stop the test LSP server and client."""
-        shutdown_response = self.send_request(methods.SHUTDOWN).result(timeout=DEFAULT_TIMEOUT_IN_SECONDS)
+        shutdown_response = (await self.send_request(methods.SHUTDOWN)).result(timeout=DEFAULT_TIMEOUT_IN_SECONDS)
         assert shutdown_response is None
 
-        self.send_notification(methods.EXIT)
+        await self.send_notification(methods.EXIT)
         self._server_thread.join()
 
         self.client._stop_event.set()
@@ -71,29 +76,28 @@ class LspTestClient:
             pass
         self._client_thread.join()
 
-    def send_request(self, method: str, params: Model = None, timeout: int = DEFAULT_TIMEOUT_IN_SECONDS):
-        """Send a request to the server.
+    async def send_request(self, method: str, params: Optional[Model] = None):
+        """
+        Send a request to the server.
 
         Args:
             method (str): The LSP method to use for the request.
             params (Model): The parameters to send with the request. (optional)
-            timeout (int): The timeout to use when waiting for a result. If not passed,
-                           DEFAULT_TIMEOUT_IN_SECONDS is used.
 
         Returns:
             The LSP response for the sent request.
         """
-        if params:
-            return self.client.lsp.send_request(method, params).result(timeout=timeout)
-        return self.client.lsp.send_request(method)
+        response = self.client.lsp.send_request(method, params)
+        await sleep(SLEEP_TIME)
+        return response
 
-    def send_notification(self, method: str):
-        """Send a notification to the server.
+    async def send_notification(self, method: str, params: Optional[Model] = None) -> None:
+        """
+        Send a notification to the server.
 
         Args:
             method (str): The LSP method to use for the notification.
-
-        Returns:
-            The LSP response for the sent notification.
+            params (Optional[Model]): Optional parameters to send with the notification.
         """
-        return self.client.lsp.notify(method)
+        self.client.lsp.notify(method, params)
+        await sleep(SLEEP_TIME)

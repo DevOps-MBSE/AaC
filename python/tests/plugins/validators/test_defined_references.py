@@ -1,19 +1,15 @@
-from unittest import TestCase
-
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.definition_helpers import get_definition_by_name, get_definitions_by_root_key
 from aac.parser import parse
 from aac.plugins.validators import ValidatorPlugin, ValidatorResult
 from aac.plugins.validators.defined_references import get_plugin_aac_definitions, register_validators, validate_references
-from tests.helpers.context import get_core_spec_context
 
+from tests.active_context_test_case import ActiveContextTestCase
+from tests.helpers.context import get_core_spec_context
 from tests.helpers.parsed_definitions import create_schema_definition, create_field_entry
 
 
-class TestDefinedReferencesPlugin(TestCase):
-    def setUp(self) -> None:
-        get_active_context(reload_context=True)
-
+class TestDefinedReferencesPlugin(ActiveContextTestCase):
     def test_module_register_validators(self):
         actual_validator_plugin = register_validators()
 
@@ -45,15 +41,15 @@ class TestDefinedReferencesPlugin(TestCase):
         invalid_definition_type = "ThisTypeStringWontAppearInTheCoreSpecIHope"
 
         test_invalid_definition_reference_field = create_field_entry("InvalidBehaviorField", invalid_definition_type)
-        test_invalid_schema_defintion = create_schema_definition("InvalidSchema", fields=[test_invalid_definition_reference_field])
+        test_invalid_schema_definition = create_schema_definition("InvalidSchema", fields=[test_invalid_definition_reference_field])
 
         invalid_reference_error_message = ""
         expected_result = ValidatorResult([invalid_reference_error_message], False)
 
-        test_active_context = get_core_spec_context([test_invalid_schema_defintion])
+        test_active_context = get_core_spec_context([test_invalid_schema_definition])
         field_definition = test_active_context.get_definition_by_name("Field")
 
-        actual_result = validate_references(test_invalid_schema_defintion, field_definition, test_active_context)
+        actual_result = validate_references(test_invalid_schema_definition, field_definition, test_active_context)
 
         self.assertEqual(expected_result.is_valid, actual_result.is_valid)
         self.assertIn("Undefined", "\n".join(actual_result.messages))
@@ -64,15 +60,15 @@ class TestDefinedReferencesPlugin(TestCase):
         invalid_primitive_type = "striiiiing"
 
         test_invalid_primitive_reference_field = create_field_entry("InvalidPrimitiveField", invalid_primitive_type)
-        test_invalid_schema_defintion = create_schema_definition("InvalidSchema", fields=[test_invalid_primitive_reference_field])
+        test_invalid_schema_definition = create_schema_definition("InvalidSchema", fields=[test_invalid_primitive_reference_field])
 
         invalid_reference_error_message = ""
         expected_result = ValidatorResult([invalid_reference_error_message], False)
 
-        test_active_context = get_core_spec_context([test_invalid_schema_defintion])
+        test_active_context = get_core_spec_context([test_invalid_schema_definition])
         field_definition = test_active_context.get_definition_by_name("Field")
 
-        actual_result = validate_references(test_invalid_schema_defintion, field_definition, test_active_context)
+        actual_result = validate_references(test_invalid_schema_definition, field_definition, test_active_context)
 
         self.assertEqual(expected_result.is_valid, actual_result.is_valid)
         self.assertIn("Undefined", "\n".join(actual_result.messages))

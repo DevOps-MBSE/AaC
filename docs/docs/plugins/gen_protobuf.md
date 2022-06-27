@@ -31,8 +31,9 @@ Protobuf messages will only be generated for data structures identified as inter
 # Protobuf 3 Features
 
 Feature Implementation:
+
 | Feature | Implementation Status |
-|---------|-------------|
+|---------|-----------------------|
 | [Scalar Values](#scalar-values) | ✅ Implemented |
 | [User-defined Message Types](#user-defined-message-types) | ✅ Implemented |
 | [Embedded Comments](#embedded-comments) | ✅ Implemented |

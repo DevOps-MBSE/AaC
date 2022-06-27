@@ -16,6 +16,10 @@ from aac.lang.definitions.lexeme import Lexeme
 from aac.lang.definitions.source_location import SourceLocation
 
 
+YAML_DOCUMENT_SEPARATOR = "---"
+DEFAULT_SOURCE_URI = "<string>"
+
+
 def parse(source: str, source_uri: Optional[str] = None) -> list[Definition]:
     """Parse the Architecture-as-Code (AaC) definition(s) from the provided source.
 
@@ -27,69 +31,27 @@ def parse(source: str, source_uri: Optional[str] = None) -> list[Definition]:
         A list of Definition objects containing the internal representation of the definition and metadata
         associated with the definition.
     """
-
-    def mark_to_source_location(start: yaml.error.Mark, end: yaml.error.Mark) -> SourceLocation:
-        return SourceLocation(start.line, start.column, start.index, end.column - start.column)
-
-    def get_lexemes_for_definition(contents):
-        yaml_source = path.abspath(source) if path.lexists(source) else "<string>"
-        lexemes = []
-        tokens = [token for token in yaml.scan(contents, Loader=yaml.SafeLoader) if hasattr(token, "value")]
-        for token in tokens:
-            location = mark_to_source_location(token.start_mark, token.end_mark)
-            lexemes.append(Lexeme(location, yaml_source, token.value))
-        return lexemes
-
-    contents = get_yaml_from_source(source)
-    definition_dicts = _parse_file(source) if path.lexists(source) else _parse_str(source, contents)
-
-    parsed_definitions = []
-    for name, definition_dict in definition_dicts.items():
-        uri, definition_dict = list(definition_dict.items())[0]
-        definition_uri = source_uri or uri
-        parsed_definitions.append(Definition(name, contents, definition_uri, get_lexemes_for_definition(contents), definition_dict))
-
-    return parsed_definitions
+    return _parse_file(source) if path.lexists(source) else _parse_str(source_uri or DEFAULT_SOURCE_URI, source)
 
 
-def get_yaml_from_source(source: str) -> str:
-    """Get the YAML contents from the provided source.
-
-    Args:
-        source (str): The source from which to get the YAML contents. This can be a path-like
-        string pointing to a file with YAML contents; or a string of YAML contents.
-
-    Returns:
-        The YAML contents extracted from source.
-    """
-    if path.lexists(source):
-        return _read_file_content(source)
-    return source
-
-
-def _parse_file(arch_file: str) -> dict[str, dict]:
-    """Parse an Architecture-as-Code YAML file.
+def _parse_file(arch_file: str) -> list[Definition]:
+    """Parse an Architecture-as-Code YAML file and return the definitions in it.
 
     Args:
         arch_file (str): The Architecture-as-Code YAML file to be parsed.
 
     Returns:
-        The parse method returns a dict of each root type defined in the Arch-as-Code spec. If
-        validation of the provided YAML file fails, an error message is displayed and None is
-        returned.
+        The AaC definitions extracted from the specified file.
     """
-    parsed_models: dict[str, dict] = {}
+    definitions: list[Definition] = []
 
-    files = _get_files_to_process(arch_file)
+    for file in _get_files_to_process(arch_file):
+        definitions.extend(_parse_str(file, _read_file_content(file)))
 
-    for file in files:
-        contents = _read_file_content(file)
-        parsed_models = parsed_models | _parse_str(file, contents)
-
-    return parsed_models
+    return definitions
 
 
-def _parse_str(source: str, model_content: str) -> dict[str, dict]:
+def _parse_str(source: str, model_content: str) -> list[Definition]:
     """Parse a string containing one or more YAML model definitions.
 
     Args:
@@ -97,22 +59,39 @@ def _parse_str(source: str, model_content: str) -> dict[str, dict]:
         model_content:  The YAML to parse
 
     Returns:
-        A dictionary of the parsed model(s). The key is the type name from the model and the
-        value is the parsed model root.
+        The AaC definitions that were built from the model contents.
     """
-    parsed_models: dict[str, dict] = {}
 
-    roots = _parse_yaml(source, model_content)
+    def mark_to_source_location(start: yaml.error.Mark, end: yaml.error.Mark) -> SourceLocation:
+        return SourceLocation(start.line, start.column, start.index, end.column - start.column)
 
-    for root in roots:
-        if "import" in root:
-            del root["import"]
+    def get_lexemes_for_definition(contents):
+        yaml_source = path.abspath(source) if path.lexists(source) else DEFAULT_SOURCE_URI
+        lexemes = []
+        tokens = [token for token in yaml.scan(contents, Loader=yaml.SafeLoader) if hasattr(token, "value")]
+        for token in tokens:
+            location = mark_to_source_location(token.start_mark, token.end_mark)
+            lexemes.append(Lexeme(location, yaml_source, token.value))
+        return lexemes
 
-        root_type, *_ = root.keys()
-        root_name = root.get(root_type).get("name")
-        parsed_models = parsed_models | {root_name: {source: root}}
+    definitions: list[Definition] = []
+    for doc in model_content.split(YAML_DOCUMENT_SEPARATOR):
+        for root in _parse_yaml(source, doc):
+            if "import" in root:
+                del root["import"]
 
-    return parsed_models
+            root_type, *_ = root.keys()
+            root_name = root.get(root_type).get("name")
+            contents = _add_yaml_document_separator(doc) if _has_document_separator(model_content, doc) else doc
+            lexemes = get_lexemes_for_definition(contents)
+            definitions.append(Definition(root_name, contents, source, lexemes, root))
+
+    return definitions
+
+
+def _has_document_separator(model_content: str, document: str) -> bool:
+    before, _, _ = model_content.partition(document)
+    return before.endswith(YAML_DOCUMENT_SEPARATOR)
 
 
 def _parse_yaml(source: str, content: str) -> dict:
@@ -203,3 +182,9 @@ def _get_files_to_process(arch_file_path: str) -> list[str]:
             ret_val.extend(_get_files_to_process(parse_path))
 
     return ret_val
+
+
+def _add_yaml_document_separator(content: str) -> str:
+    """Add the YAML document separator to the content."""
+    content = content.lstrip()
+    return f"{YAML_DOCUMENT_SEPARATOR}\n{content}" if content else content

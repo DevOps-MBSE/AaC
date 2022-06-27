@@ -1,16 +1,12 @@
-from unittest import TestCase
 from tempfile import NamedTemporaryFile
 
-from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.plugins.specifications.specifications_impl import spec_validate
 
+from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.assertion import assert_plugin_failure, assert_plugin_success
 
 
-class TestSpecifications(TestCase):
-    def setUp(self) -> None:
-        get_active_context(reload_context=True)
-
+class TestSpecifications(ActiveContextTestCase):
     def test_spec_validate(self):
         with NamedTemporaryFile("w") as temp_spec:
             temp_spec.write(VALID_SPEC)
