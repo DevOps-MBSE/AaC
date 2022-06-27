@@ -30,12 +30,6 @@ schema:
     - name: quote_source
       type: string
       description:  Pointer to material supporting the unit cost. Quote type will have a bearing on field content.
-  required:
-    - name
-    - make
-    - model
-    - description
-    - unit_cost
   validation:
     - name: Required fields are present
       arguments:
@@ -64,14 +58,14 @@ schema:
     - name: quantity
       type: int
       description: The count of the parts to be used.
-  required:
-    - part-ref
-    - quantity
   validation:
     - name: Required fields are present
       arguments:
         - part-ref
         - quantity
+    - name: References are valid
+      arguments:
+        - part-ref
 ---
 schema:
   name: Assembly
@@ -110,6 +104,9 @@ schema:
       arguments:
         - assembly-ref
         - quantity
+    - name: References are valid
+      arguments:
+        - assembly-ref
 ---
 schema:
   name: Deployment
@@ -153,14 +150,14 @@ schema:
     - name: quantity
       type: int
       description: The number of deployments to include.
-  required:
-    - name
-    - quantity
   validation:
     - name: Required fields are present
       arguments:
-        - name
+        - deployment-ref
         - quantity
+    - name: References are valid
+      arguments:
+        - deployment-ref
 ---
 ext:
    name: MaterialRootItems

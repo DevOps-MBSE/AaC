@@ -3,7 +3,7 @@ part:
   make: General Electric
   model: Chill Box Mark 2
   description: Standard over under fridge
-  unit_cost: 0.0
+  unit_cost: 0.01
   quote_type: Furnished_Equipment
   quote: ./terms_of_lease.pdf
 ---
@@ -12,7 +12,7 @@ part:
   make: General Electric
   model: Kitchen Cooker Mark 2
   description: Standard 4 eye electric stove with oven
-  unit_cost: 0.00
+  unit_cost: 0.01
   quote_type: Furnished_Equipment
   quote: ./terms_of_lease.pdf
 ---
@@ -21,6 +21,6 @@ part:
   make: General Electric
   model: Scrubinator Mark 2
   description: Standard 2 rack dish washer
-  unit_cost: 0.00
+  unit_cost: 0.01
   quote_type: Furnished_Equipment
   quote: ./terms_of_lease.pdf
