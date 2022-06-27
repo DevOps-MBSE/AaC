@@ -58,19 +58,19 @@ schema:
   name: PartRef
   description:  Reference to a part with quantity
   fields:
-    - name: name
-      type: string
+    - name: part-ref
+      type: reference
       description: Reference fo the name in a Part item.
     - name: quantity
       type: int
       description: The count of the parts to be used.
   required:
-    - name
+    - part-ref
     - quantity
   validation:
     - name: Required fields are present
       arguments:
-        - name
+        - part-ref
         - quantity
 ---
 schema:
@@ -89,9 +89,6 @@ schema:
     - name: sub-assemblies
       type: AssemblyRef[]
       description: A list of assemblies that contribute to the assembly.
-  required:
-    - name
-    - description
   validation:
     - name: Required fields are present
       arguments:
@@ -102,19 +99,16 @@ schema:
   name: AssemblyRef
   description:  Reference to an assembly with quantity
   fields:
-    - name: name
-      type: string
+    - name: assembly-ref
+      type: reference
       description: Reference fo the name in another Assembly item.
     - name: quantity
       type: int
       description: The count of the assemblies to be used.
-  required:
-    - name
-    - quantity
   validation:
     - name: Required fields are present
       arguments:
-        - name
+        - assembly-ref
         - quantity
 ---
 schema:
@@ -142,10 +136,6 @@ schema:
     - name: need_date
       type: date
       descriptioN: Optional field to define a needed material receive date.
-  required:
-    - name
-    - description
-    - location
   validation:
     - name: Required fields are present
       arguments:
@@ -157,9 +147,9 @@ schema:
   name: DeploymentRef
   description:  Reference to a deployment with quantity
   fields:
-    - name: name
-      type: string
-      description: Reference fo the name in another Deployment item.
+    - name: deployment-ref
+      type: reference
+      description: Reference to another Deployment item.
     - name: quantity
       type: int
       description: The number of deployments to include.
