@@ -88,7 +88,7 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
             source_file = source_files.get(source)
 
             if not source_file:
-                source_file = AaCFile(source, True, True)
+                source_file = AaCFile(source, True, False)
                 source_files[source] = source_file
 
             definitions.append(Definition(root_name, contents, source_file, lexemes, root))
