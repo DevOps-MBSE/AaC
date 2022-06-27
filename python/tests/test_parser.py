@@ -57,7 +57,6 @@ class TestParser(TestCase):
             temporary_test_file(TEST_STATUS_FILE_CONTENTS, dir=temp_dir, suffix=".aac") as import2,
             temporary_test_file(self.get_test_model(import1.name, import2.name), dir=temp_dir, suffix=".aac") as test_yaml,
         ):
-
             parsed_models = parse(test_yaml.name)
 
             self.assertEqual(len(parsed_models), 3)
@@ -127,8 +126,14 @@ class TestParser(TestCase):
 
         self.assertEqual(len(parsed_definitions), 2)
 
-        self.assertNotIn(TEST_STATUS_FILE_CONTENTS_NAME, self.get_lexeme_values_for_definition(TEST_MESSAGE_FILE_CONTENTS_NAME, parsed_definitions))
-        self.assertNotIn(TEST_MESSAGE_FILE_CONTENTS_NAME, self.get_lexeme_values_for_definition(TEST_STATUS_FILE_CONTENTS_NAME, parsed_definitions))
+        self.assertNotIn(
+            TEST_STATUS_FILE_CONTENTS_NAME,
+            self.get_lexeme_values_for_definition(TEST_MESSAGE_FILE_CONTENTS_NAME, parsed_definitions),
+        )
+        self.assertNotIn(
+            TEST_MESSAGE_FILE_CONTENTS_NAME,
+            self.get_lexeme_values_for_definition(TEST_STATUS_FILE_CONTENTS_NAME, parsed_definitions),
+        )
 
     def test_file_lexemes_are_split_by_yaml_documents(self):
         content = f"{TEST_MESSAGE_FILE_CONTENTS}{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_FILE_CONTENTS}"
@@ -137,16 +142,26 @@ class TestParser(TestCase):
 
             self.assertEqual(len(parsed_definitions), 2)
 
-            self.assertNotIn(TEST_STATUS_FILE_CONTENTS_NAME, self.get_lexeme_values_for_definition(TEST_MESSAGE_FILE_CONTENTS_NAME, parsed_definitions))
-            self.assertNotIn(TEST_MESSAGE_FILE_CONTENTS_NAME, self.get_lexeme_values_for_definition(TEST_STATUS_FILE_CONTENTS_NAME, parsed_definitions))
+            self.assertNotIn(
+                TEST_STATUS_FILE_CONTENTS_NAME,
+                self.get_lexeme_values_for_definition(TEST_MESSAGE_FILE_CONTENTS_NAME, parsed_definitions),
+            )
+            self.assertNotIn(
+                TEST_MESSAGE_FILE_CONTENTS_NAME,
+                self.get_lexeme_values_for_definition(TEST_STATUS_FILE_CONTENTS_NAME, parsed_definitions),
+            )
 
     def test_does_not_add_doc_separator_if_not_already_present(self):
         definition, *_ = parse(TEST_MESSAGE_FILE_CONTENTS, source_uri="<parser test>")
         self.assertEqual(definition.content, TEST_MESSAGE_FILE_CONTENTS)
 
-        definitions = parse(f"{TEST_MESSAGE_FILE_CONTENTS}{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_FILE_CONTENTS}", source_uri="<parser test>")
+        definitions = parse(
+            f"{TEST_MESSAGE_FILE_CONTENTS}{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_FILE_CONTENTS}", source_uri="<parser test>"
+        )
 
-        message_definition, *_ = [definition for definition in definitions if definition.name == TEST_MESSAGE_FILE_CONTENTS_NAME]
+        message_definition, *_ = [
+            definition for definition in definitions if definition.name == TEST_MESSAGE_FILE_CONTENTS_NAME
+        ]
         self.assertFalse(message_definition.content.startswith(YAML_DOCUMENT_SEPARATOR))
 
         status_definition, *_ = [definition for definition in definitions if definition.name == TEST_STATUS_FILE_CONTENTS_NAME]

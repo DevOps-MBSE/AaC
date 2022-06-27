@@ -34,7 +34,8 @@
             "pythonic",
             "usecase",
             "uvicorn"
-        ]
+        ],
+        "python.languageServer": "Pylance"
     },
     "launch": {
         "configurations": [{

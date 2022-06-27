@@ -47,12 +47,12 @@ def _parse_file(arch_file: str) -> list[Definition]:
     definitions: list[Definition] = []
 
     for file in _get_files_to_process(arch_file):
-        definitions.extend(_parse_str(file, _read_file_content(file), arch_file))
+        definitions.extend(_parse_str(file, _read_file_content(file)))
 
     return definitions
 
 
-def _parse_str(source: str, model_content: str, source_uri: Optional[str] = None) -> list[Definition]:
+def _parse_str(source: str, model_content: str) -> list[Definition]:
     """Parse a string containing one or more YAML model definitions.
 
     Args:
@@ -85,12 +85,11 @@ def _parse_str(source: str, model_content: str, source_uri: Optional[str] = None
             root_name = root.get(root_type).get("name")
             contents = _add_yaml_document_separator(doc) if _has_document_separator(model_content, doc) else doc
             lexemes = get_lexemes_for_definition(contents)
-            source_file_uri = source_uri or DEFAULT_SOURCE_URI
-            source_file = source_files.get(source_uri)
+            source_file = source_files.get(source)
 
             if not source_file:
-                source_file = AaCFile(source_file_uri, True, True)
-                source_files[source_file_uri] = source_file
+                source_file = AaCFile(source, True, True)
+                source_files[source] = source_file
 
             definitions.append(Definition(root_name, contents, source_file, lexemes, root))
 
