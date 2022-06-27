@@ -90,6 +90,7 @@ def strip_undefined_fields_from_definition(definition: Definition, context: Lang
 
         for field_name in definition_dict_field_names:
             if field_name not in defined_top_level_fields_dict:
+                logging.info(f"Removing undefined field {field_name} from definition: {definition.name}")
                 del definition_dict[field_name]
             else:
                 field_schema_type = defined_top_level_fields_dict.get(field_name).get("type")

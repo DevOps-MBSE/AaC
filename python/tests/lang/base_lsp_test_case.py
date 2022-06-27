@@ -7,7 +7,7 @@ from pygls.lsp.types import ClientCapabilities, InitializeParams
 from pygls.lsp.types.basic_structures import Position, TextDocumentIdentifier, TextDocumentItem, VersionedTextDocumentIdentifier
 from pygls.lsp.types.language_features.completion import CompletionContext, CompletionParams, CompletionTriggerKind
 from pygls.lsp.types.language_features.hover import HoverParams
-from pygls.lsp.types.workspace import DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams
+from pygls.lsp.types.workspace import DidSaveTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams
 from aac.lang.lsp.code_completion_provider import SPACE_TRIGGER
 
 from tests.active_context_test_case import ActiveContextTestCase
@@ -93,10 +93,10 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
         document.version += 1
         document.write(content)
         await self.client.send_notification(
-            methods.TEXT_DOCUMENT_DID_CHANGE,
-            DidChangeTextDocumentParams(
+            methods.TEXT_DOCUMENT_DID_SAVE,
+            DidSaveTextDocumentParams(
                 text_document=VersionedTextDocumentIdentifier(uri=self.to_uri(file_name), version=document.version),
-                content_changes=[{"text": content}]
+                text=content
             )
         )
 
