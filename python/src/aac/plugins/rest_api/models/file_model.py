@@ -1,16 +1,21 @@
 """Pydantic Version of the AaC Definition Class."""
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, FilePath
 
 from aac.files.aac_file import AaCFile
 
 
 class FileModel(BaseModel):
-    """REST API Model for the Definition class."""
+    """REST API Model for the File class."""
     uri: str
     content: Optional[str] = ""
     is_user_editable: bool
     is_loaded_in_context: bool
+
+
+class FilePathModel(BaseModel):
+    """REST API Model for just file uris."""
+    uri: FilePath
 
 
 def to_file_model(file: AaCFile, file_content: str = "") -> FileModel:
@@ -26,4 +31,19 @@ def to_file_model(file: AaCFile, file_content: str = "") -> FileModel:
     """
     return FileModel(
         uri=file.uri, content=file_content, is_user_editable=file.is_user_editable, is_loaded_in_context=file.is_loaded_in_context
+    )
+
+
+def to_file_class(file: FileModel) -> AaCFile:
+    """
+    Return an AacFile object from a FileModel object.
+
+    Args:
+        file (FileModel): The FileModel object to convert
+
+    Returns:
+        An AaCFile object.
+    """
+    return AaCFile(
+        uri=file.uri, is_user_editable=file.is_user_editable, is_loaded_in_context=file.is_loaded_in_context
     )
