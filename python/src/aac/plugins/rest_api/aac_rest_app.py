@@ -8,7 +8,6 @@ import os
 import logging
 
 from aac.files.aac_file import AaCFile
-from aac.files.context import get_files_in_context, get_file_in_context_by_uri
 from aac.files.find import find_aac_files, is_aac_file
 from aac.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_active_context
@@ -24,7 +23,7 @@ AVAILABLE_AAC_FILES = []
 @app.get("/files/context", status_code=HTTPStatus.OK, response_model=list[FileModel])
 def get_files_from_context():
     """Return a list of all files contributing definitions to the active context."""
-    return [to_file_model(file) for file in get_files_in_context(get_active_context())]
+    return [to_file_model(file) for file in get_active_context().get_files_in_context()]
 
 
 @app.get("/files/available", status_code=HTTPStatus.OK, response_model=list[FileModel])
@@ -49,7 +48,7 @@ def get_file_by_uri(uri: str):
 
         return file_model
     else:
-        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail=f"File {file_uri} not found in the context.")
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail=f"File {uri} not found in the context.")
 
 
 @app.post("/files/import", status_code=HTTPStatus.NO_CONTENT)
@@ -69,6 +68,21 @@ def import_files_to_context(file_models: list[FilePathModel]):
     else:
         new_file_definitions = [parse(file) for file in valid_aac_files]
         list(map(get_active_context().add_definitions_to_context, new_file_definitions))
+
+
+@app.put("/file", status_code=HTTPStatus.NO_CONTENT)
+def update_file_uri(current_file_uri: str, new_file_uri: str) -> None:
+    """Update the request body definitions in the active context."""
+    file_in_context = get_active_context().get_file_in_context_by_uri(current_file_uri)
+
+    if file_in_context:
+        file_model = to_file_model(file_in_context)
+        with open(file_in_context.uri) as file:
+            file_model.content = file.read()
+
+        return file_model
+    else:
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail=f"File {current_file_uri} not found in the context.")
 
 
 @app.delete("/file", status_code=HTTPStatus.NO_CONTENT)
@@ -100,7 +114,7 @@ def get_definitions():
 
 @app.get("/definition", status_code=HTTPStatus.OK, response_model=DefinitionModel)
 def get_definition_by_name(name: str):
-    """Returns a definition from active context by name, or HTTPStatus.NOT_FOUND not found if the definition doesn't exist."""
+    """Returns a definition from active contsext by name, or HTTPStatus.NOT_FOUND not found if the definition doesn't exist."""
     definition = get_active_context().get_definition_by_name(name)
 
     if not definition:
