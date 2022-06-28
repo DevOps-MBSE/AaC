@@ -74,7 +74,7 @@ def _is_reference_parsable(field_name: Any, field_value: Any) -> bool:
 
     for segment in field_value.split('.'):
 
-        if not re.search(".*\(\w+\=(\"\w+(\s\w+)*\"|\w+)\)", segment):  # this regex needs work
+        if not re.search(".*(\(\w+\=(\"\w+(\s\w+)*\"|\w+)\))?", segment):  # this regex needs work
             # segment content consistent with segment formatting
             found_invalid_segment = True
 

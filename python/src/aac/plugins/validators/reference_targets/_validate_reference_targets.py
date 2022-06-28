@@ -81,7 +81,7 @@ def _is_reference_parsable(field_name: Any, field_value: Any) -> bool:
 
     for segment in field_value.split('.'):
 
-        if not re.search(".*\(\w+\=(\"\w+(\s\w+)*\"|\w+)\)", segment):  # this regex needs work
+        if not re.search(".*(\(\w+\=(\"\w+(\s\w+)*\"|\w+)\))?", segment):  # this regex needs work
             # segment content consistent with segment formatting
             found_invalid_segment = True
 
@@ -95,46 +95,85 @@ def _reference_target_exists(field_name: Any, field_value: Any, language_context
 
     # First get the root element and optional selector
     segments = field_value.split('.')
-    root_segment = segments[0]
-    root, root_selector = _get_segment_content(segments[0])
 
-    # Now get all definitions of that root type as our basis of target search
-    search_space = language_context.get_definitions_by_root_key(root)
-    print(f"len(search_space) = {len(search_space)}")
+    # get the root so we can pull the right definitions from the language context
+    root, _, _, _ = _get_segment_content(segments[0])
 
-    keepers = []
-    # Next if there is a selector, remove all items that don't satisfy the selector
-    if root_selector:
-        field_name, field_value = root_selector.split("=")
-        field_value = field_value.strip('\"')  # remove quotes if they exist
-        for model in search_space:
-            selector_field_value = model.get_top_level_fields()[field_name]
-            print(f"comparing selector '{field_value}' with selector_field_value '{selector_field_value}'")
-            if selector_field_value == field_value:
-                keepers.append(model)
-                print(f"keeping model from selector, match!")
-
-        print(f"len(keepers) = {len(keepers)}")
+    # recursively filter through the definitions by filtering out definitions using selectors
+    keepers = _process_segment([], segments, language_context.get_definitions_by_root_key(root), language_context)
 
     return len(keepers) > 0
 
 
-def _process_segment(current_segment: str, future_segments: list(str), language_context: LanguageContext) -> list(Definition):
+def _process_segment(prefix: list[str], segments: list[str], definitions: list[Definition], language_context: LanguageContext) -> list[Definition]:
     """
     This should process segments recursively
     """
-    # TODO refactor the above function into a recursive behavior that will work through segments
-    return []
+    if len(segments) == 0:
+        # everything has been processed, so return what was found in the previous recursion
+        return definitions
+
+    keepers = []
+    key, selector, selector_field, selector_value = _get_segment_content(segments[0])
+
+    if key in language_context.get_root_keys():
+        # handle the root key
+        if selector:
+            # handle root level selector
+            for definition in definitions:
+                if definition.get_top_level_fields()[selector_field] == selector_value:
+                    keepers.append(definition)
+        else:
+            # no root level selector, so just keep all definitions and move on
+            keepers.extend(definitions)
+    else:
+        # handle non-root keys
+        prefix.pop()  # ignore root prefix
+        for definition in definitions:
+            def_dict = definition.get_top_level_fields()
+            key_list = []
+            for val in prefix:
+                key_list.append(val)
+                def_dict = def_dict[val]
+            # we now have worked through the prefix keys to the dict for evaluation
+            if key in def_dict.keys():
+                if selector:
+                    # since there is a selector, only keep the definition if it contains the specified selector field and value
+                    # note that selectors filter based on child field values
+                    value_for_key = def_dict[key]
+                    if type(value_for_key) is list:
+                        for item in value_for_key:
+                            if str(item[selector_field]) == str(selector_value):  # casting these seems like a hack
+
+                                keepers.append(definition)
+                                break
+                    else:
+                        if str(value_for_key[selector_field]) == str(selector_value):  # casting these seems like a hack
+                            keepers.append(definition)
+                else:
+                    # if there's no selector, keep the definition since it contains the segment key
+                    keepers.append(my_definition)
+
+    if len(keepers) == 0:
+        return []
+
+    nxt_prefix = prefix
+    nxt_prefix.append(key)
+    return _process_segment(nxt_prefix, segments[1:], keepers, language_context)
 
 
 def _get_segment_content(segment: Any) -> tuple:
+
     element = ""
     selector = ""
-    if segment.find('(') :
+    selector_field = ""
+    selector_value = ""
+    if segment.find('(') > 0 :
         element = segment.partition('(')[0]
         selector = segment[segment.find('(')+1:segment.find(')')]
-
+        selector_field, selector_value = selector.split("=")
+        selector_value = selector_value.strip('\"')  # remove quotes if they exist
     else:
         element = segment
 
-    return element, selector
+    return (element, selector, selector_field, selector_value)

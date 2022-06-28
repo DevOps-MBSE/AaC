@@ -3,7 +3,7 @@ deployment:
   description: The place I'm going to live.
   location: Crystal Terrace Apartments Unit 1234
   sub-deployments:
-    - deployment-ref: deployment(name="Living_Room")
+    - deployment-ref: deployment.assemblies(quantity=1)
       quantity: 1
     - deployment-ref: deployment(name="Kitchen")
       quantity: 1

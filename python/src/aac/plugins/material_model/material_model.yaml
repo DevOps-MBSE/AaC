@@ -155,7 +155,7 @@ schema:
       arguments:
         - deployment-ref
         - quantity
-    - name: Reference format valid
+    - name: Reference target valid
       arguments:
         - deployment-ref
 ---
