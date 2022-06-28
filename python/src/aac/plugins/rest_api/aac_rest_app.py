@@ -8,6 +8,7 @@ import os
 import logging
 
 from aac.files.aac_file import AaCFile
+from aac.files.context import get_files_in_context, get_file_in_context_by_uri
 from aac.files.find import find_aac_files, is_aac_file
 from aac.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_active_context
@@ -21,9 +22,9 @@ AVAILABLE_AAC_FILES = []
 
 
 @app.get("/files/context", status_code=HTTPStatus.OK, response_model=list[FileModel])
-def get_files_in_context():
+def get_files_from_context():
     """Return a list of all files contributing definitions to the active context."""
-    return [to_file_model(file) for file in get_active_context().get_files_in_context()]
+    return [to_file_model(file) for file in get_files_in_context(get_active_context())]
 
 
 @app.get("/files/available", status_code=HTTPStatus.OK, response_model=list[FileModel])
@@ -37,9 +38,9 @@ def get_available_files(background_tasks: BackgroundTasks):
 
 
 @app.get("/file", status_code=HTTPStatus.OK, response_model=FileModel)
-def get_file_by_uri(file_uri: str):
+def get_file_by_uri(uri: str):
     """Return the target file from the workspace, or HTTPStatus.NOT_FOUND if the file isn't in the context."""
-    file_in_context = get_active_context().get_file_in_context_by_uri(file_uri)
+    file_in_context = get_active_context().get_file_in_context_by_uri(uri)
 
     if file_in_context:
         file_model = to_file_model(file_in_context)
@@ -70,21 +71,22 @@ def import_files_to_context(file_models: list[FilePathModel]):
         list(map(get_active_context().add_definitions_to_context, new_file_definitions))
 
 
-@app.delete("/files", status_code=HTTPStatus.NO_CONTENT)
-def remove_files(file_uris: list[FilePathModel]):
-    """Remove the request file(s) and it's associated definitions from the active context."""
+@app.delete("/file", status_code=HTTPStatus.NO_CONTENT)
+def remove_file_by_uri(uri: str):
+    """Remove the requested file and it's associated definitions from the active context."""
     active_context = get_active_context()
 
     definitions_to_remove = []
-    for file_uri in file_uris:
-        discovered_definitions = active_context.get_definitions_by_file_uri(str(file_uri.uri))
-        definitions_to_remove.extend(discovered_definitions)
+    discovered_definitions = active_context.get_definitions_by_file_uri(uri)
+    definitions_to_remove.extend(discovered_definitions)
 
-        if len(discovered_definitions) == 0:
-            raise HTTPException(
-                status_code=HTTPStatus.NOT_FOUND,
-                detail=f"No definition(s) from {file_uri} were found in the context; Will not remove any definitions or files from the context.",
-            )
+    if len(discovered_definitions) == 0:
+        error_message = f"No definition(s) from {uri} were found in the context; Will not remove any definitions or files from the context."
+        logging.error(error_message)
+        raise HTTPException(
+            status_code=HTTPStatus.NOT_FOUND,
+            detail=error_message,
+        )
 
     active_context.remove_definitions_from_context(definitions_to_remove)
 
@@ -102,7 +104,9 @@ def get_definition_by_name(name: str):
     definition = get_active_context().get_definition_by_name(name)
 
     if not definition:
-        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail=f"Definition {name} not found in the context.")
+        error_message = f"Definition {name} not found in the context."
+        logging.error(error_message)
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail=error_message)
 
     return to_definition_model(definition)
 
@@ -114,60 +118,35 @@ def add_definitions(definition_models: list[DefinitionModel]):
     get_active_context().add_definitions_to_context(definitions)
 
 
-@app.put("/definitions", status_code=HTTPStatus.NO_CONTENT)
-def update_definitions(definition_models: list[DefinitionModel]) -> None:
+@app.put("/definition", status_code=HTTPStatus.NO_CONTENT)
+def update_definition(definition_model: DefinitionModel) -> None:
     """Update the request body definitions in the active context."""
     active_context = get_active_context()
 
-    discovered_definitions = _get_definitions_from_definition_models(definition_models)
+    definition_to_update = active_context.get_definition_by_name(definition_model.name)
 
-    if len(discovered_definitions.missing) > 0:
+    if definition_to_update:
+        active_context.update_definition_in_context(to_definition_class(definition_model))
+    else:
         raise HTTPException(
             status_code=HTTPStatus.NOT_FOUND,
-            detail=f"Definition(s) {discovered_definitions.missing} not found in the context; failed to update definitions.",
+            detail=f"Definition(s) {definition_model.name} not found in the context; failed to update definitions.",
         )
-    else:
-        active_context.update_definitions_in_context(discovered_definitions.present)
 
-
-@app.delete("/definitions", status_code=HTTPStatus.NO_CONTENT)
-def remove_definitions(definition_models: list[DefinitionModel]):
-    """Remove the request body definitions from the active context."""
+@app.delete("/definition", status_code=HTTPStatus.NO_CONTENT)
+def remove_definition_by_name(name: str):
+    """Remove the definition via name from the active context."""
     active_context = get_active_context()
 
-    discovered_definitions = _get_definitions_from_definition_models(definition_models)
+    definition_to_remove = active_context.get_definition_by_name(name)
 
-    if len(discovered_definitions.missing) > 0:
+    if definition_to_remove:
+        active_context.remove_definition_from_context(definition_to_remove)
+    else:
         raise HTTPException(
             status_code=HTTPStatus.NOT_FOUND,
-            detail=f"Definition(s) {discovered_definitions.missing} not found in the context; failed to delete definitions.",
+            detail=f"Definition {name} not found in the context; failed to delete definitions.",
         )
-    else:
-        active_context.remove_definitions_from_context(discovered_definitions.present)
-
-
-@dataclass
-class _DiscoveredDefinitions:
-    present: list[Definition]
-    missing: list[str]
-
-
-def _get_definitions_from_definition_models(definition_models: list[DefinitionModel]) -> _DiscoveredDefinitions:
-    """Returns two lists in a tuple, one with definitions found in the context and one with missing definition names."""
-    active_context = get_active_context()
-
-    present_definitions = []
-    missing_definitions = []
-    for model in definition_models:
-        old_definition = active_context.get_definition_by_name(model.name)
-
-        if old_definition:
-            new_content = yaml.dump(model.structure, sort_keys=False)
-            present_definitions.append(Definition(model.name, new_content, old_definition.source, [], model.structure))
-        else:
-            missing_definitions.append(model.name)
-
-    return _DiscoveredDefinitions(present_definitions, missing_definitions)
 
 
 def _get_available_files_in_workspace() -> set[AaCFile]:
