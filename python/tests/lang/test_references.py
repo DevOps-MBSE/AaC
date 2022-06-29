@@ -1,13 +1,13 @@
 from unittest import TestCase
 
-from aac.lang.references import get_definition_references_from_list
+from aac.lang.references import get_definition_type_references_from_list, is_reference_format_valid, get_reference_target_definitions
 
 from tests.helpers.parsed_definitions import create_schema_definition, create_schema_ext_definition, create_field_entry, create_model_definition
 
 
 class TestLangReferences(TestCase):
 
-    def test_get_definition_references_from_list(self):
+    def test_get_definition_type_references_from_list(self):
         source_definition_name = "Source Def"
         source_definition = create_schema_definition(source_definition_name)
 
@@ -26,7 +26,13 @@ class TestLangReferences(TestCase):
         expected_references = [reference_definition1, reference_definition2]
         definitions_to_search = expected_references + [unrelated_definition, source_definition]
 
-        actual_references = get_definition_references_from_list(source_definition, definitions_to_search)
+        actual_references = get_definition_type_references_from_list(source_definition, definitions_to_search)
 
         self.assertCountEqual(actual_references, expected_references)
         self.assertListEqual(expected_references, actual_references)
+
+    def test_is_reference_format_valid(self):
+        self.assertTrue(is_reference_format_valid("parent.child"))
+        self.assertTrue(is_reference_format_valid("parent(name=\"MyModel\")"))
+        self.assertTrue(is_reference_format_valid("parent.child(name=\"MyModel\")"))
+        self.assertTrue(is_reference_format_valid("parent(name=\"MyModel\").child"))
