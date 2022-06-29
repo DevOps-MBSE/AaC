@@ -1,4 +1,5 @@
 """Module for AaC Language functions related to definition references."""
+
 from aac.lang.language_context import LanguageContext
 from aac.lang.definitions.definition import Definition
 
@@ -23,18 +24,20 @@ def get_definition_type_references_from_list(
     return list(filter(filter_definitions_by_reference, definitions_to_search))
 
 
-def is_reference_format_valid(reference_field_value: str) -> bool:
+def is_reference_format_valid(reference_field_value: str) -> tuple[bool, str]:
     """Returns boolean indicating reference field is properly formatted for processing."""
     # This assumes input is not None
     if reference_field_value is None or not reference_field_value:
-        return False
+        return False, "Reference must have content"
 
     found_invalid_segment = False
+    message = "Reference OK"
 
     for segment in reference_field_value.split('.'):
 
         # Rule: segment must have content
         if len(segment) == 0:
+            message = "Failed rule: segment must have content"
             found_invalid_segment = True
             break
 
@@ -43,12 +46,14 @@ def is_reference_format_valid(reference_field_value: str) -> bool:
         equals = segment.find('=')
 
         # Rule: if there is an open peren designating a selector, there must be a corresponding close peren...and vice versa
-        if (open_peren < 0 and close_peren < 0) or (open_peren > 0 and close_peren > 0):
+        if not ((open_peren < 0 and close_peren < 0) or (open_peren > 0 and close_peren > 0)):
+            message = "Failed rule: if there is an open peren designating a selector, there must be a corresponding close peren...and vice versa"
             found_invalid_segment = True
             break
 
         # Rule:  if there is a selector, it must contain an equals with content on either side
         if open_peren >= 0 and (equals < 0 or (open_peren + 1 == equals) or (equals + 1 == close_peren)):
+            message = "Failed rule: if there is a selector, it must contain an equals with content on either side"
             found_invalid_segment = True
             break
 
@@ -57,15 +62,17 @@ def is_reference_format_valid(reference_field_value: str) -> bool:
 
         # Rule: there must be content before the selector
         if len(key) == 0:
+            message = "Failed rule: there must be content before the selector"
             found_invalid_segment = True
             break
 
         # Rule: names only contain allowed values
         if _has_disallowed_characters(key) or (len(selector_field) > 0 and _has_disallowed_characters(selector_field)):
+            message = "Failed rule: names only contain allowed values"
             found_invalid_segment = True
             break
 
-    return not found_invalid_segment
+    return not found_invalid_segment, message
 
 
 def _has_disallowed_characters(test_me: str) -> bool:
@@ -91,7 +98,7 @@ def get_reference_target_definitions(reference_field_value: str, language_contex
     """
 
     # Check that input is not None and is valid
-    if not is_reference_format_valid(reference_field_value):
+    if not is_reference_format_valid(reference_field_value)[0]:
         return []
 
     # First get the root element and optional selector
@@ -132,6 +139,7 @@ def _process_segment(prefix: list[str], segments: list[str], definitions: list[D
 
 
 def _process_root(selector: str, selector_field: str, selector_value: str, definitions: list[Definition]) -> list[Definition]:
+    """Return definitions that match the root selector.  If no selector, return all definitions."""
     keepers = []
     if selector:
         # handle root level selector
@@ -145,33 +153,53 @@ def _process_root(selector: str, selector_field: str, selector_value: str, defin
 
 
 def _process_non_root(key: str, prefix: list[str], selector: str, selector_field: str, selector_value: str, definitions: list[Definition]) -> list[Definition]:
+    # initialize return value as empty string
     keepers = []
-    prefix.pop()  # ignore root prefix
     for definition in definitions:
-        def_dict = definition.get_top_level_fields()
-        key_list = []
-        for val in prefix:
-            key_list.append(val)
-            def_dict = def_dict[val]
-        # we now have worked through the prefix keys to the dict for evaluation
-        if key in def_dict.keys():
-            if selector:
-                # since there is a selector, only keep the definition if it contains the specified selector field and value
-                # note that selectors filter based on child field values
-                value_for_key = def_dict[key]
-                if type(value_for_key) is list:
-                    for item in value_for_key:
-                        if str(item[selector_field]) == str(selector_value):  # casting these seems like a hack
+        top_level_fields = definition.get_top_level_fields()
+        dict_list = _drill_into_nested_dict(prefix[1:], top_level_fields)
 
+        for def_dict in dict_list:
+            if key in def_dict.keys():
+                if selector:
+                    # since there is a selector, only keep the definition if it contains the specified selector field and value
+                    # note that selectors filter based on child field values
+                    value_for_key = def_dict[key]
+                    if type(value_for_key) is list:
+                        for item in value_for_key:
+                            if str(item[selector_field]) == str(selector_value):  # casting these seems like a hack
+
+                                keepers.append(definition)
+                                break
+                    else:
+                        if str(value_for_key[selector_field]) == str(selector_value):  # casting these seems like a hack
                             keepers.append(definition)
-                            break
                 else:
-                    if str(value_for_key[selector_field]) == str(selector_value):  # casting these seems like a hack
-                        keepers.append(definition)
-            else:
-                # if there's no selector, keep the definition since it contains the segment key
-                keepers.append(definition)
+                    # if there's no selector, keep the definition since it contains the segment key
+                    keepers.append(definition)
     return keepers
+
+
+def _drill_into_nested_dict(search_keys: list[str], search_me: dict) -> list:
+    if len(search_keys) == 0:
+        return [search_me]
+
+    if search_keys[0] in search_me.keys():
+        next_level = search_me[search_keys[0]]
+        if isinstance(next_level, list):
+            items_to_return = []
+            # iterate through next level items and continue search
+            for item in next_level:
+                if isinstance(item, dict):
+                    i = _drill_into_nested_dict(search_keys[1:], item)
+                    if len(i) > 0:
+                        items_to_return.extend(i)
+            return items_to_return
+        elif isinstance(next_level, dict):
+            return _drill_into_nested_dict(search_keys[1:], next_level)
+        else:
+            return []
+    return []
 
 
 def _get_reference_segment_content(segment: str) -> tuple:

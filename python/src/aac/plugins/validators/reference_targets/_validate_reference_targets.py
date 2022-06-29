@@ -43,8 +43,8 @@ def validate_reference_targets(definition_under_test: Definition, target_schema_
                 logging.debug(missing_reference_field)
 
             # field must be contain a parsable reference value
-            elif not is_reference_format_valid(field_value):
-                invalid_reference_format = f"Reference field '{reference_field_name}' is not properly formatted: {field_value}"
+            elif not is_reference_format_valid(field_value)[0]:
+                invalid_reference_format = f"Reference field '{reference_field_name}' is not properly formatted: {field_value} - {is_reference_format_valid(field_value)[1]}"
                 error_messages.append(invalid_reference_format)
                 logging.debug(invalid_reference_format)
 
