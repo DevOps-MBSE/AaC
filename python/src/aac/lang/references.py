@@ -168,7 +168,6 @@ def _process_non_root(key: str, prefix: list[str], selector: str, selector_field
                     if type(value_for_key) is list:
                         for item in value_for_key:
                             if str(item[selector_field]) == str(selector_value):  # casting these seems like a hack
-
                                 keepers.append(definition)
                                 break
                     else:
