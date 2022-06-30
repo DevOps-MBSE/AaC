@@ -184,22 +184,17 @@ def _drill_into_nested_dict(search_keys: list[str], search_me: dict) -> list:
     if len(search_keys) == 0:
         return [search_me]
 
+    items_to_return = []
     if search_keys[0] in search_me.keys():
-        next_level = search_me[search_keys[0]]
+        next_level = search_me.get(search_keys[0])
         if isinstance(next_level, list):
-            items_to_return = []
             # iterate through next level items and continue search
             for item in next_level:
-                if isinstance(item, dict):
-                    i = _drill_into_nested_dict(search_keys[1:], item)
-                    if len(i) > 0:
-                        items_to_return.extend(i)
-            return items_to_return
+                items_to_return.extend(_drill_into_nested_dict(search_keys[1:], item))
         elif isinstance(next_level, dict):
-            return _drill_into_nested_dict(search_keys[1:], next_level)
-        else:
-            return []
-    return []
+            items_to_return = _drill_into_nested_dict(search_keys[1:], next_level)
+
+    return items_to_return
 
 
 def _get_reference_segment_content(segment: str) -> tuple:
