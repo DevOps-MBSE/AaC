@@ -21,7 +21,7 @@ validation:
           then:
             - The ValidatorOutput does not indicate any errors
             - The ValidatorOutput does not indicate any warnings
-            - The ValidatorOutput indicates the validator plugin under test is valid
+            - The ValidatorOutput indicates the definition under test is valid
         - scenario: Fail to validate a definition's reference fields
           given:
             - The ValidatorInput content consists of otherwise valid AaC definitions.
