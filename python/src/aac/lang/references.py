@@ -180,7 +180,7 @@ def _process_non_root(key: str, prefix: list[str], selector: str, selector_field
     return keepers
 
 
-def _drill_into_nested_dict(search_keys: list[str], search_me: dict) -> list:
+def _drill_into_nested_dict(search_keys: list[str], search_me: dict) -> list[dict]:
     if len(search_keys) == 0:
         return [search_me]
 
