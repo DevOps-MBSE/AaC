@@ -24,10 +24,10 @@ def get_definition_type_references_from_list(
     return list(filter(filter_definitions_by_reference, definitions_to_search))
 
 
-def is_reference_format_valid(reference_field_value: str) -> tuple[bool, str]:
-    """Returns boolean indicating reference field is properly formatted for processing."""
+def is_reference_format_valid(reference_field_value: str = None) -> tuple[bool, str]:
+    """Returns boolean and string tuple indicating if the reference field is properly formatted for processing."""
     # This assumes input is not None
-    if reference_field_value is None or not reference_field_value:
+    if reference_field_value is None:
         return False, "Reference must have content"
 
     found_invalid_segment = False
