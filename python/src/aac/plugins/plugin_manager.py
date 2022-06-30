@@ -46,6 +46,8 @@ def get_plugin_manager() -> PluginManager:
         exclusive_fields,
         subcomponent_type,
         root_keys,
+        reference_fields,
+        reference_targets,
     )
 
     plugin_manager = PluginManager(PLUGIN_PROJECT_NAME)
@@ -77,6 +79,8 @@ def get_plugin_manager() -> PluginManager:
     plugin_manager.register(exclusive_fields)
     plugin_manager.register(subcomponent_type)
     plugin_manager.register(root_keys)
+    plugin_manager.register(reference_fields)
+    plugin_manager.register(reference_targets)
 
     return plugin_manager
 
