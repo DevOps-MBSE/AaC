@@ -82,7 +82,7 @@ def _has_disallowed_characters(test_me: str) -> bool:
 
 def get_reference_target_definitions(reference_field_value: str, language_context: LanguageContext) -> list[Definition]:
     """
-    Return a boolean indicating if the reference target exists in the defined model.
+    Return a list containing the referenced definitions.
 
     Args:
         reference_field_value (str): The definition that is being referenced
