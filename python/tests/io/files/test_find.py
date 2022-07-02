@@ -1,7 +1,7 @@
 from unittest import TestCase
 from tempfile import NamedTemporaryFile, TemporaryDirectory
 
-from aac.files.find import find_aac_files, is_aac_file
+from aac.io.files.find import find_aac_files, is_aac_file
 from aac.spec.core import get_aac_spec_as_yaml
 
 from tests.helpers.io import temporary_test_file, YAML_FILE_EXTENSION, AAC_FILE_EXTENSION

@@ -1,4 +1,4 @@
-from aac.files.aac_file import AaCFile
+from aac.io.files.aac_file import AaCFile
 from aac.lang.definitions.definition import Definition
 from aac.validate import validated_definitions, validated_source, ValidationError
 

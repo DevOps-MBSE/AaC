@@ -2,8 +2,8 @@
 import logging
 import os
 
-from aac.parser import parse, ParserError
-from aac.files.aac_file import AaCFile
+from aac.io.parser import parse, ParserError
+from aac.io.files.aac_file import AaCFile
 
 
 def find_aac_files(root_directory_to_search: str) -> list[str]:

@@ -10,7 +10,7 @@ import os
 import uvicorn
 
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
-from aac.plugins.rest_api.aac_rest_app import app
+from aac.plugins.rest_api.aac_rest_app import app, refresh_available_files_in_workspace
 
 plugin_name = "aac-rest-api"
 
@@ -32,6 +32,7 @@ def rest_api(host: Optional[str] = "0.0.0.0", port: Optional[int] = 8000) -> Plu
 
 def _start_restful_service(host: str, port: int) -> str:
     """Start the RESTful interface service."""
+    refresh_available_files_in_workspace()
     logging.info(f"Starting REST API in {os.getcwd()}.")
     uvicorn.run(app, host=host, port=port)
     return "Successfully started and stopped the RESTful API."

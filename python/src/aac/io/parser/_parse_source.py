@@ -10,15 +10,12 @@ import yaml
 from yaml.parser import ParserError as YAMLParserError
 from typing import Optional
 
-from aac.files.aac_file import AaCFile
-from aac.parser._parser_error import ParserError
+from aac.io.files.aac_file import AaCFile
+from aac.io.constants import YAML_DOCUMENT_SEPARATOR, DEFAULT_SOURCE_URI
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.lexeme import Lexeme
 from aac.lang.definitions.source_location import SourceLocation
-
-
-YAML_DOCUMENT_SEPARATOR = "---"
-DEFAULT_SOURCE_URI = "<string>"
+from aac.io.parser._parser_error import ParserError
 
 
 def parse(source: str, source_uri: Optional[str] = None) -> list[Definition]:

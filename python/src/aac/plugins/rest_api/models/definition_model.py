@@ -2,7 +2,7 @@
 from typing import Optional
 from pydantic import BaseModel
 
-from aac.files.aac_file import AaCFile
+from aac.io.files.aac_file import AaCFile
 from aac.lang.definitions.definition import Definition
 
 

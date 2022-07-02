@@ -2,7 +2,7 @@
 from typing import Optional
 from pydantic import BaseModel, FilePath
 
-from aac.files.aac_file import AaCFile
+from aac.io.files.aac_file import AaCFile
 
 
 class FileModel(BaseModel):

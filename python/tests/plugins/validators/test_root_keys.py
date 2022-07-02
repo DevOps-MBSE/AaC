@@ -2,7 +2,7 @@ import logging
 
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.definition_helpers import get_definition_by_name, get_definitions_by_root_key
-from aac.parser import parse
+from aac.io.parser import parse
 from aac.plugins.validators import ValidatorPlugin
 from aac.plugins.validators.root_keys import get_plugin_aac_definitions, register_validators, validate_root_keys
 

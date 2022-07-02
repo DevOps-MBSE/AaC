@@ -5,7 +5,7 @@ import logging
 import yaml
 
 from aac.lang.definitions.lexeme import Lexeme
-from aac.files.aac_file import AaCFile
+from aac.io.files.aac_file import AaCFile
 
 
 @attrs

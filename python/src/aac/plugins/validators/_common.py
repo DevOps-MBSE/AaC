@@ -1,6 +1,6 @@
 """Module for common, shared functions specifically for the validator subclass of plugins."""
 
-from aac.parser import parse
+from aac.io.parser import parse
 from aac.lang.definitions.definition import Definition
 from aac.lang.definition_helpers import get_definitions_by_root_key
 from aac.plugins import PluginError

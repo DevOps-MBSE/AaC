@@ -1,17 +1,14 @@
 """Module for configuring and maintaining the restful application and its routes."""
-from dataclasses import dataclass
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 from http import HTTPStatus
-import asyncio
-import yaml
 import os
 import logging
 
-from aac.files.aac_file import AaCFile
-from aac.files.find import find_aac_files, is_aac_file
-from aac.parser import parse
+from aac.io.files.aac_file import AaCFile
+from aac.io.files.find import find_aac_files, is_aac_file
+from aac.io.parser import parse
+from aac.io.writer import write_definitions_to_file
 from aac.lang.active_context_lifecycle_manager import get_active_context
-from aac.lang.definitions.definition import Definition
 from aac.plugins.rest_api.models.definition_model import DefinitionModel, to_definition_class, to_definition_model
 from aac.plugins.rest_api.models.file_model import FileModel, FilePathModel, to_file_model
 
@@ -30,7 +27,7 @@ def get_files_from_context():
 def get_available_files(background_tasks: BackgroundTasks):
     """Return a list of all files available in the workspace for import into the active context. The list of files returned does not include files already in the context."""
     # Update the files via an async function so that any changes to the files shows up, eventually.
-    background_tasks.add_task(_refresh_available_files_in_workspace)
+    background_tasks.add_task(refresh_available_files_in_workspace)
 
     #  Having to use a cached response for now as the file-walking makes the response take about 5 seconds, which is too long.
     return [to_file_model(file) for file in AVAILABLE_AAC_FILES]
@@ -72,12 +69,15 @@ def import_files_to_context(file_models: list[FilePathModel]):
 
 @app.put("/file", status_code=HTTPStatus.NO_CONTENT)
 def update_file_uri(current_file_uri: str, new_file_uri: str) -> None:
-    """Update file's uri. (Renaming of files)"""
+    """Update a file's uri. (Rename file)."""
     active_context = get_active_context()
     file_in_context = active_context.get_file_in_context_by_uri(current_file_uri)
 
     if file_in_context:
         definitions_in_file = active_context.get_definitions_by_file_uri(str(file_in_context.uri))
+        write_definitions_to_file(definitions_in_file, new_file_uri, True)
+
+        os.remove(file_in_context.uri)
     else:
         error_message = f"File {current_file_uri} not found in the context."
         logging.error(error_message)
@@ -174,10 +174,7 @@ def _get_available_files_in_workspace() -> set[AaCFile]:
     return aac_files_in_workspace.difference(aac_files_in_context)
 
 
-async def _refresh_available_files_in_workspace() -> None:
+async def refresh_available_files_in_workspace() -> None:
     """Used to refresh the available files. Used in async since it takes too long for being used in request-response flow."""
     global AVAILABLE_AAC_FILES
     AVAILABLE_AAC_FILES = list(_get_available_files_in_workspace())
-
-# Initialize AVAILABLE_AAC_FILES by calling the refresh function after the function declaration.
-asyncio.run(_refresh_available_files_in_workspace())

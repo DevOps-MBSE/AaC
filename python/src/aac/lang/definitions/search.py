@@ -43,7 +43,7 @@ def search(model: dict[str, Any], search_keys: list[str]) -> list:
 
     Args:
         model: The model to search.  This is often the value taken from the dict returned
-            by aac.parser.parse(<aac_file>).
+            by aac.io.parser.parse(<aac_file>).
         search_keys: A list of strings representing keys in the model dict hierarchy.
 
     Returns:

@@ -4,7 +4,7 @@ from tempfile import NamedTemporaryFile, TemporaryDirectory
 from unittest import TestCase
 from nose2.tools import params
 
-from aac import parser
+from aac.io import parser
 from aac.lang.definition_helpers import get_definition_by_name
 from aac.lang.definitions.search import search, search_definition
 from aac.plugins.gen_gherkin_behaviors import (

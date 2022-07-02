@@ -4,7 +4,7 @@ from typing import Optional
 import copy
 import logging
 
-from aac.files.aac_file import AaCFile
+from aac.io.files.aac_file import AaCFile
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.extensions import apply_extension_to_definition, remove_extension_from_definition
 from aac.lang.definitions.search import search_definition

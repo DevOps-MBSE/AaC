@@ -5,8 +5,8 @@ from unittest import TestCase
 from aac.lang import definition_helpers
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.source_location import SourceLocation
-from aac.parser import parse, ParserError
-from aac.parser._parse_source import YAML_DOCUMENT_SEPARATOR, _add_yaml_document_separator
+from aac.io.parser import parse, ParserError
+from aac.io.parser._parse_source import YAML_DOCUMENT_SEPARATOR, _add_yaml_document_separator
 
 from tests.helpers.io import temporary_test_file
 

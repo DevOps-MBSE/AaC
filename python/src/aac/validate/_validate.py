@@ -7,7 +7,7 @@ from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.schema import get_definition_schema_components
 from aac.lang.hierarchy import get_definition_ancestry
-from aac.parser import parse
+from aac.io.parser import parse
 from aac.plugins.plugin_manager import get_validator_plugins
 from aac.plugins.validators import ValidatorPlugin, ValidatorResult
 from aac.validate._validation_error import ValidationError

@@ -4,7 +4,7 @@ from aac.lang.definition_helpers import get_definition_by_name
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.search import search_definition
 from aac.package_resources import get_resource_file_contents, get_resource_file_path
-from aac.parser import parse
+from aac.io.parser import parse
 
 PRIMITIVES: list[str] = []
 ROOT_NAMES: list[str] = []

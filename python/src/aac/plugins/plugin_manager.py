@@ -3,7 +3,7 @@
 from iteration_utilities import flatten
 from pluggy import PluginManager
 
-from aac import parser
+from aac.io import parser
 from aac.lang.definitions.definition import Definition
 from aac.plugins import hookspecs, PLUGIN_PROJECT_NAME
 from aac.plugins.validators import ValidatorPlugin

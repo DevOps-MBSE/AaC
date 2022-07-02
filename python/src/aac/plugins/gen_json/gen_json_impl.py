@@ -2,6 +2,7 @@
 import json
 import os
 
+from aac.io.writer import write_file
 from aac.lang.definition_helpers import convert_parsed_definitions_to_dict_definition
 from aac.plugins.plugin_execution import (
     PluginExecutionResult,
@@ -31,13 +32,9 @@ def print_json(architecture_files: list[str], output_directory: str = None) -> P
             formatted_json = json.dumps(definitions_as_dict, indent=2)
 
             if output_directory:
-                if not os.path.exists(output_directory):
-                    os.makedirs(output_directory)
-
                 output_file_path = os.path.join(output_directory, f"{file_name}.json")
-                with open(output_file_path, "w") as out_file:
-                    out_file.write(formatted_json)
-                    return f"Wrote JSON to {output_file_path}."
+                write_file(output_file_path, formatted_json, True)
+                return f"Wrote JSON to {output_file_path}."
 
             return f"File: {architecture_file_path}\n{formatted_json}\n"
 
