@@ -78,10 +78,11 @@ class TestFindFiles(TestCase):
                     l3_aac_file_aac.close()
                     l3_invalid_file_aac.close()
 
-        self.assertListEqual(expected_result, actual_result)
-        self.assertNotIn(l1_invalid_file_aac.name, actual_result)
-        self.assertNotIn(l2_invalid_file_yaml.name, actual_result)
-        self.assertNotIn(l3_invalid_file_aac.name, actual_result)
+        actual_result_file_paths = [file.uri for file in actual_result]
+        self.assertListEqual(expected_result, actual_result_file_paths)
+        self.assertNotIn(l1_invalid_file_aac.name, actual_result_file_paths)
+        self.assertNotIn(l2_invalid_file_yaml.name, actual_result_file_paths)
+        self.assertNotIn(l3_invalid_file_aac.name, actual_result_file_paths)
 
 
 def _write_content_to_temp_file(temp_file, content: str) -> None:

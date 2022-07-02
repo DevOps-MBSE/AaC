@@ -72,17 +72,19 @@ def import_files_to_context(file_models: list[FilePathModel]):
 
 @app.put("/file", status_code=HTTPStatus.NO_CONTENT)
 def update_file_uri(current_file_uri: str, new_file_uri: str) -> None:
-    """Update the request body definitions in the active context."""
-    file_in_context = get_active_context().get_file_in_context_by_uri(current_file_uri)
+    """Update file's uri. (Renaming of files)"""
+    active_context = get_active_context()
+    file_in_context = active_context.get_file_in_context_by_uri(current_file_uri)
 
     if file_in_context:
-        file_model = to_file_model(file_in_context)
-        with open(file_in_context.uri) as file:
-            file_model.content = file.read()
-
-        return file_model
+        definitions_in_file = active_context.get_definitions_by_file_uri(str(file_in_context.uri))
     else:
-        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail=f"File {current_file_uri} not found in the context.")
+        error_message = f"File {current_file_uri} not found in the context."
+        logging.error(error_message)
+        raise HTTPException(
+            status_code=HTTPStatus.NOT_FOUND,
+            detail=error_message,
+        )
 
 
 @app.delete("/file", status_code=HTTPStatus.NO_CONTENT)
@@ -125,11 +127,10 @@ def get_definition_by_name(name: str):
     return to_definition_model(definition)
 
 
-@app.post("/definitions", status_code=HTTPStatus.NO_CONTENT)
-def add_definitions(definition_models: list[DefinitionModel]):
-    """Add a list of definitions to the active context."""
-    definitions = [to_definition_class(model) for model in definition_models]
-    get_active_context().add_definitions_to_context(definitions)
+@app.post("/definition", status_code=HTTPStatus.NO_CONTENT)
+def add_definition(definition_model: DefinitionModel):
+    """Add the definition to the active context."""
+    get_active_context().add_definition_to_context(to_definition_class(definition_model))
 
 
 @app.put("/definition", status_code=HTTPStatus.NO_CONTENT)
@@ -146,6 +147,7 @@ def update_definition(definition_model: DefinitionModel) -> None:
             status_code=HTTPStatus.NOT_FOUND,
             detail=f"Definition(s) {definition_model.name} not found in the context; failed to update definitions.",
         )
+
 
 @app.delete("/definition", status_code=HTTPStatus.NO_CONTENT)
 def remove_definition_by_name(name: str):
