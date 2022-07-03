@@ -19,7 +19,7 @@ def write_file(uri: str, content: str, overwrite: bool = False) -> None:
     does_file_exist = path.exists(uri)
     file_parent_dir = path.dirname(uri)
 
-    if not (does_file_exist or path.exists(file_parent_dir)):
+    if not path.exists(file_parent_dir):
         makedirs(file_parent_dir, exist_ok=True)
 
     if not overwrite and does_file_exist:
@@ -42,10 +42,8 @@ def write_definitions_to_file(definitions: list[Definition], file_uri: str, is_u
         file_uri (str): The URI of the file to write the definitions to.
         is_user_editable (bool): True if the AaC file can be edited by users.
     """
-    def sort_definitions_by_lexeme_line(definition_a: Definition, definition_b: Definition) -> int:
-        definition_a_starting_line = next(iter(definition_a.lexemes, -1))
-        definition_b_starting_line = next(iter(definition_b.lexemes, -1))
-        return definition_a_starting_line - definition_b_starting_line
+    def sort_definitions_by_lexeme_line(definition: Definition) -> int:
+        return definition.lexemes[0].location.line if definition.lexemes else -1
 
     definitions.sort(key=sort_definitions_by_lexeme_line)
 
@@ -54,7 +52,7 @@ def write_definitions_to_file(definitions: list[Definition], file_uri: str, is_u
         definition.source.uri = file_uri
         definition.source.is_user_editable = is_user_editable
 
-        yaml_doc_separator = f"{linesep}{YAML_DOCUMENT_SEPARATOR}{linesep}" if file_content else ""
+        yaml_doc_separator = f"{YAML_DOCUMENT_SEPARATOR}{linesep}" if file_content else ""
         file_content += f"{yaml_doc_separator}{definition.to_yaml()}"
 
     write_file(file_uri, file_content, True)
