@@ -3,6 +3,8 @@ TEST_DOCUMENT_MODEL_NAME = "ServiceOne"
 TEST_DOCUMENT_SCHEMA_NAME = "DataA"
 TEST_ADDITIONAL_SCHEMA_NAME = "DataC"
 TEST_ADDITIONAL_MODEL_NAME = "ServiceTwo"
+TEST_ENUM_NAME = "Options"
+
 TEST_DOCUMENT_CONTENT = f"""
 schema:
   name: {TEST_DOCUMENT_SCHEMA_NAME}
@@ -99,4 +101,12 @@ model:
             - ServiceThree receives a {TEST_ADDITIONAL_SCHEMA_NAME} request
           then:
             - ServiceThree returns the {TEST_ADDITIONAL_SCHEMA_NAME} data in the response, untouched
+"""
+TEST_ENUM_CONTENT = f"""
+enum:
+  name: {TEST_ENUM_NAME}
+  values:
+    - one
+    - two
+    - three
 """
