@@ -1,12 +1,12 @@
-from unittest import TestCase
 
 from aac.spec import core
 
+from tests.active_context_test_case import ActiveContextTestCase
 
 EXPECTED_ROOT_KEY_NAMES = ["import", "enum", "schema", "map", "model", "usecase", "ext", "validation"]
 
 
-class TestSpecCore(TestCase):
+class TestSpecCore(ActiveContextTestCase):
     def test_get_primitive(self):
         """
         Unit test for the core.get_primitive method.
