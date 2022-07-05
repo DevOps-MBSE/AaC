@@ -1,7 +1,7 @@
 """AaC Module for easy file io."""
 
 import logging
-from os import linesep, path, makedirs
+from os import path, makedirs
 
 from aac.lang.definitions.definition import Definition
 from aac.io.constants import YAML_DOCUMENT_SEPARATOR
@@ -43,7 +43,7 @@ def write_definitions_to_file(definitions: list[Definition], file_uri: str, is_u
         is_user_editable (bool): True if the AaC file can be edited by users.
     """
     def sort_definitions_by_lexeme_line(definition: Definition) -> int:
-        return definition.lexemes[0].location.line if definition.lexemes else -1
+        return -1 if not definition.lexemes else definition.lexemes[0].location.line
 
     definitions.sort(key=sort_definitions_by_lexeme_line)
 
@@ -52,7 +52,7 @@ def write_definitions_to_file(definitions: list[Definition], file_uri: str, is_u
         definition.source.uri = file_uri
         definition.source.is_user_editable = is_user_editable
 
-        yaml_doc_separator = f"{YAML_DOCUMENT_SEPARATOR}{linesep}" if file_content else ""
+        yaml_doc_separator = f"{YAML_DOCUMENT_SEPARATOR}\n" if file_content else ""
         file_content += f"{yaml_doc_separator}{definition.to_yaml()}"
 
     write_file(file_uri, file_content, True)
