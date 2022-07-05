@@ -15,7 +15,10 @@ from aac.plugins.rest_api.models.file_model import FileModel, FilePathModel, to_
 app = FastAPI()
 
 AVAILABLE_AAC_FILES = []
+WORKSPACE_DIR = os.getcwd()
 
+
+# File CRUD Operations
 
 @app.get("/files/context", status_code=HTTPStatus.OK, response_model=list[FileModel])
 def get_files_from_context():
@@ -107,6 +110,8 @@ def remove_file_by_uri(uri: str):
     active_context.remove_definitions_from_context(definitions_to_remove)
 
 
+# Definition CRUD Operations
+
 @app.get("/definitions", status_code=HTTPStatus.OK, response_model=list[DefinitionModel])
 def get_definitions():
     """Return a list of the definitions in the active context."""
@@ -116,7 +121,12 @@ def get_definitions():
 
 @app.get("/definition", status_code=HTTPStatus.OK, response_model=DefinitionModel)
 def get_definition_by_name(name: str):
-    """Returns a definition from active contsext by name, or HTTPStatus.NOT_FOUND not found if the definition doesn't exist."""
+    """
+    Returns a definition from active context by name, or HTTPStatus.NOT_FOUND not found if the definition doesn't exist.
+
+    Returns:
+        200 HTTPStatus.OK if successful.
+    """
     definition = get_active_context().get_definition_by_name(name)
 
     if not definition:
@@ -129,8 +139,41 @@ def get_definition_by_name(name: str):
 
 @app.post("/definition", status_code=HTTPStatus.NO_CONTENT)
 def add_definition(definition_model: DefinitionModel):
-    """Add the definition to the active context."""
-    get_active_context().add_definition_to_context(to_definition_class(definition_model))
+    """
+    Add the definition to the active context. If the definition's source file doesn't exist, a new one will be created.
+
+    Args:
+        definition_model (DefinitionModel): The definition model in request body.
+
+    Returns:
+        204 HTTPStatus.NO_CONTENT if successful.
+    """
+    definition_source_uri = definition_model.source_uri
+
+    if not definition_source_uri.startswith(WORKSPACE_DIR):
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail=f"Definition can't be added to a file {definition_source_uri} which is outside of the working directory: {WORKSPACE_DIR}.",
+        )
+
+    definition_to_write = to_definition_class(definition_model)
+    active_context = get_active_context()
+    existing_definitions = active_context.get_definitions_by_file_uri(definition_source_uri)
+
+    is_user_editable = True
+    if len(existing_definitions) > 0:
+        is_user_editable = existing_definitions[0].source.is_user_editable
+
+    if not is_user_editable:
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail=f"File {definition_source_uri} can't be edited by users.",
+        )
+
+    write_definitions_to_file([definition_to_write, *existing_definitions], definition_source_uri, is_user_editable)
+    updated_definition_source_and_lexemes = parse(definition_source_uri)
+    active_context.add_definition_to_context(definition_to_write)
+    active_context.update_definitions_in_context(updated_definition_source_and_lexemes)
 
 
 @app.put("/definition", status_code=HTTPStatus.NO_CONTENT)
@@ -169,7 +212,7 @@ def _get_available_files_in_workspace() -> set[AaCFile]:
     """Get the available AaC files in the workspace sans files already in the context."""
     active_context = get_active_context()
     aac_files_in_context = set(active_context.get_files_in_context())
-    aac_files_in_workspace = set(find_aac_files(os.getcwd()))
+    aac_files_in_workspace = set(find_aac_files(WORKSPACE_DIR))
 
     return aac_files_in_workspace.difference(aac_files_in_context)
 

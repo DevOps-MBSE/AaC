@@ -1,14 +1,20 @@
+from tempfile import TemporaryDirectory
+from unittest.mock import patch
 from fastapi.encoders import jsonable_encoder
 from fastapi.testclient import TestClient
 from http import HTTPStatus
 import json
+import os
 
+from aac.io.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.plugins.rest_api.aac_rest_app import app
 from aac.plugins.rest_api.models.definition_model import to_definition_model
 from aac.plugins.rest_api.models.file_model import to_file_model
 from aac.spec import get_aac_spec
+from aac.spec.core import _get_aac_spec_file_path
 
+from tests.helpers.io import temporary_test_file
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.parsed_definitions import create_behavior_entry, create_model_definition, create_enum_definition
 
@@ -65,15 +71,74 @@ class TestAacRestApi(ActiveContextTestCase):
 
     def test_add_definition(self):
         active_context = get_active_context()
-        initial_active_context_count = len(active_context.definitions)
+        test_enum_definition = create_enum_definition("SomeEnum", ["v1", "v2"])
+
+        # Establish an existing test user file in the context
+        with temporary_test_file(test_enum_definition.to_yaml()) as aac_file:
+            with patch("aac.plugins.rest_api.aac_rest_app.WORKSPACE_DIR", os.path.dirname(aac_file.name)):
+                parsed_test_enum_definition = parse(aac_file.name)
+                active_context.add_definitions_to_context(parsed_test_enum_definition)
+
+                # Add our actual test content
+                test_model_definition = create_model_definition("SomeModel")
+                test_model_definition.source = parsed_test_enum_definition[0].source
+
+                response = self.test_client.post("/definition", data=json.dumps(jsonable_encoder(to_definition_model(test_model_definition))))
+                self.assertEqual(HTTPStatus.NO_CONTENT, response.status_code)
+                self.assertIsNotNone(active_context.get_definition_by_name(test_model_definition.name))
+
+    def test_add_definition_create_source_file(self):
+        active_context = get_active_context()
 
         test_enum_definition = create_enum_definition("SomeEnum", ["v1", "v2"])
 
-        response = self.test_client.post("/definition", data=json.dumps(jsonable_encoder(to_definition_model(test_enum_definition))))
-        self.assertEqual(HTTPStatus.NO_CONTENT, response.status_code)
+        with TemporaryDirectory() as temp_directory:
+            with patch("aac.plugins.rest_api.aac_rest_app.WORKSPACE_DIR", temp_directory):
+                source_file_name = "test_source.aac"
+                source_file = f"{temp_directory}/{source_file_name}"
+                self.assertFalse(os.path.exists(source_file))
+                test_enum_definition.source.uri = source_file
 
-        post_active_context_count = len(active_context.definitions)
-        self.assertEqual(initial_active_context_count + 1, post_active_context_count)
+                response = self.test_client.post("/definition", data=json.dumps(jsonable_encoder(to_definition_model(test_enum_definition))))
+
+                self.assertEqual(HTTPStatus.NO_CONTENT, response.status_code)
+                self.assertTrue(os.path.exists(source_file))
+                self.assertIsNotNone(active_context.get_definition_by_name(test_enum_definition.name))
+
+                with open(source_file) as source_file:
+                    self.assertEqual(source_file.read(), test_enum_definition.to_yaml())
+
+    def test_add_definition_create_source_file_outside_workspace_fails(self):
+        active_context = get_active_context()
+
+        test_enum_definition = create_enum_definition("SomeEnum", ["v1", "v2"])
+
+        # Demonstrate that users can't write content to files outside of the designated workspace.
+        with TemporaryDirectory() as temp_directory:
+            source_file_name = "test_source.aac"
+            source_file = f"{temp_directory}{source_file_name}"
+            self.assertFalse(os.path.exists(source_file))
+            test_enum_definition.source.uri = source_file
+
+            response = self.test_client.post("/definition", data=json.dumps(jsonable_encoder(to_definition_model(test_enum_definition))))
+
+            self.assertEqual(HTTPStatus.BAD_REQUEST, response.status_code)
+            self.assertIn("outside of the working directory", response.text)
+            self.assertIn(source_file, response.text)
+            self.assertFalse(os.path.exists(source_file))
+            self.assertIsNone(active_context.get_definition_by_name(test_enum_definition.name))
+
+    def test_add_definition_create_source_file_outside_trying_to_edit_safe_file(self):
+        active_context = get_active_context()
+        test_source = active_context.get_file_in_context_by_uri(_get_aac_spec_file_path())
+
+        test_enum_definition = create_enum_definition("SomeEnum", ["v1", "v2"])
+        test_enum_definition.source = test_source
+
+        response = self.test_client.post("/definition", data=json.dumps(jsonable_encoder(to_definition_model(test_enum_definition))))
+        self.assertEqual(HTTPStatus.BAD_REQUEST, response.status_code)
+        self.assertIn("can't be edited", response.text)
+        self.assertIn(test_source.uri, response.text)
 
     def test_update_definitions(self):
         test_context = get_active_context()
