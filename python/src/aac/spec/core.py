@@ -29,7 +29,7 @@ def get_aac_spec() -> list[Definition]:
     global AAC_CORE_SPEC_DEFINITIONS
     if not len(AAC_CORE_SPEC_DEFINITIONS) > 0:
         core_spec_as_yaml = get_aac_spec_as_yaml()
-        AAC_CORE_SPEC_DEFINITIONS = parse(core_spec_as_yaml, get_resource_file_path(__package__, CORE_SPEC_FILE_NAME))
+        AAC_CORE_SPEC_DEFINITIONS = parse(core_spec_as_yaml, _get_aac_spec_file_path())
         list(map(set_files_to_not_user_editable, AAC_CORE_SPEC_DEFINITIONS))
 
     return AAC_CORE_SPEC_DEFINITIONS
@@ -106,3 +106,8 @@ def get_root_fields(reload: bool = False) -> list[dict]:
     root_definition = get_definition_by_name("root", aac_definitions)
 
     return search_definition(root_definition, ["schema", "fields"])
+
+
+def _get_aac_spec_file_path() -> str:
+    """Get the path for the spec file in the AaC package on the filesystem."""
+    return get_resource_file_path(__package__, CORE_SPEC_FILE_NAME)
