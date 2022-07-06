@@ -17,7 +17,9 @@ class AaCFile:
     is_loaded_in_context: bool = attrib(validator=validators.instance_of(bool))
 
     def __hash__(self):
+        """Hash function for the class."""
         return hash(self.uri)
 
     def __eq__(self, obj):
+        """Equals function for the class."""
         return isinstance(obj, AaCFile) and obj.uri == self.uri
