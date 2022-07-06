@@ -1,4 +1,4 @@
-"""AaC Module for easy file io."""
+"""AaC Module for easy file writing."""
 
 import logging
 from os import path, makedirs
@@ -30,7 +30,7 @@ def write_file(uri: str, content: str, overwrite: bool = False) -> None:
         with open(uri, "w") as file:
             file.writelines(content)
     except IOError as error:
-        logging.error(f"Failed to write file {uri} do to error: {error}")
+        logging.error(f"Failed to write file {uri} due to error: {error}")
 
 
 def write_definitions_to_file(definitions: list[Definition], file_uri: str, is_user_editable: bool = True) -> None:

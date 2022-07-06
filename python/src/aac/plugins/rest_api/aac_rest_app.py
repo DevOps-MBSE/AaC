@@ -32,7 +32,7 @@ def get_available_files(background_tasks: BackgroundTasks):
     # Update the files via an async function so that any changes to the files shows up, eventually.
     background_tasks.add_task(refresh_available_files_in_workspace)
 
-    #  Having to use a cached response for now as the file-walking makes the response take about 5 seconds, which is too long.
+    #  Having to use a cached response for now as the file-walking makes the response take too long.
     return [to_file_model(file) for file in AVAILABLE_AAC_FILES]
 
 
