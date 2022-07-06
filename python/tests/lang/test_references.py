@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.references import get_definition_type_references_from_list, is_reference_format_valid, get_reference_target_definitions, _drill_into_nested_dict
-from aac.parser import parse
+from aac.io.parser import parse
 
 from tests.helpers.parsed_definitions import create_schema_definition, create_schema_ext_definition, create_field_entry, create_model_definition
 
