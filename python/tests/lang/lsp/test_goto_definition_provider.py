@@ -134,30 +134,35 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         self.assertEqual(location.range.json(), schema_definition_location.range.json())
 
     async def test_handles_goto_definition_for_enums(self):
-        await self.create_document("enum.aac", TEST_ENUM_CONTENT)
         await self.create_document("spec.aac", get_aac_spec_as_yaml())
 
         string_range, *_ = self.provider.get_ranges_containing_name(TEST_DOCUMENT_CONTENT, "string")
         line = string_range.start.line
         character = string_range.start.character
-        core_spec_response: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=line, character=character)
+        res: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=line, character=character)
 
         string_definition_location, *_ = self.get_definition_location_of_name("string")
-        location = core_spec_response.get_location()
+        location = res.get_location()
         self.assertIsNotNone(location)
         self.assertEqual(location.uri, self.to_uri(string_definition_location.uri))
         self.assertEqual(location.range.json(), string_definition_location.range.json())
 
+    async def test_handles_goto_definition_for_symbols_with_hyphens(self):
+        await self.create_document("spec.aac", get_aac_spec_as_yaml())
+
         request_response_range, *_ = self.provider.get_ranges_containing_name(TEST_DOCUMENT_CONTENT, "request-response")
         line = request_response_range.start.line
         character = request_response_range.start.character
-        core_spec_response: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=line, character=character)
+        res: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=line, character=character)
 
         request_response_definition_location, *_ = self.get_definition_location_of_name("request-response")
-        location = core_spec_response.get_location()
+        location = res.get_location()
         self.assertIsNotNone(location)
         self.assertEqual(location.uri, self.to_uri(request_response_definition_location.uri))
         self.assertEqual(location.range.json(), request_response_definition_location.range.json())
+
+    async def test_handles_goto_definition_for_custom_enums(self):
+        await self.create_document("enum.aac", TEST_ENUM_CONTENT)
 
         new_content = f"{TEST_DOCUMENT_CONTENT}{TEST_PARTIAL_CONTENT} {TEST_ENUM_NAME}\n"
         await self.write_document(TEST_DOCUMENT_NAME, new_content)
@@ -165,10 +170,10 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         custom_enum_range, *_ = self.provider.get_ranges_containing_name(new_content, TEST_ENUM_NAME)
         line = custom_enum_range.start.line
         character = custom_enum_range.start.character
-        custom_enum_response: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=line, character=character)
+        res: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=line, character=character)
 
         custom_enum_definition_location, *_ = self.get_definition_location_of_name(TEST_ENUM_NAME)
-        location = custom_enum_response.get_location()
+        location = res.get_location()
         self.assertIsNotNone(location)
         self.assertEqual(location.uri, self.to_uri(custom_enum_definition_location.uri))
         self.assertEqual(location.range.json(), custom_enum_definition_location.range.json())
