@@ -18,6 +18,12 @@ class FilePathModel(BaseModel):
     uri: FilePath
 
 
+class FilePathRenameModel(BaseModel):
+    """REST API Model for renaming a file."""
+    current_file_uri: FilePath
+    new_file_uri: str
+
+
 def to_file_model(file: AaCFile, file_content: str = "") -> FileModel:
     """
     Return a FileModel representation from an AaCFile object.

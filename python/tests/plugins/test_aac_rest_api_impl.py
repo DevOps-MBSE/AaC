@@ -11,7 +11,7 @@ from aac.io.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.plugins.rest_api.aac_rest_app import app, refresh_available_files_in_workspace
 from aac.plugins.rest_api.models.definition_model import to_definition_model
-from aac.plugins.rest_api.models.file_model import to_file_model
+from aac.plugins.rest_api.models.file_model import FilePathModel, FilePathRenameModel, to_file_model
 from aac.spec import get_aac_spec
 from aac.spec.core import _get_aac_spec_file_path
 
@@ -20,7 +20,7 @@ from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.parsed_definitions import create_behavior_entry, create_model_definition, create_enum_definition, create_schema_definition
 
 
-class TestAacRestApi(ActiveContextTestCase):
+class TestAacRestApiFileEndpoints(ActiveContextTestCase):
     test_client = TestClient(app)
 
     def test_get_files_in_context(self):
@@ -57,6 +57,84 @@ class TestAacRestApi(ActiveContextTestCase):
                 actual_result_files_name = [file.get("uri") for file in actual_result]
                 self.assertIn(temp_file1.name, actual_result_files_name)
                 self.assertIn(temp_file2.name, actual_result_files_name)
+
+    def test_get_file_in_context_by_uri(self):
+        core_spec_uri = _get_aac_spec_file_path()
+
+        response = self.test_client.get(f"/file?uri={core_spec_uri}")
+        actual_result = response.json()
+        self.assertEqual(HTTPStatus.OK, response.status_code)
+        self.assertEqual(core_spec_uri, actual_result.get("uri"))
+        self.assertFalse(actual_result.get("is_user_editable"))
+
+    def test_import_file_to_context_by_uri(self):
+        active_context = get_active_context()
+
+        test_model_definition_name = "TestModel"
+        test_model_definition = create_model_definition(test_model_definition_name)
+
+        file_content = test_model_definition.to_yaml()
+
+        with TemporaryDirectory() as temp_directory:
+
+            patch_manager = patch("aac.plugins.rest_api.aac_rest_app.WORKSPACE_DIR", temp_directory)
+            file_manager = temporary_test_file(file_content, dir=temp_directory, suffix=YAML_FILE_EXTENSION)
+            with patch_manager, file_manager as temp_file:
+                file_path_model = FilePathModel(uri=temp_file.name)
+
+                self.assertIsNone(active_context.get_definition_by_name(test_model_definition_name))
+
+                response = self.test_client.post("/files/import", data=json.dumps(jsonable_encoder([file_path_model])))
+                self.assertEqual(HTTPStatus.NO_CONTENT, response.status_code)
+
+                self.assertIsNotNone(active_context.get_definition_by_name(test_model_definition_name))
+
+    def test_rename_file_in_context(self):
+        active_context = get_active_context()
+
+        test_model_definition_name = "TestModel"
+        test_model_definition = create_model_definition(test_model_definition_name)
+        file_content = test_model_definition.to_yaml()
+
+        with TemporaryDirectory() as temp_dir:
+            old_file_name = "OldTestFile.yaml"
+            new_file_name = "TestFile.aac"
+            new_file_uri = os.path.join(temp_dir, new_file_name)
+
+            temp_file = open(os.path.join(temp_dir, old_file_name), "w")
+            temp_file.writelines(file_content)
+            temp_file.close()
+
+            with patch("aac.plugins.rest_api.aac_rest_app.WORKSPACE_DIR", temp_dir):
+                parsed_definition = parse(temp_file.name)
+                active_context.add_definitions_to_context(parsed_definition)
+
+                rename_request_data = FilePathRenameModel(current_file_uri=temp_file.name, new_file_uri=new_file_uri)
+                response = self.test_client.put("/file", data=json.dumps(jsonable_encoder(rename_request_data)))
+                self.assertEqual(HTTPStatus.NO_CONTENT, response.status_code)
+
+                file_names_in_context = [file.uri for file in active_context.get_files_in_context()]
+                self.assertIn(new_file_uri, file_names_in_context)
+
+            # Clean-up the renamed file.
+            os.remove(new_file_uri)
+
+    def test_remove_file_from_context(self):
+        active_context = get_active_context()
+
+        core_spec_path = _get_aac_spec_file_path()
+        core_definitions = get_aac_spec()
+
+        response = self.test_client.delete(f"/file?uri={core_spec_path}")
+        self.assertEqual(HTTPStatus.NO_CONTENT, response.status_code)
+
+        self.assertGreater(len(core_definitions), 0)
+        for core_definition in core_definitions:
+            self.assertIsNone(active_context.get_definition_by_name(core_definition.name))
+
+
+class TestAacRestApiDefinitionEndpoints(ActiveContextTestCase):
+    test_client = TestClient(app)
 
     def test_get_definitions(self):
         self.maxDiff = None

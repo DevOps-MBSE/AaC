@@ -10,7 +10,7 @@ from aac.io.parser import parse
 from aac.io.writer import write_definitions_to_file
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.plugins.rest_api.models.definition_model import DefinitionModel, to_definition_class, to_definition_model
-from aac.plugins.rest_api.models.file_model import FileModel, FilePathModel, to_file_model
+from aac.plugins.rest_api.models.file_model import FileModel, FilePathModel, FilePathRenameModel, to_file_model
 
 app = FastAPI()
 
@@ -66,24 +66,35 @@ def import_files_to_context(file_models: list[FilePathModel]):
 
 
 @app.put("/file", status_code=HTTPStatus.NO_CONTENT)
-def update_file_uri(current_file_uri: str, new_file_uri: str) -> None:
+def rename_file_uri(rename_request: FilePathRenameModel) -> None:
     """Update a file's uri. (Rename file)."""
     active_context = get_active_context()
-    file_in_context = active_context.get_file_in_context_by_uri(current_file_uri)
+    current_file_path = str(rename_request.current_file_uri)
+    new_file_path = rename_request.new_file_uri
+
+    file_in_context = active_context.get_file_in_context_by_uri(current_file_path)
+
+    if not _is_file_path_in_working_directory(new_file_path):
+        _report_error_response(HTTPStatus.BAD_REQUEST, f"Files can only be renamed to a uri inside of the working directory: {WORKSPACE_DIR}.")
 
     if file_in_context:
-        definitions_in_file = active_context.get_definitions_by_file_uri(str(file_in_context.uri))
-        write_definitions_to_file(definitions_in_file, new_file_uri, True)
+        os.rename(current_file_path, new_file_path)
+        definitions_to_update = active_context.get_definitions_by_file_uri(current_file_path)
+        for definition in definitions_to_update:
+            definition.source.uri = new_file_path
 
-        os.remove(file_in_context.uri)
     else:
-        _report_error_response(HTTPStatus.NOT_FOUND, f"File {current_file_uri} not found in the context.")
+        _report_error_response(HTTPStatus.NOT_FOUND, f"File {current_file_path} not found in the context.")
 
 
 @app.delete("/file", status_code=HTTPStatus.NO_CONTENT)
 def remove_file_by_uri(uri: str):
     """Remove the requested file and it's associated definitions from the active context."""
     active_context = get_active_context()
+
+    file_in_context = active_context.get_file_in_context_by_uri(uri)
+    if not file_in_context:
+        _report_error_response(HTTPStatus.NOT_FOUND, f"File {uri} not found in the context.")
 
     definitions_to_remove = []
     discovered_definitions = active_context.get_definitions_by_file_uri(uri)
@@ -133,7 +144,7 @@ def add_definition(definition_model: DefinitionModel):
     """
     definition_source_uri = definition_model.source_uri
 
-    if not definition_source_uri.startswith(WORKSPACE_DIR):
+    if not _is_file_path_in_working_directory(definition_source_uri):
         _report_error_response(HTTPStatus.BAD_REQUEST, f"Definition can't be added to a file {definition_source_uri} which is outside of the working directory: {WORKSPACE_DIR}.")
 
     definition_to_write = to_definition_class(definition_model)
@@ -200,3 +211,7 @@ def _report_error_response(code: HTTPStatus, error: str):
         status_code=code,
         detail=error,
     )
+
+
+def _is_file_path_in_working_directory(file_path: str) -> bool:
+    return str(file_path).startswith(WORKSPACE_DIR)
