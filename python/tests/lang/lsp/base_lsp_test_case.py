@@ -9,6 +9,9 @@ from pygls.lsp.types.text_synchronization import TextDocumentSyncKind
 from pygls.lsp.types.workspace import DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams
 from pygls.workspace import Document
 
+from aac.lang.active_context_lifecycle_manager import get_active_context
+from aac.parser import parse
+
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.lsp.text_document import TextDocument
 from tests.lang.lsp.definition_constants import TEST_DOCUMENT_CONTENT, TEST_DOCUMENT_NAME
@@ -63,6 +66,8 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
             )
         )
 
+        get_active_context().add_definitions_to_context(parse(content))
+
         return document
 
     async def close_document(self, file_name: str) -> None:
@@ -105,6 +110,8 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
                 content_changes=[{"text": content}]
             )
         )
+
+        get_active_context().add_definitions_to_context(parse(content))
 
     def read_document(self, file_name: str) -> str:
         """
