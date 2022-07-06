@@ -48,7 +48,7 @@ def get_file_by_uri(uri: str):
 
         return file_model
     else:
-        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail=f"File {uri} not found in the context.")
+        _report_error_response(HTTPStatus.NOT_FOUND, f"File {uri} not found in the context.")
 
 
 @app.post("/files/import", status_code=HTTPStatus.NO_CONTENT)
@@ -59,12 +59,7 @@ def import_files_to_context(file_models: list[FilePathModel]):
     invalid_files = files_to_import.difference(valid_aac_files)
 
     if len(invalid_files) > 0:
-        error_message = f"Invalid files were asked to imported. Invalid files: {invalid_files}"
-        logging.error(error_message)
-        raise HTTPException(
-            status_code=HTTPStatus.BAD_REQUEST,
-            detail=error_message,
-        )
+        _report_error_response(HTTPStatus.BAD_REQUEST, f"Invalid files were asked to imported. Invalid files: {invalid_files}.")
     else:
         new_file_definitions = [parse(file) for file in valid_aac_files]
         list(map(get_active_context().add_definitions_to_context, new_file_definitions))
@@ -82,12 +77,7 @@ def update_file_uri(current_file_uri: str, new_file_uri: str) -> None:
 
         os.remove(file_in_context.uri)
     else:
-        error_message = f"File {current_file_uri} not found in the context."
-        logging.error(error_message)
-        raise HTTPException(
-            status_code=HTTPStatus.NOT_FOUND,
-            detail=error_message,
-        )
+        _report_error_response(HTTPStatus.NOT_FOUND, f"File {current_file_uri} not found in the context.")
 
 
 @app.delete("/file", status_code=HTTPStatus.NO_CONTENT)
@@ -100,12 +90,7 @@ def remove_file_by_uri(uri: str):
     definitions_to_remove.extend(discovered_definitions)
 
     if len(discovered_definitions) == 0:
-        error_message = f"No definition(s) from {uri} were found in the context; Will not remove any definitions or files from the context."
-        logging.error(error_message)
-        raise HTTPException(
-            status_code=HTTPStatus.NOT_FOUND,
-            detail=error_message,
-        )
+        _report_error_response(HTTPStatus.NOT_FOUND, f"No definition(s) from {uri} were found in the context; Will not remove any definitions or files from the context.")
 
     active_context.remove_definitions_from_context(definitions_to_remove)
 
@@ -130,9 +115,7 @@ def get_definition_by_name(name: str):
     definition = get_active_context().get_definition_by_name(name)
 
     if not definition:
-        error_message = f"Definition {name} not found in the context."
-        logging.error(error_message)
-        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail=error_message)
+        _report_error_response(HTTPStatus.NOT_FOUND, f"Definition {name} not found in the context.")
 
     return to_definition_model(definition)
 
@@ -151,10 +134,7 @@ def add_definition(definition_model: DefinitionModel):
     definition_source_uri = definition_model.source_uri
 
     if not definition_source_uri.startswith(WORKSPACE_DIR):
-        raise HTTPException(
-            status_code=HTTPStatus.BAD_REQUEST,
-            detail=f"Definition can't be added to a file {definition_source_uri} which is outside of the working directory: {WORKSPACE_DIR}.",
-        )
+        _report_error_response(HTTPStatus.BAD_REQUEST, f"Definition can't be added to a file {definition_source_uri} which is outside of the working directory: {WORKSPACE_DIR}.")
 
     definition_to_write = to_definition_class(definition_model)
     active_context = get_active_context()
@@ -165,10 +145,7 @@ def add_definition(definition_model: DefinitionModel):
         is_user_editable = existing_definitions[0].source.is_user_editable
 
     if not is_user_editable:
-        raise HTTPException(
-            status_code=HTTPStatus.BAD_REQUEST,
-            detail=f"File {definition_source_uri} can't be edited by users.",
-        )
+        _report_error_response(HTTPStatus.BAD_REQUEST, f"File {definition_source_uri} can't be edited by users.")
 
     write_definitions_to_file([definition_to_write, *existing_definitions], definition_source_uri, is_user_editable)
     updated_definition_source_and_lexemes = parse(definition_source_uri)
@@ -186,10 +163,7 @@ def update_definition(definition_model: DefinitionModel) -> None:
     if definition_to_update:
         active_context.update_definition_in_context(to_definition_class(definition_model))
     else:
-        raise HTTPException(
-            status_code=HTTPStatus.NOT_FOUND,
-            detail=f"Definition(s) {definition_model.name} not found in the context; failed to update definitions.",
-        )
+        _report_error_response(HTTPStatus.NOT_FOUND, f"Definition(s) {definition_model.name} not found in the context; failed to update definitions.")
 
 
 @app.delete("/definition", status_code=HTTPStatus.NO_CONTENT)
@@ -202,10 +176,7 @@ def remove_definition_by_name(name: str):
     if definition_to_remove:
         active_context.remove_definition_from_context(definition_to_remove)
     else:
-        raise HTTPException(
-            status_code=HTTPStatus.NOT_FOUND,
-            detail=f"Definition {name} not found in the context; failed to delete definitions.",
-        )
+        _report_error_response(HTTPStatus.NOT_FOUND, f"Definition {name} not found in the context; failed to delete definitions.")
 
 
 def _get_available_files_in_workspace() -> set[AaCFile]:
@@ -221,3 +192,11 @@ async def refresh_available_files_in_workspace() -> None:
     """Used to refresh the available files. Used in async since it takes too long for being used in request-response flow."""
     global AVAILABLE_AAC_FILES
     AVAILABLE_AAC_FILES = list(_get_available_files_in_workspace())
+
+
+def _report_error_response(code: HTTPStatus, error: str):
+    logging.error(error)
+    raise HTTPException(
+        status_code=code,
+        detail=error,
+    )
