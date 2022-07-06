@@ -5,18 +5,19 @@ from fastapi.testclient import TestClient
 from http import HTTPStatus
 import json
 import os
+import asyncio
 
 from aac.io.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_active_context
-from aac.plugins.rest_api.aac_rest_app import app
+from aac.plugins.rest_api.aac_rest_app import app, refresh_available_files_in_workspace
 from aac.plugins.rest_api.models.definition_model import to_definition_model
 from aac.plugins.rest_api.models.file_model import to_file_model
 from aac.spec import get_aac_spec
 from aac.spec.core import _get_aac_spec_file_path
 
-from tests.helpers.io import temporary_test_file
+from tests.helpers.io import AAC_FILE_EXTENSION, YAML_FILE_EXTENSION, temporary_test_file
 from tests.active_context_test_case import ActiveContextTestCase
-from tests.helpers.parsed_definitions import create_behavior_entry, create_model_definition, create_enum_definition
+from tests.helpers.parsed_definitions import create_behavior_entry, create_model_definition, create_enum_definition, create_schema_definition
 
 
 class TestAacRestApi(ActiveContextTestCase):
@@ -30,6 +31,32 @@ class TestAacRestApi(ActiveContextTestCase):
         actual_result = response.json()
         self.assertEqual(HTTPStatus.OK, response.status_code)
         self.assertListEqual(expected_result, actual_result)
+
+    def test_get_available_aac_files(self):
+        test_model_definition = create_model_definition("TestModel")
+        test_enum_definition = create_enum_definition("TestEnum", [])
+        test_schema_definition = create_schema_definition("TestSchema")
+
+        file1_content = f"{test_model_definition.to_yaml()}---\n{test_enum_definition.to_yaml()}"
+        file2_content = test_schema_definition.to_yaml()
+
+        with TemporaryDirectory() as temp_directory:
+
+            patch_manager = patch("aac.plugins.rest_api.aac_rest_app.WORKSPACE_DIR", temp_directory)
+            file1_manager = temporary_test_file(file1_content, dir=temp_directory, suffix=YAML_FILE_EXTENSION)
+            file2_manager = temporary_test_file(file2_content, dir=temp_directory, suffix=AAC_FILE_EXTENSION)
+
+            with patch_manager, file1_manager as temp_file1, file2_manager as temp_file2:
+
+                # Force the server to refresh the available files now that the working dir is altered.
+                asyncio.run(refresh_available_files_in_workspace())
+
+                response = self.test_client.get("/files/available")
+                actual_result = response.json()
+                self.assertEqual(HTTPStatus.OK, response.status_code)
+                actual_result_files_name = [file.get("uri") for file in actual_result]
+                self.assertIn(temp_file1.name, actual_result_files_name)
+                self.assertIn(temp_file2.name, actual_result_files_name)
 
     def test_get_definitions(self):
         self.maxDiff = None
