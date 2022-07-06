@@ -5,17 +5,17 @@ from pygls.lsp.types.basic_structures import Location, Position, Range
 from pygls.lsp.types.language_features.definition import DefinitionParams
 from pygls.workspace import Document
 
-from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.lsp.providers.lsp_provider import LspProvider
-from aac.parser._parse_source import YAML_DOCUMENT_SEPARATOR
 
 
 class GotoDefinitionProvider(LspProvider):
     """Resolve the location where a specified name is defined."""
+    language_server: LanguageServer
 
     def handle_request(self, ls: LanguageServer, params: DefinitionParams) -> list[Location]:
         """Return the location at which the specified item is found."""
-        return self.get_definition_location_at_position(ls.workspace.documents, params.text_document.uri, params.position)
+        self.language_server = ls
+        return self.get_definition_location_at_position(self.language_server.workspace.documents, params.text_document.uri, params.position)
 
     def get_definition_location_at_position(self, documents: dict[str, Document], current_uri: str, position: Position) -> list[Location]:
         """
@@ -90,17 +90,12 @@ class GotoDefinitionProvider(LspProvider):
         """
 
         def is_schema_definition() -> bool:
-            return f"name: {name}" == lines[0]
+            return self.language_server.language_context.is_definition_type(name) and f"name: {name}" == lines[0]
 
         def is_enum_definition() -> bool:
-            if f"- {name}" == lines[0]:
-                for line in lines:
-                    if YAML_DOCUMENT_SEPARATOR == line:
-                        return False
-                    elif "enum:" == line:
-                        return True
-            return False
+            enum = self.language_server.language_context.get_enum_definition_with_type(name)
+            return enum is not None and f"- {name}" == lines[0]
 
         lines.reverse()
         lines = [line.strip() for line in lines]
-        return is_schema_definition() if get_active_context().is_definition_type(name) else is_enum_definition()
+        return is_schema_definition() or is_enum_definition()

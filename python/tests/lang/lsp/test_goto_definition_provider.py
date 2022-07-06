@@ -41,6 +41,7 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
     async def asyncSetUp(self) -> None:
         await super().asyncSetUp()
         self.provider = self.client.server.providers.get(methods.DEFINITION)
+        self.provider.language_server = self.client.server
 
     async def goto_definition(self, file_name: str, line: int = 0, character: int = 0) -> GotoDefinitionResponse:
         """
