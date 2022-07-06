@@ -362,16 +362,3 @@ class LanguageContext:
                 return definition.source
 
         return None
-
-    def is_file_in_context(self, aac_file: AaCFile) -> bool:
-        """
-        Return a boolean indicating if the AaCFile is loaded in the language context.
-
-        Args:
-            aac_file (AaCFile): The AaC File to search for.
-
-        Returns:
-            True if the file is present, otherwise false.
-        """
-        files_in_context = self.get_files_in_context()
-        return aac_file in files_in_context
