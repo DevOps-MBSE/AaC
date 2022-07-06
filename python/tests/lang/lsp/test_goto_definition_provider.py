@@ -1,7 +1,7 @@
 from unittest.async_case import IsolatedAsyncioTestCase
 
 from pygls.lsp import methods
-from pygls.lsp.types.basic_structures import Position
+from pygls.lsp.types.basic_structures import Location, Position
 from pygls.lsp.types.language_features.definition import DefinitionParams
 
 from aac.spec.core import get_aac_spec_as_yaml
@@ -14,6 +14,8 @@ from tests.lang.lsp.definition_constants import (
     TEST_DOCUMENT_NAME,
     TEST_DOCUMENT_CONTENT,
     TEST_DOCUMENT_SCHEMA_NAME,
+    TEST_ENUM_NAME,
+    TEST_ENUM_CONTENT,
     TEST_PARTIAL_CONTENT,
     TEST_ADDITIONAL_SCHEMA_NAME,
     TEST_ADDITIONAL_MODEL_CONTENT,
@@ -22,6 +24,19 @@ from tests.lang.lsp.definition_constants import (
 
 class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
     provider: GotoDefinitionProvider
+
+    def get_definition_location_at_position(self, file_name: str, line: int = 0, character: int = 0) -> list[Location]:
+        return self.provider.get_definition_location_at_position(
+            {self.to_uri(name) or "": self.virtual_document_to_lsp_document(name) for name in self.documents.keys()},
+            self.to_uri(file_name) or "",
+            Position(line=line, character=character),
+        )
+
+    def get_definition_location_of_name(self, name: str) -> list[Location]:
+        return self.provider.get_definition_location_of_name(
+            {self.to_uri(name) or "": self.virtual_document_to_lsp_document(name) for name in self.documents.keys()},
+            name,
+        )
 
     async def asyncSetUp(self) -> None:
         await super().asyncSetUp()
@@ -55,7 +70,7 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
 
     async def test_get_named_location(self):
         document_uri = self.to_uri(TEST_DOCUMENT_NAME) or ""
-        location, *_ = self.provider.get_definition_location(
+        location, *_ = self.provider.get_definition_location_at_position(
             {document_uri: self.virtual_document_to_lsp_document(TEST_DOCUMENT_NAME)},
             document_uri,
             Position(line=21, character=17),
@@ -110,16 +125,41 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         await self.create_document("spec.aac", get_aac_spec_as_yaml())
 
         res: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=1, character=1)
-        schema_definition_location, *_ = self.provider.get_definition_location(
-            {self.to_uri(file_name): self.virtual_document_to_lsp_document(file_name) for file_name in self.documents.keys()},
-            self.to_uri(TEST_DOCUMENT_NAME),
-            Position(line=1, character=1),
-        )
+        schema_definition_location, *_ = self.get_definition_location_at_position(TEST_DOCUMENT_NAME, line=1, character=1)
 
         location = res.get_location()
         self.assertIsNotNone(location)
-        self.assertIn(location.uri, self.to_uri(schema_definition_location.uri))
-        self.assertIn(location.range.json(), schema_definition_location.range.json())
+        self.assertEqual(location.uri, self.to_uri(schema_definition_location.uri))
+        self.assertEqual(location.range.json(), schema_definition_location.range.json())
+
+    async def test_handles_goto_definition_for_enums(self):
+        await self.create_document("enum.aac", TEST_ENUM_CONTENT)
+        await self.create_document("spec.aac", get_aac_spec_as_yaml())
+
+        string_range, *_ = self.provider.get_ranges_containing_name(TEST_DOCUMENT_CONTENT, "string")
+        line = string_range.start.line
+        character = string_range.start.character
+        core_spec_response: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=line, character=character)
+
+        string_definition_location, *_ = self.get_definition_location_of_name("string")
+        location = core_spec_response.get_location()
+        self.assertIsNotNone(location)
+        self.assertEqual(location.uri, self.to_uri(string_definition_location.uri))
+        self.assertEqual(location.range.json(), string_definition_location.range.json())
+
+        new_content = f"{TEST_DOCUMENT_CONTENT}{TEST_PARTIAL_CONTENT} {TEST_ENUM_NAME}\n"
+        await self.write_document(TEST_DOCUMENT_NAME, new_content)
+
+        custom_enum_range, *_ = self.provider.get_ranges_containing_name(new_content, TEST_ENUM_NAME)
+        line = custom_enum_range.start.line
+        character = custom_enum_range.start.character
+        custom_enum_response: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=line, character=character)
+
+        custom_enum_definition_location, *_ = self.get_definition_location_of_name(TEST_ENUM_NAME)
+        location = custom_enum_response.get_location()
+        self.assertIsNotNone(location)
+        self.assertEqual(location.uri, self.to_uri(custom_enum_definition_location.uri))
+        self.assertEqual(location.range.json(), custom_enum_definition_location.range.json())
 
     async def test_no_results_when_nothing_under_cursor(self):
         res: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME)

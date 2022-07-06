@@ -5,7 +5,9 @@ from pygls.lsp.types.basic_structures import Location, Position, Range
 from pygls.lsp.types.language_features.definition import DefinitionParams
 from pygls.workspace import Document
 
+from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.lsp.providers.lsp_provider import LspProvider
+from aac.parser._parse_source import YAML_DOCUMENT_SEPARATOR
 
 
 class GotoDefinitionProvider(LspProvider):
@@ -13,19 +15,45 @@ class GotoDefinitionProvider(LspProvider):
 
     def handle_request(self, ls: LanguageServer, params: DefinitionParams) -> list[Location]:
         """Return the location at which the specified item is found."""
-        return self.get_definition_location(ls.workspace.documents, params.text_document.uri, params.position)
+        return self.get_definition_location_at_position(ls.workspace.documents, params.text_document.uri, params.position)
 
-    def get_definition_location(self, documents: dict[str, Document], current_uri: str, position: Position) -> list[Location]:
-        """Return the location where the AaC definition is defined."""
-        name = documents.get(current_uri).word_at_position(position)
+    def get_definition_location_at_position(self, documents: dict[str, Document], current_uri: str, position: Position) -> list[Location]:
+        """
+        Return the location(s) where the AaC reference at the specified position is defined.
+
+        Args:
+            documents (dict[str, Document]): A container mapping document names to the associated LSP document.
+            current_uri (str): The URI of the file that's currently active.
+            position (Position): The position of the cursor in `current_uri` whose definition is being searched.
+
+        Returns:
+            A list of Locations at which the item at `position` is defined. If there is nothing
+            found at the specified position, an empty list is returned.
+        """
+        document = documents.get(current_uri)
+        name = document.word_at_position(position) if document else ""
+        return self.get_definition_location_of_name(documents, name)
+
+    def get_definition_location_of_name(self, documents: dict[str, Document], name: str) -> list[Location]:
+        """
+        Return the location(s) where the AaC reference is defined.
+
+        Args:
+
+        Returns:
+            A list of Locations at which the `name`d item is defined. If there is no named item, an
+            empty list is returned.
+        """
         if not name:
             return []
 
         locations = []
         for doc in documents.values():
             ranges = self.get_ranges_containing_name(doc.source, name)
-            definition_ranges = [text_range for text_range in ranges if f"name: {name}" == doc.source.splitlines()[text_range.start.line].strip()]
+            lines = doc.source.splitlines()
+            definition_ranges = [text_range for text_range in ranges if self._is_definition(name, lines[:text_range.start.line + 1])]
             locations.extend([Location(uri=doc.uri, range=definition_range) for definition_range in definition_ranges])
+
         return locations
 
     def get_ranges_containing_name(self, content: str, name: str) -> list[Range]:
@@ -48,3 +76,31 @@ class GotoDefinitionProvider(LspProvider):
         lines = content.splitlines()
         starting_positions = [Position(line=i, character=lines[i].find(name)) for i, line in enumerate(lines) if name in line]
         return [Range(start=start_pos, end=get_end_position(start_pos)) for start_pos in starting_positions]
+
+    def _is_definition(self, name: str, lines: list[str]) -> bool:
+        """
+        Returns a boolean indicating if the named item at the specified location is a definition.
+
+        Args:
+            name (str): The named item to check.
+            lines (list[str]): The lines up to the one to be searched for the named item.
+
+        Returns:
+            A boolean value indicating that the named item is defined in the provided content.
+        """
+
+        def is_schema_definition() -> bool:
+            return f"name: {name}" == lines[0]
+
+        def is_enum_definition() -> bool:
+            if f"- {name}" == lines[0]:
+                for line in lines:
+                    if YAML_DOCUMENT_SEPARATOR == line:
+                        return False
+                    elif "enum:" == line:
+                        return True
+            return False
+
+        lines.reverse()
+        lines = [line.strip() for line in lines]
+        return is_schema_definition() if get_active_context().is_definition_type(name) else is_enum_definition()
