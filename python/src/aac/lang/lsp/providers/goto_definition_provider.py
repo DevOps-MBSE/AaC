@@ -5,6 +5,7 @@ from pygls.lsp.types.basic_structures import Location, Position, Range
 from pygls.lsp.types.language_features.definition import DefinitionParams
 from pygls.workspace import Document
 
+from aac.lang.definitions.type import remove_list_type_indicator
 from aac.lang.lsp.providers.lsp_provider import LspProvider
 
 
@@ -30,9 +31,14 @@ class GotoDefinitionProvider(LspProvider):
             A list of Locations at which the item at `position` is defined. If there is nothing
             found at the specified position, an empty list is returned.
         """
-        document = documents.get(current_uri)
-        name = document.word_at_position(position) if document else ""
-        return self.get_definition_location_of_name(documents, name)
+        def symbol_at_position() -> str:
+            document = documents.get(current_uri)
+            offset = document.offset_at_position(position)
+            before = document.source[:offset].split()[-1]
+            after = document.source[offset:].split()[0]
+            return remove_list_type_indicator(f"{before}{after}")
+
+        return self.get_definition_location_of_name(documents, symbol_at_position())
 
     def get_definition_location_of_name(self, documents: dict[str, Document], name: str) -> list[Location]:
         """
@@ -49,7 +55,7 @@ class GotoDefinitionProvider(LspProvider):
 
         locations = []
         for doc in documents.values():
-            ranges = self.get_ranges_containing_name(doc.source, name)
+            ranges = self.get_ranges_containing_name(doc.source, remove_list_type_indicator(name))
             lines = doc.source.splitlines()
             definition_ranges = [text_range for text_range in ranges if self._is_definition(name, lines[:text_range.start.line + 1])]
             locations.extend([Location(uri=doc.uri, range=definition_range) for definition_range in definition_ranges])
