@@ -148,6 +148,17 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         self.assertEqual(location.uri, self.to_uri(string_definition_location.uri))
         self.assertEqual(location.range.json(), string_definition_location.range.json())
 
+        request_response_range, *_ = self.provider.get_ranges_containing_name(TEST_DOCUMENT_CONTENT, "request-response")
+        line = request_response_range.start.line
+        character = request_response_range.start.character
+        core_spec_response: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=line, character=character)
+
+        request_response_definition_location, *_ = self.get_definition_location_of_name("request-response")
+        location = core_spec_response.get_location()
+        self.assertIsNotNone(location)
+        self.assertEqual(location.uri, self.to_uri(request_response_definition_location.uri))
+        self.assertEqual(location.range.json(), request_response_definition_location.range.json())
+
         new_content = f"{TEST_DOCUMENT_CONTENT}{TEST_PARTIAL_CONTENT} {TEST_ENUM_NAME}\n"
         await self.write_document(TEST_DOCUMENT_NAME, new_content)
 

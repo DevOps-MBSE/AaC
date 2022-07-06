@@ -32,13 +32,22 @@ class GotoDefinitionProvider(LspProvider):
             found at the specified position, an empty list is returned.
         """
         def symbol_at_position() -> str:
-            document = documents.get(current_uri)
-            offset = document.offset_at_position(position)
-            before = document.source[:offset].split()[-1]
-            after = document.source[offset:].split()[0]
-            return remove_list_type_indicator(f"{before}{after}")
+            def on_symbol() -> bool:
+                return document.source[offset].strip() != ""
 
-        return self.get_definition_location_of_name(documents, symbol_at_position())
+            def at_beginning_of_symbol() -> bool:
+                return offset > 0 and document.source[offset - 1].strip() == ""
+
+            def at_end_of_symbol() -> bool:
+                return offset < len(document.source) and document.source[offset].strip() == ""
+
+            offset = document.offset_at_position(position)
+            before = document.source[:offset].split()[-1] if on_symbol() and not at_beginning_of_symbol() else ""
+            after = document.source[offset:].split()[0] if not at_end_of_symbol() else ""
+            return f"{before}{after}"
+
+        document = documents.get(current_uri)
+        return self.get_definition_location_of_name(documents, symbol_at_position()) if document else []
 
     def get_definition_location_of_name(self, documents: dict[str, Document], name: str) -> list[Location]:
         """
@@ -53,9 +62,10 @@ class GotoDefinitionProvider(LspProvider):
         if not name:
             return []
 
+        name = remove_list_type_indicator(name).strip(":")
         locations = []
         for doc in documents.values():
-            ranges = self.get_ranges_containing_name(doc.source, remove_list_type_indicator(name))
+            ranges = self.get_ranges_containing_name(doc.source, name)
             lines = doc.source.splitlines()
             definition_ranges = [text_range for text_range in ranges if self._is_definition(name, lines[:text_range.start.line + 1])]
             locations.extend([Location(uri=doc.uri, range=definition_range) for definition_range in definition_ranges])
