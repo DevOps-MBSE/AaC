@@ -143,7 +143,7 @@ def add_definition(definition_model: DefinitionModel):
     Returns:
         204 HTTPStatus.NO_CONTENT if successful.
     """
-    definition_source_uri = definition_model.source_uri
+    definition_source_uri = sanitize_filesystem_path(definition_model.source_uri)
 
     if not _is_file_path_in_working_directory(definition_source_uri):
         _report_error_response(HTTPStatus.BAD_REQUEST, f"Definition can't be added to a file {definition_source_uri} which is outside of the working directory: {WORKSPACE_DIR}.")

@@ -12,6 +12,7 @@ from typing import Optional
 
 from aac.io.files.aac_file import AaCFile
 from aac.io.constants import YAML_DOCUMENT_SEPARATOR, DEFAULT_SOURCE_URI
+from aac.io.paths import sanitize_filesystem_path
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.lexeme import Lexeme
 from aac.lang.definitions.source_location import SourceLocation
@@ -29,7 +30,8 @@ def parse(source: str, source_uri: Optional[str] = None) -> list[Definition]:
         A list of Definition objects containing the internal representation of the definition and metadata
         associated with the definition.
     """
-    return _parse_file(source) if path.lexists(source) else _parse_str(source_uri or DEFAULT_SOURCE_URI, source)
+    sanitized_source = sanitize_filesystem_path(source)
+    return _parse_file(sanitized_source) if path.lexists(sanitized_source) else _parse_str(source_uri or DEFAULT_SOURCE_URI, sanitized_source)
 
 
 def _parse_file(arch_file: str) -> list[Definition]:
