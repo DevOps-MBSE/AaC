@@ -6,7 +6,7 @@ from aac.io.parser import parse, ParserError
 from aac.io.files.aac_file import AaCFile
 
 
-def find_aac_files(root_directory_to_search: str) -> list[str]:
+def find_aac_files(root_directory_to_search: str) -> list[AaCFile]:
     """Return a list of paths to AaC files in or under the root directory."""
     aac_files = []
 
