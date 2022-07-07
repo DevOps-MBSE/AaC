@@ -31,7 +31,7 @@ def parse(source: str, source_uri: Optional[str] = None) -> list[Definition]:
         associated with the definition.
     """
     sanitized_source = sanitize_filesystem_path(source)
-    return _parse_file(sanitized_source) if path.lexists(sanitized_source) else _parse_str(source_uri or DEFAULT_SOURCE_URI, sanitized_source)
+    return _parse_file(sanitized_source) if path.lexists(sanitized_source) else _parse_str(source_uri or DEFAULT_SOURCE_URI, source)
 
 
 def _parse_file(arch_file: str) -> list[Definition]:
@@ -73,7 +73,7 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
             lexemes.append(Lexeme(location, yaml_source, token.value))
         return lexemes
 
-    source_files = {}
+    source_files: dict[str, AaCFile] = {}
     definitions: list[Definition] = []
     for doc in model_content.split(YAML_DOCUMENT_SEPARATOR):
         for root in _parse_yaml(source, doc):
@@ -100,7 +100,7 @@ def _has_document_separator(model_content: str, document: str) -> bool:
     return before.endswith(YAML_DOCUMENT_SEPARATOR)
 
 
-def _parse_yaml(source: str, content: str) -> dict:
+def _parse_yaml(source: str, content: str) -> list[dict]:
     """Parse content as a YAML string and return the resulting structure.
 
     Args:
