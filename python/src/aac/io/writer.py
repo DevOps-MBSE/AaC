@@ -5,6 +5,7 @@ from os import path, makedirs
 
 from aac.lang.definitions.definition import Definition
 from aac.io.constants import YAML_DOCUMENT_SEPARATOR
+from aac.io.paths import sanitize_filesystem_path
 
 
 def write_file(uri: str, content: str, overwrite: bool = False) -> None:
@@ -16,21 +17,22 @@ def write_file(uri: str, content: str, overwrite: bool = False) -> None:
         content (str): contents of the file to write
         overwrite (bool): True to overwrite an existing file or false to not.
     """
-    does_file_exist = path.exists(uri)
-    file_parent_dir = path.dirname(uri)
+    sanitized_uri = sanitize_filesystem_path(uri)
+    does_file_exist = path.exists(sanitized_uri)
+    file_parent_dir = path.dirname(sanitized_uri)
 
     if not path.exists(file_parent_dir):
         makedirs(file_parent_dir, exist_ok=True)
 
     if not overwrite and does_file_exist:
-        logging.info(f"{uri} already exists, skipping write.")
+        logging.info(f"{sanitized_uri} already exists, skipping write.")
         return
 
     try:
-        with open(uri, "w") as file:
+        with open(sanitized_uri, "w") as file:
             file.writelines(content)
     except IOError as error:
-        logging.error(f"Failed to write file {uri} due to error: {error}")
+        logging.error(f"Failed to write file {sanitized_uri} due to error: {error}")
 
 
 def write_definitions_to_file(definitions: list[Definition], file_uri: str, is_user_editable: bool = True) -> None:

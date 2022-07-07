@@ -6,6 +6,7 @@ import logging
 
 from aac.io.files.aac_file import AaCFile
 from aac.io.files.find import find_aac_files, is_aac_file
+from aac.io.paths import sanitize_filesystem_path
 from aac.io.parser import parse
 from aac.io.writer import write_definitions_to_file
 from aac.lang.active_context_lifecycle_manager import get_active_context
@@ -14,8 +15,8 @@ from aac.plugins.rest_api.models.file_model import FileModel, FilePathModel, Fil
 
 app = FastAPI()
 
-AVAILABLE_AAC_FILES = []
-WORKSPACE_DIR = os.getcwd()
+AVAILABLE_AAC_FILES: list[AaCFile] = []
+WORKSPACE_DIR: str = os.getcwd()
 
 
 # File CRUD Operations
@@ -69,8 +70,8 @@ def import_files_to_context(file_models: list[FilePathModel]):
 def rename_file_uri(rename_request: FilePathRenameModel) -> None:
     """Update a file's uri. (Rename file)."""
     active_context = get_active_context()
-    current_file_path = str(rename_request.current_file_uri)
-    new_file_path = rename_request.new_file_uri
+    current_file_path = sanitize_filesystem_path(str(rename_request.current_file_uri))
+    new_file_path = sanitize_filesystem_path(rename_request.new_file_uri)
 
     file_in_context = active_context.get_file_in_context_by_uri(current_file_path)
 
@@ -127,8 +128,8 @@ def get_definition_by_name(name: str):
 
     if not definition:
         _report_error_response(HTTPStatus.NOT_FOUND, f"Definition {name} not found in the context.")
-
-    return to_definition_model(definition)
+    else:
+        return to_definition_model(definition)
 
 
 @app.post("/definition", status_code=HTTPStatus.NO_CONTENT)
