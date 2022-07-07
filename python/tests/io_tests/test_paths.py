@@ -34,12 +34,8 @@ class TestPaths(TestCase):
         (f"{WORKING_TEST_DIR}/%2e%2e%5c/src/aac/test.py", f"{_get_working_directory_parent_directory(1)}/src/aac/test.py"),
         (f"{WORKING_TEST_DIR}/%2e%2e\/src/aac/test.py", f"{_get_working_directory_parent_directory(1)}/src/aac/test.py"),
         (f"{WORKING_TEST_DIR}/..%5c\/src/aac/test.py", f"{_get_working_directory_parent_directory(1)}/src/aac/test.py"),
-        (f"{WORKING_TEST_DIR}/%252e%252e%255c\/src/aac/test.py", f"{_get_working_directory_parent_directory(1)}/src/aac/test.py"),
+        (f"{WORKING_TEST_DIR}/%252e%252e%255c\/src/aac/test.py", f"{_get_working_directory_parent_directory(1)}/src/aac/test.py",),
         (f"{WORKING_TEST_DIR}/..%255c\/src/aac/test.py", f"{_get_working_directory_parent_directory(1)}/src/aac/test.py"),
     )
     def test_sanitize_filesystem_path(self, test_path: str, expected_result: str):
         self.assertEqual(sanitize_filesystem_path(test_path), expected_result)
-
-    def test_sanitize_filesystem_path1(self):
-        self.assertEqual(sanitize_filesystem_path("../../src/aac/test.py"), f"{_get_working_directory_parent_directory(2)}/src/aac/test.py")
-
