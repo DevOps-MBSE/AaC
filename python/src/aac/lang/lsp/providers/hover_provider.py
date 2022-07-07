@@ -2,6 +2,7 @@
 
 from typing import Optional
 
+from pygls.lsp.types.basic_structures import MarkupContent, MarkupKind
 from pygls.lsp.types.language_features.hover import Hover, HoverParams
 from pygls.server import LanguageServer
 from pygls.workspace import Document
@@ -17,4 +18,4 @@ class HoverProvider(LspProvider):
         document: Optional[Document] = ls.workspace.documents.get(params.text_document.uri)
         name = document.word_at_position(params.position) if document else ""
         definition = ls.language_context.get_definition_by_name(name)
-        return definition and Hover(contents=definition.content)
+        return definition and Hover(contents=MarkupContent(kind=MarkupKind.Markdown, value=f"```\n{definition.content}\n```"))
