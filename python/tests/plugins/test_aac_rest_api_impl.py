@@ -234,7 +234,7 @@ class TestAacRestApiDefinitionEndpoints(ActiveContextTestCase):
             self.assertIsNone(active_context.get_definition_by_name(test_enum_definition.name))
 
     def test_add_definition_create_source_file_outside_trying_to_edit_safe_file(self):
-        active_context = get_active_context()
+        active_context = get_active_context(True)
         core_spec_path = _get_aac_spec_file_path()
         test_source = active_context.get_file_in_context_by_uri(core_spec_path)
 
