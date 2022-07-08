@@ -133,3 +133,7 @@ class TestDefinitionStructures(TestCase):
 
         self.assertNotIn(extra_top_level_field_name, actual_result_yaml_dump)
         self.assertNotIn(extra_top_level_field_value, actual_result_yaml_dump)
+        self.assertNotIn(behavior_input_extra_field_name, actual_result_yaml_dump)
+        self.assertNotIn(behavior_input_extra_field_value, actual_result_yaml_dump)
+        self.assertNotIn(behavior_output_extra_field_name, actual_result_yaml_dump)
+        self.assertNotIn(behavior_output_extra_field_value, actual_result_yaml_dump)
