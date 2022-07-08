@@ -4,12 +4,16 @@ from unittest import TestCase
 
 from aac.io.parser import parse
 from aac.io.writer import write_definitions_to_file
-from aac.spec.core import get_aac_spec
+from aac.spec.core import get_aac_spec, AAC_CORE_SPEC_DEFINITIONS
 
 from tests.helpers.parsed_definitions import create_enum_definition, create_model_definition
 
 
 class TestWriter(TestCase):
+    def tearDown(self):
+        # Remove altered core-spec definitions
+        global AAC_CORE_SPEC_DEFINITIONS
+        AAC_CORE_SPEC_DEFINITIONS = []
 
     def test_write_definitions_to_file(self):
         test_file_name = "out.yaml"
