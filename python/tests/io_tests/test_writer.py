@@ -4,17 +4,12 @@ from unittest import TestCase
 
 from aac.io.parser import parse
 from aac.io.writer import write_definitions_to_file
-from aac.spec.core import get_aac_spec, AAC_CORE_SPEC_DEFINITIONS
+from aac.spec import core
 
 from tests.helpers.parsed_definitions import create_enum_definition, create_model_definition
 
 
 class TestWriter(TestCase):
-    def tearDown(self):
-        # Remove altered core-spec definitions
-        global AAC_CORE_SPEC_DEFINITIONS
-        AAC_CORE_SPEC_DEFINITIONS = []
-
     def test_write_definitions_to_file(self):
         test_file_name = "out.yaml"
 
@@ -42,7 +37,7 @@ class TestWriter(TestCase):
     def test_write_definitions_to_file_preserve_order(self):
         test_file_name = "out.yaml"
 
-        test_definitions = get_aac_spec()
+        test_definitions = core.get_aac_spec()
 
         with TemporaryDirectory() as temp_dir:
             test_file_uri = os.path.join(temp_dir, test_file_name)
@@ -55,3 +50,6 @@ class TestWriter(TestCase):
         self.assertListEqual([d.name for d in test_definitions], [d.name for d in actual_result_parsed_definitions])
         self.assertListEqual([d.source.uri for d in test_definitions], [d.source.uri for d in actual_result_parsed_definitions])
         self.assertListEqual([d.lexemes[0].location.line for d in test_definitions], [d.lexemes[0].location.line for d in actual_result_parsed_definitions])
+
+        # Remove altered core-spec definitions
+        core.AAC_CORE_SPEC_DEFINITIONS = []
