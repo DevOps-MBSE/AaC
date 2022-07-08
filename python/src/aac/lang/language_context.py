@@ -312,7 +312,7 @@ class LanguageContext:
 
         return list(filter(does_definition_source_uri_match, self.definitions))
 
-    def get_enum_definition_with_type(self, type: str) -> Optional[Definition]:
+    def get_enum_definition_by_type(self, type: str) -> Optional[Definition]:
         """
         Return the enum definition that defines the specified enumerated type.
 
