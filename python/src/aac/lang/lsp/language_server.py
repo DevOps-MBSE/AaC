@@ -96,10 +96,10 @@ async def did_close(ls: AacLanguageServer, params: DidCloseTextDocumentParams):
 
 async def did_save(ls: AacLanguageServer, params: DidSaveTextDocumentParams):
     """Text document did change notification."""
-    logging.info(f"Text document altered by LSP client {params.text_document.uri}.")
+    document_uri = params.text_document.uri
+    logging.info(f"Text document altered by LSP client {document_uri}.")
 
-    file_content = params.text
-    incoming_definitions = parse(file_content)
+    incoming_definitions = parse(document_uri.removeprefix("file://"))
     new_definitions = []
     altered_definitions = []
 
