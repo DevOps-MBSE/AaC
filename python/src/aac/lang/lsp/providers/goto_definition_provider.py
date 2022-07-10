@@ -55,6 +55,8 @@ class GotoDefinitionProvider(LspProvider):
         Return the location(s) where the AaC reference is defined.
 
         Args:
+            documents (dict[str, Document]): The documents in the workspace in which to search for name.
+            name (str): The name of the item whose location is being determined.
 
         Returns:
             A list of Locations at which the `name`d item is defined. If there is no named item, an
