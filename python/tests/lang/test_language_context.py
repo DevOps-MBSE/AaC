@@ -175,7 +175,7 @@ class TestLanguageContext(TestCase):
 
         self.assertEqual(expected_results, actual_results)
 
-    def test_get_get_defined_types_with_unextended_context(self):
+    def test_get_defined_types_with_unextended_context(self):
         core_spec = get_aac_spec()
         test_context = LanguageContext(core_spec)
 
