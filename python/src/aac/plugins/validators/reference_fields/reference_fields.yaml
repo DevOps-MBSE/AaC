@@ -1,0 +1,33 @@
+validation:
+  name: Reference format valid
+  description: Verifies every field declared as reference is properly formatted for processing
+  behavior:
+    - name: Verify that reference fields properly formatted.
+      type: request-response
+      description:
+      input:
+        - name: input
+          type: ValidatorInput
+      output:
+        - name: results
+          type: ValidatorOutput
+      acceptance:
+        - scenario: Successfully Validate a definition's reference fields
+          given:
+            - The ValidatorInput content consists of valid AaC definitions.
+            - The ValidatorInput contains some AaC fields that reference other definitions.
+          when:
+            - The input is validation
+          then:
+            - The ValidatorOutput does not indicate any errors
+            - The ValidatorOutput does not indicate any warnings
+            - The ValidatorOutput indicates the definition under test is valid
+        - scenario: Fail to validate a definition's reference fields
+          given:
+            - The ValidatorInput content consists of otherwise valid AaC definitions.
+            - The ValidatorInput contains at least one reference field that is incorrectly formatted.
+          when:
+            - The ValidatorInput is validated
+          then:
+            - The ValidatorOutput has errors
+            - The ValidatorOutput errors indicate that there are incorrectly formatted reference fields

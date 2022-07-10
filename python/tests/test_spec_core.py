@@ -11,7 +11,7 @@ class TestSpecCore(TestCase):
         """
         Unit test for the core.get_primitive method.
         """
-        expected_results = ["int", "number", "string", "bool", "file", "date"]
+        expected_results = ["int", "number", "string", "bool", "file", "date", "reference"]
 
         result = core.get_primitives()
 

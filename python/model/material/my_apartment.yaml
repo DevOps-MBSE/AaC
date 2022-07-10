@@ -3,9 +3,9 @@ deployment:
   description: The place I'm going to live.
   location: Crystal Terrace Apartments Unit 1234
   sub-deployments:
-    - name: Living_Room
+    - deployment-ref: deployment.assemblies(quantity=1)
       quantity: 1
-    - name: Kitchen
+    - deployment-ref: deployment(name="Kitchen")
       quantity: 1
 ---
 import:
@@ -14,10 +14,11 @@ import:
 deployment:
   name: Living_Room
   description:  The place I'll hang out a lot.
+  location: The large room off the entry way
   assemblies:
-    - name: Entertainment_System
+    - assembly-ref: assembly(name="Entertainment_System")
       quantity: 1
-    - name: Seating_Area
+    - assembly-ref: assembly(name="Seating_Area")
       quantity: 1
 ---
 import:
@@ -26,8 +27,9 @@ import:
 deployment:
   name: Kitchen
   description:  Where I'll cook my food.
+  location: The room with the sink and the stove
   assemblies:
-    - name: Appliances
+    - assembly-ref: assembly(name="Appliances")
       quantity: 1
-    - name: Cook_Ware
+    - assembly-ref: assembly(name="Cook_Ware")
       quantity: 1
