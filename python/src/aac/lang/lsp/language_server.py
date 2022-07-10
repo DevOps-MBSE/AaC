@@ -12,7 +12,7 @@ from pygls.lsp import (
     Hover,
     HoverParams,
     TextDocumentSyncKind,
-    DidSaveTextDocumentParams,
+    DidChangeTextDocumentParams,
     DidCloseTextDocumentParams,
     DidOpenTextDocumentParams,
     methods
@@ -61,7 +61,7 @@ class AacLanguageServer(LanguageServer):
 
         self.feature(methods.TEXT_DOCUMENT_DID_OPEN)(did_open)
         self.feature(methods.TEXT_DOCUMENT_DID_CLOSE)(did_close)
-        self.feature(methods.TEXT_DOCUMENT_DID_SAVE)(did_save)
+        self.feature(methods.TEXT_DOCUMENT_DID_CHANGE)(did_change)
 
         trigger_and_commit_chars = self.code_completion_provider.get_trigger_characters()
         completion_options = CompletionOptions(trigger_characters=trigger_and_commit_chars)
@@ -94,12 +94,13 @@ async def did_close(ls: AacLanguageServer, params: DidCloseTextDocumentParams):
     managed_file.is_client_managed = False
 
 
-async def did_save(ls: AacLanguageServer, params: DidSaveTextDocumentParams):
+async def did_change(ls: AacLanguageServer, params: DidChangeTextDocumentParams):
     """Text document did change notification."""
     document_uri = params.text_document.uri
     logging.info(f"Text document altered by LSP client {document_uri}.")
 
-    incoming_definitions = parse(document_uri.removeprefix("file://"))
+    file_content = params.content_changes[0].text
+    incoming_definitions = parse(file_content)
     new_definitions = []
     altered_definitions = []
 
