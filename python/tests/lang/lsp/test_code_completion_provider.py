@@ -38,10 +38,8 @@ class TestCodeCompletionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
 
     def get_all_defined_type_names(self) -> list[str]:
         """Return a list of all defined type names."""
-        test_context = self.client.server.language_context
-
-        schemas = test_context.get_definitions_by_root_key("schema")
-        enums = test_context.get_definitions_by_root_key("enum")
+        schemas = self.active_context.get_definitions_by_root_key("schema")
+        enums = self.active_context.get_definitions_by_root_key("enum")
 
         all_defined_type_names = [definition.name for definition in schemas]
         [all_defined_type_names.extend(search_definition(enum, ["enum", "values"])) for enum in enums]
