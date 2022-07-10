@@ -12,7 +12,7 @@
                                               "[/\\\\]\\.mypy_cache\\'"
                                               "[/\\\\]\\.tox\\'")))))))
                  (projectile-project-type . python-pkg)
-                 (projectile-project-test-cmd . "tox")
+                 (projectile-project-test-cmd . "cd python; source .venv/bin/activate.fish && flake8 . && nose2 -c tox.ini")
                  (python-backend . lsp)
                  ;; To use this, add the `pyright` LSP server with `yarn global add pyright`.
                  ;; (python-lsp-server . pyright)
