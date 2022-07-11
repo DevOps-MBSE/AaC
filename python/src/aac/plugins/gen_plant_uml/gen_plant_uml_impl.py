@@ -270,7 +270,7 @@ def _get_model_content(model: Definition, defined_interfaces: set) -> dict:
 
     for component in components:
         component_type = component.get("type")
-        model_components.append(_get_model_content(active_context.get_definition_by_name(component_type), set()))
+        model_components.append(_get_model_content(active_context.get_definition_by_name(component_type), defined_interfaces))
 
     return {
         "name": model_name,
