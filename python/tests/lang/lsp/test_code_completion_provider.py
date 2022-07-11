@@ -2,6 +2,7 @@ from unittest.async_case import IsolatedAsyncioTestCase
 
 from pygls.lsp import methods
 from pygls.lsp.types.language_features.completion import CompletionContext, CompletionParams, CompletionTriggerKind
+from aac.lang.definitions.search import search_definition
 
 from aac.lang.lsp.providers.code_completion_provider import SPACE_TRIGGER
 
@@ -35,13 +36,23 @@ class TestCodeCompletionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
             ),
         )
 
+    def get_all_defined_type_names(self) -> list[str]:
+        """Return a list of all defined type names."""
+        schemas = self.active_context.get_definitions_by_root_key("schema")
+        enums = self.active_context.get_definitions_by_root_key("enum")
+
+        all_defined_type_names = [definition.name for definition in schemas]
+        [all_defined_type_names.extend(search_definition(enum, ["enum", "values"])) for enum in enums]
+
+        return all_defined_type_names
+
     async def test_handles_completion_request(self):
         new_content = f"{TEST_PARTIAL_CONTENT}{SPACE_TRIGGER}"
         await self.write_document(TEST_DOCUMENT_NAME, new_content)
 
-        last_line_num = len(new_content.splitlines()) - 1
-        last_char_num = len(new_content.splitlines()[last_line_num]) - 1
-        res: CompletionResponse = await self.complete(TEST_DOCUMENT_NAME, line=last_line_num, character=last_char_num)
+        last_line = len(new_content.splitlines()) - 1
+        last_char = len(new_content.splitlines()[last_line]) - 1
+        res: CompletionResponse = await self.complete(TEST_DOCUMENT_NAME, line=last_line, character=last_char)
 
         self.assertGreater(len(res.get_completion_items()), 0)
-        self.assertIsNotNone(res.get_completion_item_by_label("string"))
+        [self.assertIn(name, self.get_all_defined_type_names()) for name in res.get_completion_item_names()]

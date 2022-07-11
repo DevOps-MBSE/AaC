@@ -1,0 +1,33 @@
+validation:
+  name: Reference target valid
+  description: Verifies every field declared as reference are valid and reference an existing model element
+  behavior:
+    - name: Reference target valid
+      type: request-response
+      description:
+      input:
+        - name: input
+          type: ValidatorInput
+      output:
+        - name: results
+          type: ValidatorOutput
+      acceptance:
+        - scenario: Successfully Validate a definition's reference field targets
+          given:
+            - The ValidatorInput content consists of valid AaC definitions.
+            - The ValidatorInput contains some AaC fields that reference other existing definitions.
+          when:
+            - The input is validation
+          then:
+            - The ValidatorOutput does not indicate any errors
+            - The ValidatorOutput does not indicate any warnings
+            - The ValidatorOutput indicates the validator plugin under test is valid
+        - scenario: Fail to validate a definition's reference field targets
+          given:
+            - The ValidatorInput content consists of otherwise valid AaC definitions.
+            - The ValidatorInput contains at least one reference field that references a non-existent target.
+          when:
+            - The ValidatorInput is validated
+          then:
+            - The ValidatorOutput has errors
+            - The ValidatorOutput errors indicate that there are reference field targets

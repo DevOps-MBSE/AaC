@@ -6,6 +6,7 @@ from pygls.lsp.types.language_features.definition import DefinitionParams
 from pygls.workspace import Document
 
 from aac.lang.definitions.type import remove_list_type_indicator
+from aac.lang.language_context import LanguageContext
 from aac.lang.lsp.providers.lsp_provider import LspProvider
 
 
@@ -54,6 +55,8 @@ class GotoDefinitionProvider(LspProvider):
         Return the location(s) where the AaC reference is defined.
 
         Args:
+            documents (dict[str, Document]): The documents in the workspace in which to search for name.
+            name (str): The name of the item whose location is being determined.
 
         Returns:
             A list of Locations at which the `name`d item is defined. If there is no named item, an
@@ -106,12 +109,12 @@ class GotoDefinitionProvider(LspProvider):
         """
 
         def is_schema_definition() -> bool:
-            return self.language_server.language_context.is_definition_type(name) and f"name: {name}" == lines[0]
+            return context.is_definition_type(name) and f"name: {name}" == lines[0]
 
         def is_enum_definition() -> bool:
-            enum = self.language_server.language_context.get_enum_definition_with_type(name)
-            return enum is not None and f"- {name}" == lines[0]
+            return context.get_enum_definition_by_type(name) is not None and f"- {name}" == lines[0]
 
         lines.reverse()
         lines = [line.strip() for line in lines]
+        context: LanguageContext = self.language_server.language_context
         return is_schema_definition() or is_enum_definition()
