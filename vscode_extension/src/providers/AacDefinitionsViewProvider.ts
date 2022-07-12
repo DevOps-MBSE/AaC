@@ -40,3 +40,13 @@ class Definition extends vscode.TreeItem {
         dark: path.join(__filename, '..', '..', 'resources', 'dark', 'dependency.svg')
     };
 }
+
+function getDefinitionByName(definitionName: string) {
+    return Promise.resolve(aacRestApi.getDefinitionByNameDefinitionGet({name: definitionName}))
+}
+
+export function onDefinitionNodeSelection(event: vscode.TreeViewSelectionChangeEvent<Definition>) {
+    if (event.selection.length > 0) {
+        getDefinitionByName(event.selection[0].definitionModel.name).then(response => console.log(response))
+    }
+}
