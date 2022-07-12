@@ -81,6 +81,11 @@
                 "command": "aac.execute",
                 "title": "Execute AaC Command",
                 "category": "AaC"
+            },
+            {
+                "command": "aac.visualEditor.new",
+                "title": "Open Definition in Visual Editor",
+                "category": "AaC"
             }
         ],
         "languages": [
@@ -133,7 +138,7 @@
         ],
         "customEditors": [
             {
-                "viewType": "aac.restEditor",
+                "viewType": "aac.visualEditor",
                 "displayName": "Edit AaC Definitions",
                 "selector": [
                     {
