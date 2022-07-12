@@ -3,6 +3,7 @@
 import { Configuration, DefaultApi } from "../requests/generated/aac_rest_api";
 import fetch from "node-fetch"
 export * from  "../requests/generated/aac_rest_api/models"
+export * from  "../requests/generated/aac_rest_api/apis"
 
 
 const configuration = new Configuration({
