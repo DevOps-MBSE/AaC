@@ -234,12 +234,7 @@ class LanguageContext:
             A boolean indicating if the string matches an enum type defined in the context.
         """
         definition = self.get_definition_by_name(type)
-
-        is_enum_type = False
-        if definition:
-            is_enum_type = definition.is_enum()
-
-        return is_enum_type
+        return definition.is_enum() if definition else False
 
     def is_primitive_type(self, type: str) -> bool:
         """
@@ -316,3 +311,21 @@ class LanguageContext:
             return file_uri == definition.source_uri
 
         return list(filter(does_definition_source_uri_match, self.definitions))
+
+    def get_enum_definition_by_type(self, type: str) -> Optional[Definition]:
+        """
+        Return the enum definition that defines the specified enumerated type.
+
+        Args:
+            type (str): The type string.
+
+        Returns:
+            If the specified type is defined by an enum in the LanguageContext, returns the enum
+            definition that defines the specified type. If not, returns None.
+        """
+
+        def is_type_defined_by_enum(enum: Definition) -> bool:
+            return type in enum.get_top_level_fields().get("values", [])
+
+        definitions = [enum for enum in self.get_definitions_by_root_key("enum") if is_type_defined_by_enum(enum)]
+        return definitions[0] if definitions else None

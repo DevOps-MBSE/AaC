@@ -1,0 +1,5 @@
+schema:
+  name: Response
+  fields:
+    - name: content
+      type: string

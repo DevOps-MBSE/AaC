@@ -175,7 +175,7 @@ class TestLanguageContext(TestCase):
 
         self.assertEqual(expected_results, actual_results)
 
-    def test_get_get_defined_types_with_unextended_context(self):
+    def test_get_defined_types_with_unextended_context(self):
         core_spec = get_aac_spec()
         test_context = LanguageContext(core_spec)
 
@@ -206,3 +206,25 @@ class TestLanguageContext(TestCase):
         actual_results = test_context.get_root_keys()
 
         self.assertEqual(expected_results, actual_results)
+
+    def test_get_enum_definition_by_type_when_enum_is_in_core_spec(self):
+        core_spec = get_aac_spec()
+        test_context = LanguageContext(core_spec)
+
+        primitives_definition = test_context.get_definition_by_name("Primitives")
+        behavior_type_definition = test_context.get_definition_by_name("BehaviorType")
+
+        self.assertEqual(primitives_definition, test_context.get_enum_definition_by_type("string"))
+        self.assertEqual(behavior_type_definition, test_context.get_enum_definition_by_type("pub-sub"))
+
+    def test_get_enum_definition_by_type_when_enum_is_added(self):
+        test_context = LanguageContext()
+
+        values = ["a", "b", "c"]
+
+        [self.assertIsNone(test_context.get_enum_definition_by_type(value)) for value in values]
+
+        enum = create_enum_definition("TestEnum", values)
+        test_context.add_definition_to_context(enum)
+
+        [self.assertEqual(enum, test_context.get_enum_definition_by_type(value)) for value in values]
