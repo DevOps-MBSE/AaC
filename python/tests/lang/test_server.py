@@ -31,6 +31,18 @@ class TestLspServer(BaseLspTestCase, IsolatedAsyncioTestCase):
         self.assertIsNotNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_SCHEMA_NAME))
         self.assertIsNotNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_MODEL_NAME))
 
+    async def test_handles_content_changes_with_malformed_data(self):
+        self.assertIsNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_SCHEMA_NAME))
+        self.assertIsNone(self.active_context.get_definition_by_name(TEST_ADDITIONAL_MODEL_NAME))
+
+        await self.write_document(TEST_DOCUMENT_NAME, f"{TEST_DOCUMENT_CONTENT}---{TEST_MALFORMED_CONTENT}")
+
+        modified_definition = self.active_context.get_definition_by_name(TEST_ADDITIONAL_MODEL_NAME)
+        modified_definition_content = modified_definition.to_yaml()
+
+        self.assertNotIn(MALFORMED_EXTRA_FIELD_NAME, modified_definition_content)
+        self.assertNotIn(MALFORMED_EXTRA_FIELD_CONTENT, modified_definition_content)
+
     async def test_handles_hover_request(self):
         res: HoverResponse = await self.hover(TEST_DOCUMENT_NAME)
         self.assertIn("LSP server", res.get_content())
@@ -121,10 +133,38 @@ model:
             - ServiceTwo processes the request into a DataC response
             - ServiceTwo returns the DataC response
 """
+MALFORMED_EXTRA_FIELD_NAME = "extrafield"
+MALFORMED_EXTRA_FIELD_CONTENT = "extracontent"
 TEST_PARTIAL_CONTENT = f"""
 schema:
   name: {TEST_ADDITIONAL_SCHEMA_NAME}
   fields:
   - name: msg
     type:\
+"""
+TEST_MALFORMED_CONTENT = f"""
+model:
+  name: {TEST_ADDITIONAL_MODEL_NAME}
+  {MALFORMED_EXTRA_FIELD_NAME}: {MALFORMED_EXTRA_FIELD_CONTENT}
+  behavior:
+    - name: Process DataB Request
+      type: request-response
+      description: Process a DataB request and return a DataC response
+      input:
+        - name: in
+          type: DataB
+      output:
+        - name: out
+          type: DataC
+          {MALFORMED_EXTRA_FIELD_NAME}: {MALFORMED_EXTRA_FIELD_CONTENT}
+      acceptance:
+        - scenario: Receive DataB request and return DataC response
+          given:
+            - ServiceTwo is running
+          when:
+            - ServiceTwo receives a DataB request
+          then:
+            - ServiceTwo processes the request into a DataC response
+            - ServiceTwo returns the DataC response
+          {MALFORMED_EXTRA_FIELD_NAME}: {MALFORMED_EXTRA_FIELD_CONTENT}
 """
