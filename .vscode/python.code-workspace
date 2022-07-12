@@ -120,7 +120,8 @@
             "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "puml-component",
-                "${workspaceFolder}/model/flow/System.yaml"
+                "${workspaceFolder}/model/flow/System.yaml",
+                "out"
             ],
             "console": "integratedTerminal",
             "justMyCode": false
@@ -131,7 +132,8 @@
             "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "puml-object",
-                "${workspaceFolder}/model/flow/System.yaml"
+                "${workspaceFolder}/model/flow/System.yaml",
+                "out"
             ],
             "console": "integratedTerminal",
             "justMyCode": false
@@ -142,7 +144,8 @@
             "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "puml-object",
-                "${workspaceFolder}/model/flow/flow.yaml"
+                "${workspaceFolder}/model/flow/flow.yaml",
+                "out"
             ],
             "console": "integratedTerminal",
             "justMyCode": false

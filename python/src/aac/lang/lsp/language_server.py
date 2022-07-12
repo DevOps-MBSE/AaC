@@ -21,6 +21,7 @@ from pygls.lsp import (
 
 from aac.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_initialized_language_context
+from aac.lang.definitions.structure import strip_undefined_fields_from_definition
 from aac.lang.language_context import LanguageContext
 from aac.lang.lsp.managed_workspace_file import ManagedWorkspaceFile
 from aac.lang.lsp.providers.lsp_provider import LspProvider
@@ -104,7 +105,8 @@ async def did_close(ls: AacLanguageServer, params: DidCloseTextDocumentParams):
 
 async def did_change(ls: AacLanguageServer, params: DidChangeTextDocumentParams):
     """Text document did change notification."""
-    logging.info(f"Text document altered by LSP client {params.text_document.uri}.")
+    document_uri = params.text_document.uri
+    logging.info(f"Text document altered by LSP client {document_uri}.")
 
     file_content = params.content_changes[0].text
     incoming_definitions = parse(file_content)
@@ -112,19 +114,20 @@ async def did_change(ls: AacLanguageServer, params: DidChangeTextDocumentParams)
     altered_definitions = []
 
     for incoming_definition in incoming_definitions:
+        sanitized_definition = strip_undefined_fields_from_definition(incoming_definition, ls.language_context)
         # At the moment we have to rely on definition names, but we'll need to update definitions based on file URI
-        old_definition = ls.language_context.get_definition_by_name(incoming_definition.name)
+        old_definition = ls.language_context.get_definition_by_name(sanitized_definition.name)
 
         if old_definition:
-            altered_definitions.append(incoming_definition)
+            altered_definitions.append(sanitized_definition)
 
             old_definition_lines = old_definition.to_yaml().split(os.linesep)
             altered_definition_lines = incoming_definition.to_yaml().split(os.linesep)
             changes = "\n".join(list(difflib.ndiff(old_definition_lines, altered_definition_lines))).strip()
             logging.info(f"Updating definition: {old_definition.name}.\n Differences:\n{changes}")
         else:
-            logging.info(f"Adding definition: {incoming_definition.name}.")
-            new_definitions.append(incoming_definition)
+            logging.info(f"Adding definition: {sanitized_definition.name}.")
+            new_definitions.append(sanitized_definition)
 
     ls.language_context.add_definitions_to_context(new_definitions)
     ls.language_context.update_definitions_in_context(altered_definitions)
