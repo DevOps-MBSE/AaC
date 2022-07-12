@@ -90,3 +90,32 @@ TEST_SERVICE_THREE = create_model_definition(TEST_SERVICE_THREE_NAME, behavior=[
 
 TEST_DOCUMENT_NAME = "test.aac"
 TEST_DOCUMENT_CONTENT = f"{YAML_DOCUMENT_SEPARATOR}\n".join([TEST_SCHEMA_A.to_yaml(), TEST_SCHEMA_B.to_yaml(), TEST_SERVICE_ONE.to_yaml()])
+
+MALFORMED_EXTRA_FIELD_NAME = "extrafield"
+MALFORMED_EXTRA_FIELD_CONTENT = "extracontent"
+TEST_MALFORMED_CONTENT = f"""
+model:
+  name: {TEST_SERVICE_TWO_NAME}
+  {MALFORMED_EXTRA_FIELD_NAME}: {MALFORMED_EXTRA_FIELD_CONTENT}
+  behavior:
+    - name: Process {TEST_SCHEMA_B.name} Request
+      type: request-response
+      description: Process a {TEST_SCHEMA_B.name} request and return a {TEST_SCHEMA_C.name} response
+      input:
+        - name: in
+          type: {TEST_SCHEMA_B.name}
+      output:
+        - name: out
+          type: {TEST_SCHEMA_C.name}
+          {MALFORMED_EXTRA_FIELD_NAME}: {MALFORMED_EXTRA_FIELD_CONTENT}
+      acceptance:
+        - scenario: Receive {TEST_SCHEMA_B.name} request and return {TEST_SCHEMA_C.name} response
+          given:
+            - {TEST_SERVICE_TWO_NAME} is running
+          when:
+            - {TEST_SERVICE_TWO_NAME} receives a {TEST_SCHEMA_B.name} request
+          then:
+            - {TEST_SERVICE_TWO_NAME} processes the request into a {TEST_SCHEMA_C.name} response
+            - {TEST_SERVICE_TWO_NAME} returns the {TEST_SCHEMA_C.name} response
+          {MALFORMED_EXTRA_FIELD_NAME}: {MALFORMED_EXTRA_FIELD_CONTENT}
+"""

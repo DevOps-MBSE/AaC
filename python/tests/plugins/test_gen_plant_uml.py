@@ -30,15 +30,15 @@ class TestGenPlantUml(ActiveContextTestCase):
         self.assertEqual(_get_formatted_definition_name("Definition Name"), "definition_name")
         self.assertEqual(
             _get_formatted_definition_name(f"{FILE_NAME_CHARACTERS_TO_REPLACE}This is my Definition Name"),
-            "this_is_my_definition_name"
+            "this_is_my_definition_name",
         )
         self.assertEqual(
             _get_formatted_definition_name(f"This is my{FILE_NAME_CHARACTERS_TO_REPLACE} Definition Name"),
-            "this_is_my_definition_name"
+            "this_is_my_definition_name",
         )
         self.assertEqual(
             _get_formatted_definition_name(f"This is my Definition Name{FILE_NAME_CHARACTERS_TO_REPLACE}"),
-            "this_is_my_definition_name"
+            "this_is_my_definition_name",
         )
 
     def test_generated_file_name(self):
@@ -57,12 +57,16 @@ class TestGenPlantUml(ActiveContextTestCase):
             )
             self.assertEqual(
                 _get_generated_file_name(filename, puml_type, definition_name, new_relative_dir),
-                os.path.join(new_relative_dir, puml_type, f"{file_name}_{formatted_definition_name}{PLANT_UML_FILE_EXTENSION}"),
+                os.path.join(
+                    new_relative_dir, puml_type, f"{file_name}_{formatted_definition_name}{PLANT_UML_FILE_EXTENSION}"
+                ),
             )
 
     def test_puml_component_diagram_to_file(self):
-        with (TemporaryDirectory() as temp_directory,
-              temporary_test_file(TEST_PUML_ARCH_YAML, dir=temp_directory, suffix=YAML_FILE_EXTENSION) as plugin_yaml):
+        with TemporaryDirectory() as temp_directory, temporary_test_file(
+            TEST_PUML_ARCH_YAML, dir=temp_directory, suffix=YAML_FILE_EXTENSION
+        ) as plugin_yaml:
+
             result = puml_component(plugin_yaml.name, temp_directory)
 
             full_output_dir = os.path.join(temp_directory, COMPONENT_STRING)
@@ -83,8 +87,10 @@ class TestGenPlantUml(ActiveContextTestCase):
                 check_generated_file_contents(path, self._get_checker_from_filepath(parts[-1], COMPONENT_STRING))
 
     def test_puml_object_diagram_to_file(self):
-        with (TemporaryDirectory() as temp_directory,
-              temporary_test_file(TEST_PUML_ARCH_YAML, dir=temp_directory, suffix=YAML_FILE_EXTENSION) as plugin_yaml):
+        with TemporaryDirectory() as temp_directory, temporary_test_file(
+            TEST_PUML_ARCH_YAML, dir=temp_directory, suffix=YAML_FILE_EXTENSION
+        ) as plugin_yaml:
+
             full_output_dir = os.path.join(temp_directory, OBJECT_STRING)
 
             result = puml_object(plugin_yaml.name, temp_directory)
@@ -101,8 +107,10 @@ class TestGenPlantUml(ActiveContextTestCase):
                 self._check_object_diagram_content(generated_puml_file.read())
 
     def test_puml_sequence_diagram_to_file(self):
-        with (TemporaryDirectory() as temp_directory,
-              temporary_test_file(TEST_PUML_ARCH_YAML, dir=temp_directory, suffix=YAML_FILE_EXTENSION) as plugin_yaml):
+        with TemporaryDirectory() as temp_directory, temporary_test_file(
+            TEST_PUML_ARCH_YAML, dir=temp_directory, suffix=YAML_FILE_EXTENSION
+        ) as plugin_yaml:
+
             result = puml_sequence(plugin_yaml.name, temp_directory)
 
             full_output_dir = os.path.join(temp_directory, SEQUENCE_STRING)
@@ -137,6 +145,7 @@ class TestGenPlantUml(ActiveContextTestCase):
             The method on self that checks the generated content for the file from which path was
             extracted.
         """
+
         def is_checker(obj):
             return inspect.ismethod(obj) and obj.__name__.startswith(f"_check_{puml_type}_diagram")
 
@@ -147,21 +156,29 @@ class TestGenPlantUml(ActiveContextTestCase):
         self._assert_diagram_contains_uml_boilerplate(component_diagram_content_string)
         self._check_component_diagram_serviceone(component_diagram_content_string)
         self._check_component_diagram_servicetwo(component_diagram_content_string)
-        self.assertIn(f"component \"{TEST_PUML_SYSTEM_TYPE}\"", component_diagram_content_string)
+        self.assertIn(f'component "{TEST_PUML_SYSTEM_TYPE}"', component_diagram_content_string)
 
     def _check_component_diagram_serviceone(self, component_diagram_content_string: str):
         self._assert_diagram_contains_uml_boilerplate(component_diagram_content_string)
-        self._assert_component_diagram_relations(component_diagram_content_string, "->", [
-            {"left": TEST_PUML_DATA_A_TYPE, "right": f"{TEST_PUML_SERVICE_ONE_TYPE}", "name": "in"},
-            {"left": f"{TEST_PUML_SERVICE_ONE_TYPE}", "right": TEST_PUML_DATA_B_TYPE, "name": "out"},
-        ])
+        self._assert_component_diagram_relations(
+            component_diagram_content_string,
+            "-->",
+            [
+                {"left": TEST_PUML_DATA_A_TYPE, "right": f"{TEST_PUML_SERVICE_ONE_TYPE}", "name": "in"},
+                {"left": f"{TEST_PUML_SERVICE_ONE_TYPE}", "right": TEST_PUML_DATA_B_TYPE, "name": "out"},
+            ],
+        )
 
     def _check_component_diagram_servicetwo(self, component_diagram_content_string: str):
         self._assert_diagram_contains_uml_boilerplate(component_diagram_content_string)
-        self._assert_component_diagram_relations(component_diagram_content_string, "->", [
-            {"left": TEST_PUML_DATA_B_TYPE, "right": f"{TEST_PUML_SERVICE_TWO_TYPE}", "name": "in"},
-            {"left": f"{TEST_PUML_SERVICE_TWO_TYPE}", "right": TEST_PUML_DATA_C_TYPE, "name": "out"},
-        ])
+        self._assert_component_diagram_relations(
+            component_diagram_content_string,
+            "-->",
+            [
+                {"left": TEST_PUML_DATA_B_TYPE, "right": f"{TEST_PUML_SERVICE_TWO_TYPE}", "name": "in"},
+                {"left": f"{TEST_PUML_SERVICE_TWO_TYPE}", "right": TEST_PUML_DATA_C_TYPE, "name": "out"},
+            ],
+        )
 
     def _assert_component_diagram_relations(self, content: str, relation: str, links: list[dict[str, str]]):
         for link in links:
@@ -169,13 +186,17 @@ class TestGenPlantUml(ActiveContextTestCase):
 
     def _check_object_diagram_content(self, object_diagram_content_string: str):
         self._assert_diagram_contains_uml_boilerplate(object_diagram_content_string)
-        self._assert_object_diagram_object(object_diagram_content_string, [
-            TEST_PUML_SYSTEM_TYPE, TEST_PUML_SERVICE_ONE_TYPE, TEST_PUML_SERVICE_TWO_TYPE
-        ])
-        self._assert_object_diagram_object_relations(object_diagram_content_string, "*--", [
-            {"left": TEST_PUML_SYSTEM_TYPE, "right": TEST_PUML_SERVICE_ONE_TYPE},
-            {"left": TEST_PUML_SYSTEM_TYPE, "right": TEST_PUML_SERVICE_TWO_TYPE},
-        ])
+        self._assert_object_diagram_object(
+            object_diagram_content_string, [TEST_PUML_SYSTEM_TYPE, TEST_PUML_SERVICE_ONE_TYPE, TEST_PUML_SERVICE_TWO_TYPE]
+        )
+        self._assert_object_diagram_object_relations(
+            object_diagram_content_string,
+            "*--",
+            [
+                {"left": TEST_PUML_SYSTEM_TYPE, "right": TEST_PUML_SERVICE_ONE_TYPE},
+                {"left": TEST_PUML_SYSTEM_TYPE, "right": TEST_PUML_SERVICE_TWO_TYPE},
+            ],
+        )
 
     def _assert_object_diagram_object(self, content: str, objects: list[str]):
         for obj in objects:
@@ -188,27 +209,39 @@ class TestGenPlantUml(ActiveContextTestCase):
     def _check_sequence_diagram_usecase_one(self, sequence_diagram_content_string: str):
         self._assert_diagram_contains_uml_boilerplate(sequence_diagram_content_string)
         self.assertIn(f"title {TEST_PUML_USE_CASE_ONE_TITLE}", sequence_diagram_content_string)
-        self._assert_sequence_diagram_participants(sequence_diagram_content_string, [
-            {"name": TEST_PUML_SYSTEM_NAME, "type": TEST_PUML_SYSTEM_TYPE},
-            {"name": TEST_PUML_SERVICE_ONE_NAME, "type": TEST_PUML_SERVICE_ONE_TYPE},
-            {"name": TEST_PUML_SERVICE_TWO_NAME, "type": TEST_PUML_SERVICE_TWO_TYPE},
-        ])
-        self._assert_sequence_diagram_io(sequence_diagram_content_string, [
-            {"in": TEST_PUML_SYSTEM_NAME, "out": TEST_PUML_SERVICE_ONE_NAME},
-            {"in": TEST_PUML_SERVICE_TWO_NAME, "out": TEST_PUML_SYSTEM_NAME},
-        ])
+        self._assert_sequence_diagram_participants(
+            sequence_diagram_content_string,
+            [
+                {"name": TEST_PUML_SYSTEM_NAME, "type": TEST_PUML_SYSTEM_TYPE},
+                {"name": TEST_PUML_SERVICE_ONE_NAME, "type": TEST_PUML_SERVICE_ONE_TYPE},
+                {"name": TEST_PUML_SERVICE_TWO_NAME, "type": TEST_PUML_SERVICE_TWO_TYPE},
+            ],
+        )
+        self._assert_sequence_diagram_io(
+            sequence_diagram_content_string,
+            [
+                {"in": TEST_PUML_SYSTEM_NAME, "out": TEST_PUML_SERVICE_ONE_NAME},
+                {"in": TEST_PUML_SERVICE_TWO_NAME, "out": TEST_PUML_SYSTEM_NAME},
+            ],
+        )
 
     def _check_sequence_diagram_usecase_two(self, sequence_diagram_content_string: str):
         self._assert_diagram_contains_uml_boilerplate(sequence_diagram_content_string)
         self.assertIn(f"title {TEST_PUML_USE_CASE_TWO_TITLE}", sequence_diagram_content_string)
-        self._assert_sequence_diagram_participants(sequence_diagram_content_string, [
-            {"name": TEST_PUML_SERVICE_ONE_NAME, "type": TEST_PUML_SERVICE_ONE_TYPE},
-            {"name": TEST_PUML_SERVICE_TWO_NAME, "type": TEST_PUML_SERVICE_TWO_TYPE},
-        ])
-        self._assert_sequence_diagram_io(sequence_diagram_content_string, [
-            {"in": TEST_PUML_SERVICE_ONE_NAME, "out": TEST_PUML_SERVICE_TWO_NAME},
-            {"in": TEST_PUML_SERVICE_TWO_NAME, "out": TEST_PUML_SERVICE_ONE_NAME},
-        ])
+        self._assert_sequence_diagram_participants(
+            sequence_diagram_content_string,
+            [
+                {"name": TEST_PUML_SERVICE_ONE_NAME, "type": TEST_PUML_SERVICE_ONE_TYPE},
+                {"name": TEST_PUML_SERVICE_TWO_NAME, "type": TEST_PUML_SERVICE_TWO_TYPE},
+            ],
+        )
+        self._assert_sequence_diagram_io(
+            sequence_diagram_content_string,
+            [
+                {"in": TEST_PUML_SERVICE_ONE_NAME, "out": TEST_PUML_SERVICE_TWO_NAME},
+                {"in": TEST_PUML_SERVICE_TWO_NAME, "out": TEST_PUML_SERVICE_ONE_NAME},
+            ],
+        )
 
     def _assert_sequence_diagram_participants(self, content: str, participants: list[dict[str, str]]):
         for participant in participants:
