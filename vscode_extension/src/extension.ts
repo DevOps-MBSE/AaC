@@ -2,6 +2,7 @@ import { ExtensionContext, window, commands } from "vscode";
 import { AacLanguageServerClient } from "./AacLanguageServer";
 import { executeAacCommand, getAaCVersion } from "./aacExecutableWrapper";
 import { getOutputChannel } from "./outputChannel";
+import { AacDefinitionsViewProvider } from "./providers/AacDefinitionsViewProvider"
 
 let aacLspClient: AacLanguageServerClient = AacLanguageServerClient.getLspClient();
 
@@ -26,6 +27,9 @@ function activatePlugin(context: ExtensionContext) {
     context.subscriptions.push(
         commands.registerCommand(EXECUTE_AAC_COMMAND_NAME, executeAacCommand)
     );
+
+    const aacDefinitionsViewProvider = new AacDefinitionsViewProvider();
+	window.registerTreeDataProvider('definitions-in-context', aacDefinitionsViewProvider);
 }
 
 export function deactivate(): void {
