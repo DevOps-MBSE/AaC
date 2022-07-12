@@ -10,7 +10,6 @@ from pygls.server import LanguageServer
 from pygls.lsp import (
     CompletionOptions,
     CompletionParams,
-    Hover,
     HoverParams,
     TextDocumentSyncKind,
     DidChangeTextDocumentParams,
@@ -27,6 +26,7 @@ from aac.lang.lsp.managed_workspace_file import ManagedWorkspaceFile
 from aac.lang.lsp.providers.lsp_provider import LspProvider
 from aac.lang.lsp.providers.code_completion_provider import CodeCompletionProvider
 from aac.lang.lsp.providers.goto_definition_provider import GotoDefinitionProvider
+from aac.lang.lsp.providers.hover_provider import HoverProvider
 
 
 class AacLanguageServer(LanguageServer):
@@ -62,6 +62,7 @@ class AacLanguageServer(LanguageServer):
         """Configure and setup the providers that make LSP functionality available for the AaC LSP server."""
         self.providers[methods.COMPLETION] = self.providers.get(methods.COMPLETION, CodeCompletionProvider())
         self.providers[methods.DEFINITION] = self.providers.get(methods.DEFINITION, GotoDefinitionProvider())
+        self.providers[methods.HOVER] = self.providers.get(methods.HOVER, HoverProvider())
 
     def setup_features(self) -> None:
         """Configure the server with the supported features."""
@@ -143,7 +144,10 @@ async def handle_completion(ls: AacLanguageServer, params: CompletionParams):
 
 async def handle_hover(ls: AacLanguageServer, params: HoverParams):
     """Handle a hover request."""
-    return Hover(contents="Hello from your friendly AaC LSP server!")
+    hover_provider = ls.providers.get(methods.HOVER)
+    hover_results = hover_provider.handle_request(ls, params)
+    logging.debug(f"Hover results: {hover_results}")
+    return hover_results
 
 
 async def handle_goto_definition(ls: AacLanguageServer, params: DefinitionParams):
