@@ -122,10 +122,6 @@
                 {
                     "id": "definitions-in-context",
                     "name": "Definitions in the Active Context"
-                },
-                {
-                    "id": "files-in-context",
-                    "name": "Files in the Active Context"
                 }
             ]
         },
