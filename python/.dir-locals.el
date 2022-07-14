@@ -11,6 +11,7 @@
                                               "[/\\\\]html_code_coverage\\'"
                                               "[/\\\\]\\.mypy_cache\\'"
                                               "[/\\\\]\\.tox\\'")))))))
+                 (projectile-create-missing-test-files . t)
                  (projectile-project-type . python-pkg)
                  (projectile-project-test-cmd . "cd python; source .venv/bin/activate.fish && flake8 . && nose2 -c tox.ini")
                  (python-backend . lsp)
