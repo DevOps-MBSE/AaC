@@ -8,7 +8,7 @@ from aac.io.files.aac_file import AaCFile
 class FileModel(BaseModel):
     """REST API Model for the File class."""
     uri: str
-    content: Optional[str] = ""
+    content: Optional[str]
     is_user_editable: bool
     is_loaded_in_context: bool
 
@@ -24,7 +24,7 @@ class FilePathRenameModel(BaseModel):
     new_file_uri: str
 
 
-def to_file_model(file: AaCFile, file_content: str = "") -> FileModel:
+def to_file_model(file: AaCFile, file_content: Optional[str] = None) -> FileModel:
     """
     Return a FileModel representation from an AaCFile object.
 
