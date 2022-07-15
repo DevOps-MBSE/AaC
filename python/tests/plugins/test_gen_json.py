@@ -1,5 +1,13 @@
 import os
+from aac import parser
 
+from aac.plugins.gen_json import (
+    get_commands,
+    get_resource_file_path,
+    register_plugin,
+    get_plugin_aac_definitions,
+    plugin_resource_file_args,
+)
 from aac.plugins.gen_json.gen_json_impl import print_json
 from aac.plugins.plugin_execution import PluginExecutionStatusCode
 
@@ -39,6 +47,17 @@ class TestGenJson(ActiveContextTestCase):
         with temporary_test_file("model: ][") as temp_arch_file:
             result = print_json([temp_arch_file.name])
             self.assertEqual(result.status_code, PluginExecutionStatusCode.PARSER_FAILURE)
+
+    def test_get_plugin(self):
+        plugin = register_plugin()
+
+        self.assertEqual(plugin.name, "gen_json")
+
+        commands = get_commands()
+        self.assertEqual(plugin.contributions.get_commands(), commands)
+
+        definitions = parser.parse(get_plugin_aac_definitions(), get_resource_file_path(*plugin_resource_file_args))
+        self.assertEqual(plugin.contributions.get_definitions(), definitions)
 
 
 TEST_ARCH_YAML_STRING = """
