@@ -6,12 +6,13 @@ from pluggy import PluginManager
 from aac import parser
 from aac.lang.definitions.definition import Definition
 from aac.plugins import hookspecs, PLUGIN_PROJECT_NAME
+from aac.plugins.plugin import Plugin
 from aac.plugins.validators import ValidatorPlugin
 
 
 def get_plugin_manager() -> PluginManager:
     """
-    Gets the plugin manager and automatically registers internal plugins.
+    Get the plugin manager and automatically registers internal plugins.
 
     Returns:
         The plugin manager.
@@ -87,7 +88,7 @@ def get_plugin_manager() -> PluginManager:
 
 def get_plugin_definitions() -> list[Definition]:
     """
-    Gets a list of all the plugin-defined AaC models and definitions.
+    Get a list of all the plugin-defined AaC models and definitions.
 
     Returns:
         A list of parsed definitions from all active plugins.
@@ -106,21 +107,20 @@ def get_plugin_definitions() -> list[Definition]:
 
 def get_validator_plugins() -> list[ValidatorPlugin]:
     """
-    Gets a list of registered validator plugins and metadata.
+    Get a list of registered validator plugins and metadata.
 
     Returns:
         A list of validator plugins that are currently registered.
     """
-    plugin_manager = get_plugin_manager()
-    return plugin_manager.hook.register_validators()
+    return get_plugin_manager().hook.register_validators()
 
 
 def get_plugin_model_definitions() -> dict:
     """
-    Gets all a list of all the plugin-defined AaC models and definitions.
+    Get a collection of all the plugin-defined AaC models and definitions.
 
     Returns:
-        A list of plugin defined models.
+        A collection of plugin defined models.
     """
     plugin_manager = get_plugin_manager()
     plugin_models_yaml = plugin_manager.hook.get_plugin_aac_definitions()
@@ -132,3 +132,13 @@ def get_plugin_model_definitions() -> dict:
             plugin_extensions = definitions_dict | plugin_extensions
 
     return plugin_extensions
+
+
+def get_plugins() -> list[Plugin]:
+    """
+    Get a list of all the plugins available in the AaC package.
+
+    Returns:
+        A list of plugins that are currently registered.
+    """
+    return get_plugin_manager().hook.register_plugin()
