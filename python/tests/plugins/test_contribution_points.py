@@ -3,7 +3,7 @@ from unittest.case import TestCase
 
 from aac.cli.aac_command import AacCommand, AacCommandArgument
 from aac.lang.definitions.definition import Definition
-from aac.plugins.contribution_points import ContributionPointNames, ContributionPoints, InvalidContributionPointError
+from aac.plugins.contribution_points import ContributionPoints, InvalidContributionPointError
 from aac.plugins.validators._validator_plugin import ValidatorPlugin
 
 from tests.helpers.parsed_definitions import create_enum_definition, create_schema_definition, create_validation_definition
@@ -16,23 +16,36 @@ class TestContributionPoints(TestCase):
 
     def test_register_contributions(self):
         self._assert_items_are_registered(
-            ContributionPointNames.COMMANDS,
             [create_command("Test1"), create_command("Test2")],
             self.contributions.register_commands,
+            self.contributions.get_commands,
         )
         self._assert_items_are_registered(
-            ContributionPointNames.VALIDATIONS,
             [
                 create_validation("Test1", create_validation_definition("Validation1")),
                 create_validation("Test2", create_validation_definition("Validation2"))
             ],
             self.contributions.register_validations,
+            self.contributions.get_validations,
         )
         self._assert_items_are_registered(
-            ContributionPointNames.DEFINITIONS,
             [create_schema_definition("Test1"), create_enum_definition("Test2", ["one", "two"])],
             self.contributions.register_definitions,
+            self.contributions.get_definitions,
         )
+
+    def test_get_contributions_by_name(self):
+        command = create_command("Test")
+        self.contributions.register_command(command)
+        self.assertEqual(command, self.contributions.get_command_by_name(command.name))
+
+        validation = create_validation("Test", create_validation_definition("Validation"))
+        self.contributions.register_validation(validation)
+        self.assertEqual(validation, self.contributions.get_validation_by_name(validation.name))
+
+        definition = create_schema_definition("Test")
+        self.contributions.register_definition(definition)
+        self.assertEqual(definition, self.contributions.get_definition_by_name(definition.name))
 
     def test_register_validtaion_only_accepts_validations(self):
         make_regex = lambda item: f".*(error|add|validation|{item.name}).*".lower()
@@ -43,10 +56,10 @@ class TestContributionPoints(TestCase):
         command = create_command("TestCommand")
         self._assert_invalid_contribution_point(command, make_regex(command))
 
-    def _assert_items_are_registered(self, contribution_point_name, items, register_fn):
+    def _assert_items_are_registered(self, items, register_fn, get_registered_items_fn):
         register_fn(items)
 
-        registered_items = self.contributions.contribution_points.get(contribution_point_name, [])
+        registered_items = get_registered_items_fn()
         self.assertEqual(len(items), len(registered_items))
         [self.assertIn(item, registered_items) for item in items]
 

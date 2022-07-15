@@ -1,7 +1,7 @@
 """A module for contribution point functionality."""
 
 from enum import Enum
-from typing import Callable, Union
+from typing import Callable, Optional, Union
 
 from attr import Factory, attrib, attrs, validators
 
@@ -43,6 +43,14 @@ class ContributionPoints:
         """Register the specified commands."""
         self._register_items(ContributionPointNames.COMMANDS, commands, lambda command: isinstance(command, AacCommand))
 
+    def get_commands(self) -> list[AacCommand]:
+        """Return the registered AacCommands."""
+        return self._get_items(ContributionPointNames.COMMANDS)
+
+    def get_command_by_name(self, name: str) -> Optional[AacCommand]:
+        """Return the command with the specified name."""
+        return self._get_item_by_name(ContributionPointNames.COMMANDS, name)
+
     def register_validation(self, validation: ValidatorPlugin) -> None:
         """Register the specified validation."""
         self.register_validations([validation])
@@ -51,6 +59,14 @@ class ContributionPoints:
         """Register the specified validations."""
         self._register_items(ContributionPointNames.VALIDATIONS, validations, lambda validation: isinstance(validation, ValidatorPlugin))
 
+    def get_validations(self) -> list[AacCommand]:
+        """Return the registered ValidatorPlugins."""
+        return self._get_items(ContributionPointNames.VALIDATIONS)
+
+    def get_validation_by_name(self, name: str) -> Optional[ValidatorPlugin]:
+        """Return the validation with the specified name."""
+        return self._get_item_by_name(ContributionPointNames.VALIDATIONS, name)
+
     def register_definition(self, definition: Definition) -> None:
         """Register the specified definition."""
         self.register_definitions([definition])
@@ -58,6 +74,14 @@ class ContributionPoints:
     def register_definitions(self, definitions: list[Definition]) -> None:
         """Register the specified definitions."""
         self._register_items(ContributionPointNames.DEFINITIONS, definitions, lambda definition: isinstance(definition, Definition))
+
+    def get_definitions(self) -> list[AacCommand]:
+        """Return the registered Definitions."""
+        return self._get_items(ContributionPointNames.DEFINITIONS)
+
+    def get_definition_by_name(self, name: str) -> Optional[Definition]:
+        """Return the definition with the specified name."""
+        return self._get_item_by_name(ContributionPointNames.DEFINITIONS, name)
 
     def _register_items(
         self,
@@ -73,6 +97,13 @@ class ContributionPoints:
             self.contribution_points[contribution_name].append(item)
 
         [register_item(item) for item in items]
+
+    def _get_items(self, contribution_name: ContributionPointNames) -> list:
+        return self.contribution_points.get(contribution_name, [])
+
+    def _get_item_by_name(self, contribution_name: ContributionPointNames, name: str):
+        items = [item for item in self._get_items(contribution_name) if item.name == name]
+        return items[0] if len(items) > 0 else None
 
 
 @attrs
