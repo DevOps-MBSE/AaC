@@ -2,6 +2,7 @@
 
 from aac.cli.aac_command import AacCommand
 from aac.plugins import hookspec
+from aac.plugins.plugin import Plugin
 from aac.plugins.validators import ValidatorPlugin
 
 
@@ -32,4 +33,14 @@ def register_validators() -> ValidatorPlugin:
 
     Returns:
         A collection of data necessary to manage and execute validation plugins.
+    """
+
+
+@hookspec
+def register_plugin() -> Plugin:
+    """
+    Returns the information about plugin.
+
+    Returns:
+        A collection of information about the plugin and what it contributes.
     """
