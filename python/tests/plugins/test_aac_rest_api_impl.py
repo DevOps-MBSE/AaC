@@ -7,6 +7,7 @@ import json
 import os
 import asyncio
 
+from aac.io.constants import YAML_DOCUMENT_EXTENSION, AAC_DOCUMENT_EXTENSION
 from aac.io.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.plugins.rest_api.aac_rest_app import app, refresh_available_files_in_workspace
@@ -15,7 +16,7 @@ from aac.plugins.rest_api.models.file_model import FilePathModel, FilePathRename
 from aac.spec import get_aac_spec
 from aac.spec.core import _get_aac_spec_file_path
 
-from tests.helpers.io import AAC_FILE_EXTENSION, YAML_FILE_EXTENSION, temporary_test_file
+from tests.helpers.io import temporary_test_file
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.parsed_definitions import create_behavior_entry, create_model_definition, create_enum_definition, create_schema_definition
 
@@ -43,8 +44,8 @@ class TestAacRestApiFileEndpoints(ActiveContextTestCase):
         with TemporaryDirectory() as temp_directory:
 
             patch_manager = patch("aac.plugins.rest_api.aac_rest_app.WORKSPACE_DIR", temp_directory)
-            file1_manager = temporary_test_file(file1_content, dir=temp_directory, suffix=YAML_FILE_EXTENSION)
-            file2_manager = temporary_test_file(file2_content, dir=temp_directory, suffix=AAC_FILE_EXTENSION)
+            file1_manager = temporary_test_file(file1_content, dir=temp_directory, suffix=YAML_DOCUMENT_EXTENSION)
+            file2_manager = temporary_test_file(file2_content, dir=temp_directory, suffix=AAC_DOCUMENT_EXTENSION)
 
             with patch_manager, file1_manager as temp_file1, file2_manager as temp_file2:
 
@@ -78,7 +79,7 @@ class TestAacRestApiFileEndpoints(ActiveContextTestCase):
         with TemporaryDirectory() as temp_directory:
 
             patch_manager = patch("aac.plugins.rest_api.aac_rest_app.WORKSPACE_DIR", temp_directory)
-            file_manager = temporary_test_file(file_content, dir=temp_directory, suffix=YAML_FILE_EXTENSION)
+            file_manager = temporary_test_file(file_content, dir=temp_directory, suffix=YAML_DOCUMENT_EXTENSION)
             with patch_manager, file_manager as temp_file:
                 file_path_model = FilePathModel(uri=temp_file.name)
 

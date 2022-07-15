@@ -8,9 +8,6 @@ import os
 from contextlib import contextmanager
 from tempfile import NamedTemporaryFile, TemporaryDirectory
 
-YAML_FILE_EXTENSION = ".yaml"
-AAC_FILE_EXTENSION = ".aac"
-
 
 def clear_directory(dirspec: str, *file_list: list[str]) -> None:
     """Clear the specified directory of any file contents.

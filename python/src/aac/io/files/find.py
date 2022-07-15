@@ -2,6 +2,7 @@
 import logging
 import os
 
+from aac.io.constants import YAML_DOCUMENT_EXTENSION, AAC_DOCUMENT_EXTENSION
 from aac.io.parser import parse, ParserError
 from aac.io.files.aac_file import AaCFile
 
@@ -13,7 +14,7 @@ def find_aac_files(root_directory_to_search: str) -> list[AaCFile]:
     root_dir_abs_path = os.path.abspath(root_directory_to_search)
     if os.path.isdir(root_dir_abs_path):
         directory_results = os.walk(root_dir_abs_path)
-        for directory_path, directory_names, filenames in directory_results:
+        for directory_path, _, filenames in directory_results:
             for filename in filenames:
                 filepath = os.path.join(directory_path, filename)
                 if is_aac_file(filepath):
@@ -26,10 +27,10 @@ def find_aac_files(root_directory_to_search: str) -> list[AaCFile]:
 
 def is_aac_file(filepath: str) -> bool:
     """Test if a target file is considered a valid AaC file."""
-    filename, file_ext = os.path.splitext(filepath)
+    _, file_ext = os.path.splitext(filepath)
 
     is_valid_aac_file = False
-    if file_ext == ".yaml" or file_ext == ".aac":
+    if file_ext == YAML_DOCUMENT_EXTENSION or file_ext == AAC_DOCUMENT_EXTENSION:
         try:
             parse(filepath)
         except ParserError as error:
