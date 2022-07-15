@@ -4,6 +4,7 @@
 
 from fastapi.openapi.utils import get_openapi
 from typing import Optional
+import asyncio
 import json
 import logging
 import os
@@ -32,7 +33,7 @@ def rest_api(host: Optional[str] = "0.0.0.0", port: Optional[int] = 8000) -> Plu
 
 def _start_restful_service(host: str, port: int) -> str:
     """Start the RESTful interface service."""
-    refresh_available_files_in_workspace()
+    asyncio.run(refresh_available_files_in_workspace())
     logging.info(f"Starting REST API in {os.getcwd()}.")
     uvicorn.run(app, host=host, port=port)
     return "Successfully started and stopped the RESTful API."
