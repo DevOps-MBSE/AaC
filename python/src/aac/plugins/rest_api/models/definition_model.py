@@ -9,7 +9,7 @@ from aac.lang.definitions.definition import Definition
 class DefinitionModel(BaseModel):
     """REST API Model for the Definition class."""
     name: str
-    content: Optional[str] = ""
+    content: Optional[str]
     source_uri: str
     structure: dict
 
