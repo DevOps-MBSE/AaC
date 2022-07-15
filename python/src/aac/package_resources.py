@@ -16,3 +16,19 @@ def get_resource_file_contents(package: str, resource: str) -> str:
     """
     with resources.open_text(package, resource) as resource_file:
         return resource_file.read()
+
+
+# Temporary until #378 is merged
+def get_resource_file_path(package: str, resource: str) -> str:
+    """
+    Returns the path to the package resource as a string.
+
+    Args:
+        package (str): the package containing the resource
+        resource (str): the resource's filename
+
+    Returns:
+        A string containing the resource's path.
+    """
+    with resources.path(package, resource) as path:
+        return str(path)
