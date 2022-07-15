@@ -352,7 +352,6 @@ class LanguageContext:
 
         Args:
             uri (str): The string uri to search for
-            language_context (LanguageContext): The language context to search for the file.
 
         Returns:
             An optional AaCFile if it's present in the context, otherwise None
