@@ -1,5 +1,4 @@
 import * as vscode from 'vscode';
-import * as fs from 'fs';
 import * as path from 'path';
 import { aacRestApi, DefinitionModel } from "../requests/aacRequests"
 
@@ -47,6 +46,13 @@ function getDefinitionByName(definitionName: string) {
 
 export function onDefinitionNodeSelection(event: vscode.TreeViewSelectionChangeEvent<Definition>) {
     if (event.selection.length > 0) {
-        getDefinitionByName(event.selection[0].definitionModel.name).then(response => console.log(response))
+        getDefinitionByName(event.selection[0].definitionModel.name).then(response => {
+            console.log(response)
+            vscode.commands.executeCommand(
+                "vscode.openWith",
+                vscode.Uri.from({scheme: "untitled", path:`${response.name}`}),
+                "aac.visualEditor"
+            );
+        })
     }
 }

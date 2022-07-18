@@ -183,6 +183,7 @@
         "vsce": "^2.6.4"
     },
     "dependencies": {
+        "@json-editor/json-editor": "^2.8.0",
         "node-fetch": "^2.6.0",
         "vscode-languageclient": "^7.0.0"
     }
