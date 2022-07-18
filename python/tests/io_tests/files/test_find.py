@@ -9,7 +9,6 @@ from tests.helpers.io import temporary_test_file
 
 
 class TestFindFiles(TestCase):
-
     def test_is_aac_file_with_valid_yaml_file(self):
         test_file_content = get_aac_spec_as_yaml()
         with temporary_test_file(test_file_content, suffix=YAML_DOCUMENT_EXTENSION) as test_yaml:
@@ -45,39 +44,36 @@ class TestFindFiles(TestCase):
 
     def test_find_aac_files(self):
 
-        with TemporaryDirectory() as l1_temp_dir:
-            l1_aac_file_aac = NamedTemporaryFile(dir=l1_temp_dir, suffix=AAC_DOCUMENT_EXTENSION, mode="w")
-            _write_content_to_temp_file(l1_aac_file_aac, get_aac_spec_as_yaml())
+        with (
+            TemporaryDirectory() as l1_temp_dir,
+            temporary_test_file(get_aac_spec_as_yaml(), dir=l1_temp_dir, suffix=AAC_DOCUMENT_EXTENSION) as l1_aac_file_aac,
+            temporary_test_file(
+                VALID_NON_AAC_YAML_CONTENT, dir=l1_temp_dir, suffix=AAC_DOCUMENT_EXTENSION
+            ) as l1_invalid_file_aac,
+        ):
 
-            l1_invalid_file_aac = NamedTemporaryFile(dir=l1_temp_dir, suffix=AAC_DOCUMENT_EXTENSION, mode="w")
-            _write_content_to_temp_file(l1_invalid_file_aac, VALID_NON_AAC_YAML_CONTENT)
+            with (
+                TemporaryDirectory(dir=l1_temp_dir) as l2_temp_dir,
+                temporary_test_file(
+                    get_aac_spec_as_yaml(), dir=l2_temp_dir, suffix=YAML_DOCUMENT_EXTENSION
+                ) as l2_aac_file_yaml,
+                temporary_test_file(
+                    VALID_NON_AAC_YAML_CONTENT, dir=l2_temp_dir, suffix=YAML_DOCUMENT_EXTENSION
+                ) as l2_invalid_file_yaml,
+            ):
 
-            with TemporaryDirectory(dir=l1_temp_dir) as l2_temp_dir:
-                l2_aac_file_yaml = NamedTemporaryFile(dir=l2_temp_dir, suffix=YAML_DOCUMENT_EXTENSION, mode="w")
-                _write_content_to_temp_file(l2_aac_file_yaml, get_aac_spec_as_yaml())
-
-                l2_invalid_file_yaml = NamedTemporaryFile(dir=l2_temp_dir, suffix=YAML_DOCUMENT_EXTENSION, mode="w")
-                _write_content_to_temp_file(l2_invalid_file_yaml, VALID_NON_AAC_YAML_CONTENT)
-
-                with TemporaryDirectory(dir=l2_temp_dir) as l3_temp_dir:
-                    l3_aac_file_aac = NamedTemporaryFile(dir=l3_temp_dir, suffix=AAC_DOCUMENT_EXTENSION, mode="w")
-                    _write_content_to_temp_file(l3_aac_file_aac, get_aac_spec_as_yaml())
-
-                    l3_invalid_file_aac = NamedTemporaryFile(dir=l3_temp_dir, suffix=AAC_DOCUMENT_EXTENSION, mode="w")
-                    _write_content_to_temp_file(l3_invalid_file_aac, VALID_NON_AAC_YAML_CONTENT)
+                with (
+                    TemporaryDirectory(dir=l2_temp_dir) as l3_temp_dir,
+                    temporary_test_file(
+                        get_aac_spec_as_yaml(), dir=l3_temp_dir, suffix=AAC_DOCUMENT_EXTENSION
+                    ) as l3_aac_file_aac,
+                    temporary_test_file(
+                        VALID_NON_AAC_YAML_CONTENT, dir=l3_temp_dir, suffix=AAC_DOCUMENT_EXTENSION
+                    ) as l3_invalid_file_aac,
+                ):
 
                     expected_result = [l1_aac_file_aac.name, l2_aac_file_yaml.name, l3_aac_file_aac.name]
                     actual_result = find_aac_files(l1_temp_dir)
-
-                    # Have to manually close the temp files here, otherwise their temp directory context managers will cause test errors.
-                    l1_aac_file_aac.close()
-                    l1_invalid_file_aac.close()
-
-                    l2_aac_file_yaml.close()
-                    l2_invalid_file_yaml.close()
-
-                    l3_aac_file_aac.close()
-                    l3_invalid_file_aac.close()
 
         actual_result_file_paths = [file.uri for file in actual_result]
         self.assertListEqual(expected_result, actual_result_file_paths)
