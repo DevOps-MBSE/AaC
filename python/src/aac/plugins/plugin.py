@@ -22,4 +22,5 @@ class Plugin:
     )
 
     def __hash__(self) -> int:
+        """Return the hash for this Plugin object."""
         return hash(self.name)
