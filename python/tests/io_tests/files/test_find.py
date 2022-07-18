@@ -1,5 +1,5 @@
 from unittest import TestCase
-from tempfile import NamedTemporaryFile, TemporaryDirectory
+from tempfile import TemporaryDirectory
 
 from aac.io.constants import YAML_DOCUMENT_EXTENSION, AAC_DOCUMENT_EXTENSION
 from aac.io.files.find import find_aac_files, is_aac_file
