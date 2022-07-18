@@ -125,6 +125,8 @@ def _parse_yaml(source: str, content: str) -> list[dict]:
         _error_if_not_yaml(source, content, models)
         _error_if_not_complete(source, content, models)
         return models
+    except Exception as error:
+        raise ParserError(source, [f"Failed to parse file: {error}", content])
     except YAMLParserError as error:
         raise ParserError(source, [f"invalid YAML {error.context} {error.problem}", content])
 
