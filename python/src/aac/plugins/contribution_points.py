@@ -1,7 +1,7 @@
 """A module for contribution point functionality."""
 
 from enum import Enum
-from typing import Callable, Optional, Union
+from typing import Any, Callable, Optional, Union
 
 from attr import Factory, attrib, attrs, validators
 
@@ -27,21 +27,25 @@ class ContributionPoints:
         contribution_points: The collection of contribution made by all plugins.
     """
 
-    contribution_points: dict[ContributionPointNames, list] = attrib(
+    contribution_points: dict[ContributionPointNames, dict] = attrib(
         default=Factory(dict), validator=validators.instance_of(dict)
     )
 
     def __attrs_post_init__(self):
         """Post-init hook for attrs classes."""
-        [self.contribution_points.setdefault(value, []) for value in ContributionPointNames._member_map_.values()]
+        [self.contribution_points.setdefault(name, {}) for name in ContributionPointNames._member_map_.values()]
 
-    def register_command(self, command: AacCommand) -> None:
+    def register_command(self, plugin_name: str, command: AacCommand) -> None:
         """Register the specified command."""
-        self.register_commands([command])
+        self.register_commands(plugin_name, [command])
 
-    def register_commands(self, commands: list[AacCommand]) -> None:
+    def register_commands(self, plugin_name: str, commands: list[AacCommand]) -> None:
         """Register the specified commands."""
-        self._register_items(ContributionPointNames.COMMANDS, commands, lambda command: isinstance(command, AacCommand))
+
+        def validate(command: Any) -> bool:
+            return isinstance(command, AacCommand)
+
+        self._register_items(plugin_name, ContributionPointNames.COMMANDS, commands, validate)
 
     def get_commands(self) -> list[AacCommand]:
         """Return the registered AacCommands."""
@@ -51,13 +55,17 @@ class ContributionPoints:
         """Return the command with the specified name."""
         return self._get_item_by_name(ContributionPointNames.COMMANDS, name)
 
-    def register_validation(self, validation: ValidatorPlugin) -> None:
+    def register_validation(self, plugin_name: str, validation: ValidatorPlugin) -> None:
         """Register the specified validation."""
-        self.register_validations([validation])
+        self.register_validations(plugin_name, [validation])
 
-    def register_validations(self, validations: list[ValidatorPlugin]) -> None:
+    def register_validations(self, plugin_name: str, validations: list[ValidatorPlugin]) -> None:
         """Register the specified validations."""
-        self._register_items(ContributionPointNames.VALIDATIONS, validations, lambda validation: isinstance(validation, ValidatorPlugin))
+
+        def validate(validation: Any) -> bool:
+            return isinstance(validation, ValidatorPlugin)
+
+        self._register_items(plugin_name, ContributionPointNames.VALIDATIONS, validations, validate)
 
     def get_validations(self) -> list[AacCommand]:
         """Return the registered ValidatorPlugins."""
@@ -67,13 +75,17 @@ class ContributionPoints:
         """Return the validation with the specified name."""
         return self._get_item_by_name(ContributionPointNames.VALIDATIONS, name)
 
-    def register_definition(self, definition: Definition) -> None:
+    def register_definition(self, plugin_name: str, definition: Definition) -> None:
         """Register the specified definition."""
-        self.register_definitions([definition])
+        self.register_definitions(plugin_name, [definition])
 
-    def register_definitions(self, definitions: list[Definition]) -> None:
+    def register_definitions(self, plugin_name: str, definitions: list[Definition]) -> None:
         """Register the specified definitions."""
-        self._register_items(ContributionPointNames.DEFINITIONS, definitions, lambda definition: isinstance(definition, Definition))
+
+        def validate(definition: Any) -> bool:
+            return isinstance(definition, Definition)
+
+        self._register_items(plugin_name, ContributionPointNames.DEFINITIONS, definitions, validate)
 
     def get_definitions(self) -> list[AacCommand]:
         """Return the registered Definitions."""
@@ -85,6 +97,7 @@ class ContributionPoints:
 
     def _register_items(
         self,
+        plugin_name: str,
         contribution_name: ContributionPointNames,
         items: Union[list[AacCommand], list[ValidatorPlugin], list[Definition]],
         validation: Callable
@@ -92,9 +105,12 @@ class ContributionPoints:
         """Register the specified items as contributions."""
         def register_item(item: Union[AacCommand, ValidatorPlugin, Definition]) -> None:
             if not validation(item):
-                raise InvalidContributionPointError(f"Error adding {item.name} as a {contribution_name}")
+                raise InvalidContributionPointError(f"Error adding {item.name} as a {contribution_name} registered by {plugin_name}")
 
-            self.contribution_points[contribution_name].append(item)
+            if plugin_name not in self.contribution_points[contribution_name]:
+                self.contribution_points[contribution_name][plugin_name] = []
+
+            self.contribution_points[contribution_name][plugin_name].append(item)
 
         [register_item(item) for item in items]
 
