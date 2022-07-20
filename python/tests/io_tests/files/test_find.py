@@ -82,11 +82,6 @@ class TestFindFiles(TestCase):
         self.assertNotIn(l3_invalid_file_aac.name, actual_result_file_paths)
 
 
-def _write_content_to_temp_file(temp_file, content: str) -> None:
-    temp_file.write(content)
-    temp_file.seek(0)
-
-
 NON_YAML_FILE_CONTENT = """
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
 labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
