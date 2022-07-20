@@ -1,5 +1,14 @@
 """The Architecture-as-Code tool."""
 
+# Run Python3.9 Check before continuing
+import sys
+
+if sys.version_info < (3, 9):
+    minor = sys.version_info.minor
+    major = sys.version_info.major
+    print(f"Python version {major}.{minor} is too low; AaC requires at least Python version 3.9 or higher to run.")
+    exit(1)
+
 import logging
 import os
 

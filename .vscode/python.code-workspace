@@ -23,6 +23,7 @@
         ],
         "cSpell.enabled": true,
         "cSpell.words": [
+            "attribs",
             "fastapi",
             "jsonable",
             "pluggy",
@@ -33,11 +34,13 @@
             "pythonic",
             "usecase",
             "uvicorn"
-        ]
+        ],
+        "python.languageServer": "Pylance",
+        "python.linting.mypyEnabled": true
     },
     "launch": {
         "configurations": [{
-            "name": "Python: Validate AaC",
+            "name": "Validate AaC",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/aac/__main__.py",
@@ -48,7 +51,7 @@
             "console": "integratedTerminal",
             "justMyCode": false
         }, {
-            "name": "Python: Validate EchoService",
+            "name": "Validate EchoService",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/aac/__main__.py",
@@ -59,7 +62,7 @@
             "console": "integratedTerminal",
             "justMyCode": false
         }, {
-            "name": "Python: Validate Flow",
+            "name": "Validate Flow",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/aac/__main__.py",
@@ -70,7 +73,7 @@
             "console": "integratedTerminal",
             "justMyCode": false
         }, {
-            "name": "Python: Validate AaC gen-protobuf",
+            "name": "Validate AaC gen-protobuf",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/aac/__main__.py",
@@ -81,7 +84,7 @@
             "console": "integratedTerminal",
             "justMyCode": false
         }, {
-            "name": "Python: Gen-JSON Core AaC Spec",
+            "name": "Gen-JSON Core AaC Spec",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/aac/__main__.py",
@@ -92,7 +95,7 @@
             "console": "integratedTerminal",
             "justMyCode": false
         }, {
-            "name": "Python: Gen-JSON EchoService",
+            "name": "Gen-JSON EchoService",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/aac/__main__.py",
@@ -103,7 +106,7 @@
             "console": "integratedTerminal",
             "justMyCode": false
         }, {
-            "name": "Python: Gen-JSON Flow",
+            "name": "Gen-JSON Flow",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/aac/__main__.py",
@@ -114,7 +117,7 @@
             "console": "integratedTerminal",
             "justMyCode": false
         }, {
-            "name": "Python: Puml-component Flow",
+            "name": "Puml-component Flow",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/aac/__main__.py",
@@ -126,7 +129,7 @@
             "console": "integratedTerminal",
             "justMyCode": false
         }, {
-            "name": "Python: Puml-object Flow",
+            "name": "Puml-object Flow",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/aac/__main__.py",
@@ -138,7 +141,7 @@
             "console": "integratedTerminal",
             "justMyCode": false
         }, {
-            "name": "Python: Puml-sequence Flow",
+            "name": "Puml-sequence Flow",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/aac/__main__.py",
@@ -150,7 +153,7 @@
             "console": "integratedTerminal",
             "justMyCode": false
         }, {
-            "name": "Python: Gen-Plugin PlantUML",
+            "name": "Gen-Plugin PlantUML",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/aac/__main__.py",
@@ -161,7 +164,7 @@
             "console": "integratedTerminal",
             "justMyCode": false
         }, {
-            "name": "Python: Gen-Plugin Protobuf",
+            "name": "Gen-Plugin Protobuf",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/aac/__main__.py",
@@ -172,7 +175,7 @@
             "console": "integratedTerminal",
             "justMyCode": false
         }, {
-            "name": "Python: Gen-Protobuf",
+            "name": "Gen-Protobuf",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/aac/__main__.py",
@@ -184,7 +187,7 @@
             "console": "integratedTerminal",
             "justMyCode": false
         }, {
-            "name": "Python: Gen-System Document",
+            "name": "Gen-System Document",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/aac/__main__.py",
@@ -197,7 +200,7 @@
             "console": "integratedTerminal",
             "justMyCode": false
         }, {
-            "name": "Python: Gen-Gherkin Feature File",
+            "name": "Gen-Gherkin Feature File",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/aac/__main__.py",
@@ -209,7 +212,7 @@
             "console": "integratedTerminal",
             "justMyCode": false
         }, {
-            "name": "Python: Unit Tests",
+            "name": "Unit Tests",
             "type": "python",
             "request": "launch",
             "program": "nose2",
@@ -217,7 +220,7 @@
             "console": "integratedTerminal",
             "justMyCode": false
         }, {
-            "name": "Python: Start LSP Server IO",
+            "name": "Start LSP Server IO",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/aac/__main__.py",
@@ -227,7 +230,7 @@
             "console": "integratedTerminal",
             "justMyCode": false
         }, {
-            "name": "Python: Start LSP Server TCP",
+            "name": "Start LSP Server TCP",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/aac/__main__.py",
@@ -237,12 +240,23 @@
             "console": "integratedTerminal",
             "justMyCode": false
         }, {
-            "name": "Python: Start RESTful API",
+            "name": "Start RESTful API",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "rest-api"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        }, {
+            "name": "Generate RESTful API Spec",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/aac/__main__.py",
+            "args": [
+                "generate-openapi-spec",
+                "oasv3-spec"
             ],
             "console": "integratedTerminal",
             "justMyCode": false

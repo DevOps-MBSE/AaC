@@ -4,16 +4,14 @@ from unittest.async_case import IsolatedAsyncioTestCase
 from pygls import uris
 from pygls.lsp import methods
 from pygls.lsp.types import ClientCapabilities, InitializeParams
-from pygls.lsp.types.basic_structures import Position, TextDocumentIdentifier, TextDocumentItem, VersionedTextDocumentIdentifier
-from pygls.lsp.types.language_features.completion import CompletionContext, CompletionParams, CompletionTriggerKind
-from pygls.lsp.types.language_features.hover import HoverParams
+from pygls.lsp.types.basic_structures import Model, Position, TextDocumentIdentifier, TextDocumentItem, VersionedTextDocumentIdentifier
+from pygls.lsp.types.text_synchronization import TextDocumentSyncKind
 from pygls.lsp.types.workspace import DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams
-from aac.lang.lsp.code_completion_provider import SPACE_TRIGGER
+from pygls.workspace import Document
 
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.lsp.text_document import TextDocument
-from tests.helpers.lsp.responses.hover_response import HoverResponse
-from tests.helpers.lsp.responses.completion_response import CompletionResponse
+from tests.lang.lsp.definition_constants import TEST_DOCUMENT_CONTENT, TEST_DOCUMENT_NAME
 from tests.lang.lsp_test_client import LspTestClient
 
 
@@ -31,6 +29,8 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
             methods.INITIALIZE,
             InitializeParams(process_id=12345, capabilities=ClientCapabilities()),
         )
+        self.active_context = self.client.server.language_context
+        await self.create_document(TEST_DOCUMENT_NAME, TEST_DOCUMENT_CONTENT)
 
     async def asyncTearDown(self):
         await super().asyncTearDown()
@@ -50,7 +50,7 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
         Returns:
             The new virtual document
         """
-        assert self.documents.get(file_name) is None, f"Virtual document {file_name} already exists"
+        self.assertIsNone(self.documents.get(file_name), f"Virtual document {file_name} already exists")
 
         self.documents[file_name] = TextDocument(file_name=file_name, content=content)
         document = self.documents.get(file_name)
@@ -72,7 +72,10 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
         Args:
             file_name (str): The name of the file to close.
         """
-        assert self.documents.get(file_name), f"Could not close virtual document because there is no document named {file_name}."
+        self.assertIsNotNone(
+            self.documents.get(file_name),
+            f"Could not close virtual document because there is no document named {file_name}."
+        )
 
         await self.client.send_notification(
             methods.TEXT_DOCUMENT_DID_CLOSE,
@@ -87,7 +90,10 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
             file_name (str): The name of the virtual document whose content will be written.
             content (str): The content to write to the virtual document.
         """
-        assert self.documents.get(file_name), f"Could not write content to virtual document because there is no document named {file_name}."
+        self.assertIsNotNone(
+            self.documents.get(file_name),
+            f"Could not write content to virtual document because there is no document named {file_name}."
+        )
 
         document = self.documents.get(file_name)
         document.version += 1
@@ -110,59 +116,40 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
         Returns:
             The content of the specified virtual document.
         """
-        assert self.documents.get(file_name), f"Could not read content from virtual document because there is no document named {file_name}."
+        self.assertIsNotNone(
+            self.documents.get(file_name),
+            f"Could not read content from virtual document because there is no document named {file_name}."
+        )
         return self.documents.get(file_name).read()
 
     def to_uri(self, file_name: str) -> Optional[str]:
         """Return file_name as a file URI."""
-        assert self.documents.get(file_name), f"Could not get virtual document URI because there is no document named {file_name}."
+        self.assertIsNotNone(
+            self.documents.get(file_name),
+            f"Could not get virtual document URI because there is no document named {file_name}."
+        )
         return uris.from_fs_path(file_name)
 
-    async def hover(self, file_name: str, line: int = 0, character: int = 0) -> HoverResponse:
-        """
-        Send a hover request and return the response.
-
-        Args:
-            file_name (str): The name of the virtual document in which to perform the hover action.
-            line (int): The line number (starting from 0) at which to perform the hover action.
-            character (int): The character number (starting from 0) at which to perform the hover action.
-
-        Returns:
-            A HoverResponse that is returned from the LSP server.
-        """
-        assert self.documents.get(file_name), f"Could not hover in virtual document because there is no document named {file_name}."
-
-        response = await self.client.send_request(
-            methods.HOVER,
-            HoverParams(
-                text_document=TextDocumentIdentifier(uri=self.to_uri(file_name)),
-                position=Position(line=line, character=character),
-            )
+    def virtual_document_to_lsp_document(self, file_name: str) -> Document:
+        """Convert a virtual document to an LSP document."""
+        self.assertIsNotNone(
+            self.documents.get(file_name),
+            f"Could not convert virtual document because there is no document named {file_name}."
         )
-        return HoverResponse(response.result())
+        document = self.documents.get(file_name)
+        return Document(uri=document.file_name, source=document.content, version=document.version, sync_kind=TextDocumentSyncKind.FULL)
 
-    async def complete(self, file_name: str, line: int = 0, character: int = 0, trigger_kind: CompletionTriggerKind = CompletionTriggerKind.TriggerCharacter, trigger_character: str = SPACE_TRIGGER) -> CompletionResponse:
-        """
-        Send a code completion request and return the response.
+    def build_text_document_position_params(self, file_name: str, line: int = 0, character: int = 0) -> dict:
+        """Return a dictionary that can be used as TextDocumentPositionParams in an LSP request."""
+        return {
+            "text_document": TextDocumentIdentifier(uri=self.to_uri(file_name)),
+            "position": Position(line=line, character=character),
+        }
 
-        Args:
-            file_name (str): The name of the virtual document in which to perform the code completion action.
-            line (int): The line number (starting from 0) at which to perform the code completion action.
-            character (int): The character number (starting from 0) at which to perform the code completion action.
-            trigger_kind (CompletionTriggerKind): The action that triggered the code completion action.
-            trigger_caracter (str): The character that triggered/triggers the code completion action.
-
-        Returns:
-            A CompletionResponse that is returned from the LSP server.
-        """
-        assert self.documents.get(file_name), f"Could not execute code completion in virtual document because there is no document named {file_name}."
-
-        response = await self.client.send_request(
-            methods.COMPLETION,
-            CompletionParams(
-                context=CompletionContext(trigger_kind=trigger_kind, trigger_character=trigger_character),
-                text_document=TextDocumentIdentifier(uri=self.to_uri(file_name)),
-                position=Position(line=line, character=character),
-            )
+    async def build_request(self, file_name: str, response_type: type, method: str, params: Model):
+        self.assertIsNotNone(
+            self.documents.get(file_name),
+            f"Could not execute {method} in virtual document because there is no document named {file_name}."
         )
-        return CompletionResponse(response.result())
+        response = await self.client.send_request(method, params)
+        return response_type(response.result())

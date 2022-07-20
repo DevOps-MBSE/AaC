@@ -4,17 +4,19 @@
 
 from fastapi.openapi.utils import get_openapi
 from typing import Optional
+import asyncio
 import json
+import logging
 import os
 import uvicorn
 
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
-from aac.plugins.rest_api.aac_rest_app import app
+from aac.plugins.rest_api.aac_rest_app import app, refresh_available_files_in_workspace
 
 plugin_name = "aac-rest-api"
 
 
-def rest_api(host: Optional[str], port: Optional[int]) -> PluginExecutionResult:
+def rest_api(host: Optional[str] = "0.0.0.0", port: Optional[int] = 8000) -> PluginExecutionResult:
     """
     Start a RESTful interface for interacting with and managing AaC.
 
@@ -22,12 +24,17 @@ def rest_api(host: Optional[str], port: Optional[int]) -> PluginExecutionResult:
         host (Optional[str]): Set the hostname of the service. Useful for operating behind proxies.
         port (Optional[int]): The port to which the RESTful service will be bound.
     """
+    if isinstance(port, str):
+        port = int(port)
+
     with plugin_result(plugin_name, _start_restful_service, host, port) as result:
         return result
 
 
-def _start_restful_service(host: Optional[str] = "0.0.0.0", port: Optional[int] = 8000) -> str:
+def _start_restful_service(host: str, port: int) -> str:
     """Start the RESTful interface service."""
+    asyncio.run(refresh_available_files_in_workspace())
+    logging.info(f"Starting REST API in {os.getcwd()}.")
     uvicorn.run(app, host=host, port=port)
     return "Successfully started and stopped the RESTful API."
 

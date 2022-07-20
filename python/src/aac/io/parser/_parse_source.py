@@ -6,18 +6,17 @@ to find a certain type in a model by just looking for that key.
 """
 
 from os import path
-import yaml
-from yaml.parser import ParserError as YAMLParserError
 from typing import Optional
+from yaml.parser import ParserError as YAMLParserError
+import yaml
 
-from aac.parser._parser_error import ParserError
+from aac.io.files.aac_file import AaCFile
+from aac.io.constants import YAML_DOCUMENT_SEPARATOR, DEFAULT_SOURCE_URI
+from aac.io.paths import sanitize_filesystem_path
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.lexeme import Lexeme
 from aac.lang.definitions.source_location import SourceLocation
-
-
-YAML_DOCUMENT_SEPARATOR = "---"
-DEFAULT_SOURCE_URI = "<string>"
+from aac.io.parser._parser_error import ParserError
 
 
 def parse(source: str, source_uri: Optional[str] = None) -> list[Definition]:
@@ -31,7 +30,12 @@ def parse(source: str, source_uri: Optional[str] = None) -> list[Definition]:
         A list of Definition objects containing the internal representation of the definition and metadata
         associated with the definition.
     """
-    return _parse_file(source) if path.lexists(source) else _parse_str(source_uri or DEFAULT_SOURCE_URI, source)
+    sanitized_source = sanitize_filesystem_path(source)
+    return (
+        _parse_file(sanitized_source)
+        if path.lexists(sanitized_source)
+        else _parse_str(sanitize_filesystem_path(source_uri or DEFAULT_SOURCE_URI), source)
+    )
 
 
 def _parse_file(arch_file: str) -> list[Definition]:
@@ -74,6 +78,7 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
             lexemes.append(Lexeme(location, yaml_source, token.value))
         return lexemes
 
+    source_files: dict[str, AaCFile] = {}
     definitions: list[Definition] = []
     for doc in model_content.split(YAML_DOCUMENT_SEPARATOR):
         for root in _parse_yaml(source, doc):
@@ -84,7 +89,13 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
             root_name = root.get(root_type).get("name")
             contents = _add_yaml_document_separator(doc) if _has_document_separator(model_content, doc) else doc
             lexemes = get_lexemes_for_definition(contents)
-            definitions.append(Definition(root_name, contents, source, lexemes, root))
+            source_file = source_files.get(source)
+
+            if not source_file:
+                source_file = AaCFile(source, True, False)
+                source_files[source] = source_file
+
+            definitions.append(Definition(root_name, contents, source_file, lexemes, root))
 
     return definitions
 
@@ -94,7 +105,7 @@ def _has_document_separator(model_content: str, document: str) -> bool:
     return before.endswith(YAML_DOCUMENT_SEPARATOR)
 
 
-def _parse_yaml(source: str, content: str) -> dict:
+def _parse_yaml(source: str, content: str) -> list[dict]:
     """Parse content as a YAML string and return the resulting structure.
 
     Args:
@@ -114,8 +125,10 @@ def _parse_yaml(source: str, content: str) -> dict:
         _error_if_not_yaml(source, content, models)
         _error_if_not_complete(source, content, models)
         return models
+    except Exception as error:
+        raise ParserError(source, [f"Failed to parse file, invalid YAML {error}", content])
     except YAMLParserError as error:
-        raise ParserError(source, [f"invalid YAML {error.context} {error.problem}", content])
+        raise ParserError(source, [f"Failed to parse file, invalid YAML {error.context} {error.problem}", content])
 
 
 def _error_if_not_yaml(source, content, models):

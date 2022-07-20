@@ -7,6 +7,9 @@ class CompletionResponse(LspResponse):
     def get_completion_items(self) -> list[CompletionItem]:
         return self.response.get("items")
 
+    def get_completion_item_names(self) -> list[str]:
+        return [item.get("label") for item in self.get_completion_items()]
+
     def get_completion_item_by_label(self, label: str) -> Optional[CompletionItem]:
         items = [item for item in self.get_completion_items() if item.get("label") == label]
         return items[0] if items else None

@@ -1,10 +1,10 @@
 """The Language Context manages the highly-contextual AaC DSL."""
-
 from attr import Factory, attrib, attrs, validators
 from typing import Optional
 import copy
 import logging
 
+from aac.io.files.aac_file import AaCFile
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.extensions import apply_extension_to_definition, remove_extension_from_definition
 from aac.lang.definitions.search import search_definition
@@ -31,7 +31,7 @@ class LanguageContext:
 
     definitions: list[Definition] = attrib(default=Factory(list), validator=validators.instance_of(list))
 
-    # Private attribute - don't reference outside the class.
+    # Private attribute - don't reference outside of this class.
     definitions_name_dictionary: dict[str, Definition] = attrib(
         init=False, default=Factory(dict), validator=validators.instance_of(dict)
     )
@@ -46,6 +46,7 @@ class LanguageContext:
         new_definition = copy.deepcopy(definition)
 
         if new_definition.name not in self.definitions_name_dictionary:
+            new_definition.source.is_loaded_in_context = True
             self.definitions_name_dictionary[new_definition.name] = new_definition
             self.definitions.append(new_definition)
         else:
@@ -86,9 +87,9 @@ class LanguageContext:
             definition (Definition): The Definition to remove from the context.
         """
         if definition.name in self.definitions_name_dictionary:
+            definition.source.is_loaded_in_context = False
             self.definitions_name_dictionary.pop(definition.name)
             self.definitions.remove(definition)
-
         else:
             definitions_in_context = self.get_defined_types()
             logging.error(
@@ -234,12 +235,7 @@ class LanguageContext:
             A boolean indicating if the string matches an enum type defined in the context.
         """
         definition = self.get_definition_by_name(type)
-
-        is_enum_type = False
-        if definition:
-            is_enum_type = definition.is_enum()
-
-        return is_enum_type
+        return definition.is_enum() if definition else False
 
     def is_primitive_type(self, type: str) -> bool:
         """
@@ -313,6 +309,55 @@ class LanguageContext:
         """
 
         def does_definition_source_uri_match(definition: Definition) -> bool:
-            return file_uri == definition.source_uri
+            return file_uri == definition.source.uri
 
         return list(filter(does_definition_source_uri_match, self.definitions))
+
+    def get_enum_definition_by_type(self, type: str) -> Optional[Definition]:
+        """
+        Return the enum definition that defines the specified enumerated type.
+
+        Args:
+            type (str): The type string.
+
+        Returns:
+            If the specified type is defined by an enum in the LanguageContext, returns the enum
+            definition that defines the specified type. If not, returns None.
+        """
+
+        def is_type_defined_by_enum(enum: Definition) -> bool:
+            return type in enum.get_top_level_fields().get("values", [])
+
+        definitions = [enum for enum in self.get_definitions_by_root_key("enum") if is_type_defined_by_enum(enum)]
+        return definitions[0] if definitions else None
+
+    def get_files_in_context(self) -> list[AaCFile]:
+        """
+        Return a list of all the files contributing definitions to the context.
+
+        Returns:
+            A list of all the files contributing definitions to the context.
+        """
+        files_in_context = {}
+
+        for definition in self.definitions:
+            if not files_in_context.get(definition.source.uri):
+                files_in_context[definition.source.uri] = definition.source
+
+        return list(files_in_context.values())
+
+    def get_file_in_context_by_uri(self, uri: str) -> Optional[AaCFile]:
+        """
+        Return the AaCFile object by uri from the context or None if the file isn't in the context.
+
+        Args:
+            uri (str): The string uri to search for
+
+        Returns:
+            An optional AaCFile if it's present in the context, otherwise None
+        """
+        for definition in self.definitions:
+            if definition.source.uri == uri:
+                return definition.source
+
+        return None

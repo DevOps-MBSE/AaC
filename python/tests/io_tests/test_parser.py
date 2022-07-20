@@ -5,8 +5,8 @@ from unittest import TestCase
 from aac.lang import definition_helpers
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.source_location import SourceLocation
-from aac.parser import parse, ParserError
-from aac.parser._parse_source import YAML_DOCUMENT_SEPARATOR, _add_yaml_document_separator
+from aac.io.parser import parse, ParserError
+from aac.io.parser._parse_source import YAML_DOCUMENT_SEPARATOR, _add_yaml_document_separator
 
 from tests.helpers.io import temporary_test_file
 
@@ -57,7 +57,6 @@ class TestParser(TestCase):
             temporary_test_file(TEST_STATUS_FILE_CONTENTS, dir=temp_dir, suffix=".aac") as import2,
             temporary_test_file(self.get_test_model(import1.name, import2.name), dir=temp_dir, suffix=".aac") as test_yaml,
         ):
-
             parsed_models = parse(test_yaml.name)
 
             self.assertEqual(len(parsed_models), 3)
@@ -71,9 +70,9 @@ class TestParser(TestCase):
             self.check_model_name(model_echosvc_definition.structure, "EchoService", "model")
 
             # For some reason MacOS prepends /private to temporary files/directories
-            self.assertEqual(schema_message_definition.source_uri.removeprefix("/private"), import1.name)
-            self.assertEqual(enum_status_definition.source_uri.removeprefix("/private"), import2.name)
-            self.assertEqual(model_echosvc_definition.source_uri.removeprefix("/private"), test_yaml.name)
+            self.assertEqual(schema_message_definition.source.uri.removeprefix("/private"), import1.name)
+            self.assertEqual(enum_status_definition.source.uri.removeprefix("/private"), import2.name)
+            self.assertEqual(model_echosvc_definition.source.uri.removeprefix("/private"), test_yaml.name)
 
             first, second, *_ = model_echosvc_definition.lexemes
             self.assertEqual(first.source, test_yaml.name)
@@ -127,8 +126,14 @@ class TestParser(TestCase):
 
         self.assertEqual(len(parsed_definitions), 2)
 
-        self.assertNotIn(TEST_STATUS_FILE_CONTENTS_NAME, self.get_lexeme_values_for_definition(TEST_MESSAGE_FILE_CONTENTS_NAME, parsed_definitions))
-        self.assertNotIn(TEST_MESSAGE_FILE_CONTENTS_NAME, self.get_lexeme_values_for_definition(TEST_STATUS_FILE_CONTENTS_NAME, parsed_definitions))
+        self.assertNotIn(
+            TEST_STATUS_FILE_CONTENTS_NAME,
+            self.get_lexeme_values_for_definition(TEST_MESSAGE_FILE_CONTENTS_NAME, parsed_definitions),
+        )
+        self.assertNotIn(
+            TEST_MESSAGE_FILE_CONTENTS_NAME,
+            self.get_lexeme_values_for_definition(TEST_STATUS_FILE_CONTENTS_NAME, parsed_definitions),
+        )
 
     def test_file_lexemes_are_split_by_yaml_documents(self):
         content = f"{TEST_MESSAGE_FILE_CONTENTS}{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_FILE_CONTENTS}"
@@ -137,16 +142,26 @@ class TestParser(TestCase):
 
             self.assertEqual(len(parsed_definitions), 2)
 
-            self.assertNotIn(TEST_STATUS_FILE_CONTENTS_NAME, self.get_lexeme_values_for_definition(TEST_MESSAGE_FILE_CONTENTS_NAME, parsed_definitions))
-            self.assertNotIn(TEST_MESSAGE_FILE_CONTENTS_NAME, self.get_lexeme_values_for_definition(TEST_STATUS_FILE_CONTENTS_NAME, parsed_definitions))
+            self.assertNotIn(
+                TEST_STATUS_FILE_CONTENTS_NAME,
+                self.get_lexeme_values_for_definition(TEST_MESSAGE_FILE_CONTENTS_NAME, parsed_definitions),
+            )
+            self.assertNotIn(
+                TEST_MESSAGE_FILE_CONTENTS_NAME,
+                self.get_lexeme_values_for_definition(TEST_STATUS_FILE_CONTENTS_NAME, parsed_definitions),
+            )
 
     def test_does_not_add_doc_separator_if_not_already_present(self):
         definition, *_ = parse(TEST_MESSAGE_FILE_CONTENTS, source_uri="<parser test>")
         self.assertEqual(definition.content, TEST_MESSAGE_FILE_CONTENTS)
 
-        definitions = parse(f"{TEST_MESSAGE_FILE_CONTENTS}{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_FILE_CONTENTS}", source_uri="<parser test>")
+        definitions = parse(
+            f"{TEST_MESSAGE_FILE_CONTENTS}{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_FILE_CONTENTS}", source_uri="<parser test>"
+        )
 
-        message_definition, *_ = [definition for definition in definitions if definition.name == TEST_MESSAGE_FILE_CONTENTS_NAME]
+        message_definition, *_ = [
+            definition for definition in definitions if definition.name == TEST_MESSAGE_FILE_CONTENTS_NAME
+        ]
         self.assertFalse(message_definition.content.startswith(YAML_DOCUMENT_SEPARATOR))
 
         status_definition, *_ = [definition for definition in definitions if definition.name == TEST_STATUS_FILE_CONTENTS_NAME]

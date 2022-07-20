@@ -147,7 +147,6 @@ cython_debug/
 .vscode/
 .project
 .settings/
-.dir-locals.el
 
 # Custom python code coverage html report directory name
 html_code_coverage
@@ -164,4 +163,3 @@ html_code_coverage
 _site
 Gemfile.lock
 node_modules
-
