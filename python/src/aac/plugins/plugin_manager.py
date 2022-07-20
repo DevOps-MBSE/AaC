@@ -141,4 +141,4 @@ def get_plugins() -> list[Plugin]:
     Returns:
         A list of plugins that are currently registered.
     """
-    return get_plugin_manager().hook.register_plugin()
+    return get_plugin_manager().hook.get_plugin()

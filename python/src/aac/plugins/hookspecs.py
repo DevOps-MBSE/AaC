@@ -37,7 +37,7 @@ def register_validators() -> ValidatorPlugin:
 
 
 @hookspec
-def register_plugin() -> Plugin:
+def get_plugin() -> Plugin:
     """
     Returns the information about plugin.
 

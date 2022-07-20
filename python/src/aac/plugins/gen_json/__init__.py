@@ -4,11 +4,11 @@
 
 from aac.cli.aac_command import AacCommand, AacCommandArgument
 from aac.package_resources import get_resource_file_contents, get_resource_file_path
+from aac.parser import parse
 from aac.plugins import hookimpl
 from aac.plugins.contribution_points import ContributionPoints
 from aac.plugins.gen_json.gen_json_impl import print_json
 from aac.plugins.plugin import Plugin
-from aac.parser import parse
 
 
 plugin_resource_file_args = (__package__, "gen_json.yaml")
@@ -52,7 +52,7 @@ def get_plugin_aac_definitions() -> str:
 
 
 @hookimpl
-def register_plugin() -> Plugin:
+def get_plugin() -> Plugin:
     """
     Returns the information about the validation plugin necessary to execute validation.
 
@@ -63,7 +63,6 @@ def register_plugin() -> Plugin:
 
     contributions.register_commands(get_commands())
 
-    # It may be a good idea to have get_plugin_aac_definitions return a list of Defininitions now that we have them.
     plugin_definitions = parse(
         get_plugin_aac_definitions(),
         get_resource_file_path(*plugin_resource_file_args)
