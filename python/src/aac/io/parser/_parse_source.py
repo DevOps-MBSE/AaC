@@ -34,7 +34,7 @@ def parse(source: str, source_uri: Optional[str] = None) -> list[Definition]:
     return (
         _parse_file(sanitized_source)
         if path.lexists(sanitized_source)
-        else _parse_str(sanitize_filesystem_path(source_uri) or DEFAULT_SOURCE_URI, source)
+        else _parse_str(sanitize_filesystem_path(source_uri or DEFAULT_SOURCE_URI), source)
     )
 
 
