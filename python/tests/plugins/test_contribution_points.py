@@ -6,30 +6,32 @@ from aac.lang.definitions.definition import Definition
 from aac.plugins.contribution_points import ContributionPoints, InvalidContributionPointError
 from aac.plugins.validators._validator_plugin import ValidatorPlugin
 
-from tests.helpers.parsed_definitions import create_enum_definition, create_schema_definition, create_validation_definition
+from tests.helpers.parsed_definitions import create_schema_definition, create_validation_definition
 
 
 class TestContributionPoints(TestCase):
+    num_items_to_create = 2
+
     def setUp(self) -> None:
         super().setUp()
         self.contributions = ContributionPoints()
 
     def test_register_contributions(self):
         self._assert_items_are_registered(
-            [create_command("Test1"), create_command("Test2")],
+            [create_command(f"Test{i}") for i in range(self.num_items_to_create)],
             self.contributions.register_commands,
             self.contributions.get_commands,
         )
         self._assert_items_are_registered(
             [
-                create_validation("Test1", create_validation_definition("Validation1")),
-                create_validation("Test2", create_validation_definition("Validation2"))
+                create_validation(f"Test{i}", create_validation_definition(f"Validation{i}"))
+                for i in range(self.num_items_to_create)
             ],
             self.contributions.register_validations,
             self.contributions.get_validations,
         )
         self._assert_items_are_registered(
-            [create_schema_definition("Test1"), create_enum_definition("Test2", ["one", "two"])],
+            [create_schema_definition(f"Test{i}") for i in range(self.num_items_to_create)],
             self.contributions.register_definitions,
             self.contributions.get_definitions,
         )
