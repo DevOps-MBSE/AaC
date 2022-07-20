@@ -7,7 +7,7 @@ from attr import Factory, attrib, attrs, validators
 from pygls.lsp import CompletionParams, CompletionList, CompletionItem, CompletionItemKind
 from pygls.server import LanguageServer
 
-from aac.parser import parse
+from aac.io.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.definition_helpers import get_definitions_by_root_key
 from aac.lang.definitions.definition import Definition

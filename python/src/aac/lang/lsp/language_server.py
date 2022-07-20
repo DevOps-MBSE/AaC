@@ -18,7 +18,7 @@ from pygls.lsp import (
     methods
 )
 
-from aac.parser import parse
+from aac.io.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_initialized_language_context
 from aac.lang.definitions.structure import strip_undefined_fields_from_definition
 from aac.lang.language_context import LanguageContext

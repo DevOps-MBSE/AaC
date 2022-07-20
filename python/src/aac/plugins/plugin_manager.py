@@ -3,7 +3,7 @@
 from iteration_utilities import flatten
 from pluggy import PluginManager
 
-from aac import parser
+from aac.io import parser
 from aac.lang.definitions.definition import Definition
 from aac.plugins import hookspecs, PLUGIN_PROJECT_NAME
 from aac.plugins.validators import ValidatorPlugin
@@ -92,6 +92,10 @@ def get_plugin_definitions() -> list[Definition]:
     Returns:
         A list of parsed definitions from all active plugins.
     """
+    def set_files_to_not_user_editable(definition):
+        definition.source.is_user_editable = False
+        return definition
+
     plugin_manager = get_plugin_manager()
     plugin_definitions_as_yaml = plugin_manager.hook.get_plugin_aac_definitions()
     plugin_definitions = []
@@ -101,7 +105,8 @@ def get_plugin_definitions() -> list[Definition]:
             plugin_file_source_uri = "plugins.yaml"
             plugin_definitions.append(parser.parse(plugin_definition, plugin_file_source_uri))
 
-    return list(flatten(plugin_definitions))
+    flattened_definition_list = list(flatten(plugin_definitions))
+    return list(map(set_files_to_not_user_editable, flattened_definition_list))
 
 
 def get_validator_plugins() -> list[ValidatorPlugin]:
