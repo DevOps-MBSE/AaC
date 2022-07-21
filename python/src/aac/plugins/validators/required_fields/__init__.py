@@ -53,7 +53,7 @@ def get_required_fields(definition: Definition) -> list[str]:
 @hookimpl
 def get_plugin() -> Plugin:
     """
-    Returns the information about plugin.
+    Returns information about the plugin.
 
     Returns:
         A collection of information about the plugin and what it contributes.
