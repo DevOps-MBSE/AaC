@@ -4,7 +4,7 @@
 
 from aac.cli.aac_command import AacCommand, AacCommandArgument
 from aac.package_resources import get_resource_file_contents, get_resource_file_path
-from aac.parser import parse
+from aac.io.parser import parse
 from aac.plugins import hookimpl
 from aac.plugins.gen_design_doc.gen_design_doc_impl import gen_design_doc
 from aac.plugins.plugin import Plugin

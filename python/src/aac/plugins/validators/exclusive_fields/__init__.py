@@ -1,7 +1,7 @@
 """Validation plugin that ensures that only one of the fields identified via arguments is defined."""
 
 from aac.package_resources import get_resource_file_contents, get_resource_file_path
-from aac.parser import parse
+from aac.io.parser import parse
 from aac.plugins import hookimpl
 from aac.plugins.plugin import Plugin
 from aac.plugins.validators import ValidatorPlugin, get_validation_definition_from_plugin_definitions

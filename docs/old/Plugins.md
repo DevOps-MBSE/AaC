@@ -41,7 +41,7 @@ To validate an Architecture-as-Code model from within your plugin, you can do th
 ```python
 from pprint import pprint
 
-from aac.parser import parse
+from aac.io.parser import parse
 from aac.plugins.plugin_execution import plugin_result
 from aac.validator import validation
 
