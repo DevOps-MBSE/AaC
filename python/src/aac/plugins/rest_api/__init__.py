@@ -49,10 +49,10 @@ def get_commands() -> list[AacCommand]:
 @hookimpl
 def get_plugin() -> Plugin:
     """
-    Returns the information about the validation plugin necessary to execute validation.
+    Returns the information about plugin.
 
     Returns:
-        A collection of data necessary to manage and execute validation plugins.
+        A collection of information about the plugin and what it contributes.
     """
     *_, plugin_name = __package__.split(".")
     plugin = Plugin(plugin_name)

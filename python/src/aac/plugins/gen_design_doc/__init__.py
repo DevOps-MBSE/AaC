@@ -63,10 +63,10 @@ def get_plugin_aac_definitions() -> str:
 @hookimpl
 def get_plugin() -> Plugin:
     """
-    Returns the information about the validation plugin necessary to execute validation.
+    Returns the information about plugin.
 
     Returns:
-        A collection of data necessary to manage and execute validation plugins.
+        A collection of information about the plugin and what it contributes.
     """
     plugin_definitions = parse(
         get_plugin_aac_definitions(),
