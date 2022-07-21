@@ -7,7 +7,6 @@ from aac.plugins.plugin import Plugin
 from aac.plugins.validators import ValidatorPlugin, get_validation_definition_from_plugin_definitions
 from aac.plugins.validators.defined_references._validate_references import validate_references
 
-
 PLUGIN_YAML_FILE = "defined_references.yaml"
 plugin_resource_file_args = (__package__, PLUGIN_YAML_FILE)
 

@@ -7,7 +7,6 @@ from aac.plugins.plugin import Plugin
 from aac.plugins.validators import ValidatorPlugin, get_validation_definition_from_plugin_definitions
 from aac.plugins.validators.root_keys._validate_root_keys import validate_root_keys
 
-
 PLUGIN_YAML_FILE = "root_keys.yaml"
 plugin_resource_file_args = (__package__, PLUGIN_YAML_FILE)
 

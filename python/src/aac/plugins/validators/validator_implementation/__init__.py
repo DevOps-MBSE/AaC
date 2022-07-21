@@ -7,7 +7,6 @@ from aac.plugins.plugin import Plugin
 from aac.plugins.validators import ValidatorPlugin, get_validation_definition_from_plugin_definitions
 from aac.plugins.validators.validator_implementation._validator_implementation import validate_validator_implementations
 
-
 PLUGIN_YAML_FILE = "validator_implementation.yaml"
 plugin_resource_file_args = (__package__, PLUGIN_YAML_FILE)
 

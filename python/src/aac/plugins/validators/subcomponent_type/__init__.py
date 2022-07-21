@@ -7,7 +7,6 @@ from aac.plugins.plugin import Plugin
 from aac.plugins.validators import ValidatorPlugin, get_validation_definition_from_plugin_definitions
 from aac.plugins.validators.subcomponent_type._subcomponent_type import validate_subcomponent_types
 
-
 PLUGIN_YAML_FILE = "subcomponent_type.yaml"
 plugin_resource_file_args = (__package__, PLUGIN_YAML_FILE)
 
