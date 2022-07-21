@@ -1,15 +1,17 @@
 """The Language Context manages the highly-contextual AaC DSL."""
 
-from attr import Factory, attrib, attrs, validators
-from typing import Optional
 import copy
 import logging
+
+from attr import Factory, attrib, attrs, validators
+from typing import Optional
 
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.extensions import apply_extension_to_definition, remove_extension_from_definition
 from aac.lang.definitions.search import search_definition
 from aac.lang.definitions.type import remove_list_type_indicator
 from aac.lang.definition_helpers import get_definitions_by_root_key
+from aac.plugins.plugin import Plugin
 
 
 @attrs(slots=True, auto_attribs=True)
@@ -30,6 +32,7 @@ class LanguageContext:
         self.definitions_name_dictionary = {definition.name: definition for definition in self.definitions}
 
     definitions: list[Definition] = attrib(default=Factory(list), validator=validators.instance_of(list))
+    plugins: list[Plugin] = attrib(default=Factory(list), validator=validators.instance_of(list))
 
     # Private attribute - don't reference outside the class.
     definitions_name_dictionary: dict[str, Definition] = attrib(
@@ -329,3 +332,16 @@ class LanguageContext:
 
         definitions = [enum for enum in self.get_definitions_by_root_key("enum") if is_type_defined_by_enum(enum)]
         return definitions[0] if definitions else None
+
+    def add_plugins(self, plugins: list[Plugin]):
+        """Add the specified plugins to the current language context."""
+        self.plugins.extend(plugins)
+
+    def get_plugins(self) -> list[Plugin]:
+        """
+        Return the applied plugins that contribute to the current language context.
+
+        Returns:
+            The collection of applied plugins that contribute to the current language context.
+        """
+        return self.plugins
