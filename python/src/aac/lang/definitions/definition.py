@@ -7,7 +7,7 @@ import yaml
 from aac.lang.definitions.lexeme import Lexeme
 
 
-@attrs
+@attrs(hash=False)
 class Definition:
     """An Architecture-as-Code definition.
 
@@ -24,6 +24,10 @@ class Definition:
     source_uri: str = attrib(validator=validators.instance_of(str))
     lexemes: list[Lexeme] = attrib(default=Factory(list), validator=validators.instance_of(list))
     structure: dict = attrib(default=Factory(dict), validator=validators.instance_of(dict))
+
+    def __hash__(self) -> int:
+        """Return the hash of this Definition."""
+        return hash(self.name)
 
     def get_root_key(self) -> str:
         """Return the root key for the parsed definition."""
