@@ -1,4 +1,4 @@
-from aac.parser._parse_source import YAML_DOCUMENT_SEPARATOR
+from aac.io.constants import YAML_DOCUMENT_SEPARATOR
 
 from tests.helpers.parsed_definitions import (
     create_enum_definition,

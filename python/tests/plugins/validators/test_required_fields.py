@@ -2,7 +2,7 @@ from typing import Any
 
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.definition_helpers import get_definitions_by_root_key
-from aac.parser import parse
+from aac.io.parser import parse
 from aac.plugins.validators import ValidatorPlugin
 from aac.plugins.validators.required_fields import (
     get_plugin_aac_definitions,

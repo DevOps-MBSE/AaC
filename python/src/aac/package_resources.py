@@ -18,7 +18,6 @@ def get_resource_file_contents(package: str, resource: str) -> str:
         return resource_file.read()
 
 
-# Temporary until #378 is merged
 def get_resource_file_path(package: str, resource: str) -> str:
     """
     Returns the path to the package resource as a string.

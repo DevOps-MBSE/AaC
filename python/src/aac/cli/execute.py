@@ -32,7 +32,8 @@ def run_cli():
             # sourced from the target function itself
             parameters = inspect.signature(command.callback).parameters.keys()
             for argument in parameters:
-                keyword_args[argument] = args_dict[argument]
+                if args_dict[argument] is not None:
+                    keyword_args[argument] = args_dict[argument]
 
             result = command.callback(**keyword_args)
             print(f"{result.name}: {result.status_code.name.lower()}\n\n{result.get_messages_as_string()}")

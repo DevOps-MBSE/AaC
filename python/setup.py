@@ -56,6 +56,8 @@ development_dependencies = [
     "furo == 2021.10.9",
     "pipdeptree >= 2.2.0",
     "Pygments >= 2.5.1",
+    "mypy >= 0.961",
+    "types-PyYAML >= 6.0.9",
 ]
 
 test_dependencies = [

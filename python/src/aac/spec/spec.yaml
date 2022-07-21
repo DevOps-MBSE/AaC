@@ -1,8 +1,8 @@
----
-# root is a special case representing the root of the architecture model and
-# not explicitly included in a model file
 schema:
   name: root
+  description: |
+    root is a special case representing the root of the architecture model and
+    not explicitly included in a model file
   fields:
     - name: import
       type: string[]

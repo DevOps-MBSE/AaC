@@ -5,6 +5,7 @@ import logging
 import yaml
 
 from aac.lang.definitions.lexeme import Lexeme
+from aac.io.files.aac_file import AaCFile
 
 
 @attrs(hash=False)
@@ -14,14 +15,14 @@ class Definition:
     Attributes:
         name (str): The name of the definition
         content (str): The original source textual representation of the definition.
-        source_uri (str): The URI for the document containing the definition.
+        source (AaCFile): The source document containing the definition.
         lexemes (list[Lexeme]): A list of lexemes for each item in the parsed definition.
         structure (dict): The dictionary representation of the definition.
     """
 
     name: str = attrib(validator=validators.instance_of(str))
     content: str = attrib(validator=validators.instance_of(str))
-    source_uri: str = attrib(validator=validators.instance_of(str))
+    source: AaCFile = attrib(validator=validators.instance_of(AaCFile))
     lexemes: list[Lexeme] = attrib(default=Factory(list), validator=validators.instance_of(list))
     structure: dict = attrib(default=Factory(dict), validator=validators.instance_of(dict))
 

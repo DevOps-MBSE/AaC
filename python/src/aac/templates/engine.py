@@ -1,10 +1,10 @@
 """This module provides a common set of templating and generation functions."""
 from __future__ import annotations
-
-import os
-
 from attr import attrib, attrs, validators
 from jinja2 import Environment, PackageLoader, Template
+import os
+
+from aac.io.writer import write_file
 
 
 def load_templates(package_name: str, template_directory: str = "templates") -> list[Template]:
@@ -111,32 +111,12 @@ def write_generated_templates_to_file(generated_files: list[TemplateOutputFile])
         generated_files: list of generated files to write to the filesystem
     """
     for generated_file in generated_files:
-        os.makedirs(generated_file.output_directory, exist_ok=True)
-        _write_file(
-            generated_file.output_directory,
-            generated_file.file_name,
+        file_uri = os.path.join(generated_file.output_directory, generated_file.file_name)
+        write_file(
+            file_uri,
             generated_file.content,
             generated_file.overwrite,
         )
-
-
-def _write_file(path: str, file_name: str, content: str, overwrite: bool) -> None:
-    """
-    Write string content to a file.
-
-    Args:
-        path: the path to the directory that the file will be written to
-        file_name: the name of the file to be written
-        content: contents of the file to write
-        overwrite: whether to overwrite an existing file, if false the file will not be altered.
-    """
-    file_to_write = os.path.join(path, file_name)
-    if not overwrite and os.path.exists(file_to_write):
-        print(f"{file_to_write} already exists, skipping write")
-        return
-
-    with open(file_to_write, "w") as file:
-        file.writelines(content)
 
 
 @attrs(slots=True, auto_attribs=True)

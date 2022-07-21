@@ -1,6 +1,6 @@
 from unittest.async_case import IsolatedAsyncioTestCase
 
-from aac.parser._parse_source import YAML_DOCUMENT_SEPARATOR
+from aac.io.constants import YAML_DOCUMENT_SEPARATOR
 
 from tests.lang.lsp.base_lsp_test_case import BaseLspTestCase
 from tests.lang.lsp.definition_constants import (

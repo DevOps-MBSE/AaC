@@ -6,7 +6,7 @@ from pygls.lsp.types.language_features.definition import DefinitionParams
 
 from aac.spec.core import get_aac_spec_as_yaml
 from aac.lang.lsp.providers.goto_definition_provider import GotoDefinitionProvider
-from aac.parser._parse_source import YAML_DOCUMENT_SEPARATOR
+from aac.io.constants import YAML_DOCUMENT_SEPARATOR
 
 from tests.helpers.lsp.responses.goto_definition_response import GotoDefinitionResponse
 from tests.lang.lsp.base_lsp_test_case import BaseLspTestCase
