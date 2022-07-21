@@ -6,7 +6,6 @@ from aac.cli.aac_command import AacCommand, AacCommandArgument
 from aac.package_resources import get_resource_file_contents, get_resource_file_path
 from aac.parser import parse
 from aac.plugins import hookimpl
-from aac.plugins.contribution_points import ContributionPoints
 from aac.plugins.gen_json.gen_json_impl import print_json
 from aac.plugins.plugin import Plugin
 
@@ -59,15 +58,14 @@ def get_plugin() -> Plugin:
     Returns:
         A collection of data necessary to manage and execute validation plugins.
     """
-    contributions = ContributionPoints()
-
-    contributions.register_commands(get_commands())
-
     plugin_definitions = parse(
         get_plugin_aac_definitions(),
         get_resource_file_path(*plugin_resource_file_args)
     )
-    contributions.register_definitions(plugin_definitions)
 
     *_, plugin_name = __package__.split(".")
-    return Plugin(plugin_name, contributions)
+    plugin = Plugin(plugin_name)
+    plugin.register_commands(set(get_commands()))
+    plugin.register_definitions(set(plugin_definitions))
+
+    return plugin
