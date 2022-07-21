@@ -36,6 +36,7 @@ def get_commands() -> list[AacCommand]:
 
     return plugin_commands
 
+
 @hookimpl
 def get_plugin() -> Plugin:
     """
