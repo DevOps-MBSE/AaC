@@ -4,7 +4,10 @@
 
 from aac.cli.aac_command import AacCommand
 from aac.plugins import hookimpl
+from aac.plugins.plugin import Plugin
 from aac.plugins.print_spec.print_spec_impl import print_spec, print_active_context
+
+plugin_resource_file_args = (__package__, "print-spec.yaml")
 
 
 @hookimpl
@@ -32,3 +35,17 @@ def get_commands() -> list[AacCommand]:
     ]
 
     return plugin_commands
+
+@hookimpl
+def get_plugin() -> Plugin:
+    """
+    Returns the information about the validation plugin necessary to execute validation.
+
+    Returns:
+        A collection of data necessary to manage and execute validation plugins.
+    """
+    *_, plugin_name = __package__.split(".")
+    plugin = Plugin(plugin_name)
+    plugin.register_commands(set(get_commands()))
+
+    return plugin
