@@ -1,5 +1,5 @@
 import os
-from aac import parser
+from aac.io.parser import parse
 
 from aac.plugins.gen_json import (
     get_commands,
@@ -56,7 +56,7 @@ class TestGenJson(ActiveContextTestCase):
         commands = get_commands()
         self.assertEqual(plugin.contributions.get_commands(), set(commands))
 
-        definitions = parser.parse(get_plugin_aac_definitions(), get_resource_file_path(*plugin_resource_file_args))
+        definitions = parse(get_plugin_aac_definitions(), get_resource_file_path(*plugin_resource_file_args))
         self.assertEqual(plugin.contributions.get_definitions(), set(definitions))
 
 
