@@ -1,42 +1,44 @@
-from typing import Callable
 from unittest.case import TestCase
 
-from aac.cli.aac_command import AacCommand, AacCommandArgument
-from aac.lang.definitions.definition import Definition
-from aac.plugins.contribution_points import ContributionPoints, InvalidContributionPointError
-from aac.plugins.validators._validator_plugin import ValidatorPlugin
+from aac.plugins.contribution_points import ContributionPoints
 
+from tests.helpers.contribution_points import (
+    create_command,
+    create_validation,
+    assert_invalid_contribution_point,
+    assert_items_are_registered,
+)
 from tests.helpers.parsed_definitions import create_schema_definition, create_validation_definition
 
 
 class TestContributionPoints(TestCase):
     plugin_name = "test"
-    num_items_to_create = 2
+    num_items = 2
 
     def setUp(self) -> None:
         super().setUp()
         self.contributions = ContributionPoints()
 
     def test_register_contributions(self):
-        self._assert_items_are_registered(
-            self.plugin_name,
-            [create_command(f"Test{i}") for i in range(self.num_items_to_create)],
-            self.contributions.register_commands,
+        assert_items_are_registered(
+            self,
+            {create_command(f"Test{i}") for i in range(self.num_items)},
+            lambda items: self.contributions.register_commands(self.plugin_name, items),
             self.contributions.get_commands,
         )
-        self._assert_items_are_registered(
-            self.plugin_name,
-            [
+        assert_items_are_registered(
+            self,
+            {
                 create_validation(f"Test{i}", create_validation_definition(f"Validation{i}"))
-                for i in range(self.num_items_to_create)
-            ],
-            self.contributions.register_validations,
+                for i in range(self.num_items)
+            },
+            lambda items: self.contributions.register_validations(self.plugin_name, items),
             self.contributions.get_validations,
         )
-        self._assert_items_are_registered(
-            self.plugin_name,
-            [create_schema_definition(f"Test{i}") for i in range(self.num_items_to_create)],
-            self.contributions.register_definitions,
+        assert_items_are_registered(
+            self,
+            {create_schema_definition(f"Test{i}") for i in range(self.num_items)},
+            lambda items: self.contributions.register_definitions(self.plugin_name, items),
             self.contributions.get_definitions,
         )
 
@@ -53,41 +55,43 @@ class TestContributionPoints(TestCase):
         self.contributions.register_definition(self.plugin_name, definition)
         self.assertEqual(definition, self.contributions.get_definition_by_name(definition.name))
 
-    def test_register_validtaion_only_accepts_validations(self):
-        make_regex = lambda item: f".*(error|add|validation|{item.name}).*".lower()
+    def test_get_contributions_by_plugin(self):
+        commands = {create_command(f"Test{i}") for i in range(self.num_items)}
+        self.contributions.register_commands(self.plugin_name, commands)
+        self.assertEqual(self.contributions.get_commands_by_plugin_name(self.plugin_name), commands)
+
+        validations = {create_validation(f"Test{i}", create_validation_definition(f"Validation{i}")) for i in range(self.num_items)}
+        self.contributions.register_validations(self.plugin_name, validations)
+        self.assertEqual(self.contributions.get_validations_by_plugin_name(self.plugin_name), validations)
+
+        definitions = {create_schema_definition(f"Test{i}") for i in range(self.num_items)}
+        self.contributions.register_definitions(self.plugin_name, definitions)
+        self.assertEqual(self.contributions.get_definitions_by_plugin_name(self.plugin_name), definitions)
+
+    def test_register_items_only_accept_items_of_correct_contribution_type(self):
+        make_regex = lambda expected, item: f".*(error|add|{expected}|{item.name}).*".lower()
 
         definition = create_schema_definition("TestDefinition")
-        self._assert_invalid_contribution_point(self.plugin_name, definition, make_regex(definition))
-
         command = create_command("TestCommand")
-        self._assert_invalid_contribution_point(self.plugin_name, command, make_regex(command))
+        validation = create_validation("TestValidation", create_validation_definition("Validation"))
 
-    def _assert_items_are_registered(self, name, items, register_fn, get_registered_items_fn):
-        register_fn(name, items)
+        assert_invalid_contribution_point(
+            self, self.plugin_name, definition, self.contributions.register_validation, make_regex("validation", definition)
+        )
+        assert_invalid_contribution_point(
+            self, self.plugin_name, command, self.contributions.register_validation, make_regex("validation", command)
+        )
 
-        registered_items = get_registered_items_fn(name)
-        self.assertEqual(len(items), len(registered_items))
-        [self.assertIn(item, registered_items) for item in items]
+        assert_invalid_contribution_point(
+            self, self.plugin_name, command, self.contributions.register_definition, make_regex("definition", command)
+        )
+        assert_invalid_contribution_point(
+            self, self.plugin_name, validation, self.contributions.register_definition, make_regex("definition", validation)
+        )
 
-    def _assert_invalid_contribution_point(self, name, item, exception_regex):
-        with self.assertRaises(InvalidContributionPointError) as cm:
-            self.contributions.register_validation(name, item)
-
-        self.assertRegex(cm.exception.message.lower(), exception_regex)
-
-
-def identity(value: object) -> object:
-    """Return the object that was passed in."""
-    return value
-
-
-def create_command(
-        name: str, description: str = "", callback: Callable = identity, args: list[AacCommandArgument] = []
-) -> AacCommand:
-    """Create a new AacCommand for testing."""
-    return AacCommand(name, description, callback, args)
-
-
-def create_validation(name: str, definition: Definition, callback: Callable = identity) -> ValidatorPlugin:
-    """Create a new ValidatorPlugin for testing."""
-    return ValidatorPlugin(name, definition, callback)
+        assert_invalid_contribution_point(
+            self, self.plugin_name, definition, self.contributions.register_command, make_regex("command", definition)
+        )
+        assert_invalid_contribution_point(
+            self, self.plugin_name, validation, self.contributions.register_command, make_regex("command", validation)
+        )
