@@ -1,6 +1,5 @@
 """Validation plugin to ensure that each definition has all required fields populated."""
 
-from aac.lang.definitions.definition import Definition
 from aac.package_resources import get_resource_file_contents, get_resource_file_path
 from aac.io.parser import parse
 from aac.plugins import hookimpl
@@ -35,20 +34,6 @@ def register_validators() -> ValidatorPlugin:
     return ValidatorPlugin(validation_definition.name, validation_definition, validate_reference_fields)
 
 
-def get_reference_fields(definition: Definition) -> list[str]:
-    """
-    Return a list of field names declared in the definition's Reference Fields Validation.
-
-    Args:
-        definition (Definition): The definition to search through
-
-    Returns:
-        The list of field names declared as required fields in the definition.
-    """
-    reference_validation = [v for v in definition.get_validations() if v.get("name") == REFERENCE_FIELDS_VALIDATION_STRING]
-    return reference_validation and reference_validation[0].get("arguments") or []
-
-
 @hookimpl
 def get_plugin() -> Plugin:
     """
@@ -68,6 +53,3 @@ def get_plugin() -> Plugin:
     plugin.register_validations({register_validators()})
 
     return plugin
-
-
-REFERENCE_FIELDS_VALIDATION_STRING = register_validators().name
