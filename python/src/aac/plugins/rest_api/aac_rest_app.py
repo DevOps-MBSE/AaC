@@ -195,6 +195,7 @@ def remove_definition_by_name(name: str):
 
 
 # AaC Plugin Commands
+
 @app.get("/commands", status_code=HTTPStatus.OK, response_model=list[CommandModel])
 def get_aac_commands():
     """Return a list of all available plugin commands."""
