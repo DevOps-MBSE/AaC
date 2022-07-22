@@ -12,6 +12,7 @@ from aac.io.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.plugins.plugin_manager import get_plugin_commands
 from aac.plugins.rest_api.aac_rest_app import app, refresh_available_files_in_workspace
+from aac.plugins.rest_api.models.command_model import CommandRequestModel
 from aac.plugins.rest_api.models.definition_model import to_definition_model
 from aac.plugins.rest_api.models.file_model import FilePathModel, FilePathRenameModel, to_file_model
 from aac.spec import get_aac_spec
@@ -19,7 +20,12 @@ from aac.spec.core import _get_aac_spec_file_path
 
 from tests.helpers.io import temporary_test_file
 from tests.active_context_test_case import ActiveContextTestCase
-from tests.helpers.parsed_definitions import create_behavior_entry, create_model_definition, create_enum_definition, create_schema_definition
+from tests.helpers.parsed_definitions import (
+    create_behavior_entry,
+    create_model_definition,
+    create_enum_definition,
+    create_schema_definition,
+)
 
 
 class TestAacRestApiCommandEndpoints(ActiveContextTestCase):
@@ -48,6 +54,47 @@ class TestAacRestApiCommandEndpoints(ActiveContextTestCase):
                 self.assertIsNotNone(actual_argument)
                 self.assertEqual(argument.description, actual_argument.get("description"))
                 self.assertEqual(argument.data_type, actual_argument.get("data_type"))
+
+    def test_execute_validate_command(self):
+        command_name = "validate"
+        test_model = create_model_definition("Model")
+
+        with temporary_test_file(test_model.to_yaml()) as temp_file:
+            request_arguments = CommandRequestModel(name=command_name, arguments=[temp_file.name])
+            response = self.test_client.post("/command", data=json.dumps(jsonable_encoder(request_arguments)))
+
+            self.assertEqual(HTTPStatus.OK, response.status_code)
+            self.assertIn("success", response.text)
+            self.assertIn(command_name, response.text)
+            self.assertIn(temp_file.name, response.text)
+
+    def test_execute_puml_component_command(self):
+        command_name = "puml-component"
+        test_model_name = "model"
+        test_model = create_model_definition(test_model_name)
+
+        with (TemporaryDirectory() as temp_directory, temporary_test_file(test_model.to_yaml(), dir=temp_directory) as temp_file):
+            self.assertEqual(len(os.listdir(temp_directory)), 1)
+
+            request_arguments = CommandRequestModel(name=command_name, arguments=[temp_file.name, temp_directory])
+            response = self.test_client.post("/command", data=json.dumps(jsonable_encoder(request_arguments)))
+
+            component_directory = os.path.join(temp_directory, "component")
+
+            self.assertEqual(HTTPStatus.OK, response.status_code)
+            self.assertIn("success", response.text)
+            self.assertIn(temp_directory, response.text)
+            self.assertEqual(len(os.listdir(temp_directory)), 2)
+            self.assertIn("component", os.listdir(temp_directory))
+            self.assertEqual(len(os.listdir(component_directory)), 1)
+            self.assertIn(f"{os.path.basename(temp_file.name)}_{test_model_name}.puml", os.listdir(component_directory))
+
+    def test_execute_rest_api_command_fails(self):
+        command_name = "rest-api"
+        request_arguments = CommandRequestModel(name=command_name, arguments=[])
+        response = self.test_client.post("/command", data=json.dumps(jsonable_encoder(request_arguments)))
+
+        self.assertEqual(HTTPStatus.NOT_FOUND, response.status_code)
 
 
 class TestAacRestApiFileEndpoints(ActiveContextTestCase):
@@ -218,7 +265,9 @@ class TestAacRestApiDefinitionEndpoints(ActiveContextTestCase):
                 test_model_definition = create_model_definition("SomeModel")
                 test_model_definition.source = parsed_test_enum_definition[0].source
 
-                response = self.test_client.post("/definition", data=json.dumps(jsonable_encoder(to_definition_model(test_model_definition))))
+                response = self.test_client.post(
+                    "/definition", data=json.dumps(jsonable_encoder(to_definition_model(test_model_definition)))
+                )
                 self.assertEqual(HTTPStatus.NO_CONTENT, response.status_code)
                 self.assertIsNotNone(active_context.get_definition_by_name(test_model_definition.name))
 
@@ -234,7 +283,9 @@ class TestAacRestApiDefinitionEndpoints(ActiveContextTestCase):
                 self.assertFalse(os.path.exists(source_file))
                 test_enum_definition.source.uri = source_file
 
-                response = self.test_client.post("/definition", data=json.dumps(jsonable_encoder(to_definition_model(test_enum_definition))))
+                response = self.test_client.post(
+                    "/definition", data=json.dumps(jsonable_encoder(to_definition_model(test_enum_definition)))
+                )
 
                 self.assertEqual(HTTPStatus.NO_CONTENT, response.status_code)
                 self.assertTrue(os.path.exists(source_file))
@@ -255,7 +306,9 @@ class TestAacRestApiDefinitionEndpoints(ActiveContextTestCase):
             self.assertFalse(os.path.exists(source_file))
             test_enum_definition.source.uri = source_file
 
-            response = self.test_client.post("/definition", data=json.dumps(jsonable_encoder(to_definition_model(test_enum_definition))))
+            response = self.test_client.post(
+                "/definition", data=json.dumps(jsonable_encoder(to_definition_model(test_enum_definition)))
+            )
 
             self.assertEqual(HTTPStatus.BAD_REQUEST, response.status_code)
             self.assertIn("outside of the working directory", response.text)
@@ -268,12 +321,17 @@ class TestAacRestApiDefinitionEndpoints(ActiveContextTestCase):
         core_spec_path = _get_aac_spec_file_path()
         test_source = active_context.get_file_in_context_by_uri(core_spec_path)
 
-        self.assertIsNotNone(test_source, f"Couldn't find the core spec by uri {core_spec_path}. Expected uri is: {get_aac_spec()[0].source.uri}")
+        self.assertIsNotNone(
+            test_source,
+            f"Couldn't find the core spec by uri {core_spec_path}. Expected uri is: {get_aac_spec()[0].source.uri}",
+        )
 
         test_enum_definition = create_enum_definition("SomeEnum", ["v1", "v2"])
         test_enum_definition.source = test_source
 
-        response = self.test_client.post("/definition", data=json.dumps(jsonable_encoder(to_definition_model(test_enum_definition))))
+        response = self.test_client.post(
+            "/definition", data=json.dumps(jsonable_encoder(to_definition_model(test_enum_definition)))
+        )
         self.assertEqual(HTTPStatus.BAD_REQUEST, response.status_code)
         self.assertIn("can't be edited", response.text)
         self.assertIn(test_source.uri, response.text)
@@ -290,7 +348,9 @@ class TestAacRestApiDefinitionEndpoints(ActiveContextTestCase):
         test_behavior_name = "TestBehavior"
         test_model_definition.structure["model"]["behavior"] = create_behavior_entry(test_behavior_name)
 
-        response = self.test_client.put("/definition", data=json.dumps(jsonable_encoder(to_definition_model(test_model_definition))))
+        response = self.test_client.put(
+            "/definition", data=json.dumps(jsonable_encoder(to_definition_model(test_model_definition)))
+        )
 
         self.assertEqual(HTTPStatus.NO_CONTENT, response.status_code)
 
@@ -302,7 +362,9 @@ class TestAacRestApiDefinitionEndpoints(ActiveContextTestCase):
         test_model_definition_name = "TestModel"
         test_model_definition = create_model_definition(test_model_definition_name)
 
-        response = self.test_client.put("/definition", data=json.dumps(jsonable_encoder(to_definition_model(test_model_definition))))
+        response = self.test_client.put(
+            "/definition", data=json.dumps(jsonable_encoder(to_definition_model(test_model_definition)))
+        )
 
         self.assertEqual(HTTPStatus.NOT_FOUND, response.status_code)
         self.assertIn(test_model_definition_name, response.text)
