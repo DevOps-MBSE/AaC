@@ -34,8 +34,12 @@ class PluginExecutionResult:
     """
 
     name: str = attrib(validator=validators.instance_of(str))
-    status_code: PluginExecutionStatusCode = attrib(validator=validators.instance_of(PluginExecutionStatusCode))
-    messages: list[str] = attrib(default=Factory(list), validator=validators.instance_of(list))
+    status_code: PluginExecutionStatusCode = attrib(
+        validator=validators.instance_of(PluginExecutionStatusCode)
+    )
+    messages: list[str] = attrib(
+        default=Factory(list), validator=validators.instance_of(list)
+    )
 
     def add_messages(self, *messages) -> None:
         """Add messages to the list of messages."""
@@ -55,8 +59,9 @@ class PluginExecutionResult:
 
 
 @contextmanager
-def plugin_result(name: str, cmd: Callable, *args, **kwargs):
-    """Create a PluginExecutionResult after running command on a validated model from file.
+def plugin_result(name: str, cmd: Callable, *args: list, **kwargs: dict):
+    """
+    Create a PluginExecutionResult after running command on a validated model from file.
 
     This context manager will yield the validation result containing the valid model contained in
     the provided architecture file. If the model is invalid or the file doesn't exist, nothing will
@@ -66,6 +71,8 @@ def plugin_result(name: str, cmd: Callable, *args, **kwargs):
         name (str): The name of the plugin whose result is being returned.
         cmd (str): The command to be called. The command is expected to return a message to be
                        displayed to the user.
+        args (list[Any]): a list of args that are passed to the accompanying command
+        kwargs (dict): a dictionary of keyword arguments that are passed to the accompanying command
 
     Yields:
         A PluginExecutionResult populated with any errors that might have been encountered.
