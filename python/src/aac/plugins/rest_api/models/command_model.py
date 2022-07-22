@@ -14,6 +14,7 @@ class CommandResponseModel(BaseModel):
     """Response model for returning the results/outcomes of commands requests."""
     command_name: str
     result_message: str
+    success: bool
 
 
 class CommandArgumentModel(BaseModel):

@@ -64,6 +64,7 @@ class TestAacRestApiCommandEndpoints(ActiveContextTestCase):
             response = self.test_client.post("/command", data=json.dumps(jsonable_encoder(request_arguments)))
 
             self.assertEqual(HTTPStatus.OK, response.status_code)
+            self.assertTrue(response.json().get("success"))
             self.assertIn("success", response.text)
             self.assertIn(command_name, response.text)
             self.assertIn(temp_file.name, response.text)
@@ -82,6 +83,7 @@ class TestAacRestApiCommandEndpoints(ActiveContextTestCase):
             component_directory = os.path.join(temp_directory, "component")
 
             self.assertEqual(HTTPStatus.OK, response.status_code)
+            self.assertTrue(response.json().get("success"))
             self.assertIn("success", response.text)
             self.assertIn(temp_directory, response.text)
             self.assertEqual(len(os.listdir(temp_directory)), 2)
