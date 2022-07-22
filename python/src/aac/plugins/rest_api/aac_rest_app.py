@@ -1,15 +1,18 @@
 """Module for configuring and maintaining the restful application and its routes."""
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 from http import HTTPStatus
-import os
 import logging
+import os
 
+from aac.cli.aac_command import AacCommand
 from aac.io.files.aac_file import AaCFile
 from aac.io.files.find import find_aac_files, is_aac_file
 from aac.io.paths import sanitize_filesystem_path
 from aac.io.parser import parse
 from aac.io.writer import write_definitions_to_file
 from aac.lang.active_context_lifecycle_manager import get_active_context
+from aac.plugins.plugin_manager import get_plugin_commands
+from aac.plugins.rest_api.models.command_model import CommandModel, CommandRequestModel, CommandResponseModel, to_command_model
 from aac.plugins.rest_api.models.definition_model import DefinitionModel, to_definition_class, to_definition_model
 from aac.plugins.rest_api.models.file_model import FileModel, FilePathModel, FilePathRenameModel, to_file_model
 
@@ -191,6 +194,29 @@ def remove_definition_by_name(name: str):
         _report_error_response(HTTPStatus.NOT_FOUND, f"Definition {name} not found in the context; failed to delete definitions.")
 
 
+# AaC Plugin Commands
+@app.get("/commands", status_code=HTTPStatus.OK, response_model=list[CommandModel])
+def get_aac_commands():
+    """Return a list of all available plugin commands."""
+    aac_and_plugin_commands = _get_rest_api_compatible_commands()
+    return [to_command_model(command) for command in aac_and_plugin_commands.values()]
+
+
+@app.post("/command", status_code=HTTPStatus.OK, response_model=CommandResponseModel)
+def execute_aac_command(command_request: CommandRequestModel):
+    """Return a list of all available plugin commands."""
+    aac_commands_by_name = _get_rest_api_compatible_commands()
+    aac_command = aac_commands_by_name.get(command_request.name)
+
+    if aac_command is not None:
+        arguments = command_request.arguments
+
+        result = aac_command.callback(*(arguments or []))
+        return CommandResponseModel(command_name=result.name, result_message=f"{result.name}: {result.status_code.name.lower()}\n\n{result.get_messages_as_string()}")
+    else:
+        _report_error_response(HTTPStatus.NOT_FOUND, f"Command name {command_request.name} not found in the list of available commands: {list(aac_commands_by_name.keys())}.")
+
+
 def _get_available_files_in_workspace() -> set[AaCFile]:
     """Get the available AaC files in the workspace sans files already in the context."""
     active_context = get_active_context()
@@ -216,3 +242,11 @@ def _report_error_response(code: HTTPStatus, error: str):
 
 def _is_file_path_in_working_directory(file_path: str) -> bool:
     return str(file_path).startswith(WORKSPACE_DIR)
+
+
+def _get_rest_api_compatible_commands() -> dict[str, AacCommand]:
+    """Filter out plugin commands that aren't compatible with the rest-api command. These commands are long-running commands that don't allow for a timely rest response."""
+    command_name_filters = ["rest-api", "start-lsp-io", "start-lsp-tcp"]
+    filtered_aac_and_plugin_commands = list(filter(lambda command: command.name not in command_name_filters, get_plugin_commands()))
+
+    return {command.name: command for command in filtered_aac_and_plugin_commands}
