@@ -10,6 +10,7 @@ import asyncio
 from aac.io.constants import YAML_DOCUMENT_EXTENSION, AAC_DOCUMENT_EXTENSION
 from aac.io.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_active_context
+from aac.plugins.plugin_manager import get_plugin_commands
 from aac.plugins.rest_api.aac_rest_app import app, refresh_available_files_in_workspace
 from aac.plugins.rest_api.models.definition_model import to_definition_model
 from aac.plugins.rest_api.models.file_model import FilePathModel, FilePathRenameModel, to_file_model
@@ -19,6 +20,34 @@ from aac.spec.core import _get_aac_spec_file_path
 from tests.helpers.io import temporary_test_file
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.parsed_definitions import create_behavior_entry, create_model_definition, create_enum_definition, create_schema_definition
+
+
+class TestAacRestApiCommandEndpoints(ActiveContextTestCase):
+    test_client = TestClient(app)
+
+    def test_get_available_commands(self):
+        excluded_rest_api_commands = ["rest-api", "start-lsp-io", "start-lsp-tcp"]
+        expected_result = list(filter(lambda command: command.name not in excluded_rest_api_commands, get_plugin_commands()))
+        expected_commands_dict = {command.name: command for command in expected_result}
+
+        response = self.test_client.get("/commands")
+        actual_result = response.json()
+
+        actual_commands_dict = {command.get("name"): command for command in actual_result}
+
+        self.assertEqual(HTTPStatus.OK, response.status_code)
+
+        for command_name, command in expected_commands_dict.items():
+            actual_command = actual_commands_dict.get(command_name)
+            self.assertIsNotNone(actual_command)
+            self.assertEqual(command.description, actual_command.get("description"))
+
+            actual_command_arguments_dict = {arg.get("name"): arg for arg in actual_command.get("arguments")}
+            for argument in command.arguments:
+                actual_argument = actual_command_arguments_dict.get(argument.name)
+                self.assertIsNotNone(actual_argument)
+                self.assertEqual(argument.description, actual_argument.get("description"))
+                self.assertEqual(argument.data_type, actual_argument.get("data_type"))
 
 
 class TestAacRestApiFileEndpoints(ActiveContextTestCase):
