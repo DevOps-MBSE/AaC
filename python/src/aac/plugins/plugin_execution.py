@@ -59,7 +59,7 @@ class PluginExecutionResult:
 
 
 @contextmanager
-def plugin_result(name: str, cmd: Callable, *args: list, **kwargs: dict):
+def plugin_result(name: str, cmd: Callable, *args: Tuple[Any], **kwargs: Dict[str, Any]):
     """
     Create a PluginExecutionResult after running command on a validated model from file.
 

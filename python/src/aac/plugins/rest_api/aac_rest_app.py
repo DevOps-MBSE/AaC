@@ -247,7 +247,7 @@ def _is_file_path_in_working_directory(file_path: str) -> bool:
 
 def _get_rest_api_compatible_commands() -> dict[str, AacCommand]:
     """Filter out plugin commands that aren't compatible with the rest-api command. These commands are long-running commands that don't allow for a timely rest response."""
-    command_name_filters = ["rest-api", "start-lsp-io", "start-lsp-tcp"]
-    filtered_aac_and_plugin_commands = list(filter(lambda command: command.name not in command_name_filters, get_plugin_commands()))
+    long_running_commands = ["rest-api", "start-lsp-io", "start-lsp-tcp"]
+    filtered_aac_and_plugin_commands = list(filter(lambda command: command.name not in long_running_commands, get_plugin_commands()))
 
     return {command.name: command for command in filtered_aac_and_plugin_commands}
