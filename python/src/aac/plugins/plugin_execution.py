@@ -1,6 +1,6 @@
 """Tools for handling plugin execution results consistently."""
 
-from typing import Callable
+from typing import Callable, Tuple, Any
 from attr import attrib, attrs, validators, Factory
 from contextlib import contextmanager
 from enum import Enum, auto, unique
@@ -59,7 +59,7 @@ class PluginExecutionResult:
 
 
 @contextmanager
-def plugin_result(name: str, cmd: Callable, *args: Tuple[Any], **kwargs: Dict[str, Any]):
+def plugin_result(name: str, cmd: Callable, *args: Tuple[Any], **kwargs: dict[str, Any]):
     """
     Create a PluginExecutionResult after running command on a validated model from file.
 
