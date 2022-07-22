@@ -71,8 +71,8 @@ def plugin_result(name: str, cmd: Callable, *args: Tuple[Any], **kwargs: dict[st
         name (str): The name of the plugin whose result is being returned.
         cmd (str): The command to be called. The command is expected to return a message to be
                        displayed to the user.
-        args (list[Any]): a list of args that are passed to the accompanying command
-        kwargs (dict): a dictionary of keyword arguments that are passed to the accompanying command
+        args (Tuple[Any]): a list of args that are passed to the accompanying command
+        kwargs (dict[str, Any]): a dictionary of keyword arguments that are passed to the accompanying command
 
     Yields:
         A PluginExecutionResult populated with any errors that might have been encountered.
