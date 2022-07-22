@@ -11,14 +11,14 @@ class CommandRequestModel(BaseModel):
 
 
 class CommandResponseModel(BaseModel):
-    """Response model for returning the results/outcomes of commands requests."""
+    """Response model for returning the results/outcomes of command requests."""
     command_name: str
     result_message: str
     success: bool
 
 
 class CommandArgumentModel(BaseModel):
-    """REST API Model for the AaC Command class."""
+    """REST API Model for the AaC Command Argument class."""
     name: str
     description: str
     data_type: str
