@@ -16,6 +16,7 @@ from aac.plugins.validators._validator_plugin import ValidatorPlugin
 class ContributionPoints:
     """
     A class to support contribution points which serve as hooks into AaC core for adding/customizing functionality.
+
     See ContributionType for the complete list of contribution types.
 
     Attributes:
