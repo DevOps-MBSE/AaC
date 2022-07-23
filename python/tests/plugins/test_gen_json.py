@@ -53,11 +53,10 @@ class TestGenJson(ActiveContextTestCase):
 
         self.assertEqual(plugin.name, "gen_json")
 
-        commands = get_commands()
-        self.assertEqual(plugin.contributions.get_commands(), set(commands))
+        self.assertEqual(plugin.contributions.get_commands(), get_commands())
 
         definitions = parse(get_plugin_aac_definitions(), get_resource_file_path(*plugin_resource_file_args))
-        self.assertEqual(plugin.contributions.get_definitions(), set(definitions))
+        self.assertEqual(plugin.contributions.get_definitions(), definitions)
 
 
 TEST_ARCH_YAML_STRING = """

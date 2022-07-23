@@ -25,9 +25,9 @@ class ContributionPoints:
 
     def register_command(self, plugin_name: str, command: AacCommand) -> None:
         """Register the specified command."""
-        self.register_commands(plugin_name, {command})
+        self.register_commands(plugin_name, [command])
 
-    def register_commands(self, plugin_name: str, commands: set[AacCommand]) -> None:
+    def register_commands(self, plugin_name: str, commands: list[AacCommand]) -> None:
         """Register the specified commands."""
 
         def validate(command: Any) -> bool:
@@ -35,7 +35,7 @@ class ContributionPoints:
 
         self._register_contributions(plugin_name, ContributionType.COMMANDS, commands, validate)
 
-    def get_commands(self) -> set[AacCommand]:
+    def get_commands(self) -> list[AacCommand]:
         """Return the registered AacCommands."""
         return self._get_items(ContributionType.COMMANDS)
 
@@ -43,15 +43,15 @@ class ContributionPoints:
         """Return the command with the specified name."""
         return self._get_item_by_name(ContributionType.COMMANDS, name)
 
-    def get_commands_by_plugin_name(self, plugin_name: str) -> Optional[set[AacCommand]]:
+    def get_commands_by_plugin_name(self, plugin_name: str) -> list[AacCommand]:
         """Return the command with the specified name."""
         return self._get_items_by_plugin_name(ContributionType.COMMANDS, plugin_name)
 
     def register_validation(self, plugin_name: str, validation: ValidatorPlugin) -> None:
         """Register the specified validation."""
-        self.register_validations(plugin_name, {validation})
+        self.register_validations(plugin_name, [validation])
 
-    def register_validations(self, plugin_name: str, validations: set[ValidatorPlugin]) -> None:
+    def register_validations(self, plugin_name: str, validations: list[ValidatorPlugin]) -> None:
         """Register the specified validations."""
 
         def validate(validation: Any) -> bool:
@@ -59,7 +59,7 @@ class ContributionPoints:
 
         self._register_contributions(plugin_name, ContributionType.VALIDATIONS, validations, validate)
 
-    def get_validations(self) -> set[ValidatorPlugin]:
+    def get_validations(self) -> list[ValidatorPlugin]:
         """Return the registered ValidatorPlugins."""
         return self._get_items(ContributionType.VALIDATIONS)
 
@@ -67,15 +67,15 @@ class ContributionPoints:
         """Return the validation with the specified name."""
         return self._get_item_by_name(ContributionType.VALIDATIONS, name)
 
-    def get_validations_by_plugin_name(self, plugin_name: str) -> Optional[set[ValidatorPlugin]]:
+    def get_validations_by_plugin_name(self, plugin_name: str) -> list[ValidatorPlugin]:
         """Return the validation with the specified name."""
         return self._get_items_by_plugin_name(ContributionType.VALIDATIONS, plugin_name)
 
     def register_definition(self, plugin_name: str, definition: Definition) -> None:
         """Register the specified definition."""
-        self.register_definitions(plugin_name, {definition})
+        self.register_definitions(plugin_name, [definition])
 
-    def register_definitions(self, plugin_name: str, definitions: set[Definition]) -> None:
+    def register_definitions(self, plugin_name: str, definitions: list[Definition]) -> None:
         """Register the specified definitions."""
 
         def validate(definition: Any) -> bool:
@@ -83,7 +83,7 @@ class ContributionPoints:
 
         self._register_contributions(plugin_name, ContributionType.DEFINITIONS, definitions, validate)
 
-    def get_definitions(self) -> set[AacCommand]:
+    def get_definitions(self) -> list[AacCommand]:
         """Return the registered Definitions."""
         return self._get_items(ContributionType.DEFINITIONS)
 
@@ -91,7 +91,7 @@ class ContributionPoints:
         """Return the definition with the specified name."""
         return self._get_item_by_name(ContributionType.DEFINITIONS, name)
 
-    def get_definitions_by_plugin_name(self, plugin_name: str) -> Optional[set[Definition]]:
+    def get_definitions_by_plugin_name(self, plugin_name: str) -> list[Definition]:
         """Return the definition with the specified name."""
         return self._get_items_by_plugin_name(ContributionType.DEFINITIONS, plugin_name)
 
@@ -99,7 +99,7 @@ class ContributionPoints:
         self,
         plugin_name: str,
         contribution_name: ContributionType,
-        items: Union[set[AacCommand], set[ValidatorPlugin], set[Definition]],
+        items: Union[list[AacCommand], list[ValidatorPlugin], list[Definition]],
         validation: Callable
     ) -> None:
 
@@ -119,16 +119,16 @@ class ContributionPoints:
     def _get_contributions_by_type(self, contribution_type: ContributionType) -> list[PluginContribution]:
         return [contrib for contrib in self.contributions if contrib.is_contribution_type(contribution_type)]
 
-    def _get_items(self, contribution_type: ContributionType) -> set:
-        return set(flatten([contrib.items for contrib in self._get_contributions_by_type(contribution_type)]))
+    def _get_items(self, contribution_type: ContributionType) -> list:
+        return list(flatten([contrib.items for contrib in self._get_contributions_by_type(contribution_type)]))
 
     def _get_item_by_name(self, contribution_type: ContributionType, name: str):
         items = [item for item in self._get_items(contribution_type) if item.name == name]
         return items[0] if len(items) > 0 else None
 
-    def _get_items_by_plugin_name(self, contribution_type: ContributionType, plugin_name: str) -> Optional[set]:
+    def _get_items_by_plugin_name(self, contribution_type: ContributionType, plugin_name: str) -> list:
         contributions = [contrib for contrib in self._get_contributions_by_type(contribution_type) if contrib.plugin_name == plugin_name]
-        return contributions[0].items if len(contributions) > 0 else None
+        return list(contributions[0].items) if len(contributions) > 0 else []
 
 
 @attrs

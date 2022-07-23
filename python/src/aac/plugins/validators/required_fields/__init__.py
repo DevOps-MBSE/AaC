@@ -64,8 +64,8 @@ def get_plugin() -> Plugin:
 
     *_, plugin_name = __package__.split(".")
     plugin = Plugin(plugin_name)
-    plugin.register_definitions(set(plugin_definitions))
-    plugin.register_validations({register_validators()})
+    plugin.register_definitions(plugin_definitions)
+    plugin.register_validations([register_validators()])
 
     return plugin
 

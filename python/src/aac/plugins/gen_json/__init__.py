@@ -65,7 +65,7 @@ def get_plugin() -> Plugin:
 
     *_, plugin_name = __package__.split(".")
     plugin = Plugin(plugin_name)
-    plugin.register_commands(set(get_commands()))
-    plugin.register_definitions(set(plugin_definitions))
+    plugin.register_commands(get_commands())
+    plugin.register_definitions(plugin_definitions)
 
     return plugin

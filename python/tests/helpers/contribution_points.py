@@ -25,7 +25,7 @@ def create_validation(name: str, definition: Definition, callback: Callable = id
 
 
 def assert_items_are_registered(
-    test_case: TestCase, items: set, register_fn: Callable[[set], None], get_registered_items_fn: Callable[[], set]
+    test_case: TestCase, items: list, register_fn: Callable[[list], None], get_registered_items_fn: Callable[[], list]
 ):
     """Assert that the specified items are registered."""
     register_fn(items)

@@ -1,6 +1,5 @@
 """Plugin metadata class."""
 
-from typing import Optional
 from attr import Factory, attrib, attrs, validators
 
 from aac.cli.aac_command import AacCommand
@@ -28,26 +27,26 @@ class Plugin:
         """Return the hash for this Plugin object."""
         return hash(self.name)
 
-    def register_commands(self, commands: set[AacCommand]):
+    def register_commands(self, commands: list[AacCommand]):
         """Register the specified commands."""
         self.contributions.register_commands(self.name, commands)
 
-    def get_commands(self) -> Optional[set[AacCommand]]:
+    def get_commands(self) -> list[AacCommand]:
         """Get the commands registered by this plugin."""
         return self.contributions.get_commands_by_plugin_name(self.name)
 
-    def register_validations(self, validations: set[ValidatorPlugin]):
+    def register_validations(self, validations: list[ValidatorPlugin]):
         """Register the specified validations."""
         self.contributions.register_validations(self.name, validations)
 
-    def get_validations(self) -> Optional[set[ValidatorPlugin]]:
+    def get_validations(self) -> list[ValidatorPlugin]:
         """Get the validations registered by this plugin."""
         return self.contributions.get_validations_by_plugin_name(self.name)
 
-    def register_definitions(self, definitions: set[Definition]):
+    def register_definitions(self, definitions: list[Definition]):
         """Register the specified definitions."""
         self.contributions.register_definitions(self.name, definitions)
 
-    def get_definitions(self) -> Optional[set[Definition]]:
+    def get_definitions(self) -> list[Definition]:
         """Get the definitions registered by this plugin."""
         return self.contributions.get_definitions_by_plugin_name(self.name)
