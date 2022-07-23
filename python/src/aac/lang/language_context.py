@@ -2,7 +2,6 @@
 
 import copy
 import logging
-
 from attr import Factory, attrib, attrs, validators
 from typing import Optional
 
