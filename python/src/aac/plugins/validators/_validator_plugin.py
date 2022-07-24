@@ -5,7 +5,7 @@ from attr import attrib, attrs, validators
 from aac.lang.definitions.definition import Definition
 
 
-@attrs
+@attrs(hash=False)
 class ValidatorPlugin:
     """
     A class that contains all the relevant information to manage and execute validator plugins with the validation process.
@@ -19,3 +19,7 @@ class ValidatorPlugin:
     name: str = attrib(validator=validators.instance_of(str))
     definition: Definition = attrib(validator=validators.instance_of(Definition))
     validation_function: callable = attrib(validator=validators.is_callable())
+
+    def __hash__(self) -> int:
+        """Return the hash of this ValidatorPlugin."""
+        return hash(self.name)

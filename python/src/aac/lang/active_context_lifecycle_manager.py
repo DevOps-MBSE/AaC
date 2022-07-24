@@ -1,7 +1,7 @@
 """This module manages a singleton instance of LanguageContext and its lifecycle."""
 
 from aac.lang.language_context import LanguageContext
-from aac.plugins.plugin_manager import get_plugin_definitions
+from aac.plugins.plugin_manager import get_plugin_definitions, get_plugins
 from aac.spec import get_aac_spec
 
 ACTIVE_CONTEXT = None
@@ -37,6 +37,7 @@ def get_initialized_language_context(core_spec_only: bool = False) -> LanguageCo
     language_context.add_definitions_to_context(get_aac_spec())
 
     if not core_spec_only:
+        language_context.add_plugins(get_plugins())
         language_context.add_definitions_to_context(get_plugin_definitions())
 
     return language_context

@@ -8,7 +8,7 @@ from aac.lang.definitions.lexeme import Lexeme
 from aac.io.files.aac_file import AaCFile
 
 
-@attrs
+@attrs(hash=False)
 class Definition:
     """An Architecture-as-Code definition.
 
@@ -25,6 +25,10 @@ class Definition:
     source: AaCFile = attrib(validator=validators.instance_of(AaCFile))
     lexemes: list[Lexeme] = attrib(default=Factory(list), validator=validators.instance_of(list))
     structure: dict = attrib(default=Factory(dict), validator=validators.instance_of(dict))
+
+    def __hash__(self) -> int:
+        """Return the hash of this Definition."""
+        return hash(self.name)
 
     def get_root_key(self) -> str:
         """Return the root key for the parsed definition."""

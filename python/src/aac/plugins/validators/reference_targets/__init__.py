@@ -1,12 +1,14 @@
 """Validation plugin to ensure that each definition has all required fields populated."""
 
-from aac.lang.definitions.definition import Definition
-from aac.package_resources import get_resource_file_contents
+from aac.package_resources import get_resource_file_contents, get_resource_file_path
+from aac.io.parser import parse
 from aac.plugins import hookimpl
+from aac.plugins.plugin import Plugin
 from aac.plugins.validators import ValidatorPlugin, get_validation_definition_from_plugin_definitions
 from aac.plugins.validators.reference_targets._validate_reference_targets import validate_reference_targets
 
 PLUGIN_YAML_FILE = "reference_targets.yaml"
+plugin_resource_file_args = (__package__, PLUGIN_YAML_FILE)
 
 
 @hookimpl
@@ -17,7 +19,7 @@ def get_plugin_aac_definitions() -> str:
     Returns:
          string representing yaml extensions and definitions defined by the plugin
     """
-    return get_resource_file_contents(__package__, PLUGIN_YAML_FILE)
+    return get_resource_file_contents(*plugin_resource_file_args)
 
 
 @hookimpl
@@ -32,18 +34,22 @@ def register_validators() -> ValidatorPlugin:
     return ValidatorPlugin(validation_definition.name, validation_definition, validate_reference_targets)
 
 
-def get_reference_fields(definition: Definition) -> list[str]:
+@hookimpl
+def get_plugin() -> Plugin:
     """
-    Return a list of field names declared in the definition's Reference Target Validation.
-
-    Args:
-        definition (Definition): The definition to search through
+    Returns information about the plugin.
 
     Returns:
-        The list of field names declared as required fields in the definition.
+        A collection of information about the plugin and what it contributes.
     """
-    reference_validation = [v for v in definition.get_validations() if v.get("name") == REFERENCE_FIELDS_VALIDATION_STRING]
-    return reference_validation and reference_validation[0].get("arguments") or []
+    plugin_definitions = parse(
+        get_plugin_aac_definitions(),
+        get_resource_file_path(*plugin_resource_file_args)
+    )
 
+    *_, plugin_name = __package__.split(".")
+    plugin = Plugin(plugin_name)
+    plugin.register_definitions(plugin_definitions)
+    plugin.register_validations([register_validators()])
 
-REFERENCE_FIELDS_VALIDATION_STRING = register_validators().name
+    return plugin
