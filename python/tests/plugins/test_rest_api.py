@@ -74,7 +74,10 @@ class TestAacRestApiCommandEndpoints(ActiveContextTestCase):
         test_model_name = "model"
         test_model = create_model_definition(test_model_name)
 
-        with (TemporaryDirectory() as temp_directory, temporary_test_file(test_model.to_yaml(), dir=temp_directory) as temp_file):
+        with (
+            TemporaryDirectory() as temp_directory,
+            temporary_test_file(test_model.to_yaml(), dir=temp_directory) as temp_file,
+        ):
             self.assertEqual(len(os.listdir(temp_directory)), 1)
 
             request_arguments = CommandRequestModel(name=command_name, arguments=[temp_file.name, temp_directory])
