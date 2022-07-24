@@ -13,23 +13,9 @@ from aac.io.writer import write_definitions_to_file
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.plugins.plugin_execution import PluginExecutionStatusCode
 from aac.plugins.plugin_manager import get_plugin_commands
-from aac.plugins.rest_api.models.command_model import (
-    CommandModel,
-    CommandRequestModel,
-    CommandResponseModel,
-    to_command_model,
-)
-from aac.plugins.rest_api.models.definition_model import (
-    DefinitionModel,
-    to_definition_class,
-    to_definition_model,
-)
-from aac.plugins.rest_api.models.file_model import (
-    FileModel,
-    FilePathModel,
-    FilePathRenameModel,
-    to_file_model,
-)
+from aac.plugins.rest_api.models.command_model import CommandModel, CommandRequestModel, CommandResponseModel, to_command_model
+from aac.plugins.rest_api.models.definition_model import DefinitionModel, to_definition_class, to_definition_model
+from aac.plugins.rest_api.models.file_model import FileModel, FilePathModel, FilePathRenameModel, to_file_model
 
 app = FastAPI()
 
@@ -68,9 +54,7 @@ def get_file_by_uri(uri: str):
 
         return file_model
     else:
-        _report_error_response(
-            HTTPStatus.NOT_FOUND, f"File {uri} not found in the context."
-        )
+        _report_error_response(HTTPStatus.NOT_FOUND, f"File {uri} not found in the context.")
 
 
 @app.post("/files/import", status_code=HTTPStatus.NO_CONTENT)
@@ -107,16 +91,12 @@ def rename_file_uri(rename_request: FilePathRenameModel) -> None:
 
     if file_in_context:
         os.rename(current_file_path, new_file_path)
-        definitions_to_update = active_context.get_definitions_by_file_uri(
-            current_file_path
-        )
+        definitions_to_update = active_context.get_definitions_by_file_uri(current_file_path)
         for definition in definitions_to_update:
             definition.source.uri = new_file_path
 
     else:
-        _report_error_response(
-            HTTPStatus.NOT_FOUND, f"File {current_file_path} not found in the context."
-        )
+        _report_error_response(HTTPStatus.NOT_FOUND, f"File {current_file_path} not found in the context.")
 
 
 @app.delete("/file", status_code=HTTPStatus.NO_CONTENT)
@@ -126,9 +106,7 @@ def remove_file_by_uri(uri: str):
 
     file_in_context = active_context.get_file_in_context_by_uri(uri)
     if not file_in_context:
-        _report_error_response(
-            HTTPStatus.NOT_FOUND, f"File {uri} not found in the context."
-        )
+        _report_error_response(HTTPStatus.NOT_FOUND, f"File {uri} not found in the context.")
 
     definitions_to_remove = []
     discovered_definitions = active_context.get_definitions_by_file_uri(uri)
@@ -146,15 +124,10 @@ def remove_file_by_uri(uri: str):
 # Definition CRUD Operations
 
 
-@app.get(
-    "/definitions", status_code=HTTPStatus.OK, response_model=list[DefinitionModel]
-)
+@app.get("/definitions", status_code=HTTPStatus.OK, response_model=list[DefinitionModel])
 def get_definitions():
     """Return a list of the definitions in the active context."""
-    definition_models = [
-        to_definition_model(definition)
-        for definition in get_active_context().definitions
-    ]
+    definition_models = [to_definition_model(definition) for definition in get_active_context().definitions]
     return definition_models
 
 
@@ -169,9 +142,7 @@ def get_definition_by_name(name: str):
     definition = get_active_context().get_definition_by_name(name)
 
     if not definition:
-        _report_error_response(
-            HTTPStatus.NOT_FOUND, f"Definition {name} not found in the context."
-        )
+        _report_error_response(HTTPStatus.NOT_FOUND, f"Definition {name} not found in the context.")
     else:
         return to_definition_model(definition)
 
@@ -197,9 +168,7 @@ def add_definition(definition_model: DefinitionModel):
 
     definition_to_write = to_definition_class(definition_model)
     active_context = get_active_context()
-    existing_definitions = active_context.get_definitions_by_file_uri(
-        definition_source_uri
-    )
+    existing_definitions = active_context.get_definitions_by_file_uri(definition_source_uri)
 
     is_user_editable = True
     if len(existing_definitions) > 0:
@@ -229,9 +198,7 @@ def update_definition(definition_model: DefinitionModel) -> None:
     definition_to_update = active_context.get_definition_by_name(definition_model.name)
 
     if definition_to_update:
-        active_context.update_definition_in_context(
-            to_definition_class(definition_model)
-        )
+        active_context.update_definition_in_context(to_definition_class(definition_model))
     else:
         _report_error_response(
             HTTPStatus.NOT_FOUND,
@@ -277,9 +244,7 @@ def execute_aac_command(command_request: CommandRequestModel):
         result = aac_command.callback(*(arguments or []))
         success = result.status_code == PluginExecutionStatusCode.SUCCESS
         result_message = f"{result.name}: {result.status_code.name.lower()}\n\n{result.get_messages_as_string()}"
-        return CommandResponseModel(
-            command_name=result.name, result_message=result_message, success=success
-        )
+        return CommandResponseModel(command_name=result.name, result_message=result_message, success=success)
     else:
         _report_error_response(
             HTTPStatus.NOT_FOUND,
