@@ -66,9 +66,9 @@ class TestContributionPoints(TestCase):
         self.contributions.register_definitions(self.plugin_name, definitions)
         self.contributions.register_validations(self.plugin_name, validations)
 
-        self.assertEqual(self.contributions.get_commands_by_plugin_name(self.plugin_name), commands)
-        self.assertEqual(self.contributions.get_definitions_by_plugin_name(self.plugin_name), definitions)
-        self.assertEqual(self.contributions.get_validations_by_plugin_name(self.plugin_name), validations)
+        self.assertCountEqual(self.contributions.get_commands_by_plugin_name(self.plugin_name), commands)
+        self.assertCountEqual(self.contributions.get_definitions_by_plugin_name(self.plugin_name), definitions)
+        self.assertCountEqual(self.contributions.get_validations_by_plugin_name(self.plugin_name), validations)
 
     def test_register_items_only_accept_items_of_correct_contribution_type(self):
         make_regex = lambda expected, item: f".*(error|add|{expected}|{item.name}).*".lower()
