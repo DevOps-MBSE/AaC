@@ -1,13 +1,10 @@
 """The entry-point for the command line interface for the aac tool."""
 import argparse
 import inspect
-import itertools
 import sys
 from typing import Callable
 
-from pluggy import PluginManager
-
-from aac.plugins.plugin_manager import get_plugin_manager
+from aac.plugins.plugin_manager import get_plugin_commands
 
 
 def run_cli():
@@ -16,9 +13,7 @@ def run_cli():
 
     This method parses the command line and performs the requested user command or outputs usage.
     """
-    plugin_manager = get_plugin_manager()
-
-    arg_parser, aac_plugin_commands = _setup_arg_parser(plugin_manager)
+    arg_parser, aac_plugin_commands = _setup_arg_parser()
 
     args = arg_parser.parse_args()
 
@@ -42,18 +37,14 @@ def run_cli():
                 sys.exit(result.status_code.value)
 
 
-def _setup_arg_parser(
-    plugin_manager: PluginManager,
-) -> tuple[argparse.ArgumentParser, list[Callable]]:
+def _setup_arg_parser() -> tuple[argparse.ArgumentParser, list[Callable]]:
     def help_formatter(prog):
         return argparse.HelpFormatter(prog, max_help_position=30)
 
     arg_parser = argparse.ArgumentParser(formatter_class=help_formatter)
     command_parser = arg_parser.add_subparsers(dest="command")
 
-    # Built-in commands
-    results = plugin_manager.hook.get_commands()
-    aac_and_plugin_commands = list(itertools.chain(*results))
+    aac_and_plugin_commands = get_plugin_commands()
 
     for command in aac_and_plugin_commands:
         command_subparser = command_parser.add_parser(command.name, help=command.description)

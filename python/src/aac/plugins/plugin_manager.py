@@ -1,10 +1,12 @@
 """Provide access to plugins and plugin data."""
-
 from importlib import import_module
 from iteration_utilities import flatten
 from pluggy import PluginManager
+import itertools
 
+from aac.cli.aac_command import AacCommand
 from aac.lang.definitions.definition import Definition
+from aac.io.parser import parse
 from aac.plugins import hookspecs, PLUGIN_PROJECT_NAME
 from aac.plugins.plugin import Plugin
 from aac.plugins.validators import ValidatorPlugin
@@ -103,4 +105,21 @@ def get_plugins() -> list[Plugin]:
     Returns:
         A list of plugins that are currently registered.
     """
+    plugin_manager = get_plugin_manager()
+    plugin_models_yaml = plugin_manager.hook.get_plugin_aac_definitions()
+    plugin_extensions = {}
+    for plugin_ext in plugin_models_yaml:
+        if len(plugin_ext) > 0:
+            parsed_definitions = parse(plugin_ext)
+            definitions_dict = dict(map(lambda definition: (definition.name, definition.structure), parsed_definitions))
+            plugin_extensions = definitions_dict | plugin_extensions
+
+    return plugin_extensions
+
+
+def get_plugin_commands() -> list[AacCommand]:
+    """Return all of the AaC Commands provided by plugins."""
+    plugin_manager = get_plugin_manager()
+    plugin_commands = plugin_manager.hook.get_commands()
+    return list(itertools.chain(*plugin_commands))
     return get_plugin_manager().hook.get_plugin()
