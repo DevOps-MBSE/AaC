@@ -1,5 +1,5 @@
 model:
-  name: aac-core-spec
+  name: print-spec
   description: Print the AaC core specification
   behavior:
     - name: print-spec

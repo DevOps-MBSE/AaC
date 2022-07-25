@@ -25,7 +25,7 @@ class AacCommandArgument:
     action = attrib(default=None, validator=validators.instance_of((str, type(None))))
 
 
-@attrs
+@attrs(hash=False)
 class AacCommand:
     """
     A class used as a struct to hold a command name, command description, and callback.
@@ -44,3 +44,7 @@ class AacCommand:
     description = attrib(validator=validators.instance_of(str))
     callback = attrib(validator=validators.is_callable())
     arguments = attrib(default=Factory(list), validator=validators.instance_of(list))
+
+    def __hash__(self) -> int:
+        """Return the hash of this AacCommand."""
+        return hash(self.name)

@@ -1,5 +1,5 @@
 model:
-  name: aac-spec
+  name: specifications
   description: aac-spec is a Architecture-as-Code plugin that enables requirement definition and traceability in Architecture-as-Code models.
   behavior:
     - name: spec-validate
