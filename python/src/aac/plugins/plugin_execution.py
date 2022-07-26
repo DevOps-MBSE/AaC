@@ -7,6 +7,7 @@ from enum import Enum, auto, unique
 from traceback import extract_tb
 
 from aac.io.parser import ParserError
+from aac.lang.language_error import LanguageError
 from aac.plugins import PluginError, OperationCancelled
 from aac.validate import ValidationError
 
@@ -80,6 +81,9 @@ def plugin_result(name: str, cmd: Callable, *args: Tuple[Any], **kwargs: dict[st
     result = PluginExecutionResult(name, PluginExecutionStatusCode.SUCCESS)
     try:
         result.add_messages(cmd(*args, **kwargs))
+    except LanguageError as error:
+        result.add_messages("Internal error occurred in the AaC language:\n", *error.args, "")
+        result.status_code = PluginExecutionStatusCode.GENERAL_FAILURE
     except ParserError as error:
         source, errors = error.args
         result.add_messages(f"Failed to parse {source}\n", *errors, "")
