@@ -13,6 +13,9 @@ def apply_extension_to_definition(extension_definition: Definition, target_defin
     Args:
         extension_definition (Definition): The extension definition to apply to the context.
         target_definition (Definition): The definition in the context to which to apply the extension.
+
+    Raises:
+        LanguageError: Raised when there is an unrecoverable internal error when applying an extension
     """
     target_definition_fields_dict = target_definition.get_top_level_fields()
     extension_additional_content = _get_extension_additional_content_dict(extension_definition)
@@ -50,6 +53,9 @@ def remove_extension_from_definition(extension_definition: Definition, target_de
     Args:
         extension_definition (Definition): The extension definition to apply to the context.
         target_definition (Definition): The extension definition to apply to the context.
+
+    Raises:
+        LanguageError: Raised when there is an unrecoverable internal error when removing an extension
     """
     target_definition_fields = target_definition.get_top_level_fields()
     extension_additional_content = _get_extension_additional_content_dict(extension_definition)
