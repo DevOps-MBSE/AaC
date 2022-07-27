@@ -30,4 +30,4 @@ def help_dump() -> PluginExecutionResult:
 def _get_all_commands() -> list[AacCommand]:
     all_plugins = plugin_manager.get_plugin_manager().get_plugins()
     list_plugins = list(flatten([plugin.get_commands() for plugin in all_plugins if hasattr(plugin, "get_commands")]))
-      return sorted(list_plugins)
+    return sorted(list_plugins)
