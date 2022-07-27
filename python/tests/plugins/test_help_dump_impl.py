@@ -41,8 +41,6 @@ class TestHelpDump(TestCase):
         list_all_plugins = help_dump().messages
         output_test = json.loads("".join(list_all_plugins), object_pairs_hook=OrderedDict)
 
-
-
     def expected_formatted_output(self, name, description, arguments):
         return {
             "name": name,
