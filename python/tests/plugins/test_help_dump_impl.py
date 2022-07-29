@@ -38,9 +38,15 @@ class TestHelpDump(TestCase):
             )
 
     def test_help_dump_json_dump_sort(self):
-        list_all_plugins = help_dump().messages
-        json.loads("".join(list_all_plugins), object_pairs_hook=OrderedDict)
+        expected_commands = sorted(get_plugin_commands(), key=lambda command: command.name)
 
+        list_all_plugins = help_dump().messages
+        help_dump_output = json.loads("".join(list_all_plugins), object_pairs_hook=OrderedDict)
+
+        expected_result = [command.name for command in expected_commands]
+        actual_result = [command.get("name") for command in help_dump_output]
+
+        self.assertListEqual(expected_result, actual_result)
     def expected_formatted_output(self, name, description, arguments):
         return {
             "name": name,
