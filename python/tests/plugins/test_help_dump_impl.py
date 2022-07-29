@@ -47,6 +47,7 @@ class TestHelpDump(TestCase):
         actual_result = [command.get("name") for command in help_dump_output]
 
         self.assertListEqual(expected_result, actual_result)
+
     def expected_formatted_output(self, name, description, arguments):
         return {
             "name": name,
