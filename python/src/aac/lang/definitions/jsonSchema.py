@@ -1,0 +1,158 @@
+"""Common JsonSchema Functions for AaC Definitions."""
+import logging
+import json
+
+from aac.lang.language_context import LanguageContext
+from aac.lang.definitions.type import remove_list_type_indicator, is_array_type
+from aac.lang.definitions.definition import Definition
+from aac.lang.definitions.schema import get_definition_schema
+
+
+def get_definition_as_json_schema(definition: Definition, language_context: LanguageContext) -> str:
+    """
+    Return a string containing the JSON Schema representation of the definition.
+
+    Args:
+        definition (Definition): The definition to convert to JSON Schema
+
+    Returns:
+        a string containing the definition as a JSON schema
+    """
+
+    definition_schema = get_definition_schema(definition, language_context)
+
+    definition_fields = definition.get_top_level_fields()
+    description = definition_fields.get("description") or ""
+
+    jsonSchema = ""
+    if definition_schema is None:
+        logging.error(f"Failed to find the definition schema for {definition.name}")
+    else:
+        schema_dict = {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": _get_definition_json_schema(definition_schema, language_context)
+        }
+
+        jsonSchema = json.dumps(schema_dict)
+
+    return jsonSchema
+
+
+def _get_definition_json_schema(definition_schema: Definition, language_context: LanguageContext) -> dict:
+    """Recursive function that traverses the definition structure and converts it to JSON schema entries."""
+
+    schema_object = {}
+    schema_structure_fields = definition_schema.get_top_level_fields().get("fields", {})
+    for field in schema_structure_fields:
+        field_name = field.get("name")
+        field_type = field.get("type")
+
+        if field_type is None:
+            logging.error(f"Field entry {field_name} is missing type declaration in schema {definition_schema.name}")
+        else:
+            if language_context.is_definition_type(field_type) or language_context.is_primitive_type(field_type):
+                field_json_schema = _get_definition_field_json_schema(field_name, field_type, language_context)
+                schema_object.update(field_json_schema)
+            else:
+                logging.warning(f"Excluding field {field_name} because there is no corresponding schema definition could be found for type {field_type}.")
+
+    return schema_object
+
+
+def _get_definition_field_json_schema(field_name: str, field_type: str, language_context: LanguageContext) -> dict:
+    json_schema_fragment = {}
+    if language_context.is_primitive_type(field_type):
+        json_schema_fragment = _get_primitive_field_json_schema(field_name, field_type)
+
+    elif language_context.is_enum_type(field_type):
+        json_schema_fragment = _get_enum_field_json_schema(field_name, ["val1", "val2"])
+
+    elif language_context.is_definition_type(field_type):
+        json_schema_fragment = _get_defined_type_field_json_schema(field_name, field_type, language_context)
+
+    else:
+        logging.error(f"Field entry {field_name} is not a definition, primitive, or enum type declaration.")
+
+    return json_schema_fragment
+
+
+def _get_defined_type_field_json_schema(field_name: str, field_type: str, language_context: LanguageContext) -> dict:
+    """Return the JSON schema for a definition field."""
+    is_field_structure_an_array = is_array_type(field_type)
+
+    schema_object = {}
+    field_schema = language_context.get_definition_by_name(field_type)
+
+    if field_schema is not None:
+        defined_fields = field_schema.get_top_level_fields().get("fields", {})
+        schema_sub_structures = {}
+
+        for field in defined_fields:
+            defined_field_name = field.get("name")
+            defined_field_type = field.get("type")
+            schema_sub_structures.update(_get_definition_field_json_schema(defined_field_name, defined_field_type, language_context))
+
+    if is_field_structure_an_array:
+        schema_object = {
+            field_name: {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": schema_sub_structures
+                }
+            }
+        }
+    else:
+        schema_object = {
+            field_name: {
+                "type": "object",
+                "properties": schema_sub_structures
+            }
+        }
+
+    return schema_object
+
+
+def _get_primitive_field_json_schema(field_name: str, field_type: str) -> dict:
+    """
+    Return the JSON schema for a primitive field.
+
+    example return value:
+    ```
+    "name": {
+        "type": "string"
+    }
+    ```
+    """
+    return {
+        field_name: {
+            "type": field_type
+        }
+    }
+
+
+def _get_enum_field_json_schema(field_name: str, field_values: list[str]) -> dict:
+    """
+    Return the JSON schema for an enum field.
+
+    example return value:
+    ```
+    "name": {
+        "type": "array",
+            "items": {
+                "type": "string",
+                "enum": ["John", "Jane", "Junior"]
+            }
+    }
+    ```
+    """
+    return {
+        field_name: {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "enum": field_values
+            }
+        }
+    }
