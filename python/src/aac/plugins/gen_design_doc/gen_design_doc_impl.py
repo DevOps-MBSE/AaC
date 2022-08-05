@@ -1,10 +1,12 @@
 """AaC Plugin implementation module for the aac-gen-design-doc plugin."""
 
 import os
+
 from typing import Optional
 
 from iteration_utilities import flatten
 from jinja2 import Template
+
 
 from aac.lang.definition_helpers import get_definitions_by_root_key
 from aac.lang.definitions.definition import Definition

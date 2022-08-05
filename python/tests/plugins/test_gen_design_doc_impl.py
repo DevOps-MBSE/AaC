@@ -13,14 +13,14 @@ class TestGenerateDesignDocumentPlugin(TestCase):
             test_model_file_name = f"{temp_dir}/test_model.yaml"
             test_design_doc_file_name = None
             with open(test_model_file_name, "w") as arch_file:
-                arch_file.write(TEST_MODEL)
-
+                arch_file.write(TEST_MODEL_2)
+    
             result = gen_design_doc(test_model_file_name, temp_dir)
             assert_plugin_success(result)
-
+    
             files = os.listdir(temp_dir)
             self.assertEqual(len(files), 2)
-
+    
             test_design_doc_file_name, *_ = [
                 f for f in files if f != os.path.basename(test_model_file_name)
             ]
@@ -30,7 +30,7 @@ class TestGenerateDesignDocumentPlugin(TestCase):
                 self.assert_schema(markdown)
                 self.assert_model(markdown)
                 self.assert_use_case(markdown)
-
+    
     def assert_headings(self, markdown: str) -> None:
         patterns = [
             "test_model",
@@ -90,7 +90,7 @@ schema:
         - j
 ---
 schema:
-  name: Point
+  name: Vector.Point
   fields:
     - name: x
       type: number
@@ -163,4 +163,17 @@ usecase:
       source: model2
       target: model1
       action: move from point beta back to point alpha
+"""
+TEST_MODEL_2 = """
+schema:
+  name: Schema1
+  fields:
+    - name: data
+      type: SubSchema.Schema1
+---
+schema:
+  name: SubSchema.Schema1
+  fields:
+    - name: data
+      type: string
 """
