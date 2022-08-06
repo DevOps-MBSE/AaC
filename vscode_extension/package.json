@@ -161,7 +161,7 @@
         "lint": "eslint src --ext ts",
         "test": "node ./out/test/runTest.js",
         "package": "vsce package --yarn -o aac.vsix",
-        "generate:rest_api": "yarn openapi-generator-cli generate -i ../AaC_OpenAPI_Schema.json -o src/requests/generated/aac_rest_api -g typescript-fetch --additional-properties=supportsES6=true,npmVersion=6.9.0,typescriptThreePlus=true"
+        "generate:rest_api": "yarn openapi-generator-cli generate -i AaC_OpenAPI_Schema.json -o src/requests/generated/aac_rest_api -g typescript-fetch --additional-properties=supportsES6=true,npmVersion=6.9.0,typescriptThreePlus=true"
     },
     "devDependencies": {
         "@openapitools/openapi-generator-cli": "^2.5.1",
