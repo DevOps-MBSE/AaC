@@ -99,7 +99,7 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
         // Wait for the webview to be properly ready before we init
         webviewPanel.webview.onDidReceiveMessage(e => {
             if (e.type === 'ready') {
-                this.getDefinition(path.basename(document.uri.fsPath)).then(response => {
+                this.getDefinition(path.basename(document.uri.fsPath), true).then(response => {
                     this.postMessage(webviewPanel, 'update', {
                         untitled: true,
                         editable: true,
@@ -208,8 +208,8 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
         }
     }
 
-    private getDefinition(definitionName: string) {
-        return Promise.resolve(aacRestApi.getDefinitionByNameDefinitionGet({name: definitionName}))
+    private getDefinition(definitionName: string, includeJsonSchema: boolean = false) {
+        return Promise.resolve(aacRestApi.getDefinitionByNameDefinitionGet({name: definitionName, includeJsonSchema: includeJsonSchema}))
     }
 }
 
