@@ -13,7 +13,7 @@ import uvicorn
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 from aac.plugins.rest_api.aac_rest_app import app, refresh_available_files_in_workspace
 
-plugin_name = "aac-rest-api"
+plugin_name = "rest-api"
 
 
 def rest_api(host: Optional[str] = "0.0.0.0", port: Optional[int] = 8000) -> PluginExecutionResult:
