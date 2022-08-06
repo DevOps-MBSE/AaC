@@ -12,6 +12,7 @@ class DefinitionModel(BaseModel):
     content: Optional[str]
     source_uri: str
     structure: dict
+    json_schema: Optional[dict]
 
 
 def to_definition_model(definition: Definition) -> DefinitionModel:

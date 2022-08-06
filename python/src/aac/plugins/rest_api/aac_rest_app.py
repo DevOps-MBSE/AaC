@@ -10,6 +10,7 @@ from aac.io.paths import sanitize_filesystem_path
 from aac.io.parser import parse
 from aac.io.writer import write_definitions_to_file
 from aac.lang.active_context_lifecycle_manager import get_active_context
+from aac.lang.definitions.json_schema import get_definition_json_schema
 from aac.plugins.rest_api.models.definition_model import DefinitionModel, to_definition_class, to_definition_model
 from aac.plugins.rest_api.models.file_model import FileModel, FilePathModel, FilePathRenameModel, to_file_model
 
@@ -117,19 +118,25 @@ def get_definitions():
 
 
 @app.get("/definition", status_code=HTTPStatus.OK, response_model=DefinitionModel)
-def get_definition_by_name(name: str):
+def get_definition_by_name(name: str, include_json_schema: bool = False):
     """
     Returns a definition from active context by name, or HTTPStatus.NOT_FOUND not found if the definition doesn't exist.
 
     Returns:
         200 HTTPStatus.OK if successful.
     """
-    definition = get_active_context().get_definition_by_name(name)
+    active_context = get_active_context()
+    definition = active_context.get_definition_by_name(name)
 
     if not definition:
         _report_error_response(HTTPStatus.NOT_FOUND, f"Definition {name} not found in the context.")
     else:
-        return to_definition_model(definition)
+        definition_model = to_definition_model(definition)
+
+        if include_json_schema:
+            definition_model.json_schema = get_definition_json_schema(definition, active_context)
+
+        return definition_model
 
 
 @app.post("/definition", status_code=HTTPStatus.NO_CONTENT)

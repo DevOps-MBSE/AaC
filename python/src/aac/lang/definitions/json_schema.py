@@ -1,6 +1,5 @@
 """Common JsonSchema Functions for AaC Definitions."""
 import logging
-import json
 
 from aac.lang.language_context import LanguageContext
 from aac.lang.definitions.type import remove_list_type_indicator, is_array_type
@@ -8,7 +7,7 @@ from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.schema import get_definition_schema
 
 
-def get_definition_json_schema(definition: Definition, language_context: LanguageContext) -> str:
+def get_definition_json_schema(definition: Definition, language_context: LanguageContext) -> dict:
     """
     Return a string containing the JSON Schema for the definition; the definition's schema definition is converted to the JSON schema.
 
@@ -16,12 +15,12 @@ def get_definition_json_schema(definition: Definition, language_context: Languag
         definition (Definition): The definition to convert to JSON Schema
 
     Returns:
-        a string containing the definition as a JSON schema for the definition's content.
+        a dictionary containing the definition as a JSON schema for the definition's content.
     """
 
     definition_schema = get_definition_schema(definition, language_context)
 
-    jsonSchema = ""
+    schema_dict = {}
     if definition_schema is None:
         logging.error(f"Failed to find the definition schema for {definition.name}")
     else:
@@ -31,9 +30,7 @@ def get_definition_json_schema(definition: Definition, language_context: Languag
             "properties": _get_definition_json_schema(definition_schema, language_context),
         }
 
-        jsonSchema = json.dumps(schema_dict)
-
-    return jsonSchema
+    return schema_dict
 
 
 def _get_definition_json_schema(definition_schema: Definition, language_context: LanguageContext) -> dict:

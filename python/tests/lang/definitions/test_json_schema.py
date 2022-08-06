@@ -2,7 +2,7 @@ import json
 
 from unittest import TestCase
 from aac.lang.active_context_lifecycle_manager import get_initialized_language_context
-from aac.lang.definitions.jsonSchema import get_definition_json_schema
+from aac.lang.definitions.json_schema import get_definition_json_schema
 
 from tests.helpers.parsed_definitions import (
     create_schema_definition,
@@ -31,7 +31,7 @@ class TestJsonSchema(TestCase):
         test_context.add_definitions_to_context([test_sub_schema, test_root_schema])
 
         expected_result = json.loads(EXPECTED_JSON_SCHEMA)
-        actual_result = json.loads(get_definition_json_schema(test_root_schema, test_context))
+        actual_result = get_definition_json_schema(test_root_schema, test_context)
         self.assertDictEqual(actual_result, expected_result)
 
     def test_get_definition_json_schema_with_enum(self):
@@ -53,7 +53,7 @@ class TestJsonSchema(TestCase):
         test_context.add_definitions_to_context([test_sub_schema, test_root_schema])
 
         expected_result = json.loads(EXPECTED_JSON_SCHEMA)
-        actual_result = json.loads(get_definition_json_schema(test_root_schema, test_context))
+        actual_result = get_definition_json_schema(test_root_schema, test_context)
         self.assertDictEqual(actual_result, expected_result)
 
 
