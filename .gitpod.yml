@@ -13,6 +13,7 @@ tasks:
       python3.9 -m pip install --upgrade pip
       source venv/bin/activate
       pip install -e .[all]
+      aac generate-openapi-spec ../vscode_extension/
     command: cd python/; source venv/bin/activate # Always launch a console with our virtual env
 
 vscode:

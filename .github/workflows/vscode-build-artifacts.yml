@@ -21,18 +21,6 @@ jobs:
           cache: 'yarn'
           cache-dependency-path: vscode_extension/yarn.lock
 
-      - name: Install Yarn Package Manager
-        run: npm install -g yarn
-
-      - name: Install the Node Dependencies
-        run: yarn install
-
-      - name: Compile VSCode Extension
-        run: yarn compile
-
-      - name: Lint with ESLint
-        run: yarn run eslint . --ext .js,.jsx,.ts,.tsx --max-warnings=0
-
       - name: Set up Python 3.9
         uses: actions/setup-python@v2
         with:
@@ -46,6 +34,27 @@ jobs:
 
       - name: Install Wheel Distribution
         run: pip install ../python/dist/*.whl
+
+      - name: Download Python REST API OpenAPI Spec
+        uses: actions/download-artifact@v2
+        with:
+          name: rest-api-documentation
+          path: python/oasv3-spec
+
+      - name: Install Yarn Package Manager
+        run: npm install -g yarn
+
+      - name: Install the Node Dependencies
+        run: yarn install
+
+      - name: Generate OpenAPI Requests
+        run: yarn run generate:rest_api
+
+      - name: Compile VSCode Extension
+        run: yarn compile
+
+      - name: Lint with ESLint
+        run: yarn run eslint . --ext .js,.jsx,.ts,.tsx --max-warnings=0
 
       - name: Test VSCode Extension
         run: xvfb-run -a yarn test
