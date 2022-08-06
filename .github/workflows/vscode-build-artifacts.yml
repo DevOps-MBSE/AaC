@@ -39,7 +39,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: rest-api-documentation
-          path: vscode_extension/oasv3-spec
+          path: vscode_extension/AaC_OpenAPI_Schema.json
 
       - name: Install Yarn Package Manager
         run: npm install -g yarn
