@@ -134,16 +134,13 @@ EXPECTED_MODEL_JSON_SCHEMA = """
                         "type": "string"
                     },
                     "type": {
-                        "type": "array",
-                        "items": {
-                            "type": "string",
-                            "enum": [
-                                "pub-sub",
-                                "request-response",
-                                "startup",
-                                "timer"
-                            ]
-                        }
+                        "type": "string",
+                        "enum": [
+                            "pub-sub",
+                            "request-response",
+                            "startup",
+                            "timer"
+                        ]
                     },
                     "description": {
                         "type": "string"

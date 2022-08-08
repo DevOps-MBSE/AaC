@@ -153,7 +153,7 @@ def _get_enum_field_json_schema(field_name: str, field_type: str, language_conte
 
     if enum_definition:
         enum_values = enum_definition.get_top_level_fields().get("values", [])
-        enum_schema_segment = {field_name: {"type": "array", "items": {"type": "string", "enum": enum_values}}}
+        enum_schema_segment = {field_name: {"type": "string", "enum": enum_values}}
     else:
         logging.warn(f"There is no enum definition in the context named {field_type}")
 
