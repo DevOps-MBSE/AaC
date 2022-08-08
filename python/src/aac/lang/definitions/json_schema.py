@@ -62,7 +62,7 @@ def _get_definition_field_json_schema(field_name: str, field_type: str, language
         json_schema_fragment = _get_primitive_field_json_schema(field_name, field_type)
 
     elif language_context.is_enum_type(field_type):
-        json_schema_fragment = _get_enum_field_json_schema(field_name, ["val1", "val2"])
+        json_schema_fragment = _get_enum_field_json_schema(field_name, field_type, language_context)
 
     elif language_context.is_definition_type(field_type):
         json_schema_fragment = _get_defined_type_field_json_schema(field_name, field_type, language_context)
@@ -133,7 +133,7 @@ def _get_primitive_field_json_schema(field_name: str, field_type: str) -> dict:
     return primitive_field_schema
 
 
-def _get_enum_field_json_schema(field_name: str, field_values: list[str]) -> dict:
+def _get_enum_field_json_schema(field_name: str, field_type: str, language_context: LanguageContext) -> dict:
     """
     Return the JSON schema for an enum field.
 
@@ -148,4 +148,13 @@ def _get_enum_field_json_schema(field_name: str, field_values: list[str]) -> dic
     }
     ```
     """
-    return {field_name: {"type": "array", "items": {"type": "string", "enum": field_values}}}
+    enum_definition = language_context.get_definition_by_name(field_type)
+    enum_schema_segment = {}
+
+    if enum_definition:
+        enum_values = enum_definition.get_top_level_fields().get("values", [])
+        enum_schema_segment = {field_name: {"type": "array", "items": {"type": "string", "enum": enum_values}}}
+    else:
+        logging.warn(f"There is no enum definition in the context named {field_type}")
+
+    return enum_schema_segment
