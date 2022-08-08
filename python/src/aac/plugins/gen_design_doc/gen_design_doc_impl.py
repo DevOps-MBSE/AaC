@@ -19,6 +19,7 @@ from aac.templates.engine import (
     write_generated_templates_to_file,
 )
 from aac.validate import validated_source
+from aac.io.files.aac_file import AaCFile
 
 plugin_name = "gen-design-doc"
 default_template_file = "templates/system-design-doc.md.jinja2"
@@ -70,13 +71,11 @@ def _make_template_properties(parsed_definitions: list[Definition], arch_file: s
     models = _get_and_prepare_definitions_by_type(parsed_definitions, "model")
     usecases = _get_and_prepare_definitions_by_type(parsed_definitions, "usecase")
     interfaces = _get_and_prepare_definitions_by_type(parsed_definitions, "schema")
-    required_fields = _get_required_fields_for_definitions(parsed_definitions)
     return {
         "title": title,
         "models": models,
         "usecases": usecases,
-        "interfaces": interfaces,
-        "required": required_fields,
+        "interfaces": _get_interfaces_with_required_fields(interfaces),
     }
 
 
@@ -99,8 +98,11 @@ def _get_and_prepare_definitions_by_type(parsed_definitions: list[Definition], a
     return [definition.structure for definition in filtered_definitions]
 
 
-def _get_required_fields_for_definitions(parsed_definitions: list[Definition]) -> list[dict]:
-    return [{definition.name: get_required_fields(definition)} for definition in parsed_definitions]
+def _get_interfaces_with_required_fields(interfaces: list[dict]) -> list[dict]:
+    def add_required_fields_to_interface(interface):
+        definition = Definition("", "", AaCFile("", False, False), [], interface)
+        return interface | {"required_fields": get_required_fields(definition)}
+    return [add_required_fields_to_interface(interface) for interface in interfaces]
 
 
 def _generate_system_doc(output_filespec: str, selected_template: Template, output_directory: str, template_properties: dict) -> TemplateOutputFile:

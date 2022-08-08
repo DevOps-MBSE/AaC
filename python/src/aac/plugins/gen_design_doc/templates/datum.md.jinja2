@@ -4,8 +4,7 @@
 
 #### Fields
 {% for field in datum.fields %}
-{%- set required_fields = required|map(attribute=datum.name)|select("defined")|first|list %}
-- {{ field.type }} {{ field.name }}{%- if field.name in required_fields %} (required){%- endif %}
+- {{ field.type }} {{ field.name }}{%- if field.name in i.required_fields %} (required){%- endif %}
 {%- endfor %}
 
 {%- endfor %}

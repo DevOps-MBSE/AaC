@@ -5,6 +5,7 @@ from unittest import TestCase
 from aac.plugins.gen_design_doc.gen_design_doc_impl import gen_design_doc
 
 from tests.helpers.assertion import assert_plugin_success
+from tests.helpers.io import temporary_test_file
 
 
 class TestGenerateDesignDocumentPlugin(TestCase):
@@ -13,7 +14,7 @@ class TestGenerateDesignDocumentPlugin(TestCase):
             test_model_file_name = f"{temp_dir}/test_model.yaml"
             test_design_doc_file_name = None
             with open(test_model_file_name, "w") as arch_file:
-                arch_file.write(TEST_MODEL_2)
+                arch_file.write(TEST_MODEL)
     
             result = gen_design_doc(test_model_file_name, temp_dir)
             assert_plugin_success(result)
@@ -30,7 +31,23 @@ class TestGenerateDesignDocumentPlugin(TestCase):
                 self.assert_schema(markdown)
                 self.assert_model(markdown)
                 self.assert_use_case(markdown)
+   
+    def test_can_handle_names_with_dots(self):
+        with temporary_test_file(TEST_MODEL_2) as test_yaml:
+            result = gen_design_doc(test_yaml.name, os.path.dirname(test_yaml.name))
+            assert_plugin_success(result)
+            
+            temp_dir = os.path.dirname(test_yaml.name)
+            files = os.listdir(temp_dir)
+            self.assertEqual(len(files), 2)
     
+            test_design_doc_file_name, *_ = [
+                f for f in files if f != os.path.basename(test_yaml.name)
+            ]
+
+            with open(os.path.join(temp_dir, test_design_doc_file_name)) as markdown_file:
+                self.assertIn("SubSchema.Schema1 data", markdown_file.read())
+
     def assert_headings(self, markdown: str) -> None:
         patterns = [
             "test_model",
@@ -70,7 +87,7 @@ class TestGenerateDesignDocumentPlugin(TestCase):
     def assert_use_case(self, markdown: str) -> None:
         patterns = ["move an object", "Source", "Target", "Action"]
         [self.assertIn(pattern, markdown) for pattern in patterns]
-
+    
 
 TEST_MODEL = """
 schema:
@@ -90,7 +107,7 @@ schema:
         - j
 ---
 schema:
-  name: Vector.Point
+  name: Point
   fields:
     - name: x
       type: number
