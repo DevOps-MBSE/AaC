@@ -8,6 +8,16 @@ Provides the complete list of AaC commands as VSCode Tasks
 
 Provides an AaC Language Server
 
+### Architecture-as-Code Language Server Protocol (LSP)
+The AaC VSCode extension integrates with the AaC python package to provide IDE language features for AaC files.
+
+### Visual Definition Editor
+The AaC VSCode extension can leverage the AaC python package's `rest-api` plugin to provide VSCode users with an in-IDE visual editor for AaC definitions.
+
+Before getting started, make sure that you have the AaC `rest-api` plugin running in your project directory.
+```bash
+aac rest-api --host <hostname|localhost> --port <8000>
+```
 
 ## Requirements
 
@@ -17,7 +27,32 @@ Once the `aac` package is installed, verify that the installation is working cor
 
 ## Extension Settings
 
-None yet.
+
+### pythonPath
+The filesystem path to the Python3 executable. If using a virtual environment, use the path to the virtual environment Python executable.
+
+The default value is `/usr/local/bin`.
+
+### version
+The version of the installed AaC tool. If the environment is using a different version of AaC, an error will be shown to the user.
+
+### aacPath
+The filesystem path to the aac CLI tool. MUST be set in order to for the AaC VSCode extension to start up the LSP server in IO mode.
+
+### lsp.serverMode
+The mode of communication with the LSP server. IO is default, but TCP will allow for connection to already established LSP servers.
+
+### lsp.tcp.host
+The hostname of of the LSP server. Used to establish a TCP connection.
+
+### lsp.tcp.port
+The port of of the LSP server. Used to establish a TCP connection.
+
+### rest_api.host
+The host to use for establishing a TCP connection with the AaC REST API plugin.
+
+### rest_api.port
+The port to use for establishing a TCP connection with the AaC REST API plugin.
 
 ## Known Issues
 
