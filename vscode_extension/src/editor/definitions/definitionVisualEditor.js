@@ -16,16 +16,18 @@
 
         async setEditorData(data) {
             // Initialize the editor with a JSON schema
-            const root_key = Object.keys(data.structure)[0];
+            const rootKey = Object.keys(data.structure)[0];
+            add_titles_to_json_schema(data.jsonSchema, rootKey)
             var editor = new JSONEditor(document.getElementById('main'),
                 {
                     "use_default_values": true,
                     "prompt_before_delete": false,
-                    "disable_collapse": true,
+                    "disable_collapse": false,
                     "disable_array_delete_last_row": true,
                     "array_controls_top": true,
+                    "disable_edit_json": true,
                     "schema": data.jsonSchema,
-                    "startval": data.structure[root_key]
+                    "startval": data.structure[rootKey]
                 }
             );
 
@@ -54,3 +56,31 @@
     // Signal to VS Code that the webview is initialized.
     vscode.postMessage({ type: 'ready' });
 }());
+
+function add_titles_to_json_schema(jsonSchema, definitionRootKey) {
+    jsonSchema.title = definitionRootKey
+
+    recursively_apply_array_element_titles(jsonSchema.properties)
+}
+
+function recursively_apply_array_element_titles(array_properties_object) {
+    if (array_properties_object) {
+        Object.entries(array_properties_object).forEach(function (entry) {
+            const key = entry[0]
+            const value = entry[1]
+            if (value.type == "array") {
+                console.log(`boom ${entry}`)
+                entry_title = get_array_entry_title_from_array_name(key)
+                array_properties_object[key].items.title = entry_title
+                name_template = (array_properties_object[key].items.properties?.name !== undefined ? "- {{ self.name }}" : "")
+
+                array_properties_object[key].items.headerTemplate = `${entry_title} {{ i1 }} ${name_template}`
+                recursively_apply_array_element_titles(array_properties_object[key].items.properties)
+            }
+        });
+    }
+}
+
+function get_array_entry_title_from_array_name(array_name) {
+    return (array_name.endsWith("s") ? array_name.slice(0, -1) : array_name)
+}

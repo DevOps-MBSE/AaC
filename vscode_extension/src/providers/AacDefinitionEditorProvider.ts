@@ -3,12 +3,12 @@ import * as vscode from 'vscode';
 import { disposeAll } from '../disposable';
 import { AacDefinitionsDocument, AacDefinitionEdit } from '../editor/definitions/DefinitionsDocument'
 import { getNonce } from '../nonce';
-import { aacRestApi, GetDefinitionByNameDefinitionGetRequest } from '../requests/aacRequests'
+import { aacRestApi } from '../requests/aacRequests'
 
 /**
  * Provider for AaC visual definition editors.
  *
- * AaC visual definition editors editors are used for to allow users to visually interact with the AaC REST API and definitions. There is no real underlying file for these editors.
+ * AaC visual definition editors allow users to visually interact with the AaC REST API and definitions. There is no real underlying file for these editors as multiple definitions can exist in a file.
  */
 export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<AacDefinitionsDocument> {
 
@@ -17,9 +17,8 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
             AacDefinitionEditorProvider.viewType,
             new AacDefinitionEditorProvider(context),
             {
-                // `retainContextWhenHidden` which keeps the webview alive even when it is not visible. Does have a memory overhead, avoid if possible.
                 webviewOptions: {
-                    retainContextWhenHidden: true,
+                    retainContextWhenHidden: true, //keeps the webview alive even when it is not visible. Does have a memory overhead.
                 },
                 supportsMultipleEditorsPerDocument: false,
             });
@@ -57,20 +56,19 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
 
         const listeners: vscode.Disposable[] = [];
 
-        listeners.push(document.onDidChange(e => {
-            // Tell VS Code that the document has been edited by the use.
+        listeners.push(document.onDidChange(event => {
+            // Propagate document changes to VS Code.
             this._onDidChangeCustomDocument.fire({
                 document,
-                ...e,
+                ...event,
             });
         }));
 
-        listeners.push(document.onDidChangeContent(e => {
-            // Update all webviews when the document changes
+        listeners.push(document.onDidChangeContent(event => {
             for (const webviewPanel of this.webviews.get(document.uri)) {
                 this.postMessage(webviewPanel, 'update', {
-                    edits: e.edits,
-                    content: e.content,
+                    edits: event.edits,
+                    content: event.content,
                 });
             }
         }));
@@ -85,7 +83,7 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
         webviewPanel: vscode.WebviewPanel,
         _token: vscode.CancellationToken
     ): Promise<void> {
-        // Add the webview to our internal set of active webviews
+        // Add the webview to the internal set of active webviews
         this.webviews.add(document.uri, webviewPanel);
 
         // Setup initial content for the webview
@@ -94,11 +92,11 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
         };
         webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview);
 
-        webviewPanel.webview.onDidReceiveMessage(e => this.onMessage(document, e));
+        webviewPanel.webview.onDidReceiveMessage(event => this.onMessage(document, event));
 
         // Wait for the webview to be properly ready before we init
-        webviewPanel.webview.onDidReceiveMessage(e => {
-            if (e.type === 'ready') {
+        webviewPanel.webview.onDidReceiveMessage(event => {
+            if (event.type === 'ready') {
                 this.getDefinition(path.basename(document.uri.fsPath), true).then(response => {
                     this.postMessage(webviewPanel, 'update', {
                         untitled: true,
@@ -144,7 +142,6 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
         const jsonNodeModulesPath = path.join(this._context.extensionUri.fsPath, 'node_modules')
 
         const jsonEditorPath = vscode.Uri.parse(path.join(jsonNodeModulesPath, '@json-editor', 'json-editor', 'dist', 'jsoneditor.js'));
-        const coreJsPath = vscode.Uri.parse(path.join(jsonNodeModulesPath, 'core-js', 'index.js'));
 
         const jsonEditorScriptUri = webview.asWebviewUri(jsonEditorPath);
 

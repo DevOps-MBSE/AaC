@@ -6,3 +6,10 @@ button {
     cursor: pointer;
     border: none;
 }
+
+input {
+    width: 90%;
+    font-size: medium;
+    margin-top: 4px;
+    margin-bottom: 8px;
+}
