@@ -2,7 +2,6 @@
 
 import logging
 from typing import Optional
-from aac.io.constants import YAML_DOCUMENT_SEPARATOR
 
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.type import remove_list_type_indicator
@@ -120,4 +119,4 @@ def get_definition_fields_and_types(
 
 def get_definitions_as_yaml(definitions: list[Definition]) -> str:
     """Return all the definitions as a single YAML string."""
-    return f"{YAML_DOCUMENT_SEPARATOR}\n".join([definition.to_yaml() for definition in definitions])
+    return "\n".join([definition.content for definition in definitions])
