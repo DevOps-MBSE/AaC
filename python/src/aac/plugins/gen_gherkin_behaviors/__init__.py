@@ -9,46 +9,6 @@ from aac.plugins import hookimpl
 from aac.plugins.gen_gherkin_behaviors.gen_gherkin_behaviors_impl import gen_gherkin_behaviors
 from aac.plugins.plugin import Plugin
 
-plugin_resource_file_args = (__package__, "gen_gherkin_behaviors.yaml")
-
-
-@hookimpl
-def get_commands() -> list[AacCommand]:
-    """
-    Return a list of AacCommands provided by the plugin to register for use.
-
-    This function is automatically generated. Do not edit.
-
-    Returns:
-        list of AacCommands
-    """
-    gen_gherkin_behaviors_arguments = [
-        AacCommandArgument("architecture_file", "The yaml file containing the data models to generate as Gherkin feature files."),
-        AacCommandArgument("output_directory", "The directory to write the generated Gherkin feature files to."),
-    ]
-
-    plugin_commands = [
-        AacCommand(
-            "gen-gherkin-behaviors",
-            "Generate Gherkin feature files from Arch-as-Code model behavior scenarios.",
-            gen_gherkin_behaviors,
-            gen_gherkin_behaviors_arguments),
-    ]
-
-    return plugin_commands
-
-
-@hookimpl
-def get_plugin_aac_definitions() -> str:
-    """
-    Return the plugins Aac definitions.
-
-    Returns:
-         string representing yaml extensions and definitions defined by the plugin
-    """
-
-    return get_resource_file_contents(*plugin_resource_file_args)
-
 
 @hookimpl
 def get_plugin() -> Plugin:
@@ -58,14 +18,41 @@ def get_plugin() -> Plugin:
     Returns:
         A collection of information about the plugin and what it contributes.
     """
-    plugin_definitions = parse(
-        get_plugin_aac_definitions(),
-        get_resource_file_path(*plugin_resource_file_args)
-    )
-
     *_, plugin_name = __package__.split(".")
     plugin = Plugin(plugin_name)
-    plugin.register_commands(get_commands())
-    plugin.register_definitions(plugin_definitions)
-
+    plugin.register_commands(_get_plugin_commands())
+    plugin.register_definitions(_get_plugin_definitions())
     return plugin
+
+
+def _get_plugin_definitions():
+    plugin_resource_file_args = (__package__, "gen_gherkin_behaviors.yaml")
+    plugin_definitions = parse(
+        get_resource_file_contents(*plugin_resource_file_args),
+        get_resource_file_path(*plugin_resource_file_args)
+    )
+    return plugin_definitions
+
+
+def _get_plugin_commands() -> list[AacCommand]:
+    gen_gherkin_behaviors_arguments = [
+        AacCommandArgument(
+            "architecture_file",
+            "The yaml file containing the data models to generate as Gherkin feature files.",
+        ),
+        AacCommandArgument(
+            "output_directory",
+            "The directory to write the generated Gherkin feature files to.",
+        ),
+    ]
+
+    plugin_commands = [
+        AacCommand(
+            "gen-gherkin-behaviors",
+            "Generate Gherkin feature files from Arch-as-Code model behavior scenarios.",
+            gen_gherkin_behaviors,
+            gen_gherkin_behaviors_arguments,
+        ),
+    ]
+
+    return plugin_commands

@@ -5,11 +5,11 @@ from unittest import TestCase
 from nose2.tools import params
 
 from aac.io import parser
-from aac.lang.definition_helpers import get_definition_by_name
+from aac.lang.definition_helpers import get_definition_by_name, get_definitions_as_yaml
 from aac.lang.definitions.search import search, search_definition
 from aac.plugins.gen_gherkin_behaviors import (
-    get_commands,
-    get_plugin_aac_definitions,
+    _get_plugin_definitions,
+    _get_plugin_commands,
     __name__ as gen_gherkin_behaviors_module_name,
 )
 from aac.plugins.gen_gherkin_behaviors.gen_gherkin_behaviors_impl import (
@@ -36,7 +36,7 @@ class TestGenerateGherkinBehaviorsPlugin(TestCase):
             for command_yaml in commands_yaml:
                 commands_yaml_dict[command_yaml.get("name")] = command_yaml
 
-            for command in get_commands():
+            for command in _get_plugin_commands():
                 self.assertIn(command.name, commands_yaml_dict)
                 command_yaml = commands_yaml_dict.get(command.name)
 
@@ -50,12 +50,10 @@ class TestGenerateGherkinBehaviorsPlugin(TestCase):
                     self.assertIn(argument.name, arg_names)
 
     def test_get_plugin_aac_definitions_conforms_with_plugin_model(self):
-        with resources.open_text(
-            gen_gherkin_behaviors_module_name, "gen_gherkin_behaviors.yaml"
-        ) as plugin_model_file:
+        with resources.open_text(gen_gherkin_behaviors_module_name, "gen_gherkin_behaviors.yaml") as plugin_model_file:
             plugin_model_content = plugin_model_file.read()
 
-            self.assertEqual(plugin_model_content, get_plugin_aac_definitions())
+            self.assertEqual(plugin_model_content, get_definitions_as_yaml(_get_plugin_definitions()))
 
     def test_gen_gherkin_behaviors_with_one_behavior_multiple_scenarios(self):
         expected_filename = "First_Behavior.feature"

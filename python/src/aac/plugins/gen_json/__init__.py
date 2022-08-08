@@ -10,21 +10,35 @@ from aac.plugins.gen_json.gen_json_impl import print_json
 from aac.plugins.plugin import Plugin
 
 
-plugin_resource_file_args = (__package__, "gen_json.yaml")
-
-
 @hookimpl
-def get_commands() -> list[AacCommand]:
+def get_plugin() -> Plugin:
     """
-    Provides the json command for integration into the CLI.
+    Returns information about the plugin.
 
     Returns:
-        list of AacCommands to register.
+        A collection of information about the plugin and what it contributes.
     """
+    *_, plugin_name = __package__.split(".")
+    plugin = Plugin(plugin_name)
+    plugin.register_commands(_get_plugin_commands())
+    plugin.register_definitions(_get_plugin_definitions())
+    return plugin
+
+
+def _get_plugin_definitions():
+    plugin_resource_file_args = (__package__, "gen_json.yaml")
+    plugin_definitions = parse(
+        get_resource_file_contents(*plugin_resource_file_args),
+        get_resource_file_path(*plugin_resource_file_args)
+    )
+    return plugin_definitions
+
+
+def _get_plugin_commands():
     command_arguments = [
         AacCommandArgument(
             "architecture_files",
-            "Space delimited list of one or more file paths to yaml file(s) containing models to parse and print as JSON.",
+            "Space delimited list of one or more file paths to AaC file(s) containing models to parse and print as JSON.",
             number_of_arguments="+",
         ),
         AacCommandArgument(
@@ -34,38 +48,12 @@ def get_commands() -> list[AacCommand]:
     ]
 
     plugin_commands = [
-        AacCommand("gen-json", "Converts an AaC model to JSON", print_json, command_arguments)
+        AacCommand(
+            "gen-json",
+            "Convert an AaC definition to JSON",
+            print_json,
+            command_arguments,
+        )
     ]
+
     return plugin_commands
-
-
-@hookimpl
-def get_plugin_aac_definitions() -> str:
-    """
-    Return the plugins Aac definitions.
-
-    Returns:
-         string representing yaml extensions and definitions defined by the plugin
-    """
-    return get_resource_file_contents(*plugin_resource_file_args)
-
-
-@hookimpl
-def get_plugin() -> Plugin:
-    """
-    Returns information about the plugin.
-
-    Returns:
-        A collection of information about the plugin and what it contributes.
-    """
-    plugin_definitions = parse(
-        get_plugin_aac_definitions(),
-        get_resource_file_path(*plugin_resource_file_args)
-    )
-
-    *_, plugin_name = __package__.split(".")
-    plugin = Plugin(plugin_name)
-    plugin.register_commands(get_commands())
-    plugin.register_definitions(plugin_definitions)
-
-    return plugin

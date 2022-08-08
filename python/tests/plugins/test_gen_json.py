@@ -1,12 +1,9 @@
 import os
-from aac.io.parser import parse
 
 from aac.plugins.gen_json import (
-    get_commands,
-    get_resource_file_path,
     get_plugin,
-    get_plugin_aac_definitions,
-    plugin_resource_file_args,
+    _get_plugin_definitions,
+    _get_plugin_commands,
 )
 from aac.plugins.gen_json.gen_json_impl import print_json
 from aac.plugins.plugin_execution import PluginExecutionStatusCode
@@ -52,11 +49,8 @@ class TestGenJson(ActiveContextTestCase):
         plugin = get_plugin()
 
         self.assertEqual(plugin.name, "gen_json")
-
-        self.assertEqual(plugin.contributions.get_commands(), get_commands())
-
-        definitions = parse(get_plugin_aac_definitions(), get_resource_file_path(*plugin_resource_file_args))
-        self.assertEqual(plugin.contributions.get_definitions(), definitions)
+        self.assertEqual(plugin.contributions.get_commands(), _get_plugin_commands())
+        self.assertEqual(plugin.contributions.get_definitions(), _get_plugin_definitions())
 
 
 TEST_ARCH_YAML_STRING = """

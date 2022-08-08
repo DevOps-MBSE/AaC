@@ -9,19 +9,32 @@ from aac.plugins import hookimpl
 from aac.plugins.gen_design_doc.gen_design_doc_impl import gen_design_doc
 from aac.plugins.plugin import Plugin
 
-plugin_resource_file_args = (__package__, "gen_design_doc.yaml")
-
 
 @hookimpl
-def get_commands() -> list[AacCommand]:
+def get_plugin() -> Plugin:
     """
-    Return a list of AacCommands provided by the plugin to register for use.
-
-    This function is automatically generated. Do not edit.
+    Returns information about the plugin.
 
     Returns:
-        list of AacCommands
+        A collection of information about the plugin and what it contributes.
     """
+    *_, plugin_name = __package__.split(".")
+    plugin = Plugin(plugin_name)
+    plugin.register_definitions(_get_plugin_definitions())
+    plugin.register_commands(_get_plugin_commands())
+    return plugin
+
+
+def _get_plugin_definitions():
+    plugin_resource_file_args = (__package__, "gen_design_doc.yaml")
+    plugin_definitions = parse(
+        get_resource_file_contents(*plugin_resource_file_args),
+        get_resource_file_path(*plugin_resource_file_args)
+    )
+    return plugin_definitions
+
+
+def _get_plugin_commands():
     gen_design_doc_arguments = [
         AacCommandArgument(
             "architecture_files",
@@ -47,35 +60,3 @@ def get_commands() -> list[AacCommand]:
     ]
 
     return plugin_commands
-
-
-@hookimpl
-def get_plugin_aac_definitions() -> str:
-    """
-    Return the plugin's AaC definitions.
-
-    Returns:
-         string representing yaml extensions and definitions defined by the plugin
-    """
-    return get_resource_file_contents(*plugin_resource_file_args)
-
-
-@hookimpl
-def get_plugin() -> Plugin:
-    """
-    Returns information about the plugin.
-
-    Returns:
-        A collection of information about the plugin and what it contributes.
-    """
-    plugin_definitions = parse(
-        get_plugin_aac_definitions(),
-        get_resource_file_path(*plugin_resource_file_args)
-    )
-
-    *_, plugin_name = __package__.split(".")
-    plugin = Plugin(plugin_name)
-    plugin.register_commands(get_commands())
-    plugin.register_definitions(plugin_definitions)
-
-    return plugin
