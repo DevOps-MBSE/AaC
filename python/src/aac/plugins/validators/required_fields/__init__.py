@@ -1,9 +1,8 @@
 """Validation plugin to ensure that each definition has all required fields populated."""
 
-from aac.lang.definition_helpers import get_definitions_as_yaml
+from aac.io.parser import parse
 from aac.lang.definitions.definition import Definition
 from aac.package_resources import get_resource_file_contents, get_resource_file_path
-from aac.io.parser import parse
 from aac.plugins import hookimpl
 from aac.plugins.plugin import Plugin
 from aac.plugins.validators import ValidatorPlugin, get_validation_definition_from_plugin_definitions
@@ -35,8 +34,7 @@ def _get_plugin_definitions():
 
 
 def _get_plugin_validations():
-    validation_definition_yaml = get_definitions_as_yaml(_get_plugin_definitions())
-    validation_definition = get_validation_definition_from_plugin_definitions(validation_definition_yaml)
+    validation_definition = get_validation_definition_from_plugin_definitions(_get_plugin_definitions())
     return [
         ValidatorPlugin(validation_definition.name, validation_definition, validate_required_fields)
     ]
