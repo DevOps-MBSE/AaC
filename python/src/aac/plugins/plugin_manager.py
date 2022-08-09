@@ -79,9 +79,19 @@ def get_plugins() -> list[Plugin]:
     return get_plugin_manager().hook.get_plugin()
 
 
+def get_plugin_commands() -> list[AacCommand]:
+    """
+    Get a list of all of the AaC commands contributed by plugins.
+
+    Returns:
+        A list of AaC Commands provided by plugins.
+    """
+    return list(flatten([plugin.get_commands() for plugin in get_plugins() if plugin.get_commands()]))
+
+
 def get_plugin_definitions() -> list[Definition]:
     """
-    Get a list of all the plugin-defined AaC models and definitions.
+    Get a list of all the plugin-defined AaC definitions.
 
     Returns:
         A list of parsed definitions from all active plugins.
@@ -103,8 +113,3 @@ def get_validator_plugins() -> list[ValidatorPlugin]:
         A list of validator plugins that are currently registered.
     """
     return list(flatten([plugin.get_validations() for plugin in get_plugins() if plugin.get_validations()]))
-
-
-def get_plugin_commands() -> list[AacCommand]:
-    """Return all of the AaC Commands provided by plugins."""
-    return list(flatten([plugin.get_commands() for plugin in get_plugins() if plugin.get_commands()]))
