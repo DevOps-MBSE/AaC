@@ -22,7 +22,7 @@ def get_plugin() -> Plugin:
     return plugin
 
 
-def _get_plugin_commands() -> list[AacCommand]:
+def _get_plugin_commands():
     plugin_commands = [
         AacCommand(
             "version",
