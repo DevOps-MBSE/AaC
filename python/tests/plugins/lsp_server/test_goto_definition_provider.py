@@ -9,8 +9,8 @@ from aac.plugins.lsp_server.providers.goto_definition_provider import GotoDefini
 from aac.io.constants import YAML_DOCUMENT_SEPARATOR
 
 from tests.helpers.lsp.responses.goto_definition_response import GotoDefinitionResponse
-from tests.lang.lsp.base_lsp_test_case import BaseLspTestCase
-from tests.lang.lsp.definition_constants import (
+from tests.plugins.lsp_server.base_lsp_test_case import BaseLspTestCase
+from tests.plugins.lsp_server.definition_constants import (
     TEST_DOCUMENT_NAME,
     TEST_DOCUMENT_CONTENT,
     TEST_ENUM,

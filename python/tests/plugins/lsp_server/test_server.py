@@ -2,8 +2,8 @@ from unittest.async_case import IsolatedAsyncioTestCase
 
 from aac.io.constants import YAML_DOCUMENT_SEPARATOR
 
-from tests.lang.lsp.base_lsp_test_case import BaseLspTestCase
-from tests.lang.lsp.definition_constants import (
+from tests.plugins.lsp_server.base_lsp_test_case import BaseLspTestCase
+from tests.plugins.lsp_server.definition_constants import (
     TEST_DOCUMENT_NAME,
     TEST_DOCUMENT_CONTENT,
     TEST_SCHEMA_C,
