@@ -20,9 +20,9 @@ class Definition:
         structure (dict): The dictionary representation of the definition.
     """
 
-    name: str = attrib(validator=validators.instance_of(str))
-    content: str = attrib(validator=validators.instance_of(str))
-    source: AaCFile = attrib(validator=validators.instance_of(AaCFile))
+    name: str = attrib(default="", validator=validators.instance_of(str))
+    content: str = attrib(default="", validator=validators.instance_of(str))
+    source: AaCFile = attrib(default=AaCFile("", False, False), validator=validators.instance_of(AaCFile))
     lexemes: list[Lexeme] = attrib(default=Factory(list), validator=validators.instance_of(list))
     structure: dict = attrib(default=Factory(dict), validator=validators.instance_of(dict))
 

@@ -19,7 +19,6 @@ from aac.templates.engine import (
     write_generated_templates_to_file,
 )
 from aac.validate import validated_source
-from aac.io.files.aac_file import AaCFile
 
 plugin_name = "gen-design-doc"
 default_template_file = "templates/system-design-doc.md.jinja2"
@@ -100,7 +99,7 @@ def _get_and_prepare_definitions_by_type(parsed_definitions: list[Definition], a
 
 def _get_interfaces_with_required_fields(interfaces: list[dict]) -> list[dict]:
     def add_required_fields_to_interface(interface):
-        definition = Definition("", "", AaCFile("", False, False), [], interface)
+        definition = Definition(structure=interface)
         return interface | {"required_fields": get_required_fields(definition)}
     return [add_required_fields_to_interface(interface) for interface in interfaces]
 
