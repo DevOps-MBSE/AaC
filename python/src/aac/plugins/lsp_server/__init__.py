@@ -5,9 +5,7 @@
 from aac.cli.aac_command import AacCommand, AacCommandArgument
 from aac.plugins import hookimpl
 from aac.plugins.plugin import Plugin
-from aac.plugins.start_lsp.start_lsp_impl import start_lsp_io, start_lsp_tcp
-
-plugin_resource_file_args = (__package__, "start-lsp.yaml")
+from aac.plugins.lsp_server.start_lsp_server_impl import start_lsp_io, start_lsp_tcp
 
 
 @hookimpl

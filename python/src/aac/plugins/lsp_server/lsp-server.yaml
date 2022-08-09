@@ -1,5 +1,5 @@
 model:
-  name: start-lsp
+  name: lsp-server
   description: Start the LSP server
   behavior:
     - name: start-lsp-io
