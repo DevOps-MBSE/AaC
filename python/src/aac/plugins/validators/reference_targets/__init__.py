@@ -1,11 +1,10 @@
 """Validation plugin to ensure that each definition has all required fields populated."""
 
-from aac.io.parser import parse
-from aac.package_resources import get_resource_file_contents, get_resource_file_path
 from aac.plugins import hookimpl
 from aac.plugins.plugin import Plugin
-from aac.plugins.validators import ValidatorPlugin, get_validation_definition_from_plugin_definitions
+from aac.plugins._common import get_plugin_definitions_from_yaml
 from aac.plugins.validators.reference_targets._validate_reference_targets import validate_reference_targets
+from aac.plugins.validators._common import get_plugin_validations_from_definitions
 
 
 @hookimpl
@@ -24,16 +23,8 @@ def get_plugin() -> Plugin:
 
 
 def _get_plugin_definitions():
-    plugin_resource_file_args = (__package__, "reference_targets.yaml")
-    plugin_definitions = parse(
-        get_resource_file_contents(*plugin_resource_file_args),
-        get_resource_file_path(*plugin_resource_file_args),
-    )
-    return plugin_definitions
+    return get_plugin_definitions_from_yaml(__package__, "reference_targets.yaml")
 
 
 def _get_plugin_validations():
-    validation_definition = get_validation_definition_from_plugin_definitions(_get_plugin_definitions())
-    return [
-        ValidatorPlugin(validation_definition.name, validation_definition, validate_reference_targets)
-    ]
+    return get_plugin_validations_from_definitions(_get_plugin_definitions(), validate_reference_targets)
