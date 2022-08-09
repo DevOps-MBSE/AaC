@@ -22,11 +22,11 @@ from aac.io.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_initialized_language_context
 from aac.lang.definitions.structure import strip_undefined_fields_from_definition
 from aac.lang.language_context import LanguageContext
-from aac.lang.lsp.managed_workspace_file import ManagedWorkspaceFile
-from aac.lang.lsp.providers.lsp_provider import LspProvider
-from aac.lang.lsp.providers.code_completion_provider import CodeCompletionProvider
-from aac.lang.lsp.providers.goto_definition_provider import GotoDefinitionProvider
-from aac.lang.lsp.providers.hover_provider import HoverProvider
+from aac.plugins.lsp_server.managed_workspace_file import ManagedWorkspaceFile
+from aac.plugins.lsp_server.providers.lsp_provider import LspProvider
+from aac.plugins.lsp_server.providers.code_completion_provider import CodeCompletionProvider
+from aac.plugins.lsp_server.providers.goto_definition_provider import GotoDefinitionProvider
+from aac.plugins.lsp_server.providers.hover_provider import HoverProvider
 
 
 class AacLanguageServer(LanguageServer):

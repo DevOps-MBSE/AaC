@@ -32,7 +32,7 @@ def get_plugin_manager() -> PluginManager:
         "gen_plant_uml",
         "specifications",
         "print_spec",
-        "start_lsp",
+        "lsp_server",
         "material_model",
         "help_dump",
         "rest_api",

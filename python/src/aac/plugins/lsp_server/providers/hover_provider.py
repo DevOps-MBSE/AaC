@@ -7,7 +7,7 @@ from pygls.lsp.types.language_features.hover import Hover, HoverParams
 from pygls.server import LanguageServer
 from pygls.workspace import Document
 
-from aac.lang.lsp.providers.lsp_provider import LspProvider
+from aac.plugins.lsp_server.providers.lsp_provider import LspProvider
 
 
 class HoverProvider(LspProvider):

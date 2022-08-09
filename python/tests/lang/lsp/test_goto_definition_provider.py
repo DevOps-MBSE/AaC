@@ -5,7 +5,7 @@ from pygls.lsp.types.basic_structures import Location, Position
 from pygls.lsp.types.language_features.definition import DefinitionParams
 
 from aac.spec.core import get_aac_spec_as_yaml
-from aac.lang.lsp.providers.goto_definition_provider import GotoDefinitionProvider
+from aac.plugins.lsp_server.providers.goto_definition_provider import GotoDefinitionProvider
 from aac.io.constants import YAML_DOCUMENT_SEPARATOR
 
 from tests.helpers.lsp.responses.goto_definition_response import GotoDefinitionResponse

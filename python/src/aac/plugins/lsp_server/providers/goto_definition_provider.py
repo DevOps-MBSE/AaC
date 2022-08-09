@@ -7,7 +7,7 @@ from pygls.workspace import Document
 
 from aac.lang.definitions.type import remove_list_type_indicator
 from aac.lang.language_context import LanguageContext
-from aac.lang.lsp.providers.lsp_provider import LspProvider
+from aac.plugins.lsp_server.providers.lsp_provider import LspProvider
 
 
 class GotoDefinitionProvider(LspProvider):
