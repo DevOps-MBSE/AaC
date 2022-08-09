@@ -25,5 +25,6 @@ def get_plugin() -> Plugin:
 def _get_plugin_definitions():
     return get_plugin_definitions_from_yaml(__package__, "root_keys.yaml")
 
+
 def _get_plugin_validations():
     return get_plugin_validations_from_definitions(_get_plugin_definitions(), validate_root_keys)
