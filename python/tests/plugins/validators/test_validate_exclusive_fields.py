@@ -9,17 +9,17 @@ from tests.helpers.parsed_definitions import create_schema_ext_definition, creat
 
 class TestExclusiveFieldsPlugin(ActiveContextTestCase):
     def test_module_register_validators(self):
-        actual_validator_plugin = _get_plugin_validations()
+        actual_validator_plugins = _get_plugin_validations()
 
         validation_definitions = get_definitions_by_root_key("validation", _get_plugin_definitions())
         self.assertEqual(1, len(validation_definitions))
 
-        expected_validation_name = "Mutually exclusive fields"
+        validation_definition = validation_definitions[0]
         expected_validator_plugin = ValidatorPlugin(
-            name=expected_validation_name, definition=validation_definitions[0], validation_function=(lambda x: x)
+            name=validation_definition.name, definition=validation_definition, validation_function=(lambda x: x)
         )
-        self.assertEqual(expected_validator_plugin.name, actual_validator_plugin[0].name)
-        self.assertEqual(expected_validator_plugin.definition, actual_validator_plugin[0].definition)
+        self.assertEqual(expected_validator_plugin.name, actual_validator_plugins[0].name)
+        self.assertEqual(expected_validator_plugin.definition, actual_validator_plugins[0].definition)
 
     def test_validate_exclusive_fields_no_defined_exclusive_fields(self):
         test_active_context = get_active_context()

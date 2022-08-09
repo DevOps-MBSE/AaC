@@ -10,16 +10,17 @@ from tests.helpers.parsed_definitions import create_schema_definition, create_fi
 
 class TestDefinedReferencesPlugin(ActiveContextTestCase):
     def test_module_register_validators(self):
-        actual_validator_plugin = _get_plugin_validations()
+        actual_validator_plugins = _get_plugin_validations()
 
         validation_definitions = get_definitions_by_root_key("validation", _get_plugin_definitions())
         self.assertEqual(1, len(validation_definitions))
 
+        validation_definition = validation_definitions[0]
         expected_validator_plugin = ValidatorPlugin(
-            name="Type references exist", definition=validation_definitions[0], validation_function=(lambda x: x)
+            name=validation_definition.name, definition=validation_definition, validation_function=(lambda x: x)
         )
-        self.assertEqual(expected_validator_plugin.name, actual_validator_plugin[0].name)
-        self.assertEqual(expected_validator_plugin.definition, actual_validator_plugin[0].definition)
+        self.assertEqual(expected_validator_plugin.name, actual_validator_plugins[0].name)
+        self.assertEqual(expected_validator_plugin.definition, actual_validator_plugins[0].definition)
 
     def test_validate_references_valid_references(self):
         test_primitive_reference_field = create_field_entry("ValidPrimitiveField", "string")

@@ -29,8 +29,9 @@ class TestRequiredFieldsPlugin(ActiveContextTestCase):
         validation_definitions = get_definitions_by_root_key("validation", _get_plugin_definitions())
         self.assertEqual(1, len(validation_definitions))
 
+        validation_definition = validation_definitions[0]
         expected_validator_plugin = ValidatorPlugin(
-            name="Required fields are present", definition=validation_definitions[0], validation_function=(lambda x: x)
+            name=validation_definition.name, definition=validation_definition, validation_function=(lambda x: x)
         )
         self.assertEqual(expected_validator_plugin.name, actual_validator_plugins[0].name)
         self.assertEqual(expected_validator_plugin.definition, actual_validator_plugins[0].definition)
