@@ -43,8 +43,9 @@ def validated_source(source: str) -> Generator[ValidationResult, None, None]:
 
 
 def _with_validation(user_definitions: list[Definition]) -> ValidationResult:
-    result = _validate_definitions(user_definitions)
     try:
+        result = _validate_definitions(user_definitions)
+
         if result.is_valid:
             return result
         else:
