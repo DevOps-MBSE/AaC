@@ -46,7 +46,7 @@ def get_plugin_validations_from_definitions(plugin_definitions: list[Definition]
     """
     Return the ValidatorPlugins based on the plugin definitions.
 
-    Beware, plugins currently only support one validator per plugin. 
+    Beware, plugins currently only support one validator per plugin.
     """
     validation_definition = get_validation_definition_from_plugin_definitions(plugin_definitions)
     return [ValidatorPlugin(validation_definition.name, validation_definition, callback)]
