@@ -2,9 +2,8 @@ from unittest import TestCase
 
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.definition_helpers import get_definitions_by_root_key
-from aac.io.parser import parse
 from aac.plugins.validators import ValidatorPlugin
-from aac.plugins.validators.validator_implementation import get_plugin_aac_definitions, register_validators, validate_validator_implementations
+from aac.plugins.validators.validator_implementation import _get_plugin_definitions, _get_plugin_validations, validate_validator_implementations
 
 from tests.helpers.parsed_definitions import create_validation_definition
 
@@ -12,14 +11,17 @@ from tests.helpers.parsed_definitions import create_validation_definition
 class TestValidationImplementPlugin(TestCase):
 
     def test_validation_module_register_validators(self):
-        actual_validator_plugin = register_validators()
+        actual_validator_plugins = _get_plugin_validations()
 
-        validation_definitions = get_definitions_by_root_key("validation", parse(get_plugin_aac_definitions()))
+        validation_definitions = get_definitions_by_root_key("validation", _get_plugin_definitions())
         self.assertEqual(1, len(validation_definitions))
 
-        expected_validator_plugin = ValidatorPlugin(name="Validation definition has an implementation", definition=validation_definitions[0], validation_function=(lambda x: x))
-        self.assertEqual(expected_validator_plugin.name, actual_validator_plugin.name)
-        self.assertEqual(expected_validator_plugin.definition, actual_validator_plugin.definition)
+        validation_definition = validation_definitions[0]
+        expected_validator_plugin = ValidatorPlugin(
+            name=validation_definition.name, definition=validation_definition, validation_function=(lambda x: x)
+        )
+        self.assertEqual(expected_validator_plugin.name, actual_validator_plugins[0].name)
+        self.assertEqual(expected_validator_plugin.definition, actual_validator_plugins[0].definition)
 
     def test_validate_validator_implementations_validate_validation_success(self):
         test_active_context = get_active_context(reload_context=True)

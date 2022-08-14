@@ -4,8 +4,8 @@ from pygls.lsp import methods
 from pygls.lsp.types.language_features.hover import HoverParams
 
 from tests.helpers.lsp.responses.hover_response import HoverResponse
-from tests.lang.lsp.base_lsp_test_case import BaseLspTestCase
-from tests.lang.lsp.definition_constants import (
+from tests.plugins.lsp_server.base_lsp_test_case import BaseLspTestCase
+from tests.plugins.lsp_server.definition_constants import (
     TEST_DOCUMENT_CONTENT,
     TEST_DOCUMENT_NAME,
 )

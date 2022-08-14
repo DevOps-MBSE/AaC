@@ -157,6 +157,7 @@ class TestGenPlugin(TestCase):
             # Assert that some expected content is present
             generated_plugin_file_contents = generated_templates.get(INIT_TEMPLATE_NAME).content
             self.assertIn("@hookimpl", generated_plugin_file_contents)
+            self.assertIn("get_plugin", generated_plugin_file_contents)
             self.assertIn("gen_protobuf_arguments", generated_plugin_file_contents)
             self.assertIn("import gen_protobuf", generated_plugin_file_contents)
             self.assertIn("architecture_file", generated_plugin_file_contents)

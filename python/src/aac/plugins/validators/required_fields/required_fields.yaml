@@ -4,7 +4,6 @@ validation:
   behavior:
     - name: Verify that definition fields marked as required are populated.
       type: request-response
-      description:
       input:
         - name: input
           type: ValidatorInput

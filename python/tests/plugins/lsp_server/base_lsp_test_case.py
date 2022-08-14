@@ -11,8 +11,8 @@ from pygls.workspace import Document
 
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.lsp.text_document import TextDocument
-from tests.lang.lsp.definition_constants import TEST_DOCUMENT_CONTENT, TEST_DOCUMENT_NAME
-from tests.lang.lsp_test_client import LspTestClient
+from tests.plugins.lsp_server.definition_constants import TEST_DOCUMENT_CONTENT, TEST_DOCUMENT_NAME
+from tests.plugins.lsp_server.lsp_test_client import LspTestClient
 
 
 class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):

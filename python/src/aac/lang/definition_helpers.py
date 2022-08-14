@@ -115,3 +115,8 @@ def get_definition_fields_and_types(
         field_types = field_types | {field_name: type_definition}
 
     return field_types
+
+
+def get_definitions_as_yaml(definitions: list[Definition]) -> str:
+    """Return all the definitions as a single YAML string."""
+    return "\n".join([definition.content for definition in definitions])
