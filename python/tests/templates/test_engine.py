@@ -3,6 +3,7 @@ from tempfile import TemporaryDirectory
 from unittest import TestCase
 
 from jinja2 import Template
+from jinja2.environment import Environment
 
 from aac.templates.engine import (
     TemplateOutputFile,
@@ -13,6 +14,7 @@ from aac.templates.engine import (
     write_generated_templates_to_file,
 )
 from aac.plugins.gen_plugin import __package__ as gen_plugin_package
+from aac.templates.error import AacTemplateError
 
 from tests.helpers.io import temporary_test_file
 
@@ -144,3 +146,10 @@ class TestTemplateEngine(TestCase):
 
             with open(test_file.name) as file:
                 self.assertNotEqual(file.read(), new_content)
+
+    def test_error_when_template_is_invalid(self):
+        template = Environment().from_string("{% set bad = map(attribute=x.y) %}")
+        with self.assertRaises(AacTemplateError) as cm:
+            generate_template_as_string(template, {})
+
+        self.assertRegex(cm.exception.args[0], "x.*undefined")

@@ -1,10 +1,13 @@
 """This module provides a common set of templating and generation functions."""
+
 from __future__ import annotations
-from attr import attrib, attrs, validators
-from jinja2 import Environment, PackageLoader, Template
 import os
 
+from attr import attrib, attrs, validators
+from jinja2 import Environment, PackageLoader, Template, TemplateError
+
 from aac.io.writer import write_file
+from aac.templates.error import AacTemplateError
 
 
 def load_templates(package_name: str, template_directory: str = "templates") -> list[Template]:
@@ -100,7 +103,10 @@ def generate_template_as_string(template: Template, properties: dict[str, str]) 
     Returns:
         Compiled/Rendered template as a string
     """
-    return template.render(properties)
+    try:
+        return template.render(properties)
+    except TemplateError as te:
+        raise AacTemplateError(f"Error occurred during template rendering: {te.message}")
 
 
 def write_generated_templates_to_file(generated_files: list[TemplateOutputFile]) -> None:
