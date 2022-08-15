@@ -1,5 +1,4 @@
 import os
-from tempfile import TemporaryDirectory
 from unittest import TestCase
 
 from aac.plugins.gen_design_doc.gen_design_doc_impl import gen_design_doc
@@ -10,24 +9,19 @@ from tests.helpers.io import temporary_test_file
 
 class TestGenerateDesignDocumentPlugin(TestCase):
     def test_can_generate_design_doc_with_models(self):
-        with TemporaryDirectory() as temp_dir:
-            test_model_file_name = f"{temp_dir}/test_model.yaml"
-            test_design_doc_file_name = None
-            with open(test_model_file_name, "w") as arch_file:
-                arch_file.write(TEST_MODEL)
-    
-            result = gen_design_doc(test_model_file_name, temp_dir)
-            assert_plugin_success(result)
-    
+        with temporary_test_file(TEST_MODEL) as test_model: 
+            temp_dir = os.path.dirname(test_model.name)
+            result = gen_design_doc(test_model.name, temp_dir)
+            assert_plugin_success(result) 
             files = os.listdir(temp_dir)
             self.assertEqual(len(files), 2)
-    
             test_design_doc_file_name, *_ = [
-                f for f in files if f != os.path.basename(test_model_file_name)
+                f for f in files if f != os.path.basename(test_model.name)
             ]
-            with open(f"{temp_dir}/{test_design_doc_file_name}", "r") as design_doc:
-                markdown = design_doc.read()
-                self.assert_headings(markdown)
+            with open(os.path.join(temp_dir, test_design_doc_file_name)) as markdown_file:
+                document_title = os.path.basename(test_model.name)
+                markdown = markdown_file.read()
+                self.assert_headings(markdown, document_title)
                 self.assert_schema(markdown)
                 self.assert_model(markdown)
                 self.assert_use_case(markdown)
@@ -48,9 +42,9 @@ class TestGenerateDesignDocumentPlugin(TestCase):
             with open(os.path.join(temp_dir, test_design_doc_file_name)) as markdown_file:
                 self.assertIn("SubSchema.Schema1 data", markdown_file.read())
 
-    def assert_headings(self, markdown: str) -> None:
+    def assert_headings(self, markdown: str, document_title: str) -> None:
         patterns = [
-            "test_model",
+            document_title,
             "Schema",
             "Model",
             "Use Cases",
