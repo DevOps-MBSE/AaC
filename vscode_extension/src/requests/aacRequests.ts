@@ -1,14 +1,8 @@
 /* tslint:disable */
 /* eslint-disable */
-import { Configuration, DefaultApi } from "../requests/generated/aac_rest_api";
-import fetch from "node-fetch"
-export * from  "../requests/generated/aac_rest_api/models"
-export * from  "../requests/generated/aac_rest_api/apis"
+import { DefaultApi } from  "./generated/aac_rest_api/api"
+export * from "./generated/aac_rest_api/model/models"
 
-
-const configuration = new Configuration({
-  basePath: "http://localhost:8000",
-  fetchApi: fetch
-});
-
-export const aacRestApi = new DefaultApi(configuration)
+const port = "8000"
+const host = "localhost"
+export const aacRestApi = new DefaultApi(`http://${host}:${port}`)

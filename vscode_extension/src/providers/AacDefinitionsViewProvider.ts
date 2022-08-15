@@ -20,8 +20,8 @@ export class AacDefinitionsViewProvider implements vscode.TreeDataProvider<Defin
     }
 
     private async getDefinitionsInContext(): Promise<Definition[]> {
-        const definitionModels = (await Promise.resolve(aacRestApi.getDefinitionsDefinitionsGet()))
-        return definitionModels.map((definitionModel: DefinitionModel) => new Definition(definitionModel, vscode.TreeItemCollapsibleState.None))
+        const requestResponse = (await Promise.resolve(aacRestApi.getDefinitionsDefinitionsGet()))
+        return requestResponse.body.map((definition: DefinitionModel) => new Definition(definition, vscode.TreeItemCollapsibleState.None))
     }
 }
 class Definition extends vscode.TreeItem {
@@ -41,16 +41,15 @@ class Definition extends vscode.TreeItem {
 }
 
 function getDefinitionByName(definitionName: string) {
-    return Promise.resolve(aacRestApi.getDefinitionByNameDefinitionGet({name: definitionName}))
+    return Promise.resolve(aacRestApi.getDefinitionByNameDefinitionGet(definitionName, true))
 }
 
 export function onDefinitionNodeSelection(event: vscode.TreeViewSelectionChangeEvent<Definition>) {
     if (event.selection.length > 0) {
         getDefinitionByName(event.selection[0].definitionModel.name).then(response => {
-            console.log(response)
             vscode.commands.executeCommand(
                 "vscode.openWith",
-                vscode.Uri.from({scheme: "untitled", path:`${response.name}`}),
+                vscode.Uri.from({scheme: "untitled", path:`${response.body.name}`}),
                 "aac.visualEditor"
             );
         })

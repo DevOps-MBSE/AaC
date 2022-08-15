@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 import { disposeAll } from '../disposable';
 import { AacDefinitionsDocument, AacDefinitionEdit } from '../editor/definitions/DefinitionsDocument'
 import { getNonce } from '../nonce';
-import { aacRestApi } from '../requests/aacRequests'
+import { aacRestApi, DefinitionModel } from '../requests/aacRequests'
 
 /**
  * Provider for AaC visual definition editors.
@@ -49,8 +49,7 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
                     throw new Error('Could not find webview to save for');
                 }
                 const panel = webviewsForDocument[0];
-                const response = await this.postMessageWithResponse<number[]>(panel, 'getFileData', {});
-                return new Uint8Array(response);
+                return new Uint8Array()
             }
         });
 
@@ -99,9 +98,7 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
             if (event.type === 'ready') {
                 this.getDefinition(path.basename(document.uri.fsPath), true).then(response => {
                     this.postMessage(webviewPanel, 'update', {
-                        untitled: true,
-                        editable: true,
-                        value: response
+                        value: response.body
                     });
                 })
             }
@@ -130,7 +127,7 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
     //#endregion
 
     /**
-     * Get the static HTML used for in our editor's webviews.
+     * Get the editor webview HTML.
      */
     private getHtmlForWebview(webview: vscode.Webview): string {
         // Local path to script and css for the webview
@@ -170,43 +167,42 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
 			</head>
 			<body>
 				<div id="main"></div>
-                <button id='submit'>Submit (console.log)</button>
+                <button id='submit'>Save</button>
                 <script src="${scriptUri}" http-equiv="Content-Security-Policy" script-src-elem 'unsafe-inline' ${scriptUri} nonce='${nonce}';></script>
 			</body>
 			</html>`;
     }
 
-    private _requestId = 1;
     private readonly _callbacks = new Map<number, (response: any) => void>();
-
-    private postMessageWithResponse<R = unknown>(panel: vscode.WebviewPanel, type: string, body: any): Promise<R> {
-        const requestId = this._requestId++;
-        const p = new Promise<R>(resolve => this._callbacks.set(requestId, resolve));
-        panel.webview.postMessage({ type, requestId, body });
-        return p;
-    }
 
     private postMessage(panel: vscode.WebviewPanel, type: string, body: any): void {
         panel.webview.postMessage({ type, body });
     }
 
     private onMessage(document: AacDefinitionsDocument, message: any) {
-        switch (message.type) {
-            case 'stroke':
-                document.makeEdit(message as AacDefinitionEdit);
-                return;
+        console.log(document)
 
-            case 'response':
-                {
-                    const callback = this._callbacks.get(message.requestId);
-                    callback?.(message.body);
-                    return;
-                }
+        switch (message.type) {
+            case 'save':
+                console.log(message.body as AacDefinitionEdit)
+
+                const updatedDefinitionModel = new DefinitionModel()
+                updatedDefinitionModel.name = message.body.name
+                updatedDefinitionModel.structure = message.body
+                updatedDefinitionModel.sourceUri = "test"
+
+                console.log(updatedDefinitionModel)
+                this.updateDefinition(updatedDefinitionModel)
+                return;
         }
     }
 
     private getDefinition(definitionName: string, includeJsonSchema: boolean = false) {
-        return Promise.resolve(aacRestApi.getDefinitionByNameDefinitionGet({name: definitionName, includeJsonSchema: includeJsonSchema}))
+        return Promise.resolve(aacRestApi.getDefinitionByNameDefinitionGet(definitionName, includeJsonSchema)).catch(error => {console.error(error)})
+    }
+
+    private updateDefinition(definition: DefinitionModel) {
+        return Promise.resolve(aacRestApi.updateDefinitionDefinitionPut(definition)).catch(error => {console.error(error)})
     }
 }
 
