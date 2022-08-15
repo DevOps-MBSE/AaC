@@ -98,9 +98,11 @@ def _get_and_prepare_definitions_by_type(parsed_definitions: list[Definition], a
 
 
 def _get_interfaces_with_required_fields(interfaces: list[dict]) -> list[dict]:
+
     def add_required_fields_to_interface(interface):
         definition = Definition(structure=interface)
         return interface | {"required_fields": get_required_fields(definition)}
+
     return [add_required_fields_to_interface(interface) for interface in interfaces]
 
 
