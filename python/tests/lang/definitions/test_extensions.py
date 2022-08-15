@@ -1,6 +1,7 @@
 from unittest import TestCase
 from aac.lang.active_context_lifecycle_manager import get_initialized_language_context
 from aac.lang.definitions.extensions import apply_extension_to_definition, remove_extension_from_definition
+from aac.lang.language_error import LanguageError
 from aac.plugins.validators.required_fields import REQUIRED_FIELDS_VALIDATION_STRING
 
 from tests.helpers.parsed_definitions import (
@@ -13,6 +14,20 @@ from tests.helpers.parsed_definitions import (
 
 
 class TestDefinitionExtensions(TestCase):
+
+    def test_apply_bad_extension_to_definition(self):
+        test_schema_field = create_field_entry("TestField", "string")
+        test_schema_name = "myDef"
+        test_schema = create_schema_definition(test_schema_name, fields=[test_schema_field])
+
+        schema_ext_field_name = "extField"
+        schema_ext_field_type = "ExtField"
+        ext_field = create_field_entry(schema_ext_field_name, schema_ext_field_type)
+        test_schema_ext = create_schema_ext_definition("mySchemaExt", test_schema_name, fields=[ext_field], required=[schema_ext_field_name])
+        test_schema_ext.structure["ext"]["dataExt"] = test_schema_ext.structure["ext"]["schemaExt"]
+        del test_schema_ext.structure["ext"]["schemaExt"]
+
+        self.assertRaises(LanguageError, apply_extension_to_definition, test_schema_ext, test_schema)
 
     def test_apply_and_remove_extension_from_definition(self):
         test_schema_field = create_field_entry("TestField", "string")
