@@ -17,9 +17,8 @@ class TestGenerateDesignDocumentPlugin(TestCase):
             self.assertEqual(len(files), 2)
             test_design_doc_file_name, *_ = [f for f in files if f != os.path.basename(test_model.name)]
             with open(os.path.join(temp_dir, test_design_doc_file_name)) as markdown_file:
-                document_title = os.path.basename(test_model.name)
                 markdown = markdown_file.read()
-                self.assert_headings(markdown, document_title)
+                self.assert_headings(markdown, os.path.basename(test_model.name))
                 self.assert_schema(markdown)
                 self.assert_model(markdown)
                 self.assert_use_case(markdown)
