@@ -341,7 +341,7 @@ def _convert_message_name_to_file_name(message_name: str) -> str:
         A protobuf file name string
     """
     new_file_name = f"{message_name}.proto"
-    new_file_name = new_file_name.replace("- ", "_")
+    new_file_name = new_file_name.replace("-", "_")
     new_file_name = new_file_name.replace(" ", "")
     new_file_name = _convert_camel_case_to_snake_case(new_file_name)
     return new_file_name
