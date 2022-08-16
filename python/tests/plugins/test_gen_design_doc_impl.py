@@ -81,7 +81,6 @@ class TestGenerateDesignDocumentPlugin(TestCase):
     def assert_use_case(self, markdown: str) -> None:
         patterns = ["move an object", "Source", "Target", "Action"]
         [self.assertIn(pattern, markdown) for pattern in patterns]
-    
 
 TEST_MODEL = """
 schema:
