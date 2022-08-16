@@ -30,15 +30,10 @@ class TestGenerateDesignDocumentPlugin(TestCase):
         with temporary_test_file(TEST_MODEL_2) as test_yaml:
             result = gen_design_doc(test_yaml.name, os.path.dirname(test_yaml.name))
             assert_plugin_success(result)
-            
             temp_dir = os.path.dirname(test_yaml.name)
             files = os.listdir(temp_dir)
             self.assertEqual(len(files), 2)
-    
-            test_design_doc_file_name, *_ = [
-                f for f in files if f != os.path.basename(test_yaml.name)
-            ]
-
+            test_design_doc_file_name, *_ = [f for f in files if f != os.path.basename(test_yaml.name)]
             with open(os.path.join(temp_dir, test_design_doc_file_name)) as markdown_file:
                 self.assertIn("SubSchema.Schema1 data", markdown_file.read())
 
