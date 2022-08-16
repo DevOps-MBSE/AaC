@@ -1,7 +1,7 @@
 import:
   - ./structures.yaml
 model:
-  name: Alarm Clock
+  name: AlarmClock
   description: A simple alarm clock
   components:
     - name: clock
@@ -9,7 +9,7 @@ model:
     - name: timer
       type: ClockTimer
     - name: alarm
-      type: Clock Alarm
+      type: ClockAlarm
   behavior:
     - name: setAlarm
       type: request-response
@@ -60,7 +60,7 @@ model:
           type: TimerAlert
 ---
 model:
-  name: Clock Alarm
+  name: ClockAlarm
   description: A simple alarm that produces noise.
   behavior:
     - name: triggerAlarm
