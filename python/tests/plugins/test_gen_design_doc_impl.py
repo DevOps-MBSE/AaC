@@ -75,6 +75,7 @@ class TestGenerateDesignDocumentPlugin(TestCase):
         patterns = ["move an object", "Source", "Target", "Action"]
         [self.assertIn(pattern, markdown) for pattern in patterns]
 
+
 TEST_MODEL = """
 schema:
   name: Vector
@@ -167,6 +168,7 @@ usecase:
       target: model1
       action: move from point beta back to point alpha
 """
+
 TEST_MODEL_2 = """
 schema:
   name: Schema1
