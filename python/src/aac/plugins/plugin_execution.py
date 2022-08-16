@@ -8,6 +8,7 @@ from traceback import extract_tb
 
 from aac.io.parser import ParserError
 from aac.plugins import PluginError, OperationCancelled
+from aac.templates.error import AacTemplateError
 from aac.validate import ValidationError
 
 
@@ -90,6 +91,9 @@ def plugin_result(name: str, cmd: Callable, *args: Tuple[Any], **kwargs: dict[st
     except FileNotFoundError as error:
         result.add_messages(f"{error.strerror}: {error.filename}")
         result.status_code = PluginExecutionStatusCode.GENERAL_FAILURE
+    except AacTemplateError as error:
+        result.add_messages(error.message)
+        result.status_code = PluginExecutionStatusCode.PLUGIN_FAILURE
     except PluginError as error:
         result.set_messages(error.message)
         result.status_code = PluginExecutionStatusCode.PLUGIN_FAILURE

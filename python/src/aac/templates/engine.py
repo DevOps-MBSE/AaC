@@ -106,7 +106,7 @@ def generate_template_as_string(template: Template, properties: dict[str, str]) 
     try:
         return template.render(properties)
     except TemplateError as te:
-        raise AacTemplateError(f"Error occurred during template rendering: {te.message}")
+        raise AacTemplateError(f"Error occurred during rendering of '{template.filename}':\nThe error was: {te.message}")
 
 
 def write_generated_templates_to_file(generated_files: list[TemplateOutputFile]) -> None:
