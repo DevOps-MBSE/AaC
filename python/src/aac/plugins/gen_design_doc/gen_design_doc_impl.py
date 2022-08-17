@@ -93,7 +93,6 @@ def _get_output_file_extension(template_filespec: str) -> str:
 
 
 def _get_and_prepare_definitions_by_type(parsed_definitions: list[Definition], aac_type: str) -> list[dict]:
-    
     def get_definition_structure_with_required_fields(interface_definition: Definition):
         return interface_definition.structure | {"required_fields": get_required_fields(interface_definition)}
 
