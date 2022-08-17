@@ -33,7 +33,9 @@ class TestGenerateDesignDocumentPlugin(TestCase):
             self.assertEqual(len(files), 2)
             test_design_doc_file_name, *_ = [f for f in files if f != os.path.basename(test_yaml.name)]
             with open(os.path.join(temp_dir, test_design_doc_file_name)) as markdown_file:
-                self.assertIn("SubSchema.Schema1 data", markdown_file.read())
+                markdown = markdown_file.read()
+                self.assertIn("SubSchema.Schema1 data", markdown)
+                self.assertNotIn("required", markdown) 
 
     def assert_headings(self, markdown: str, document_title: str) -> None:
         patterns = [
