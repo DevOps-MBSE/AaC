@@ -17,18 +17,18 @@ class TestGenerateDesignDocumentPlugin(TestCase):
             self.assertEqual(len(files), 2)
             test_design_doc_file_name, *_ = [f for f in files if f != os.path.basename(test_model.name)]
             with open(os.path.join(temp_dir, test_design_doc_file_name)) as markdown_file:
-                document_title = os.path.basename(test_model.name)
                 markdown = markdown_file.read()
-                self.assert_headings(markdown, document_title)
+                self.assert_headings(markdown, os.path.basename(test_model.name))
                 self.assert_schema(markdown)
                 self.assert_model(markdown)
                 self.assert_use_case(markdown)
    
     def test_can_handle_names_with_dots(self):
         with temporary_test_file(TEST_MODEL_2) as test_yaml:
-            result = gen_design_doc(test_yaml.name, os.path.dirname(test_yaml.name))
-            assert_plugin_success(result)
             temp_dir = os.path.dirname(test_yaml.name)
+
+            result = gen_design_doc(test_yaml.name, temp_dir)
+            assert_plugin_success(result)
             files = os.listdir(temp_dir)
             self.assertEqual(len(files), 2)
             test_design_doc_file_name, *_ = [f for f in files if f != os.path.basename(test_yaml.name)]
