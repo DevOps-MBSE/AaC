@@ -1,6 +1,7 @@
 import os
 from tempfile import TemporaryDirectory
 from unittest import TestCase
+from unittest.mock import Mock, patch
 
 from jinja2 import Template
 from jinja2.environment import Environment
@@ -147,9 +148,24 @@ class TestTemplateEngine(TestCase):
             with open(test_file.name) as file:
                 self.assertNotEqual(file.read(), new_content)
 
-    def test_error_when_template_is_invalid(self):
+    def test_error_when_template_is_rendered(self):
         template = Environment().from_string("{% set bad = map(attribute=x.y) %}")
         with self.assertRaises(AacTemplateError) as cm:
             generate_template_as_string(template, {})
 
         self.assertRegex(cm.exception.args[0], "x.*undefined")
+
+    @patch("aac.templates.engine._is_template")
+    def test_error_when_syntax_error_in_template(self, _is_template: Mock):
+        import sys
+
+        _is_template.return_value = True
+
+        template_content = """{% if True %}true{% else %}false{% endif }"""
+        with temporary_test_file(template_content) as test_template:
+            sys.path.append("/")
+
+            temp_package_name = os.path.dirname(test_template.name)[1:].replace("/", ".")
+            self.assertRaises(AacTemplateError, load_templates, temp_package_name, ".")
+
+            sys.path.remove("/")

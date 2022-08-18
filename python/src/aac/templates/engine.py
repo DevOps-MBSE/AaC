@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 import os
+from typing import Callable
 
 from attr import attrib, attrs, validators
 from jinja2 import Environment, PackageLoader, Template, TemplateError
@@ -21,8 +22,9 @@ def load_templates(package_name: str, template_directory: str = "templates") -> 
     Returns:
         list of loaded templates
     """
+
     def _load_templates_from_env(env) -> list:
-        filtered_templates = list(filter(lambda template: template.endswith("jinja2"), env.list_templates()))
+        filtered_templates = list(filter(_is_template, env.list_templates()))
         return list(map(env.get_template, filtered_templates))
 
     env = Environment(
@@ -30,7 +32,15 @@ def load_templates(package_name: str, template_directory: str = "templates") -> 
         autoescape=True,
     )
 
-    return _load_templates_from_env(env)
+    return _handle_template_error(
+        f"The error occurred while loading the templates from '{template_directory}/' for the '{package_name}' package",
+        _load_templates_from_env,
+        env,
+    )
+
+
+def _is_template(filename: str) -> bool:
+    return filename.endswith("jinja2")
 
 
 def generate_templates(templates: list[Template], output_directories: dict[str, str], properties: dict[str, str]) -> dict[str, TemplateOutputFile]:
@@ -103,10 +113,7 @@ def generate_template_as_string(template: Template, properties: dict[str, str]) 
     Returns:
         Compiled/Rendered template as a string
     """
-    try:
-        return template.render(properties)
-    except TemplateError as te:
-        raise AacTemplateError(f"Error occurred during rendering of '{template.filename}':\nThe error was: {te.message}")
+    return _handle_template_error(f"The error occurred while rendering {template.filename}", template.render, properties)
 
 
 def write_generated_templates_to_file(generated_files: list[TemplateOutputFile]) -> None:
@@ -122,6 +129,16 @@ def write_generated_templates_to_file(generated_files: list[TemplateOutputFile])
             file_uri,
             generated_file.content,
             generated_file.overwrite,
+        )
+
+
+def _handle_template_error(error_reason: str, callback: Callable, *args, **kwargs):
+    try:
+        return callback(*args, **kwargs)
+    except TemplateError as template_error:
+        raise AacTemplateError(
+            f"{template_error.__class__.__name__} occurred running {__package__}.{callback.__name__}:\n"
+            f"{error_reason}\n{template_error}"
         )
 
 

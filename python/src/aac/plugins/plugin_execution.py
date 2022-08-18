@@ -104,7 +104,10 @@ def plugin_result(name: str, cmd: Callable, *args: Tuple[Any], **kwargs: dict[st
         # Extract the first stack trace, skipping the plugin result we'd expect to find in the first element
         error_trace = extract_tb(error.__traceback__)[1]
         result.add_messages(
-            f"An unrecognized error occurred:{error_trace.filename} line {error_trace.lineno} message: {error}"
+            f"A(n) {error.__class__.__qualname__} error occurred",
+            f"  in {error_trace.filename}",
+            f"  on line {error_trace.lineno}",
+            f"\nThe error was:\n{error}",
         )
         result.status_code = PluginExecutionStatusCode.GENERAL_FAILURE
 
