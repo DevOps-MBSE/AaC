@@ -3,6 +3,7 @@ from iteration_utilities import flatten
 from typing import Generator
 
 from aac.lang.language_context import LanguageContext
+from aac.lang.language_error import LanguageError
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.schema import get_definition_schema_components
@@ -42,11 +43,15 @@ def validated_source(source: str) -> Generator[ValidationResult, None, None]:
 
 
 def _with_validation(user_definitions: list[Definition]) -> ValidationResult:
-    result = _validate_definitions(user_definitions)
-    if result.is_valid:
-        return result
-    else:
-        raise ValidationError("Failed to validate content with errors:", *result.messages)
+    try:
+        result = _validate_definitions(user_definitions)
+
+        if result.is_valid:
+            return result
+        else:
+            raise ValidationError("Failed to validate content with errors:", *result.messages)
+    except LanguageError as error:
+        raise ValidationError("Failed to validate content due to an internal language error:\n", *error.args)
 
 
 def _validate_definitions(user_definitions: list[Definition]) -> ValidationResult:

@@ -1,10 +1,12 @@
 """AaC Plugin implementation module for the aac-gen-design-doc plugin."""
 
 import os
+
 from typing import Optional
 
 from iteration_utilities import flatten
 from jinja2 import Template
+
 
 from aac.lang.definition_helpers import get_definitions_by_root_key
 from aac.lang.definitions.definition import Definition
@@ -68,13 +70,11 @@ def _make_template_properties(parsed_definitions: list[Definition], arch_file: s
     models = _get_and_prepare_definitions_by_type(parsed_definitions, "model")
     usecases = _get_and_prepare_definitions_by_type(parsed_definitions, "usecase")
     interfaces = _get_and_prepare_definitions_by_type(parsed_definitions, "schema")
-    required_fields = _get_required_fields_for_definitions(parsed_definitions)
     return {
         "title": title,
         "models": models,
         "usecases": usecases,
         "interfaces": interfaces,
-        "required": required_fields,
     }
 
 
@@ -93,12 +93,18 @@ def _get_output_file_extension(template_filespec: str) -> str:
 
 
 def _get_and_prepare_definitions_by_type(parsed_definitions: list[Definition], aac_type: str) -> list[dict]:
+
+    def get_definition_structure_with_required_fields(interface_definition: Definition):
+        return interface_definition.structure | {"required_fields": get_required_fields(interface_definition)}
+
     filtered_definitions = get_definitions_by_root_key(aac_type, parsed_definitions)
-    return [definition.structure for definition in filtered_definitions]
+    definition_template_properties = []
+    if aac_type == "schema":
+        definition_template_properties = [get_definition_structure_with_required_fields(definition) for definition in filtered_definitions]
+    else:
+        definition_template_properties = [definition.structure for definition in filtered_definitions]
 
-
-def _get_required_fields_for_definitions(parsed_definitions: list[Definition]) -> list[dict]:
-    return [{definition.name: get_required_fields(definition)} for definition in parsed_definitions]
+    return definition_template_properties
 
 
 def _generate_system_doc(output_filespec: str, selected_template: Template, output_directory: str, template_properties: dict) -> TemplateOutputFile:
