@@ -161,7 +161,7 @@
         "lint": "eslint src --ext ts",
         "test": "node ./out/test/runTest.js",
         "package": "vsce package --yarn -o aac.vsix",
-        "generate:rest_api": "yarn openapi-generator-cli generate -i AaC_OpenAPI_Schema.json -o src/requests/generated/aac_rest_api -g typescript-fetch --additional-properties=supportsES6=true,npmVersion=6.9.0,typescriptThreePlus=true"
+        "generate:rest_api": "yarn openapi-generator-cli generate -i AaC_OpenAPI_Schema.json -o src/requests/generated/aac_rest_api -g typescript-node"
     },
     "devDependencies": {
         "@openapitools/openapi-generator-cli": "^2.5.1",
@@ -184,7 +184,8 @@
     },
     "dependencies": {
         "@json-editor/json-editor": "^2.8.0",
-        "node-fetch": "^2.6.0",
+        "@types/request": "^2.48.8",
+        "request": "^2.88.2",
         "vscode-languageclient": "^7.0.0"
     }
 }
