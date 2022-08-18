@@ -35,7 +35,6 @@ SCHEMA_FILE_TYPE = "schema"
 ENUM_FILE_TYPE = "enum"
 ENUM_VALUE_1 = "VAL1"
 ENUM_VALUE_2 = "VAL2"
-TEST_MESSAGE_SPACE_NAME = "Message A"
 
 
 class TestGenerateProtobufPlugin(ActiveContextTestCase):
@@ -136,11 +135,16 @@ class TestGenerateProtobufPlugin(ActiveContextTestCase):
         ("somethingSimple", "something_simple"),
         ("SomethingComplex!To.Test", "something_complex!_to._test"),
         ("whataboutnocamelcases?", "whataboutnocamelcases?"),
-        ("whataboutanamewitha space", "what_about_a_name_with_a_space")
     )
     def test__convert_camel_case_to_snake_case(self, test_string, expected_string):
         self.assertEqual(expected_string, _convert_camel_case_to_snake_case(test_string))
 
+    @params(
+        ("Data A", "data_a.proto"),
+        ("Message with multiple spaces", "messagewithmultiplespaces.proto"),
+        (" beginningSpace", "beginning_space.proto"),
+        ("trailing ", "trailing.proto"),
+    )
     def test__convert_message_name_to_file_name(self, test_string, expected_string):
         self.assertEqual(expected_string, _convert_message_name_to_file_name(test_string))
 
