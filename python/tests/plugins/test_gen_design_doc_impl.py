@@ -1,39 +1,45 @@
 import os
-from tempfile import TemporaryDirectory
 from unittest import TestCase
 
 from aac.plugins.gen_design_doc.gen_design_doc_impl import gen_design_doc
 
 from tests.helpers.assertion import assert_plugin_success
+from tests.helpers.io import temporary_test_file
 
 
 class TestGenerateDesignDocumentPlugin(TestCase):
     def test_can_generate_design_doc_with_models(self):
-        with TemporaryDirectory() as temp_dir:
-            test_model_file_name = f"{temp_dir}/test_model.yaml"
-            test_design_doc_file_name = None
-            with open(test_model_file_name, "w") as arch_file:
-                arch_file.write(TEST_MODEL)
-
-            result = gen_design_doc(test_model_file_name, temp_dir)
-            assert_plugin_success(result)
-
+        with temporary_test_file(TEST_MODEL) as test_model: 
+            temp_dir = os.path.dirname(test_model.name)
+            result = gen_design_doc(test_model.name, temp_dir)
+            assert_plugin_success(result) 
             files = os.listdir(temp_dir)
             self.assertEqual(len(files), 2)
-
-            test_design_doc_file_name, *_ = [
-                f for f in files if f != os.path.basename(test_model_file_name)
-            ]
-            with open(f"{temp_dir}/{test_design_doc_file_name}", "r") as design_doc:
-                markdown = design_doc.read()
-                self.assert_headings(markdown)
+            test_design_doc_file_name, *_ = [f for f in files if f != os.path.basename(test_model.name)]
+            with open(os.path.join(temp_dir, test_design_doc_file_name)) as markdown_file:
+                markdown = markdown_file.read()
+                self.assert_headings(markdown, os.path.basename(test_model.name))
                 self.assert_schema(markdown)
                 self.assert_model(markdown)
                 self.assert_use_case(markdown)
+   
+    def test_can_handle_names_with_dots(self):
+        with temporary_test_file(TEST_MODEL_2) as test_yaml:
+            temp_dir = os.path.dirname(test_yaml.name)
 
-    def assert_headings(self, markdown: str) -> None:
+            result = gen_design_doc(test_yaml.name, temp_dir)
+            assert_plugin_success(result)
+            files = os.listdir(temp_dir)
+            self.assertEqual(len(files), 2)
+            test_design_doc_file_name, *_ = [f for f in files if f != os.path.basename(test_yaml.name)]
+            with open(os.path.join(temp_dir, test_design_doc_file_name)) as markdown_file:
+                markdown = markdown_file.read()
+                self.assertIn("SubSchema.Schema1 data", markdown)
+                self.assertNotIn("required", markdown) 
+
+    def assert_headings(self, markdown: str, document_title: str) -> None:
         patterns = [
-            "test_model",
+            document_title,
             "Schema",
             "Model",
             "Use Cases",
@@ -163,4 +169,18 @@ usecase:
       source: model2
       target: model1
       action: move from point beta back to point alpha
+"""
+
+TEST_MODEL_2 = """
+schema:
+  name: Schema1
+  fields:
+    - name: data
+      type: SubSchema.Schema1
+---
+schema:
+  name: SubSchema.Schema1
+  fields:
+    - name: data
+      type: string
 """
