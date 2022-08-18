@@ -30,18 +30,6 @@
                     "pattern": "(\\\\?([^\\/]*[\\/])*)([^\\/]+)$",
                     "description": "The filesystem path to the Python3 executable."
                 },
-                "aac.version": {
-                    "scope": "machine-overridable",
-                    "type": "string",
-                    "enum": [
-                        "0.0.5",
-                        "0.1.0",
-                        "0.1.1",
-                        "0.1.2"
-                    ],
-                    "default": "0.1.2",
-                    "description": "The version of the installed AaC tool."
-                },
                 "aac.aacPath": {
                     "scope": "machine-overridable",
                     "type": "string",
@@ -73,6 +61,21 @@
                     "maximum": 65535,
                     "default": 5007,
                     "description": "The port to use for establishing a TCP connection with the LSP server."
+                },
+                "aac.rest_api.host": {
+                    "scope": "machine-overridable",
+                    "type": "string",
+                    "pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
+                    "default": "127.0.0.1",
+                    "description": "The host to use for establishing a connection to an AaC RESTful server."
+                },
+                "aac.rest_api.port": {
+                    "scope": "machine-overridable",
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 65535,
+                    "default": 8000,
+                    "description": "The port to use for establishing a connection to an AaC RESTful server."
                 }
             }
         },
@@ -80,11 +83,6 @@
             {
                 "command": "aac.execute",
                 "title": "Execute AaC Command",
-                "category": "AaC"
-            },
-            {
-                "command": "aac.visualEditor.new",
-                "title": "Open Definition in Visual Editor",
                 "category": "AaC"
             }
         ],
@@ -130,12 +128,6 @@
                 }
             ]
         },
-        "viewsWelcome": [
-            {
-                "view": "aac-visual-editor",
-                "contents": "You can have paragraphs of text here. You can have [links](https://code.visualstudio.com) to external sources or [internal commands](command:welcome-view-content-sample.hello).\nUse new lines to have new paragraphs.\nPlace a link alone in a paragraph to make it a button\n[Hello](command:welcome-view-content-sample.hello)"
-            }
-        ],
         "customEditors": [
             {
                 "viewType": "aac.visualEditor",
@@ -168,6 +160,7 @@
         "@types/glob": "^7.2.0",
         "@types/mocha": "^9.0.0",
         "@types/node": "14.x",
+        "@types/request": "^2.48.8",
         "@types/sinon": "^10.0.11",
         "@types/vscode": "^1.60.0",
         "@typescript-eslint/eslint-plugin": "^5.10.1",
@@ -184,7 +177,6 @@
     },
     "dependencies": {
         "@json-editor/json-editor": "^2.8.0",
-        "@types/request": "^2.48.8",
         "request": "^2.88.2",
         "vscode-languageclient": "^7.0.0"
     }

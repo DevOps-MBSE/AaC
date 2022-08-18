@@ -18,7 +18,7 @@ suite("AaC Executable Wrapper Test Suite", () => {
         };
 
         await aacWrapper.executeCommandWithArguments(versionCommand)
-            .then((output: string) => assert.ok(output.includes(configuration.getConfigurationItem("version"))))
+            .then((output: string) => assert.ok(output.includes("Print the AaC package version.")))
             .catch(reason => assert.fail(reason));
     });
 });

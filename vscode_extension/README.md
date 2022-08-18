@@ -33,9 +33,6 @@ The filesystem path to the Python3 executable. If using a virtual environment, u
 
 The default value is `/usr/local/bin`.
 
-### version
-The version of the installed AaC tool. If the environment is using a different version of AaC, an error will be shown to the user.
-
 ### aacPath
 The filesystem path to the aac CLI tool. MUST be set in order to for the AaC VSCode extension to start up the LSP server in IO mode.
 
