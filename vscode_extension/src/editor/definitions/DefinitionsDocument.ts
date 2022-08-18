@@ -131,8 +131,7 @@ export class AacDefinitionsDocument extends Disposable implements vscode.CustomD
      * Called by VS Code when the user saves the document.
      */
     async save(cancellation: vscode.CancellationToken): Promise<void> {
-        // await this.saveAs(this.uri, cancellation);
-        console.log("save")
+        await this.saveAs(this.uri, cancellation);
         this._savedEdits = Array.from(this._edits);
     }
 

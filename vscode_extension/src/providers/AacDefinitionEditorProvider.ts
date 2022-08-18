@@ -98,7 +98,7 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
             if (event.type === 'ready') {
                 this.getDefinition(path.basename(document.uri.fsPath), true).then(response => {
                     this.postMessage(webviewPanel, 'update', {
-                        value: response.body
+                        value: response?.body
                     });
                 })
             }
