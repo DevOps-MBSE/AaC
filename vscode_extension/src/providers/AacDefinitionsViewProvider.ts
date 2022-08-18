@@ -29,15 +29,18 @@ class Definition extends vscode.TreeItem {
         public readonly definitionModel: DefinitionModel,
         public readonly collapsibleState: vscode.TreeItemCollapsibleState
     ) {
+
         super(definitionModel.name, collapsibleState);
-        this.tooltip = `${definitionModel.name}`;
-        this.description = `${definitionModel.name}`;
+        this.definitionType = Object.keys(definitionModel.structure)[0];
+        this.description = `${this.definitionType}`;
+        this.tooltip = `Open the ${this.definitionType} definition "${definitionModel.name}" in a visual editor.\nThe definition originates from ${definitionModel.sourceUri}`;
+        this.iconPath = {
+            light: "",
+            dark:  ""
+        };
     }
 
-    iconPath = {
-        light: path.join(__filename, '..', '..', 'resources', 'light', 'dependency.svg'),
-        dark: path.join(__filename, '..', '..', 'resources', 'dark', 'dependency.svg')
-    };
+    private definitionType: string;
 }
 
 function getDefinitionByName(definitionName: string) {
