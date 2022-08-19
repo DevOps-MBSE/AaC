@@ -136,9 +136,13 @@ def _handle_template_error(error_reason: str, callback: Callable, *args, **kwarg
     try:
         return callback(*args, **kwargs)
     except TemplateError as template_error:
+        error_message = f"{error_reason}\n{template_error}"
+
+        if hasattr(template_error, "filename"):
+            error_message = f"{error_reason}\n{os.path.basename(template_error.filename)}:L{template_error.lineno} {template_error.message}"
+
         raise AacTemplateError(
-            f"{template_error.__class__.__name__} occurred running {__package__}.{callback.__name__}:\n"
-            f"{error_reason}\n{template_error}"
+            f"{template_error.__class__.__name__} occurred running {__package__}.{callback.__name__}:\n{error_message}"
         )
 
 
