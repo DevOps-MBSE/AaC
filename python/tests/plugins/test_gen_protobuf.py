@@ -8,6 +8,7 @@ from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.plugins.plugin_execution import plugin_result
 from aac.plugins.gen_protobuf.gen_protobuf_impl import (
     gen_protobuf,
+    _convert_message_name_to_file_name,
     _convert_camel_case_to_snake_case,
     _get_message_template_properties,
     _convert_description_to_protobuf_comment
@@ -137,6 +138,15 @@ class TestGenerateProtobufPlugin(ActiveContextTestCase):
     )
     def test__convert_camel_case_to_snake_case(self, test_string, expected_string):
         self.assertEqual(expected_string, _convert_camel_case_to_snake_case(test_string))
+
+    @params(
+        ("Data A", "data_a.proto"),
+        ("Message with multiple spaces", "messagewithmultiplespaces.proto"),
+        (" beginningSpace", "beginning_space.proto"),
+        ("trailing ", "trailing.proto"),
+    )
+    def test__convert_message_name_to_file_name(self, test_string, expected_string):
+        self.assertEqual(expected_string, _convert_message_name_to_file_name(test_string))
 
     def test__generate_protobuf_details_from_data_message_model(self):
         test_field = _to_message_template_field_properties(TEST_FIELD_A_NAME, INT64_TYPE, TEST_FIELD_A_DESCRIPTION)
