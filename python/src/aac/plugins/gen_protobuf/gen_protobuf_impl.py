@@ -197,6 +197,14 @@ def _to_template_properties_dict(name: str, description: str, enums: list[str] =
         elif type(option_value) is bool:
             option_entry["value"] = str(option_value).lower()
 
+    # Format the names
+    name = name.replace(" ", "")
+
+    # Format the enum values
+    enums = [enums.replace(" ", "_") for enums in enums]
+
+    # Format the field strings\
+
     return {
         "message_name": name,
         "message_description": description,
@@ -221,12 +229,11 @@ def _get_enum_properties(enum_definition: Definition) -> dict[str, any]:
     enum_name = enum_definition.name
     enum_definition_fields = enum_definition.get_top_level_fields()
     enum_values = [enum.upper() for enum in enum_definition_fields.get("values") or []]
-    formatted_enum_values = [value.replace(" ", "_") for value in enum_values or []]
     enum_description = enum_definition_fields.get("description") or ""
     description_as_proto_comment = _convert_description_to_protobuf_comment(enum_description)
     definition_options = enum_definition_fields.get("protobuf_message_options") or []
 
-    return _to_template_properties_dict(enum_name, description_as_proto_comment, enums=formatted_enum_values, options=definition_options)
+    return _to_template_properties_dict(enum_name, description_as_proto_comment, enums=enum_values, options=definition_options)
 
 
 def _get_schema_properties(interface_structures: dict[str, Definition], data_definition: Definition) -> dict[str, any]:
@@ -249,8 +256,6 @@ def _get_schema_properties(interface_structures: dict[str, Definition], data_def
     definition_description_as_proto_comment = _convert_description_to_protobuf_comment(definition_description)
     definition_options = definition_fields.get("protobuf_message_options") or []
 
-    formatted_definition_name = definition_name.replace(" ", "")
-
     message_fields = []
     message_imports = []
     for field in structure_fields:
@@ -260,14 +265,11 @@ def _get_schema_properties(interface_structures: dict[str, Definition], data_def
         sanitized_proto_field_type = remove_list_type_indicator(proto_field_type)
         description_as_proto_comment = _convert_description_to_protobuf_comment(proto_field_description, 1)
 
-        formatted_proto_field_name = proto_field_name.replace(" ", "")
-        formatted_proto_field_type = sanitized_proto_field_type.replace(" ", "")
-
         message_fields.append(
             {
-                "name": formatted_proto_field_name,
+                "name": proto_field_name,
                 "description": description_as_proto_comment,
-                "type": formatted_proto_field_type,
+                "type": sanitized_proto_field_type,
                 "repeat": is_array_type(proto_field_type),
             }
         )
@@ -287,7 +289,7 @@ def _get_schema_properties(interface_structures: dict[str, Definition], data_def
             raise GenerateProtobufException(error_message)
 
     return _to_template_properties_dict(
-        formatted_definition_name,
+        definition_name,
         definition_description_as_proto_comment,
         fields=message_fields,
         imports=message_imports,
