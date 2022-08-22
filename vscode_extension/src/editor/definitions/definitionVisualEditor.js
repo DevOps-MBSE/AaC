@@ -19,7 +19,6 @@ const vscode = acquireVsCodeApi();
             // Initialize the editor with a JSON schema
             this.rootKey = Object.keys(data.structure)[0];
             addTitlesToJsonSchema(data.jsonSchema, this.rootKey)
-            console.log("sourceUri:", data.sourceUri)
 
             if (this.editor) {
                 this.editor.destroy();
@@ -38,13 +37,8 @@ const vscode = acquireVsCodeApi();
                 }
             );
 
-
-            // console.log(this.editor) //.getEditor(`${this.rootKey}.name`).disable();
-
             this.editor.on('change', () => {
                 const editorContent = this.editor?.getValue()
-                console.log("Edit ", editorContent)
-
                 const rootKey = editor.rootKey
                 const definitionStructure = {}
                 definitionStructure[rootKey] = editorContent
@@ -56,14 +50,11 @@ const vscode = acquireVsCodeApi();
                     structure: definitionStructure
                 };
 
-                console.log("sending edit", aacDefinitionEdit)
                 vscode.postMessage({ type: 2, body: aacDefinitionEdit});
             });
 
             // Hook up the submit button to log to the console
             document.getElementById('submit').addEventListener('click', function () {
-                console.log("Saving")
-
                 // Enum AacEditorEventTypes.SAVE = 3
                 vscode.postMessage({ type: 3 });
             });
@@ -75,7 +66,6 @@ const vscode = acquireVsCodeApi();
     // Handle messages from the extension
     window.addEventListener('message', async event => {
         const { type, body } = event.data;
-        console.log(`Event: ${type}`, body)
         switch (type) {
             // Enum AacEditorEventTypes.EDIT = 2
             case 2:
