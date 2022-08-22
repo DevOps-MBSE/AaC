@@ -179,7 +179,7 @@ export class AacDefinitionsDocument extends Disposable implements vscode.CustomD
      *
      * These backups are used to implement hot exit.
      */
-    async backup(destination: vscode.Uri, cancellation: vscode.CancellationToken): Promise<vscode.CustomDocumentBackup> {
+    async backup(destination: vscode.Uri, _cancellation: vscode.CancellationToken): Promise<vscode.CustomDocumentBackup> {
         // TODO - Write the document representation to file/disk
 
         return {
