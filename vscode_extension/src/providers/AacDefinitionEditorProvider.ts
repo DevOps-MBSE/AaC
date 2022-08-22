@@ -1,9 +1,9 @@
-import * as path from 'path'
+import * as path from 'path';
 import * as vscode from 'vscode';
 import { disposeAll } from '../disposable';
-import { AacDefinitionsDocument, AacDefinitionEdit, AacEditorEventTypes } from '../editor/definitions/DefinitionsDocument'
+import { AacDefinitionsDocument, AacDefinitionEdit, AacEditorEventTypes } from '../editor/definitions/DefinitionsDocument';
 import { getNonce } from '../nonce';
-import { aacRestApi, DefinitionModel } from "../requests/aacRequests"
+import { aacRestApi, DefinitionModel } from "../requests/aacRequests";
 import { IncomingMessage } from 'http';
 
 /**
@@ -106,12 +106,12 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
      */
     private getHtmlForWebview(webview: vscode.Webview): string {
         // Local path to script and css for the webview
-        const editorSourceDirPath = path.join(this._context.extensionUri.fsPath, 'src', 'editor', 'definitions')
+        const editorSourceDirPath = path.join(this._context.extensionUri.fsPath, 'src', 'editor', 'definitions');
 
         const scriptUri = webview.asWebviewUri(vscode.Uri.parse(path.join(editorSourceDirPath, 'definitionVisualEditor.js')));
         const styleMainUri = webview.asWebviewUri(vscode.Uri.parse(path.join(editorSourceDirPath, 'definitionEditor.css')));
 
-        const jsonNodeModulesPath = path.join(this._context.extensionUri.fsPath, 'node_modules')
+        const jsonNodeModulesPath = path.join(this._context.extensionUri.fsPath, 'node_modules');
 
         const jsonEditorPath = vscode.Uri.parse(path.join(jsonNodeModulesPath, '@json-editor', 'json-editor', 'dist', 'jsoneditor.js'));
 
@@ -150,7 +150,7 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
 
 
     private postEditMessage(panel: vscode.WebviewPanel, body: AacDefinitionEdit): void {
-        this.postMessage(panel, AacEditorEventTypes.EDIT, body)
+        this.postMessage(panel, AacEditorEventTypes.EDIT, body);
     }
 
     /**
@@ -168,33 +168,33 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
             case AacEditorEventTypes.READY:
                 this.getDefinition(document).then(response => {
                     this.postEditMessage(panel, response.body as AacDefinitionEdit);
-                })
+                });
                 return;
             case AacEditorEventTypes.EDIT:
-                document.makeEdit(message.body as AacDefinitionEdit)
+                document.makeEdit(message.body as AacDefinitionEdit);
                 return;
             case AacEditorEventTypes.SAVE:
-                this.updateDefinition(document)
+                this.updateDefinition(document);
                 return;
         }
     }
 
     private async getDefinition(document: AacDefinitionsDocument):  Promise<{ response: IncomingMessage; body: DefinitionModel; }>  {
-        return Promise.resolve(aacRestApi.getDefinitionByNameDefinitionGet(document.originalDefinitionName, true))
+        return Promise.resolve(aacRestApi.getDefinitionByNameDefinitionGet(document.originalDefinitionName, true));
     }
 
     private async updateDefinition(document: AacDefinitionsDocument): Promise<IncomingMessage> {
-        const updatedDefinitionModel: DefinitionModel = new DefinitionModel()
-        updatedDefinitionModel.name = document.originalDefinitionName
-        updatedDefinitionModel.sourceUri = document.originalDefinitionUri
-        updatedDefinitionModel.structure = document.definitionStructure ? document.definitionStructure : {}
+        const updatedDefinitionModel: DefinitionModel = new DefinitionModel();
+        updatedDefinitionModel.name = document.originalDefinitionName;
+        updatedDefinitionModel.sourceUri = document.originalDefinitionUri;
+        updatedDefinitionModel.structure = document.definitionStructure ? document.definitionStructure : {};
 
-        const response = (await Promise.resolve(aacRestApi.updateDefinitionDefinitionPut(updatedDefinitionModel))).response
-        if (response.statusCode != 204) {
-            vscode.window.showErrorMessage(`Failed to update definition: ${response.statusMessage}`)
+        const response = (await Promise.resolve(aacRestApi.updateDefinitionDefinitionPut(updatedDefinitionModel))).response;
+        if (response.statusCode !== 204) {
+            vscode.window.showErrorMessage(`Failed to update definition: ${response.statusMessage}`);
         };
 
-        return response
+        return response;
     }
 }
 

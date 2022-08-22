@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { aacRestApi, DefinitionModel } from "../requests/aacRequests"
+import { aacRestApi, DefinitionModel } from "../requests/aacRequests";
 
 export class AacDefinitionsViewProvider implements vscode.TreeDataProvider<Definition> {
     constructor() { }
@@ -20,8 +20,8 @@ export class AacDefinitionsViewProvider implements vscode.TreeDataProvider<Defin
     }
 
     private async getDefinitionsInContext(): Promise<Definition[]> {
-        const requestResponse = (await Promise.resolve(aacRestApi.getDefinitionsDefinitionsGet()))
-        return requestResponse.body.map((definition: DefinitionModel) => new Definition(definition, vscode.TreeItemCollapsibleState.None))
+        const requestResponse = (await Promise.resolve(aacRestApi.getDefinitionsDefinitionsGet()));
+        return requestResponse.body.map((definition: DefinitionModel) => new Definition(definition, vscode.TreeItemCollapsibleState.None));
     }
 }
 class Definition extends vscode.TreeItem {
@@ -44,7 +44,7 @@ class Definition extends vscode.TreeItem {
 }
 
 function getDefinitionByName(definitionName: string) {
-    return Promise.resolve(aacRestApi.getDefinitionByNameDefinitionGet(definitionName, true))
+    return Promise.resolve(aacRestApi.getDefinitionByNameDefinitionGet(definitionName, true));
 }
 
 export function onDefinitionNodeSelection(event: vscode.TreeViewSelectionChangeEvent<Definition>) {
@@ -55,6 +55,6 @@ export function onDefinitionNodeSelection(event: vscode.TreeViewSelectionChangeE
                 vscode.Uri.from({scheme: "untitled", path:`${response.body.name}`}),
                 "aac.visualEditor"
             );
-        })
+        });
     }
 }

@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { Disposable } from '../../disposable';
-import { aacRestApi, DefinitionModel } from "../../requests/aacRequests"
+import { aacRestApi, DefinitionModel } from "../../requests/aacRequests";
 import { IncomingMessage } from 'http';
 
 export enum AacEditorEventTypes {
@@ -62,13 +62,13 @@ export class AacDefinitionsDocument extends Disposable implements vscode.CustomD
         this._documentUri = uri;
         this._delegate = delegate;
         this._originalDefinitionName = path.basename(uri.path);
-        this._originalDefinitionUri = ""
+        this._originalDefinitionUri = "";
 
         this._delegate.getDefinition(this).then(response => {
-            this._definitionStructure = response.body.structure
-            this._originalDefinitionUri = response.body.sourceUri
-            this._jsonSchema = response.body.jsonSchema
-        })
+            this._definitionStructure = response.body.structure;
+            this._originalDefinitionUri = response.body.sourceUri;
+            this._jsonSchema = response.body.jsonSchema;
+        });
     }
 
     public get uri() { return this._documentUri; }
@@ -123,7 +123,7 @@ export class AacDefinitionsDocument extends Disposable implements vscode.CustomD
      */
     makeEdit(edit: AacDefinitionEdit) {
         this._edits.push(edit);
-        this._definitionStructure = edit.structure
+        this._definitionStructure = edit.structure;
 
         this._onDidChange.fire({
             label: 'edit',
@@ -146,7 +146,7 @@ export class AacDefinitionsDocument extends Disposable implements vscode.CustomD
      * Called by VS Code when the user saves the document.
      */
     async save(_cancellation: vscode.CancellationToken): Promise<void> {
-        this._delegate.updateDefinition(this)
+        this._delegate.updateDefinition(this);
     }
 
     /**
@@ -199,7 +199,7 @@ export class AacDefinitionsDocument extends Disposable implements vscode.CustomD
      * @returns an Object that is the definition's structure
      */
     async getDefinitionStructure(): Promise<Object> {
-        return this._definitionStructure ? this._definitionStructure : {}
+        return this._definitionStructure ? this._definitionStructure : {};
     }
 
     /**
@@ -207,6 +207,6 @@ export class AacDefinitionsDocument extends Disposable implements vscode.CustomD
      * @returns an Object that is the definition's JSON schema
      */
     async getDefinitionSchema(): Promise<Object> {
-        return this._jsonSchema ? this._jsonSchema : {}
+        return this._jsonSchema ? this._jsonSchema : {};
     }
 }
