@@ -140,11 +140,8 @@ def _get_enum_field_json_schema(field_name: str, field_type: str, language_conte
     example return value:
     ```
     "name": {
-        "type": "array",
-            "items": {
-                "type": "string",
-                "enum": ["John", "Jane", "Junior"]
-            }
+            "type": "string",
+            "enum": ["John", "Jane", "Junior"]
     }
     ```
     """

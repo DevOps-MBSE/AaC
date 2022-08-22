@@ -14,7 +14,7 @@
             "error",
             {
               "selector": "variable",
-              "format": ["camelCase", "UPPER_CASE", "PascalCase"]
+              "format": ["UPPER_CASE"]
             }
         ],
         "@typescript-eslint/semi": "warn",

@@ -27,7 +27,6 @@ suite("AaC Executable Wrapper Test Suite", () => {
         await aacWrapper.executeCommandWithArguments(helpDumpCommand)
             .then((output: string) => {
                 const searchString = "Validate the AaC definition file";
-                console.log(`it should execute the help command ${output}`);
                 assert.strictEqual(output.includes(searchString), true, `'${searchString}' not found in ${output}`);
             });
     });
