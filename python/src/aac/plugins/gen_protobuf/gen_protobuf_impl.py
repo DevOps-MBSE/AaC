@@ -169,9 +169,7 @@ def _get_message_template_properties(interface_structures: dict[str, Definition]
     return template_properties_list
 
 
-def _to_template_properties_dict(
-    name: str, description: str, enums: list[str] = [], fields: list[dict] = [], imports: list[str] = [], options: list = []
-) -> dict[str, any]:
+def _to_template_properties_dict(name: str, description: str, enums: list[str] = [], fields: list[dict] = [], imports: list[str] = [], options: list = []) -> dict[str, any]:
     """
     Return the template model properties dictionary for the provided arguments.
 
@@ -223,11 +221,12 @@ def _get_enum_properties(enum_definition: Definition) -> dict[str, any]:
     enum_name = enum_definition.name
     enum_definition_fields = enum_definition.get_top_level_fields()
     enum_values = [enum.upper() for enum in enum_definition_fields.get("values") or []]
+    formatted_enum_values = [value.replace(" ", "_") for value in enum_values or []]
     enum_description = enum_definition_fields.get("description") or ""
     description_as_proto_comment = _convert_description_to_protobuf_comment(enum_description)
     definition_options = enum_definition_fields.get("protobuf_message_options") or []
 
-    return _to_template_properties_dict(enum_name, description_as_proto_comment, enums=enum_values, options=definition_options)
+    return _to_template_properties_dict(enum_name, description_as_proto_comment, enums=formatted_enum_values, options=definition_options)
 
 
 def _get_schema_properties(interface_structures: dict[str, Definition], data_definition: Definition) -> dict[str, any]:
@@ -251,7 +250,7 @@ def _get_schema_properties(interface_structures: dict[str, Definition], data_def
     definition_options = definition_fields.get("protobuf_message_options") or []
 
     message_fields = []
-    message_imports = []
+    message_imports = [] 
     for field in structure_fields:
         proto_field_name = field.get("name")
         proto_field_description = field.get("description") or ""
