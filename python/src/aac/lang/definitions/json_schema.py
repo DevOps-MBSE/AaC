@@ -34,7 +34,7 @@ def get_definition_json_schema(definition: Definition, language_context: Languag
 
 
 def _get_definition_json_schema(definition_schema: Definition, language_context: LanguageContext) -> dict:
-    """Recursive function that traverses the definition structure and converts it to JSON schema entries."""
+    """Return the json schema structure for the definition schema."""
 
     schema_object = {}
     schema_structure_fields = definition_schema.get_top_level_fields().get("fields", {})
