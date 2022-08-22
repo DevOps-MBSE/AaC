@@ -9,15 +9,23 @@ const vscode = acquireVsCodeApi();
             this.ready = false;
 
             this.editable = false;
-            this.container = parent
+            this.container = parent;
+            this.rootKey = "";
+            this.sourceUri = "";
+            this.editor = null;
         }
 
         async setEditorData(data) {
             // Initialize the editor with a JSON schema
-            const rootKey = Object.keys(data.structure)[0];
-            addTitlesToJsonSchema(data.jsonSchema, rootKey)
+            this.rootKey = Object.keys(data.structure)[0];
+            addTitlesToJsonSchema(data.jsonSchema, this.rootKey)
             console.log("sourceUri:", data.sourceUri)
-            var editor = new JSONEditor(document.getElementById('main'),
+
+            if (this.editor) {
+                this.editor.destroy();
+            }
+
+            this.editor = new JSONEditor(document.getElementById('main'),
                 {
                     "use_default_values": true,
                     "prompt_before_delete": false,
@@ -26,14 +34,38 @@ const vscode = acquireVsCodeApi();
                     "array_controls_top": true,
                     "disable_edit_json": true,
                     "schema": data.jsonSchema,
-                    "startval": data.structure[rootKey]
+                    "startval": data.structure[this.rootKey]
                 }
             );
 
+
+            // console.log(this.editor) //.getEditor(`${this.rootKey}.name`).disable();
+
+            this.editor.on('change', () => {
+                const editorContent = this.editor?.getValue()
+                console.log("Edit ", editorContent)
+
+                const rootKey = editor.rootKey
+                const definitionStructure = {}
+                definitionStructure[rootKey] = editorContent
+
+                // Enum AacEditorEventTypes.EDIT = 2
+                const aacDefinitionEdit = {
+                    name: definitionStructure[rootKey].name,
+                    sourceUri: this.sourceUri,
+                    structure: definitionStructure
+                };
+
+                console.log("sending edit", aacDefinitionEdit)
+                vscode.postMessage({ type: 2, body: aacDefinitionEdit});
+            });
+
             // Hook up the submit button to log to the console
             document.getElementById('submit').addEventListener('click', function () {
-                // Get the value from the editor
-                postSaveMessage(editor.getValue());
+                console.log("Saving")
+
+                // Enum AacEditorEventTypes.SAVE = 3
+                vscode.postMessage({ type: 3 });
             });
         }
     }
@@ -43,16 +75,20 @@ const vscode = acquireVsCodeApi();
     // Handle messages from the extension
     window.addEventListener('message', async event => {
         const { type, body } = event.data;
+        console.log(`Event: ${type}`, body)
         switch (type) {
-            case 'update':
+            // Enum AacEditorEventTypes.EDIT = 2
+            case 2:
                 {
-                    await editor.setEditorData(body.value)
+                    await editor.setEditorData(body)
                     return;
                 }
         }
     });
 
-    postReadyMessage();
+    // Send editor is ready message
+    // Enum AacEditorEventTypes.READY = 1
+    vscode.postMessage({ type: 1 });
 }());
 
 function addTitlesToJsonSchema(jsonSchema, definitionRootKey) {
@@ -80,12 +116,4 @@ function recursivelyApplyArrayElementTitles(array_properties_object) {
 
 function getArrayEntryTitleFromArrayName(array_name) {
     return (array_name.endsWith("s") ? array_name.slice(0, -1) : array_name)
-}
-
-function postReadyMessage() {
-    vscode.postMessage({ type: 'ready' });
-}
-
-function postSaveMessage(savedContent) {
-    vscode.postMessage({ type: 'save', body: savedContent});
 }

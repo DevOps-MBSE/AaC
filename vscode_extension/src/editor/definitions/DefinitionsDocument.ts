@@ -1,8 +1,13 @@
 import * as vscode from 'vscode';
+import * as path from 'path';
 import { Disposable } from '../../disposable';
+import { aacRestApi, DefinitionModel } from "../../requests/aacRequests"
+import { IncomingMessage } from 'http';
 
-export interface AacDefinitionsDocumentDelegate {
-    getFileData(): Promise<Uint8Array>;
+export enum AacEditorEventTypes {
+    READY = 1,
+    EDIT = 2,
+    SAVE = 3
 }
 
 /**
@@ -10,8 +15,17 @@ export interface AacDefinitionsDocumentDelegate {
  */
 export interface AacDefinitionEdit {
     readonly name: string;
-    readonly source_uri: string;
+    readonly sourceUri: string;
     readonly structure: Object;
+    readonly jsonSchema?: Object;
+}
+
+/**
+ * Define the edit datastructure.
+ */
+export interface AacDefinitionDelegate {
+    getDefinition(document: AacDefinitionsDocument):  Promise<{ response: IncomingMessage; body: DefinitionModel; }>;
+    updateDefinition(document: AacDefinitionsDocument): Promise<IncomingMessage>;
 }
 
 /**
@@ -21,46 +35,46 @@ export class AacDefinitionsDocument extends Disposable implements vscode.CustomD
 
     static async create(
         uri: vscode.Uri,
-        backupId: string | undefined,
-        delegate: AacDefinitionsDocumentDelegate,
+        delegate: AacDefinitionDelegate
     ): Promise<AacDefinitionsDocument | PromiseLike<AacDefinitionsDocument>> {
-        //# TODO Set the initial file data here.
-
-        // If we have a backup, read that. Otherwise read the resource from the workspace
-        const dataFile = typeof backupId === 'string' ? vscode.Uri.parse(backupId) : uri;
-        const fileData = await AacDefinitionsDocument.readFile(dataFile);
-        return new AacDefinitionsDocument(uri, fileData, delegate);
+        return new AacDefinitionsDocument(uri, delegate);
     }
 
-    private static async readFile(uri: vscode.Uri): Promise<Uint8Array> {
-        if (uri.scheme === 'untitled') {
-            return new Uint8Array();
-        }
-        return new Uint8Array(await vscode.workspace.fs.readFile(uri));
-    }
+    private readonly _documentUri: vscode.Uri;
+    private readonly _delegate: AacDefinitionDelegate;
 
-    private readonly _uri: vscode.Uri;
-
-    private _documentData: Uint8Array;
+    //VSCode document attributes
     private _edits: Array<AacDefinitionEdit> = [];
     private _savedEdits: Array<AacDefinitionEdit> = [];
 
-    private readonly _delegate: AacDefinitionsDocumentDelegate;
+    // AaC Definition Data Attributes
+    private _originalDefinitionName: string;
+    private _originalDefinitionUri: string;
+    private _definitionStructure?: Object;
+    private _jsonSchema?: Object;
+
 
     private constructor(
         uri: vscode.Uri,
-        initialContent: Uint8Array,
-        delegate: AacDefinitionsDocumentDelegate
+        delegate: AacDefinitionDelegate
     ) {
         super();
-        this._uri = uri;
-        this._documentData = initialContent;
+        this._documentUri = uri;
         this._delegate = delegate;
+        this._originalDefinitionName = path.basename(uri.path);
+        this._originalDefinitionUri = ""
+
+        this._delegate.getDefinition(this).then(response => {
+            this._definitionStructure = response.body.structure
+            this._originalDefinitionUri = response.body.sourceUri
+            this._jsonSchema = response.body.jsonSchema
+        })
     }
 
-    public get uri() { return this._uri; }
-
-    public get documentData(): Uint8Array { return this._documentData; }
+    public get uri() { return this._documentUri; }
+    public get originalDefinitionName() { return this._originalDefinitionName; }
+    public get originalDefinitionUri() { return this._originalDefinitionUri; }
+    public get definitionStructure() { return this._definitionStructure; }
 
     private readonly _onDidDispose = this._register(new vscode.EventEmitter<void>());
 
@@ -70,7 +84,7 @@ export class AacDefinitionsDocument extends Disposable implements vscode.CustomD
     public readonly onDidDispose = this._onDidDispose.event;
 
     private readonly _onDidChangeDocument = this._register(new vscode.EventEmitter<{
-        readonly content?: Uint8Array;
+        readonly content?: Object;
         readonly edits: readonly AacDefinitionEdit[];
     }>());
 
@@ -109,9 +123,10 @@ export class AacDefinitionsDocument extends Disposable implements vscode.CustomD
      */
     makeEdit(edit: AacDefinitionEdit) {
         this._edits.push(edit);
+        this._definitionStructure = edit.structure
 
         this._onDidChange.fire({
-            label: 'Stroke',
+            label: 'edit',
             undo: async () => {
                 this._edits.pop();
                 this._onDidChangeDocument.fire({
@@ -130,31 +145,31 @@ export class AacDefinitionsDocument extends Disposable implements vscode.CustomD
     /**
      * Called by VS Code when the user saves the document.
      */
-    async save(cancellation: vscode.CancellationToken): Promise<void> {
-        await this.saveAs(this.uri, cancellation);
-        this._savedEdits = Array.from(this._edits);
+    async save(_cancellation: vscode.CancellationToken): Promise<void> {
+        this._delegate.updateDefinition(this)
     }
 
     /**
      * Called by VS Code when the user saves the document to a new location.
      */
-    async saveAs(targetResource: vscode.Uri, cancellation: vscode.CancellationToken): Promise<void> {
-        const fileData = await this._delegate.getFileData();
+    async saveAs(_targetResource: vscode.Uri, cancellation: vscode.CancellationToken): Promise<void> {
+
         if (cancellation.isCancellationRequested) {
             return;
         }
-        await vscode.workspace.fs.writeFile(targetResource, fileData);
+
+        this._delegate.updateDefinition(this);
     }
 
     /**
      * Called by VS Code when the user calls `revert` on a document.
      */
     async revert(_cancellation: vscode.CancellationToken): Promise<void> {
-        const diskContent = await AacDefinitionsDocument.readFile(this.uri);
-        this._documentData = diskContent;
+        // TODO - Read the document representation/backup from file/disk
+        this._definitionStructure = await this._delegate.getDefinition(this);
         this._edits = this._savedEdits;
         this._onDidChangeDocument.fire({
-            content: diskContent,
+            content: this._definitionStructure,
             edits: this._edits,
         });
     }
@@ -165,7 +180,7 @@ export class AacDefinitionsDocument extends Disposable implements vscode.CustomD
      * These backups are used to implement hot exit.
      */
     async backup(destination: vscode.Uri, cancellation: vscode.CancellationToken): Promise<vscode.CustomDocumentBackup> {
-        await this.saveAs(destination, cancellation);
+        // TODO - Write the document representation to file/disk
 
         return {
             id: destination.toString(),
@@ -177,5 +192,21 @@ export class AacDefinitionsDocument extends Disposable implements vscode.CustomD
                 }
             }
         };
+    }
+
+   /**
+     * Get the definition structure/object
+     * @returns an Object that is the definition's structure
+     */
+    async getDefinitionStructure(): Promise<Object> {
+        return this._definitionStructure ? this._definitionStructure : {}
+    }
+
+    /**
+     * Get the JSON Schema for the definition
+     * @returns an Object that is the definition's JSON schema
+     */
+    async getDefinitionSchema(): Promise<Object> {
+        return this._jsonSchema ? this._jsonSchema : {}
     }
 }

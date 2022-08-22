@@ -1,9 +1,10 @@
 import * as path from 'path'
 import * as vscode from 'vscode';
 import { disposeAll } from '../disposable';
-import { AacDefinitionsDocument, AacDefinitionEdit } from '../editor/definitions/DefinitionsDocument'
+import { AacDefinitionsDocument, AacDefinitionEdit, AacEditorEventTypes } from '../editor/definitions/DefinitionsDocument'
 import { getNonce } from '../nonce';
-import { aacRestApi, DefinitionModel } from '../requests/aacRequests'
+import { aacRestApi, DefinitionModel } from "../requests/aacRequests"
+import { IncomingMessage } from 'http';
 
 /**
  * Provider for AaC visual definition editors.
@@ -39,22 +40,15 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
 
     async openCustomDocument(
         uri: vscode.Uri,
-        openContext: { backupId?: string },
+        _openContext: { backupId?: string },
         _token: vscode.CancellationToken
     ): Promise<AacDefinitionsDocument> {
-        const document: AacDefinitionsDocument = await AacDefinitionsDocument.create(uri, openContext.backupId, {
-            getFileData: async () => {
-                const webviewsForDocument = Array.from(this.webviews.get(document.uri));
-                if (!webviewsForDocument.length) {
-                    throw new Error('Could not find webview to save for');
-                }
-                const panel = webviewsForDocument[0];
-                return new Uint8Array()
-            }
-        });
+        const document: AacDefinitionsDocument = await AacDefinitionsDocument.create(uri, {
+                getDefinition: this.getDefinition,
+                updateDefinition: this.updateDefinition
+            });
 
         const listeners: vscode.Disposable[] = [];
-
         listeners.push(document.onDidChange(event => {
             // Propagate document changes to VS Code.
             this._onDidChangeCustomDocument.fire({
@@ -63,14 +57,6 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
             });
         }));
 
-        listeners.push(document.onDidChangeContent(event => {
-            for (const webviewPanel of this.webviews.get(document.uri)) {
-                this.postMessage(webviewPanel, 'update', {
-                    edits: event.edits,
-                    content: event.content,
-                });
-            }
-        }));
 
         document.onDidDispose(() => disposeAll(listeners));
 
@@ -91,18 +77,7 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
         };
         webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview);
 
-        webviewPanel.webview.onDidReceiveMessage(event => this.onMessage(document, event));
-
-        // Wait for the webview to be properly ready before we init
-        webviewPanel.webview.onDidReceiveMessage(event => {
-            if (event.type === 'ready') {
-                this.getDefinition(path.basename(document.uri.fsPath), true).then(response => {
-                    this.postMessage(webviewPanel, 'update', {
-                        value: response?.body
-                    });
-                })
-            }
-        });
+        webviewPanel.webview.onDidReceiveMessage(event => this.onMessage(webviewPanel, document, event));
     }
 
     private readonly _onDidChangeCustomDocument = new vscode.EventEmitter<vscode.CustomDocumentEditEvent<AacDefinitionsDocument>>();
@@ -146,7 +121,7 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
         // Use a nonce to whitelist which scripts can be run
         const nonce = getNonce();
 
-        return /* html */`
+        return `
 			<!DOCTYPE html>
 			<html lang="en">
 			<head>
@@ -173,36 +148,53 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
 			</html>`;
     }
 
-    private readonly _callbacks = new Map<number, (response: any) => void>();
 
-    private postMessage(panel: vscode.WebviewPanel, type: string, body: any): void {
+    private postEditMessage(panel: vscode.WebviewPanel, body: AacDefinitionEdit): void {
+        this.postMessage(panel, AacEditorEventTypes.EDIT, body)
+    }
+
+    /**
+     * Send a message to the editor.
+     */
+    private postMessage(panel: vscode.WebviewPanel, type: AacEditorEventTypes, body: any): void {
         panel.webview.postMessage({ type, body });
     }
 
-    private onMessage(document: AacDefinitionsDocument, message: any) {
-        console.log(document)
-
+    /**
+     * On messages from the editor, perform the appropriate action.
+     */
+    private onMessage(panel: vscode.WebviewPanel, document: AacDefinitionsDocument, message: any) {
         switch (message.type) {
-            case 'save':
-                console.log(message.body as AacDefinitionEdit)
-
-                const updatedDefinitionModel = new DefinitionModel()
-                updatedDefinitionModel.name = message.body.name
-                updatedDefinitionModel.structure = message.body
-                updatedDefinitionModel.sourceUri = "test"
-
-                console.log(updatedDefinitionModel)
-                this.updateDefinition(updatedDefinitionModel)
+            case AacEditorEventTypes.READY:
+                this.getDefinition(document).then(response => {
+                    this.postEditMessage(panel, response.body as AacDefinitionEdit);
+                })
+                return;
+            case AacEditorEventTypes.EDIT:
+                document.makeEdit(message.body as AacDefinitionEdit)
+                return;
+            case AacEditorEventTypes.SAVE:
+                this.updateDefinition(document)
                 return;
         }
     }
 
-    private getDefinition(definitionName: string, includeJsonSchema: boolean = false) {
-        return Promise.resolve(aacRestApi.getDefinitionByNameDefinitionGet(definitionName, includeJsonSchema)).catch(error => {console.error(error)})
+    private async getDefinition(document: AacDefinitionsDocument):  Promise<{ response: IncomingMessage; body: DefinitionModel; }>  {
+        return Promise.resolve(aacRestApi.getDefinitionByNameDefinitionGet(document.originalDefinitionName, true))
     }
 
-    private updateDefinition(definition: DefinitionModel) {
-        return Promise.resolve(aacRestApi.updateDefinitionDefinitionPut(definition)).catch(error => {console.error(error)})
+    private async updateDefinition(document: AacDefinitionsDocument): Promise<IncomingMessage> {
+        const updatedDefinitionModel: DefinitionModel = new DefinitionModel()
+        updatedDefinitionModel.name = document.originalDefinitionName
+        updatedDefinitionModel.sourceUri = document.originalDefinitionUri
+        updatedDefinitionModel.structure = document.definitionStructure ? document.definitionStructure : {}
+
+        const response = (await Promise.resolve(aacRestApi.updateDefinitionDefinitionPut(updatedDefinitionModel))).response
+        if (response.statusCode != 204) {
+            vscode.window.showErrorMessage(`Failed to update definition: ${response.statusMessage}`)
+        };
+
+        return response
     }
 }
 
