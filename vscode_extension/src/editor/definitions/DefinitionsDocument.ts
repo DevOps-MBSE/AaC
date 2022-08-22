@@ -199,7 +199,7 @@ export class AacDefinitionsDocument extends Disposable implements vscode.CustomD
      * @returns an Object that is the definition's structure
      */
     async getDefinitionStructure(): Promise<Object> {
-        return this._definitionStructure ? this._definitionStructure : {};
+        return this._definitionStructure ?? {};
     }
 
     /**
@@ -207,6 +207,6 @@ export class AacDefinitionsDocument extends Disposable implements vscode.CustomD
      * @returns an Object that is the definition's JSON schema
      */
     async getDefinitionSchema(): Promise<Object> {
-        return this._jsonSchema ? this._jsonSchema : {};
+        return this._jsonSchema ?? {};
     }
 }

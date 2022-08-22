@@ -187,7 +187,7 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
         const updatedDefinitionModel: DefinitionModel = new DefinitionModel();
         updatedDefinitionModel.name = document.originalDefinitionName;
         updatedDefinitionModel.sourceUri = document.originalDefinitionUri;
-        updatedDefinitionModel.structure = document.definitionStructure ? document.definitionStructure : {};
+        updatedDefinitionModel.structure = document.definitionStructure ?? {};
 
         const response = (await Promise.resolve(aacRestApi.updateDefinitionDefinitionPut(updatedDefinitionModel))).response;
         if (response.statusCode !== 204) {
