@@ -1,15 +1,8 @@
 import * as assert from "assert";
 
 import * as aacWrapper from "../../aacExecutableWrapper";
-import * as configuration from "../../configuration";
 
 suite("AaC Executable Wrapper Test Suite", () => {
-    test("it should get the version of the aac tool", async () => {
-        await aacWrapper.getAaCVersion()
-            .then(value => assert.strictEqual(value, configuration.getConfigurationItem("version")))
-            .catch(reason => assert.fail(reason));
-    });
-
     test("it should execute a command with no arguments", async () => {
         const versionCommand = {
             name: "version",
@@ -18,7 +11,24 @@ suite("AaC Executable Wrapper Test Suite", () => {
         };
 
         await aacWrapper.executeCommandWithArguments(versionCommand)
-            .then((output: string) => assert.ok(output.includes("Print the AaC package version.")))
-            .catch(reason => assert.fail(reason));
+            .then((output: string) => {
+                const searchString = "version: success";
+                assert.strictEqual(output.includes(searchString), true, `'${searchString}' not found in ${output}`);
+            });
+    });
+
+    test("it should execute the help command", async () => {
+        const helpDumpCommand = {
+            name: "help-dump",
+            description: "",
+            arguments: [],
+        };
+
+        await aacWrapper.executeCommandWithArguments(helpDumpCommand)
+            .then((output: string) => {
+                const searchString = "Validate the AaC definition file";
+                console.log(`it should execute the help command ${output}`);
+                assert.strictEqual(output.includes(searchString), true, `'${searchString}' not found in ${output}`);
+            });
     });
 });
