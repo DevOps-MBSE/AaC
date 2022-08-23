@@ -1,7 +1,7 @@
 import logging
 
 from aac.lang.language_context import LanguageContext
-from aac.lang.references import is_reference_format_valid
+from aac.lang.definitions.references import is_reference_format_valid
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.structure import get_substructures_by_type
 from aac.plugins.validators import ValidatorResult
