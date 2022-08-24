@@ -1,5 +1,5 @@
 """Module for the Goto Definition Provider which handles all goto definition requests."""
-
+import logging
 from pygls.server import LanguageServer
 from pygls.lsp.types.basic_structures import Location, Position, Range
 from pygls.lsp.types.language_features.definition import DefinitionParams
@@ -8,6 +8,7 @@ from pygls.workspace import Document
 from aac.lang.definitions.type import remove_list_type_indicator
 from aac.lang.language_context import LanguageContext
 from aac.plugins.lsp_server.providers.lsp_provider import LspProvider
+from aac.lang.definitions.lexeme import Lexeme
 
 
 class GotoDefinitionProvider(LspProvider):
@@ -33,18 +34,15 @@ class GotoDefinitionProvider(LspProvider):
             found at the specified position, an empty list is returned.
         """
         def symbol_at_position() -> str:
-            def on_symbol() -> bool:
-                return document.source[offset].strip() != ""
-
             def at_beginning_of_symbol() -> bool:
-                return offset > 0 and document.source[offset - 1].strip() == ""
+                return offset > 0 and document.source[offset - 1].isspace()
 
             def at_end_of_symbol() -> bool:
-                return offset < len(document.source) and document.source[offset].strip() == ""
+                return offset < len(document.source) and document.source[offset].isspace()
 
             offset = document.offset_at_position(position)
-            before = document.source[:offset].split()[-1] if on_symbol() and not at_beginning_of_symbol() else ""
-            after = document.source[offset:].split()[0] if not at_end_of_symbol() else ""
+            before = document.source[:offset].split()[-1] if at_end_of_symbol() else ""
+            after = document.source[offset:].split()[0] if at_beginning_of_symbol() else ""
             return f"{before}{after}"
 
         document = documents.get(current_uri)
@@ -65,13 +63,23 @@ class GotoDefinitionProvider(LspProvider):
         if not name:
             return []
 
-        name = remove_list_type_indicator(name).strip(":")
+        lsp_context = self.language_server.language_context if self.language_server else get_active_context()
+
         locations = []
-        for doc in documents.values():
-            ranges = self.get_ranges_containing_name(doc.source, name)
-            lines = doc.source.splitlines()
-            definition_ranges = [text_range for text_range in ranges if self._is_definition(name, lines[:text_range.start.line + 1])]
-            locations.extend([Location(uri=doc.uri, range=definition_range) for definition_range in definition_ranges])
+        name = remove_list_type_indicator(name).strip(":")
+        definition_to_find = lsp_context.get_definition_by_name(name)
+
+        if not definition_to_find:
+            logging.warn(f"Can't find references for non-definition {name}")
+        else:
+            def filter_lexeme_by_reference_name(lexeme: Lexeme) -> bool:
+                return lexeme.value == name
+
+            referencing_lexemes = filter(filter_lexeme_by_reference_name, definition_to_find.lexemes)
+            for lexeme in referencing_lexemes:
+                start_position = Position(line=lexeme.location.line, character=lexeme.location.column)
+                end_position = Position(line=lexeme.location.line, character=lexeme.location.column + lexeme.location.span)
+                locations.append(Location(uri=lexeme.source, range=Range(start=start_position, end=end_position)))
 
         return locations
 
