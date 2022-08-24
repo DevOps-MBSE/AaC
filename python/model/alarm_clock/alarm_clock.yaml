@@ -1,7 +1,7 @@
 import:
   - ./structures.yaml
 model:
-  name: Alarm Clock
+  name: AlarmClock
   description: A simple alarm clock
   components:
     - name: clock
@@ -56,8 +56,8 @@ model:
         - name: currentTime
           type: Timestamp
       output:
-        - name: timer Alert
-          type: Timer Alert
+        - name: timerAlert
+          type: TimerAlert
 ---
 model:
   name: ClockAlarm
@@ -67,8 +67,8 @@ model:
       type: request-response
       description: Trigger the alarm noise when a TimerAlert is received.
       input:
-        - name: timer Alert
-          type: Timer Alert
+        - name: timerAlert
+          type: TimerAlert
       output:
-        - name: alarm Noise
-          type: Alarm Noise
+        - name: alarmNoise
+          type: AlarmNoise
