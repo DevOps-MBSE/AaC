@@ -5,7 +5,8 @@ the caller with a dictionary of the content keyed by the named type.  This allow
 to find a certain type in a model by just looking for that key.
 """
 
-from os import path
+from os import path, linesep
+from pickletools import int4
 from typing import Optional
 from yaml.parser import ParserError as YAMLParserError
 import yaml
@@ -69,7 +70,7 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
     def mark_to_source_location(start: yaml.error.Mark, end: yaml.error.Mark) -> SourceLocation:
         return SourceLocation(start.line, start.column, start.index, end.column - start.column)
 
-    def get_lexemes_for_definition(contents):
+    def get_lexemes_for_definition(contents) -> list[Lexeme]:
         yaml_source = path.abspath(source) if path.lexists(source) else DEFAULT_SOURCE_URI
         lexemes = []
         tokens = [token for token in yaml.scan(contents, Loader=yaml.SafeLoader) if hasattr(token, "value")]
@@ -78,24 +79,38 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
             lexemes.append(Lexeme(location, yaml_source, token.value))
         return lexemes
 
+    def is_lexeme_between_locations(lexeme: Lexeme, inclusive_line_start: int, inclusive_line_end: int4) -> list[Lexeme]:
+        return lexeme.start_mark.line >= inclusive_line_start and lexeme.end_mark.line <= inclusive_line_end
+
+    yaml_tokens = list(yaml.scan(model_content, Loader=yaml.SafeLoader))
+    doc_start_token = [token for token in yaml_tokens if isinstance(token, yaml.tokens.StreamStartToken)]
+    doc_end_token = [token for token in yaml_tokens if isinstance(token, yaml.tokens.StreamEndToken)]
+    doc_segment_tokens = [token for token in yaml_tokens if isinstance(token, yaml.tokens.DocumentStartToken)]
+    value_tokens = [token for token in yaml_tokens if hasattr(token, "value")]
+    doc_tokens = [*doc_start_token, *doc_segment_tokens, *doc_end_token]
+
     source_files: dict[str, AaCFile] = {}
     definitions: list[Definition] = []
-    for doc in model_content.split(YAML_DOCUMENT_SEPARATOR):
-        for root in _parse_yaml(source, doc):
-            if "import" in root:
-                del root["import"]
+    for doc_token_index in range(0, len(doc_tokens) - 1):
+        start_doc_token = doc_tokens[doc_token_index]
+        end_doc_token = doc_tokens[doc_token_index + 1] if doc_token_index < len(doc_tokens) else doc_tokens[-1]
 
-            root_type, *_ = root.keys()
-            root_name = root.get(root_type).get("name")
-            contents = _add_yaml_document_separator(doc) if _has_document_separator(model_content, doc) else doc
-            lexemes = get_lexemes_for_definition(contents)
-            source_file = source_files.get(source)
+        content_start = start_doc_token.start_mark.line
+        content_end = end_doc_token.end_mark.line
 
-            if not source_file:
-                source_file = AaCFile(source, True, False)
-                source_files[source] = source_file
+        yaml_text = linesep.join(model_content.split(linesep)[content_start:content_end])
+        definition_lexemes = [lexeme for lexeme in value_tokens if is_lexeme_between_locations(lexeme, content_start, content_end)]
+        root_yaml = _parse_yaml(source, yaml_text)[0]
 
-            definitions.append(Definition(root_name, contents, source_file, lexemes, root))
+        root_type, *_ = root_yaml.keys()
+        root_name = root_yaml.get(root_type).get("name")
+        source_file = source_files.get(source)
+
+        if not source_file:
+            source_file = AaCFile(source, True, False)
+            source_files[source] = source_file
+
+        definitions.append(Definition(root_name, yaml_text, source_file, definition_lexemes, root_yaml))
 
     return definitions
 
