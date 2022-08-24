@@ -20,9 +20,9 @@ from tests.helpers.io import temporary_test_file
 from tests.helpers.parsed_definitions import create_enum_definition, create_field_entry, create_schema_definition
 
 
-TEST_MESSAGE_A_NAME = "MessageA"
+TEST_MESSAGE_A_NAME = "messageA"
 TEST_MESSAGE_A_DESCRIPTION = "Some description for MessageA"
-TEST_MESSAGE_B_NAME = "MessageB"
+TEST_MESSAGE_B_NAME = "messageB"
 TEST_MESSAGE_B_FILE_NAME = "message_b.proto"
 TEST_FIELD_A_NAME = "TestFieldA"
 TEST_FIELD_A_DESCRIPTION = "Some description for TestFieldA"
@@ -53,16 +53,14 @@ class TestGenerateProtobufPlugin(ActiveContextTestCase):
 
             # Assert each data message has its own file.
             generated_file_names = os.listdir(temp_dir)
-            self.assertEqual(7, len(generated_file_names))
+            self.assertEqual(5, len(generated_file_names))
 
             # Assert each expected file is present
             self.assertIn("data_a.proto", generated_file_names)
             self.assertIn("data_b.proto", generated_file_names)
             self.assertIn("data_c.proto", generated_file_names)
-            self.assertIn("data_d.proto", generated_file_names)
             self.assertIn("message_metadata_data.proto", generated_file_names)
-            self.assertIn("message_type.proto", generated_file_names)
-            self.assertIn("message_space.proto", generated_file_names)
+            self.assertIn("message_type.proto", generated_file_names) 
 
             # Assert data_a.proto contents
             with open(os.path.join(temp_dir, "data_a.proto")) as data_a_proto_file:
@@ -76,9 +74,9 @@ class TestGenerateProtobufPlugin(ActiveContextTestCase):
                 self.assertIn('Description for the DataA MessageMetadataData', data_a_proto_file_contents)
 
                 # Assert data_a structure
-                self.assertIn("MessageMetadataData metadata", data_a_proto_file_contents)
+                self.assertIn("messageMetadataData metadata", data_a_proto_file_contents)
                 self.assertIn("string msg", data_a_proto_file_contents)
-                self.assertIn("MessageType message_type", data_a_proto_file_contents)
+                self.assertIn("messageType message_type", data_a_proto_file_contents)
 
             # Assert data_b.proto contents
             with open(os.path.join(temp_dir, "data_b.proto")) as data_b_proto_file:
@@ -91,7 +89,7 @@ class TestGenerateProtobufPlugin(ActiveContextTestCase):
                 self.assertIn('option boolean_property = false;', data_b_proto_file_contents)
 
                 # Assert data_b structure
-                self.assertIn("MessageMetadataData metadata", data_b_proto_file_contents)
+                self.assertIn("messageMetadataData metadata", data_b_proto_file_contents)
                 self.assertIn("string transformed_msg", data_b_proto_file_contents)
 
             # Assert data_c.proto contents
@@ -101,7 +99,7 @@ class TestGenerateProtobufPlugin(ActiveContextTestCase):
                 self.assertIn('import "message_metadata_data.proto"', data_c_proto_file_contents)
 
                 # Assert data_b structure
-                self.assertIn("MessageMetadataData metadata", data_c_proto_file_contents)
+                self.assertIn("messageMetadataData metadata", data_c_proto_file_contents)
                 self.assertIn("repeated fixed64 code", data_c_proto_file_contents)
 
             # Assert message_metadata_data.proto contents
@@ -117,39 +115,10 @@ class TestGenerateProtobufPlugin(ActiveContextTestCase):
                 message_type_proto_file_contents = message_type_proto_file.read()
 
                 # Assert message_type structure
-                self.assertIn("enum MessageType", message_type_proto_file_contents)
+                self.assertIn("enum messageType", message_type_proto_file_contents)
                 self.assertIn("TYPE_1", message_type_proto_file_contents)
                 self.assertIn("TYPE_2", message_type_proto_file_contents)
                 self.assertIn("TYPE_3", message_type_proto_file_contents)
-
-            # Assert data_d.proto contents
-            with open(os.path.join(temp_dir, "data_d.proto")) as data_d_proto_file:
-                data_d_proto_file_contents = data_d_proto_file.read()
-                # Assert imports for component classes
-                self.assertIn('import "message_metadata_data.proto"', data_d_proto_file_contents)
-                self.assertIn('import "message_space.proto"', data_d_proto_file_contents)
-
-                # Assert the name of the model
-                self.assertIn('DataD', data_d_proto_file_contents)
-
-                # Assert Data D Message Descripton
-                self.assertIn('Description for the DataD Message', data_d_proto_file_contents)
-                self.assertIn('Description for the DataD MessageMetadataData', data_d_proto_file_contents)
-
-                # Assert data_d structure
-                self.assertIn("MessageMetadataData metadata", data_d_proto_file_contents)
-                self.assertIn("string msg", data_d_proto_file_contents)
-                self.assertIn("MessageSpace message_space", data_d_proto_file_contents)
-
-            # Assert message_space structure
-            with open(os.path.join(temp_dir, "message_space.proto")) as message_space_proto_file:
-                message_space_proto_file_contents = message_space_proto_file.read()
-
-                # Assert values with spaces
-                self.assertIn("enum MessageSpace", message_space_proto_file_contents)
-                self.assertIn("SPACE_1", message_space_proto_file_contents)
-                self.assertIn("SPACE_2", message_space_proto_file_contents)
-                self.assertIn("SPACE_3", message_space_proto_file_contents)
 
     @patch("aac.plugins.gen_protobuf.gen_protobuf_impl.load_templates")
     def test_gen_protobuf_fails_with_multiple_message_templates(self, load_templates):
@@ -286,18 +255,16 @@ model:
       type: ServiceOne
     - name: svc2
       type: ServiceTwo
-    - name: sv3
-      type: ServiceThree
   behavior:
     - name: doFlow
       type: request-response
       description:  process DataA and respond with DataD
       input:
         - name: in
-          type: DataA
+          type: Data A
       output:
         - name: out
-          type: Data D
+          type: DataC
       acceptance:
         - scenario: go
           given:
@@ -314,7 +281,7 @@ model:
       type: request-response
       input:
         - name: in
-          type: DataA
+          type: Data A
       output:
         - name: out
           type: DataB
@@ -347,28 +314,8 @@ model:
           then:
             - The user receives a response with DataC
 ---
-model:
-    name: ServiceThree
-    behavior:
-    - name: Process DataC
-      type: request-response
-      input:
-        - name: in
-          type: DataC
-      output:
-        - name: out
-          type: Data D
-      acceptance:
-        - scenario: go
-          given:
-            - ServiceThree is running. 
-          when:
-            - The user sends a DataD request
-          then:
-            - The user receives a DataB Response
----
 schema:
-  name: DataA
+  name: Data A
   description: Description for the DataA Message
   fields:
   - name: metadata
@@ -377,7 +324,7 @@ schema:
   - name: msg
     type: string
   - name: message_type
-    type: MessageType
+    type: Message Type
   validation:
     - name: Required fields are present
       arguments:
@@ -404,10 +351,10 @@ schema:
 schema:
   name: DataC
   fields:
-  - name: metadata
-    type: MessageMetadataData
-  - name: code
-    type: fixed64[]
+    - name: metadata
+      type: MessageMetadataData
+    - name: code
+      type: fixed64[]
   validation:
     - name: Required fields are present
       arguments:
@@ -416,40 +363,17 @@ schema:
 schema:
   name: MessageMetadataData
   fields:
-  - name: message_id
-    type: int64
+    - name: message_id
+      type: int64
   validation:
     - name: Required fields are present
       arguments:
         - message_id
 ---
 enum:
-  name: MessageType
+  name: Message Type
   values:
-  - type_1
-  - type_2
-  - type_3
----
-enum:
-    name: Message Space
-    values:
-    - space 1
-    - space 2
-    - space 3
----
-schema:
-  name: Data D
-  description: Description for the DataD Message
-  fields:
-  - name: metadata
-    type: MessageMetadataData
-    description: Description for the DataD MessageMetadataData
-  - name: msg
-    type: string
-  - name: message_space
-    type: Message Space
-  validation:
-    - name: Required fields are present
-      arguments:
-        - message_space
+    - type 1
+    - type 2
+    - type 3
 """

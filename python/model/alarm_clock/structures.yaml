@@ -1,11 +1,11 @@
 schema:
-  name: Timer Alert
+  name: TimerAlert
   description: Data structure for timer alerts.
   fields:
     - name: triggeredTime
       type: Timestamp
-    - name: alarm Noise
-      type: Alarm Noise
+    - name: alarmNoise
+      type: AlarmNoise
 ---
 schema:
   name: Timestamp
@@ -71,7 +71,7 @@ enum:
     - "+14:00"
 ---
 enum:
-  name: Alarm Noise
+  name: AlarmNoise
   description: List of available alarm noises
   values:
     - "Sonic Boom"

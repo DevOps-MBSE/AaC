@@ -198,12 +198,18 @@ def _to_template_properties_dict(name: str, description: str, enums: list[str] =
             option_entry["value"] = str(option_value).lower()
 
     # Format the names
-    name = name.replace(" ", "")
+    name = _sanitize_message_to_camel_case(name)
+
+    if (file_type == "enum"):
+        name = _sanitize_message_to_pascal_case(name)
 
     # Format the enum values
-    enums = [enums.replace(" ", "_") for enums in enums]
+    enums = [_sanitize_message_to_snake_case(enum) for enum in enums]
 
-    # Format the field strings\
+    # Format the field strings
+    for field in fields:
+        field["name"] = _sanitize_message_to_camel_case(field.get("name"))
+        field["type"] = _sanitize_message_to_pascal_case(field.get("type"))
 
     return {
         "message_name": name,
@@ -228,7 +234,7 @@ def _get_enum_properties(enum_definition: Definition) -> dict[str, any]:
     """
     enum_name = enum_definition.name
     enum_definition_fields = enum_definition.get_top_level_fields()
-    enum_values = [enum.upper() for enum in enum_definition_fields.get("values") or []]
+    enum_values = enum_definition_fields.get("values") or []
     enum_description = enum_definition_fields.get("description") or ""
     description_as_proto_comment = _convert_description_to_protobuf_comment(enum_description)
     definition_options = enum_definition_fields.get("protobuf_message_options") or []
@@ -319,7 +325,6 @@ def _generate_protobuf_messages(
         generated_template.file_name = _convert_message_name_to_file_name(properties.get("message_name"))
         generated_template.overwrite = True  # Protobuf files shouldn't be modified by the user, and so should always overwrite
         return generated_template
-
     # This plugin produces only protobuf messages and one message per file due to protobuf specifications. (it only needs one template)
     protobuf_template = None
     if len(protobuf_message_templates) != 1:
@@ -367,6 +372,58 @@ def _convert_camel_case_to_snake_case(camel_case_str: str) -> str:
     for char in camel_case_str[1:]:
         snake_case_str += (char, f"_{char.lower()}")[char.isupper()]
     return snake_case_str
+
+
+def _sanitize_message_to_camel_case(message_with_space: str) -> str:
+    """
+    Remove spaces from messages to convert them to CamelCaseStr.
+
+    Args:
+        message_with_space: the message containing a space to convert
+
+    Returns:
+        CamelCaseStr
+    """
+    message_to_camel_case = ""
+
+    message_to_camel_case = message_with_space.replace(" ", "")
+
+    return message_to_camel_case
+
+
+def _sanitize_message_to_pascal_case(message_with_space: str) -> str:
+    """
+    Remove spaces from messages to convert them to pascalCaseStr.
+
+    Args:
+        message_with_space: the message containing a space to convert
+
+    Returns:
+        pascalCaseStr
+    """
+    message_to_pascal_case = ""
+
+    message_to_pascal_case = message_with_space[0].lower() + message_with_space[1:].replace(" ", "")
+
+    return message_to_pascal_case
+
+
+def _sanitize_message_to_snake_case(message_with_space: str) -> str:
+    """
+    Remove spaces from messages to convert them to snake_case_str.
+
+    Args:
+        message_with_space: the message containing a space to convert
+
+    Returns:
+        snake_case_str
+    """
+    string_to_convert = ""
+
+    string_to_convert = message_with_space.upper().replace(" ", "_")
+    converted_string = string_to_convert
+
+    return converted_string
 
 
 def _convert_description_to_protobuf_comment(description: str, indent_level: int = 0) -> str:
