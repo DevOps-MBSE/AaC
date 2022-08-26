@@ -1,19 +1,13 @@
 """Module for the Find All References Provider which handles requests to find all references."""
 
-import os
 import logging
-from attr import Factory, attrib, attrs, validators
 from pygls.server import LanguageServer
 from pygls.lsp.types.basic_structures import Location, Position, Range, Position
 from pygls.lsp.types.language_features.references import ReferenceParams
 from pygls.workspace import Document
 
-from aac.io.parser import parse
 from aac.lang.definitions.references import get_definition_type_references_from_list
 from aac.lang.definitions.type import remove_list_type_indicator
-from aac.lang.active_context_lifecycle_manager import get_active_context
-from aac.lang.definition_helpers import get_definitions_by_root_key
-from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.lexeme import Lexeme
 import aac.plugins.lsp_server.providers.lsp_provider as lsp_provider
 
@@ -69,7 +63,7 @@ class FindReferencesProvider(lsp_provider.LspProvider):
         if not name:
             return []
 
-        lsp_context = self.language_server.language_context if self.language_server else get_active_context()
+        lsp_context = self.language_server.language_context
 
         locations = []
         name = remove_list_type_indicator(name).strip(":")
@@ -79,9 +73,10 @@ class FindReferencesProvider(lsp_provider.LspProvider):
             logging.warn(f"Can't find references for non-definition {name}")
         else:
             referencing_definitions = get_definition_type_references_from_list(definition_to_find, lsp_context.definitions)
+
             for definition in referencing_definitions:
                 def filter_lexeme_by_reference_name(lexeme: Lexeme) -> bool:
-                    return lexeme.value == name
+                    return remove_list_type_indicator(lexeme.value) == name
 
                 referencing_lexemes = filter(filter_lexeme_by_reference_name, definition.lexemes)
 
@@ -133,5 +128,5 @@ class FindReferencesProvider(lsp_provider.LspProvider):
 
         lines.reverse()
         lines = [line.strip() for line in lines]
-        context: LanguageContext = self.language_server.language_context
+        context = self.language_server.language_context
         return is_schema_definition() or is_enum_definition()
