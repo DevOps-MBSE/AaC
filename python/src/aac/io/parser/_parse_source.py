@@ -6,18 +6,18 @@ to find a certain type in a model by just looking for that key.
 """
 
 from os import path, linesep
-from pickletools import int4
 from typing import Optional
 from yaml.parser import ParserError as YAMLParserError
+import logging
 import yaml
 
-from aac.io.files.aac_file import AaCFile
 from aac.io.constants import YAML_DOCUMENT_SEPARATOR, DEFAULT_SOURCE_URI
+from aac.io.files.aac_file import AaCFile
+from aac.io.parser._parser_error import ParserError
 from aac.io.paths import sanitize_filesystem_path
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.lexeme import Lexeme
 from aac.lang.definitions.source_location import SourceLocation
-from aac.io.parser._parser_error import ParserError
 
 
 def parse(source: str, source_uri: Optional[str] = None) -> list[Definition]:
@@ -70,17 +70,16 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
     def mark_to_source_location(start: yaml.error.Mark, end: yaml.error.Mark) -> SourceLocation:
         return SourceLocation(start.line, start.column, start.index, end.column - start.column)
 
-    def get_lexemes_for_definition(contents) -> list[Lexeme]:
-        yaml_source = path.abspath(source) if path.lexists(source) else DEFAULT_SOURCE_URI
-        lexemes = []
-        tokens = [token for token in yaml.scan(contents, Loader=yaml.SafeLoader) if hasattr(token, "value")]
-        for token in tokens:
+    def get_lexemes_for_definition(value_tokens, content_start, content_end) -> list[Lexeme]:
+        definition_tokens = [token for token in value_tokens if is_token_between_locations(token, content_start, content_end)]
+        definition_lexemes = []
+        for token in definition_tokens:
             location = mark_to_source_location(token.start_mark, token.end_mark)
-            lexemes.append(Lexeme(location, yaml_source, token.value))
-        return lexemes
+            definition_lexemes.append(Lexeme(location, source, token.value))
+        return definition_lexemes
 
-    def is_lexeme_between_locations(lexeme: Lexeme, inclusive_line_start: int, inclusive_line_end: int4) -> list[Lexeme]:
-        return lexeme.start_mark.line >= inclusive_line_start and lexeme.end_mark.line <= inclusive_line_end
+    def is_token_between_locations(token, inclusive_line_start: int, inclusive_line_end: int) -> list[Lexeme]:
+        return token.start_mark.line >= inclusive_line_start and token.end_mark.line <= inclusive_line_end
 
     yaml_tokens = list(yaml.scan(model_content, Loader=yaml.SafeLoader))
     doc_start_token = [token for token in yaml_tokens if isinstance(token, yaml.tokens.StreamStartToken)]
@@ -98,26 +97,31 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
         content_start = start_doc_token.start_mark.line
         content_end = end_doc_token.end_mark.line
 
-        yaml_text = linesep.join(model_content.split(linesep)[content_start:content_end])
-        definition_lexemes = [lexeme for lexeme in value_tokens if is_lexeme_between_locations(lexeme, content_start, content_end)]
-        root_yaml = _parse_yaml(source, yaml_text)[0]
+        end_of_file_offset = (1 if isinstance(end_doc_token, yaml.tokens.StreamEndToken) else 0)
 
-        root_type, *_ = root_yaml.keys()
-        root_name = root_yaml.get(root_type).get("name")
-        source_file = source_files.get(source)
+        yaml_text = linesep.join(model_content.split(linesep)[content_start:content_end + end_of_file_offset])
+        yaml_text += ("" if isinstance(end_doc_token, yaml.tokens.StreamEndToken) else linesep)
 
-        if not source_file:
-            source_file = AaCFile(source, True, False)
-            source_files[source] = source_file
+        if yaml_text.strip():
+            definition_lexemes = get_lexemes_for_definition(value_tokens, content_start, content_end)
+            root_yaml = _parse_yaml(source, yaml_text)[0]
 
-        definitions.append(Definition(root_name, yaml_text, source_file, definition_lexemes, root_yaml))
+            if "import" in root_yaml:
+                del root_yaml["import"]
+
+            root_type, *_ = root_yaml.keys()
+            definition_name = root_yaml.get(root_type, {}).get("name")
+            source_file = source_files.get(source)
+
+            if not source_file:
+                source_file = AaCFile(source, True, False)
+                source_files[source] = source_file
+
+            definitions.append(Definition(definition_name, yaml_text, source_file, definition_lexemes, root_yaml))
+        else:
+            logging.info(f"Skipping empty content between {start_doc_token}:L{content_start} and {end_doc_token}:L{content_end} in source {source}")
 
     return definitions
-
-
-def _has_document_separator(model_content: str, document: str) -> bool:
-    before, _, _ = model_content.partition(document)
-    return before.endswith(YAML_DOCUMENT_SEPARATOR)
 
 
 def _parse_yaml(source: str, content: str) -> list[dict]:
@@ -140,10 +144,10 @@ def _parse_yaml(source: str, content: str) -> list[dict]:
         _error_if_not_yaml(source, content, models)
         _error_if_not_complete(source, content, models)
         return models
-    except Exception as error:
-        raise ParserError(source, [f"Failed to parse file, invalid YAML {error}", content])
     except YAMLParserError as error:
         raise ParserError(source, [f"Failed to parse file, invalid YAML {error.context} {error.problem}", content])
+    except Exception as error:
+        raise ParserError(source, [f"Failed to parse file, invalid YAML {error}", content])
 
 
 def _error_if_not_yaml(source, content, models):
