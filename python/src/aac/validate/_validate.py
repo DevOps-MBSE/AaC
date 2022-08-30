@@ -12,7 +12,7 @@ from aac.io.parser import parse
 from aac.plugins.plugin_manager import get_validator_plugins
 from aac.plugins.validators import ValidatorPlugin, ValidatorResult
 from aac.validate._validation_error import ValidationError
-from aac.validate._validation_result import ValidationResult
+from aac.validate._validation_result import ValidationResult, Severity
 from aac.validate._collect_validators import get_applicable_validators_for_definition
 
 
@@ -46,7 +46,7 @@ def _with_validation(user_definitions: list[Definition]) -> ValidationResult:
     try:
         result = _validate_definitions(user_definitions)
 
-        if result.is_valid:
+        if result.is_valid():
             return result
         else:
             raise ValidationError("Failed to validate content with errors:", *result.messages)
@@ -68,10 +68,10 @@ def _validate_definitions(user_definitions: list[Definition]) -> ValidationResul
 
     for result in validator_results:
         validator_messages.extend(result.messages)
-        if not result.is_valid:
+        if not result.is_valid():
             invalid_results.extend(result.messages)
 
-    return ValidationResult(user_definitions, validator_messages, (len(invalid_results) < 1))
+    return ValidationResult(user_definitions, {Severity.ERROR: validator_messages})
 
 
 def _validate_definition(
