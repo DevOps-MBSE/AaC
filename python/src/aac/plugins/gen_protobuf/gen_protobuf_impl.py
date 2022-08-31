@@ -207,7 +207,7 @@ def _to_template_properties_dict(name: str, description: str, enums: list[str] =
 
     # Format the field strings
     for field in fields:
-        field["name"] = _sanitize_string_to_pascal_case(field.get("name"))
+        field["name"] = _sanitize_string_to_snake_case(field.get("name"))
         if (field["type"] not in active_context.get_primitive_types()):
             field["type"] = _sanitize_string_to_pascal_case(field.get("type"))
 
@@ -410,7 +410,7 @@ def _sanitize_string_to_pascal_case(string_to_convert: str) -> str:
     change_to_pascal = ""
     split_strings = re.findall(r'[A-Z][^A-Z]*|\s|-|_|;', string_to_convert)
     if (len(split_strings) > 0):
-        change_to_pascal = ''.join(string[0].upper() + string[1:].lower() for string in split_strings)
+        change_to_pascal = ''.join(string[0].upper() + string[1:].lower().replace("_", "") for string in split_strings)
         converted_string = change_to_pascal.replace(" ", "")
     else:
         converted_string = string_to_convert[0].upper() + string_to_convert[1:].replace(" ", "")

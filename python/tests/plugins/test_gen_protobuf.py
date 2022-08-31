@@ -24,11 +24,11 @@ TEST_MESSAGE_A_NAME = "MessageA"
 TEST_MESSAGE_A_DESCRIPTION = "Some description for MessageA"
 TEST_MESSAGE_B_NAME = "MessageB"
 TEST_MESSAGE_B_FILE_NAME = "message_b.proto"
-TEST_FIELD_A_NAME = "TestFieldA"
+TEST_FIELD_A_NAME = "test_field_a"
 TEST_FIELD_A_DESCRIPTION = "Some description for TestFieldA"
-FIELD_METADATA_NAME = "Metadata"
-FIELD_MESSAGE_NAME = "Message"
-FIELD_ID_NAME = "Id"
+FIELD_METADATA_NAME = "metadata"
+FIELD_MESSAGE_NAME = "message"
+FIELD_ID_NAME = "id"
 INT64_TYPE = "int64"
 STRING_TYPE = "string"
 SCHEMA_FILE_TYPE = "schema"
@@ -74,8 +74,8 @@ class TestGenerateProtobufPlugin(ActiveContextTestCase):
                 self.assertIn('Description for the DataA MessageMetadataData', data_a_proto_file_contents)
 
                 # Assert data_a structure
-                self.assertIn("MessageMetadataData Metadata", data_a_proto_file_contents)
-                self.assertIn("string Msg", data_a_proto_file_contents)
+                self.assertIn("MessageMetadataData metadata", data_a_proto_file_contents)
+                self.assertIn("string msg", data_a_proto_file_contents)
                 self.assertIn("MessageType message_type", data_a_proto_file_contents)
 
             # Assert data_b.proto contents
@@ -99,7 +99,7 @@ class TestGenerateProtobufPlugin(ActiveContextTestCase):
                 self.assertIn('import "message_metadata_data.proto"', data_c_proto_file_contents)
 
                 # Assert data_b structure
-                self.assertIn("MessageMetadataData Metadata", data_c_proto_file_contents)
+                self.assertIn("MessageMetadataData metadata", data_c_proto_file_contents)
                 self.assertIn("repeated fixed64 code", data_c_proto_file_contents)
 
             # Assert message_metadata_data.proto contents
@@ -107,7 +107,7 @@ class TestGenerateProtobufPlugin(ActiveContextTestCase):
                 message_metadata_data_proto_file_contents = message_metadata_data_proto_file.read()
 
                 # Assert data_b structure
-                self.assertIn("Message MessageMetadataData", message_metadata_data_proto_file_contents)
+                self.assertIn("message MessageMetadataData", message_metadata_data_proto_file_contents)
                 self.assertIn("int64 message_id", message_metadata_data_proto_file_contents)
 
             # Assert message_type.proto contents
