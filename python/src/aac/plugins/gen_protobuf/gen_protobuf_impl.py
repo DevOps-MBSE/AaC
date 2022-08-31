@@ -5,6 +5,7 @@
 
 import logging
 import os
+import re
 
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.type import is_array_type, remove_list_type_indicator
@@ -198,18 +199,17 @@ def _to_template_properties_dict(name: str, description: str, enums: list[str] =
             option_entry["value"] = str(option_value).lower()
 
     # Format the names
-    name = _sanitize_message_to_camel_case(name)
-
-    if (file_type == "enum"):
-        name = _sanitize_message_to_pascal_case(name)
+    name = _sanitize_string_to_pascal_case(name)
 
     # Format the enum values
-    enums = [_sanitize_message_to_snake_case(enum) for enum in enums]
+    enums = [_sanitize_string_to_snake_case(enum) for enum in enums]
+    enums = [enum.upper() for enum in enums]
 
     # Format the field strings
     for field in fields:
-        field["name"] = _sanitize_message_to_camel_case(field.get("name"))
-        field["type"] = _sanitize_message_to_pascal_case(field.get("type"))
+        field["name"] = _sanitize_string_to_pascal_case(field.get("name"))
+        if (field["type"] not in active_context.get_primitive_types()):
+            field["type"] = _sanitize_string_to_pascal_case(field.get("type"))
 
     return {
         "message_name": name,
@@ -374,7 +374,7 @@ def _convert_camel_case_to_snake_case(camel_case_str: str) -> str:
     return snake_case_str
 
 
-def _sanitize_message_to_camel_case(message_with_space: str) -> str:
+def _sanitize_string_to_camel_case(string_to_convert: str) -> str:
     """
     Remove spaces from messages to convert them to CamelCaseStr.
 
@@ -382,16 +382,21 @@ def _sanitize_message_to_camel_case(message_with_space: str) -> str:
         message_with_space: the message containing a space to convert
 
     Returns:
-        CamelCaseStr
+        camelCaseStr
     """
-    message_to_camel_case = ""
+    converted_string = ""
+    change_to_camel = ""
+    split_strings = re.findall(r'[A-Z][^A-Z]*|\s|-|_|;', string_to_convert)
+    if (len(split_strings) > 0):
+        change_to_camel = ''.join(string[0].upper() + string[1:].lower() for string in split_strings)
+        converted_string = change_to_camel[0].lower() + change_to_camel[1:].replace(" ", "")
+    else:
+        converted_string = string_to_convert[0].lower() + string_to_convert[1:].replace(" ", "")
 
-    message_to_camel_case = message_with_space.replace(" ", "")
-
-    return message_to_camel_case
+    return converted_string
 
 
-def _sanitize_message_to_pascal_case(message_with_space: str) -> str:
+def _sanitize_string_to_pascal_case(string_to_convert: str) -> str:
     """
     Remove spaces from messages to convert them to pascalCaseStr.
 
@@ -399,16 +404,21 @@ def _sanitize_message_to_pascal_case(message_with_space: str) -> str:
         message_with_space: the message containing a space to convert
 
     Returns:
-        pascalCaseStr
+        PascalCaseStr
     """
-    message_to_pascal_case = ""
+    converted_string = ""
+    change_to_pascal = ""
+    split_strings = re.findall(r'[A-Z][^A-Z]*|\s|-|_|;', string_to_convert)
+    if (len(split_strings) > 0):
+        change_to_pascal = ''.join(string[0].upper() + string[1:].lower() for string in split_strings)
+        converted_string = change_to_pascal.replace(" ", "")
+    else:
+        converted_string = string_to_convert[0].upper() + string_to_convert[1:].replace(" ", "")
 
-    message_to_pascal_case = message_with_space[0].lower() + message_with_space[1:].replace(" ", "")
-
-    return message_to_pascal_case
+    return converted_string
 
 
-def _sanitize_message_to_snake_case(message_with_space: str) -> str:
+def _sanitize_string_to_snake_case(string_to_convert: str) -> str:
     """
     Remove spaces from messages to convert them to snake_case_str.
 
@@ -418,10 +428,14 @@ def _sanitize_message_to_snake_case(message_with_space: str) -> str:
     Returns:
         snake_case_str
     """
-    string_to_convert = ""
-
-    string_to_convert = message_with_space.upper().replace(" ", "_")
-    converted_string = string_to_convert
+    converted_string = ""
+    change_to_snake = ""
+    split_on_space = re.split(r'\s|-|;', string_to_convert)
+    if (len(split_on_space) <= 1):
+        converted_string = string_to_convert.lower()
+    else:
+        change_to_snake = '_'.join(word.lower() for word in split_on_space)
+        converted_string = change_to_snake
 
     return converted_string
 

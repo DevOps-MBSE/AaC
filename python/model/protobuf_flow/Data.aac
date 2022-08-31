@@ -14,11 +14,11 @@ schema:
       type: Authentication
       description: System boundary authentication information.
     - name: metadata
-      type: MessageMetadataData
+      type: Message MetadataData
     - name: msg
       type: string
     - name: message_type
-      type: MessageType
+      type: Message Type
   validation:
     - name: Required fields are present
       arguments:
@@ -28,7 +28,7 @@ schema:
   name: DataB
   fields:
     - name: metadata
-      type: MessageMetadataData
+      type: Message MetadataData
     - name: transformed_msg
       type: string
   validation:
@@ -40,7 +40,7 @@ schema:
   name: DataC
   fields:
     - name: metadata
-      type: MessageMetadataData
+      type: Message MetadataData
     - name: code
       type: fixed64[]
   validation:
@@ -52,7 +52,7 @@ schema:
   name: DataD
   fields:
     - name: metadata
-      type: MessageMetadataData
+      type: Message MetadataData
     - name: msg
       type: string
   validation:
@@ -61,7 +61,7 @@ schema:
         - metadata
 ---
 schema:
-  name: MessageMetadataData
+  name: Message MetadataData
   fields:
     - name: message_id
       type: int64[]
@@ -71,10 +71,10 @@ schema:
         - message_id
 ---
 enum:
-  name: MessageType
+  name: Message Type
   description: |
     Enums for the various supported message types.
   values:
-    - type_1
+    - type 1
     - type_2
-    - type_3
+    - type-3

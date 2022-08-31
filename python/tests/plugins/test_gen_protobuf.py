@@ -20,15 +20,15 @@ from tests.helpers.io import temporary_test_file
 from tests.helpers.parsed_definitions import create_enum_definition, create_field_entry, create_schema_definition
 
 
-TEST_MESSAGE_A_NAME = "messageA"
+TEST_MESSAGE_A_NAME = "MessageA"
 TEST_MESSAGE_A_DESCRIPTION = "Some description for MessageA"
-TEST_MESSAGE_B_NAME = "messageB"
+TEST_MESSAGE_B_NAME = "MessageB"
 TEST_MESSAGE_B_FILE_NAME = "message_b.proto"
 TEST_FIELD_A_NAME = "TestFieldA"
 TEST_FIELD_A_DESCRIPTION = "Some description for TestFieldA"
-FIELD_METADATA_NAME = "metadata"
-FIELD_MESSAGE_NAME = "message"
-FIELD_ID_NAME = "id"
+FIELD_METADATA_NAME = "Metadata"
+FIELD_MESSAGE_NAME = "Message"
+FIELD_ID_NAME = "Id"
 INT64_TYPE = "int64"
 STRING_TYPE = "string"
 SCHEMA_FILE_TYPE = "schema"
@@ -74,9 +74,9 @@ class TestGenerateProtobufPlugin(ActiveContextTestCase):
                 self.assertIn('Description for the DataA MessageMetadataData', data_a_proto_file_contents)
 
                 # Assert data_a structure
-                self.assertIn("messageMetadataData metadata", data_a_proto_file_contents)
-                self.assertIn("string msg", data_a_proto_file_contents)
-                self.assertIn("messageType message_type", data_a_proto_file_contents)
+                self.assertIn("MessageMetadataData Metadata", data_a_proto_file_contents)
+                self.assertIn("string Msg", data_a_proto_file_contents)
+                self.assertIn("MessageType message_type", data_a_proto_file_contents)
 
             # Assert data_b.proto contents
             with open(os.path.join(temp_dir, "data_b.proto")) as data_b_proto_file:
@@ -89,7 +89,7 @@ class TestGenerateProtobufPlugin(ActiveContextTestCase):
                 self.assertIn('option boolean_property = false;', data_b_proto_file_contents)
 
                 # Assert data_b structure
-                self.assertIn("messageMetadataData metadata", data_b_proto_file_contents)
+                self.assertIn("MessageMetadataData metadata", data_b_proto_file_contents)
                 self.assertIn("string transformed_msg", data_b_proto_file_contents)
 
             # Assert data_c.proto contents
@@ -99,7 +99,7 @@ class TestGenerateProtobufPlugin(ActiveContextTestCase):
                 self.assertIn('import "message_metadata_data.proto"', data_c_proto_file_contents)
 
                 # Assert data_b structure
-                self.assertIn("messageMetadataData metadata", data_c_proto_file_contents)
+                self.assertIn("MessageMetadataData Metadata", data_c_proto_file_contents)
                 self.assertIn("repeated fixed64 code", data_c_proto_file_contents)
 
             # Assert message_metadata_data.proto contents
@@ -107,7 +107,7 @@ class TestGenerateProtobufPlugin(ActiveContextTestCase):
                 message_metadata_data_proto_file_contents = message_metadata_data_proto_file.read()
 
                 # Assert data_b structure
-                self.assertIn("message MessageMetadataData", message_metadata_data_proto_file_contents)
+                self.assertIn("Message MessageMetadataData", message_metadata_data_proto_file_contents)
                 self.assertIn("int64 message_id", message_metadata_data_proto_file_contents)
 
             # Assert message_type.proto contents
@@ -115,7 +115,7 @@ class TestGenerateProtobufPlugin(ActiveContextTestCase):
                 message_type_proto_file_contents = message_type_proto_file.read()
 
                 # Assert message_type structure
-                self.assertIn("enum messageType", message_type_proto_file_contents)
+                self.assertIn("enum MessageType", message_type_proto_file_contents)
                 self.assertIn("TYPE_1", message_type_proto_file_contents)
                 self.assertIn("TYPE_2", message_type_proto_file_contents)
                 self.assertIn("TYPE_3", message_type_proto_file_contents)
