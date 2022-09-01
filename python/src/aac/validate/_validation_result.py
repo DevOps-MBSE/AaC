@@ -1,3 +1,5 @@
+"""A module for representing the aggregated validation result."""
+
 from typing import Callable
 
 from attr import attrib, attrs, validators, Factory

@@ -1,3 +1,5 @@
+"""A module for providing validator plugin results."""
+
 from attr import attrib, attrs, validators, Factory
 
 
