@@ -21,7 +21,7 @@ class PluginContribution:
     items: set = attrib(default=Factory(set), validator=validators.instance_of(set))
 
     def is_contribution_type(self, contribution_type: ContributionType) -> bool:
-        """Return whether th contribution is of the specified contribution type."""
+        """Return whether the contribution is of the specified contribution type."""
         return self.contribution_type == contribution_type
 
     def __hash__(self) -> int:
