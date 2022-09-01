@@ -1,14 +1,8 @@
-from enum import Enum, auto
 from typing import Callable
 
 from attr import attrib, attrs, validators, Factory
 
-
-class Severity(Enum):
-    """A message severity for distinguishing between different kinds of ValidationResult messages."""
-    INFO = auto()
-    WARNING = auto()
-    ERROR = auto()
+from aac.plugins.validators._validator_finding import Severity
 
 
 @attrs(slots=True, auto_attribs=True)
