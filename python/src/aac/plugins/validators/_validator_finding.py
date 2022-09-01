@@ -9,9 +9,29 @@ is.
 
 from enum import Enum, auto
 
+from attr import attrib, attrs, validators
 
-class Severity(Enum):
+from aac.lang.definitions.definition import Definition
+
+
+class FindingSeverity(Enum):
     """A severity for distinguishing between different kinds of validator findings."""
     INFO = auto()
     WARNING = auto()
     ERROR = auto()
+
+
+@attrs(slots=True)
+class ValidatorFinding:
+    """
+    A finding made in a validator plugin.
+
+    Attributes:
+        definition (Definition): The definition on which the finding was made.
+        severity (FindingSeverity): The severity of the finding.
+        message (str): A message for the user to know how to address the finding, if needed.
+    """
+
+    definition: Definition = attrib(validator=validators.instance_of(Definition))
+    severity: FindingSeverity = attrib(validator=validators.instance_of(FindingSeverity))
+    message: str = attrib(validator=validators.instance_of(str))
