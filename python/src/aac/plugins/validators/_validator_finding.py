@@ -1,9 +1,10 @@
 """
-A module for validator findings created when validator plugins want to provide information to a user
-about a definition.
+A module for defining a validator finding.
 
-Validator findings include errors but need not be limited to errors, so this module also exports a
-severity that informs how severe the finding is.
+Validator findings are created when a validator plugin wants to provide feedback to a user about a
+definition. Validation errors are a subset of the category of validator findings but findings need
+not be limited to errors, so this module also exports a severity that informs how severe the finding
+is.
 """
 
 from enum import Enum, auto
