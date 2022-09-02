@@ -20,7 +20,7 @@ class TestValidatorFindings(TestCase):
     def test_add_findings_of_specific_severity(self):
         validator_findings = self.get_validator_findings()
 
-        self.assertEqual(len(validator_findings.findings), len(DEFAULT_TEST_FINDINGS))
+        self.assertEqual(len(validator_findings.get_all_findings()), len(DEFAULT_TEST_FINDINGS))
 
     def test_get_findings(self):
         validator_findings = self.get_validator_findings()
@@ -38,9 +38,9 @@ class TestValidatorFindings(TestCase):
         self, validator_findings: Optional[ValidatorFindings] = None, findings: list[ValidatorFinding] = DEFAULT_TEST_FINDINGS,
     ) -> ValidatorFindings:
         validator_findings = validator_findings or ValidatorFindings()
-        self.assertEqual(len(validator_findings.findings), 0)
+        self.assertEqual(len(validator_findings.get_all_findings()), 0)
 
         validator_findings.add_findings(findings)
-        self.assertEqual(len(validator_findings.findings), len(findings))
+        self.assertEqual(len(validator_findings.get_all_findings()), len(findings))
 
         return validator_findings
