@@ -24,15 +24,18 @@ class ValidatorFindings:
 
     def add_error_finding(self, definition: Definition, message: str) -> None:
         """Add the finding as an error finding."""
-        self.add_findings([ValidatorFinding(definition, FindingSeverity.ERROR, message)])
+        self._add_finding_with_severity(definition, message, FindingSeverity.ERROR)
 
     def add_warning_finding(self, definition: Definition, message: str) -> None:
         """Add the finding as an warning finding."""
-        self.add_findings([ValidatorFinding(definition, FindingSeverity.WARNING, message)])
+        self._add_finding_with_severity(definition, message, FindingSeverity.WARNING)
 
     def add_info_finding(self, definition: Definition, message: str) -> None:
         """Add the finding as an info finding."""
-        self.add_findings([ValidatorFinding(definition, FindingSeverity.INFO, message)])
+        self._add_finding_with_severity(definition, message, FindingSeverity.INFO)
+
+    def _add_finding_with_severity(self, definition: Definition, message: str, severity: FindingSeverity):
+        self.add_findings([ValidatorFinding(definition, severity, message)])
 
     def get_all_findings(self) -> list[ValidatorFinding]:
         """Return a list of all the validator findings."""
