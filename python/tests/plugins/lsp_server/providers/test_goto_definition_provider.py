@@ -1,8 +1,8 @@
-from unittest.async_case import IsolatedAsyncioTestCase
-
+from os import path
 from pygls.lsp import methods
 from pygls.lsp.types.basic_structures import Location, Position
 from pygls.lsp.types.language_features.definition import DefinitionParams
+from unittest.async_case import IsolatedAsyncioTestCase
 
 from aac.spec.core import get_aac_spec_as_yaml
 from aac.plugins.lsp_server.providers.goto_definition_provider import GotoDefinitionProvider
@@ -69,12 +69,12 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         self.assertEqual(text_range.end, Position(line=1, character=8 + len(TEST_SCHEMA_A.name)))
 
     async def test_get_named_location(self):
-        document_uri = self.to_uri(TEST_DOCUMENT_NAME) or ""
-        location, *_ = self.provider.get_definition_location_at_position(
+        document_uri = self.to_uri(path.join(TEST_DOCUMENT_NAME)) or ""
+        location = self.provider.get_definition_location_at_position(
             {document_uri: self.virtual_document_to_lsp_document(TEST_DOCUMENT_NAME)},
             document_uri,
             Position(line=29, character=13),
-        )
+        )[0]
 
         self.assertEqual(location.range.start, Position(line=1, character=8))
         self.assertEqual(location.range.end, Position(line=1, character=8 + len(TEST_SCHEMA_A.name)))
@@ -117,7 +117,7 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
 
         location = res.get_location()
         self.assertIsNotNone(location)
-        self.assertEqual(location.uri, self.to_uri(added_document.file_name))
+        self.assertEqual(path.basename(location.uri), path.basename(added_document.file_name))
         self.assertEqual(location.range.start, Position(line=definition_range.start.line, character=definition_range.start.character))
         self.assertEqual(location.range.end, Position(line=definition_range.end.line, character=definition_range.end.character))
 
@@ -125,7 +125,7 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         await self.create_document("spec.aac", get_aac_spec_as_yaml())
 
         res: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=0, character=1)
-        schema_definition_location, *_ = self.get_definition_location_at_position(TEST_DOCUMENT_NAME, line=0, character=1)
+        schema_definition_location = self.get_definition_location_at_position(TEST_DOCUMENT_NAME, line=0, character=1)[0]
 
         location = res.get_location()
         self.assertIsNotNone(location)
@@ -140,7 +140,7 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         character = string_range.start.character
         res: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=line, character=character)
 
-        string_definition_location, *_ = self.get_definition_location_of_name("string")
+        string_definition_location = self.get_definition_location_of_name("string")[0]
         location = res.get_location()
         self.assertIsNotNone(location)
         self.assertEqual(location.uri, self.to_uri(string_definition_location.uri))
@@ -154,7 +154,7 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         character = request_response_range.start.character
         res: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=line, character=character)
 
-        request_response_definition_location, *_ = self.get_definition_location_of_name("request-response")
+        request_response_definition_location = self.get_definition_location_of_name("request-response")[0]
         location = res.get_location()
         self.assertIsNotNone(location)
         self.assertEqual(location.uri, self.to_uri(request_response_definition_location.uri))
@@ -174,7 +174,7 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         custom_enum_definition_location, *_ = self.get_definition_location_of_name(TEST_ENUM.name)
         location = res.get_location()
         self.assertIsNotNone(location)
-        self.assertEqual(location.uri, self.to_uri(custom_enum_definition_location.uri))
+        self.assertEqual(path.basename(location.uri), path.basename((custom_enum_definition_location.uri)))
         self.assertEqual(location.range.json(), custom_enum_definition_location.range.json())
 
     async def test_no_results_when_nothing_under_cursor(self):

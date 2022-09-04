@@ -32,7 +32,7 @@ class TestHoverProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         )
 
     async def test_handles_hover_request(self):
-        res: HoverResponse = await self.hover(TEST_DOCUMENT_NAME)
+        res: HoverResponse = await self.hover(TEST_DOCUMENT_NAME, 1)
         self.assertEqual(res.get_content(), self.active_context.get_definition_by_name("schema").content)
 
     async def test_no_hover_when_nothing_under_cursor(self):

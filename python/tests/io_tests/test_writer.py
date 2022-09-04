@@ -50,7 +50,7 @@ class TestWriter(TestCase):
         self.assertListEqual([d.name for d in test_definitions], [d.name for d in actual_result_parsed_definitions])
         self.assertListEqual([d.source.uri for d in test_definitions], [d.source.uri for d in actual_result_parsed_definitions])
         # Disabling this test for now since the writer doesn't maintain multiline descriptions correctly which causes inconsistent lexeme lines when written to file then read back in.
-        # self.assertListEqual([d.lexemes[0].location.line for d in test_definitions], [d.lexemes[0].location.line for d in actual_result_parsed_definitions])
+        # self.assertListEqual([d.lexemes[0].location.line for d in test_definitions], [d.lexemes[0].location.line for d in actual_result_parsed_definitions]) # noqa E800
 
         # Remove altered core-spec definitions
         core.AAC_CORE_SPEC_DEFINITIONS = []

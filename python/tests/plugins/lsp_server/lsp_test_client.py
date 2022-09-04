@@ -99,5 +99,5 @@ class LspTestClient:
             method (str): The LSP method to use for the notification.
             params (Optional[Model]): Optional parameters to send with the notification.
         """
-        self.client.lsp.notify(method, params)
+        self.client.send_notification(method, params)
         await sleep(SLEEP_TIME)

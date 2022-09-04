@@ -3,7 +3,7 @@
 import os
 import difflib
 import logging
-from typing import Optional, Any
+from typing import Optional
 from pygls.lsp.types.language_features.definition import DefinitionParams
 from pygls.protocol import LanguageServerProtocol
 from pygls.server import LanguageServer
@@ -11,13 +11,12 @@ from pygls.lsp import (
     CompletionOptions,
     CompletionParams,
     HoverParams,
-    TextDocumentPositionParams,
     ReferenceParams,
     TextDocumentSyncKind,
     DidChangeTextDocumentParams,
     DidCloseTextDocumentParams,
     DidOpenTextDocumentParams,
-    methods
+    methods,
 )
 
 from aac.io.parser import parse
@@ -45,7 +44,15 @@ class AacLanguageServer(LanguageServer):
     providers: dict[str, LspProvider]
     workspace_files: dict[str, ManagedWorkspaceFile]
 
-    def __init__(self, language_context=None, providers={}, workspace_files={}, loop=None, protocol_cls=LanguageServerProtocol, max_workers: int = 2):
+    def __init__(
+        self,
+        language_context=None,
+        providers={},
+        workspace_files={},
+        loop=None,
+        protocol_cls=LanguageServerProtocol,
+        max_workers: int = 2,
+    ):
         """Docstring."""
         super().__init__(loop, protocol_cls, max_workers)
 
@@ -162,10 +169,10 @@ async def handle_goto_definition(ls: AacLanguageServer, params: DefinitionParams
     logging.debug(f"Goto Definition results: {goto_definition_results}")
     return goto_definition_results
 
+
 async def handle_references(ls: AacLanguageServer, params: ReferenceParams):
     """Handle a goto definition request."""
     find_references_provider = ls.providers.get(methods.REFERENCES)
     find_references_results = find_references_provider.handle_request(ls, params)
     logging.debug(f"Find references results: {find_references_results}")
     return find_references_results
-

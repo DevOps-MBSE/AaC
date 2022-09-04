@@ -7,6 +7,7 @@ from pygls.workspace import Document
 
 from aac.lang.definitions.type import remove_list_type_indicator
 from aac.lang.language_context import LanguageContext
+from aac.plugins.lsp_server.providers.common import get_symbol_at_position
 from aac.plugins.lsp_server.providers.lsp_provider import LspProvider
 from aac.lang.definitions.lexeme import Lexeme
 
@@ -33,20 +34,14 @@ class GotoDefinitionProvider(LspProvider):
             A list of Locations at which the item at `position` is defined. If there is nothing
             found at the specified position, an empty list is returned.
         """
-        def symbol_at_position() -> str:
-            def at_beginning_of_symbol() -> bool:
-                return offset > 0 and document.source[offset - 1].isspace()
-
-            def at_end_of_symbol() -> bool:
-                return offset < len(document.source) and document.source[offset].isspace()
-
-            offset = document.offset_at_position(position)
-            before = document.source[:offset].split()[-1] if at_end_of_symbol() else ""
-            after = document.source[offset:].split()[0] if at_beginning_of_symbol() else ""
-            return f"{before}{after}"
-
         document = documents.get(current_uri)
-        return self.get_definition_location_of_name(documents, symbol_at_position()) if document else []
+        locations = []
+        if document:
+            offset = document.offset_at_position(position)
+            name = get_symbol_at_position(document.source, offset)
+            locations = self.get_definition_location_of_name(documents, name)
+
+        return locations
 
     def get_definition_location_of_name(self, documents: dict[str, Document], name: str) -> list[Location]:
         """
@@ -63,7 +58,7 @@ class GotoDefinitionProvider(LspProvider):
         if not name:
             return []
 
-        lsp_context = self.language_server.language_context if self.language_server else get_active_context()
+        lsp_context = self.language_server.language_context
 
         locations = []
         name = remove_list_type_indicator(name).strip(":")

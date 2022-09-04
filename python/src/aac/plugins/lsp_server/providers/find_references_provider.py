@@ -2,13 +2,14 @@
 
 import logging
 from pygls.server import LanguageServer
-from pygls.lsp.types.basic_structures import Location, Position, Range, Position
+from pygls.lsp.types.basic_structures import Location, Position, Range
 from pygls.lsp.types.language_features.references import ReferenceParams
 from pygls.workspace import Document
 
 from aac.lang.definitions.references import get_definition_type_references_from_list
 from aac.lang.definitions.type import remove_list_type_indicator
 from aac.lang.definitions.lexeme import Lexeme
+from aac.plugins.lsp_server.providers.common import get_symbol_at_position
 import aac.plugins.lsp_server.providers.lsp_provider as lsp_provider
 
 
@@ -33,20 +34,13 @@ class FindReferencesProvider(lsp_provider.LspProvider):
             A list of Locations at which the item at `position` is defined. If there is nothing
             found at the specified position, an empty list is returned.
         """
-        def symbol_at_position() -> str:
-            def at_beginning_of_symbol() -> bool:
-                return offset > 0 and document.source[offset - 1].isspace()
-
-            def at_end_of_symbol() -> bool:
-                return offset < len(document.source) and document.source[offset].isspace()
-
-            offset = document.offset_at_position(position)
-            before = document.source[:offset].split()[-1] if at_end_of_symbol() else ""
-            after = document.source[offset:].split()[0] if at_beginning_of_symbol() else ""
-            return f"{before}{after}"
-
         document = documents.get(current_uri)
-        return self.get_definition_location_of_name(documents, symbol_at_position()) if document else []
+        locations = []
+        if document:
+            offset = document.offset_at_position(position)
+            locations = self.get_definition_location_of_name(documents, get_symbol_at_position(document.source, offset))
+
+        return locations
 
     def get_definition_location_of_name(self, documents: dict[str, Document], name: str) -> list[Location]:
         """
