@@ -9,7 +9,7 @@ from pygls.workspace import Document
 from aac.lang.definitions.references import get_definition_type_references_from_list
 from aac.lang.definitions.type import remove_list_type_indicator
 from aac.lang.definitions.lexeme import Lexeme
-from aac.plugins.lsp_server.providers.common import get_symbol_at_position
+from aac.plugins.lsp_server.providers.symbols import get_symbol_at_position
 import aac.plugins.lsp_server.providers.lsp_provider as lsp_provider
 
 

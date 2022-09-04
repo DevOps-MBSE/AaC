@@ -7,7 +7,7 @@ from pygls.workspace import Document
 
 from aac.lang.definitions.type import remove_list_type_indicator
 from aac.lang.language_context import LanguageContext
-from aac.plugins.lsp_server.providers.common import get_symbol_at_position
+from aac.plugins.lsp_server.providers.symbols import get_symbol_at_position
 from aac.plugins.lsp_server.providers.lsp_provider import LspProvider
 from aac.lang.definitions.lexeme import Lexeme
 
@@ -58,10 +58,14 @@ class GotoDefinitionProvider(LspProvider):
         if not name:
             return []
 
-        lsp_context = self.language_server.language_context
+        lsp_context: LanguageContext = self.language_server.language_context
 
         locations = []
         name = remove_list_type_indicator(name).strip(":")
+
+        is_root_type = (name in lsp_context.get_root_keys())
+        is_enum_value =
+
         definition_to_find = lsp_context.get_definition_by_name(name)
 
         if not definition_to_find:
