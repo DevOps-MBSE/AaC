@@ -76,7 +76,7 @@ class TestValidate(ActiveContextTestCase):
         invalid_fields_test_field = create_field_entry("MissingTestField")
         del invalid_fields_test_field["type"]
         invalid_reference_test_field = create_field_entry("BadRefTestField", "striiiing")
-        invalid_data_definition = create_schema_definition("InvalidData", fields=[invalid_fields_test_field, invalid_reference_test_field])
+        invalid_schema_definition = create_schema_definition("InvalidData", fields=[invalid_fields_test_field, invalid_reference_test_field])
 
         fake_root_key = "not_a_root_key"
         test_definition_dict = {
@@ -88,13 +88,13 @@ class TestValidate(ActiveContextTestCase):
         invalid_root_key_definition = Definition("Test", "", invalid_definition_source, [], test_definition_dict)
 
         with self.assertRaises(ValidationError) as error:
-            with validated_definitions([invalid_data_definition, invalid_root_key_definition]):
+            with validated_definitions([invalid_schema_definition, invalid_root_key_definition]):
                 pass
 
         exception = error.exception
         error_messages = "\n".join(exception.args).lower()
         self.assertEqual(ValidationError, type(exception))
-        self.assertGreater(len(exception.args), 2)
+        self.assertGreater(error_messages.count("\n"), 3)
         self.assertIn("undefined", error_messages)
         self.assertIn("missing", error_messages)
         self.assertIn("root", error_messages)

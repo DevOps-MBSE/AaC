@@ -1,9 +1,9 @@
 import logging
 
-from aac.lang.language_context import LanguageContext
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.structure import get_substructures_by_type
-from aac.plugins.validators import ValidatorResult
+from aac.lang.language_context import LanguageContext
+from aac.plugins.validators import ValidatorFindings, ValidatorResult
 
 
 def validate_exclusive_fields(definition_under_test: Definition, target_schema_definition: Definition, language_context: LanguageContext, *validation_args) -> ValidatorResult:
@@ -19,17 +19,17 @@ def validate_exclusive_fields(definition_under_test: Definition, target_schema_d
     Returns:
         A ValidatorResult containing any applicable error messages.
     """
-    error_messages = []
+    findings = ValidatorFindings()
 
-    def validate_dict(dict_to_validate: dict) -> list[str]:
+    def validate_dict(dict_to_validate: dict) -> None:
         present_exclusive_fields = set(validation_args).intersection(set(dict_to_validate.keys()))
 
         if len(present_exclusive_fields) > 1:
             multiple_exclusive_fields = f"Multiple exclusive fields are defined '{present_exclusive_fields}' in: {dict_to_validate}"
-            error_messages.append(multiple_exclusive_fields)
+            findings.add_error_finding(target_schema_definition, multiple_exclusive_fields)
             logging.debug(multiple_exclusive_fields)
 
     dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)
     list(map(validate_dict, dicts_to_test))
 
-    return ValidatorResult(error_messages, len(error_messages) == 0)
+    return ValidatorResult(definition_under_test, findings)

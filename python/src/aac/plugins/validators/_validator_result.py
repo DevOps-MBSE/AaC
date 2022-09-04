@@ -1,20 +1,34 @@
-"""A module for providing validator plugin results."""
-
-from attr import attrib, attrs, validators, Factory
+"""A module for representing validator results."""
 
 
-@attrs(slots=True, auto_attribs=True)
+from typing import Union
+from attr import Factory, attrib, attrs, validators
+
+from aac.lang.definitions.definition import Definition
+from aac.plugins.validators._validator_findings import ValidatorFindings
+
+
+@attrs(slots=True)
 class ValidatorResult:
-    """Represents the validation result from a validator plugin on a single definition.
+    """
+    Represents the result of the validation of one, or more, definitions.
 
     Attributes:
-        messages (list): A dictionary of definition names as keys to lists of messages
-        is_valid (bool): A bool indicating whether the definition is valid or not (True/False)
+        findings (ValidatorFindings): A collection of findings that resulted from running validation
+                                      on the Definition.
     """
 
-    messages: list[str] = attrib(default=Factory(list), validator=validators.instance_of(list))
-    is_valid: bool = attrib(default=False, validator=validators.instance_of(bool))
+    definitions: Union[Definition, list[Definition]] = attrib(
+        default=Factory(list), validator=validators.instance_of((list, Definition))
+    )
+    findings: ValidatorFindings = attrib(
+        default=Factory(ValidatorFindings), validator=validators.instance_of(ValidatorFindings)
+    )
+
+    def is_valid(self) -> bool:
+        """Return True if there are no error messages on the validation result; False, otherwise."""
+        return len(self.findings.get_error_findings()) == 0
 
     def get_messages_as_string(self) -> str:
         """Get all of the validator result messages as a single string."""
-        return "\n".join(self.messages)
+        return "\n".join([finding.message for finding in self.findings.get_all_findings()])

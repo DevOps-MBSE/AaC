@@ -3,11 +3,10 @@
 
 from attr import Factory, attrib, attrs, validators
 
+from aac.lang.definitions.definition import Definition
 from aac.plugins.validators._validator_finding import FindingSeverity, ValidatorFinding
 
 
-# QUESTION: Should we allow duplicate findings? Perhaps we can make that configurable if that's the
-# desired behavior?
 @attrs
 class ValidatorFindings:
     """
@@ -22,6 +21,18 @@ class ValidatorFindings:
     def add_findings(self, new_findings: list[ValidatorFinding]) -> None:
         """Add the new findings to the collection of all findings."""
         self.findings.extend(new_findings)
+
+    def add_error_finding(self, definition: Definition, message: str) -> None:
+        """Add the finding as an error finding."""
+        self.add_findings([ValidatorFinding(definition, FindingSeverity.ERROR, message)])
+
+    def add_warning_finding(self, definition: Definition, message: str) -> None:
+        """Add the finding as an warning finding."""
+        self.add_findings([ValidatorFinding(definition, FindingSeverity.WARNING, message)])
+
+    def add_info_finding(self, definition: Definition, message: str) -> None:
+        """Add the finding as an info finding."""
+        self.add_findings([ValidatorFinding(definition, FindingSeverity.INFO, message)])
 
     def get_all_findings(self) -> list[ValidatorFinding]:
         """Return a list of all the validator findings."""

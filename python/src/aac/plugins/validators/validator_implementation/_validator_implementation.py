@@ -4,7 +4,7 @@ from aac.lang.language_context import LanguageContext
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.structure import get_substructures_by_type
 from aac.plugins.plugin_manager import get_validator_plugins
-from aac.plugins.validators import ValidatorResult, ValidatorPlugin
+from aac.plugins.validators import ValidatorFindings, ValidatorResult, ValidatorPlugin
 
 
 def validate_validator_implementations(definition_under_test: Definition, target_schema_definition: Definition, language_context: LanguageContext, *validation_args) -> ValidatorResult:
@@ -19,7 +19,7 @@ def validate_validator_implementations(definition_under_test: Definition, target
     Returns:
         A ValidatorResult containing any applicable error messages.
     """
-    error_messages = []
+    findings = ValidatorFindings()
 
     def validate_dict(dict_to_validate: dict) -> list[str]:
 
@@ -34,15 +34,15 @@ def validate_validator_implementations(definition_under_test: Definition, target
         if not validation_plugins:
             registered_plugin_names = [plugin.name for plugin in validator_implementations]
             registered_plugin_names = f"Validation '{validation_name}' did not have a corresponding implementation. Registered plugin names: {registered_plugin_names}"
-            error_messages.append(registered_plugin_names)
+            findings.add_error_finding(target_schema_definition, registered_plugin_names)
             logging.debug(registered_plugin_names)
         elif validation_plugins and not len(validation_plugins) == 1:
             registered_plugin_names = [plugin.name for plugin in validator_implementations]
             registered_plugin_names = f"Validation '{validation_name}' returned multiple corresponding implementations. Matching plugins: {validation_plugins}"
-            error_messages.append(registered_plugin_names)
+            findings.add_error_finding(target_schema_definition, registered_plugin_names)
             logging.debug(registered_plugin_names)
 
     dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)
     list(map(validate_dict, dicts_to_test))
 
-    return ValidatorResult(error_messages, len(error_messages) == 0)
+    return ValidatorResult(definition_under_test, findings)
