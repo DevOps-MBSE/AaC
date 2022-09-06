@@ -75,6 +75,6 @@ enum:
   description: |
     Enums for the various supported message types.
   values:
-    - type 1
+    - type_1
     - type_2
-    - type-3
+    - type_3
