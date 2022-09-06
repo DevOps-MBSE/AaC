@@ -202,8 +202,7 @@ def _to_template_properties_dict(name: str, description: str, enums: list[str] =
     name = _sanitize_string_to_pascal_case(name)
 
     # Format the enum values
-    enums = [_sanitize_string_to_snake_case(enum) for enum in enums]
-    enums = [enum.upper() for enum in enums]
+    enums = [_sanitize_string_to_snake_case(enum).upper() for enum in enums]
 
     # Format the field strings
     for field in fields:
