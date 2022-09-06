@@ -19,9 +19,9 @@ def validate_references(definition_under_test: Definition, target_schema_definit
         A ValidatorResult containing any applicable error messages.
     """
     findings = ValidatorFindings()
+    *_, validation_name = __package__.split(".")
 
     def validate_dict(dict_to_validate: dict) -> None:
-
         reference_type = dict_to_validate.get("type")
 
         if reference_type:
@@ -29,11 +29,11 @@ def validate_references(definition_under_test: Definition, target_schema_definit
                 logging.debug(f"Valid type reference. Type '{reference_type}' in content: {dict_to_validate}")
             else:
                 undefined_reference_error_message = f"Undefined type '{reference_type}' referenced: {dict_to_validate}"
-                findings.add_error_finding(definition_under_test, undefined_reference_error_message)
+                findings.add_error_finding(definition_under_test, undefined_reference_error_message, validation_name, 0, 0, 0, 0)
                 logging.debug(undefined_reference_error_message)
         else:
             missing_field_in_dictionary = f"Missing field 'type' in validation content dictionary: {dict_to_validate}"
-            findings.add_error_finding(definition_under_test, missing_field_in_dictionary)
+            findings.add_error_finding(definition_under_test, missing_field_in_dictionary, validation_name, 0, 0, 0, 0)
             logging.debug(missing_field_in_dictionary)
 
     dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)

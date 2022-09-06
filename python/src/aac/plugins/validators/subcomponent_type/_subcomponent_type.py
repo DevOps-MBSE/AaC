@@ -19,6 +19,7 @@ def validate_subcomponent_types(definition_under_test: Definition, target_schema
         A ValidatorResult containing any applicable error messages.
     """
     findings = ValidatorFindings()
+    *_, validation_name = __package__.split(".")
 
     def validate_model_subcomponents(dict_to_validate: dict):
         subcomponents = dict_to_validate.get("components", [])
@@ -36,7 +37,7 @@ def validate_subcomponent_types(definition_under_test: Definition, target_schema
                         f"Expected '{expected_type}' as the subcomponent type but found '{component_type}' with type "
                         f"'{actual_type}' in: {dict_to_validate}"
                     )
-                    findings.add_error_finding(target_schema_definition, incorrect_subcomponent_type)
+                    findings.add_error_finding(target_schema_definition, incorrect_subcomponent_type, validation_name, 0, 0, 0, 0)
                     logging.debug(incorrect_subcomponent_type)
             else:
                 component_name = component.get("name")
@@ -44,7 +45,7 @@ def validate_subcomponent_types(definition_under_test: Definition, target_schema
                     f"Expected component '{component_name}' to have the field 'type', but was not present. Bad component:"
                     f"{component}"
                 )
-                findings.add_error_finding(target_schema_definition, component_missing_type)
+                findings.add_error_finding(target_schema_definition, component_missing_type, validation_name, 0, 0, 0, 0)
                 logging.debug(component_missing_type)
 
     dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)

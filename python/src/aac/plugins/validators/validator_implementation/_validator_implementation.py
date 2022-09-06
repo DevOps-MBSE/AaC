@@ -20,10 +20,10 @@ def validate_validator_implementations(definition_under_test: Definition, target
         A ValidatorResult containing any applicable error messages.
     """
     findings = ValidatorFindings()
+    *_, this_validation_name = __package__.split(".")
 
-    def validate_dict(dict_to_validate: dict) -> list[str]:
-
-        def get_validator_by_name(name: str, plugins: list[ValidatorPlugin]) -> ValidatorPlugin:
+    def validate_dict(dict_to_validate: dict) -> None:
+        def get_validator_by_name(name: str, plugins: list[ValidatorPlugin]) -> list[ValidatorPlugin]:
             return list(filter(lambda plugin: plugin.name == name, plugins))
 
         validator_implementations = get_validator_plugins()
@@ -34,12 +34,12 @@ def validate_validator_implementations(definition_under_test: Definition, target
         if not validation_plugins:
             registered_plugin_names = [plugin.name for plugin in validator_implementations]
             registered_plugin_names = f"Validation '{validation_name}' did not have a corresponding implementation. Registered plugin names: {registered_plugin_names}"
-            findings.add_error_finding(target_schema_definition, registered_plugin_names)
+            findings.add_error_finding(target_schema_definition, registered_plugin_names, this_validation_name, 0, 0, 0, 0)
             logging.debug(registered_plugin_names)
         elif validation_plugins and not len(validation_plugins) == 1:
             registered_plugin_names = [plugin.name for plugin in validator_implementations]
             registered_plugin_names = f"Validation '{validation_name}' returned multiple corresponding implementations. Matching plugins: {validation_plugins}"
-            findings.add_error_finding(target_schema_definition, registered_plugin_names)
+            findings.add_error_finding(target_schema_definition, registered_plugin_names, this_validation_name, 0, 0, 0, 0)
             logging.debug(registered_plugin_names)
 
     dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)

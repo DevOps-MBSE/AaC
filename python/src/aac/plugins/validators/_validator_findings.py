@@ -4,7 +4,7 @@
 from attr import Factory, attrib, attrs, validators
 
 from aac.lang.definitions.definition import Definition
-from aac.plugins.validators._validator_finding import FindingSeverity, ValidatorFinding
+from aac.plugins.validators._validator_finding import FindingLocation, FindingSeverity, ValidatorFinding
 
 
 @attrs
@@ -22,20 +22,85 @@ class ValidatorFindings:
         """Add the new findings to the collection of all findings."""
         self.findings.extend(new_findings)
 
-    def add_error_finding(self, definition: Definition, message: str) -> None:
+    def add_error_finding(
+        self,
+        definition: Definition,
+        message: str,
+        validation_name: str,
+        line: int,
+        column: int,
+        position: int,
+        span: int,
+    ) -> None:
         """Add the finding as an error finding."""
-        self._add_finding_with_severity(definition, message, FindingSeverity.ERROR)
+        self._add_finding_with_severity(
+            definition,
+            message,
+            FindingSeverity.ERROR,
+            validation_name,
+            line,
+            column,
+            position,
+            span,
+        )
 
-    def add_warning_finding(self, definition: Definition, message: str) -> None:
+    def add_warning_finding(
+        self,
+        definition: Definition,
+        message: str,
+        validation_name: str,
+        line: int,
+        column: int,
+        position: int,
+        span: int,
+    ) -> None:
         """Add the finding as an warning finding."""
-        self._add_finding_with_severity(definition, message, FindingSeverity.WARNING)
+        self._add_finding_with_severity(
+            definition,
+            message,
+            FindingSeverity.WARNING,
+            validation_name,
+            line,
+            column,
+            position,
+            span,
+        )
 
-    def add_info_finding(self, definition: Definition, message: str) -> None:
+    def add_info_finding(
+        self,
+        definition: Definition,
+        message: str,
+        validation_name: str,
+        line: int,
+        column: int,
+        position: int,
+        span: int,
+    ) -> None:
         """Add the finding as an info finding."""
-        self._add_finding_with_severity(definition, message, FindingSeverity.INFO)
+        self._add_finding_with_severity(
+            definition,
+            message,
+            FindingSeverity.INFO,
+            validation_name,
+            line,
+            column,
+            position,
+            span,
+        )
 
-    def _add_finding_with_severity(self, definition: Definition, message: str, severity: FindingSeverity):
-        self.add_findings([ValidatorFinding(definition, severity, message)])
+    def _add_finding_with_severity(
+        self,
+        definition: Definition,
+        message: str,
+        severity: FindingSeverity,
+        validation_name: str,
+        line: int,
+        column: int,
+        position: int,
+        span: int,
+    ) -> None:
+        location = FindingLocation(validation_name, definition.source, line, column, position, span)
+        self.add_findings([ValidatorFinding(definition, severity, message, location)])
 
     def get_all_findings(self) -> list[ValidatorFinding]:
         """Return a list of all the validator findings."""

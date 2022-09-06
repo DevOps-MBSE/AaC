@@ -22,6 +22,8 @@ def validate_required_fields(definition_under_test: Definition, target_schema_de
         A ValidatorResult containing any applicable error messages.
     """
     findings = ValidatorFindings()
+    *_, validation_name = __package__.split(".")
+
     required_field_names = validation_args
     schema_defined_fields_as_list = target_schema_definition.get_top_level_fields().get("fields") or []
     schema_defined_fields_as_dict = {field.get("name"): field for field in schema_defined_fields_as_list}
@@ -33,12 +35,12 @@ def validate_required_fields(definition_under_test: Definition, target_schema_de
 
             if field_value is None:
                 missing_required_field = f"Required field '{required_field_name}' missing from: {dict_to_validate}"
-                findings.add_error_finding(target_schema_definition, missing_required_field)
+                findings.add_error_finding(definition_under_test, missing_required_field, validation_name, 0, 0, 0, 0)
                 logging.debug(missing_required_field)
 
             elif not _is_field_populated(field_type, field_value):
                 unpopulated_required_field = f"Required field '{required_field_name}' is not populated in: {dict_to_validate}"
-                findings.add_error_finding(target_schema_definition, unpopulated_required_field)
+                findings.add_error_finding(definition_under_test, unpopulated_required_field, validation_name, 0, 0, 0, 0)
                 logging.debug(unpopulated_required_field)
 
     dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)

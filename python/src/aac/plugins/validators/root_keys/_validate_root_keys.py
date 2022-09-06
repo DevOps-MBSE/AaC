@@ -20,13 +20,15 @@ def validate_root_keys(definition_under_test: Definition, target_schema_definiti
         A ValidatorResult containing any applicable error messages.
     """
     findings = ValidatorFindings()
+    *_, validation_name = __package__.split(".")
+
     active_context_root_keys = get_active_context().get_root_keys()
 
     root_key = definition_under_test.get_root_key()
 
     if root_key not in active_context_root_keys:
         undefined_reference_error_message = f"Undefined root key '{root_key}' in definition '{definition_under_test.name}'. Valid root keys {active_context_root_keys}"
-        findings.add_error_finding(definition_under_test, undefined_reference_error_message)
+        findings.add_error_finding(definition_under_test, undefined_reference_error_message, validation_name, 0, 0, 0, 0)
         logging.debug(undefined_reference_error_message)
 
     return ValidatorResult(definition_under_test, findings)
