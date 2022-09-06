@@ -34,6 +34,6 @@ class ValidatorResult:
         """Get all of the validator result messages as a single string."""
 
         def format_message(finding: ValidatorFinding) -> str:
-            return f"{finding.location.validation_name}:{finding.severity.name}:{finding.location.source.uri}\n  {finding.message}"
+            return f"\n{finding.location.validation_name}:{finding.severity.name}:{finding.location.source.uri}\n  {finding.message}"
 
         return "\n".join([format_message(finding) for finding in self.findings.get_all_findings()])
