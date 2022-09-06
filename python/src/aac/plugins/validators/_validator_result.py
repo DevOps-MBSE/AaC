@@ -5,6 +5,7 @@ from typing import Union
 from attr import Factory, attrib, attrs, validators
 
 from aac.lang.definitions.definition import Definition
+from aac.plugins.validators._validator_finding import ValidatorFinding
 from aac.plugins.validators._validator_findings import ValidatorFindings
 
 
@@ -31,4 +32,8 @@ class ValidatorResult:
 
     def get_messages_as_string(self) -> str:
         """Get all of the validator result messages as a single string."""
-        return "\n".join([finding.message for finding in self.findings.get_all_findings()])
+
+        def format_message(finding: ValidatorFinding) -> str:
+            return f"{finding.location.validation_name}:{finding.severity.name}:{finding.location.source.uri}\n  {finding.message}"
+
+        return "\n".join([format_message(finding) for finding in self.findings.get_all_findings()])
