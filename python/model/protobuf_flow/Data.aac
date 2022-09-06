@@ -18,7 +18,7 @@ schema:
     - name: msg
       type: string
     - name: message_type
-      type: Message Type
+      type: MessageType
   validation:
     - name: Required fields are present
       arguments:
@@ -71,7 +71,7 @@ schema:
         - message_id
 ---
 enum:
-  name: Message Type
+  name: MessageType
   description: |
     Enums for the various supported message types.
   values:
