@@ -5,6 +5,7 @@
 
 import logging
 import os
+import re
 
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.type import is_array_type, remove_list_type_indicator
@@ -169,9 +170,7 @@ def _get_message_template_properties(interface_structures: dict[str, Definition]
     return template_properties_list
 
 
-def _to_template_properties_dict(
-    name: str, description: str, enums: list[str] = [], fields: list[dict] = [], imports: list[str] = [], options: list = []
-) -> dict[str, any]:
+def _to_template_properties_dict(name: str, description: str, enums: list[str] = [], fields: list[dict] = [], imports: list[str] = [], options: list = []) -> dict[str, any]:
     """
     Return the template model properties dictionary for the provided arguments.
 
@@ -199,6 +198,18 @@ def _to_template_properties_dict(
         elif type(option_value) is bool:
             option_entry["value"] = str(option_value).lower()
 
+    # Format the names
+    name = _sanitize_string_to_pascal_case(name)
+
+    # Format the enum values
+    enums = [_sanitize_string_to_snake_case(enum).upper() for enum in enums]
+
+    # Format the field strings
+    for field in fields:
+        field["name"] = _sanitize_string_to_snake_case(field.get("name"))
+        if (field["type"] not in active_context.get_primitive_types()):
+            field["type"] = _sanitize_string_to_pascal_case(field.get("type"))
+
     return {
         "message_name": name,
         "message_description": description,
@@ -222,7 +233,7 @@ def _get_enum_properties(enum_definition: Definition) -> dict[str, any]:
     """
     enum_name = enum_definition.name
     enum_definition_fields = enum_definition.get_top_level_fields()
-    enum_values = [enum.upper() for enum in enum_definition_fields.get("values") or []]
+    enum_values = enum_definition_fields.get("values") or []
     enum_description = enum_definition_fields.get("description") or ""
     description_as_proto_comment = _convert_description_to_protobuf_comment(enum_description)
     definition_options = enum_definition_fields.get("protobuf_message_options") or []
@@ -313,7 +324,6 @@ def _generate_protobuf_messages(
         generated_template.file_name = _convert_message_name_to_file_name(properties.get("message_name"))
         generated_template.overwrite = True  # Protobuf files shouldn't be modified by the user, and so should always overwrite
         return generated_template
-
     # This plugin produces only protobuf messages and one message per file due to protobuf specifications. (it only needs one template)
     protobuf_template = None
     if len(protobuf_message_templates) != 1:
@@ -361,6 +371,72 @@ def _convert_camel_case_to_snake_case(camel_case_str: str) -> str:
     for char in camel_case_str[1:]:
         snake_case_str += (char, f"_{char.lower()}")[char.isupper()]
     return snake_case_str
+
+
+def _sanitize_string_to_camel_case(string_to_convert: str) -> str:
+    """
+    Remove spaces from messages to convert them to CamelCaseStr.
+
+    Args:
+        message_with_space: the message containing a space to convert
+
+    Returns:
+        camelCaseStr
+    """
+    converted_string = ""
+    change_to_camel = ""
+    split_strings = re.findall(r'[A-Z][^A-Z]*|\s|-|_|;', string_to_convert)
+    if (len(split_strings) > 0):
+        change_to_camel = ''.join(string[0].upper() + string[1:].lower() for string in split_strings)
+        converted_string = change_to_camel[0].lower() + change_to_camel[1:].replace(" ", "")
+    else:
+        converted_string = string_to_convert[0].lower() + string_to_convert[1:].replace(" ", "")
+
+    return converted_string
+
+
+def _sanitize_string_to_pascal_case(string_to_convert: str) -> str:
+    """
+    Remove spaces from messages to convert them to pascalCaseStr.
+
+    Args:
+        message_with_space: the message containing a space to convert
+
+    Returns:
+        PascalCaseStr
+    """
+    converted_string = ""
+    change_to_pascal = ""
+    split_strings = re.findall(r'[A-Z][^A-Z]*|\s|-|_|;', string_to_convert)
+    if (len(split_strings) > 0):
+        change_to_pascal = ''.join(string[0].upper() + string[1:].lower().replace("_", "") for string in split_strings)
+        converted_string = change_to_pascal.replace(" ", "")
+    else:
+        converted_string = string_to_convert[0].upper() + string_to_convert[1:].replace(" ", "")
+
+    return converted_string
+
+
+def _sanitize_string_to_snake_case(string_to_convert: str) -> str:
+    """
+    Remove spaces from messages to convert them to snake_case_str.
+
+    Args:
+        message_with_space: the message containing a space to convert
+
+    Returns:
+        snake_case_str
+    """
+    converted_string = ""
+    change_to_snake = ""
+    split_on_space = re.split(r'\s|-|;', string_to_convert)
+    if (len(split_on_space) <= 1):
+        converted_string = string_to_convert.lower()
+    else:
+        change_to_snake = '_'.join(word.lower() for word in split_on_space)
+        converted_string = change_to_snake
+
+    return converted_string
 
 
 def _convert_description_to_protobuf_comment(description: str, indent_level: int = 0) -> str:
