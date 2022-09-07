@@ -192,6 +192,15 @@ class LanguageContext:
         else:
             return []
 
+    def get_root_keys_definition(self) -> Optional[Definition]:
+        """
+        Return the root keys type definition in the LanguageContext.
+
+        Returns:
+            The definition that defines the root key types.
+        """
+        return self.get_definition_by_name("root")
+
     def get_primitives_definition(self) -> Optional[Definition]:
         """
         Return the primitive type definition in the LanguageContext.
