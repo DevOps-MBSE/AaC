@@ -1,10 +1,11 @@
 from os import path
 from pygls.lsp import methods
-from pygls.lsp.types.basic_structures import Location, Position
+from pygls.lsp.types.basic_structures import Location, Position, Range
 from pygls.lsp.types.language_features.definition import DefinitionParams
 from unittest.async_case import IsolatedAsyncioTestCase
+from re import search
 
-from aac.spec.core import get_aac_spec_as_yaml
+from aac.spec.core import get_aac_spec_as_yaml, _get_aac_spec_file_path
 from aac.plugins.lsp_server.providers.goto_definition_provider import GotoDefinitionProvider
 from aac.io.constants import YAML_DOCUMENT_SEPARATOR
 
@@ -31,11 +32,12 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
             Position(line=line, character=character),
         )
 
-    def get_definition_location_of_name(self, name: str) -> list[Location]:
-        return self.provider.get_definition_location_of_name(
-            {self.to_uri(name) or "": self.virtual_document_to_lsp_document(name) for name in self.documents.keys()},
-            name,
-        )
+    def get_definition_location_of_name(self, content: str, name: str) -> Location:
+        test_document_lines = content.splitlines()
+        target_line = list(filter(lambda line: _filter_line_containing_target_value(line, name), test_document_lines))[0]
+        match = search(name, target_line)
+        line = test_document_lines.index(target_line)
+        return Location(uri="", range=Range(start=Position(line=line, character=match.start()), end=Position(line=line, character=match.end())))
 
     async def asyncSetUp(self) -> None:
         await super().asyncSetUp()
@@ -61,13 +63,6 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
             DefinitionParams(**self.build_text_document_position_params(file_name, line, character)),
         )
 
-    async def test_get_ranges_containing_name(self):
-        text_range, *rest = self.provider.get_ranges_containing_name(TEST_DOCUMENT_CONTENT, TEST_SCHEMA_A.name)
-        self.assertEqual(len(rest) + 1, TEST_DOCUMENT_CONTENT.count(TEST_SCHEMA_A.name))
-
-        self.assertEqual(text_range.start, Position(line=1, character=8))
-        self.assertEqual(text_range.end, Position(line=1, character=8 + len(TEST_SCHEMA_A.name)))
-
     async def test_get_named_location(self):
         document_uri = self.to_uri(path.join(TEST_DOCUMENT_NAME)) or ""
         location = self.provider.get_definition_location_at_position(
@@ -80,26 +75,22 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         self.assertEqual(location.range.end, Position(line=1, character=8 + len(TEST_SCHEMA_A.name)))
 
     async def test_handles_goto_definition_request_when_cursor_at_definition(self):
-        text_range, *_ = self.provider.get_ranges_containing_name(TEST_DOCUMENT_CONTENT, TEST_SCHEMA_A.name)
-        line = text_range.start.line
-        character = text_range.start.character
-        res: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=line, character=character)
+        target_location = self.get_definition_location_of_name(TEST_DOCUMENT_CONTENT, TEST_SCHEMA_A.name)
+        res: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=target_location.range.start.line, character=target_location.range.start.character)
 
         location = res.get_location()
         self.assertIsNotNone(location)
-        self.assertEqual(location.range.start, Position(line=line, character=character))
-        self.assertEqual(location.range.end, Position(line=line, character=character + len(TEST_SCHEMA_A.name)))
+        self.assertEqual(location.range.start, Position(line=location.range.start.line, character=location.range.start.character))
+        self.assertEqual(location.range.end, Position(line=location.range.end.line, character=location.range.end.character))
 
     async def test_handles_goto_definition_request_when_definition_in_same_document(self):
-        definition_range, text_range, *_ = self.provider.get_ranges_containing_name(TEST_DOCUMENT_CONTENT, TEST_SCHEMA_A.name)
-        line = text_range.start.line
-        character = text_range.start.character
-        res: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=line, character=character)
+        target_location = self.get_definition_location_of_name(TEST_DOCUMENT_CONTENT, TEST_SCHEMA_A.name)
+        res: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=target_location.range.start.line, character=target_location.range.start.character)
 
         location = res.get_location()
         self.assertIsNotNone(location)
-        self.assertEqual(location.range.start, Position(line=definition_range.start.line, character=definition_range.start.character))
-        self.assertEqual(location.range.end, Position(line=definition_range.end.line, character=definition_range.end.character))
+        self.assertEqual(location.range.start, Position(line=location.range.start.line, character=location.range.start.character))
+        self.assertEqual(location.range.end, Position(line=location.range.end.line, character=location.range.end.character))
 
     async def test_handles_goto_definition_request_when_definition_in_different_document(self):
         added_content = TEST_SCHEMA_C.to_yaml()
@@ -108,18 +99,16 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         new_test_document_content = f"{TEST_DOCUMENT_CONTENT}{YAML_DOCUMENT_SEPARATOR}{TEST_SERVICE_THREE.to_yaml()}"
         await self.write_document(TEST_DOCUMENT_NAME, new_test_document_content)
 
-        text_range, *_ = self.provider.get_ranges_containing_name(new_test_document_content, TEST_SCHEMA_C.name)
-        line = text_range.start.line
-        character = text_range.start.character
-        res: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=line, character=character)
+        target_location = self.get_definition_location_of_name(new_test_document_content, TEST_SCHEMA_C.name)
+        res: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=target_location.range.start.line, character=target_location.range.start.character)
 
-        definition_range, *_ = self.provider.get_ranges_containing_name(added_content, TEST_SCHEMA_C.name)
+        definition_location = self.get_definition_location_of_name(added_content, TEST_SCHEMA_C.name)
 
         location = res.get_location()
         self.assertIsNotNone(location)
         self.assertEqual(path.basename(location.uri), path.basename(added_document.file_name))
-        self.assertEqual(location.range.start, Position(line=definition_range.start.line, character=definition_range.start.character))
-        self.assertEqual(location.range.end, Position(line=definition_range.end.line, character=definition_range.end.character))
+        self.assertEqual(location.range.start, Position(line=definition_location.range.start.line, character=definition_location.range.start.character))
+        self.assertEqual(location.range.end, Position(line=definition_location.range.end.line, character=definition_location.range.end.character))
 
     async def test_handles_goto_definition_for_root_keys(self):
         await self.create_document("spec.aac", get_aac_spec_as_yaml())
@@ -129,35 +118,30 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
 
         location = res.get_location()
         self.assertIsNotNone(location)
-        self.assertEqual(location.uri, self.to_uri(schema_definition_location.uri))
+        self.assertEqual(location.uri, schema_definition_location.uri)
         self.assertEqual(location.range.json(), schema_definition_location.range.json())
 
     async def test_handles_goto_definition_for_enums(self):
         await self.create_document("spec.aac", get_aac_spec_as_yaml())
 
-        string_range, *_ = self.provider.get_ranges_containing_name(TEST_DOCUMENT_CONTENT, "string")
-        line = string_range.start.line
-        character = string_range.start.character
-        res: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=line, character=character)
+        string_location = self.get_definition_location_of_name(TEST_DOCUMENT_CONTENT, "string")
+        res: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, string_location.range.start.line, character=string_location.range.start.character)
 
-        string_definition_location = self.get_definition_location_of_name("string")[0]
+        expected_location = Location(uri=_get_aac_spec_file_path(), range=Range(start=Position(line=254, character=6), end=Position(line=254, character=12)))
         location = res.get_location()
         self.assertIsNotNone(location)
-        self.assertEqual(location.uri, self.to_uri(string_definition_location.uri))
-        self.assertEqual(location.range.json(), string_definition_location.range.json())
+        self.assertEqual(location.uri, expected_location.uri)
+        self.assertEqual(location.range.json(), expected_location.range.json())
 
     async def test_handles_goto_definition_for_symbols_with_hyphens(self):
         await self.create_document("spec.aac", get_aac_spec_as_yaml())
 
-        request_response_range, *_ = self.provider.get_ranges_containing_name(TEST_DOCUMENT_CONTENT, "request-response")
-        line = request_response_range.start.line
-        character = request_response_range.start.character
-        res: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=line, character=character)
+        string_location = self.get_definition_location_of_name(TEST_DOCUMENT_CONTENT, "request-response")
+        res: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=string_location.range.start.line, character=string_location.range.start.character)
 
-        request_response_definition_location = self.get_definition_location_of_name("request-response")[0]
+        request_response_definition_location = self.get_definition_location_of_name(get_aac_spec_as_yaml(), "request-response")
         location = res.get_location()
         self.assertIsNotNone(location)
-        self.assertEqual(location.uri, self.to_uri(request_response_definition_location.uri))
         self.assertEqual(location.range.json(), request_response_definition_location.range.json())
 
     async def test_handles_goto_definition_for_custom_enums(self):
@@ -166,18 +150,19 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         new_content = f"{TEST_DOCUMENT_CONTENT}{TEST_PARTIAL_CONTENT} {TEST_ENUM.name}\n"
         await self.write_document(TEST_DOCUMENT_NAME, new_content)
 
-        custom_enum_range, *_ = self.provider.get_ranges_containing_name(new_content, TEST_ENUM.name)
-        line = custom_enum_range.start.line
-        character = custom_enum_range.start.character
-        res: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=line, character=character)
+        string_location = self.get_definition_location_of_name(new_content, TEST_ENUM.name)
+        res: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=string_location.range.start.line, character=string_location.range.start.character)
 
-        custom_enum_definition_location, *_ = self.get_definition_location_of_name(TEST_ENUM.name)
+        custom_enum_location = self.get_definition_location_of_name(TEST_ENUM.to_yaml(), TEST_ENUM.name)
         location = res.get_location()
         self.assertIsNotNone(location)
-        self.assertEqual(path.basename(location.uri), path.basename((custom_enum_definition_location.uri)))
-        self.assertEqual(location.range.json(), custom_enum_definition_location.range.json())
+        self.assertEqual(location.range.json(), custom_enum_location.range.json())
 
     async def test_no_results_when_nothing_under_cursor(self):
-        await self.write_document(TEST_DOCUMENT_NAME, f"\n{TEST_DOCUMENT_CONTENT}")
-        res: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME)
+        await self.write_document(TEST_DOCUMENT_NAME, f" \n{TEST_DOCUMENT_CONTENT}")
+        res: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=0)
         self.assertIsNone(res.get_location())
+
+
+def _filter_line_containing_target_value(line: str, value: str) -> bool:
+    return value in line

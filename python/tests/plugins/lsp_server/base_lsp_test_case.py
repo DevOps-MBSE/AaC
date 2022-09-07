@@ -11,6 +11,8 @@ from pygls.lsp.types.text_synchronization import TextDocumentSyncKind
 from pygls.lsp.types.workspace import DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams
 from pygls.workspace import Document
 
+from aac.spec import core
+
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.lsp.text_document import TextDocument
 from tests.plugins.lsp_server.definition_constants import TEST_DOCUMENT_CONTENT, TEST_DOCUMENT_NAME
@@ -33,6 +35,10 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
         )
         self.active_context = self.client.server.language_context
         self.temp_documents_directory: TemporaryDirectory = TemporaryDirectory()
+
+        # Add the core spec to the virtual docs
+        core_spec_virtual_doc = self._create_core_spec_virtual_doc()
+        self.documents[core_spec_virtual_doc.get_full_path()] = core_spec_virtual_doc
 
         await self.create_document(TEST_DOCUMENT_NAME, TEST_DOCUMENT_CONTENT)
 
@@ -173,3 +179,8 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
 
     def _get_absolute_file_path(self, file_name: str):
         return path.join(self.temp_documents_directory.name, file_name)
+
+    def _create_core_spec_virtual_doc(self) -> TextDocument:
+        content = core.get_aac_spec_as_yaml()
+        full_file_path = core._get_aac_spec_file_path()
+        return TextDocument(file_path=path.dirname(full_file_path), file_name=path.basename(full_file_path), content=content)

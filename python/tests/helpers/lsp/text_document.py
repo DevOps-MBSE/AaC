@@ -56,6 +56,10 @@ class TextDocument:
         yaml_definitions = [definition.to_yaml() for definition in definitions]
         self.write("---".join(yaml_definitions))
 
+    def get_full_path(self) -> str:
+        """Returns the joined filepath and filename."""
+        return path.join(self.file_path, self.file_name)
+
 
 @contextmanager
 def text_document(file_path: str, file_name: str, content: str) -> Generator[TextDocument, None, None]:
