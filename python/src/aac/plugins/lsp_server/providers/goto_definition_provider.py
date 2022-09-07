@@ -1,13 +1,15 @@
 """Module for the Goto Definition Provider which handles all goto definition requests."""
 import logging
 from pygls.server import LanguageServer
-from pygls.lsp.types.basic_structures import Location, Position, Range
+from pygls.lsp.types.basic_structures import Location, Position
 from pygls.lsp.types.language_features.definition import DefinitionParams
 from pygls.workspace import Document
+from aac.lang.definitions.definition import Definition
 
 from aac.lang.definitions.type import remove_list_type_indicator
 from aac.lang.language_context import LanguageContext
-from aac.plugins.lsp_server.providers.symbols import get_symbol_at_position
+from aac.plugins.lsp_server.providers.symbols import get_symbol_at_position, get_symbol_type, SymbolType
+from aac.plugins.lsp_server.providers.locations import get_location_from_lexeme
 from aac.plugins.lsp_server.providers.lsp_provider import LspProvider
 from aac.lang.definitions.lexeme import Lexeme
 
@@ -37,13 +39,12 @@ class GotoDefinitionProvider(LspProvider):
         document = documents.get(current_uri)
         locations = []
         if document:
-            offset = document.offset_at_position(position)
-            name = get_symbol_at_position(document.source, offset)
-            locations = self.get_definition_location_of_name(documents, name)
+            name = get_symbol_at_position(document.source, position.line, position.character)
+            locations = self.get_definition_location_of_name(name)
 
         return locations
 
-    def get_definition_location_of_name(self, documents: dict[str, Document], name: str) -> list[Location]:
+    def get_definition_location_of_name(self, name: str) -> list[Location]:
         """
         Return the location(s) where the AaC reference is defined.
 
@@ -58,70 +59,104 @@ class GotoDefinitionProvider(LspProvider):
         if not name:
             return []
 
-        lsp_context: LanguageContext = self.language_server.language_context
+        language_context: LanguageContext = self.language_server.language_context
 
         locations = []
         name = remove_list_type_indicator(name).strip(":")
+        symbol_types = get_symbol_type(name, language_context)
 
-        is_root_type = (name in lsp_context.get_root_keys())
-        is_enum_value =
+        if SymbolType.DEFINITION_NAME in symbol_types:
+            definition_to_find = language_context.get_definition_by_name(name)
+            if not definition_to_find:
+                logging.warn(f"Can't find references for non-definition {name}")
+            else:
+                locations.extend(self.get_definition_name_lexeme_location(definition_to_find))
 
-        definition_to_find = lsp_context.get_definition_by_name(name)
+        if SymbolType.ENUM_VALUE_TYPE in symbol_types:
+            definition_to_find = language_context.get_enum_definition_by_type(name)
+            if definition_to_find:
+                locations.extend(self.get_enum_value_lexeme_location(definition_to_find, name))
 
-        if not definition_to_find:
-            logging.warn(f"Can't find references for non-definition {name}")
-        else:
-            def filter_lexeme_by_reference_name(lexeme: Lexeme) -> bool:
-                return lexeme.value == name
-
-            referencing_lexemes = filter(filter_lexeme_by_reference_name, definition_to_find.lexemes)
-            for lexeme in referencing_lexemes:
-                start_position = Position(line=lexeme.location.line, character=lexeme.location.column)
-                end_position = Position(line=lexeme.location.line, character=lexeme.location.column + lexeme.location.span)
-                locations.append(Location(uri=lexeme.source, range=Range(start=start_position, end=end_position)))
+        if SymbolType.ROOT_KEY_NAME in symbol_types:
+            definition_to_find = language_context.get_root_keys_definition()
+            if definition_to_find:
+                locations.extend(self.get_root_key_definition_lexeme_location(definition_to_find, name))
 
         return locations
 
-    def get_ranges_containing_name(self, content: str, name: str) -> list[Range]:
+    def get_definition_name_lexeme_location(self, definition: Definition) -> list[Location]:
         """
-        Return the cursor position of the item in content.
+        Returns a list of locations corresponding to the name declaration in definition structures.
 
         Args:
-            content (str): The content from the workspace document in which to find the named item.
-            name (str): The item to search for in the document's content.
+            definition (Definition): The definition to pull the name lexeme from.
+
 
         Returns:
-            A list of Ranges where in the content
+            A list, probably consisting of only one element, of locations corresponding to lexemes of definition names
         """
+        def filter_lexeme_by_reference_name(lexeme: Lexeme) -> bool:
+            return lexeme.value == definition.name
 
-        def get_end_position(position: Position) -> Position:
-            end_position = position.copy()
-            end_position.character += len(name)
-            return end_position
+        locations = []
+        referencing_lexemes = filter(filter_lexeme_by_reference_name, definition.lexemes)
+        for lexeme in referencing_lexemes:
+            previous_lexeme = definition.lexemes[definition.lexemes.index(lexeme) - 1]
+            if "name" in previous_lexeme.value:
+                locations.append(get_location_from_lexeme(lexeme))
 
-        lines = content.splitlines()
-        starting_positions = [Position(line=i, character=lines[i].find(name)) for i, line in enumerate(lines) if name in line]
-        return [Range(start=start_pos, end=get_end_position(start_pos)) for start_pos in starting_positions]
+        return locations
 
-    def _is_definition(self, name: str, lines: list[str]) -> bool:
+    def get_enum_value_lexeme_location(self, definition: Definition, enum_value: str) -> list[Location]:
         """
-        Returns a boolean indicating if the named item at the specified location is a definition.
+        Returns a list of locations corresponding to the enum value declaration in the enum definition's structure.
 
         Args:
-            name (str): The named item to check.
-            lines (list[str]): The lines up to the one to be searched for the named item.
+            definition (Definition): The definition to pull the enum value lexeme from.
+            enum_value (str): The string value to target.
+
 
         Returns:
-            A boolean value indicating that the named item is defined in the provided content.
+            A list, probably consisting of only one element, of locations corresponding to lexemes of definition names
         """
+        def filter_lexeme_by_reference_name(lexeme: Lexeme) -> bool:
+            return lexeme.value == enum_value
 
-        def is_schema_definition() -> bool:
-            return context.is_definition_type(name) and f"name: {name}" == lines[0]
+        def filter_for_value_lexeme(lexeme: Lexeme) -> bool:
+            return lexeme.value == "values"
 
-        def is_enum_definition() -> bool:
-            return context.get_enum_definition_by_type(name) is not None and f"- {name}" == lines[0]
+        locations = []
+        referencing_lexemes = filter(filter_lexeme_by_reference_name, definition.lexemes)
+        values_lexeme = list(filter(filter_for_value_lexeme, definition.lexemes))[0]
+        values_lexeme_index = definition.lexemes.index(values_lexeme)
 
-        lines.reverse()
-        lines = [line.strip() for line in lines]
-        context: LanguageContext = self.language_server.language_context
-        return is_schema_definition() or is_enum_definition()
+        for lexeme in referencing_lexemes:
+            if values_lexeme_index < definition.lexemes.index(lexeme):
+                locations.append(get_location_from_lexeme(lexeme))
+
+        return locations
+
+    def get_root_key_definition_lexeme_location(self, definition: Definition, root_key: str) -> list[Location]:
+        """
+        Returns a list of locations corresponding to the root key string's declaration in the root keys definition's structure.
+
+        Args:
+            definition (Definition): The definition to pull the enum value lexeme from.
+            root_key (str): The string value to target.
+
+
+        Returns:
+            A list, probably consisting of only one element, of locations corresponding to lexemes of definition names
+        """
+        def filter_lexeme_by_reference_name(lexeme: Lexeme) -> bool:
+            return lexeme.value == root_key
+
+        locations = []
+        referencing_lexemes = filter(filter_lexeme_by_reference_name, definition.lexemes)
+        for lexeme in referencing_lexemes:
+            lexeme_index = definition.lexemes.index(lexeme)
+            previous_lexeme = definition.lexemes[lexeme_index - 1]
+            if "name" in previous_lexeme.value and lexeme_index > 0:
+                locations.append(get_location_from_lexeme(lexeme))
+
+        return locations

@@ -37,12 +37,12 @@ class FindReferencesProvider(lsp_provider.LspProvider):
         document = documents.get(current_uri)
         locations = []
         if document:
-            offset = document.offset_at_position(position)
-            locations = self.get_definition_location_of_name(documents, get_symbol_at_position(document.source, offset))
+            symbol = get_symbol_at_position(document.source, position.line, position.character)
+            locations = self.get_definition_location_of_name(symbol)
 
         return locations
 
-    def get_definition_location_of_name(self, documents: dict[str, Document], name: str) -> list[Location]:
+    def get_definition_location_of_name(self, name: str) -> list[Location]:
         """
         Return the location(s) where the AaC reference is defined.
 
