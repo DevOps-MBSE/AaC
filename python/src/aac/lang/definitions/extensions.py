@@ -152,8 +152,8 @@ def _remove_extension_required_fields_to_definition(target_definition_fields: di
 
 def _get_required_fields_validation_string() -> str:
     """Return the name of the required fields validation."""
-    from aac.plugins.validators.required_fields import REQUIRED_FIELDS_VALIDATION_STRING
-    return REQUIRED_FIELDS_VALIDATION_STRING
+    from aac.plugins.validators.required_fields import PLUGIN_NAME
+    return PLUGIN_NAME
 
 
 def _get_required_fields_validation_for_definition(definition_fields: dict) -> dict:

@@ -6,6 +6,8 @@ from aac.lang.definitions.definition import Definition
 from aac.plugins.validators import ValidatorResult
 from aac.plugins.validators._validator_findings import ValidatorFindings
 
+PLUGIN_NAME = "Root key is defined"
+
 
 def validate_root_keys(definition_under_test: Definition, target_schema_definition: Definition, language_context: LanguageContext, *validation_args) -> ValidatorResult:
     """
@@ -20,7 +22,6 @@ def validate_root_keys(definition_under_test: Definition, target_schema_definiti
         A ValidatorResult containing any applicable error messages.
     """
     findings = ValidatorFindings()
-    *_, validation_name = __package__.split(".")
 
     active_context_root_keys = get_active_context().get_root_keys()
 
@@ -28,7 +29,7 @@ def validate_root_keys(definition_under_test: Definition, target_schema_definiti
 
     if root_key not in active_context_root_keys:
         undefined_reference_error_message = f"Undefined root key '{root_key}' in definition '{definition_under_test.name}'. Valid root keys {active_context_root_keys}"
-        findings.add_error_finding(definition_under_test, undefined_reference_error_message, validation_name, 0, 0, 0, 0)
+        findings.add_error_finding(definition_under_test, undefined_reference_error_message, PLUGIN_NAME, 0, 0, 0, 0)
         logging.debug(undefined_reference_error_message)
 
     return ValidatorResult(definition_under_test, findings)
