@@ -40,11 +40,11 @@ class GotoDefinitionProvider(LspProvider):
         locations = []
         if document:
             name = get_symbol_at_position(document.source, position.line, position.character)
-            locations = self.get_definition_location_of_name(name)
+            locations = self.get_definition_location(name)
 
         return locations
 
-    def get_definition_location_of_name(self, name: str) -> list[Location]:
+    def get_definition_location(self, name: str) -> list[Location]:
         """
         Return the location(s) where the AaC reference is defined.
 

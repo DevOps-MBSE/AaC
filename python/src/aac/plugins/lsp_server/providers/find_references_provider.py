@@ -2,14 +2,17 @@
 
 import logging
 from pygls.server import LanguageServer
-from pygls.lsp.types.basic_structures import Location, Position, Range
-from pygls.lsp.types.language_features.references import ReferenceParams
+from pygls.lsp.types import Location, Position, ReferenceParams
 from pygls.workspace import Document
 
+from aac.lang.definitions.definition import Definition
+from aac.lang.language_context import LanguageContext
+from aac.lang.definition_helpers import get_definitions_by_root_key
 from aac.lang.definitions.references import get_definition_type_references_from_list
 from aac.lang.definitions.type import remove_list_type_indicator
 from aac.lang.definitions.lexeme import Lexeme
-from aac.plugins.lsp_server.providers.symbols import get_symbol_at_position
+from aac.plugins.lsp_server.providers.symbols import get_symbol_at_position, SymbolType, get_symbol_type
+from aac.plugins.lsp_server.providers.locations import get_location_from_lexeme
 import aac.plugins.lsp_server.providers.lsp_provider as lsp_provider
 
 
@@ -19,7 +22,9 @@ class FindReferencesProvider(lsp_provider.LspProvider):
     def handle_request(self, ls: LanguageServer, params: ReferenceParams) -> list[Location]:
         """Return the locations at which references to the item are found."""
         self.language_server = ls
-        return self.get_reference_locations(self.language_server.workspace.documents, params.text_document.uri, params.position)
+        return self.get_reference_locations(
+            self.language_server.workspace.documents, params.text_document.uri, params.position
+        )
 
     def get_reference_locations(self, documents: dict[str, Document], current_uri: str, position: Position) -> list[Location]:
         """
@@ -31,96 +36,92 @@ class FindReferencesProvider(lsp_provider.LspProvider):
             position (Position): The position of the cursor in `current_uri` whose definition is being searched.
 
         Returns:
-            A list of Locations at which the item at `position` is defined. If there is nothing
+            A list of Locations at which the item at `position` is referenced. If there is nothing
             found at the specified position, an empty list is returned.
         """
         document = documents.get(current_uri)
         locations = []
         if document:
             symbol = get_symbol_at_position(document.source, position.line, position.character)
-            locations = self.get_definition_location_of_name(symbol)
+            locations = self.get_symbol_reference_locations(symbol)
 
         return locations
 
-    def get_definition_location_of_name(self, name: str) -> list[Location]:
+    def get_symbol_reference_locations(self, symbol: str) -> list[Location]:
         """
-        Return the location(s) where the AaC reference is defined.
+        Return the location(s) where the target value is referenced.
 
         Args:
             documents (dict[str, Document]): The documents in the workspace in which to search for name.
             name (str): The name of the item whose location is being determined.
 
         Returns:
-            A list of Locations at which the `name`d item is defined. If there is no named item, an
+            A list of Locations at which the `name`d item is referenced. If there is no named item, an
             empty list is returned.
         """
-        if not name:
+        if not symbol:
             return []
 
-        lsp_context = self.language_server.language_context
+        language_context = self.language_server.language_context
 
         locations = []
-        name = remove_list_type_indicator(name).strip(":")
-        definition_to_find = lsp_context.get_definition_by_name(name)
+        name = remove_list_type_indicator(symbol).strip(":")
+        symbol_types = get_symbol_type(name, language_context)
 
-        if not definition_to_find:
-            logging.warn(f"Can't find references for non-definition {name}")
-        else:
-            referencing_definitions = get_definition_type_references_from_list(definition_to_find, lsp_context.definitions)
+        if SymbolType.DEFINITION_NAME in symbol_types:
+            definition_to_find = language_context.get_definition_by_name(name)
+            if not definition_to_find:
+                logging.warn(f"Can't find references for non-definition {name}")
+            else:
+                locations.extend(self.get_definition_name_reference_locations(definition_to_find, language_context))
 
-            for definition in referencing_definitions:
-                def filter_lexeme_by_reference_name(lexeme: Lexeme) -> bool:
-                    return remove_list_type_indicator(lexeme.value) == name
-
-                referencing_lexemes = filter(filter_lexeme_by_reference_name, definition.lexemes)
-
-                for lexeme in referencing_lexemes:
-                    start_position = Position(line=lexeme.location.line, character=lexeme.location.column)
-                    end_position = Position(line=lexeme.location.line, character=lexeme.location.column + lexeme.location.span)
-                    locations.append(Location(uri=lexeme.source, range=Range(start=start_position, end=end_position)))
+        if SymbolType.ROOT_KEY_NAME in symbol_types:
+            locations.extend(self.get_root_key_reference_locations(name, language_context))
 
         return locations
 
-    def get_ranges_containing_name(self, content: str, name: str) -> list[Range]:
+    def get_definition_name_reference_locations(
+        self, definition_to_find: Definition, language_context: LanguageContext
+    ) -> list[Location]:
         """
-        Return the cursor position of the item in content.
+        Returns a list of locations corresponding to the name declaration in definition structures.
 
         Args:
-            content (str): The content from the workspace document in which to find the named item.
-            name (str): The item to search for in the document's content.
+            definition (Definition): The definition to pull the name lexeme from.
+
 
         Returns:
-            A list of Ranges where in the content
+            A list, probably consisting of only one element, of locations corresponding to lexemes of definition names
         """
+        locations = []
+        referencing_definitions = get_definition_type_references_from_list(definition_to_find, language_context.definitions)
 
-        def get_end_position(position: Position) -> Position:
-            end_position = position.copy()
-            end_position.character += len(name)
-            return end_position
+        for definition in referencing_definitions:
 
-        lines = content.splitlines()
-        starting_positions = [Position(line=i, character=lines[i].find(name)) for i, line in enumerate(lines) if name in line]
-        return [Range(start=start_pos, end=get_end_position(start_pos)) for start_pos in starting_positions]
+            def filter_lexeme_by_reference_name(lexeme: Lexeme) -> bool:
+                return remove_list_type_indicator(lexeme.value) == definition_to_find.name
 
-    def _is_definition(self, name: str, lines: list[str]) -> bool:
+            referencing_lexemes = filter(filter_lexeme_by_reference_name, definition.lexemes)
+            for lexeme in referencing_lexemes:
+                locations.append(get_location_from_lexeme(lexeme))
+
+        return locations
+
+    def get_root_key_reference_locations(self, root_key: str, language_context: LanguageContext) -> list[Location]:
         """
-        Returns a boolean indicating if the named item at the specified location is a definition.
+        Returns a list of locations corresponding to the name declaration in definition structures.
 
         Args:
-            name (str): The named item to check.
-            lines (list[str]): The lines up to the one to be searched for the named item.
+            definition (Definition): The definition to pull the name lexeme from.
+
 
         Returns:
-            A boolean value indicating that the named item is defined in the provided content.
+            A list, probably consisting of only one element, of locations corresponding to lexemes of definition names
         """
+        locations = []
+        referencing_definitions = get_definitions_by_root_key(root_key, language_context.definitions)
 
-        def is_schema_definition() -> bool:
-            return context.is_definition_type(name) and f"name: {name}" == lines[0]
+        for definition in referencing_definitions:
+            locations.append(get_location_from_lexeme(definition.lexemes[0]))
 
-        def is_enum_definition() -> bool:
-            return context.get_enum_definition_by_type(name) is not None and f"- {name}" == lines[0]
-
-        lines.reverse()
-        lines = [line.strip() for line in lines]
-        context = self.language_server.language_context
-        return is_schema_definition() or is_enum_definition()
+        return locations
