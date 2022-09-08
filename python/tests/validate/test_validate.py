@@ -1,5 +1,8 @@
+from unittest.mock import MagicMock, patch
+
 from aac.io.files.aac_file import AaCFile
 from aac.lang.definitions.definition import Definition
+from aac.plugins.validators._validator_result import ValidatorResult, ValidatorFindings
 from aac.validate import validated_definitions, validated_source, ValidationError
 
 from tests.active_context_test_case import ActiveContextTestCase
@@ -99,3 +102,20 @@ class TestValidate(ActiveContextTestCase):
         self.assertIn("missing", error_messages)
         self.assertIn("root", error_messages)
         self.assertIn(fake_root_key, error_messages)
+
+    @patch("aac.validate._validate._validate_definitions")
+    def test_non_error_findings_do_not_cause_validation_failures(self, _validate_definitions_mock: MagicMock):
+        test_definitions = [create_schema_definition("Test")]
+
+        test_findings = ValidatorFindings()
+        test_findings.add_info_finding(test_definitions[0], "warning message", "test validator", 0, 0, 0, 0)
+        test_findings.add_warning_finding(test_definitions[0], "warning message", "test validator", 0, 0, 0, 0)
+
+        _validate_definitions_mock.return_value = ValidatorResult(test_definitions, test_findings)
+
+        with validated_definitions(test_definitions) as result:
+            self.assertEqual(len(result.findings.get_all_findings()), 2)
+            self.assertEqual(len(result.findings.get_info_findings()), 1)
+            self.assertEqual(len(result.findings.get_warning_findings()), 1)
+
+            self.assertTrue(result.is_valid())
