@@ -106,7 +106,7 @@ def plugin_result(name: str, cmd: Callable, *args: Tuple[Any], **kwargs: dict[st
         result.status_code = PluginExecutionStatusCode.OPERATION_CANCELLED
     except Exception as error:
         # Extract the first stack trace, skipping the plugin result we'd expect to find in the first element
-        error_trace = extract_tb(error.__traceback__)[1]
+        error_trace = extract_tb(error.__traceback__)[-1]
         result.add_messages(
             f"A(n) {error.__class__.__qualname__} error occurred",
             f"  in {error_trace.filename}",
