@@ -31,12 +31,17 @@ def parse(source: str, source_uri: Optional[str] = None) -> list[Definition]:
         A list of Definition objects containing the internal representation of the definition and metadata
         associated with the definition.
     """
-    sanitized_source = sanitize_filesystem_path(source)
-    return (
-        _parse_file(sanitized_source)
-        if path.lexists(sanitized_source)
-        else _parse_str(sanitize_filesystem_path(source_uri or DEFAULT_SOURCE_URI), source)
-    )
+    # Linesep provides a quick and cheap filter for filepaths. A valid filepath won't have newlines.
+    sanitized_source = source
+    parsed_definitions = []
+    is_file = False
+
+    if linesep not in source:
+        sanitized_source = sanitize_filesystem_path(source)
+        if path.lexists(sanitized_source):
+            is_file = True
+
+    return _parse_file(sanitized_source) if is_file else _parse_str(source_uri or DEFAULT_SOURCE_URI, source)
 
 
 def _parse_file(arch_file: str) -> list[Definition]:

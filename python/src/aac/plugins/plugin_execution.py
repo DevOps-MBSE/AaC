@@ -1,10 +1,10 @@
 """Tools for handling plugin execution results consistently."""
-
-from typing import Callable, Tuple, Any
 from attr import attrib, attrs, validators, Factory
 from contextlib import contextmanager
 from enum import Enum, auto, unique
 from traceback import extract_tb
+from typing import Callable, Tuple, Any
+import logging
 
 from aac.io.parser import ParserError
 from aac.lang.language_error import LanguageError
@@ -114,5 +114,6 @@ def plugin_result(name: str, cmd: Callable, *args: Tuple[Any], **kwargs: dict[st
             f"\nThe error was:\n{error}",
         )
         result.status_code = PluginExecutionStatusCode.GENERAL_FAILURE
+        logging.error(f"Plugin {name} failed during execution:\n{extract_tb(error.__traceback__)}")
 
     yield result
