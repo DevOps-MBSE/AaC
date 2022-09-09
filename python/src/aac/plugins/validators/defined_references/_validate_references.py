@@ -19,27 +19,22 @@ def validate_references(definition_under_test: Definition, target_schema_definit
         A ValidatorResult containing any applicable error messages.
     """
     error_messages = []
-    validate_fields = validation_args
-    fields_as_list = target_schema_definition.get_top_level_fields().get("fields") or []
-    fields_as_dict = {field.get("name"): field for field in fields_as_list}
 
     def validate_dict(dict_to_validate: dict) -> list[str]:
 
-        for validate_field in validate_fields:
-            field_value = dict_to_validate.get(validate_field)
-            field_type = fields_as_dict.get(validate_field, {}).get("type")
-
-            # Verify that type is not blank
-            if field_type is None:
-                missing_type = f"Formatting error: '{validate_field}', is missing Type."
-                error_messages.append(missing_type)
-                logging.debug(missing_type)
-
-            # Verify that the name is not blank
-            elif field_value is None:
-                missing_name = f"Formatting Error: '{validate_field}' is missing a value."
-                error_messages.append(missing_name)
-                logging.debug(missing_name)
+        for reference_to_validate in validation_args:
+            dict_to_validate.get(reference_to_validate)
+            if (reference_to_validate):
+                if (language_context.is_primitive_type(reference_to_validate) or language_context.is_definition_type(reference_to_validate)):
+                    logging.debug(f"Valid type reference. Type '{reference_to_validate}' in content: {dict_to_validate}")
+                else:
+                    undefined_reference_error_message = f"Undefined type '{reference_to_validate}' referenced: {dict_to_validate}"
+                    error_messages.append(undefined_reference_error_message)
+                    logging.debug(undefined_reference_error_message)
+            else:
+                missing_field_in_dictionary = f"Missing field 'type' in validation content dictionary: {dict_to_validate}"
+                error_messages.append(missing_field_in_dictionary)
+                logging.debug(missing_field_in_dictionary)
 
     dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)
     list(map(validate_dict, dicts_to_test))
