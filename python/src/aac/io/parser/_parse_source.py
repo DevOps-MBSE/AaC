@@ -33,7 +33,6 @@ def parse(source: str, source_uri: Optional[str] = None) -> list[Definition]:
     """
     # Linesep provides a quick and cheap filter for filepaths. A valid filepath won't have newlines.
     sanitized_source = source
-    parsed_definitions = []
     is_file = False
 
     if linesep not in source:
