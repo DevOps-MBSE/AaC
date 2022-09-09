@@ -130,3 +130,10 @@ jobs:
 
         - name: Create PlantUML Component Diagram
           run: python -m aac puml-object model/flow/System.yaml output/
+
+        - name: Upload logs from failed runs
+          if: ${{ failure() }}
+          uses: actions/upload-artifact@v2
+          with:
+            name: failed_test_log
+            path: python/src/aac/aac.log
