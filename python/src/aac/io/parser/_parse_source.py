@@ -40,6 +40,11 @@ def parse(source: str, source_uri: Optional[str] = None) -> list[Definition]:
         if path.lexists(sanitized_source):
             is_file = True
 
+    if is_file:
+        print(f"Is file: {source}")
+    else:
+        print(f"Is not a file: {source}")
+
     return _parse_file(sanitized_source) if is_file else _parse_str(source_uri or DEFAULT_SOURCE_URI, source)
 
 
