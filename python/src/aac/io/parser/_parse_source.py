@@ -41,7 +41,7 @@ def parse(source: str, source_uri: Optional[str] = None) -> list[Definition]:
             is_file = True
 
     if is_file:
-        print(f"Is file: {source}")
+        print(f"Is file: {sanitized_source}")
     else:
         print(f"Is not a file: {source}")
 
