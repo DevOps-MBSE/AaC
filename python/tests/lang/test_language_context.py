@@ -2,6 +2,7 @@ from unittest import TestCase
 
 from aac.lang.active_context_lifecycle_manager import get_initialized_language_context
 from aac.lang.language_context import LanguageContext
+from aac.lang.language_error import LanguageError
 from aac.spec import get_aac_spec, get_primitives, get_root_keys
 
 from tests.helpers.parsed_definitions import (
@@ -228,3 +229,22 @@ class TestLanguageContext(TestCase):
         test_context.add_definition_to_context(enum)
 
         [self.assertEqual(enum, test_context.get_enum_definition_by_type(value)) for value in values]
+
+    def test_language_error_if_apply_extension_with_duplicate_names(self):
+        field1 = create_field_entry(f"{self.TEST_FIELD_DEFINITION_NAME}1")
+        test_schema = create_schema_definition(self.TEST_SCHEMA_DEFINITION_NAME, fields=[field1])
+
+        field2 = create_field_entry(f"{self.TEST_FIELD_DEFINITION_NAME}2")
+        test_duplicate_schema = create_schema_definition(self.TEST_SCHEMA_DEFINITION_NAME, fields=[field2])
+
+        language_context = LanguageContext([test_schema, test_duplicate_schema])
+
+        self.assertEqual(len(language_context.definitions), 2)
+
+        test_extension = create_schema_ext_definition(self.TEST_SCHEMA_EXT_DEFINITION_NAME, self.TEST_SCHEMA_DEFINITION_NAME)
+
+        with self.assertRaises(LanguageError) as cm:
+            language_context.add_definition_to_context(test_extension)
+
+        self.assertRegexpMatches(str(cm.exception).lower(), "duplicate.*definition.*name.*")
+        self.assertIn(self.TEST_SCHEMA_DEFINITION_NAME, str(cm.exception))

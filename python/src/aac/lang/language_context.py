@@ -14,6 +14,7 @@ from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.extensions import apply_extension_to_definition, remove_extension_from_definition
 from aac.lang.definitions.search import search_definition
 from aac.lang.definitions.type import remove_list_type_indicator
+from aac.lang.language_error import LanguageError
 from aac.plugins.plugin import Plugin
 
 
@@ -63,7 +64,14 @@ class LanguageContext:
         if definition.is_extension():
             target_definition_name = definition.get_top_level_fields().get("type")
             target_definition = self.get_definition_by_name(target_definition_name)
-            if target_definition:
+
+            definitions_with_target_definition_name = [
+                definition for definition in self.definitions if target_definition.name == definition.name
+            ]
+
+            if len(definitions_with_target_definition_name) > 1:
+                raise LanguageError(f"Duplicate definitions found ({len(definitions_with_target_definition_name)}) with name '{target_definition_name}'.")
+            elif target_definition:
                 apply_extension_to_definition(definition, target_definition)
             else:
                 logging.error(f"Extension failed to define target, field 'type' is missing. {definition.structure}")
@@ -284,10 +292,12 @@ class LanguageContext:
                 definition for definition in self.definitions_dictionary.values() if definition.name == definition_name
             ]
 
-            if not definition_to_return:
-                logging.info(f"Failed to find the definition named '{definition_name}' in the context.")
-            else:
+            if len(definition_to_return) > 0:
+                if len(definition_to_return) > 1:
+                    logging.info(f"Multiple definitions found with the same name '{definition_name}' found in context. Returning the first")
                 return definition_to_return[0]
+            else:
+                logging.info(f"Failed to find the definition named '{definition_name}' in the context.")
         else:
             logging.error(f"No definition name was provided to {self.get_definition_by_name.__name__}")
 
