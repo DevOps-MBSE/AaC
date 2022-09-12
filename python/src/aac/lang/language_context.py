@@ -2,15 +2,18 @@
 
 import copy
 import logging
-from attr import Factory, attrib, attrs, validators
+
 from typing import Optional
+from uuid import UUID
+
+from attr import Factory, attrib, attrs, validators
 
 from aac.io.files.aac_file import AaCFile
+from aac.lang.definition_helpers import get_definitions_by_root_key
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.extensions import apply_extension_to_definition, remove_extension_from_definition
 from aac.lang.definitions.search import search_definition
 from aac.lang.definitions.type import remove_list_type_indicator
-from aac.lang.definition_helpers import get_definitions_by_root_key
 from aac.plugins.plugin import Plugin
 
 
@@ -29,13 +32,13 @@ class LanguageContext:
 
     def __attrs_post_init__(self):
         """Post init hook for attrs classes."""
-        self.definitions_name_dictionary = {definition.name: definition for definition in self.definitions}
+        self.definitions_dictionary = {definition.uid: definition for definition in self.definitions}
 
     definitions: list[Definition] = attrib(default=Factory(list), validator=validators.instance_of(list))
     plugins: list[Plugin] = attrib(default=Factory(list), validator=validators.instance_of(list))
 
     # Private attribute - don't reference outside of this class.
-    definitions_name_dictionary: dict[str, Definition] = attrib(
+    definitions_dictionary: dict[UUID, Definition] = attrib(
         init=False, default=Factory(dict), validator=validators.instance_of(dict)
     )
 
@@ -48,9 +51,9 @@ class LanguageContext:
         """
         new_definition = copy.deepcopy(definition)
 
-        if new_definition.name not in self.definitions_name_dictionary:
+        if new_definition.uid not in self.definitions_dictionary:
             new_definition.source.is_loaded_in_context = True
-            self.definitions_name_dictionary[new_definition.name] = new_definition
+            self.definitions_dictionary[new_definition.uid] = new_definition
             self.definitions.append(new_definition)
         else:
             logging.debug(
@@ -89,9 +92,9 @@ class LanguageContext:
         Args:
             definition (Definition): The Definition to remove from the context.
         """
-        if definition.name in self.definitions_name_dictionary:
+        if definition.uid in self.definitions_dictionary:
             definition.source.is_loaded_in_context = False
-            self.definitions_name_dictionary.pop(definition.name)
+            self.definitions_dictionary.pop(definition.uid)
             self.definitions.remove(definition)
         else:
             definitions_in_context = self.get_defined_types()
@@ -133,8 +136,8 @@ class LanguageContext:
             definition (Definition): The Definition to update in the context.
         """
 
-        if definition.name in self.definitions_name_dictionary:
-            old_definition = self.definitions_name_dictionary.get(definition.name)
+        if definition.uid in self.definitions_dictionary:
+            old_definition = self.definitions_dictionary.get(definition.uid)
 
             self.remove_definition_from_context(old_definition)
             self.add_definition_to_context(definition)
@@ -277,14 +280,16 @@ class LanguageContext:
         definition_to_return = None
         if definition_name:
             definition_name = remove_list_type_indicator(definition_name)
-            definition_to_return = self.definitions_name_dictionary.get(definition_name)
+            definition_to_return = [
+                definition for definition in self.definitions_dictionary.values() if definition.name == definition_name
+            ]
 
             if not definition_to_return:
                 logging.info(f"Failed to find the definition named '{definition_name}' in the context.")
+            else:
+                return definition_to_return[0]
         else:
             logging.error(f"No definition name was provided to {self.get_definition_by_name.__name__}")
-
-        return definition_to_return
 
     def get_definitions_by_root_key(self, root_key: str) -> list[Definition]:
         """Return a subset of definitions with the given root key.
