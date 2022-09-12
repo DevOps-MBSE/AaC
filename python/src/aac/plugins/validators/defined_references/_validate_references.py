@@ -23,12 +23,12 @@ def validate_references(definition_under_test: Definition, target_schema_definit
     def validate_dict(dict_to_validate: dict) -> list[str]:
 
         for reference_to_validate in validation_args:
-            dict_to_validate.get(reference_to_validate)
-            if (reference_to_validate):
-                if (language_context.is_primitive_type(reference_to_validate) or language_context.is_definition_type(reference_to_validate)):
-                    logging.debug(f"Valid type reference. Type '{reference_to_validate}' in content: {dict_to_validate}")
+            field_reference = dict_to_validate.get(reference_to_validate)
+            if (field_reference):
+                if (language_context.is_primitive_type(field_reference) or language_context.is_definition_type(field_reference)):
+                    logging.debug(f"Valid type reference. Type '{field_reference}' in content: {dict_to_validate}")
                 else:
-                    undefined_reference_error_message = f"Undefined type '{reference_to_validate}' referenced: {dict_to_validate}"
+                    undefined_reference_error_message = f"Undefined type '{field_reference}' referenced: {dict_to_validate}"
                     error_messages.append(undefined_reference_error_message)
                     logging.debug(undefined_reference_error_message)
             else:

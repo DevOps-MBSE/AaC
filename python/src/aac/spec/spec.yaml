@@ -282,10 +282,12 @@ schema:
         A description for the field to let users know what it's for and any
         other useful information.
   validation:
-    - name: Type references exist
     - name: Required fields are present
       arguments:
         - name
+        - type
+    - name: Type references exist
+      arguments:
         - type
 ---
 schema:
