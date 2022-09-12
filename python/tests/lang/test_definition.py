@@ -13,6 +13,11 @@ from tests.helpers.parsed_definitions import (
 
 
 class TestDefinition(TestCase):
+    def test_uuid(self):
+        self.assertTrue(create_schema_definition("Test").uid.is_safe)
+        self.assertEqual(create_schema_definition("Test"), create_schema_definition("Test"))
+        self.assertNotEqual(create_schema_definition("Test1"), create_schema_definition("Test2"))
+
     def test_get_fields_with_empty_no_top_level_fields(self):
         test_definition = create_schema_definition("EmptyData")
         test_definition.structure["schema"] = {}
