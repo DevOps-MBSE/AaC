@@ -126,6 +126,7 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
             logging.info(f"Skipping empty content between {start_doc_token}:L{content_start} and {end_doc_token}:L{content_end} in source {source}")
             logging.debug(f"Isolated Yaml Text: {yaml_text}")
             logging.debug(f"Source: {source} Content:{model_content}")
+            logging.debug(f"Content lines:{model_content.split(linesep)}")
 
     return definitions
 
