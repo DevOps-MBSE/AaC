@@ -22,19 +22,20 @@ def validate_references(definition_under_test: Definition, target_schema_definit
 
     def validate_dict(dict_to_validate: dict) -> list[str]:
 
-        reference_type = dict_to_validate.get("type")
-
-        if reference_type:
-            if language_context.is_primitive_type(reference_type) or language_context.is_definition_type(reference_type):
-                logging.debug(f"Valid type reference. Type '{reference_type}' in content: {dict_to_validate}")
+        field_reference = ""
+        for reference_to_validate in validation_args:
+            field_reference = dict_to_validate.get(reference_to_validate)
+            if (field_reference):
+                if (language_context.is_primitive_type(field_reference) or language_context.is_definition_type(field_reference)):
+                    logging.debug(f"Valid type reference. Type '{field_reference}' in content: {dict_to_validate}")
+                else:
+                    undefined_reference_error_message = f"Undefined type '{field_reference}' referenced: {dict_to_validate}"
+                    error_messages.append(undefined_reference_error_message)
+                    logging.debug(undefined_reference_error_message)
             else:
-                undefined_reference_error_message = f"Undefined type '{reference_type}' referenced: {dict_to_validate}"
-                error_messages.append(undefined_reference_error_message)
-                logging.debug(undefined_reference_error_message)
-        else:
-            missing_field_in_dictionary = f"Missing field 'type' in validation content dictionary: {dict_to_validate}"
-            error_messages.append(missing_field_in_dictionary)
-            logging.debug(missing_field_in_dictionary)
+                missing_field_in_dictionary = f"Missing field 'type' in validation content dictionary: {dict_to_validate}"
+                error_messages.append(missing_field_in_dictionary)
+                logging.debug(missing_field_in_dictionary)
 
     dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)
     list(map(validate_dict, dicts_to_test))

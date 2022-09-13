@@ -49,7 +49,7 @@ class TestDefinedReferencesPlugin(ActiveContextTestCase):
         test_active_context = get_core_spec_context([test_invalid_schema_definition])
         field_definition = test_active_context.get_definition_by_name("Field")
 
-        actual_result = validate_references(test_invalid_schema_definition, field_definition, test_active_context)
+        actual_result = validate_references(test_invalid_schema_definition, field_definition, test_active_context, 'type')
 
         self.assertEqual(expected_result.is_valid, actual_result.is_valid)
         self.assertIn("Undefined", "\n".join(actual_result.messages))
@@ -68,7 +68,7 @@ class TestDefinedReferencesPlugin(ActiveContextTestCase):
         test_active_context = get_core_spec_context([test_invalid_schema_definition])
         field_definition = test_active_context.get_definition_by_name("Field")
 
-        actual_result = validate_references(test_invalid_schema_definition, field_definition, test_active_context)
+        actual_result = validate_references(test_invalid_schema_definition, field_definition, test_active_context, 'type')
 
         self.assertEqual(expected_result.is_valid, actual_result.is_valid)
         self.assertIn("Undefined", "\n".join(actual_result.messages))
