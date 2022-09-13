@@ -103,7 +103,7 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
 
         end_of_file_offset = (1 if isinstance(end_doc_token, yaml.tokens.StreamEndToken) else 0)
 
-        yaml_text = linesep.join(model_content.split(linesep)[content_start:content_end + end_of_file_offset])
+        yaml_text = linesep.join(model_content.splitlines()[content_start:content_end + end_of_file_offset])
         yaml_text += ("" if isinstance(end_doc_token, yaml.tokens.StreamEndToken) else linesep)
 
         if yaml_text.strip():
@@ -126,7 +126,7 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
             logging.info(f"Skipping empty content between {start_doc_token}:L{content_start} and {end_doc_token}:L{content_end} in source {source}")
             logging.debug(f"Isolated Yaml Text: {yaml_text}")
             logging.debug(f"Source: {source} Content:{model_content}")
-            logging.debug(f"Content lines:{model_content.split(linesep)}")
+            logging.debug(f"Content lines:{model_content.splitlines()}")
 
     return definitions
 
