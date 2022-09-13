@@ -22,6 +22,7 @@ def validate_references(definition_under_test: Definition, target_schema_definit
 
     def validate_dict(dict_to_validate: dict) -> list[str]:
 
+        field_reference = ""
         for reference_to_validate in validation_args:
             field_reference = dict_to_validate.get(reference_to_validate)
             if (field_reference):
