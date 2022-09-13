@@ -104,7 +104,7 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
         end_of_file_offset = (1 if isinstance(end_doc_token, yaml.tokens.StreamEndToken) else 0)
 
         yaml_text = linesep.join(model_content.splitlines()[content_start:content_end + end_of_file_offset])
-        yaml_text += ("" if isinstance(end_doc_token, yaml.tokens.StreamEndToken) else linesep)
+        yaml_text += linesep
 
         if yaml_text.strip():
             definition_lexemes = get_lexemes_for_definition(value_tokens, content_start, content_end)
