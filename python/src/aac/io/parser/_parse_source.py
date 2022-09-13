@@ -96,7 +96,7 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
     definitions: list[Definition] = []
     for doc_token_index in range(0, len(doc_tokens) - 1):
         start_doc_token = doc_tokens[doc_token_index]
-        end_doc_token = doc_tokens[doc_token_index + 1] if doc_token_index < len(doc_tokens) else doc_tokens[-1]
+        end_doc_token = doc_tokens[doc_token_index + 1]
 
         content_start = start_doc_token.start_mark.line
         content_end = end_doc_token.end_mark.line
@@ -124,6 +124,8 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
             definitions.append(Definition(definition_name, yaml_text, source_file, definition_lexemes, root_yaml))
         else:
             logging.info(f"Skipping empty content between {start_doc_token}:L{content_start} and {end_doc_token}:L{content_end} in source {source}")
+            logging.debug(f"Isolated Yaml Text: {yaml_text}")
+            logging.debug(f"Source: {source} Content:{model_content}")
 
     return definitions
 
