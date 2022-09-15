@@ -2,9 +2,7 @@
 
 import logging
 import yaml
-
 from uuid import NAMESPACE_OID, UUID, uuid5
-
 from attr import Factory, attrib, attrs, validators
 
 from aac.lang.definitions.lexeme import Lexeme
