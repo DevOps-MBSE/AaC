@@ -1,10 +1,9 @@
-from unittest import TestCase
-
-from aac.lang.active_context_lifecycle_manager import get_initialized_language_context
+from aac.lang.active_context_lifecycle_manager import get_active_context, get_initialized_language_context
 from aac.lang.language_context import LanguageContext
 from aac.lang.language_error import LanguageError
 from aac.spec import get_aac_spec, get_primitives, get_root_keys
 
+from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.parsed_definitions import (
     create_schema_definition,
     create_schema_ext_definition,
@@ -14,7 +13,7 @@ from tests.helpers.parsed_definitions import (
 )
 
 
-class TestLanguageContext(TestCase):
+class TestLanguageContext(ActiveContextTestCase):
 
     ENUM_VALUE_EXAMPLE_ONE = "valueOne"
     ENUM_VALUE_EXAMPLE_TWO = "valueTwo"
@@ -248,3 +247,9 @@ class TestLanguageContext(TestCase):
 
         self.assertRegexpMatches(str(cm.exception).lower(), "duplicate.*definition.*name.*")
         self.assertIn(self.TEST_SCHEMA_DEFINITION_NAME, str(cm.exception))
+
+    def test_uuid_in_active_context(self):
+        definition_uuids_list = [definition.uid for definition in get_active_context().definitions]
+        definition_uuids_set = set(definition_uuids_list)
+        self.assertGreaterEqual(len(definition_uuids_set), len(get_aac_spec()))
+        self.assertEqual(len(definition_uuids_list), len(definition_uuids_set))
