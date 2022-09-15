@@ -3,7 +3,7 @@ A module for defining a validator finding.
 
 Validator findings are created when a validator plugin wants to provide feedback to a user about a
 definition. Validation errors are a subset of the category of validator findings but findings need
-not be limited to errors, so this module also exports a severity that informs how severe the finding
+not be limited to errors, so this module also exports a severity category that informs how severe the finding
 is.
 """
 
