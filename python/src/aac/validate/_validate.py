@@ -49,7 +49,7 @@ def _with_validation(user_definitions: list[Definition]) -> ValidatorResult:
         if result.is_valid():
             return result
         else:
-            raise ValidationError("Failed to validate content with errors:", result.get_messages_as_string())
+            raise ValidationError(result.get_messages_as_string())
     except LanguageError as error:
         raise ValidationError("Failed to validate content due to an internal language error:\n", *error.args)
 
