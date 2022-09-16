@@ -11,7 +11,7 @@ from aac.lang.definition_helpers import get_definitions_by_root_key
 from aac.lang.definitions.references import get_definition_type_references_from_list
 from aac.lang.definitions.type import remove_list_type_indicator
 from aac.lang.definitions.lexeme import Lexeme
-from aac.plugins.lsp_server.providers.symbols import get_symbol_at_position, SymbolType, get_symbol_type
+from aac.plugins.lsp_server.providers.symbols import get_symbol_at_position, SymbolType, get_possible_symbol_types
 from aac.plugins.lsp_server.providers.locations import get_location_from_lexeme
 import aac.plugins.lsp_server.providers.lsp_provider as lsp_provider
 
@@ -66,7 +66,7 @@ class FindReferencesProvider(lsp_provider.LspProvider):
 
         locations = []
         name = remove_list_type_indicator(symbol).strip(":")
-        symbol_types = get_symbol_type(name, language_context)
+        symbol_types = get_possible_symbol_types(name, language_context)
 
         if SymbolType.DEFINITION_NAME in symbol_types:
             definition_to_find = language_context.get_definition_by_name(name)

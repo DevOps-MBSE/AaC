@@ -43,7 +43,7 @@ class TestFindReferencesProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         match = search(TEST_SCHEMA_B.name, TEST_DOCUMENT_CONTENT)
 
         while match is not None:
-            line = _get_lines_for_offset(TEST_DOCUMENT_CONTENT, substring_index)
+            line = _get_line_for_offset(TEST_DOCUMENT_CONTENT, substring_index)
             last_line_end_index = TEST_DOCUMENT_CONTENT[:substring_index].rindex(linesep) if substring_index > 0 else 0
             line_match = search(TEST_SCHEMA_B.name, TEST_DOCUMENT_CONTENT[last_line_end_index:substring_index])
 
@@ -80,7 +80,7 @@ class TestFindReferencesProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
 
         while match is not None:
             substring_index += match.end()
-            line = _get_lines_for_offset(TEST_DOCUMENT_CONTENT, substring_index)
+            line = _get_line_for_offset(TEST_DOCUMENT_CONTENT, substring_index)
             last_line_end_index = 0
             try:
                 last_line_end_index = TEST_DOCUMENT_CONTENT[:substring_index].rindex(linesep) + 1
