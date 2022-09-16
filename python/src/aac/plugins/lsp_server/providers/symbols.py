@@ -11,7 +11,7 @@ class SymbolType(Enum):
     ROOT_KEY_NAME = 3
 
 
-def get_symbol_type(name: str, language_context: LanguageContext) -> list[SymbolType]:
+def get_possible_symbol_types(name: str, language_context: LanguageContext) -> list[SymbolType]:
     """
     Return a list of enums indicating what kind of symbol this may be based on the language context.
 
@@ -20,7 +20,7 @@ def get_symbol_type(name: str, language_context: LanguageContext) -> list[Symbol
         language_context (LanguageContext): The language context to search for context for the symbol.
 
     Returns:
-        A list of enums indicating a relationship between the name and content in the language context.
+        A list of enums indicating a possible relationship between the name and content in the language context.
     """
 
     symbol_types = []
@@ -44,8 +44,8 @@ def get_symbol_at_position(content: str, line: int, column: int) -> str:
 
     Args:
         content (str): A container mapping document names to the associated LSP document.
-        offset (int): The URI of the file that's currently active.
-        position (Position): The position of the cursor in `current_uri` whose definition is being searched.
+        line (int): The line on which the cursor is positioned.
+        column (int): The column on which the cursor is positioned.
 
     Returns:
         A list of Locations at which the item at `position` is defined. If there is nothing

@@ -112,8 +112,8 @@ class FindReferencesProvider(lsp_provider.LspProvider):
         Returns a list of locations corresponding to the name declaration in definition structures.
 
         Args:
-            definition (Definition): The definition to pull the name lexeme from.
-
+            root_key (str): The root key for which locations of references will be returned.
+            language_context (LanguageContext): The LanguageContext in which to look for the root key.
 
         Returns:
             A list, probably consisting of only one element, of locations corresponding to lexemes of definition names

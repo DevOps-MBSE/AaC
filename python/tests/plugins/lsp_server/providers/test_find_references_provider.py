@@ -118,6 +118,6 @@ class TestFindReferencesProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         self.assertListEqual(expected_locations, filtered_actual_locations)
 
 
-def _get_lines_for_offset(content: str, offset: int) -> int:
+def _get_line_for_offset(content: str, offset: int) -> int:
     """Returns a line number for the given offset."""
     return len([char for char in content[:offset] if char == linesep])

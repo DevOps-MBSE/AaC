@@ -48,7 +48,7 @@ def temporary_test_file(content: str, **extra_file_attrs):
                 * newline (default value is None)
                 * suffix (default value is None)
                 * prefix (default value is None)
-                * dir (default value is None)
+                * dir (default value is `TemporaryDirectory()`)
 
     Yields:
         The temporary test file containing the specified contents.
