@@ -43,7 +43,7 @@ class FindReferencesProvider(lsp_provider.LspProvider):
         locations = []
         if document:
             symbol = get_symbol_at_position(document.source, position.line, position.character)
-            locations = self.get_symbol_reference_locations(symbol)
+            locations = self.get_symbol_reference_locations(symbol) if symbol else []
 
         return locations
 
@@ -52,11 +52,10 @@ class FindReferencesProvider(lsp_provider.LspProvider):
         Return the location(s) where the target value is referenced.
 
         Args:
-            documents (dict[str, Document]): The documents in the workspace in which to search for name.
-            name (str): The name of the item whose location is being determined.
+            symbol (str): The symbol whose location is being determined.
 
         Returns:
-            A list of Locations at which the `name`d item is referenced. If there is no named item, an
+            A list of Locations at which the `symbol` is referenced. If no symbol is found, an
             empty list is returned.
         """
         if not symbol:
@@ -87,8 +86,8 @@ class FindReferencesProvider(lsp_provider.LspProvider):
         Returns a list of locations corresponding to the name declaration in definition structures.
 
         Args:
-            definition (Definition): The definition to pull the name lexeme from.
-
+            definition_to_find (Definition): The definition to pull the name lexeme from.
+            language_context (LanguageContext): The LanguageContext in which to look for the definition.
 
         Returns:
             A list, probably consisting of only one element, of locations corresponding to lexemes of definition names

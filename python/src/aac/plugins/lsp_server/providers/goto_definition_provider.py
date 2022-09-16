@@ -39,8 +39,8 @@ class GotoDefinitionProvider(LspProvider):
         document = documents.get(current_uri)
         locations = []
         if document:
-            name = get_symbol_at_position(document.source, position.line, position.character)
-            locations = self.get_definition_location(name)
+            symbol = get_symbol_at_position(document.source, position.line, position.character)
+            locations = self.get_definition_location(symbol) if symbol else []
 
         return locations
 

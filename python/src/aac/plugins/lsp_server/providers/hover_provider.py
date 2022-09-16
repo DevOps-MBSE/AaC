@@ -20,6 +20,8 @@ class HoverProvider(LspProvider):
         document: Optional[Document] = ls.workspace.documents.get(params.text_document.uri)
         position = params.position
         symbol = get_symbol_at_position(document.source, position.line, position.character)
-        name = remove_list_type_indicator(symbol).strip(":")
-        definition = ls.language_context.get_definition_by_name(name)
-        return definition and Hover(contents=MarkupContent(kind=MarkupKind.Markdown, value=f"```\n{definition.content}\n```"))
+
+        if symbol is not None:
+            name = remove_list_type_indicator(symbol).strip(":")
+            definition = ls.language_context.get_definition_by_name(name)
+            return definition and Hover(contents=MarkupContent(kind=MarkupKind.Markdown, value=f"```\n{definition.content}\n```"))

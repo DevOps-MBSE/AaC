@@ -1,5 +1,6 @@
 """Module contain common functionality shared by the various LSP providers."""
 from enum import Enum
+from typing import Optional
 
 from aac.lang.language_context import LanguageContext
 
@@ -38,7 +39,7 @@ def get_possible_symbol_types(name: str, language_context: LanguageContext) -> l
     return symbol_types
 
 
-def get_symbol_at_position(content: str, line: int, column: int) -> str:
+def get_symbol_at_position(content: str, line: int, column: int) -> Optional[str]:
     """
     Return the word at or adjacent to the offset location.
 
@@ -56,7 +57,7 @@ def get_symbol_at_position(content: str, line: int, column: int) -> str:
     adjusted_column = column if column < len(line_with_symbol) else column - 1
     on_symbol = not line_with_symbol[adjusted_column].isspace()
 
-    symbol = ""
+    symbol = None
     if on_symbol:
 
         symbol_start = 0
