@@ -45,8 +45,8 @@ class TestValidate(ActiveContextTestCase):
 
         exception = error.exception
         self.assertEqual(ValidationError, type(exception))
-        self.assertGreater(len(exception.args), 1)
-        self.assertIn("undefined", exception.args[1].lower())
+        self.assertEqual(len(exception.args), 1)
+        self.assertIn("undefined", exception.args[0].lower())
 
     def test_validate_definitions_with_invalid_missing_required_field(self):
         test_definition = create_schema_definition("Empty Schema", fields=[])
@@ -57,8 +57,8 @@ class TestValidate(ActiveContextTestCase):
 
         exception = error.exception
         self.assertEqual(ValidationError, type(exception))
-        self.assertGreater(len(exception.args), 1)
-        self.assertIn("required", exception.args[1].lower())
+        self.assertEqual(len(exception.args), 1)
+        self.assertIn("required", exception.args[0].lower())
 
     def test_validate_definitions_with_invalid_multiple_exclusive_fields(self):
         test_field_entry = create_field_entry("TestField", "string")
@@ -72,8 +72,8 @@ class TestValidate(ActiveContextTestCase):
 
         exception = error.exception
         self.assertEqual(ValidationError, type(exception))
-        self.assertGreater(len(exception.args), 1)
-        self.assertIn("multiple", exception.args[1].lower())
+        self.assertEqual(len(exception.args), 1)
+        self.assertIn("multiple", exception.args[0].lower())
 
     def test_multiple_validate_definitions_with_invalid_definition(self):
         invalid_fields_test_field = create_field_entry("MissingTestField")
