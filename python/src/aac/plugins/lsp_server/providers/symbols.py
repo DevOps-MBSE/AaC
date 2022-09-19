@@ -1,4 +1,5 @@
 """Module contain common functionality shared by the various LSP providers."""
+import logging
 from enum import Enum
 from typing import Optional
 
@@ -7,6 +8,7 @@ from aac.lang.language_context import LanguageContext
 
 class SymbolType(Enum):
     """Enums classifying the symbol type. Leveraged by providers to tailor responses."""
+
     DEFINITION_NAME = 1
     ENUM_VALUE_TYPE = 2
     ROOT_KEY_NAME = 3
@@ -29,8 +31,8 @@ def get_possible_symbol_types(name: str, language_context: LanguageContext) -> l
     if language_context.is_definition_type(name):
         symbol_types.append(SymbolType.DEFINITION_NAME)
 
-    enum_values_in_context = [value for values in [definition.get_top_level_fields().get("values") for definition in language_context.get_definitions_by_root_key("enum")] for value in values]
-    if name in enum_values_in_context:
+    enum_definition = language_context.get_enum_definition_by_type(name)
+    if enum_definition:
         symbol_types.append(SymbolType.ENUM_VALUE_TYPE)
 
     if name in language_context.get_root_keys():
@@ -49,8 +51,7 @@ def get_symbol_at_position(content: str, line: int, column: int) -> Optional[str
         column (int): The column on which the cursor is positioned.
 
     Returns:
-        A list of Locations at which the item at `position` is defined. If there is nothing
-        found at the specified position, an empty list is returned.
+        The symbol found at the current location in the content.
     """
     content_lines = content.splitlines()
     line_with_symbol = content_lines[line]
