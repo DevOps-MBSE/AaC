@@ -55,28 +55,30 @@ def get_symbol_at_position(content: str, line: int, column: int) -> Optional[str
     """
     content_lines = content.splitlines()
     line_with_symbol = content_lines[line]
-    adjusted_column = column if column < len(line_with_symbol) else column - 1
-    on_symbol = not line_with_symbol[adjusted_column].isspace()
-
     symbol = None
-    if on_symbol:
 
-        symbol_start = 0
-        # Reversed range from the adjusted column to the 0 element in the line
-        for i in range(adjusted_column, -1, -1):
-            if line_with_symbol[i].isspace():
-                break
+    if line_with_symbol != "":
+        adjusted_column = column if column < len(line_with_symbol) else column - 1
+        on_symbol = not line_with_symbol[adjusted_column].isspace()
 
-            symbol_start = i
+        if on_symbol:
 
-        symbol_end = len(line_with_symbol)
-        for i in range(adjusted_column, len(line_with_symbol)):
-            if line_with_symbol[i].isspace():
-                break
+            symbol_start = 0
+            # Reversed range from the adjusted column to the 0 element in the line
+            for i in range(adjusted_column, -1, -1):
+                if line_with_symbol[i].isspace():
+                    break
 
-            symbol_end = i
+                symbol_start = i
 
-        # Have to add 1 to the end index since slice ends are exclusive.
-        symbol = line_with_symbol[symbol_start:symbol_end + 1].strip()
+            symbol_end = len(line_with_symbol)
+            for i in range(adjusted_column, len(line_with_symbol)):
+                if line_with_symbol[i].isspace():
+                    break
+
+                symbol_end = i
+
+            # Have to add 1 to the end index since slice ends are exclusive.
+            symbol = line_with_symbol[symbol_start:symbol_end + 1].strip()
 
     return symbol

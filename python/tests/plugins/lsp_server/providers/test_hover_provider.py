@@ -36,6 +36,6 @@ class TestHoverProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         self.assertEqual(res.get_content(), self.active_context.get_definition_by_name("DataA").content)
 
     async def test_no_hover_when_nothing_under_cursor(self):
-        await self.write_document(TEST_DOCUMENT_NAME, f" \n{TEST_DOCUMENT_CONTENT}")
+        await self.write_document(TEST_DOCUMENT_NAME, f"\n{TEST_DOCUMENT_CONTENT}")
         res: HoverResponse = await self.hover(TEST_DOCUMENT_NAME)
         self.assertIsNone(res.get_content())

@@ -68,11 +68,11 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
 
     async def test_get_named_location(self):
         document_uri = self.to_uri(path.join(TEST_DOCUMENT_NAME)) or ""
-        location = self.provider.get_definition_location_at_position(
+        location, *_ = self.provider.get_definition_location_at_position(
             {document_uri: self.virtual_document_to_lsp_document(TEST_DOCUMENT_NAME)},
             document_uri,
             Position(line=29, character=13),
-        )[0]
+        )
 
         self.assertEqual(location.range.start, Position(line=1, character=8))
         self.assertEqual(location.range.end, Position(line=1, character=8 + len(TEST_SCHEMA_A.name)))
@@ -133,7 +133,7 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         await self.create_document("spec.aac", get_aac_spec_as_yaml())
 
         res: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=0, character=1)
-        schema_definition_location = self.get_definition_location_at_position(TEST_DOCUMENT_NAME, line=0, character=1)[0]
+        schema_definition_location, *_ = self.get_definition_location_at_position(TEST_DOCUMENT_NAME, line=0, character=1)
 
         location = res.get_location()
         self.assertIsNotNone(location)
