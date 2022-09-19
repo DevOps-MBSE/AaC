@@ -60,7 +60,7 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
         self.assertIsNone(self.documents.get(file_name), f"Virtual document {file_name} already exists")
 
         absolute_file_path = self._get_absolute_file_path(file_name)
-        self.documents[absolute_file_path] = TextDocument(file_path=self.temp_documents_directory.name, file_name=file_name, content=content)
+        self.documents[absolute_file_path] = TextDocument(file_path=path.dirname(absolute_file_path), file_name=file_name, content=content)
         document = self.documents.get(absolute_file_path)
 
         uri = self.to_uri(absolute_file_path)
@@ -170,7 +170,7 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
         return response_type(response.result())
 
     def _get_absolute_file_path(self, file_name: str):
-        return path.join(self.temp_documents_directory.name, file_name)
+        return path.realpath(path.join(self.temp_documents_directory.name, file_name))
 
     def _create_core_spec_virtual_doc(self) -> TextDocument:
         content = core.get_aac_spec_as_yaml()
