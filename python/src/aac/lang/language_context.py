@@ -230,7 +230,7 @@ class LanguageContext:
         Returns:
             A list of strings, one entry for each definition name available in the LanguageContext.
         """
-        return list(map(lambda definition: definition.name, self.definitions))
+        return [definition.name for definition in self.definitions]
 
     def is_enum_type(self, type: str) -> bool:
         """
