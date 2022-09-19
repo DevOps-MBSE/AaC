@@ -1,5 +1,4 @@
 """Module contain common functionality shared by the various LSP providers."""
-import logging
 from enum import Enum
 from typing import Optional
 
