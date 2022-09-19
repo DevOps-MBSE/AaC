@@ -36,10 +36,6 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
         self.active_context = self.client.server.language_context
         self.temp_documents_directory: TemporaryDirectory = TemporaryDirectory()
 
-        # Add the core spec to the virtual docs
-        core_spec_virtual_doc = self._create_core_spec_virtual_doc()
-        self.documents[core_spec_virtual_doc.get_full_path()] = core_spec_virtual_doc
-
         await self.create_document(TEST_DOCUMENT_NAME, TEST_DOCUMENT_CONTENT)
 
     async def asyncTearDown(self):
@@ -172,10 +168,6 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
         )
         response = await self.client.send_request(method, params)
         return response_type(response.result())
-
-    def tear_down():
-        """General tear-down method for the test LSP server. Clears out temporary files."""
-        pass
 
     def _get_absolute_file_path(self, file_name: str):
         return path.join(self.temp_documents_directory.name, file_name)
