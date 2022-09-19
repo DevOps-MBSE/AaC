@@ -92,7 +92,7 @@ jobs:
 
       strategy:
           matrix:
-            os: [ubuntu-latest, windows-latest, macos-12]
+            os: [ubuntu-latest, windows-latest]
 
       steps:
         - name: Checkout Repository
