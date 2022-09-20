@@ -2,8 +2,7 @@
 
 from typing import Optional
 
-from pygls.lsp.types.basic_structures import MarkupContent, MarkupKind
-from pygls.lsp.types.language_features.hover import Hover, HoverParams
+from pygls.lsp.types import MarkupContent, MarkupKind, Hover, HoverParams
 from pygls.server import LanguageServer
 from pygls.workspace import Document
 

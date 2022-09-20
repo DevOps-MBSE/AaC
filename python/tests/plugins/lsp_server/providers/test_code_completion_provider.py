@@ -1,7 +1,7 @@
 from unittest.async_case import IsolatedAsyncioTestCase
 
 from pygls.lsp import methods
-from pygls.lsp.types.language_features.completion import CompletionContext, CompletionParams, CompletionTriggerKind
+from pygls.lsp.types import CompletionContext, CompletionParams, CompletionTriggerKind
 from aac.lang.definitions.search import search_definition
 
 from aac.plugins.lsp_server.providers.code_completion_provider import SPACE_TRIGGER
