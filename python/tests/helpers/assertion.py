@@ -53,10 +53,11 @@ def _assert_plugin_state(plugin_result: PluginExecutionResult, code: PluginExecu
 
 def assert_validator_result_failure(validator_result: ValidatorResult, *expected_error_message_contents):
     """Asserts that the validator result indicates a failure status and contains the defined error message content."""
-    if validator_result.is_valid:
-        raise AssertionError(f"ValidatorResult did not return an unsuccessful status as expected. Messages:\n{validator_result.get_messages_as_string()}")
-
     error_message = validator_result.get_messages_as_string()
+
+    if validator_result.is_valid():
+        raise AssertionError(f"ValidatorResult did not return an unsuccessful status as expected. Messages:\n{error_message}")
+
     for error_string in expected_error_message_contents:
         if error_string not in error_message:
             raise AssertionError(f"ValidatorResult does not contain expected error message content '{error_string}'. Error message:\n{error_message}")
@@ -64,5 +65,5 @@ def assert_validator_result_failure(validator_result: ValidatorResult, *expected
 
 def assert_validator_result_success(validator_result: ValidatorResult):
     """Asserts that the validator result indicates a successful status."""
-    if not validator_result.is_valid:
+    if not validator_result.is_valid():
         raise AssertionError(f"ValidatorResult did not return a successful status as expected. Messages:\n{validator_result.get_messages_as_string()}")
