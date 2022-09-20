@@ -24,7 +24,7 @@ TEST_MESSAGE_A_NAME = "MessageA"
 TEST_MESSAGE_A_DESCRIPTION = "Some description for MessageA"
 TEST_MESSAGE_B_NAME = "MessageB"
 TEST_MESSAGE_B_FILE_NAME = "message_b.proto"
-TEST_FIELD_A_NAME = "TestFieldA"
+TEST_FIELD_A_NAME = "test_field_a"
 TEST_FIELD_A_DESCRIPTION = "Some description for TestFieldA"
 FIELD_METADATA_NAME = "metadata"
 FIELD_MESSAGE_NAME = "message"
@@ -60,7 +60,7 @@ class TestGenerateProtobufPlugin(ActiveContextTestCase):
             self.assertIn("data_b.proto", generated_file_names)
             self.assertIn("data_c.proto", generated_file_names)
             self.assertIn("message_metadata_data.proto", generated_file_names)
-            self.assertIn("message_type.proto", generated_file_names)
+            self.assertIn("message_type.proto", generated_file_names) 
 
             # Assert data_a.proto contents
             with open(os.path.join(temp_dir, "data_a.proto")) as data_a_proto_file:
@@ -261,7 +261,7 @@ model:
       description:  process DataA and respond with DataD
       input:
         - name: in
-          type: DataA
+          type: Data A
       output:
         - name: out
           type: DataC
@@ -281,7 +281,7 @@ model:
       type: request-response
       input:
         - name: in
-          type: DataA
+          type: Data A
       output:
         - name: out
           type: DataB
@@ -315,7 +315,7 @@ model:
             - The user receives a response with DataC
 ---
 schema:
-  name: DataA
+  name: Data A
   description: Description for the DataA Message
   fields:
   - name: metadata
@@ -324,7 +324,7 @@ schema:
   - name: msg
     type: string
   - name: message_type
-    type: MessageType
+    type: Message Type
   validation:
     - name: Required fields are present
       arguments:
@@ -351,10 +351,10 @@ schema:
 schema:
   name: DataC
   fields:
-  - name: metadata
-    type: MessageMetadataData
-  - name: code
-    type: fixed64[]
+    - name: metadata
+      type: MessageMetadataData
+    - name: code
+      type: fixed64[]
   validation:
     - name: Required fields are present
       arguments:
@@ -363,17 +363,17 @@ schema:
 schema:
   name: MessageMetadataData
   fields:
-  - name: message_id
-    type: int64
+    - name: message_id
+      type: int64
   validation:
     - name: Required fields are present
       arguments:
         - message_id
 ---
 enum:
-  name: MessageType
+  name: Message Type
   values:
-  - type_1
-  - type_2
-  - type_3
+    - type 1
+    - type 2
+    - type 3
 """

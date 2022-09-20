@@ -2,7 +2,7 @@ from unittest import TestCase
 from aac.lang.active_context_lifecycle_manager import get_initialized_language_context
 from aac.lang.definitions.extensions import apply_extension_to_definition, remove_extension_from_definition
 from aac.lang.language_error import LanguageError
-from aac.plugins.validators.required_fields import REQUIRED_FIELDS_VALIDATION_STRING
+from aac.plugins.validators.required_fields import PLUGIN_NAME
 
 from tests.helpers.parsed_definitions import (
     create_schema_definition,
@@ -54,7 +54,7 @@ class TestDefinitionExtensions(TestCase):
         self.assertIn(test_enum, language_context.definitions)
 
         self.assertEqual(1, len(test_schema.structure["schema"]["fields"]))
-        self.assertNotIn(REQUIRED_FIELDS_VALIDATION_STRING, test_schema.structure["schema"]["validation"])
+        self.assertNotIn(PLUGIN_NAME, test_schema.structure["schema"]["validation"])
         self.assertEqual(2, len(test_enum.structure["enum"]["values"]))
 
         apply_extension_to_definition(test_schema_ext, test_schema)
@@ -63,7 +63,7 @@ class TestDefinitionExtensions(TestCase):
         # Assert Altered Extension State
         required_fields_validation, *_ = [validation for validation in test_schema.structure["schema"]["validation"]]
         self.assertEqual(2, len(test_schema.structure["schema"]["fields"]))
-        self.assertEqual(REQUIRED_FIELDS_VALIDATION_STRING, required_fields_validation.get("name"))
+        self.assertEqual(PLUGIN_NAME, required_fields_validation.get("name"))
         self.assertEqual(1, len(required_fields_validation.get("arguments")))
         self.assertIn(schema_ext_field_name, test_schema.to_yaml())
         self.assertIn(schema_ext_field_type, test_schema.to_yaml())
@@ -76,7 +76,7 @@ class TestDefinitionExtensions(TestCase):
 
         # Assert Removed Extension State
         self.assertEqual(1, len(test_schema.structure["schema"]["fields"]))
-        self.assertNotIn(REQUIRED_FIELDS_VALIDATION_STRING, test_schema.structure["schema"]["validation"])
+        self.assertNotIn(PLUGIN_NAME, test_schema.structure["schema"]["validation"])
         self.assertNotIn(schema_ext_field_name, test_schema.to_yaml())
         self.assertNotIn(schema_ext_field_type, test_schema.to_yaml())
 
