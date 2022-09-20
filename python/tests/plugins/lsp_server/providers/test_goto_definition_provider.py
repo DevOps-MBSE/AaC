@@ -130,8 +130,6 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         )
 
     async def test_handles_goto_definition_for_root_keys(self):
-        await self.create_document("spec.aac", get_aac_spec_as_yaml())
-
         res: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=0, character=1)
         schema_definition_location, *_ = self.get_definition_location_at_position(TEST_DOCUMENT_NAME, line=0, character=1)
 
@@ -141,8 +139,6 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         self.assertEqual(location.range.json(), schema_definition_location.range.json())
 
     async def test_handles_goto_definition_for_enums(self):
-        await self.create_document("spec.aac", get_aac_spec_as_yaml())
-
         string_location = self.get_definition_location_of_name(TEST_DOCUMENT_CONTENT, "string")
         res: GotoDefinitionResponse = await self.goto_definition(
             TEST_DOCUMENT_NAME, string_location.range.start.line, character=string_location.range.start.character
@@ -158,8 +154,6 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         self.assertEqual(location.range.json(), expected_location.range.json())
 
     async def test_handles_goto_definition_for_symbols_with_hyphens(self):
-        await self.create_document("spec.aac", get_aac_spec_as_yaml())
-
         string_location = self.get_definition_location_of_name(TEST_DOCUMENT_CONTENT, "request-response")
         res: GotoDefinitionResponse = await self.goto_definition(
             TEST_DOCUMENT_NAME, line=string_location.range.start.line, character=string_location.range.start.character
