@@ -60,6 +60,13 @@ jobs:
         echo y | aac gen-plugin gen_plugin_generation_test/gen_protobuf.yaml
         pip install .
 
+    - name: Upload logs from failed runs
+      if: ${{ failure() }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: failed_test_log
+        path: python/src/aac/aac.log
+
   os_test_matrix_setup:
     name: Setup OS Test Matrix
     runs-on: ubuntu-latest
@@ -123,3 +130,10 @@ jobs:
 
         - name: Create PlantUML Component Diagram
           run: python -m aac puml-object model/flow/System.yaml output/
+
+        - name: Upload logs from failed runs
+          if: ${{ failure() }}
+          uses: actions/upload-artifact@v2
+          with:
+            name: failed_test_log
+            path: python/src/aac/aac.log
