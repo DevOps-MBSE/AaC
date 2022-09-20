@@ -205,7 +205,7 @@ def create_validation_definition(name: str, description: str = "", behavior: lis
     return _create_parsed_definition("validation", definition_dict)
 
 
-def _create_parsed_definition(root_key: str, definition_structure: dict):
+def _create_parsed_definition(root_key: str, definition_structure: dict) -> Definition:
     """The base Parsed Definition creation function."""
     name = (NAME_STRING in definition_structure and definition_structure[NAME_STRING]) or "undefined_name"
     definition_dict = {root_key: definition_structure}

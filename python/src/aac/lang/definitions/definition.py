@@ -1,8 +1,9 @@
 """An Architecture-as-Code definition augmented with metadata and helpful functions."""
 
-from attr import Factory, attrib, attrs, validators
 import logging
 import yaml
+from uuid import NAMESPACE_OID, UUID, uuid5
+from attr import Factory, attrib, attrs, validators
 
 from aac.lang.definitions.lexeme import Lexeme
 from aac.io.files.aac_file import AaCFile
@@ -13,6 +14,7 @@ class Definition:
     """An Architecture-as-Code definition.
 
     Attributes:
+        uid (UUID): A unique identifier for selecting the specific definition.
         name (str): The name of the definition
         content (str): The original source textual representation of the definition.
         source (AaCFile): The source document containing the definition.
@@ -20,11 +22,16 @@ class Definition:
         structure (dict): The dictionary representation of the definition.
     """
 
+    uid: UUID = attrib(init=False, validator=validators.instance_of(UUID))
     name: str = attrib(validator=validators.instance_of(str))
     content: str = attrib(validator=validators.instance_of(str))
     source: AaCFile = attrib(validator=validators.instance_of(AaCFile))
     lexemes: list[Lexeme] = attrib(default=Factory(list), validator=validators.instance_of(list))
     structure: dict = attrib(default=Factory(dict), validator=validators.instance_of(dict))
+
+    def __attrs_post_init__(self):
+        """Post-initialization hook."""
+        self.uid = uuid5(NAMESPACE_OID, self.name)
 
     def __hash__(self) -> int:
         """Return the hash of this Definition."""
