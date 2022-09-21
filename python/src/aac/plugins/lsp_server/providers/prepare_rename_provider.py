@@ -14,6 +14,7 @@ class PrepareRenameProvider(lsp_provider.LspProvider):
     def handle_request(self, language_server: LanguageServer, params: PrepareRenameParams) -> Optional[Range]:
         """
         Return a range that encompasses the symbol to the locations at which references to the item are found.
+
         https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_prepareRename
 
         Args:

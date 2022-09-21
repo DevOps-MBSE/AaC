@@ -56,7 +56,7 @@ class RenameProvider(lsp_provider.LspProvider):
             if symbol:
                 edits = self._get_rename_edits(symbol, new_name) if symbol else {}
                 select_symbol_text_edit = TextEdit(
-                    range=self._get_symbol_rename_edit(document.source, position, new_name), new_text=new_name
+                    range=get_symbol_range_at_position(document.source, position.line, position.character)
                 )
                 edits.get(current_uri, []).append(select_symbol_text_edit)
 
@@ -95,12 +95,6 @@ class RenameProvider(lsp_provider.LspProvider):
                 edits = self.get_definition_name_reference_locations(new_name, definition_to_find, language_context)
 
         return edits
-
-    def _get_symbol_rename_edit(self, source: str, position: Position, new_name: str) -> Range:
-        """Returns a TextEdit for the initially-selected symbol."""
-        symbol_range = get_symbol_range_at_position(source, position.line, position.character)
-        # _update_range_to_renamed_content_length(symbol_range, new_name)
-        return symbol_range
 
     def get_definition_name_reference_locations(
         self, new_name: str, definition_to_find: Definition, language_context: LanguageContext

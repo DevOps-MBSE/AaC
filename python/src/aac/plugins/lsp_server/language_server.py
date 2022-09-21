@@ -11,7 +11,6 @@ from pygls.lsp import (
     CompletionParams,
     DefinitionParams,
     RenameParams,
-    PrepareRenameParams,
     HoverParams,
     ReferenceParams,
     TextDocumentSyncKind,
