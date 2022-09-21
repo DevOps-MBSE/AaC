@@ -154,7 +154,7 @@ async def did_change(ls: AacLanguageServer, params: DidChangeTextDocumentParams)
 
 
 async def handle_completion(ls: AacLanguageServer, params: CompletionParams):
-    """Handle a completion request."""
+    """Handle the completion request."""
     code_completion_provider = ls.providers.get(methods.COMPLETION)
     completion_results = code_completion_provider.handle_request(ls, params)
     logging.debug(f"Completion results: {completion_results}")
@@ -162,7 +162,7 @@ async def handle_completion(ls: AacLanguageServer, params: CompletionParams):
 
 
 async def handle_hover(ls: AacLanguageServer, params: HoverParams):
-    """Handle a hover request."""
+    """Handle the hover request."""
     hover_provider = ls.providers.get(methods.HOVER)
     hover_results = hover_provider.handle_request(ls, params)
     logging.debug(f"Hover results: {hover_results}")
@@ -170,7 +170,7 @@ async def handle_hover(ls: AacLanguageServer, params: HoverParams):
 
 
 async def handle_goto_definition(ls: AacLanguageServer, params: DefinitionParams):
-    """Handle a goto definition request."""
+    """Handle the goto definition request."""
     goto_definition_provider = ls.providers.get(methods.DEFINITION)
     goto_definition_results = goto_definition_provider.handle_request(ls, params)
     logging.debug(f"Goto Definition results: {goto_definition_results}")
@@ -178,7 +178,7 @@ async def handle_goto_definition(ls: AacLanguageServer, params: DefinitionParams
 
 
 async def handle_references(ls: AacLanguageServer, params: ReferenceParams):
-    """Handle a goto definition request."""
+    """Handle the find references request."""
     find_references_provider = ls.providers.get(methods.REFERENCES)
     find_references_results = find_references_provider.handle_request(ls, params)
     logging.debug(f"Find references results: {find_references_results}")
@@ -186,7 +186,7 @@ async def handle_references(ls: AacLanguageServer, params: ReferenceParams):
 
 
 async def handle_rename(ls: AacLanguageServer, params: RenameParams):
-    """Handle a goto definition request."""
+    """Handle the rename definition request."""
     rename_provider = ls.providers.get(methods.RENAME)
     rename_results = rename_provider.handle_request(ls, params)
     logging.debug(f"Rename results: {rename_results}")
@@ -194,7 +194,7 @@ async def handle_rename(ls: AacLanguageServer, params: RenameParams):
 
 
 async def handle_prepare_rename(ls: AacLanguageServer, params: RenameParams):
-    """Handle a goto definition request."""
+    """Handle the prepare rename definition request."""
     prepare_rename_provider = ls.providers.get(methods.PREPARE_RENAME)
     prepare_rename_results = prepare_rename_provider.handle_request(ls, params)
     logging.debug(f"Prepare rename results: {prepare_rename_results}")
