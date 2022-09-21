@@ -32,6 +32,7 @@ from aac.plugins.lsp_server.providers.code_completion_provider import CodeComple
 from aac.plugins.lsp_server.providers.goto_definition_provider import GotoDefinitionProvider
 from aac.plugins.lsp_server.providers.hover_provider import HoverProvider
 from aac.plugins.lsp_server.providers.rename_provider import RenameProvider
+from aac.plugins.lsp_server.providers.prepare_rename_provider import PrepareRenameProvider
 
 
 class AacLanguageServer(LanguageServer):
@@ -78,7 +79,7 @@ class AacLanguageServer(LanguageServer):
         self.providers[methods.REFERENCES] = self.providers.get(methods.REFERENCES, FindReferencesProvider())
         self.providers[methods.HOVER] = self.providers.get(methods.HOVER, HoverProvider())
         self.providers[methods.RENAME] = self.providers.get(methods.RENAME, RenameProvider())
-        self.providers[methods.PREPARE_RENAME] = self.providers.get(methods.PREPARE_RENAME, RenameProvider())
+        self.providers[methods.PREPARE_RENAME] = self.providers.get(methods.PREPARE_RENAME, PrepareRenameProvider())
 
     def setup_features(self) -> None:
         """Configure the server with the supported features."""
@@ -188,14 +189,14 @@ async def handle_references(ls: AacLanguageServer, params: ReferenceParams):
 async def handle_rename(ls: AacLanguageServer, params: RenameParams):
     """Handle a goto definition request."""
     rename_provider = ls.providers.get(methods.RENAME)
-    rename_results = rename_provider.handle_rename_request(ls, params)
+    rename_results = rename_provider.handle_request(ls, params)
     logging.debug(f"Rename results: {rename_results}")
     return rename_results
 
 
 async def handle_prepare_rename(ls: AacLanguageServer, params: RenameParams):
     """Handle a goto definition request."""
-    rename_provider = ls.providers.get(methods.PREPARE_RENAME)
-    prepare_rename_results = rename_provider.handle_prepare_rename_request(ls, params)
+    prepare_rename_provider = ls.providers.get(methods.PREPARE_RENAME)
+    prepare_rename_results = prepare_rename_provider.handle_request(ls, params)
     logging.debug(f"Prepare rename results: {prepare_rename_results}")
     return prepare_rename_results

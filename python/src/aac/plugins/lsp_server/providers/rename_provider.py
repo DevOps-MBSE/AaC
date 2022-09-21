@@ -1,10 +1,9 @@
 """Module for the Rename Provider which handles requests to rename symbols."""
 
 import logging
-from os import path
 from typing import Optional
 from pygls.server import LanguageServer
-from pygls.lsp.types import Range, Position, RenameParams, PrepareRenameParams, WorkspaceEdit, TextEdit, TextDocumentIdentifier
+from pygls.lsp.types import Range, Position, RenameParams, WorkspaceEdit, TextEdit, TextDocumentIdentifier
 from pygls.workspace import Document
 
 from aac.lang.definitions.definition import Definition
@@ -12,7 +11,12 @@ from aac.lang.language_context import LanguageContext
 from aac.lang.definitions.references import get_definition_type_references_from_list
 from aac.lang.definitions.type import remove_list_type_indicator
 from aac.lang.definitions.lexeme import Lexeme
-from aac.plugins.lsp_server.providers.symbols import get_symbol_at_position, get_symbol_range_at_position, get_possible_symbol_types, SymbolType
+from aac.plugins.lsp_server.providers.symbols import (
+    get_symbol_at_position,
+    get_symbol_range_at_position,
+    get_possible_symbol_types,
+    SymbolType,
+)
 from aac.plugins.lsp_server.providers.locations import get_location_from_lexeme
 import aac.plugins.lsp_server.providers.lsp_provider as lsp_provider
 
@@ -20,32 +24,16 @@ import aac.plugins.lsp_server.providers.lsp_provider as lsp_provider
 class RenameProvider(lsp_provider.LspProvider):
     """Handles the rename requests."""
 
-    def handle_prepare_rename_request(self, language_server: LanguageServer, params: PrepareRenameParams) -> Optional[Range]:
-        """
-        Return a range that encompasses the symbol to the locations at which references to the item are found.
-        https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_prepareRename
-
-        Args:
-            language_server (LanguageServer): An instance of the language server
-            params (PrepareRenameParams): PrepareRename request parameters
-
-        Returns:
-            A range of consisting of the symbol to rename, or None if it's an invalid symbol
-        """
-        self.language_server = language_server
-        language_server_documents = self.language_server.workspace.documents
-        document = language_server_documents.get(params.text_document.uri)
-        if document:
-            return get_symbol_range_at_position(document.source, params.position.line, params.position.character)
-
-    def handle_rename_request(self, ls: LanguageServer, params: RenameParams) -> WorkspaceEdit:
+    def handle_request(self, ls: LanguageServer, params: RenameParams) -> WorkspaceEdit:
         """Return the locations at which references to the item are found."""
         self.language_server = ls
         return self.get_rename_edits(
             self.language_server.workspace.documents, params.text_document.uri, params.position, params.new_name
         )
 
-    def get_rename_edits(self, documents: dict[str, Document], current_uri: str, position: Position, new_name: str) -> Optional[WorkspaceEdit]:
+    def get_rename_edits(
+        self, documents: dict[str, Document], current_uri: str, position: Position, new_name: str
+    ) -> Optional[WorkspaceEdit]:
         """
         Return the rename edits where the AaC's.
 
@@ -67,7 +55,9 @@ class RenameProvider(lsp_provider.LspProvider):
 
             if symbol:
                 edits = self._get_rename_edits(symbol, new_name) if symbol else {}
-                select_symbol_text_edit = TextEdit(range=self._get_symbol_rename_edit(document.source, position, new_name), new_text=new_name)
+                select_symbol_text_edit = TextEdit(
+                    range=self._get_symbol_rename_edit(document.source, position, new_name), new_text=new_name
+                )
                 edits.get(current_uri, []).append(select_symbol_text_edit)
 
                 try:
@@ -106,13 +96,11 @@ class RenameProvider(lsp_provider.LspProvider):
 
         return edits
 
-
     def _get_symbol_rename_edit(self, source: str, position: Position, new_name: str) -> Range:
         """Returns a TextEdit for the initially-selected symbol."""
         symbol_range = get_symbol_range_at_position(source, position.line, position.character)
         # _update_range_to_renamed_content_length(symbol_range, new_name)
         return symbol_range
-
 
     def get_definition_name_reference_locations(
         self, new_name: str, definition_to_find: Definition, language_context: LanguageContext
