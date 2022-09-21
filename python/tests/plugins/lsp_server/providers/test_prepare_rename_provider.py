@@ -22,7 +22,7 @@ class TestPrepareRenameProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
             character (int): The character number (starting from 0) at which to perform the prepare rename action.
 
         Returns:
-            A RenameResponse that is returned from the LSP server.
+            A PrepareRenameResponse that is returned from the LSP server.
         """
         return await self.build_request(
             file_name,
@@ -31,7 +31,7 @@ class TestPrepareRenameProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
             PrepareRenameParams(**self.build_text_document_position_params(file_name, line, character)),
         )
 
-    async def test_rename_request(self):
+    async def test_prepare_rename_request(self):
         expected_selection = "DataA"
         expected_range_line = 1
         expected_range_character_start = 8
@@ -43,7 +43,7 @@ class TestPrepareRenameProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         self.assertEqual(actual_range.start.character, expected_range_character_start)
         self.assertEqual(actual_range.end.character, expected_range_character_end)
 
-    async def test_no_rename_when_nothing_under_cursor(self):
+    async def test_no_prepare_rename_when_nothing_under_cursor(self):
         await self.write_document(TEST_DOCUMENT_NAME, f"\n{TEST_DOCUMENT_CONTENT}")
         res: PrepareRenameResponse = await self.prepare_rename(TEST_DOCUMENT_NAME)
         self.assertIsNone(res.response)

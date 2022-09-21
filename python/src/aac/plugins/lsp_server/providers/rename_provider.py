@@ -64,6 +64,7 @@ class RenameProvider(lsp_provider.LspProvider):
         return workspace_edit
 
     def _get_rename_edits(self, symbol: str, new_name: str) -> dict[str, TextEdit]:
+        """Returns the list of text edits based on the selected symbol's type."""
         if not symbol:
             return None
 
@@ -78,24 +79,14 @@ class RenameProvider(lsp_provider.LspProvider):
             if not definition_to_find:
                 logging.warn(f"Can't find references for non-definition {name}")
             else:
-                edits = self.get_definition_name_text_edits(new_name, definition_to_find, language_context)
+                edits = self._get_definition_name_text_edits(new_name, definition_to_find, language_context)
 
         return edits
 
-    def get_definition_name_text_edits(
+    def _get_definition_name_text_edits(
         self, new_name: str, definition_to_find: Definition, language_context: LanguageContext
     ) -> dict[str, TextEdit]:
-        """
-        Returns a dict of locations and text edits based on instances of the definition's name.
-
-        Args:
-            new_name (str): The new value to replace the target symbol with.
-            definition_to_find (Definition): The definition to pull the name lexeme from.
-            language_context (LanguageContext): The LanguageContext in which to look for the definition.
-
-        Returns:
-            A dictionary of document uri to TextEdits where the uri is the key and the list of edits the value.
-        """
+        """Returns a dictionary of document uri to TextEdits where the uri is the key and the list of edits the value."""
         edits = {}
         referencing_definitions = get_definition_type_references_from_list(definition_to_find, language_context.definitions)
         definitions_to_alter = [*referencing_definitions, definition_to_find]
