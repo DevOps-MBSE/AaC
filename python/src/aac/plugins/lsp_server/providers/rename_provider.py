@@ -59,7 +59,7 @@ class RenameProvider(lsp_provider.LspProvider):
                     range=get_symbol_range_at_position(document.source, position.line, position.character),
                     new_text=new_name
                 )
-                edits.get(document.path, []).append(select_symbol_text_edit)
+                edits[document.path] = [*edits.get(document.path, []), select_symbol_text_edit]
 
                 try:
                     workspace_edit = WorkspaceEdit(text_document=TextDocumentIdentifier(uri=document.uri), changes=edits)
