@@ -1,4 +1,4 @@
-"""Module for the Rename Provider which handles requests to rename symbols."""
+"""Module for the Prepare Rename Provider which handles requests to prepare symbol rename ranges."""
 
 from typing import Optional
 from pygls.server import LanguageServer
@@ -13,7 +13,7 @@ class PrepareRenameProvider(lsp_provider.LspProvider):
 
     def handle_request(self, language_server: LanguageServer, params: PrepareRenameParams) -> Optional[Range]:
         """
-        Return a range that encompasses the symbol to the locations at which references to the item are found.
+        Return a range that encompasses the symbol or None if the selection is invalid.
 
         https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_prepareRename
 
