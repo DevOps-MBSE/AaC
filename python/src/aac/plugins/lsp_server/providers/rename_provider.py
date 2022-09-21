@@ -36,6 +36,8 @@ class RenameProvider(lsp_provider.LspProvider):
         """
         Return the rename edits for the selected symbol.
 
+        https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_rename
+
         Args:
             documents (dict[str, Document]): A container mapping document names to the associated LSP document.
             current_uri (str): The URI of the file that's currently active.
