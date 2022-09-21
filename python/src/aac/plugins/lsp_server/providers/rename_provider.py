@@ -3,7 +3,7 @@
 import logging
 from typing import Optional
 from pygls.server import LanguageServer
-from pygls.lsp.types import Range, Position, RenameParams, WorkspaceEdit, TextEdit, TextDocumentIdentifier
+from pygls.lsp.types import Position, RenameParams, WorkspaceEdit, TextEdit, TextDocumentIdentifier
 from pygls.workspace import Document
 
 from aac.lang.definitions.definition import Definition
