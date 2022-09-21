@@ -13,7 +13,6 @@ from aac.lang.definitions.type import remove_list_type_indicator
 from aac.lang.definitions.lexeme import Lexeme
 from aac.plugins.lsp_server.providers.symbols import (
     get_symbol_at_position,
-    get_symbol_range_at_position,
     get_possible_symbol_types,
     SymbolType,
 )
@@ -25,7 +24,7 @@ class RenameProvider(lsp_provider.LspProvider):
     """Handles the rename requests."""
 
     def handle_request(self, ls: LanguageServer, params: RenameParams) -> WorkspaceEdit:
-        """Return the locations at which references to the item are found."""
+        """Return the workspace edit consisting of text edits for the rename request."""
         self.language_server = ls
         return self.get_rename_edits(
             self.language_server.workspace.documents, params.text_document.uri, params.position, params.new_name
@@ -35,7 +34,7 @@ class RenameProvider(lsp_provider.LspProvider):
         self, documents: dict[str, Document], current_uri: str, position: Position, new_name: str
     ) -> Optional[WorkspaceEdit]:
         """
-        Return the rename edits where the AaC's.
+        Return the rename edits for the selected symbol.
 
         Args:
             documents (dict[str, Document]): A container mapping document names to the associated LSP document.
@@ -44,8 +43,7 @@ class RenameProvider(lsp_provider.LspProvider):
             new_name (str): The new name to replace instances of the selected symbol with.
 
         Returns:
-            A list of Locations at which the item at `position` is referenced. If there is nothing
-            found at the specified position, an empty list is returned.
+            A workspace edit consisting of the text edits spanning all pertinent instances of the selected symbol, or None.
         """
         document = documents.get(current_uri)
         workspace_edit = None
@@ -55,11 +53,6 @@ class RenameProvider(lsp_provider.LspProvider):
 
             if symbol:
                 edits = self._get_rename_edits(symbol, new_name) if symbol else {}
-                select_symbol_text_edit = TextEdit(
-                    range=get_symbol_range_at_position(document.source, position.line, position.character),
-                    new_text=new_name
-                )
-                edits[document.path] = [*edits.get(document.path, []), select_symbol_text_edit]
 
                 try:
                     workspace_edit = WorkspaceEdit(text_document=TextDocumentIdentifier(uri=document.uri), changes=edits)
@@ -69,16 +62,6 @@ class RenameProvider(lsp_provider.LspProvider):
         return workspace_edit
 
     def _get_rename_edits(self, symbol: str, new_name: str) -> dict[str, TextEdit]:
-        """
-        Return the location(s) where the target value is referenced.
-
-        Args:
-            symbol (str): The symbol whose location is being determined.
-
-        Returns:
-            A list of Locations at which the `symbol` is referenced. If no symbol is found, an
-            empty list is returned.
-        """
         if not symbol:
             return None
 
@@ -93,18 +76,18 @@ class RenameProvider(lsp_provider.LspProvider):
             if not definition_to_find:
                 logging.warn(f"Can't find references for non-definition {name}")
             else:
-                edits = self.get_definition_name_reference_locations(new_name, definition_to_find, language_context)
+                edits = self.get_definition_name_text_edits(new_name, definition_to_find, language_context)
 
         return edits
 
-    def get_definition_name_reference_locations(
+    def get_definition_name_text_edits(
         self, new_name: str, definition_to_find: Definition, language_context: LanguageContext
     ) -> dict[str, TextEdit]:
         """
-        Returns a list of locations corresponding to the name declaration in definition structures.
+        Returns a dict of locations and text edits based on instances of the definition's name.
 
         Args:
-            new_name (str):
+            new_name (str): The new value to replace the target symbol with.
             definition_to_find (Definition): The definition to pull the name lexeme from.
             language_context (LanguageContext): The LanguageContext in which to look for the definition.
 
@@ -113,8 +96,9 @@ class RenameProvider(lsp_provider.LspProvider):
         """
         edits = {}
         referencing_definitions = get_definition_type_references_from_list(definition_to_find, language_context.definitions)
+        definitions_to_alter = [*referencing_definitions, definition_to_find]
 
-        for definition in referencing_definitions:
+        for definition in definitions_to_alter:
 
             def filter_lexeme_by_reference_name(lexeme: Lexeme) -> bool:
                 return remove_list_type_indicator(lexeme.value) == definition_to_find.name
@@ -123,18 +107,8 @@ class RenameProvider(lsp_provider.LspProvider):
 
             for lexeme_to_replace in referencing_lexemes:
                 document_edits = edits.get(lexeme_to_replace.source, [])
-                document_edits.append(_lexeme_to_text_edit(lexeme_to_replace, new_name))
+                replacing_range = get_location_from_lexeme(lexeme_to_replace).range
+                document_edits.append(TextEdit(range=replacing_range, new_text=new_name))
                 edits[str(lexeme_to_replace.source)] = document_edits
 
         return edits
-
-
-def _lexeme_to_text_edit(lexeme: Lexeme, new_value: str) -> TextEdit:
-    """Returns a TextEdit based on the location of the lexeme, but with the length and value of the new value."""
-    replacing_range = get_location_from_lexeme(lexeme).range
-    return TextEdit(range=replacing_range, new_text=new_value)
-
-
-def _update_range_to_renamed_content_length(range_to_update: Range, new_value: str) -> None:
-    """Alters the Range value passed in as an argument to be the length of the new value."""
-    range_to_update.end.character = range_to_update.start.character + len(new_value)
