@@ -22,12 +22,16 @@ class Definition:
         structure (dict): The dictionary representation of the definition.
     """
 
-    uid: UUID = attrib(init=False, default=uuid4(), validator=validators.instance_of(UUID))
+    uid: UUID = attrib(init=False, validator=validators.instance_of(UUID))
     name: str = attrib(validator=validators.instance_of(str))
     content: str = attrib(validator=validators.instance_of(str))
     source: AaCFile = attrib(validator=validators.instance_of(AaCFile))
     lexemes: list[Lexeme] = attrib(default=Factory(list), validator=validators.instance_of(list))
     structure: dict = attrib(default=Factory(dict), validator=validators.instance_of(dict))
+
+    def __attrs_post_init__(self):
+        """Post-init hook."""
+        self.uid = uuid4()
 
     def __hash__(self) -> int:
         """Return the hash of this Definition."""
