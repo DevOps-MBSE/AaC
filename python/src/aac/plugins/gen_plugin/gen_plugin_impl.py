@@ -282,6 +282,8 @@ def _gather_commands(behaviors: dict) -> list[dict]:
         """Modify the input and output entries of a behavior definition to reduce complexity in the templates."""
         python_type = in_out_entry.get("python_type")
 
+        in_out_entry["name"] = in_out_entry.get("name").removeprefix("--")
+
         if python_type:
             in_out_entry["type"] = python_type
             in_out_entry["python_type_default"] = type(python_type)
