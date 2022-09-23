@@ -23,6 +23,18 @@ class TestValidateUniqueNames(ActiveContextTestCase):
 
         assert_validator_result_success(actual_result)
 
+    def test_validation_succeeds_with_no_duplicated_names_of_different_types(self):
+        test_active_context = get_active_context()
+
+        definition = create_schema_definition("Test1")
+        test_active_context.add_definition_to_context(definition)
+
+        new_definition = create_enum_definition("Test2", ["a", "b", "c"])
+        unused_definition = create_schema_definition("unused")
+        actual_result = validate_unique_names(new_definition, unused_definition, test_active_context)
+
+        assert_validator_result_success(actual_result)
+
     def test_validation_fails_with_duplicated_names_of_same_type(self):
         test_active_context = get_active_context()
 
@@ -35,13 +47,22 @@ class TestValidateUniqueNames(ActiveContextTestCase):
 
         assert_validator_result_failure(actual_result)
 
-    def test_validation_succeeds_with_no_duplicated_names_of_different_types(self):
+    def test_validation_fails_with_duplicated_names_of_different_types(self):
         test_active_context = get_active_context()
 
         definition = create_schema_definition("Test")
         test_active_context.add_definition_to_context(definition)
 
         new_definition = create_enum_definition("Test", ["a", "b", "c"])
+        unused_definition = create_schema_definition("unused")
+        actual_result = validate_unique_names(new_definition, unused_definition, test_active_context)
+
+        assert_validator_result_failure(actual_result)
+
+    def test_validation_fails_with_duplicated_name_from_spec(self):
+        test_active_context = get_active_context()
+
+        new_definition = create_schema_definition("schema")
         unused_definition = create_schema_definition("unused")
         actual_result = validate_unique_names(new_definition, unused_definition, test_active_context)
 

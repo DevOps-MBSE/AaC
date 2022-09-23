@@ -2,7 +2,7 @@
 
 import yaml
 
-from aac.io.files.aac_file import AaCFile
+from aac.io.parser import parse
 from aac.lang.definitions.definition import Definition
 
 ACCEPTANCE_STRING = "acceptance"
@@ -207,10 +207,5 @@ def create_validation_definition(name: str, description: str = "", behavior: lis
 
 def _create_parsed_definition(root_key: str, definition_structure: dict) -> Definition:
     """The base Parsed Definition creation function."""
-    name = (NAME_STRING in definition_structure and definition_structure[NAME_STRING]) or "undefined_name"
     definition_dict = {root_key: definition_structure}
-    definition_source = AaCFile("<test>", False, False)
-
-    return Definition(
-        name=name, content=yaml.dump(definition_dict, sort_keys=False), source=definition_source, lexemes=[], structure=definition_dict
-    )
+    return parse(yaml.dump(definition_dict, sort_keys=False), "<test>")[0]

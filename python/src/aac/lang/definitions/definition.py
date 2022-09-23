@@ -31,7 +31,7 @@ class Definition:
 
     def __attrs_post_init__(self):
         """Post-initialization hook."""
-        self.uid = uuid5(NAMESPACE_OID, self.name)
+        self.uid = uuid5(NAMESPACE_OID, f"{self.source.uri}:{self.name}:{self.content}")
 
     def __hash__(self) -> int:
         """Return the hash of this Definition."""
