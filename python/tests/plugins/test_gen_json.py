@@ -50,7 +50,10 @@ class TestGenJson(ActiveContextTestCase):
 
         self.assertEqual(plugin.name, "gen_json")
         self.assertEqual(plugin.contributions.get_commands(), _get_plugin_commands())
-        assert_definitions_equal(plugin.contributions.get_definitions(), _get_plugin_definitions())
+        [
+            assert_definitions_equal(d1, d2)
+            for d1, d2 in zip(plugin.contributions.get_definitions(), _get_plugin_definitions())
+        ]
 
 
 TEST_ARCH_YAML_STRING = """
