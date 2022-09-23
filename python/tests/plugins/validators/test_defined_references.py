@@ -4,6 +4,7 @@ from aac.plugins.validators import ValidatorFindings, ValidatorPlugin, Validator
 from aac.plugins.validators.defined_references import _get_plugin_definitions, _get_plugin_validations, validate_references
 
 from tests.active_context_test_case import ActiveContextTestCase
+from tests.helpers.assertion import assert_definitions_equal
 from tests.helpers.context import get_core_spec_context
 from tests.helpers.parsed_definitions import create_schema_definition, create_field_entry
 
@@ -20,7 +21,7 @@ class TestDefinedReferencesPlugin(ActiveContextTestCase):
             name=validation_definition.name, definition=validation_definition, validation_function=(lambda x: x)
         )
         self.assertEqual(expected_validator_plugin.name, actual_validator_plugins[0].name)
-        self.assertEqual(expected_validator_plugin.definition, actual_validator_plugins[0].definition)
+        assert_definitions_equal(expected_validator_plugin.definition, actual_validator_plugins[0].definition)
 
     def test_validate_references_valid_references(self):
         test_primitive_reference_field = create_field_entry("ValidPrimitiveField", "string")
