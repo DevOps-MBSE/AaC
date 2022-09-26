@@ -8,6 +8,7 @@ import logging
 import yaml
 
 from os import path
+from os import rename
 
 from aac.lang.definition_helpers import convert_parsed_definitions_to_dict_definition, get_models_by_type
 from aac.lang.definitions.search import search
@@ -143,7 +144,7 @@ def _generate_template_files(plugin_type: str, output_directory: str, output_dir
 
 
 def _prepare_and_generate_plugin_files(
-    definitions: list[Definition], plugin_type: str, architecture_file_path: str, output_directory: str
+        definitions: list[Definition], plugin_type: str, architecture_file_path: str, output_directory: str
 ) -> dict[str, list[TemplateOutputFile]]:
     """
     Parse the model and generate the plugin template accordingly.
@@ -171,7 +172,7 @@ def _prepare_and_generate_plugin_files(
     template_output_directories = _get_template_output_directories(
         plugin_type, architecture_file_path, plugin_implementation_name
     )
-
+    _move_architecture_file_to_plugin_root(architecture_file_path, plugin_implementation_name, output_directory)
     generated_templates = _generate_template_files(plugin_type, output_directory, template_output_directories, template_properties)
 
     _apply_output_template_properties(generated_templates, templates_to_overwrite, plugin_implementation_name)
@@ -352,3 +353,14 @@ def _get_repository_root_directory_from_path(system_path: str) -> str:
         )
 
     return system_path[:target_index]
+
+
+def _move_architecture_file_to_plugin_root(architecture_file_path: str, plugin_name: str, output_directory: str) -> None:
+
+    file_name = path.basename(architecture_file_path)
+    try:
+        rename(f"{architecture_file_path}", f"{output_directory}/{plugin_name}/{file_name}")
+    except OSError as error:
+        rename_file_error_message = f"{error}"
+        logging.error(rename_file_error_message)
+        raise GeneratePluginException(rename_file_error_message)
