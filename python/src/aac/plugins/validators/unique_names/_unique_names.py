@@ -32,10 +32,10 @@ def validate_unique_names(
 
 
 def _build_duplicate_name_message(definition: Definition, definitions: list[Definition]) -> str:
-    def _get_position(definition: Definition) -> str:
-        lexeme, *_ = [lexeme for lexeme in definition.lexemes if definition.name == lexeme.value]
+    def _get_position(other_definition: Definition) -> str:
+        lexeme, *_ = [lexeme for lexeme in other_definition.lexemes if lexeme.value == definition.name]
         return f"{lexeme.location.line + 1}:{lexeme.location.column}"
 
-    message = [f"Definition '{definition.name}' is already defined in:"]
+    message = [f"Definition '{definition.name}' is defined in:"]
     message += [f"  {definition.source.uri} at {_get_position(definition)}" for definition in definitions]
     return linesep.join(message)
