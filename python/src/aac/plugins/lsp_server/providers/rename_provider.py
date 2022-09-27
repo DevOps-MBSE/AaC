@@ -56,8 +56,8 @@ class RenameProvider(LspProvider):
             edits = self._get_rename_edits(symbol, new_name) if symbol else {}
 
             try:
-                workspace_edit = workspaceedit(text_document=textdocumentidentifier(uri=document.uri), changes=edits)
-            except exception as error:
+                workspace_edit = WorkspaceEdit(text_document=TextDocumentIdentifier(uri=document.uri), changes=edits)
+            except Exception as error:
                 logging.error(error)
 
         return workspace_edit
