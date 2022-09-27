@@ -144,7 +144,7 @@ def _generate_template_files(plugin_type: str, output_directory: str, output_dir
 
 
 def _prepare_and_generate_plugin_files(
-        definitions: list[Definition], plugin_type: str, architecture_file_path: str, output_directory: str
+    definitions: list[Definition], plugin_type: str, architecture_file_path: str, output_directory: str
 ) -> dict[str, list[TemplateOutputFile]]:
     """
     Parse the model and generate the plugin template accordingly.
