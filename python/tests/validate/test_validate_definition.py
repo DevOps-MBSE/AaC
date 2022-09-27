@@ -35,6 +35,6 @@ class TestValidateDefinition(ActiveContextTestCase):
 
         self.assertGreater(len(actual_results), 0)
 
-        invalid_results = list(filter(lambda result: not result.is_valid, actual_results))
+        invalid_results = list(filter(lambda result: not result.is_valid(), actual_results))
         self.assertEqual(len(invalid_results), 1)
-        self.assertIn("undefined", "\n".join(invalid_results[0].messages).lower())
+        self.assertIn("undefined", invalid_results[0].get_messages_as_string().lower())

@@ -19,5 +19,5 @@ logging.basicConfig(
     filename=os.path.join(os.path.dirname(__file__), "aac.log"),
     encoding="utf-8",
     level=logging.DEBUG,
-    datefmt="%m/%d/%Y %H:%M:%S",
+    datefmt="%m/%d/%Y %H:%M:%S"
 )

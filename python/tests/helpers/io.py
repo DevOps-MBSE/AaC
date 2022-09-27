@@ -42,6 +42,13 @@ def temporary_test_file(content: str, **extra_file_attrs):
         extra_file_attrs (dict): Extra file attributes that will be used when creating the test
                                  file. These should be valid parameters to NamedTemporaryFile.
                                  (optional)
+            Extra file attributes:
+                * buffering (default value is - 1)
+                * encoding (default value is None)
+                * newline (default value is None)
+                * suffix (default value is None)
+                * prefix (default value is None)
+                * dir (default value is `TemporaryDirectory()`)
 
     Yields:
         The temporary test file containing the specified contents.

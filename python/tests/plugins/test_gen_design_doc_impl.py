@@ -9,10 +9,10 @@ from tests.helpers.io import temporary_test_file
 
 class TestGenerateDesignDocumentPlugin(TestCase):
     def test_can_generate_design_doc_with_models(self):
-        with temporary_test_file(TEST_MODEL) as test_model: 
+        with temporary_test_file(TEST_MODEL) as test_model:
             temp_dir = os.path.dirname(test_model.name)
             result = gen_design_doc(test_model.name, temp_dir)
-            assert_plugin_success(result) 
+            assert_plugin_success(result)
             files = os.listdir(temp_dir)
             self.assertEqual(len(files), 2)
             test_design_doc_file_name, *_ = [f for f in files if f != os.path.basename(test_model.name)]
@@ -22,7 +22,7 @@ class TestGenerateDesignDocumentPlugin(TestCase):
                 self.assert_schema(markdown)
                 self.assert_model(markdown)
                 self.assert_use_case(markdown)
-   
+
     def test_can_handle_names_with_dots(self):
         with temporary_test_file(TEST_MODEL_2) as test_yaml:
             temp_dir = os.path.dirname(test_yaml.name)
@@ -35,7 +35,7 @@ class TestGenerateDesignDocumentPlugin(TestCase):
             with open(os.path.join(temp_dir, test_design_doc_file_name)) as markdown_file:
                 markdown = markdown_file.read()
                 self.assertIn("SubSchema.Schema1 data", markdown)
-                self.assertNotIn("required", markdown) 
+                self.assertNotIn("required", markdown)
 
     def assert_headings(self, markdown: str, document_title: str) -> None:
         patterns = [
