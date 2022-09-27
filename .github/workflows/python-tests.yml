@@ -59,7 +59,7 @@ jobs:
           cp  src/aac/plugins/gen_protobuf/gen_protobuf.yaml gen_plugin_generation_test
           echo y | aac gen-plugin gen_plugin_generation_test/gen_protobuf.yaml
           pip install .
-          aac -h
+          aac -h | grep 'test-file' && echo 'Third-Party Plugin Created successfully'
 
   os_test_matrix_setup:
     name: Setup OS Test Matrix
