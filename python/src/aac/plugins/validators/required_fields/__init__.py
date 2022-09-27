@@ -4,8 +4,8 @@ from aac.lang.definitions.definition import Definition
 from aac.plugins import hookimpl
 from aac.plugins.plugin import Plugin
 from aac.plugins._common import get_plugin_definitions_from_yaml
-from aac.plugins.validators.required_fields._validate_required_fields import validate_required_fields
 from aac.plugins.validators._common import get_plugin_validations_from_definitions
+from aac.plugins.validators.required_fields._validate_required_fields import PLUGIN_NAME, validate_required_fields
 
 
 @hookimpl
@@ -16,8 +16,7 @@ def get_plugin() -> Plugin:
     Returns:
         A collection of information about the plugin and what it contributes.
     """
-    *_, plugin_name = __package__.split(".")
-    plugin = Plugin(plugin_name)
+    plugin = Plugin(PLUGIN_NAME)
     plugin.register_definitions(_get_plugin_definitions())
     plugin.register_validations(_get_plugin_validations())
     return plugin
@@ -41,8 +40,5 @@ def get_required_fields(definition: Definition) -> list[str]:
     Returns:
         The list of field names declared as required fields in the definition.
     """
-    required_validation = [v for v in definition.get_validations() if v.get("name") == REQUIRED_FIELDS_VALIDATION_STRING]
-    return required_validation and required_validation[0].get("arguments") or []
-
-
-REQUIRED_FIELDS_VALIDATION_STRING = _get_plugin_validations()[0].name
+    required_validation = [v for v in definition.get_validations() if v.get("name") == PLUGIN_NAME]
+    return len(required_validation) == 1 and required_validation[0].get("arguments") or []

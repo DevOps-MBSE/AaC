@@ -18,8 +18,18 @@
                                     "[/\\\\].vscode\\'"
                                     "[/\\\\].vscode-test\\'"))))))
          (projectile-create-missing-test-files . t)))
- (python-mode . ((projectile-project-type . python-pkg)
+ (python-mode . ((projectile-project-name . "aac")
+                 (projectile-default-test-directory . "tests/")
+                 (projectile-project-type . python-pkg)
                  (projectile-project-test-cmd . "cd python; flake8 . && nose2 -c tox.ini")
+                 (eval . (progn
+                           (defun aac-projectile-test-dir (projectile-test-directory-fn project-type)
+                             "AaC stores tests in tests/ not test/."
+                             (if (and (string-equal "aac" (projectile-project-name))
+                                      (string-prefix-p "python" (symbol-name project-type)))
+                                 "tests/"
+                               (projectile-test-directory-fn project-type)))
+                           (advice-add 'projectile-test-directory :around #'aac-projectile-test-dir)))
                  (python-backend . lsp)
                  (python-lsp-server . pyright)
                  (python-formatter . black)

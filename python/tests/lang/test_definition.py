@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from aac.plugins.validators.required_fields import get_required_fields, REQUIRED_FIELDS_VALIDATION_STRING
+from aac.plugins.validators.required_fields import get_required_fields, PLUGIN_NAME
 
 from tests.helpers.parsed_definitions import (
     create_schema_definition,
@@ -13,6 +13,11 @@ from tests.helpers.parsed_definitions import (
 
 
 class TestDefinition(TestCase):
+    def test_uuid(self):
+        self.assertTrue(create_schema_definition("Test").uid.is_safe)
+        self.assertEqual(create_schema_definition("Test"), create_schema_definition("Test"))
+        self.assertNotEqual(create_schema_definition("Test1"), create_schema_definition("Test2"))
+
     def test_get_fields_with_empty_no_top_level_fields(self):
         test_definition = create_schema_definition("EmptyData")
         test_definition.structure["schema"] = {}
@@ -33,7 +38,7 @@ class TestDefinition(TestCase):
         test_required_sub_field_two = create_field_entry("ReqSubField2", "string")
         test_fields = [test_required_sub_field_one, test_required_sub_field_two]
         test_required = [test_required_sub_field_one.get("name"), test_required_sub_field_two.get("name")]
-        required_fields_validator = create_validation_entry(REQUIRED_FIELDS_VALIDATION_STRING, test_required)
+        required_fields_validator = create_validation_entry(PLUGIN_NAME, test_required)
         test_definition = create_schema_definition("TestData", fields=test_fields, validations=[required_fields_validator])
 
         actual_result = get_required_fields(test_definition)

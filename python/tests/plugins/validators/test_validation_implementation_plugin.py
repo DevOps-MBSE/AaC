@@ -35,7 +35,7 @@ class TestValidationImplementPlugin(TestCase):
 
         actual_result = validate_validator_implementations(test_validation_definition, validation_definition, test_active_context)
 
-        self.assertTrue(actual_result.is_valid)
+        self.assertTrue(actual_result.is_valid())
 
     def test_validate_validator_implementations_validate_user_defined_validation_fails(self):
         test_active_context = get_active_context(reload_context=True)
@@ -47,4 +47,4 @@ class TestValidationImplementPlugin(TestCase):
 
         actual_result = validate_validator_implementations(test_validation_definition, validation_definition, test_active_context)
 
-        self.assertFalse(actual_result.is_valid)
+        self.assertFalse(actual_result.is_valid())

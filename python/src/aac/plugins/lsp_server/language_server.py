@@ -11,11 +11,12 @@ from pygls.lsp import (
     CompletionOptions,
     CompletionParams,
     HoverParams,
+    ReferenceParams,
     TextDocumentSyncKind,
     DidChangeTextDocumentParams,
     DidCloseTextDocumentParams,
     DidOpenTextDocumentParams,
-    methods
+    methods,
 )
 
 from aac.io.parser import parse
@@ -23,6 +24,7 @@ from aac.lang.active_context_lifecycle_manager import get_initialized_language_c
 from aac.lang.definitions.structure import strip_undefined_fields_from_definition
 from aac.lang.language_context import LanguageContext
 from aac.plugins.lsp_server.managed_workspace_file import ManagedWorkspaceFile
+from aac.plugins.lsp_server.providers.find_references_provider import FindReferencesProvider
 from aac.plugins.lsp_server.providers.lsp_provider import LspProvider
 from aac.plugins.lsp_server.providers.code_completion_provider import CodeCompletionProvider
 from aac.plugins.lsp_server.providers.goto_definition_provider import GotoDefinitionProvider
@@ -42,7 +44,15 @@ class AacLanguageServer(LanguageServer):
     providers: dict[str, LspProvider]
     workspace_files: dict[str, ManagedWorkspaceFile]
 
-    def __init__(self, language_context=None, providers={}, workspace_files={}, loop=None, protocol_cls=LanguageServerProtocol, max_workers: int = 2):
+    def __init__(
+        self,
+        language_context=None,
+        providers={},
+        workspace_files={},
+        loop=None,
+        protocol_cls=LanguageServerProtocol,
+        max_workers: int = 2,
+    ):
         """Docstring."""
         super().__init__(loop, protocol_cls, max_workers)
 
@@ -62,6 +72,7 @@ class AacLanguageServer(LanguageServer):
         """Configure and setup the providers that make LSP functionality available for the AaC LSP server."""
         self.providers[methods.COMPLETION] = self.providers.get(methods.COMPLETION, CodeCompletionProvider())
         self.providers[methods.DEFINITION] = self.providers.get(methods.DEFINITION, GotoDefinitionProvider())
+        self.providers[methods.REFERENCES] = self.providers.get(methods.REFERENCES, FindReferencesProvider())
         self.providers[methods.HOVER] = self.providers.get(methods.HOVER, HoverProvider())
 
     def setup_features(self) -> None:
@@ -77,6 +88,7 @@ class AacLanguageServer(LanguageServer):
         self.feature(methods.COMPLETION, completion_options)(handle_completion)
         self.feature(methods.HOVER)(handle_hover)
         self.feature(methods.DEFINITION)(handle_goto_definition)
+        self.feature(methods.REFERENCES)(handle_references)
 
 
 async def did_open(ls: AacLanguageServer, params: DidOpenTextDocumentParams):
@@ -92,7 +104,7 @@ async def did_open(ls: AacLanguageServer, params: DidOpenTextDocumentParams):
 
     managed_file.is_client_managed = True
     _, file_path = file_uri.split("file://")
-    ls.language_context.add_definitions_to_context(parse(params.text_document.text, file_path))
+    ls.language_context.add_definitions_to_context(parse(file_path))
 
 
 async def did_close(ls: AacLanguageServer, params: DidCloseTextDocumentParams):
@@ -156,3 +168,11 @@ async def handle_goto_definition(ls: AacLanguageServer, params: DefinitionParams
     goto_definition_results = goto_definition_provider.handle_request(ls, params)
     logging.debug(f"Goto Definition results: {goto_definition_results}")
     return goto_definition_results
+
+
+async def handle_references(ls: AacLanguageServer, params: ReferenceParams):
+    """Handle a goto definition request."""
+    find_references_provider = ls.providers.get(methods.REFERENCES)
+    find_references_results = find_references_provider.handle_request(ls, params)
+    logging.debug(f"Find references results: {find_references_results}")
+    return find_references_results

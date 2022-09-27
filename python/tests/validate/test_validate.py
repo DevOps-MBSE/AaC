@@ -1,5 +1,8 @@
+from unittest.mock import MagicMock, patch
+
 from aac.io.files.aac_file import AaCFile
 from aac.lang.definitions.definition import Definition
+from aac.plugins.validators._validator_result import ValidatorResult, ValidatorFindings
 from aac.validate import validated_definitions, validated_source, ValidationError
 
 from tests.active_context_test_case import ActiveContextTestCase
@@ -42,8 +45,8 @@ class TestValidate(ActiveContextTestCase):
 
         exception = error.exception
         self.assertEqual(ValidationError, type(exception))
-        self.assertGreater(len(exception.args), 1)
-        self.assertIn("undefined", exception.args[1].lower())
+        self.assertEqual(len(exception.args), 1)
+        self.assertIn("undefined", exception.args[0].lower())
 
     def test_validate_definitions_with_invalid_missing_required_field(self):
         test_definition = create_schema_definition("Empty Schema", fields=[])
@@ -54,8 +57,8 @@ class TestValidate(ActiveContextTestCase):
 
         exception = error.exception
         self.assertEqual(ValidationError, type(exception))
-        self.assertGreater(len(exception.args), 1)
-        self.assertIn("required", exception.args[1].lower())
+        self.assertEqual(len(exception.args), 1)
+        self.assertIn("required", exception.args[0].lower())
 
     def test_validate_definitions_with_invalid_multiple_exclusive_fields(self):
         test_field_entry = create_field_entry("TestField", "string")
@@ -69,14 +72,14 @@ class TestValidate(ActiveContextTestCase):
 
         exception = error.exception
         self.assertEqual(ValidationError, type(exception))
-        self.assertGreater(len(exception.args), 1)
-        self.assertIn("multiple", exception.args[1].lower())
+        self.assertEqual(len(exception.args), 1)
+        self.assertIn("multiple", exception.args[0].lower())
 
     def test_multiple_validate_definitions_with_invalid_definition(self):
         invalid_fields_test_field = create_field_entry("MissingTestField")
         del invalid_fields_test_field["type"]
         invalid_reference_test_field = create_field_entry("BadRefTestField", "striiiing")
-        invalid_data_definition = create_schema_definition("InvalidData", fields=[invalid_fields_test_field, invalid_reference_test_field])
+        invalid_schema_definition = create_schema_definition("InvalidData", fields=[invalid_fields_test_field, invalid_reference_test_field])
 
         fake_root_key = "not_a_root_key"
         test_definition_dict = {
@@ -88,14 +91,31 @@ class TestValidate(ActiveContextTestCase):
         invalid_root_key_definition = Definition("Test", "", invalid_definition_source, [], test_definition_dict)
 
         with self.assertRaises(ValidationError) as error:
-            with validated_definitions([invalid_data_definition, invalid_root_key_definition]):
+            with validated_definitions([invalid_schema_definition, invalid_root_key_definition]):
                 pass
 
         exception = error.exception
         error_messages = "\n".join(exception.args).lower()
         self.assertEqual(ValidationError, type(exception))
-        self.assertGreater(len(exception.args), 2)
+        self.assertGreater(error_messages.count("\n"), 3)
         self.assertIn("undefined", error_messages)
         self.assertIn("missing", error_messages)
         self.assertIn("root", error_messages)
         self.assertIn(fake_root_key, error_messages)
+
+    @patch("aac.validate._validate._validate_definitions")
+    def test_non_error_findings_do_not_cause_validation_failures(self, _validate_definitions_mock: MagicMock):
+        test_definitions = [create_schema_definition("Test")]
+
+        test_findings = ValidatorFindings()
+        test_findings.add_info_finding(test_definitions[0], "warning message", "test validator", 0, 0, 0, 0)
+        test_findings.add_warning_finding(test_definitions[0], "warning message", "test validator", 0, 0, 0, 0)
+
+        _validate_definitions_mock.return_value = ValidatorResult(test_definitions, test_findings)
+
+        with validated_definitions(test_definitions) as result:
+            self.assertEqual(len(result.findings.get_all_findings()), 2)
+            self.assertEqual(len(result.findings.get_info_findings()), 1)
+            self.assertEqual(len(result.findings.get_warning_findings()), 1)
+
+            self.assertTrue(result.is_valid())
