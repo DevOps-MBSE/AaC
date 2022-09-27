@@ -53,13 +53,12 @@ class RenameProvider(LspProvider):
         if document:
             symbol = get_symbol_at_position(document.source, position.line, position.character)
 
-            if symbol:
-                edits = self._get_rename_edits(symbol, new_name) if symbol else {}
+            edits = self._get_rename_edits(symbol, new_name) if symbol else {}
 
-                try:
-                    workspace_edit = WorkspaceEdit(text_document=TextDocumentIdentifier(uri=document.uri), changes=edits)
-                except Exception as error:
-                    logging.error(error)
+            try:
+                workspace_edit = workspaceedit(text_document=textdocumentidentifier(uri=document.uri), changes=edits)
+            except exception as error:
+                logging.error(error)
 
         return workspace_edit
 
@@ -88,20 +87,20 @@ class RenameProvider(LspProvider):
     ) -> dict[str, TextEdit]:
         """Returns a dictionary of document uri to TextEdits where the uri is the key and the list of edits the value."""
         edits = {}
-        referencing_definitions = get_definition_type_references_from_list(definition_to_find, language_context.definitions)
-        definitions_to_alter = [*referencing_definitions, definition_to_find]
+        definition_references = get_definition_type_references_from_list(definition_to_find, language_context.definitions)
+        definitions_to_alter = [*definition_references, definition_to_find]
 
         for definition in definitions_to_alter:
 
             def filter_lexeme_by_reference_name(lexeme: Lexeme) -> bool:
                 return remove_list_type_indicator(lexeme.value) == definition_to_find.name
 
-            referencing_lexemes = filter(filter_lexeme_by_reference_name, definition.lexemes)
+            reference_lexemes = filter(filter_lexeme_by_reference_name, definition.lexemes)
 
-            for lexeme_to_replace in referencing_lexemes:
+            for lexeme_to_replace in reference_lexemes:
                 document_edits = edits.get(lexeme_to_replace.source, [])
-                replacing_range = get_location_from_lexeme(lexeme_to_replace).range
-                document_edits.append(TextEdit(range=replacing_range, new_text=new_name))
+                replacement_range = get_location_from_lexeme(lexeme_to_replace).range
+                document_edits.append(TextEdit(range=replacement_range, new_text=new_name))
                 edits[str(lexeme_to_replace.source)] = document_edits
 
         return edits
