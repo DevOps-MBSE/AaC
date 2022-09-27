@@ -17,15 +17,15 @@ from aac.plugins.lsp_server.providers.symbols import (
     SymbolType,
 )
 from aac.plugins.lsp_server.providers.locations import get_location_from_lexeme
-import aac.plugins.lsp_server.providers.lsp_provider as lsp_provider
+from aac.plugins.lsp_server.providers.lsp_provider import LspProvider
 
 
-class RenameProvider(lsp_provider.LspProvider):
+class RenameProvider(LspProvider):
     """Handles the rename requests."""
 
-    def handle_request(self, ls: LanguageServer, params: RenameParams) -> WorkspaceEdit:
+    def handle_request(self, language_server: LanguageServer, params: RenameParams) -> WorkspaceEdit:
         """Return the workspace edit consisting of text edits for the rename request."""
-        self.language_server = ls
+        self.language_server = language_server
         return self.get_rename_edits(
             self.language_server.workspace.documents, params.text_document.uri, params.position, params.new_name
         )

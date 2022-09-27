@@ -14,13 +14,15 @@ from aac.plugins.lsp_server.providers.lsp_provider import LspProvider
 class HoverProvider(LspProvider):
     """Provide useful contextual information for the named item being hovered over."""
 
-    def handle_request(self, ls: LanguageServer, params: HoverParams) -> Optional[Hover]:
+    def handle_request(self, language_server: LanguageServer, params: HoverParams) -> Optional[Hover]:
         """Return the YAML representation of the item at the specified position."""
-        document: Optional[Document] = ls.workspace.documents.get(params.text_document.uri)
+        document: Optional[Document] = language_server.workspace.documents.get(params.text_document.uri)
         position = params.position
         symbol = get_symbol_at_position(document.source, position.line, position.character)
 
         if symbol is not None:
             name = remove_list_type_indicator(symbol).strip(":")
-            definition = ls.language_context.get_definition_by_name(name)
-            return definition and Hover(contents=MarkupContent(kind=MarkupKind.Markdown, value=f"```\n{definition.content}\n```"))
+            definition = language_server.language_context.get_definition_by_name(name)
+            return definition and Hover(
+                contents=MarkupContent(kind=MarkupKind.Markdown, value=f"```\n{definition.content}\n```")
+            )

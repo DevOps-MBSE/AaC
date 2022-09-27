@@ -5,10 +5,10 @@ from pygls.server import LanguageServer
 from pygls.lsp.types import Range, PrepareRenameParams
 
 from aac.plugins.lsp_server.providers.symbols import get_symbol_range_at_position
-import aac.plugins.lsp_server.providers.lsp_provider as lsp_provider
+from aac.plugins.lsp_server.providers.lsp_provider import LspProvider
 
 
-class PrepareRenameProvider(lsp_provider.LspProvider):
+class PrepareRenameProvider(LspProvider):
     """Handles the prepare rename requests."""
 
     def handle_request(self, language_server: LanguageServer, params: PrepareRenameParams) -> Optional[Range]:

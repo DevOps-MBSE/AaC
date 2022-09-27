@@ -13,15 +13,15 @@ from aac.lang.definitions.type import remove_list_type_indicator
 from aac.lang.definitions.lexeme import Lexeme
 from aac.plugins.lsp_server.providers.symbols import get_symbol_at_position, SymbolType, get_possible_symbol_types
 from aac.plugins.lsp_server.providers.locations import get_location_from_lexeme
-import aac.plugins.lsp_server.providers.lsp_provider as lsp_provider
+from aac.plugins.lsp_server.providers.lsp_provider import LspProvider
 
 
-class FindReferencesProvider(lsp_provider.LspProvider):
+class FindReferencesProvider(LspProvider):
     """Resolve the reference locations for a definition name or root key."""
 
-    def handle_request(self, ls: LanguageServer, params: ReferenceParams) -> list[Location]:
+    def handle_request(self, language_server: LanguageServer, params: ReferenceParams) -> list[Location]:
         """Return the locations at which references to the item are found."""
-        self.language_server = ls
+        self.language_server = language_server
         return self.get_reference_locations(
             self.language_server.workspace.documents, params.text_document.uri, params.position
         )
