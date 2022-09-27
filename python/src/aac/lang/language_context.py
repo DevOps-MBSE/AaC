@@ -203,6 +203,15 @@ class LanguageContext:
         else:
             return []
 
+    def get_root_keys_definition(self) -> Optional[Definition]:
+        """
+        Return the root keys type definition in the LanguageContext.
+
+        Returns:
+            The definition that defines the root key types.
+        """
+        return self.get_definition_by_name("root")
+
     def get_primitives_definition(self) -> Optional[Definition]:
         """
         Return the primitive type definition in the LanguageContext.
@@ -232,7 +241,7 @@ class LanguageContext:
         Returns:
             A list of strings, one entry for each definition name available in the LanguageContext.
         """
-        return list(map(lambda definition: definition.name, self.definitions))
+        return [definition.name for definition in self.definitions]
 
     def is_enum_type(self, type: str) -> bool:
         """

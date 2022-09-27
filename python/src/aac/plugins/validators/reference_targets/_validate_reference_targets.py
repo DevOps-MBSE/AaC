@@ -3,7 +3,7 @@ import logging
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.structure import get_substructures_by_type
 from aac.lang.language_context import LanguageContext
-from aac.lang.references import (
+from aac.lang.definitions.references import (
     get_reference_target_definitions,
     is_reference_format_valid,
 )

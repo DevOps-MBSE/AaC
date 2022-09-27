@@ -1,3 +1,4 @@
+from os import linesep
 from unittest.async_case import IsolatedAsyncioTestCase
 
 from aac.io.constants import YAML_DOCUMENT_SEPARATOR
@@ -16,7 +17,7 @@ from tests.plugins.lsp_server.definition_constants import (
 
 
 class TestLspServer(BaseLspTestCase, IsolatedAsyncioTestCase):
-    additional_content = f"{TEST_SCHEMA_C.to_yaml()}{YAML_DOCUMENT_SEPARATOR}{TEST_SERVICE_TWO.to_yaml()}"
+    additional_content = f"{TEST_SCHEMA_C.to_yaml()}{YAML_DOCUMENT_SEPARATOR}{linesep}{TEST_SERVICE_TWO.to_yaml()}"
 
     async def test_adds_definitions_when_opening_file(self):
         self.assertIsNone(self.active_context.get_definition_by_name(TEST_SCHEMA_C.name))
@@ -31,13 +32,13 @@ class TestLspServer(BaseLspTestCase, IsolatedAsyncioTestCase):
         self.assertIsNone(self.active_context.get_definition_by_name(TEST_SCHEMA_C.name))
         self.assertIsNone(self.active_context.get_definition_by_name(TEST_SERVICE_TWO.name))
 
-        await self.write_document(TEST_DOCUMENT_NAME, f"{TEST_DOCUMENT_CONTENT}{YAML_DOCUMENT_SEPARATOR}{self.additional_content}")
+        await self.write_document(TEST_DOCUMENT_NAME, f"{TEST_DOCUMENT_CONTENT}{YAML_DOCUMENT_SEPARATOR}{linesep}{self.additional_content}")
 
         self.assertIsNotNone(self.active_context.get_definition_by_name(TEST_SCHEMA_C.name))
         self.assertIsNotNone(self.active_context.get_definition_by_name(TEST_SERVICE_TWO.name))
 
     async def test_handles_content_changes_with_malformed_data(self):
-        await self.write_document(TEST_DOCUMENT_NAME, f"{TEST_DOCUMENT_CONTENT}{YAML_DOCUMENT_SEPARATOR}{TEST_MALFORMED_CONTENT}")
+        await self.write_document(TEST_DOCUMENT_NAME, f"{TEST_DOCUMENT_CONTENT}{YAML_DOCUMENT_SEPARATOR}{linesep}{TEST_MALFORMED_CONTENT}")
 
         modified_definition = self.active_context.get_definition_by_name(TEST_SERVICE_TWO_NAME)
         modified_definition_content = modified_definition.to_yaml()
