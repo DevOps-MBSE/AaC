@@ -17,9 +17,9 @@ class GotoDefinitionProvider(LspProvider):
     """Resolve the location where a specified name is defined."""
     language_server: LanguageServer
 
-    def handle_request(self, ls: LanguageServer, params: DefinitionParams) -> list[Location]:
+    def handle_request(self, language_server: LanguageServer, params: DefinitionParams) -> list[Location]:
         """Return the location at which the specified item is found."""
-        self.language_server = ls
+        self.language_server = language_server
         return self.get_definition_location_at_position(self.language_server.workspace.documents, params.text_document.uri, params.position)
 
     def get_definition_location_at_position(self, documents: dict[str, Document], current_uri: str, position: Position) -> list[Location]:
