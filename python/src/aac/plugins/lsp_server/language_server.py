@@ -1,8 +1,8 @@
 """The Architecture-as-Code Language Server."""
 
-import os
 import difflib
 import logging
+from os import linesep
 from typing import Optional
 from pygls.protocol import LanguageServerProtocol
 from pygls.server import LanguageServer
@@ -125,25 +125,28 @@ async def did_close(ls: AacLanguageServer, params: DidCloseTextDocumentParams):
 
 async def did_change(ls: AacLanguageServer, params: DidChangeTextDocumentParams):
     """Text document did change notification."""
-    document_uri = params.text_document.uri
-    logging.info(f"Text document altered by LSP client {document_uri}.")
+    document_path = params.text_document.uri.removeprefix("file://")
+    logging.info(f"Text document altered by LSP client {document_path}.")
 
     file_content = params.content_changes[0].text
-    incoming_definitions = parse(file_content)
+    incoming_definitions_dict = {definition.name: definition for definition in parse(file_content, document_path)}
     new_definitions = []
     altered_definitions = []
 
-    for incoming_definition in incoming_definitions:
+    old_definitions = ls.language_context.get_definitions_by_file_uri(document_path)
+    old_definitions_to_update_dict = {definition.name: definition for definition in old_definitions if definition.name in incoming_definitions_dict}
+    old_definitions_to_delete = [definition for definition in old_definitions if definition.name not in incoming_definitions_dict]
+
+    for incoming_definition_name, incoming_definition in incoming_definitions_dict.items():
         sanitized_definition = strip_undefined_fields_from_definition(incoming_definition, ls.language_context)
-        # At the moment we have to rely on definition names, but we'll need to update definitions based on file URI
-        old_definition = ls.language_context.get_definition_by_name(sanitized_definition.name)
+        old_definition = old_definitions_to_update_dict.get(incoming_definition_name)
 
         if old_definition:
             altered_definitions.append(sanitized_definition)
 
-            old_definition_lines = old_definition.to_yaml().split(os.linesep)
-            altered_definition_lines = incoming_definition.to_yaml().split(os.linesep)
-            changes = "\n".join(list(difflib.ndiff(old_definition_lines, altered_definition_lines))).strip()
+            old_definition_lines = old_definition.to_yaml().split(linesep)
+            altered_definition_lines = incoming_definition.to_yaml().split(linesep)
+            changes = linesep.join(list(difflib.ndiff(old_definition_lines, altered_definition_lines))).strip()
             logging.info(f"Updating definition: {old_definition.name}.\n Differences:\n{changes}")
         else:
             logging.info(f"Adding definition: {sanitized_definition.name}.")
@@ -151,6 +154,7 @@ async def did_change(ls: AacLanguageServer, params: DidChangeTextDocumentParams)
 
     ls.language_context.add_definitions_to_context(new_definitions)
     ls.language_context.update_definitions_in_context(altered_definitions)
+    ls.language_context.remove_definitions_from_context(old_definitions_to_delete)
 
 
 async def handle_completion(ls: AacLanguageServer, params: CompletionParams):
