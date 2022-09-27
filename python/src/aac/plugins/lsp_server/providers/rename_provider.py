@@ -52,13 +52,13 @@ class RenameProvider(LspProvider):
 
         if document:
             symbol = get_symbol_at_position(document.source, position.line, position.character)
-
             edits = self._get_rename_edits(symbol, new_name) if symbol else {}
 
-            try:
-                workspace_edit = WorkspaceEdit(text_document=TextDocumentIdentifier(uri=document.uri), changes=edits)
-            except Exception as error:
-                logging.error(error)
+            if symbol:
+                try:
+                    workspace_edit = WorkspaceEdit(text_document=TextDocumentIdentifier(uri=document.uri), changes=edits)
+                except Exception as error:
+                    logging.error(error)
 
         return workspace_edit
 
