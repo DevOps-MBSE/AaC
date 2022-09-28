@@ -50,6 +50,7 @@ jobs:
       run: |
         mkdir -p src/aac/plugins/test_gen_protobuf/
         cp  src/aac/plugins/gen_protobuf/gen_protobuf.yaml src/aac/plugins/test_gen_protobuf/gen_plugin_generation_test.yaml
+        rm -rf src/aac/plugins/gen_protobuf
         echo y | aac gen-plugin src/aac/plugins/test_gen_protobuf/gen_plugin_generation_test.yaml
         pip install .[all]
 
