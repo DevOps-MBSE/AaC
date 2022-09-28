@@ -1,0 +1,24 @@
+model:
+  name: test-file
+  description: A Gen-Plugin test to confirm functionality of 3rd party plugin integration.
+  behavior:
+    - name: test-file
+      type: command
+      description: Test Generate Plugin 3rd party plugin creation.
+      input:
+        - name: architecture_file
+          type: string
+          python_type: str
+          description: filepath to the architecture file to convert to JSON.
+        - name: --output_directory
+          type: string
+          python_type: str
+          description: Directory in which JSON files will be written
+      acceptance:
+        - scenario: Output JSON representation.
+          given:
+            - The {{gen-json.input.architecture_file}} contains a valid model.
+          when:
+            - The aac app is run with the gen-jason command.
+          then:
+            - JSON representation is output to the user or to the user defined output directory.
