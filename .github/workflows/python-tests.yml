@@ -133,6 +133,7 @@ jobs:
             model_file=$(find $LD_LIBRARY_PATH -name System.yaml)
             python -m aac puml-object $model_file output/
 
+        # TODO: Fix value of path attribute
         - name: Upload logs from failed runs
           if: ${{ failure() }}
           uses: actions/upload-artifact@v2
