@@ -114,7 +114,7 @@ jobs:
 
         - name: Validate Core Spec
           run: |
-            spec_file=$(find /opt -name spec.yaml | grep "aac\/spec\/spec.yaml" | head -n1)
+            spec_file=$(find $LD_LIBRARY_PATH -name spec.yaml | grep "aac.spec.spec.yaml" | head -n1)
             python -m aac validate $spec_file
 
         - name: Print out Core Spec
@@ -124,10 +124,14 @@ jobs:
           run: python -m aac print-active-context
 
         - name: Validate Example Model
-          run: python -m aac validate model/flow/System.yaml
+          run: |
+            model_file=$(find $LD_LIBRARY_PATH -name System.yaml)
+            python -m aac validate $model_file
 
         - name: Create PlantUML Component Diagram
-          run: python -m aac puml-object model/flow/System.yaml output/
+          run: |
+            model_file=$(find $LD_LIBRARY_PATH -name System.yaml)
+            python -m aac puml-object $model_file output/
 
         - name: Upload logs from failed runs
           if: ${{ failure() }}
