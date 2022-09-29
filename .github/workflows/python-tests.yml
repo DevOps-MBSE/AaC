@@ -48,18 +48,16 @@ jobs:
 
     - name: Test Gen-Plugin First-Party Plugin
       run: |
-        mkdir -p src/aac/plugins/test_gen_protobuf/
-        cp  src/aac/plugins/gen_protobuf/gen_protobuf.yaml src/aac/plugins/test_gen_protobuf/gen_plugin_generation_test.yaml
-        rm -rf src/aac/plugins/gen_protobuf
-        echo y | aac gen-plugin src/aac/plugins/test_gen_protobuf/gen_plugin_generation_test.yaml
+        mkdir -p src/aac/plugins/first_party/
+        cp model/plugin/plugin.yaml src/aac/plugins/first_party/first_party.yaml
+        echo y | aac gen-plugin src/aac/plugins/first_party/first_party.yaml
         pip install .[all]
 
     - name: Test Gen-Plugin Third-Party Plugin
       run: |
-        mkdir gen_plugin_generation_test
-        cp  src/aac/plugins/gen_protobuf/gen_protobuf.yaml gen_plugin_generation_test
-        echo y | aac gen-plugin gen_plugin_generation_test/gen_protobuf.yaml
-        pip install .
+        echo y | aac gen-plugin model/plugin/plugin.yaml
+        cd model/plugin/
+        pip install .[all]
 
     - name: Upload logs from failed runs
       if: ${{ failure() }}
