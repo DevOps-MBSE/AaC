@@ -94,9 +94,6 @@ jobs:
             os: [ubuntu-latest, windows-latest]
 
       steps:
-        - name: Checkout Repository
-          uses: actions/checkout@v2
-
         - name: Set up Python 3.9
           uses: actions/setup-python@v2
           with:
@@ -116,7 +113,9 @@ jobs:
           run: python -m aac version
 
         - name: Validate Core Spec
-          run: python -m aac validate src/aac/spec/spec.yaml
+          run: |
+            spec_file=$(find /opt -name spec.yaml | grep "aac\/spec\/spec.yaml" | head -n1)
+            python -m aac validate $spec_file
 
         - name: Print out Core Spec
           run: python -m aac print-spec
