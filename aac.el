@@ -67,6 +67,7 @@
                     "[/\\\\].vscode-test\\'")))))
 
 (with-eval-after-load 'dap-mode
+  (add-hook 'dap-stopped-hook (lambda (arg) (call-interactively #'dap-hydra)))
   (require 'dap-variables)
   (advice-add 'dap-launch-find-launch-json :around
     (lambda (fn &rest args)

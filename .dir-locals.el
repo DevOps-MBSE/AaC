@@ -1,10 +1,10 @@
-((nil . ((projectile-create-missing-test-files . t)))
+((nil . ((projectile-project-name . "aac")
+         (projectile-create-missing-test-files . t)))
  (python-mode . ((eval . (progn
                            (add-to-list 'load-path (projectile-project-root) t)
                            (require 'aac)
                            (aac-add-debug-templates-from-code-workspace)
                            (advice-add 'projectile-test-directory :around #'aac-projectile-test-dir)))
-                 (projectile-project-name . "aac")
                  (projectile-default-test-directory . "tests/")
                  (projectile-project-type . python-pkg)
                  (projectile-project-test-cmd . "cd python; flake8 . && nose2 -c tox.ini")
