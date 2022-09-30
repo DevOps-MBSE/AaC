@@ -12,6 +12,7 @@ def get_inherited_attributes(definition: Definition, language_context: LanguageC
 
     Args:
         definition (Definition): The definition to search for inherited superclass definitions.
+        language_context (LanguageContext): The LanguageContext to lookup inherited definitions from.
 
     Returns:
         A dictionary of parent-definition name to transitive fields. If the inherits field is not present, return None.
@@ -42,6 +43,7 @@ def apply_inherited_attributes_to_definition(definition: Definition, language_co
 
     Args:
         definition (Definition): The definition to search for inherited superclass definitions.
+        language_context (LanguageContext): The LanguageContext to lookup inherited definitions from.
 
     Returns:
         None. The definition's structure is altered in place.
