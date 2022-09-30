@@ -7,6 +7,16 @@ from typing import Optional
 from uuid import UUID
 
 from aac.io.files.aac_file import AaCFile
+from aac.lang.constants import (
+    DEFINITION_FIELD_NAME,
+    DEFINITION_FIELD_TYPE,
+    DEFINITION_FIELD_VALUES,
+    DEFINITION_NAME_ROOT,
+    DEFINITION_FIELD_FIELDS,
+    ROOT_KEY_ENUM,
+    ROOT_KEY_EXTENSION,
+    ROOT_KEY_SCHEMA,
+)
 from aac.lang.definition_helpers import get_definitions_by_root_key
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.extensions import apply_extension_to_definition, remove_extension_from_definition
@@ -60,7 +70,7 @@ class LanguageContext:
             )
 
         if definition.is_extension():
-            target_definition_name = definition.get_top_level_fields().get("type")
+            target_definition_name = definition.get_top_level_fields().get(DEFINITION_FIELD_TYPE)
             target_definition = self.get_definition_by_name(target_definition_name)
 
             definitions_with_target_definition_name = [
@@ -68,7 +78,9 @@ class LanguageContext:
             ]
 
             if len(definitions_with_target_definition_name) > 1:
-                raise LanguageError(f"Duplicate definitions found ({len(definitions_with_target_definition_name)}) with name '{target_definition_name}'.")
+                raise LanguageError(
+                    f"Duplicate definitions found ({len(definitions_with_target_definition_name)}) with name '{target_definition_name}'."
+                )
             elif target_definition:
                 apply_extension_to_definition(definition, target_definition)
             else:
@@ -81,6 +93,7 @@ class LanguageContext:
         Args:
             definitions: The list of Definitions to add to the context.
         """
+
         def dirty_dependency_sort_for_definitions_with_inheritance(definitions: list[Definition]) -> list[Definition]:
             sorted_definitions: dict[str, Definition] = OrderedDict()
 
@@ -95,17 +108,23 @@ class LanguageContext:
 
             return list(sorted_definitions.values())
 
-        extension_definitions = get_definitions_by_root_key("ext", definitions)
+        extension_definitions = get_definitions_by_root_key(ROOT_KEY_EXTENSION, definitions)
         extension_definition_names = [definition.name for definition in extension_definitions]
 
         schema_definitions = get_definitions_by_root_key("schema", definitions)
-        definitions_with_inheritance = [definition for definition in schema_definitions if definition.get_inherits() is not None]
-        sorted_definitions_with_inheritance = dirty_dependency_sort_for_definitions_with_inheritance(definitions_with_inheritance)
+        definitions_with_inheritance = [
+            definition for definition in schema_definitions if definition.get_inherits() is not None
+        ]
+        sorted_definitions_with_inheritance = dirty_dependency_sort_for_definitions_with_inheritance(
+            definitions_with_inheritance
+        )
         definitions_names_with_inheritance = [definition.name for definition in definitions_with_inheritance]
 
         definition_names_with_dependencies = definitions_names_with_inheritance + extension_definition_names
 
-        definitions_without_dependencies = [definition for definition in definitions if definition.name not in definition_names_with_dependencies]
+        definitions_without_dependencies = [
+            definition for definition in definitions if definition.name not in definition_names_with_dependencies
+        ]
 
         for definition in definitions_without_dependencies:
             self.add_definition_to_context(definition)
@@ -134,7 +153,7 @@ class LanguageContext:
             )
 
         if definition.is_extension():
-            target_definition_name = definition.get_top_level_fields().get("type")
+            target_definition_name = definition.get_top_level_fields().get(DEFINITION_FIELD_TYPE)
             target_definition = self.get_definition_by_name(target_definition_name)
             if target_definition:
                 remove_extension_from_definition(definition, target_definition)
@@ -148,9 +167,11 @@ class LanguageContext:
         Args:
             definitions (list[Definition]): The list of Definitions to remove from the context.
         """
-        extension_definitions = get_definitions_by_root_key("ext", definitions)
+        extension_definitions = get_definitions_by_root_key(ROOT_KEY_EXTENSION, definitions)
         extension_definition_names = [definition.name for definition in extension_definitions]
-        non_extension_definitions = [definition for definition in definitions if definition.name not in extension_definition_names]
+        non_extension_definitions = [
+            definition for definition in definitions if definition.name not in extension_definition_names
+        ]
 
         for definition in non_extension_definitions:
             if definition not in extension_definitions:
@@ -185,9 +206,11 @@ class LanguageContext:
         Args:
             definitions (list[Definition]): The list of Definitions to update in the context.
         """
-        extension_definitions = get_definitions_by_root_key("ext", definitions)
+        extension_definitions = get_definitions_by_root_key(ROOT_KEY_EXTENSION, definitions)
         extension_definition_names = [definition.name for definition in extension_definitions]
-        non_extension_definitions = [definition for definition in definitions if definition.name not in extension_definition_names]
+        non_extension_definitions = [
+            definition for definition in definitions if definition.name not in extension_definition_names
+        ]
 
         for definition in non_extension_definitions:
             if definition not in extension_definitions:
@@ -207,7 +230,7 @@ class LanguageContext:
             from active plugins and user files, which may extend the set of root keys.
             See :py:func:`aac.spec.get_root_keys()` for the list of root keys provided by the unaltered core AaC DSL.
         """
-        return [field.get("name") for field in self.get_root_fields()]
+        return [field.get(DEFINITION_FIELD_NAME) for field in self.get_root_fields()]
 
     def get_root_fields(self) -> list[dict]:
         """
@@ -219,10 +242,10 @@ class LanguageContext:
             These fields may differ from those provided by the core spec since the LanguageContext applies definitions
             from active plugins and user files, which may extend the set of root fields.
         """
-        root_definition = self.get_definition_by_name("root")
+        root_definition = self.get_definition_by_name(DEFINITION_NAME_ROOT)
 
         if root_definition:
-            return search_definition(root_definition, ["schema", "fields"])
+            return search_definition(root_definition, [ROOT_KEY_SCHEMA, DEFINITION_FIELD_FIELDS])
         else:
             return []
 
@@ -233,7 +256,7 @@ class LanguageContext:
         Returns:
             The definition that defines the root key types.
         """
-        return self.get_definition_by_name("root")
+        return self.get_definition_by_name(DEFINITION_NAME_ROOT)
 
     def get_primitives_definition(self) -> Optional[Definition]:
         """
@@ -255,7 +278,7 @@ class LanguageContext:
             from active plugins and user files, which may extend the set of root keys.
             See :py:func:`aac.spec.get_primitives()` for the list of root keys provided by the unaltered core AaC DSL.
         """
-        return search_definition(self.get_primitives_definition(), ["enum", "values"])
+        return search_definition(self.get_primitives_definition(), [ROOT_KEY_ENUM, DEFINITION_FIELD_VALUES])
 
     def get_defined_types(self) -> list[str]:
         """
@@ -326,7 +349,9 @@ class LanguageContext:
 
             if len(definition_to_return) > 0:
                 if len(definition_to_return) > 1:
-                    logging.info(f"Multiple definitions found with the same name '{definition_name}' found in context. Returning the first")
+                    logging.info(
+                        f"Multiple definitions found with the same name '{definition_name}' found in context. Returning the first"
+                    )
                 return definition_to_return[0]
             else:
                 logging.info(f"Failed to find the definition named '{definition_name}' in the context.")
@@ -368,10 +393,12 @@ class LanguageContext:
         """
 
         def is_type_defined_by_enum(enum: Definition) -> bool:
-            return type in enum.get_top_level_fields().get("values", [])
+            return type in enum.get_top_level_fields().get(DEFINITION_FIELD_VALUES, [])
 
-        enum_definition, *_ = [enum for enum in self.get_definitions_by_root_key("enum") if is_type_defined_by_enum(enum)]
-        return enum_definition if enum_definition else None
+        enum_definitions = [
+            enum for enum in self.get_definitions_by_root_key(ROOT_KEY_ENUM) if is_type_defined_by_enum(enum)
+        ]
+        return enum_definitions[0] if enum_definitions else None
 
     def add_plugins(self, plugins: list[Plugin]):
         """Add the specified plugins to the current language context."""
