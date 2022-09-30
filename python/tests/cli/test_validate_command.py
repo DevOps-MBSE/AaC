@@ -1,8 +1,11 @@
+from os import linesep
+
 from aac.cli.builtin_commands.validate.validate_impl import validate
+from aac.io.constants import YAML_DOCUMENT_SEPARATOR
 from aac.lang.active_context_lifecycle_manager import get_active_context
 
 from tests.active_context_test_case import ActiveContextTestCase
-from tests.helpers.assertion import assert_plugin_success, assert_validation_failure
+from tests.helpers.assertion import assert_plugin_failure, assert_plugin_success, assert_validation_failure
 from tests.helpers.parsed_definitions import create_behavior_entry, create_field_entry, create_model_definition, create_schema_definition
 from tests.helpers.io import temporary_test_file
 
@@ -27,9 +30,11 @@ class TestValidateCommand(ActiveContextTestCase):
 
     def test_validate_command_specify_definition_name_succeeds_with_valid_definition(self):
         valid_model = create_model_definition("Valid Model", "A valid model.")
-        ## TO/DO come back and replace this with test constant definitions
+        # TO/DO come back and replace this with test constant definitions
         valid_schema = create_schema_definition("Test Schema", fields=[create_field_entry("name", "str")])
-        with temporary_test_file(valid_model.content) as valid_model_file:
+
+        TEST_CONTENT = f"{YAML_DOCUMENT_SEPARATOR}{linesep}".join([valid_model.to_yaml(), valid_schema.to_yaml()])
+        with temporary_test_file(TEST_CONTENT) as valid_model_file:
             result = validate(valid_model_file.name, valid_model.name)
 
             assert_plugin_success(result)
@@ -40,4 +45,26 @@ class TestValidateCommand(ActiveContextTestCase):
             self.assertTrue(active_context.is_definition_type(valid_model.name))
 
             # This check will only work if we allow validate to pollute the active context for validation.
+            self.assertFalse(active_context.is_definition_type(valid_schema.name))
+
+    def test_validate_command_specify_definition_name_fails_with_missing_definition(self):
+        valid_model = create_model_definition("Valid Model", "A valid model.")
+        # TO/DO come back and replace this with test constant definitions
+        valid_schema = create_schema_definition("Test Schema", fields=[create_field_entry("name", "str")])
+
+        TEST_CONTENT = f"{YAML_DOCUMENT_SEPARATOR}{linesep}".join([valid_model.to_yaml(), valid_schema.to_yaml()])
+        with temporary_test_file(TEST_CONTENT) as valid_model_file:
+            undefined_definition_name = f"{valid_model.name}_v2"
+            result = validate(valid_model_file.name, undefined_definition_name)
+
+            assert_plugin_failure(result)
+            error_message_as_lines = result.get_messages_as_string().splitlines()
+            self.assertIn(undefined_definition_name, error_message_as_lines[0])
+            self.assertIn("not found", error_message_as_lines[0])
+            self.assertIn(valid_model.name, error_message_as_lines[1])
+            self.assertIn(valid_schema.name, error_message_as_lines[1])
+
+            # This check will only work if we allow validate to pollute the active context for validation.
+            active_context = get_active_context()
+            self.assertFalse(active_context.is_definition_type(valid_model.name))
             self.assertFalse(active_context.is_definition_type(valid_schema.name))
