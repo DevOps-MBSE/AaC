@@ -130,13 +130,19 @@ def create_enum_definition(name: str, values: list[str]):
 
 def create_schema_definition(name: str, description: str = "", fields: list[dict] = [], validations: list[dict] = [], inherits: list[str] = []):
     """Return a simulated schema definition."""
-    definition_dict = {
-        NAME_STRING: name,
-        DESCRIPTION_STRING: description,
-        INHERITS_STRING: inherits,
-        FIELDS_STRING: fields,
-        VALIDATION_STRING: validations,
-    }
+    definition_dict = {NAME_STRING: name}
+
+    if inherits:
+        definition_dict[INHERITS_STRING] = inherits
+
+    if description:
+        definition_dict[DESCRIPTION_STRING] = description
+
+    # Placing this here to preserve an expected order
+    definition_dict[FIELDS_STRING] = fields
+
+    if validations:
+        definition_dict[VALIDATION_STRING] = validations
 
     return _create_parsed_definition("schema", definition_dict)
 
