@@ -119,8 +119,15 @@ jobs:
           run: python -m aac version
 
         - name: Validate Core Spec
+          if: ${{ matrix.os }} == "ubuntu-latest"
           run: |
             spec_file=$(find $LD_LIBRARY_PATH -name spec.yaml | head -n1)
+            python -m aac validate $spec_file
+
+        - name: Validate Core Spec
+          if: ${{ matrix.os }} == "windows-latest"
+          run: |
+            $spec_file=$(gci -r -fi spec.yaml -Name $pythonLocation)
             python -m aac validate $spec_file
 
         - name: Print out Core Spec
