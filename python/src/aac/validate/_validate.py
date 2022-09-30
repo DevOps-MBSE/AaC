@@ -17,21 +17,37 @@ from aac.validate._collect_validators import get_applicable_validators_for_defin
 
 
 @contextmanager
-def validated_definitions(user_definitions: list[Definition]) -> Generator[ValidatorResult, None, None]:
-    """Validate user-defined definitions along with the definitions in the ActiveContext.
+def validated_definition(definition: Definition) -> Generator[ValidatorResult, None, None]:
+    """
+    Validate a single definition. Does not validate any other definitions in the context.
 
     Args:
-        user_definitions (list[Definition]): A list of user-defined definitions to validate
+        definition (Definition): The definition to validate
 
     Yields:
         A ValidationResults:py:class:`aac.validate.ValidationResult` indicating the result.
     """
-    yield _with_validation(user_definitions)
+    yield _with_validation([definition], False)
+
+
+@contextmanager
+def validated_definitions(definitions: list[Definition]) -> Generator[ValidatorResult, None, None]:
+    """
+    Validate definitions along with all other definitions in the ActiveContext.
+
+    Args:
+        definitions (list[Definition]): A list of definitions to validate
+
+    Yields:
+        A ValidationResults:py:class:`aac.validate.ValidationResult` indicating the result.
+    """
+    yield _with_validation(definitions)
 
 
 @contextmanager
 def validated_source(source: str) -> Generator[ValidatorResult, None, None]:
-    """Run validation on a string-based YAML definition or a YAML file.
+    """
+    Run validation on a string-based YAML definition or a YAML file.
 
     Args:
         source (str): The source of the YAML representation of the model.
@@ -42,9 +58,9 @@ def validated_source(source: str) -> Generator[ValidatorResult, None, None]:
     yield _with_validation(parse(source))
 
 
-def _with_validation(user_definitions: list[Definition]) -> ValidatorResult:
+def _with_validation(user_definitions: list[Definition], validate_context: bool = True) -> ValidatorResult:
     try:
-        result = _validate_definitions(user_definitions)
+        result = _validate_definitions(user_definitions, validate_context)
 
         if result.is_valid():
             return result
@@ -54,9 +70,9 @@ def _with_validation(user_definitions: list[Definition]) -> ValidatorResult:
         raise ValidationError("Failed to validate content due to an internal language error:\n", *error.args)
 
 
-def _validate_definitions(user_definitions: list[Definition]) -> ValidatorResult:
+def _validate_definitions(definitions: list[Definition], validate_context: bool) -> ValidatorResult:
     active_context = get_active_context()
-    active_context.add_definitions_to_context(user_definitions)
+    active_context.add_definitions_to_context(definitions)
 
     validator_plugins = get_validator_plugins()
 
@@ -67,8 +83,10 @@ def _validate_definitions(user_definitions: list[Definition]) -> ValidatorResult
         definition_findings = [result.findings.get_all_findings() for result in results]
         combined_findings.add_findings(list(flatten(definition_findings)))
 
-    [validate_each_definition(definition) for definition in active_context.definitions]
-    return ValidatorResult(user_definitions, combined_findings)
+    context_definitions_to_validate = active_context.definitions
+    definitions_to_validate = definitions + context_definitions_to_validate if validate_context else []
+    [validate_each_definition(definition) for definition in definitions_to_validate]
+    return ValidatorResult(definitions, combined_findings)
 
 
 def _validate_definition(
