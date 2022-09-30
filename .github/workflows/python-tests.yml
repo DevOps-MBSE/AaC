@@ -127,7 +127,7 @@ jobs:
         - name: Validate Core Spec
           if: matrix.os == 'windows-latest'
           run: |
-            $spec_file=$(gci -r -fi spec.yaml -Name "$Env:pythonLocation").ToLower()
+            $spec_file=$(gci -r -fi spec.yaml -Name "$Env:pythonLocation")
             python -m aac validate "$Env:pythonLocation\$spec_file"
 
         - name: Print out Core Spec
