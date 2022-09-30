@@ -1,4 +1,5 @@
 import logging
+import os
 from setuptools import find_packages, setup
 from src.aac import __version__
 
@@ -33,7 +34,7 @@ runtime_dependencies = [
     "anyio < 5, >= 3.4.0",
     "sniffio >= 1.1",
     "uvicorn >= 0.17.6",
-    "requests >= 2.27.0"
+    "requests >= 2.27.0",
 ]
 
 development_dependencies = [
@@ -84,6 +85,12 @@ setup(
     packages=find_packages(where="src", exclude="tests"),
     package_dir={"": "src"},
     package_data={"": ["*.aac", "*.jinja2", "*.yaml"]},
+    data_files=[
+        (
+            "model",
+            [f"{root}/{filename}" for root, _, files in os.walk("model") for filename in files],
+        )
+    ],
     install_requires=runtime_dependencies,
     setup_requires=development_dependencies,
     tests_require=test_dependencies,
