@@ -44,7 +44,6 @@ jobs:
     - name: Upload AaC models
       uses: actions/upload-artifact@v2
       with:
-        name: aac_models
         path: python/model/
 
     - name: Validate Core Spec and Plugin Specs
@@ -105,11 +104,9 @@ jobs:
           with:
             python-version: 3.9
 
-        - name: Download models
+        - name: Download AaC models
           uses: actions/download-artifact@v2
-          id: download-models
           with:
-            name: aac_models
             path: python/model/
 
         - name: Download Python Wheel
