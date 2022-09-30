@@ -1,5 +1,4 @@
 import logging
-import os
 from setuptools import find_packages, setup
 from src.aac import __version__
 
