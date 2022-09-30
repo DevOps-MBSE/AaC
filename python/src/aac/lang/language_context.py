@@ -112,24 +112,17 @@ class LanguageContext:
         extension_definition_names = [definition.name for definition in extension_definitions]
 
         schema_definitions = get_definitions_by_root_key(ROOT_KEY_SCHEMA, definitions)
-        definitions_with_inheritance = [
-            definition for definition in schema_definitions if definition.get_inherits() is not None
-        ]
-        sorted_definitions_with_inheritance = dirty_dependency_sort_for_definitions_with_inheritance(
-            definitions_with_inheritance
-        )
-        definitions_names_with_inheritance = [definition.name for definition in definitions_with_inheritance]
+        child_definitions = [definition for definition in schema_definitions if definition.get_inherits() is not None]
+        sorted_child_definitions = dirty_dependency_sort_for_definitions_with_inheritance(child_definitions)
+        child_definition_names = [definition.name for definition in child_definitions]
+        secondary_definitions = child_definition_names + extension_definition_names
 
-        definition_names_with_dependencies = definitions_names_with_inheritance + extension_definition_names
+        initial_definitions = [definition for definition in definitions if definition.name not in secondary_definitions]
 
-        definitions_without_dependencies = [
-            definition for definition in definitions if definition.name not in definition_names_with_dependencies
-        ]
-
-        for definition in definitions_without_dependencies:
+        for definition in initial_definitions:
             self.add_definition_to_context(definition)
 
-        for definition in sorted_definitions_with_inheritance:
+        for definition in sorted_child_definitions:
             self.add_definition_to_context(definition)
 
         for extension_definition in extension_definitions:
@@ -395,9 +388,7 @@ class LanguageContext:
         def is_type_defined_by_enum(enum: Definition) -> bool:
             return type in enum.get_top_level_fields().get(DEFINITION_FIELD_VALUES, [])
 
-        enum_definitions = [
-            enum for enum in self.get_definitions_by_root_key(ROOT_KEY_ENUM) if is_type_defined_by_enum(enum)
-        ]
+        enum_definitions = [enum for enum in self.get_definitions_by_root_key(ROOT_KEY_ENUM) if is_type_defined_by_enum(enum)]
         return enum_definitions[0] if enum_definitions else None
 
     def add_plugins(self, plugins: list[Plugin]):
