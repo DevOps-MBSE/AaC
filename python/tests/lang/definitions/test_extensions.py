@@ -54,14 +54,14 @@ class TestDefinitionExtensions(TestCase):
         self.assertIn(test_enum, language_context.definitions)
 
         self.assertEqual(1, len(test_schema.structure["schema"]["fields"]))
-        self.assertNotIn(PLUGIN_NAME, test_schema.structure["schema"]["validation"])
+        self.assertNotIn(PLUGIN_NAME, test_schema.get_validations())
         self.assertEqual(2, len(test_enum.structure["enum"]["values"]))
 
         apply_extension_to_definition(test_schema_ext, test_schema)
         apply_extension_to_definition(test_enum_ext, test_enum)
 
         # Assert Altered Extension State
-        required_fields_validation, *_ = [validation for validation in test_schema.structure["schema"]["validation"]]
+        required_fields_validation, *_ = [validation for validation in test_schema.get_validations()]
         self.assertEqual(2, len(test_schema.structure["schema"]["fields"]))
         self.assertEqual(PLUGIN_NAME, required_fields_validation.get("name"))
         self.assertEqual(1, len(required_fields_validation.get("arguments")))
@@ -76,7 +76,7 @@ class TestDefinitionExtensions(TestCase):
 
         # Assert Removed Extension State
         self.assertEqual(1, len(test_schema.structure["schema"]["fields"]))
-        self.assertNotIn(PLUGIN_NAME, test_schema.structure["schema"]["validation"])
+        self.assertNotIn(PLUGIN_NAME, test_schema.get_validations())
         self.assertNotIn(schema_ext_field_name, test_schema.to_yaml())
         self.assertNotIn(schema_ext_field_type, test_schema.to_yaml())
 
