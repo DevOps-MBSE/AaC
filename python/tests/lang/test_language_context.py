@@ -108,7 +108,7 @@ class TestLanguageContext(ActiveContextTestCase):
         extended_schema_definition = language_context.get_definition_by_name(target_schema_definition_name)
         extended_enum_definition = language_context.get_definition_by_name(target_enum_definition_name)
 
-        extended_enum_values = extended_enum_definition.get_top_level_fields().get("values")
+        extended_enum_values = extended_enum_definition.get_values()
         self.assertIn(self.ENUM_VALUE_EXAMPLE_ONE, extended_enum_values)
         self.assertIn(self.ENUM_VALUE_EXAMPLE_TWO, extended_enum_values)
 
@@ -119,7 +119,7 @@ class TestLanguageContext(ActiveContextTestCase):
         unextended_schema_definition = language_context.get_definition_by_name(target_schema_definition_name)
         unextended_enum_definition = language_context.get_definition_by_name(target_enum_definition_name)
 
-        unextended_enum_values = unextended_enum_definition.get_top_level_fields().get("values")
+        unextended_enum_values = unextended_enum_definition.get_values()
         self.assertNotIn(self.ENUM_VALUE_EXAMPLE_ONE, unextended_enum_values)
         self.assertNotIn(self.ENUM_VALUE_EXAMPLE_TWO, unextended_enum_values)
 
@@ -140,7 +140,7 @@ class TestLanguageContext(ActiveContextTestCase):
         extended_schema_definition = language_context.get_definition_by_name(target_schema_definition_name)
         extended_enum_definition = language_context.get_definition_by_name(target_enum_definition_name)
 
-        extended_enum_values = extended_enum_definition.get_top_level_fields().get("values")
+        extended_enum_values = extended_enum_definition.get_values()
         self.assertIn(self.ENUM_VALUE_EXAMPLE_ONE, extended_enum_values)
         self.assertIn(self.ENUM_VALUE_EXAMPLE_TWO, extended_enum_values)
 
@@ -160,7 +160,7 @@ class TestLanguageContext(ActiveContextTestCase):
         updated_schema_definition = language_context.get_definition_by_name(target_schema_definition_name)
         updated_enum_definition = language_context.get_definition_by_name(target_enum_definition_name)
 
-        updated_enum_values = updated_enum_definition.get_top_level_fields().get("values")
+        updated_enum_values = updated_enum_definition.get_values()
         self.assertNotIn(self.ENUM_VALUE_EXAMPLE_TWO, updated_enum_values)
 
         updated_schema_field_names = [field.get("name") for field in updated_schema_definition.get_top_level_fields().get("fields")]

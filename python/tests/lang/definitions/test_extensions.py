@@ -54,7 +54,7 @@ class TestDefinitionExtensions(TestCase):
         self.assertIn(test_enum, language_context.definitions)
 
         self.assertEqual(1, len(test_schema.structure["schema"]["fields"]))
-        self.assertNotIn(PLUGIN_NAME, test_schema.get_validations())
+        self.assertIsNone(test_schema.get_validations())
         self.assertEqual(2, len(test_enum.structure["enum"]["values"]))
 
         apply_extension_to_definition(test_schema_ext, test_schema)
