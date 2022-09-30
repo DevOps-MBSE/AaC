@@ -1,12 +1,10 @@
 """The Language Context manages the highly-contextual AaC DSL."""
-
 import copy
 import logging
-
+from attr import Factory, attrib, attrs, validators
+from collections import OrderedDict
 from typing import Optional
 from uuid import UUID
-
-from attr import Factory, attrib, attrs, validators
 
 from aac.io.files.aac_file import AaCFile
 from aac.lang.definition_helpers import get_definitions_by_root_key
@@ -83,15 +81,40 @@ class LanguageContext:
         Args:
             definitions: The list of Definitions to add to the context.
         """
+        def dirty_dependency_sort_for_definitions_with_inheritance(definitions: list[Definition]) -> list[Definition]:
+            sorted_definitions: dict[str, Definition] = OrderedDict()
+
+            for definition in definitions:
+                sorted_definitions[definition.name] = definition
+
+            for definition in definitions:
+                inherited_definition_names = definition.get_inherits()
+                for inherited_definition_name in inherited_definition_names:
+                    if inherited_definition_name in sorted_definitions:
+                        sorted_definitions.move_to_end(definition.name)
+
+            return list(sorted_definitions.values())
+
         extension_definitions = get_definitions_by_root_key("ext", definitions)
         extension_definition_names = [definition.name for definition in extension_definitions]
-        non_extension_definitions = [definition for definition in definitions if definition.name not in extension_definition_names]
 
-        for definition in non_extension_definitions:
+        schema_definitions = get_definitions_by_root_key("schema", definitions)
+        definitions_with_inheritance = [definition for definition in schema_definitions if definition.get_inherits() is not None]
+        sorted_definitions_with_inheritance = dirty_dependency_sort_for_definitions_with_inheritance(definitions_with_inheritance)
+        definitions_names_with_inheritance = [definition.name for definition in definitions_with_inheritance]
+
+        definition_names_with_dependencies = definitions_names_with_inheritance + extension_definition_names
+
+        definitions_without_dependencies = [definition for definition in definitions if definition.name not in definition_names_with_dependencies]
+
+        for definition in definitions_without_dependencies:
             self.add_definition_to_context(definition)
 
-        for extension_definitions in extension_definitions:
-            self.add_definition_to_context(extension_definitions)
+        for definition in sorted_definitions_with_inheritance:
+            self.add_definition_to_context(definition)
+
+        for extension_definition in extension_definitions:
+            self.add_definition_to_context(extension_definition)
 
     def remove_definition_from_context(self, definition: Definition):
         """
@@ -133,8 +156,8 @@ class LanguageContext:
             if definition not in extension_definitions:
                 self.remove_definition_from_context(definition)
 
-        for extension_definitions in extension_definitions:
-            self.remove_definition_from_context(extension_definitions)
+        for extension_definition in extension_definitions:
+            self.remove_definition_from_context(extension_definition)
 
     def update_definition_in_context(self, definition: Definition):
         """
@@ -170,8 +193,8 @@ class LanguageContext:
             if definition not in extension_definitions:
                 self.update_definition_in_context(definition)
 
-        for extension_definitions in extension_definitions:
-            self.update_definition_in_context(extension_definitions)
+        for extension_definition in extension_definitions:
+            self.update_definition_in_context(extension_definition)
 
     def get_root_keys(self) -> list[str]:
         """
@@ -319,11 +342,7 @@ class LanguageContext:
         Returns:
             A list of definitions with the given root key.
         """
-
-        def does_definition_root_match(definition: Definition) -> bool:
-            return root_key == definition.get_root_key()
-
-        return list(filter(does_definition_root_match, self.definitions))
+        return [definition for definition in self.definitions if root_key == definition.get_root_key()]
 
     def get_definitions_by_file_uri(self, file_uri: str) -> list[Definition]:
         """Return a subset of definitions that are sourced from the target file URI.
@@ -334,11 +353,7 @@ class LanguageContext:
         Returns:
             A list of definitions belonging to the target file.
         """
-
-        def does_definition_source_uri_match(definition: Definition) -> bool:
-            return file_uri == definition.source.uri
-
-        return list(filter(does_definition_source_uri_match, self.definitions))
+        return [definition for definition in self.definitions if file_uri == definition.source.uri]
 
     def get_enum_definition_by_type(self, type: str) -> Optional[Definition]:
         """
@@ -355,8 +370,8 @@ class LanguageContext:
         def is_type_defined_by_enum(enum: Definition) -> bool:
             return type in enum.get_top_level_fields().get("values", [])
 
-        definitions = [enum for enum in self.get_definitions_by_root_key("enum") if is_type_defined_by_enum(enum)]
-        return definitions[0] if definitions else None
+        enum_definition, *_ = [enum for enum in self.get_definitions_by_root_key("enum") if is_type_defined_by_enum(enum)]
+        return enum_definition if enum_definition else None
 
     def add_plugins(self, plugins: list[Plugin]):
         """Add the specified plugins to the current language context."""
