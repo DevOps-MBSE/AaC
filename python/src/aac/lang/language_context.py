@@ -9,7 +9,6 @@ from uuid import UUID
 from aac.io.files.aac_file import AaCFile
 from aac.lang.constants import (
     DEFINITION_FIELD_NAME,
-    DEFINITION_FIELD_VALUES,
     DEFINITION_NAME_PRIMITIVES,
     DEFINITION_NAME_ROOT,
     ROOT_KEY_ENUM,
@@ -401,7 +400,7 @@ class LanguageContext:
         """
 
         def is_type_defined_by_enum(enum: Definition) -> bool:
-            return type in enum.get_top_level_fields().get(DEFINITION_FIELD_VALUES, [])
+            return type in (enum.get_values() or [])
 
         enum_definitions = [enum for enum in self.get_definitions_by_root_key(ROOT_KEY_ENUM) if is_type_defined_by_enum(enum)]
         return enum_definitions[0] if enum_definitions else None
