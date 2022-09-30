@@ -128,8 +128,7 @@ jobs:
           if: matrix.os == 'windows-latest'
           run: |
             $spec_file=$(gci -r -fi spec.yaml -Name "$Env:pythonLocation")
-            echo "$Env:pythonLocation/$spec_file"
-            python -m aac validate "$Env:pythonLocation/$spec_file"
+            python -m aac validate "$Env:pythonLocation\\$spec_file"
 
         - name: Print out Core Spec
           run: python -m aac print-spec
