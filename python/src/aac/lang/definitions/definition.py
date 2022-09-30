@@ -7,6 +7,18 @@ import copy
 import logging
 import yaml
 
+from aac.lang.constants import (
+    DEFINITION_FIELD_EXTENSION_ENUM,
+    DEFINITION_FIELD_EXTENSION_SCHEMA,
+    DEFINITION_FIELD_FIELDS,
+    DEFINITION_FIELD_INHERITS,
+    DEFINITION_FIELD_TYPE,
+    DEFINITION_FIELD_VALIDATION,
+    DEFINITION_FIELD_VALUES,
+    ROOT_KEY_ENUM,
+    ROOT_KEY_EXTENSION,
+    ROOT_KEY_SCHEMA
+)
 from aac.lang.definitions.lexeme import Lexeme
 from aac.io.files.aac_file import AaCFile
 
@@ -23,7 +35,6 @@ class Definition:
         lexemes (list[Lexeme]): A list of lexemes for each item in the parsed definition.
         structure (dict): The dictionary representation of the definition.
     """
-
     uid: UUID = attrib(init=False, validator=validators.instance_of(UUID))
     name: str = attrib(validator=validators.instance_of(str))
     content: str = attrib(validator=validators.instance_of(str))
@@ -42,6 +53,8 @@ class Definition:
     def get_root_key(self) -> str:
         """Return the root key for the parsed definition."""
         return list(self.structure.keys())[0]
+
+    # Get Field Functions
 
     def get_top_level_fields(self) -> dict[str, dict]:
         """
@@ -62,41 +75,62 @@ class Definition:
 
         return fields
 
-    def get_validations(self) -> list[dict]:
-        """Return a list of validation entry dictionaries if the definition has a validation field or an empty list if not."""
+    def get_type(self) -> Optional[list[dict]]:
+        """Return the string for the extension type field, or None if the field isn't defined."""
         fields = self.get_top_level_fields()
-        return fields.get("validation") or []
+        return fields.get(DEFINITION_FIELD_TYPE)
+
+    def get_validations(self) -> Optional[list[dict]]:
+        """Return a list of validation entry dictionaries, or None if the field isn't defined."""
+        fields = self.get_top_level_fields()
+        return fields.get(DEFINITION_FIELD_VALIDATION)
 
     def get_inherits(self) -> Optional[list[str]]:
         """Return a list of Definition names that are inherited, or None if the field isn't defined."""
         fields = self.get_top_level_fields()
-        return fields.get("inherits") or []
+        return fields.get(DEFINITION_FIELD_INHERITS)
+
+    def get_values(self) -> Optional[list[str]]:
+        """Return a list of enum values, or None if there are no enum values defined."""
+        fields = self.get_top_level_fields()
+        return fields.get(DEFINITION_FIELD_VALUES)
+
+    def get_fields(self) -> Optional[list[dict]]:
+        """Return a list of field dictionaries, or None if there are no fields defined."""
+        fields = self.get_top_level_fields()
+        return fields.get(DEFINITION_FIELD_FIELDS)
+
+    # Type Test Functions
 
     def is_extension(self) -> bool:
         """Returns true if the definition is an extension definition."""
-        return self.get_root_key() == "ext"
+        return self.get_root_key() == ROOT_KEY_EXTENSION
 
     def is_schema_extension(self) -> bool:
         """Returns true if the definition is a schema extension definition."""
         definition = self.get_top_level_fields()
-        return "schemaExt" in definition and isinstance(definition["schemaExt"], dict)
+        return DEFINITION_FIELD_EXTENSION_SCHEMA in definition and isinstance(definition[DEFINITION_FIELD_EXTENSION_SCHEMA], dict)
 
     def is_enum_extension(self) -> bool:
         """Returns true if the definition is an enum extension definition."""
         definition = self.get_top_level_fields()
-        return "enumExt" in definition and isinstance(definition["enumExt"], dict)
+        return DEFINITION_FIELD_EXTENSION_ENUM in definition and isinstance(definition[DEFINITION_FIELD_EXTENSION_ENUM], dict)
 
     def is_schema(self) -> bool:
         """Returns true if the definition is a schema definition."""
-        return self.get_root_key() == "schema"
+        return self.get_root_key() == ROOT_KEY_SCHEMA
 
     def is_enum(self) -> bool:
         """Returns true if the definition is an enum definition."""
-        return self.get_root_key() == "enum"
+        return self.get_root_key() == ROOT_KEY_ENUM
+
+    # IO Functions
 
     def to_yaml(self) -> str:
         """Return a yaml string based on the current state of the definition including extensions."""
         return yaml.dump(self.structure, sort_keys=False)
+
+    # Misc Functions
 
     def copy(self) -> Definition:
         """Return a deep copy of the definition."""
