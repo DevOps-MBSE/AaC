@@ -1,5 +1,4 @@
 """Module for features and functionality for Schema inheritance."""
-import logging
 from typing import Optional
 
 from aac.lang.definitions.definition import Definition
