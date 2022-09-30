@@ -111,7 +111,7 @@ class LanguageContext:
         extension_definitions = get_definitions_by_root_key(ROOT_KEY_EXTENSION, definitions)
         extension_definition_names = [definition.name for definition in extension_definitions]
 
-        schema_definitions = get_definitions_by_root_key("schema", definitions)
+        schema_definitions = get_definitions_by_root_key(ROOT_KEY_SCHEMA, definitions)
         definitions_with_inheritance = [
             definition for definition in schema_definitions if definition.get_inherits() is not None
         ]
