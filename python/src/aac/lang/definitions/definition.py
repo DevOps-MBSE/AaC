@@ -1,9 +1,11 @@
 """An Architecture-as-Code definition augmented with metadata and helpful functions."""
-
+from __future__ import annotations
+from attr import Factory, attrib, attrs, validators
+from uuid import NAMESPACE_OID, UUID, uuid5
+from typing import Optional
+import copy
 import logging
 import yaml
-from uuid import NAMESPACE_OID, UUID, uuid5
-from attr import Factory, attrib, attrs, validators
 
 from aac.lang.definitions.lexeme import Lexeme
 from aac.io.files.aac_file import AaCFile
@@ -48,6 +50,9 @@ class Definition:
         Schema/data definitions will return their top-level fields, including a "fields" field. Because schema/data
         is self-defining, it may be easy to confuse the intention of this function and assume that it will returns the
         entries in a schema/data definition's `fields` field, which is not the case.
+
+        The resulting structure is not a copy, but a reference to the Definition's underlying structure. Editing this
+        data structure will alter the fields in the Definition.
         """
         fields = self.structure.get(self.get_root_key())
 
@@ -61,6 +66,11 @@ class Definition:
         """Return a list of validation entry dictionaries if the definition has a validation field or an empty list if not."""
         fields = self.get_top_level_fields()
         return fields.get("validation") or []
+
+    def get_inherits(self) -> Optional[list[str]]:
+        """Return a list of Definition names that are inherited, or None if the field isn't defined."""
+        fields = self.get_top_level_fields()
+        return fields.get("inherits") or []
 
     def is_extension(self) -> bool:
         """Returns true if the definition is an extension definition."""
@@ -87,3 +97,7 @@ class Definition:
     def to_yaml(self) -> str:
         """Return a yaml string based on the current state of the definition including extensions."""
         return yaml.dump(self.structure, sort_keys=False)
+
+    def copy(self) -> Definition:
+        """Return a deep copy of the definition."""
+        return copy.deepcopy(self)
