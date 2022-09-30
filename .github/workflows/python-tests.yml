@@ -121,7 +121,7 @@ jobs:
         - name: Validate Core Spec
           if: matrix.os == 'ubuntu-latest'
           run: |
-            spec_file=$(find $LD_LIBRARY_PATH -name spec.yaml | head -n1)
+            spec_file=$(find $pythonLocation -name spec.yaml | head -n1)
             python -m aac validate $spec_file
 
         - name: Validate Core Spec
@@ -142,10 +142,9 @@ jobs:
         - name: Create PlantUML Component Diagram
           run: python -m aac puml-object model/flow/System.yaml output/
 
-        # TODO: Fix value of path attribute
         - name: Upload logs from failed runs
           if: ${{ failure() }}
           uses: actions/upload-artifact@v2
           with:
             name: failed_test_log
-            path: python/src/aac/aac.log
+            path: ${{ env.pythonLocation }}/**/aac.log
