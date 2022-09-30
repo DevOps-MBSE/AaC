@@ -41,11 +41,6 @@ jobs:
         name: test-coverage-report
         path: python/html_code_coverage/
 
-    - name: Upload AaC models
-      uses: actions/upload-artifact@v2
-      with:
-        path: python/model/
-
     - name: Validate Core Spec and Plugin Specs
       run: |
         find src -name spec.yaml -print0 | xargs -0 -n1 aac validate
@@ -107,6 +102,7 @@ jobs:
         - name: Download AaC models
           uses: actions/download-artifact@v2
           with:
+            name: aac-models
             path: python/model/
 
         - name: Download Python Wheel
