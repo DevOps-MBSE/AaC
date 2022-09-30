@@ -85,12 +85,6 @@ setup(
     packages=find_packages(where="src", exclude="tests"),
     package_dir={"": "src"},
     package_data={"": ["*.aac", "*.jinja2", "*.yaml"]},
-    data_files=[
-        (
-            "model",
-            [f"{root}/{filename}" for root, _, files in os.walk("model") for filename in files],
-        )
-    ],
     install_requires=runtime_dependencies,
     setup_requires=development_dependencies,
     tests_require=test_dependencies,

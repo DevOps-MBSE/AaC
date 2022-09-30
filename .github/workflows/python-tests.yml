@@ -41,6 +41,12 @@ jobs:
         name: test-coverage-report
         path: python/html_code_coverage/
 
+    - name: Upload AaC models
+      uses: actions/upload-artifact@v2
+      with:
+        name: aac_models
+        path: python/model/
+
     - name: Validate Core Spec and Plugin Specs
       run: |
         find src -name spec.yaml -print0 | xargs -0 -n1 aac validate
@@ -99,6 +105,13 @@ jobs:
           with:
             python-version: 3.9
 
+        - name: Download models
+          uses: actions/download-artifact@v2
+          id: download-models
+          with:
+            name: aac_models
+            path: python/model/
+
         - name: Download Python Wheel
           uses: actions/download-artifact@v2
           id: download-wheel
@@ -114,7 +127,7 @@ jobs:
 
         - name: Validate Core Spec
           run: |
-            spec_file=$(find $LD_LIBRARY_PATH -name spec.yaml | grep "aac.spec.spec.yaml" | head -n1)
+            spec_file=$(find $LD_LIBRARY_PATH -name spec.yaml | head -n1)
             python -m aac validate $spec_file
 
         - name: Print out Core Spec
@@ -124,15 +137,10 @@ jobs:
           run: python -m aac print-active-context
 
         - name: Validate Example Model
-          run: |
-            model_file=$(find $LD_LIBRARY_PATH -name System.yaml)
-            echo $model_file
-            python -m aac validate $model_file
+          run: python -m aac validate model/flow/System.yaml
 
         - name: Create PlantUML Component Diagram
-          run: |
-            model_file=$(find $LD_LIBRARY_PATH -name System.yaml)
-            python -m aac puml-object $model_file output/
+          run: python -m aac puml-object model/flow/System.yaml output/
 
         # TODO: Fix value of path attribute
         - name: Upload logs from failed runs
