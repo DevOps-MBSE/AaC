@@ -9,10 +9,9 @@ from uuid import UUID
 from aac.io.files.aac_file import AaCFile
 from aac.lang.constants import (
     DEFINITION_FIELD_NAME,
-    DEFINITION_FIELD_TYPE,
     DEFINITION_FIELD_VALUES,
+    DEFINITION_NAME_PRIMITIVES,
     DEFINITION_NAME_ROOT,
-    DEFINITION_FIELD_FIELDS,
     ROOT_KEY_ENUM,
     ROOT_KEY_EXTENSION,
     ROOT_KEY_SCHEMA,
@@ -20,7 +19,6 @@ from aac.lang.constants import (
 from aac.lang.definition_helpers import get_definitions_by_root_key
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.extensions import apply_extension_to_definition, remove_extension_from_definition
-from aac.lang.definitions.search import search_definition
 from aac.lang.definitions.type import remove_list_type_indicator
 from aac.lang.language_error import LanguageError
 from aac.plugins.plugin import Plugin
@@ -70,7 +68,7 @@ class LanguageContext:
             )
 
         if definition.is_extension():
-            target_definition_name = definition.get_top_level_fields().get(DEFINITION_FIELD_TYPE)
+            target_definition_name = definition.get_type()
             target_definition = self.get_definition_by_name(target_definition_name)
 
             definitions_with_target_definition_name = [
@@ -146,7 +144,7 @@ class LanguageContext:
             )
 
         if definition.is_extension():
-            target_definition_name = definition.get_top_level_fields().get(DEFINITION_FIELD_TYPE)
+            target_definition_name = definition.get_type()
             target_definition = self.get_definition_by_name(target_definition_name)
             if target_definition:
                 remove_extension_from_definition(definition, target_definition)
@@ -235,30 +233,43 @@ class LanguageContext:
             These fields may differ from those provided by the core spec since the LanguageContext applies definitions
             from active plugins and user files, which may extend the set of root fields.
         """
-        root_definition = self.get_definition_by_name(DEFINITION_NAME_ROOT)
+        return self.get_definition_by_name(DEFINITION_NAME_ROOT).get_fields()
 
-        if root_definition:
-            return search_definition(root_definition, [ROOT_KEY_SCHEMA, DEFINITION_FIELD_FIELDS])
-        else:
-            return []
-
-    def get_root_keys_definition(self) -> Optional[Definition]:
+    def get_root_keys_definition(self) -> Definition:
         """
         Return the root keys type definition in the LanguageContext.
 
         Returns:
             The definition that defines the root key types.
-        """
-        return self.get_definition_by_name(DEFINITION_NAME_ROOT)
 
-    def get_primitives_definition(self) -> Optional[Definition]:
+        Raises:
+            LanguageError - An error indicating the root key definition is not in the context.
+        """
+        root_definition = self.get_definition_by_name(DEFINITION_NAME_ROOT)
+        if root_definition:
+            return root_definition
+        else:
+            missing_root_definition_error_message = "The root-key defining definition '{DEFINITION_NAME_ROOT}' is not in the context."
+            logging.critical(missing_root_definition_error_message)
+            raise LanguageError(missing_root_definition_error_message)
+
+    def get_primitives_definition(self) -> Definition:
         """
         Return the primitive type definition in the LanguageContext.
 
         Returns:
             The definition that defines the primitive types.
+
+        Raises:
+            LanguageError - An error indicating the primitive key definition is not in the context.
         """
-        return self.get_definition_by_name("Primitives")
+        primitives_definition = self.get_definition_by_name(DEFINITION_NAME_PRIMITIVES)
+        if primitives_definition:
+            return primitives_definition
+        else:
+            missing_primitives_definition_error_message = "The AaC DSL primitive types defining definition '{DEFINITION_NAME_PRIMITIVES}' is not in the context."
+            logging.critical(missing_primitives_definition_error_message)
+            raise LanguageError(missing_primitives_definition_error_message)
 
     def get_primitive_types(self) -> list[str]:
         """
@@ -271,7 +282,7 @@ class LanguageContext:
             from active plugins and user files, which may extend the set of root keys.
             See :py:func:`aac.spec.get_primitives()` for the list of root keys provided by the unaltered core AaC DSL.
         """
-        return search_definition(self.get_primitives_definition(), [ROOT_KEY_ENUM, DEFINITION_FIELD_VALUES])
+        return self.get_primitives_definition().get_values()
 
     def get_defined_types(self) -> list[str]:
         """
@@ -411,13 +422,7 @@ class LanguageContext:
         Returns:
             A list of all the files contributing definitions to the context.
         """
-        files_in_context = {}
-
-        for definition in self.definitions:
-            if not files_in_context.get(definition.source.uri):
-                files_in_context[definition.source.uri] = definition.source
-
-        return list(files_in_context.values())
+        return list({definition.source for definition in self.definitions})
 
     def get_file_in_context_by_uri(self, uri: str) -> Optional[AaCFile]:
         """
