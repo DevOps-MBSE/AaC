@@ -249,7 +249,9 @@ class LanguageContext:
         if root_definition:
             return root_definition
         else:
-            missing_root_definition_error_message = "The root-key defining definition '{DEFINITION_NAME_ROOT}' is not in the context."
+            missing_root_definition_error_message = (
+                "The root-key defining definition '{DEFINITION_NAME_ROOT}' is not in the context."
+            )
             logging.critical(missing_root_definition_error_message)
             raise LanguageError(missing_root_definition_error_message)
 
@@ -267,7 +269,9 @@ class LanguageContext:
         if primitives_definition:
             return primitives_definition
         else:
-            missing_primitives_definition_error_message = "The AaC DSL primitive types defining definition '{DEFINITION_NAME_PRIMITIVES}' is not in the context."
+            missing_primitives_definition_error_message = (
+                "The AaC DSL primitive types defining definition '{DEFINITION_NAME_PRIMITIVES}' is not in the context."
+            )
             logging.critical(missing_primitives_definition_error_message)
             raise LanguageError(missing_primitives_definition_error_message)
 
