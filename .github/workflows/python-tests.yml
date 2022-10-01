@@ -74,6 +74,13 @@ jobs:
       wheel_name: ${{ steps.wheel_artifact.outputs.wheel_name }}
 
     steps:
+      - name: Upload AaC models
+        if: matrix.py_version == '3.9.13'
+        uses: actions/upload-artifact@v2
+        with:
+          name: aac-models
+          path: python/model/
+
       - name: Download Python Wheel
         uses: actions/download-artifact@v2
         with:
@@ -119,7 +126,7 @@ jobs:
           run: python -m aac version
 
         - name: Validate Core Spec
-          if: matrix.os == 'ubuntu-latest'
+          if: matrix.os != 'windows-latest'
           run: |
             spec_file=$(find $pythonLocation -name spec.yaml | head -n1)
             python -m aac validate $spec_file
