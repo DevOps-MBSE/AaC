@@ -119,7 +119,7 @@ jobs:
           run: python -m aac version
 
         - name: Validate Core Spec
-          if: matrix.os == 'ubuntu-latest'
+          if: matrix.os != 'windows-latest'
           run: |
             spec_file=$(find $pythonLocation -name spec.yaml | head -n1)
             python -m aac validate $spec_file
