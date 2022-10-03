@@ -94,11 +94,11 @@ already set as options in the VSCode extension.
 If you choose to use a different host or port, you must specify that in the TCP
 settings.
 
-#### Python Path
+### Python Path
 
 Specify the path to the Python 3 executable or use "python"/"python3" to use the
 globally-installed Python version.
 
-#### Version
+### Version
 
 Specify the version of the AaC tool to use.
