@@ -102,3 +102,10 @@ globally-installed Python version.
 ### Version
 
 Specify the version of the AaC tool to use.
+
+## Extension Features
+
+While we are adding new features regularly, currently the VSCode extension offers support for:
+
+1. [Executing AaC commands from within VSCode](command_features.md)
+1. [Modeling systems using the AaC Language](lsp_features.md)
