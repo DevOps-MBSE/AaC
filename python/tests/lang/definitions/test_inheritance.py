@@ -1,6 +1,6 @@
 from unittest import TestCase
 from aac.lang.active_context_lifecycle_manager import get_initialized_language_context
-from aac.lang.definitions.inheritance import get_inherited_attributes, apply_inherited_attributes_to_definition
+from aac.lang.definitions.inheritance import get_inherited_attributes
 
 from tests.helpers.prebuilt_definition_constants import (
     TEST_SCHEMA_PARENT_1_NAME,
@@ -36,9 +36,10 @@ class TestDefinitionInheritance(TestCase):
     def test_apply_inherited_attributes_to_definition_with_fully_loaded_parents(self):
         test_context = get_initialized_language_context()
         test_child_definition = TEST_SCHEMA_CHILD.copy()
+
+        # Fields are applied when the definition is added to the context
         test_context.add_definitions_to_context([TEST_SCHEMA_PARENT_1, test_child_definition, TEST_SCHEMA_PARENT_2])
 
-        apply_inherited_attributes_to_definition(test_child_definition, test_context)
         actual_validations = test_child_definition.get_validations()
         actual_fields = test_child_definition.get_top_level_fields().get("fields")
 
@@ -66,9 +67,10 @@ class TestDefinitionInheritance(TestCase):
         del test_parent_2_definition.get_top_level_fields()["fields"]
 
         test_child_definition = TEST_SCHEMA_CHILD.copy()
+
+        # Fields are applied when the definition is added to the context
         test_context.add_definitions_to_context([test_child_definition, test_parent_1_definition, test_parent_2_definition])
 
-        apply_inherited_attributes_to_definition(test_child_definition, test_context)
         actual_validations = test_child_definition.get_validations()
         actual_fields = test_child_definition.get_top_level_fields().get("fields")
 
