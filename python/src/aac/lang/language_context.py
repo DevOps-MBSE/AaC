@@ -67,6 +67,7 @@ class LanguageContext:
             )
 
         if definition.get_inherits():
+            # This import is located here because the inheritance module uses the language context for lookup, causing a circular dependency at initialization
             from aac.lang.definitions.inheritance import apply_inherited_attributes_to_definition
             apply_inherited_attributes_to_definition(definition, self)
 
