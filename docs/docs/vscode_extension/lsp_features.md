@@ -14,7 +14,7 @@ that system modelers can obtain benefits provided by creating systems in an IDE.
 
 All the features described here are available "out of the box" and no extra
 configuration is required aside from the initial configuration described in the
-[setup guide](docs/vscode_extension).
+[setup guide](/docs/vscode_extension).
 
 ## Basic Completion
 
