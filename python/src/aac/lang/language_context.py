@@ -66,6 +66,10 @@ class LanguageContext:
                 f"Did not add definition '{new_definition.name}' to the context because one already exists with the same name."
             )
 
+        if definition.get_inherits():
+            from aac.lang.definitions.inheritance import apply_inherited_attributes_to_definition
+            apply_inherited_attributes_to_definition(definition, self)
+
         if definition.is_extension():
             target_definition_name = definition.get_type()
             target_definition = self.get_definition_by_name(target_definition_name)
