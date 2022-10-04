@@ -13,11 +13,11 @@ refer to [this](https://jondavid-black.github.io/AaC/docs/vscode_extension) page
 ## Features
 
 Provides the complete list of AaC commands as VSCode Tasks. See
-[here](https://jondavid-black.github.io/AaC/docs/vscode_extension/commands) for
+[here](https://jondavid-black.github.io/AaC/docs/vscode_extension/command_features) for
 more information.
 
 Provides an AaC Language Server. See
-[here](https://jondavid-black.github.io/AaC/docs/vscode_extension/lsp) for more
+[here](https://jondavid-black.github.io/AaC/docs/vscode_extension/lsp_features) for more
 information.
 
 

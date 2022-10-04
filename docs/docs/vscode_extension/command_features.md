@@ -1,9 +1,8 @@
 ---
 layout: default
 title: Execute AaC Commands
-nav_order: 2
-has_children: true
-permalink: docs/vscode_extension/commands
+nav_order: 3
+parent: AaC VSCode Extension
 ---
 
 # Running AaC Commands

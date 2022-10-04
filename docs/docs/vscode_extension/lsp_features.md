@@ -1,9 +1,8 @@
 ---
 layout: default
 title: AaC LSP Features
-nav_order: 2
-has_children: true
-permalink: docs/vscode_extension/lsp
+nav_order: 3
+parent: AaC VSCode Extension
 ---
 
 # AaC LSP Features
