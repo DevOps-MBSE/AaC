@@ -70,6 +70,16 @@ export class AacLanguageServerClient {
     }
 
     private async assertCorrectPythonVersionIsInstalled(pythonPath: string): Promise<void> {
+        const isAtLeastMinPythonVersion = (currentVersion: string) => {
+            const [actualMajor, actualMinor, actualPatch] = currentVersion.split(".").map(it => parseInt(it));
+            const [minMajor, minMinor, minPatch] = MIN_REQUIRED_PYTHON_VERSION.split(".").map(it => parseInt(it));
+            return (
+                (actualPatch && minPatch && minMajor <= actualMajor && minMinor <= actualMinor && actualPatch <= minPatch)
+                || (!(actualPatch || minPatch) && actualMinor && minMinor && minMinor <= actualMinor && minMajor <= actualMajor)
+                || (!(actualPatch || minPatch) && !(actualMinor || minMinor) && minMajor <= actualMajor)
+            );
+        };
+
         const resolve = await execShell(`${pythonPath} --version`, {});
 
         // Python 2 apparently writes it's version to standard error...
@@ -78,7 +88,7 @@ export class AacLanguageServerClient {
 
         const pythonVersion = getSemanticVersionNumber(resolve.stdout) ?? versionInStandardError ?? "unknown";
         assertTrue(
-            pythonVersion.startsWith(MIN_REQUIRED_PYTHON_VERSION),
+            isAtLeastMinPythonVersion(pythonVersion),
             `The AaC tool requires Python ${MIN_REQUIRED_PYTHON_VERSION} or newer; current version is: ${pythonVersion}`,
         );
     }
