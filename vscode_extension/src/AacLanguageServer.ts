@@ -5,7 +5,7 @@ import { ExtensionContext, window, workspace } from "vscode";
 import { LanguageClient, LanguageClientOptions, ServerOptions, StreamInfo, Trace } from "vscode-languageclient/node";
 import { getConfigurationItem } from "./configuration";
 import { execShell } from "./shell";
-import { assertTrue, showMessageOnError, getSemanticVersionNumber } from "./helpers";
+import { assertTrue, showMessageOnError } from "./helpers";
 
 enum LspServerMode {
     io = "IO",
@@ -30,21 +30,28 @@ export class AacLanguageServerClient {
     }
 
     public startLanguageServer(context: ExtensionContext): void {
+        const startServer = () => {
+            this.assertAacToolIsAvailable();
 
-        this.assertAacToolIsAvailable();
+            showMessageOnError(() => this.startLspClient(context), "Failed trying to start the server.");
+            this.onClientReady();
+        };
 
-        showMessageOnError(() => this.startLspClient(context), "Failed trying to start the server.");
-        this.onClientReady();
+        if (this.aacLspClient) {
+            this.shutdownServer().then(startServer);
+        } else {
+            startServer();
+        }
     }
 
-    public shutdownServer(): void {
-        this.aacLspClient.stop();
+    public shutdownServer(): Promise<void> {
+        return this.aacLspClient?.stop();
     }
 
-    private assertAacToolIsAvailable(): void {
-        const pythonPath = this.getConfigurationItemFile("pythonPath");
-        this.assertCorrectPythonVersionIsInstalled(pythonPath);
-        this.assertCorrectAacVersionIsInstalled(pythonPath);
+    private async assertAacToolIsAvailable(): Promise<void> {
+        const aacPath = this.getConfigurationItemFile("aacPath");
+        const resolve = await execShell(`${aacPath} -h`);
+        assertTrue(!resolve.stderr, `Could not get the installed AaC version.\n${resolve.stderr}`);
     }
 
     private onClientReady(): any {
@@ -69,42 +76,7 @@ export class AacLanguageServerClient {
         return item;
     }
 
-    private async assertCorrectPythonVersionIsInstalled(pythonPath: string): Promise<void> {
-        const isAtLeastMinPythonVersion = (currentVersion: string) => {
-            const [actualMajor, actualMinor, actualPatch] = currentVersion.split(".").map(it => parseInt(it));
-            const [minMajor, minMinor, minPatch] = MIN_REQUIRED_PYTHON_VERSION.split(".").map(it => parseInt(it));
-            return (
-                (actualPatch && minPatch && minMajor <= actualMajor && minMinor <= actualMinor && actualPatch <= minPatch)
-                || (!(actualPatch || minPatch) && actualMinor && minMinor && minMinor <= actualMinor && minMajor <= actualMajor)
-                || (!(actualPatch || minPatch) && !(actualMinor || minMinor) && minMajor <= actualMajor)
-            );
-        };
-
-        const resolve = await execShell(`${pythonPath} --version`, {});
-
-        // Python 2 apparently writes it's version to standard error...
-        const versionInStandardError = getSemanticVersionNumber(resolve.stderr);
-        assertTrue(!resolve.stderr || !!versionInStandardError, `Could not get the Python version.\n${resolve.stderr}`);
-
-        const pythonVersion = getSemanticVersionNumber(resolve.stdout) ?? versionInStandardError ?? "unknown";
-        assertTrue(
-            isAtLeastMinPythonVersion(pythonVersion),
-            `The AaC tool requires Python ${MIN_REQUIRED_PYTHON_VERSION} or newer; current version is: ${pythonVersion}`,
-        );
-    }
-
-    private async assertCorrectAacVersionIsInstalled(pythonPath: string): Promise<void> {
-        const resolve = await execShell(`${pythonPath} -m pip freeze`);
-        assertTrue(!resolve.stderr, `Could not get the installed AaC version.\n${resolve.stderr}`);
-
-        const expectedAacVersion: string = getConfigurationItem("version") ?? "";
-        const aacVersionPattern = new RegExp(`aac==${expectedAacVersion}|-e git.*egg=aac`, "ig");
-        const actualAacVersion = resolve.stdout.match(aacVersionPattern)?.pop();
-        assertTrue(!!actualAacVersion, `The installed aac version is ${actualAacVersion} which is unsupported.`);
-    }
-
     private async startLspClient(context: ExtensionContext): Promise<void> {
-        if (this.aacLspClient) { return; }
         this.aacLspClient = new LanguageClient(
             "aac",
             "AaC Language Client",
