@@ -1,0 +1,24 @@
+model:
+  name: test-file
+  description: An Architecture-as-Code plugin that generates json representations of the AaC yaml DSL.
+  behavior:
+    - name: test-file
+      type: command
+      description: Generate JSON representation of AaC yaml DSL
+      input:
+        - name: architecture_file
+          type: string
+          python_type: str
+          description: filepath to the architecture file to convert to JSON.
+        - name: --output_directory
+          type: string
+          python_type: str
+          description: Directory in which JSON files will be written
+      acceptance:
+        - scenario: Output JSON representation.
+          given:
+            - The {{test-file.input.architecture_file}} contains a valid model.
+          when:
+            - The aac app is run with the test-file command.
+          then:
+            - JSON representation is output to the user or to the user defined output directory.
