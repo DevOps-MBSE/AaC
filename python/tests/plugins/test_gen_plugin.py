@@ -15,7 +15,7 @@ from aac.plugins.plugin_execution import PluginExecutionStatusCode
 from aac.validate import validated_source
 
 from tests.helpers.assertion import assert_plugin_failure, assert_plugin_success
-from tests.helpers.io import temporary_test_file
+from tests.helpers.io import temporary_test_file, temporary_test_file_wo_cm
 
 INIT_TEMPLATE_NAME = "__init__.py.jinja2"
 PLUGIN_IMPL_TEMPLATE_NAME = "plugin_impl.py.jinja2"
@@ -59,20 +59,23 @@ class TestGenPlugin(TestCase):
 
     @patch("aac.plugins.gen_plugin.gen_plugin_impl._is_user_desired_output_directory")
     def test_generate_third_party_plugin(self, is_user_desired_output_dir):
+
         with TemporaryDirectory() as temp_directory:
 
-            self.assertEqual(len(os.listdir(temp_directory)), 0)
+            temp_file = temporary_test_file_wo_cm(TEST_PLUGIN_YAML_STRING, dir=temp_directory, suffix=".yaml")
 
-            with temporary_test_file(TEST_PLUGIN_YAML_STRING, dir=temp_directory) as plugin_yaml:
-                is_user_desired_output_dir.return_value = True
-                result = generate_plugin(plugin_yaml.name)
+            is_user_desired_output_dir.return_value = True
+            result = generate_plugin(temp_file.name)
 
-                assert_plugin_success(result)
+            assert_plugin_success(result)
 
-                generated_plugin_files = os.listdir(temp_directory)
-                self.assertEqual(len(generated_plugin_files), 6)
-                self.assertIn(os.path.basename(plugin_yaml.name), generated_plugin_files)
-                self.assertIn(f"{TEST_PLUGIN_NAME}", generated_plugin_files)
+            generated_plugin_files = []
+            for root, dirs, files in os.walk(temp_directory, topdown=False):
+                for file in files:
+                    generated_plugin_files.append(os.path.join(root, file))
+            self.assertEqual(len(generated_plugin_files), 7)
+            self.assertEqual(len([file for file in generated_plugin_files if os.path.basename(temp_file.name) in file]), 1)
+            self.assertGreater(len([file for file in generated_plugin_files if TEST_PLUGIN_NAME in file]), 0)
 
     @patch("aac.plugins.gen_plugin.gen_plugin_impl._is_user_desired_output_directory")
     def test_generate_plugin_fails_with_multiple_models(self, is_user_desired_output_dir):
@@ -124,16 +127,22 @@ class TestGenPlugin(TestCase):
             self.assertEqual(expected_filename, actual_filename)
 
     def test_prepare_and_generate_plugin_files(self):
-        with validated_source(TEST_PLUGIN_YAML_STRING) as result:
-            plugin_name = "aac_gen_protobuf"
+        with TemporaryDirectory() as temp_directory:
 
-            generated_templates = _prepare_and_generate_plugin_files(result.definitions, PLUGIN_TYPE_THIRD_STRING, "", "")
+            temp_file = temporary_test_file_wo_cm(TEST_PLUGIN_YAML_STRING, dir=temp_directory)
 
-            generated_template_names = []
-            generated_template_output_directories = []
-            for template in generated_templates.values():
-                generated_template_names.append(template.file_name)
-                generated_template_output_directories.append(template.output_directory)
+            with validated_source(temp_file.name) as result:
+                plugin_name = "aac_gen_protobuf"
+
+                generated_templates = _prepare_and_generate_plugin_files(
+                    result.definitions, PLUGIN_TYPE_THIRD_STRING, temp_file.name, ""
+                )
+
+                generated_template_names = []
+                generated_template_output_directories = []
+                for template in generated_templates.values():
+                    generated_template_names.append(template.file_name)
+                    generated_template_output_directories.append(template.output_directory)
 
             # Check that the files don't have "-" in the name
             for name in generated_template_names:
@@ -173,7 +182,9 @@ class TestGenPlugin(TestCase):
             generated_plugin_impl_test_file_contents = generated_templates.get(PLUGIN_IMPL_TEST_TEMPLATE_NAME).content
             self.assertIn("TestAacGenProtobuf(TestCase)", generated_plugin_impl_test_file_contents)
 
-            generated_plugin_impl_test_file_output_directory = generated_templates.get(PLUGIN_IMPL_TEST_TEMPLATE_NAME).output_directory
+            generated_plugin_impl_test_file_output_directory = generated_templates.get(
+                PLUGIN_IMPL_TEST_TEMPLATE_NAME
+            ).output_directory
             self.assertEqual(generated_plugin_impl_test_file_output_directory, "tests")
 
             generated_readme_file_contents = generated_templates.get(README_TEMPLATE_NAME).content

@@ -37,7 +37,7 @@ def parse(source: str, source_uri: Optional[str] = None) -> list[Definition]:
 
     if linesep not in source:
         sanitized_source = sanitize_filesystem_path(source)
-        if path.lexists(sanitized_source):
+        if path.exists(sanitized_source):
             is_file = True
 
     return _parse_file(sanitized_source) if is_file else _parse_str(source_uri or DEFAULT_SOURCE_URI, source)
