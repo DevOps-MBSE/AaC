@@ -15,18 +15,64 @@
         "url": "https://github.com/jondavid-black/AaC.git"
     },
     "activationEvents": [
-        "onStartupFinished"
+        "onStartupFinished",
+        "onCommand:aac.changeAacPath",
+        "onCommand:aac.changePythonPath",
+        "onCommand:aac.execute"
     ],
     "main": "./out/extension.js",
     "contributes": {
+        "walkthroughs": [
+            {
+                "id": "welcome",
+                "title": "Welcome to Architecture-as-Code",
+                "description": "Walk through setting up the Architecture-as-Code extension.",
+                "steps": [
+                    {
+                        "id": "aac-path",
+                        "title": "AaC Path",
+                        "description": "This step will configure the path to the `aac` tool that will be used by the extension.\n[Set AaC Path](command:aac.changeAacPath)",
+                        "media": {"markdown": "media/aac-path.md"},
+                        "completionEvents": ["onSettingChanged:aac.aacPath"]
+                    },
+                    {
+                        "id": "python-path",
+                        "title": "Python Path",
+                        "description": "This step will configure the path to Python.\n[Set Python Path](command:aac.changePythonPath)",
+                        "media": {"markdown": "media/python-path.md"},
+                        "completionEvents": ["onSettingChanged:aac.pythonPath"]
+                    },
+                    {
+                        "id": "view-docs",
+                        "title": "View AaC Documentation",
+                        "description": "Bookmark and read through the AaC documentation.\n[Open documentation](https://jondavid-black.github.io/AaC)",
+                        "media": {"markdown": "media/view-docs.md"},
+                        "completionEvents": ["onLink:https://jondavid-black.github.io/AaC"]
+                    },
+                    {
+                        "id": "exec-aac-command",
+                        "title": "Execute an AaC command",
+                        "description": "Execute your first AaC command via the extension.\n[Execute an AaC Command](command:aac.execute)",
+                        "media": {"markdown": "media/aac-command.md"},
+                        "completionEvents": ["onCommand:aac.execute"]
+                    }
+                ]
+            }
+        ],
         "configuration": {
-            "type": "string",
             "title": "Architecture-as-Code",
             "properties": {
+                "aac.aacPath": {
+                    "scope": "machine-overridable",
+                    "type": "string",
+                    "default": "aac",
+                    "pattern": "(\\\\?([^\\/]*[\\/])*)([^\\/]+)$",
+                    "description": "The filesystem path to the aac CLI tool."
+                },
                 "aac.pythonPath": {
                     "scope": "machine-overridable",
                     "type": "string",
-                    "default": "/usr/local/bin",
+                    "default": "python3",
                     "pattern": "(\\\\?([^\\/]*[\\/])*)([^\\/]+)$",
                     "description": "The filesystem path to the Python3 executable."
                 },
@@ -41,13 +87,6 @@
                     ],
                     "default": "0.1.2",
                     "description": "The version of the installed AaC tool."
-                },
-                "aac.aacPath": {
-                    "scope": "machine-overridable",
-                    "type": "string",
-                    "default": "",
-                    "pattern": "(\\\\?([^\\/]*[\\/])*)([^\\/]+)$",
-                    "description": "The filesystem path to the aac CLI tool."
                 },
                 "aac.lsp.serverMode": {
                     "scope": "machine-overridable",
