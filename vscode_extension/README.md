@@ -5,8 +5,10 @@ VSCode Extension that wraps the Python3 package
 your fingertips within VSCode as well as providing language server features for
 an easier, more productive experience with AaC.
 
-For instructions on configuring the AaC VSCode Extension, refer to
-[this](https://jondavid-black.github.io/AaC/docs/vscode_extension) page.
+The AaC VSCode extension does not require configuration as long as the `aac`
+Python tool is in your `PATH`. Nonetheless, there are configuration options
+available, so for detailed instructions on configuring the AaC VSCode Extension,
+refer to [this](https://jondavid-black.github.io/AaC/docs/vscode_extension) page.
 
 ## Features
 
