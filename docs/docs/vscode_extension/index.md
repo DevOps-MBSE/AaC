@@ -108,8 +108,8 @@ Specify the version of the AaC tool to use.
 While we are adding new features regularly, currently the VSCode extension
 offers support for:
 
-1. [Executing AaC commands from within VSCode](command_features.md)
-1. [Modeling systems using the AaC Language](lsp_features.md)
+1. [Executing AaC commands from within VSCode](command_features)
+1. [Modeling systems using the AaC Language](lsp_features)
 
 To gain access to any of these features, the AaC extension must be active while
 editing your files. To verify that the extension is active, look in the bottom
