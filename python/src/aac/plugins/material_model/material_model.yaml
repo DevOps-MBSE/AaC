@@ -160,13 +160,13 @@ schema:
         - deployment-ref
 ---
 ext:
-   name: MaterialRootItems
-   type: root
-   schemaExt:
-      add:
-        - name: part
-          type: Part
-        - name: assembly
-          type: Assembly
-        - name: deployment
-          type: Deployment
+  name: MaterialRootItems
+  type: root
+  schemaExt:
+    add:
+      - name: part
+        type: Part
+      - name: assembly
+        type: Assembly
+      - name: deployment
+        type: Deployment

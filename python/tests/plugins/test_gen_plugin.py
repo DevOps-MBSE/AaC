@@ -1,6 +1,5 @@
 import os
 from tempfile import TemporaryDirectory
-from unittest import TestCase
 from unittest.mock import patch
 
 from aac.plugins.gen_plugin.gen_plugin_impl import (
@@ -14,6 +13,7 @@ from aac.plugins.gen_plugin.gen_plugin_impl import EXPECTED_FIRST_PARTY_DIRECTOR
 from aac.plugins.plugin_execution import PluginExecutionStatusCode
 from aac.validate import validated_source
 
+from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.assertion import assert_plugin_failure, assert_plugin_success
 from tests.helpers.io import temporary_test_file, temporary_test_file_wo_cm
 
@@ -25,7 +25,7 @@ README_TEMPLATE_NAME = "README.md.jinja2"
 TOX_CONFIG_TEMPLATE_NAME = "tox.ini.jinja2"
 
 
-class TestGenPlugin(TestCase):
+class TestGenPlugin(ActiveContextTestCase):
     @patch("aac.plugins.gen_plugin.gen_plugin_impl._is_user_desired_output_directory")
     def test_generate_first_party_plugin(self, is_user_desired_output_dir):
         with TemporaryDirectory() as temp_directory:

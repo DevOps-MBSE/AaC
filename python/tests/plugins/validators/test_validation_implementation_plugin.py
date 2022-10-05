@@ -5,6 +5,7 @@ from aac.lang.definition_helpers import get_definitions_by_root_key
 from aac.plugins.validators import ValidatorPlugin
 from aac.plugins.validators.validator_implementation import _get_plugin_definitions, _get_plugin_validations, validate_validator_implementations
 
+from tests.helpers.assertion import assert_definitions_equal
 from tests.helpers.parsed_definitions import create_validation_definition
 
 
@@ -21,7 +22,7 @@ class TestValidationImplementPlugin(TestCase):
             name=validation_definition.name, definition=validation_definition, validation_function=(lambda x: x)
         )
         self.assertEqual(expected_validator_plugin.name, actual_validator_plugins[0].name)
-        self.assertEqual(expected_validator_plugin.definition, actual_validator_plugins[0].definition)
+        assert_definitions_equal(expected_validator_plugin.definition, actual_validator_plugins[0].definition)
 
     def test_validate_validator_implementations_validate_validation_success(self):
         test_active_context = get_active_context(reload_context=True)

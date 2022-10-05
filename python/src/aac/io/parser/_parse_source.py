@@ -11,7 +11,7 @@ from yaml.parser import ParserError as YAMLParserError
 import logging
 import yaml
 
-from aac.io.constants import YAML_DOCUMENT_SEPARATOR, DEFAULT_SOURCE_URI
+from aac.io.constants import DEFAULT_SOURCE_URI, YAML_DOCUMENT_SEPARATOR
 from aac.io.files.aac_file import AaCFile
 from aac.io.parser._parser_error import ParserError
 from aac.io.paths import sanitize_filesystem_path
@@ -208,18 +208,18 @@ def _get_files_to_process(arch_file_path: str) -> list[str]:
     Traverse the import path starting from the specified Arch-as-Code file and returns a list of
     all files referenced by the model.
     """
-    ret_val = [arch_file_path]
+    files_to_import = {arch_file_path}
     content = _read_file_content(arch_file_path)
     roots = _parse_yaml(arch_file_path, content)
-    roots_with_imports = filter(lambda r: "import" in r.keys(), roots)
+    roots_with_imports = [root for root in roots if "import" in root.keys()]
 
     for root in roots_with_imports:
         for imp in root["import"]:
             arch_file_dir = path.dirname(path.realpath(arch_file_path))
             parse_path = path.join(arch_file_dir, imp.removeprefix(f".{path.sep}"))
-            ret_val.extend(_get_files_to_process(parse_path))
+            files_to_import.update(_get_files_to_process(parse_path))
 
-    return ret_val
+    return files_to_import
 
 
 def _add_yaml_document_separator(content: str) -> str:

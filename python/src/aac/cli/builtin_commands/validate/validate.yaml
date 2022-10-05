@@ -10,6 +10,12 @@ model:
           type: file
           python_type: str
           description: The path to the AaC file to be validated.
+        - name: --definition_name
+          type: string
+          python_type: str
+          description: |
+            The name of one definition to validate. (optional)
+            This argument will cause only the definition provided by the argument to be validated.
       acceptance:
         - scenario: The definitions are valid
           given:

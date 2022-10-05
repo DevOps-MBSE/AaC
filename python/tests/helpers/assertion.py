@@ -1,8 +1,7 @@
 """Provide some general unit test assertion helpers to address recurring and duplicated testing patterns."""
-from aac.plugins.plugin_execution import (
-    PluginExecutionResult,
-    PluginExecutionStatusCode
-)
+
+from aac.lang.definitions.definition import Definition
+from aac.plugins.plugin_execution import PluginExecutionResult, PluginExecutionStatusCode
 from aac.plugins.validators import ValidatorResult
 
 
@@ -67,3 +66,13 @@ def assert_validator_result_success(validator_result: ValidatorResult):
     """Asserts that the validator result indicates a successful status."""
     if not validator_result.is_valid():
         raise AssertionError(f"ValidatorResult did not return a successful status as expected. Messages:\n{validator_result.get_messages_as_string()}")
+
+
+def assert_definitions_equal(definition1: Definition, definition2: Definition) -> bool:
+    """Asserts that two definitions are the same."""
+    return (
+        definition1.name == definition2.name
+        and definition1.source == definition2.source
+        and definition1.content == definition2.content
+        and definition1.lexemes == definition2.lexemes
+    )

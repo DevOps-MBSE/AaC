@@ -1,6 +1,7 @@
 """Module contain common functionality shared by the various LSP providers."""
 from enum import Enum
 from typing import Optional
+from pygls.lsp.types import Range, Position
 
 from aac.lang.language_context import LanguageContext
 
@@ -52,9 +53,20 @@ def get_symbol_at_position(content: str, line: int, column: int) -> Optional[str
     Returns:
         The symbol found at the current location in the content.
     """
+    symbol_range = get_symbol_range_at_position(content, line, column)
+    symbol = None
+    if symbol_range:
+        symbol_line = content.splitlines()[line]
+        symbol = symbol_line[symbol_range.start.character:symbol_range.end.character]
+
+    return symbol
+
+
+def get_symbol_range_at_position(content: str, line: int, column: int) -> Optional[Range]:
+    """Return the range of the symbol at the position."""
     content_lines = content.splitlines()
     line_with_symbol = content_lines[line]
-    symbol = None
+    symbol_range = None
 
     if line_with_symbol != "":
         adjusted_column = column if column < len(line_with_symbol) else column - 1
@@ -78,6 +90,10 @@ def get_symbol_at_position(content: str, line: int, column: int) -> Optional[str
                 symbol_end = i
 
             # Have to add 1 to the end index since slice ends are exclusive.
-            symbol = line_with_symbol[symbol_start:symbol_end + 1].strip()
+            symbol_end += 1
 
-    return symbol
+            start_position = Position(line=line, character=symbol_start)
+            end_position = Position(line=line, character=symbol_end)
+            symbol_range = Range(start=start_position, end=end_position)
+
+    return symbol_range

@@ -9,7 +9,7 @@ from aac.plugins.gen_json.gen_json_impl import print_json
 from aac.plugins.plugin_execution import PluginExecutionStatusCode
 
 from tests.active_context_test_case import ActiveContextTestCase
-from tests.helpers.assertion import assert_plugin_success
+from tests.helpers.assertion import assert_definitions_equal, assert_plugin_success
 from tests.helpers.io import temporary_test_file
 
 
@@ -50,7 +50,10 @@ class TestGenJson(ActiveContextTestCase):
 
         self.assertEqual(plugin.name, "gen_json")
         self.assertEqual(plugin.contributions.get_commands(), _get_plugin_commands())
-        self.assertEqual(plugin.contributions.get_definitions(), _get_plugin_definitions())
+        [
+            assert_definitions_equal(d1, d2)
+            for d1, d2 in zip(plugin.contributions.get_definitions(), _get_plugin_definitions())
+        ]
 
 
 TEST_ARCH_YAML_STRING = """

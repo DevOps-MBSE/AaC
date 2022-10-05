@@ -143,5 +143,4 @@ def search_definition(definition: Definition, search_keys: list[str]) -> list:
     Returns:
         Returns a list of found data items based on the search keys.
     """
-
     return search(definition.structure, search_keys)
