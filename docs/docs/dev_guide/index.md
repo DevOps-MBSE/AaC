@@ -1,6 +1,6 @@
 ---
 layout: default
-title: AaC Developer's Guide
+title: Developer's Guide to AaC
 nav_order: 2
 has_children: true
 permalink: docs/dev_guide
