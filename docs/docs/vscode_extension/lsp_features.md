@@ -16,11 +16,11 @@ All the features described here are available "out of the box" and no extra
 configuration is required aside from the initial configuration described in the
 [setup guide](/docs/vscode_extension).
 
-## Basic Completion
+## Basic Completion (WIP)
 
-Of all the features provided by the LSP server implementation, at this time, the
-one that leaves the most to be desired is code completion functionality. That
-said, there is basic completion provided for type names.
+Code completion is still heavily in development, but there is currently a very
+basic implementation that provides valid definition names as suggestions when it
+detects the modeler is defining a reference to a definition.
 
 The code completion box is available whenever `type: ` is entered in an AaC file.
 
