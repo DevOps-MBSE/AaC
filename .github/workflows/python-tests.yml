@@ -16,7 +16,7 @@ jobs:
 
     steps:
 
-      - name: Checkout Repository
+    - name: Checkout Repository
       uses: actions/checkout@v2
 
     - name: Set up Python ${{ matrix.py_version }}
@@ -55,17 +55,17 @@ jobs:
         echo y | aac gen-plugin src/aac/plugins/first_party/first_party.yaml
         pip install .[all]
 
-      - name: Test Gen-Plugin Third-Party Plugin
-        run: |
-          mkdir gen_plugin_generation_test
-          cp  model/test_file/test_file.yaml gen_plugin_generation_test
-          echo y | aac gen-plugin gen_plugin_generation_test/test_file.yaml
-          cd gen_plugin_generation_test
-          pip install .
-          cd .. 
-          aac -h | grep "test-file" && echo 'Third-Party Plugin Created successfully'
+    - name: Test Gen-Plugin Third-Party Plugin
+      run: |
+        mkdir gen_plugin_generation_test
+        cp  model/test_file/test_file.yaml gen_plugin_generation_test
+        echo y | aac gen-plugin gen_plugin_generation_test/test_file.yaml
+        cd gen_plugin_generation_test
+        pip install .
+        cd .. 
+        aac -h | grep "test-file" && echo 'Third-Party Plugin Created successfully'
 
-      - name: Upload logs from failed runs
+    - name: Upload logs from failed runs
       if: ${{ failure() }}
       uses: actions/upload-artifact@v2
       with:
@@ -99,24 +99,24 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
         
-      steps:
-        - name: Set up Python 3.9
-          uses: actions/setup-python@v2
-          with:
-            python-version: 3.9
+    steps:
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
 
-        - name: Download AaC models
-          uses: actions/download-artifact@v2
-          with:
-            name: aac-models
-            path: python/model/
+      - name: Download AaC models
+        uses: actions/download-artifact@v2
+        with:
+          name: aac-models
+          path: python/model/
 
-        - name: Download Python Wheel
-          uses: actions/download-artifact@v2
-          id: download-wheel
-          with:
-            name: aac_wheel
-            path: python/dist/
+      - name: Download Python Wheel
+        uses: actions/download-artifact@v2
+        id: download-wheel
+        with:
+          name: aac_wheel
+          path: python/dist/
 
       - name: Install Wheel Distribution
         run: pip install ${{steps.download-wheel.outputs.download-path}}/${{needs.os_test_matrix_setup.outputs.wheel_name}}
@@ -129,7 +129,7 @@ jobs:
         run: |
           spec_file=$(find $pythonLocation -name spec.yaml | head -n1)
           python -m aac validate $spec_file
-      
+    
       - name: Validate Core Spec
         if: matrix.os == 'windows-latest'
         run: |
