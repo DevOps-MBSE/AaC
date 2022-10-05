@@ -101,7 +101,7 @@ async function execAacShellCommand(command: string, commandArgs: CommandArgument
         .filter(argument => argument.userResponse)
         .map(argument => argument.optional ? `${argument.name} ${argument.userResponse}` : argument.userResponse);
 
-    const aac = getConfigurationItem("aacPath") || "aac";
+    const aac = getConfigurationItem("aacPath");
     try {
         const { stdout, stderr } = await execShell([aac, command, ...commandArgsArray].join(" "), {});
         return stderr.length > 0 ? stderr : stdout;
