@@ -1,5 +1,11 @@
 from unittest import TestCase
 from aac.lang.active_context_lifecycle_manager import get_initialized_language_context
+from aac.lang.constants import (
+    DEFINITION_FIELD_NAME,
+    DEFINITION_FIELD_TYPE,
+    DEFINITION_FIELD_FIELDS,
+    DEFINITION_FIELD_VALIDATION
+)
 from aac.lang.definitions.inheritance import get_inherited_attributes
 
 from tests.helpers.prebuilt_definition_constants import (
@@ -27,8 +33,8 @@ class TestDefinitionInheritance(TestCase):
         actual_results = get_inherited_attributes(TEST_SCHEMA_CHILD, test_context)
         self.assertIsNotNone(actual_results)
         self.assertIn(TEST_SCHEMA_PARENT_1_NAME, actual_results)
-        self.assertIn("fields", actual_results.get(TEST_SCHEMA_PARENT_1_NAME))
-        self.assertIn("validation", actual_results.get(TEST_SCHEMA_PARENT_1_NAME))
+        self.assertIn(DEFINITION_FIELD_FIELDS, actual_results.get(TEST_SCHEMA_PARENT_1_NAME))
+        self.assertIn(DEFINITION_FIELD_VALIDATION, actual_results.get(TEST_SCHEMA_PARENT_1_NAME))
 
         self.assertIn(TEST_SCHEMA_PARENT_2_NAME, actual_results)
 
@@ -40,20 +46,20 @@ class TestDefinitionInheritance(TestCase):
         test_context.add_definitions_to_context([TEST_SCHEMA_PARENT_1, test_child_definition, TEST_SCHEMA_PARENT_2])
 
         actual_validations = test_child_definition.get_validations()
-        actual_fields = test_child_definition.get_top_level_fields().get("fields")
+        actual_fields = test_child_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS)
 
         self.assertEqual(len(actual_validations), 2)
-        field_names = [field.get("name") for field in actual_fields]
+        field_names = [field.get(DEFINITION_FIELD_NAME) for field in actual_fields]
         self.assertIn(TEST_SCHEMA_PARENT_1_FIELD_NAME, field_names)
         self.assertIn(TEST_SCHEMA_PARENT_2_FIELD_NAME, field_names)
         self.assertIn(TEST_SCHEMA_CHILD_FIELD_NAME, field_names)
 
-        field_types = [field.get("type") for field in actual_fields]
+        field_types = [field.get(DEFINITION_FIELD_TYPE) for field in actual_fields]
         self.assertIn(TEST_SCHEMA_PARENT_1_FIELD_TYPE, field_types)
         self.assertIn(TEST_SCHEMA_PARENT_2_FIELD_TYPE, field_types)
         self.assertIn(TEST_SCHEMA_CHILD_FIELD_TYPE, field_types)
 
-        validation_names = [validation.get("name") for validation in actual_validations]
+        validation_names = [validation.get(DEFINITION_FIELD_NAME) for validation in actual_validations]
         self.assertIn(TEST_SCHEMA_PARENT_1_VALIDATION_NAME, validation_names)
         self.assertIn(TEST_SCHEMA_PARENT_2_VALIDATION_NAME, validation_names)
 
@@ -62,8 +68,8 @@ class TestDefinitionInheritance(TestCase):
         test_parent_1_definition = TEST_SCHEMA_PARENT_1.copy()
         test_parent_2_definition = TEST_SCHEMA_PARENT_2.copy()
 
-        del test_parent_1_definition.get_top_level_fields()["validation"]
-        del test_parent_2_definition.get_top_level_fields()["fields"]
+        del test_parent_1_definition.get_top_level_fields()[DEFINITION_FIELD_VALIDATION]
+        del test_parent_2_definition.get_top_level_fields()[DEFINITION_FIELD_FIELDS]
 
         test_child_definition = TEST_SCHEMA_CHILD.copy()
 
@@ -71,17 +77,17 @@ class TestDefinitionInheritance(TestCase):
         test_context.add_definitions_to_context([test_child_definition, test_parent_1_definition, test_parent_2_definition])
 
         actual_validations = test_child_definition.get_validations()
-        actual_fields = test_child_definition.get_top_level_fields().get("fields")
+        actual_fields = test_child_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS)
 
-        field_names = [field.get("name") for field in actual_fields]
+        field_names = [field.get(DEFINITION_FIELD_NAME) for field in actual_fields]
         self.assertIn(TEST_SCHEMA_PARENT_1_FIELD_NAME, field_names)
         self.assertNotIn(TEST_SCHEMA_PARENT_2_FIELD_NAME, field_names)
         self.assertIn(TEST_SCHEMA_CHILD_FIELD_NAME, field_names)
 
-        field_types = [field.get("type") for field in actual_fields]
+        field_types = [field.get(DEFINITION_FIELD_TYPE) for field in actual_fields]
         self.assertIn(TEST_SCHEMA_PARENT_1_FIELD_TYPE, field_types)
         self.assertIn(TEST_SCHEMA_CHILD_FIELD_TYPE, field_types)
 
-        validation_names = [validation.get("name") for validation in actual_validations]
+        validation_names = [validation.get(DEFINITION_FIELD_NAME) for validation in actual_validations]
         self.assertNotIn(TEST_SCHEMA_PARENT_1_VALIDATION_NAME, validation_names)
         self.assertIn(TEST_SCHEMA_PARENT_2_VALIDATION_NAME, validation_names)
