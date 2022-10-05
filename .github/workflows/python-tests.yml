@@ -60,7 +60,7 @@ jobs:
         echo y | aac gen-plugin model/plugin/plugin.yaml
         cd model/plugin/
         pip install .[all]
-        aac -h | grep 'test-plugin' 
+        aac -h 
       
     - name: Upload logs from failed runs
       if: ${{ failure() }}
