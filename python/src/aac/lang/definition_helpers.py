@@ -68,19 +68,13 @@ def get_definition_by_name(definition_name: str, definitions: list[Definition]) 
     matching_definitions = list(filter(does_definition_name_match, definitions))
     matching_definitions_count = len(matching_definitions)
 
-    result = None
-    if matching_definitions_count > 1:
-        multiple_definitions_found_error = f"Found multiple definitions with the same name '{definition_name}'\n{matching_definitions}'"
-        logging.error(multiple_definitions_found_error)
-        raise RuntimeError(f'Found multiple definitions with the same name "{definition_name}"\n{matching_definitions}')
+    if matching_definitions_count < 1:
+        logging.debug(f"Failed to find a definition with the name '{definition_name}'")
 
-    elif matching_definitions_count < 1:
-        logging.debug(f'Failed to find a definition with the name "{definition_name}"')
+    elif matching_definitions_count > 1:
+        logging.error(f"Found multiple definitions with the same name '{definition_name}'\n{matching_definitions}'")
 
-    else:
-        result = matching_definitions[0]
-
-    return result
+    return matching_definitions[0] if matching_definitions_count >= 1 else None
 
 
 def convert_parsed_definitions_to_dict_definition(definitions: list[Definition]) -> dict:

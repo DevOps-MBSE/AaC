@@ -311,6 +311,7 @@ schema:
       arguments:
         - name
         - fields
+    - name: Unique definition names
 ---
 schema:
   name: Behavior

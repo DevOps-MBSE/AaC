@@ -2,7 +2,7 @@
 
 import logging
 import yaml
-from uuid import NAMESPACE_OID, UUID, uuid5
+from uuid import UUID, uuid4
 from attr import Factory, attrib, attrs, validators
 
 from aac.lang.definitions.lexeme import Lexeme
@@ -30,8 +30,8 @@ class Definition:
     structure: dict = attrib(default=Factory(dict), validator=validators.instance_of(dict))
 
     def __attrs_post_init__(self):
-        """Post-initialization hook."""
-        self.uid = uuid5(NAMESPACE_OID, self.name)
+        """Post-init hook."""
+        self.uid = uuid4()
 
     def __hash__(self) -> int:
         """Return the hash of this Definition."""

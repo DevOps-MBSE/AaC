@@ -63,4 +63,3 @@ model:
             - The request is logged.
             - A math response is provided with a result of 4 in less than 500 ms.
             - The response is logged.
-

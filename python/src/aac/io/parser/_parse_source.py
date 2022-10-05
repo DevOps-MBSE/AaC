@@ -11,7 +11,7 @@ from yaml.parser import ParserError as YAMLParserError
 import logging
 import yaml
 
-from aac.io.constants import YAML_DOCUMENT_SEPARATOR, DEFAULT_SOURCE_URI
+from aac.io.constants import DEFAULT_SOURCE_URI
 from aac.io.files.aac_file import AaCFile
 from aac.io.parser._parser_error import ParserError
 from aac.io.paths import sanitize_filesystem_path
@@ -216,13 +216,7 @@ def _get_files_to_process(arch_file_path: str) -> list[str]:
     for root in roots_with_imports:
         for imp in root["import"]:
             arch_file_dir = path.dirname(path.realpath(arch_file_path))
-            parse_path = path.join(arch_file_dir, imp.removeprefix(f".{path.sep}"))
+            parse_path = sanitize_filesystem_path(path.join(arch_file_dir, imp.removeprefix(f".{path.sep}")))
             ret_val.extend(_get_files_to_process(parse_path))
 
     return ret_val
-
-
-def _add_yaml_document_separator(content: str) -> str:
-    """Add the YAML document separator to the content."""
-    content = content.lstrip()
-    return f"{YAML_DOCUMENT_SEPARATOR}\n{content}" if content else content
