@@ -30,7 +30,7 @@ runtime_dependencies = [
     "anyio < 5, >= 3.4.0",
     "sniffio >= 1.1",
     "uvicorn >= 0.17.6",
-    "requests >= 2.27.0"
+    "requests >= 2.27.0",
 ]
 
 development_dependencies = [

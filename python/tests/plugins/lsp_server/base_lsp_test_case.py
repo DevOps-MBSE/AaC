@@ -6,7 +6,13 @@ from unittest.async_case import IsolatedAsyncioTestCase
 from pygls import uris
 from pygls.lsp import methods
 from pygls.lsp.types import ClientCapabilities, InitializeParams
-from pygls.lsp.types.basic_structures import Model, Position, TextDocumentIdentifier, TextDocumentItem, VersionedTextDocumentIdentifier
+from pygls.lsp.types.basic_structures import (
+    Model,
+    Position,
+    TextDocumentIdentifier,
+    TextDocumentItem,
+    VersionedTextDocumentIdentifier,
+)
 from pygls.lsp.types.text_synchronization import TextDocumentSyncKind
 from pygls.lsp.types.workspace import DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams
 from pygls.workspace import Document
@@ -64,7 +70,9 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
         self.assertIsNone(self.documents.get(file_name), f"Virtual document {file_name} already exists")
 
         absolute_file_path = self._get_absolute_file_path(file_name)
-        self.documents[absolute_file_path] = TextDocument(file_path=path.dirname(absolute_file_path), file_name=file_name, content=content)
+        self.documents[absolute_file_path] = TextDocument(
+            file_path=path.dirname(absolute_file_path), file_name=file_name, content=content
+        )
         document = self.documents.get(absolute_file_path)
 
         uri = self.to_uri(absolute_file_path)
@@ -72,7 +80,7 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
             methods.TEXT_DOCUMENT_DID_OPEN,
             DidOpenTextDocumentParams(
                 text_document=TextDocumentItem(uri=uri, language_id="aac", version=document.version, text=content)
-            )
+            ),
         )
 
         return document
@@ -87,12 +95,12 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
         absolute_file_path = self._get_absolute_file_path(file_name)
         self.assertIsNotNone(
             self.documents.get(absolute_file_path),
-            f"Could not close virtual document because there is no document named {absolute_file_path}."
+            f"Could not close virtual document because there is no document named {absolute_file_path}.",
         )
 
         await self.client.send_notification(
             methods.TEXT_DOCUMENT_DID_CLOSE,
-            DidCloseTextDocumentParams(text_document=TextDocumentIdentifier(uri=self.to_uri(absolute_file_path)))
+            DidCloseTextDocumentParams(text_document=TextDocumentIdentifier(uri=self.to_uri(absolute_file_path))),
         )
 
     async def write_document(self, file_name: str, content: str) -> None:
@@ -106,8 +114,7 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
         absolute_file_path = self._get_absolute_file_path(file_name)
         document = self.documents.get(absolute_file_path)
         self.assertIsNotNone(
-            document,
-            f"Could not write content to virtual document because there is no document named {absolute_file_path}."
+            document, f"Could not write content to virtual document because there is no document named {absolute_file_path}."
         )
 
         document.version += 1
@@ -116,8 +123,8 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
             methods.TEXT_DOCUMENT_DID_CHANGE,
             DidChangeTextDocumentParams(
                 text_document=VersionedTextDocumentIdentifier(uri=self.to_uri(absolute_file_path), version=document.version),
-                content_changes=[{"text": content}]
-            )
+                content_changes=[{"text": content}],
+            ),
         )
 
     def read_document(self, file_name: str) -> str:
@@ -133,7 +140,7 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
         absolute_file_path = self._get_absolute_file_path(file_name)
         self.assertIsNotNone(
             self.documents.get(absolute_file_path),
-            f"Could not read content from virtual document because there is no document named {absolute_file_path}."
+            f"Could not read content from virtual document because there is no document named {absolute_file_path}.",
         )
         return self.documents.get(absolute_file_path).read()
 
@@ -142,7 +149,7 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
         absolute_file_path = self._get_absolute_file_path(file_name)
         self.assertIsNotNone(
             self.documents.get(absolute_file_path),
-            f"Could not get virtual document URI because there is no document named {absolute_file_path}."
+            f"Could not get virtual document URI because there is no document named {absolute_file_path}.",
         )
         return uris.from_fs_path(absolute_file_path)
 
@@ -151,13 +158,20 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
         absolute_file_path = self._get_absolute_file_path(file_name)
         self.assertIsNotNone(
             self.documents.get(absolute_file_path),
-            f"Could not convert virtual document because there is no document named {absolute_file_path}."
+            f"Could not convert virtual document because there is no document named {absolute_file_path}.",
         )
         document = self.documents.get(absolute_file_path)
-        return Document(absolute_file_path, source=document.content, version=document.version, sync_kind=TextDocumentSyncKind.FULL)
+        return Document(
+            absolute_file_path, source=document.content, version=document.version, sync_kind=TextDocumentSyncKind.FULL
+        )
 
     def build_text_document_position_params(self, file_name: str, line: int = 0, character: int = 0) -> dict:
-        """Return a dictionary that can be used as TextDocumentPositionParams in an LSP request."""
+        """
+        Return a dictionary that can be used as TextDocumentPositionParams in an LSP request.
+
+        Returns:
+            A dictionary with the `text_document` and `position` attributes.
+        """
         absolute_file_path = self._get_absolute_file_path(file_name)
         return {
             "text_document": TextDocumentIdentifier(uri=self.to_uri(absolute_file_path)),
@@ -168,7 +182,7 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
         absolute_file_path = self._get_absolute_file_path(file_name)
         self.assertIsNotNone(
             self.documents.get(absolute_file_path),
-            f"Could not execute {method} in virtual document because there is no document named {absolute_file_path}."
+            f"Could not execute {method} in virtual document because there is no document named {absolute_file_path}.",
         )
         response = await self.client.send_request(method, params)
         return response_type(response.result())

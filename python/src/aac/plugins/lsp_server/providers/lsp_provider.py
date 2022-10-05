@@ -10,6 +10,6 @@ class LspProvider:
     """A base class used to handle specific LSP requests."""
 
     @abstractmethod
-    def handle_request(self, ls: LanguageServer, params: Model):
+    def handle_request(self, language_server: LanguageServer, params: Model):
         """Handle the specific request."""
         raise NotImplementedError("All LspProviders must implement the handle_request method.")

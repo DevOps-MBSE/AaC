@@ -34,30 +34,32 @@ class CodeCompletionProvider(LspProvider):
         """Return a list of the currently registered trigger characters."""
         return list(self.completion_callbacks.keys())
 
-    def handle_request(self, ls: LanguageServer, params: CompletionParams):
+    def handle_request(self, language_server: LanguageServer, params: CompletionParams):
         """Resolve the trigger to the corresponding code completion function, then execute it."""
         trigger_character = params.context.trigger_character
 
         if not trigger_character:
-            source_document_content = _get_code_completion_parent_text_file(ls, params).split(os.linesep)
+            source_document_content = _get_code_completion_parent_text_file(language_server, params).split(os.linesep)
             trigger_character = source_document_content[params.position.line][params.position.character - 1]
 
         callback_function = self.completion_callbacks.get(trigger_character)
         if callback_function:
-            return callback_function(ls, params)
+            return callback_function(language_server, params)
         else:
-            logging.debug(f"Failed to find corresponding code completion function for the registered trigger: {trigger_character} in registered callbacks: {self.completion_callbacks}")
+            logging.debug(
+                f"Failed to find corresponding code completion function for the registered trigger: {trigger_character} in registered callbacks: {self.completion_callbacks}"
+            )
 
 
-def _handle_space_code_completion(ls: LanguageServer, params: CompletionParams):
-    source_document_content = _get_code_completion_parent_text_file(ls, params).split(os.linesep)
+def _handle_space_code_completion(language_server: LanguageServer, params: CompletionParams):
+    source_document_content = _get_code_completion_parent_text_file(language_server, params).split(os.linesep)
     position_line = source_document_content[params.position.line]
 
     if position_line.strip().startswith("type:"):
-        return _get_reference_completion_items(ls, params)
+        return _get_reference_completion_items(language_server, params)
 
 
-def _get_reference_completion_items(ls: LanguageServer, params: CompletionParams):
+def _get_reference_completion_items(language_server: LanguageServer, params: CompletionParams):
     active_context = get_active_context()
     primitives_definition = active_context.get_primitives_definition()
 
@@ -65,27 +67,27 @@ def _get_reference_completion_items(ls: LanguageServer, params: CompletionParams
     if primitives_definition:
         primitive_references = {field: "Primitive type" for field in active_context.get_primitive_types()}
 
-    schema_definition_references = _convert_definitions_to_name_description_dict(active_context.get_definitions_by_root_key("schema"))
+    schema_definition_references = _convert_definitions_to_name_description_dict(
+        active_context.get_definitions_by_root_key("schema")
+    )
 
-    file_definitions = parse(_get_code_completion_parent_text_file(ls, params))
-    file_schema_references = _convert_definitions_to_name_description_dict(get_definitions_by_root_key("schema", file_definitions))
+    file_definitions = parse(_get_code_completion_parent_text_file(language_server, params))
+    file_schema_references = _convert_definitions_to_name_description_dict(
+        get_definitions_by_root_key("schema", file_definitions)
+    )
     available_references = primitive_references | schema_definition_references | file_schema_references
 
     return CompletionList(
         is_incomplete=False,
         items=[
-            CompletionItem(
-                label=name,
-                kind=CompletionItemKind.Reference,
-                documentation=description
-            )
+            CompletionItem(label=name, kind=CompletionItemKind.Reference, documentation=description)
             for name, description in available_references.items()
         ],
     )
 
 
-def _get_code_completion_parent_text_file(ls: LanguageServer, params: CompletionParams):
-    return ls.workspace.documents.get(params.text_document.uri).source
+def _get_code_completion_parent_text_file(language_server: LanguageServer, params: CompletionParams):
+    return language_server.workspace.documents.get(params.text_document.uri).source
 
 
 def _convert_definitions_to_name_description_dict(definitions: list[Definition]) -> dict:

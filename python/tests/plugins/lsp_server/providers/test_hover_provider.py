@@ -1,7 +1,7 @@
 from unittest.async_case import IsolatedAsyncioTestCase
 
 from pygls.lsp import methods
-from pygls.lsp.types.language_features.hover import HoverParams
+from pygls.lsp.types import HoverParams
 
 from tests.helpers.lsp.responses.hover_response import HoverResponse
 from tests.plugins.lsp_server.base_lsp_test_case import BaseLspTestCase

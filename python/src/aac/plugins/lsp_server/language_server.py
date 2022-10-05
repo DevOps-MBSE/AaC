@@ -1,15 +1,16 @@
 """The Architecture-as-Code Language Server."""
 
-import os
 import difflib
 import logging
+from os import linesep
 from typing import Optional
-from pygls.lsp.types.language_features.definition import DefinitionParams
 from pygls.protocol import LanguageServerProtocol
 from pygls.server import LanguageServer
 from pygls.lsp import (
     CompletionOptions,
     CompletionParams,
+    DefinitionParams,
+    RenameParams,
     HoverParams,
     ReferenceParams,
     TextDocumentSyncKind,
@@ -29,6 +30,8 @@ from aac.plugins.lsp_server.providers.lsp_provider import LspProvider
 from aac.plugins.lsp_server.providers.code_completion_provider import CodeCompletionProvider
 from aac.plugins.lsp_server.providers.goto_definition_provider import GotoDefinitionProvider
 from aac.plugins.lsp_server.providers.hover_provider import HoverProvider
+from aac.plugins.lsp_server.providers.rename_provider import RenameProvider
+from aac.plugins.lsp_server.providers.prepare_rename_provider import PrepareRenameProvider
 
 
 class AacLanguageServer(LanguageServer):
@@ -74,6 +77,8 @@ class AacLanguageServer(LanguageServer):
         self.providers[methods.DEFINITION] = self.providers.get(methods.DEFINITION, GotoDefinitionProvider())
         self.providers[methods.REFERENCES] = self.providers.get(methods.REFERENCES, FindReferencesProvider())
         self.providers[methods.HOVER] = self.providers.get(methods.HOVER, HoverProvider())
+        self.providers[methods.RENAME] = self.providers.get(methods.RENAME, RenameProvider())
+        self.providers[methods.PREPARE_RENAME] = self.providers.get(methods.PREPARE_RENAME, PrepareRenameProvider())
 
     def setup_features(self) -> None:
         """Configure the server with the supported features."""
@@ -89,6 +94,8 @@ class AacLanguageServer(LanguageServer):
         self.feature(methods.HOVER)(handle_hover)
         self.feature(methods.DEFINITION)(handle_goto_definition)
         self.feature(methods.REFERENCES)(handle_references)
+        self.feature(methods.RENAME)(handle_rename)
+        self.feature(methods.PREPARE_RENAME)(handle_prepare_rename)
 
 
 async def did_open(ls: AacLanguageServer, params: DidOpenTextDocumentParams):
@@ -118,25 +125,28 @@ async def did_close(ls: AacLanguageServer, params: DidCloseTextDocumentParams):
 
 async def did_change(ls: AacLanguageServer, params: DidChangeTextDocumentParams):
     """Text document did change notification."""
-    document_uri = params.text_document.uri
-    logging.info(f"Text document altered by LSP client {document_uri}.")
+    document_path = params.text_document.uri.removeprefix("file://")
+    logging.info(f"Text document altered by LSP client {document_path}.")
 
     file_content = params.content_changes[0].text
-    incoming_definitions = parse(file_content)
+    incoming_definitions_dict = {definition.name: definition for definition in parse(file_content, document_path)}
     new_definitions = []
     altered_definitions = []
 
-    for incoming_definition in incoming_definitions:
+    old_definitions = ls.language_context.get_definitions_by_file_uri(document_path)
+    old_definitions_to_update_dict = {definition.name: definition for definition in old_definitions if definition.name in incoming_definitions_dict}
+    old_definitions_to_delete = [definition for definition in old_definitions if definition.name not in incoming_definitions_dict]
+
+    for incoming_definition_name, incoming_definition in incoming_definitions_dict.items():
         sanitized_definition = strip_undefined_fields_from_definition(incoming_definition, ls.language_context)
-        # At the moment we have to rely on definition names, but we'll need to update definitions based on file URI
-        old_definition = ls.language_context.get_definition_by_name(sanitized_definition.name)
+        old_definition = old_definitions_to_update_dict.get(incoming_definition_name)
 
         if old_definition:
             altered_definitions.append(sanitized_definition)
 
-            old_definition_lines = old_definition.to_yaml().split(os.linesep)
-            altered_definition_lines = incoming_definition.to_yaml().split(os.linesep)
-            changes = "\n".join(list(difflib.ndiff(old_definition_lines, altered_definition_lines))).strip()
+            old_definition_lines = old_definition.to_yaml().split(linesep)
+            altered_definition_lines = incoming_definition.to_yaml().split(linesep)
+            changes = linesep.join(list(difflib.ndiff(old_definition_lines, altered_definition_lines))).strip()
             logging.info(f"Updating definition: {old_definition.name}.\n Differences:\n{changes}")
         else:
             logging.info(f"Adding definition: {sanitized_definition.name}.")
@@ -144,10 +154,11 @@ async def did_change(ls: AacLanguageServer, params: DidChangeTextDocumentParams)
 
     ls.language_context.add_definitions_to_context(new_definitions)
     ls.language_context.update_definitions_in_context(altered_definitions)
+    ls.language_context.remove_definitions_from_context(old_definitions_to_delete)
 
 
 async def handle_completion(ls: AacLanguageServer, params: CompletionParams):
-    """Handle a completion request."""
+    """Handle the completion request."""
     code_completion_provider = ls.providers.get(methods.COMPLETION)
     completion_results = code_completion_provider.handle_request(ls, params)
     logging.debug(f"Completion results: {completion_results}")
@@ -155,7 +166,7 @@ async def handle_completion(ls: AacLanguageServer, params: CompletionParams):
 
 
 async def handle_hover(ls: AacLanguageServer, params: HoverParams):
-    """Handle a hover request."""
+    """Handle the hover request."""
     hover_provider = ls.providers.get(methods.HOVER)
     hover_results = hover_provider.handle_request(ls, params)
     logging.debug(f"Hover results: {hover_results}")
@@ -163,7 +174,7 @@ async def handle_hover(ls: AacLanguageServer, params: HoverParams):
 
 
 async def handle_goto_definition(ls: AacLanguageServer, params: DefinitionParams):
-    """Handle a goto definition request."""
+    """Handle the goto definition request."""
     goto_definition_provider = ls.providers.get(methods.DEFINITION)
     goto_definition_results = goto_definition_provider.handle_request(ls, params)
     logging.debug(f"Goto Definition results: {goto_definition_results}")
@@ -171,8 +182,24 @@ async def handle_goto_definition(ls: AacLanguageServer, params: DefinitionParams
 
 
 async def handle_references(ls: AacLanguageServer, params: ReferenceParams):
-    """Handle a goto definition request."""
+    """Handle the find references request."""
     find_references_provider = ls.providers.get(methods.REFERENCES)
     find_references_results = find_references_provider.handle_request(ls, params)
     logging.debug(f"Find references results: {find_references_results}")
     return find_references_results
+
+
+async def handle_rename(ls: AacLanguageServer, params: RenameParams):
+    """Handle the rename definition request."""
+    rename_provider = ls.providers.get(methods.RENAME)
+    rename_results = rename_provider.handle_request(ls, params)
+    logging.debug(f"Rename results: {rename_results}")
+    return rename_results
+
+
+async def handle_prepare_rename(ls: AacLanguageServer, params: RenameParams):
+    """Handle the prepare rename definition request."""
+    prepare_rename_provider = ls.providers.get(methods.PREPARE_RENAME)
+    prepare_rename_results = prepare_rename_provider.handle_request(ls, params)
+    logging.debug(f"Prepare rename results: {prepare_rename_results}")
+    return prepare_rename_results
