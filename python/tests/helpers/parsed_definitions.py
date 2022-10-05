@@ -12,6 +12,7 @@ ARGUMENTS_STRING = "arguments"
 BEHAVIOR_CAPITALIZED_STRING = "Behavior"
 BEHAVIOR_STRING = "behavior"
 COMPONENTS_STRING = "components"
+INHERITS_STRING = "inherits"
 DESCRIPTION_STRING = "description"
 FIELDS_STRING = "fields"
 GIVEN_STRING = "given"
@@ -127,14 +128,21 @@ def create_enum_definition(name: str, values: list[str]):
     return _create_parsed_definition("enum", definition_dict)
 
 
-def create_schema_definition(name: str, description: str = "", fields: list[dict] = [], validations: list[dict] = []):
+def create_schema_definition(name: str, description: str = "", fields: list[dict] = [], validations: list[dict] = [], inherits: list[str] = []):
     """Return a simulated schema definition."""
-    definition_dict = {
-        NAME_STRING: name,
-        DESCRIPTION_STRING: description,
-        FIELDS_STRING: fields,
-        VALIDATION_STRING: validations,
-    }
+    definition_dict = {NAME_STRING: name}
+
+    if inherits:
+        definition_dict[INHERITS_STRING] = inherits
+
+    if description:
+        definition_dict[DESCRIPTION_STRING] = description
+
+    # Placing this here to preserve an expected order
+    definition_dict[FIELDS_STRING] = fields
+
+    if validations:
+        definition_dict[VALIDATION_STRING] = validations
 
     return _create_parsed_definition("schema", definition_dict)
 

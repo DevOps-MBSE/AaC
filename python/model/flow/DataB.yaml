@@ -1,5 +1,9 @@
+import:
+  - ./DataMessage.yaml
 schema:
   name: DataB
+  inherits:
+    - DataMessage
   fields:
-  - name: msg
+  - name: transformed_request
     type: string

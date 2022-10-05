@@ -13,14 +13,11 @@ except Exception as exception:
 
 runtime_dependencies = [
     "attrs >= 21.2",
-    "coverage >= 6.0",
-    "jsonschema >= 4.0",
     "pyrsistent >= 0.18",
     "PyYAML >= 5.4",
     "six >= 1.16",
     "click >= 8.0",
     "pathspec >= 0.9",
-    "platformdirs >= 2.4",
     "regex >= 2021.9",
     "typing-extensions >= 3.10",
     "pluggy >= 1.0",
@@ -40,6 +37,8 @@ development_dependencies = [
     "wheel == 0.37.0",
     "tomli < 2.0.0",
     "black == 22.3.0",
+    "platformdirs >= 2.4",
+    "coverage >= 6.0",
     "mccabe == 0.6.1",
     "mypy-extensions == 0.4.3",
     "pycodestyle >= 2.8.0",
@@ -58,6 +57,7 @@ development_dependencies = [
     "Pygments >= 2.5.1",
     "mypy >= 0.961",
     "types-PyYAML >= 6.0.9",
+    "requests >= 2.27.0",
 ]
 
 test_dependencies = [

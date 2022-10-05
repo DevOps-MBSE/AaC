@@ -1,5 +1,9 @@
+import:
+  - ./DataMessage.yaml
 schema:
   name: DataC
+  inherits:
+    - DataMessage
   fields:
-  - name: msg
+  - name: internal_state_change
     type: string
