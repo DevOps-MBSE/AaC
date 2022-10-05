@@ -60,7 +60,7 @@ jobs:
           echo y | aac gen-plugin gen_plugin_generation_test/test_file.yaml
           cd gen_plugin_generation_test
           pip install .
-          aac -h | grep 'test-file' && echo 'Third-Party Plugin Created successfully'
+          aac -h | grep "test-file" && echo 'Third-Party Plugin Created successfully'
 
       - name: Upload logs from failed runs
         if: ${{ failure() }}
