@@ -3,6 +3,7 @@ from os import linesep
 from aac.cli.builtin_commands.validate.validate_impl import validate
 from aac.io.constants import YAML_DOCUMENT_SEPARATOR
 from aac.lang.active_context_lifecycle_manager import get_active_context
+from aac.lang.constants import DEFINITION_FIELD_NAME, PRIMITIVE_TYPE_STRING
 
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.assertion import assert_plugin_failure, assert_plugin_success, assert_validation_failure
@@ -30,8 +31,7 @@ class TestValidateCommand(ActiveContextTestCase):
 
     def test_validate_command_specify_definition_name_succeeds_with_valid_definition(self):
         valid_model = create_model_definition("Valid Model", "A valid model.")
-        # TO/DO come back and replace this with test constant definitions
-        valid_schema = create_schema_definition("Test Schema", fields=[create_field_entry("name", "str")])
+        valid_schema = create_schema_definition("Test Schema", fields=[create_field_entry(DEFINITION_FIELD_NAME, PRIMITIVE_TYPE_STRING)])
 
         TEST_CONTENT = f"{YAML_DOCUMENT_SEPARATOR}{linesep}".join([valid_model.to_yaml(), valid_schema.to_yaml()])
         with temporary_test_file(TEST_CONTENT) as valid_model_file:
@@ -49,8 +49,7 @@ class TestValidateCommand(ActiveContextTestCase):
 
     def test_validate_command_specify_definition_name_fails_with_missing_definition(self):
         valid_model = create_model_definition("Valid Model", "A valid model.")
-        # TO/DO come back and replace this with test constant definitions
-        valid_schema = create_schema_definition("Test Schema", fields=[create_field_entry("name", "str")])
+        valid_schema = create_schema_definition("Test Schema", fields=[create_field_entry(DEFINITION_FIELD_NAME, PRIMITIVE_TYPE_STRING)])
 
         TEST_CONTENT = f"{YAML_DOCUMENT_SEPARATOR}{linesep}".join([valid_model.to_yaml(), valid_schema.to_yaml()])
         with temporary_test_file(TEST_CONTENT) as valid_model_file:
