@@ -1,6 +1,6 @@
-import { ExtensionContext, window, commands, workspace } from "vscode";
+import { ExtensionContext, commands, workspace } from "vscode";
 import { AacLanguageServerClient } from "./AacLanguageServer";
-import { executeAacCommand, getAaCVersion } from "./aacExecutableWrapper";
+import { executeAacCommand } from "./aacExecutableWrapper";
 import { getOutputChannel } from "./outputChannel";
 import { setFilePathConfigurationItem } from "./configuration";
 
@@ -11,15 +11,8 @@ const CHANGE_AAC_PATH_SETTING_NAME = "aac.changeAacPath";
 
 export function activate(context: ExtensionContext) {
     registerCommands(context);
+    activatePlugin(context);
     workspace.onDidChangeConfiguration(_ => activatePlugin(context));
-    getAaCVersion().then(installedAaCVersion => {
-        if (installedAaCVersion) {
-            activatePlugin(context);
-        } else {
-            const missingAacMessage = "Please install AaC locally to activate these plugin features.\n 'pip install aac'";
-            window.showErrorMessage(missingAacMessage);
-        }
-    });
 }
 
 function activatePlugin(context: ExtensionContext) {
@@ -27,8 +20,15 @@ function activatePlugin(context: ExtensionContext) {
 }
 
 function registerCommands(context: ExtensionContext) {
-    context.subscriptions.push(commands.registerCommand(EXECUTE_AAC_COMMAND_NAME, executeAacCommand));
-    context.subscriptions.push(commands.registerCommand(CHANGE_AAC_PATH_SETTING_NAME, () => setFilePathConfigurationItem("aacPath", "Select the AaC executable")));
+    const commandsToRegister = [
+        [EXECUTE_AAC_COMMAND_NAME, executeAacCommand],
+        [CHANGE_AAC_PATH_SETTING_NAME, () => setFilePathConfigurationItem("aacPath", "Select the AaC executable")],
+    ];
+
+    commandsToRegister.map(pair => {
+        const [name, command] = pair;
+        context.subscriptions.push(commands.registerCommand(<string>(name), <(...args: any[]) => any>(command)));
+    });
 }
 
 export function deactivate(): void {

@@ -6,6 +6,7 @@ import { LanguageClient, LanguageClientOptions, ServerOptions, StreamInfo, Trace
 import { getConfigurationItem } from "./configuration";
 import { execShell } from "./shell";
 import { assertTrue, showMessageOnError } from "./helpers";
+import { getAaCVersion } from "./aacExecutableWrapper";
 
 enum LspServerMode {
     io = "IO",
@@ -30,28 +31,22 @@ export class AacLanguageServerClient {
     }
 
     public startLanguageServer(context: ExtensionContext): void {
-        const startServer = () => {
-            this.assertAacToolIsAvailable();
-
-            showMessageOnError(() => this.startLspClient(context), "Failed trying to start the server.");
-            this.onClientReady();
-        };
-
-        if (this.aacLspClient) {
-            this.shutdownServer().then(startServer);
-        } else {
-            startServer();
-        }
+        (this.shutdownServer() ?? new Promise<void>((resolve, _) => resolve())).then(() => {
+            getAaCVersion().then(installedVersion => {
+                if (installedVersion) {
+                    showMessageOnError(() => this.startLspClient(context), "Failed trying to start the server.");
+                    this.onClientReady();
+                } else {
+                    window.showErrorMessage(
+                        "Please install AaC locally to activate these plugin features.\n 'pip install aac'"
+                    );
+                }
+            });
+        });
     }
 
     public shutdownServer(): Promise<void> {
         return this.aacLspClient?.stop();
-    }
-
-    private async assertAacToolIsAvailable(): Promise<void> {
-        const aacPath = this.getConfigurationItemFile("aacPath");
-        const resolve = await execShell(`${aacPath} -h`);
-        assertTrue(!resolve.stderr, `Could not get the installed AaC version.\n${resolve.stderr}`);
     }
 
     private onClientReady(): any {
