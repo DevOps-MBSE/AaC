@@ -29,7 +29,7 @@ To install the AaC VSCode Extension, open the Extensions panel and enter
 by clicking the "Install" button.
 
 ![Install the AaC Extension](/assets/images/vscode_extension/install-aac-extension.png)
-
+The AaC VSCode Extension can be found in the [VSCode Marketplace](https://marketplace.visualstudio.com/items?itemName=Arch-as-Code.aac) and the [OpenVSX registry](https://open-vsx.org/extension/Arch-as-Code/aac).
 ## Extension Settings
 
 There are a few settings available to users of the AaC VSCode extension to
