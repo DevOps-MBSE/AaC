@@ -96,7 +96,8 @@ class LanguageContext:
             definitions: The list of Definitions to add to the context.
         """
 
-        def dirty_dependency_sort_for_definitions_with_inheritance(definitions: list[Definition]) -> list[Definition]:
+        def simple_dependency_sort_for_definitions_with_inheritance(definitions: list[Definition]) -> list[Definition]:
+            """This is a simple attempt to resolve dependencies between definitions with inheritance. This is a temporary inadequacy."""
             sorted_definitions: dict[str, Definition] = OrderedDict()
 
             for definition in definitions:
@@ -115,7 +116,7 @@ class LanguageContext:
 
         schema_definitions = get_definitions_by_root_key(ROOT_KEY_SCHEMA, definitions)
         child_definitions = [definition for definition in schema_definitions if definition.get_inherits() is not None]
-        sorted_child_definitions = dirty_dependency_sort_for_definitions_with_inheritance(child_definitions)
+        sorted_child_definitions = simple_dependency_sort_for_definitions_with_inheritance(child_definitions)
         child_definition_names = [definition.name for definition in child_definitions]
         secondary_definitions = child_definition_names + extension_definition_names
 
