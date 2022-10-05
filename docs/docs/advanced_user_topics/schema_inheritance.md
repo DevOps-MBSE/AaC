@@ -61,5 +61,3 @@ schema:
 ## Inheriting from Multiple Definitions
 AaC supports modeling multiple inheritance. There is no functional difference between inheriting from one or multiple definitions other than there will be multiple sources that contribute transitive attributes.
 
-
-
