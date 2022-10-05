@@ -58,6 +58,7 @@ jobs:
           mkdir gen_plugin_generation_test
           cp  model/test_file/test_file.yaml gen_plugin_generation_test
           echo y | aac gen-plugin gen_plugin_generation_test/test_file.yaml
+          cd gen_plugin_generation_test
           pip install .
           aac -h | grep 'test-file' && echo 'Third-Party Plugin Created successfully'
 
