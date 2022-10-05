@@ -29,7 +29,6 @@ class TestDefinitionInheritance(TestCase):
         self.assertIn(TEST_SCHEMA_PARENT_1_NAME, actual_results)
         self.assertIn("fields", actual_results.get(TEST_SCHEMA_PARENT_1_NAME))
         self.assertIn("validation", actual_results.get(TEST_SCHEMA_PARENT_1_NAME))
-        self.assertIn("fields", actual_results.get(TEST_SCHEMA_PARENT_1_NAME))
 
         self.assertIn(TEST_SCHEMA_PARENT_2_NAME, actual_results)
 

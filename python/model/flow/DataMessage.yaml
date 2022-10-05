@@ -1,5 +1,6 @@
 schema:
   name: DataMessage
+  description: Provides metadata for flow system messages.
   fields:
     - name: source
       type: string
