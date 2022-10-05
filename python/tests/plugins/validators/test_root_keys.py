@@ -6,7 +6,7 @@ from aac.plugins.validators import ValidatorPlugin
 from aac.plugins.validators.root_keys import _get_plugin_definitions, _get_plugin_validations, validate_root_keys
 
 from tests.active_context_test_case import ActiveContextTestCase
-from tests.helpers.assertion import assert_validator_result_success, assert_validator_result_failure
+from tests.helpers.assertion import assert_definitions_equal, assert_validator_result_success, assert_validator_result_failure
 from tests.helpers.parsed_definitions import create_schema_definition, create_schema_ext_definition, create_field_entry
 
 
@@ -26,7 +26,7 @@ class TestRootKeysValidator(ActiveContextTestCase):
             name=validation_definition.name, definition=validation_definition, validation_function=(lambda x: x)
         )
         self.assertEqual(expected_validator_plugin.name, actual_validator_plugins[0].name)
-        self.assertEqual(expected_validator_plugin.definition, actual_validator_plugins[0].definition)
+        assert_definitions_equal(expected_validator_plugin.definition, actual_validator_plugins[0].definition)
 
     def test_validate_root_keys_valid_key(self):
         test_primitive_reference_field = create_field_entry("ValidPrimitiveField", "string")

@@ -104,12 +104,13 @@ def _validate_definition(
     for target_schema_definition in all_applicable_definitions:
         sub_definition_validations = target_schema_definition.get_validations()
 
-        for validation in sub_definition_validations:
-            validation_name = validation.get("name")
-            validator_plugin = list(filter(lambda plugin: plugin.name == validation_name, applicable_validator_plugins))
+        if sub_definition_validations:
+            for validation in sub_definition_validations:
+                validation_name = validation.get("name")
+                validator_plugin = list(filter(lambda plugin: plugin.name == validation_name, applicable_validator_plugins))
 
-            if validator_plugin:
-                validator_results.append(_apply_validator(definition, target_schema_definition, context, validator_plugin[0]))
+                if validator_plugin:
+                    validator_results.append(_apply_validator(definition, target_schema_definition, context, validator_plugin[0]))
 
     return validator_results
 

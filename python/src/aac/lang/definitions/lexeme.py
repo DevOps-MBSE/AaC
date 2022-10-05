@@ -2,10 +2,11 @@
 
 from attr import attrib, attrs, validators
 
+from aac.io.paths import is_same_file
 from aac.lang.definitions.source_location import SourceLocation
 
 
-@attrs
+@attrs(eq=False)
 class Lexeme:
     """A lexical unit for a parsed AaC definition.
 
@@ -18,3 +19,12 @@ class Lexeme:
     location: SourceLocation = attrib(validator=validators.instance_of(SourceLocation))
     source: str = attrib(validator=validators.instance_of(str))
     value: str = attrib(validator=validators.instance_of(str))
+
+    def __eq__(self, __o) -> bool:
+        """Return whether this Lexeme is the same as __o."""
+        return (
+            isinstance(__o, Lexeme)
+            and self.value == __o.value
+            and self.location == __o.location
+            and is_same_file(self.source, __o.source)
+        )
