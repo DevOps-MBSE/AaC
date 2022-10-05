@@ -12,7 +12,7 @@ runtime_dependencies = [
 ]
 
 test_dependencies = [
-    "nose2 >= 0.10.0",
+    "nose2 >= 0.10.0 a
     "coverage >= 6.0",
     "flake8 >= 3.9",
     "flake8-docstrings >= 1.6.0",
@@ -24,6 +24,9 @@ test_dependencies = [
 setup(
     version="0.0.1",
     name="{{plugin.name}}",
+    packages=find_packages(where="{{plugin.name}}", exclude="tests"),
+    package_dir={"": "{{plugin.name}}"},
+    package_data={"": ["*.yaml"]},
     install_requires=runtime_dependencies,
     extras_require={
         "test": test_dependencies
