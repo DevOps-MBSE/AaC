@@ -54,16 +54,13 @@ jobs:
         cp model/plugin/plugin.yaml src/aac/plugins/first_party/first_party.yaml
         echo y | aac gen-plugin src/aac/plugins/first_party/first_party.yaml
         pip install .[all]
-
+    
     - name: Test Gen-Plugin Third-Party Plugin
       run: |
-        mkdir gen_plugin_generation_test
-        cp  model/test_file/test_file.yaml gen_plugin_generation_test
-        echo y | aac gen-plugin gen_plugin_generation_test/test_file.yaml
-        cd gen_plugin_generation_test
-        pip install .
-        cd .. 
-        aac -h | grep "test-file" && echo 'Third-Party Plugin Created successfully'
+        echo y | aac gen-plugin model/plugin/plugin.yaml
+        cd model/plugin/
+        pip install .[all]
+        aac -h
 
     - name: Upload logs from failed runs
       if: ${{ failure() }}
