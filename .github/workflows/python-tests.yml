@@ -57,9 +57,10 @@ jobs:
     
     - name: Test Gen-Plugin Third-Party Plugin
       run: |
-        echo y | aac gen-plugin model/test_plugin/test_plugin.yaml
-        cd model/test_plugin/
-        pip install .
+        echo y | aac gen-plugin model/plugin/plugin.yaml
+        cd model/plugin/
+        pip install .:w
+        
         aac -h | grep "test-plugin-command" && echo 'Succefully installed Third-Party plugin!'
       
     - name: Upload logs from failed runs
