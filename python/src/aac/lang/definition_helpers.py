@@ -5,7 +5,6 @@ from typing import Optional
 
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.type import remove_list_type_indicator
-from aac.lang.definitions.search import search_definition
 
 
 def get_models_by_type(models: dict[str, dict], root_name: str) -> dict[str, dict]:
@@ -86,29 +85,6 @@ def convert_parsed_definitions_to_dict_definition(definitions: list[Definition])
 
     """
     return {definition.name: definition.structure for definition in definitions}
-
-
-def get_definition_fields_and_types(
-    parsed_definition: Definition, context_definitions: list[Definition]
-) -> dict[str, Definition]:
-    """Return a list of field names mapped to their definition types."""
-    root_definition = get_definition_by_name("root", context_definitions)
-    root_fields = search_definition(root_definition, ["schema", "fields"])
-    roots_dict = {field.get("name"): field.get("type") for field in root_fields}
-    root_definition_name = roots_dict.get(parsed_definition.get_root_key())
-
-    definition_structure = get_definition_by_name(root_definition_name, context_definitions)
-    defined_fields = search_definition(definition_structure, [definition_structure.get_root_key(), "fields"])
-
-    field_types = {}
-    for field in defined_fields:
-        field_name = field.get("name")
-        field_type = field.get("type")
-
-        type_definition = get_definition_by_name(field_type, context_definitions) or field_type
-        field_types = field_types | {field_name: type_definition}
-
-    return field_types
 
 
 def get_definitions_as_yaml(definitions: list[Definition]) -> str:
