@@ -144,5 +144,5 @@ jobs:
           uses: actions/upload-artifact@v2
           with:
             name: failed_test_log
-            path: ${{ env.pythonLocation }}/**/aac.logg
+            path: ${{ env.pythonLocation }}/**/aac.log
 
