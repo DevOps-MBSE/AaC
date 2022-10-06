@@ -24,7 +24,7 @@ test_dependencies = [
 setup(
     version="0.0.1",
     name="{{plugin.name}}",
-    packages=find_packages(where="{{plugin.implementation_name}}", exclude="tests"),
+    packages=[{{plugin.implementation_name}}],
     package_dir={"{{plugin.implementation_name}}": "src/{{plugin.implementation_name}}"},
     package_data={"": ["*.aac", "*.jinja2", "*.yaml"]},
     install_requires=runtime_dependencies,
