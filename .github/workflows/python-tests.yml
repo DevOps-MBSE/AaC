@@ -46,18 +46,21 @@ jobs:
         find src -name spec.yaml -print0 | xargs -0 -n1 aac validate
         find src -name spec.yaml -print0 | xargs -0 -n1 aac validate --definition_name root
         find src/aac/plugins -name *.yaml -print0 | xargs -0 -n1 aac validate
+    
     - name: Test Gen-Plugin First-Party Plugin
       run: |
         mkdir -p src/aac/plugins/first_party/
         cp model/plugin/plugin.yaml src/aac/plugins/first_party/first_party.yaml
         echo y | aac gen-plugin src/aac/plugins/first_party/first_party.yaml
         pip install .[all]
+    
     - name: Test Gen-Plugin Third-Party Plugin
       run: |
         echo y | aac gen-plugin model/plugin/plugin.yaml
         cd model/plugin/
         pip install .
         aac -h | grep "test-plugin-command"
+    
     - name: Upload logs from failed runs
       if: ${{ failure() }}
       uses: actions/upload-artifact@v2
