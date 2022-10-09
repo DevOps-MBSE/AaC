@@ -29,6 +29,12 @@ def _get_plugin_commands():
             "The path to the AaC file to be validated.",
             data_type="file",
         ),
+        AacCommandArgument(
+            "--definition_name",
+            """The name of one definition to validate. (optional)
+            This argument will cause only the definition provided by the argument to be validated.""",
+            data_type="str",
+        ),
     ]
 
     plugin_commands = [

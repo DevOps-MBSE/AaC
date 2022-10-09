@@ -1,11 +1,12 @@
+import json
+import os
+import asyncio
+
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
 from fastapi.encoders import jsonable_encoder
 from fastapi.testclient import TestClient
 from http import HTTPStatus
-import json
-import os
-import asyncio
 
 from aac.io.constants import YAML_DOCUMENT_EXTENSION, AAC_DOCUMENT_EXTENSION
 from aac.io.parser import parse
@@ -71,13 +72,11 @@ class TestAacRestApiCommandEndpoints(ActiveContextTestCase):
 
     def test_execute_puml_component_command(self):
         command_name = "puml-component"
-        test_model_name = "model"
+        test_model_name = "Model"
         test_model = create_model_definition(test_model_name)
 
-        with (
-            TemporaryDirectory() as temp_directory,
-            temporary_test_file(test_model.to_yaml(), dir=temp_directory) as temp_file,
-        ):
+        with temporary_test_file(test_model.to_yaml()) as temp_file:
+            temp_directory = os.path.dirname(temp_file.name)
             self.assertEqual(len(os.listdir(temp_directory)), 1)
 
             request_arguments = CommandRequestModel(name=command_name, arguments=[temp_file.name, temp_directory])
@@ -92,7 +91,7 @@ class TestAacRestApiCommandEndpoints(ActiveContextTestCase):
             self.assertEqual(len(os.listdir(temp_directory)), 2)
             self.assertIn("component", os.listdir(temp_directory))
             self.assertEqual(len(os.listdir(component_directory)), 1)
-            self.assertIn(f"{os.path.basename(temp_file.name)}_{test_model_name}.puml", os.listdir(component_directory))
+            self.assertIn(f"{os.path.basename(temp_file.name)}_{test_model_name.lower()}.puml", os.listdir(component_directory))
 
     def test_execute_rest_api_command_fails(self):
         command_name = "rest-api"
@@ -351,7 +350,7 @@ class TestAacRestApiDefinitionEndpoints(ActiveContextTestCase):
 
         # Update the test definitions
         test_behavior_name = "TestBehavior"
-        test_model_definition.structure["model"]["behavior"] = create_behavior_entry(test_behavior_name)
+        test_model_definition.structure["model"]["behavior"] = [create_behavior_entry(test_behavior_name)]
 
         response = self.test_client.put(
             "/definition", data=json.dumps(jsonable_encoder(to_definition_model(test_model_definition)))

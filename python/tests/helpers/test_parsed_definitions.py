@@ -32,9 +32,7 @@ class TestArchParsedDefinitions(TestCase):
             [
                 "schema:",
                 f"  name: {definition_name}",
-                "  description: ''",
                 "  fields: []",
-                "  validation: []",
             ]
         )
 

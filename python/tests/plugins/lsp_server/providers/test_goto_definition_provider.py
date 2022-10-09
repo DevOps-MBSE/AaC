@@ -71,7 +71,7 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         location, *_ = self.provider.get_definition_location_at_position(
             {document_uri: self.virtual_document_to_lsp_document(TEST_DOCUMENT_NAME)},
             document_uri,
-            Position(line=29, character=13),
+            Position(line=25, character=13),
         )
 
         self.assertEqual(location.range.start, Position(line=1, character=8))

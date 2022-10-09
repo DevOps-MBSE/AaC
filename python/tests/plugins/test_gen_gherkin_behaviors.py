@@ -1,7 +1,6 @@
 import os
 from importlib import resources
 from tempfile import NamedTemporaryFile, TemporaryDirectory
-from unittest import TestCase
 from nose2.tools import params
 
 from aac.io import parser
@@ -17,10 +16,11 @@ from aac.plugins.gen_gherkin_behaviors.gen_gherkin_behaviors_impl import (
     gen_gherkin_behaviors,
 )
 
+from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.assertion import assert_plugin_success
 
 
-class TestGenerateGherkinBehaviorsPlugin(TestCase):
+class TestGenerateGherkinBehaviorsPlugin(ActiveContextTestCase):
     def test_gen_gherkin_get_commands_conforms_with_plugin_model(self):
         with resources.open_text(gen_gherkin_behaviors_module_name, "gen_gherkin_behaviors.yaml") as plugin_model_file:
             plugin_name = "aac-gen-gherkin-behaviors"
