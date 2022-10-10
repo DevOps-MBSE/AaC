@@ -14,7 +14,7 @@ In order to define inheritance in AaC, a `schema` definition must populate the f
 Schema definitions inherit fields and validation rules from their parent definitions. So, if you were to define a required field in the parent definition, it will also be required in the child definition.
 
 
-In the example below, `InternalMessageA` has declared that it inherits `BaseMessage`. Despite `InternalMessageA` appearing to only have the field `some_data`, it has actually been extend with the fields and validations from `BaseMessage` as it's ingested into the AaC DSL engine.
+In the example below, `InternalMessageA` has declared that it inherits `BaseMessage`. Despite `InternalMessageA` appearing to only have the field `some_data`, it has actually been extended with the fields and validations from `BaseMessage` as it's ingested into the AaC DSL engine.
 ```yaml
 schema:
     name: BaseMessage
