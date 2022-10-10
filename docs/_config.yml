@@ -16,7 +16,7 @@
 title: AaC
 description: Enabling DevOps for Model-Based System Engineering
 baseurl: "/" # the subpath of your site, e.g. /blog
-url: "https://4000-jondavidblack-aac-70of4eyyt7j.ws-us70.gitpod.io" # the base hostname & protocol for your site, e.g. http://example.com
+url: "https://jondavid-black.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 
 permalink: pretty
 exclude: ["node_modules/", "*.gemspec", "*.gem", "Gemfile", "Gemfile.lock", "package.json", "package-lock.json",  "script/", "LICENSE.txt", "lib/", "bin/", "README.md", "Rakefile"
