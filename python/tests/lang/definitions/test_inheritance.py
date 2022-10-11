@@ -45,8 +45,9 @@ class TestDefinitionInheritance(TestCase):
         # Fields are applied when the definition is added to the context
         test_context.add_definitions_to_context([TEST_SCHEMA_PARENT_1, test_child_definition, TEST_SCHEMA_PARENT_2])
 
-        actual_validations = test_child_definition.get_validations()
-        actual_fields = test_child_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS)
+        updated_definition = test_context.get_definition_by_name(test_child_definition.name)
+        actual_validations = updated_definition.get_validations()
+        actual_fields = updated_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS)
 
         self.assertEqual(len(actual_validations), 2)
         field_names = [field.get(DEFINITION_FIELD_NAME) for field in actual_fields]
@@ -76,8 +77,9 @@ class TestDefinitionInheritance(TestCase):
         # Fields are applied when the definition is added to the context
         test_context.add_definitions_to_context([test_child_definition, test_parent_1_definition, test_parent_2_definition])
 
-        actual_validations = test_child_definition.get_validations()
-        actual_fields = test_child_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS)
+        updated_definition = test_context.get_definition_by_name(test_child_definition.name)
+        actual_validations = updated_definition.get_validations()
+        actual_fields = updated_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS)
 
         field_names = [field.get(DEFINITION_FIELD_NAME) for field in actual_fields]
         self.assertIn(TEST_SCHEMA_PARENT_1_FIELD_NAME, field_names)
