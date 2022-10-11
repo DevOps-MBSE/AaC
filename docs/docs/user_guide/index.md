@@ -1,7 +1,7 @@
 ---
 layout: default
-title: AaC User's Guide
-nav_order: 2
+title: User's Guide to AaC
+nav_order: 3
 has_children: true
 permalink: docs/user_guide
 ---
