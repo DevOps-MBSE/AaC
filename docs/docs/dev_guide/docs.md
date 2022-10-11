@@ -9,25 +9,23 @@ nav_order: 2
 AaC documentation consists of two groups of generated documents: these jekyll pages and Sphinx API documentation for the Python API.
 
 ## Jekyll Docs
-Jekyll docs are manually-maintained readme pages. We use these Jekyll docs to document topics such as user-facing documentation and developer-facing documentation (like this page).
+Our Jekyll documentation is a collection of manually-maintained README pages. We use the Jekyll documentation to describe user-facing features and developer-facing features (like this page).
 
 ### Setup
-The Jekyll docs use the Ruby build tool [Bundler](https://bundler.io/). You'll need to have this installed in your local development environment.
+Generating the Jekyll documentation requires the Ruby build tool [Bundler](https://bundler.io/). To modify these pages, you'll need to have this installed in your local development environment.
 
 If you haven't built the Jekyll docs before, you'll need to run `bundle install` inside the top-level repository directory `docs`. Voila! The links work, and you can create a public link to share with others to see.
-### Starting the Preview Server
-
 
 ### Serving Jekyll Pages in Gitpod
-Because Gitpod is a container-based development environment, it present some peculiarities for users who may be trying to server Jekyll files. One of the larger issues is that the Jekyll docs are using localhost or `0.0.0.0` as the base URL while the actual hostname is the Gitpod container's public address.
+Because Gitpod is a container-based development environment, it presents some peculiarities for users who may be trying to serve Jekyll files. One of the larger issues is that the Jekyll docs use `localhost` or `0.0.0.0` as the base URL while the actual hostname is the Gitpod container's public address.
 
-In order to override the localhost or `0.0.0.0` hostname when serving these pages, you'll need to set the environment variable `JEKYLL_ENV` to `production` like so:
+In order to override the `localhost` or `0.0.0.0` hostname when serving these pages, you'll need to set the environment variable `JEKYLL_ENV` to `production` like so:
 
 `export JEKYLL_ENV=production`
 
 Once Jekyll is in production mode, you'll need to override the `url` config value in `_config.yml` to be `https://4000-<gitpod instance URL>` (e.g. `https://4000-jondavidblack-aac-70of4eyyt7j.ws-us70.gitpod.io`)
 
-Then just serve the pages `bundle exec jekyll s`
+Then just serve the pages by running `bundle exec jekyll s` or `bundle exec jekyll serve`.
 
 ## Sphinx API Documentation
 We use the automated documentation generation tool, [Sphinx](https://www.sphinx-doc.org/en/master/), for generating API documentation for the AaC Python package.

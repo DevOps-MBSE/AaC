@@ -8,7 +8,7 @@ parent: Developer's Guide to AaC
 Architecture-as-Code allows users to model data structure inheritance in `schema` definitions, the definition type used to model data structures in AaC. Inheritance modeling is officially supported in AaC [version 0.1.3](https://github.com/jondavid-black/AaC/releases/tag/v0.1.3) and above; users wanting to model data structure inheritance in earlier versions are able to do so with some extra work, see [Modeling Inheritance in 0.1.2 or Earlier Versions](#modeling-inheritance-in-012-or-earlier-versions).
 
 # Modeling Inheritance in Current Versions
-Version 0.1.3 of AaC introduced changes to support inheritance for `schema` definitions. The inheritance mechanism applies transitive attributes from the `fields` and `validation` fields from the parent definition(s). These attributes are applied to child definitions, (sub-class definitions), automatically when ingested into a LanguageContext; this means that developers using AaC version `0.1.3` or above automatically have their inherited definitions' transitive attributes applied -- thus developers do not need to do any sort of lookup or resolving of inherited, transitive attributes.
+Version `0.1.3` of AaC introduced changes to support inheritance for `schema` definitions. The inheritance mechanism applies transitive attributes from the `fields` and `validation` fields from the parent definition(s). These attributes are applied to child definitions (sub-class definitions) automatically when ingested into a `LanguageContext`; this means that developers using AaC version `0.1.3` or above automatically have their inherited definitions' transitive attributes applied -- thus developers do not need to do any sort of lookup or resolving of inherited, transitive attributes.
 
 ## Supporting Structure Changes
 The first change was to add an additional field to the `schema` definition named `inherits` that references other definition names:
@@ -80,10 +80,10 @@ Definition(
             'inherits': ['DataMessage'],
             'name': 'DataA',
             'fields': [
-                {'name': 'request', 'type': 'string'}
-                {'name': 'source', 'type': 'string'}      # <-- Inherited Field
-                {'name': 'destination', 'type': 'string'} # <-- Inherited Field
-                {'name': 'content-length', 'type': 'int'} # <-- Inherited Field
+                {'name': 'request', 'type': 'string'},
+                {'name': 'source', 'type': 'string'},      # <-- Inherited Field
+                {'name': 'destination', 'type': 'string'}, # <-- Inherited Field
+                {'name': 'content-length', 'type': 'int'}, # <-- Inherited Field
             ]
         }
     }
@@ -133,7 +133,7 @@ ext:
 ```
 
 ## Accessing the Inherited Fields
-Because `0.1.2` and earlier versions don't automatically apply inherited fields or validations, you will have to manually look them up. You'll start by getting the list of inherited definition names, look them up in the context, then extract the fields and validations from the parent definitions.
+Because `0.1.2` and earlier versions don't automatically apply inherited fields or validations, you will have to manually look them up. Start by getting the list of inherited definition names, look them up in the context, then extract the fields and validations from the parent definitions.
 
 ```python
 active_context = get_active_context()
