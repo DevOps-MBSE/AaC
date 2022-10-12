@@ -69,7 +69,7 @@ class LanguageContext:
         if definition.get_inherits():
             # This import is located here because the inheritance module uses the language context for lookup, causing a circular dependency at initialization
             from aac.lang.definitions.inheritance import apply_inherited_attributes_to_definition
-            apply_inherited_attributes_to_definition(definition, self)
+            apply_inherited_attributes_to_definition(new_definition, self)
 
         if definition.is_extension():
             target_definition_name = definition.get_type()
@@ -84,7 +84,7 @@ class LanguageContext:
                     f"Duplicate definitions found ({len(definitions_with_target_definition_name)}) with name '{target_definition_name}'."
                 )
             elif target_definition:
-                apply_extension_to_definition(definition, target_definition)
+                apply_extension_to_definition(new_definition, target_definition)
             else:
                 logging.error(f"Extension failed to define target, field 'type' is missing. {definition.structure}")
 
