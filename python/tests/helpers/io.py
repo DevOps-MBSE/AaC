@@ -8,6 +8,8 @@ import os
 from contextlib import contextmanager
 from tempfile import NamedTemporaryFile, TemporaryDirectory
 
+from regex import W
+
 
 def clear_directory(dirspec: str, *file_list: list[str]) -> None:
     """Clear the specified directory of any file contents.
@@ -64,7 +66,7 @@ def temporary_test_file(content: str, **extra_file_attrs):
 
 
 def temporary_test_file_wo_cm(content: str, **extra_file_attrs):
-    """Create a temporary file containing content for testing.
+    """Create a temporary file containing content for testing without the use of a context manager.
 
     Arguments:
         content (str): A string to use as the contents of the file.
@@ -84,13 +86,12 @@ def temporary_test_file_wo_cm(content: str, **extra_file_attrs):
     """
     
     new_directory = extra_file_attrs.get("dir") or TemporaryDirectory()
-    extra_file_attrs |= {"dir": new_directory}
-    with new_working_dir(new_directory):
-        file = NamedTemporaryFile(mode="w", **extra_file_attrs)
-        file.write(content)
-        file.seek(0)
+    extra_file_attrs |= {"dir": new_directory, "delete": False}
+    file = NamedTemporaryFile(mode="w", **extra_file_attrs)
+    file.write(content)
+    file.seek(0)
 
-        return file
+    return file
 
 
 @contextmanager
