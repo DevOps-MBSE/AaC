@@ -69,10 +69,7 @@ class TestGenPlugin(ActiveContextTestCase):
 
             assert_plugin_success(result)
 
-            generated_plugin_files = []
-            for root, dirs, files in os.walk(temp_directory, topdown=False):
-                for file in files:
-                    generated_plugin_files.append(os.path.join(root, file))
+            generated_plugin_files = [os.path.join(root, file) for root, dirs, files in os.walk(temp_directory) for file in files]
             self.assertEqual(len(generated_plugin_files), 7)
             self.assertEqual(len([file for file in generated_plugin_files if os.path.basename(temp_file.name) in file]), 1)
             self.assertGreater(len([file for file in generated_plugin_files if TEST_PLUGIN_NAME in file]), 0)

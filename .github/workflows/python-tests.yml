@@ -46,19 +46,19 @@ jobs:
         find src -name spec.yaml -print0 | xargs -0 -n1 aac validate
         find src -name spec.yaml -print0 | xargs -0 -n1 aac validate --definition_name root
         find src/aac/plugins -name *.yaml -print0 | xargs -0 -n1 aac validate
-    
+
     - name: Test Gen-Plugin First-Party Plugin
       run: |
         mkdir -p src/aac/plugins/first_party/
         cp model/plugin/plugin.yaml src/aac/plugins/first_party/first_party.yaml
         echo y | aac gen-plugin src/aac/plugins/first_party/first_party.yaml
         pip install .[all]
-    
+
     - name: Test Gen-Plugin Third-Party Plugin
       run: |
         echo y | aac gen-plugin model/plugin/plugin.yaml
         cd model/plugin/
-        pip install .
+        pip install .[all]
         aac -h | grep "test-plugin-command"
     
     - name: Upload logs from failed runs
@@ -125,13 +125,13 @@ jobs:
           run: |
             spec_file=$(find $pythonLocation -name spec.yaml | head -n1)
             python -m aac validate $spec_file
-        
+ 
         - name: Validate Core Spec
           if: matrix.os == 'windows-latest'
           run: |
             $spec_file=$(gci -r -fi spec.yaml -Name "$Env:pythonLocation")
             python -m aac validate "$Env:pythonLocation\$spec_file"
-        
+
         - name: Print out Core Spec
           run: python -m aac print-spec
 

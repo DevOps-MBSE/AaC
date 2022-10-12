@@ -172,7 +172,7 @@ def _prepare_and_generate_plugin_files(
         plugin_type, architecture_file_path, plugin_implementation_name
     )
 
-    if (plugin_type == PLUGIN_TYPE_THIRD_STRING):
+    if plugin_type == PLUGIN_TYPE_THIRD_STRING:
         _move_architecture_file_to_plugin_root(architecture_file_path, output_directory, plugin_implementation_name)
 
     generated_templates = _generate_template_files(plugin_type, output_directory, template_output_directories, template_properties)
@@ -358,7 +358,8 @@ def _get_repository_root_directory_from_path(system_path: str) -> str:
 
 
 def _move_architecture_file_to_plugin_root(architecture_file_path: str, output_directory: str, plugin_name: str) -> None:
-
+    """Moves the architecture file to the plugin root directory."""
+    architecture_file_path = path.join(output_directory, architecture_file_path)
     file_name = path.basename(architecture_file_path)
     new_file_path = path.join(output_directory, plugin_name, file_name)
     new_file_dir_path = path.dirname(new_file_path)
