@@ -27,11 +27,26 @@ jobs:
       - name: Install the AaC Package
         run: pip install -e .[all]
 
+      - name: Lint with flake8
+        run: flake8 .
+
       - name: List Transitive Dependencies
         run: pipdeptree
 
-      - name: Lint with flake8
-        run: flake8 .
+      - name: Create Dependencies Package
+        run: |
+          pip wheel ./
+          mv *.whl wheel_dependencies
+          pip-compile --generate-hashes setup.py
+          mv requirements.txt wheel_dependencies
+          cd wheel_dependencies
+          tar -cvf wheel_dependencies.tar.gz .
+
+      - name: Upload Dependencies Package
+        uses: actions/upload-artifact@v2
+        with:
+          name: wheel_dependencies
+          path: wheel_dependencies/
 
       - name: Generate API Documentation
         run: |
