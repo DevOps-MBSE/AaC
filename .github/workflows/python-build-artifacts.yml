@@ -46,7 +46,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: wheel_dependencies
-          path: wheel_dependencies/wheel_dependencies.tar.gz
+          path: python/wheel_dependencies/wheel_dependencies.tar.gz
 
       - name: Generate API Documentation
         run: |
