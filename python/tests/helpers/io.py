@@ -8,8 +8,6 @@ import os
 from contextlib import contextmanager
 from tempfile import NamedTemporaryFile, TemporaryDirectory
 
-from regex import W
-
 
 def clear_directory(dirspec: str, *file_list: list[str]) -> None:
     """Clear the specified directory of any file contents.
