@@ -38,7 +38,7 @@ jobs:
           mkdir wheel_dependencies
           cd wheel_dependencies
           pip wheel ../
-          pip-compile --generate-hashes setup.py
+          pip-compile --generate-hashes ../setup.py
           mv ../requirements.txt .
           tar -cvf wheel_dependencies.tar.gz .
 
