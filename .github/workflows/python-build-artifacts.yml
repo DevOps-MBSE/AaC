@@ -35,18 +35,18 @@ jobs:
 
       - name: Create Dependencies Package
         run: |
-          pip wheel ./
-          mv *.whl wheel_dependencies
-          pip-compile --generate-hashes setup.py
-          mv requirements.txt wheel_dependencies
+          mkdir wheel_dependencies
           cd wheel_dependencies
+          pip wheel ../
+          pip-compile --generate-hashes setup.py
+          mv ../requirements.txt .
           tar -cvf wheel_dependencies.tar.gz .
 
       - name: Upload Dependencies Package
         uses: actions/upload-artifact@v2
         with:
           name: wheel_dependencies
-          path: wheel_dependencies/
+          path: wheel_dependencies/wheel_dependencies.tar.gz
 
       - name: Generate API Documentation
         run: |
