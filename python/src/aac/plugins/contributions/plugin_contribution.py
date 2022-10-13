@@ -2,7 +2,7 @@
 
 from attr import Factory, attrib, attrs, validators
 
-from aac.plugins.contribution_type import ContributionType
+from aac.plugins.contributions.contribution_type import ContributionType
 
 
 @attrs(hash=False)

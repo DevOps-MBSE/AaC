@@ -7,8 +7,8 @@ from attr import Factory, attrib, attrs, validators
 
 from aac.cli.aac_command import AacCommand
 from aac.lang.definitions.definition import Definition
-from aac.plugins.contribution_type import ContributionType
-from aac.plugins.plugin_contribution import PluginContribution
+from aac.plugins.contributions.contribution_type import ContributionType
+from aac.plugins.contributions.plugin_contribution import PluginContribution
 from aac.plugins.validators._validator_plugin import ValidatorPlugin
 
 
@@ -24,6 +24,8 @@ class ContributionPoints:
     """
 
     contributions: set[PluginContribution] = attrib(default=Factory(set), validator=validators.instance_of(set))
+
+    # AaC Command Contribution Point
 
     def register_command(self, plugin_name: str, command: AacCommand) -> None:
         """Register the specified command."""
@@ -49,6 +51,8 @@ class ContributionPoints:
         """Return the command with the specified name."""
         return self._get_items_by_plugin_name(ContributionType.COMMANDS, plugin_name)
 
+    # Validator Contribution Point
+
     def register_validation(self, plugin_name: str, validation: ValidatorPlugin) -> None:
         """Register the specified validation."""
         self.register_validations(plugin_name, [validation])
@@ -73,6 +77,8 @@ class ContributionPoints:
         """Return the validation with the specified name."""
         return self._get_items_by_plugin_name(ContributionType.VALIDATIONS, plugin_name)
 
+    # Definition Contribution Point
+
     def register_definition(self, plugin_name: str, definition: Definition) -> None:
         """Register the specified definition."""
         self.register_definitions(plugin_name, [definition])
@@ -84,6 +90,20 @@ class ContributionPoints:
             return isinstance(definition, Definition)
 
         self._register_contributions(plugin_name, ContributionType.DEFINITIONS, definitions, validate)
+
+    def get_definitions(self) -> list[AacCommand]:
+        """Return the registered Definitions."""
+        return self._get_items(ContributionType.DEFINITIONS)
+
+    def get_definition_by_name(self, name: str) -> Optional[Definition]:
+        """Return the definition with the specified name."""
+        return self._get_item_by_name(ContributionType.DEFINITIONS, name)
+
+    def get_definitions_by_plugin_name(self, plugin_name: str) -> list[Definition]:
+        """Return the definition with the specified name."""
+        return self._get_items_by_plugin_name(ContributionType.DEFINITIONS, plugin_name)
+
+    # Primitive Type Validation Point
 
     def register_primitive_validation(self, plugin_name: str, validation: ValidatorPlugin) -> None:
         """Register the specified primitives validation."""
@@ -97,17 +117,19 @@ class ContributionPoints:
 
         self._register_contributions(plugin_name, ContributionType.PRIMITIVE_VALIDATION, validations, validate)
 
-    def get_definitions(self) -> list[AacCommand]:
-        """Return the registered Definitions."""
-        return self._get_items(ContributionType.DEFINITIONS)
+    def get_primitive_validations(self) -> list[AacCommand]:
+        """Return the primitive validations Definitions."""
+        return self._get_items(ContributionType.PRIMITIVE_VALIDATION)
 
-    def get_definition_by_name(self, name: str) -> Optional[Definition]:
-        """Return the definition with the specified name."""
-        return self._get_item_by_name(ContributionType.DEFINITIONS, name)
+    def get_primitive_validations_by_name(self, name: str) -> Optional[Definition]:
+        """Return the primitive validations with the specified name."""
+        return self._get_item_by_name(ContributionType.PRIMITIVE_VALIDATION, name)
 
-    def get_definitions_by_plugin_name(self, plugin_name: str) -> list[Definition]:
-        """Return the definition with the specified name."""
-        return self._get_items_by_plugin_name(ContributionType.DEFINITIONS, plugin_name)
+    def get_primitive_validations_by_plugin_name(self, plugin_name: str) -> list[Definition]:
+        """Return the primitive validations with the specified name."""
+        return self._get_items_by_plugin_name(ContributionType.PRIMITIVE_VALIDATION, plugin_name)
+
+    # Helper Functions
 
     def _register_contributions(
         self,

@@ -4,7 +4,7 @@ from attr import Factory, attrib, attrs, validators
 
 from aac.cli.aac_command import AacCommand
 from aac.lang.definitions.definition import Definition
-from aac.plugins.contribution_points import ContributionPoints
+from aac.plugins.contributions.contribution_points import ContributionPoints
 from aac.plugins.validators._validator_plugin import ValidatorPlugin
 
 

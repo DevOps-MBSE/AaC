@@ -3,7 +3,7 @@ from unittest.case import TestCase
 
 from aac.cli.aac_command import AacCommand, AacCommandArgument
 from aac.lang.definitions.definition import Definition
-from aac.plugins.contribution_points import InvalidContributionPointError
+from aac.plugins.contributions.contribution_points import InvalidContributionPointError
 from aac.plugins.validators._validator_plugin import ValidatorPlugin
 
 

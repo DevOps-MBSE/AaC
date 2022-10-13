@@ -1,7 +1,7 @@
 from unittest.case import TestCase
 
-from aac.plugins.contribution_type import ContributionType
-from aac.plugins.plugin_contribution import PluginContribution
+from aac.plugins.contributions.contribution_type import ContributionType
+from aac.plugins.contributions.plugin_contribution import PluginContribution
 
 from tests.helpers.parsed_definitions import create_schema_definition, create_validation_definition
 from tests.plugins.test_contribution_points import create_command, create_validation

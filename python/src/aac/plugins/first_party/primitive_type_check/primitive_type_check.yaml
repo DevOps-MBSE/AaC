@@ -1,0 +1,5 @@
+model:
+  name: primitive-type-checking
+  description: |
+    Primitive Type Checking is an Architecture-as-Code plugin that provides
+    primitive type validations for the primitive enum types defined in the core specification.

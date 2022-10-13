@@ -1,6 +1,6 @@
 from unittest.case import TestCase
 
-from aac.plugins.contribution_points import ContributionPoints
+from aac.plugins.contributions.contribution_points import ContributionPoints
 
 from tests.helpers.contribution_points import (
     create_command,
