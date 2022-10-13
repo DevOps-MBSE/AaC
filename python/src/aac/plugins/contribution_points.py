@@ -85,6 +85,18 @@ class ContributionPoints:
 
         self._register_contributions(plugin_name, ContributionType.DEFINITIONS, definitions, validate)
 
+    def register_primitive_validation(self, plugin_name: str, validation: ValidatorPlugin) -> None:
+        """Register the specified primitives validation."""
+        self.register_validations(plugin_name, [validation])
+
+    def register_primitive_validations(self, plugin_name: str, validations: list[ValidatorPlugin]) -> None:
+        """Register the specified primitives validations."""
+
+        def validate(validation: Any) -> bool:
+            return isinstance(validation, ValidatorPlugin)
+
+        self._register_contributions(plugin_name, ContributionType.PRIMITIVE_VALIDATION, validations, validate)
+
     def get_definitions(self) -> list[AacCommand]:
         """Return the registered Definitions."""
         return self._get_items(ContributionType.DEFINITIONS)
