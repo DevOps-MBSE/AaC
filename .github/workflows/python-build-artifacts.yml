@@ -35,18 +35,19 @@ jobs:
 
       - name: Create Dependencies Package
         run: |
-          mkdir wheel_dependencies
-          cd wheel_dependencies
+          mkdir secure_install
+          cd secure_install
           pip wheel ../
           pip-compile --generate-hashes ../setup.py
           mv ../requirements.txt .
-          tar -cvf wheel_dependencies.tar.gz .
+          pip hash aac-*.whl >> requirements.txt
+          tar -cvf secure_install.tar.gz .
 
       - name: Upload Dependencies Package
         uses: actions/upload-artifact@v2
         with:
-          name: wheel_dependencies
-          path: python/wheel_dependencies/wheel_dependencies.tar.gz
+          name: secure_install
+          path: python/secure_install/secure_install.tar.gz
 
       - name: Generate API Documentation
         run: |
