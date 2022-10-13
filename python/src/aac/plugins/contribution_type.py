@@ -9,3 +9,4 @@ class ContributionType(Enum):
     COMMANDS = "commands"
     VALIDATIONS = "validations"
     DEFINITIONS = "definitions"
+    PRIMITIVE_VALIDATION = "primitive_validation"
