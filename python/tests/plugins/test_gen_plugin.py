@@ -124,21 +124,20 @@ class TestGenPlugin(ActiveContextTestCase):
 
     def test_prepare_and_generate_plugin_files(self):
         with TemporaryDirectory() as temp_directory:
-
-            temp_file = temporary_test_file_wo_cm(TEST_PLUGIN_YAML_STRING, dir=temp_directory)
+            temp_file = temporary_test_file_wo_cm(TEST_PLUGIN_YAML_STRING, dir=temp_directory, suffix=".yaml")
 
             with validated_source(temp_file.name) as result:
                 plugin_name = "aac_gen_protobuf"
 
                 generated_templates = _prepare_and_generate_plugin_files(
-                    result.definitions, PLUGIN_TYPE_THIRD_STRING, temp_file.name, ""
+                    result.definitions, PLUGIN_TYPE_THIRD_STRING, temp_file.name, temp_directory
                 )
 
                 generated_template_names = []
                 generated_template_output_directories = []
                 for template in generated_templates.values():
                     generated_template_names.append(template.file_name)
-                    generated_template_output_directories.append(template.output_directory)
+                    generated_template_output_directories.append(os.path.basename(template.output_directory))
 
             # Check that the files don't have "-" in the name
             for name in generated_template_names:
@@ -177,12 +176,7 @@ class TestGenPlugin(ActiveContextTestCase):
 
             generated_plugin_impl_test_file_contents = generated_templates.get(PLUGIN_IMPL_TEST_TEMPLATE_NAME).content
             self.assertIn("TestAacGenProtobuf(TestCase)", generated_plugin_impl_test_file_contents)
-
-            generated_plugin_impl_test_file_output_directory = generated_templates.get(
-                PLUGIN_IMPL_TEST_TEMPLATE_NAME
-            ).output_directory
-            self.assertEqual(generated_plugin_impl_test_file_output_directory, "tests")
-
+ 
             generated_readme_file_contents = generated_templates.get(README_TEMPLATE_NAME).content
             self.assertIn("# aac-gen-protobuf", generated_readme_file_contents)
             self.assertIn("## Command:", generated_readme_file_contents)
@@ -199,7 +193,7 @@ class TestGenPlugin(ActiveContextTestCase):
             self.assertIn("[report]", generated_tox_config_file_contents)
             self.assertIn("code-directories = aac_gen_protobuf", generated_tox_config_file_contents)
             self.assertIn("coverage = aac_gen_protobuf", generated_tox_config_file_contents)
-            self.assertIn("fail_under = 80.00", generated_tox_config_file_contents)
+            self.assertIn("fail_under = 80.00", generated_tox_config_file_contents) 
 
     def test__prepare_and_generate_plugin_files_errors_on_multiple_models(self):
         with validated_source(f"{TEST_PLUGIN_YAML_STRING}\n---\n{SECONDARY_MODEL_YAML_DEFINITION}") as result:
