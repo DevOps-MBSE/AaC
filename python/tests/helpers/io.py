@@ -82,7 +82,6 @@ def temporary_test_file_wo_cm(content: str, **extra_file_attrs):
     Yields:
         The temporary test file containing the specified contents.
     """
-    
     new_directory = extra_file_attrs.get("dir") or TemporaryDirectory()
     extra_file_attrs |= {"dir": new_directory, "delete": False}
     file = NamedTemporaryFile(mode="w", **extra_file_attrs)

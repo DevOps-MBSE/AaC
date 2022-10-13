@@ -193,7 +193,7 @@ class TestGenPlugin(ActiveContextTestCase):
             self.assertIn("[report]", generated_tox_config_file_contents)
             self.assertIn("code-directories = aac_gen_protobuf", generated_tox_config_file_contents)
             self.assertIn("coverage = aac_gen_protobuf", generated_tox_config_file_contents)
-            self.assertIn("fail_under = 80.00", generated_tox_config_file_contents) 
+            self.assertIn("fail_under = 80.00", generated_tox_config_file_contents)
 
     def test__prepare_and_generate_plugin_files_errors_on_multiple_models(self):
         with validated_source(f"{TEST_PLUGIN_YAML_STRING}\n---\n{SECONDARY_MODEL_YAML_DEFINITION}") as result:
