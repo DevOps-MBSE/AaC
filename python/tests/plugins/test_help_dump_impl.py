@@ -4,7 +4,7 @@ from unittest import TestCase
 from collections import OrderedDict
 from aac.cli.aac_command import AacCommand, AacCommandArgument
 from aac.cli.aac_command_encoder import AacCommandEncoder, AacCommandArgumentEncoder
-from aac.plugins.help_dump.help_dump_impl import help_dump
+from aac.plugins.first_party.help_dump.help_dump_impl import help_dump
 from aac.plugins.plugin_manager import get_plugin_commands
 
 from tests.helpers.assertion import assert_plugin_success

@@ -22,7 +22,7 @@ def get_plugin_manager() -> PluginManager:
     plugin_manager.load_setuptools_entrypoints(PLUGIN_PROJECT_NAME)
 
     # register "built-in" plugins
-    first_party_plugins_package = "aac.plugins"
+    first_party_plugins_package = "aac.plugins.first_party"
     first_party_plugins = [
         "gen_json",
         "gen_plugin",

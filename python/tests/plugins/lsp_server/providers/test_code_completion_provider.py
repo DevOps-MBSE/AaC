@@ -4,7 +4,7 @@ from pygls.lsp import methods
 from pygls.lsp.types import CompletionContext, CompletionParams, CompletionTriggerKind
 from aac.lang.definitions.search import search_definition
 
-from aac.plugins.lsp_server.providers.code_completion_provider import SPACE_TRIGGER
+from aac.plugins.first_party.lsp_server.providers.code_completion_provider import SPACE_TRIGGER
 
 from tests.helpers.lsp.responses.completion_response import CompletionResponse
 from tests.plugins.lsp_server.base_lsp_test_case import BaseLspTestCase

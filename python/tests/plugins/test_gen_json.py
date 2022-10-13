@@ -1,11 +1,11 @@
 import os
 
-from aac.plugins.gen_json import (
+from aac.plugins.first_party.gen_json import (
     get_plugin,
     _get_plugin_definitions,
     _get_plugin_commands,
 )
-from aac.plugins.gen_json.gen_json_impl import print_json
+from aac.plugins.first_party.gen_json.gen_json_impl import print_json
 from aac.plugins.plugin_execution import PluginExecutionStatusCode
 
 from tests.active_context_test_case import ActiveContextTestCase

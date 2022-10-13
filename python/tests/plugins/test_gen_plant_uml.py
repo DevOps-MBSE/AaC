@@ -4,7 +4,7 @@ from tempfile import TemporaryDirectory
 from typing import Callable
 
 from aac.io.constants import YAML_DOCUMENT_EXTENSION
-from aac.plugins.gen_plant_uml.gen_plant_uml_impl import (
+from aac.plugins.first_party.gen_plant_uml.gen_plant_uml_impl import (
     COMPONENT_STRING,
     OBJECT_STRING,
     SEQUENCE_STRING,

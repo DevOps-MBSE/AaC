@@ -6,7 +6,7 @@ import os
 
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.plugins.plugin_execution import plugin_result
-from aac.plugins.gen_protobuf.gen_protobuf_impl import (
+from aac.plugins.first_party.gen_protobuf.gen_protobuf_impl import (
     gen_protobuf,
     _convert_message_name_to_file_name,
     _convert_camel_case_to_snake_case,
@@ -60,7 +60,7 @@ class TestGenerateProtobufPlugin(ActiveContextTestCase):
             self.assertIn("data_b.proto", generated_file_names)
             self.assertIn("data_c.proto", generated_file_names)
             self.assertIn("message_metadata_data.proto", generated_file_names)
-            self.assertIn("message_type.proto", generated_file_names) 
+            self.assertIn("message_type.proto", generated_file_names)
 
             # Assert data_a.proto contents
             with open(os.path.join(temp_dir, "data_a.proto")) as data_a_proto_file:
@@ -120,7 +120,7 @@ class TestGenerateProtobufPlugin(ActiveContextTestCase):
                 self.assertIn("TYPE_2", message_type_proto_file_contents)
                 self.assertIn("TYPE_3", message_type_proto_file_contents)
 
-    @patch("aac.plugins.gen_protobuf.gen_protobuf_impl.load_templates")
+    @patch("aac.plugins.first_party.gen_protobuf.gen_protobuf_impl.load_templates")
     def test_gen_protobuf_fails_with_multiple_message_templates(self, load_templates):
         with TemporaryDirectory() as temp_dir, NamedTemporaryFile("w") as arch_file:
             arch_file.write(TEST_ARCH_YAML_STRING)

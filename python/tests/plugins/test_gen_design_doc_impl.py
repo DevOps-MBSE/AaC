@@ -1,7 +1,7 @@
 import os
 from unittest import TestCase
 
-from aac.plugins.gen_design_doc.gen_design_doc_impl import gen_design_doc
+from aac.plugins.first_party.gen_design_doc.gen_design_doc_impl import gen_design_doc
 
 from tests.helpers.assertion import assert_plugin_success
 from tests.helpers.io import temporary_test_file

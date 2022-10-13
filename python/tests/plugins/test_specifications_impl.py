@@ -1,6 +1,6 @@
 from tempfile import NamedTemporaryFile
 
-from aac.plugins.specifications.specifications_impl import spec_validate
+from aac.plugins.first_party.specifications.specifications_impl import spec_validate
 
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.assertion import assert_plugin_failure, assert_plugin_success

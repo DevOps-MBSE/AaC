@@ -2,14 +2,14 @@ import os
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
-from aac.plugins.gen_plugin.gen_plugin_impl import (
+from aac.plugins.first_party.gen_plugin.gen_plugin_impl import (
     _prepare_and_generate_plugin_files,
     _convert_template_name_to_file_name,
     _get_repository_root_directory_from_path,
     generate_plugin,
 )
-from aac.plugins.gen_plugin.GeneratePluginException import GeneratePluginException
-from aac.plugins.gen_plugin.gen_plugin_impl import EXPECTED_FIRST_PARTY_DIRECTORY_PATH, PLUGIN_TYPE_THIRD_STRING
+from aac.plugins.first_party.gen_plugin.GeneratePluginException import GeneratePluginException
+from aac.plugins.first_party.gen_plugin.gen_plugin_impl import EXPECTED_FIRST_PARTY_DIRECTORY_PATH, PLUGIN_TYPE_THIRD_STRING
 from aac.plugins.plugin_execution import PluginExecutionStatusCode
 from aac.validate import validated_source
 
@@ -26,7 +26,7 @@ TOX_CONFIG_TEMPLATE_NAME = "tox.ini.jinja2"
 
 
 class TestGenPlugin(ActiveContextTestCase):
-    @patch("aac.plugins.gen_plugin.gen_plugin_impl._is_user_desired_output_directory")
+    @patch("aac.plugins.first_party.gen_plugin.gen_plugin_impl._is_user_desired_output_directory")
     def test_generate_first_party_plugin(self, is_user_desired_output_dir):
         with TemporaryDirectory() as temp_directory:
 
@@ -57,7 +57,7 @@ class TestGenPlugin(ActiveContextTestCase):
                 self.assertIn(f"{TEST_PLUGIN_NAME}_impl.py", generated_plugin_files)
                 self.assertIn(os.path.basename(plugin_yaml.name), generated_plugin_files)
 
-    @patch("aac.plugins.gen_plugin.gen_plugin_impl._is_user_desired_output_directory")
+    @patch("aac.plugins.first_party.gen_plugin.gen_plugin_impl._is_user_desired_output_directory")
     def test_generate_third_party_plugin(self, is_user_desired_output_dir):
         with TemporaryDirectory() as temp_directory:
 
@@ -74,7 +74,7 @@ class TestGenPlugin(ActiveContextTestCase):
                 self.assertIn(os.path.basename(plugin_yaml.name), generated_plugin_files)
                 self.assertIn(f"{TEST_PLUGIN_NAME}", generated_plugin_files)
 
-    @patch("aac.plugins.gen_plugin.gen_plugin_impl._is_user_desired_output_directory")
+    @patch("aac.plugins.first_party.gen_plugin.gen_plugin_impl._is_user_desired_output_directory")
     def test_generate_plugin_fails_with_multiple_models(self, is_user_desired_output_dir):
         with TemporaryDirectory() as temp_directory:
 
@@ -90,7 +90,7 @@ class TestGenPlugin(ActiveContextTestCase):
                 self.assertEqual(len(temp_directory_files), 1)
                 self.assertIn(os.path.basename(plugin_yaml.name), temp_directory_files)
 
-    @patch("aac.plugins.gen_plugin.gen_plugin_impl._is_user_desired_output_directory")
+    @patch("aac.plugins.first_party.gen_plugin.gen_plugin_impl._is_user_desired_output_directory")
     def test_generate_plugin_returns_op_cancelled_when_confirmation_is_false(self, is_user_desired_output_dir):
         with TemporaryDirectory() as temp_directory:
 

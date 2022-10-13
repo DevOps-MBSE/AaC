@@ -6,7 +6,7 @@ from unittest.async_case import IsolatedAsyncioTestCase
 from re import search
 
 from aac.spec.core import get_aac_spec_as_yaml, _get_aac_spec_file_path
-from aac.plugins.lsp_server.providers.goto_definition_provider import GotoDefinitionProvider
+from aac.plugins.first_party.lsp_server.providers.goto_definition_provider import GotoDefinitionProvider
 from aac.io.constants import YAML_DOCUMENT_SEPARATOR
 
 from tests.helpers.lsp.responses.goto_definition_response import GotoDefinitionResponse

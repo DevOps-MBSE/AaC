@@ -12,10 +12,10 @@ from aac.io.constants import YAML_DOCUMENT_EXTENSION, AAC_DOCUMENT_EXTENSION
 from aac.io.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.plugins.plugin_manager import get_plugin_commands
-from aac.plugins.rest_api.aac_rest_app import app, refresh_available_files_in_workspace
-from aac.plugins.rest_api.models.command_model import CommandRequestModel
-from aac.plugins.rest_api.models.definition_model import to_definition_model
-from aac.plugins.rest_api.models.file_model import FilePathModel, FilePathRenameModel, to_file_model
+from aac.plugins.first_party.rest_api.aac_rest_app import app, refresh_available_files_in_workspace
+from aac.plugins.first_party.rest_api.models.command_model import CommandRequestModel
+from aac.plugins.first_party.rest_api.models.definition_model import to_definition_model
+from aac.plugins.first_party.rest_api.models.file_model import FilePathModel, FilePathRenameModel, to_file_model
 from aac.spec import get_aac_spec
 from aac.spec.core import _get_aac_spec_file_path
 
@@ -123,7 +123,7 @@ class TestAacRestApiFileEndpoints(ActiveContextTestCase):
 
         with TemporaryDirectory() as temp_directory:
 
-            patch_manager = patch("aac.plugins.rest_api.aac_rest_app.WORKSPACE_DIR", temp_directory)
+            patch_manager = patch("aac.plugins.first_party.rest_api.aac_rest_app.WORKSPACE_DIR", temp_directory)
             file1_manager = temporary_test_file(file1_content, dir=temp_directory, suffix=YAML_DOCUMENT_EXTENSION)
             file2_manager = temporary_test_file(file2_content, dir=temp_directory, suffix=AAC_DOCUMENT_EXTENSION)
 
@@ -158,7 +158,7 @@ class TestAacRestApiFileEndpoints(ActiveContextTestCase):
 
         with TemporaryDirectory() as temp_directory:
 
-            patch_manager = patch("aac.plugins.rest_api.aac_rest_app.WORKSPACE_DIR", temp_directory)
+            patch_manager = patch("aac.plugins.first_party.rest_api.aac_rest_app.WORKSPACE_DIR", temp_directory)
             file_manager = temporary_test_file(file_content, dir=temp_directory, suffix=YAML_DOCUMENT_EXTENSION)
             with patch_manager, file_manager as temp_file:
                 file_path_model = FilePathModel(uri=temp_file.name)
@@ -186,7 +186,7 @@ class TestAacRestApiFileEndpoints(ActiveContextTestCase):
             temp_file.writelines(file_content)
             temp_file.close()
 
-            with patch("aac.plugins.rest_api.aac_rest_app.WORKSPACE_DIR", temp_dir):
+            with patch("aac.plugins.first_party.rest_api.aac_rest_app.WORKSPACE_DIR", temp_dir):
                 parsed_definition = parse(temp_file.name)
                 active_context.add_definitions_to_context(parsed_definition)
 
@@ -261,7 +261,7 @@ class TestAacRestApiDefinitionEndpoints(ActiveContextTestCase):
 
         # Establish an existing test user file in the context
         with temporary_test_file(test_enum_definition.to_yaml()) as aac_file:
-            with patch("aac.plugins.rest_api.aac_rest_app.WORKSPACE_DIR", os.path.dirname(aac_file.name)):
+            with patch("aac.plugins.first_party.rest_api.aac_rest_app.WORKSPACE_DIR", os.path.dirname(aac_file.name)):
                 parsed_test_enum_definition = parse(aac_file.name)
                 active_context.add_definitions_to_context(parsed_test_enum_definition)
 
@@ -281,7 +281,7 @@ class TestAacRestApiDefinitionEndpoints(ActiveContextTestCase):
         test_enum_definition = create_enum_definition("SomeEnum", ["v1", "v2"])
 
         with TemporaryDirectory() as temp_directory:
-            with patch("aac.plugins.rest_api.aac_rest_app.WORKSPACE_DIR", temp_directory):
+            with patch("aac.plugins.first_party.rest_api.aac_rest_app.WORKSPACE_DIR", temp_directory):
                 source_file_name = "test_source.aac"
                 source_file = f"{temp_directory}/{source_file_name}"
                 self.assertFalse(os.path.exists(source_file))

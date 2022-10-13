@@ -6,12 +6,12 @@ from nose2.tools import params
 from aac.io import parser
 from aac.lang.definition_helpers import get_definition_by_name, get_definitions_as_yaml
 from aac.lang.definitions.search import search, search_definition
-from aac.plugins.gen_gherkin_behaviors import (
+from aac.plugins.first_party.gen_gherkin_behaviors import (
     _get_plugin_definitions,
     _get_plugin_commands,
     __name__ as gen_gherkin_behaviors_module_name,
 )
-from aac.plugins.gen_gherkin_behaviors.gen_gherkin_behaviors_impl import (
+from aac.plugins.first_party.gen_gherkin_behaviors.gen_gherkin_behaviors_impl import (
     _create_gherkin_feature_file_name,
     gen_gherkin_behaviors,
 )
