@@ -123,3 +123,17 @@ and press "Enter".
 Once complete, you can view all references to see that the new name has been updated:
 
 ![After executing rename](/assets/images/vscode_extension/example-rename-afterwards.png)
+
+## Symantic Highlighting
+
+The LSP implementation provides semantic highlighting to enhance the user
+experience with customized syntax coloring for specific AaC items. Without
+semantic highlighting, all AaC definitions will look the same like standard YAML
+but with semantic highlighting observant users can distinguish various types of
+definitions by their syntax coloring. For example, depending on your chosen
+theme, an enum definition will have one color compared to a schema definition,
+and so on.
+
+
+![TODO: Add image showing no semantic highlighting]()
+![TODO: Add image showing semantic highlighting]()
