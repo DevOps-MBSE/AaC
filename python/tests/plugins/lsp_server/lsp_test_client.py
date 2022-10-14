@@ -7,8 +7,7 @@ from asyncio.tasks import sleep
 from threading import Thread
 from typing import Optional
 
-from pygls.lsp import methods
-from pygls.lsp.types import Model
+from pygls.lsp import methods, Model
 
 from aac.plugins.lsp_server.language_server import AacLanguageServer
 
