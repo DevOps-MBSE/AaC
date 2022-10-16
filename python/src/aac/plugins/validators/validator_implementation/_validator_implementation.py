@@ -47,4 +47,4 @@ def validate_validator_implementations(definition_under_test: Definition, target
     dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)
     list(map(validate_dict, dicts_to_test))
 
-    return ValidatorResult(definition_under_test, findings)
+    return ValidatorResult([definition_under_test], findings)

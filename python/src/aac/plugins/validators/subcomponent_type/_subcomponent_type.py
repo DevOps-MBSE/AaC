@@ -53,4 +53,4 @@ def validate_subcomponent_types(definition_under_test: Definition, target_schema
     dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)
     list(map(validate_model_subcomponents, dicts_to_test))
 
-    return ValidatorResult(definition_under_test, findings)
+    return ValidatorResult([definition_under_test], findings)

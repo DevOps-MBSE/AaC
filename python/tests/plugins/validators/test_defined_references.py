@@ -47,7 +47,7 @@ class TestDefinedReferencesPlugin(ActiveContextTestCase):
         invalid_reference_error_message = ""
         test_findings = ValidatorFindings()
         test_findings.add_error_finding(test_invalid_schema_definition, invalid_reference_error_message, "validate thing", 0, 0, 0, 0)
-        expected_result = ValidatorResult(test_invalid_schema_definition, test_findings)
+        expected_result = ValidatorResult([test_invalid_schema_definition], test_findings)
 
         test_active_context = get_core_spec_context([test_invalid_schema_definition])
         field_definition = test_active_context.get_definition_by_name("Field")
@@ -69,7 +69,7 @@ class TestDefinedReferencesPlugin(ActiveContextTestCase):
         invalid_reference_error_message = ""
         expected_findings = ValidatorFindings()
         expected_findings.add_error_finding(test_invalid_schema_definition, invalid_reference_error_message, "validate thing", 0, 0, 0, 0)
-        expected_result = ValidatorResult(test_invalid_schema_definition, expected_findings)
+        expected_result = ValidatorResult([test_invalid_schema_definition], expected_findings)
 
         test_active_context = get_core_spec_context([test_invalid_schema_definition])
         field_definition = test_active_context.get_definition_by_name("Field")

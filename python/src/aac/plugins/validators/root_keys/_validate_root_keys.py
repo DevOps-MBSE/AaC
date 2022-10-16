@@ -32,4 +32,4 @@ def validate_root_keys(definition_under_test: Definition, target_schema_definiti
         findings.add_error_finding(definition_under_test, undefined_reference_error_message, PLUGIN_NAME, 0, 0, 0, 0)
         logging.debug(undefined_reference_error_message)
 
-    return ValidatorResult(definition_under_test, findings)
+    return ValidatorResult([definition_under_test], findings)

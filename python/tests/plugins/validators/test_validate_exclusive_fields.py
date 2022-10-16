@@ -32,7 +32,7 @@ class TestExclusiveFieldsPlugin(ActiveContextTestCase):
         ext_schema = get_definition_by_name("extension", test_active_context.definitions)
         ext_schema_args = ext_schema.get_validations()[0].get("arguments")
 
-        expected_result = ValidatorResult(test_definition)
+        expected_result = ValidatorResult([test_definition])
 
         actual_result = validate_exclusive_fields(test_definition, ext_schema, test_active_context, *ext_schema_args)
 
@@ -47,7 +47,7 @@ class TestExclusiveFieldsPlugin(ActiveContextTestCase):
         ext_schema = get_definition_by_name("extension", test_active_context.definitions)
         ext_schema_args = ext_schema.get_validations()[0].get("arguments")
 
-        expected_result = ValidatorResult(test_definition)
+        expected_result = ValidatorResult([test_definition])
 
         actual_result = validate_exclusive_fields(test_definition, ext_schema, test_active_context, *ext_schema_args)
 

@@ -15,12 +15,14 @@ class ValidatorResult:
     Represents the result of the validation of one, or more, definitions.
 
     Attributes:
+        definitions (list[Definition]): The list of definitions that were validated; they are
+                                        valid if this result is valid.
         findings (ValidatorFindings): A collection of findings that resulted from running validation
                                       on the Definition.
     """
 
-    definitions: Union[Definition, list[Definition]] = attrib(
-        default=Factory(list), validator=validators.instance_of((list, Definition))
+    definitions: list[Definition] = attrib(
+        default=Factory(list), validator=validators.instance_of((list))
     )
     findings: ValidatorFindings = attrib(
         default=Factory(ValidatorFindings), validator=validators.instance_of(ValidatorFindings)
