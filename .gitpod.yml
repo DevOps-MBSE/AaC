@@ -20,7 +20,7 @@ tasks:
       cd docs/
       bundle install
       export JEKYLL_ENV=production
-    command: bundle exec jekyll s
+    command: cd docs/; bundle exec jekyll s
 
 vscode:
   extensions:
