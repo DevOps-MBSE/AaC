@@ -8,6 +8,8 @@ from tests.plugins.lsp_server.base_lsp_test_case import BaseLspTestCase
 from tests.plugins.lsp_server.definition_constants import (
     TEST_DOCUMENT_CONTENT,
     TEST_DOCUMENT_NAME,
+    TEST_DOCUMENT_WITH_ENUM_NAME,
+    TEST_DOCUMENT_WITH_ENUM_CONTENT, 
 )
 
 
@@ -43,10 +45,11 @@ class TestRenameProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
 
     async def test_rename_enum_request(self):
         expected_new_enum = "OptionsNew"
-        res: RenameResponse = await self.rename(TEST_DOCUMENT_NAME, expected_new_enum, 19, 8)
+        await self.create_document(TEST_DOCUMENT_WITH_ENUM_NAME, f"\n{TEST_DOCUMENT_WITH_ENUM_CONTENT}")
+        res: RenameResponse = await self.rename(TEST_DOCUMENT_WITH_ENUM_NAME, expected_new_enum, 20, 8)
         actual_text_edits = res.get_all_text_edits()
         expected_test_document_edits = res.get_workspace_edit()
-        self.assertIn(TEST_DOCUMENT_NAME, list(expected_test_document_edits.keys())[0])
+        self.assertIn(TEST_DOCUMENT_WITH_ENUM_NAME, list(expected_test_document_edits.keys())[0])
         self.assertIn(expected_new_enum, actual_text_edits[0].get("newText"))
         self.assertEqual(1, len(actual_text_edits))
 
