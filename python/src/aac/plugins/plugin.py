@@ -57,4 +57,4 @@ class Plugin:
 
     def get_primitive_validations(self) -> list[Definition]:
         """Get the definitions registered by this plugin."""
-        return self.contributions.get_primitive_validations(self.name)
+        return self.contributions.get_primitive_validations_by_plugin_name(self.name)
