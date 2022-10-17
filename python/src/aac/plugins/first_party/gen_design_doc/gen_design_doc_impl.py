@@ -4,7 +4,6 @@ import os
 
 from typing import Optional
 
-from iteration_utilities import flatten
 from jinja2 import Template
 
 
@@ -62,7 +61,8 @@ def _get_parsed_models(architecture_files: list) -> list[Definition]:
             return result.definitions
 
     # For each architecture_file, parse and validate the contents, then flatten the list of lists to a 1D list
-    return list(flatten(map(parse_with_validation, architecture_files)))
+    parsed_definition_lists = list(map(parse_with_validation, architecture_files))
+    return [definition for definition_list in parsed_definition_lists for definition in definition_list]
 
 
 def _make_template_properties(parsed_definitions: list[Definition], arch_file: str) -> dict:

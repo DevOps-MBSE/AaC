@@ -1,6 +1,5 @@
 """Provide access to plugins and plugin data."""
 from importlib import import_module
-from iteration_utilities import flatten
 from pluggy import PluginManager
 
 from aac.cli.aac_command import AacCommand
@@ -87,7 +86,8 @@ def get_plugin_commands() -> list[AacCommand]:
     Returns:
         A list of AaC Commands provided by plugins.
     """
-    return list(flatten([plugin.get_commands() for plugin in get_plugins() if plugin.get_commands()]))
+    command_lists = [plugin.get_commands() for plugin in get_plugins() if plugin.get_commands()]
+    return [command for command_list in command_lists for command in command_list]
 
 
 def get_plugin_definitions() -> list[Definition]:
@@ -102,15 +102,28 @@ def get_plugin_definitions() -> list[Definition]:
         definition.source.is_user_editable = False
         return definition
 
-    definitions = [plugin.get_definitions() for plugin in get_plugins() if plugin.get_definitions()]
-    return list(map(set_files_to_not_user_editable, flatten(definitions)))
+    definition_lists = [plugin.get_definitions() for plugin in get_plugins() if plugin.get_definitions()]
+    definitions_list = [definition for definition_list in definition_lists for definition in definition_list]
+    return list(map(set_files_to_not_user_editable, definitions_list))
 
 
 def get_validator_plugins() -> list[ValidatorPlugin]:
     """
-    Get a list of registered validator plugins and metadata.
+    Get a list of registered validators and metadata.
 
     Returns:
         A list of validator plugins that are currently registered.
     """
-    return list(flatten([plugin.get_validations() for plugin in get_plugins() if plugin.get_validations()]))
+    validation_lists = [plugin.get_validations() for plugin in get_plugins() if plugin.get_validations()]
+    return [validation for validation_list in validation_lists for validation in validation_list]
+
+
+def get_enum_validator_plugins() -> list[ValidatorPlugin]:
+    """
+    Get a list of registered enum/type validators and metadata.
+
+    Returns:
+        A list of validator plugins that are currently registered.
+    """
+    type_validator_lists = [plugin.get_primitive_validations() for plugin in get_plugins() if plugin.get_primitive_validations()]
+    return [validation for validation_list in type_validator_lists for validation in validation_list]

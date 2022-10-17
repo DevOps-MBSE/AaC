@@ -1,6 +1,5 @@
 import logging
 from typing import Optional
-from iteration_utilities import flatten
 
 from aac.lang.language_context import LanguageContext
 from aac.lang.definitions.definition import Definition
@@ -31,8 +30,11 @@ def get_applicable_validators_for_definition(
     ancestor_definitions = get_definition_ancestry(definition, context)
     sub_structure_definitions = get_definition_schema_components(definition, context)
     # For each ancestor definition, pull validation definitions, collapse the 2d list to 1d, and return the list of validations.
-    applicable_ancestor_validation_dicts = list(flatten(map(_get_validation_entries, ancestor_definitions)))
-    applicable_substructure_validation_dicts = list(flatten(map(_get_validation_entries, sub_structure_definitions)))
+    ancestor_lists = map(_get_validation_entries, ancestor_definitions)
+    substructure_lists = map(_get_validation_entries, sub_structure_definitions)
+
+    applicable_ancestor_validation_dicts = [ancestor for ancestor_list in ancestor_lists for ancestor in ancestor_list]
+    applicable_substructure_validation_dicts = [substructure for substructure_list in substructure_lists for substructure in substructure_list]
     applicable_validation_dicts = applicable_ancestor_validation_dicts + applicable_substructure_validation_dicts
 
     applicable_validators = {}

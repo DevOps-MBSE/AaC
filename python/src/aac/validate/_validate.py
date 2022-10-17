@@ -1,5 +1,4 @@
 from contextlib import contextmanager
-from iteration_utilities import flatten
 from typing import Generator
 
 from aac.lang.language_context import LanguageContext
@@ -81,7 +80,7 @@ def _validate_definitions(definitions: list[Definition], validate_context: bool)
     def validate_each_definition(definition: Definition):
         results = _validate_definition(definition, validator_plugins, active_context)
         definition_findings = [result.findings.get_all_findings() for result in results]
-        combined_findings.add_findings(list(flatten(definition_findings)))
+        combined_findings.add_findings([finding for finding_list in definition_findings for finding in finding_list])
 
     context_definitions_to_validate = active_context.definitions
     definitions_to_validate = definitions + context_definitions_to_validate if validate_context else []

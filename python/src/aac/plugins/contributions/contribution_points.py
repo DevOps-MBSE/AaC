@@ -1,7 +1,6 @@
 """A module for contribution point functionality."""
 
 from typing import Any, Callable, Optional, Union
-from iteration_utilities import flatten
 
 from attr import Factory, attrib, attrs, validators
 
@@ -156,7 +155,8 @@ class ContributionPoints:
         return [contrib for contrib in self.contributions if contrib.is_contribution_type(contribution_type)]
 
     def _get_items(self, contribution_type: ContributionType) -> list:
-        return list(flatten([contrib.items for contrib in self._get_contributions_by_type(contribution_type)]))
+        contribution_lists = [contrib.items for contrib in self._get_contributions_by_type(contribution_type)]
+        return [contribution for contribution_list in contribution_lists for contribution in contribution_list]
 
     def _get_item_by_name(self, contribution_type: ContributionType, name: str):
         items = [item for item in self._get_items(contribution_type) if item.name == name]
