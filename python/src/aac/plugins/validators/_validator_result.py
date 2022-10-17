@@ -1,7 +1,4 @@
 """A module for representing validator results."""
-
-
-from typing import Union
 from attr import Factory, attrib, attrs, validators
 
 from aac.lang.definitions.definition import Definition

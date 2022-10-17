@@ -2,8 +2,6 @@
 from __future__ import annotations
 from attr import attrib, attrs, validators
 
-from aac.lang.definitions.definition import Definition
-
 
 @attrs(hash=False)
 class TypeValidationContribution:

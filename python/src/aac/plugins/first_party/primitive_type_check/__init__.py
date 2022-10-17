@@ -7,6 +7,7 @@ from aac.plugins.first_party.primitive_type_check.type_validations import INTEGE
 from aac.plugins.contributions.contribution_types import TypeValidationContribution
 from aac.plugins.plugin import Plugin
 
+
 @hookimpl
 def get_plugin() -> Plugin:
     """
