@@ -8,7 +8,6 @@ from tests.plugins.lsp_server.base_lsp_test_case import BaseLspTestCase
 from tests.plugins.lsp_server.definition_constants import (
     TEST_DOCUMENT_CONTENT,
     TEST_DOCUMENT_NAME,
-    TEST_ENUM,
 )
 
 

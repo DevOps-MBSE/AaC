@@ -115,7 +115,7 @@ class RenameProvider(LspProvider):
     def _get_enum_value_type_text_edits(
         self, new_name: str, definition_to_find: Definition, language_context: LanguageContext
     ) -> dict[str, TextEdit]:
-        """Returns a dictionary of enum value type uri to TextEdits where the uri is the key and the list of edits is the value"""
+        """Returns a dictionary of enum value type uri to TextEdits where the uri is the key and the list of edits is the value."""
         edits = {}
         enum_references = get_definition_type_references_from_list(definition_to_find, language_context.definitions)
         enum_to_alter = [*enum_references, definition_to_find]
