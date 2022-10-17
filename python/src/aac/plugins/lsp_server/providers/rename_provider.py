@@ -134,4 +134,3 @@ class RenameProvider(LspProvider):
                 edits[str(lexeme_to_replace.source)] = document_edits
 
         return edits
-
