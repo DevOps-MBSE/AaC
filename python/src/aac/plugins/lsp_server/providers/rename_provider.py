@@ -8,7 +8,7 @@ from pygls.workspace import Document
 
 from aac.lang.definitions.definition import Definition
 from aac.lang.language_context import LanguageContext
-from aac.lang.definitions.references import get_definition_type_references_from_list
+from aac.lang.definitions.references import get_definition_type_references_from_list, get_enum_references_from_context
 from aac.lang.definitions.type import remove_list_type_indicator
 from aac.lang.definitions.lexeme import Lexeme
 from aac.plugins.lsp_server.providers.symbols import (

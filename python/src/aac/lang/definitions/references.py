@@ -23,11 +23,13 @@ def get_definition_type_references_from_list(
 
     return list(filter(filter_definitions_by_reference, definitions_to_search))
 
+
 def get_enum_references_from_context(
     enum_definition: Definition, language_context: LanguageContext
 ) -> list[Definition]:
     """
     Return a subset of Definitions that have a field with an enum value from the target enum definition.
+
     Given example definitions like:
     ```
     enum:
@@ -42,6 +44,7 @@ def get_enum_references_from_context(
         example_option: one
     ```
     This function will return the definition `ExampleRootDefinition` above.
+
     Args:
         enum_definition (Definition): The enum definition that is being referenced
         language_context (LanguageContext): The context and definitions to search through
@@ -61,6 +64,7 @@ def get_enum_references_from_context(
             definitions_referencing_enum_value.extend(instances_of_referencing_root_key)
 
     return definitions_referencing_enum_value
+
 
 def is_reference_format_valid(reference_field_value: str = None) -> tuple[bool, str]:
     """Returns boolean and string tuple indicating if the reference field is properly formatted for processing."""
