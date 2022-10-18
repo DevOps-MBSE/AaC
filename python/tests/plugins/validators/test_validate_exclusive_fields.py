@@ -4,6 +4,7 @@ from aac.plugins.validators import ValidatorPlugin, ValidatorResult
 from aac.plugins.validators.exclusive_fields import _get_plugin_definitions, _get_plugin_validations, validate_exclusive_fields
 
 from tests.active_context_test_case import ActiveContextTestCase
+from tests.helpers.assertion import assert_definitions_equal
 from tests.helpers.parsed_definitions import create_schema_ext_definition, create_enum_ext_definition, create_field_entry
 
 
@@ -19,7 +20,7 @@ class TestExclusiveFieldsPlugin(ActiveContextTestCase):
             name=validation_definition.name, definition=validation_definition, validation_function=(lambda x: x)
         )
         self.assertEqual(expected_validator_plugin.name, actual_validator_plugins[0].name)
-        self.assertEqual(expected_validator_plugin.definition, actual_validator_plugins[0].definition)
+        assert_definitions_equal(expected_validator_plugin.definition, actual_validator_plugins[0].definition)
 
     def test_validate_exclusive_fields_no_defined_exclusive_fields(self):
         test_active_context = get_active_context()

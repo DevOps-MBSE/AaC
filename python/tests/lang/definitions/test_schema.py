@@ -113,14 +113,15 @@ class TestDefinitionSchemas(TestCase):
 
         schema_definition = test_context.get_definition_by_name("schema")
 
-        # Per the core spec, we'd expect Field and ValidationReference
+        # Per the core spec, we'd expect DefinitionReference, Field, and ValidationReference
         field_definition = test_context.get_definition_by_name("Field")
         validation_reference_definition = test_context.get_definition_by_name("ValidationReference")
+        definition_reference_definition = test_context.get_definition_by_name("DefinitionReference")
 
-        expected_definitions = [field_definition, validation_reference_definition]
+        expected_definitions = [definition_reference_definition, field_definition, validation_reference_definition]
         actual_definitions = get_definition_schema_components(schema_definition, test_context)
 
-        self.assertEqual(len(actual_definitions), 2)
+        self.assertEqual(len(actual_definitions), 3)
         self.assertListEqual(expected_definitions, actual_definitions)
 
     def test_get_sub_definitions_with_model(self):

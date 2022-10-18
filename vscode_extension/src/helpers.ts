@@ -17,8 +17,3 @@ export function showMessageOnError(action: () => any, failureMessage: string): a
         window.showErrorMessage(`${failureMessage}\n${onFailure}`);
     }
 }
-
-export function getSemanticVersionNumber(str: string): string | undefined {
-    const versionRegex = /\d+\.\d+\.\d+/;
-    return str.match(versionRegex)?.pop();
-}

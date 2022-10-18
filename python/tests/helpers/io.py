@@ -63,6 +63,34 @@ def temporary_test_file(content: str, **extra_file_attrs):
             yield file
 
 
+def temporary_test_file_wo_cm(content: str, **extra_file_attrs):
+    """Create a temporary file containing content for testing without the use of a context manager.
+
+    Arguments:
+        content (str): A string to use as the contents of the file.
+        extra_file_attrs (dict): Extra file attributes that will be used when creating the test
+                                 file. These should be valid parameters to NamedTemporaryFile.
+                                 (optional)
+            Extra file attributes:
+                * buffering (default value is - 1)
+                * encoding (default value is None)
+                * newline (default value is None)
+                * suffix (default value is None)
+                * prefix (default value is None)
+                * dir (default value is `TemporaryDirectory()`)
+
+    Yields:
+        The temporary test file containing the specified contents.
+    """
+    new_directory = extra_file_attrs.get("dir") or TemporaryDirectory()
+    extra_file_attrs |= {"dir": new_directory, "delete": False}
+    file = NamedTemporaryFile(mode="w", **extra_file_attrs)
+    file.write(content)
+    file.seek(0)
+
+    return file
+
+
 @contextmanager
 def new_working_dir(directory):
     """Change directories to execute some code, then change back.

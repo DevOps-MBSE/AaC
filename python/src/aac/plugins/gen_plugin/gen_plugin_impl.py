@@ -7,7 +7,7 @@ defined behavior becomes a new command for the aac CLI.
 import logging
 import yaml
 
-from os import path
+from os import path, rename, makedirs
 
 from aac.lang.definition_helpers import convert_parsed_definitions_to_dict_definition, get_models_by_type
 from aac.lang.definitions.search import search
@@ -172,6 +172,9 @@ def _prepare_and_generate_plugin_files(
         plugin_type, architecture_file_path, plugin_implementation_name
     )
 
+    if plugin_type == PLUGIN_TYPE_THIRD_STRING:
+        _move_architecture_file_to_plugin_root(architecture_file_path, output_directory, plugin_implementation_name)
+
     generated_templates = _generate_template_files(plugin_type, output_directory, template_output_directories, template_properties)
 
     _apply_output_template_properties(generated_templates, templates_to_overwrite, plugin_implementation_name)
@@ -282,6 +285,8 @@ def _gather_commands(behaviors: dict) -> list[dict]:
         """Modify the input and output entries of a behavior definition to reduce complexity in the templates."""
         python_type = in_out_entry.get("python_type")
 
+        in_out_entry["name"] = in_out_entry.get("name").removeprefix("--")
+
         if python_type:
             in_out_entry["type"] = python_type
             in_out_entry["python_type_default"] = type(python_type)
@@ -350,3 +355,20 @@ def _get_repository_root_directory_from_path(system_path: str) -> str:
         )
 
     return system_path[:target_index]
+
+
+def _move_architecture_file_to_plugin_root(architecture_file_path: str, output_directory: str, plugin_name: str) -> None:
+    """Moves the architecture file to the plugin root directory."""
+    architecture_file_path = path.join(output_directory, architecture_file_path)
+    file_name = path.basename(architecture_file_path)
+    new_file_path = path.join(output_directory, plugin_name, file_name)
+    new_file_dir_path = path.dirname(new_file_path)
+
+    try:
+        if not path.exists(new_file_dir_path):
+            makedirs(new_file_dir_path)
+        rename(architecture_file_path, new_file_path)
+    except OSError as error:
+        rename_file_error_message = f"Failed to move plugin architecture file to new plugin root directory '{new_file_path}'. Error: {error}"
+        logging.error(rename_file_error_message)
+        raise GeneratePluginException(rename_file_error_message)

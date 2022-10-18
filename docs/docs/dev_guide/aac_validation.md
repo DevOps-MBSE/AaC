@@ -1,6 +1,6 @@
 ---
 layout: default
-parent: AaC Developer's Guide
+parent: Developer's Guide to AaC
 title: AaC Language Validation
 nav_order: 3
 has_children: false

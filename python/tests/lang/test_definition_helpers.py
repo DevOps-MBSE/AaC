@@ -3,17 +3,13 @@ Unit tests for the aac.definition_helpers module.
 """
 
 from unittest import TestCase
-from aac.lang.active_context_lifecycle_manager import get_active_context
 
 from aac.lang.definition_helpers import (
-    get_definition_by_name,
     get_definitions_by_root_key,
-    get_definition_fields_and_types,
 )
-from aac.lang.definitions.search import search_definition, search
+from aac.lang.definitions.search import search
 from aac.lang.definitions.definition import Definition
 from aac.spec import core
-from tests.helpers.parsed_definitions import create_model_definition
 
 
 class TestDefinitionHelpers(TestCase):
@@ -70,21 +66,3 @@ class TestDefinitionHelpers(TestCase):
         schema_field_types = search(schema_entry, ["schema", "fields", "type"])
 
         self.assertCountEqual(schema_field_types, expected)
-
-    def test_get_definition_field_types_model_type(self):
-        text_context = get_active_context(reload_context=True)
-        test_model = create_model_definition("TestModel")
-
-        model_definition = get_definition_by_name("model", text_context.definitions)
-        expected_fields = search_definition(model_definition, ["schema", "fields"])
-        self.assertGreater(len(expected_fields), 1)
-
-        actual_result = get_definition_fields_and_types(test_model, text_context.definitions)
-
-        self.assertEqual(len(expected_fields), len(actual_result))
-
-        for expected_field in expected_fields:
-            field_name = expected_field.get("name")
-            field_type = expected_field.get("type")
-            self.assertIn(field_name, actual_result)
-            self.assertTrue(text_context.is_definition_type(field_type) or text_context.is_primitive_type(field_type))

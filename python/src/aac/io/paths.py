@@ -43,7 +43,7 @@ def sanitize_filesystem_path(file_path: str) -> str:
             decoded_url_path = unquoted_path
 
     null_byte_stripped_path = decoded_url_path.replace("\0", "")
-    ascii_string_file_path = unicodedata.normalize('NFKD', null_byte_stripped_path).encode('ascii', 'replace').decode()
+    ascii_string_file_path = unicodedata.normalize("NFKD", null_byte_stripped_path).encode("ascii", "replace").decode()
 
     # Replace instances of \ / with os-specific filepath separator
     os_specific_separator_file_path = ascii_string_file_path.replace("/", os.path.sep)
@@ -55,3 +55,17 @@ def sanitize_filesystem_path(file_path: str) -> str:
     logging.info(f"Sanitized and converted path '{file_path}' to '{abs_norm_path}'.")
 
     return abs_norm_path
+
+
+def is_same_file(path1: str, path2: str) -> bool:
+    """
+    Return whether or not path1 and path2 refer to the same file.
+
+    Args:
+        path1 (str): The first path to compare.
+        path2 (str): The second path to compare.
+
+    Returns:
+        Return True if both paths refer to the same file; False, otherwise.
+    """
+    return os.path.normcase(path1) == os.path.normcase(path2)
