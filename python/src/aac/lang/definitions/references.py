@@ -1,6 +1,4 @@
 """Module for AaC Language functions related to definition references."""
-
-from regex import D
 from aac.lang.language_context import LanguageContext
 from aac.lang.definitions.definition import Definition
 
@@ -67,6 +65,7 @@ def get_enum_references_from_context(
             definitions_referencing_enum_value.extend(instances_of_referencing_root_key)
 
     return definitions_referencing_enum_value
+
 
 def is_reference_format_valid(reference_field_value: str = None) -> tuple[bool, str]:
     """Returns boolean and string tuple indicating if the reference field is properly formatted for processing."""
