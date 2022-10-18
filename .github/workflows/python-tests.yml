@@ -59,7 +59,8 @@ jobs:
         echo y | aac gen-plugin model/plugin/plugin.yaml
         cd model/plugin/
         pip install .[all]
-
+        aac -h | grep "test-plugin-command"
+    
     - name: Upload logs from failed runs
       if: ${{ failure() }}
       uses: actions/upload-artifact@v2
@@ -124,7 +125,6 @@ jobs:
           run: |
             spec_file=$(find $pythonLocation -name spec.yaml | head -n1)
             python -m aac validate $spec_file
-
         - name: Validate Core Spec
           if: matrix.os == 'windows-latest'
           run: |
@@ -149,3 +149,4 @@ jobs:
           with:
             name: failed_test_log
             path: ${{ env.pythonLocation }}/**/aac.log
+
