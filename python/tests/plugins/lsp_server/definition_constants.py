@@ -38,7 +38,7 @@ TEST_SERVICE_ONE_BEHAVIOR = create_behavior_entry(
             then=[
                 f"{TEST_SERVICE_ONE_NAME} processes the request into a {TEST_SCHEMA_B.name} response",
                 f"{TEST_SERVICE_ONE_NAME} returns the {TEST_SCHEMA_B.name} response",
-            ],
+            ]
         ),
         create_scenario_entry(
             "Receive invalid request",
@@ -65,7 +65,7 @@ TEST_SERVICE_TWO_BEHAVIOR = create_behavior_entry(
             then=[
                 f"{TEST_SERVICE_TWO_NAME} processes the request into a DataC response",
                 f"{TEST_SERVICE_TWO_NAME} returns the DataC response",
-            ],
+            ]
         )
     ]
 )
@@ -85,13 +85,25 @@ TEST_SERVICE_THREE_BEHAVIOR = create_behavior_entry(
             then=[f"{TEST_SERVICE_THREE_NAME} returns the {TEST_SCHEMA_C.name} data in the response, untouched"],
         )
     ]
-)
+  )
+
 TEST_SERVICE_THREE = create_model_definition(TEST_SERVICE_THREE_NAME, behavior=[TEST_SERVICE_THREE_BEHAVIOR])
 
 TEST_DOCUMENT_NAME = "test.aac"
-TEST_DOCUMENT_WITH_ENUM_NAME = "enum_test.aac"
 TEST_DOCUMENT_CONTENT = f"{YAML_DOCUMENT_SEPARATOR}\n".join([TEST_SCHEMA_A.to_yaml(), TEST_SCHEMA_B.to_yaml(), TEST_SERVICE_ONE.to_yaml()])
-TEST_DOCUMENT_WITH_ENUM_CONTENT = f"{YAML_DOCUMENT_SEPARATOR}\n".join([TEST_SCHEMA_A.to_yaml(), TEST_SCHEMA_B.to_yaml(), TEST_ENUM.to_yaml(), TEST_SERVICE_ONE.to_yaml()])
+
+TEST_DOCUMENT_WITH_ENUM_NAME = "enum_test.aac"
+TEST_DOCUMENT_CONTENT = f"{YAML_DOCUMENT_SEPARATOR}\n".join(
+    [TEST_SCHEMA_A.to_yaml(), TEST_SCHEMA_B.to_yaml(), TEST_SERVICE_ONE.to_yaml()]
+)
+TEST_DOCUMENT_WITH_ENUM_CONTENT = f"{YAML_DOCUMENT_SEPARATOR}\n".join(
+    [
+        TEST_ROOT_SCHEMA.to_yaml(),
+        TEST_ROOT_EXTENSION.to_yaml(),
+        TEST_ENUM.to_yaml(),
+        TEST_ROOT_INSTANCE.to_yaml(),
+    ]
+)
 
 MALFORMED_EXTRA_FIELD_NAME = "extrafield"
 MALFORMED_EXTRA_FIELD_CONTENT = "extracontent"
