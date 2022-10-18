@@ -8,7 +8,7 @@ from pygls.workspace import Document
 
 from aac.lang.definitions.definition import Definition
 from aac.lang.language_context import LanguageContext
-from aac.lang.definitions.references import get_definition_type_references_from_list
+from aac.lang.definitions.references import get_definition_type_references_from_list, get_enum_references_from_context
 from aac.lang.definitions.type import remove_list_type_indicator
 from aac.lang.definitions.lexeme import Lexeme
 from aac.plugins.lsp_server.providers.symbols import (
@@ -81,11 +81,11 @@ class RenameProvider(LspProvider):
                 edits = self._get_definition_name_text_edits(new_name, definition_to_find, language_context)
 
         if SymbolType.ENUM_VALUE_TYPE in symbol_types:
-            enum_to_find = language_context.get_definition_by_name(name)
+            enum_to_find = language_context.get_enum_definition_by_type(name)
             if not enum_to_find:
                 logging.warn(f"Can't find references for non-enum-type {name}")
             else:
-                edits = self._get_enum_value_type_text_edits(new_name, definition_to_find, language_context)
+                edits = self._get_enum_value_type_text_edits(name, new_name, enum_to_find, language_context)
 
         return edits
 
@@ -113,24 +113,23 @@ class RenameProvider(LspProvider):
         return edits
 
     def _get_enum_value_type_text_edits(
-        self, new_name: str, definition_to_find: Definition, language_context: LanguageContext
+        self, old_value: str, new_value: str, definition_to_find: Definition, language_context: LanguageContext
     ) -> dict[str, TextEdit]:
         """Returns a dictionary of enum value type uri to TextEdits where the uri is the key and the list of edits is the value."""
         edits = {}
-        enum_references = get_definition_type_references_from_list(definition_to_find, language_context.definitions)
-        enum_to_alter = [*enum_references, definition_to_find]
+        enum_references = get_enum_references_from_context(definition_to_find, language_context)
+        enum_references_to_alter = [*enum_references, definition_to_find]
 
-        for definition in enum_to_alter:
+        for definition in enum_references_to_alter:
+            def filter_lexeme_by_enum_value(lexeme: Lexeme) -> bool:
+                return remove_list_type_indicator(lexeme.value) == old_value
 
-            def filter_lexeme_by_reference_name(lexeme: Lexeme) -> bool:
-                return remove_list_type_indicator(lexeme.value) == definition_to_find.name
-
-            reference_lexemes = filter(filter_lexeme_by_reference_name, definition.lexemes)
+            reference_lexemes = filter(filter_lexeme_by_enum_value, definition.lexemes)
 
             for lexeme_to_replace in reference_lexemes:
                 document_edits = edits.get(lexeme_to_replace.source, [])
                 replacement_range = get_location_from_lexeme(lexeme_to_replace).range
-                document_edits.append(TextEdit(range=replacement_range, replacement_text=new_name))
+                document_edits.append(TextEdit(range=replacement_range, new_text=new_value))
                 edits[str(lexeme_to_replace.source)] = document_edits
 
         return edits

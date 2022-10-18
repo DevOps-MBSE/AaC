@@ -1,5 +1,6 @@
 """Module for AaC Language functions related to definition references."""
 
+from regex import D
 from aac.lang.language_context import LanguageContext
 from aac.lang.definitions.definition import Definition
 
@@ -23,6 +24,49 @@ def get_definition_type_references_from_list(
 
     return list(filter(filter_definitions_by_reference, definitions_to_search))
 
+
+def get_enum_references_from_context(
+    enum_definition: Definition, language_context: LanguageContext
+) -> list[Definition]:
+    """
+    Return a subset of Definitions that have a field with an enum value from the target enum definition.
+
+    Given example definitions like:
+    ```
+    enum:
+        name: Options
+        values:
+            - one
+            - two
+            - three
+    ---
+    example_root:
+        name: ExampleRootDefinition
+        example_option: one
+    ```
+
+    This function will return the definition `ExampleRootDefinition` above.
+
+    Args:
+        enum_definition (Definition): The enum definition that is being referenced
+        language_context (LanguageContext): The context and definitions to search through
+
+    Return:
+        A list of Definitions that leverage the target enum definition's values
+    """
+    enum_reference_schema_definitions = get_definition_type_references_from_list(enum_definition, language_context.definitions)
+
+    # Since enum values aren't used in schema definitions, we need to find instances of the enum values in the other root keys
+    root_definitions_type_to_key_dict = {root.get("type"): root.get("name") for root in language_context.get_root_fields()}
+    root_definition_types = [root_type for root_type in root_definitions_type_to_key_dict.keys()]
+
+    definitions_referencing_enum_value = []
+    for enum_reference in enum_reference_schema_definitions:
+        if enum_reference.name in root_definition_types:
+            instances_of_referencing_root_key = language_context.get_definitions_by_root_key(root_definitions_type_to_key_dict.get(enum_reference.name))
+            definitions_referencing_enum_value.extend(instances_of_referencing_root_key)
+
+    return definitions_referencing_enum_value
 
 def is_reference_format_valid(reference_field_value: str = None) -> tuple[bool, str]:
     """Returns boolean and string tuple indicating if the reference field is properly formatted for processing."""
