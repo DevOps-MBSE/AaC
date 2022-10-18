@@ -2,6 +2,7 @@
 from typing import Any, Optional
 import logging
 
+from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.constants import (
     PRIMITIVE_TYPE_STRING,
     PRIMITIVE_TYPE_INT,
@@ -12,8 +13,10 @@ from aac.lang.constants import (
     PRIMITIVE_TYPE_REFERENCE,
 )
 from aac.lang.definitions.definition import Definition
+from aac.lang.definitions.lexeme import Lexeme
 from aac.plugins.contributions.contribution_types import TypeValidationContribution
 from aac.plugins.validators._validator_finding import ValidatorFinding, FindingSeverity, FindingLocation
+from aac.validate import ValidationError
 
 
 def _create_validator_name(enum_type: str) -> str:
@@ -27,6 +30,26 @@ BOOL_VALIDATION_NAME = _create_validator_name(PRIMITIVE_TYPE_BOOL)
 DATE_VALIDATION_NAME = _create_validator_name(PRIMITIVE_TYPE_DATE)
 FILE_VALIDATION_NAME = _create_validator_name(PRIMITIVE_TYPE_FILE)
 REFERENCE_VALIDATION_NAME = _create_validator_name(PRIMITIVE_TYPE_REFERENCE)
+
+
+def _create_finding_location(name: str, lexeme: Lexeme) -> FindingLocation:
+    active_context = get_active_context()
+    source_file = active_context.get_file_in_context_by_uri(lexeme.source)
+
+    if source_file is None:
+        error_message = f"Attempted to create a type validation finding, but the source file '{lexeme.source}' isn't in the context."
+        logging.error(error_message)
+        raise ValidationError(error_message)
+    else:
+        lexeme_location = lexeme.location
+        return FindingLocation(
+            name,
+            source_file,
+            lexeme_location.line,
+            lexeme_location.line,
+            lexeme_location.position,
+            lexeme_location.span,
+        )
 
 
 def validate_integer(definition: Definition, value_to_validate: Any) -> Optional[ValidatorFinding]:
@@ -54,7 +77,17 @@ def validate_integer(definition: Definition, value_to_validate: Any) -> Optional
     finding = None
     if is_invalid:
         finding_message = f"{value_to_validate} is not a valid value for the enum type {PRIMITIVE_TYPE_INT}"
-        finding = ValidatorFinding(definition, FindingSeverity.ERROR, finding_message, FindingLocation())
+        lexeme, *_ = [lexeme for lexeme in definition.lexemes if lexeme.value(value_to_validate)]
+        lexeme_location = lexeme.location
+        finding_location = FindingLocation(
+            INT_VALIDATION_NAME,
+            lexeme.source,
+            lexeme_location.line,
+            lexeme_location.line,
+            lexeme_location.position,
+            lexeme_location.span,
+        )
+        finding = ValidatorFinding(definition, FindingSeverity.ERROR, finding_message, finding_location)
 
     return finding
 

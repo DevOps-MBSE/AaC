@@ -7,6 +7,7 @@ from aac.lang.definitions.definition import Definition
 from aac.plugins import hookspecs, PLUGIN_PROJECT_NAME
 from aac.plugins.plugin import Plugin
 from aac.plugins.validators import ValidatorPlugin
+from aac.plugins.contributions.contribution_types import TypeValidationContribution
 
 
 def get_plugin_manager() -> PluginManager:
@@ -35,6 +36,7 @@ def get_plugin_manager() -> PluginManager:
         "material_model",
         "help_dump",
         "rest_api",
+        "primitive_type_check"
     ]
 
     # register "built-in" commands
@@ -118,7 +120,7 @@ def get_validator_plugins() -> list[ValidatorPlugin]:
     return [validation for validation_list in validation_lists for validation in validation_list]
 
 
-def get_enum_validator_plugins() -> list[ValidatorPlugin]:
+def get_enum_validator_plugins() -> list[TypeValidationContribution]:
     """
     Get a list of registered enum/type validators and metadata.
 

@@ -5,6 +5,7 @@ from attr import Factory, attrib, attrs, validators
 from aac.cli.aac_command import AacCommand
 from aac.lang.definitions.definition import Definition
 from aac.plugins.contributions.contribution_points import ContributionPoints
+from aac.plugins.contributions.contribution_types.type_validation import TypeValidationContribution
 from aac.plugins.validators._validator_plugin import ValidatorPlugin
 
 
@@ -51,10 +52,10 @@ class Plugin:
         """Get the definitions registered by this plugin."""
         return self.contributions.get_definitions_by_plugin_name(self.name)
 
-    def register_primitive_validations(self, definitions: list[Definition]):
+    def register_primitive_validations(self, definitions: list[TypeValidationContribution]):
         """Register the specified definitions."""
         self.contributions.register_primitive_validations(self.name, definitions)
 
-    def get_primitive_validations(self) -> list[Definition]:
+    def get_primitive_validations(self) -> list[TypeValidationContribution]:
         """Get the definitions registered by this plugin."""
         return self.contributions.get_primitive_validations_by_plugin_name(self.name)

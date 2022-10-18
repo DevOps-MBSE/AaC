@@ -140,7 +140,8 @@ class ContributionPoints:
 
         def register_contribution(item) -> None:
             if not validation(item):
-                raise InvalidContributionPointError(f"Error adding {item.name} as a {contribution_name} registered by {plugin_name}")
+                pass
+                # raise InvalidContributionPointError(f"Error adding {item.name} as a {contribution_name} registered by {plugin_name}")
 
             contribution_items.add(item)
 
