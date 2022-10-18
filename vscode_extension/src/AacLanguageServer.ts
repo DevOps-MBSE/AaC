@@ -13,7 +13,6 @@ enum LspServerMode {
     tcp = "TCP",
 }
 
-const MIN_REQUIRED_PYTHON_VERSION = "3.9";
 const DEFAULT_LSP_SERVER_MODE = LspServerMode.io;
 
 export class AacLanguageServerClient {
