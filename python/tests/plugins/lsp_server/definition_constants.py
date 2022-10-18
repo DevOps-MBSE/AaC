@@ -9,7 +9,7 @@ from tests.helpers.parsed_definitions import (
     create_behavior_entry,
     create_scenario_entry,
     create_schema_ext_definition,
-    _create_parsed_definition,
+    _create_parsed_definition
 )
 
 TEST_ENUM = create_enum_definition("Options", ["one", "two", "three"])
@@ -21,6 +21,7 @@ TEST_ROOT_EXTENSION = create_schema_ext_definition(
     "TestRootExtension", DEFINITION_NAME_ROOT, fields=[create_field_entry("test_root", TEST_ROOT_SCHEMA.name)]
 )
 TEST_ROOT_INSTANCE = _create_parsed_definition("test_root", {"name": "TestRootInstance", "test_enum": "one"})
+
 
 TEST_PARTIAL_CONTENT_NAME = "Partial"
 TEST_PARTIAL_CONTENT = f"""
@@ -46,7 +47,7 @@ TEST_SERVICE_ONE_BEHAVIOR = create_behavior_entry(
             then=[
                 f"{TEST_SERVICE_ONE_NAME} processes the request into a {TEST_SCHEMA_B.name} response",
                 f"{TEST_SERVICE_ONE_NAME} returns the {TEST_SCHEMA_B.name} response",
-            ]
+            ],
         ),
         create_scenario_entry(
             "Receive invalid request",
@@ -54,7 +55,7 @@ TEST_SERVICE_ONE_BEHAVIOR = create_behavior_entry(
             when=[f"{TEST_SERVICE_ONE_NAME} receives request that isn't a {TEST_SCHEMA_A.name} request"],
             then=[f"{TEST_SERVICE_ONE_NAME} returns an error response code"],
         ),
-    ]
+    ],
 )
 TEST_SERVICE_ONE = create_model_definition(TEST_SERVICE_ONE_NAME, behavior=[TEST_SERVICE_ONE_BEHAVIOR])
 
@@ -73,9 +74,9 @@ TEST_SERVICE_TWO_BEHAVIOR = create_behavior_entry(
             then=[
                 f"{TEST_SERVICE_TWO_NAME} processes the request into a DataC response",
                 f"{TEST_SERVICE_TWO_NAME} returns the DataC response",
-            ]
+            ],
         )
-    ]
+    ],
 )
 TEST_SERVICE_TWO = create_model_definition(TEST_SERVICE_TWO_NAME, behavior=[TEST_SERVICE_TWO_BEHAVIOR])
 
@@ -92,9 +93,8 @@ TEST_SERVICE_THREE_BEHAVIOR = create_behavior_entry(
             when=[f"{TEST_SERVICE_THREE_NAME} receives a {TEST_SCHEMA_C.name} request"],
             then=[f"{TEST_SERVICE_THREE_NAME} returns the {TEST_SCHEMA_C.name} data in the response, untouched"],
         )
-    ]
+    ],
 )
-
 TEST_SERVICE_THREE = create_model_definition(TEST_SERVICE_THREE_NAME, behavior=[TEST_SERVICE_THREE_BEHAVIOR])
 
 TEST_DOCUMENT_NAME = "test.aac"
