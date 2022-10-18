@@ -81,11 +81,11 @@ class RenameProvider(LspProvider):
                 edits = self._get_definition_name_text_edits(new_name, definition_to_find, language_context)
 
         if SymbolType.ENUM_VALUE_TYPE in symbol_types:
-            enum_to_find = language_context.get_definition_by_name(name)
+            enum_to_find = language_context.get_enum_definition_by_type(name)
             if not enum_to_find:
                 logging.warn(f"Can't find references for non-enum-type {name}")
             else:
-                edits = self._get_enum_value_type_text_edits(new_name, definition_to_find, language_context)
+                edits = self._get_enum_value_type_text_edits(name, new_name, enum_to_find, language_context)
 
         return edits
 
