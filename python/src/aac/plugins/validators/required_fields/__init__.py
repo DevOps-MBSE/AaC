@@ -40,5 +40,5 @@ def get_required_fields(definition: Definition) -> list[str]:
     Returns:
         The list of field names declared as required fields in the definition.
     """
-    required_validation = [v for v in definition.get_validations() if v.get("name") == PLUGIN_NAME]
+    required_validation = [v for v in definition.get_validations() or [] if v.get("name") == PLUGIN_NAME]
     return len(required_validation) == 1 and required_validation[0].get("arguments") or []

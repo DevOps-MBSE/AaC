@@ -15,6 +15,13 @@ tasks:
       pip install -e .[all]
     command: cd python/; source venv/bin/activate # Always launch a console with our virtual env
 
+  - name: Deploy Jekyll Docs
+    init: |
+      cd docs/
+      bundle install
+      export JEKYLL_ENV=production
+    command: bundle exec jekyll s
+
 vscode:
   extensions:
     - eamodio.gitlens

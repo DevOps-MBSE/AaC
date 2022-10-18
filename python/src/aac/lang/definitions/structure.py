@@ -32,7 +32,7 @@ def get_substructures_by_type(
         if schema_definition.name == target_schema_definition.name:
             substructure_instances.append(definition_dict)
 
-        schema_defined_fields = schema_definition.get_top_level_fields().get("fields")
+        schema_defined_fields = schema_definition.get_top_level_fields().get("fields") or []
         schema_defined_fields_dict = {field.get("name"): field for field in schema_defined_fields}
         field_names_to_traverse = set(schema_defined_fields_dict.keys()).intersection(set(definition_dict.keys()))
 
@@ -52,7 +52,8 @@ def get_substructures_by_type(
                     )
                     continue
 
-                for field in field_content:
+                fields_to_traverse = [field for field in field_content if isinstance(field, dict)]
+                for field in fields_to_traverse:
                     _get_substructures(field_schema_definition, field)
 
     source_definition_root_key = source_definition.get_root_key()

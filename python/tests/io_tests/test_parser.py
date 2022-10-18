@@ -5,8 +5,8 @@ from unittest import TestCase
 from aac.lang import definition_helpers
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.source_location import SourceLocation
+from aac.io.constants import YAML_DOCUMENT_SEPARATOR
 from aac.io.parser import parse, ParserError
-from aac.io.parser._parse_source import YAML_DOCUMENT_SEPARATOR, _add_yaml_document_separator
 
 from tests.helpers.io import temporary_test_file
 
@@ -107,7 +107,7 @@ class TestParser(TestCase):
 
         contents = [definition.content for definition in parsed_definitions]
         self.assertIn(TEST_MESSAGE_FILE_CONTENTS, contents)
-        self.assertIn(_add_yaml_document_separator(TEST_STATUS_FILE_CONTENTS), contents)
+        self.assertIn(f"{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_FILE_CONTENTS}", contents)
 
     def test_file_content_is_split_by_yaml_documents(self):
         content = f"{TEST_MESSAGE_FILE_CONTENTS}{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_FILE_CONTENTS}"
@@ -118,7 +118,7 @@ class TestParser(TestCase):
 
             contents = [definition.content for definition in parsed_definitions]
             self.assertIn(TEST_MESSAGE_FILE_CONTENTS, contents)
-            self.assertIn(_add_yaml_document_separator(TEST_STATUS_FILE_CONTENTS), contents)
+            self.assertIn(f"{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_FILE_CONTENTS}", contents)
 
     def test_lexemes_are_split_by_yaml_documents(self):
         content = f"{TEST_MESSAGE_FILE_CONTENTS}{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_FILE_CONTENTS}"

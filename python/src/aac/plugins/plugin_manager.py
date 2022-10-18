@@ -56,6 +56,7 @@ def get_plugin_manager() -> PluginManager:
         "root_keys",
         "reference_fields",
         "reference_targets",
+        "unique_names",
     ]
 
     def register_plugin(plugin, package):

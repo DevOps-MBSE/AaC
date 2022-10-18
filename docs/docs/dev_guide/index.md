@@ -1,9 +1,8 @@
 ---
 layout: default
-title: AaC Developer's Guide
-nav_order: 2
+title: Developer's Guide to AaC
+nav_order: 6
 has_children: true
-permalink: docs/dev_guide
 ---
 
 # Getting started

@@ -12,7 +12,7 @@ from aac.plugins.validators.required_fields import (
 from aac.plugins.validators.required_fields._validate_required_fields import _is_field_populated
 
 from tests.active_context_test_case import ActiveContextTestCase
-from tests.helpers.assertion import assert_validator_result_failure, assert_validator_result_success
+from tests.helpers.assertion import assert_definitions_equal, assert_validator_result_failure, assert_validator_result_success
 from tests.helpers.parsed_definitions import (
     create_behavior_entry,
     create_schema_definition,
@@ -34,7 +34,7 @@ class TestRequiredFieldsPlugin(ActiveContextTestCase):
             name=validation_definition.name, definition=validation_definition, validation_function=(lambda x: x)
         )
         self.assertEqual(expected_validator_plugin.name, actual_validator_plugins[0].name)
-        self.assertEqual(expected_validator_plugin.definition, actual_validator_plugins[0].definition)
+        assert_definitions_equal(expected_validator_plugin.definition, actual_validator_plugins[0].definition)
 
     def test_validate_required_fields_not_missing_required_fields_for_schema_definition(self):
         test_active_context = get_active_context()

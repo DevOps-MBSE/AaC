@@ -1,7 +1,7 @@
 ---
 layout: default
-title: AaC User's Guide
-nav_order: 2
+title: User's Guide to AaC
+nav_order: 3
 has_children: true
 permalink: docs/user_guide
 ---
@@ -12,11 +12,11 @@ Architecture-as-Code (AaC) is a distinctly different take on Model-Based System 
 ## Who is AaC for?
 While "code" is in the name, AaC isn't solely for coders, programmers, or software engineers. Instead, AaC is intended to be a single-source of truth shared between all stakeholders from design to implementation and auditing. Towards this goal, AaC provides several interfaces for interacting with the language and tool set.
 
-|Interface|Implementation Status| References |
-|---------|---------------------|------------|
-| Command-line Interface | ✅ Implemented | [AaC Command Line Interface](./aac_cli)
-| Application Programming Interface | ✅ Implemented (Python)  | N/A |
-| Visualization | ⚠️ In-progress | N/A |
+| Interface                         | Implementation Status    | References                                  |
+|-----------------------------------|--------------------------|---------------------------------------------|
+| Command-line Interface            | ✅ Implemented           | [AaC Command Line Interface](./aac_cli)     |
+| Application Programming Interface | ✅ Implemented (Python)  | N/A                                         |
+| Visualization                     | ⚠️ In-progress           | [AaC VSCode Extension](../vscode_extension) |
 
 # Getting Started
 Not sure where to start with AaC? We've got you covered; just checkout
