@@ -20,7 +20,7 @@ class TestCollectValidators(ActiveContextTestCase):
 
     def test_get_applicable_validators_for_empty_schema_definition(self):
         test_definition = create_schema_definition("Empty Schema")
-        active_context = get_active_context(reload_context=True)
+        active_context = get_active_context()
 
         validation_plugins = active_context.get_validator_plugins()
 
@@ -37,7 +37,7 @@ class TestCollectValidators(ActiveContextTestCase):
     def test_get_applicable_validators_for_schema_definition(self):
         test_field = create_field_entry("TestField", "string")
         test_definition = create_schema_definition("DataWithField", fields=[test_field])
-        active_context = get_active_context(reload_context=True)
+        active_context = get_active_context()
 
         validation_plugins = active_context.get_validator_plugins()
 
@@ -54,7 +54,7 @@ class TestCollectValidators(ActiveContextTestCase):
     def test_get_applicable_validators_for_model_definition(self):
         test_field = create_field_entry("TestStateField", "string")
         test_definition = create_model_definition("ModelWithField", state=[test_field])
-        active_context = get_active_context(reload_context=True)
+        active_context = get_active_context()
 
         validation_plugins = active_context.get_validator_plugins()
 
@@ -73,7 +73,7 @@ class TestCollectValidators(ActiveContextTestCase):
     def test_get_applicable_validators_for_field_definition(self):
         target_definition_key = "Field"
 
-        active_context = get_active_context(reload_context=True)
+        active_context = get_active_context()
 
         validation_plugins = active_context.get_validator_plugins()
 
@@ -88,7 +88,7 @@ class TestCollectValidators(ActiveContextTestCase):
             self.assertIn(expected_validation.get("name"), actual_plugin_names)
 
     def test_get_applicable_validators_for_definition_enum_returns_schema_validator(self):
-        active_context = get_active_context(reload_context=True)
+        active_context = get_active_context()
 
         validation_plugins = active_context.get_validator_plugins()
 
@@ -116,7 +116,7 @@ class TestCollectValidators(ActiveContextTestCase):
         self.assertListEqual(expected_result, actual_result)
 
     def test__get_validator_plugin_by_name(self):
-
+        active_context = get_active_context()
         validation_plugins = active_context.get_validator_plugins()
 
         self.assertGreater(len(validation_plugins), 0)
