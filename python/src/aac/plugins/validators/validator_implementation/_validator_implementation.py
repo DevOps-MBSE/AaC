@@ -3,7 +3,6 @@ import logging
 from aac.lang.language_context import LanguageContext
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.structure import get_substructures_by_type
-from aac.plugins.plugin_manager import get_validator_plugins
 from aac.plugins.validators import ValidatorFindings, ValidatorResult
 from aac.plugins.contributions.contribution_types import PrimitiveValidationContribution
 
@@ -29,7 +28,7 @@ def validate_validator_implementations(definition_under_test: Definition, target
         def get_validator_by_name(name: str, plugins: list[PrimitiveValidationContribution]) -> list[PrimitiveValidationContribution]:
             return list(filter(lambda plugin: plugin.name == name, plugins))
 
-        validator_implementations = get_validator_plugins()
+        validator_implementations = language_context.get_validator_plugins()
         validation_name = dict_to_validate.get("name")
 
         validation_plugins = get_validator_by_name(validation_name, validator_implementations)

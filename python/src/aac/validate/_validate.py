@@ -9,7 +9,6 @@ from aac.lang.definitions.schema import get_definition_schema_components, get_de
 from aac.lang.definitions.type import remove_list_type_indicator, is_array_type
 from aac.lang.hierarchy import get_definition_ancestry
 from aac.io.parser import parse
-from aac.plugins.plugin_manager import get_validator_plugins
 from aac.plugins.contributions.contribution_types import PrimitiveValidationContribution
 from aac.plugins.validators import ValidatorFindings, ValidatorResult
 from aac.plugins.validators._validator_finding import ValidatorFinding
@@ -75,7 +74,7 @@ def _validate_definitions(definitions: list[Definition], validate_context: bool)
     active_context = get_active_context()
     active_context.add_definitions_to_context(definitions)
 
-    validator_plugins = get_validator_plugins()
+    validator_plugins = active_context.get_validator_plugins()
 
     combined_findings = ValidatorFindings()
 
