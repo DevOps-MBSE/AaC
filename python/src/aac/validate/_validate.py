@@ -1,5 +1,6 @@
+import logging
 from contextlib import contextmanager
-from typing import Generator, Optional
+from typing import Generator
 
 from aac.lang.language_context import LanguageContext
 from aac.lang.language_error import LanguageError
@@ -9,7 +10,7 @@ from aac.lang.definitions.schema import get_definition_schema_components, get_de
 from aac.lang.definitions.type import remove_list_type_indicator, is_array_type
 from aac.lang.hierarchy import get_definition_ancestry
 from aac.io.parser import parse
-from aac.plugins.plugin_manager import get_validator_plugins, get_enum_validator_plugins
+from aac.plugins.plugin_manager import get_validator_plugins
 from aac.plugins.validators import ValidatorPlugin, ValidatorFindings, ValidatorResult
 from aac.plugins.validators._validator_finding import ValidatorFinding
 from aac.validate._validation_error import ValidationError
@@ -136,7 +137,9 @@ def _apply_validator(
 def _validate_primitive_types(definition: Definition, context: LanguageContext) -> ValidatorResult:
     """Validates the instances of AaC primitive types."""
     findings = ValidatorFindings()
-    findings.add_findings(_recursive_validate_field(definition, get_definition_schema(definition, context), definition.get_top_level_fields(), context))
+    definition_schema = get_definition_schema(definition, context)
+    if definition_schema:
+        findings.add_findings(_recursive_validate_field(definition, definition_schema, definition.get_top_level_fields(), context))
 
     return ValidatorResult([definition], findings)
 
@@ -170,6 +173,8 @@ def _recursive_validate_field(source_def: Definition, field_schema: Definition, 
 
                 elif context.is_definition_type(sanitized_field_type):
                     new_field_schema = context.get_definition_by_name(sanitized_field_type)
-                    findings.extend(_recursive_validate_field(source_def, new_field_schema, field_value, context))
+
+                    if new_field_schema:
+                        findings.extend(_recursive_validate_field(source_def, new_field_schema, field_value, context))
 
     return findings

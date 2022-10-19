@@ -7,6 +7,7 @@ from attr import Factory, attrib, attrs, validators
 from aac.cli.aac_command import AacCommand
 from aac.lang.definitions.definition import Definition
 from aac.plugins.contributions.contribution_type import ContributionType
+from aac.plugins.contributions.contribution_types.type_validation import TypeValidationContribution
 from aac.plugins.contributions.plugin_contribution import PluginContribution
 from aac.plugins.validators._validator_plugin import ValidatorPlugin
 
@@ -108,11 +109,11 @@ class ContributionPoints:
         """Register the specified primitives validation."""
         self.register_validations(plugin_name, [validation])
 
-    def register_primitive_validations(self, plugin_name: str, validations: list[ValidatorPlugin]) -> None:
+    def register_primitive_validations(self, plugin_name: str, validations: list[TypeValidationContribution]) -> None:
         """Register the specified primitives validations."""
 
         def validate(validation: Any) -> bool:
-            return isinstance(validation, ValidatorPlugin)
+            return isinstance(validation, TypeValidationContribution)
 
         self._register_contributions(plugin_name, ContributionType.PRIMITIVE_VALIDATION, validations, validate)
 
@@ -134,14 +135,13 @@ class ContributionPoints:
         self,
         plugin_name: str,
         contribution_name: ContributionType,
-        items: Union[list[AacCommand], list[ValidatorPlugin], list[Definition]],
+        items: list[Union[AacCommand, ValidatorPlugin, Definition, TypeValidationContribution]],
         validation: Callable
     ) -> None:
 
         def register_contribution(item) -> None:
             if not validation(item):
-                pass
-                # raise InvalidContributionPointError(f"Error adding {item.name} as a {contribution_name} registered by {plugin_name}")
+                raise InvalidContributionPointError(f"Error adding {item.name} as a {contribution_name} registered by {plugin_name}")
 
             contribution_items.add(item)
 

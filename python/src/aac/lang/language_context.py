@@ -424,6 +424,15 @@ class LanguageContext:
         """
         return self.plugins
 
+    def get_plugins(self) -> list[Plugin]:
+        """
+        Return the applied plugins that contribute to the current language context.
+
+        Returns:
+            The collection of applied plugins that contribute to the current language context.
+        """
+        return self.plugins
+
     def get_files_in_context(self) -> list[AaCFile]:
         """
         Return a list of all the files contributing definitions to the context.
