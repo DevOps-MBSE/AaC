@@ -4,7 +4,7 @@ from unittest.case import TestCase
 from aac.cli.aac_command import AacCommand, AacCommandArgument
 from aac.lang.definitions.definition import Definition
 from aac.plugins.contributions.contribution_points import InvalidContributionPointError
-from aac.plugins.validators._validator_plugin import ValidatorPlugin
+from aac.plugins.contributions.contribution_types import RuleValidationContribution
 
 
 def identity(value: object) -> object:
@@ -19,9 +19,9 @@ def create_command(
     return AacCommand(name, description, callback, args)
 
 
-def create_validation(name: str, definition: Definition, callback: Callable = identity) -> ValidatorPlugin:
-    """Create a new ValidatorPlugin for testing."""
-    return ValidatorPlugin(name, definition, callback)
+def create_validation(name: str, definition: Definition, callback: Callable = identity) -> RuleValidationContribution:
+    """Create a new RuleValidationContribution for testing."""
+    return RuleValidationContribution(name, definition, callback)
 
 
 def assert_items_are_registered(

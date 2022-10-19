@@ -21,6 +21,7 @@ from aac.lang.definitions.extensions import apply_extension_to_definition, remov
 from aac.lang.definitions.type import remove_list_type_indicator
 from aac.lang.language_error import LanguageError
 from aac.plugins.plugin import Plugin
+from aac.plugins.contributions.contribution_types import TypeValidationContribution, RuleValidationContribution
 
 
 @attrs(slots=True, auto_attribs=True)
@@ -424,14 +425,25 @@ class LanguageContext:
         """
         return self.plugins
 
-    def get_plugins(self) -> list[Plugin]:
+    def get_validator_plugins(self) -> list[RuleValidationContribution]:
         """
-        Return the applied plugins that contribute to the current language context.
+        Get a list of registered validators and metadata in the context.
 
         Returns:
-            The collection of applied plugins that contribute to the current language context.
+            A list of validator plugins that are currently registered.
         """
-        return self.plugins
+        validation_lists = [plugin.get_validations() for plugin in self.get_plugins() if plugin.get_validations()]
+        return [validation for validation_list in validation_lists for validation in validation_list]
+
+    def get_enum_validator_plugins(self) -> list[TypeValidationContribution]:
+        """
+        Get a list of registered enum/type validators and metadata in the context.
+
+        Returns:
+            A list of validator plugins that are currently registered.
+        """
+        type_validator_lists = [plugin.get_primitive_validations() for plugin in self.get_plugins() if plugin.get_primitive_validations()]
+        return [validation for validation_list in type_validator_lists for validation in validation_list]
 
     def get_files_in_context(self) -> list[AaCFile]:
         """

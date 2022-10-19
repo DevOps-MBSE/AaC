@@ -1,6 +1,7 @@
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.definition_helpers import get_definition_by_name, get_definitions_by_root_key
-from aac.plugins.validators import ValidatorPlugin, ValidatorResult
+from aac.plugins.contributions.contribution_types import RuleValidationContribution
+from aac.plugins.validators import ValidatorResult
 from aac.plugins.validators.exclusive_fields import _get_plugin_definitions, _get_plugin_validations, validate_exclusive_fields
 
 from tests.active_context_test_case import ActiveContextTestCase
@@ -16,7 +17,7 @@ class TestExclusiveFieldsPlugin(ActiveContextTestCase):
         self.assertEqual(1, len(validation_definitions))
 
         validation_definition = validation_definitions[0]
-        expected_validator_plugin = ValidatorPlugin(
+        expected_validator_plugin = RuleValidationContribution(
             name=validation_definition.name, definition=validation_definition, validation_function=(lambda x: x)
         )
         self.assertEqual(expected_validator_plugin.name, actual_validator_plugins[0].name)

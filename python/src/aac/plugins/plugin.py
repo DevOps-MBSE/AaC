@@ -6,7 +6,6 @@ from aac.cli.aac_command import AacCommand
 from aac.lang.definitions.definition import Definition
 from aac.plugins.contributions.contribution_points import ContributionPoints
 from aac.plugins.contributions.contribution_types.type_validation import TypeValidationContribution
-from aac.plugins.validators._validator_plugin import ValidatorPlugin
 
 
 @attrs(hash=False)
@@ -36,11 +35,11 @@ class Plugin:
         """Get the commands registered by this plugin."""
         return self.contributions.get_commands_by_plugin_name(self.name)
 
-    def register_validations(self, validations: list[ValidatorPlugin]):
+    def register_validations(self, validations: list[TypeValidationContribution]):
         """Register the specified validations."""
         self.contributions.register_validations(self.name, validations)
 
-    def get_validations(self) -> list[ValidatorPlugin]:
+    def get_validations(self) -> list[TypeValidationContribution]:
         """Get the validations registered by this plugin."""
         return self.contributions.get_validations_by_plugin_name(self.name)
 

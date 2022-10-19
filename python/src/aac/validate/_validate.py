@@ -1,4 +1,3 @@
-import logging
 from contextlib import contextmanager
 from typing import Generator
 
@@ -11,7 +10,8 @@ from aac.lang.definitions.type import remove_list_type_indicator, is_array_type
 from aac.lang.hierarchy import get_definition_ancestry
 from aac.io.parser import parse
 from aac.plugins.plugin_manager import get_validator_plugins
-from aac.plugins.validators import ValidatorPlugin, ValidatorFindings, ValidatorResult
+from aac.plugins.contributions.contribution_types import TypeValidationContribution
+from aac.plugins.validators import ValidatorFindings, ValidatorResult
 from aac.plugins.validators._validator_finding import ValidatorFinding
 from aac.validate._validation_error import ValidationError
 from aac.validate._collect_validators import get_applicable_validators_for_definition
@@ -94,7 +94,7 @@ def _validate_definitions(definitions: list[Definition], validate_context: bool)
 
 
 def _validate_definition(
-    definition: Definition, validator_plugins: list[ValidatorPlugin], context: LanguageContext
+    definition: Definition, validator_plugins: list[TypeValidationContribution], context: LanguageContext
 ) -> list[ValidatorResult]:
     """Traverse the definition and validate it according to the validator plugins."""
 
@@ -121,7 +121,7 @@ def _validate_definition(
 
 
 def _apply_validator(
-    definition: Definition, target_schema_definition: Definition, context: LanguageContext, validator_plugin: ValidatorPlugin
+    definition: Definition, target_schema_definition: Definition, context: LanguageContext, validator_plugin: TypeValidationContribution
 ) -> ValidatorResult:
     """Executes the validator callback on the applicable dictionary structure or substructure."""
     validation_args: list[str] = []
