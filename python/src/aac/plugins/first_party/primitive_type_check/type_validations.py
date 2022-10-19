@@ -77,7 +77,7 @@ def validate_integer(definition: Definition, value_to_validate: Any) -> Optional
     finding = None
     if is_invalid:
         finding_message = f"{value_to_validate} is not a valid value for the enum type {PRIMITIVE_TYPE_INT}"
-        lexeme, *_ = [lexeme for lexeme in definition.lexemes if lexeme.value(value_to_validate)]
+        lexeme, *_ = [lexeme for lexeme in definition.lexemes if lexeme.value == value_to_validate]
         lexeme_location = lexeme.location
         finding_location = FindingLocation(
             INT_VALIDATION_NAME,

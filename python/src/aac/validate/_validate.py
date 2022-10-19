@@ -84,7 +84,7 @@ def _validate_definitions(definitions: list[Definition], validate_context: bool)
         combined_findings.add_findings([finding for finding_list in definition_findings for finding in finding_list])
 
     context_definitions_to_validate = active_context.definitions
-    definitions_to_validate = definitions # + context_definitions_to_validate if validate_context else []
+    definitions_to_validate = definitions + context_definitions_to_validate if validate_context else []
     [validate_each_definition(definition) for definition in definitions_to_validate]
 
     # This step is necessary to return validated definitions that have had their inheritance applied.
@@ -143,7 +143,9 @@ def _validate_primitive_types(definition: Definition, context: LanguageContext) 
 
 def _recursive_validate_field(source_def: Definition, field_schema: Definition, field_dict: dict, context: LanguageContext) -> list[ValidatorFinding]:
     primitive_types = context.get_primitive_types()
-    validators = {validator.primitive_type: validator for validator in get_enum_validator_plugins()}
+    type_validator_lists = [plugin.get_primitive_validations() for plugin in context.get_plugins() if plugin.get_primitive_validations()]
+    enum_validators = [validation for validation_list in type_validator_lists for validation in validation_list]
+    validators_dict = {validator.primitive_type: validator for validator in enum_validators}
 
     findings = []
     schema_fields = field_schema.get_top_level_fields().get("fields", [])
@@ -159,47 +161,15 @@ def _recursive_validate_field(source_def: Definition, field_schema: Definition, 
 
             for field_value in field_values:
                 if field_type in primitive_types:
-                    validator = validators.get(field_type)
+                    validator = validators_dict.get(field_type)
 
                     if validator:
-                        findings.append(validator.validation_function(source_def, field_value))
+                        finding = validator.validation_function(source_def, field_value)
+                        if finding:
+                            findings.append(finding)
 
                 elif context.is_definition_type(sanitized_field_type):
                     new_field_schema = context.get_definition_by_name(sanitized_field_type)
                     findings.extend(_recursive_validate_field(source_def, new_field_schema, field_value, context))
 
     return findings
-
-
-# def _validate_primitive_types(definition: Definition, context: LanguageContext) -> ValidatorResult:
-#     """Validates the instances of AaC primitive types."""
-#     findings = ValidatorFindings()
-#     primitive_types = context.get_primitive_types()
-
-#     def _filter_primitive_type(field: dict) -> bool:
-#         return field.get("type", "") or "" in primitive_types
-
-#     def _filter_primitive_reference(definition: Definition) -> bool:
-#         primitive_fields = list(filter(_filter_primitive_type, definition.get_top_level_fields().get("fields", [])))
-#         return len(primitive_fields) > 0
-
-#     sub_structure_definitions = get_definition_schema_components(definition, context)
-#     primitive_instances = list(filter(_filter_primitive_reference, sub_structure_definitions))
-
-#     for field_schema in primitive_instances:
-#         primitive_substructures = get_substructures_by_type(definition, field_schema, context)
-#         for field_to_check in primitive_substructures:
-#             field_name = field_to_check.get("name", "")
-
-#             for field_name in definition.get_top_level_fields():
-#                 field = definition.get_top_level_fields().get(field_name)
-#                 field_value =
-#                 print(field_name)
-
-#     substructure_lists = [get_substructures_by_type(definition, schema_definition, context) for schema_definition in primitive_instances]
-#     definition_sections_with_primitive_values = [substructure for substructure_list in substructure_lists for substructure in substructure_list]
-
-#     for section in definition_sections_with_primitive_values:
-#         print(section)
-
-#     return ValidatorResult([definition], findings)
