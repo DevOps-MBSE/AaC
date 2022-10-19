@@ -7,7 +7,7 @@ from attr import Factory, attrib, attrs, validators
 from aac.cli.aac_command import AacCommand
 from aac.lang.definitions.definition import Definition
 from aac.plugins.contributions.contribution_type import ContributionType
-from aac.plugins.contributions.contribution_types import TypeValidationContribution, RuleValidationContribution
+from aac.plugins.contributions.contribution_types import PrimitiveValidationContribution, DefinitionValidationContribution
 from aac.plugins.contributions.plugin_contribution import PluginContribution
 
 
@@ -52,27 +52,27 @@ class ContributionPoints:
 
     # Validator Contribution Point
 
-    def register_validation(self, plugin_name: str, validation: RuleValidationContribution) -> None:
+    def register_validation(self, plugin_name: str, validation: DefinitionValidationContribution) -> None:
         """Register the specified validation."""
         self.register_validations(plugin_name, [validation])
 
-    def register_validations(self, plugin_name: str, validations: list[RuleValidationContribution]) -> None:
+    def register_validations(self, plugin_name: str, validations: list[DefinitionValidationContribution]) -> None:
         """Register the specified validations."""
 
         def validate(validation: Any) -> bool:
-            return isinstance(validation, RuleValidationContribution)
+            return isinstance(validation, DefinitionValidationContribution)
 
         self._register_contributions(plugin_name, ContributionType.VALIDATIONS, validations, validate)
 
-    def get_validations(self) -> list[RuleValidationContribution]:
+    def get_validations(self) -> list[DefinitionValidationContribution]:
         """Return the registered TypeValidationContributions."""
         return self._get_items(ContributionType.VALIDATIONS)
 
-    def get_validation_by_name(self, name: str) -> Optional[RuleValidationContribution]:
+    def get_validation_by_name(self, name: str) -> Optional[DefinitionValidationContribution]:
         """Return the validation with the specified name."""
         return self._get_item_by_name(ContributionType.VALIDATIONS, name)
 
-    def get_validations_by_plugin_name(self, plugin_name: str) -> list[RuleValidationContribution]:
+    def get_validations_by_plugin_name(self, plugin_name: str) -> list[DefinitionValidationContribution]:
         """Return the validation with the specified name."""
         return self._get_items_by_plugin_name(ContributionType.VALIDATIONS, plugin_name)
 
@@ -104,15 +104,15 @@ class ContributionPoints:
 
     # Primitive Type Validation Point
 
-    def register_primitive_validation(self, plugin_name: str, validation: TypeValidationContribution) -> None:
+    def register_primitive_validation(self, plugin_name: str, validation: PrimitiveValidationContribution) -> None:
         """Register the specified primitives validation."""
         self.register_validations(plugin_name, [validation])
 
-    def register_primitive_validations(self, plugin_name: str, validations: list[TypeValidationContribution]) -> None:
+    def register_primitive_validations(self, plugin_name: str, validations: list[PrimitiveValidationContribution]) -> None:
         """Register the specified primitives validations."""
 
         def validate(validation: Any) -> bool:
-            return isinstance(validation, TypeValidationContribution)
+            return isinstance(validation, PrimitiveValidationContribution)
 
         self._register_contributions(plugin_name, ContributionType.PRIMITIVE_VALIDATION, validations, validate)
 
@@ -134,7 +134,7 @@ class ContributionPoints:
         self,
         plugin_name: str,
         contribution_name: ContributionType,
-        items: list[Union[AacCommand, RuleValidationContribution, Definition, TypeValidationContribution]],
+        items: list[Union[AacCommand, DefinitionValidationContribution, Definition, PrimitiveValidationContribution]],
         validation: Callable
     ) -> None:
 

@@ -14,7 +14,7 @@ from aac.lang.constants import (
 )
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.lexeme import Lexeme
-from aac.plugins.contributions.contribution_types import TypeValidationContribution
+from aac.plugins.contributions.contribution_types import PrimitiveValidationContribution
 from aac.plugins.validators._validator_finding import ValidatorFinding, FindingSeverity, FindingLocation
 from aac.validate import ValidationError
 
@@ -92,4 +92,4 @@ def validate_integer(definition: Definition, value_to_validate: Any) -> Optional
     return finding
 
 
-INTEGER_VALIDATOR = TypeValidationContribution(INT_VALIDATION_NAME, PRIMITIVE_TYPE_INT, validate_integer)
+INTEGER_VALIDATOR = PrimitiveValidationContribution(INT_VALIDATION_NAME, PRIMITIVE_TYPE_INT, validate_integer)

@@ -6,7 +6,7 @@ from aac.cli.aac_command import AacCommand
 from aac.lang.definitions.definition import Definition
 from aac.plugins import hookspecs, PLUGIN_PROJECT_NAME
 from aac.plugins.plugin import Plugin
-from aac.plugins.contributions.contribution_types import TypeValidationContribution, RuleValidationContribution
+from aac.plugins.contributions.contribution_types import PrimitiveValidationContribution, DefinitionValidationContribution
 
 
 def get_plugin_manager() -> PluginManager:
@@ -108,7 +108,7 @@ def get_plugin_definitions() -> list[Definition]:
     return list(map(set_files_to_not_user_editable, definitions_list))
 
 
-def get_validator_plugins() -> list[RuleValidationContribution]:
+def get_validator_plugins() -> list[DefinitionValidationContribution]:
     """
     Get a list of registered validators and metadata.
 
@@ -119,7 +119,7 @@ def get_validator_plugins() -> list[RuleValidationContribution]:
     return [validation for validation_list in validation_lists for validation in validation_list]
 
 
-def get_enum_validator_plugins() -> list[TypeValidationContribution]:
+def get_enum_validator_plugins() -> list[PrimitiveValidationContribution]:
     """
     Get a list of registered enum/type validators and metadata.
 

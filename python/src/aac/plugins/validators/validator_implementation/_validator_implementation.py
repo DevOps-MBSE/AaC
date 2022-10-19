@@ -5,7 +5,7 @@ from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.structure import get_substructures_by_type
 from aac.plugins.plugin_manager import get_validator_plugins
 from aac.plugins.validators import ValidatorFindings, ValidatorResult
-from aac.plugins.contributions.contribution_types import TypeValidationContribution
+from aac.plugins.contributions.contribution_types import PrimitiveValidationContribution
 
 
 PLUGIN_NAME = "Validation definition has an implementation"
@@ -26,7 +26,7 @@ def validate_validator_implementations(definition_under_test: Definition, target
     findings = ValidatorFindings()
 
     def validate_dict(dict_to_validate: dict) -> None:
-        def get_validator_by_name(name: str, plugins: list[TypeValidationContribution]) -> list[TypeValidationContribution]:
+        def get_validator_by_name(name: str, plugins: list[PrimitiveValidationContribution]) -> list[PrimitiveValidationContribution]:
             return list(filter(lambda plugin: plugin.name == name, plugins))
 
         validator_implementations = get_validator_plugins()

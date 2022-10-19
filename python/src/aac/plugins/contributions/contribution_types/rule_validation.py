@@ -6,7 +6,7 @@ from aac.lang.definitions.definition import Definition
 
 
 @attrs(hash=False)
-class RuleValidationContribution:
+class DefinitionValidationContribution:
     """
     A class that contains all the relevant information to manage and execute rule validator contributions with the validation process.
 

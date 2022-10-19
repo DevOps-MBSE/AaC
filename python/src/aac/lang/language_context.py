@@ -21,7 +21,7 @@ from aac.lang.definitions.extensions import apply_extension_to_definition, remov
 from aac.lang.definitions.type import remove_list_type_indicator
 from aac.lang.language_error import LanguageError
 from aac.plugins.plugin import Plugin
-from aac.plugins.contributions.contribution_types import TypeValidationContribution, RuleValidationContribution
+from aac.plugins.contributions.contribution_types import PrimitiveValidationContribution, DefinitionValidationContribution
 
 
 @attrs(slots=True, auto_attribs=True)
@@ -425,7 +425,7 @@ class LanguageContext:
         """
         return self.plugins
 
-    def get_validator_plugins(self) -> list[RuleValidationContribution]:
+    def get_validator_plugins(self) -> list[DefinitionValidationContribution]:
         """
         Get a list of registered validators and metadata in the context.
 
@@ -435,7 +435,7 @@ class LanguageContext:
         validation_lists = [plugin.get_validations() for plugin in self.get_plugins() if plugin.get_validations()]
         return [validation for validation_list in validation_lists for validation in validation_list]
 
-    def get_enum_validator_plugins(self) -> list[TypeValidationContribution]:
+    def get_enum_validator_plugins(self) -> list[PrimitiveValidationContribution]:
         """
         Get a list of registered enum/type validators and metadata in the context.
 

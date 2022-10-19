@@ -6,12 +6,12 @@ from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.search import search_definition
 from aac.lang.definitions.schema import get_definition_schema_components
 from aac.lang.hierarchy import get_definition_ancestry
-from aac.plugins.contributions.contribution_types import TypeValidationContribution
+from aac.plugins.contributions.contribution_types import PrimitiveValidationContribution
 
 
 def get_applicable_validators_for_definition(
-    definition: Definition, validator_plugins: list[TypeValidationContribution], context: LanguageContext
-) -> list[TypeValidationContribution]:
+    definition: Definition, validator_plugins: list[PrimitiveValidationContribution], context: LanguageContext
+) -> list[PrimitiveValidationContribution]:
     """
     Return a list of all validator plugins that are applicable to the definition.
 
@@ -64,7 +64,7 @@ def _get_validation_entries(definition: Definition) -> list[dict]:
     return validations
 
 
-def _get_validator_plugin_by_name(validator_name: str, validator_plugins: list[TypeValidationContribution]) -> Optional[TypeValidationContribution]:
+def _get_validator_plugin_by_name(validator_name: str, validator_plugins: list[PrimitiveValidationContribution]) -> Optional[PrimitiveValidationContribution]:
     filtered_validators = list(filter(lambda plugin: plugin.name == validator_name, validator_plugins))
     filtered_validators_count = len(filtered_validators)
 

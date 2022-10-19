@@ -4,7 +4,7 @@ from attr import attrib, attrs, validators
 
 
 @attrs(hash=False)
-class TypeValidationContribution:
+class PrimitiveValidationContribution:
     """
     A class that contains all the relevant information to manage and execute type validator contributions against type-value enums in the validation process.
 
