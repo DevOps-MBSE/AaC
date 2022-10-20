@@ -1,4 +1,3 @@
-from typing import Any
 from os import linesep
 from aac.lang.active_context_lifecycle_manager import get_active_context
 

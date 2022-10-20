@@ -187,6 +187,7 @@ def _error_if_not_complete(source, content, models):
     models_without_imports = list(filter(lambda m: not is_import(m), models))
     all(map(assert_definition_has_name, models_without_imports))
 
+
 def _read_file_content(arch_file: str) -> str:
     """
     Read file content method extracts text content from the specified file.
