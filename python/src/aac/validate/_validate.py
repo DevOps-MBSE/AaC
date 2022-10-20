@@ -157,8 +157,8 @@ def _recursive_validate_field(
     type_validator_lists = [
         plugin.get_primitive_validations() for plugin in context.get_plugins() if plugin.get_primitive_validations()
     ]
-    enum_validators = [validation for validation_list in type_validator_lists for validation in validation_list]
-    validators_dict = {validator.primitive_type: validator for validator in enum_validators}
+    primitive_validators = [validation for validation_list in type_validator_lists for validation in validation_list]
+    validators_dict = {validator.primitive_type: validator for validator in primitive_validators}
 
     findings = []
     schema_fields = field_schema.get_top_level_fields().get("fields", [])

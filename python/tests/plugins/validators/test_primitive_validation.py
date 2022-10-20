@@ -2,6 +2,7 @@ from os import linesep
 from aac.lang.active_context_lifecycle_manager import get_active_context
 
 from aac.validate import validated_source
+from aac.io.constants import DEFINITION_SEPARATOR
 from aac.plugins.first_party.primitive_type_check import INTEGER_VALIDATOR
 
 from tests.active_context_test_case import ActiveContextTestCase
@@ -20,13 +21,13 @@ from tests.helpers.prebuilt_definition_constants import (
 
 class TestPrimitiveValidation(ActiveContextTestCase):
 
-    VALID_PRIMITIVES_FILE_CONTENT = linesep.join([
+    VALID_PRIMITIVES_FILE_CONTENT = DEFINITION_SEPARATOR.join([
         TEST_TYPES_SCHEMA_DEFINITION.to_yaml(),
         TEST_TYPES_SCHEMA_EXTENSION_DEFINITION.to_yaml(),
         TEST_TYPES_VALID_INSTANCE.to_yaml()
     ])
 
-    INVALID_PRIMITIVES_FILE_CONTENT = linesep.join([
+    INVALID_PRIMITIVES_FILE_CONTENT = DEFINITION_SEPARATOR.join([
         TEST_TYPES_SCHEMA_DEFINITION.to_yaml(),
         TEST_TYPES_SCHEMA_EXTENSION_DEFINITION.to_yaml(),
         TEST_TYPES_INVALID_INSTANCE.to_yaml()
@@ -39,8 +40,14 @@ class TestPrimitiveValidation(ActiveContextTestCase):
 
     def test_type_check_invalid(self):
         with temporary_test_file(self.INVALID_PRIMITIVES_FILE_CONTENT) as test_file:
-            with validated_source(test_file.name) as result:
-                assert_validator_result_failure(result)
+            with self.assertRaises(Exception) as context:
+                with validated_source(test_file.name) as result:
+                    pass
+
+                self.assertIsNotNone(context.exception)
+
+                self.assertIn(INTEGER_VALIDATOR.name, context.exception)
+                self.assertIn(INTEGER_VALIDATOR.primitive_type, context.exception)
 
     def test_integer_type_check_valid(self):
         test_context = get_active_context()

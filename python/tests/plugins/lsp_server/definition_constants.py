@@ -1,4 +1,4 @@
-from aac.io.constants import YAML_DOCUMENT_SEPARATOR
+from aac.io.constants import DEFINITION_SEPARATOR
 
 from tests.helpers.parsed_definitions import (
     create_enum_definition,
@@ -89,7 +89,7 @@ TEST_SERVICE_THREE_BEHAVIOR = create_behavior_entry(
 TEST_SERVICE_THREE = create_model_definition(TEST_SERVICE_THREE_NAME, behavior=[TEST_SERVICE_THREE_BEHAVIOR])
 
 TEST_DOCUMENT_NAME = "test.aac"
-TEST_DOCUMENT_CONTENT = f"{YAML_DOCUMENT_SEPARATOR}\n".join([TEST_SCHEMA_A.to_yaml(), TEST_SCHEMA_B.to_yaml(), TEST_SERVICE_ONE.to_yaml()])
+TEST_DOCUMENT_CONTENT = DEFINITION_SEPARATOR.join([TEST_SCHEMA_A.to_yaml(), TEST_SCHEMA_B.to_yaml(), TEST_SERVICE_ONE.to_yaml()])
 
 MALFORMED_EXTRA_FIELD_NAME = "extrafield"
 MALFORMED_EXTRA_FIELD_CONTENT = "extracontent"
