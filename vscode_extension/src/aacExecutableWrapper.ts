@@ -65,20 +65,24 @@ export async function getAaCVersion(): Promise<string | null> {
 }
 
 async function getCommandArgUserInput(commandArguments: CommandArgument[]) {
+    const hasPathArgument = (argument: CommandArgument, options: string[]) =>
+        options.some(option => argument.description?.toLowerCase().includes(option));
+
     let argumentsWithoutUserResponse: CommandArgument[] = commandArguments
         .filter(argument => !argument.userResponse)
         .filter(argument => !argument.name?.includes("--help"));
 
     for (let index = 0; index < argumentsWithoutUserResponse.length; ++index) {
         let argumentToPromptUserFor = argumentsWithoutUserResponse[index];
-        if (argumentToPromptUserFor.description?.toLowerCase().includes("path")) {
+        if (hasPathArgument(argumentToPromptUserFor, ["path", "file", "directory"])) {
             const dialogBoxOptions: OpenDialogOptions = {
                 title: argumentToPromptUserFor.name,
-                canSelectMany: false
+                canSelectMany: hasPathArgument(argumentToPromptUserFor, ["paths", "files", "directories"]),
+                canSelectFolders: hasPathArgument(argumentToPromptUserFor, ["directory", "directories"]),
             };
 
-            let fileUri: Uri[] | undefined = await window.showOpenDialog(dialogBoxOptions);
-            argumentToPromptUserFor.userResponse = fileUri ? fileUri[0]?.path : "";
+            let fileUris: Uri[] | undefined = await window.showOpenDialog(dialogBoxOptions);
+            argumentToPromptUserFor.userResponse = fileUris ? fileUris.map(uri => uri.path).join(",") : "";
         } else {
             const inputBoxOptions: InputBoxOptions = {
                 title: argumentToPromptUserFor.name,
