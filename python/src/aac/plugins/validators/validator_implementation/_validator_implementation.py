@@ -4,7 +4,7 @@ from aac.lang.language_context import LanguageContext
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.structure import get_substructures_by_type
 from aac.plugins.validators import ValidatorFindings, ValidatorResult
-from aac.plugins.contributions.contribution_types import PrimitiveValidationContribution
+from aac.plugins.contributions.contribution_types import DefinitionValidationContribution
 
 
 PLUGIN_NAME = "Validation definition has an implementation"
@@ -17,7 +17,7 @@ def validate_validator_implementations(
     *validation_args,
 ) -> ValidatorResult:
     """
-    Validates that the validation definition has a corresponding registered TypeValidationContribution.
+    Validates that the validation definition has a corresponding registered DefinitionValidationContribution.
 
     Args:
         definition_under_test (Definition): The definition that's being validated. (Root validation definitions)
@@ -31,8 +31,8 @@ def validate_validator_implementations(
 
     def validate_dict(dict_to_validate: dict) -> None:
         def get_validator_by_name(
-            name: str, plugins: list[PrimitiveValidationContribution]
-        ) -> list[PrimitiveValidationContribution]:
+            name: str, plugins: list[DefinitionValidationContribution]
+        ) -> list[DefinitionValidationContribution]:
             return list(filter(lambda plugin: plugin.name == name, plugins))
 
         validator_implementations = language_context.get_definition_validations()
