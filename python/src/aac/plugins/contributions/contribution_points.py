@@ -49,6 +49,32 @@ class ContributionPoints:
         """Return the command with the specified name."""
         return self._get_items_by_plugin_name(ContributionType.COMMANDS, plugin_name)
 
+    # Definition Contribution Point
+
+    def register_definition(self, plugin_name: str, definition: Definition) -> None:
+        """Register the specified definition."""
+        self.register_definitions(plugin_name, [definition])
+
+    def register_definitions(self, plugin_name: str, definitions: list[Definition]) -> None:
+        """Register the specified definitions."""
+
+        def validate(definition: Any) -> bool:
+            return isinstance(definition, Definition)
+
+        self._register_contributions(plugin_name, ContributionType.DEFINITIONS, definitions, validate)
+
+    def get_definitions(self) -> list[AacCommand]:
+        """Return the registered Definitions."""
+        return self._get_items(ContributionType.DEFINITIONS)
+
+    def get_definition_by_name(self, name: str) -> Optional[Definition]:
+        """Return the definition with the specified name."""
+        return self._get_item_by_name(ContributionType.DEFINITIONS, name)
+
+    def get_definitions_by_plugin_name(self, plugin_name: str) -> list[Definition]:
+        """Return the definition with the specified name."""
+        return self._get_items_by_plugin_name(ContributionType.DEFINITIONS, plugin_name)
+
     # Definition Validation Contribution Point
 
     def register_definition_validation(self, plugin_name: str, validation: DefinitionValidationContribution) -> None:
@@ -92,32 +118,6 @@ class ContributionPoints:
     def get_definition_validations_by_plugin_name(self, plugin_name: str) -> list[DefinitionValidationContribution]:
         """Return the definition validation with the specified name."""
         return self._get_items_by_plugin_name(ContributionType.DEFINITION_VALIDATIONS, plugin_name)
-
-    # Definition Contribution Point
-
-    def register_definition(self, plugin_name: str, definition: Definition) -> None:
-        """Register the specified definition."""
-        self.register_definitions(plugin_name, [definition])
-
-    def register_definitions(self, plugin_name: str, definitions: list[Definition]) -> None:
-        """Register the specified definitions."""
-
-        def validate(definition: Any) -> bool:
-            return isinstance(definition, Definition)
-
-        self._register_contributions(plugin_name, ContributionType.DEFINITIONS, definitions, validate)
-
-    def get_definitions(self) -> list[AacCommand]:
-        """Return the registered Definitions."""
-        return self._get_items(ContributionType.DEFINITIONS)
-
-    def get_definition_by_name(self, name: str) -> Optional[Definition]:
-        """Return the definition with the specified name."""
-        return self._get_item_by_name(ContributionType.DEFINITIONS, name)
-
-    def get_definitions_by_plugin_name(self, plugin_name: str) -> list[Definition]:
-        """Return the definition with the specified name."""
-        return self._get_items_by_plugin_name(ContributionType.DEFINITIONS, plugin_name)
 
     # Primitive Validation Contribution Point
 
