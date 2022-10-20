@@ -15,7 +15,7 @@ class TestPlugin(TestCase):
         assert_items_are_registered(self, commands, self.plugin.register_commands, self.plugin.get_commands)
 
         validations = {create_validation("Test", create_validation_definition("validation"))}
-        assert_items_are_registered(self, validations, self.plugin.register_validations, self.plugin.get_validations)
+        assert_items_are_registered(self, validations, self.plugin.register_definition_validations, self.plugin.get_definition_validations)
 
         definitions = {create_schema_definition("Test")}
         assert_items_are_registered(self, definitions, self.plugin.register_definitions, self.plugin.get_definitions)

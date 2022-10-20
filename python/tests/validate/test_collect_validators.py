@@ -22,7 +22,7 @@ class TestCollectValidators(ActiveContextTestCase):
         test_definition = create_schema_definition("Empty Schema")
         active_context = get_active_context()
 
-        validation_plugins = active_context.get_validator_plugins()
+        validation_plugins = active_context.get_definition_validations()
 
         schema_definition = active_context.get_definition_by_name("schema")
         field_definition = active_context.get_definition_by_name("Field")
@@ -39,7 +39,7 @@ class TestCollectValidators(ActiveContextTestCase):
         test_definition = create_schema_definition("DataWithField", fields=[test_field])
         active_context = get_active_context()
 
-        validation_plugins = active_context.get_validator_plugins()
+        validation_plugins = active_context.get_definition_validations()
 
         schema_definition = get_definition_by_name("schema", active_context.definitions)
         schema_validations = search_definition(schema_definition, ["schema", "validation"])
@@ -56,7 +56,7 @@ class TestCollectValidators(ActiveContextTestCase):
         test_definition = create_model_definition("ModelWithField", state=[test_field])
         active_context = get_active_context()
 
-        validation_plugins = active_context.get_validator_plugins()
+        validation_plugins = active_context.get_definition_validations()
 
         schema_definition = get_definition_by_name("schema", active_context.definitions)
         schema_validations = search_definition(schema_definition, ["schema", "validation"])
@@ -75,7 +75,7 @@ class TestCollectValidators(ActiveContextTestCase):
 
         active_context = get_active_context()
 
-        validation_plugins = active_context.get_validator_plugins()
+        validation_plugins = active_context.get_definition_validations()
 
         field_definition = get_definition_by_name(target_definition_key, active_context.definitions)
 
@@ -90,7 +90,7 @@ class TestCollectValidators(ActiveContextTestCase):
     def test_get_applicable_validators_for_definition_enum_returns_schema_validator(self):
         active_context = get_active_context()
 
-        validation_plugins = active_context.get_validator_plugins()
+        validation_plugins = active_context.get_definition_validations()
 
         enum_definition = create_enum_definition("Test Enum", ["val1", "val2"])
         schema_definition = get_definition_by_name("schema", active_context.definitions)
@@ -117,7 +117,7 @@ class TestCollectValidators(ActiveContextTestCase):
 
     def test__get_validator_plugin_by_name(self):
         active_context = get_active_context()
-        validation_plugins = active_context.get_validator_plugins()
+        validation_plugins = active_context.get_definition_validations()
 
         self.assertGreater(len(validation_plugins), 0)
 

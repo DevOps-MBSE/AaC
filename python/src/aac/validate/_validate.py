@@ -74,7 +74,7 @@ def _validate_definitions(definitions: list[Definition], validate_context: bool)
     active_context = get_active_context()
     active_context.add_definitions_to_context(definitions)
 
-    validator_plugins = active_context.get_validator_plugins()
+    validator_plugins = active_context.get_definition_validations()
 
     combined_findings = ValidatorFindings()
 
@@ -113,14 +113,19 @@ def _validate_definition(
                 validator_plugin = list(filter(lambda plugin: plugin.name == validation_name, applicable_validator_plugins))
 
                 if validator_plugin:
-                    validator_results.append(_apply_validator(definition, target_schema_definition, context, validator_plugin[0]))
+                    validator_results.append(
+                        _apply_validator(definition, target_schema_definition, context, validator_plugin[0])
+                    )
 
     validator_results.append(_validate_primitive_types(definition, context))
     return validator_results
 
 
 def _apply_validator(
-    definition: Definition, target_schema_definition: Definition, context: LanguageContext, validator_plugin: PrimitiveValidationContribution
+    definition: Definition,
+    target_schema_definition: Definition,
+    context: LanguageContext,
+    validator_plugin: PrimitiveValidationContribution,
 ) -> ValidatorResult:
     """Executes the validator callback on the applicable dictionary structure or substructure."""
     validation_args: list[str] = []
@@ -138,14 +143,20 @@ def _validate_primitive_types(definition: Definition, context: LanguageContext) 
     findings = ValidatorFindings()
     definition_schema = get_definition_schema(definition, context)
     if definition_schema:
-        findings.add_findings(_recursive_validate_field(definition, definition_schema, definition.get_top_level_fields(), context))
+        findings.add_findings(
+            _recursive_validate_field(definition, definition_schema, definition.get_top_level_fields(), context)
+        )
 
     return ValidatorResult([definition], findings)
 
 
-def _recursive_validate_field(source_def: Definition, field_schema: Definition, field_dict: dict, context: LanguageContext) -> list[ValidatorFinding]:
+def _recursive_validate_field(
+    source_def: Definition, field_schema: Definition, field_dict: dict, context: LanguageContext
+) -> list[ValidatorFinding]:
     primitive_types = context.get_primitive_types()
-    type_validator_lists = [plugin.get_primitive_validations() for plugin in context.get_plugins() if plugin.get_primitive_validations()]
+    type_validator_lists = [
+        plugin.get_primitive_validations() for plugin in context.get_plugins() if plugin.get_primitive_validations()
+    ]
     enum_validators = [validation for validation_list in type_validator_lists for validation in validation_list]
     validators_dict = {validator.primitive_type: validator for validator in enum_validators}
 

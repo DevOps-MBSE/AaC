@@ -70,6 +70,7 @@ class LanguageContext:
         if definition.get_inherits():
             # This import is located here because the inheritance module uses the language context for lookup, causing a circular dependency at initialization
             from aac.lang.definitions.inheritance import apply_inherited_attributes_to_definition
+
             apply_inherited_attributes_to_definition(new_definition, self)
 
         if definition.is_extension():
@@ -425,24 +426,28 @@ class LanguageContext:
         """
         return self.plugins
 
-    def get_validator_plugins(self) -> list[DefinitionValidationContribution]:
+    def get_definition_validations(self) -> list[DefinitionValidationContribution]:
         """
-        Get a list of registered validators and metadata in the context.
+        Get a list of registered validations and metadata in the context.
 
         Returns:
             A list of validator plugins that are currently registered.
         """
-        validation_lists = [plugin.get_validations() for plugin in self.get_plugins() if plugin.get_validations()]
+        validation_lists = [
+            plugin.get_definition_validations() for plugin in self.get_plugins() if plugin.get_definition_validations()
+        ]
         return [validation for validation_list in validation_lists for validation in validation_list]
 
-    def get_enum_validator_plugins(self) -> list[PrimitiveValidationContribution]:
+    def get_primitive_validations(self) -> list[PrimitiveValidationContribution]:
         """
-        Get a list of registered enum/type validators and metadata in the context.
+        Get a list of registered enum/type validations and metadata in the context.
 
         Returns:
             A list of validator plugins that are currently registered.
         """
-        type_validator_lists = [plugin.get_primitive_validations() for plugin in self.get_plugins() if plugin.get_primitive_validations()]
+        type_validator_lists = [
+            plugin.get_primitive_validations() for plugin in self.get_plugins() if plugin.get_primitive_validations()
+        ]
         return [validation for validation_list in type_validator_lists for validation in validation_list]
 
     def get_files_in_context(self) -> list[AaCFile]:

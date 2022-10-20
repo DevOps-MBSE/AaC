@@ -5,7 +5,7 @@ from attr import Factory, attrib, attrs, validators
 from aac.cli.aac_command import AacCommand
 from aac.lang.definitions.definition import Definition
 from aac.plugins.contributions.contribution_points import ContributionPoints
-from aac.plugins.contributions.contribution_types.type_validation import PrimitiveValidationContribution
+from aac.plugins.contributions.contribution_types import DefinitionValidationContribution, PrimitiveValidationContribution
 
 
 @attrs(hash=False)
@@ -35,13 +35,21 @@ class Plugin:
         """Get the commands registered by this plugin."""
         return self.contributions.get_commands_by_plugin_name(self.name)
 
-    def register_validations(self, validations: list[PrimitiveValidationContribution]):
+    def register_definition_validations(self, validations: list[DefinitionValidationContribution]):
         """Register the specified validations."""
-        self.contributions.register_validations(self.name, validations)
+        self.contributions.register_definition_validations(self.name, validations)
 
-    def get_validations(self) -> list[PrimitiveValidationContribution]:
+    def get_definition_validations(self) -> list[DefinitionValidationContribution]:
         """Get the validations registered by this plugin."""
-        return self.contributions.get_validations_by_plugin_name(self.name)
+        return self.contributions.get_definition_validations_by_plugin_name(self.name)
+
+    def register_primitive_validations(self, validations: list[PrimitiveValidationContribution]):
+        """Register the specified primitive validations."""
+        self.contributions.register_primitive_validations(self.name, validations)
+
+    def get_primitive_validations(self) -> list[PrimitiveValidationContribution]:
+        """Get the primitive validations registered by this plugin."""
+        return self.contributions.get_primitive_validations_by_plugin_name(self.name)
 
     def register_definitions(self, definitions: list[Definition]):
         """Register the specified definitions."""
@@ -50,11 +58,3 @@ class Plugin:
     def get_definitions(self) -> list[Definition]:
         """Get the definitions registered by this plugin."""
         return self.contributions.get_definitions_by_plugin_name(self.name)
-
-    def register_primitive_validations(self, definitions: list[PrimitiveValidationContribution]):
-        """Register the specified definitions."""
-        self.contributions.register_primitive_validations(self.name, definitions)
-
-    def get_primitive_validations(self) -> list[PrimitiveValidationContribution]:
-        """Get the definitions registered by this plugin."""
-        return self.contributions.get_primitive_validations_by_plugin_name(self.name)

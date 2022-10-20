@@ -50,30 +50,48 @@ class ContributionPoints:
         """Return the command with the specified name."""
         return self._get_items_by_plugin_name(ContributionType.COMMANDS, plugin_name)
 
-    # Validator Contribution Point
+    # Definition Validation Contribution Point
 
-    def register_validation(self, plugin_name: str, validation: DefinitionValidationContribution) -> None:
-        """Register the specified validation."""
-        self.register_validations(plugin_name, [validation])
+    def register_definition_validation(self, plugin_name: str, validation: DefinitionValidationContribution) -> None:
+        """
+        Register the specified definition validation.
 
-    def register_validations(self, plugin_name: str, validations: list[DefinitionValidationContribution]) -> None:
-        """Register the specified validations."""
+        The definition validation contribution point is used to register programmatic
+            implementations of definition validation rules.
+
+        Args:
+            plugin_name (str): The name of the plugin that is providing the definition validation.
+            validation (DefinitionValidationContribution): The definition validation that are being registered.
+        """
+        self.register_definition_validations(plugin_name, [validation])
+
+    def register_definition_validations(self, plugin_name: str, validations: list[DefinitionValidationContribution]) -> None:
+        """
+        Register the specified definition validations.
+
+        The definition validation contribution point is used to register programmatic
+            implementations of definition validation rules.
+
+        Args:
+            plugin_name (str): The name of the plugin that is providing the definition validation.
+            validation (list[DefinitionValidationContribution]): The definition validations that are being registered.
+        """
 
         def validate(validation: Any) -> bool:
             return isinstance(validation, DefinitionValidationContribution)
 
         self._register_contributions(plugin_name, ContributionType.VALIDATIONS, validations, validate)
 
-    def get_validations(self) -> list[DefinitionValidationContribution]:
-        """Return the registered TypeValidationContributions."""
+    def get_definition_validations(self) -> list[DefinitionValidationContribution]:
+        """Return the registered DefinitionValidationContribution."""
         return self._get_items(ContributionType.VALIDATIONS)
 
-    def get_validation_by_name(self, name: str) -> Optional[DefinitionValidationContribution]:
-        """Return the validation with the specified name."""
+    def get_definition_validation_by_name(self, name: str) -> Optional[DefinitionValidationContribution]:
+        """Return the definition validation with the specified name."""
         return self._get_item_by_name(ContributionType.VALIDATIONS, name)
 
-    def get_validations_by_plugin_name(self, plugin_name: str) -> list[DefinitionValidationContribution]:
-        """Return the validation with the specified name."""
+    def get_definition_validations_by_plugin_name(self, plugin_name: str) -> list[DefinitionValidationContribution]:
+        """Return the definition validation with the specified name."""
         return self._get_items_by_plugin_name(ContributionType.VALIDATIONS, plugin_name)
 
     # Definition Contribution Point
@@ -102,14 +120,31 @@ class ContributionPoints:
         """Return the definition with the specified name."""
         return self._get_items_by_plugin_name(ContributionType.DEFINITIONS, plugin_name)
 
-    # Primitive Type Validation Point
+    # Primitive Validation Contribution Point
 
     def register_primitive_validation(self, plugin_name: str, validation: PrimitiveValidationContribution) -> None:
-        """Register the specified primitives validation."""
-        self.register_validations(plugin_name, [validation])
+        """Register the specified primitive type validation.
+
+        The primitive validation contribution point is used to register programmatic
+            implementations of primitive validation rules.
+
+        Args:
+            plugin_name (str): The name of the plugin that is providing the primitive validation.
+            validation (PrimitiveValidationContribution): The definition validation that are being registered.
+        """
+        self.register_definition_validations(plugin_name, [validation])
 
     def register_primitive_validations(self, plugin_name: str, validations: list[PrimitiveValidationContribution]) -> None:
-        """Register the specified primitives validations."""
+        """
+        Register the specified primitive type validations.
+
+        The primitive validation contribution point is used to register programmatic
+            implementations of primitive validation rules.
+
+        Args:
+            plugin_name (str): The name of the plugin that is providing the primitive validation.
+            validation (list[PrimitiveValidationContribution]): The definition validations that are being registered.
+        """
 
         def validate(validation: Any) -> bool:
             return isinstance(validation, PrimitiveValidationContribution)
@@ -135,12 +170,13 @@ class ContributionPoints:
         plugin_name: str,
         contribution_name: ContributionType,
         items: list[Union[AacCommand, DefinitionValidationContribution, Definition, PrimitiveValidationContribution]],
-        validation: Callable
+        validation: Callable,
     ) -> None:
-
         def register_contribution(item) -> None:
             if not validation(item):
-                raise InvalidContributionPointError(f"Error adding {item.name} as a {contribution_name} registered by {plugin_name}")
+                raise InvalidContributionPointError(
+                    f"Error adding {item.name} as a {contribution_name} registered by {plugin_name}"
+                )
 
             contribution_items.add(item)
 
@@ -163,7 +199,9 @@ class ContributionPoints:
         return items[0] if len(items) > 0 else None
 
     def _get_items_by_plugin_name(self, contribution_type: ContributionType, plugin_name: str) -> list:
-        contributions = [contrib for contrib in self._get_contributions_by_type(contribution_type) if contrib.plugin_name == plugin_name]
+        contributions = [
+            contrib for contrib in self._get_contributions_by_type(contribution_type) if contrib.plugin_name == plugin_name
+        ]
         return list(contributions[0].items) if len(contributions) > 0 else []
 
 

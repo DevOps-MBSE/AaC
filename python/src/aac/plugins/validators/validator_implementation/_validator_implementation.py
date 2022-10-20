@@ -10,7 +10,12 @@ from aac.plugins.contributions.contribution_types import PrimitiveValidationCont
 PLUGIN_NAME = "Validation definition has an implementation"
 
 
-def validate_validator_implementations(definition_under_test: Definition, target_schema_definition: Definition, language_context: LanguageContext, *validation_args) -> ValidatorResult:
+def validate_validator_implementations(
+    definition_under_test: Definition,
+    target_schema_definition: Definition,
+    language_context: LanguageContext,
+    *validation_args,
+) -> ValidatorResult:
     """
     Validates that the validation definition has a corresponding registered TypeValidationContribution.
 
@@ -25,10 +30,12 @@ def validate_validator_implementations(definition_under_test: Definition, target
     findings = ValidatorFindings()
 
     def validate_dict(dict_to_validate: dict) -> None:
-        def get_validator_by_name(name: str, plugins: list[PrimitiveValidationContribution]) -> list[PrimitiveValidationContribution]:
+        def get_validator_by_name(
+            name: str, plugins: list[PrimitiveValidationContribution]
+        ) -> list[PrimitiveValidationContribution]:
             return list(filter(lambda plugin: plugin.name == name, plugins))
 
-        validator_implementations = language_context.get_validator_plugins()
+        validator_implementations = language_context.get_definition_validations()
         validation_name = dict_to_validate.get("name")
 
         validation_plugins = get_validator_by_name(validation_name, validator_implementations)

@@ -14,7 +14,7 @@ class TestValidateDefinition(ActiveContextTestCase):
         test_definition = create_schema_definition("Test", fields=[test_field])
         test_context = get_active_context(reload_context=True)
 
-        validation_plugins = test_context.get_validator_plugins()
+        validation_plugins = test_context.get_definition_validations()
 
         actual_results = _validate_definition(test_definition, validation_plugins, test_context)
 
@@ -28,7 +28,7 @@ class TestValidateDefinition(ActiveContextTestCase):
         test_definition = create_schema_definition("Test", fields=[test_field])
         test_context = get_active_context(reload_context=True)
 
-        validation_plugins = test_context.get_validator_plugins()
+        validation_plugins = test_context.get_definition_validations()
 
         actual_results = _validate_definition(test_definition, validation_plugins, test_context)
 

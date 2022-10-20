@@ -35,7 +35,7 @@ def get_plugin_manager() -> PluginManager:
         "material_model",
         "help_dump",
         "rest_api",
-        "primitive_type_check"
+        "primitive_type_check",
     ]
 
     # register "built-in" commands
@@ -115,7 +115,7 @@ def get_validator_plugins() -> list[DefinitionValidationContribution]:
     Returns:
         A list of validator plugins that are currently registered.
     """
-    validation_lists = [plugin.get_validations() for plugin in get_plugins() if plugin.get_validations()]
+    validation_lists = [plugin.get_definition_validations() for plugin in get_plugins() if plugin.get_definition_validations()]
     return [validation for validation_list in validation_lists for validation in validation_list]
 
 
@@ -126,5 +126,7 @@ def get_enum_validator_plugins() -> list[PrimitiveValidationContribution]:
     Returns:
         A list of validator plugins that are currently registered.
     """
-    type_validator_lists = [plugin.get_primitive_validations() for plugin in get_plugins() if plugin.get_primitive_validations()]
+    type_validator_lists = [
+        plugin.get_primitive_validations() for plugin in get_plugins() if plugin.get_primitive_validations()
+    ]
     return [validation for validation_list in type_validator_lists for validation in validation_list]
