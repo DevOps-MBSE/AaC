@@ -21,7 +21,7 @@ from aac.lang.definitions.extensions import apply_extension_to_definition, remov
 from aac.lang.definitions.type import remove_list_type_indicator
 from aac.lang.language_error import LanguageError
 from aac.plugins.plugin import Plugin
-from aac.plugins.contributions.contribution_types import PrimitiveValidationContribution, DefinitionValidationContribution
+from aac.plugins.contributions.contribution_types import DefinitionValidationContribution, PrimitiveValidationContribution
 
 
 @attrs(slots=True, auto_attribs=True)

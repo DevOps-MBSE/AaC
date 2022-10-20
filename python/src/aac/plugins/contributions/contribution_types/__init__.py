@@ -6,6 +6,6 @@ from aac.plugins.contributions.contribution_types.contribution_type import Contr
 
 __all__ = (
     ContributionType.__name__,
-    DefinitionValidationContribution.__name__,
     PrimitiveValidationContribution.__name__,
+    DefinitionValidationContribution.__name__,
 )

@@ -2,16 +2,17 @@ import logging
 from typing import Optional
 
 from aac.lang.language_context import LanguageContext
+from aac.lang.constants import DEFINITION_FIELD_NAME, DEFINITION_FIELD_VALIDATION, ROOT_KEY_SCHEMA
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.search import search_definition
 from aac.lang.definitions.schema import get_definition_schema_components
 from aac.lang.hierarchy import get_definition_ancestry
-from aac.plugins.contributions.contribution_types import PrimitiveValidationContribution
+from aac.plugins.contributions.contribution_types import DefinitionValidationContribution
 
 
 def get_applicable_validators_for_definition(
-    definition: Definition, validator_plugins: list[PrimitiveValidationContribution], context: LanguageContext
-) -> list[PrimitiveValidationContribution]:
+    definition: Definition, validator_plugins: list[DefinitionValidationContribution], context: LanguageContext
+) -> list[DefinitionValidationContribution]:
     """
     Return a list of all validator plugins that are applicable to the definition.
 
@@ -39,7 +40,7 @@ def get_applicable_validators_for_definition(
 
     applicable_validators = {}
     for validation_dict in applicable_validation_dicts:
-        validation_name = validation_dict.get("name")
+        validation_name = validation_dict.get(DEFINITION_FIELD_NAME)
         validator_plugin = _get_validator_plugin_by_name(validation_name, validator_plugins)
 
         if validator_plugin:
@@ -58,13 +59,13 @@ def _get_validation_entries(definition: Definition) -> list[dict]:
     validations = {}
 
     # Currently validations are only registered in `data` root definitions.
-    if definition.get_root_key() == "schema":
-        validations = search_definition(definition, ["schema", "validation"])
+    if definition.get_root_key() == ROOT_KEY_SCHEMA:
+        validations = search_definition(definition, [ROOT_KEY_SCHEMA, DEFINITION_FIELD_VALIDATION])
 
     return validations
 
 
-def _get_validator_plugin_by_name(validator_name: str, validator_plugins: list[PrimitiveValidationContribution]) -> Optional[PrimitiveValidationContribution]:
+def _get_validator_plugin_by_name(validator_name: str, validator_plugins: list[DefinitionValidationContribution]) -> Optional[DefinitionValidationContribution]:
     filtered_validators = list(filter(lambda plugin: plugin.name == validator_name, validator_plugins))
     filtered_validators_count = len(filtered_validators)
 

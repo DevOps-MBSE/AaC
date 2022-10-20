@@ -6,7 +6,7 @@ from aac.cli.aac_command import AacCommand
 from aac.lang.definitions.definition import Definition
 from aac.plugins import hookspecs, PLUGIN_PROJECT_NAME
 from aac.plugins.plugin import Plugin
-from aac.plugins.contributions.contribution_types import PrimitiveValidationContribution, DefinitionValidationContribution
+from aac.plugins.contributions.contribution_types import DefinitionValidationContribution, PrimitiveValidationContribution
 
 
 def get_plugin_manager() -> PluginManager:

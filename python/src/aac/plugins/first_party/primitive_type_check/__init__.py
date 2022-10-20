@@ -4,7 +4,7 @@
 
 from aac.plugins import hookimpl
 from aac.plugins.first_party.primitive_type_check.type_validations import INTEGER_VALIDATOR
-from aac.plugins.contributions.contribution_types import PrimitiveValidationContribution
+from aac.plugins.contributions.contribution_types import DefinitionValidationContribution
 from aac.plugins.plugin import Plugin
 
 
@@ -22,5 +22,5 @@ def get_plugin() -> Plugin:
     return plugin
 
 
-def _get_primitive_validations() -> list[PrimitiveValidationContribution]:
+def _get_primitive_validations() -> list[DefinitionValidationContribution]:
     return [INTEGER_VALIDATOR]

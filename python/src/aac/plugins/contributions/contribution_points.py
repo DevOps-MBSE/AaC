@@ -6,7 +6,7 @@ from attr import Factory, attrib, attrs, validators
 
 from aac.cli.aac_command import AacCommand
 from aac.lang.definitions.definition import Definition
-from aac.plugins.contributions.contribution_types import ContributionType, PrimitiveValidationContribution, DefinitionValidationContribution
+from aac.plugins.contributions.contribution_types import ContributionType, DefinitionValidationContribution, PrimitiveValidationContribution
 from aac.plugins.contributions.plugin_contribution import PluginContribution
 
 
@@ -168,7 +168,7 @@ class ContributionPoints:
         self,
         plugin_name: str,
         contribution_name: ContributionType,
-        items: list[Union[AacCommand, DefinitionValidationContribution, Definition, PrimitiveValidationContribution]],
+        items: list[Union[AacCommand, DefinitionValidationContribution, PrimitiveValidationContribution, Definition]],
         validation: Callable,
     ) -> None:
         def register_contribution(item) -> None:
