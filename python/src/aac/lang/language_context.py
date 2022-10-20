@@ -310,7 +310,7 @@ class LanguageContext:
 
         This method is helpful for discerning the type of a definition by its name. This is
         functionally equivalent to getting the definition by name from the context and then
-        running the `Definition` method `is_enum()`
+        running the `Definition` method `is_enum()`.
 
         Args:
             type (str): The enum's type string.
@@ -365,7 +365,7 @@ class LanguageContext:
             if len(definition_to_return) > 0:
                 if len(definition_to_return) > 1:
                     logging.info(
-                        f"Multiple definitions found with the same name '{definition_name}' found in context. Returning the first"
+                        f"Multiple definitions found with the same name '{definition_name}' found in context. Returning the first one."
                     )
                 return definition_to_return[0]
             else:
@@ -464,10 +464,10 @@ class LanguageContext:
         Return the AaCFile object by uri from the context or None if the file isn't in the context.
 
         Args:
-            uri (str): The string uri to search for
+            uri (str): The string uri to search for.
 
         Returns:
-            An optional AaCFile if it's present in the context, otherwise None
+            An optional AaCFile if it's present in the context, otherwise None.
         """
         for definition in self.definitions:
             if definition.source.uri == uri:
