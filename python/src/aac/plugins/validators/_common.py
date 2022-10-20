@@ -44,7 +44,7 @@ def get_validation_definition_from_plugin_definitions(validator_definitions: lis
 
 def get_plugin_validations_from_definitions(plugin_definitions: list[Definition], callback: Callable) -> list[DefinitionValidationContribution]:
     """
-    Return the RuleValidationContribution based on the plugin definitions.
+    Return the DefinitionValidationContribution based on the plugin definitions.
 
     Beware, plugins currently only support one validator per plugin.
     """

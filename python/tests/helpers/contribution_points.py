@@ -20,7 +20,7 @@ def create_command(
 
 
 def create_validation(name: str, definition: Definition, callback: Callable = identity) -> DefinitionValidationContribution:
-    """Create a new RuleValidationContribution for testing."""
+    """Create a new DefinitionValidationContribution for testing."""
     return DefinitionValidationContribution(name, definition, callback)
 
 

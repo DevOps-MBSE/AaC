@@ -21,5 +21,5 @@ class DefinitionValidationContribution:
     validation_function: callable = attrib(validator=validators.is_callable())
 
     def __hash__(self) -> int:
-        """Return the hash of this RuleValidationContribution."""
+        """Return the hash of this DefinitionValidationContribution."""
         return hash(self.name)

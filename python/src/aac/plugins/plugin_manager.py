@@ -108,9 +108,9 @@ def get_plugin_definitions() -> list[Definition]:
     return list(map(set_files_to_not_user_editable, definitions_list))
 
 
-def get_validator_plugins() -> list[DefinitionValidationContribution]:
+def get_definition_validations() -> list[DefinitionValidationContribution]:
     """
-    Get a list of registered validators and metadata.
+    Get a list of registered definition validations and metadata.
 
     Returns:
         A list of validator plugins that are currently registered.
@@ -119,14 +119,14 @@ def get_validator_plugins() -> list[DefinitionValidationContribution]:
     return [validation for validation_list in validation_lists for validation in validation_list]
 
 
-def get_enum_validator_plugins() -> list[PrimitiveValidationContribution]:
+def get_primitive_validations() -> list[PrimitiveValidationContribution]:
     """
-    Get a list of registered enum/type validators and metadata.
+    Get a list of registered primitive validations and metadata.
 
     Returns:
         A list of validator plugins that are currently registered.
     """
-    type_validator_lists = [
+    validation_lists = [
         plugin.get_primitive_validations() for plugin in get_plugins() if plugin.get_primitive_validations()
     ]
-    return [validation for validation_list in type_validator_lists for validation in validation_list]
+    return [validation for validation_list in validation_lists for validation in validation_list]
