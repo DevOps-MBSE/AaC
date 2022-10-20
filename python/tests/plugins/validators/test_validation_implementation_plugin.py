@@ -18,11 +18,11 @@ class TestValidationImplementPlugin(TestCase):
         self.assertEqual(1, len(validation_definitions))
 
         validation_definition = validation_definitions[0]
-        expected_validator_plugin = DefinitionValidationContribution(
+        expected_definition_validation = DefinitionValidationContribution(
             name=validation_definition.name, definition=validation_definition, validation_function=(lambda x: x)
         )
-        self.assertEqual(expected_validator_plugin.name, actual_validator_plugins[0].name)
-        assert_definitions_equal(expected_validator_plugin.definition, actual_validator_plugins[0].definition)
+        self.assertEqual(expected_definition_validation.name, actual_validator_plugins[0].name)
+        assert_definitions_equal(expected_definition_validation.definition, actual_validator_plugins[0].definition)
 
     def test_validate_validator_implementations_validate_validation_success(self):
         test_active_context = get_active_context(reload_context=True)
