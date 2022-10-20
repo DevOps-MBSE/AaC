@@ -445,10 +445,10 @@ class LanguageContext:
         Returns:
             A list of validator plugins that are currently registered.
         """
-        type_validator_lists = [
+        validation_lists = [
             plugin.get_primitive_validations() for plugin in self.get_plugins() if plugin.get_primitive_validations()
         ]
-        return [validation for validation_list in type_validator_lists for validation in validation_list]
+        return [validation for validation_list in validation_lists for validation in validation_list]
 
     def get_files_in_context(self) -> list[AaCFile]:
         """
