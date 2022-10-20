@@ -4,7 +4,6 @@ import * as net from "net";
 import { ExtensionContext, window, workspace } from "vscode";
 import { LanguageClient, LanguageClientOptions, ServerOptions, StreamInfo, Trace } from "vscode-languageclient/node";
 import { getConfigurationItem } from "./configuration";
-import { execShell } from "./shell";
 import { assertTrue, showMessageOnError } from "./helpers";
 import { getAaCVersion } from "./aacExecutableWrapper";
 
