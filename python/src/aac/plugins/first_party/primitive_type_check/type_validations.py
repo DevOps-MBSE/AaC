@@ -68,7 +68,9 @@ def validate_integer(definition: Definition, value_to_validate: Any) -> Optional
     """
     is_invalid = False
     try:
-        int(value_to_validate)
+        type_casted_int = int(value_to_validate)
+        # assert that the conversion didn't alter the contents, like in the case of float -> int.
+        is_invalid = (str(type_casted_int) != str(value_to_validate))
     except Exception as error:
         is_invalid = True
         logging.debug(f"{PRIMITIVE_TYPE_INT} validation failed for value {value_to_validate} with error:\n{error}")
@@ -77,16 +79,9 @@ def validate_integer(definition: Definition, value_to_validate: Any) -> Optional
     finding = None
     if is_invalid:
         finding_message = f"{value_to_validate} is not a valid value for the enum type {PRIMITIVE_TYPE_INT}"
-        lexeme, *_ = [lexeme for lexeme in definition.lexemes if lexeme.value == value_to_validate]
-        lexeme_location = lexeme.location
-        finding_location = FindingLocation(
-            INT_VALIDATION_NAME,
-            lexeme.source,
-            lexeme_location.line,
-            lexeme_location.line,
-            lexeme_location.position,
-            lexeme_location.span,
-        )
+        # Cast the value_to_validate to string since lexeme values will always be strings.
+        lexeme, *_ = [lexeme for lexeme in definition.lexemes if lexeme.value == str(value_to_validate)]
+        finding_location = _create_finding_location(INT_VALIDATION_NAME, lexeme)
         finding = ValidatorFinding(definition, FindingSeverity.ERROR, finding_message, finding_location)
 
     return finding

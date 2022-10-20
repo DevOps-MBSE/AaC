@@ -176,16 +176,16 @@ def _error_if_not_complete(source, content, models):
         type, *_ = model.keys()
         return type == "import"
 
-    def is_complete_model(model):
-        """Return True if the model has a name property; False, otherwise."""
+    def assert_definition_has_name(model):
+        """Throws a ParserError if the definition doesn't have a name property."""
         type, *_ = model.keys()
-        return model.get(type) and model.get(type).get("name")
+        has_name = model.get(type) and model.get(type).get("name")
+        if not has_name:
+            raise ParserError(source, [f"Definition is missing field 'name': {content}"])
 
     # Raise an error if any of the loaded YAML models are incomplete.
-    models_no_imports = list(filter(lambda m: not is_import(m), models))
-    if not all(map(is_complete_model, models_no_imports)):
-        raise ParserError(source, [f"incomplete model:\n{content}\n"])
-
+    models_without_imports = list(filter(lambda m: not is_import(m), models))
+    all(map(assert_definition_has_name, models_without_imports))
 
 def _read_file_content(arch_file: str) -> str:
     """
