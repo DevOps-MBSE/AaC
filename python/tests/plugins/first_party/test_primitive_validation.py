@@ -2,7 +2,7 @@ from aac.lang.active_context_lifecycle_manager import get_active_context
 
 from aac.validate import validated_source
 from aac.io.constants import DEFINITION_SEPARATOR
-from aac.plugins.first_party.primitive_type_check import INTEGER_VALIDATOR
+from aac.plugins.first_party.primitive_type_check.validators import int_validator
 
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.assertion import assert_validator_result_success
@@ -19,6 +19,8 @@ from tests.helpers.prebuilt_definition_constants import (
 
 
 class TestPrimitiveValidation(ActiveContextTestCase):
+
+    INTEGER_VALIDATOR = int_validator.get_validator()
 
     VALID_PRIMITIVES_FILE_CONTENT = DEFINITION_SEPARATOR.join([
         TEST_TYPES_SCHEMA_DEFINITION.to_yaml(),
@@ -45,14 +47,14 @@ class TestPrimitiveValidation(ActiveContextTestCase):
 
                 self.assertIsNotNone(context.exception)
 
-                self.assertIn(INTEGER_VALIDATOR.name, context.exception)
-                self.assertIn(INTEGER_VALIDATOR.primitive_type, context.exception)
+                self.assertIn(self.INTEGER_VALIDATOR.name, context.exception)
+                self.assertIn(self.INTEGER_VALIDATOR.primitive_type, context.exception)
 
     def test_integer_type_check_valid(self):
         test_context = get_active_context()
         test_context.add_definitions_to_context([TEST_TYPES_SCHEMA_DEFINITION, TEST_TYPES_SCHEMA_EXTENSION_DEFINITION])
 
-        finding = INTEGER_VALIDATOR.validation_function(TEST_TYPES_VALID_INSTANCE, 0)
+        finding = self.INTEGER_VALIDATOR.validation_function(TEST_TYPES_VALID_INSTANCE, 0)
         self.assertIsNone(finding)
 
     def test_integer_type_check_invalid_float(self):
@@ -62,7 +64,7 @@ class TestPrimitiveValidation(ActiveContextTestCase):
         invalid_int_value = 0.5
         invalid_definition = create_definition(TEST_TYPES_ROOT_KEY, "invalidPrimitives", {SCHEMA_FIELD_INT.get("name"): invalid_int_value})
 
-        finding = INTEGER_VALIDATOR.validation_function(invalid_definition, invalid_int_value)
+        finding = self.INTEGER_VALIDATOR.validation_function(invalid_definition, invalid_int_value)
         self.assertIsNotNone(finding)
 
     def test_integer_type_check_invalid_string(self):
@@ -72,5 +74,5 @@ class TestPrimitiveValidation(ActiveContextTestCase):
         invalid_int_value = "DefinitelyNotAnInt"
         invalid_definition = create_definition(TEST_TYPES_ROOT_KEY, "invalidPrimitives", {SCHEMA_FIELD_INT.get("name"): invalid_int_value})
 
-        finding = INTEGER_VALIDATOR.validation_function(invalid_definition, invalid_int_value)
+        finding = self.INTEGER_VALIDATOR.validation_function(invalid_definition, invalid_int_value)
         self.assertIsNotNone(finding)
