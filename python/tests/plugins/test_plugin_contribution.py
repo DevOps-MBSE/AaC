@@ -28,16 +28,16 @@ class TestPluginContribution(TestCase):
 
         contribution = PluginContribution(
             self.plugin_name,
-            ContributionType.VALIDATIONS,
+            ContributionType.DEFINITION_VALIDATIONS,
             {create_validation(f"test{i}", create_validation_definition(f"validation{i}")) for i in range(self.num_items)},
         )
-        self.assertTrue(contribution.is_contribution_type(ContributionType.VALIDATIONS))
+        self.assertTrue(contribution.is_contribution_type(ContributionType.DEFINITION_VALIDATIONS))
 
     def test_hash(self):
         contribution1 = PluginContribution("test", ContributionType.COMMANDS)
         contribution2 = PluginContribution("test", ContributionType.COMMANDS)
         contribution3 = PluginContribution("Test", ContributionType.COMMANDS)
-        contribution4 = PluginContribution("test", ContributionType.VALIDATIONS)
+        contribution4 = PluginContribution("test", ContributionType.DEFINITION_VALIDATIONS)
 
         self.assertEqual(contribution1, contribution2)
         self.assertNotEqual(contribution1, contribution3)
