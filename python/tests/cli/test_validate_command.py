@@ -1,5 +1,3 @@
-from os import linesep
-
 from aac.cli.builtin_commands.validate.validate_impl import validate
 from aac.io.constants import DEFINITION_SEPARATOR
 from aac.lang.active_context_lifecycle_manager import get_active_context
