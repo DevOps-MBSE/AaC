@@ -13,6 +13,7 @@ from pygls.lsp import (
     RenameParams,
     HoverParams,
     ReferenceParams,
+    SemanticTokensParams,
     TextDocumentSyncKind,
     DidChangeTextDocumentParams,
     DidCloseTextDocumentParams,
@@ -32,6 +33,7 @@ from aac.plugins.lsp_server.providers.goto_definition_provider import GotoDefini
 from aac.plugins.lsp_server.providers.hover_provider import HoverProvider
 from aac.plugins.lsp_server.providers.rename_provider import RenameProvider
 from aac.plugins.lsp_server.providers.prepare_rename_provider import PrepareRenameProvider
+from aac.plugins.lsp_server.providers.semantic_tokens_provider import SemanticTokensProvider
 
 
 class AacLanguageServer(LanguageServer):
@@ -79,6 +81,9 @@ class AacLanguageServer(LanguageServer):
         self.providers[methods.HOVER] = self.providers.get(methods.HOVER, HoverProvider())
         self.providers[methods.RENAME] = self.providers.get(methods.RENAME, RenameProvider())
         self.providers[methods.PREPARE_RENAME] = self.providers.get(methods.PREPARE_RENAME, PrepareRenameProvider())
+        self.providers[methods.TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL] = self.providers.get(
+            methods.TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL, SemanticTokensProvider()
+        )
 
     def setup_features(self) -> None:
         """Configure the server with the supported features."""
@@ -96,6 +101,9 @@ class AacLanguageServer(LanguageServer):
         self.feature(methods.REFERENCES)(handle_references)
         self.feature(methods.RENAME)(handle_rename)
         self.feature(methods.PREPARE_RENAME)(handle_prepare_rename)
+
+        semantic_tokens_legend = self.providers.get(methods.TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL).get_semantic_tokens_legend()
+        self.feature(methods.TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL, semantic_tokens_legend)(handle_semantic_tokens)
 
 
 async def did_open(ls: AacLanguageServer, params: DidOpenTextDocumentParams):
@@ -203,3 +211,11 @@ async def handle_prepare_rename(ls: AacLanguageServer, params: RenameParams):
     prepare_rename_results = prepare_rename_provider.handle_request(ls, params)
     logging.debug(f"Prepare rename results: {prepare_rename_results}")
     return prepare_rename_results
+
+
+async def handle_semantic_tokens(ls: AacLanguageServer, params: SemanticTokensParams):
+    """Handle the semantic tokens request."""
+    semantic_tokens_provider = ls.providers.get(methods.TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL)
+    semantic_tokens_results = semantic_tokens_provider.handle_request(ls, params)
+    logging.debug(f"Semantic tokens results: {semantic_tokens_results}")
+    return semantic_tokens_results
