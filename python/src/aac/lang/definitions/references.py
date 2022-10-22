@@ -24,9 +24,7 @@ def get_definition_type_references_from_list(
     return list(filter(filter_definitions_by_reference, definitions_to_search))
 
 
-def get_enum_references_from_context(
-    enum_definition: Definition, language_context: LanguageContext
-) -> list[Definition]:
+def get_enum_references_from_context(enum_definition: Definition, language_context: LanguageContext) -> list[Definition]:
     """
     Return a subset of Definitions that have a field with an enum value from the target enum definition.
 
@@ -53,7 +51,6 @@ def get_enum_references_from_context(
     """
     enum_reference_schema_definitions = get_definition_type_references_from_list(enum_definition, language_context.definitions)
 
-    # Since enum values aren't used in schema definitions, we need to find instances of the enum values in the other root keys
     root_definitions_type_to_key_dict = {root.get("type"): root.get("name") for root in language_context.get_root_fields()}
 
     definitions_referencing_enum_value = []
