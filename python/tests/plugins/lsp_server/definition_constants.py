@@ -17,9 +17,7 @@ TEST_SCHEMA_A = create_schema_definition("DataA", fields=[create_field_entry("ms
 TEST_SCHEMA_B = create_schema_definition("DataB", fields=[create_field_entry("msg", "string")])
 TEST_SCHEMA_C = create_schema_definition("DataC", fields=[create_field_entry("msg", "string")])
 TEST_ROOT_SCHEMA = create_schema_definition("NewRootKeyStructure", fields=[create_field_entry("name", "string"), create_field_entry("test_enum", TEST_ENUM.name)])
-TEST_ROOT_EXTENSION = create_schema_ext_definition(
-    "TestRootExtension", DEFINITION_NAME_ROOT, fields=[create_field_entry("test_root", TEST_ROOT_SCHEMA.name)]
-)
+TEST_ROOT_EXTENSION = create_schema_ext_definition("TestRootExtension", DEFINITION_NAME_ROOT, fields=[create_field_entry("test_root", TEST_ROOT_SCHEMA.name)])
 TEST_ROOT_INSTANCE = _create_parsed_definition("test_root", {"name": "TestRootInstance", "test_enum": "one"})
 
 
