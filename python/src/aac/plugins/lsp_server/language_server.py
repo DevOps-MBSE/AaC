@@ -19,6 +19,7 @@ from pygls.lsp import (
     DidOpenTextDocumentParams,
     methods,
 )
+from pygls.lsp.types import PublishDiagnosticsParams
 
 from aac.io.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_initialized_language_context
@@ -79,6 +80,7 @@ class AacLanguageServer(LanguageServer):
         self.providers[methods.HOVER] = self.providers.get(methods.HOVER, HoverProvider())
         self.providers[methods.RENAME] = self.providers.get(methods.RENAME, RenameProvider())
         self.providers[methods.PREPARE_RENAME] = self.providers.get(methods.PREPARE_RENAME, PrepareRenameProvider())
+        self.providers[methods.TEXT_DOCUMENT_PUBLISH_DIAGNOSTICS] = self.providers.get(methods.TEXT_DOCUMENT_PUBLISH_DIAGNOSTICS, PublishDiagnosticsProvider())
 
     def setup_features(self) -> None:
         """Configure the server with the supported features."""
@@ -203,3 +205,11 @@ async def handle_prepare_rename(ls: AacLanguageServer, params: RenameParams):
     prepare_rename_results = prepare_rename_provider.handle_request(ls, params)
     logging.debug(f"Prepare rename results: {prepare_rename_results}")
     return prepare_rename_results
+
+
+async def handle_publish_diagnostics(ls: AacLanguageServer, params: PublishDiagnosticsParams):
+    """Handle the publish diagnostics request."""
+    publish_diagnostics_provider = ls.providers.get(methods.TEXT_DOCUMENT_PUBLISH_DIAGNOSTICS)
+    publish_diagnostics_results = publish_diagnostics_provider.handle_request(ls, params)
+    logging.debug(f"Publish Diagnostics results: {publish_diagnostics_results}")
+    return publish_diagnostics_results
