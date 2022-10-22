@@ -20,7 +20,6 @@ TEST_ROOT_SCHEMA = create_schema_definition("NewRootKeyStructure", fields=[creat
 TEST_ROOT_EXTENSION = create_schema_ext_definition("TestRootExtension", DEFINITION_NAME_ROOT, fields=[create_field_entry("test_root", TEST_ROOT_SCHEMA.name)])
 TEST_ROOT_INSTANCE = _create_parsed_definition("test_root", {"name": "TestRootInstance", "test_enum": "one"})
 
-
 TEST_PARTIAL_CONTENT_NAME = "Partial"
 TEST_PARTIAL_CONTENT = f"""
 schema:
