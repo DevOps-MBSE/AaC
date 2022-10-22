@@ -1,4 +1,4 @@
-ac.io.constants import YAML_DOCUMENT_SEPARATOR
+from aac.io.constants import YAML_DOCUMENT_SEPARATOR
 from aac.lang.constants import DEFINITION_NAME_ROOT
 
 from tests.helpers.parsed_definitions import (
