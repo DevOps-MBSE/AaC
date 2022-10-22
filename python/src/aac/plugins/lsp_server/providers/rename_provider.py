@@ -121,11 +121,7 @@ class RenameProvider(LspProvider):
         enum_references_to_alter = [*enum_references, definition_to_find]
 
         for definition in enum_references_to_alter:
-            def filter_lexeme_by_enum_value(lexeme: Lexeme) -> bool:
-                return remove_list_type_indicator(lexeme.value) == old_value
-
-            reference_lexemes = filter(filter_lexeme_by_enum_value, definition.lexemes)
-
+            reference_lexemes = [lexeme for lexeme in definition.lexemes if remove_list_type_indicator(lexeme.value) == old_value]
             for lexeme_to_replace in reference_lexemes:
                 document_edits = edits.get(lexeme_to_replace.source, [])
                 replacement_range = get_location_from_lexeme(lexeme_to_replace).range
