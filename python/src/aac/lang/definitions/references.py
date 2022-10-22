@@ -24,9 +24,7 @@ def get_definition_type_references_from_list(
     return list(filter(filter_definitions_by_reference, definitions_to_search))
 
 
-def get_enum_references_from_context(
-    enum_definition: Definition, language_context: LanguageContext
-) -> list[Definition]:
+def get_enum_references_from_context(enum_definition: Definition, language_context: LanguageContext) -> list[Definition]:
     """
     Return a subset of Definitions that have a field with an enum value from the target enum definition.
 
