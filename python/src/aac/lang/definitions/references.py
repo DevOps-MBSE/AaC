@@ -55,7 +55,7 @@ def get_enum_references_from_context(enum_definition: Definition, language_conte
 
     definitions_referencing_enum_value = []
     for enum_reference in enum_reference_schema_definitions:
-        if enum_reference.name in enum_reference_schema_definitions:
+        if enum_reference.name in root_definitions_type_to_key_dict.keys():
             instances_of_referencing_root_key = language_context.get_definitions_by_root_key(root_definitions_type_to_key_dict.get(enum_reference.name))
             definitions_referencing_enum_value.extend(instances_of_referencing_root_key)
 
