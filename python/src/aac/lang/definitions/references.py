@@ -46,6 +46,7 @@ def get_enum_references_from_context(enum_definition: Definition, language_conte
     Args:
         enum_definition (Definition): The enum definition that is being referenced
         language_context (LanguageContext): The context and definitions to search through
+
     Returns:
         A list of Definitions that leverage the target enum definition's values
     """
