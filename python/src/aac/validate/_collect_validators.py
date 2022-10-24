@@ -18,7 +18,7 @@ def get_applicable_validators_for_definition(
 
     Args:
         definition (Definition): The definition to search through.
-        validator_plugins (list[TypeValidationContribution]): The list of available, registered validator plugins.
+        validator_plugins (list[DefinitionValidationContribution]): The list of available, registered validator plugins.
         context (LanguageContext): The language context
 
     Returns:
