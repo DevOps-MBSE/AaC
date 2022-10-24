@@ -60,8 +60,7 @@ def _get_parsed_models(architecture_files: list) -> list[Definition]:
         with validated_source(architecture_file) as result:
             return result.definitions
 
-    # For each architecture_file, parse and validate the contents, then flatten the list of lists to a 1D list
-    parsed_definition_lists = list(map(parse_with_validation, architecture_files))
+    parsed_definition_lists = map(parse_with_validation, architecture_files)
     return [definition for definition_list in parsed_definition_lists for definition in definition_list]
 
 
