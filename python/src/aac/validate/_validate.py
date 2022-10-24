@@ -190,7 +190,7 @@ def _validate_primitive_field(source_def: Definition, field_type: str, field_val
     if validator:
         finding = validator[0].validation_function(source_def, field_value)
     else:
-        logging.info("No primitive type validation for '{field_type}'")
+        logging.info(f"No primitive type validation for '{field_type}'")
 
     return finding
 

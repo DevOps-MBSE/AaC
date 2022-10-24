@@ -35,20 +35,23 @@ class TestPrimitiveValidation(ActiveContextTestCase):
     ])
 
     def test_type_check_valid(self):
-        with temporary_test_file(self.VALID_PRIMITIVES_FILE_CONTENT) as test_file:
-            with validated_source(test_file.name) as result:
-                assert_validator_result_success(result)
+        with (
+            temporary_test_file(self.VALID_PRIMITIVES_FILE_CONTENT) as test_file,
+            validated_source(test_file.name) as result
+        ):
+            assert_validator_result_success(result)
 
     def test_type_check_invalid(self):
-        with temporary_test_file(self.INVALID_PRIMITIVES_FILE_CONTENT) as test_file:
-            with self.assertRaises(Exception) as context:
-                with validated_source(test_file.name) as result: # noqa F841
-                    pass
+        with (
+            temporary_test_file(self.INVALID_PRIMITIVES_FILE_CONTENT) as test_file,
+            self.assertRaises(Exception) as error,
+            validated_source(test_file.name),
+        ):
 
-                self.assertIsNotNone(context.exception)
+            self.assertIsNotNone(error.exception)
 
-                self.assertIn(self.INTEGER_VALIDATOR.name, context.exception)
-                self.assertIn(self.INTEGER_VALIDATOR.primitive_type, context.exception)
+            self.assertIn(self.INTEGER_VALIDATOR.name, error.exception)
+            self.assertIn(self.INTEGER_VALIDATOR.primitive_type, error.exception)
 
     def test_integer_type_check_valid(self):
         test_context = get_active_context()
