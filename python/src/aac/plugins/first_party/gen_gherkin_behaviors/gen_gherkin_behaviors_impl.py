@@ -60,7 +60,7 @@ def _get_template_properties(parsed_models: dict) -> dict[str, dict]:
         """Produce a template property dictionary for each behavior entry in a model."""
         behaviors = model.get("model").get("behavior") or []
 
-        behavior_lists = list(map(collect_behavior_entry_properties, behaviors))
+        behavior_lists = map(collect_behavior_entry_properties, behaviors)
         return [behavior for behavior_list in behavior_lists for behavior in behavior_list]
 
     def collect_behavior_entry_properties(behavior_entry: dict) -> list[dict]:
@@ -68,7 +68,7 @@ def _get_template_properties(parsed_models: dict) -> dict[str, dict]:
         feature_name = behavior_entry.get("name")
         feature_description = behavior_entry.get("description") or "TODO: Fill out this feature description."  # noqa: T101
         behavior_scenarios = behavior_entry.get("acceptance") or []
-        scenario_lists = list(map(collect_and_sanitize_scenario_steps, behavior_scenarios))
+        scenario_lists = map(collect_and_sanitize_scenario_steps, behavior_scenarios)
 
         return [
             {
