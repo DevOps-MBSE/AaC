@@ -8,7 +8,7 @@ from aac.lang.definitions.definition import Definition
 @attrs(hash=False)
 class DefinitionValidationContribution:
     """
-    A class that contains all the relevant information to manage and execute rule validator contributions with the validation process.
+    A class that contains all the relevant information to manage and execute definition validation contributions with the validation process.
 
     Attributes:
         name: A string with the name of the command argument
