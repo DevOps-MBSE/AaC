@@ -9,7 +9,7 @@ class PrimitiveValidationContribution:
     A class that contains all the relevant information to manage and execute type validator contributions against type-value enums in the validation process.
 
     Attributes:
-        validation_type: The name of the enum
+        name: The name of the enum validator
         primitive_type: The enum type
         validation_function: The validation callback function
     """
