@@ -26,8 +26,9 @@ function activatePlugin(context: ExtensionContext) {
     context.subscriptions.push(AacDefinitionEditorProvider.register(context));
 
 	const definitionsView = window.createTreeView('definitions-in-context', { treeDataProvider: new AacDefinitionsViewProvider() });
-    definitionsView.onDidChangeSelection(event => {
+    definitionsView.onDidChangeSelection((event) => {
         onDefinitionNodeSelection(event);
+    });
 }
 
 function registerCommands(context: ExtensionContext) {
