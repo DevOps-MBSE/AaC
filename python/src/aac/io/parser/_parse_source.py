@@ -11,7 +11,7 @@ from yaml.parser import ParserError as YAMLParserError
 import logging
 import yaml
 
-from aac.io.constants import DEFAULT_SOURCE_URI, DEFINITION_SEPARATOR
+from aac.io.constants import DEFAULT_SOURCE_URI
 from aac.io.files.aac_file import AaCFile
 from aac.io.parser._parser_error import ParserError
 from aac.io.paths import sanitize_filesystem_path
