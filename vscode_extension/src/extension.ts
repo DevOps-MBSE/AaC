@@ -1,4 +1,4 @@
-import { ExtensionContext, commands, workspace } from "vscode";
+import { ExtensionContext, commands, workspace, window } from "vscode";
 import { AacLanguageServerClient } from "./AacLanguageServer";
 import { executeAacCommand } from "./aacExecutableWrapper";
 import { getOutputChannel } from "./outputChannel";
