@@ -1,12 +1,12 @@
 from unittest import TestCase
 
-from aac.plugins.validators import get_validation_definition_from_plugin_definitions
+from aac.plugins.validators import get_validation_definition_from_plugin_yaml
 
 
 class TestValidatorsModule(TestCase):
 
     def test_get_validation_definition_from_plugin_definitions(self):
-        parsed_definition = get_validation_definition_from_plugin_definitions(TEST_VALIDATION_DEFINITION_STRING)
+        parsed_definition = get_validation_definition_from_plugin_yaml(TEST_VALIDATION_DEFINITION_STRING)
         self.assertEqual(TEST_VALIDATION_NAME, parsed_definition.name)
 
 

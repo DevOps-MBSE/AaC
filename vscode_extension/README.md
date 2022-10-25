@@ -1,12 +1,24 @@
 # Architecture-as-Code VSCode Extension
 
-VSCode Extension that wraps the Python3 package [`aac`](https://pypi.org/project/aac/). This extension provides AaC commands at your fingertips within VSCode as well as providing language server features for an easier, more productive experience with AaC.
+VSCode Extension that wraps the Python3 package
+[`aac`](https://pypi.org/project/aac/). This extension provides AaC commands at
+your fingertips within VSCode as well as providing language server features for
+an easier, more productive experience with AaC.
+
+The AaC VSCode extension does not require configuration as long as the `aac`
+Python tool is in your `PATH`. Nonetheless, there are configuration options
+available, so for detailed instructions on configuring the AaC VSCode Extension,
+refer to [this](https://jondavid-black.github.io/AaC/docs/vscode_extension) page.
 
 ## Features
 
-Provides the complete list of AaC commands as VSCode Tasks
+Provides the complete list of AaC commands as VSCode Tasks. See
+[here](https://jondavid-black.github.io/AaC/docs/vscode_extension/command_features) for
+more information.
 
-Provides an AaC Language Server
+Provides an AaC Language Server. See
+[here](https://jondavid-black.github.io/AaC/docs/vscode_extension/lsp_features) for more
+information.
 
 ### Architecture-as-Code Language Server Protocol (LSP)
 The AaC VSCode extension integrates with the AaC python package to provide IDE language features for AaC files.
@@ -21,9 +33,14 @@ aac rest-api --host <hostname|localhost> --port <8000>
 
 ## Requirements
 
-This plugin relies on the Python package [`aac`](https://pypi.org/project/aac/). In order to use this plugin, you must install `aac` locally. See the [AaC Repository](https://github.com/jondavid-black/AaC#using-aac-to-model-your-system) for how to install the AaC package.
+This plugin relies on the Python package [`aac`](https://pypi.org/project/aac/).
+In order to use this plugin, you must install `aac` locally. See the [AaC
+Repository](https://github.com/jondavid-black/AaC#using-aac-to-model-your-system)
+for how to install the AaC package.
 
-Once the `aac` package is installed, verify that the installation is working correctly by running `aac -h` in a terminal. If you are presented with a list of commands with accompanying descriptions, the installation was successful.
+Once the `aac` package is installed, verify that the installation is working
+correctly by running `aac -h` in a terminal. If you are presented with a list of
+commands with accompanying descriptions, the installation was successful.
 
 ## Extension Settings
 

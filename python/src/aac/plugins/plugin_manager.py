@@ -2,11 +2,9 @@
 from importlib import import_module
 from iteration_utilities import flatten
 from pluggy import PluginManager
-import itertools
 
 from aac.cli.aac_command import AacCommand
 from aac.lang.definitions.definition import Definition
-from aac.io.parser import parse
 from aac.plugins import hookspecs, PLUGIN_PROJECT_NAME
 from aac.plugins.plugin import Plugin
 from aac.plugins.validators import ValidatorPlugin
@@ -34,7 +32,7 @@ def get_plugin_manager() -> PluginManager:
         "gen_plant_uml",
         "specifications",
         "print_spec",
-        "start_lsp",
+        "lsp_server",
         "material_model",
         "help_dump",
         "rest_api",
@@ -58,6 +56,7 @@ def get_plugin_manager() -> PluginManager:
         "root_keys",
         "reference_fields",
         "reference_targets",
+        "unique_names",
     ]
 
     def register_plugin(plugin, package):
@@ -71,9 +70,29 @@ def get_plugin_manager() -> PluginManager:
     return plugin_manager
 
 
+def get_plugins() -> list[Plugin]:
+    """
+    Get a list of all the plugins available in the AaC package.
+
+    Returns:
+        A list of plugins that are currently registered.
+    """
+    return get_plugin_manager().hook.get_plugin()
+
+
+def get_plugin_commands() -> list[AacCommand]:
+    """
+    Get a list of all of the AaC commands contributed by plugins.
+
+    Returns:
+        A list of AaC Commands provided by plugins.
+    """
+    return list(flatten([plugin.get_commands() for plugin in get_plugins() if plugin.get_commands()]))
+
+
 def get_plugin_definitions() -> list[Definition]:
     """
-    Get a list of all the plugin-defined AaC models and definitions.
+    Get a list of all the plugin-defined AaC definitions.
 
     Returns:
         A list of parsed definitions from all active plugins.
@@ -83,9 +102,8 @@ def get_plugin_definitions() -> list[Definition]:
         definition.source.is_user_editable = False
         return definition
 
-    plugins = get_plugin_manager().hook.get_plugin()
-    flattened_definition_list = list(flatten(filter(lambda x: x, [plugin.get_definitions() for plugin in plugins])))
-    return list(map(set_files_to_not_user_editable, flattened_definition_list))
+    definitions = [plugin.get_definitions() for plugin in get_plugins() if plugin.get_definitions()]
+    return list(map(set_files_to_not_user_editable, flatten(definitions)))
 
 
 def get_validator_plugins() -> list[ValidatorPlugin]:
@@ -95,31 +113,4 @@ def get_validator_plugins() -> list[ValidatorPlugin]:
     Returns:
         A list of validator plugins that are currently registered.
     """
-    return get_plugin_manager().hook.register_validators()
-
-
-def get_plugins() -> list[Plugin]:
-    """
-    Get a list of all the plugins available in the AaC package.
-
-    Returns:
-        A list of plugins that are currently registered.
-    """
-    plugin_manager = get_plugin_manager()
-    plugin_models_yaml = plugin_manager.hook.get_plugin_aac_definitions()
-    plugin_extensions = {}
-    for plugin_ext in plugin_models_yaml:
-        if len(plugin_ext) > 0:
-            parsed_definitions = parse(plugin_ext)
-            definitions_dict = dict(map(lambda definition: (definition.name, definition.structure), parsed_definitions))
-            plugin_extensions = definitions_dict | plugin_extensions
-
-    return plugin_extensions
-
-
-def get_plugin_commands() -> list[AacCommand]:
-    """Return all of the AaC Commands provided by plugins."""
-    plugin_manager = get_plugin_manager()
-    plugin_commands = plugin_manager.hook.get_commands()
-    return list(itertools.chain(*plugin_commands))
-    return get_plugin_manager().hook.get_plugin()
+    return list(flatten([plugin.get_validations() for plugin in get_plugins() if plugin.get_validations()]))

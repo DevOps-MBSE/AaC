@@ -1,5 +1,5 @@
 from typing import Optional
-from pygls.lsp.types.language_features.completion import CompletionItem
+from pygls.lsp.types import CompletionItem
 from tests.helpers.lsp.responses.lsp_response import LspResponse
 
 

@@ -2,11 +2,9 @@
 
 import json
 
-from iteration_utilities import flatten
 
-from aac.plugins import plugin_manager
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
-from aac.cli.aac_command import AacCommand
+from aac.plugins.plugin_manager import get_plugin_commands
 from aac.cli.aac_command_encoder import AacCommandEncoder
 
 plugin_name = "help-dump"
@@ -21,14 +19,9 @@ def help_dump() -> PluginExecutionResult:
     """
 
     def get_command_info():
-        return json.dumps([encoder.default(command) for command in _get_all_commands()])
+        sorted_plugin_commands = sorted(get_plugin_commands(), key=lambda command: command.name)
+        return json.dumps([encoder.default(command) for command in sorted_plugin_commands])
 
     encoder = AacCommandEncoder()
     with plugin_result(plugin_name, get_command_info) as result:
         return result
-
-
-def _get_all_commands() -> list[AacCommand]:
-    all_plugins = plugin_manager.get_plugin_manager().get_plugins()
-    plugins_with_commands = list(flatten([plugin.get_commands() for plugin in all_plugins if hasattr(plugin, "get_commands")]))
-    return sorted(plugins_with_commands, key=lambda command: command.name)

@@ -3,6 +3,7 @@ from iteration_utilities import flatten
 from typing import Generator
 
 from aac.lang.language_context import LanguageContext
+from aac.lang.language_error import LanguageError
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.schema import get_definition_schema_components
@@ -11,26 +12,42 @@ from aac.io.parser import parse
 from aac.plugins.plugin_manager import get_validator_plugins
 from aac.plugins.validators import ValidatorPlugin, ValidatorResult
 from aac.validate._validation_error import ValidationError
-from aac.validate._validation_result import ValidationResult
+from aac.plugins.validators._validator_findings import ValidatorFindings
 from aac.validate._collect_validators import get_applicable_validators_for_definition
 
 
 @contextmanager
-def validated_definitions(user_definitions: list[Definition]) -> Generator[ValidationResult, None, None]:
-    """Validate user-defined definitions along with the definitions in the ActiveContext.
+def validated_definition(definition: Definition) -> Generator[ValidatorResult, None, None]:
+    """
+    Validate a single definition. Does not validate any other definitions in the context.
 
     Args:
-        user_definitions (list[Definition]): A list of user-defined definitions to validate
+        definition (Definition): The definition to validate
 
     Yields:
         A ValidationResults:py:class:`aac.validate.ValidationResult` indicating the result.
     """
-    yield _with_validation(user_definitions)
+    yield _with_validation([definition], False)
 
 
 @contextmanager
-def validated_source(source: str) -> Generator[ValidationResult, None, None]:
-    """Run validation on a string-based YAML definition or a YAML file.
+def validated_definitions(definitions: list[Definition]) -> Generator[ValidatorResult, None, None]:
+    """
+    Validate definitions along with all other definitions in the ActiveContext.
+
+    Args:
+        definitions (list[Definition]): A list of definitions to validate
+
+    Yields:
+        A ValidationResults:py:class:`aac.validate.ValidationResult` indicating the result.
+    """
+    yield _with_validation(definitions)
+
+
+@contextmanager
+def validated_source(source: str) -> Generator[ValidatorResult, None, None]:
+    """
+    Run validation on a string-based YAML definition or a YAML file.
 
     Args:
         source (str): The source of the YAML representation of the model.
@@ -41,32 +58,38 @@ def validated_source(source: str) -> Generator[ValidationResult, None, None]:
     yield _with_validation(parse(source))
 
 
-def _with_validation(user_definitions: list[Definition]) -> ValidationResult:
-    result = _validate_definitions(user_definitions)
-    if result.is_valid:
-        return result
-    else:
-        raise ValidationError("Failed to validate content with errors:", *result.messages)
+def _with_validation(user_definitions: list[Definition], validate_context: bool = True) -> ValidatorResult:
+    try:
+        result = _validate_definitions(user_definitions, validate_context)
+
+        if result.is_valid():
+            return result
+        else:
+            raise ValidationError(result.get_messages_as_string())
+    except LanguageError as error:
+        raise ValidationError("Failed to validate content due to an internal language error:\n", *error.args)
 
 
-def _validate_definitions(user_definitions: list[Definition]) -> ValidationResult:
-    registered_validators = get_validator_plugins()
+def _validate_definitions(definitions: list[Definition], validate_context: bool) -> ValidatorResult:
     active_context = get_active_context()
-    active_context.add_definitions_to_context(user_definitions)
+    active_context.add_definitions_to_context(definitions)
 
-    def validate_each_definition(definition: Definition) -> list[ValidatorResult]:
-        return _validate_definition(definition, registered_validators, active_context)
+    validator_plugins = get_validator_plugins()
 
-    validator_results = list(flatten(map(validate_each_definition, active_context.definitions)))
-    validator_messages = []
-    invalid_results = []
+    combined_findings = ValidatorFindings()
 
-    for result in validator_results:
-        validator_messages.extend(result.messages)
-        if not result.is_valid:
-            invalid_results.extend(result.messages)
+    def validate_each_definition(definition: Definition):
+        results = _validate_definition(definition, validator_plugins, active_context)
+        definition_findings = [result.findings.get_all_findings() for result in results]
+        combined_findings.add_findings(list(flatten(definition_findings)))
 
-    return ValidationResult(user_definitions, validator_messages, (len(invalid_results) < 1))
+    context_definitions_to_validate = active_context.definitions
+    definitions_to_validate = definitions + context_definitions_to_validate if validate_context else []
+    [validate_each_definition(definition) for definition in definitions_to_validate]
+
+    # This step is necessary to return validated definitions that have had their inheritance applied.
+    validated_definitions = [active_context.get_definition_by_name(definition.name) for definition in definitions]
+    return ValidatorResult(validated_definitions, combined_findings)
 
 
 def _validate_definition(
@@ -84,12 +107,13 @@ def _validate_definition(
     for target_schema_definition in all_applicable_definitions:
         sub_definition_validations = target_schema_definition.get_validations()
 
-        for validation in sub_definition_validations:
-            validation_name = validation.get("name")
-            validator_plugin = list(filter(lambda plugin: plugin.name == validation_name, applicable_validator_plugins))
+        if sub_definition_validations:
+            for validation in sub_definition_validations:
+                validation_name = validation.get("name")
+                validator_plugin = list(filter(lambda plugin: plugin.name == validation_name, applicable_validator_plugins))
 
-            if validator_plugin:
-                validator_results.append(_apply_validator(definition, target_schema_definition, context, validator_plugin[0]))
+                if validator_plugin:
+                    validator_results.append(_apply_validator(definition, target_schema_definition, context, validator_plugin[0]))
 
     return validator_results
 

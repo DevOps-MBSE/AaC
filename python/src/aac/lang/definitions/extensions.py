@@ -3,6 +3,7 @@
 import logging
 
 from aac.lang.definitions.definition import Definition
+from aac.lang.language_error import LanguageError
 
 
 def apply_extension_to_definition(extension_definition: Definition, target_definition: Definition) -> None:
@@ -12,6 +13,9 @@ def apply_extension_to_definition(extension_definition: Definition, target_defin
     Args:
         extension_definition (Definition): The extension definition to apply to the context.
         target_definition (Definition): The definition in the context to which to apply the extension.
+
+    Raises:
+        LanguageError: Raised when there is an unrecoverable internal error when applying an extension
     """
     target_definition_fields_dict = target_definition.get_top_level_fields()
     extension_additional_content = _get_extension_additional_content_dict(extension_definition)
@@ -20,19 +24,26 @@ def apply_extension_to_definition(extension_definition: Definition, target_defin
     original_field_values = target_definition_fields_dict.get(extension_field_name)
     if original_field_values is not None:
         updated_values = []
-        new_values = extension_additional_content.get("add") or []
-        if extension_definition.is_enum_extension():
-            updated_values = _combine_enum_values(original_field_values, new_values)
+
+        if extension_additional_content is not None and "add" in extension_additional_content:
+            new_values = extension_additional_content.get("add") or []
+            if extension_definition.is_enum_extension():
+                updated_values = _combine_enum_values(original_field_values, new_values)
+            else:
+                updated_values = _combine_schema_fields(original_field_values, new_values)
+
+            target_definition_fields_dict[extension_field_name] = updated_values
+            _add_extension_required_fields_to_definition(target_definition_fields_dict, extension_additional_content)
+
         else:
-            updated_values = _combine_schema_fields(original_field_values, new_values)
+            missing_ext_content_message = f"Error when attempting to applying extension '{extension_definition.name}'. The extension is missing the appropriate extension content field '{target_definition.get_root_key()}Ext'"
+            logging.error(missing_ext_content_message)
+            raise LanguageError(missing_ext_content_message)
 
-        target_definition_fields_dict[extension_field_name] = updated_values
     else:
-        logging.error(
-            f"Attempted to apply an extension to the incorrect target. Extension name '{extension_definition.name}' target definition '{target_definition.name}'"
-        )
-
-    _add_extension_required_fields_to_definition(target_definition_fields_dict, extension_additional_content)
+        extension_type = "enum" if extension_definition.is_enum_extension() else "schema"
+        incorrect_target_error_message = f"Attempted to apply the extension '{extension_definition.name}' ({extension_type}) to an incompatible target definition '{target_definition.name}' ({target_definition.get_root_key()})"
+        logging.error(incorrect_target_error_message)
 
 
 def remove_extension_from_definition(extension_definition: Definition, target_definition: Definition) -> None:
@@ -42,6 +53,9 @@ def remove_extension_from_definition(extension_definition: Definition, target_de
     Args:
         extension_definition (Definition): The extension definition to apply to the context.
         target_definition (Definition): The extension definition to apply to the context.
+
+    Raises:
+        LanguageError: Raised when there is an unrecoverable internal error when removing an extension
     """
     target_definition_fields = target_definition.get_top_level_fields()
     extension_additional_content = _get_extension_additional_content_dict(extension_definition)
@@ -55,9 +69,9 @@ def remove_extension_from_definition(extension_definition: Definition, target_de
         for element_to_remove in elements_to_remove:
             target_definition_fields[extension_field_name].remove(element_to_remove)
     else:
-        logging.error(
-            f"Attempted to remove a missing extension field from target. Extension name '{extension_definition.name}' target definition '{target_definition.name}'"
-        )
+        missing_target_error_message = f"Attempted to remove a missing extension field from the target. Extension name '{extension_definition.name}' target definition '{target_definition.name}'"
+        logging.error(missing_target_error_message)
+        raise LanguageError(missing_target_error_message)
 
     _remove_extension_required_fields_to_definition(target_definition_fields, extension_additional_content)
 
@@ -138,8 +152,8 @@ def _remove_extension_required_fields_to_definition(target_definition_fields: di
 
 def _get_required_fields_validation_string() -> str:
     """Return the name of the required fields validation."""
-    from aac.plugins.validators.required_fields import REQUIRED_FIELDS_VALIDATION_STRING
-    return REQUIRED_FIELDS_VALIDATION_STRING
+    from aac.plugins.validators.required_fields import PLUGIN_NAME
+    return PLUGIN_NAME
 
 
 def _get_required_fields_validation_for_definition(definition_fields: dict) -> dict:

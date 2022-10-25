@@ -18,6 +18,12 @@ jobs:
         with:
           python-version: 3.9
 
+      - name: Upload AaC models
+        uses: actions/upload-artifact@v2
+        with:
+          name: aac-models
+          path: python/model/
+
       - name: Install the AaC Package
         run: pip install -e .[all]
 

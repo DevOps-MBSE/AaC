@@ -5,7 +5,7 @@ Unit tests for the testing helper parsed_definitions module.
 from unittest import TestCase
 
 from aac.io.parser import parse
-from aac.plugins.validators.required_fields import REQUIRED_FIELDS_VALIDATION_STRING
+from aac.plugins.validators.required_fields import PLUGIN_NAME
 
 from tests.helpers.parsed_definitions import (
     create_schema_definition,
@@ -32,9 +32,7 @@ class TestArchParsedDefinitions(TestCase):
             [
                 "schema:",
                 f"  name: {definition_name}",
-                "  description: ''",
                 "  fields: []",
-                "  validation: []",
             ]
         )
 
@@ -59,7 +57,7 @@ class TestArchParsedDefinitions(TestCase):
                 f"    type: {field_type}",
                 f"    description: {field_description}",
                 "  validation:",
-                f"  - name: {REQUIRED_FIELDS_VALIDATION_STRING}",
+                f"  - name: {PLUGIN_NAME}",
                 "    arguments:",
                 f"    - {field_name}"
             ]
@@ -68,7 +66,7 @@ class TestArchParsedDefinitions(TestCase):
         field_definition = create_field_entry(field_name, field_type, field_description)
 
         expected_parsed_definition = parse(expected_yaml)[0]
-        required_field_validator = create_validation_entry(REQUIRED_FIELDS_VALIDATION_STRING, [field_name])
+        required_field_validator = create_validation_entry(PLUGIN_NAME, [field_name])
         actual_parsed_definition = create_schema_definition(
             name=definition_name, description=definition_description, fields=[field_definition], validations=[required_field_validator]
         )

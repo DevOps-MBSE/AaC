@@ -7,25 +7,38 @@ from aac.plugins import hookimpl
 from aac.plugins.plugin import Plugin
 from aac.plugins.rest_api.aac_rest_api_impl import rest_api, generate_api_spec
 
-plugin_resource_file_args = (__package__, "rest_api.yaml")
-
 
 @hookimpl
-def get_commands() -> list[AacCommand]:
+def get_plugin() -> Plugin:
     """
-    Return a list of AacCommands provided by the plugin to register for use.
-
-    This function is automatically generated. Do not edit.
+    Returns information about the plugin.
 
     Returns:
-        list of AacCommands
+        A collection of information about the plugin and what it contributes.
     """
+    *_, plugin_name = __package__.split(".")
+    plugin = Plugin(plugin_name)
+    plugin.register_commands(_get_plugin_commands())
+    return plugin
+
+
+def _get_plugin_commands():
     rest_api_arguments = [
-        AacCommandArgument("--host", "Set the hostname of the service. Useful for operating behind proxies."),
-        AacCommandArgument("--port", "The port to which the RESTful service will be bound."),
+        AacCommandArgument(
+            "--host",
+            "Set the hostname of the service. Useful for operating behind proxies.",
+        ),
+        AacCommandArgument(
+            "--port",
+            "The port to which the RESTful service will be bound.",
+        ),
     ]
+
     generate_api_spec_arguments = [
-        AacCommandArgument("output_directory", "The output directory in which to write the AaC OpenAPI JSON file"),
+        AacCommandArgument(
+            "output_directory",
+            "The output directory in which to write the AaC OpenAPI JSON file",
+        ),
     ]
 
     plugin_commands = [
@@ -44,18 +57,3 @@ def get_commands() -> list[AacCommand]:
     ]
 
     return plugin_commands
-
-
-@hookimpl
-def get_plugin() -> Plugin:
-    """
-    Returns information about the plugin.
-
-    Returns:
-        A collection of information about the plugin and what it contributes.
-    """
-    *_, plugin_name = __package__.split(".")
-    plugin = Plugin(plugin_name)
-    plugin.register_commands(get_commands())
-
-    return plugin

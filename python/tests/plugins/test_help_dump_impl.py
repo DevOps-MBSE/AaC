@@ -4,7 +4,7 @@ from unittest import TestCase
 from collections import OrderedDict
 from aac.cli.aac_command import AacCommand, AacCommandArgument
 from aac.cli.aac_command_encoder import AacCommandEncoder, AacCommandArgumentEncoder
-from aac.plugins.help_dump.help_dump_impl import help_dump, _get_all_commands
+from aac.plugins.help_dump.help_dump_impl import help_dump
 from aac.plugins.plugin_manager import get_plugin_commands
 
 from tests.helpers.assertion import assert_plugin_success
@@ -32,7 +32,7 @@ class TestHelpDump(TestCase):
         result = help_dump()
         assert_plugin_success(result)
 
-        for command in _get_all_commands():
+        for command in get_plugin_commands():
             self.assertIn(
                 json.dumps(self.expected_formatted_output(command.name, command.description, command.arguments)),
                 result.get_messages_as_string()
@@ -40,11 +40,9 @@ class TestHelpDump(TestCase):
 
     def test_help_dump_json_dump_sort(self):
         expected_commands = sorted(get_plugin_commands(), key=lambda command: command.name)
-
-        list_all_plugins = help_dump().messages
-        help_dump_output = json.loads("".join(list_all_plugins), object_pairs_hook=OrderedDict)
-
         expected_result = [command.name for command in expected_commands]
+
+        help_dump_output = json.loads(help_dump().get_messages_as_string(), object_pairs_hook=OrderedDict)
         actual_result = [command.get("name") for command in help_dump_output]
 
         self.assertListEqual(expected_result, actual_result)

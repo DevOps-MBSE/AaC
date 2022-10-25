@@ -17,7 +17,7 @@ validation:
             - The ValidatorInput content consists of valid AaC definitions.
             - The ValidatorInput contains some AaC definitions that reference other definitions.
           when:
-            - The input is validation
+            - The input is validated
           then:
             - The ValidatorOutput does not indicate any errors
             - The ValidatorOutput does not indicate any warnings

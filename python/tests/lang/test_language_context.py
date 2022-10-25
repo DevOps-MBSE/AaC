@@ -1,9 +1,9 @@
-from unittest import TestCase
-
-from aac.lang.active_context_lifecycle_manager import get_initialized_language_context
+from aac.lang.active_context_lifecycle_manager import get_active_context, get_initialized_language_context
 from aac.lang.language_context import LanguageContext
+from aac.lang.language_error import LanguageError
 from aac.spec import get_aac_spec, get_primitives, get_root_keys
 
+from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.parsed_definitions import (
     create_schema_definition,
     create_schema_ext_definition,
@@ -13,7 +13,7 @@ from tests.helpers.parsed_definitions import (
 )
 
 
-class TestLanguageContext(TestCase):
+class TestLanguageContext(ActiveContextTestCase):
 
     ENUM_VALUE_EXAMPLE_ONE = "valueOne"
     ENUM_VALUE_EXAMPLE_TWO = "valueTwo"
@@ -108,7 +108,7 @@ class TestLanguageContext(TestCase):
         extended_schema_definition = language_context.get_definition_by_name(target_schema_definition_name)
         extended_enum_definition = language_context.get_definition_by_name(target_enum_definition_name)
 
-        extended_enum_values = extended_enum_definition.get_top_level_fields().get("values")
+        extended_enum_values = extended_enum_definition.get_values()
         self.assertIn(self.ENUM_VALUE_EXAMPLE_ONE, extended_enum_values)
         self.assertIn(self.ENUM_VALUE_EXAMPLE_TWO, extended_enum_values)
 
@@ -119,7 +119,7 @@ class TestLanguageContext(TestCase):
         unextended_schema_definition = language_context.get_definition_by_name(target_schema_definition_name)
         unextended_enum_definition = language_context.get_definition_by_name(target_enum_definition_name)
 
-        unextended_enum_values = unextended_enum_definition.get_top_level_fields().get("values")
+        unextended_enum_values = unextended_enum_definition.get_values()
         self.assertNotIn(self.ENUM_VALUE_EXAMPLE_ONE, unextended_enum_values)
         self.assertNotIn(self.ENUM_VALUE_EXAMPLE_TWO, unextended_enum_values)
 
@@ -140,7 +140,7 @@ class TestLanguageContext(TestCase):
         extended_schema_definition = language_context.get_definition_by_name(target_schema_definition_name)
         extended_enum_definition = language_context.get_definition_by_name(target_enum_definition_name)
 
-        extended_enum_values = extended_enum_definition.get_top_level_fields().get("values")
+        extended_enum_values = extended_enum_definition.get_values()
         self.assertIn(self.ENUM_VALUE_EXAMPLE_ONE, extended_enum_values)
         self.assertIn(self.ENUM_VALUE_EXAMPLE_TWO, extended_enum_values)
 
@@ -160,7 +160,7 @@ class TestLanguageContext(TestCase):
         updated_schema_definition = language_context.get_definition_by_name(target_schema_definition_name)
         updated_enum_definition = language_context.get_definition_by_name(target_enum_definition_name)
 
-        updated_enum_values = updated_enum_definition.get_top_level_fields().get("values")
+        updated_enum_values = updated_enum_definition.get_values()
         self.assertNotIn(self.ENUM_VALUE_EXAMPLE_TWO, updated_enum_values)
 
         updated_schema_field_names = [field.get("name") for field in updated_schema_definition.get_top_level_fields().get("fields")]
@@ -228,3 +228,28 @@ class TestLanguageContext(TestCase):
         test_context.add_definition_to_context(enum)
 
         [self.assertEqual(enum, test_context.get_enum_definition_by_type(value)) for value in values]
+
+    def test_language_error_if_apply_extension_with_duplicate_names(self):
+        field1 = create_field_entry(f"{self.TEST_FIELD_DEFINITION_NAME}1")
+        test_schema = create_schema_definition(self.TEST_SCHEMA_DEFINITION_NAME, fields=[field1])
+
+        field2 = create_field_entry(f"{self.TEST_FIELD_DEFINITION_NAME}2")
+        test_duplicate_schema = create_schema_definition(self.TEST_SCHEMA_DEFINITION_NAME, fields=[field2])
+
+        language_context = LanguageContext([test_schema, test_duplicate_schema])
+
+        self.assertEqual(len(language_context.definitions), 2)
+
+        test_extension = create_schema_ext_definition(self.TEST_SCHEMA_EXT_DEFINITION_NAME, self.TEST_SCHEMA_DEFINITION_NAME)
+
+        with self.assertRaises(LanguageError) as cm:
+            language_context.add_definition_to_context(test_extension)
+
+        self.assertRegexpMatches(str(cm.exception).lower(), "duplicate.*definition.*name.*")
+        self.assertIn(self.TEST_SCHEMA_DEFINITION_NAME, str(cm.exception))
+
+    def test_uuid_in_active_context(self):
+        definition_uuids_list = [definition.uid for definition in get_active_context().definitions]
+        definition_uuids_set = set(definition_uuids_list)
+        self.assertGreaterEqual(len(definition_uuids_set), len(get_aac_spec()))
+        self.assertEqual(len(definition_uuids_list), len(definition_uuids_set))

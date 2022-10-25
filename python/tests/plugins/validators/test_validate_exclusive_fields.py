@@ -1,26 +1,26 @@
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.definition_helpers import get_definition_by_name, get_definitions_by_root_key
-from aac.io.parser import parse
 from aac.plugins.validators import ValidatorPlugin, ValidatorResult
-from aac.plugins.validators.exclusive_fields import get_plugin_aac_definitions, register_validators, validate_exclusive_fields
+from aac.plugins.validators.exclusive_fields import _get_plugin_definitions, _get_plugin_validations, validate_exclusive_fields
 
 from tests.active_context_test_case import ActiveContextTestCase
+from tests.helpers.assertion import assert_definitions_equal
 from tests.helpers.parsed_definitions import create_schema_ext_definition, create_enum_ext_definition, create_field_entry
 
 
 class TestExclusiveFieldsPlugin(ActiveContextTestCase):
     def test_module_register_validators(self):
-        actual_validator_plugin = register_validators()
+        actual_validator_plugins = _get_plugin_validations()
 
-        validation_definitions = get_definitions_by_root_key("validation", parse(get_plugin_aac_definitions()))
+        validation_definitions = get_definitions_by_root_key("validation", _get_plugin_definitions())
         self.assertEqual(1, len(validation_definitions))
 
-        expected_validation_name = "Mutually exclusive fields"
+        validation_definition = validation_definitions[0]
         expected_validator_plugin = ValidatorPlugin(
-            name=expected_validation_name, definition=validation_definitions[0], validation_function=(lambda x: x)
+            name=validation_definition.name, definition=validation_definition, validation_function=(lambda x: x)
         )
-        self.assertEqual(expected_validator_plugin.name, actual_validator_plugin.name)
-        self.assertEqual(expected_validator_plugin.definition, actual_validator_plugin.definition)
+        self.assertEqual(expected_validator_plugin.name, actual_validator_plugins[0].name)
+        assert_definitions_equal(expected_validator_plugin.definition, actual_validator_plugins[0].definition)
 
     def test_validate_exclusive_fields_no_defined_exclusive_fields(self):
         test_active_context = get_active_context()
@@ -32,7 +32,7 @@ class TestExclusiveFieldsPlugin(ActiveContextTestCase):
         ext_schema = get_definition_by_name("extension", test_active_context.definitions)
         ext_schema_args = ext_schema.get_validations()[0].get("arguments")
 
-        expected_result = ValidatorResult([], True)
+        expected_result = ValidatorResult(test_definition)
 
         actual_result = validate_exclusive_fields(test_definition, ext_schema, test_active_context, *ext_schema_args)
 
@@ -47,7 +47,7 @@ class TestExclusiveFieldsPlugin(ActiveContextTestCase):
         ext_schema = get_definition_by_name("extension", test_active_context.definitions)
         ext_schema_args = ext_schema.get_validations()[0].get("arguments")
 
-        expected_result = ValidatorResult([], True)
+        expected_result = ValidatorResult(test_definition)
 
         actual_result = validate_exclusive_fields(test_definition, ext_schema, test_active_context, *ext_schema_args)
 
@@ -66,4 +66,4 @@ class TestExclusiveFieldsPlugin(ActiveContextTestCase):
 
         actual_result = validate_exclusive_fields(test_combined_ext_definition, ext_schema, test_active_context, *ext_schema_args)
 
-        self.assertFalse(actual_result.is_valid)
+        self.assertFalse(actual_result.is_valid())

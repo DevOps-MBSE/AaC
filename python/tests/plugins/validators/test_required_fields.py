@@ -2,18 +2,17 @@ from typing import Any
 
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.definition_helpers import get_definitions_by_root_key
-from aac.io.parser import parse
 from aac.plugins.validators import ValidatorPlugin
 from aac.plugins.validators.required_fields import (
-    get_plugin_aac_definitions,
-    register_validators,
+    _get_plugin_definitions,
+    _get_plugin_validations,
     validate_required_fields,
     get_required_fields,
 )
 from aac.plugins.validators.required_fields._validate_required_fields import _is_field_populated
 
 from tests.active_context_test_case import ActiveContextTestCase
-from tests.helpers.assertion import assert_validator_result_failure, assert_validator_result_success
+from tests.helpers.assertion import assert_definitions_equal, assert_validator_result_failure, assert_validator_result_success
 from tests.helpers.parsed_definitions import (
     create_behavior_entry,
     create_schema_definition,
@@ -25,16 +24,17 @@ from tests.helpers.parsed_definitions import (
 
 class TestRequiredFieldsPlugin(ActiveContextTestCase):
     def test_module_register_validators(self):
-        actual_validator_plugin = register_validators()
+        actual_validator_plugins = _get_plugin_validations()
 
-        validation_definitions = get_definitions_by_root_key("validation", parse(get_plugin_aac_definitions()))
+        validation_definitions = get_definitions_by_root_key("validation", _get_plugin_definitions())
         self.assertEqual(1, len(validation_definitions))
 
+        validation_definition = validation_definitions[0]
         expected_validator_plugin = ValidatorPlugin(
-            name="Required fields are present", definition=validation_definitions[0], validation_function=(lambda x: x)
+            name=validation_definition.name, definition=validation_definition, validation_function=(lambda x: x)
         )
-        self.assertEqual(expected_validator_plugin.name, actual_validator_plugin.name)
-        self.assertEqual(expected_validator_plugin.definition, actual_validator_plugin.definition)
+        self.assertEqual(expected_validator_plugin.name, actual_validator_plugins[0].name)
+        assert_definitions_equal(expected_validator_plugin.definition, actual_validator_plugins[0].definition)
 
     def test_validate_required_fields_not_missing_required_fields_for_schema_definition(self):
         test_active_context = get_active_context()
