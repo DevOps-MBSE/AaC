@@ -9,7 +9,7 @@ from yaml import Token
 
 from aac.io.parser._parse_source import _scan_yaml
 from aac.lang.language_context import LanguageContext
-from aac.plugins.lsp_server.providers.lsp_provider import LspProvider
+from aac.plugins.first_party.lsp_server.providers.lsp_provider import LspProvider
 from aac.spec.core import get_root_keys, _get_aac_spec_file_path
 
 

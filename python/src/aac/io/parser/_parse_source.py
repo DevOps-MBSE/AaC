@@ -8,7 +8,6 @@ import logging
 import yaml
 from os import path, linesep
 from typing import Optional
-from iteration_utilities import flatten
 from yaml.parser import ParserError as YAMLParserError
 
 from aac.io.constants import DEFAULT_SOURCE_URI
@@ -52,7 +51,8 @@ def _parse_file(arch_file: str) -> list[Definition]:
     Returns:
         The AaC definitions extracted from the specified file.
     """
-    return list(flatten([_parse_str(file, _read_file_content(file)) for file in _get_files_to_process(arch_file)]))
+    definition_lists = [_parse_str(file, _read_file_content(file)) for file in _get_files_to_process(arch_file)]
+    return [definition for definition_list in definition_lists for definition in definition_list]
 
 
 def _parse_str(source: str, model_content: str) -> list[Definition]:
