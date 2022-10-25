@@ -27,8 +27,8 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
 
     def get_definition_location_at_position(self, file_name: str, line: int = 0, character: int = 0) -> list[Location]:
         return self.provider.get_definition_location_at_position(
-            {self.to_uri(name) or "": self.virtual_document_to_lsp_document(name) for name in self.documents.keys()},
-            self.to_uri(file_name) or "",
+            {self.to_uri(name): self.virtual_document_to_lsp_document(name) for name in self.documents.keys()},
+            self.to_uri(file_name),
             Position(line=line, character=character),
         )
 
@@ -67,7 +67,7 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         )
 
     async def test_get_named_location(self):
-        document_uri = self.to_uri(path.join(TEST_DOCUMENT_NAME)) or ""
+        document_uri = self.to_uri(path.join(TEST_DOCUMENT_NAME))
         location, *_ = self.provider.get_definition_location_at_position(
             {document_uri: self.virtual_document_to_lsp_document(TEST_DOCUMENT_NAME)},
             document_uri,

@@ -8,6 +8,7 @@ import logging
 import yaml
 
 from aac.lang.constants import (
+    DEFINITION_FIELD_DESCRIPTION,
     DEFINITION_FIELD_EXTENSION_ENUM,
     DEFINITION_FIELD_EXTENSION_SCHEMA,
     DEFINITION_FIELD_FIELDS,
@@ -17,7 +18,7 @@ from aac.lang.constants import (
     DEFINITION_FIELD_VALUES,
     ROOT_KEY_ENUM,
     ROOT_KEY_EXTENSION,
-    ROOT_KEY_SCHEMA
+    ROOT_KEY_SCHEMA,
 )
 from aac.lang.definitions.lexeme import Lexeme
 from aac.io.files.aac_file import AaCFile
@@ -35,6 +36,7 @@ class Definition:
         lexemes (list[Lexeme]): A list of lexemes for each item in the parsed definition.
         structure (dict): The dictionary representation of the definition.
     """
+
     uid: UUID = attrib(init=False, validator=validators.instance_of(UUID))
     name: str = attrib(validator=validators.instance_of(str))
     content: str = attrib(validator=validators.instance_of(str))
@@ -74,6 +76,11 @@ class Definition:
             fields = {}
 
         return fields
+
+    def get_description(self) -> Optional[str]:
+        """Return the description for the current definition, or None if it isn't defined."""
+        fields = self.get_top_level_fields()
+        return fields.get(DEFINITION_FIELD_DESCRIPTION)
 
     def get_type(self) -> Optional[list[dict]]:
         """Return the string for the extension type field, or None if the field isn't defined."""
