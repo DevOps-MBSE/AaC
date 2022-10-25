@@ -5,6 +5,7 @@
                            (require 'aac)
                            (aac-add-debug-templates-from-code-workspace)
                            (advice-add 'projectile-test-directory :around #'aac-projectile-test-dir)))
+                 (fill-column . 127)
                  (projectile-default-test-directory . "tests/")
                  (projectile-project-type . python-pkg)
                  (projectile-project-test-cmd . "cd python; flake8 . && nose2 -c tox.ini")

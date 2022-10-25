@@ -1,7 +1,7 @@
 """Module for the Goto Definition Provider which handles all goto definition requests."""
 import logging
+from pygls.lsp import Location, Position, DefinitionParams
 from pygls.server import LanguageServer
-from pygls.lsp.types import Location, Position, DefinitionParams
 from pygls.workspace import Document
 from aac.lang.definitions.definition import Definition
 

@@ -4,12 +4,12 @@ The AaC parser reads a YAML file, performs validation (if not suppressed) and pr
 the caller with a dictionary of the content keyed by the named type.  This allows you
 to find a certain type in a model by just looking for that key.
 """
-
-from os import path, linesep
-from typing import Optional
-from yaml.parser import ParserError as YAMLParserError
 import logging
 import yaml
+from os import path, linesep
+from typing import Optional
+from iteration_utilities import flatten
+from yaml.parser import ParserError as YAMLParserError
 
 from aac.io.constants import DEFAULT_SOURCE_URI
 from aac.io.files.aac_file import AaCFile
@@ -52,12 +52,7 @@ def _parse_file(arch_file: str) -> list[Definition]:
     Returns:
         The AaC definitions extracted from the specified file.
     """
-    definitions: list[Definition] = []
-
-    for file in _get_files_to_process(arch_file):
-        definitions.extend(_parse_str(file, _read_file_content(file)))
-
-    return definitions
+    return list(flatten([_parse_str(file, _read_file_content(file)) for file in _get_files_to_process(arch_file)]))
 
 
 def _parse_str(source: str, model_content: str) -> list[Definition]:
@@ -85,11 +80,11 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
     def is_token_between_locations(token, inclusive_line_start: int, inclusive_line_end: int) -> list[Lexeme]:
         return token.start_mark.line >= inclusive_line_start and token.end_mark.line <= inclusive_line_end
 
-    yaml_tokens = list(yaml.scan(model_content, Loader=yaml.SafeLoader))
+    yaml_tokens = _scan_yaml(model_content)
+    value_tokens = [token for token in yaml_tokens if hasattr(token, "value")]
     doc_start_token = [token for token in yaml_tokens if isinstance(token, yaml.tokens.StreamStartToken)]
     doc_end_token = [token for token in yaml_tokens if isinstance(token, yaml.tokens.StreamEndToken)]
     doc_segment_tokens = [token for token in yaml_tokens if isinstance(token, yaml.tokens.DocumentStartToken)]
-    value_tokens = [token for token in yaml_tokens if hasattr(token, "value")]
     doc_tokens = [*doc_start_token, *doc_segment_tokens, *doc_end_token]
 
     source_files: dict[str, AaCFile] = {}
@@ -101,7 +96,7 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
         content_start_line = start_doc_token.start_mark.line
         content_end_line = end_doc_token.end_mark.line
 
-        end_of_file_offset = (1 if isinstance(end_doc_token, yaml.tokens.StreamEndToken) else 0)
+        end_of_file_offset = 1 if isinstance(end_doc_token, yaml.tokens.StreamEndToken) else 0
 
         yaml_text = linesep.join(model_content.splitlines()[content_start_line:content_end_line + end_of_file_offset])
         yaml_text += linesep
@@ -156,6 +151,10 @@ def _parse_yaml(source: str, content: str) -> list[dict]:
         raise ParserError(source, [f"Failed to parse file, invalid YAML {error}", content])
 
 
+def _scan_yaml(content):
+    return list(yaml.scan(content, Loader=yaml.SafeLoader))
+
+
 def _error_if_not_yaml(source, content, models):
     """Raise a ParserError if the model is not a YAML model we can parse."""
 
@@ -164,7 +163,7 @@ def _error_if_not_yaml(source, content, models):
         return isinstance(model, dict)
 
     # Iterate over each model and test if it is considered a valid model.
-    if False in map(is_model, models):
+    if not all(map(is_model, models)):
         raise ParserError(source, ["provided content was not YAML", content])
 
 

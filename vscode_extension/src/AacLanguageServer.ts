@@ -4,7 +4,6 @@ import * as net from "net";
 import { ExtensionContext, window, workspace } from "vscode";
 import { LanguageClient, LanguageClientOptions, ServerOptions, StreamInfo, Trace } from "vscode-languageclient/node";
 import { getConfigurationItem } from "./configuration";
-import { execShell } from "./shell";
 import { assertTrue, showMessageOnError } from "./helpers";
 import { getAaCVersion } from "./aacExecutableWrapper";
 
@@ -13,7 +12,6 @@ enum LspServerMode {
     tcp = "TCP",
 }
 
-const MIN_REQUIRED_PYTHON_VERSION = "3.9";
 const DEFAULT_LSP_SERVER_MODE = LspServerMode.io;
 
 export class AacLanguageServerClient {
