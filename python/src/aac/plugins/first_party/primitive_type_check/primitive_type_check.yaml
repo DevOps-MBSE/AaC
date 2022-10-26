@@ -3,3 +3,45 @@ model:
   description: |
     Primitive Type Checking is an Architecture-as-Code plugin that provides
     primitive type validations for the primitive enum types defined in the core specification.
+  behavior:
+    - name: Validate Integer Primitives
+      type: request-response
+      description:
+      input:
+        - name: input
+          type: ValidatorInput
+      output:
+        - name: results
+          type: ValidatorOutput
+      acceptance:
+        - scenario: Successfully Validate an Integer Primitive Value
+          given:
+            - The ValidatorInput content consists of valid AaC definitions
+            - The ValidatorInput contains at least one definition field that is defined as being type `int`
+            - The value in the primitive `int` field is a non-string whole number
+          when:
+            - The input is validated
+          then:
+            - The ValidatorOutput does not indicate any errors
+            - The ValidatorOutput does not indicate any warnings
+            - The ValidatorOutput indicates the primitive value under test is valid
+        - scenario: Fail to Validate an Integer Primitive Value is A Float
+          given:
+            - The ValidatorInput content consists of valid AaC definitions
+            - The ValidatorInput contains at least one definition field that is defined as being type `int`
+            - The value in the primitive `int` field is a decimal number
+          when:
+            - The input is validated
+          then:
+            - The ValidatorOutput indicates an error
+            - The ValidatorOutput indicates the primitive value under test is invalid
+        - scenario: Fail to Validate an Integer Primitive Value Is a String
+          given:
+            - The ValidatorInput content consists of valid AaC definitions
+            - The ValidatorInput contains at least one definition field that is defined as being type `int`
+            - The value in the primitive `int` field contains alphabetical letters or punctuation marks
+          when:
+            - The input is validated
+          then:
+            - The ValidatorOutput indicates an error
+            - The ValidatorOutput indicates the primitive value under test is invalid
