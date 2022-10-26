@@ -7,7 +7,6 @@ from aac.lang.definitions.json_schema import get_definition_json_schema
 from tests.helpers.parsed_definitions import (
     create_schema_definition,
     create_model_definition,
-    create_enum_definition,
     create_field_entry,
 )
 
