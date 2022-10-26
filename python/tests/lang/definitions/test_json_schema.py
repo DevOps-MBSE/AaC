@@ -17,7 +17,7 @@ class TestJsonSchema(TestCase):
         self.maxDiff = None
         test_context = get_initialized_language_context(core_spec_only=True)
 
-        test_sub_schema_enum_field = create_enum_definition("EnumField", ["val1", "val2"])
+        test_sub_schema_enum_field = create_field_entry("EnumField", ["val1", "val2"])
 
         test_sub_schema_name = "enumSchema"
         test_sub_schema = create_schema_definition(test_sub_schema_name, fields=[test_sub_schema_enum_field])
@@ -54,6 +54,17 @@ EXPECTED_SCHEMA_JSON_SCHEMA = """
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
     "properties": {
+        "inherits": {
+            "items": {
+                "properties": {
+                    "name": {
+                        "type": "string"
+                        }
+                    },
+                    "type": "object"
+            },
+            "type": "array"
+        },
         "name": {
             "type": "string"
         },
