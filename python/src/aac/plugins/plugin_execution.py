@@ -36,12 +36,8 @@ class PluginExecutionResult:
     """
 
     name: str = attrib(validator=validators.instance_of(str))
-    status_code: PluginExecutionStatusCode = attrib(
-        validator=validators.instance_of(PluginExecutionStatusCode)
-    )
-    messages: list[str] = attrib(
-        default=Factory(list), validator=validators.instance_of(list)
-    )
+    status_code: PluginExecutionStatusCode = attrib(validator=validators.instance_of(PluginExecutionStatusCode))
+    messages: list[str] = attrib(default=Factory(list), validator=validators.instance_of(list))
 
     def add_messages(self, *messages) -> None:
         """Add messages to the list of messages."""
@@ -106,13 +102,13 @@ def plugin_result(name: str, cmd: Callable, *args: Tuple[Any], **kwargs: dict[st
         result.status_code = PluginExecutionStatusCode.OPERATION_CANCELLED
     except Exception as error:
         # Extract the first stack trace, skipping the plugin result we'd expect to find in the first element
-        error_trace = extract_tb(error.__traceback__)[-1]
-        result.add_messages(
-            f"A(n) {error.__class__.__qualname__} error occurred",
-            f"  in {error_trace.filename}",
-            f"  on line {error_trace.lineno}",
-            f"\nThe error was:\n{error}",
-        )
+        for error_trace in extract_tb(error.__traceback__):
+            result.add_messages(
+                f"\nA(n) {error_trace.name} error occurred",
+                f"  in {error_trace.filename}",
+                f"  on line {error_trace.lineno}",
+                f"The error was: {error}",
+            )
         result.status_code = PluginExecutionStatusCode.GENERAL_FAILURE
         logging.error(f"Plugin {name} failed during execution:\n{extract_tb(error.__traceback__)}")
 
