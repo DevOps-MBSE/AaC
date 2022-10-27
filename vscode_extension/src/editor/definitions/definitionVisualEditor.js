@@ -1,4 +1,5 @@
 /* tslint:disable */
+/* eslint-disable */
 const vscode = acquireVsCodeApi();
 
 const AacEditorEventTypes = {
