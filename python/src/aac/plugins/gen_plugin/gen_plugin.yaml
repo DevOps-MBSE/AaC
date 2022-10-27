@@ -46,7 +46,6 @@ enum:
     - bytes
     - bytearray
     - memoryview
-    - object
 ---
 ext:
    name: CommandArgumentFields
@@ -58,7 +57,7 @@ ext:
         - name: number_of_arguments
           type: int
         - name: default
-          type: object
+          type: PythonDataType
 ---
 ext:
    name: CommandBehaviorType
