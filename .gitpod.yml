@@ -14,6 +14,9 @@ tasks:
       source venv/bin/activate
       pip install -e .[all]
       aac generate-openapi-spec ../vscode_extension/
+      cd ../vscode_extension/
+      yarn generate:rest_api
+      cd ../
     command: cd python/; source venv/bin/activate # Always launch a console with our virtual env
 
   - name: Deploy Jekyll Docs

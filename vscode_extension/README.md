@@ -41,33 +41,6 @@ for how to install the AaC package.
 Once the `aac` package is installed, verify that the installation is working
 correctly by running `aac -h` in a terminal. If you are presented with a list of
 commands with accompanying descriptions, the installation was successful.
-
-## Extension Settings
-
-
-### pythonPath
-The filesystem path to the Python3 executable. If using a virtual environment, use the path to the virtual environment Python executable.
-
-The default value is `/usr/local/bin`.
-
-### aacPath
-The filesystem path to the aac CLI tool. MUST be set in order to for the AaC VSCode extension to start up the LSP server in IO mode.
-
-### lsp.serverMode
-The mode of communication with the LSP server. IO is default, but TCP will allow for connection to already established LSP servers.
-
-### lsp.tcp.host
-The hostname of of the LSP server. Used to establish a TCP connection.
-
-### lsp.tcp.port
-The port of of the LSP server. Used to establish a TCP connection.
-
-### rest_api.host
-The host to use for establishing a TCP connection with the AaC REST API plugin.
-
-### rest_api.port
-The port to use for establishing a TCP connection with the AaC REST API plugin.
-
 ## Known Issues
 
 None yet.

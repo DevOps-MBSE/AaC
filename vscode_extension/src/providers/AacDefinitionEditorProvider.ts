@@ -36,8 +36,6 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
         private readonly _context: vscode.ExtensionContext
     ) { }
 
-    //#region CustomEditorProvider
-
     async openCustomDocument(
         uri: vscode.Uri,
         _openContext: { backupId?: string },
@@ -99,8 +97,6 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
         return document.backup(context.destination, cancellation);
     }
 
-    //#endregion
-
     /**
      * Get the editor webview HTML.
      */
@@ -122,30 +118,30 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
         const nonce = getNonce();
 
         return `
-			<!DOCTYPE html>
-			<html lang="en">
-			<head>
-				<meta charset="UTF-8">
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
 
-				<!--
-				Use a content security policy to only allow loading images from https or from our extension directory,
-				and only allow scripts that have a specific nonce.
-				-->
-				<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webview.cspSource} blob:; style-src ${webview.cspSource} 'unsafe-inline'; script-src * data: ${webview.cspSource} 'unsafe-inline' 'unsafe-eval';">
+                <!--
+                Use a content security policy to only allow loading images from https or from our extension directory,
+                and only allow scripts that have a specific nonce.
+                -->
+                <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webview.cspSource} blob:; style-src ${webview.cspSource} 'unsafe-inline'; script-src * data: ${webview.cspSource} 'unsafe-inline' 'unsafe-eval';">
 
-				<meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-				<link href="${styleMainUri}" rel="stylesheet" />
+                <link href="${styleMainUri}" rel="stylesheet" />
 
                 <script src="${jsonEditorScriptUri}" http-equiv="Content-Security-Policy" script-src-elem "${jsonEditorScriptUri}" nonce="${nonce}";></script>
-				<title></title>
-			</head>
-			<body>
-				<div id="main"></div>
+                <title></title>
+            </head>
+            <body>
+                <div id="main"></div>
                 <button id='submit'>Save</button>
                 <script src="${scriptUri}" http-equiv="Content-Security-Policy" script-src-elem 'unsafe-inline' ${scriptUri} nonce='${nonce}';></script>
-			</body>
-			</html>`;
+            </body>
+            </html>`;
     }
 
 

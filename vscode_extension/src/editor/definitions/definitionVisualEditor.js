@@ -1,5 +1,4 @@
 /* tslint:disable */
-/* eslint-disable */
 const vscode = acquireVsCodeApi();
 
 // This script is run within the webview itself
