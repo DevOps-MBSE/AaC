@@ -8,7 +8,7 @@ from aac.plugins.plugin_execution import PluginExecutionResult
 from aac.plugins.plugin_manager import get_plugin_commands
 
 
-@group(context_settings=dict(help_option_name=["-h", "--help"]))
+@group(context_settings=dict(help_option_names=["-h", "--help"]))
 def cli():
     """The Architecture-as-Code (AaC) command line tool."""
     pass
@@ -37,7 +37,7 @@ def to_click_parameter(argument: AacCommandArgument) -> Parameter:
     return (
         Option(names, help=argument.description, show_default=True, **args)
         if argument.name[0].startswith("-")
-        else Argument(names, required=argument.required, **args)
+        else Argument(names, **args)
     )
 
 
