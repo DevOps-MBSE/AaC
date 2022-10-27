@@ -9,10 +9,11 @@ from aac.lang.definitions.schema import get_definition_schema
 
 def get_definition_json_schema(definition: Definition, language_context: LanguageContext) -> dict:
     """
-    Return a string containing the JSON Schema for the definition; the definition's schema definition is converted to the JSON schema.
+    Return a dictionary containing the JSON Schema for the definition; the definition's schema is converted to the JSON schema.
 
     Args:
-        definition (Definition): The definition to convert to JSON Schema
+        definition (Definition): The definition to convert to JSON Schema.
+        language_context (LanguageContext): The language context in which to search for the definition.
 
     Returns:
         a dictionary containing the definition as a JSON schema for the definition's content.
@@ -50,7 +51,7 @@ def _get_definition_json_schema(definition_schema: Definition, language_context:
                 schema_object.update(field_json_schema)
             else:
                 logging.warning(
-                    f"Excluding field {field_name} because there is no corresponding schema definition could be found for type {field_type}."
+                    f"Excluding field {field_name} because no corresponding schema definition could be found for type {field_type}."
                 )
 
     return schema_object
