@@ -87,7 +87,7 @@ def get_plugin_commands() -> list[AacCommand]:
     Returns:
         A list of AaC Commands provided by plugins.
     """
-    return list(flatten([plugin.get_commands() for plugin in get_plugins() if plugin.get_commands()]))
+    return [command for plugin in get_plugins() for command in plugin.get_commands()]
 
 
 def get_plugin_definitions() -> list[Definition]:
@@ -102,8 +102,7 @@ def get_plugin_definitions() -> list[Definition]:
         definition.source.is_user_editable = False
         return definition
 
-    definitions = [plugin.get_definitions() for plugin in get_plugins() if plugin.get_definitions()]
-    return list(map(set_files_to_not_user_editable, flatten(definitions)))
+    return [set_files_to_not_user_editable(definition) for plugin in get_plugins() for definition in plugin.get_definitions()]
 
 
 def get_validator_plugins() -> list[ValidatorPlugin]:
@@ -113,4 +112,4 @@ def get_validator_plugins() -> list[ValidatorPlugin]:
     Returns:
         A list of validator plugins that are currently registered.
     """
-    return list(flatten([plugin.get_validations() for plugin in get_plugins() if plugin.get_validations()]))
+    return [validation for plugin in get_plugins() for validation in plugin.get_validations()]

@@ -26,11 +26,15 @@ def _get_plugin_commands():
     start_lsp_tcp_arguments = [
         AacCommandArgument(
             "--host",
-            "The host address to bind the TCP server to. Defaults to 127.0.0.1.",
+            "The host address to bind the TCP server to.",
+            "str",
+            default="127.0.0.1",
         ),
         AacCommandArgument(
             "--port",
-            "The host port to bing the TCP server to. Defaults to 5007.",
+            "The host port to bing the TCP server to.",
+            "int",
+            default=5007,
         ),
     ]
 

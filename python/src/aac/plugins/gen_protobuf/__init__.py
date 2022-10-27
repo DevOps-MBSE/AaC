@@ -27,12 +27,14 @@ def get_plugin() -> Plugin:
 def _get_plugin_commands():
     gen_protobuf_arguments = [
         AacCommandArgument(
-            "architecture_file",
+            "architecture-file",
             "The yaml file containing the data models to generate as Protobuf messages.",
+            "file",
         ),
         AacCommandArgument(
-            "output_directory",
+            "output-directory",
             "The directory to write the generated Protobuf messages to.",
+            "directory",
         ),
     ]
 

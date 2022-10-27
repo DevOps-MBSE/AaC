@@ -12,12 +12,7 @@ from os import path, rename, makedirs
 from aac.lang.definition_helpers import convert_parsed_definitions_to_dict_definition, get_models_by_type
 from aac.lang.definitions.search import search
 from aac.lang.definitions.definition import Definition
-from aac.templates.engine import (
-    TemplateOutputFile,
-    generate_templates,
-    load_templates,
-    write_generated_templates_to_file,
-)
+from aac.templates.engine import TemplateOutputFile, generate_templates, load_templates, write_generated_templates_to_file
 from aac.plugins import OperationCancelled
 from aac.plugins.gen_plugin.GeneratePluginException import GeneratePluginException
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
@@ -62,7 +57,11 @@ def generate_plugin(architecture_file: str) -> PluginExecutionResult:
 def _generate_plugin_files_to_directory(architecture_file_path: str, plugin_output_directory: str, plugin_type: str) -> str:
     with validated_source(architecture_file_path) as validation_result:
         definitions = validation_result.definitions
-        templates = list(_prepare_and_generate_plugin_files(definitions, plugin_type, architecture_file_path, plugin_output_directory).values())
+        templates = list(
+            _prepare_and_generate_plugin_files(
+                definitions, plugin_type, architecture_file_path, plugin_output_directory
+            ).values()
+        )
         write_generated_templates_to_file(templates)
         return f"Successfully created a {plugin_type}-party plugin in {plugin_output_directory}"
 
@@ -136,7 +135,9 @@ def _get_template_output_directories(plugin_type: str, architecture_file_path: s
     return first_party_directories if plugin_type == PLUGIN_TYPE_FIRST_STRING else third_party_directories
 
 
-def _generate_template_files(plugin_type: str, output_directory: str, output_directories: dict, template_properties: dict) -> dict[str, TemplateOutputFile]:
+def _generate_template_files(
+    plugin_type: str, output_directory: str, output_directories: dict, template_properties: dict
+) -> dict[str, TemplateOutputFile]:
     """Generates the Jinja2 templates with the template properties."""
     directories = {name: path.join(output_directory, output_file) for name, output_file in output_directories.items()}
     return generate_templates(load_templates(__package__, f"templates/{plugin_type}_party"), directories, template_properties)
@@ -175,7 +176,9 @@ def _prepare_and_generate_plugin_files(
     if plugin_type == PLUGIN_TYPE_THIRD_STRING:
         _move_architecture_file_to_plugin_root(architecture_file_path, output_directory, plugin_implementation_name)
 
-    generated_templates = _generate_template_files(plugin_type, output_directory, template_output_directories, template_properties)
+    generated_templates = _generate_template_files(
+        plugin_type, output_directory, template_output_directories, template_properties
+    )
 
     _apply_output_template_properties(generated_templates, templates_to_overwrite, plugin_implementation_name)
 
@@ -369,6 +372,8 @@ def _move_architecture_file_to_plugin_root(architecture_file_path: str, output_d
             makedirs(new_file_dir_path)
         rename(architecture_file_path, new_file_path)
     except OSError as error:
-        rename_file_error_message = f"Failed to move plugin architecture file to new plugin root directory '{new_file_path}'. Error: {error}"
+        rename_file_error_message = (
+            f"Failed to move plugin architecture file to new plugin root directory '{new_file_path}'. Error: {error}"
+        )
         logging.error(rename_file_error_message)
         raise GeneratePluginException(rename_file_error_message)

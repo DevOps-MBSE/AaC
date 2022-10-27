@@ -1,24 +1,23 @@
 """A plugin to print JSON schema of AaC model files."""
+
 import json
 import os
+from typing import Optional
 
 from aac.io.writer import write_file
 from aac.lang.definition_helpers import convert_parsed_definitions_to_dict_definition
-from aac.plugins.plugin_execution import (
-    PluginExecutionResult,
-    PluginExecutionStatusCode,
-    plugin_result,
-)
+from aac.plugins.plugin_execution import PluginExecutionResult, PluginExecutionStatusCode, plugin_result
 from aac.validate import validated_source
 
 
 plugin_name = "gen-json"
 
 
-def print_json(architecture_files: list[str], output_directory: str = None) -> PluginExecutionResult:
-    """Print the parsed_models from the parsed architecture_files values in JSON format.
+def print_json(architecture_files: list[str], output_directory: Optional[str] = None) -> PluginExecutionResult:
+    """
+    Print the parsed_models from the parsed architecture_files values in JSON format.
 
-    Arguments:
+    Args:
         architecture_files (list[str]): filepath to the architecture file to convert to JSON.
         output_directory (str): Directory in which JSON files will be written. (optional)
     """

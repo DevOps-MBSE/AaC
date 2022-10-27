@@ -27,14 +27,16 @@ def get_plugin() -> Plugin:
 def _get_plugin_commands():
     command_arguments = [
         AacCommandArgument(
-            "architecture_files",
-            "Space delimited list of one or more file paths to AaC file(s) containing models to parse and print as JSON.",
-            number_of_arguments="+",
+            "architecture-file",
+            "File paths to AaC file(s) containing models to parse and print as JSON.",
+            "file",
+            number_of_arguments=-1,
         ),
         AacCommandArgument(
-            "--output_directory",
+            "--output-directory",
             "Directory in which JSON files will be written",
-        )
+            "directory",
+        ),
     ]
 
     plugin_commands = [

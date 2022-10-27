@@ -2,9 +2,6 @@
 
 import os
 
-from typing import Optional
-
-from iteration_utilities import flatten
 from jinja2 import Template
 
 
@@ -21,32 +18,32 @@ from aac.templates.engine import (
 from aac.validate import validated_source
 
 plugin_name = "gen-design-doc"
-default_template_file = "templates/system-design-doc.md.jinja2"
 
 
-def gen_design_doc(architecture_files: str, output_directory: str, template_file: Optional[str] = None) -> PluginExecutionResult:
+def gen_design_doc(
+    architecture_file: str, output_directory: str, template_file: str = "templates/system-design-doc.md.jinja2"
+) -> PluginExecutionResult:
     """
     Generate a System Design Document from Architecture-as-Code models.
 
     Args:
-        architecture_files (str): A comma-separated list of yaml file(s) containing the modeled
-                                      system for which to generate the System Design document.
+        architecture_file (str): A comma-separated list of yaml file(s) containing the modeled
+                                     system for which to generate the System Design document.
         output_directory (str): The directory to which the System Design document will be written.
         template_file (str): The name of the template file to use for generating the document. (optional)
     """
 
     def write_design_doc_to_directory():
-        first_arch_file, *other_arch_files = architecture_files.split(",")
-        parsed_models = _get_parsed_models([first_arch_file] + other_arch_files)
+        parsed_models = _get_parsed_models(architecture_file)
 
         loaded_templates = load_templates(__package__)
-        template_file_name = os.path.basename(template_file or default_template_file)
+        template_file_name = os.path.basename(template_file)
 
         selected_template, *_ = [t for t in loaded_templates if template_file_name == t.name]
 
-        output_filespec = _get_output_filespec(first_arch_file, _get_output_file_extension(template_file_name))
+        output_filespec = _get_output_filespec(architecture_file, _get_output_file_extension(template_file_name))
 
-        template_properties = _make_template_properties(parsed_models, first_arch_file)
+        template_properties = _make_template_properties(parsed_models, architecture_file)
         generated_document = _generate_system_doc(output_filespec, selected_template, output_directory, template_properties)
         write_generated_templates_to_file([generated_document])
 
@@ -56,13 +53,9 @@ def gen_design_doc(architecture_files: str, output_directory: str, template_file
         return result
 
 
-def _get_parsed_models(architecture_files: list) -> list[Definition]:
-    def parse_with_validation(architecture_file):
-        with validated_source(architecture_file) as result:
-            return result.definitions
-
-    # For each architecture_file, parse and validate the contents, then flatten the list of lists to a 1D list
-    return list(flatten(map(parse_with_validation, architecture_files)))
+def _get_parsed_models(architecture_file: str) -> list[Definition]:
+    with validated_source(architecture_file) as result:
+        return result.definitions if isinstance(result.definitions, list) else [result.definitions]
 
 
 def _make_template_properties(parsed_definitions: list[Definition], arch_file: str) -> dict:
@@ -93,21 +86,24 @@ def _get_output_file_extension(template_filespec: str) -> str:
 
 
 def _get_and_prepare_definitions_by_type(parsed_definitions: list[Definition], aac_type: str) -> list[dict]:
-
     def get_definition_structure_with_required_fields(interface_definition: Definition):
         return interface_definition.structure | {"required_fields": get_required_fields(interface_definition)}
 
     filtered_definitions = get_definitions_by_root_key(aac_type, parsed_definitions)
     definition_template_properties = []
     if aac_type == "schema":
-        definition_template_properties = [get_definition_structure_with_required_fields(definition) for definition in filtered_definitions]
+        definition_template_properties = [
+            get_definition_structure_with_required_fields(definition) for definition in filtered_definitions
+        ]
     else:
         definition_template_properties = [definition.structure for definition in filtered_definitions]
 
     return definition_template_properties
 
 
-def _generate_system_doc(output_filespec: str, selected_template: Template, output_directory: str, template_properties: dict) -> TemplateOutputFile:
+def _generate_system_doc(
+    output_filespec: str, selected_template: Template, output_directory: str, template_properties: dict
+) -> TemplateOutputFile:
     template = generate_template(selected_template, output_directory, template_properties)
 
     template.file_name = output_filespec

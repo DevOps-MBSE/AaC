@@ -27,35 +27,41 @@ def get_plugin() -> Plugin:
 def _get_plugin_commands():
     puml_component_arguments = [
         AacCommandArgument(
-            "architecture_file",
+            "architecture-file",
             "Path to a yaml file containing an AaC usecase from which to generate a Plant UML component diagram.",
+            "file",
         ),
         AacCommandArgument(
-            "output_directory",
+            "output-directory",
             "Output directory for the PlantUML (.puml) diagram file",
-        )
+            "directory",
+        ),
     ]
 
     puml_sequence_arguments = [
         AacCommandArgument(
-            "architecture_file",
+            "architecture-file",
             "Path to a yaml file containing an AaC usecase from which to generate a Plant UML sequence diagram.",
+            "file",
         ),
         AacCommandArgument(
-            "output_directory",
+            "output-directory",
             "Output directory for the PlantUML (.puml) diagram file",
-        )
+            "directory",
+        ),
     ]
 
     puml_object_arguments = [
         AacCommandArgument(
-            "architecture_file",
+            "architecture-file",
             "Path to a yaml file containing an AaC usecase from which to generate a Plant UML object diagram.",
+            "file",
         ),
         AacCommandArgument(
-            "output_directory",
+            "output-directory",
             "Output directory for the PlantUML (.puml) diagram file",
-        )
+            "directory",
+        ),
     ]
 
     plugin_commands = [

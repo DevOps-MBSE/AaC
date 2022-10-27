@@ -6,13 +6,14 @@ model:
       type: command
       description: Validates spec traces within the AaC model
       input:
-        - name: architecture_file
+        - name: architecture-file
           type: file
+          python_type: str
           description:  The file to validate for spec cross-references.
       acceptance:
         - scenario: Valid spec traces are modeled.
           given:
-            - The {{spec-validate.input.architecture_file}} contains a valid architecture specification.
+            - The {{spec-validate.input.architecture-file}} contains a valid architecture specification.
           when:
             - The aac app is run with the spec-validate command.
           then:

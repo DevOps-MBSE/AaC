@@ -27,12 +27,14 @@ def get_plugin() -> Plugin:
 def _get_plugin_commands() -> list[AacCommand]:
     gen_gherkin_behaviors_arguments = [
         AacCommandArgument(
-            "architecture_file",
+            "architecture-file",
             "The yaml file containing the data models to generate as Gherkin feature files.",
+            "file",
         ),
         AacCommandArgument(
-            "output_directory",
+            "output-directory",
             "The directory to write the generated Gherkin feature files to.",
+            "directory",
         ),
     ]
 

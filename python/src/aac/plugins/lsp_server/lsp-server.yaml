@@ -21,11 +21,13 @@ model:
         - name: --host
           type: string
           python_type: str
-          description: The host address to bind the TCP server to. Defaults to "127.0.0.1"
+          description: The host address to bind the TCP server to.
+          default: 127.0.0.1
         - name: --port
           type: number
           python_type: int
-          description: The host port to bing the TCP server to. Defaults to "5007"
+          description: The host port to bing the TCP server to.
+          default: 5007
       acceptance:
         - scenario: Start the LSP server in TCP mode
           given:
