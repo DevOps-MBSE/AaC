@@ -21,7 +21,7 @@ export interface AacDefinitionEdit {
 }
 
 /**
- * Define the edit datastructure.
+ * Define the delegate.
  */
 export interface AacDefinitionDelegate {
     getDefinition(document: AacDefinitionsDocument):  Promise<{ response: IncomingMessage; body: DefinitionModel; }>;

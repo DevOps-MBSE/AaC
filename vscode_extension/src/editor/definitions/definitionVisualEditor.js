@@ -1,6 +1,12 @@
 /* tslint:disable */
 const vscode = acquireVsCodeApi();
 
+const AacEditorEventTypes = {
+	READY: 1,
+    EDIT: 2,
+    SAVE: 3
+}
+
 // This script is run within the webview itself
 (function () {
     class DefinitionEditor {
@@ -42,20 +48,18 @@ const vscode = acquireVsCodeApi();
                 const definitionStructure = {}
                 definitionStructure[rootKey] = editorContent
 
-                // Enum AacEditorEventTypes.EDIT = 2
                 const aacDefinitionEdit = {
                     name: definitionStructure[rootKey].name,
                     sourceUri: this.sourceUri,
                     structure: definitionStructure
                 };
 
-                vscode.postMessage({ type: 2, body: aacDefinitionEdit});
+                vscode.postMessage({ type: AacEditorEventTypes.EDIT, body: aacDefinitionEdit});
             });
 
             // Hook up the submit button to log to the console
             document.getElementById('submit').addEventListener('click', function () {
-                // Enum AacEditorEventTypes.SAVE = 3
-                vscode.postMessage({ type: 3 });
+                vscode.postMessage({ type: AacEditorEventTypes.SAVE });
             });
         }
     }
@@ -66,8 +70,7 @@ const vscode = acquireVsCodeApi();
     window.addEventListener('message', async event => {
         const { type, body } = event.data;
         switch (type) {
-            // Enum AacEditorEventTypes.EDIT = 2
-            case 2:
+            case AacEditorEventTypes.EDIT:
                 {
                     await editor.setEditorData(body)
                     return;
@@ -76,8 +79,7 @@ const vscode = acquireVsCodeApi();
     });
 
     // Send editor is ready message
-    // Enum AacEditorEventTypes.READY = 1
-    vscode.postMessage({ type: 1 });
+    vscode.postMessage({ type: AacEditorEventTypes.READY });
 }());
 
 function addTitlesToJsonSchema(jsonSchema, definitionRootKey) {
