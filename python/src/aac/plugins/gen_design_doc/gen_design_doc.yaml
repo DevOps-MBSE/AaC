@@ -14,18 +14,12 @@ model:
           type: directory
           python_type: str
           description: The directory to which the System Design document will be written.
-        - name: --template-file
-          type: file
-          python_type: str
-          description: The name of the Jinja2 template file to use for generating the document. (optional)
       acceptance:
         - scenario: Output a System Design document containing an outline of the model and its components.
           given:
             - The {{gen-design-doc.input.architecture-file}} represents a valid system architecture.
-            - The {{gen-design-doc.input.template-file}} exists and is a valid Jinja2 template.
           when:
             - The aac application is run with the gen-design-doc command and a valid architecture file, a template file, and an output directory.
           then:
             - A System Design document is written to {{gen-design-doc.input.output-directory}}.
-            - The {{gen-design-doc.input.template-file}} template is used as a basis for the System Design document.
             - The System Design document is generated and contains an outline of the model(s).

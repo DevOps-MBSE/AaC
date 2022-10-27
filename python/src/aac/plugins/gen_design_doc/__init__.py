@@ -34,11 +34,6 @@ def _get_plugin_commands():
             "The directory to which the System Design document will be written.",
             "directory",
         ),
-        AacCommandArgument(
-            "--template-file",
-            "The name of the Jinja2 template file to use for generating the document. (optional)",
-            "file",
-        ),
     ]
 
     plugin_commands = [

@@ -20,9 +20,7 @@ from aac.validate import validated_source
 plugin_name = "gen-design-doc"
 
 
-def gen_design_doc(
-    architecture_file: str, output_directory: str, template_file: str = "templates/system-design-doc.md.jinja2"
-) -> PluginExecutionResult:
+def gen_design_doc(architecture_file: str, output_directory: str) -> PluginExecutionResult:
     """
     Generate a System Design Document from Architecture-as-Code models.
 
@@ -30,18 +28,16 @@ def gen_design_doc(
         architecture_file (str): A comma-separated list of yaml file(s) containing the modeled
                                      system for which to generate the System Design document.
         output_directory (str): The directory to which the System Design document will be written.
-        template_file (str): The name of the template file to use for generating the document. (optional)
     """
 
     def write_design_doc_to_directory():
         parsed_models = _get_parsed_models(architecture_file)
 
+        system_template_file_name = "system-design-doc.md.jinja2"
         loaded_templates = load_templates(__package__)
-        template_file_name = os.path.basename(template_file)
+        selected_template, *_ = [t for t in loaded_templates if system_template_file_name == t.name]
 
-        selected_template, *_ = [t for t in loaded_templates if template_file_name == t.name]
-
-        output_filespec = _get_output_filespec(architecture_file, _get_output_file_extension(template_file_name))
+        output_filespec = _get_output_filespec(architecture_file, _get_output_file_extension(system_template_file_name))
 
         template_properties = _make_template_properties(parsed_models, architecture_file)
         generated_document = _generate_system_doc(output_filespec, selected_template, output_directory, template_properties)
