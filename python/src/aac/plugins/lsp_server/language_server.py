@@ -3,7 +3,8 @@
 import difflib
 import logging
 from os import linesep
-from typing import Optional
+from re import I
+from typing import Optional, Union
 from pygls.protocol import LanguageServerProtocol
 from pygls.server import LanguageServer
 from pygls.lsp import (
@@ -19,7 +20,6 @@ from pygls.lsp import (
     DidOpenTextDocumentParams,
     methods,
 )
-from pygls.lsp.types import PublishDiagnosticsParams
 
 from aac.io.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_initialized_language_context
@@ -33,6 +33,7 @@ from aac.plugins.lsp_server.providers.goto_definition_provider import GotoDefini
 from aac.plugins.lsp_server.providers.hover_provider import HoverProvider
 from aac.plugins.lsp_server.providers.rename_provider import RenameProvider
 from aac.plugins.lsp_server.providers.prepare_rename_provider import PrepareRenameProvider
+from aac.plugins.lsp_server.providers.publish_diagnostics_provider import PublishDiagnosticsProvider
 
 
 class AacLanguageServer(LanguageServer):
@@ -97,6 +98,7 @@ class AacLanguageServer(LanguageServer):
         self.feature(methods.DEFINITION)(handle_goto_definition)
         self.feature(methods.REFERENCES)(handle_references)
         self.feature(methods.RENAME)(handle_rename)
+        self.feature(methods.TEXT_DOCUMENT_PUBLISH_DIAGNOSTICS)(handle_publish_diagnostics)
         self.feature(methods.PREPARE_RENAME)(handle_prepare_rename)
 
 
@@ -114,6 +116,8 @@ async def did_open(ls: AacLanguageServer, params: DidOpenTextDocumentParams):
     managed_file.is_client_managed = True
     _, file_path = file_uri.split("file://")
     ls.language_context.add_definitions_to_context(parse(file_path))
+
+    handle_publish_diagnostics(ls, params)
 
 
 async def did_close(ls: AacLanguageServer, params: DidCloseTextDocumentParams):
@@ -157,6 +161,8 @@ async def did_change(ls: AacLanguageServer, params: DidChangeTextDocumentParams)
     ls.language_context.add_definitions_to_context(new_definitions)
     ls.language_context.update_definitions_in_context(altered_definitions)
     ls.language_context.remove_definitions_from_context(old_definitions_to_delete)
+
+    handle_publish_diagnostics(ls, params)
 
 
 async def handle_completion(ls: AacLanguageServer, params: CompletionParams):
@@ -207,9 +213,10 @@ async def handle_prepare_rename(ls: AacLanguageServer, params: RenameParams):
     return prepare_rename_results
 
 
-async def handle_publish_diagnostics(ls: AacLanguageServer, params: PublishDiagnosticsParams):
+def handle_publish_diagnostics(ls: AacLanguageServer, params: Union[DidOpenTextDocumentParams, DidChangeTextDocumentParams] ):
     """Handle the publish diagnostics request."""
     publish_diagnostics_provider = ls.providers.get(methods.TEXT_DOCUMENT_PUBLISH_DIAGNOSTICS)
-    publish_diagnostics_results = publish_diagnostics_provider.handle_request(ls, params)
-    logging.debug(f"Publish Diagnostics results: {publish_diagnostics_results}")
-    return publish_diagnostics_results
+    diagnostics = publish_diagnostics_provider.handle_request(ls, params)
+    ls.publish_diagnostics(params.text_document.uri, diagnostics)
+    logging.debug(f"Publish Diagnostics results: {diagnostics}")
+    return diagnostics
