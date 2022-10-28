@@ -1,7 +1,6 @@
 """AaC Plugin implementation module for the aac-rest-api plugin."""
 
 from fastapi.openapi.utils import get_openapi
-from typing import Optional
 import asyncio
 import json
 import logging

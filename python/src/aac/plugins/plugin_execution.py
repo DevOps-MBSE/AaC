@@ -102,14 +102,20 @@ def plugin_result(name: str, cmd: Callable, *args: Tuple[Any], **kwargs: dict[st
         result.status_code = PluginExecutionStatusCode.OPERATION_CANCELLED
     except Exception as error:
         # Extract the first stack trace, skipping the plugin result we'd expect to find in the first element
-        for error_trace in extract_tb(error.__traceback__):
-            result.add_messages(
-                f"\nA(n) {error_trace.name} error occurred",
-                f"  in {error_trace.filename}",
-                f"  on line {error_trace.lineno}",
-                f"The error was: {error}",
-            )
+        result.add_messages(_get_error_messages(error))
         result.status_code = PluginExecutionStatusCode.GENERAL_FAILURE
         logging.error(f"Plugin {name} failed during execution:\n{extract_tb(error.__traceback__)}")
 
     yield result
+
+
+def _get_error_messages(error: Exception) -> list[str]:
+    def error_message_lines(error_trace):
+        return (
+            f"\nA(n) {error_trace.name} error occurred",
+            f"  in {error_trace.filename}",
+            f"  on line {error_trace.lineno}",
+            f"The error was: {error}",
+        )
+
+    return [line for error_trace in extract_tb(error.__traceback__) for line in error_message_lines(error_trace)]

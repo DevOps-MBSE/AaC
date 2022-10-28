@@ -1,6 +1,5 @@
 """Provide access to plugins and plugin data."""
 from importlib import import_module
-from iteration_utilities import flatten
 from pluggy import PluginManager
 
 from aac.cli.aac_command import AacCommand

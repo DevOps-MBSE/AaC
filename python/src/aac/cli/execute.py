@@ -16,6 +16,7 @@ def cli():
 
 @cli.result_callback()
 def output_result(result: PluginExecutionResult):
+    """Output the message from the result of executing the CLI command."""
     error_occurred = not result.is_success
     echo(result.get_messages_as_string(), err=error_occurred, color=True)
     if error_occurred:
@@ -23,6 +24,7 @@ def output_result(result: PluginExecutionResult):
 
 
 def to_click_type(type_name: str) -> ParamType:
+    """Convert the named type to a type recognized by Click."""
     if type_name == "file":
         return Path(file_okay=True)
     elif type_name == "directory":
@@ -32,6 +34,7 @@ def to_click_type(type_name: str) -> ParamType:
 
 
 def to_click_parameter(argument: AacCommandArgument) -> Parameter:
+    """Convert an AacCommandArgument to a Click Parameter."""
     names = [argument.name] if isinstance(argument.name, str) else argument.name
     args = dict(type=to_click_type(argument.data_type), nargs=argument.number_of_arguments, default=argument.default)
     return (
@@ -42,6 +45,7 @@ def to_click_parameter(argument: AacCommandArgument) -> Parameter:
 
 
 def to_click_command(command: AacCommand) -> Command:
+    """Convert an AacCommand to a Click Command."""
     return Command(
         name=command.name,
         callback=command.callback,
