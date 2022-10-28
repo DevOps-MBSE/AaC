@@ -57,7 +57,7 @@ class PluginExecutionResult:
 
 
 @contextmanager
-def plugin_result(name: str, cmd: Callable, *args: Tuple[Any], **kwargs: dict[str, Any]):
+def plugin_result(name: str, cmd: Callable[..., Any], *args: Tuple[Any], **kwargs: dict[str, Any]):
     """
     Create a PluginExecutionResult after running command on a validated model from file.
 
@@ -67,7 +67,7 @@ def plugin_result(name: str, cmd: Callable, *args: Tuple[Any], **kwargs: dict[st
 
     Arguments:
         name (str): The name of the plugin whose result is being returned.
-        cmd (str): The command to be called. The command is expected to return a message to be
+        cmd (Callable[..., Any]): The command to be called. The command is expected to return a message to be
                        displayed to the user.
         args (Tuple[Any]): a list of args that are passed to the accompanying command
         kwargs (dict[str, Any]): a dictionary of keyword arguments that are passed to the accompanying command
@@ -112,10 +112,10 @@ def plugin_result(name: str, cmd: Callable, *args: Tuple[Any], **kwargs: dict[st
 def _get_error_messages(error: Exception) -> list[str]:
     def error_message_lines(error_trace):
         return (
-            f"\nA(n) {error_trace.name} error occurred",
-            f"  in {error_trace.filename}",
-            f"  on line {error_trace.lineno}",
-            f"The error was: {error}",
+            f"\nA(n) {error_trace.name} error occurred"
+            f"\n  in {error_trace.filename}"
+            f"\n  on line {error_trace.lineno}"
+            f"\nThe error was: {error}"
         )
 
-    return [line for error_trace in extract_tb(error.__traceback__) for line in error_message_lines(error_trace)]
+    return [error_message_lines(error_trace) for error_trace in extract_tb(error.__traceback__)]

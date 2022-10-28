@@ -5,12 +5,7 @@ from iteration_utilities import flatten
 from aac.lang.definition_helpers import get_models_by_type, convert_parsed_definitions_to_dict_definition
 from aac.plugins import PluginError
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
-from aac.templates.engine import (
-    TemplateOutputFile,
-    generate_template,
-    load_templates,
-    write_generated_templates_to_file,
-)
+from aac.templates.engine import TemplateOutputFile, generate_template, load_templates, write_generated_templates_to_file
 from aac.validate import validated_source
 
 plugin_name = "gen-gherkin-behaviors"
@@ -81,7 +76,7 @@ def _get_template_properties(parsed_models: dict) -> dict[str, dict]:
         """Collect and sanitize scenario steps then return template properties for a 'scenarios' entry."""
         return [
             {
-                "description": scenario.get("scenario") or "TODO: Write a description.",  # noqa: T101
+                "description": scenario.get("scenario", "TODO: Write a description."),  # noqa: T101
                 "givens": list(map(sanitize_scenario_step_entry, scenario.get("given"))),
                 "whens": list(map(sanitize_scenario_step_entry, scenario.get("when"))),
                 "thens": list(map(sanitize_scenario_step_entry, scenario.get("then"))),

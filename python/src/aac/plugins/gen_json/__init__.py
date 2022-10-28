@@ -27,7 +27,7 @@ def get_plugin() -> Plugin:
 def _get_plugin_commands():
     command_arguments = [
         AacCommandArgument(
-            "architecture-file",
+            "architecture-files",
             "File paths to AaC file(s) containing models to parse and print as JSON.",
             "file",
             number_of_arguments=-1,
