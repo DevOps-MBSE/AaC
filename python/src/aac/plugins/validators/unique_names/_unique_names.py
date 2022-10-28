@@ -32,7 +32,7 @@ def validate_unique_names(
         findings.add_error_finding(definition_under_test, duplicate_name_message, PLUGIN_NAME, 0, 0, 0, 0)
         logging.debug(duplicate_name_message)
 
-    return ValidatorResult(definition_under_test, findings)
+    return ValidatorResult([definition_under_test], findings)
 
 
 def _build_duplicate_name_message(definition: Definition, definitions: list[Definition]) -> str:

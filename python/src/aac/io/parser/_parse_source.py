@@ -4,13 +4,10 @@ The AaC parser reads a YAML file, performs validation (if not suppressed) and pr
 the caller with a dictionary of the content keyed by the named type.  This allows you
 to find a certain type in a model by just looking for that key.
 """
-
 import logging
 import yaml
-
 from os import path, linesep
 from typing import Optional
-from iteration_utilities import flatten
 from yaml.parser import ParserError as YAMLParserError
 
 from aac.io.constants import DEFAULT_SOURCE_URI
@@ -54,7 +51,8 @@ def _parse_file(arch_file: str) -> list[Definition]:
     Returns:
         The AaC definitions extracted from the specified file.
     """
-    return list(flatten([_parse_str(file, _read_file_content(file)) for file in _get_files_to_process(arch_file)]))
+    definition_lists = [_parse_str(file, _read_file_content(file)) for file in _get_files_to_process(arch_file)]
+    return [definition for definition_list in definition_lists for definition in definition_list]
 
 
 def _parse_str(source: str, model_content: str) -> list[Definition]:
@@ -177,15 +175,16 @@ def _error_if_not_complete(source, content, models):
         type, *_ = model.keys()
         return type == "import"
 
-    def is_complete_model(model):
-        """Return True if the model has a name property; False, otherwise."""
+    def assert_definition_has_name(model):
+        """Throws a ParserError if the definition doesn't have a name property."""
         type, *_ = model.keys()
-        return model.get(type) and model.get(type).get("name")
+        has_name = model.get(type) and model.get(type).get("name")
+        if not has_name:
+            raise ParserError(source, [f"Definition is missing field 'name': {content}"])
 
     # Raise an error if any of the loaded YAML models are incomplete.
-    models_no_imports = list(filter(lambda m: not is_import(m), models))
-    if not all(map(is_complete_model, models_no_imports)):
-        raise ParserError(source, [f"incomplete model:\n{content}\n"])
+    models_without_imports = list(filter(lambda m: not is_import(m), models))
+    all(map(assert_definition_has_name, models_without_imports))
 
 
 def _read_file_content(arch_file: str) -> str:

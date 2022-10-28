@@ -4,7 +4,7 @@ import logging
 from os import path, makedirs
 
 from aac.lang.definitions.definition import Definition
-from aac.io.constants import YAML_DOCUMENT_SEPARATOR
+from aac.io.constants import DEFINITION_SEPARATOR
 from aac.io.paths import sanitize_filesystem_path
 
 
@@ -54,7 +54,7 @@ def write_definitions_to_file(definitions: list[Definition], file_uri: str, is_u
         definition.source.uri = file_uri
         definition.source.is_user_editable = is_user_editable
 
-        yaml_doc_separator = f"{YAML_DOCUMENT_SEPARATOR}\n" if file_content else ""
+        yaml_doc_separator = DEFINITION_SEPARATOR if file_content else ""
         file_content += f"{yaml_doc_separator}{definition.to_yaml()}"
 
     write_file(file_uri, file_content, True)

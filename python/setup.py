@@ -21,7 +21,6 @@ runtime_dependencies = [
     "regex >= 2021.9",
     "typing-extensions >= 3.10",
     "pluggy >= 1.0",
-    "iteration_utilities >= 0.11",
     "Jinja2 >= 3.0",
     "MarkupSafe >= 2.0",
     "pygls >= 0.11",

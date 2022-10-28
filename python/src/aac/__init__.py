@@ -12,7 +12,7 @@ if sys.version_info < (3, 9):
 import logging
 import os
 
-__version__ = "0.1.4"
+__version__ = "0.1.5"
 
 logging.basicConfig(
     format="%(asctime)s::%(module)s::%(filename)s::L%(lineno)d::%(levelname)s::%(message)s",

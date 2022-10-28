@@ -6,7 +6,7 @@ from aac.io.parser import parse
 from aac.lang.definition_helpers import get_definitions_by_root_key
 from aac.lang.definitions.definition import Definition
 from aac.plugins import PluginError
-from aac.plugins.validators import ValidatorPlugin
+from aac.plugins.contributions.contribution_types import DefinitionValidationContribution
 
 
 def get_validation_definition_from_plugin_yaml(plugin_definitions_string: str) -> Definition:
@@ -42,11 +42,11 @@ def get_validation_definition_from_plugin_definitions(validator_definitions: lis
     return validation_definitions[0]
 
 
-def get_plugin_validations_from_definitions(plugin_definitions: list[Definition], callback: Callable) -> list[ValidatorPlugin]:
+def get_plugin_validations_from_definitions(plugin_definitions: list[Definition], callback: Callable) -> list[DefinitionValidationContribution]:
     """
-    Return the ValidatorPlugins based on the plugin definitions.
+    Return the DefinitionValidationContribution based on the plugin definitions.
 
     Beware, plugins currently only support one validator per plugin.
     """
     validation_definition = get_validation_definition_from_plugin_definitions(plugin_definitions)
-    return [ValidatorPlugin(validation_definition.name, validation_definition, callback)]
+    return [DefinitionValidationContribution(validation_definition.name, validation_definition, callback)]

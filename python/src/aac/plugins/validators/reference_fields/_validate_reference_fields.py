@@ -55,4 +55,4 @@ def validate_reference_fields(definition_under_test: Definition, target_schema_d
     dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)
     list(map(validate_dict, dicts_to_test))
 
-    return ValidatorResult(definition_under_test, findings)
+    return ValidatorResult([definition_under_test], findings)

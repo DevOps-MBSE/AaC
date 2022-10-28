@@ -5,7 +5,7 @@ from unittest.mock import patch
 from aac.io import parser
 from aac.io.constants import YAML_DOCUMENT_SEPARATOR
 from aac.lang.constants import ROOT_KEY_VALIDATION
-from aac.plugins.lsp_server.providers.semantic_tokens_provider import SemanticTokensProvider
+from aac.plugins.first_party.lsp_server.providers.semantic_tokens_provider import SemanticTokensProvider
 
 from tests.helpers.lsp.responses.semantic_tokens_response import SemanticTokensResponse
 from tests.helpers.parsed_definitions import (
@@ -150,7 +150,7 @@ class TestSemanticTokensProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         self.assertListEqual(self.get_expected_tokens_from_definitions(parsed_definitions, props), res.get_semantic_tokens())
 
     def get_token_from_lexeme(self, prev, lexeme, type, modifier):
-        pkg = "aac.plugins.lsp_server.providers.semantic_tokens_provider.SemanticTokensProvider"
+        pkg = "aac.plugins.first_party.lsp_server.providers.semantic_tokens_provider.SemanticTokensProvider"
         with patch(f"{pkg}.get_line") as get_line, patch(f"{pkg}.get_char") as get_char:
             get_line.side_effect = lambda lexeme: lexeme.location.line if lexeme else 0
             get_char.side_effect = lambda lexeme: lexeme.location.column if lexeme else 0
