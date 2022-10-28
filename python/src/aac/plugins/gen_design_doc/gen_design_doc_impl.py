@@ -25,8 +25,8 @@ def gen_design_doc(architecture_file: str, output_directory: str) -> PluginExecu
     Generate a System Design Document from Architecture-as-Code models.
 
     Args:
-        architecture_file (str): A comma-separated list of yaml file(s) containing the modeled
-                                     system for which to generate the System Design document.
+        architecture_file (str): An AaC file containing the modeled system for which to generate the
+                                 System Design document.
         output_directory (str): The directory to which the System Design document will be written.
     """
 
