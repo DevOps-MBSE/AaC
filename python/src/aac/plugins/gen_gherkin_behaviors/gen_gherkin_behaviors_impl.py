@@ -55,15 +55,15 @@ def _get_template_properties(parsed_models: dict) -> dict[str, dict]:
 
     def collect_model_behavior_properties(model: dict) -> list[dict]:
         """Produce a template property dictionary for each behavior entry in a model."""
-        behaviors = model.get("model").get("behavior") or []
+        behaviors = model.get("model", {}).get("behavior", [])
 
         return list(flatten(map(collect_behavior_entry_properties, behaviors)))
 
     def collect_behavior_entry_properties(behavior_entry: dict) -> list[dict]:
         """Produce a list of template property dictionaries from a behavior entry."""
         feature_name = behavior_entry.get("name")
-        feature_description = behavior_entry.get("description") or "TODO: Fill out this feature description."  # noqa: T101
-        behavior_scenarios = behavior_entry.get("acceptance") or []
+        feature_description = behavior_entry.get("description", "TODO: Fill out this feature description.")  # noqa: T101
+        behavior_scenarios = behavior_entry.get("acceptance", [])
 
         return [
             {
@@ -72,14 +72,14 @@ def _get_template_properties(parsed_models: dict) -> dict[str, dict]:
             }
         ]
 
-    def collect_and_sanitize_scenario_steps(scenario: dict) -> dict:
+    def collect_and_sanitize_scenario_steps(scenario: dict) -> list[dict]:
         """Collect and sanitize scenario steps then return template properties for a 'scenarios' entry."""
         return [
             {
                 "description": scenario.get("scenario", "TODO: Write a description."),  # noqa: T101
-                "givens": list(map(sanitize_scenario_step_entry, scenario.get("given"))),
-                "whens": list(map(sanitize_scenario_step_entry, scenario.get("when"))),
-                "thens": list(map(sanitize_scenario_step_entry, scenario.get("then"))),
+                "givens": [sanitize_scenario_step_entry(given) for given in scenario.get("given", [])],
+                "whens": [sanitize_scenario_step_entry(when) for when in scenario.get("when", [])],
+                "thens": [sanitize_scenario_step_entry(then) for then in scenario.get("then", [])],
             }
         ]
 
