@@ -46,12 +46,19 @@ def to_click_parameter(argument: AacCommandArgument) -> Parameter:
 
 def to_click_command(command: AacCommand) -> Command:
     """Convert an AacCommand to a Click Command."""
+
+    def is_required_arg(arg):
+        if isinstance(arg, list):
+            return is_required_arg(arg[0])
+
+        return not arg.name.startswith("-")
+
     return Command(
         name=command.name,
         callback=command.callback,
         params=[to_click_parameter(arg) for arg in command.arguments],
         help=command.description,
-        no_args_is_help=len(command.arguments) > 0,
+        no_args_is_help=len([arg for arg in command.arguments if is_required_arg(arg)]) > 0,
     )
 
 
