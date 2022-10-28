@@ -1,21 +1,14 @@
-import io
-import sys
-from unittest.mock import patch
+from click.testing import CliRunner
 
 from aac import __version__ as aac_version
-from aac.cli.execute import run_cli
+from aac.cli.builtin_commands.version import plugin_command
+from aac.cli.execute import cli
 
 from tests.active_context_test_case import ActiveContextTestCase
 
 
 class TestExecute(ActiveContextTestCase):
-    @patch('argparse._sys.argv', ['aac', 'version'])
-    def test_run_cli_version_command(self):
-        captured_output = io.StringIO()
-        sys.stdout = captured_output
-        run_cli()
-        sys.stdout = sys.__stdout__
-        result_string = captured_output.getvalue()
-
-        self.assertIn('success', result_string)
-        self.assertIn(aac_version, result_string)
+    def test_version_command(self):
+        runner = CliRunner()
+        result = runner.invoke(cli, [plugin_command])
+        self.assertIn(aac_version, result.output)

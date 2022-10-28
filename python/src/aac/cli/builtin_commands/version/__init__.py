@@ -5,6 +5,8 @@ from aac.cli.builtin_commands.version.version_impl import version
 from aac.plugins import hookimpl
 from aac.plugins.plugin import Plugin
 
+plugin_command = "version"
+
 
 @hookimpl
 def get_plugin() -> Plugin:
@@ -23,7 +25,7 @@ def get_plugin() -> Plugin:
 def _get_plugin_commands():
     plugin_commands = [
         AacCommand(
-            "version",
+            plugin_command,
             "Print the AaC package version.",
             version,
         ),
