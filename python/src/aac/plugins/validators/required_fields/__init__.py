@@ -18,7 +18,7 @@ def get_plugin() -> Plugin:
     """
     plugin = Plugin(PLUGIN_NAME)
     plugin.register_definitions(_get_plugin_definitions())
-    plugin.register_validations(_get_plugin_validations())
+    plugin.register_definition_validations(_get_plugin_validations())
     return plugin
 
 

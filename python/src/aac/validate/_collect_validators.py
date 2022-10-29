@@ -1,24 +1,24 @@
 import logging
 from typing import Optional
-from iteration_utilities import flatten
 
 from aac.lang.language_context import LanguageContext
+from aac.lang.constants import DEFINITION_FIELD_NAME, DEFINITION_FIELD_VALIDATION, ROOT_KEY_SCHEMA
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.search import search_definition
 from aac.lang.definitions.schema import get_definition_schema_components
 from aac.lang.hierarchy import get_definition_ancestry
-from aac.plugins.validators import ValidatorPlugin
+from aac.plugins.contributions.contribution_types import DefinitionValidationContribution
 
 
 def get_applicable_validators_for_definition(
-    definition: Definition, validator_plugins: list[ValidatorPlugin], context: LanguageContext
-) -> list[ValidatorPlugin]:
+    definition: Definition, validator_plugins: list[DefinitionValidationContribution], context: LanguageContext
+) -> list[DefinitionValidationContribution]:
     """
     Return a list of all validator plugins that are applicable to the definition.
 
     Args:
         definition (Definition): The definition to search through.
-        validator_plugins (list[ValidatorPlugin]): The list of available, registered validator plugins.
+        validator_plugins (list[DefinitionValidationContribution]): The list of available, registered validator plugins.
         context (LanguageContext): The language context
 
     Returns:
@@ -31,13 +31,16 @@ def get_applicable_validators_for_definition(
     ancestor_definitions = get_definition_ancestry(definition, context)
     sub_structure_definitions = get_definition_schema_components(definition, context)
     # For each ancestor definition, pull validation definitions, collapse the 2d list to 1d, and return the list of validations.
-    applicable_ancestor_validation_dicts = list(flatten(map(_get_validation_entries, ancestor_definitions)))
-    applicable_substructure_validation_dicts = list(flatten(map(_get_validation_entries, sub_structure_definitions)))
+    ancestor_lists = map(_get_validation_entries, ancestor_definitions)
+    substructure_lists = map(_get_validation_entries, sub_structure_definitions)
+
+    applicable_ancestor_validation_dicts = [ancestor for ancestor_list in ancestor_lists for ancestor in ancestor_list]
+    applicable_substructure_validation_dicts = [substructure for substructure_list in substructure_lists for substructure in substructure_list]
     applicable_validation_dicts = applicable_ancestor_validation_dicts + applicable_substructure_validation_dicts
 
     applicable_validators = {}
     for validation_dict in applicable_validation_dicts:
-        validation_name = validation_dict.get("name")
+        validation_name = validation_dict.get(DEFINITION_FIELD_NAME)
         validator_plugin = _get_validator_plugin_by_name(validation_name, validator_plugins)
 
         if validator_plugin:
@@ -56,13 +59,13 @@ def _get_validation_entries(definition: Definition) -> list[dict]:
     validations = {}
 
     # Currently validations are only registered in `data` root definitions.
-    if definition.get_root_key() == "schema":
-        validations = search_definition(definition, ["schema", "validation"])
+    if definition.get_root_key() == ROOT_KEY_SCHEMA:
+        validations = search_definition(definition, [ROOT_KEY_SCHEMA, DEFINITION_FIELD_VALIDATION])
 
     return validations
 
 
-def _get_validator_plugin_by_name(validator_name: str, validator_plugins: list[ValidatorPlugin]) -> Optional[ValidatorPlugin]:
+def _get_validator_plugin_by_name(validator_name: str, validator_plugins: list[DefinitionValidationContribution]) -> Optional[DefinitionValidationContribution]:
     filtered_validators = list(filter(lambda plugin: plugin.name == validator_name, validator_plugins))
     filtered_validators_count = len(filtered_validators)
 
