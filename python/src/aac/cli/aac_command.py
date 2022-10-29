@@ -8,7 +8,7 @@ from attr import Factory, attrib, attrs, validators
 @attrs
 class AacCommandArgument:
     """
-    A class used as represent a command argument for an AaC command.
+    A class used to represent a command argument for an AaC command.
 
     Attributes:
         name: One or more strings with the name of the command argument.
