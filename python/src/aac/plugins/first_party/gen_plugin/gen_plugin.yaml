@@ -6,25 +6,25 @@ model:
       type: command
       description: Generate
       input:
-        - name: architecture_file
-          type: string
+        - name: architecture-file
+          type: file
           python_type: str
           description: filepath to the architecture file.
       acceptance:
         - scenario: Generate first party plugin stub files.
           given:
-            - The {{gen-plugin.input.architecture_file}} contains a valid model.
-            - The {{gen-plugin.input.architecture_file}} is in the AaC repository under the directory path "src/aac/plugins/".
+            - The {{gen-plugin.input.architecture-file}} contains a valid model.
+            - The {{gen-plugin.input.architecture-file}} is in the AaC repository under the directory path "src/aac/plugins/".
           when:
             - The aac app is run with the gen-plugin command.
           then:
             - Stubbed first party plugin files are generated.
         - scenario: Generate third party plugin stub files.
           given:
-            - The {{gen-plugin.input.architecture_file}} contains a valid model.
+            - The {{gen-plugin.input.architecture-file}} contains a valid model.
           when:
             - The aac app is run with the gen-plugin command.
-            - The value of {{gen-plugin.input.architecture_file}} does not contain "src/aac/plugins/".
+            - The value of {{gen-plugin.input.architecture-file}} does not contain "src/aac/plugins/".
           then:
             - Stubbed third party plugin files are not generated.
 
@@ -48,11 +48,15 @@ enum:
     - memoryview
 ---
 ext:
-   name: PythonTypeField
+   name: CommandArgumentFields
    type: Field
    schemaExt:
       add:
         - name: python_type
+          type: PythonDataType
+        - name: number_of_arguments
+          type: int
+        - name: default
           type: PythonDataType
 ---
 ext:

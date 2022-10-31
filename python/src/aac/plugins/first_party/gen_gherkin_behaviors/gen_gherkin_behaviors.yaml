@@ -6,19 +6,19 @@ model:
       type: command
       description: Generate Gherkin feature files from Arch-as-Code model behavior scenarios.
       input:
-        - name: architecture_file
-          type: string
+        - name: architecture-file
+          type: file
           python_type: str
           description: The yaml file containing the data models to generate as Gherkin feature files.
-        - name: output_directory
-          type: string
+        - name: output-directory
+          type: directory
           python_type: str
           description: The directory to write the generated Gherkin feature files to.
       acceptance:
         - scenario: Output Gherkin feature files for behavior scenarios in an Architecture model.
           given:
-            - The {{gen-gherkin-behaviors.input.architecture_file}} contains a valid architecture.
+            - The {{gen-gherkin-behaviors.input.architecture-file}} contains a valid architecture.
           when:
             - The aac app is run with the gen-gherkin-behaviors command and a valid architecture file.
           then:
-            - Gherkin feature files are written to {{gen-gherkin-behaviors.input.output_directory}}.
+            - Gherkin feature files are written to {{gen-gherkin-behaviors.input.output-directory}}.

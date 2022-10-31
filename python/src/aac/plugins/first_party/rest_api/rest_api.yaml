@@ -10,10 +10,12 @@ model:
           type: string
           python_type: str
           description: Set the hostname of the service. Useful for operating behind proxies.
+          defualt: 0.0.0.0
         - name: --port
           type: int
           python_type: int
           description: The port to which the RESTful service will be bound.
+          default: 8080
       acceptance:
         - scenario: Start the RESTful API without arguments
           when:
@@ -34,7 +36,7 @@ model:
       description: Write the OpenAPI schema to a JSON file.
       input:
         - name: output_directory
-          type: string
+          type: directory
           python_type: str
           description: The output directory in which to write the AaC OpenAPI JSON file
       acceptance:

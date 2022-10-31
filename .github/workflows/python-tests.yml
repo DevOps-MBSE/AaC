@@ -44,7 +44,7 @@ jobs:
     - name: Validate Core Spec and Plugin Specs
       run: |
         find src -name spec.yaml -print0 | xargs -0 -n1 aac validate
-        find src -name spec.yaml -print0 | xargs -0 -n1 aac validate --definition_name root
+        find src -name spec.yaml -print0 | xargs -0 -n1 aac validate --definition-name root
         find src/aac/plugins -name *.yaml -print0 | xargs -0 -n1 aac validate
 
     - name: Test Gen-Plugin First-Party Plugin
@@ -60,7 +60,7 @@ jobs:
         cd model/plugin/
         pip install .[all]
         aac -h | grep "test-plugin-command"
-    
+
     - name: Upload logs from failed runs
       if: ${{ failure() }}
       uses: actions/upload-artifact@v2
@@ -149,4 +149,3 @@ jobs:
           with:
             name: failed_test_log
             path: ${{ env.pythonLocation }}/**/aac.log
-

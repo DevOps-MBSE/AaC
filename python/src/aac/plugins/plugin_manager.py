@@ -126,7 +126,5 @@ def get_primitive_validations() -> list[PrimitiveValidationContribution]:
     Returns:
         A list of validator plugins that are currently registered.
     """
-    validation_lists = [
-        plugin.get_primitive_validations() for plugin in get_plugins() if plugin.get_primitive_validations()
-    ]
+    validation_lists = [plugin.get_primitive_validations() for plugin in get_plugins() if plugin.get_primitive_validations()]
     return [validation for validation_list in validation_lists for validation in validation_list]

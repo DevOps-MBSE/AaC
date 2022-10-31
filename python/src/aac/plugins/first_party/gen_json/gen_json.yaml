@@ -6,18 +6,18 @@ model:
       type: command
       description: Generate JSON representation of AaC yaml DSL
       input:
-        - name: architecture_file
-          type: string
-          python_type: str
-          description: filepath to the architecture file to convert to JSON.
-        - name: --output_directory
-          type: string
+        - name: architecture-files
+          type: file
+          python_type: list[str]
+          description: File paths to AaC file(s) containing models to parse and print as JSON.
+        - name: --output-directory
+          type: directory
           python_type: str
           description: Directory in which JSON files will be written
       acceptance:
         - scenario: Output JSON representation.
           given:
-            - The {{gen-json.input.architecture_file}} contains a valid model.
+            - The {{gen-json.input.architecture-files}} contains a valid model.
           when:
             - The aac app is run with the gen-json command.
           then:

@@ -42,6 +42,9 @@ def _get_plugin_commands():
         AacCommandArgument(
             "{{command_input.name}}",
             {% if command_input.description is defined %}"{{command_input.description}}"{% else %}"TODO: fill me out"{%- endif %},
+            "{{command_input.type}}",
+            {%- if command_input.number_of_arguments is defined %}number_of_arguments={{command_input.number_of_arguments}},{%- endif %}
+            {%- if command_input.default is defined %}default={{command_input.default}},{%- endif %}
         ),
     {%- endfor %}
     ]

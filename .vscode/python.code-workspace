@@ -187,13 +187,12 @@
             "console": "integratedTerminal",
             "justMyCode": false
         }, {
-            "name": "Gen-System Document",
+            "name": "Gen-System Design Document",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "gen-design-doc",
-                "system-design-doc.md.jinja2",
                 "${workspaceFolder}/model/flow/System.yaml",
                 "test"
             ],

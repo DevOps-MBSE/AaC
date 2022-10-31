@@ -27,8 +27,9 @@ def get_plugin() -> Plugin:
 def _get_plugin_commands():
     command_arguments = [
         AacCommandArgument(
-            "architecture_file",
+            "architecture-file",
             "The yaml file containing the AaC DSL of the plugin architecture.",
+            "file",
         )
     ]
 

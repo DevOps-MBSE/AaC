@@ -10,6 +10,33 @@ nav_order: 3
 ## Plugins and CLI Commands
 The AaC package leverages a plugin architecture for modular user features; this allows users to customize the features they want from AaC. If an AaC user wants to generate code messages for the interfaces of their models they can leverage the GenProtobuf plugin, likewise they could leverage the GenDesignDoc plugin to generate markdown-based overview documents of their models. The flexibility and the target artifacts are up to the user and their needs, but all available AaC commands can be listed via the help command.
 
+## Tab Completion
+
+The AaC package supports tab completion for Bash, Zsh, and Fish. To set this up
+for your particular shell, you must generate a completion script. After
+executing the above command for your corresponding shell, source the completion
+script from your shell profile script:
+
+For Bash, run the following:
+
+```shell
+_AAC_COMPLETE=bash_source aac > ~/.aac-complete.bash
+echo ". ~/.aac-complete.bash" >> ~/.bashrc
+```
+
+For Zsh, run the following:
+
+```shell
+_AAC_COMPLETE=zsh_source aac > ~/.aac-complete.zsh
+echo ". ~/.aac-complete.zsh" >> ~/.zshrc
+```
+
+For Fish, run the following:
+
+```shell
+_AAC_COMPLETE=fish_source aac > ~/.config/fish/completions/aac-complete.fish
+```
+
 ## The Help Command
 AaC has a help command for the CLI that can be invoked via `aac -h`. Successfully invoking the help command is an easy way to check if your installation of AaC is working. For each installed and active plugin, they will contribute to the comands visible in the help output text, similar to:
 ```
@@ -91,4 +118,3 @@ validate: plugin_failure
 Definitions available in 'model/alarm_clock/alarm_clock.yaml' are ['AlarmClock', 'Clock', 'ClockTimer', 'ClockAlarm', 'TimerAlert', 'Timestamp', 'TimezoneOffset', 'AlarmNoise']
 Definition 'Primitives' can be found in '/workspace/AaC/python/src/aac/spec/spec.yaml'
 ```
-
