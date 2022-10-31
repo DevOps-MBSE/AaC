@@ -19,10 +19,6 @@ export function activate(context: ExtensionContext) {
 
 function activatePlugin(context: ExtensionContext) {
     aacLspClient.startLanguageServer(context);
-    context.subscriptions.push(
-        commands.registerCommand(EXECUTE_AAC_COMMAND_NAME, executeAacCommand)
-    );
-
     context.subscriptions.push(AacDefinitionEditorProvider.register(context));
 
     const definitionsView = window.createTreeView('definitions-in-context', {treeDataProvider: new AacDefinitionsViewProvider()});
