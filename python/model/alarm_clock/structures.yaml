@@ -2,6 +2,8 @@ schema:
   name: TimerAlert
   description: Data structure for timer alerts.
   fields:
+    - name: name
+      type: string
     - name: triggeredTime
       type: Timestamp
     - name: alarmNoise
@@ -74,7 +76,25 @@ enum:
   name: AlarmNoise
   description: List of available alarm noises
   values:
-    - "Sonic Boom"
-    - "Siren"
-    - "Klaxon"
-    - "Dog Barking"
+    - SONIC_BOOM
+    - SIREN
+    - KLAXON
+    - DOG_BARKING
+---
+ext:
+  name: AddTimerAlertRootNode
+  type: root
+  schemaExt:
+    add:
+      - name: timer_alert
+        type: TimerAlert
+---
+timer_alert:
+  name: my_alert
+  triggeredTime:
+    hour: 06
+    minute: 30
+    second: 00
+    year: 2022
+    month: 01
+    day: 01

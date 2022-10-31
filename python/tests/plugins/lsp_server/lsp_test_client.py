@@ -7,10 +7,9 @@ from asyncio.tasks import sleep
 from threading import Thread
 from typing import Optional
 
-from pygls.lsp import methods
-from pygls.lsp.types import Model
+from pygls.lsp import methods, Model
 
-from aac.plugins.lsp_server.language_server import AacLanguageServer
+from aac.plugins.first_party.lsp_server.language_server import AacLanguageServer
 
 
 # We have to sleep to give the server enough time to finish processing changes to the active

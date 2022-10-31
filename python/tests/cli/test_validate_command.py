@@ -1,7 +1,5 @@
-from os import linesep
-
 from aac.cli.builtin_commands.validate.validate_impl import validate
-from aac.io.constants import YAML_DOCUMENT_SEPARATOR
+from aac.io.constants import DEFINITION_SEPARATOR
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.constants import DEFINITION_FIELD_NAME, PRIMITIVE_TYPE_STRING
 
@@ -33,7 +31,7 @@ class TestValidateCommand(ActiveContextTestCase):
         valid_model = create_model_definition("Valid Model", "A valid model.")
         valid_schema = create_schema_definition("Test Schema", fields=[create_field_entry(DEFINITION_FIELD_NAME, PRIMITIVE_TYPE_STRING)])
 
-        TEST_CONTENT = f"{YAML_DOCUMENT_SEPARATOR}{linesep}".join([valid_model.to_yaml(), valid_schema.to_yaml()])
+        TEST_CONTENT = DEFINITION_SEPARATOR.join([valid_model.to_yaml(), valid_schema.to_yaml()])
         with temporary_test_file(TEST_CONTENT) as valid_model_file:
             result = validate(valid_model_file.name, valid_model.name)
 
@@ -51,7 +49,7 @@ class TestValidateCommand(ActiveContextTestCase):
         valid_model = create_model_definition("Valid Model", "A valid model.")
         valid_schema = create_schema_definition("Test Schema", fields=[create_field_entry(DEFINITION_FIELD_NAME, PRIMITIVE_TYPE_STRING)])
 
-        TEST_CONTENT = f"{YAML_DOCUMENT_SEPARATOR}{linesep}".join([valid_model.to_yaml(), valid_schema.to_yaml()])
+        TEST_CONTENT = DEFINITION_SEPARATOR.join([valid_model.to_yaml(), valid_schema.to_yaml()])
         with temporary_test_file(TEST_CONTENT) as valid_model_file:
             undefined_definition_name = f"{valid_model.name}_v2"
             result = validate(valid_model_file.name, undefined_definition_name)

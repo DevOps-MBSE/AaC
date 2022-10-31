@@ -1,0 +1,59 @@
+model:
+  name: gen-protobuf
+  description: gen-protobuf is an Architecture-as-Code plugin that generates protobuf message definitions from Architecture-as-Code models.
+  behavior:
+    - name: gen-protobuf
+      type: command
+      description: Generate protobuf messages from Arch-as-Code models
+      input:
+        - name: architecture-file
+          type: file
+          python_type: str
+          description: The yaml file containing the data models to generate as Protobuf messages.
+        - name: output-directory
+          type: directory
+          python_type: str
+          description: The directory to write the generated Protobuf messages to.
+      acceptance:
+        - scenario: Output protobuf messages for behavior input/output entries in an Architecture model.
+          given:
+            - The {{gen-protobuf.input.architecture-file}} contains a valid architecture.
+          when:
+            - The aac app is run with the gen-protobuf command and a valid architecture file.
+          then:
+            - Protobuf messages are written to {{gen-protobuf.input.output-directory}}.
+---
+ext:
+  name: ProtobufPrimitiveTypesExtension
+  type: Primitives
+  enumExt:
+    add:
+      - double
+      - float
+      - int32
+      - int64
+      - uint32
+      - uint64
+      - sint32
+      - sint64
+      - fixed32
+      - fixed64
+      - bool
+      - string
+      - bytes
+---
+ext:
+   name: SchemaMessageOptions
+   type: schema
+   schemaExt:
+      add:
+        - name: protobuf_message_options
+          type: KeyValuePair[]
+---
+ext:
+   name: EnumMessageOptions
+   type: enum
+   schemaExt:
+      add:
+        - name: protobuf_message_options
+          type: KeyValuePair[]

@@ -1,0 +1,81 @@
+from aac.lang.active_context_lifecycle_manager import get_active_context
+
+from aac.validate import validated_source
+from aac.io.constants import DEFINITION_SEPARATOR
+from aac.plugins.first_party.primitive_type_check.validators import int_validator
+
+from tests.active_context_test_case import ActiveContextTestCase
+from tests.helpers.assertion import assert_validator_result_success
+from tests.helpers.io import temporary_test_file
+from tests.helpers.parsed_definitions import create_definition
+from tests.helpers.prebuilt_definition_constants import (
+    TEST_TYPES_SCHEMA_DEFINITION,
+    TEST_TYPES_SCHEMA_EXTENSION_DEFINITION,
+    TEST_TYPES_VALID_INSTANCE,
+    TEST_TYPES_INVALID_INSTANCE,
+    TEST_TYPES_ROOT_KEY,
+    SCHEMA_FIELD_INT
+)
+
+
+class TestPrimitiveValidation(ActiveContextTestCase):
+
+    INTEGER_VALIDATOR = int_validator.get_validator()
+
+    VALID_PRIMITIVES_FILE_CONTENT = DEFINITION_SEPARATOR.join([
+        TEST_TYPES_SCHEMA_DEFINITION.to_yaml(),
+        TEST_TYPES_SCHEMA_EXTENSION_DEFINITION.to_yaml(),
+        TEST_TYPES_VALID_INSTANCE.to_yaml()
+    ])
+
+    INVALID_PRIMITIVES_FILE_CONTENT = DEFINITION_SEPARATOR.join([
+        TEST_TYPES_SCHEMA_DEFINITION.to_yaml(),
+        TEST_TYPES_SCHEMA_EXTENSION_DEFINITION.to_yaml(),
+        TEST_TYPES_INVALID_INSTANCE.to_yaml()
+    ])
+
+    def test_type_check_valid(self):
+        with (
+            temporary_test_file(self.VALID_PRIMITIVES_FILE_CONTENT) as test_file,
+            validated_source(test_file.name) as result
+        ):
+            assert_validator_result_success(result)
+
+    def test_type_check_invalid(self):
+        with (
+            temporary_test_file(self.INVALID_PRIMITIVES_FILE_CONTENT) as test_file,
+            self.assertRaises(Exception) as error,
+            validated_source(test_file.name),
+        ):
+
+            self.assertIsNotNone(error.exception)
+
+            self.assertIn(self.INTEGER_VALIDATOR.name, error.exception)
+            self.assertIn(self.INTEGER_VALIDATOR.primitive_type, error.exception)
+
+    def test_integer_type_check_valid(self):
+        test_context = get_active_context()
+        test_context.add_definitions_to_context([TEST_TYPES_SCHEMA_DEFINITION, TEST_TYPES_SCHEMA_EXTENSION_DEFINITION])
+
+        finding = self.INTEGER_VALIDATOR.validation_function(TEST_TYPES_VALID_INSTANCE, 0)
+        self.assertIsNone(finding)
+
+    def test_integer_type_check_invalid_float(self):
+        test_context = get_active_context()
+        test_context.add_definitions_to_context([TEST_TYPES_SCHEMA_DEFINITION, TEST_TYPES_SCHEMA_EXTENSION_DEFINITION])
+
+        invalid_int_value = 0.5
+        invalid_definition = create_definition(TEST_TYPES_ROOT_KEY, "invalidPrimitives", {SCHEMA_FIELD_INT.get("name"): invalid_int_value})
+
+        finding = self.INTEGER_VALIDATOR.validation_function(invalid_definition, invalid_int_value)
+        self.assertIsNotNone(finding)
+
+    def test_integer_type_check_invalid_string(self):
+        test_context = get_active_context()
+        test_context.add_definitions_to_context([TEST_TYPES_SCHEMA_DEFINITION, TEST_TYPES_SCHEMA_EXTENSION_DEFINITION])
+
+        invalid_int_value = "DefinitelyNotAnInt"
+        invalid_definition = create_definition(TEST_TYPES_ROOT_KEY, "invalidPrimitives", {SCHEMA_FIELD_INT.get("name"): invalid_int_value})
+
+        finding = self.INTEGER_VALIDATOR.validation_function(invalid_definition, invalid_int_value)
+        self.assertIsNotNone(finding)

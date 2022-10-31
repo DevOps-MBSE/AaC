@@ -3,8 +3,8 @@ from unittest.case import TestCase
 
 from aac.cli.aac_command import AacCommand, AacCommandArgument
 from aac.lang.definitions.definition import Definition
-from aac.plugins.contribution_points import InvalidContributionPointError
-from aac.plugins.validators._validator_plugin import ValidatorPlugin
+from aac.plugins.contributions.contribution_points import InvalidContributionPointError
+from aac.plugins.contributions.contribution_types import DefinitionValidationContribution
 
 
 def identity(value: object) -> object:
@@ -19,9 +19,9 @@ def create_command(
     return AacCommand(name, description, callback, args)
 
 
-def create_validation(name: str, definition: Definition, callback: Callable = identity) -> ValidatorPlugin:
-    """Create a new ValidatorPlugin for testing."""
-    return ValidatorPlugin(name, definition, callback)
+def create_validation(name: str, definition: Definition, callback: Callable = identity) -> DefinitionValidationContribution:
+    """Create a new DefinitionValidationContribution for testing."""
+    return DefinitionValidationContribution(name, definition, callback)
 
 
 def assert_items_are_registered(
