@@ -5,32 +5,36 @@ const vscode = acquireVsCodeApi();
 const AacEditorEventTypes = {
 	READY: 1,
     EDIT: 2,
-    SAVE: 3
+    SAVE: 3,
+    DELETE: 4,
 }
 
+const SUBMIT_BUTTON_ID = 'submit'
+const DELETE_BUTTON_ID = 'delete'
+
 // This script is run within the webview itself
-(function () {
+var runEditor = () => {
     class DefinitionEditor {
         constructor( /** @type {HTMLElement} */ parent) {
             this.ready = false;
-
             this.editable = false;
             this.container = parent;
             this.rootKey = "";
             this.sourceUri = "";
-            this.editor = null;
+            this.jsonEditor = null;
         }
 
         async setEditorData(data) {
             // Initialize the editor with a JSON schema
+            this.editable = data.isUserEditable
             this.rootKey = Object.keys(data.structure)[0];
             addTitlesToJsonSchema(data.jsonSchema, this.rootKey)
 
-            if (this.editor) {
-                this.editor.destroy();
+            if (this.jsonEditor) {
+                this.jsonEditor.destroy();
             }
 
-            this.editor = new JSONEditor(document.getElementById('main'),
+            this.jsonEditor = new JSONEditor(document.getElementById('main'),
                 {
                     "use_default_values": true,
                     "prompt_before_delete": false,
@@ -43,8 +47,8 @@ const AacEditorEventTypes = {
                 }
             );
 
-            this.editor.on('change', () => {
-                const editorContent = this.editor?.getValue()
+            this.jsonEditor.on('change', () => {
+                const editorContent = this.jsonEditor?.getValue()
                 const rootKey = editor.rootKey
                 const definitionStructure = {}
                 definitionStructure[rootKey] = editorContent
@@ -59,9 +63,20 @@ const AacEditorEventTypes = {
             });
 
             // Hook up the submit button to log to the console
-            document.getElementById('submit').addEventListener('click', function () {
+            document.getElementById(SUBMIT_BUTTON_ID).addEventListener('click', function () {
                 vscode.postMessage({ type: AacEditorEventTypes.SAVE });
             });
+
+            // Hook up the delete button to log to the console
+            document.getElementById(DELETE_BUTTON_ID).addEventListener('click', function () {
+                vscode.postMessage({ type: AacEditorEventTypes.DELETE });
+            });
+
+            // Disable the editor if the definition's file isn't editable.
+            if (editor.jsonEditor && editor.editable === false) {
+                document.getElementById(SUBMIT_BUTTON_ID).disabled = true
+                document.getElementById(DELETE_BUTTON_ID).disabled = true
+            }
         }
     }
 
@@ -81,31 +96,33 @@ const AacEditorEventTypes = {
 
     // Send editor is ready message
     vscode.postMessage({ type: AacEditorEventTypes.READY });
-}());
 
-function addTitlesToJsonSchema(jsonSchema, definitionRootKey) {
-    jsonSchema.title = definitionRootKey
+    function addTitlesToJsonSchema(jsonSchema, definitionRootKey) {
+        jsonSchema.title = definitionRootKey
 
-    recursivelyApplyArrayElementTitles(jsonSchema.properties)
-}
+        recursivelyApplyArrayElementTitles(jsonSchema.properties)
+    }
 
-function recursivelyApplyArrayElementTitles(array_properties_object) {
-    if (array_properties_object) {
-        Object.entries(array_properties_object).forEach(function (entry) {
-            const key = entry[0]
-            const value = entry[1]
-            if (value.type == "array") {
-                entry_title = getArrayEntryTitleFromArrayName(key)
-                array_properties_object[key].items.title = entry_title
-                name_template = (array_properties_object[key].items.properties?.name !== undefined ? "- {{ self.name }}" : "")
+    function recursivelyApplyArrayElementTitles(array_properties_object) {
+        if (array_properties_object) {
+            Object.entries(array_properties_object).forEach(function (entry) {
+                const key = entry[0]
+                const value = entry[1]
+                if (value.type == "array") {
+                    entry_title = getArrayEntryTitleFromArrayName(key)
+                    array_properties_object[key].items.title = entry_title
+                    name_template = (array_properties_object[key].items.properties?.name !== undefined ? "- {{ self.name }}" : "")
 
-                array_properties_object[key].items.headerTemplate = `${entry_title} {{ i1 }} ${name_template}`
-                recursivelyApplyArrayElementTitles(array_properties_object[key].items.properties)
-            }
-        });
+                    array_properties_object[key].items.headerTemplate = `${entry_title} {{ i1 }} ${name_template}`
+                    recursivelyApplyArrayElementTitles(array_properties_object[key].items.properties)
+                }
+            });
+        }
+    }
+
+    function getArrayEntryTitleFromArrayName(array_name) {
+        return (array_name.endsWith("s") ? array_name.slice(0, -1) : array_name)
     }
 }
 
-function getArrayEntryTitleFromArrayName(array_name) {
-    return (array_name.endsWith("s") ? array_name.slice(0, -1) : array_name)
-}
+runEditor()

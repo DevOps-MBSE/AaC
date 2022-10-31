@@ -139,11 +139,11 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
             <body>
                 <div id="main"></div>
                 <button id='submit'>Save</button>
+                <button id='delete'>Delete</button>
                 <script src="${scriptUri}" http-equiv="Content-Security-Policy" script-src-elem 'unsafe-inline' ${scriptUri} nonce='${nonce}';></script>
             </body>
             </html>`;
     }
-
 
     private postEditMessage(panel: vscode.WebviewPanel, body: AacDefinitionEdit): void {
         this.postMessage(panel, AacEditorEventTypes.EDIT, body);
@@ -172,6 +172,9 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
             case AacEditorEventTypes.SAVE:
                 this.updateDefinition(document);
                 return;
+            case AacEditorEventTypes.DELETE:
+                this.deleteDefinition(document);
+                return;
         }
     }
 
@@ -188,6 +191,15 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
         const response = (await Promise.resolve(aacRestApi.updateDefinitionDefinitionPut(updatedDefinitionModel))).response;
         if (response.statusCode !== 204) {
             vscode.window.showErrorMessage(`Failed to update definition: ${response.statusMessage}`);
+        };
+
+        return response;
+    }
+
+    private async deleteDefinition(document: AacDefinitionsDocument): Promise<IncomingMessage> {
+        const response = (await Promise.resolve(aacRestApi.removeDefinitionByNameDefinitionDelete(document.originalDefinitionName))).response;
+        if (response.statusCode !== 204) {
+            vscode.window.showErrorMessage(`Failed to delete definition: ${response.statusMessage}`);
         };
 
         return response;

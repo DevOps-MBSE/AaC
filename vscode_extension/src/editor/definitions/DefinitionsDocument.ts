@@ -7,7 +7,8 @@ import { IncomingMessage } from 'http';
 export enum AacEditorEventTypes {
     READY = 1,
     EDIT = 2,
-    SAVE = 3
+    SAVE = 3,
+    DELETE = 4,
 }
 
 /**
