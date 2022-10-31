@@ -205,7 +205,9 @@ def update_definition(definition_model: DefinitionModel) -> None:
     definition_to_update = active_context.get_definition_by_name(definition_model.name)
 
     if definition_to_update:
-        active_context.update_definition_in_context(to_definition_class(definition_model))
+        updated_definition = to_definition_class(definition_model)
+        updated_definition.uid = definition_to_update.uid
+        active_context.update_definition_in_context(updated_definition)
     else:
         _report_error_response(
             HTTPStatus.NOT_FOUND,
@@ -272,6 +274,15 @@ async def refresh_available_files_in_workspace() -> None:
     """Used to refresh the available files. Used in async since it takes too long for being used in request-response flow."""
     global AVAILABLE_AAC_FILES
     AVAILABLE_AAC_FILES = list(_get_available_files_in_workspace())
+
+    # Update the active context with any missing files
+    active_context = get_active_context()
+    files_in_context = {file.uri for file in active_context.get_files_in_context()}
+    available_files = {file.uri for file in AVAILABLE_AAC_FILES}
+    missing_files = available_files.difference(files_in_context)
+    for file_uri in missing_files:
+        parsed_definitions = parse(file_uri)
+        active_context.add_definitions_to_context(parsed_definitions)
 
 
 def _report_error_response(code: HTTPStatus, error: str):
