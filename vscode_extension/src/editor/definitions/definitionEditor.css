@@ -7,6 +7,15 @@ button {
     border: none;
 }
 
+button:disabled {
+    background-color: rgb(26, 63, 87);
+    color: rgba(255, 255, 255, 0.383);
+    padding: 8px;
+    margin: 8px;
+    cursor: pointer;
+    border: none;
+}
+
 input {
     width: 90%;
     margin-top: 4px;
