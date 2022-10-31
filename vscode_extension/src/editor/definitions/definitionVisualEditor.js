@@ -11,13 +11,14 @@ const AacEditorEventTypes = {
 
 const SUBMIT_BUTTON_ID = 'submit'
 const DELETE_BUTTON_ID = 'delete'
+const SOURCE_PARAGRAPH_ID = 'source'
 
 // This script is run within the webview itself
 var runEditor = () => {
     class DefinitionEditor {
         constructor( /** @type {HTMLElement} */ parent) {
             this.ready = false;
-            this.editable = false;
+            this.editable = true;
             this.container = parent;
             this.rootKey = "";
             this.sourceUri = "";
@@ -27,6 +28,7 @@ var runEditor = () => {
         async setEditorData(data) {
             // Initialize the editor with a JSON schema
             this.editable = data.isUserEditable
+            this.sourceUri = data.sourceUri
             this.rootKey = Object.keys(data.structure)[0];
             addTitlesToJsonSchema(data.jsonSchema, this.rootKey)
 
@@ -71,6 +73,9 @@ var runEditor = () => {
             document.getElementById(DELETE_BUTTON_ID).addEventListener('click', function () {
                 vscode.postMessage({ type: AacEditorEventTypes.DELETE });
             });
+
+            // Set the source uri field in the editor.
+            document.getElementById(SOURCE_PARAGRAPH_ID).value = this.sourceUri
 
             // Disable the editor if the definition's file isn't editable.
             if (editor.jsonEditor && editor.editable === false) {

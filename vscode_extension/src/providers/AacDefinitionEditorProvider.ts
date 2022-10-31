@@ -137,6 +137,10 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
                 <title></title>
             </head>
             <body>
+                <div id="source-div">
+                    <label id="source-label">Definition's File</label>
+                    <input id="source" value="test value" disabled/>
+                </div>
                 <div id="main"></div>
                 <button id='submit'>Save</button>
                 <button id='delete'>Delete</button>
@@ -173,6 +177,7 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
                 this.updateDefinition(document);
                 return;
             case AacEditorEventTypes.DELETE:
+                vscode.commands.executeCommand('workbench.action.closeActiveEditor');
                 this.deleteDefinition(document);
                 return;
         }
