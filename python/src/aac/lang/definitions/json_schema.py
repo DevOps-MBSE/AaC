@@ -1,6 +1,18 @@
 """Common JsonSchema Functions for AaC Definitions."""
 import logging
 
+from aac.lang.constants import (
+    DEFINITION_FIELD_NAME,
+    DEFINITION_FIELD_TYPE,
+    DEFINITION_FIELD_FIELDS,
+    PRIMITIVE_TYPE_BOOL,
+    PRIMITIVE_TYPE_DATE,
+    PRIMITIVE_TYPE_FILE,
+    PRIMITIVE_TYPE_NUMBER,
+    PRIMITIVE_TYPE_INT,
+    PRIMITIVE_TYPE_REFERENCE,
+    PRIMITIVE_TYPE_STRING,
+)
 from aac.lang.language_context import LanguageContext
 from aac.lang.definitions.type import remove_list_type_indicator, is_array_type
 from aac.lang.definitions.definition import Definition
@@ -38,10 +50,10 @@ def _get_definition_json_schema(definition_schema: Definition, language_context:
     """Return the json schema structure for the definition schema."""
 
     schema_object = {}
-    schema_structure_fields = definition_schema.get_top_level_fields().get("fields", {})
+    schema_structure_fields = definition_schema.get_top_level_fields().get(DEFINITION_FIELD_FIELDS, {})
     for field in schema_structure_fields:
-        field_name = field.get("name")
-        field_type = field.get("type")
+        field_name = field.get(DEFINITION_FIELD_NAME)
+        field_type = field.get(DEFINITION_FIELD_TYPE)
 
         if field_type is None:
             logging.error(f"Field entry {field_name} is missing type declaration in schema {definition_schema.name}")
@@ -86,8 +98,8 @@ def _get_defined_type_field_json_schema(field_name: str, field_type: str, langua
         schema_sub_structures = {}
 
         for field in defined_fields:
-            defined_field_name = field.get("name")
-            defined_field_type = field.get("type")
+            defined_field_name = field.get(DEFINITION_FIELD_NAME)
+            defined_field_type = field.get(DEFINITION_FIELD_TYPE)
             schema_sub_structures.update(
                 _get_definition_field_json_schema(defined_field_name, defined_field_type, language_context)
             )
@@ -122,14 +134,38 @@ def _get_primitive_field_json_schema(field_name: str, field_type: str) -> dict:
         }
     }
     ```
+
+    Json Schema types reference: https://json-schema.org/understanding-json-schema/reference/type.html
     """
+
+    def convert_aac_primitive_to_json_primitive(primitive_type: str) -> str:
+        schema_primitive = ""
+        if primitive_type in [
+            PRIMITIVE_TYPE_STRING,
+            PRIMITIVE_TYPE_REFERENCE,
+            PRIMITIVE_TYPE_DATE,
+            PRIMITIVE_TYPE_FILE,
+            PRIMITIVE_TYPE_REFERENCE,
+        ]:
+            schema_primitive = "string"
+        elif primitive_type == PRIMITIVE_TYPE_INT:
+            schema_primitive = "integer"
+        elif primitive_type == PRIMITIVE_TYPE_NUMBER:
+            schema_primitive = "number"
+        elif primitive_type == PRIMITIVE_TYPE_BOOL:
+            schema_primitive = "boolean"
+        else:
+            logging.warn(f"Unhandled AaC -> Json Schema primitive type: '{primitive_type}'")
+        return schema_primitive
+
     primitive_field_schema = {}
     sanitized_type = remove_list_type_indicator(field_type)
+    schema_primitive_type = convert_aac_primitive_to_json_primitive(sanitized_type)
 
     if is_array_type(field_type):
-        primitive_field_schema = {field_name: {"type": "array", "items": {"type": sanitized_type}}}
+        primitive_field_schema = {field_name: {"type": "array", "items": {"type": schema_primitive_type}}}
     else:
-        primitive_field_schema = {field_name: {"type": sanitized_type}}
+        primitive_field_schema = {field_name: {"type": schema_primitive_type}}
 
     return primitive_field_schema
 
