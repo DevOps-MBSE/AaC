@@ -280,9 +280,9 @@ async def refresh_available_files_in_workspace() -> None:
     files_in_context = {file.uri for file in active_context.get_files_in_context()}
     available_files = {file.uri for file in AVAILABLE_AAC_FILES}
     missing_files = available_files.difference(files_in_context)
-    for file_uri in missing_files:
-        parsed_definitions = parse(file_uri)
-        active_context.add_definitions_to_context(parsed_definitions)
+    definition_lists_from_missing_files = [parse(file_uri) for file_uri in missing_files]
+    definitions_to_add = {definition.name: definition for definition_list in definition_lists_from_missing_files for definition in definition_list}
+    active_context.add_definitions_to_context(list(definitions_to_add.values()))
 
 
 def _report_error_response(code: HTTPStatus, error: str):
