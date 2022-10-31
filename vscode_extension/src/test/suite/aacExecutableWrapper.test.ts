@@ -12,7 +12,8 @@ suite("AaC Executable Wrapper Test Suite", () => {
 
         await aacWrapper.executeCommandWithArguments(versionCommand)
             .then((output: string) => {
-                const searchString = "version: success";
+                // Leaving the minor version out of the test.
+                const searchString = "0.1.";
                 assert.strictEqual(output.includes(searchString), true, `'${searchString}' not found in ${output}`);
             });
     });
