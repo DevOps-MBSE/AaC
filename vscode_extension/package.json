@@ -98,7 +98,7 @@
                     "type": "number",
                     "minimum": 0,
                     "maximum": 65535,
-                    "default": 8000,
+                    "default": 8080,
                     "description": "The port to use for establishing a connection to an AaC RESTful server."
                 }
             }
