@@ -92,7 +92,7 @@ class TestParser(TestCase):
     def test_errors_when_parsing_incomplete_model(self):
         content = "model:"
         with temporary_test_file(content) as test_yaml:
-            self.check_parser_errors(test_yaml.name, "incomplete model", content)
+            self.check_parser_errors(test_yaml.name, "Definition is missing field 'name'", content)
 
     def test_errors_when_parsing_non_yaml(self):
         content = "not yaml"

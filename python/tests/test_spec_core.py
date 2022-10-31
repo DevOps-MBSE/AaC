@@ -1,4 +1,3 @@
-
 from aac.spec import core
 
 from tests.active_context_test_case import ActiveContextTestCase
@@ -11,7 +10,7 @@ class TestSpecCore(ActiveContextTestCase):
         """
         Unit test for the core.get_primitive method.
         """
-        expected_results = ["int", "number", "string", "bool", "file", "date", "reference"]
+        expected_results = ["int", "number", "string", "bool", "file", "directory", "date", "reference"]
 
         result = core.get_primitives()
 

@@ -1,4 +1,11 @@
 tasks:
+  - name: Deploy Jekyll Docs
+    init: |
+      cd docs/
+      bundle install
+      export JEKYLL_ENV=production
+    command: cd docs/; bundle exec jekyll s
+
   - name: VSCode Extension Environment
     init: |
       cd vscode_extension/
@@ -18,13 +25,6 @@ tasks:
       yarn generate:rest_api
       cd ../
     command: cd python/; source venv/bin/activate # Always launch a console with our virtual env
-
-  - name: Deploy Jekyll Docs
-    init: |
-      cd docs/
-      bundle install
-      export JEKYLL_ENV=production
-    command: bundle exec jekyll s
 
 vscode:
   extensions:

@@ -14,7 +14,7 @@ from aac.templates.engine import (
     load_templates,
     write_generated_templates_to_file,
 )
-from aac.plugins.gen_plugin import __package__ as gen_plugin_package
+from aac.plugins.first_party.gen_plugin import __package__ as gen_plugin_package
 from aac.templates.error import AacTemplateError
 
 from tests.helpers.io import temporary_test_file

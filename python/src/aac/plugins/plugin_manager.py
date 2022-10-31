@@ -1,13 +1,12 @@
 """Provide access to plugins and plugin data."""
 from importlib import import_module
-from iteration_utilities import flatten
 from pluggy import PluginManager
 
 from aac.cli.aac_command import AacCommand
 from aac.lang.definitions.definition import Definition
 from aac.plugins import hookspecs, PLUGIN_PROJECT_NAME
 from aac.plugins.plugin import Plugin
-from aac.plugins.validators import ValidatorPlugin
+from aac.plugins.contributions.contribution_types import DefinitionValidationContribution, PrimitiveValidationContribution
 
 
 def get_plugin_manager() -> PluginManager:
@@ -22,7 +21,7 @@ def get_plugin_manager() -> PluginManager:
     plugin_manager.load_setuptools_entrypoints(PLUGIN_PROJECT_NAME)
 
     # register "built-in" plugins
-    first_party_plugins_package = "aac.plugins"
+    first_party_plugins_package = "aac.plugins.first_party"
     first_party_plugins = [
         "gen_json",
         "gen_plugin",
@@ -36,6 +35,7 @@ def get_plugin_manager() -> PluginManager:
         "material_model",
         "help_dump",
         "rest_api",
+        "primitive_type_check",
     ]
 
     # register "built-in" commands
@@ -87,7 +87,8 @@ def get_plugin_commands() -> list[AacCommand]:
     Returns:
         A list of AaC Commands provided by plugins.
     """
-    return list(flatten([plugin.get_commands() for plugin in get_plugins() if plugin.get_commands()]))
+    command_lists = [plugin.get_commands() for plugin in get_plugins() if plugin.get_commands()]
+    return [command for command_list in command_lists for command in command_list]
 
 
 def get_plugin_definitions() -> list[Definition]:
@@ -102,15 +103,28 @@ def get_plugin_definitions() -> list[Definition]:
         definition.source.is_user_editable = False
         return definition
 
-    definitions = [plugin.get_definitions() for plugin in get_plugins() if plugin.get_definitions()]
-    return list(map(set_files_to_not_user_editable, flatten(definitions)))
+    definition_lists = [plugin.get_definitions() for plugin in get_plugins() if plugin.get_definitions()]
+    definitions_list = [definition for definition_list in definition_lists for definition in definition_list]
+    return list(map(set_files_to_not_user_editable, definitions_list))
 
 
-def get_validator_plugins() -> list[ValidatorPlugin]:
+def get_definition_validations() -> list[DefinitionValidationContribution]:
     """
-    Get a list of registered validator plugins and metadata.
+    Get a list of registered definition validations and metadata.
 
     Returns:
         A list of validator plugins that are currently registered.
     """
-    return list(flatten([plugin.get_validations() for plugin in get_plugins() if plugin.get_validations()]))
+    validation_lists = [plugin.get_definition_validations() for plugin in get_plugins() if plugin.get_definition_validations()]
+    return [validation for validation_list in validation_lists for validation in validation_list]
+
+
+def get_primitive_validations() -> list[PrimitiveValidationContribution]:
+    """
+    Get a list of registered primitive validations and metadata.
+
+    Returns:
+        A list of validator plugins that are currently registered.
+    """
+    validation_lists = [plugin.get_primitive_validations() for plugin in get_plugins() if plugin.get_primitive_validations()]
+    return [validation for validation_list in validation_lists for validation in validation_list]

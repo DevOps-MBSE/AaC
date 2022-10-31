@@ -21,6 +21,7 @@ from aac.lang.definitions.extensions import apply_extension_to_definition, remov
 from aac.lang.definitions.type import remove_list_type_indicator
 from aac.lang.language_error import LanguageError
 from aac.plugins.plugin import Plugin
+from aac.plugins.contributions.contribution_types import DefinitionValidationContribution, PrimitiveValidationContribution
 
 
 @attrs(slots=True, auto_attribs=True)
@@ -69,6 +70,7 @@ class LanguageContext:
         if definition.get_inherits():
             # This import is located here because the inheritance module uses the language context for lookup, causing a circular dependency at initialization
             from aac.lang.definitions.inheritance import apply_inherited_attributes_to_definition
+
             apply_inherited_attributes_to_definition(new_definition, self)
 
         if definition.is_extension():
@@ -308,7 +310,7 @@ class LanguageContext:
 
         This method is helpful for discerning the type of a definition by its name. This is
         functionally equivalent to getting the definition by name from the context and then
-        running the `Definition` method `is_enum()`
+        running the `Definition` method `is_enum()`.
 
         Args:
             type (str): The enum's type string.
@@ -363,7 +365,7 @@ class LanguageContext:
             if len(definition_to_return) > 0:
                 if len(definition_to_return) > 1:
                     logging.info(
-                        f"Multiple definitions found with the same name '{definition_name}' found in context. Returning the first"
+                        f"Multiple definitions found with the same name '{definition_name}' found in context. Returning the first one."
                     )
                 return definition_to_return[0]
             else:
@@ -424,6 +426,30 @@ class LanguageContext:
         """
         return self.plugins
 
+    def get_definition_validations(self) -> list[DefinitionValidationContribution]:
+        """
+        Get a list of registered validations and metadata in the context.
+
+        Returns:
+            A list of validator plugins that are currently registered.
+        """
+        validation_lists = [
+            plugin.get_definition_validations() for plugin in self.get_plugins() if plugin.get_definition_validations()
+        ]
+        return [validation for validation_list in validation_lists for validation in validation_list]
+
+    def get_primitive_validations(self) -> list[PrimitiveValidationContribution]:
+        """
+        Get a list of registered enum/type validations and metadata in the context.
+
+        Returns:
+            A list of validator plugins that are currently registered.
+        """
+        validation_lists = [
+            plugin.get_primitive_validations() for plugin in self.get_plugins() if plugin.get_primitive_validations()
+        ]
+        return [validation for validation_list in validation_lists for validation in validation_list]
+
     def get_files_in_context(self) -> list[AaCFile]:
         """
         Return a list of all the files contributing definitions to the context.
@@ -438,10 +464,10 @@ class LanguageContext:
         Return the AaCFile object by uri from the context or None if the file isn't in the context.
 
         Args:
-            uri (str): The string uri to search for
+            uri (str): The string uri to search for.
 
         Returns:
-            An optional AaCFile if it's present in the context, otherwise None
+            An optional AaCFile if it's present in the context, otherwise None.
         """
         for definition in self.definitions:
             if definition.source.uri == uri:

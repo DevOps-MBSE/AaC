@@ -1,6 +1,6 @@
 from unittest.case import TestCase
 
-from aac.plugins.contribution_points import ContributionPoints
+from aac.plugins.contributions.contribution_points import ContributionPoints
 
 from tests.helpers.contribution_points import (
     create_command,
@@ -38,8 +38,8 @@ class TestContributionPoints(TestCase):
                 create_validation(f"Test{i}", create_validation_definition(f"Validation{i}"))
                 for i in range(self.num_items)
             ],
-            lambda items: self.contributions.register_validations(self.plugin_name, items),
-            self.contributions.get_validations,
+            lambda items: self.contributions.register_definition_validations(self.plugin_name, items),
+            self.contributions.get_definition_validations,
         )
 
     def test_get_contributions_by_name(self):
@@ -49,11 +49,11 @@ class TestContributionPoints(TestCase):
 
         self.contributions.register_command(self.plugin_name, command)
         self.contributions.register_definition(self.plugin_name, definition)
-        self.contributions.register_validation(self.plugin_name, validation)
+        self.contributions.register_definition_validation(self.plugin_name, validation)
 
         self.assertEqual(command, self.contributions.get_command_by_name(command.name))
         self.assertEqual(definition, self.contributions.get_definition_by_name(definition.name))
-        self.assertEqual(validation, self.contributions.get_validation_by_name(validation.name))
+        self.assertEqual(validation, self.contributions.get_definition_validation_by_name(validation.name))
 
     def test_get_contributions_by_plugin(self):
         commands = [create_command(f"Test{i}") for i in range(self.num_items)]
@@ -64,11 +64,11 @@ class TestContributionPoints(TestCase):
 
         self.contributions.register_commands(self.plugin_name, commands)
         self.contributions.register_definitions(self.plugin_name, definitions)
-        self.contributions.register_validations(self.plugin_name, validations)
+        self.contributions.register_definition_validations(self.plugin_name, validations)
 
         self.assertCountEqual(self.contributions.get_commands_by_plugin_name(self.plugin_name), commands)
         self.assertCountEqual(self.contributions.get_definitions_by_plugin_name(self.plugin_name), definitions)
-        self.assertCountEqual(self.contributions.get_validations_by_plugin_name(self.plugin_name), validations)
+        self.assertCountEqual(self.contributions.get_definition_validations_by_plugin_name(self.plugin_name), validations)
 
     def test_register_items_only_accept_items_of_correct_contribution_type(self):
         make_regex = lambda expected, item: f".*(error|add|{expected}|{item.name}).*".lower()
@@ -86,5 +86,5 @@ class TestContributionPoints(TestCase):
         assertion(command, self.contributions.register_definition, make_regex("definition", command))
         assertion(validation, self.contributions.register_definition, make_regex("definition", validation))
 
-        assertion(definition, self.contributions.register_validation, make_regex("validation", definition))
-        assertion(command, self.contributions.register_validation, make_regex("validation", command))
+        assertion(definition, self.contributions.register_definition_validation, make_regex("validation", definition))
+        assertion(command, self.contributions.register_definition_validation, make_regex("validation", command))

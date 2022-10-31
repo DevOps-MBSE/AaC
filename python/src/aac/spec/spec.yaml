@@ -258,6 +258,7 @@ enum:
     - bool
     - date
     - file
+    - directory
     - reference
 ---
 schema:
