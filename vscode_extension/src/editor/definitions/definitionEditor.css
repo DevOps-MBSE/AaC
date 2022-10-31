@@ -16,8 +16,18 @@ button:disabled {
     border: none;
 }
 
+#source-div {
+    display: block;
+}
+
 input {
     width: 90%;
     margin-top: 4px;
     margin-bottom: 8px;
+}
+
+#source-label {
+    display: block;
+    margin-bottom: 3px;
+    font-weight: bold;
 }
