@@ -3,14 +3,14 @@
 import difflib
 import logging
 from os import linesep
-from re import I
-from typing import Optional, Union
+from typing import Optional
 from pygls.protocol import LanguageServerProtocol
 from pygls.server import LanguageServer
 from pygls.lsp import (
     CompletionOptions,
     CompletionParams,
     DefinitionParams,
+    PublishDiagnosticsParams,
     RenameParams,
     HoverParams,
     ReferenceParams,
@@ -127,8 +127,6 @@ async def did_open(ls: AacLanguageServer, params: DidOpenTextDocumentParams):
     _, file_path = file_uri.split("file://")
     ls.language_context.add_definitions_to_context(parse(file_path))
 
-    handle_publish_diagnostics(ls, params)
-
 
 async def did_close(ls: AacLanguageServer, params: DidCloseTextDocumentParams):
     """Text document did close notification."""
@@ -175,8 +173,6 @@ async def did_change(ls: AacLanguageServer, params: DidChangeTextDocumentParams)
     ls.language_context.add_definitions_to_context(new_definitions)
     ls.language_context.update_definitions_in_context(altered_definitions)
     ls.language_context.remove_definitions_from_context(old_definitions_to_delete)
-
-    handle_publish_diagnostics(ls, params)
 
 
 async def handle_completion(ls: AacLanguageServer, params: CompletionParams):
@@ -235,10 +231,10 @@ async def handle_semantic_tokens(ls: AacLanguageServer, params: SemanticTokensPa
     return semantic_tokens_results
 
 
-def handle_publish_diagnostics(ls: AacLanguageServer, params: Union[DidOpenTextDocumentParams, DidChangeTextDocumentParams]):
+async def handle_publish_diagnostics(ls: AacLanguageServer, params: PublishDiagnosticsParams):
     """Handle the publish diagnostics request."""
     publish_diagnostics_provider = ls.providers.get(methods.TEXT_DOCUMENT_PUBLISH_DIAGNOSTICS)
-    diagnostics = publish_diagnostics_provider.handle_request(ls, params)
-    ls.publish_diagnostics(params.text_document.uri, diagnostics)
+    diagnostics = await publish_diagnostics_provider.handle_request(ls, params)
+    ls.publish_diagnostics(params.uri, diagnostics)
     logging.debug(f"Publish Diagnostics results: {diagnostics}")
     return diagnostics

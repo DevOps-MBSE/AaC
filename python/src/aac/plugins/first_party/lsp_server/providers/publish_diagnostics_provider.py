@@ -1,40 +1,49 @@
 """Module for PublishDiagnostics Provider which handles publishing of diagnostics for AaC Language Server."""
 
-from pygls.server import LanguageServer
-from pygls.lsp.types.basic_structures import Position, Range
-from pygls.lsp.types.basic_structures import Diagnostic
+from aac.io.parser import parse
+from typing import Optional
 
-from aac.plugins.lsp_server.providers.lsp_provider import LspProvider
-from aac.validate._validate import validated_source
+from pygls.lsp import Diagnostic, DiagnosticSeverity, Position, PublishDiagnosticsParams, Range
+from pygls.server import LanguageServer
+from pygls.uris import to_fs_path
+
+from aac.plugins.first_party.lsp_server.providers.lsp_provider import LspProvider
+from aac.plugins.validators import ValidatorResult
+from aac.plugins.validators._validator_finding import FindingSeverity
+from aac.validate._validate import _validate_definitions
 
 
 class PublishDiagnosticsProvider(LspProvider):
     """Handler for Publishing Diagnostics for AaC LSP."""
 
-    ls = LanguageServer
-
-    async def handle_request(self, ls: LanguageServer, file_uri: str) -> list[Diagnostic]:
-        """
-        Return the ValidationResults and pass those in through the Diagnostic Module to then be returned and shown to the user through the Editor.
-
-        Args:
-            ls (LanguageServer): Contents of the LanguageServer is being passed in.
-            file_uri (str): The uri of the file that is currently open or being altered.
-
-        Returns:
-            A list of diagnostics from the ValidationResults. If nothing is found an empty list is returned.
-        """
+    async def handle_request(self, ls: LanguageServer, params: PublishDiagnosticsParams) -> list[Diagnostic]:
+        """Handle publishing validation findings as diagnostics."""
         diagnostics = []
-        ls.show_message("Validating AaC Open AaC File...")
-        with validated_source(file_uri) as validation_result:
-            for finding in validation_result.findings.findings:
-                severity = finding.severity
-                source = finding.source
+        validation_result: ValidatorResult = _validate_definitions(parse(to_fs_path(params.uri)), validate_context=True)
 
-                range_start = Position(line=finding.location.line, character=finding.location.position)
-                range_end = Position(line=finding.location.line, character=finding.location.position + finding.location.span)
+        for finding in validation_result.findings.findings:
+            finding_location = finding.location.location
 
-                message = finding.message
-                full_range = Range(start=range_start, end=range_end)
-            diagnostics.append(Diagnostic(severity=severity, source=source, range=full_range, message=message))
+            range_start = Position(line=finding_location.line, character=finding_location.position)
+            range_end = Position(line=finding_location.line, character=finding_location.position + finding_location.span)
+
+            severity = self.finding_severity_to_diagnostic_severity(finding.severity)
+
+            diagnostics.append(
+                Diagnostic(
+                    range=Range(start=range_start, end=range_end),
+                    severity=severity.value if severity else None,
+                    code=finding.location.validation_name,
+                    source="aac",
+                    message=finding.message,
+                )
+            )
+
         return diagnostics
+
+    def finding_severity_to_diagnostic_severity(self, finding_severity: FindingSeverity) -> Optional[DiagnosticSeverity]:
+        """Return the DiagnosticSeverity that corresponds most closely to the correpsonding FindingSeverity."""
+        finding_severity_name = finding_severity.name.title()
+        for severity_name in DiagnosticSeverity._member_names_:
+            if finding_severity_name in severity_name:
+                return DiagnosticSeverity[severity_name]
