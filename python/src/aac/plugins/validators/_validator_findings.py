@@ -16,11 +16,11 @@ class ValidatorFindings:
         findings: A collection of validator findings.
     """
 
-    findings: list[ValidatorFinding] = attrib(init=False, default=Factory(list), validator=validators.instance_of(list))
+    findings: set[ValidatorFinding] = attrib(init=False, default=Factory(set), validator=validators.instance_of(set))
 
     def add_findings(self, new_findings: list[ValidatorFinding]) -> None:
         """Add the new findings to the collection of all findings."""
-        self.findings.extend(new_findings)
+        self.findings.update(new_findings)
 
     def add_error_finding(
         self,
@@ -104,7 +104,7 @@ class ValidatorFindings:
 
     def get_all_findings(self) -> list[ValidatorFinding]:
         """Return a list of all the validator findings."""
-        return self.findings
+        return list(self.findings)
 
     def get_error_findings(self) -> list[ValidatorFinding]:
         """Return a list of error findings."""

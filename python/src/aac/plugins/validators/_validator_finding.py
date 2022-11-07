@@ -6,6 +6,7 @@ definition. Validation errors are a subset of the category of validator findings
 not be limited to errors, so this module also exports a severity category that informs how severe the finding
 is.
 """
+
 from enum import Enum, auto
 
 from attr import attrib, attrs, validators
@@ -16,12 +17,13 @@ from aac.plugins.validators._finding_location import FindingLocation
 
 class FindingSeverity(Enum):
     """A severity for distinguishing between different kinds of validator findings."""
+
     INFO = auto()
     WARNING = auto()
     ERROR = auto()
 
 
-@attrs(slots=True)
+@attrs(slots=True, hash=False)
 class ValidatorFinding:
     """
     A finding made in a validator plugin.
@@ -38,3 +40,8 @@ class ValidatorFinding:
     severity: FindingSeverity = attrib(validator=validators.instance_of(FindingSeverity))
     message: str = attrib(validator=validators.instance_of(str))
     location: FindingLocation = attrib(validator=validators.instance_of(FindingLocation))
+
+    def __hash__(self) -> int:
+        """Return a hash for the finding."""
+        loc = self.location.location
+        return hash(f"{self.location.source.uri}{loc.line}{loc.column}{loc.position}{loc.span}{self.location.validation_name}")
