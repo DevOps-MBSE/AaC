@@ -16,6 +16,8 @@ from aac.validate._validate import _validate_definitions
 class PublishDiagnosticsProvider(LspProvider):
     """Handler for Publishing Diagnostics for AaC LSP."""
 
+    diagnostics: list[Diagnostic] = []
+
     async def handle_request(self, _: LanguageServer, params: PublishDiagnosticsParams) -> list[Diagnostic]:
         """Handle publishing validation findings as diagnostics."""
 
@@ -30,7 +32,8 @@ class PublishDiagnosticsProvider(LspProvider):
             )
 
         result = _validate_definitions(parse(to_fs_path(params.uri)), validate_context=True)
-        return [finding_to_diagnostic(finding) for finding in result.findings.get_all_findings()]
+        self.diagnostics.extend([finding_to_diagnostic(finding) for finding in result.findings.get_all_findings()])
+        return self.diagnostics
 
     def finding_severity_to_diagnostic_severity(self, finding_severity: FindingSeverity) -> Optional[DiagnosticSeverity]:
         """Return the DiagnosticSeverity that corresponds most closely to the correpsonding FindingSeverity."""

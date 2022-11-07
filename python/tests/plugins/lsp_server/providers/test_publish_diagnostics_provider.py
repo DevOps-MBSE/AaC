@@ -21,6 +21,7 @@ class TestPublishDiagnosticsProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         self.provider = self.client.server.providers.get(methods.TEXT_DOCUMENT_PUBLISH_DIAGNOSTICS)
 
     async def publish_diagnostics(self, file_name: str, diagnostics: Optional[list[Diagnostic]] = None) -> list[Diagnostic]:
+        self.provider.diagnostics.clear()
         return await self.provider.handle_request(
             self.client.server,
             PublishDiagnosticsParams(uri=self.to_uri(file_name), diagnostics=diagnostics or []),
