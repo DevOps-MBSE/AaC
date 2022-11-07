@@ -55,6 +55,7 @@ The AaC Python package, its source code, and its configuration are all found in 
 We expect Python developers to use a virtual environment when developing the AaC package, and so the project is configured only for use with virtual environments.
 
 Create a new environment:
+
 `bash` and `zsh` command:
 
 ```bash
@@ -62,6 +63,7 @@ python3.9 -m venv venv --upgrade-deps
 ```
 
 Or if you're developing in a containerized environment:
+
 `bash` and `zsh` command:
 
 ```bash
@@ -69,6 +71,7 @@ python3.9 -m venv venv --upgrade-deps --system-site-packages
 ```
 
 Configure your shell with the virtual environment:
+
 `bash` and `zsh` command:
 
 ```bash
@@ -76,6 +79,7 @@ source venv/bin/activate
 ```
 
 Install the AaC package in development mode:
+
 `bash` command:
 
 ```bash
@@ -89,6 +93,7 @@ pip install -e '.[all]'
 ```
 
 Run the AaC `version` command to confirm the package is installed:
+
 `bash` and `zsh` command:
 
 ```bash
@@ -112,6 +117,7 @@ pip install -e .
 If you'd like to install the additional dependencies (test and dev), then you can specify that pip include those dependencies like such:
 
 To install test dependencies (test), run this:
+
 `bash` command:
 
 ```bash
@@ -125,6 +131,7 @@ pip install -e '.[test]'
 ```
 
 To install development dependencies (dev), run this:
+
 `bash` command:
 
 ```bash
@@ -138,6 +145,7 @@ pip install -e '.[dev]'
 ```
 
 To install all dependencies (runtime, dev, and test), run this:
+
 `bash` command:
 
 ```bash
@@ -153,6 +161,7 @@ pip install -e '.[all]'
 #### Testing the Python Package
 
 To run tests, make sure you've set up your dependencies using `pip install -e .[test]` or `pip install -e .[all]` (or the `ZSH` equivalents). Then, from the root of the Python project, run the following shell command (from within your virtual environment).
+
 `bash` and `zsh` command:
 
 ```bash
