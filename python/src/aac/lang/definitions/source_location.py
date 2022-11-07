@@ -18,3 +18,7 @@ class SourceLocation:
     column: int = attrib(validator=validators.instance_of(int))
     position: int = attrib(validator=validators.instance_of(int))
     span: int = attrib(validator=validators.instance_of(int))
+
+    def to_tuple(self):
+        """Return a representation of the location as a tuple."""
+        return self.line, self.column, self.position, self.span
