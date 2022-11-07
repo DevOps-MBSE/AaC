@@ -1,10 +1,12 @@
 import logging
 from os import linesep
 from typing import Optional
+from aac.lang.constants import DEFINITION_FIELD_NAME
 
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.lexeme import Lexeme
 from aac.lang.language_context import LanguageContext
+from aac.plugins.validators import FindingLocation
 from aac.plugins.validators._validator_result import ValidatorFindings, ValidatorResult
 
 
@@ -12,7 +14,10 @@ PLUGIN_NAME = "Unique definition names"
 
 
 def validate_unique_names(
-    definition_under_test: Definition, target_schema_definition: Definition, language_context: LanguageContext, *validation_args
+    definition_under_test: Definition,
+    target_schema_definition: Definition,
+    language_context: LanguageContext,
+    *validation_args,
 ) -> ValidatorResult:
     """Search through the language context ensuring that all definition names are unique."""
 
@@ -29,7 +34,17 @@ def validate_unique_names(
 
     if len(definitions_with_target_name) > 0:
         duplicate_name_message = _build_duplicate_name_message(definition_under_test, definitions_with_target_name)
-        findings.add_error_finding(definition_under_test, duplicate_name_message, PLUGIN_NAME, 0, 0, 0, 0)
+        definition_name_lexemes = [
+            definition.get_lexeme_with_value(definition.name, [DEFINITION_FIELD_NAME])
+            for definition in definitions_with_target_name
+        ]
+        for lexeme in definition_name_lexemes:
+            findings.add_error_finding(
+                definition_under_test,
+                duplicate_name_message,
+                PLUGIN_NAME,
+                *FindingLocation.from_lexeme(PLUGIN_NAME, lexeme).to_tuple(),
+            )
         logging.debug(duplicate_name_message)
 
     return ValidatorResult([definition_under_test], findings)

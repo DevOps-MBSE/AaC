@@ -1,15 +1,21 @@
 import logging
 
-from aac.lang.language_context import LanguageContext
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.definitions.definition import Definition
-from aac.plugins.validators import ValidatorResult
+from aac.lang.language_context import LanguageContext
+from aac.plugins.validators import FindingLocation, ValidatorResult
 from aac.plugins.validators._validator_findings import ValidatorFindings
+
 
 PLUGIN_NAME = "Root key is defined"
 
 
-def validate_root_keys(definition_under_test: Definition, target_schema_definition: Definition, language_context: LanguageContext, *validation_args) -> ValidatorResult:
+def validate_root_keys(
+    definition_under_test: Definition,
+    target_schema_definition: Definition,
+    language_context: LanguageContext,
+    *validation_args,
+) -> ValidatorResult:
     """
     Validates that the definition root key is defined by the root definition.
 
@@ -29,7 +35,13 @@ def validate_root_keys(definition_under_test: Definition, target_schema_definiti
 
     if root_key not in active_context_root_keys:
         undefined_reference_error_message = f"Undefined root key '{root_key}' in definition '{definition_under_test.name}'. Valid root keys {active_context_root_keys}"
-        findings.add_error_finding(definition_under_test, undefined_reference_error_message, PLUGIN_NAME, 0, 0, 0, 0)
+        root_key_lexeme = definition_under_test.get_lexeme_with_value(root_key)
+        findings.add_error_finding(
+            definition_under_test,
+            undefined_reference_error_message,
+            PLUGIN_NAME,
+            *FindingLocation.from_lexeme(PLUGIN_NAME, root_key_lexeme).to_tuple(),
+        )
         logging.debug(undefined_reference_error_message)
 
     return ValidatorResult([definition_under_test], findings)

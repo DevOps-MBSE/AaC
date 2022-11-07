@@ -1,16 +1,14 @@
 from unittest.mock import MagicMock, patch
 
-from aac.io.files.aac_file import AaCFile
-from aac.lang.definitions.definition import Definition
-from aac.plugins.validators._validator_result import ValidatorResult, ValidatorFindings
-from aac.validate import validated_definitions, validated_source, ValidationError
-
+from aac.io.parser import parse
+from aac.plugins.validators._validator_result import ValidatorFindings, ValidatorResult
+from aac.validate import ValidationError, validated_definitions, validated_source
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.parsed_definitions import (
-    create_schema_definition,
-    create_schema_ext_definition,
     create_enum_ext_definition,
     create_field_entry,
+    create_schema_definition,
+    create_schema_ext_definition,
 )
 
 
@@ -65,6 +63,7 @@ class TestValidate(ActiveContextTestCase):
         test_combined_ext_definition = create_schema_ext_definition("TestSchemaExt", "Behavior", fields=[test_field_entry])
         test_enum_definition = create_enum_ext_definition("TestEnumExt", "Primitives", values=["val1", "val2"])
         test_combined_ext_definition.structure["ext"]["enumExt"] = test_enum_definition.structure["ext"]["enumExt"]
+        test_combined_ext_definition, *_ = parse(test_combined_ext_definition.to_yaml())
 
         with self.assertRaises(ValidationError) as error:
             with validated_definitions([test_combined_ext_definition]):
@@ -79,16 +78,17 @@ class TestValidate(ActiveContextTestCase):
         invalid_fields_test_field = create_field_entry("MissingTestField")
         del invalid_fields_test_field["type"]
         invalid_reference_test_field = create_field_entry("BadRefTestField", "striiiing")
-        invalid_schema_definition = create_schema_definition("InvalidData", fields=[invalid_fields_test_field, invalid_reference_test_field])
+        invalid_schema_definition = create_schema_definition(
+            "InvalidData", fields=[invalid_fields_test_field, invalid_reference_test_field]
+        )
 
         fake_root_key = "not_a_root_key"
-        test_definition_dict = {
-            fake_root_key: {
-                "name": "Test",
-            }
-        }
-        invalid_definition_source = AaCFile("<test>", True, False)
-        invalid_root_key_definition = Definition("Test", "", invalid_definition_source, [], test_definition_dict)
+        invalid_root_key_definition = create_schema_definition("Test")
+        invalid_root_key_definition.structure[fake_root_key] = invalid_root_key_definition.structure[
+            invalid_root_key_definition.get_root_key()
+        ]
+        del invalid_root_key_definition.structure[invalid_root_key_definition.get_root_key()]
+        invalid_root_key_definition, *_ = parse(invalid_root_key_definition.to_yaml())
 
         with self.assertRaises(ValidationError) as error:
             with validated_definitions([invalid_schema_definition, invalid_root_key_definition]):
