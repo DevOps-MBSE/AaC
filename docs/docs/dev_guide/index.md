@@ -192,3 +192,10 @@ yarn compile
 Assuming that the Typescript VSCode Extension workspace is currently open and active, the VSCode extension can be debugged in VSCode by opening an extension typescript file, hitting the `f5` key, and selecting "VSCode Extension Development" from the debug run configurations.
 
 Assuming all went well, VSCode will launch another instance of the IDE with the AaC Extension installed.
+
+
+## AaC Profiling Developer Guide
+
+### cProfile Setup and Justification
+
+### Profile Setup and Justification
