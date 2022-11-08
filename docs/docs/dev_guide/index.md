@@ -145,7 +145,6 @@ pip install -e '.[dev]'
 ```
 
 To install all dependencies (runtime, dev, and test), run this:
-
 `bash` command:
 
 ```bash
@@ -161,7 +160,6 @@ pip install -e '.[all]'
 #### Testing the Python Package
 
 To run tests, make sure you've set up your dependencies using `pip install -e .[test]` or `pip install -e .[all]` (or the `ZSH` equivalents). Then, from the root of the Python project, run the following shell command (from within your virtual environment).
-
 `bash` and `zsh` command:
 
 ```bash
