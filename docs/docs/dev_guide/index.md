@@ -193,7 +193,6 @@ Assuming that the Typescript VSCode Extension workspace is currently open and ac
 
 Assuming all went well, VSCode will launch another instance of the IDE with the AaC Extension installed.
 
-
 ## AaC Profiling Developer Guide
 
 ### cProfile Setup and Justification
