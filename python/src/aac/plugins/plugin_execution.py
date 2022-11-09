@@ -48,10 +48,6 @@ class PluginExecutionResult:
         """Add messages to the list of messages."""
         self.messages.extend(messages)
 
-    def set_messages(self, messages: list[str]) -> None:
-        """Clear the current messages and set them to the passed in messages."""
-        self.messages = messages
-
     def is_success(self) -> bool:
         """Return True if the command succeeded; False, otherwise."""
         return self.status_code == PluginExecutionStatusCode.SUCCESS
@@ -100,10 +96,10 @@ def plugin_result(name: str, cmd: Callable[..., Any], *args: Tuple[Any], **kwarg
         result.add_messages(error.message)
         result.status_code = PluginExecutionStatusCode.PLUGIN_FAILURE
     except PluginError as error:
-        result.set_messages(error.message)
+        result.add_message(error.message)
         result.status_code = PluginExecutionStatusCode.PLUGIN_FAILURE
     except OperationCancelled as condition:
-        result.set_messages(condition.message)
+        result.add_message(condition.message)
         result.status_code = PluginExecutionStatusCode.OPERATION_CANCELLED
     except Exception as error:
         # Extract the first stack trace, skipping the plugin result we'd expect to find in the first element
