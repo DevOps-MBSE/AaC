@@ -2,6 +2,7 @@
 from attr import attrib, attrs, validators, Factory
 from contextlib import contextmanager
 from enum import Enum, auto, unique
+from os import linesep
 from traceback import extract_tb
 from typing import Callable, Tuple, Any
 import logging
@@ -39,13 +40,17 @@ class PluginExecutionResult:
     status_code: PluginExecutionStatusCode = attrib(validator=validators.instance_of(PluginExecutionStatusCode))
     messages: list[str] = attrib(default=Factory(list), validator=validators.instance_of(list))
 
-    def add_messages(self, *messages) -> None:
+    def add_message(self, message: str) -> None:
+        """Add a message to the list of messages."""
+        self.messages.append(message)
+
+    def add_messages(self, messages: list[str]) -> None:
         """Add messages to the list of messages."""
         self.messages.extend(messages)
 
-    def set_messages(self, *messages) -> None:
+    def set_messages(self, messages: list[str]) -> None:
         """Clear the current messages and set them to the passed in messages."""
-        self.messages = list(messages)
+        self.messages = messages
 
     def is_success(self) -> bool:
         """Return True if the command succeeded; False, otherwise."""
@@ -53,7 +58,7 @@ class PluginExecutionResult:
 
     def get_messages_as_string(self) -> str:
         """Return the output messages as a combined string."""
-        return "\n".join(self.messages)
+        return linesep.join(self.messages)
 
 
 @contextmanager
@@ -77,19 +82,19 @@ def plugin_result(name: str, cmd: Callable[..., Any], *args: Tuple[Any], **kwarg
     """
     result = PluginExecutionResult(name, PluginExecutionStatusCode.SUCCESS)
     try:
-        result.add_messages(cmd(*args, **kwargs))
+        result.add_message(cmd(*args, **kwargs))
     except LanguageError as error:
-        result.add_messages("Internal error occurred in the AaC language:\n", *error.args, "")
+        result.add_message("Internal error occurred in the AaC language:\n", *error.args, "")
         result.status_code = PluginExecutionStatusCode.GENERAL_FAILURE
     except ParserError as error:
         source, errors = error.args
-        result.add_messages(f"Failed to parse {source}\n", *errors, "")
+        result.add_messages([f"Failed to parse {source}\n", *errors, ""])
         result.status_code = PluginExecutionStatusCode.PARSER_FAILURE
     except ValidationError as error:
-        result.add_messages("Failed to validate:\n", *error.args, "")
+        result.add_messages(["Failed to validate:\n", *error.args, ""])
         result.status_code = PluginExecutionStatusCode.VALIDATION_FAILURE
     except FileNotFoundError as error:
-        result.add_messages(f"{error.strerror}: {error.filename}")
+        result.add_message(f"{error.strerror}: {error.filename}")
         result.status_code = PluginExecutionStatusCode.GENERAL_FAILURE
     except AacTemplateError as error:
         result.add_messages(error.message)
@@ -110,12 +115,12 @@ def plugin_result(name: str, cmd: Callable[..., Any], *args: Tuple[Any], **kwarg
 
 
 def _get_error_messages(error: Exception) -> list[str]:
-    def error_message_lines(error_trace):
-        return (
-            f"\nA(n) {error_trace.name} error occurred"
-            f"\n  in {error_trace.filename}"
-            f"\n  on line {error_trace.lineno}"
-            f"\nThe error was: {error}"
-        )
+    def error_message_lines(error_trace) -> str:
+        return f"""
+        A(n) {error_trace.name} error occurred
+          in {error_trace.filename}
+          on line {error_trace.lineno}
+        The error was: {error}
+        """
 
     return [error_message_lines(error_trace) for error_trace in extract_tb(error.__traceback__)]
