@@ -26,7 +26,6 @@ from pygls.uris import to_fs_path
 
 from aac.io.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_initialized_language_context
-from aac.lang.definitions.structure import strip_undefined_fields_from_definition
 from aac.lang.language_context import LanguageContext
 from aac.plugins.first_party.lsp_server.managed_workspace_file import ManagedWorkspaceFile
 from aac.plugins.first_party.lsp_server.providers.code_completion_provider import CodeCompletionProvider
@@ -164,19 +163,18 @@ async def did_change(ls: AacLanguageServer, params: DidChangeTextDocumentParams)
     ]
 
     for incoming_definition_name, incoming_definition in incoming_definitions_dict.items():
-        sanitized_definition = strip_undefined_fields_from_definition(incoming_definition, ls.language_context)
         old_definition = old_definitions_to_update_dict.get(incoming_definition_name)
 
         if old_definition:
-            altered_definitions.append(sanitized_definition)
+            altered_definitions.append(incoming_definition)
 
             old_definition_lines = old_definition.to_yaml().split(linesep)
             altered_definition_lines = incoming_definition.to_yaml().split(linesep)
             changes = linesep.join(list(difflib.ndiff(old_definition_lines, altered_definition_lines))).strip()
             logging.info(f"Updating definition: {old_definition.name}.\n Differences:\n{changes}")
         else:
-            logging.info(f"Adding definition: {sanitized_definition.name}.")
-            new_definitions.append(sanitized_definition)
+            logging.info(f"Adding definition: {incoming_definition.name}.")
+            new_definitions.append(incoming_definition)
 
     ls.language_context.add_definitions_to_context(new_definitions)
     ls.language_context.update_definitions_in_context(altered_definitions)
