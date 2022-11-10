@@ -9,8 +9,8 @@ from aac.plugins.validators.required_fields import PLUGIN_NAME as REQUIRED_FIELD
 from aac.plugins.validators.root_keys import PLUGIN_NAME as ROOT_KEYS_VALIDATOR
 
 from tests.helpers.parsed_definitions import create_enum_definition, create_field_entry, create_schema_definition
-from tests.plugins.lsp_server.definition_constants import TEST_DOCUMENT_NAME, TEST_ENUM, TEST_SERVICE_ONE
 from tests.plugins.lsp_server.base_lsp_test_case import BaseLspTestCase
+from tests.plugins.lsp_server.definition_constants import TEST_DOCUMENT_NAME, TEST_SCHEMA_A, TEST_SCHEMA_B, TEST_SERVICE_ONE
 
 
 class TestPublishDiagnosticsProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
@@ -19,9 +19,9 @@ class TestPublishDiagnosticsProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         await super().asyncSetUp()
         self.provider = self.client.server.providers.get(methods.TEXT_DOCUMENT_PUBLISH_DIAGNOSTICS)
+        self.provider.diagnostics = []
 
     async def publish_diagnostics(self, file_name: str, diagnostics: Optional[list[Diagnostic]] = None) -> list[Diagnostic]:
-        self.provider.diagnostics.clear()
         return await self.provider.handle_request(
             self.client.server,
             PublishDiagnosticsParams(uri=self.to_uri(file_name), diagnostics=diagnostics or []),
@@ -46,7 +46,7 @@ class TestPublishDiagnosticsProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
 
         await self.create_document(invalid_enum_document_name, invalid_enum.to_yaml())
 
-        diagnostic, *_ = await self.publish_diagnostics(invalid_enum_document_name)
+        diagnostic, *_ = self.provider.diagnostics
         self.assertEqual(0, len(_))
         self.assertEqual(DiagnosticSeverity.Error, diagnostic.severity)
         self.assertEqual(Range(start=Position(line=0, character=0), end=Position(line=0, character=4)), diagnostic.range)
@@ -59,7 +59,7 @@ class TestPublishDiagnosticsProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         invalid_schema = create_schema_definition("InvalidSchema", "a schema with an invalid field", fields)
         await self.create_document(invalid_schema_document_name, invalid_schema.to_yaml())
 
-        diagnostic, *_ = await self.publish_diagnostics(invalid_schema_document_name)
+        diagnostic, *_ = self.provider.diagnostics
         self.assertEqual(0, len(_))
         self.assertEqual(DiagnosticSeverity.Error, diagnostic.severity)
         self.assertEqual(Range(start=Position(line=5, character=10), end=Position(line=5, character=17)), diagnostic.range)
@@ -70,10 +70,10 @@ class TestPublishDiagnosticsProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         TEST_SERVICE_ONE.structure["service"] = TEST_SERVICE_ONE.structure["model"]
         TEST_SERVICE_ONE.structure.pop("model")
 
-        content = DEFINITION_SEPARATOR.join([TEST_ENUM.to_yaml(), TEST_SERVICE_ONE.to_yaml()])
+        content = DEFINITION_SEPARATOR.join([TEST_SCHEMA_A.to_yaml(), TEST_SCHEMA_B.to_yaml(), TEST_SERVICE_ONE.to_yaml()])
         await self.write_document(TEST_DOCUMENT_NAME, content)
 
-        diagnostic, *_ = await self.publish_diagnostics(TEST_DOCUMENT_NAME)
+        diagnostic, *_ = self.provider.diagnostics
         self.assertEqual(0, len(_))
         self.assertEqual(DiagnosticSeverity.Error, diagnostic.severity)
         self.assertEqual(Range(start=Position(line=7, character=0), end=Position(line=7, character=7)), diagnostic.range)

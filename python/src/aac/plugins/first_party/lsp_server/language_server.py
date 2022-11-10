@@ -4,38 +4,40 @@ import difflib
 import logging
 from os import linesep
 from typing import Optional
-from pygls.protocol import LanguageServerProtocol
-from pygls.server import LanguageServer
+
 from pygls.lsp import (
     CompletionOptions,
     CompletionParams,
     DefinitionParams,
-    PublishDiagnosticsParams,
-    RenameParams,
-    HoverParams,
-    ReferenceParams,
-    SemanticTokensParams,
-    TextDocumentSyncKind,
     DidChangeTextDocumentParams,
     DidCloseTextDocumentParams,
     DidOpenTextDocumentParams,
+    HoverParams,
+    PublishDiagnosticsParams,
+    ReferenceParams,
+    RenameParams,
+    SemanticTokensParams,
+    TextDocumentSyncKind,
     methods,
 )
+from pygls.protocol import LanguageServerProtocol
+from pygls.server import LanguageServer
+from pygls.uris import to_fs_path
 
 from aac.io.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_initialized_language_context
 from aac.lang.definitions.structure import strip_undefined_fields_from_definition
 from aac.lang.language_context import LanguageContext
 from aac.plugins.first_party.lsp_server.managed_workspace_file import ManagedWorkspaceFile
-from aac.plugins.first_party.lsp_server.providers.find_references_provider import FindReferencesProvider
-from aac.plugins.first_party.lsp_server.providers.lsp_provider import LspProvider
 from aac.plugins.first_party.lsp_server.providers.code_completion_provider import CodeCompletionProvider
+from aac.plugins.first_party.lsp_server.providers.find_references_provider import FindReferencesProvider
 from aac.plugins.first_party.lsp_server.providers.goto_definition_provider import GotoDefinitionProvider
 from aac.plugins.first_party.lsp_server.providers.hover_provider import HoverProvider
-from aac.plugins.first_party.lsp_server.providers.rename_provider import RenameProvider
+from aac.plugins.first_party.lsp_server.providers.lsp_provider import LspProvider
 from aac.plugins.first_party.lsp_server.providers.prepare_rename_provider import PrepareRenameProvider
-from aac.plugins.first_party.lsp_server.providers.semantic_tokens_provider import SemanticTokensProvider
 from aac.plugins.first_party.lsp_server.providers.publish_diagnostics_provider import PublishDiagnosticsProvider
+from aac.plugins.first_party.lsp_server.providers.rename_provider import RenameProvider
+from aac.plugins.first_party.lsp_server.providers.semantic_tokens_provider import SemanticTokensProvider
 
 
 class AacLanguageServer(LanguageServer):
@@ -124,8 +126,14 @@ async def did_open(ls: AacLanguageServer, params: DidOpenTextDocumentParams):
         ls.workspace_files[file_uri] = managed_file
 
     managed_file.is_client_managed = True
-    _, file_path = file_uri.split("file://")
+    file_path = to_fs_path(file_uri)
     ls.language_context.add_definitions_to_context(parse(file_path))
+
+    publish_diagnostics_provider = ls.providers.get(methods.TEXT_DOCUMENT_PUBLISH_DIAGNOSTICS)
+    await publish_diagnostics_provider.handle_request(
+        ls, PublishDiagnosticsParams(uri=file_path, diagnostics=publish_diagnostics_provider.diagnostics)
+    )
+    ls.publish_diagnostics(file_path, publish_diagnostics_provider.diagnostics)
 
 
 async def did_close(ls: AacLanguageServer, params: DidCloseTextDocumentParams):
@@ -139,7 +147,7 @@ async def did_close(ls: AacLanguageServer, params: DidCloseTextDocumentParams):
 
 async def did_change(ls: AacLanguageServer, params: DidChangeTextDocumentParams):
     """Text document did change notification."""
-    document_path = params.text_document.uri.removeprefix("file://")
+    document_path = to_fs_path(params.text_document.uri)
     logging.info(f"Text document altered by LSP client {document_path}.")
 
     file_content = params.content_changes[0].text
@@ -173,6 +181,12 @@ async def did_change(ls: AacLanguageServer, params: DidChangeTextDocumentParams)
     ls.language_context.add_definitions_to_context(new_definitions)
     ls.language_context.update_definitions_in_context(altered_definitions)
     ls.language_context.remove_definitions_from_context(old_definitions_to_delete)
+
+    publish_diagnostics_provider = ls.providers.get(methods.TEXT_DOCUMENT_PUBLISH_DIAGNOSTICS)
+    await publish_diagnostics_provider.handle_request(
+        ls, PublishDiagnosticsParams(uri=document_path, diagnostics=publish_diagnostics_provider.diagnostics)
+    )
+    ls.publish_diagnostics(document_path, publish_diagnostics_provider.diagnostics)
 
 
 async def handle_completion(ls: AacLanguageServer, params: CompletionParams):
