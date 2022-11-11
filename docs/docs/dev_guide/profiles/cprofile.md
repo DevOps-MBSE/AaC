@@ -12,6 +12,7 @@ nav_order: 2
 `cProfile`, like `profile` is a deterministic profiler. Unlike the Python-backed `Profile`, `cProfile` is backed by the `lsprof` , and is a `C` extension.
 This profiler is the one that comes recommended for most use-cases as it has reasonable overhead and works really well for some long running programs.
 
+With this in mind `cProfile` is quite efficitient and is able to run quite quickly allowing quick and easy profiling of plugin code.   
 ## Getting Started
 
 To get started using the `cProfile` profiler you will need to import the profile into a new or existing plugin. 
@@ -90,3 +91,5 @@ Wrote system design document to ../../../temp/alarm_clock_system_design_document
 > *The above example is the top ten result from sorting based on the time taken from the code being run in `gen_design_doc_impl.py`
 > With the above example output you can see that the code that this was run against has some hints of recursion occurring. 
 > Without recursion occuring the two numbers at the top would be the same.*
+
+Also to note from the output above you can see where some of the code that is being run multiple times and is taking up more time than others. It is recommended to see the full output at least first to make sure that eveyrthing is getting hit and run. Then, as you go, whittle down to find the code that is offending more often.
