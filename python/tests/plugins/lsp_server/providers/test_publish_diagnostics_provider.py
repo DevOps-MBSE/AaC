@@ -46,7 +46,7 @@ class TestPublishDiagnosticsProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
 
         await self.create_document(invalid_enum_document_name, invalid_enum.to_yaml())
 
-        diagnostic, *_ = self.provider.diagnostics
+        diagnostic, *_ = await self.publish_diagnostics(invalid_enum_document_name)
         self.assertEqual(0, len(_))
         self.assertEqual(DiagnosticSeverity.Error, diagnostic.severity)
         self.assertEqual(Range(start=Position(line=0, character=0), end=Position(line=0, character=4)), diagnostic.range)
@@ -59,7 +59,7 @@ class TestPublishDiagnosticsProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         invalid_schema = create_schema_definition("InvalidSchema", "a schema with an invalid field", fields)
         await self.create_document(invalid_schema_document_name, invalid_schema.to_yaml())
 
-        diagnostic, *_ = self.provider.diagnostics
+        diagnostic, *_ = await self.publish_diagnostics(invalid_schema_document_name)
         self.assertEqual(0, len(_))
         self.assertEqual(DiagnosticSeverity.Error, diagnostic.severity)
         self.assertEqual(Range(start=Position(line=5, character=10), end=Position(line=5, character=17)), diagnostic.range)
@@ -73,9 +73,9 @@ class TestPublishDiagnosticsProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         content = DEFINITION_SEPARATOR.join([TEST_SCHEMA_A.to_yaml(), TEST_SCHEMA_B.to_yaml(), TEST_SERVICE_ONE.to_yaml()])
         await self.write_document(TEST_DOCUMENT_NAME, content)
 
-        diagnostic, *_ = self.provider.diagnostics
+        diagnostic, *_ = await self.publish_diagnostics(TEST_DOCUMENT_NAME)
         self.assertEqual(0, len(_))
         self.assertEqual(DiagnosticSeverity.Error, diagnostic.severity)
-        self.assertEqual(Range(start=Position(line=7, character=0), end=Position(line=7, character=7)), diagnostic.range)
+        self.assertEqual(Range(start=Position(line=14, character=0), end=Position(line=14, character=7)), diagnostic.range)
         self.assertEqual(ROOT_KEYS_VALIDATOR, diagnostic.code)
         self.assertRegexpMatches(diagnostic.message.lower(), "undefined.*root.*service")

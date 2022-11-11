@@ -1,12 +1,12 @@
 """Module for PublishDiagnostics Provider which handles publishing of diagnostics for AaC Language Server."""
 
-from aac.io.parser import parse
 from typing import Optional
 
 from pygls.lsp import Diagnostic, DiagnosticSeverity, PublishDiagnosticsParams
 from pygls.server import LanguageServer
 from pygls.uris import to_fs_path
 
+from aac.io.parser._parse_source import _parse_file
 from aac.plugins.first_party.lsp_server.conversion_helpers import source_location_to_range
 from aac.plugins.first_party.lsp_server.providers.lsp_provider import LspProvider
 from aac.plugins.validators._validator_finding import ValidatorFinding, FindingSeverity
@@ -31,7 +31,7 @@ class PublishDiagnosticsProvider(LspProvider):
                 message=finding.message,
             )
 
-        result = _validate_definitions(parse(to_fs_path(params.uri)), validate_context=True)
+        result = _validate_definitions(_parse_file(to_fs_path(params.uri)), validate_context=True)
         self.diagnostics.extend([finding_to_diagnostic(finding) for finding in result.findings.get_all_findings()])
         return self.diagnostics
 
