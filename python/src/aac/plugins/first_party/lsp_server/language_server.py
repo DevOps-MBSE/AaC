@@ -129,12 +129,6 @@ async def did_open(ls: AacLanguageServer, params: DidOpenTextDocumentParams):
     file_path = to_fs_path(file_uri)
     ls.language_context.add_definitions_to_context(parse(file_path))
 
-    publish_diagnostics_provider = ls.providers.get(methods.TEXT_DOCUMENT_PUBLISH_DIAGNOSTICS)
-    await publish_diagnostics_provider.handle_request(
-        ls, PublishDiagnosticsParams(uri=file_path, diagnostics=publish_diagnostics_provider.diagnostics)
-    )
-    ls.publish_diagnostics(file_path, publish_diagnostics_provider.diagnostics)
-
 
 async def did_close(ls: AacLanguageServer, params: DidCloseTextDocumentParams):
     """Text document did close notification."""
@@ -181,12 +175,6 @@ async def did_change(ls: AacLanguageServer, params: DidChangeTextDocumentParams)
     ls.language_context.add_definitions_to_context(new_definitions)
     ls.language_context.update_definitions_in_context(altered_definitions)
     ls.language_context.remove_definitions_from_context(old_definitions_to_delete)
-
-    publish_diagnostics_provider = ls.providers.get(methods.TEXT_DOCUMENT_PUBLISH_DIAGNOSTICS)
-    await publish_diagnostics_provider.handle_request(
-        ls, PublishDiagnosticsParams(uri=document_path, diagnostics=publish_diagnostics_provider.diagnostics)
-    )
-    ls.publish_diagnostics(document_path, publish_diagnostics_provider.diagnostics)
 
 
 async def handle_completion(ls: AacLanguageServer, params: CompletionParams):
