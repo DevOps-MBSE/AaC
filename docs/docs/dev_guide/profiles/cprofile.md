@@ -10,7 +10,7 @@ nav_order: 2
 ## cProfile Description
 
 `cProfile`, like `profile` is a deterministic profiler. Unlike the Python-backed `Profile`, `cProfile` is backed by the `lsprof` , and is a `C` extension.
-This profiler is the one that comes recommended for most use-cases as it has reasonable overhead and works really well for some long running programs. 
+This profiler is the one that comes recommended for most use-cases as it has reasonable overhead and works really well for some long running programs.
 
 ## Getting Started
 
@@ -20,7 +20,6 @@ If you are using `cProfile` this can be done with an import:
 
 ```python
 import cProfile
-import re
 ```
 
 To enable this profiler you can run the following commands against this class:
@@ -60,6 +59,8 @@ So lets break this down a bit:
 When you don't sort your results you can get a lot of noise from some functions and methods that are being called and can really
 disorient and add to the confusion of what is going on with the plugin. The above code was run for the `gen_design_doc_impl.py` file
 and within the results as seen with `ps.print_stats(10)` we are filtering the top ten from the line before its sort.
+
+Through the sort function, and filtering the sort you can see the heavy offenders of the plugin that is being profiled.
 
 The output from this run will have something similar to the below:
 
