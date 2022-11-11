@@ -49,11 +49,12 @@ def validate_unique_names(
 
 
 def _build_duplicate_name_message(definition: Definition, definitions: list[Definition]) -> str:
+    line, column = _get_position(definition)
     message = [f"Definition '{definition.name}' is defined in:"]
-    message += [f"  {definition.source.uri} at {_get_position(definition)}" for definition in definitions]
+    message += [f"  {definition.source.uri} at {line}:{column}" for definition in definitions]
     return linesep.join(message)
 
 
-def _get_position(definition: Definition) -> str:
+def _get_position(definition: Definition) -> tuple[int, int]:
     lexeme = definition.get_lexeme_with_value(definition.name)
-    return f"{lexeme.location.line + 1}:{lexeme.location.column}" if lexeme else "unknown location"
+    return lexeme.location.line + 1, lexeme.location.column
