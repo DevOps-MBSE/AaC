@@ -77,16 +77,18 @@ class LanguageContext:
             target_definition_name = definition.get_type()
             target_definition = self.get_definition_by_name(target_definition_name)
 
-            definitions_with_target_definition_name = [
-                definition for definition in self.definitions if target_definition.name == definition.name
-            ]
+            if target_definition:
+                definitions_with_target_definition_name = [
+                    definition for definition in self.definitions if target_definition.name == definition.name
+                ]
 
-            if len(definitions_with_target_definition_name) > 1:
-                raise LanguageError(
-                    f"Duplicate definitions found ({len(definitions_with_target_definition_name)}) with name '{target_definition_name}'."
-                )
-            elif target_definition:
+                if len(definitions_with_target_definition_name) > 1:
+                    raise LanguageError(
+                        f"Duplicate target definitions found ({len(definitions_with_target_definition_name)}) with name '{target_definition_name}'."
+                    )
+
                 apply_extension_to_definition(new_definition, target_definition)
+
             else:
                 logging.error(f"Extension failed to define target, field 'type' is missing. {definition.structure}")
 
