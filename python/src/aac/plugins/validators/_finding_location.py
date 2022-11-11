@@ -30,7 +30,7 @@ class FindingLocation:
         self.source = source_uri
         self.location = SourceLocation(line, column, position, span)
 
-    def to_tuple(self):
+    def to_tuple(self) -> tuple[int, int, int, int]:
         """Return a representation of the location as a tuple."""
         return self.location.to_tuple()
 
