@@ -2,6 +2,7 @@
 
 import difflib
 import logging
+
 from os import linesep
 from typing import Optional
 
@@ -61,8 +62,8 @@ class AacLanguageServer(LanguageServer):
         protocol_cls=LanguageServerProtocol,
         max_workers: int = 2,
     ):
-        """Docstring."""
-        super().__init__(loop, protocol_cls, max_workers)
+        """Create an AaC Language Server."""
+        super().__init__("sd", 123, loop, protocol_cls, max_workers)
 
         self.language_context = language_context
         self.providers = providers
@@ -166,6 +167,7 @@ async def did_change(ls: AacLanguageServer, params: DidChangeTextDocumentParams)
         old_definition = old_definitions_to_update_dict.get(incoming_definition_name)
 
         if old_definition:
+            incoming_definition.uid = old_definition.uid
             altered_definitions.append(incoming_definition)
 
             old_definition_lines = old_definition.to_yaml().split(linesep)
