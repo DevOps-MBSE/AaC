@@ -166,6 +166,16 @@ To run tests, make sure you've set up your dependencies using `pip install -e .[
 tox
 ```
 
+Alternatively, for use with a linter such as `flake8` you could run the following shell command from the root of your working directory:
+
+```bash
+// from the current working directory:
+flake8 .
+
+// or give a path to the file you want to lint
+flake8 ./path/to/file.py
+```
+
 Additionally, to get an HTML code coverage report, update the `tox` command to include the following flags: `tox -- --coverage-report html`
 
 #### VSCode Unit Test Support for Python
