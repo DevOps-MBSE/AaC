@@ -25,6 +25,7 @@ from pygls.protocol import LanguageServerProtocol
 from pygls.server import LanguageServer
 from pygls.uris import to_fs_path
 
+from aac import __version__ as AAC_VERSION
 from aac.io.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_initialized_language_context
 from aac.lang.language_context import LanguageContext
@@ -38,6 +39,10 @@ from aac.plugins.first_party.lsp_server.providers.prepare_rename_provider import
 from aac.plugins.first_party.lsp_server.providers.publish_diagnostics_provider import PublishDiagnosticsProvider
 from aac.plugins.first_party.lsp_server.providers.rename_provider import RenameProvider
 from aac.plugins.first_party.lsp_server.providers.semantic_tokens_provider import SemanticTokensProvider
+
+
+LANGUAGE_SERVER_NAME = "AaCLanguageServer"
+LANGUAGE_SERVER_VERSION = AAC_VERSION
 
 
 class AacLanguageServer(LanguageServer):
@@ -63,7 +68,7 @@ class AacLanguageServer(LanguageServer):
         max_workers: int = 2,
     ):
         """Create an AaC Language Server."""
-        super().__init__("sd", 123, loop, protocol_cls, max_workers)
+        super().__init__(LANGUAGE_SERVER_NAME, LANGUAGE_SERVER_VERSION, loop, protocol_cls, max_workers)
 
         self.language_context = language_context
         self.providers = providers
