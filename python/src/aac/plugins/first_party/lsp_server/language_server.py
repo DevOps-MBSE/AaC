@@ -248,9 +248,7 @@ async def handle_semantic_tokens(ls: AacLanguageServer, params: SemanticTokensPa
 async def handle_publish_diagnostics(ls: AacLanguageServer, params: PublishDiagnosticsParams):
     """Handle the publish diagnostics request."""
     publish_diagnostics_provider = ls.providers.get(methods.TEXT_DOCUMENT_PUBLISH_DIAGNOSTICS)
-    await publish_diagnostics_provider.handle_request(ls, params)
-
-    diagnostics_results = publish_diagnostics_provider.diagnostics
+    diagnostics_results = await publish_diagnostics_provider.handle_request(ls, params)
     ls.publish_diagnostics(params.uri, diagnostics_results)
     logging.debug(f"Publish Diagnostics results: {diagnostics_results}")
     return diagnostics_results
