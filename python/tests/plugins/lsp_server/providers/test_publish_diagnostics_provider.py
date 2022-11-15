@@ -3,14 +3,21 @@ from pygls.lsp import Diagnostic, DiagnosticSeverity, Position, PublishDiagnosti
 from unittest.async_case import IsolatedAsyncioTestCase
 
 from aac.io.constants import DEFINITION_SEPARATOR
+from aac.lang.constants import ROOT_KEY_MODEL
 from aac.plugins.first_party.lsp_server.providers.publish_diagnostics_provider import PublishDiagnosticsProvider
 from aac.plugins.validators.defined_references import PLUGIN_NAME as DEFINED_REFERENCES_VALIDATOR
 from aac.plugins.validators.required_fields import PLUGIN_NAME as REQUIRED_FIELDS_VALIDATOR
 from aac.plugins.validators.root_keys import PLUGIN_NAME as ROOT_KEYS_VALIDATOR
 
-from tests.helpers.parsed_definitions import create_enum_definition, create_field_entry, create_schema_definition
+from tests.helpers.parsed_definitions import (
+    create_enum_definition,
+    create_field_entry,
+    create_schema_definition,
+    create_behavior_entry,
+    create_model_definition,
+)
 from tests.plugins.lsp_server.base_lsp_test_case import BaseLspTestCase
-from tests.plugins.lsp_server.definition_constants import TEST_DOCUMENT_NAME, TEST_SCHEMA_A, TEST_SCHEMA_B, TEST_SERVICE_ONE
+from tests.plugins.lsp_server.definition_constants import TEST_DOCUMENT_NAME
 
 
 class TestPublishDiagnosticsProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
@@ -19,13 +26,10 @@ class TestPublishDiagnosticsProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         await super().asyncSetUp()
         self.provider = self.client.server.providers.get(methods.TEXT_DOCUMENT_PUBLISH_DIAGNOSTICS)
-        self.provider.diagnostics = []
 
-    async def publish_diagnostics(self, file_name: str, diagnostics: Optional[list[Diagnostic]] = None) -> list[Diagnostic]:
-        return await self.provider.handle_request(
-            self.client.server,
-            PublishDiagnosticsParams(uri=self.to_uri(file_name), diagnostics=diagnostics or []),
-        )
+    async def publish_diagnostics(self, file_name: str) -> list[Diagnostic]:
+        self.provider.language_server = self.client.server
+        return self.provider.get_diagnostics(self.to_uri(file_name))
 
     async def test_get_diagnostics_for_empty_document(self):
         empty_document_name = "empty.aac"
@@ -67,15 +71,24 @@ class TestPublishDiagnosticsProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         self.assertRegexpMatches(diagnostic.message.lower(), "undefined.*invalid.*reference")
 
     async def test_get_diagnostics_for_document_with_multiple_definitions(self):
-        TEST_SERVICE_ONE.structure["service"] = TEST_SERVICE_ONE.structure["model"]
-        TEST_SERVICE_ONE.structure.pop("model")
+        schema_a = create_schema_definition("a", "a schema", [create_field_entry("value", "int")])
+        schema_b = create_schema_definition("b", "b schema", [create_field_entry("value", "int")])
+        behavior = create_behavior_entry(
+            "TheBehavior",
+            input=[create_field_entry("in", schema_a.name)],
+            output=[create_field_entry("out", schema_b.name)],
+        )
+        invalid_model_document_name = "multiple.aac"
+        invalid_model = create_model_definition("InvalidModel", "an invalid model", behavior=[behavior])
+        invalid_model.structure["service"] = invalid_model.structure[ROOT_KEY_MODEL]
+        invalid_model.structure.pop(ROOT_KEY_MODEL)
 
-        content = DEFINITION_SEPARATOR.join([TEST_SCHEMA_A.to_yaml(), TEST_SCHEMA_B.to_yaml(), TEST_SERVICE_ONE.to_yaml()])
-        await self.write_document(TEST_DOCUMENT_NAME, content)
+        content = DEFINITION_SEPARATOR.join([schema_a.to_yaml(), schema_b.to_yaml(), invalid_model.to_yaml()])
+        await self.create_document(invalid_model_document_name, content)
 
-        diagnostic, *_ = await self.publish_diagnostics(TEST_DOCUMENT_NAME)
+        diagnostic, *_ = await self.publish_diagnostics(invalid_model_document_name)
         self.assertEqual(0, len(_))
         self.assertEqual(DiagnosticSeverity.Error, diagnostic.severity)
-        self.assertEqual(Range(start=Position(line=14, character=0), end=Position(line=14, character=7)), diagnostic.range)
+        self.assertEqual(Range(start=Position(line=16, character=0), end=Position(line=16, character=7)), diagnostic.range)
         self.assertEqual(ROOT_KEYS_VALIDATOR, diagnostic.code)
         self.assertRegexpMatches(diagnostic.message.lower(), "undefined.*root.*service")

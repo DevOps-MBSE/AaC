@@ -6,7 +6,7 @@ from pygls.lsp import Diagnostic, DiagnosticSeverity, PublishDiagnosticsParams
 from pygls.server import LanguageServer
 from pygls.uris import to_fs_path
 
-from aac.io.parser._parse_source import _parse_file
+from aac.io.parser import parse
 from aac.plugins.first_party.lsp_server.conversion_helpers import source_location_to_range
 from aac.plugins.first_party.lsp_server.providers.lsp_provider import LspProvider
 from aac.plugins.validators._validator_finding import ValidatorFinding, FindingSeverity
@@ -16,24 +16,36 @@ from aac.validate._validate import _validate_definitions
 class PublishDiagnosticsProvider(LspProvider):
     """Handler for Publishing Diagnostics for AaC LSP."""
 
-    diagnostics: list[Diagnostic] = []
-
-    async def handle_request(self, _: LanguageServer, params: PublishDiagnosticsParams) -> list[Diagnostic]:
+    async def handle_request(self, ls: LanguageServer, params: PublishDiagnosticsParams) -> list[Diagnostic]:
         """Handle publishing validation findings as diagnostics."""
+        self.language_server = ls
+        diagnostics = self.get_diagnostics(params.uri)
+        ls.publish_diagnostics(params.uri, diagnostics)
+        return diagnostics
 
-        def finding_to_diagnostic(finding: ValidatorFinding):
-            severity = self.finding_severity_to_diagnostic_severity(finding.severity)
-            return Diagnostic(
-                range=source_location_to_range(finding.location.location),
-                severity=severity.value if severity else None,
-                code=finding.location.validation_name,
-                source="aac",
-                message=finding.message,
-            )
+    def get_diagnostics(self, document_uri: str) -> list[Diagnostic]:
+        """Add the Diagnostics found on document_uri."""
+        findings = self.get_findings_for_document(document_uri)
+        return [self.finding_to_diagnostic(finding) for finding in findings]
 
-        result = _validate_definitions(_parse_file(to_fs_path(params.uri)), validate_context=True)
-        self.diagnostics.extend([finding_to_diagnostic(finding) for finding in result.findings.get_all_findings()])
-        return self.diagnostics
+    def get_findings_for_document(self, document_uri: str) -> list[ValidatorFinding]:
+        """Return all the ValidatorFindings for the specified document."""
+        document = self.language_server.workspace.get_document(document_uri)
+        parsed_definitions = parse(document.source, to_fs_path(document_uri))
+        print(parsed_definitions)
+        result = _validate_definitions(parsed_definitions, validate_context=True)
+        return result.findings.get_all_findings()
+
+    def finding_to_diagnostic(self, finding: ValidatorFinding) -> Diagnostic:
+        """Convert a ValidatorFinding to an LSP Diagnostic."""
+        severity = self.finding_severity_to_diagnostic_severity(finding.severity)
+        return Diagnostic(
+            range=source_location_to_range(finding.location.location),
+            severity=severity.value if severity else None,
+            code=finding.location.validation_name,
+            source="aac",
+            message=finding.message,
+        )
 
     def finding_severity_to_diagnostic_severity(self, finding_severity: FindingSeverity) -> Optional[DiagnosticSeverity]:
         """Return the DiagnosticSeverity that corresponds most closely to the correpsonding FindingSeverity."""
