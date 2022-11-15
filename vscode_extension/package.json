@@ -31,22 +31,34 @@
                         "id": "aac-path",
                         "title": "AaC Path",
                         "description": "This step will configure the path to the `aac` tool that will be used by the extension.\n[Set AaC Path](command:aac.changeAacPath)",
-                        "media": {"markdown": "media/aac-path.md"},
-                        "completionEvents": ["onSettingChanged:aac.aacPath"]
+                        "media": {
+                            "markdown": "media/aac-path.md"
+                        },
+                        "completionEvents": [
+                            "onSettingChanged:aac.aacPath"
+                        ]
                     },
                     {
                         "id": "view-docs",
                         "title": "View AaC Documentation",
                         "description": "Bookmark and read through the AaC documentation.\n[Open documentation](https://jondavid-black.github.io/AaC)",
-                        "media": {"markdown": "media/view-docs.md"},
-                        "completionEvents": ["onLink:https://jondavid-black.github.io/AaC"]
+                        "media": {
+                            "markdown": "media/view-docs.md"
+                        },
+                        "completionEvents": [
+                            "onLink:https://jondavid-black.github.io/AaC"
+                        ]
                     },
                     {
                         "id": "exec-aac-command",
                         "title": "Execute an AaC command",
                         "description": "Execute your first AaC command via the extension.\n[Execute an AaC Command](command:aac.execute)",
-                        "media": {"markdown": "media/aac-command.md"},
-                        "completionEvents": ["onCommand:aac.execute"]
+                        "media": {
+                            "markdown": "media/aac-command.md"
+                        },
+                        "completionEvents": [
+                            "onCommand:aac.execute"
+                        ]
                     }
                 ]
             }
@@ -108,6 +120,30 @@
                 "command": "aac.execute",
                 "title": "Execute AaC Command",
                 "category": "AaC"
+            },
+            {
+                "command": "definitionsList.editEntry",
+                "title": "Edit",
+                "icon": {
+                    "light": "src/resources/light/edit.svg",
+                    "dark": "src/resources/dark/edit.svg"
+                }
+            },
+            {
+                "command": "definitionsList.deleteEntry",
+                "title": "Delete",
+                "icon": {
+                    "light": "src/resources/light/delete.svg",
+                    "dark": "src/resources/dark/delete.svg"
+                }
+            },
+            {
+                "command": "definitionsList.refreshEntry",
+                "title": "Refresh",
+                "icon": {
+                    "light": "src/resources/light/refresh.svg",
+                    "dark": "src/resources/dark/refresh.svg"
+                }
             }
         ],
         "languages": [
@@ -163,7 +199,28 @@
                 ],
                 "priority": "default"
             }
-        ]
+        ],
+        "menus": {
+            "view/title": [
+                {
+                    "command": "definitionsList.refreshEntry",
+                    "when": "view == definitions-in-context",
+                    "group": "navigation"
+                }
+            ],
+            "view/item/context": [
+                {
+                    "command": "definitionsList.editEntry",
+                    "when": "view == definitions-in-context",
+                    "group": "inline"
+                },
+                {
+                    "command": "definitionsList.deleteEntry",
+                    "when": "view == definitions-in-context",
+                    "group": "inline"
+                }
+            ]
+        }
     },
     "extensionKind": [
         "ui",
