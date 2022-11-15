@@ -9,6 +9,7 @@ export enum AacEditorEventTypes {
     EDIT = 2,
     SAVE = 3,
     DELETE = 4,
+    VALIDATE = 5,
 }
 
 /**

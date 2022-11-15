@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 import { disposeAll } from '../disposable';
 import { AacDefinitionsDocument, AacDefinitionEdit, AacEditorEventTypes } from '../editor/definitions/DefinitionsDocument';
 import { getNonce } from '../nonce';
-import { aacRestApi, DefinitionModel } from "../requests/aacRequests";
+import { aacRestApi, DefinitionModel, CommandRequestModel } from "../requests/aacRequests";
 import { IncomingMessage } from 'http';
 
 /**
@@ -144,6 +144,7 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
                 <div id="main"></div>
                 <button id='submit'>Save</button>
                 <button id='delete'>Delete</button>
+                <button id='validate'>Validate</button>
                 <script src="${scriptUri}" http-equiv="Content-Security-Policy" script-src-elem 'unsafe-inline' ${scriptUri} nonce='${nonce}';></script>
             </body>
             </html>`;
@@ -180,6 +181,9 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
                 vscode.commands.executeCommand('workbench.action.closeActiveEditor');
                 this.deleteDefinition(document);
                 return;
+            case AacEditorEventTypes.VALIDATE:
+                this.validateDefinition(document);
+                return;
         }
     }
 
@@ -205,6 +209,25 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
         const response = (await Promise.resolve(aacRestApi.removeDefinitionByNameDefinitionDelete(document.originalDefinitionName))).response;
         if (response.statusCode !== 204) {
             vscode.window.showErrorMessage(`Failed to delete definition: ${response.statusMessage}`);
+        };
+
+        return response;
+    }
+
+    private async validateDefinition(document: AacDefinitionsDocument): Promise<IncomingMessage> {
+        const validate_command_name = "validate"
+        const validate_definition_name_arg = "--definition-name"
+        const command_request = new CommandRequestModel()
+        command_request.name = validate_command_name
+        command_request.arguments = [document.originalDefinitionUri, validate_definition_name_arg, document.originalDefinitionName]
+
+        const response = (await Promise.resolve(aacRestApi.executeAacCommandCommandPost(command_request))).response;
+        const response_data = response.body
+
+        if (response_data.success) {
+            vscode.window.showInformationMessage(`${response_data.result_message}`);
+        } else {
+            vscode.window.showErrorMessage(`${response_data.result_message}`);
         };
 
         return response;

@@ -7,10 +7,12 @@ const AacEditorEventTypes = {
     EDIT: 2,
     SAVE: 3,
     DELETE: 4,
+    VALIDATE: 5,
 }
 
 const SUBMIT_BUTTON_ID = 'submit'
 const DELETE_BUTTON_ID = 'delete'
+const VALIDATE_BUTTON_ID = 'validate'
 const SOURCE_PARAGRAPH_ID = 'source'
 
 // This script is run within the webview itself
@@ -64,14 +66,19 @@ var runEditor = () => {
                 vscode.postMessage({ type: AacEditorEventTypes.EDIT, body: aacDefinitionEdit});
             });
 
-            // Hook up the submit button to log to the console
+            // Hook up the submit button to fire SAVE edit events
             document.getElementById(SUBMIT_BUTTON_ID).addEventListener('click', function () {
                 vscode.postMessage({ type: AacEditorEventTypes.SAVE });
             });
 
-            // Hook up the delete button to log to the console
+            // Hook up the delete button to fire DELETE edit events
             document.getElementById(DELETE_BUTTON_ID).addEventListener('click', function () {
                 vscode.postMessage({ type: AacEditorEventTypes.DELETE });
+            });
+
+            // Hook up the validate button to fire VALIDATE events
+            document.getElementById(VALIDATE_BUTTON_ID).addEventListener('click', function () {
+                vscode.postMessage({ type: AacEditorEventTypes.VALIDATE });
             });
 
             // Set the source uri field in the editor.
