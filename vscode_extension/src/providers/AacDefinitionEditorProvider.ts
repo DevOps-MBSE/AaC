@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 import { disposeAll } from '../disposable';
 import { AacDefinitionsDocument, AacDefinitionEdit, AacEditorEventTypes } from '../editor/definitions/DefinitionsDocument';
 import { getNonce } from '../nonce';
-import { aacRestApi, DefinitionModel, CommandRequestModel } from "../requests/aacRequests";
+import { aacRestApi, DefinitionModel, CommandRequestModel, CommandResponseModel } from "../requests/aacRequests";
 import { IncomingMessage } from 'http';
 
 /**
@@ -215,19 +215,18 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
     }
 
     private async validateDefinition(document: AacDefinitionsDocument): Promise<IncomingMessage> {
-        const validate_command_name = "validate"
-        const validate_definition_name_arg = "--definition-name"
-        const command_request = new CommandRequestModel()
-        command_request.name = validate_command_name
-        command_request.arguments = [document.originalDefinitionUri, validate_definition_name_arg, document.originalDefinitionName]
+        const validateCommandName = "validate"
+        const validateDefinitionNameArg = "--definition-name"
+        const commandRequest = new CommandRequestModel()
+        commandRequest.name = validateCommandName
+        commandRequest.arguments = [document.originalDefinitionUri, validateDefinitionNameArg, document.originalDefinitionName]
 
-        const response = (await Promise.resolve(aacRestApi.executeAacCommandCommandPost(command_request))).response;
-        const response_data = response.body
+        const {response, body} = (await Promise.resolve(aacRestApi.executeAacCommandCommandPost(commandRequest)));
 
-        if (response_data.success) {
-            vscode.window.showInformationMessage(`${response_data.result_message}`);
+        if (body.success) {
+            vscode.window.showInformationMessage(body.resultMessage);
         } else {
-            vscode.window.showErrorMessage(`${response_data.result_message}`);
+            vscode.window.showErrorMessage(body.resultMessage);
         };
 
         return response;
