@@ -11,7 +11,7 @@ class DefinitionModel(BaseModel):
     """REST API Model for the Definition class."""
     uid: Optional[UUID]
     name: str
-    is_user_editable: bool
+    is_user_editable: Optional[bool]
     content: Optional[str]
     source_uri: str
     structure: dict
