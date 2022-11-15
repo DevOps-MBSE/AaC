@@ -30,13 +30,6 @@ class TestPublishDiagnosticsProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         self.provider.language_server = self.client.server
         return self.provider.get_diagnostics(self.to_uri(file_name))
 
-    async def test_get_diagnostics_for_empty_document(self):
-        empty_document_name = "empty.aac"
-        await self.create_document(empty_document_name)
-
-        diagnostics = await self.publish_diagnostics(empty_document_name)
-        self.assertListEqual([], diagnostics)
-
     async def test_get_diagnostics_for_document_with_valid_definitions(self):
         diagnostics = await self.publish_diagnostics(TEST_DOCUMENT_NAME)
         self.assertListEqual([], diagnostics)
