@@ -23,7 +23,7 @@ class FindingSeverity(Enum):
     ERROR = auto()
 
 
-@attrs(slots=True, hash=False)
+@attrs(slots=True)
 class ValidatorFinding:
     """
     A finding made in a validator plugin.
@@ -40,8 +40,3 @@ class ValidatorFinding:
     severity: FindingSeverity = attrib(validator=validators.instance_of(FindingSeverity))
     message: str = attrib(validator=validators.instance_of(str))
     location: FindingLocation = attrib(validator=validators.instance_of(FindingLocation))
-
-    def __hash__(self) -> int:
-        """Return a hash for the finding."""
-        loc = self.location.location
-        return hash(f"{self.location.source.uri}{loc.line}{loc.column}{loc.position}{loc.span}{self.location.validation_name}")

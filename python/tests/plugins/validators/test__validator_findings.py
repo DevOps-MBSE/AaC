@@ -26,7 +26,7 @@ class TestValidatorFindings(TestCase):
     def test_get_findings(self):
         validator_findings = self.get_validator_findings()
 
-        self.assertSetEqual(set(DEFAULT_TEST_FINDINGS), set(validator_findings.get_all_findings()))
+        self.assertListEqual(DEFAULT_TEST_FINDINGS, validator_findings.get_all_findings())
 
     def test_get_findings_of_specific_severity(self):
         validator_findings = self.get_validator_findings()
