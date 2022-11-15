@@ -246,9 +246,9 @@ def execute_aac_command(command_request: CommandRequestModel):
     """Execute the command and return the result."""
     aac_commands_by_name = _get_rest_api_compatible_commands()
     aac_command = aac_commands_by_name.get(command_request.name)
-    aac_command_argument_names = [arg.name for arg in aac_command.arguments]
 
     if aac_command is not None:
+        aac_command_argument_names = [arg.name for arg in aac_command.arguments]
         arguments = [arg for arg in command_request.arguments if arg not in aac_command_argument_names]
 
         try:
