@@ -1,5 +1,4 @@
-from typing import Optional
-from pygls.lsp import Diagnostic, DiagnosticSeverity, Position, PublishDiagnosticsParams, Range, methods
+from pygls.lsp import Diagnostic, DiagnosticSeverity, Position, Range, methods
 from unittest.async_case import IsolatedAsyncioTestCase
 
 from aac.io.constants import DEFINITION_SEPARATOR
