@@ -1,6 +1,6 @@
 ---
 layout: default
-title: cProfile and Profile Setup and Justification
+title: Profiling AaC and Plugins
 parent: Developer's Guide to AaC
 nav_order: 2
 ---
