@@ -52,28 +52,26 @@ Through the sort function, and filtering the sort you can see the heavy offender
 
 The output from this run will have something similar to the below:
 
-```bash
-aac gen-design-doc ./model/alarm_clock/alarm_clock.yaml ../../../temp/
-         4040225 function calls (3966008 primitive calls) in 1.194 seconds
+aac gen-design-doc ./model/alarm_clock/alarm_clock.yaml temp
+         4052032 function calls (3977815 primitive calls) in 3.058 seconds
 
-   Ordered by: internal time
-   List reduced from 1186 to 10 due to restriction <10>
+   Ordered by: cumulative time
+   List reduced from 1182 to 10 due to restriction <10>
 
    ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-    19692    0.085    0.000    0.085    0.000 /Users/username/venvs/AaC/python/src/aac/lang/language_context.py:361(<listcomp>)
-   107541    0.080    0.000    0.083    0.000 /Users/username/venvs/AaC/python/venv/lib/python3.9/site-packages/yaml/reader.py:99(forward)
-     8986    0.062    0.000    0.062    0.000 {method 'flush' of '_io.TextIOWrapper' objects}
-     8489    0.054    0.000    0.219    0.000 /Users/username/venvs/AaC/python/venv/lib/python3.9/site-packages/yaml/scanner.py:1270(scan_plain)
-   452287    0.047    0.000    0.047    0.000 /Users/username/venvs/AaC/python/venv/lib/python3.9/site-packages/yaml/reader.py:87(peek)
-       53    0.038    0.001    0.038    0.001 <frozen importlib._bootstrap_external>:1053(open_resource)
-   114364    0.030    0.000    0.054    0.000 /Users/username/venvs/AaC/python/venv/lib/python3.9/site-packages/yaml/scanner.py:145(need_more_tokens)
-    13605    0.028    0.000    0.028    0.000 /Users/username/venvs/AaC/python/src/aac/lang/language_context.py:305(<listcomp>)
-    22005    0.027    0.000    0.074    0.000 /Users/username/venvs/AaC/python/venv/lib/python3.9/site-packages/yaml/scanner.py:1311(scan_plain_spaces)
-     8986    0.026    0.000    0.054    0.000 /opt/homebrew/Cellar/python@3.9/3.9.14/Frameworks/Python.framework/Versions/3.9/lib/python3.9/logging/__init__.py:282(__init__)
+     58/1    0.000    0.000    3.058    3.058 /usr/lib/python3.9/contextlib.py:114(__enter__)
+   2732/2    0.001    0.000    3.058    1.529 {built-in method builtins.next}
+        2    0.000    0.000    3.058    1.529 /workspace/AaC/python/src/aac/plugins/plugin_execution.py:59(plugin_result)
+        1    0.000    0.000    3.058    3.058 /workspace/AaC/python/src/aac/plugins/first_party/gen_design_doc/gen_design_doc_impl.py:35(write_design_doc_to_directory)
+        1    0.000    0.000    3.016    3.016 /workspace/AaC/python/src/aac/plugins/first_party/gen_design_doc/gen_design_doc_impl.py:58(_get_parsed_models)
+        2    0.000    0.000    3.016    1.508 /workspace/AaC/python/src/aac/validate/_validate.py:54(validated_source)
+        1    0.000    0.000    2.920    2.920 /workspace/AaC/python/src/aac/validate/_validate.py:68(_with_validation)
+        1    0.000    0.000    2.920    2.920 /workspace/AaC/python/src/aac/validate/_validate.py:80(_validate_definitions)
+       83    0.000    0.000    1.529    0.018 /workspace/AaC/python/src/aac/lang/active_context_lifecycle_manager.py:10(get_active_context)
+        1    0.001    0.001    1.529    1.529 /workspace/AaC/python/src/aac/lang/active_context_lifecycle_manager.py:29(get_initialized_language_context)
 
 
-Wrote system design document to ../../../temp/alarm_clock_system_design_document.md
-```
+Wrote system design document to temp/alarm_clock_system_design_document.md
 
 > *The above example is the top ten result from sorting based on the time taken from the code being run in `gen_design_doc_impl.py`
 > With the above example output you can see that the code that this was run against has some hints of recursion occurring. 
