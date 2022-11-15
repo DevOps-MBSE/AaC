@@ -211,4 +211,4 @@ The type of profiling that is being described for the AaC Python Package is betw
 is a set of statistics that help to determine which portions of code are being run often and for how long. This can help to identify areas of *recursion*. Using the output data from these profilers can be imported into `pstats`
 for use of reporting.
 
-Documentation on the Setup and Justifications between the `cProfile` and `Profile` can be located here -> [Profiling in AaC Setup](./profiles/profiling.md
+Documentation on the Setup and Justifications between the `cProfile` and `Profile` can be located here -> [Profiling in AaC Setup](./profiling.md

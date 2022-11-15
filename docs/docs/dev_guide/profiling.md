@@ -52,30 +52,35 @@ Through the sort function, and filtering the sort you can see the heavy offender
 
 The output from this run will have something similar to the below:
 
-aac gen-design-doc ./model/alarm_clock/alarm_clock.yaml temp
-         4052032 function calls (3977815 primitive calls) in 3.058 seconds
+```shell
+
+$ aac gen-design-doc ./model/alarm_clock/alarm_clock.yaml ../../../temp/
+         4040214 function calls (3965997 primitive calls) in 1.129 seconds
 
    Ordered by: cumulative time
-   List reduced from 1182 to 10 due to restriction <10>
+   List reduced from 1186 to 10 due to restriction <10>
 
    ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-     58/1    0.000    0.000    3.058    3.058 /usr/lib/python3.9/contextlib.py:114(__enter__)
-   2732/2    0.001    0.000    3.058    1.529 {built-in method builtins.next}
-        2    0.000    0.000    3.058    1.529 /workspace/AaC/python/src/aac/plugins/plugin_execution.py:59(plugin_result)
-        1    0.000    0.000    3.058    3.058 /workspace/AaC/python/src/aac/plugins/first_party/gen_design_doc/gen_design_doc_impl.py:35(write_design_doc_to_directory)
-        1    0.000    0.000    3.016    3.016 /workspace/AaC/python/src/aac/plugins/first_party/gen_design_doc/gen_design_doc_impl.py:58(_get_parsed_models)
-        2    0.000    0.000    3.016    1.508 /workspace/AaC/python/src/aac/validate/_validate.py:54(validated_source)
-        1    0.000    0.000    2.920    2.920 /workspace/AaC/python/src/aac/validate/_validate.py:68(_with_validation)
-        1    0.000    0.000    2.920    2.920 /workspace/AaC/python/src/aac/validate/_validate.py:80(_validate_definitions)
-       83    0.000    0.000    1.529    0.018 /workspace/AaC/python/src/aac/lang/active_context_lifecycle_manager.py:10(get_active_context)
-        1    0.001    0.001    1.529    1.529 /workspace/AaC/python/src/aac/lang/active_context_lifecycle_manager.py:29(get_initialized_language_context)
+     58/1    0.000    0.000    1.130    1.130 /opt/homebrew/Cellar/python@3.9/3.9.14/Frameworks/Python.framework/Versions/3.9/lib/python3.9/contextlib.py:114(__enter__)
+   2732/2    0.000    0.000    1.130    0.565 {built-in method builtins.next}
+        2    0.000    0.000    1.130    0.565 /Users/charles.blackard/venvs/AaC/python/src/aac/plugins/plugin_execution.py:59(plugin_result)
+        1    0.000    0.000    1.130    1.130 /Users/charles.blackard/venvs/AaC/python/src/aac/plugins/first_party/gen_design_doc/gen_design_doc_impl.py:35(write_design_doc_to_directory)
+        1    0.000    0.000    1.095    1.095 /Users/charles.blackard/venvs/AaC/python/src/aac/plugins/first_party/gen_design_doc/gen_design_doc_impl.py:59(_get_parsed_models)
+        2    0.000    0.000    1.095    0.547 /Users/charles.blackard/venvs/AaC/python/src/aac/validate/_validate.py:54(validated_source)
+        1    0.000    0.000    1.056    1.056 /Users/charles.blackard/venvs/AaC/python/src/aac/validate/_validate.py:68(_with_validation)
+        1    0.000    0.000    1.056    1.056 /Users/charles.blackard/venvs/AaC/python/src/aac/validate/_validate.py:80(_validate_definitions)
+       83    0.000    0.000    0.589    0.007 /Users/charles.blackard/venvs/AaC/python/src/aac/lang/active_context_lifecycle_manager.py:10(get_active_context)
+        1    0.000    0.000    0.589    0.589 /Users/charles.blackard/venvs/AaC/python/src/aac/lang/active_context_lifecycle_manager.py:29(get_initialized_language_context)
 
+Wrote system design document to ../../../temp/alarm_clock_system_design_document.md```
 
 Wrote system design document to temp/alarm_clock_system_design_document.md
+```
 
 > *The above example is the top ten result from sorting based on the time taken from the code being run in `gen_design_doc_impl.py`
-> With the above example output you can see that the code that this was run against has some hints of recursion occurring. 
+> With the above example output you can see that the code that this was run against has some hints of recursion occurring.
 > Without recursion occuring the two numbers at the top would be the same.*
+> Also to note: You can see the code that was run and the ten highest length of time the code was being run. With `ncalls` you can see ho many times the code was being hit and ran against.
 
 Also to note from the output above you can see where some of the code that is being run multiple times and is taking up more time than others. It is recommended to see the full output at least first to make sure that eveyrthing is getting hit and run. Then, as you go, whittle down to find the code that is offending more often.
 
@@ -111,3 +116,4 @@ profile.runctx(command, globals, locals, filename=None, sort=- 1)
 """ The Profile() class. This is really only needed for more precise controls over the profiling being done
 than what the cProfile.run() method can provide. """
 class profile.Profile(timer=None, timeunit=0.0, subcalls=True, builtins=True)
+```
