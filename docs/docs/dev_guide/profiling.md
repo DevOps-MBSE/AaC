@@ -72,7 +72,7 @@ $ aac gen-design-doc ./model/alarm_clock/alarm_clock.yaml ../../../temp/
        83    0.000    0.000    0.589    0.007 /Users/charles.blackard/venvs/AaC/python/src/aac/lang/active_context_lifecycle_manager.py:10(get_active_context)
         1    0.000    0.000    0.589    0.589 /Users/charles.blackard/venvs/AaC/python/src/aac/lang/active_context_lifecycle_manager.py:29(get_initialized_language_context)
 
-Wrote system design document to ../../../temp/alarm_clock_system_design_document.md```
+Wrote system design document to ../../../temp/alarm_clock_system_design_document.md
 
 Wrote system design document to temp/alarm_clock_system_design_document.md
 ```
