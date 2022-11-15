@@ -243,17 +243,23 @@ def get_aac_commands():
 
 @app.post("/command", status_code=HTTPStatus.OK, response_model=CommandResponseModel)
 def execute_aac_command(command_request: CommandRequestModel):
-    """Return a list of all available plugin commands."""
+    """Execute the command and return the result."""
     aac_commands_by_name = _get_rest_api_compatible_commands()
     aac_command = aac_commands_by_name.get(command_request.name)
+    aac_command_argument_names = [arg.name for arg in aac_command.arguments]
 
     if aac_command is not None:
-        arguments = command_request.arguments
+        arguments = [arg for arg in command_request.arguments if arg not in aac_command_argument_names]
 
-        result = aac_command.callback(*(arguments or []))
-        success = result.status_code == PluginExecutionStatusCode.SUCCESS
-        result_message = f"{result.name}: {result.status_code.name.lower()}\n\n{result.get_messages_as_string()}"
-        return CommandResponseModel(command_name=result.name, result_message=result_message, success=success)
+        try:
+            result = aac_command.callback(*(arguments or []))
+            success = result.status_code == PluginExecutionStatusCode.SUCCESS
+            result_message = f"{result.name}: {result.status_code.name.lower()}\n\n{result.get_messages_as_string()}"
+        except Exception as error:
+            success = False
+            result_message = f"{result.name}: failure\n\n{error}"
+        finally:
+            return CommandResponseModel(command_name=aac_command.name, result_message=result_message, success=success)
     else:
         _report_error_response(
             HTTPStatus.NOT_FOUND,
