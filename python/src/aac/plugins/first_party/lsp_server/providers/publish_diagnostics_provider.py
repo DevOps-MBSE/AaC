@@ -32,7 +32,6 @@ class PublishDiagnosticsProvider(LspProvider):
         """Return all the ValidatorFindings for the specified document."""
         document = self.language_server.workspace.get_document(document_uri)
         parsed_definitions = parse(document.source, to_fs_path(document_uri))
-        print(parsed_definitions)
         result = _validate_definitions(parsed_definitions, validate_context=True)
         return result.findings.get_all_findings()
 
