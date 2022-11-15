@@ -83,7 +83,7 @@ Also to note from the output above you can see where some of the code that is be
 
 `profile` is another deterministic profiler. There are a lot of similarities to the `cProfile` however, this profiler has a significant amount of overhead and this profiler is pure python based. Therefore, if you need to extend the profiler, you can accomplish that with this package.
 
-It is recommended to use `cProfile` since it can cover the majority of use-cases, `profile` is when there is more overhead needed and the extra extensibility can be utiliized. You can find the `cProfile` documentation here: [cProfile Setup and Justification](./cprofile.md)
+It is recommended to use `cProfile` for the majority of use-cases, and to use `profile` for extensibility and when there is less consideration for overhead or performance. You can find the `cProfile` documentation here: [cProfile Setup and Justification](./cprofile.md)
 
 >*_NOTE: This profiler is a more advanced version of `cProfile` and has more extensibility and overhead that can be utilized. Majority of cases can be achieved with the `cProfile` package. 
 
