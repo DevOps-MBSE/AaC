@@ -242,6 +242,5 @@ async def handle_publish_diagnostics(ls: AacLanguageServer, params: PublishDiagn
     """Handle the publish diagnostics request."""
     publish_diagnostics_provider = ls.providers.get(methods.TEXT_DOCUMENT_PUBLISH_DIAGNOSTICS)
     diagnostics_results = await publish_diagnostics_provider.handle_request(ls, params)
-    ls.publish_diagnostics(params.uri, diagnostics_results)
     logging.debug(f"Publish Diagnostics results: {diagnostics_results}")
     return diagnostics_results
