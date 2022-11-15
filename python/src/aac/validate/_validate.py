@@ -91,7 +91,7 @@ def _validate_definitions(definitions: list[Definition], validate_context: bool)
         combined_findings.add_findings([finding for finding_list in definition_findings for finding in finding_list])
 
     context_definitions_to_validate = active_context.definitions
-    definitions_to_validate = definitions + context_definitions_to_validate if validate_context else []
+    definitions_to_validate = definitions + (context_definitions_to_validate if validate_context else [])
     [validate_each_definition(definition) for definition in definitions_to_validate]
 
     # This step is necessary to return validated definitions that have had their inheritance applied.
