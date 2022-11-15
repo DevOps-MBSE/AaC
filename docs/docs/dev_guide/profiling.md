@@ -90,7 +90,7 @@ Also to note from the output above you can see where some of the code that is be
 
 It is recommended to use `cProfile` for the majority of use-cases, and to use `profile` for extensibility and when there is less consideration for overhead or performance. You can find the `cProfile` documentation here: [cProfile Setup and Justification](./cprofile.md)
 
->*_NOTE: This profiler is a more advanced version of `cProfile` and has more extensibility and overhead that can be utilized. Majority of cases can be achieved with the `cProfile` package. 
+>*_NOTE*_: This profiler is a more advanced version of `cProfile` and has more extensibility and overhead that can be utilized. Majority of cases can be achieved with the `cProfile` package.
 
 ### Getting Started with Profile
 
