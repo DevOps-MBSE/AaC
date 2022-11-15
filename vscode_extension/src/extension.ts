@@ -10,7 +10,7 @@ let aacLspClient: AacLanguageServerClient = AacLanguageServerClient.getLspClient
 
 const EXECUTE_AAC_COMMAND_NAME = "aac.execute";
 const CHANGE_AAC_PATH_SETTING_NAME = "aac.changeAacPath";
-const TREE_VIEW_PROVIDER = new AacDefinitionsViewProvider()
+const TREE_VIEW_PROVIDER = new AacDefinitionsViewProvider();
 
 export function activate(context: ExtensionContext) {
     registerCommands(context);
@@ -29,9 +29,9 @@ function registerCommands(context: ExtensionContext) {
     const commandsToRegister = [
         [EXECUTE_AAC_COMMAND_NAME, executeAacCommand],
         [CHANGE_AAC_PATH_SETTING_NAME, () => setFilePathConfigurationItem("aacPath", "Select the AaC executable")],
-        [TREE_VIEW_PROVIDER.COMMAND_DEFINITIONS_LIST_REFRESH, () => { TREE_VIEW_PROVIDER.refresh() }],
-        [TREE_VIEW_PROVIDER.COMMAND_DEFINITIONS_LIST_EDIT, (e: Definition) => { editDefinition(e) }],
-        [TREE_VIEW_PROVIDER.COMMAND_DEFINITIONS_LIST_DELETE, (e: Definition) => { deleteDefinition(e, TREE_VIEW_PROVIDER) }],
+        [TREE_VIEW_PROVIDER.COMMAND_DEFINITIONS_LIST_REFRESH, () => { TREE_VIEW_PROVIDER.refresh(); }],
+        [TREE_VIEW_PROVIDER.COMMAND_DEFINITIONS_LIST_EDIT, (e: Definition) => { editDefinition(e); }],
+        [TREE_VIEW_PROVIDER.COMMAND_DEFINITIONS_LIST_DELETE, (e: Definition) => { deleteDefinition(e, TREE_VIEW_PROVIDER); }],
     ];
 
     commandsToRegister.map(pair => {

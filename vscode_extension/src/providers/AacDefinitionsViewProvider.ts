@@ -3,9 +3,9 @@ import { aacRestApi, DefinitionModel } from "../requests/aacRequests";
 
 export class AacDefinitionsViewProvider implements vscode.TreeDataProvider<Definition> {
 
-    public COMMAND_DEFINITIONS_LIST_REFRESH = "definitionsList.refreshEntry"
-    public COMMAND_DEFINITIONS_LIST_EDIT = "definitionsList.editEntry"
-    public COMMAND_DEFINITIONS_LIST_DELETE = "definitionsList.deleteEntry"
+    public COMMAND_DEFINITIONS_LIST_REFRESH = "definitionsList.refreshEntry";
+    public COMMAND_DEFINITIONS_LIST_EDIT = "definitionsList.editEntry";
+    public COMMAND_DEFINITIONS_LIST_DELETE = "definitionsList.deleteEntry";
 	private _onDidChangeTreeData: vscode.EventEmitter<Definition | undefined | void> = new vscode.EventEmitter<Definition | undefined | void>();
 	readonly onDidChangeTreeData: vscode.Event<Definition | undefined | void> = this._onDidChangeTreeData.event;
 
@@ -76,7 +76,7 @@ export function editDefinition(event: Definition) {
 export function deleteDefinition(event: Definition, viewProvider: AacDefinitionsViewProvider) {
     if (Object.keys(event.definitionModel).length > 0) {
         deleteDefinitionByName(event.definitionModel.name).then(() => {
-            viewProvider.refresh()
+            viewProvider.refresh();
         });
     }
 }

@@ -215,11 +215,11 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
     }
 
     private async validateDefinition(document: AacDefinitionsDocument): Promise<IncomingMessage> {
-        const validateCommandName = "validate"
-        const validateDefinitionNameArg = "--definition-name"
-        const commandRequest = new CommandRequestModel()
-        commandRequest.name = validateCommandName
-        commandRequest.arguments = [document.originalDefinitionUri, validateDefinitionNameArg, document.originalDefinitionName]
+        const validateCommandName = "validate";
+        const validateDefinitionNameArg = "--definition-name";
+        const commandRequest = new CommandRequestModel();
+        commandRequest.name = validateCommandName;
+        commandRequest.arguments = [document.originalDefinitionUri, validateDefinitionNameArg, document.originalDefinitionName];
 
         const {response, body} = (await Promise.resolve(aacRestApi.executeAacCommandCommandPost(commandRequest)));
 
