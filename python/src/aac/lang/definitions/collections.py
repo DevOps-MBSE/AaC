@@ -47,7 +47,7 @@ def get_definitions_by_root_key(root_key: str, definitions: list[Definition]) ->
     def does_definition_root_match(definition: Definition) -> bool:
         return root_key == definition.get_root_key()
 
-    return list(filter(does_definition_root_match, definitions))
+    return [definition for definition in definitions if does_definition_root_match(definition)]
 
 
 def get_definition_by_name(definition_name: str, definitions: list[Definition]) -> Optional[Definition]:
@@ -64,7 +64,7 @@ def get_definition_by_name(definition_name: str, definitions: list[Definition]) 
     def does_definition_name_match(parsed_definition: Definition) -> bool:
         return remove_list_type_indicator(definition_name) == parsed_definition.name
 
-    matching_definitions = list(filter(does_definition_name_match, definitions))
+    matching_definitions = [definition for definition in definitions if does_definition_name_match(definition)]
     matching_definitions_count = len(matching_definitions)
 
     if matching_definitions_count < 1:
