@@ -9,7 +9,7 @@ import yaml
 
 from os import path, rename, makedirs
 
-from aac.lang.definition_helpers import convert_parsed_definitions_to_dict_definition, get_models_by_type
+from aac.lang.definitions.collections import convert_parsed_definitions_to_dict_definition, get_models_by_type
 from aac.lang.definitions.search import search
 from aac.lang.definitions.definition import Definition
 from aac.templates.engine import TemplateOutputFile, generate_templates, load_templates, write_generated_templates_to_file

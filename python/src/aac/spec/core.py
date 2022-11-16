@@ -1,6 +1,6 @@
 """Functions to allow interacting with the core AaC spec."""
 
-from aac.lang.definition_helpers import get_definition_by_name
+from aac.lang.definitions.collections import get_definition_by_name
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.search import search_definition
 from aac.package_resources import get_resource_file_contents, get_resource_file_path
