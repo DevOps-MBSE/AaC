@@ -66,9 +66,11 @@ def validated_source(source: str) -> Generator[ValidatorResult, None, None]:
     yield _with_validation(parse(source), get_active_context())
 
 
-def _with_validation(user_definitions: list[Definition], language_Context: LanguageContext, validate_context: bool = True) -> ValidatorResult:
+def _with_validation(
+    user_definitions: list[Definition], language_context: LanguageContext, validate_context: bool = True
+) -> ValidatorResult:
     try:
-        result = _validate_definitions(user_definitions, language_Context, validate_context)
+        result = _validate_definitions(user_definitions, language_context, validate_context)
 
         if result.is_valid():
             return result
@@ -78,7 +80,9 @@ def _with_validation(user_definitions: list[Definition], language_Context: Langu
         raise ValidationError("Failed to validate content due to an internal language error:\n", *error.args)
 
 
-def _validate_definitions(definitions: list[Definition], language_context: LanguageContext, validate_context: bool) -> ValidatorResult:
+def _validate_definitions(
+    definitions: list[Definition], language_context: LanguageContext, validate_context: bool
+) -> ValidatorResult:
     validation_context = copy.deepcopy(language_context)
     validation_context.add_definitions_to_context(definitions)
 
@@ -151,7 +155,9 @@ def _validate_primitive_types(definition: Definition, language_context: Language
     findings = ValidatorFindings()
     definition_schema = get_definition_schema(definition, language_context)
     if definition_schema:
-        findings.add_findings(_validate_fields(definition, definition_schema, definition.get_top_level_fields(), language_context))
+        findings.add_findings(
+            _validate_fields(definition, definition_schema, definition.get_top_level_fields(), language_context)
+        )
 
     return ValidatorResult([definition], findings)
 
@@ -184,8 +190,12 @@ def _validate_fields(
     return findings
 
 
-def _validate_primitive_field(source_def: Definition, field_type: str, field_value: Any, language_context: LanguageContext) -> Optional[ValidatorFinding]:
-    validator = [validator for validator in language_context.get_primitive_validations() if validator.primitive_type == field_type]
+def _validate_primitive_field(
+    source_def: Definition, field_type: str, field_value: Any, language_context: LanguageContext
+) -> Optional[ValidatorFinding]:
+    validator = [
+        validator for validator in language_context.get_primitive_validations() if validator.primitive_type == field_type
+    ]
 
     finding = None
     if validator:
@@ -196,7 +206,9 @@ def _validate_primitive_field(source_def: Definition, field_type: str, field_val
     return finding
 
 
-def _validate_schema_field(source_def: Definition, field_type: str, field_value: Any, language_context: LanguageContext) -> list[ValidatorFinding]:
+def _validate_schema_field(
+    source_def: Definition, field_type: str, field_value: Any, language_context: LanguageContext
+) -> list[ValidatorFinding]:
     new_field_schema = language_context.get_definition_by_name(field_type)
     findings = []
     if new_field_schema:
