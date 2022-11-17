@@ -45,8 +45,7 @@ class TestGenerateProtobufPlugin(ActiveContextTestCase):
 
     def test_gen_protobuf(self):
         with TemporaryDirectory() as temp_dir, temporary_test_file(TEST_ARCH_YAML_STRING) as temp_arch_file:
-            with plugin_result("", gen_protobuf, temp_arch_file.name, temp_dir) as result:
-                pass
+            result = gen_protobuf(temp_arch_file.name, temp_dir)
 
             # The assert needs to be outside of the plugin_result context manager or the assertion error is masked.
             assert_plugin_success(result)
