@@ -47,6 +47,7 @@ def generate_protobuf_messages(architecture_file: str, output_directory: str) ->
 
         # Get the validated model definitions
         validated_definitions = validation_result.definitions
+        get_active_context().add_definitions_to_context(validated_definitions)
         model_definitions = get_definitions_by_root_key("model", validated_definitions)
 
         model_interface_messages = _get_model_interface_data_structures(model_definitions)
