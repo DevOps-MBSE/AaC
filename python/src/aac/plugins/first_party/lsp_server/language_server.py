@@ -1,8 +1,8 @@
 """The Architecture-as-Code Language Server."""
-import asyncio
 import difflib
 import logging
 
+from asyncio import ensure_future
 from os import linesep
 from typing import Optional
 
@@ -130,11 +130,11 @@ async def did_open(ls: AacLanguageServer, params: DidOpenTextDocumentParams):
         managed_file = ManagedWorkspaceFile(file_uri)
         ls.workspace_files[file_uri] = managed_file
 
-    # await handle_publish_diagnostics(ls, PublishDiagnosticsParams(uri=params.text_document.uri, diagnostics=[]))
-
     managed_file.is_client_managed = True
     file_path = to_fs_path(file_uri)
     ls.language_context.add_definitions_to_context(parse(file_path))
+
+    ensure_future(handle_publish_diagnostics(ls, PublishDiagnosticsParams(uri=params.text_document.uri, diagnostics=[])))
 
 
 async def did_close(ls: AacLanguageServer, params: DidCloseTextDocumentParams):
@@ -151,7 +151,7 @@ async def did_change(ls: AacLanguageServer, params: DidChangeTextDocumentParams)
     document_path = to_fs_path(params.text_document.uri)
     logging.info(f"Text document altered by LSP client {document_path}.")
 
-    asyncio.ensure_future(handle_publish_diagnostics(ls, PublishDiagnosticsParams(uri=params.text_document.uri, diagnostics=[])))
+    ensure_future(handle_publish_diagnostics(ls, PublishDiagnosticsParams(uri=params.text_document.uri, diagnostics=[])))
 
     file_content = params.content_changes[0].text
     incoming_definitions_dict = {definition.name: definition for definition in parse(file_content, document_path)}
