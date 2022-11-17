@@ -14,7 +14,7 @@ from tests.helpers.prebuilt_definition_constants import (
     TEST_TYPES_VALID_INSTANCE,
     TEST_TYPES_INVALID_INSTANCE,
     TEST_TYPES_ROOT_KEY,
-    SCHEMA_FIELD_INT
+    SCHEMA_FIELD_INT,
 )
 
 
@@ -37,8 +37,9 @@ class TestPrimitiveValidation(ActiveContextTestCase):
     def test_type_check_valid(self):
         with (
             temporary_test_file(self.VALID_PRIMITIVES_FILE_CONTENT) as test_file,
-            validated_source(test_file.name) as result
+            validated_source(test_file.name) as result,
         ):
+            get_active_context().add_definitions_to_context(result.definitions)
             assert_validator_result_success(result)
 
     def test_type_check_invalid(self):
