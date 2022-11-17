@@ -5,13 +5,12 @@ import logging
 import os
 
 from aac.lang.active_context_lifecycle_manager import get_active_context
-from aac.plugins.plugin_execution import plugin_result
 from aac.plugins.first_party.gen_protobuf.gen_protobuf_impl import (
     gen_protobuf,
     _convert_message_name_to_file_name,
     _convert_camel_case_to_snake_case,
     _get_message_template_properties,
-    _convert_description_to_protobuf_comment
+    _convert_description_to_protobuf_comment,
 )
 
 from tests.active_context_test_case import ActiveContextTestCase
