@@ -190,6 +190,7 @@ def _generate_diagram_to_file(
         Result message string
     """
     with validated_source(architecture_file_path) as result:
+        get_active_context().add_definitions_to_context(result.definitions)
         full_output_path = os.path.join(output_directory, puml_type)
         output_directories = {f"{puml_type}_diagram.puml.jinja2": full_output_path}
         template_properties = property_generator(result.definitions)
