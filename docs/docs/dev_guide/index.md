@@ -208,7 +208,7 @@ Assuming all went well, VSCode will launch another instance of the IDE with the 
 ### Profiling in AaC
 
 The type of profiling that is being described for the AaC Python Package is between using the `cProfile` (C-backed) or `Profile` (Python-backed). These two profilers are considered to be *deterministic* profilers. A *profile*
-is a set of statistics that help to determine which portions of code are being run often and for how long. This can help to identify areas of *recursion*. Using the output data from these profilers can be imported into `pstats`
+is a set of statistics that help to determine which portions of code are being run often and for how long. This can help to identify the flow of execution. Using the output data from these profilers can be imported into `pstats`
 for reporting.
 
 Documentation on the Setup and Justifications between the `cProfile` and `Profile` can be located here -> [Profiling in AaC Setup](./profiling.md)
