@@ -20,8 +20,6 @@ The official Python Profiling Documentation can be found [here.](https://docs.py
 
 To get started using the `cProfile` profiler you will need to import the profile into a new or existing plugin.
 
-If you are using `cProfile` this can be done with an import:
-
 ```python
 import cProfile
 ```
