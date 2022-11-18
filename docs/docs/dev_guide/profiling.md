@@ -102,14 +102,12 @@ To enable the `profile` package is a little more complicated than the `cProfile`
 `profile` does not support using a Context Manager so the wrapping around the activity will be a little more work:
 
 ```python
-
-""" Run Command for profile to run an AaC command within the plugin code """
+# Profile an AaC command within the plugin code
 profile.run(command, filename=None, sort=- 1)
 
-""" This command is similar to run() except that it accepts globals and locals definitions that are supplied and passed through the command being executed. """
+# This command is similar to run() except that it accepts globals and locals definitions that are supplied and passed # through the command being executed.
 profile.runctx(command, globals, locals, filename=None, sort=- 1)
 
-""" The Profile() class. This is really only needed for more precise controls over the profiling being done
-than what the cProfile.run() method can provide. """
+# The Profile() class. This is only needed for more precise control over the profiling being done
 class profile.Profile(timer=None, timeunit=0.0, subcalls=True, builtins=True)
 ```
