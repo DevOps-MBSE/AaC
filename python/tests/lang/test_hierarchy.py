@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from aac.lang.active_context_lifecycle_manager import get_active_context
-from aac.lang.definition_helpers import get_definition_by_name
+from aac.lang.definitions.collections import get_definition_by_name
 from aac.lang.hierarchy import get_root_definition_by_key
 from aac.lang.hierarchy import get_definition_ancestry
 

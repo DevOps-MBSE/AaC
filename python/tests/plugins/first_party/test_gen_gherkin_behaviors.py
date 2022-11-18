@@ -4,7 +4,7 @@ from tempfile import NamedTemporaryFile, TemporaryDirectory
 from nose2.tools import params
 
 from aac.io import parser
-from aac.lang.definition_helpers import get_definition_by_name, get_definitions_as_yaml
+from aac.lang.definitions.collections import get_definition_by_name, get_definitions_as_yaml
 from aac.lang.definitions.search import search, search_definition
 from aac.plugins.first_party.gen_gherkin_behaviors import (
     _get_plugin_definitions,

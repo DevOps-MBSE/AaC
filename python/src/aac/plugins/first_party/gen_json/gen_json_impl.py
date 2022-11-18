@@ -5,7 +5,7 @@ import os
 from typing import Optional
 
 from aac.io.writer import write_file
-from aac.lang.definition_helpers import convert_parsed_definitions_to_dict_definition
+from aac.lang.definitions.collections import convert_parsed_definitions_to_dict_definition
 from aac.plugins.plugin_execution import PluginExecutionResult, PluginExecutionStatusCode, plugin_result
 from aac.validate import validated_source
 

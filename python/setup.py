@@ -69,6 +69,7 @@ test_dependencies = [
     "flake8-eradicate >= 1.2.0",
     "flake8-assertive >= 1.3.0",
     "eradicate<3.0,>=2.0",
+    "httpx >= 0.23.0",
 ]
 
 setup(

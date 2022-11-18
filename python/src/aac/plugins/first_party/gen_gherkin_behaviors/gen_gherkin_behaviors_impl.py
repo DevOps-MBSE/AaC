@@ -1,6 +1,6 @@
 """AaC Plugin implementation module for the aac-gen-gherkin-behaviors plugin."""
 
-from aac.lang.definition_helpers import get_models_by_type, convert_parsed_definitions_to_dict_definition
+from aac.lang.definitions.collections import get_models_by_type, convert_parsed_definitions_to_dict_definition
 from aac.plugins import PluginError
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 from aac.templates.engine import TemplateOutputFile, generate_template, load_templates, write_generated_templates_to_file
