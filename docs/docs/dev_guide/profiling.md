@@ -78,7 +78,7 @@ Wrote system design document to temp/alarm_clock_system_design_document.md
 > Without recursion the two numbers at the top would be the same.
 > Also to note: You can see the code that was run and the ten longest running calls. With `ncalls` you can see how many times the code was executed.
 
-Also to note from the output above you can see where some of the code that is being run multiple times and is taking up more time than others. It is recommended to see the full output at least first to make sure that eveyrthing is getting hit and run. Then, as you go, whittle down to find the code that is offending more often.
+Also to note from the output above you can see where some of the code that is being run multiple times and is taking up more time than others. It is recommended to see the full output at least first to make sure that eveyrthing is getting executed. Then, as you go, whittle down to find the code that is offending more often.
 
 ## Profile Description
 
