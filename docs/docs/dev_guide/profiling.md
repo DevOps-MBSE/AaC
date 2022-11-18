@@ -41,8 +41,7 @@ ps.print_stats(10) # Print the top 10 calls
 return return_value
 ```
 
-When you don't sort your results you can get a lot of noise from some functions and methods that are being called and can really
-disorient and add to the confusion of what is going on with the plugin. The above code was run for the `gen_design_doc_impl.py` file
+When you don't sort your results you can get a lot of noise from some functions and methods that are being called which can add to the confusion of what the plugin is doing. The above code was run for the `gen_design_doc_impl.py` file
 and within the results as seen with `ps.print_stats(10)` we are filtering the top ten sorted lines.
 
 Through the sort function, and filtering the sort you can see the heavy offenders of the plugin that is being profiled.
