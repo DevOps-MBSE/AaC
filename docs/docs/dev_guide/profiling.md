@@ -27,7 +27,7 @@ import cProfile
 To enable this profiler you can run the following commands against this class:
 
 ```python
-""" This is with using the `cProfile` profiler within a ContextManager Object. """
+# This is with using the `cProfile` profiler within a ContextManager Object.
 
 import cProfile
 import pstats
