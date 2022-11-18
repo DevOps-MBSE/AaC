@@ -24,7 +24,7 @@ To get started using the `cProfile` profiler you will need to import the profile
 import cProfile
 ```
 
-To enable this profiler you can run the following commands against this class:
+To enable this profiler you can add the following code to your plugin to profile against any performance or other issues that may be suspected:
 
 ```python
 # This is with using the `cProfile` profiler within a ContextManager Object.
