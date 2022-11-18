@@ -74,7 +74,7 @@ Wrote system design document to temp/alarm_clock_system_design_document.md
 ```
 
 > The above example shows the top ten results from sorting based on the time taken when running `gen_design_doc_impl.py`
-> With the above example output you can see that the code that this was run against has some hints of recursion occurring.
+> With the above example output you can see that the code that was profiled uses recursion.
 > Without recursion occuring the two numbers at the top would be the same.*
 > Also to note: You can see the code that was run and the ten highest length of time the code was being run. With `ncalls` you can see how many times the code was being hit and ran against.
 
