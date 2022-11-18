@@ -57,16 +57,16 @@ $ aac gen-design-doc ./model/alarm_clock/alarm_clock.yaml ../../../temp/
    List reduced from 1186 to 10 due to restriction <10>
 
    ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-     58/1    0.000    0.000    1.130    1.130 /opt/homebrew/Cellar/python@3.9/3.9.14/Frameworks/Python.framework/Versions/3.9/lib/python3.9/contextlib.py:114(__enter__)
+     58/1    0.000    0.000    1.130    1.130 /python@3.9/3.9.14/Frameworks/Python.framework/Versions/3.9/lib/python3.9/contextlib.py:114(__enter__)
    2732/2    0.000    0.000    1.130    0.565 {built-in method builtins.next}
-        2    0.000    0.000    1.130    0.565 /Users/charles.blackard/venvs/AaC/python/src/aac/plugins/plugin_execution.py:59(plugin_result)
-        1    0.000    0.000    1.130    1.130 /Users/charles.blackard/venvs/AaC/python/src/aac/plugins/first_party/gen_design_doc/gen_design_doc_impl.py:35(write_design_doc_to_directory)
-        1    0.000    0.000    1.095    1.095 /Users/charles.blackard/venvs/AaC/python/src/aac/plugins/first_party/gen_design_doc/gen_design_doc_impl.py:59(_get_parsed_models)
-        2    0.000    0.000    1.095    0.547 /Users/charles.blackard/venvs/AaC/python/src/aac/validate/_validate.py:54(validated_source)
-        1    0.000    0.000    1.056    1.056 /Users/charles.blackard/venvs/AaC/python/src/aac/validate/_validate.py:68(_with_validation)
-        1    0.000    0.000    1.056    1.056 /Users/charles.blackard/venvs/AaC/python/src/aac/validate/_validate.py:80(_validate_definitions)
-       83    0.000    0.000    0.589    0.007 /Users/charles.blackard/venvs/AaC/python/src/aac/lang/active_context_lifecycle_manager.py:10(get_active_context)
-        1    0.000    0.000    0.589    0.589 /Users/charles.blackard/venvs/AaC/python/src/aac/lang/active_context_lifecycle_manager.py:29(get_initialized_language_context)
+        2    0.000    0.000    1.130    0.565 /home/dir/AaC/python/src/aac/plugins/plugin_execution.py:59(plugin_result)
+        1    0.000    0.000    1.130    1.130 /home/dir/AaC/python/src/aac/plugins/first_party/gen_design_doc/gen_design_doc_impl.py:35(write_design_doc_to_directory)
+        1    0.000    0.000    1.095    1.095 /home/dir/AaC/python/src/aac/plugins/first_party/gen_design_doc/gen_design_doc_impl.py:59(_get_parsed_models)
+        2    0.000    0.000    1.095    0.547 /home/dir/AaC/python/src/aac/validate/_validate.py:54(validated_source)
+        1    0.000    0.000    1.056    1.056 /home/dir/AaC/python/src/aac/validate/_validate.py:68(_with_validation)
+        1    0.000    0.000    1.056    1.056 /home/dir/AaC/python/src/aac/validate/_validate.py:80(_validate_definitions)
+       83    0.000    0.000    0.589    0.007 /home/dir/AaC/python/src/aac/lang/active_context_lifecycle_manager.py:10(get_active_context)
+        1    0.000    0.000    0.589    0.589 /home/dir/AaC/python/src/aac/lang/active_context_lifecycle_manager.py:29(get_initialized_language_context)
 
 Wrote system design document to ../../../temp/alarm_clock_system_design_document.md
 
