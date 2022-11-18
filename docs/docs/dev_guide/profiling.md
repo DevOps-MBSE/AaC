@@ -92,8 +92,6 @@ It is recommended to use `cProfile` for the majority of use-cases, and to use `p
 
 To get started using the `profile` package you will need to import this into the plugin that is being developed, new or existing.
 
-To do so just use the import statement to bring it in:
-
 ```python
 import profile
 ```
