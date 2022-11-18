@@ -169,10 +169,10 @@ tox
 Alternatively, for use with a linter such as `flake8` you could run the following shell command from the root of your working directory:
 
 ```bash
-// from the current working directory:
+# from the current working directory:
 flake8 .
 
-// or give a path to the file you want to lint
+# or give a path to the file you want to lint
 flake8 ./path/to/file.py
 ```
 
