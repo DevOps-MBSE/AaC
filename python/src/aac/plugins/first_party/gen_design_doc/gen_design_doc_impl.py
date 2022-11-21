@@ -5,7 +5,7 @@ import os
 from jinja2 import Template
 
 
-from aac.lang.definition_helpers import get_definitions_by_root_key
+from aac.lang.definitions.collections import get_definitions_by_root_key
 from aac.lang.definitions.definition import Definition
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 from aac.plugins.validators.required_fields import get_required_fields

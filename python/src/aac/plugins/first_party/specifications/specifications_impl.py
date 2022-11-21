@@ -1,6 +1,6 @@
 """AaC Plugin implementation module for the aac-spec plugin."""
 
-from aac.lang.definition_helpers import convert_parsed_definitions_to_dict_definition, get_models_by_type
+from aac.lang.definitions.collections import convert_parsed_definitions_to_dict_definition, get_models_by_type
 from aac.lang.definitions.search import search
 from aac.plugins import PluginError
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result

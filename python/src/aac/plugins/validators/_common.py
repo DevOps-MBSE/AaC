@@ -3,7 +3,7 @@
 from typing import Callable
 from aac.io.parser import parse
 
-from aac.lang.definition_helpers import get_definitions_by_root_key
+from aac.lang.definitions.collections import get_definitions_by_root_key
 from aac.lang.definitions.definition import Definition
 from aac.plugins import PluginError
 from aac.plugins.contributions.contribution_types import DefinitionValidationContribution

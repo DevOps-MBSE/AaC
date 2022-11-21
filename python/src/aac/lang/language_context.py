@@ -14,7 +14,7 @@ from aac.lang.constants import (
     ROOT_KEY_EXTENSION,
     ROOT_KEY_SCHEMA,
 )
-from aac.lang.definition_helpers import get_definitions_by_root_key
+from aac.lang.definitions.collections import get_definitions_by_root_key
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.extensions import apply_extension_to_definition, remove_extension_from_definition
 from aac.lang.definitions.type import remove_list_type_indicator

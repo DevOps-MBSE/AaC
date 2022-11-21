@@ -1,5 +1,5 @@
 from aac.lang.active_context_lifecycle_manager import get_active_context
-from aac.lang.definition_helpers import get_definition_by_name, get_definitions_by_root_key
+from aac.lang.definitions.collections import get_definition_by_name, get_definitions_by_root_key
 from aac.lang.definitions.source_location import SourceLocation
 from aac.plugins.contributions.contribution_types import DefinitionValidationContribution
 from aac.plugins.validators import ValidatorFindings, ValidatorResult

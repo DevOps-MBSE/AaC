@@ -6,7 +6,7 @@ import re
 
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.type import is_array_type, remove_list_type_indicator
-from aac.lang.definition_helpers import get_definitions_by_root_key
+from aac.lang.definitions.collections import get_definitions_by_root_key
 from aac.lang.definitions.search import search_definition
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.language_context import LanguageContext
