@@ -1,12 +1,16 @@
 """The Language Context manages the highly-contextual AaC DSL."""
+
 import copy
 import logging
-from attr import Factory, attrib, attrs, validators
+
 from collections import OrderedDict
 from typing import Optional
 from uuid import UUID
 
+from attr import Factory, attrib, attrs, validators
+
 from aac.io.files.aac_file import AaCFile
+from aac.io.parser import parse
 from aac.lang.constants import (
     DEFINITION_FIELD_NAME,
     DEFINITION_NAME_PRIMITIVES,
@@ -20,8 +24,8 @@ from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.extensions import apply_extension_to_definition, remove_extension_from_definition
 from aac.lang.definitions.type import remove_list_type_indicator
 from aac.lang.language_error import LanguageError
-from aac.plugins.plugin import Plugin
 from aac.plugins.contributions.contribution_types import DefinitionValidationContribution, PrimitiveValidationContribution
+from aac.plugins.plugin import Plugin
 
 
 @attrs(slots=True, auto_attribs=True)
@@ -134,6 +138,25 @@ class LanguageContext:
 
         for extension_definition in extension_definitions:
             self.add_definition_to_context(extension_definition)
+
+    def add_definitions_from_uri(self, uri: str, names_to_uids: Optional[dict[str, str]] = None):
+        """
+        Load the definitions from the provided file URI.
+
+        Args:
+            uri (str): The file URI from which to load definitions.
+            names_to_uids (Optional[dict[str, str]]): If provided, a dictionary from definition
+                names to UIDs, which ensures definitions have their original UIDs.
+        """
+        names_to_uids = names_to_uids or {}
+
+        self.add_definitions_to_context(parse(uri))
+
+        definitions_dictionary = {}
+        for definition in self.definitions_dictionary:
+            uid = names_to_uids.get(definition.name, definition.uid)
+            definitions_dictionary[uid] = definition
+        self.definitions_dictionary = definitions_dictionary
 
     def remove_definition_from_context(self, definition: Definition):
         """

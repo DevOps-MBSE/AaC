@@ -3,7 +3,9 @@
 import sys
 from click import Argument, Command, Option, ParamType, Parameter, Path, UNPROCESSED, echo, group, types
 
+from aac import __state_file_name__
 from aac.cli.aac_command import AacCommand, AacCommandArgument
+from aac.lang.active_context_lifecycle_manager import write_language_context
 from aac.plugins.plugin_execution import PluginExecutionResult
 from aac.plugins.plugin_manager import get_plugin_commands
 
@@ -19,6 +21,9 @@ def output_result(result: PluginExecutionResult):
     """Output the message from the result of executing the CLI command."""
     error_occurred = not result.is_success
     echo(result.get_messages_as_string(), err=error_occurred, color=True)
+
+    write_language_context(__state_file_name__)
+
     if error_occurred:
         sys.exit(result.status_code.value)
 
