@@ -2,6 +2,7 @@
 
 import json
 
+from os.path import lexists
 from typing import Optional
 
 from aac import __state_file_name__
@@ -29,9 +30,29 @@ def get_active_context(reload_context: bool = False) -> LanguageContext:
     global ACTIVE_CONTEXT
 
     if not ACTIVE_CONTEXT or reload_context:
-        ACTIVE_CONTEXT = load_language_context(__state_file_name__) or get_initialized_language_context()
+        ACTIVE_CONTEXT = load_language_context(__state_file_name__, reload_context)
 
     return ACTIVE_CONTEXT
+
+
+def load_language_context(file_name: str, reload_context: bool = False) -> LanguageContext:
+    """
+    Load the language context from filename.
+
+    Args:
+        file_name (str): The name of the file from which to load the language context.
+        reload_context (bool): If True, a fresh active context will be returned; otherwise, the
+            active context will be loaded from the provided file URI if it exists.
+
+    Returns:
+        A language context object loaded from the file, if it exists; otherwise, None.
+    """
+    if lexists(file_name) and not reload_context:
+        language_context = LanguageContext()
+        language_context.add_definitions_from_uri(file_name)
+        return language_context
+    else:
+        return get_initialized_language_context()
 
 
 def get_initialized_language_context(core_spec_only: bool = False) -> LanguageContext:
@@ -60,22 +81,5 @@ def write_language_context(file_name: str, language_context: Optional[LanguageCo
         language_context (Optional[LanguageContext]): The language context to be written. If not
             provided, the active context will be used.
     """
-    content = json.dumps(language_context or get_active_context(), cls=LanguageContextEncoder)
+    content = json.dumps(language_context or get_active_context(), cls=LanguageContextEncoder, indent=2)
     write_file(file_name, content, True)
-
-
-def load_language_context(file_name: str) -> Optional[LanguageContext]:
-    """
-    Load the language context from filename.
-
-    Args:
-        file_name (str): The name of the file from which to load the language context.
-
-    Returns:
-        A language context object loaded from the file, if it exists; otherwise, None.
-    """
-    try:
-        with open(file_name) as state_file:
-            return json.loads(state_file.read())
-    except FileNotFoundError:
-        pass

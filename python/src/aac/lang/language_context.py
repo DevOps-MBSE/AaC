@@ -139,24 +139,21 @@ class LanguageContext:
         for extension_definition in extension_definitions:
             self.add_definition_to_context(extension_definition)
 
-    def add_definitions_from_uri(self, uri: str, names_to_uids: Optional[dict[str, str]] = None):
+    def add_definitions_from_uri(self, uri: str, names: Optional[list[str]] = None):
         """
         Load the definitions from the provided file URI.
 
         Args:
             uri (str): The file URI from which to load definitions.
-            names_to_uids (Optional[dict[str, str]]): If provided, a dictionary from definition
-                names to UIDs, which ensures definitions have their original UIDs.
+            names (Optional[list[str]]): If provided, a list of the names of the definitions that
+                should be loaded into the context.
         """
-        names_to_uids = names_to_uids or {}
 
-        self.add_definitions_to_context(parse(uri))
+        def should_add_definition(definition: Definition) -> bool:
+            return names in [None, []] or definition.name in names
 
-        definitions_dictionary = {}
-        for definition in self.definitions_dictionary:
-            uid = names_to_uids.get(definition.name, definition.uid)
-            definitions_dictionary[uid] = definition
-        self.definitions_dictionary = definitions_dictionary
+        definitions = [definition for definition in parse(uri) if should_add_definition(definition)]
+        self.add_definitions_to_context(definitions)
 
     def remove_definition_from_context(self, definition: Definition):
         """

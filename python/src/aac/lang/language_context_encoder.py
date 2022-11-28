@@ -15,7 +15,7 @@ class LanguageContextEncoder(JSONEncoder):
             return {
                 "aac_version": __version__,
                 "files": [file.uri for file in object.get_files_in_context()],
-                "definitions": [[definition.name, str(definition.uid)] for definition in object.definitions],
+                "definitions": [definition.name for definition in object.definitions],
                 "plugins": [plugin.name for plugin in object.plugins],
             }
 
