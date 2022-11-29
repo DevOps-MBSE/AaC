@@ -3,6 +3,7 @@
 import json
 
 from aac import __version__
+from aac.io.paths import sanitize_filesystem_path
 from aac.lang.language_context import LanguageContext
 from aac.persistence.state_file_error import StateFileError
 
@@ -26,7 +27,8 @@ def get_language_context_from_state_file(file_name: str) -> LanguageContext:
         )
 
     for file in files:
-        language_context.add_definitions_from_uri(file, definitions)
+        uri = sanitize_filesystem_path(file)
+        language_context.add_definitions_from_uri(uri, definitions)
 
     language_context.add_named_plugins(plugins)
 
