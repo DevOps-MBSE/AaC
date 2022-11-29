@@ -22,3 +22,5 @@ logging.basicConfig(
     level=logging.DEBUG,
     datefmt="%m/%d/%Y %H:%M:%S",
 )
+
+__all__ = ("__version__",)
