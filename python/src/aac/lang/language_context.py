@@ -24,6 +24,7 @@ from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.extensions import apply_extension_to_definition, remove_extension_from_definition
 from aac.lang.definitions.type import remove_list_type_indicator
 from aac.lang.language_error import LanguageError
+from aac.plugins import plugin_manager
 from aac.plugins.contributions.contribution_types import DefinitionValidationContribution, PrimitiveValidationContribution
 from aac.plugins.plugin import Plugin
 
@@ -139,20 +140,16 @@ class LanguageContext:
         for extension_definition in extension_definitions:
             self.add_definition_to_context(extension_definition)
 
-    def add_definitions_from_uri(self, uri: str, names: Optional[list[str]] = None):
+    def add_definitions_from_uri(self, uri: str, names: list[str]):
         """
         Load the definitions from the provided file URI.
 
         Args:
             uri (str): The file URI from which to load definitions.
-            names (Optional[list[str]]): If provided, a list of the names of the definitions that
-                should be loaded into the context.
+            names (list[str]): The list of the names of the definitions that should be loaded into
+                the context.
         """
-
-        def should_add_definition(definition: Definition) -> bool:
-            return names in [None, []] or definition.name in names
-
-        definitions = [definition for definition in parse(uri) if should_add_definition(definition)]
+        definitions = [definition for definition in parse(uri) if definition.name in names]
         self.add_definitions_to_context(definitions)
 
     def remove_definition_from_context(self, definition: Definition):
@@ -407,7 +404,8 @@ class LanguageContext:
         return [definition for definition in self.definitions if root_key == definition.get_root_key()]
 
     def get_definitions_by_file_uri(self, file_uri: str) -> list[Definition]:
-        """Return a subset of definitions that are sourced from the target file URI.
+        """
+        Return a subset of definitions that are sourced from the target file URI.
 
         Args:
             file_uri (str): The source file URI to filter on.
@@ -438,6 +436,17 @@ class LanguageContext:
     def add_plugins(self, plugins: list[Plugin]):
         """Add the specified plugins to the current language context."""
         self.plugins.extend(plugins)
+
+    def add_named_plugins(self, names: list[str]):
+        """
+        Add the plugin from the provided file URI.
+
+        Args:
+            names (list[str]): The names of the plugins which should be loaded. If not provided, all
+                plugins will be loaded.
+        """
+        plugins = [plugin for plugin in plugin_manager.get_plugins() if plugin.name in names]
+        self.add_plugins(plugins)
 
     def get_plugins(self) -> list[Plugin]:
         """
