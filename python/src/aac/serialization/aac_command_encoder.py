@@ -1,6 +1,6 @@
 """Helpers for serializing an AaC command to JSON."""
 
-from json import JSONEncoder
+from json import JSONEncoder, dumps
 
 from aac.cli.aac_command import AacCommand, AacCommandArgument
 
@@ -12,6 +12,7 @@ class AacCommandArgumentEncoder(JSONEncoder):
         """Return a JSON-serializable version of an AaC command argument."""
         if isinstance(object, AacCommandArgument):
             return object.__dict__
+
         return JSONEncoder.default(self, object)
 
 
@@ -20,11 +21,11 @@ class AacCommandEncoder(JSONEncoder):
 
     def default(self, object: AacCommand):
         """Return a JSON-serializable version of an AaC command."""
-        if isinstance(object, (AacCommand)):
-            arg_encoder = AacCommandArgumentEncoder()
+        if isinstance(object, AacCommand):
             return {
                 "name": object.name,
                 "description": object.description,
-                "arguments": [arg_encoder.default(arg) for arg in object.arguments],
+                "arguments": dumps(object.arguments, cls=AacCommandArgumentEncoder),
             }
+
         return JSONEncoder.default(self, object)

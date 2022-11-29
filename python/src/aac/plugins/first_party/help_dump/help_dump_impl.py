@@ -4,7 +4,7 @@ import json
 
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 from aac.plugins.plugin_manager import get_plugin_commands
-from aac.cli.aac_command_encoder import AacCommandEncoder
+from aac.serialization import AacCommandEncoder
 
 plugin_name = "help-dump"
 

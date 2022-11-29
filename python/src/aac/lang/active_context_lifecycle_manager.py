@@ -7,9 +7,9 @@ from typing import Optional
 
 from aac.io.writer import write_file
 from aac.lang.language_context import LanguageContext
-from aac.lang.language_context_encoder import LanguageContextEncoder
 from aac.persistence import __state_file_name__, get_language_context_from_state_file
 from aac.plugins.plugin_manager import get_plugin_definitions, get_plugins
+from aac.serialization.language_context_encoder import LanguageContextEncoder
 from aac.spec import get_aac_spec
 
 
