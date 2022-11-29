@@ -1,5 +1,4 @@
 """Plugin metadata class."""
-
 from attr import Factory, attrib, attrs, validators
 
 from aac.cli.aac_command import AacCommand
@@ -8,7 +7,7 @@ from aac.plugins.contributions.contribution_points import ContributionPoints
 from aac.plugins.contributions.contribution_types import DefinitionValidationContribution, PrimitiveValidationContribution
 
 
-@attrs(hash=False)
+@attrs(hash=False, eq=False)
 class Plugin:
     """
     A class that contains information relevant to AaC Plugins.
@@ -26,6 +25,13 @@ class Plugin:
     def __hash__(self) -> int:
         """Return the hash for this Plugin object."""
         return hash(self.name)
+
+    def __eq__(self, other):
+        """Equality operator override."""
+        if isinstance(other, Plugin):
+            return (self.name == other.name)
+        else:
+            return False
 
     def register_commands(self, commands: list[AacCommand]):
         """Register the specified commands."""
