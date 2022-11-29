@@ -45,10 +45,11 @@ def decode_state_file(file_name: str) -> tuple[str, list, list, list]:
         names of the definitions in the language context, and the names of the plugins in the
         language context.
     """
-    object = json.loads(file_name)
-    return (
-        object.get("version"),
-        object.get("files"),
-        object.get("definitions"),
-        object.get("plugins"),
-    )
+    with open(file_name) as state_file:
+        object = json.loads(state_file.read()) or {}
+        return (
+            object.get("aac_version"),
+            object.get("files"),
+            object.get("definitions"),
+            object.get("plugins"),
+        )
