@@ -28,10 +28,7 @@ class Plugin:
 
     def __eq__(self, other):
         """Equality operator override."""
-        if isinstance(other, Plugin):
-            return (self.name == other.name)
-        else:
-            return False
+        return isinstance(other, Plugin) and self.name == other.name
 
     def register_commands(self, commands: list[AacCommand]):
         """Register the specified commands."""
