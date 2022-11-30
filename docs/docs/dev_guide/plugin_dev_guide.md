@@ -97,7 +97,7 @@ The folder structure will look something like this:
 ├── setup.py
 ├── test_plugin
     ├── templates
-    	└── jinja_templates
+      └── jinja_templates
 │   ├── __init__.py
 │   ├── plugin.yaml
 │   └── test_plugin_impl.py
