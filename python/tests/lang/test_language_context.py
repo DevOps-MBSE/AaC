@@ -286,13 +286,18 @@ class TestLanguageContextPluginInterface(ActiveContextTestCase):
         self.assertGreater(len(inactive_plugins), 2)
         self.assertEqual(len(test_context.get_active_plugins()), 0)
 
-        plugin_to_activate = inactive_plugins.pop()
-        test_context.activate_plugin(plugin_to_activate)
+        first_plugin_to_activate = inactive_plugins.pop()
+        test_context.activate_plugin(first_plugin_to_activate)
         self.assertEqual(len(test_context.get_active_plugins()), 1)
-        self.assertEqual(test_context.get_active_plugins()[0].name, plugin_to_activate.name)
+        self.assertEqual(test_context.get_active_plugins()[0].name, first_plugin_to_activate.name)
+
+        second_plugin_to_activate = inactive_plugins.pop()
+        test_context.activate_plugin_by_name(second_plugin_to_activate.name)
+        self.assertEqual(len(test_context.get_active_plugins()), 2)
+        self.assertEqual(test_context.get_active_plugins()[1].name, second_plugin_to_activate.name)
 
         test_context.activate_plugins(inactive_plugins)
-        self.assertEqual(len(test_context.get_active_plugins()), len(inactive_plugins) + 1)  # Magic +1 for the popped plugin
+        self.assertEqual(len(test_context.get_active_plugins()), len(inactive_plugins) + 2)  # Magic +2 for the popped plugins
         self.assertGreater(len(test_context.definitions), initial_definitions_len)
 
     def test_language_context_deactivate_plugins(self):
@@ -308,10 +313,15 @@ class TestLanguageContextPluginInterface(ActiveContextTestCase):
         test_context.activate_plugins(inactive_plugins)
         initial_definitions_len = len(test_context.definitions)
 
-        plugin_to_deactivate = inactive_plugins.pop()
-        test_context.deactivate_plugin(plugin_to_deactivate)
+        first_plugin_to_deactivate = inactive_plugins.pop()
+        test_context.deactivate_plugin(first_plugin_to_deactivate)
         self.assertEqual(len(test_context.get_active_plugins()), len(inactive_plugins))
-        self.assertNotIn(plugin_to_deactivate.name, [plugin.name for plugin in test_context.get_active_plugins()])
+        self.assertNotIn(first_plugin_to_deactivate.name, [plugin.name for plugin in test_context.get_active_plugins()])
+
+        second_plugin_to_deactivate = inactive_plugins.pop()
+        test_context.deactivate_plugin(second_plugin_to_deactivate)
+        self.assertEqual(len(test_context.get_active_plugins()), len(inactive_plugins))
+        self.assertNotIn(second_plugin_to_deactivate.name, [plugin.name for plugin in test_context.get_active_plugins()])
 
         test_context.deactivate_plugins(inactive_plugins)
         self.assertEqual(len(test_context.get_active_plugins()), 0)
