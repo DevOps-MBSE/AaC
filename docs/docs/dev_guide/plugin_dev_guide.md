@@ -7,20 +7,6 @@ nav_order: 5
 
 # Plugin Developer Guide Documentation
 
-## Contributing to the AaC Project
-
-### How to Contribute to the Project
-
-To contribute to the project, the following will need to be provided to the Project Owner for AaC:
->***Note***: The AaC Project is currently being limited to outside contributions, If interested in contributing to this project please contact the Project Owner for AaC, 
-> to be added at a later time.
-
-- Name
-- Descriptions of what will be contributed
-- Purpose and context of the contribution and its impact on the project if implemented. 
-
-This list may expand to include other additional information needed as the project expands and developments are made.
-
 ## Configuration of the Environment
 
 ### AaC Setup (Prerequisites)
@@ -29,17 +15,21 @@ When performing the steps listed in the [Developer Guide](./index.md). Please ma
 
 `aac version`
 
-If this comamnd is executable please continue with this guide for developing plugins for AaC. 
+If this command is executable please continue with this guide for developing plugins for AaC. 
 
-## AaC Generating Plugins (Gen-Plugin Comamnd)
+## AaC Generating Plugins (Gen-Plugin Command)
+
+AaC comes pre-packaged with a plugin called `Gen-Plugin` which will take an AaC architecture file describing a plugin and then generate the necessary code stubs and python project infrastructure for the user to begin implementing their new plugin.
 
 ### How to Use Gen-Plugin and Output
 
+The `gen-plugin` command can be executed with the following syntax with the `aac` plugin:
+`aac gen-plugin ./path/to/architecture_file.yaml`
 #### Input of Gen-Plugin
 
 Plugins can be created with the first-party plugin `gen-plugin`. This can be executed from a shell/terminal, with the following example command:
 `aac gen-plugin -help`
-The above comamnd will output the help documentation for the `gen-plugin` comamnd with example input.
+The above command will output the help documentation for the `gen-plugin` command with example input.
 
 The `gen-plugin` command takes input from an architecture file and will produce an output of templated plugin files that can be used to install the first/third party plugin that is being developed. An example plugin file is below:
 > *The below example can be found under this path -> `/python/model/plugin/plugin.yaml`*
@@ -81,14 +71,14 @@ schema:
 
 #### Output of Gen-Plugin
 
-The output of the Gen-Plugin comamnd will be some corresponding plugin files that are templated from the `yaml` file that was passed in to `gen-plugin`
+The output of the Gen-Plugin command will be some corresponding plugin files that are templated from the `yaml` file that was passed in to `gen-plugin`
 
-The files that are generated are the following files in a new folder in the directory where the command was executed (Location of the `yaml` file).
+The generated files are placed into the original directory containing the AaC architecture file.
 
 - `__init.py__`
 - `plugin_name_impl.py`
 - `plugin_architecture_file.yaml`
-- `jinja` template files will also be generated for the generated plugin
+- `jinja` User-made `jinja` template files can be stored here for plugins that generate artifacts.
 
 The folder structure will look something like this:
 
@@ -97,7 +87,7 @@ The folder structure will look something like this:
 ├── setup.py
 ├── test_plugin
     ├── templates
-      └── jinja_templates
+      └── example_template.jinja2
 │   ├── __init__.py
 │   ├── plugin.yaml
 │   └── test_plugin_impl.py
@@ -109,12 +99,10 @@ The folder structure will look something like this:
 Once these files have been generated, you are ready to run the `pip install` command to install the plugin.
 To install the plugin make sure that you are in the directory where the `setup.py` file is located, and run `pip install .`
 
-Once the plugin is installed in the python environment, when you run the `aac -h` command, the plugin that was just installed, should populate the available plugins/comamnds.
+Once the plugin is installed in the python environment, when you run the `aac -h` command, the plugin that was just installed, should populate the available plugins/commands.
 
 ### Testing the Plugin
 
-One of the files generated from the `gen-plugin` comamnd is that a test file for the plugin implementation will be generated. This templated output of a test will need to be further written though to produce quantifiable results. 
+One of the files generated from the `gen-plugin` command is a test file for the plugin implementation, which is generated with a stubbed test. This templated output is only a stub, and it will need to be further developed to provide results.
 
 After doing this the test can be executed either through VSCode or through terminal with the execution of `nose2` or `tox` commands. 
-
-###
