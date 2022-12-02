@@ -217,4 +217,4 @@ Documentation on the Setup and Justifications between the `cProfile` and `Profil
 
 ### Plugin Developer Guide
 
-AaC can be contributed to from certain sources upon approval by the Project Owner for the AaC Project. The link to the guidelines on how to contribute and develop plugins for AaC can be found [here](./plugin_dev_guide.md).
+Guidelines on how to contribute and develop plugins for AaC can be found [Plugin Developer Guide](./plugin_dev_guide.md).
