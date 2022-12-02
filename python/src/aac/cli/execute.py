@@ -5,7 +5,7 @@ from click import Argument, Command, Option, ParamType, Parameter, Path, UNPROCE
 
 from aac.cli.aac_command import AacCommand, AacCommandArgument
 from aac.lang.active_context_lifecycle_manager import write_language_context
-from aac.persistence import __state_file_name__
+from aac.persistence import ACTIVE_CONTEXT_STATE_FILE_NAME
 from aac.plugins.plugin_execution import PluginExecutionResult
 from aac.plugins.plugin_manager import get_plugin_commands
 
@@ -22,7 +22,7 @@ def output_result(result: PluginExecutionResult):
     error_occurred = not result.is_success
     echo(result.get_messages_as_string(), err=error_occurred, color=True)
 
-    write_language_context(__state_file_name__)
+    write_language_context(ACTIVE_CONTEXT_STATE_FILE_NAME)
 
     if error_occurred:
         sys.exit(result.status_code.value)
