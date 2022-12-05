@@ -11,7 +11,6 @@ from http import HTTPStatus
 from aac.io.constants import YAML_DOCUMENT_EXTENSION, AAC_DOCUMENT_EXTENSION
 from aac.io.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_active_context
-from aac.plugins.plugin_manager import get_plugin_commands
 from aac.plugins.first_party.rest_api.aac_rest_app import app, refresh_available_files_in_workspace
 from aac.plugins.first_party.rest_api.models.command_model import CommandRequestModel
 from aac.plugins.first_party.rest_api.models.definition_model import to_definition_model
@@ -33,8 +32,9 @@ class TestAacRestApiCommandEndpoints(ActiveContextTestCase):
     test_client = TestClient(app)
 
     def test_get_available_commands(self):
+        active_context = get_active_context()
         excluded_rest_api_commands = ["rest-api", "start-lsp-io", "start-lsp-tcp"]
-        expected_result = list(filter(lambda command: command.name not in excluded_rest_api_commands, get_plugin_commands()))
+        expected_result = list(filter(lambda command: command.name not in excluded_rest_api_commands, active_context.get_plugin_commands()))
         expected_commands_dict = {command.name: command for command in expected_result}
 
         response = self.test_client.get("/commands")
