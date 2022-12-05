@@ -8,7 +8,7 @@ defaults:
 jobs:
   python_tests:
     name: Python ${{ matrix.py_version }} Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     strategy:
       matrix:
@@ -70,7 +70,7 @@ jobs:
 
   os_test_matrix_setup:
     name: Setup OS Test Matrix
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     outputs:
       wheel_name: ${{ steps.wheel_artifact.outputs.wheel_name }}
@@ -93,7 +93,7 @@ jobs:
 
       strategy:
           matrix:
-            os: [ubuntu-latest, windows-latest]
+            os: [ubuntu-20.04, windows-latest]
 
       steps:
         - name: Set up Python 3.9
