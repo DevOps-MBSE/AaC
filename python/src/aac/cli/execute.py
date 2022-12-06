@@ -4,10 +4,9 @@ import sys
 from click import Argument, Command, Option, ParamType, Parameter, Path, UNPROCESSED, echo, group, types
 
 from aac.cli.aac_command import AacCommand, AacCommandArgument
-from aac.lang.active_context_lifecycle_manager import write_language_context
+from aac.lang.active_context_lifecycle_manager import get_active_context, write_language_context
 from aac.persistence import ACTIVE_CONTEXT_STATE_FILE_NAME
 from aac.plugins.plugin_execution import PluginExecutionResult
-from aac.plugins.plugin_manager import get_plugin_commands
 
 
 @group(context_settings=dict(help_option_names=["-h", "--help"]))
@@ -67,6 +66,7 @@ def to_click_command(command: AacCommand) -> Command:
     )
 
 
-commands = [to_click_command(cmd) for cmd in get_plugin_commands()]
+active_context = get_active_context()
+commands = [to_click_command(cmd) for cmd in active_context.get_plugin_commands()]
 for command in commands:
     cli.add_command(command)

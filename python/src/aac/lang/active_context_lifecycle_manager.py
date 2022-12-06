@@ -8,7 +8,7 @@ from typing import Optional
 from aac.io.writer import write_file
 from aac.lang.language_context import LanguageContext
 from aac.persistence import ACTIVE_CONTEXT_STATE_FILE_NAME, get_language_context_from_state_file
-from aac.plugins.plugin_manager import get_plugin_definitions, get_plugins
+from aac.plugins.plugin_manager import get_plugins
 from aac.serialization.language_context_encoder import LanguageContextEncoder
 from aac.spec import get_aac_spec
 
@@ -64,8 +64,7 @@ def get_initialized_language_context(core_spec_only: bool = False) -> LanguageCo
     language_context.add_definitions_to_context(get_aac_spec())
 
     if not core_spec_only:
-        language_context.add_plugins(get_plugins())
-        language_context.add_definitions_to_context(get_plugin_definitions())
+        language_context.activate_plugins(get_plugins())
 
     return language_context
 
