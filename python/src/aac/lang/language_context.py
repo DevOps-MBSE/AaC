@@ -159,8 +159,8 @@ class LanguageContext:
                 the context.
         """
         definitions = [definition for definition in parse(uri) if definition.name in names]
-        self.add_definitions_to_context(list(set(definitions).intersection(self.definitions)))
-        self.update_definitions_in_context(list(set(definitions).difference(self.definitions)))
+        self.update_definitions_in_context(list(set(self.definitions).intersection(definitions)))
+        self.add_definitions_to_context(list(set(definitions).difference(self.definitions)))
 
     def remove_definition_from_context(self, definition: Definition):
         """
@@ -596,21 +596,19 @@ class LanguageContext:
                     object.get("plugins"),
                 )
 
-        if not lexists(file_uri):
-            return
+        if lexists(file_uri):
+            version, files, definitions, plugins = decode_state_file()
 
-        version, files, definitions, plugins = decode_state_file()
+            if version != __version__:
+                raise StateFileError(
+                    f"Version mismatch: State file written using version {version}; current AaC version {__version__}"
+                )
 
-        if version != __version__:
-            raise StateFileError(
-                f"Version mismatch: State file written using version {version}; current AaC version {__version__}"
-            )
+            for file in files:
+                self.add_definitions_from_uri(sanitize_filesystem_path(file), definitions)
 
-        for file in files:
-            self.add_definitions_from_uri(sanitize_filesystem_path(file), definitions)
-
-        for plugin in plugins:
-            self.activate_plugin_by_name(plugin)
+            for plugin in plugins:
+                self.activate_plugin_by_name(plugin)
 
     def export_to_file(self, file_uri: str) -> None:
         """
