@@ -17,7 +17,7 @@ def validate_bool(definition: Definition, value_to_validate: Any) -> Optional[Va
     """
     Returns a Validation finding if the type isn't valid, otherwise None.
 
-    `This function is intended to be used in the Validation apparatus, and for this result
+    This function is intended to be used in the Validation apparatus, and for this result
     to be collated with other finding into a larger ValidatorResult.
 
     Arge:
@@ -25,7 +25,7 @@ def validate_bool(definition: Definition, value_to_validate: Any) -> Optional[Va
         value_to_validate (Any): The value to be tested.
 
     Returns:
-        `A ValidatorFinding if the value is not a boolean or None.
+        A ValidatorFinding if the value is not a boolean or None.
     """
 
     is_invalid = not isinstance(value_to_validate, bool)
