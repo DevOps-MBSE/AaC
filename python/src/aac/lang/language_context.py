@@ -415,18 +415,6 @@ class LanguageContext:
         """
         return [definition for definition in self.definitions if root_key == definition.get_root_key()]
 
-    def get_definitions_by_file_uri(self, file_uri: str) -> list[Definition]:
-        """
-        Return a subset of definitions that are sourced from the target file URI.
-
-        Args:
-            file_uri (str): The source file URI to filter on.
-
-        Returns:
-            A list of definitions belonging to the target file.
-        """
-        return [definition for definition in self.definitions if file_uri == definition.source.uri]
-
     def get_enum_definition_by_type(self, type: str) -> Optional[Definition]:
         """
         Return the enum definition that defines the specified enumerated type.
