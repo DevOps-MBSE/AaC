@@ -159,7 +159,8 @@ class LanguageContext:
                 the context.
         """
         definitions = [definition for definition in parse(uri) if definition.name in names]
-        self.add_definitions_to_context(definitions)
+        self.add_definitions_to_context(list(set(definitions).intersection(self.definitions)))
+        self.update_definitions_in_context(list(set(definitions).difference(self.definitions)))
 
     def remove_definition_from_context(self, definition: Definition):
         """
