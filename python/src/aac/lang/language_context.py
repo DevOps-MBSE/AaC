@@ -1,16 +1,22 @@
 """The Language Context manages the highly-contextual AaC DSL."""
 
 import copy
+import json
 import logging
 
 from collections import OrderedDict
+from os.path import lexists
 from typing import Optional
 from uuid import UUID
 
 from attr import Factory, attrib, attrs, validators
 
+from aac import __version__
+from aac.cli.aac_command import AacCommand
 from aac.io.files.aac_file import AaCFile
 from aac.io.parser import parse
+from aac.io.paths import sanitize_filesystem_path
+from aac.io.writer import write_file
 from aac.lang.constants import (
     DEFINITION_FIELD_NAME,
     DEFINITION_NAME_PRIMITIVES,
@@ -19,14 +25,13 @@ from aac.lang.constants import (
     ROOT_KEY_EXTENSION,
     ROOT_KEY_SCHEMA,
 )
-from aac.cli.aac_command import AacCommand
 from aac.lang.definitions.collections import get_definitions_by_root_key
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.extensions import apply_extension_to_definition, remove_extension_from_definition
 from aac.lang.definitions.type import remove_list_type_indicator
 from aac.lang.language_error import LanguageError
-from aac.plugins import plugin_manager
-from aac.plugins.contributions.contribution_types import DefinitionValidationContribution, PrimitiveValidationContribution
+from aac.persistence.state_file_error import StateFileError
+from aac.plugins.contributions.contribution_points import DefinitionValidationContribution, PrimitiveValidationContribution
 from aac.plugins.plugin import Plugin
 from aac.plugins.plugin_manager import get_plugins
 
@@ -441,17 +446,6 @@ class LanguageContext:
 
     # Plugin Methods
 
-    def add_named_plugins(self, names: list[str]):
-        """
-        Add the plugin from the provided file URI.
-
-        Args:
-            names (list[str]): The names of the plugins which should be loaded. If not provided, all
-                plugins will be loaded.
-        """
-        plugins = [plugin for plugin in plugin_manager.get_plugins() if plugin.name in names]
-        self.activate_plugins(plugins)
-
     def activate_plugin(self, plugin: Plugin):
         """Activate the specified plugin in the language context."""
         self.plugins.append(plugin)
@@ -581,7 +575,8 @@ class LanguageContext:
         return None
 
     def get_definitions_by_file_uri(self, file_uri: str) -> list[Definition]:
-        """Return a subset of definitions that are sourced from the target file URI.
+        """
+        Return a subset of definitions that are sourced from the target file URI.
 
         Args:
             file_uri (str): The source file URI to filter on.
@@ -590,3 +585,55 @@ class LanguageContext:
             A list of definitions belonging to the target file.
         """
         return [definition for definition in self.definitions if file_uri == definition.source.uri]
+
+    def import_from_file(self, file_uri: str) -> None:
+        """
+        Load the language context from filename.
+
+        Args:
+            file_uri (str): The name of the file from which to load the language context.
+
+        Returns:
+            A language context object loaded from the file, if it exists; otherwise, None.
+        """
+
+        def decode_state_file():
+            with open(file_uri) as state_file:
+                object = json.loads(state_file.read()) or {}
+                return (
+                    object.get("aac_version"),
+                    object.get("files"),
+                    object.get("definitions"),
+                    object.get("plugins"),
+                )
+
+        if not lexists(file_uri):
+            return
+
+        version, files, definitions, plugins = decode_state_file()
+
+        if version != __version__:
+            raise StateFileError(
+                f"Version mismatch: State file written using version {version}; current AaC version {__version__}"
+            )
+
+        for file in files:
+            self.add_definitions_from_uri(sanitize_filesystem_path(file), definitions)
+
+        for plugin in plugins:
+            self.activate_plugin_by_name(plugin)
+
+    def export_to_file(self, file_uri: str) -> None:
+        """
+        Write the language context to disk.
+
+        Args:
+            file_uri (str): The name of the file in which to store the language context.
+        """
+        data = dict(
+            aac_version=__version__,
+            files=[file.uri for file in self.get_files_in_context()],
+            definitions=self.get_defined_types(),
+            plugins=[plugin.name for plugin in self.get_active_plugins()],
+        )
+        write_file(file_uri, json.dumps(data, indent=2), True)
