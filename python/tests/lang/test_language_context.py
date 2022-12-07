@@ -1,3 +1,4 @@
+from aac.io.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_active_context, get_initialized_language_context
 from aac.lang.constants import (
     DEFINITION_FIELD_ADD,
@@ -6,25 +7,36 @@ from aac.lang.constants import (
     DEFINITION_FIELD_FIELDS,
     DEFINITION_FIELD_NAME,
     DEFINITION_FIELD_REQUIRED,
+    DEFINITION_FIELD_TYPE,
     DEFINITION_FIELD_VALUES,
     DEFINITION_NAME_PRIMITIVES,
+    PRIMITIVE_TYPE_DATE,
     PRIMITIVE_TYPE_STRING,
     ROOT_KEY_ENUM,
     ROOT_KEY_EXTENSION,
     ROOT_KEY_MODEL,
     ROOT_KEY_SCHEMA,
 )
+from aac.lang.definitions.collections import get_definition_by_name
 from aac.lang.language_context import LanguageContext
 from aac.lang.language_error import LanguageError
 from aac.spec import get_aac_spec, get_primitives, get_root_keys
 
 from tests.active_context_test_case import ActiveContextTestCase
+from tests.helpers.io import temporary_test_file
 from tests.helpers.parsed_definitions import (
     create_schema_definition,
     create_schema_ext_definition,
     create_enum_definition,
     create_enum_ext_definition,
     create_field_entry,
+)
+from tests.helpers.prebuilt_definition_constants import (
+    TEST_DOCUMENT_CONTENT,
+    TEST_SCHEMA_A,
+    TEST_SCHEMA_B,
+    TEST_SERVICE_ONE,
+    TEST_SERVICE_TWO,
 )
 
 
@@ -326,3 +338,64 @@ class TestLanguageContextPluginInterface(ActiveContextTestCase):
         test_context.deactivate_plugins(inactive_plugins)
         self.assertEqual(len(test_context.get_active_plugins()), 0)
         self.assertLess(len(test_context.definitions), initial_definitions_len)
+
+
+class TestLanguageContextFileMethods(ActiveContextTestCase):
+
+    def test_language_context_write_file(self):
+        active_context = get_active_context()
+
+        with temporary_test_file(TEST_DOCUMENT_CONTENT) as test_file:
+            test_content_definitions = parse(test_file.name)
+            active_context.add_definitions_to_context(test_content_definitions)
+
+            # Assert test content is in the context
+            schema_a_definition = active_context.get_definition_by_name(TEST_SCHEMA_A.name)
+            schema_b_definition = active_context.get_definition_by_name(TEST_SCHEMA_B.name)
+            service_one_definition = active_context.get_definition_by_name(TEST_SERVICE_ONE.name)
+
+            self.assertEqual(3, len(test_content_definitions))
+            self.assertIsNotNone(schema_a_definition)
+            self.assertIsNotNone(schema_b_definition)
+            self.assertIsNotNone(service_one_definition)
+
+            # Update Schema A with a new field
+            schema_a_updated_field = create_field_entry("new_field", PRIMITIVE_TYPE_STRING)
+            schema_a_definition.get_fields().append(schema_a_updated_field)
+            active_context.update_definition_in_context(schema_a_definition)
+
+            # Update Schema B field type
+            schema_b_definition.get_fields()[0][DEFINITION_FIELD_TYPE] = PRIMITIVE_TYPE_DATE
+            active_context.update_definition_in_context(schema_a_definition)
+
+            # Remove Service One
+            active_context.remove_definition_from_context(service_one_definition)
+
+            # Add Service Two
+            service_two_definition = TEST_SERVICE_TWO.copy()
+            service_two_definition.source.uri = test_file.name
+            active_context.add_definition_to_context(service_two_definition)
+
+            # Write changes to file
+            active_context.update_architecture_file(test_file.name)
+
+            # Re-read file and assert changes are as expected.
+            updated_definitions = parse(test_file.name)
+            updated_schema_a_definition = get_definition_by_name(TEST_SCHEMA_A.name, updated_definitions)
+            updated_schema_b_definition = get_definition_by_name(TEST_SCHEMA_B.name, updated_definitions)
+            updated_service_one_definition = get_definition_by_name(TEST_SERVICE_ONE.name, updated_definitions)
+            updated_service_two_definition = get_definition_by_name(TEST_SERVICE_TWO.name, updated_definitions)
+
+            self.assertIsNotNone(updated_schema_a_definition)
+            self.assertIsNotNone(updated_schema_b_definition)
+            self.assertIsNone(updated_service_one_definition)
+            self.assertIsNotNone(updated_service_two_definition)
+
+            self.assertIn(schema_a_updated_field, updated_schema_a_definition.get_fields())
+            self.assertEqual(PRIMITIVE_TYPE_DATE, updated_schema_b_definition.get_fields()[0].get(DEFINITION_FIELD_TYPE))
+
+            # Assert Definition Order is Kept
+            self.assertEqual(3, len(updated_definitions))
+            self.assertEqual(updated_definitions[0].name, test_content_definitions[0].name)
+            self.assertEqual(updated_definitions[1].name, test_content_definitions[1].name)
+            self.assertEqual(updated_definitions[2].name, updated_service_two_definition.name)

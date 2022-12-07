@@ -6,6 +6,7 @@ from collections import OrderedDict
 from typing import Optional
 from uuid import UUID
 
+from aac.io.writer import write_definitions_to_file
 from aac.io.files.aac_file import AaCFile
 from aac.lang.constants import (
     DEFINITION_FIELD_NAME,
@@ -524,6 +525,19 @@ class LanguageContext:
         """
         return list({definition.source for definition in self.definitions})
 
+    def update_architecture_file(self, file_uri: str) -> list[Definition]:
+        """
+        Overwrites the architecture file at the uri based on the content in the context.
+
+        Args:
+            file_uri (str): The source file URI to update.
+
+        Returns:
+            None.
+        """
+        definitions_in_file = self.get_definitions_by_file_uri(file_uri)
+        write_definitions_to_file(definitions_in_file, file_uri)
+
     def get_file_in_context_by_uri(self, uri: str) -> Optional[AaCFile]:
         """
         Return the AaCFile object by uri from the context or None if the file isn't in the context.
@@ -541,7 +555,8 @@ class LanguageContext:
         return None
 
     def get_definitions_by_file_uri(self, file_uri: str) -> list[Definition]:
-        """Return a subset of definitions that are sourced from the target file URI.
+        """
+        Return a subset of definitions that are sourced from the target file URI.
 
         Args:
             file_uri (str): The source file URI to filter on.
