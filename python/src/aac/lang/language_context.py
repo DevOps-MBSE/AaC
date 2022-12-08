@@ -582,9 +582,6 @@ class LanguageContext:
 
         Args:
             file_uri (str): The name of the file from which to load the language context.
-
-        Returns:
-            A language context object loaded from the file, if it exists; otherwise, None.
         """
 
         def decode_state_file():
