@@ -55,6 +55,7 @@ class LanguageContext:
 
     definitions: list[Definition] = attrib(default=Factory(list), validator=validators.instance_of(list))
     plugins: list[Plugin] = attrib(default=Factory(list), validator=validators.instance_of(list))
+    is_initialized: bool = attrib(default=False, validator=validators.instance_of(bool))
 
     # Private attribute - don't reference outside of this class.
     definitions_dictionary: dict[UUID, Definition] = attrib(
@@ -609,6 +610,8 @@ class LanguageContext:
 
             for plugin in plugins:
                 self.activate_plugin_by_name(plugin)
+
+            self.is_initialized = True
 
     def export_to_file(self, file_uri: str) -> None:
         """

@@ -21,12 +21,12 @@ def get_active_context(reload_context: bool = False) -> LanguageContext:
     """
     global ACTIVE_CONTEXT
 
-    if not ACTIVE_CONTEXT:
-        if reload_context:
-            ACTIVE_CONTEXT = get_initialized_language_context()
-        else:
-            ACTIVE_CONTEXT = LanguageContext()
-            ACTIVE_CONTEXT.import_from_file(ACTIVE_CONTEXT_STATE_FILE_NAME)
+    if not ACTIVE_CONTEXT and not reload_context:
+        ACTIVE_CONTEXT = LanguageContext()
+        ACTIVE_CONTEXT.import_from_file(ACTIVE_CONTEXT_STATE_FILE_NAME)
+
+    if not ACTIVE_CONTEXT or reload_context or not ACTIVE_CONTEXT.is_initialized:
+        ACTIVE_CONTEXT = get_initialized_language_context()
 
     return ACTIVE_CONTEXT
 
@@ -43,5 +43,7 @@ def get_initialized_language_context(core_spec_only: bool = False) -> LanguageCo
 
     if not core_spec_only:
         language_context.activate_plugins(get_plugins())
+
+    language_context.is_initialized = True
 
     return language_context
