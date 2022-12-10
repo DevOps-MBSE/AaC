@@ -1,8 +1,8 @@
 from unittest import TestCase
 
 from aac.lang.active_context_lifecycle_manager import get_active_context
-from aac.lang.definition_helpers import get_definitions_by_root_key
-from aac.plugins.validators import ValidatorPlugin
+from aac.lang.definitions.collections import get_definitions_by_root_key
+from aac.plugins.contributions.contribution_types import DefinitionValidationContribution
 from aac.plugins.validators.validator_implementation import _get_plugin_definitions, _get_plugin_validations, validate_validator_implementations
 
 from tests.helpers.assertion import assert_definitions_equal
@@ -18,11 +18,11 @@ class TestValidationImplementPlugin(TestCase):
         self.assertEqual(1, len(validation_definitions))
 
         validation_definition = validation_definitions[0]
-        expected_validator_plugin = ValidatorPlugin(
+        expected_definition_validation = DefinitionValidationContribution(
             name=validation_definition.name, definition=validation_definition, validation_function=(lambda x: x)
         )
-        self.assertEqual(expected_validator_plugin.name, actual_validator_plugins[0].name)
-        assert_definitions_equal(expected_validator_plugin.definition, actual_validator_plugins[0].definition)
+        self.assertEqual(expected_definition_validation.name, actual_validator_plugins[0].name)
+        assert_definitions_equal(expected_definition_validation.definition, actual_validator_plugins[0].definition)
 
     def test_validate_validator_implementations_validate_validation_success(self):
         test_active_context = get_active_context(reload_context=True)

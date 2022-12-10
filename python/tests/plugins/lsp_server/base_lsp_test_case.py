@@ -1,6 +1,5 @@
 from os import path
 from tempfile import TemporaryDirectory
-from typing import Optional
 from unittest.async_case import IsolatedAsyncioTestCase
 
 from pygls import uris
@@ -144,14 +143,14 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
         )
         return self.documents.get(absolute_file_path).read()
 
-    def to_uri(self, file_name: str) -> Optional[str]:
+    def to_uri(self, file_name: str) -> str:
         """Return file_name as a file URI."""
         absolute_file_path = self._get_absolute_file_path(file_name)
         self.assertIsNotNone(
             self.documents.get(absolute_file_path),
             f"Could not get virtual document URI because there is no document named {absolute_file_path}.",
         )
-        return uris.from_fs_path(absolute_file_path)
+        return uris.from_fs_path(absolute_file_path) or absolute_file_path
 
     def virtual_document_to_lsp_document(self, file_name: str) -> Document:
         """Convert a virtual document to an LSP document."""

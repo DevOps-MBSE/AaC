@@ -1,65 +1,68 @@
 """The entry-point for the command line interface for the aac tool."""
-import argparse
-import inspect
+
 import sys
-from typing import Callable
+from click import Argument, Command, Option, ParamType, Parameter, Path, UNPROCESSED, echo, group, types
 
-from aac.plugins.plugin_manager import get_plugin_commands
-
-
-def run_cli():
-    """
-    Run the specified AaC command.
-
-    This method parses the command line and performs the requested user command or outputs usage.
-    """
-    arg_parser, aac_plugin_commands = _setup_arg_parser()
-
-    args = arg_parser.parse_args()
-
-    for command in aac_plugin_commands:
-        if args.command == command.name:
-
-            keyword_args = {}
-            args_dict = vars(args)
-
-            # Leverage inspect here to make sure that the arg names we're trying to access are
-            # sourced from the target function itself
-            parameters = inspect.signature(command.callback).parameters.keys()
-            for argument in parameters:
-                if args_dict[argument] is not None:
-                    keyword_args[argument] = args_dict[argument]
-
-            result = command.callback(**keyword_args)
-            print(f"{result.name}: {result.status_code.name.lower()}\n\n{result.get_messages_as_string()}")
-
-            if not result.is_success():
-                sys.exit(result.status_code.value)
+from aac.cli.aac_command import AacCommand, AacCommandArgument
+from aac.lang.active_context_lifecycle_manager import get_active_context
+from aac.plugins.plugin_execution import PluginExecutionResult
 
 
-def _setup_arg_parser() -> tuple[argparse.ArgumentParser, list[Callable]]:
-    def help_formatter(prog):
-        return argparse.HelpFormatter(prog, max_help_position=30)
-
-    arg_parser = argparse.ArgumentParser(formatter_class=help_formatter)
-    command_parser = arg_parser.add_subparsers(dest="command")
-
-    aac_and_plugin_commands = get_plugin_commands()
-
-    for command in aac_and_plugin_commands:
-        command_subparser = command_parser.add_parser(command.name, help=command.description)
-
-        for argument in command.arguments:
-            command_subparser.add_argument(argument.name, help=argument.description, **_get_arguments(argument))
-
-    return arg_parser, aac_and_plugin_commands
+@group(context_settings=dict(help_option_names=["-h", "--help"]))
+def cli():
+    """The Architecture-as-Code (AaC) command line tool."""
+    pass
 
 
-def _get_arguments(argument):
-    arguments = {}
-    if argument.action:
-        arguments = arguments | {"action": argument.action}
-    else:
-        arguments = arguments | {"nargs": argument.number_of_arguments, "choices": argument.choices}
+@cli.result_callback()
+def output_result(result: PluginExecutionResult):
+    """Output the message from the result of executing the CLI command."""
+    error_occurred = not result.is_success
+    echo(result.get_messages_as_string(), err=error_occurred, color=True)
+    if error_occurred:
+        sys.exit(result.status_code.value)
 
-    return arguments
+
+def to_click_type(type_name: str) -> ParamType:
+    """Convert the named type to a type recognized by Click."""
+    if type_name == "file":
+        return Path(file_okay=True)
+    elif type_name == "directory":
+        return Path(dir_okay=True)
+
+    return types.__dict__.get(type_name.upper(), UNPROCESSED)
+
+
+def to_click_parameter(argument: AacCommandArgument) -> Parameter:
+    """Convert an AacCommandArgument to a Click Parameter."""
+    names = [argument.name] if isinstance(argument.name, str) else argument.name
+    args = dict(type=to_click_type(argument.data_type), nargs=argument.number_of_arguments, default=argument.default)
+    return (
+        Option(names, help=argument.description, show_default=True, **args)
+        if argument.name[0].startswith("-")
+        else Argument(names, **args)
+    )
+
+
+def to_click_command(command: AacCommand) -> Command:
+    """Convert an AacCommand to a Click Command."""
+
+    def is_required_arg(arg):
+        if isinstance(arg, list):
+            return is_required_arg(arg[0])
+
+        return not arg.name.startswith("-")
+
+    return Command(
+        name=command.name,
+        callback=command.callback,
+        params=[to_click_parameter(arg) for arg in command.arguments],
+        help=command.description,
+        no_args_is_help=len([arg for arg in command.arguments if is_required_arg(arg)]) > 0,
+    )
+
+
+active_context = get_active_context()
+commands = [to_click_command(cmd) for cmd in active_context.get_plugin_commands()]
+for command in commands:
+    cli.add_command(command)

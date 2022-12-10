@@ -2,6 +2,7 @@
 from attr import attrib, attrs, validators, Factory
 from contextlib import contextmanager
 from enum import Enum, auto, unique
+from os import linesep
 from traceback import extract_tb
 from typing import Callable, Tuple, Any
 import logging
@@ -36,20 +37,16 @@ class PluginExecutionResult:
     """
 
     name: str = attrib(validator=validators.instance_of(str))
-    status_code: PluginExecutionStatusCode = attrib(
-        validator=validators.instance_of(PluginExecutionStatusCode)
-    )
-    messages: list[str] = attrib(
-        default=Factory(list), validator=validators.instance_of(list)
-    )
+    status_code: PluginExecutionStatusCode = attrib(validator=validators.instance_of(PluginExecutionStatusCode))
+    messages: list[str] = attrib(default=Factory(list), validator=validators.instance_of(list))
 
-    def add_messages(self, *messages) -> None:
+    def add_message(self, message: str) -> None:
+        """Add a message to the list of messages."""
+        self.messages.append(message)
+
+    def add_messages(self, messages: list[str]) -> None:
         """Add messages to the list of messages."""
         self.messages.extend(messages)
-
-    def set_messages(self, *messages) -> None:
-        """Clear the current messages and set them to the passed in messages."""
-        self.messages = list(messages)
 
     def is_success(self) -> bool:
         """Return True if the command succeeded; False, otherwise."""
@@ -57,11 +54,11 @@ class PluginExecutionResult:
 
     def get_messages_as_string(self) -> str:
         """Return the output messages as a combined string."""
-        return "\n".join(self.messages)
+        return linesep.join(self.messages)
 
 
 @contextmanager
-def plugin_result(name: str, cmd: Callable, *args: Tuple[Any], **kwargs: dict[str, Any]):
+def plugin_result(name: str, cmd: Callable[..., Any], *args: Tuple[Any], **kwargs: dict[str, Any]):
     """
     Create a PluginExecutionResult after running command on a validated model from file.
 
@@ -71,7 +68,7 @@ def plugin_result(name: str, cmd: Callable, *args: Tuple[Any], **kwargs: dict[st
 
     Arguments:
         name (str): The name of the plugin whose result is being returned.
-        cmd (str): The command to be called. The command is expected to return a message to be
+        cmd (Callable[..., Any]): The command to be called. The command is expected to return a message to be
                        displayed to the user.
         args (Tuple[Any]): a list of args that are passed to the accompanying command
         kwargs (dict[str, Any]): a dictionary of keyword arguments that are passed to the accompanying command
@@ -81,39 +78,45 @@ def plugin_result(name: str, cmd: Callable, *args: Tuple[Any], **kwargs: dict[st
     """
     result = PluginExecutionResult(name, PluginExecutionStatusCode.SUCCESS)
     try:
-        result.add_messages(cmd(*args, **kwargs))
+        result.add_message(cmd(*args, **kwargs))
     except LanguageError as error:
-        result.add_messages("Internal error occurred in the AaC language:\n", *error.args, "")
+        result.add_message("Internal error occurred in the AaC language:\n", *error.args, "")
         result.status_code = PluginExecutionStatusCode.GENERAL_FAILURE
     except ParserError as error:
         source, errors = error.args
-        result.add_messages(f"Failed to parse {source}\n", *errors, "")
+        result.add_messages([f"Failed to parse {source}\n", *errors, ""])
         result.status_code = PluginExecutionStatusCode.PARSER_FAILURE
     except ValidationError as error:
-        result.add_messages("Failed to validate:\n", *error.args, "")
+        result.add_messages(["Failed to validate:\n", *error.args, ""])
         result.status_code = PluginExecutionStatusCode.VALIDATION_FAILURE
     except FileNotFoundError as error:
-        result.add_messages(f"{error.strerror}: {error.filename}")
+        result.add_message(f"{error.strerror}: {error.filename}")
         result.status_code = PluginExecutionStatusCode.GENERAL_FAILURE
     except AacTemplateError as error:
         result.add_messages(error.message)
         result.status_code = PluginExecutionStatusCode.PLUGIN_FAILURE
     except PluginError as error:
-        result.set_messages(error.message)
+        result.add_message(error.message)
         result.status_code = PluginExecutionStatusCode.PLUGIN_FAILURE
     except OperationCancelled as condition:
-        result.set_messages(condition.message)
+        result.add_message(condition.message)
         result.status_code = PluginExecutionStatusCode.OPERATION_CANCELLED
     except Exception as error:
         # Extract the first stack trace, skipping the plugin result we'd expect to find in the first element
-        error_trace = extract_tb(error.__traceback__)[-1]
-        result.add_messages(
-            f"A(n) {error.__class__.__qualname__} error occurred",
-            f"  in {error_trace.filename}",
-            f"  on line {error_trace.lineno}",
-            f"\nThe error was:\n{error}",
-        )
+        result.add_messages(_get_error_messages(error))
         result.status_code = PluginExecutionStatusCode.GENERAL_FAILURE
         logging.error(f"Plugin {name} failed during execution:\n{extract_tb(error.__traceback__)}")
 
     yield result
+
+
+def _get_error_messages(error: Exception) -> list[str]:
+    def error_message_lines(error_trace) -> str:
+        return f"""
+        A(n) {error_trace.name} error occurred
+          in {error_trace.filename}
+          on line {error_trace.lineno}
+        The error was: {error}
+        """
+
+    return [error_message_lines(error_trace) for error_trace in extract_tb(error.__traceback__)]

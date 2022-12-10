@@ -8,7 +8,7 @@ defaults:
 jobs:
   python_tests:
     name: Python ${{ matrix.py_version }} Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     strategy:
       matrix:
@@ -19,7 +19,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Set up Python ${{ matrix.py_version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.py_version }}
 
@@ -44,7 +44,7 @@ jobs:
     - name: Validate Core Spec and Plugin Specs
       run: |
         find src -name spec.yaml -print0 | xargs -0 -n1 aac validate
-        find src -name spec.yaml -print0 | xargs -0 -n1 aac validate --definition_name root
+        find src -name spec.yaml -print0 | xargs -0 -n1 aac validate --definition-name root
         find src/aac/plugins -name *.yaml -print0 | xargs -0 -n1 aac validate
 
     - name: Test Gen-Plugin First-Party Plugin
@@ -59,6 +59,7 @@ jobs:
         echo y | aac gen-plugin model/plugin/plugin.yaml
         cd model/plugin/
         pip install .[all]
+        aac -h | grep "test-plugin-command"
 
     - name: Upload logs from failed runs
       if: ${{ failure() }}
@@ -69,7 +70,7 @@ jobs:
 
   os_test_matrix_setup:
     name: Setup OS Test Matrix
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     outputs:
       wheel_name: ${{ steps.wheel_artifact.outputs.wheel_name }}
@@ -92,11 +93,11 @@ jobs:
 
       strategy:
           matrix:
-            os: [ubuntu-latest, windows-latest]
+            os: [ubuntu-20.04, windows-latest]
 
       steps:
         - name: Set up Python 3.9
-          uses: actions/setup-python@v2
+          uses: actions/setup-python@v4
           with:
             python-version: 3.9
 
@@ -124,7 +125,6 @@ jobs:
           run: |
             spec_file=$(find $pythonLocation -name spec.yaml | head -n1)
             python -m aac validate $spec_file
-
         - name: Validate Core Spec
           if: matrix.os == 'windows-latest'
           run: |

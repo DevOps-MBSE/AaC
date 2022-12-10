@@ -15,12 +15,15 @@ from aac.lang.constants import (
     ROOT_KEY_EXTENSION,
     ROOT_KEY_SCHEMA,
 )
-from aac.lang.definition_helpers import get_definitions_by_root_key
+from aac.cli.aac_command import AacCommand
+from aac.lang.definitions.collections import get_definitions_by_root_key
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.extensions import apply_extension_to_definition, remove_extension_from_definition
 from aac.lang.definitions.type import remove_list_type_indicator
 from aac.lang.language_error import LanguageError
+from aac.plugins.plugin_manager import get_plugins
 from aac.plugins.plugin import Plugin
+from aac.plugins.contributions.contribution_types import DefinitionValidationContribution, PrimitiveValidationContribution
 
 
 @attrs(slots=True, auto_attribs=True)
@@ -48,6 +51,8 @@ class LanguageContext:
         init=False, default=Factory(dict), validator=validators.instance_of(dict)
     )
 
+    # Definition Methods
+
     def add_definition_to_context(self, definition: Definition):
         """
         Add the Definition to the list of definitions in the LanguageContext.
@@ -69,24 +74,27 @@ class LanguageContext:
         if definition.get_inherits():
             # This import is located here because the inheritance module uses the language context for lookup, causing a circular dependency at initialization
             from aac.lang.definitions.inheritance import apply_inherited_attributes_to_definition
+
             apply_inherited_attributes_to_definition(new_definition, self)
 
         if definition.is_extension():
             target_definition_name = definition.get_type()
             target_definition = self.get_definition_by_name(target_definition_name)
 
-            definitions_with_target_definition_name = [
-                definition for definition in self.definitions if target_definition.name == definition.name
-            ]
+            if target_definition:
+                definitions_with_target_definition_name = [
+                    definition for definition in self.definitions if target_definition.name == definition.name
+                ]
 
-            if len(definitions_with_target_definition_name) > 1:
-                raise LanguageError(
-                    f"Duplicate definitions found ({len(definitions_with_target_definition_name)}) with name '{target_definition_name}'."
-                )
-            elif target_definition:
+                if len(definitions_with_target_definition_name) > 1:
+                    raise LanguageError(
+                        f"Duplicate target definitions found ({len(definitions_with_target_definition_name)}) with name '{target_definition_name}'."
+                    )
+
                 apply_extension_to_definition(new_definition, target_definition)
+
             else:
-                logging.error(f"Extension failed to define target, field 'type' is missing. {definition.structure}")
+                logging.error(f"Failed to find the target defintion '{target_definition_name}' in the context.")
 
     def add_definitions_to_context(self, definitions: list[Definition]):
         """
@@ -154,7 +162,7 @@ class LanguageContext:
             if target_definition:
                 remove_extension_from_definition(definition, target_definition)
             else:
-                logging.error(f"Extension failed to define target, field 'type' is missing. {definition.structure}")
+                logging.error(f"Failed to find the target defintion '{target_definition_name}' in the context.")
 
     def remove_definitions_from_context(self, definitions: list[Definition]):
         """
@@ -214,6 +222,8 @@ class LanguageContext:
 
         for extension_definition in extension_definitions:
             self.update_definition_in_context(extension_definition)
+
+    # Context-Specific Information Methods
 
     def get_root_keys(self) -> list[str]:
         """
@@ -308,7 +318,7 @@ class LanguageContext:
 
         This method is helpful for discerning the type of a definition by its name. This is
         functionally equivalent to getting the definition by name from the context and then
-        running the `Definition` method `is_enum()`
+        running the `Definition` method `is_enum()`.
 
         Args:
             type (str): The enum's type string.
@@ -363,7 +373,7 @@ class LanguageContext:
             if len(definition_to_return) > 0:
                 if len(definition_to_return) > 1:
                     logging.info(
-                        f"Multiple definitions found with the same name '{definition_name}' found in context. Returning the first"
+                        f"Multiple definitions found with the same name '{definition_name}' found in context. Returning the first one."
                     )
                 return definition_to_return[0]
             else:
@@ -381,17 +391,6 @@ class LanguageContext:
             A list of definitions with the given root key.
         """
         return [definition for definition in self.definitions if root_key == definition.get_root_key()]
-
-    def get_definitions_by_file_uri(self, file_uri: str) -> list[Definition]:
-        """Return a subset of definitions that are sourced from the target file URI.
-
-        Args:
-            file_uri (str): The source file URI to filter on.
-
-        Returns:
-            A list of definitions belonging to the target file.
-        """
-        return [definition for definition in self.definitions if file_uri == definition.source.uri]
 
     def get_enum_definition_by_type(self, type: str) -> Optional[Definition]:
         """
@@ -411,18 +410,110 @@ class LanguageContext:
         enum_definitions = [enum for enum in self.get_definitions_by_root_key(ROOT_KEY_ENUM) if is_type_defined_by_enum(enum)]
         return enum_definitions[0] if enum_definitions else None
 
-    def add_plugins(self, plugins: list[Plugin]):
-        """Add the specified plugins to the current language context."""
-        self.plugins.extend(plugins)
+    # Plugin Methods
 
-    def get_plugins(self) -> list[Plugin]:
+    def activate_plugin(self, plugin: Plugin):
+        """Activate the specified plugin in the language context."""
+        self.plugins.append(plugin)
+        self.add_definitions_to_context(plugin.get_definitions())
+
+    def activate_plugins(self, plugins: list[Plugin]):
+        """Activate the specified plugins in the language context."""
+        self.plugins.extend(plugins)
+        plugin_definition_lists = [plugin.get_definitions() for plugin in plugins]
+        plugin_definitions = [definition for definition_list in plugin_definition_lists for definition in definition_list]
+        self.add_definitions_to_context(plugin_definitions)
+
+    def activate_plugin_by_name(self, plugin_name: str):
+        """Activate the specified plugin in the language context."""
+        plugin, *_ = [plugin for plugin in get_plugins() if plugin.name == plugin_name]
+        self.plugins.append(plugin)
+
+    def deactivate_plugin(self, plugin: Plugin):
+        """Deactivate the specified plugin in the language context."""
+        self.plugins.remove(plugin)
+        self.remove_definitions_from_context(plugin.get_definitions())
+
+    def deactivate_plugins(self, plugins: list[Plugin]):
+        """Deactivate the specified plugins in the language context."""
+        [self.deactivate_plugin(plugin) for plugin in plugins]
+
+    def deactivate_plugin_by_name(self, plugin_name: str):
+        """Deactivate the specified plugin in the language context."""
+        plugin, *_ = [plugin for plugin in self.get_active_plugins() if plugin.name == plugin_name]
+        self.deactivate_plugin(plugin)
+
+    def get_active_plugins(self) -> list[Plugin]:
         """
-        Return the applied plugins that contribute to the current language context.
+        Return the active plugins that contribute to the current language context.
 
         Returns:
-            The collection of applied plugins that contribute to the current language context.
+            The collection of active plugins that contribute to the current language context.
         """
         return self.plugins
+
+    def get_inactive_plugins(self) -> list[Plugin]:
+        """
+        Return the list of inactive plugins. These plugins are installed on the system, but not active in the context.
+
+        Returns:
+            The collection of inactive plugins that are installed on the system, but not active in the context.
+        """
+        active_plugins = set(self.plugins)
+        installed_plugins = set(get_plugins())
+        return list(installed_plugins.difference(active_plugins))
+
+    def get_plugin_commands(self) -> list[AacCommand]:
+        """
+        Get a list of all of the AaC commands contributed by active plugins.
+
+        Returns:
+            A list of AaC Commands provided by plugins.
+        """
+        command_lists = [plugin.get_commands() for plugin in self.plugins if plugin.get_commands()]
+        return [command for command_list in command_lists for command in command_list]
+
+    def get_plugin_definitions(self) -> list[Definition]:
+        """
+        Get a list of all the plugin-defined AaC definitions contributed by active plugins.
+
+        Returns:
+            A list of definitions from all active plugins.
+        """
+
+        def set_files_to_not_user_editable(definition):
+            definition.source.is_user_editable = False
+            return definition
+
+        definition_lists = [plugin.get_definitions() for plugin in self.plugins if plugin.get_definitions()]
+        definitions_list = [definition for definition_list in definition_lists for definition in definition_list]
+        return list(map(set_files_to_not_user_editable, definitions_list))
+
+    def get_definition_validations(self) -> list[DefinitionValidationContribution]:
+        """
+        Get a list of validations and metadata in the context provided by active plugins.
+
+        Returns:
+            A list of validator plugins that are currently registered.
+        """
+        validation_lists = [
+            plugin.get_definition_validations() for plugin in self.get_active_plugins() if plugin.get_definition_validations()
+        ]
+        return [validation for validation_list in validation_lists for validation in validation_list]
+
+    def get_primitive_validations(self) -> list[PrimitiveValidationContribution]:
+        """
+        Get a list of registered enum/type validations and metadata in the context provided by active plugins.
+
+        Returns:
+            A list of validator plugins that are currently registered.
+        """
+        validation_lists = [
+            plugin.get_primitive_validations() for plugin in self.get_active_plugins() if plugin.get_primitive_validations()
+        ]
+        return [validation for validation_list in validation_lists for validation in validation_list]
+
+    # File Methods
 
     def get_files_in_context(self) -> list[AaCFile]:
         """
@@ -438,13 +529,24 @@ class LanguageContext:
         Return the AaCFile object by uri from the context or None if the file isn't in the context.
 
         Args:
-            uri (str): The string uri to search for
+            uri (str): The string uri to search for.
 
         Returns:
-            An optional AaCFile if it's present in the context, otherwise None
+            An optional AaCFile if it's present in the context, otherwise None.
         """
         for definition in self.definitions:
             if definition.source.uri == uri:
                 return definition.source
 
         return None
+
+    def get_definitions_by_file_uri(self, file_uri: str) -> list[Definition]:
+        """Return a subset of definitions that are sourced from the target file URI.
+
+        Args:
+            file_uri (str): The source file URI to filter on.
+
+        Returns:
+            A list of definitions belonging to the target file.
+        """
+        return [definition for definition in self.definitions if file_uri == definition.source.uri]

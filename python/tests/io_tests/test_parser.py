@@ -2,7 +2,7 @@ import os
 from tempfile import TemporaryDirectory
 from unittest import TestCase
 
-from aac.lang import definition_helpers
+from aac.lang.definitions import collections
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.source_location import SourceLocation
 from aac.io.constants import YAML_DOCUMENT_SEPARATOR
@@ -61,9 +61,9 @@ class TestParser(TestCase):
 
             self.assertEqual(len(parsed_models), 3)
 
-            schema_message_definition = definition_helpers.get_definition_by_name("Message", parsed_models)
-            enum_status_definition = definition_helpers.get_definition_by_name("Status", parsed_models)
-            model_echosvc_definition = definition_helpers.get_definition_by_name("EchoService", parsed_models)
+            schema_message_definition = collections.get_definition_by_name("Message", parsed_models)
+            enum_status_definition = collections.get_definition_by_name("Status", parsed_models)
+            model_echosvc_definition = collections.get_definition_by_name("EchoService", parsed_models)
 
             self.check_model_name(schema_message_definition.structure, "Message", "schema")
             self.check_model_name(enum_status_definition.structure, "Status", "enum")
@@ -92,7 +92,7 @@ class TestParser(TestCase):
     def test_errors_when_parsing_incomplete_model(self):
         content = "model:"
         with temporary_test_file(content) as test_yaml:
-            self.check_parser_errors(test_yaml.name, "incomplete model", content)
+            self.check_parser_errors(test_yaml.name, "Definition is missing field 'name'", content)
 
     def test_errors_when_parsing_non_yaml(self):
         content = "not yaml"

@@ -1,5 +1,4 @@
 from aac.lang.active_context_lifecycle_manager import get_active_context
-from aac.plugins.plugin_manager import get_validator_plugins
 from aac.validate._validate import _validate_definition
 
 from tests.active_context_test_case import ActiveContextTestCase
@@ -15,7 +14,7 @@ class TestValidateDefinition(ActiveContextTestCase):
         test_definition = create_schema_definition("Test", fields=[test_field])
         test_context = get_active_context(reload_context=True)
 
-        validation_plugins = get_validator_plugins()
+        validation_plugins = test_context.get_definition_validations()
 
         actual_results = _validate_definition(test_definition, validation_plugins, test_context)
 
@@ -29,7 +28,7 @@ class TestValidateDefinition(ActiveContextTestCase):
         test_definition = create_schema_definition("Test", fields=[test_field])
         test_context = get_active_context(reload_context=True)
 
-        validation_plugins = get_validator_plugins()
+        validation_plugins = test_context.get_definition_validations()
 
         actual_results = _validate_definition(test_definition, validation_plugins, test_context)
 

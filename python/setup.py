@@ -12,25 +12,24 @@ except Exception as exception:
     readme_description = ""
 
 runtime_dependencies = [
-    "attrs >= 21.2",
-    "pyrsistent >= 0.18",
-    "PyYAML >= 5.4",
+    "attrs >= 22.1",
+    "pyrsistent >= 0.19",
+    "PyYAML >= 6.0",
     "six >= 1.16",
-    "click >= 8.0",
-    "pathspec >= 0.9",
-    "regex >= 2021.9",
-    "typing-extensions >= 3.10",
+    "click >= 8.1",
+    "pathspec >= 0.10",
+    "regex >= 2022.10.31",
+    "typing-extensions >= 4.4",
     "pluggy >= 1.0",
-    "iteration_utilities >= 0.11",
-    "Jinja2 >= 3.0",
-    "MarkupSafe >= 2.0",
-    "pygls >= 0.11",
-    "fastapi >= 0.78",
-    "starlette >= 0.19",
-    "anyio < 5, >= 3.4.0",
-    "sniffio >= 1.1",
-    "uvicorn >= 0.17.6",
-    "requests >= 2.27.0",
+    "Jinja2 >= 3.1",
+    "MarkupSafe >= 2.1",
+    "pygls == 0.13.1",
+    "fastapi >= 0.86",
+    "starlette >= 0.20.4",
+    "anyio < 5, >= 3.6.0",
+    "sniffio >= 1.3",
+    "uvicorn >= 0.19.0",
+    "requests >= 2.28.0",
 ]
 
 development_dependencies = [
@@ -71,6 +70,7 @@ test_dependencies = [
     "flake8-eradicate >= 1.2.0",
     "flake8-assertive >= 1.3.0",
     "eradicate<3.0,>=2.0",
+    "httpx >= 0.23.0",
 ]
 
 setup(
@@ -90,7 +90,7 @@ setup(
     tests_require=test_dependencies,
     entry_points={
         "console_scripts": [
-            "aac=aac.cli.execute:run_cli",
+            "aac=aac.cli.execute:cli",
         ]
     },
     extras_require={

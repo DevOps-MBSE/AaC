@@ -1,7 +1,6 @@
 from aac.lang.active_context_lifecycle_manager import get_active_context
-from aac.lang.definition_helpers import get_definition_by_name
+from aac.lang.definitions.collections import get_definition_by_name
 from aac.lang.definitions.search import search_definition
-from aac.plugins.plugin_manager import get_validator_plugins
 from aac.validate import get_applicable_validators_for_definition
 from aac.validate._collect_validators import _get_validation_entries, _get_validator_plugin_by_name
 
@@ -21,9 +20,9 @@ class TestCollectValidators(ActiveContextTestCase):
 
     def test_get_applicable_validators_for_empty_schema_definition(self):
         test_definition = create_schema_definition("Empty Schema")
-        active_context = get_active_context(reload_context=True)
+        active_context = get_active_context()
 
-        validation_plugins = get_validator_plugins()
+        validation_plugins = active_context.get_definition_validations()
 
         schema_definition = active_context.get_definition_by_name("schema")
         field_definition = active_context.get_definition_by_name("Field")
@@ -38,9 +37,9 @@ class TestCollectValidators(ActiveContextTestCase):
     def test_get_applicable_validators_for_schema_definition(self):
         test_field = create_field_entry("TestField", "string")
         test_definition = create_schema_definition("DataWithField", fields=[test_field])
-        active_context = get_active_context(reload_context=True)
+        active_context = get_active_context()
 
-        validation_plugins = get_validator_plugins()
+        validation_plugins = active_context.get_definition_validations()
 
         schema_definition = get_definition_by_name("schema", active_context.definitions)
         schema_validations = search_definition(schema_definition, ["schema", "validation"])
@@ -55,9 +54,9 @@ class TestCollectValidators(ActiveContextTestCase):
     def test_get_applicable_validators_for_model_definition(self):
         test_field = create_field_entry("TestStateField", "string")
         test_definition = create_model_definition("ModelWithField", state=[test_field])
-        active_context = get_active_context(reload_context=True)
+        active_context = get_active_context()
 
-        validation_plugins = get_validator_plugins()
+        validation_plugins = active_context.get_definition_validations()
 
         schema_definition = get_definition_by_name("schema", active_context.definitions)
         schema_validations = search_definition(schema_definition, ["schema", "validation"])
@@ -74,9 +73,9 @@ class TestCollectValidators(ActiveContextTestCase):
     def test_get_applicable_validators_for_field_definition(self):
         target_definition_key = "Field"
 
-        active_context = get_active_context(reload_context=True)
+        active_context = get_active_context()
 
-        validation_plugins = get_validator_plugins()
+        validation_plugins = active_context.get_definition_validations()
 
         field_definition = get_definition_by_name(target_definition_key, active_context.definitions)
 
@@ -89,9 +88,9 @@ class TestCollectValidators(ActiveContextTestCase):
             self.assertIn(expected_validation.get("name"), actual_plugin_names)
 
     def test_get_applicable_validators_for_definition_enum_returns_schema_validator(self):
-        active_context = get_active_context(reload_context=True)
+        active_context = get_active_context()
 
-        validation_plugins = get_validator_plugins()
+        validation_plugins = active_context.get_definition_validations()
 
         enum_definition = create_enum_definition("Test Enum", ["val1", "val2"])
         schema_definition = get_definition_by_name("schema", active_context.definitions)
@@ -117,8 +116,8 @@ class TestCollectValidators(ActiveContextTestCase):
         self.assertListEqual(expected_result, actual_result)
 
     def test__get_validator_plugin_by_name(self):
-
-        validation_plugins = get_validator_plugins()
+        active_context = get_active_context()
+        validation_plugins = active_context.get_definition_validations()
 
         self.assertGreater(len(validation_plugins), 0)
 

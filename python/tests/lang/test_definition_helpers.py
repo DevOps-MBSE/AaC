@@ -4,7 +4,7 @@ Unit tests for the aac.definition_helpers module.
 
 from unittest import TestCase
 
-from aac.lang.definition_helpers import (
+from aac.lang.definitions.collections import (
     get_definitions_by_root_key,
 )
 from aac.lang.definitions.search import search
