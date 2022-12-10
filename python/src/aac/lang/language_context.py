@@ -1,11 +1,13 @@
 """The Language Context manages the highly-contextual AaC DSL."""
 import copy
 import logging
+import os
 from attr import Factory, attrib, attrs, validators
 from collections import OrderedDict
 from typing import Optional
 from uuid import UUID
 
+from aac.io.parser import parse
 from aac.io.writer import write_definitions_to_file
 from aac.io.files.aac_file import AaCFile
 from aac.lang.constants import (
@@ -192,17 +194,15 @@ class LanguageContext:
         Args:
             definition (Definition): The Definition to update in the context.
         """
-
-        if definition.uid in self.definitions_dictionary:
-            old_definition = self.definitions_dictionary.get(definition.uid)
-
+        old_definition = self.definitions_dictionary.get(definition.uid)
+        if old_definition:
             self.remove_definition_from_context(old_definition)
             self.add_definition_to_context(definition)
         else:
             definitions_in_context = self.get_defined_types()
-            logging.error(
-                f"Definition not present in context, can't be updated. '{definition.name}' not in '{definitions_in_context}'"
-            )
+            missing_target_definition = f"Definition not present in context, can't be updated. '{definition.name}' with uid '{definition.uid}' not present in '{definitions_in_context}'"
+            logging.error(missing_target_definition)
+            raise LanguageError(missing_target_definition)
 
     def update_definitions_in_context(self, definitions: list[Definition]):
         """
@@ -527,7 +527,7 @@ class LanguageContext:
 
     def update_architecture_file(self, file_uri: str) -> list[Definition]:
         """
-        Overwrites the architecture file at the uri based on the content in the context.
+        Overwrites the architecture file at the uri based on the content in the context and updates the definitions with their new source information.
 
         Args:
             file_uri (str): The source file URI to update.
@@ -536,7 +536,14 @@ class LanguageContext:
             None.
         """
         definitions_in_file = self.get_definitions_by_file_uri(file_uri)
-        write_definitions_to_file(definitions_in_file, file_uri)
+
+        if len(definitions_in_file) > 0:
+            write_definitions_to_file(definitions_in_file, file_uri)
+            self.remove_definitions_from_context(definitions_in_file)
+            self.add_definitions_to_context(parse(file_uri))
+        elif os.path.lexists(file_uri):
+            logging.info(f"Deleteing {file_uri} since there are no definitions for the file in the context.")
+            os.remove(file_uri)
 
     def get_file_in_context_by_uri(self, uri: str) -> Optional[AaCFile]:
         """
