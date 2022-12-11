@@ -174,17 +174,17 @@ class Definition:
         values = [*prefix_values, search_value, *suffix_values]
 
         index = 0
-        possible_found_lexeme = None
+        possible_match = None
         for lexeme in self.lexemes:
             found_all_values = len(values) == index
 
             if found_all_values:
-                return possible_found_lexeme
+                return possible_match
             elif lexeme.value == str(values[index]):
                 if lexeme.value == str(search_value):
-                    possible_found_lexeme = lexeme
+                    possible_match = lexeme
                 index += 1
             else:
                 index = 0
 
-        return possible_found_lexeme
+        return possible_match

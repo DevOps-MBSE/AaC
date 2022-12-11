@@ -31,9 +31,7 @@ class TestValidationImplementPlugin(TestCase):
     def test_validate_validator_implementations_validate_validation_success(self):
         test_active_context = get_active_context(reload_context=True)
 
-        validation_definitions = list(
-            filter(lambda definition: definition.get_root_key() == "validation", test_active_context.definitions)
-        )
+        validation_definitions = test_active_context.get_definitions_by_root_key("validation")
         self.assertGreater(len(validation_definitions), 0)
 
         test_validation_definition = validation_definitions[0]
