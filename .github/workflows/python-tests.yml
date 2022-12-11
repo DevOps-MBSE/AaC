@@ -53,11 +53,11 @@ jobs:
         cp model/plugin/plugin.yaml src/aac/plugins/first_party/first_party.yaml
         echo y | aac gen-plugin src/aac/plugins/first_party/first_party.yaml
         pip install .[all]
+        rm src/aac/state.json
 
     - name: Test Gen-Plugin Third-Party Plugin
       run: |
         echo y | aac gen-plugin model/plugin/plugin.yaml
-        rm src/aac/state.json
         cd model/plugin/
         pip install .
         aac -h | grep test-plugin-command
