@@ -60,6 +60,7 @@ jobs:
         echo y | aac gen-plugin model/plugin/plugin.yaml
         cd model/plugin/
         pip install .
+        aac -h 
         aac -h | grep test-plugin-command
 
     - name: Upload logs from failed runs
