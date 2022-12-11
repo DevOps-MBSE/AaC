@@ -44,10 +44,7 @@ def validate_reference_targets(
                 non_reference_field = f"Reference format validation cannot be performed on non-reference field '{reference_field_name}'.  Type is '{field_type}'"
                 reference_field_name_lexeme = definition_under_test.get_lexeme_with_value(reference_field_name)
                 findings.add_error_finding(
-                    definition_under_test,
-                    non_reference_field,
-                    PLUGIN_NAME,
-                    FindingLocation.from_lexeme(PLUGIN_NAME, reference_field_name_lexeme),
+                    definition_under_test, non_reference_field, PLUGIN_NAME, reference_field_name_lexeme
                 )
                 logging.debug(non_reference_field)
 
@@ -56,10 +53,7 @@ def validate_reference_targets(
                 missing_reference_field = f"Reference field '{reference_field_name}' value is missing"
                 reference_field_name_lexeme = definition_under_test.get_lexeme_with_value(reference_field_name)
                 findings.add_error_finding(
-                    definition_under_test,
-                    missing_reference_field,
-                    PLUGIN_NAME,
-                    FindingLocation.from_lexeme(PLUGIN_NAME, reference_field_name_lexeme),
+                    definition_under_test, missing_reference_field, PLUGIN_NAME, reference_field_name_lexeme
                 )
                 logging.debug(missing_reference_field)
 
@@ -68,10 +62,7 @@ def validate_reference_targets(
                 invalid_reference_format = f"Reference field '{reference_field_name}' is not properly formatted: {field_value} - {is_reference_format_valid(field_value)[1]}"
                 reference_field_name_lexeme = definition_under_test.get_lexeme_with_value(reference_field_name)
                 findings.add_error_finding(
-                    definition_under_test,
-                    invalid_reference_format,
-                    PLUGIN_NAME,
-                    FindingLocation.from_lexeme(PLUGIN_NAME, reference_field_name_lexeme),
+                    definition_under_test, invalid_reference_format, PLUGIN_NAME, reference_field_name_lexeme
                 )
                 logging.debug(invalid_reference_format)
 

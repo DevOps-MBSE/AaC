@@ -1,5 +1,6 @@
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.definitions.collections import get_definition_by_name, get_definitions_by_root_key
+from aac.lang.definitions.lexeme import Lexeme
 from aac.lang.definitions.source_location import SourceLocation
 from aac.plugins.contributions.contribution_types import DefinitionValidationContribution
 from aac.plugins.validators import ValidatorFindings, ValidatorResult
@@ -49,8 +50,9 @@ class TestDefinedReferencesPlugin(ActiveContextTestCase):
         invalid_reference_error_message = ""
         test_findings = ValidatorFindings()
         expected_finding_location = SourceLocation(4, 10, 81, 42)
+        lexeme = Lexeme(expected_finding_location, "", "")
         test_findings.add_error_finding(
-            test_invalid_schema_definition, invalid_reference_error_message, "validate thing", expected_finding_location
+            test_invalid_schema_definition, invalid_reference_error_message, "validate thing", lexeme
         )
         expected_result = ValidatorResult([test_invalid_schema_definition], test_findings)
 
@@ -76,8 +78,9 @@ class TestDefinedReferencesPlugin(ActiveContextTestCase):
         invalid_reference_error_message = ""
         expected_findings = ValidatorFindings()
         expected_finding_location = SourceLocation(4, 10, 82, 10)
+        lexeme = Lexeme(expected_finding_location, "", "")
         expected_findings.add_error_finding(
-            test_invalid_schema_definition, invalid_reference_error_message, "validate thing", expected_finding_location
+            test_invalid_schema_definition, invalid_reference_error_message, "validate thing", lexeme
         )
         expected_result = ValidatorResult([test_invalid_schema_definition], expected_findings)
 

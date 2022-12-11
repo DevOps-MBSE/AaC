@@ -5,7 +5,7 @@ from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.structure import get_substructures_by_type
 from aac.lang.definitions.type import is_array_type
 from aac.lang.language_context import LanguageContext
-from aac.plugins.validators import FindingLocation, ValidatorFindings, ValidatorResult
+from aac.plugins.validators import ValidatorFindings, ValidatorResult
 
 
 PLUGIN_NAME = "Required fields are present"
@@ -43,22 +43,14 @@ def validate_required_fields(
             if field_value is None:
                 missing_required_field = f"Required field '{required_field_name}' missing from: {dict_to_validate}"
                 required_field_lexeme = definition_under_test.get_lexeme_with_value(definition_under_test.get_root_key())
-                findings.add_error_finding(
-                    definition_under_test,
-                    missing_required_field,
-                    PLUGIN_NAME,
-                    FindingLocation.from_lexeme(PLUGIN_NAME, required_field_lexeme),
-                )
+                findings.add_error_finding(definition_under_test, missing_required_field, PLUGIN_NAME, required_field_lexeme)
                 logging.debug(missing_required_field)
 
             elif not _is_field_populated(field_type, field_value):
                 unpopulated_required_field = f"Required field '{required_field_name}' is not populated in: {dict_to_validate}"
                 required_field_lexeme = definition_under_test.get_lexeme_with_value(definition_under_test.get_root_key())
                 findings.add_error_finding(
-                    definition_under_test,
-                    unpopulated_required_field,
-                    PLUGIN_NAME,
-                    FindingLocation.from_lexeme(PLUGIN_NAME, required_field_lexeme),
+                    definition_under_test, unpopulated_required_field, PLUGIN_NAME, required_field_lexeme
                 )
                 logging.debug(unpopulated_required_field)
 

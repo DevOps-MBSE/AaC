@@ -3,7 +3,7 @@ import logging
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.structure import get_substructures_by_type
 from aac.lang.language_context import LanguageContext
-from aac.plugins.validators import FindingLocation, ValidatorFindings, ValidatorResult
+from aac.plugins.validators import ValidatorFindings, ValidatorResult
 
 
 PLUGIN_NAME = "Mutually exclusive fields"
@@ -39,10 +39,7 @@ def validate_exclusive_fields(
             )
             second_exclusive_field_lexeme = definition_under_test.get_lexeme_with_value(second)
             findings.add_error_finding(
-                definition_under_test,
-                multiple_exclusive_fields,
-                PLUGIN_NAME,
-                FindingLocation.from_lexeme(PLUGIN_NAME, second_exclusive_field_lexeme),
+                definition_under_test, multiple_exclusive_fields, PLUGIN_NAME, second_exclusive_field_lexeme
             )
             logging.debug(multiple_exclusive_fields)
 

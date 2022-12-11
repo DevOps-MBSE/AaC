@@ -4,7 +4,6 @@ from aac.lang.constants import DEFINITION_FIELD_NAME
 
 from aac.lang.definitions.definition import Definition
 from aac.lang.language_context import LanguageContext
-from aac.plugins.validators import FindingLocation
 from aac.plugins.validators._validator_result import ValidatorFindings, ValidatorResult
 
 
@@ -37,12 +36,7 @@ def validate_unique_names(
             for definition in definitions_with_target_name
         ]
         for lexeme in definition_name_lexemes:
-            findings.add_error_finding(
-                definition_under_test,
-                duplicate_name_message,
-                PLUGIN_NAME,
-                FindingLocation.from_lexeme(PLUGIN_NAME, lexeme),
-            )
+            findings.add_error_finding(definition_under_test, duplicate_name_message, PLUGIN_NAME, lexeme)
         logging.debug(duplicate_name_message)
 
     return ValidatorResult([definition_under_test], findings)

@@ -3,7 +3,7 @@ import logging
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.structure import get_substructures_by_type
 from aac.lang.language_context import LanguageContext
-from aac.plugins.validators import FindingLocation, ValidatorFindings, ValidatorResult
+from aac.plugins.validators import ValidatorFindings, ValidatorResult
 
 
 PLUGIN_NAME = "Subcomponents are models"
@@ -46,10 +46,7 @@ def validate_subcomponent_types(
                     )
                     component_type_lexeme = definition_under_test.get_lexeme_with_value(component_type)
                     findings.add_error_finding(
-                        target_schema_definition,
-                        incorrect_subcomponent_type,
-                        PLUGIN_NAME,
-                        FindingLocation.from_lexeme(PLUGIN_NAME, component_type_lexeme),
+                        target_schema_definition, incorrect_subcomponent_type, PLUGIN_NAME, component_type_lexeme
                     )
                     logging.debug(incorrect_subcomponent_type)
             else:
@@ -60,10 +57,7 @@ def validate_subcomponent_types(
                 )
                 component_name_lexeme = definition_under_test.get_lexeme_with_value(component_name)
                 findings.add_error_finding(
-                    target_schema_definition,
-                    component_missing_type,
-                    PLUGIN_NAME,
-                    FindingLocation.from_lexeme(PLUGIN_NAME, component_name_lexeme),
+                    target_schema_definition, component_missing_type, PLUGIN_NAME, component_name_lexeme
                 )
                 logging.debug(component_missing_type)
 

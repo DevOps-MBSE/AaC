@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock, patch
 
 from aac.io.parser import parse
+from aac.lang.definitions.lexeme import Lexeme
 from aac.lang.definitions.source_location import SourceLocation
 from aac.plugins.validators._validator_result import ValidatorFindings, ValidatorResult
 from aac.validate import ValidationError, validated_definitions, validated_source
@@ -109,9 +110,9 @@ class TestValidate(ActiveContextTestCase):
         test_definitions = [create_schema_definition("Test")]
 
         test_findings = ValidatorFindings()
-        source_location = SourceLocation(0, 0, 0, 0)
-        test_findings.add_info_finding(test_definitions[0], "warning message", "test validator", source_location)
-        test_findings.add_warning_finding(test_definitions[0], "warning message", "test validator", source_location)
+        lexeme = Lexeme(SourceLocation(0, 0, 0, 0), "", "")
+        test_findings.add_info_finding(test_definitions[0], "warning message", "test validator", lexeme)
+        test_findings.add_warning_finding(test_definitions[0], "warning message", "test validator", lexeme)
 
         _validate_definitions_mock.return_value = ValidatorResult(test_definitions, test_findings)
 

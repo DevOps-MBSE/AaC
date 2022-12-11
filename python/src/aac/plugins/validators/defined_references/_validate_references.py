@@ -3,7 +3,7 @@ import logging
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.structure import get_substructures_by_type
 from aac.lang.language_context import LanguageContext
-from aac.plugins.validators import FindingLocation, ValidatorFindings, ValidatorResult
+from aac.plugins.validators import ValidatorFindings, ValidatorResult
 
 
 PLUGIN_NAME = "Type references exist"
@@ -38,21 +38,13 @@ def validate_references(
                     undefined_reference_error_message = f"Undefined type '{field_reference}' referenced: {dict_to_validate}"
                     reference_lexeme = definition_under_test.get_lexeme_with_value(field_reference)
                     findings.add_error_finding(
-                        definition_under_test,
-                        undefined_reference_error_message,
-                        PLUGIN_NAME,
-                        FindingLocation.from_lexeme(PLUGIN_NAME, reference_lexeme),
+                        definition_under_test, undefined_reference_error_message, PLUGIN_NAME, reference_lexeme
                     )
                     logging.debug(undefined_reference_error_message)
             else:
                 missing_field_in_dictionary = f"Missing field 'type' in validation content dictionary: {dict_to_validate}"
                 name_lexeme = definition_under_test.get_lexeme_with_value(definition_under_test.name)
-                findings.add_error_finding(
-                    definition_under_test,
-                    missing_field_in_dictionary,
-                    PLUGIN_NAME,
-                    FindingLocation.from_lexeme(PLUGIN_NAME, name_lexeme),
-                )
+                findings.add_error_finding(definition_under_test, missing_field_in_dictionary, PLUGIN_NAME, name_lexeme)
                 logging.debug(missing_field_in_dictionary)
 
     dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)
