@@ -50,10 +50,7 @@ class TestDefinedReferencesPlugin(ActiveContextTestCase):
         test_findings = ValidatorFindings()
         expected_finding_location = SourceLocation(4, 10, 81, 42)
         test_findings.add_error_finding(
-            test_invalid_schema_definition,
-            invalid_reference_error_message,
-            "validate thing",
-            *expected_finding_location.to_tuple()
+            test_invalid_schema_definition, invalid_reference_error_message, "validate thing", expected_finding_location
         )
         expected_result = ValidatorResult([test_invalid_schema_definition], test_findings)
 
@@ -80,10 +77,7 @@ class TestDefinedReferencesPlugin(ActiveContextTestCase):
         expected_findings = ValidatorFindings()
         expected_finding_location = SourceLocation(4, 10, 82, 10)
         expected_findings.add_error_finding(
-            test_invalid_schema_definition,
-            invalid_reference_error_message,
-            "validate thing",
-            *expected_finding_location.to_tuple()
+            test_invalid_schema_definition, invalid_reference_error_message, "validate thing", expected_finding_location
         )
         expected_result = ValidatorResult([test_invalid_schema_definition], expected_findings)
 

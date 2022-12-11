@@ -49,7 +49,7 @@ def validate_subcomponent_types(
                         target_schema_definition,
                         incorrect_subcomponent_type,
                         PLUGIN_NAME,
-                        *FindingLocation.from_lexeme(PLUGIN_NAME, component_type_lexeme).to_tuple(),
+                        FindingLocation.from_lexeme(PLUGIN_NAME, component_type_lexeme),
                     )
                     logging.debug(incorrect_subcomponent_type)
             else:
@@ -63,7 +63,7 @@ def validate_subcomponent_types(
                     target_schema_definition,
                     component_missing_type,
                     PLUGIN_NAME,
-                    *FindingLocation.from_lexeme(PLUGIN_NAME, component_name_lexeme).to_tuple(),
+                    FindingLocation.from_lexeme(PLUGIN_NAME, component_name_lexeme),
                 )
                 logging.debug(component_missing_type)
 

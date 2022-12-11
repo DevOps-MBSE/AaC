@@ -47,7 +47,7 @@ def validate_required_fields(
                     definition_under_test,
                     missing_required_field,
                     PLUGIN_NAME,
-                    *FindingLocation.from_lexeme(PLUGIN_NAME, required_field_lexeme).to_tuple(),
+                    FindingLocation.from_lexeme(PLUGIN_NAME, required_field_lexeme),
                 )
                 logging.debug(missing_required_field)
 
@@ -58,7 +58,7 @@ def validate_required_fields(
                     definition_under_test,
                     unpopulated_required_field,
                     PLUGIN_NAME,
-                    *FindingLocation.from_lexeme(PLUGIN_NAME, required_field_lexeme).to_tuple(),
+                    FindingLocation.from_lexeme(PLUGIN_NAME, required_field_lexeme),
                 )
                 logging.debug(unpopulated_required_field)
 

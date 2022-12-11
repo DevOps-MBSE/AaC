@@ -47,7 +47,7 @@ def validate_reference_fields(
                     definition_under_test,
                     non_reference_field,
                     PLUGIN_NAME,
-                    *FindingLocation.from_lexeme(PLUGIN_NAME, reference_field_name_lexeme).to_tuple(),
+                    FindingLocation.from_lexeme(PLUGIN_NAME, reference_field_name_lexeme),
                 )
                 logging.debug(non_reference_field)
 
@@ -59,7 +59,7 @@ def validate_reference_fields(
                     definition_under_test,
                     missing_reference_field,
                     PLUGIN_NAME,
-                    *FindingLocation.from_lexeme(PLUGIN_NAME, reference_field_name_lexeme).to_tuple(),
+                    FindingLocation.from_lexeme(PLUGIN_NAME, reference_field_name_lexeme),
                 )
                 logging.debug(missing_reference_field)
 
@@ -71,7 +71,7 @@ def validate_reference_fields(
                     definition_under_test,
                     invalid_reference_format,
                     PLUGIN_NAME,
-                    *FindingLocation.from_lexeme(PLUGIN_NAME, reference_field_name_lexeme).to_tuple(),
+                    FindingLocation.from_lexeme(PLUGIN_NAME, reference_field_name_lexeme),
                 )
                 logging.debug(invalid_reference_format)
 

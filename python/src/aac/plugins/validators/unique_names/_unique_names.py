@@ -41,7 +41,7 @@ def validate_unique_names(
                 definition_under_test,
                 duplicate_name_message,
                 PLUGIN_NAME,
-                *FindingLocation.from_lexeme(PLUGIN_NAME, lexeme).to_tuple(),
+                FindingLocation.from_lexeme(PLUGIN_NAME, lexeme),
             )
         logging.debug(duplicate_name_message)
 

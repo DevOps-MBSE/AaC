@@ -39,7 +39,7 @@ def validate_root_keys(
             definition_under_test,
             undefined_reference_error_message,
             PLUGIN_NAME,
-            *FindingLocation.from_lexeme(PLUGIN_NAME, root_key_lexeme).to_tuple(),
+            FindingLocation.from_lexeme(PLUGIN_NAME, root_key_lexeme),
         )
         logging.debug(undefined_reference_error_message)
 

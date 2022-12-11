@@ -41,7 +41,7 @@ def validate_references(
                         definition_under_test,
                         undefined_reference_error_message,
                         PLUGIN_NAME,
-                        *FindingLocation.from_lexeme(PLUGIN_NAME, reference_lexeme).to_tuple(),
+                        FindingLocation.from_lexeme(PLUGIN_NAME, reference_lexeme),
                     )
                     logging.debug(undefined_reference_error_message)
             else:
@@ -51,7 +51,7 @@ def validate_references(
                     definition_under_test,
                     missing_field_in_dictionary,
                     PLUGIN_NAME,
-                    *FindingLocation.from_lexeme(PLUGIN_NAME, name_lexeme).to_tuple(),
+                    FindingLocation.from_lexeme(PLUGIN_NAME, name_lexeme),
                 )
                 logging.debug(missing_field_in_dictionary)
 

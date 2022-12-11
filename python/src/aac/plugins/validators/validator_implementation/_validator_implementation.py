@@ -41,7 +41,7 @@ def validate_validator_implementations(
                 target_schema_definition,
                 registered_plugin_names,
                 PLUGIN_NAME,
-                *FindingLocation.from_lexeme(PLUGIN_NAME, validation_name_lexeme).to_tuple(),
+                FindingLocation.from_lexeme(PLUGIN_NAME, validation_name_lexeme),
             )
             logging.debug(registered_plugin_names)
         elif validation_plugins and not len(validation_plugins) == 1:
@@ -52,7 +52,7 @@ def validate_validator_implementations(
                 target_schema_definition,
                 registered_plugin_names,
                 PLUGIN_NAME,
-                *FindingLocation.from_lexeme(PLUGIN_NAME, validation_name_lexeme).to_tuple(),
+                FindingLocation.from_lexeme(PLUGIN_NAME, validation_name_lexeme),
             )
             logging.debug(registered_plugin_names)
 
