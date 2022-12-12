@@ -67,7 +67,7 @@ export function editDefinition(event: Definition) {
         getDefinitionByName(event.definitionModel.name).then(response => {
             vscode.commands.executeCommand(
                 "vscode.openWith",
-                vscode.Uri.from({scheme: "foo", path:`${response.body.name}`}),
+                vscode.Uri.from({scheme: "untitled", path:`${response.body.name}`}),
                 "aac.visualEditor"
             );
         });
