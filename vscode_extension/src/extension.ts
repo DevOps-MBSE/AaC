@@ -24,9 +24,7 @@ function activatePlugin(context: ExtensionContext) {
 
     window.createTreeView('definitions-in-context', { treeDataProvider: TREE_VIEW_PROVIDER });
     const definitionsView = window.createTreeView('definitions-in-context', { treeDataProvider: TREE_VIEW_PROVIDER});
-    definitionsView.onDidChangeSelection(e => {
-        onDefinitionNodeSelection(e)
-    })
+    definitionsView.onDidChangeSelection(e => { onDefinitionNodeSelection(e); });
 }
 
 function registerCommands(context: ExtensionContext) {
