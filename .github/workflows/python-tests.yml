@@ -59,7 +59,8 @@ jobs:
       run: |
         pwd
         echo y | aac gen-plugin model/plugin/plugin.yaml
-        rm src/aac/state.json
+        ls -al model/plugin/test_plugin/
+        ls src/aac/
         cd model/plugin/
         pip install .
         aac -h
