@@ -11,7 +11,7 @@ from aac.plugins import PluginError
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 from aac.validate import validated_source, validated_definition
 from aac.io.parser import parse
-from aac.lang.definition_helpers import get_definition_by_name
+from aac.lang.definitions.collections import get_definition_by_name
 
 plugin_name = "validate"
 

@@ -23,7 +23,7 @@ runtime_dependencies = [
     "pluggy >= 1.0",
     "Jinja2 >= 3.1",
     "MarkupSafe >= 2.1",
-    "pygls >= 0.13",
+    "pygls == 0.13.1",
     "fastapi >= 0.86",
     "starlette >= 0.20.4",
     "anyio < 5, >= 3.6.0",

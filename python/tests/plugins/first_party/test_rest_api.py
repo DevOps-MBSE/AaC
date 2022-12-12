@@ -34,8 +34,9 @@ class TestAacRestApiCommandEndpoints(ActiveContextTestCase):
     test_client = TestClient(app)
 
     def test_get_available_commands(self):
+        active_context = get_active_context()
         excluded_rest_api_commands = ["rest-api", "start-lsp-io", "start-lsp-tcp"]
-        expected_result = list(filter(lambda command: command.name not in excluded_rest_api_commands, get_plugin_commands()))
+        expected_result = list(filter(lambda command: command.name not in excluded_rest_api_commands, active_context.get_plugin_commands()))
         expected_commands_dict = {command.name: command for command in expected_result}
 
         response = self.test_client.get("/commands")

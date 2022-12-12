@@ -9,7 +9,7 @@ from pygls.server import LanguageServer
 
 from aac.io.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_active_context
-from aac.lang.definition_helpers import get_definitions_by_root_key
+from aac.lang.definitions.collections import get_definitions_by_root_key
 from aac.lang.definitions.definition import Definition
 from aac.plugins.first_party.lsp_server.providers.lsp_provider import LspProvider
 

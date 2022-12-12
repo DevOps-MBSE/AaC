@@ -13,7 +13,6 @@ from aac.io.writer import write_definitions_to_file
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.definitions.json_schema import get_definition_json_schema
 from aac.plugins.plugin_execution import PluginExecutionStatusCode
-from aac.plugins.plugin_manager import get_plugin_commands
 from aac.plugins.first_party.rest_api.models.command_model import CommandModel, CommandRequestModel, CommandResponseModel, to_command_model
 from aac.plugins.first_party.rest_api.models.definition_model import DefinitionModel, to_definition_class, to_definition_model
 from aac.plugins.first_party.rest_api.models.file_model import FileModel, FilePathModel, FilePathRenameModel, to_file_model
@@ -305,11 +304,12 @@ def _is_file_path_in_working_directory(file_path: str) -> bool:
 
 def _get_rest_api_compatible_commands() -> dict[str, AacCommand]:
     """Filter out plugin commands that aren't compatible with the rest-api command. These commands are long-running commands that don't allow for a timely rest response."""
+    active_context = get_active_context()
     long_running_commands = ["rest-api", "start-lsp-io", "start-lsp-tcp"]
     filtered_aac_and_plugin_commands = list(
         filter(
             lambda command: command.name not in long_running_commands,
-            get_plugin_commands(),
+            active_context.get_plugin_commands(),
         )
     )
 

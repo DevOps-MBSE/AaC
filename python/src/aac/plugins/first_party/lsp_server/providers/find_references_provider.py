@@ -7,7 +7,7 @@ from pygls.workspace import Document
 
 from aac.lang.definitions.definition import Definition
 from aac.lang.language_context import LanguageContext
-from aac.lang.definition_helpers import get_definitions_by_root_key
+from aac.lang.definitions.collections import get_definitions_by_root_key
 from aac.lang.definitions.references import get_definition_type_references_from_list
 from aac.lang.definitions.type import remove_list_type_indicator
 from aac.lang.definitions.lexeme import Lexeme
