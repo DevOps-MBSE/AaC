@@ -1,11 +1,21 @@
 """The Language Context manages the highly-contextual AaC DSL."""
+
+import json
 import logging
-from attr import Factory, attrib, attrs, validators
+
 from collections import OrderedDict
+from os.path import lexists
 from typing import Optional
 from uuid import UUID
 
+from attr import Factory, attrib, attrs, validators
+
+from aac import __version__
+from aac.cli.aac_command import AacCommand
 from aac.io.files.aac_file import AaCFile
+from aac.io.parser import parse
+from aac.io.paths import sanitize_filesystem_path
+from aac.io.writer import write_file
 from aac.lang.constants import (
     DEFINITION_FIELD_NAME,
     DEFINITION_NAME_PRIMITIVES,
@@ -14,15 +24,15 @@ from aac.lang.constants import (
     ROOT_KEY_EXTENSION,
     ROOT_KEY_SCHEMA,
 )
-from aac.cli.aac_command import AacCommand
 from aac.lang.definitions.collections import get_definitions_by_root_key
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.extensions import apply_extension_to_definition, remove_extension_from_definition
 from aac.lang.definitions.type import remove_list_type_indicator
 from aac.lang.language_error import LanguageError
-from aac.plugins.plugin_manager import get_plugins
+from aac.persistence.state_file_error import StateFileError
+from aac.plugins.contributions.contribution_points import DefinitionValidationContribution, PrimitiveValidationContribution
 from aac.plugins.plugin import Plugin
-from aac.plugins.contributions.contribution_types import DefinitionValidationContribution, PrimitiveValidationContribution
+from aac.plugins.plugin_manager import get_plugins
 
 
 @attrs(slots=True, auto_attribs=True)
@@ -44,6 +54,7 @@ class LanguageContext:
 
     definitions: list[Definition] = attrib(default=Factory(list), validator=validators.instance_of(list))
     plugins: list[Plugin] = attrib(default=Factory(list), validator=validators.instance_of(list))
+    is_initialized: bool = attrib(default=False, validator=validators.instance_of(bool))
 
     # Private attribute - don't reference outside of this class.
     definitions_dictionary: dict[UUID, Definition] = attrib(
@@ -137,6 +148,23 @@ class LanguageContext:
 
         for extension_definition in extension_definitions:
             self.add_definition_to_context(extension_definition)
+
+    def add_definitions_from_uri(self, uri: str, names: list[str]):
+        """
+        Load the definitions from the provided file URI.
+
+        Args:
+            uri (str): The file URI from which to load definitions.
+            names (list[str]): The list of the names of the definitions that should be loaded into
+                the context.
+        """
+        if not lexists(uri):
+            logging.warn(f"Skipping {uri} as it could not be found.")
+            return
+
+        definitions = [definition for definition in parse(uri) if definition.name in names]
+        self.update_definitions_in_context(list(set(self.definitions).intersection(definitions)))
+        self.add_definitions_to_context(list(set(definitions).difference(self.definitions)))
 
     def remove_definition_from_context(self, definition: Definition):
         """
@@ -540,7 +568,8 @@ class LanguageContext:
         return None
 
     def get_definitions_by_file_uri(self, file_uri: str) -> list[Definition]:
-        """Return a subset of definitions that are sourced from the target file URI.
+        """
+        Return a subset of definitions that are sourced from the target file URI.
 
         Args:
             file_uri (str): The source file URI to filter on.
@@ -549,3 +578,52 @@ class LanguageContext:
             A list of definitions belonging to the target file.
         """
         return [definition for definition in self.definitions if file_uri == definition.source.uri]
+
+    def import_from_file(self, file_uri: str) -> None:
+        """
+        Load the language context from filename.
+
+        Args:
+            file_uri (str): The name of the file from which to load the language context.
+        """
+
+        def decode_state_file():
+            with open(file_uri) as state_file:
+                object = json.loads(state_file.read()) or {}
+                return (
+                    object.get("aac_version"),
+                    object.get("files"),
+                    object.get("definitions"),
+                    object.get("plugins"),
+                )
+
+        if lexists(file_uri):
+            version, files, definitions, plugins = decode_state_file()
+
+            if version != __version__:
+                raise StateFileError(
+                    f"Version mismatch: State file written using version {version}; current AaC version {__version__}"
+                )
+
+            for file in files:
+                self.add_definitions_from_uri(sanitize_filesystem_path(file), definitions)
+
+            for plugin in plugins:
+                self.activate_plugin_by_name(plugin)
+
+            self.is_initialized = True
+
+    def export_to_file(self, file_uri: str) -> None:
+        """
+        Write the language context to disk.
+
+        Args:
+            file_uri (str): The name of the file in which to store the language context.
+        """
+        data = dict(
+            aac_version=__version__,
+            files=[file.uri for file in self.get_files_in_context()],
+            definitions=self.get_defined_types(),
+            plugins=[plugin.name for plugin in self.get_active_plugins()],
+        )
+        write_file(file_uri, json.dumps(data, indent=2), True)

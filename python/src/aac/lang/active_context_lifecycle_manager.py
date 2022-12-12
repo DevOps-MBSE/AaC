@@ -1,8 +1,10 @@
 """This module manages a singleton instance of LanguageContext and its lifecycle."""
 
 from aac.lang.language_context import LanguageContext
+from aac.persistence import ACTIVE_CONTEXT_STATE_FILE_NAME
 from aac.plugins.plugin_manager import get_plugins
 from aac.spec import get_aac_spec
+
 
 ACTIVE_CONTEXT = None
 
@@ -17,10 +19,13 @@ def get_active_context(reload_context: bool = False) -> LanguageContext:
     Returns:
         The managed instance of LanguageContext
     """
-
     global ACTIVE_CONTEXT
 
-    if not ACTIVE_CONTEXT or reload_context:
+    if not ACTIVE_CONTEXT and not reload_context:
+        ACTIVE_CONTEXT = LanguageContext()
+        ACTIVE_CONTEXT.import_from_file(ACTIVE_CONTEXT_STATE_FILE_NAME)
+
+    if not ACTIVE_CONTEXT or reload_context or not ACTIVE_CONTEXT.is_initialized:
         ACTIVE_CONTEXT = get_initialized_language_context()
 
     return ACTIVE_CONTEXT
@@ -38,5 +43,7 @@ def get_initialized_language_context(core_spec_only: bool = False) -> LanguageCo
 
     if not core_spec_only:
         language_context.activate_plugins(get_plugins())
+
+    language_context.is_initialized = True
 
     return language_context
