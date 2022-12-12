@@ -12,7 +12,6 @@ from aac.io.constants import YAML_DOCUMENT_EXTENSION, AAC_DOCUMENT_EXTENSION
 from aac.io.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.definitions.json_schema import get_definition_json_schema
-from aac.plugins.plugin_manager import get_plugin_commands
 from aac.plugins.first_party.rest_api.aac_rest_app import app, refresh_available_files_in_workspace
 from aac.plugins.first_party.rest_api.models.command_model import CommandRequestModel
 from aac.plugins.first_party.rest_api.models.definition_model import to_definition_model
