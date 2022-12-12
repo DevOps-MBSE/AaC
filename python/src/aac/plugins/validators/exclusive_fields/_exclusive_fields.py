@@ -9,7 +9,12 @@ from aac.plugins.validators import ValidatorFindings, ValidatorResult
 PLUGIN_NAME = "Mutually exclusive fields"
 
 
-def validate_exclusive_fields(definition_under_test: Definition, target_schema_definition: Definition, language_context: LanguageContext, *validation_args) -> ValidatorResult:
+def validate_exclusive_fields(
+    definition_under_test: Definition,
+    target_schema_definition: Definition,
+    language_context: LanguageContext,
+    *validation_args,
+) -> ValidatorResult:
     """
     Validates that the none of the fields are simultaneously defined.
 
@@ -28,8 +33,14 @@ def validate_exclusive_fields(definition_under_test: Definition, target_schema_d
         present_exclusive_fields = set(validation_args).intersection(set(dict_to_validate.keys()))
 
         if len(present_exclusive_fields) > 1:
-            multiple_exclusive_fields = f"Multiple exclusive fields are defined '{present_exclusive_fields}' in: {dict_to_validate}"
-            findings.add_error_finding(definition_under_test, multiple_exclusive_fields, PLUGIN_NAME, 0, 0, 0, 0)
+            _, second, *_ = validation_args
+            multiple_exclusive_fields = (
+                f"Multiple exclusive fields are defined '{present_exclusive_fields}' in: {dict_to_validate}"
+            )
+            second_exclusive_field_lexeme = definition_under_test.get_lexeme_with_value(second)
+            findings.add_error_finding(
+                definition_under_test, multiple_exclusive_fields, PLUGIN_NAME, second_exclusive_field_lexeme
+            )
             logging.debug(multiple_exclusive_fields)
 
     dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)

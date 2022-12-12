@@ -1,9 +1,9 @@
 """A module that facilitates working with a collection of validator findings."""
 
-
 from attr import Factory, attrib, attrs, validators
 
 from aac.lang.definitions.definition import Definition
+from aac.lang.definitions.lexeme import Lexeme
 from aac.plugins.validators._validator_finding import FindingLocation, FindingSeverity, ValidatorFinding
 
 
@@ -22,84 +22,22 @@ class ValidatorFindings:
         """Add the new findings to the collection of all findings."""
         self.findings.extend(new_findings)
 
-    def add_error_finding(
-        self,
-        definition: Definition,
-        message: str,
-        validation_name: str,
-        line: int,
-        column: int,
-        position: int,
-        span: int,
-    ) -> None:
+    def add_error_finding(self, definition: Definition, message: str, validation_name: str, lexeme: Lexeme) -> None:
         """Add the finding as an error finding."""
-        self._add_finding_with_severity(
-            definition,
-            message,
-            FindingSeverity.ERROR,
-            validation_name,
-            line,
-            column,
-            position,
-            span,
-        )
+        self._add_finding_with_severity(definition, message, FindingSeverity.ERROR, validation_name, lexeme)
 
-    def add_warning_finding(
-        self,
-        definition: Definition,
-        message: str,
-        validation_name: str,
-        line: int,
-        column: int,
-        position: int,
-        span: int,
-    ) -> None:
+    def add_warning_finding(self, definition: Definition, message: str, validation_name: str, lexeme: Lexeme) -> None:
         """Add the finding as an warning finding."""
-        self._add_finding_with_severity(
-            definition,
-            message,
-            FindingSeverity.WARNING,
-            validation_name,
-            line,
-            column,
-            position,
-            span,
-        )
+        self._add_finding_with_severity(definition, message, FindingSeverity.WARNING, validation_name, lexeme)
 
-    def add_info_finding(
-        self,
-        definition: Definition,
-        message: str,
-        validation_name: str,
-        line: int,
-        column: int,
-        position: int,
-        span: int,
-    ) -> None:
+    def add_info_finding(self, definition: Definition, message: str, validation_name: str, lexeme: Lexeme) -> None:
         """Add the finding as an info finding."""
-        self._add_finding_with_severity(
-            definition,
-            message,
-            FindingSeverity.INFO,
-            validation_name,
-            line,
-            column,
-            position,
-            span,
-        )
+        self._add_finding_with_severity(definition, message, FindingSeverity.INFO, validation_name, lexeme)
 
     def _add_finding_with_severity(
-        self,
-        definition: Definition,
-        message: str,
-        severity: FindingSeverity,
-        validation_name: str,
-        line: int,
-        column: int,
-        position: int,
-        span: int,
+        self, definition: Definition, message: str, severity: FindingSeverity, validation_name: str, lexeme: Lexeme
     ) -> None:
-        location = FindingLocation(validation_name, definition.source, line, column, position, span)
+        location = FindingLocation.from_lexeme(validation_name, lexeme)
         self.add_findings([ValidatorFinding(definition, severity, message, location)])
 
     def get_all_findings(self) -> list[ValidatorFinding]:

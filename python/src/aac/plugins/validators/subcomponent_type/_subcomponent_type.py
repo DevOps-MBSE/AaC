@@ -9,7 +9,12 @@ from aac.plugins.validators import ValidatorFindings, ValidatorResult
 PLUGIN_NAME = "Subcomponents are models"
 
 
-def validate_subcomponent_types(definition_under_test: Definition, target_schema_definition: Definition, language_context: LanguageContext, *validation_args) -> ValidatorResult:
+def validate_subcomponent_types(
+    definition_under_test: Definition,
+    target_schema_definition: Definition,
+    language_context: LanguageContext,
+    *validation_args,
+) -> ValidatorResult:
     """
     Validate that the subcomponents of the definition are models.
 
@@ -39,7 +44,10 @@ def validate_subcomponent_types(definition_under_test: Definition, target_schema
                         f"Expected '{expected_type}' as the subcomponent type but found '{component_type}' with type "
                         f"'{actual_type}' in: {dict_to_validate}"
                     )
-                    findings.add_error_finding(target_schema_definition, incorrect_subcomponent_type, PLUGIN_NAME, 0, 0, 0, 0)
+                    component_type_lexeme = definition_under_test.get_lexeme_with_value(component_type)
+                    findings.add_error_finding(
+                        target_schema_definition, incorrect_subcomponent_type, PLUGIN_NAME, component_type_lexeme
+                    )
                     logging.debug(incorrect_subcomponent_type)
             else:
                 component_name = component.get("name")
@@ -47,7 +55,10 @@ def validate_subcomponent_types(definition_under_test: Definition, target_schema
                     f"Expected component '{component_name}' to have the field 'type', but was not present. Bad component:"
                     f"{component}"
                 )
-                findings.add_error_finding(target_schema_definition, component_missing_type, PLUGIN_NAME, 0, 0, 0, 0)
+                component_name_lexeme = definition_under_test.get_lexeme_with_value(component_name)
+                findings.add_error_finding(
+                    target_schema_definition, component_missing_type, PLUGIN_NAME, component_name_lexeme
+                )
                 logging.debug(component_missing_type)
 
     dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)

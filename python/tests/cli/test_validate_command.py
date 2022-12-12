@@ -39,12 +39,6 @@ class TestValidateCommand(ActiveContextTestCase):
             self.assertIn(f"{valid_model_file.name} is valid", result.get_messages_as_string())
             self.assertIn(valid_model.name, result.get_messages_as_string())
 
-            active_context = get_active_context()
-            self.assertTrue(active_context.is_definition_type(valid_model.name))
-
-            # This check will only work if we allow validate to pollute the active context for validation.
-            self.assertFalse(active_context.is_definition_type(valid_schema.name))
-
     def test_validate_command_specify_definition_name_fails_with_missing_definition(self):
         valid_model = create_model_definition("Valid Model", "A valid model.")
         valid_schema = create_schema_definition("Test Schema", fields=[create_field_entry(DEFINITION_FIELD_NAME, PRIMITIVE_TYPE_STRING)])
