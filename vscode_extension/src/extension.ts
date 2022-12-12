@@ -3,7 +3,7 @@ import { AacLanguageServerClient } from "./AacLanguageServer";
 import { executeAacCommand } from "./aacExecutableWrapper";
 import { getOutputChannel } from "./outputChannel";
 import { AacDefinitionEditorProvider } from "./providers/AacDefinitionEditorProvider";
-import { AacDefinitionsViewProvider, Definition, editDefinition, deleteDefinition } from "./providers/AacDefinitionsViewProvider";
+import { AacDefinitionsViewProvider, Definition, editDefinition, deleteDefinition, onDefinitionNodeSelection } from "./providers/AacDefinitionsViewProvider";
 import { setFilePathConfigurationItem } from "./configuration";
 
 let aacLspClient: AacLanguageServerClient = AacLanguageServerClient.getLspClient();
@@ -23,6 +23,10 @@ function activatePlugin(context: ExtensionContext) {
     context.subscriptions.push(AacDefinitionEditorProvider.register(context));
 
     window.createTreeView('definitions-in-context', { treeDataProvider: TREE_VIEW_PROVIDER });
+    const definitionsView = window.createTreeView('definitions-in-context', { treeDataProvider: TREE_VIEW_PROVIDER});
+    definitionsView.onDidChangeSelection(e => {
+        onDefinitionNodeSelection(e)
+    })
 }
 
 function registerCommands(context: ExtensionContext) {
