@@ -19,7 +19,7 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
             new AacDefinitionEditorProvider(context),
             {
                 webviewOptions: {
-                    retainContextWhenHidden: true, //keeps the webview alive even when it is not visible. Does have a memory overhead.
+                    retainContextWhenHidden: true, // keeps the webview alive even when it is not visible. Does have a memory overhead.
                 },
                 supportsMultipleEditorsPerDocument: false,
             });
@@ -32,9 +32,7 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
      */
     private readonly webviews = new WebviewCollection();
 
-    constructor(
-        private readonly _context: vscode.ExtensionContext
-    ) { }
+    constructor(private readonly _context: vscode.ExtensionContext) { }
 
     async openCustomDocument(
         uri: vscode.Uri,
@@ -49,12 +47,8 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
         const listeners: vscode.Disposable[] = [];
         listeners.push(document.onDidChange(event => {
             // Propagate document changes to VS Code.
-            this._onDidChangeCustomDocument.fire({
-                document,
-                ...event,
-            });
+            this._onDidChangeCustomDocument.fire({document, ...event});
         }));
-
 
         document.onDidDispose(() => disposeAll(listeners));
 
@@ -262,9 +256,7 @@ class WebviewCollection {
         const entry = { resource: uri.toString(), webviewPanel };
         this._webviews.add(entry);
 
-        webviewPanel.onDidDispose(() => {
-            this._webviews.delete(entry);
-        });
+        webviewPanel.onDidDispose(() => this._webviews.delete(entry));
     }
 }
 

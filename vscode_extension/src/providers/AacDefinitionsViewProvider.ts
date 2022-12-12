@@ -6,8 +6,8 @@ export class AacDefinitionsViewProvider implements vscode.TreeDataProvider<Defin
     public COMMAND_DEFINITIONS_LIST_REFRESH = "definitionsList.refreshEntry";
     public COMMAND_DEFINITIONS_LIST_EDIT = "definitionsList.editEntry";
     public COMMAND_DEFINITIONS_LIST_DELETE = "definitionsList.deleteEntry";
-	private _onDidChangeTreeData: vscode.EventEmitter<Definition | undefined | void> = new vscode.EventEmitter<Definition | undefined | void>();
-	readonly onDidChangeTreeData: vscode.Event<Definition | undefined | void> = this._onDidChangeTreeData.event;
+    private _onDidChangeTreeData: vscode.EventEmitter<Definition | undefined | void> = new vscode.EventEmitter<Definition | undefined | void>();
+    readonly onDidChangeTreeData: vscode.Event<Definition | undefined | void> = this._onDidChangeTreeData.event;
 
     constructor() { }
 
@@ -34,6 +34,7 @@ export class AacDefinitionsViewProvider implements vscode.TreeDataProvider<Defin
         return requestResponse.body.map((definition: DefinitionModel) => new Definition(definition, vscode.TreeItemCollapsibleState.None));
     }
 }
+
 export class Definition extends vscode.TreeItem {
     constructor(
         public readonly definitionModel: DefinitionModel,

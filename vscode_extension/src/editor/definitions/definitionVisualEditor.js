@@ -3,7 +3,7 @@
 const vscode = acquireVsCodeApi();
 
 const AacEditorEventTypes = {
-	READY: 1,
+    READY: 1,
     EDIT: 2,
     SAVE: 3,
     DELETE: 4,
@@ -40,14 +40,14 @@ var runEditor = () => {
 
             this.jsonEditor = new JSONEditor(document.getElementById('main'),
                 {
-                    "use_default_values": true,
-                    "prompt_before_delete": false,
-                    "disable_collapse": false,
-                    "disable_array_delete_last_row": true,
-                    "array_controls_top": true,
-                    "disable_edit_json": true,
-                    "schema": data.jsonSchema,
-                    "startval": data.structure[this.rootKey]
+                    use_default_values: true,
+                    prompt_before_delete: false,
+                    disable_collapse: false,
+                    disable_array_delete_last_row: true,
+                    array_controls_top: true,
+                    disable_edit_json: true,
+                    schema: data.jsonSchema,
+                    startval: data.structure[this.rootKey]
                 }
             );
 
