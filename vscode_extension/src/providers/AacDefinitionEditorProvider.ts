@@ -131,14 +131,14 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
                 <title></title>
             </head>
             <body>
+                <button id='submit'>Save</button>
+                <button id='delete'>Delete</button>
+                <button id='validate'>Validate</button>
                 <div id="source-div">
                     <label id="source-label">Definition's File</label>
                     <input id="source" value="test value" disabled/>
                 </div>
                 <div id="main"></div>
-                <button id='submit'>Save</button>
-                <button id='delete'>Delete</button>
-                <button id='validate'>Validate</button>
                 <script src="${scriptUri}" http-equiv="Content-Security-Policy" script-src-elem 'unsafe-inline' ${scriptUri} nonce='${nonce}';></script>
             </body>
             </html>`;
