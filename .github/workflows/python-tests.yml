@@ -52,8 +52,8 @@ jobs:
     - name: Test Gen-Plugin Third-Party Plugin
       run: |
         pwd
-        rm src/aac/state.json
         echo y | aac gen-plugin model/plugin/plugin.yaml
+        rm src/aac/state.json
         ls -al model/plugin/test_plugin/
         ls src/aac/
         cd model/plugin/
