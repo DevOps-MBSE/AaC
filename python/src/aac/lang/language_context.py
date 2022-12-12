@@ -71,7 +71,7 @@ class LanguageContext:
         Args:
             definition: The Definition to add to the context.
         """
-        new_definition = copy.deepcopy(definition)
+        new_definition = definition.copy()
 
         if new_definition.uid not in self.definitions_dictionary:
             new_definition.source.is_loaded_in_context = True
@@ -395,7 +395,7 @@ class LanguageContext:
         if definition_name:
             definition_name = remove_list_type_indicator(definition_name)
             definition_to_return = [
-                definition for definition in self.definitions_dictionary.values() if definition.name == definition_name
+                definition for definition in tuple(self.definitions_dictionary.values()) if definition.name == definition_name
             ]
 
             if len(definition_to_return) > 0:

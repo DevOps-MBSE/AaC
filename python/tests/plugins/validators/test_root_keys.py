@@ -1,13 +1,14 @@
 import logging
 
+from aac.io.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.definitions.collections import get_definition_by_name, get_definitions_by_root_key
 from aac.plugins.contributions.contribution_types import DefinitionValidationContribution
 from aac.plugins.validators.root_keys import _get_plugin_definitions, _get_plugin_validations, validate_root_keys
 
 from tests.active_context_test_case import ActiveContextTestCase
-from tests.helpers.assertion import assert_definitions_equal, assert_validator_result_success, assert_validator_result_failure
-from tests.helpers.parsed_definitions import create_schema_definition, create_schema_ext_definition, create_field_entry
+from tests.helpers.assertion import assert_definitions_equal, assert_validator_result_failure, assert_validator_result_success
+from tests.helpers.parsed_definitions import create_field_entry, create_schema_definition, create_schema_ext_definition
 
 
 class TestRootKeysValidator(ActiveContextTestCase):
@@ -43,13 +44,17 @@ class TestRootKeysValidator(ActiveContextTestCase):
     def test_validate_root_keys_invalid_key(self):
         fake_root_key = "not_a_root_key"
         test_definition = create_schema_definition("Test")
-        test_definition.structure[fake_root_key] = test_definition.structure[test_definition.get_root_key()]
-        del test_definition.structure[test_definition.get_root_key()]
+        original_root_key = test_definition.get_root_key()
+        test_definition.structure[fake_root_key] = test_definition.structure[original_root_key]
+        del test_definition.structure[original_root_key]
+
+        # We need to re-parse to make sure lexemes are up-to-date
+        test_definition, *_ = parse(test_definition.to_yaml())
 
         test_active_context = get_active_context()
         test_active_context.add_definition_to_context(test_definition)
 
-        target_schema_definition = test_active_context.get_definition_by_name(test_definition.get_root_key())
+        target_schema_definition = test_active_context.get_definition_by_name(original_root_key)
         actual_result = validate_root_keys(test_definition, target_schema_definition, test_active_context)
 
         assert_validator_result_failure(actual_result, "root", "key", fake_root_key)

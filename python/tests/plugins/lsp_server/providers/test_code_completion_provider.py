@@ -4,11 +4,12 @@ from pygls.lsp import methods
 from pygls.lsp.types import CompletionContext, CompletionParams, CompletionTriggerKind
 from aac.lang.definitions.search import search_definition
 
+from aac.io.constants import DEFINITION_SEPARATOR
 from aac.plugins.first_party.lsp_server.providers.code_completion_provider import SPACE_TRIGGER
 
 from tests.helpers.lsp.responses.completion_response import CompletionResponse
 from tests.plugins.lsp_server.base_lsp_test_case import BaseLspTestCase
-from tests.plugins.lsp_server.definition_constants import TEST_DOCUMENT_NAME, TEST_PARTIAL_CONTENT
+from tests.plugins.lsp_server.definition_constants import TEST_DOCUMENT_NAME, TEST_DOCUMENT_CONTENT, TEST_PARTIAL_CONTENT
 
 
 class TestCodeCompletionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
@@ -47,7 +48,7 @@ class TestCodeCompletionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         return all_defined_type_names
 
     async def test_handles_completion_request(self):
-        new_content = f"{TEST_PARTIAL_CONTENT}{SPACE_TRIGGER}"
+        new_content = f"{TEST_DOCUMENT_CONTENT}{DEFINITION_SEPARATOR}{TEST_PARTIAL_CONTENT}{SPACE_TRIGGER}"
         await self.write_document(TEST_DOCUMENT_NAME, new_content)
 
         last_line = len(new_content.splitlines()) - 1
