@@ -11,11 +11,11 @@ export class AacDefinitionsViewProvider implements vscode.TreeDataProvider<Defin
 
     constructor() { }
 
-    getTreeItem(element: Definition): vscode.TreeItem {
+    public getTreeItem(element: Definition): vscode.TreeItem {
         return element;
     }
 
-    getChildren(element?: Definition): Thenable<Definition[]> {
+    public getChildren(element?: Definition): Thenable<Definition[]> {
         if (element) {
             return Promise.resolve(
                 this.getDefinitionsInContext()
@@ -25,7 +25,7 @@ export class AacDefinitionsViewProvider implements vscode.TreeDataProvider<Defin
         }
     }
 
-    refresh(): void {
+    public refresh(): void {
         this._onDidChangeTreeData.fire();
     }
 
