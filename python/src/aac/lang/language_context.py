@@ -1,6 +1,5 @@
 """The Language Context manages the highly-contextual AaC DSL."""
 
-import copy
 import json
 import logging
 
