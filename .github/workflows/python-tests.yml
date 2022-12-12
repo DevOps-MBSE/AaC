@@ -28,13 +28,11 @@ jobs:
 
     - name: Run Tox Tests
       if: matrix.py_version != '3.9.13'
-      # TODO: Add back after testing is complete
-      run: "true" #tox -e $(echo py${{ matrix.py_version }} | awk -F "." '{print $1$2;}')
+      run: tox -e $(echo py${{ matrix.py_version }} | awk -F "." '{print $1$2;}')
 
     - name: Run Tox Tests With Coverage
       if: matrix.py_version == '3.9.13'
-      # TODO: Add back after testing is complete
-      run: "true" #tox -e py39 -- --coverage-report html
+      run: tox -e py39 -- --coverage-report html
 
     - name: Upload Code Coverage Report
       uses: actions/upload-artifact@v2
@@ -51,14 +49,10 @@ jobs:
 
     - name: Test Gen-Plugin Third-Party Plugin
       run: |
-        pwd
         echo y | aac gen-plugin model/plugin/plugin.yaml
         rm src/aac/state.json
-        ls -al model/plugin/test_plugin/
-        ls src/aac/
         cd model/plugin/
         pip install .
-        aac -h
         aac -h | grep test-plugin-command
         pip uninstall -y test_plugin
 
