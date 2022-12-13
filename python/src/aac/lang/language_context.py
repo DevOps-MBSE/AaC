@@ -558,15 +558,16 @@ class LanguageContext:
         Returns:
             None.
         """
-        definitions_in_file = self.get_definitions_by_file_uri(file_uri)
+        sanitized_file_uri = sanitize_filesystem_path(file_uri)
+        definitions_in_file = self.get_definitions_by_file_uri(sanitized_file_uri)
 
         if len(definitions_in_file) > 0:
-            write_definitions_to_file(definitions_in_file, file_uri)
+            write_definitions_to_file(definitions_in_file, sanitized_file_uri)
             self.remove_definitions_from_context(definitions_in_file)
-            self.add_definitions_to_context(parse(file_uri))
-        elif os.path.lexists(file_uri):
-            logging.info(f"Deleteing {file_uri} since there are no definitions for the file in the context.")
-            os.remove(file_uri)
+            self.add_definitions_to_context(parse(sanitized_file_uri))
+        elif os.path.lexists(sanitized_file_uri):
+            logging.info(f"Deleteing {sanitized_file_uri} since there are no definitions for the file in the context.")
+            os.remove(sanitized_file_uri)
 
     def get_file_in_context_by_uri(self, uri: str) -> Optional[AaCFile]:
         """
