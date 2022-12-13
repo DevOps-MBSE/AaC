@@ -13,11 +13,14 @@ import logging
 import os
 
 __version__ = "0.1.5"
+__log_file_name__ = os.path.join(os.path.dirname(__file__), "aac.log")
 
 logging.basicConfig(
     format="%(asctime)s::%(module)s::%(filename)s::L%(lineno)d::%(levelname)s::%(message)s",
-    filename=os.path.join(os.path.dirname(__file__), "aac.log"),
+    filename=__log_file_name__,
     encoding="utf-8",
     level=logging.DEBUG,
-    datefmt="%m/%d/%Y %H:%M:%S"
+    datefmt="%m/%d/%Y %H:%M:%S",
 )
+
+__all__ = ("__version__",)

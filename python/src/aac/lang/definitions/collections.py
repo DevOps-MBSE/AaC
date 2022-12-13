@@ -71,7 +71,8 @@ def get_definition_by_name(definition_name: str, definitions: list[Definition]) 
         logging.debug(f"Failed to find a definition with the name '{definition_name}'")
 
     elif matching_definitions_count > 1:
-        logging.error(f"Found multiple definitions with the same name '{definition_name}'\n{matching_definitions}'")
+        matching_definition_names = [definition.name for definition in matching_definitions]
+        logging.error(f"Found multiple definitions with the same name '{definition_name}'\n{matching_definition_names}'")
 
     return matching_definitions[0] if matching_definitions_count >= 1 else None
 

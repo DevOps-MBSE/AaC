@@ -1,4 +1,5 @@
 from aac.io.parser import parse
+from aac.io.files.aac_file import AaCFile
 from aac.lang.active_context_lifecycle_manager import get_active_context, get_initialized_language_context
 from aac.lang.constants import (
     DEFINITION_FIELD_ADD,
@@ -25,11 +26,11 @@ from aac.spec import get_aac_spec, get_primitives, get_root_keys
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.io import temporary_test_file
 from tests.helpers.parsed_definitions import (
-    create_schema_definition,
-    create_schema_ext_definition,
     create_enum_definition,
     create_enum_ext_definition,
     create_field_entry,
+    create_schema_definition,
+    create_schema_ext_definition,
 )
 from tests.helpers.prebuilt_definition_constants import (
     TEST_DOCUMENT_CONTENT,
@@ -281,11 +282,31 @@ class TestLanguageContext(ActiveContextTestCase):
         self.assertGreaterEqual(len(definition_uuids_set), len(get_aac_spec()))
         self.assertEqual(len(definition_uuids_list), len(definition_uuids_set))
 
+    def test_langauge_context_loads_state_from_file(self):
+        test_definition = create_schema_definition("TestDefinition")
+        with temporary_test_file(test_definition.to_yaml()) as test_definition_file:
+            test_definition.source = AaCFile(test_definition_file.name, True, True)
+
+            active_context = get_active_context()
+            active_context.add_definition_to_context(test_definition)
+
+            with temporary_test_file("") as state_file:
+                active_context.export_to_file(state_file.name)
+
+                new_context = LanguageContext()
+                new_context.import_from_file(state_file.name)
+
+                imported_definitions = set(new_context.get_defined_types())
+                exported_definitions = set(active_context.get_defined_types())
+                self.assertSetEqual(imported_definitions, exported_definitions)
+
+                imported_plugins = {plugin.name for plugin in new_context.get_active_plugins()}
+                exported_plugins = {plugin.name for plugin in active_context.get_active_plugins()}
+                self.assertSetEqual(imported_plugins, exported_plugins)
+
 
 class TestLanguageContextPluginInterface(ActiveContextTestCase):
-
     def test_language_context_activate_plugins(self):
-
         # Test that the active context initializes with expected active plugins
         active_context = get_active_context()
         # TODO adjust once we update the active context's default plugin strategy. # noqa: T101
@@ -313,7 +334,6 @@ class TestLanguageContextPluginInterface(ActiveContextTestCase):
         self.assertGreater(len(test_context.definitions), initial_definitions_len)
 
     def test_language_context_deactivate_plugins(self):
-
         # Test that the active context initializes with expected active plugins
         active_context = get_active_context()
         # TODO adjust once we update the active context's default plugin strategy. # noqa: T101

@@ -1,13 +1,12 @@
 from unittest import TestCase
-from aac.lang.language_context import LanguageContext
 
 from aac.lang.active_context_lifecycle_manager import get_active_context
+from aac.lang.language_context import LanguageContext
 from aac.spec import get_aac_spec
 
 
 class TestActiveContextLifecycleManager(TestCase):
     def test_init_active_context(self):
-
         active_context = get_active_context(reload_context=True)
 
         # Assert that the initialized context has more definitions than a new, unmanaged context
