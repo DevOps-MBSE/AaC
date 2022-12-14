@@ -293,6 +293,18 @@ class TestLanguageContext(ActiveContextTestCase):
                 exported_plugins = {plugin.name for plugin in active_context.get_active_plugins()}
                 self.assertSetEqual(imported_plugins, exported_plugins)
 
+    def test_language_context_copy(self):
+        active_context = get_active_context()
+        copy_context = active_context.copy()
+
+        new_definition = create_schema_definition("Test", fields=[create_field_entry("field", PRIMITIVE_TYPE_STRING)])
+        copy_context.add_definition_to_context(new_definition)
+
+        self.assertIsNone(active_context.get_definition_by_name(new_definition.name))
+        self.assertIsNotNone(copy_context.get_definition_by_name(new_definition.name))
+
+        self.assertGreater(len(copy_context.definitions), len(active_context.definitions))
+
 
 class TestLanguageContextPluginInterface(ActiveContextTestCase):
     def test_language_context_activate_plugins(self):

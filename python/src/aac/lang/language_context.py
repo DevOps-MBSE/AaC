@@ -1,14 +1,12 @@
 """The Language Context manages the highly-contextual AaC DSL."""
-
 import json
 import logging
-
+from attr import Factory, attrib, attrs, validators
 from collections import OrderedDict
+from copy import deepcopy
 from os.path import lexists
 from typing import Optional
 from uuid import UUID
-
-from attr import Factory, attrib, attrs, validators
 
 from aac import __version__
 from aac.cli.aac_command import AacCommand
@@ -627,3 +625,9 @@ class LanguageContext:
             plugins=[plugin.name for plugin in self.get_active_plugins()],
         )
         write_file(file_uri, json.dumps(data, indent=2), True)
+
+    # Misc Helper Functions
+
+    def copy(self) -> 'LanguageContext':
+        """Return a deep copy of the context."""
+        return deepcopy(self)
