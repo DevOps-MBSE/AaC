@@ -406,6 +406,21 @@ class LanguageContext:
         else:
             logging.error(f"No definition name was provided to {self.get_definition_by_name.__name__}")
 
+    def get_definition_by_uid(self, uid: UUID) -> Optional[Definition]:
+        """
+        Return the definition with the corresponding uid, or None if not found.
+
+        Args:
+            uid (str): The definition's uid to search for.
+
+        Returns:
+            The definition corresponding to the uid, or None if not found.
+        """
+        if not uid:
+            logging.error(f"No definition uid was provided to {self.get_definition_by_uid.__name__}")
+
+        return self.definitions_dictionary.get(uid)
+
     def get_definitions_by_root_key(self, root_key: str) -> list[Definition]:
         """Return a subset of definitions with the given root key.
 
