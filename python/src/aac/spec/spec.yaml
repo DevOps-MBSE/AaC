@@ -114,6 +114,9 @@ schema:
 
         See also, 'SchemaExtension'
   validation:
+    - name: Type references exist
+      arguments:
+        - type
     - name: Mutually exclusive fields
       arguments:
         - schemaExt

@@ -1,5 +1,4 @@
 """A module for defining a finding location."""
-
 from attr import attrib, attrs, validators
 from typeguard import check_type
 

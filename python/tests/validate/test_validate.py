@@ -1,6 +1,14 @@
 from unittest.mock import MagicMock, patch
 
 from aac.io.parser import parse
+from aac.lang.constants import (
+    DEFINITION_FIELD_EXTENSION_ENUM,
+    DEFINITION_FIELD_TYPE,
+    DEFINITION_NAME_PRIMITIVES,
+    DEFINITION_NAME_ROOT,
+    PRIMITIVE_TYPE_STRING,
+    ROOT_KEY_EXTENSION,
+)
 from aac.lang.definitions.lexeme import Lexeme
 from aac.lang.definitions.source_location import SourceLocation
 from aac.plugins.validators._validator_result import ValidatorFindings, ValidatorResult
@@ -16,7 +24,7 @@ from tests.helpers.parsed_definitions import (
 
 class TestValidate(ActiveContextTestCase):
     def test_validate_source_with_valid_definition(self):
-        test_field = create_field_entry("TestField", "string")
+        test_field = create_field_entry("TestField", PRIMITIVE_TYPE_STRING)
         test_definition = create_schema_definition("Test", fields=[test_field])
 
         actual_result = None
@@ -26,7 +34,7 @@ class TestValidate(ActiveContextTestCase):
         self.assertTrue(actual_result.is_valid)
 
     def test_validate_definitions_with_valid_definition(self):
-        test_field = create_field_entry("TestField", "string")
+        test_field = create_field_entry("TestField", PRIMITIVE_TYPE_STRING)
         test_definition = create_schema_definition("Test", fields=[test_field])
 
         actual_result = None
@@ -61,10 +69,12 @@ class TestValidate(ActiveContextTestCase):
         self.assertIn("required", exception.args[0].lower())
 
     def test_validate_definitions_with_invalid_multiple_exclusive_fields(self):
-        test_field_entry = create_field_entry("TestField", "string")
+        test_field_entry = create_field_entry("TestField", PRIMITIVE_TYPE_STRING)
         test_combined_ext_definition = create_schema_ext_definition("TestSchemaExt", "Behavior", fields=[test_field_entry])
-        test_enum_definition = create_enum_ext_definition("TestEnumExt", "Primitives", values=["val1", "val2"])
-        test_combined_ext_definition.structure["ext"]["enumExt"] = test_enum_definition.structure["ext"]["enumExt"]
+        test_enum_definition = create_enum_ext_definition("TestEnumExt", DEFINITION_NAME_PRIMITIVES, values=["val1", "val2"])
+        test_combined_ext_definition.structure[ROOT_KEY_EXTENSION][
+            DEFINITION_FIELD_EXTENSION_ENUM
+        ] = test_enum_definition.structure[ROOT_KEY_EXTENSION][DEFINITION_FIELD_EXTENSION_ENUM]
         test_combined_ext_definition, *_ = parse(test_combined_ext_definition.to_yaml())
 
         with self.assertRaises(ValidationError) as error:
@@ -78,7 +88,7 @@ class TestValidate(ActiveContextTestCase):
 
     def test_multiple_validate_definitions_with_invalid_definition(self):
         invalid_fields_test_field = create_field_entry("MissingTestField")
-        del invalid_fields_test_field["type"]
+        del invalid_fields_test_field[DEFINITION_FIELD_TYPE]
         invalid_reference_test_field = create_field_entry("BadRefTestField", "striiiing")
         invalid_schema_definition = create_schema_definition(
             "InvalidData", fields=[invalid_fields_test_field, invalid_reference_test_field]
@@ -122,3 +132,37 @@ class TestValidate(ActiveContextTestCase):
             self.assertEqual(len(result.findings.get_warning_findings()), 1)
 
             self.assertTrue(result.is_valid())
+
+
+class TestValidateExtensions(ActiveContextTestCase):
+    def test_validate_definitions_with_invalid_root_extension(self):
+        invalid_type = "InvalidType"
+        invalid_extension_field = create_field_entry("new_root", invalid_type)
+        invalid_root_extension = create_schema_ext_definition(
+            "NewRoot", DEFINITION_NAME_ROOT, fields=[invalid_extension_field]
+        )
+
+        with self.assertRaises(ValidationError) as error:
+            with validated_definitions([invalid_root_extension]):
+                pass
+
+        exception = error.exception
+        self.assertEqual(ValidationError, type(exception))
+        self.assertEqual(len(exception.args), 1)
+        self.assertIn("undefined", exception.args[0].lower())
+        self.assertIn(invalid_type, exception.args[0])
+
+    def test_validate_definitions_with_invalid_target_extension(self):
+        invalid_extension_field = create_field_entry("new_field", PRIMITIVE_TYPE_STRING)
+        invalid_target = f"{DEFINITION_NAME_ROOT}inTootin"
+        invalid_target_extension = create_schema_ext_definition("NewTarget", invalid_target, fields=[invalid_extension_field])
+
+        with self.assertRaises(ValidationError) as error:
+            with validated_definitions([invalid_target_extension]):
+                pass
+
+        exception = error.exception
+        self.assertEqual(ValidationError, type(exception))
+        self.assertEqual(len(exception.args), 1)
+        self.assertIn("undefined", exception.args[0].lower())
+        self.assertIn(invalid_target, exception.args[0])

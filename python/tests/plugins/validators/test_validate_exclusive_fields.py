@@ -76,7 +76,7 @@ class TestExclusiveFieldsPlugin(ActiveContextTestCase):
         test_combined_ext_definition, *_ = parse(test_combined_ext_definition.to_yaml())
 
         ext_schema = get_definition_by_name("extension", test_active_context.definitions)
-        ext_schema_args = ext_schema.get_validations()[0].get("arguments")
+        ext_schema_args = ext_schema.get_validations()[1].get("arguments")
 
         expected_finding_location = SourceLocation(10, 2, 164, 7)
 
