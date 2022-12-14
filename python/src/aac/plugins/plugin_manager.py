@@ -2,11 +2,8 @@
 from importlib import import_module
 from pluggy import PluginManager
 
-from aac.cli.aac_command import AacCommand
-from aac.lang.definitions.definition import Definition
 from aac.plugins import hookspecs, PLUGIN_PROJECT_NAME
 from aac.plugins.plugin import Plugin
-from aac.plugins.contributions.contribution_types import DefinitionValidationContribution, PrimitiveValidationContribution
 
 
 def get_plugin_manager() -> PluginManager:
@@ -78,53 +75,3 @@ def get_plugins() -> list[Plugin]:
         A list of plugins that are currently registered.
     """
     return get_plugin_manager().hook.get_plugin()
-
-
-def get_plugin_commands() -> list[AacCommand]:
-    """
-    Get a list of all of the AaC commands contributed by plugins.
-
-    Returns:
-        A list of AaC Commands provided by plugins.
-    """
-    command_lists = [plugin.get_commands() for plugin in get_plugins() if plugin.get_commands()]
-    return [command for command_list in command_lists for command in command_list]
-
-
-def get_plugin_definitions() -> list[Definition]:
-    """
-    Get a list of all the plugin-defined AaC definitions.
-
-    Returns:
-        A list of parsed definitions from all active plugins.
-    """
-
-    def set_files_to_not_user_editable(definition):
-        definition.source.is_user_editable = False
-        return definition
-
-    definition_lists = [plugin.get_definitions() for plugin in get_plugins() if plugin.get_definitions()]
-    definitions_list = [definition for definition_list in definition_lists for definition in definition_list]
-    return list(map(set_files_to_not_user_editable, definitions_list))
-
-
-def get_definition_validations() -> list[DefinitionValidationContribution]:
-    """
-    Get a list of registered definition validations and metadata.
-
-    Returns:
-        A list of validator plugins that are currently registered.
-    """
-    validation_lists = [plugin.get_definition_validations() for plugin in get_plugins() if plugin.get_definition_validations()]
-    return [validation for validation_list in validation_lists for validation in validation_list]
-
-
-def get_primitive_validations() -> list[PrimitiveValidationContribution]:
-    """
-    Get a list of registered primitive validations and metadata.
-
-    Returns:
-        A list of validator plugins that are currently registered.
-    """
-    validation_lists = [plugin.get_primitive_validations() for plugin in get_plugins() if plugin.get_primitive_validations()]
-    return [validation for validation_list in validation_lists for validation in validation_list]

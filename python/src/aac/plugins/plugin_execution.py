@@ -112,11 +112,6 @@ def plugin_result(name: str, cmd: Callable[..., Any], *args: Tuple[Any], **kwarg
 
 def _get_error_messages(error: Exception) -> list[str]:
     def error_message_lines(error_trace) -> str:
-        return f"""
-        A(n) {error_trace.name} error occurred
-          in {error_trace.filename}
-          on line {error_trace.lineno}
-        The error was: {error}
-        """
+        return f"An error occurred in {error_trace.name}\n  in file {error_trace.filename}\n  on line {error_trace.lineno}\n"
 
-    return [error_message_lines(error_trace) for error_trace in extract_tb(error.__traceback__)]
+    return [error_message_lines(error_trace) for error_trace in extract_tb(error.__traceback__)] + [f"The error was: {error}"]

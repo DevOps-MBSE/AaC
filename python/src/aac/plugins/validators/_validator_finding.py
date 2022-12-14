@@ -6,6 +6,7 @@ definition. Validation errors are a subset of the category of validator findings
 not be limited to errors, so this module also exports a severity category that informs how severe the finding
 is.
 """
+
 from enum import Enum, auto
 
 from attr import attrib, attrs, validators
@@ -16,6 +17,7 @@ from aac.plugins.validators._finding_location import FindingLocation
 
 class FindingSeverity(Enum):
     """A severity for distinguishing between different kinds of validator findings."""
+
     INFO = auto()
     WARNING = auto()
     ERROR = auto()

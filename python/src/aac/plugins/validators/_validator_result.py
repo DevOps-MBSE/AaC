@@ -18,9 +18,7 @@ class ValidatorResult:
                                       on the Definition.
     """
 
-    definitions: list[Definition] = attrib(
-        default=Factory(list), validator=validators.instance_of((list))
-    )
+    definitions: list[Definition] = attrib(default=Factory(list), validator=validators.instance_of(list))
     findings: ValidatorFindings = attrib(
         default=Factory(ValidatorFindings), validator=validators.instance_of(ValidatorFindings)
     )
@@ -33,6 +31,10 @@ class ValidatorResult:
         """Get all of the validator result messages as a single string."""
 
         def format_message(finding: ValidatorFinding) -> str:
-            return f"\nValidation finding from '{finding.location.validation_name}' of level {finding.severity.name} in {finding.location.source.uri}. Message:\n {finding.message}"
+            loc = finding.location
+            return (
+                f"\nValidation finding from '{loc.validation_name}' of level {finding.severity.name} in {loc.source.uri}. "
+                f"Message:\n {finding.message}"
+            )
 
         return "\n".join([format_message(finding) for finding in self.findings.get_all_findings()])

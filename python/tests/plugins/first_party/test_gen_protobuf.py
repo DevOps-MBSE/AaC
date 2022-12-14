@@ -5,13 +5,12 @@ import logging
 import os
 
 from aac.lang.active_context_lifecycle_manager import get_active_context
-from aac.plugins.plugin_execution import plugin_result
 from aac.plugins.first_party.gen_protobuf.gen_protobuf_impl import (
     gen_protobuf,
     _convert_message_name_to_file_name,
     _convert_camel_case_to_snake_case,
     _get_message_template_properties,
-    _convert_description_to_protobuf_comment
+    _convert_description_to_protobuf_comment,
 )
 
 from tests.active_context_test_case import ActiveContextTestCase
@@ -45,8 +44,7 @@ class TestGenerateProtobufPlugin(ActiveContextTestCase):
 
     def test_gen_protobuf(self):
         with TemporaryDirectory() as temp_dir, temporary_test_file(TEST_ARCH_YAML_STRING) as temp_arch_file:
-            with plugin_result("", gen_protobuf, temp_arch_file.name, temp_dir) as result:
-                pass
+            result = gen_protobuf(temp_arch_file.name, temp_dir)
 
             # The assert needs to be outside of the plugin_result context manager or the assertion error is masked.
             assert_plugin_success(result)

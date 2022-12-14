@@ -212,3 +212,9 @@ is a set of statistics that help to determine which portions of code are being r
 for reporting.
 
 Documentation on the Setup and Justifications between the `cProfile` and `Profile` can be located here -> [Profiling in AaC Setup](./profiling.md)
+
+## Development of Plugins
+
+### Plugin Developer Guide
+
+Guidelines on how to contribute and develop plugins for AaC can be found [Plugin Developer Guide](./plugin_dev_guide.md).

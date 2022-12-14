@@ -1,39 +1,43 @@
 """The Architecture-as-Code Language Server."""
-
 import difflib
 import logging
+
+from asyncio import ensure_future
 from os import linesep
 from typing import Optional
-from pygls.protocol import LanguageServerProtocol
-from pygls.server import LanguageServer
+
 from pygls.lsp import (
     CompletionOptions,
     CompletionParams,
     DefinitionParams,
-    RenameParams,
-    HoverParams,
-    ReferenceParams,
-    SemanticTokensParams,
-    TextDocumentSyncKind,
     DidChangeTextDocumentParams,
     DidCloseTextDocumentParams,
     DidOpenTextDocumentParams,
+    HoverParams,
+    PublishDiagnosticsParams,
+    ReferenceParams,
+    RenameParams,
+    SemanticTokensParams,
+    TextDocumentSyncKind,
     methods,
 )
+from pygls.protocol import LanguageServerProtocol
+from pygls.server import LanguageServer
+from pygls.uris import to_fs_path
 
 from aac import __version__ as AAC_VERSION
 from aac.io.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_initialized_language_context
-from aac.lang.definitions.structure import strip_undefined_fields_from_definition
 from aac.lang.language_context import LanguageContext
 from aac.plugins.first_party.lsp_server.managed_workspace_file import ManagedWorkspaceFile
-from aac.plugins.first_party.lsp_server.providers.find_references_provider import FindReferencesProvider
-from aac.plugins.first_party.lsp_server.providers.lsp_provider import LspProvider
 from aac.plugins.first_party.lsp_server.providers.code_completion_provider import CodeCompletionProvider
+from aac.plugins.first_party.lsp_server.providers.find_references_provider import FindReferencesProvider
 from aac.plugins.first_party.lsp_server.providers.goto_definition_provider import GotoDefinitionProvider
 from aac.plugins.first_party.lsp_server.providers.hover_provider import HoverProvider
-from aac.plugins.first_party.lsp_server.providers.rename_provider import RenameProvider
+from aac.plugins.first_party.lsp_server.providers.lsp_provider import LspProvider
 from aac.plugins.first_party.lsp_server.providers.prepare_rename_provider import PrepareRenameProvider
+from aac.plugins.first_party.lsp_server.providers.publish_diagnostics_provider import PublishDiagnosticsProvider
+from aac.plugins.first_party.lsp_server.providers.rename_provider import RenameProvider
 from aac.plugins.first_party.lsp_server.providers.semantic_tokens_provider import SemanticTokensProvider
 
 
@@ -63,7 +67,7 @@ class AacLanguageServer(LanguageServer):
         protocol_cls=LanguageServerProtocol,
         max_workers: int = 2,
     ):
-        """Docstring."""
+        """Create an AaC Language Server."""
         super().__init__(LANGUAGE_SERVER_NAME, LANGUAGE_SERVER_VERSION, loop, protocol_cls, max_workers)
 
         self.language_context = language_context
@@ -89,6 +93,9 @@ class AacLanguageServer(LanguageServer):
         self.providers[methods.TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL] = self.providers.get(
             methods.TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL, SemanticTokensProvider()
         )
+        self.providers[methods.TEXT_DOCUMENT_PUBLISH_DIAGNOSTICS] = self.providers.get(
+            methods.TEXT_DOCUMENT_PUBLISH_DIAGNOSTICS, PublishDiagnosticsProvider()
+        )
 
     def setup_features(self) -> None:
         """Configure the server with the supported features."""
@@ -105,6 +112,7 @@ class AacLanguageServer(LanguageServer):
         self.feature(methods.DEFINITION)(handle_goto_definition)
         self.feature(methods.REFERENCES)(handle_references)
         self.feature(methods.RENAME)(handle_rename)
+        self.feature(methods.TEXT_DOCUMENT_PUBLISH_DIAGNOSTICS)(handle_publish_diagnostics)
         self.feature(methods.PREPARE_RENAME)(handle_prepare_rename)
 
         semantic_tokens_legend = self.providers.get(methods.TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL).get_semantic_tokens_legend()
@@ -123,8 +131,10 @@ async def did_open(ls: AacLanguageServer, params: DidOpenTextDocumentParams):
         ls.workspace_files[file_uri] = managed_file
 
     managed_file.is_client_managed = True
-    _, file_path = file_uri.split("file://")
+    file_path = to_fs_path(file_uri)
     ls.language_context.add_definitions_to_context(parse(file_path))
+
+    ensure_future(handle_publish_diagnostics(ls, PublishDiagnosticsParams(uri=params.text_document.uri, diagnostics=[])))
 
 
 async def did_close(ls: AacLanguageServer, params: DidCloseTextDocumentParams):
@@ -138,8 +148,10 @@ async def did_close(ls: AacLanguageServer, params: DidCloseTextDocumentParams):
 
 async def did_change(ls: AacLanguageServer, params: DidChangeTextDocumentParams):
     """Text document did change notification."""
-    document_path = params.text_document.uri.removeprefix("file://")
+    document_path = to_fs_path(params.text_document.uri)
     logging.info(f"Text document altered by LSP client {document_path}.")
+
+    ensure_future(handle_publish_diagnostics(ls, PublishDiagnosticsParams(uri=params.text_document.uri, diagnostics=[])))
 
     file_content = params.content_changes[0].text
     incoming_definitions_dict = {definition.name: definition for definition in parse(file_content, document_path)}
@@ -147,23 +159,27 @@ async def did_change(ls: AacLanguageServer, params: DidChangeTextDocumentParams)
     altered_definitions = []
 
     old_definitions = ls.language_context.get_definitions_by_file_uri(document_path)
-    old_definitions_to_update_dict = {definition.name: definition for definition in old_definitions if definition.name in incoming_definitions_dict}
-    old_definitions_to_delete = [definition for definition in old_definitions if definition.name not in incoming_definitions_dict]
+    old_definitions_to_update_dict = {
+        definition.name: definition for definition in old_definitions if definition.name in incoming_definitions_dict
+    }
+    old_definitions_to_delete = [
+        definition for definition in old_definitions if definition.name not in incoming_definitions_dict
+    ]
 
     for incoming_definition_name, incoming_definition in incoming_definitions_dict.items():
-        sanitized_definition = strip_undefined_fields_from_definition(incoming_definition, ls.language_context)
         old_definition = old_definitions_to_update_dict.get(incoming_definition_name)
 
         if old_definition:
-            altered_definitions.append(sanitized_definition)
+            incoming_definition.uid = old_definition.uid
+            altered_definitions.append(incoming_definition)
 
             old_definition_lines = old_definition.to_yaml().split(linesep)
             altered_definition_lines = incoming_definition.to_yaml().split(linesep)
             changes = linesep.join(list(difflib.ndiff(old_definition_lines, altered_definition_lines))).strip()
             logging.info(f"Updating definition: {old_definition.name}.\n Differences:\n{changes}")
         else:
-            logging.info(f"Adding definition: {sanitized_definition.name}.")
-            new_definitions.append(sanitized_definition)
+            logging.info(f"Adding definition: {incoming_definition.name}.")
+            new_definitions.append(incoming_definition)
 
     ls.language_context.add_definitions_to_context(new_definitions)
     ls.language_context.update_definitions_in_context(altered_definitions)
@@ -224,3 +240,11 @@ async def handle_semantic_tokens(ls: AacLanguageServer, params: SemanticTokensPa
     semantic_tokens_results = semantic_tokens_provider.handle_request(ls, params)
     logging.debug(f"Semantic tokens results: {semantic_tokens_results}")
     return semantic_tokens_results
+
+
+async def handle_publish_diagnostics(ls: AacLanguageServer, params: PublishDiagnosticsParams):
+    """Handle the publish diagnostics request."""
+    publish_diagnostics_provider = ls.providers.get(methods.TEXT_DOCUMENT_PUBLISH_DIAGNOSTICS)
+    diagnostics_results = await publish_diagnostics_provider.handle_request(ls, params)
+    logging.debug(f"Publish Diagnostics results: {diagnostics_results}")
+    return diagnostics_results

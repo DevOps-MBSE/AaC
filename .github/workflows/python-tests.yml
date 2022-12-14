@@ -8,7 +8,7 @@ defaults:
 jobs:
   python_tests:
     name: Python ${{ matrix.py_version }} Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     strategy:
       matrix:
@@ -19,7 +19,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Set up Python ${{ matrix.py_version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.py_version }}
 
@@ -47,19 +47,21 @@ jobs:
         find src -name spec.yaml -print0 | xargs -0 -n1 aac validate --definition-name root
         find src/aac/plugins -name *.yaml -print0 | xargs -0 -n1 aac validate
 
-    - name: Test Gen-Plugin First-Party Plugin
-      run: |
-        mkdir -p src/aac/plugins/first_party/
-        cp model/plugin/plugin.yaml src/aac/plugins/first_party/first_party.yaml
-        echo y | aac gen-plugin src/aac/plugins/first_party/first_party.yaml
-        pip install .[all]
-
     - name: Test Gen-Plugin Third-Party Plugin
       run: |
         echo y | aac gen-plugin model/plugin/plugin.yaml
+        rm src/aac/state.json
         cd model/plugin/
+        pip install .
+        aac -h | grep test-plugin-command
+        pip uninstall -y test_plugin
+
+    - name: Test Gen-Plugin First-Party Plugin
+      run: |
+        mkdir -p src/aac/plugins/first_party/test_plugin/
+        cp model/plugin/test_plugin/plugin.yaml src/aac/plugins/first_party/test_plugin/first_party.yaml
+        echo y | aac gen-plugin src/aac/plugins/first_party/test_plugin/first_party.yaml
         pip install .[all]
-        aac -h | grep "test-plugin-command"
 
     - name: Upload logs from failed runs
       if: ${{ failure() }}
@@ -70,7 +72,7 @@ jobs:
 
   os_test_matrix_setup:
     name: Setup OS Test Matrix
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     outputs:
       wheel_name: ${{ steps.wheel_artifact.outputs.wheel_name }}
@@ -93,11 +95,11 @@ jobs:
 
       strategy:
           matrix:
-            os: [ubuntu-latest, windows-latest]
+            os: [ubuntu-20.04, windows-latest]
 
       steps:
         - name: Set up Python 3.9
-          uses: actions/setup-python@v2
+          uses: actions/setup-python@v4
           with:
             python-version: 3.9
 

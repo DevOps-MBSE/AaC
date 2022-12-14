@@ -2,9 +2,9 @@
 
 import json
 
+from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
-from aac.plugins.plugin_manager import get_plugin_commands
-from aac.cli.aac_command_encoder import AacCommandEncoder
+from aac.serialization import AacCommandEncoder
 
 plugin_name = "help-dump"
 
@@ -18,7 +18,8 @@ def help_dump() -> PluginExecutionResult:
     """
 
     def get_command_info():
-        sorted_plugin_commands = sorted(get_plugin_commands(), key=lambda command: command.name)
+        active_context = get_active_context()
+        sorted_plugin_commands = sorted(active_context.get_plugin_commands(), key=lambda command: command.name)
         return json.dumps([encoder.default(command) for command in sorted_plugin_commands])
 
     encoder = AacCommandEncoder()
