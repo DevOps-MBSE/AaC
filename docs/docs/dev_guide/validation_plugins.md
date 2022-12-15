@@ -24,6 +24,8 @@ There is also a section listing out the `validation` plugin for the implementati
 
 * [Implementation of a Validation Plugin for Definitions](#implementation-of-a-validation-plugin-for-definitions)
 
+It is also worthy to note that the ways that AaC validates is that ituses a self validating implementation. The validation is entirely data-driven, so with this implementation it can validate based on data present/provided in the definition(s).
+
 ### Definition Validations
 
 The following snippet shows how the `_validate.py` validates a `definition` that is being passed through:
@@ -58,9 +60,9 @@ The following snippet shows how the `_validate.py` validates a `definition` that
      return validator_results 
 ```
 
-With the above snippet this shows an example of how the validator is taking in a `Definition`, a list of other validator plugins, as well as, the `LanguageContext` of the definition that is being validated. This would be a good example of a validator with a *Structural Constraint* The `Definition` that is being that is being validated may have a `sub-definition` field within the primary schema. With this in mind, this validator will take a definition and filter it down by the structures that are present within. These `sub-structures` are then validated by what is already present in the primary `definition` then all these are run through and passed to the `ValidatorResult` object.
+With the above snippet this shows an example of how the validator is taking in a `Definition`, a list of other validator plugins, as well as, the `LanguageContext` of the definition that is being validated. The `Definition` validation is limited by *Structural Constraints*. With this in mind the`Definition` validator will take a `definition` that is being passed in and will decompose it into its `sub-definition`s within the primary schema. With this, this validator will take a definition and filter it down by the structures that are present within. These `sub-structure`s are then validated by what is already present in the primary `definition` then all these are run through and passed to the `ValidatorResult` object.
 
-`ValidatorResult` object is then parsed through and returned to the user through some output of the latter results. This is also done for the below example in [Primitive Validations](#primitive-validations), but it is primarily targeted towards the `Primitive Types` within the `Definition`s. 
+`ValidatorResult` object is then parsed through and returned to the user through some output of the latter results. This is also done for the below example in [Primitive Validations](#primitive-validations), but it is primarily targeted towards the `Primitive Types` within the `Definition`s.
 
 ### Primitive Validations
 
@@ -79,6 +81,8 @@ def _validate_primitive_types(definition: Definition, language_context: Language
 ```
 
 The above method like the `_validate_definition` function outlined in the previous example takes in a `Definition` and takes in the `LanguageContext` of the defintion that is being validated. However, The primary goal of this snippet is to validate the *Primitive Types* of a definition schema and pass these results to the `ValidatorResult` object for further processing and eventual output to the user. This function is an example of a *Primitive Constraint* with how validations are made/applied.
+
+The results of this validation are also coinsiding with the results from the `_validate_definition` function above and the results are taking in together to the `ValidatorResult` object for further analysis and output for the user to discern.
 
 ### Purpose of the Validation Definition
 
