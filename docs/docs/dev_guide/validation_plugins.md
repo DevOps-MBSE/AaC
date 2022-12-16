@@ -106,9 +106,122 @@ However, the severity and cases for those severities can be outlined as such:
 
 ## Implementation of a Validation Plugin for Definitions
 
-### Validation Definition
+### Creating a Validation Plugin for Definitions
 
-### Implementation of the Validator
+Examples of a validator plugin can be found in the below directory:
+`AaC/python/src/aac/plugins/validators/`
+
+Taking a look at the `required_fields` validator, we will use this as an example of what is required for a validator plugin.
+
+Looking inside this directory the structure of this validator looks like this:
+
+```markdown
+.required_fields
+├── __init__.py
+├── _validate_required_fields.py
+└── required_fields.yaml
+```
+
+So seeing the structure of this validator, there is an `init`, `implementation_file` and the `yaml` file used to create the initial plugin configuration.
+
+Taking a look at the `implementation_file` (`_validate_required_fields.py`) and `required_fields.yaml`:
+
+```python
+"""   _validate_required_fields.py   """
+def validate_required_fields(definition_under_test: Definition, target_schema_definition: Definition, language_context: LanguageContext, *validation_args) -> ValidatorResult:
+    """
+    Validates that the definition has all required fields populated.
+
+    Args:
+        definition_under_test (Definition): The definition that's being validated.
+        target_schema_definition (Definition): A definition with applicable validation.
+        language_context (LanguageContext): The language context.
+        *validation_args: The names of the required fields.
+
+    Returns:
+        A ValidatorResult containing any applicable error messages.
+    """
+    findings = ValidatorFindings()
+
+    required_field_names = validation_args
+    schema_defined_fields_as_list = target_schema_definition.get_top_level_fields().get("fields") or []
+    schema_defined_fields_as_dict = {field.get("name"): field for field in schema_defined_fields_as_list}
+
+    def validate_dict(dict_to_validate: dict) -> None:
+        for required_field_name in required_field_names:
+            field_value = dict_to_validate.get(required_field_name)
+            field_type = schema_defined_fields_as_dict.get(required_field_name, {}).get("type")
+
+            if field_value is None:
+                missing_required_field = f"Required field '{required_field_name}' missing from: {dict_to_validate}"
+                findings.add_error_finding(definition_under_test, missing_required_field, PLUGIN_NAME, 0, 0, 0, 0)
+                logging.debug(missing_required_field)
+
+            elif not _is_field_populated(field_type, field_value):
+                unpopulated_required_field = f"Required field '{required_field_name}' is not populated in: {dict_to_validate}"
+                findings.add_error_finding(definition_under_test, unpopulated_required_field, PLUGIN_NAME, 0, 0, 0, 0)
+                logging.debug(unpopulated_required_field)
+
+    dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)
+    list(map(validate_dict, dicts_to_test))
+
+    return ValidatorResult([definition_under_test], findings)
+
+
+def _is_field_populated(field_type: str, field_value: Any) -> bool:
+    """Return a boolean indicating is the field is considered 'populated'."""
+    is_field_array_type = is_array_type(field_type)
+    is_field_populated = False
+
+    if is_field_array_type:
+        is_field_populated = len(field_value) > 0
+    elif type(field_value) is bool:
+        is_field_populated = field_value is not None
+    elif field_value:
+        is_field_populated = True
+
+    return is_field_populated
+```
+
+```yaml
+# required_fields.yaml
+validation:
+  name: Required fields are present
+  description: Verifies every field declared as required is present and populated
+  behavior:
+    - name: Verify that definition fields marked as required are populated.
+      type: request-response
+      input:
+        - name: input
+          type: ValidatorInput
+      output:
+        - name: results
+          type: ValidatorOutput
+      acceptance:
+        - scenario: Successfully Validate a definition's required fields
+          given:
+            - The ValidatorInput content consists of valid AaC definitions.
+            - The ValidatorInput contains some AaC definitions that reference other definitions.
+          when:
+            - The input is validation
+          then:
+            - The ValidatorOutput does not indicate any errors
+            - The ValidatorOutput does not indicate any warnings
+            - The ValidatorOutput indicates the validator plugin under test is valid
+        - scenario: Fail to validate a definition's required fields
+          given:
+            - The ValidatorInput content consists of otherwise valid AaC definitions.
+            - The ValidatorInput contains at least one field that is required.
+            - The ValidatorInput contains at least one required field that is missing.
+          when:
+            - The ValidatorInput is validated
+          then:
+            - The ValidatorOutput has errors
+            - The ValidatorOutput errors indicate that there are missing required fields
+```
+
+***NOTE***: Without the `implementation_file` the initial validator plugin will spit out an error saying that an implementation file is missing. This is needed for the validator plugin to function properly. 
+
 
 ## Validation Interface
 
