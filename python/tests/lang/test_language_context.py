@@ -293,6 +293,23 @@ class TestLanguageContext(ActiveContextTestCase):
                 exported_plugins = {plugin.name for plugin in active_context.get_active_plugins()}
                 self.assertSetEqual(imported_plugins, exported_plugins)
 
+    def test_language_context_editable_files(self):
+        active_context = get_active_context()
+
+        primitive_definition = active_context.get_definition_by_name(DEFINITION_NAME_PRIMITIVES)
+        active_context.remove_definition_from_context(primitive_definition)
+
+        self.assertIsNotNone(active_context.get_definition_by_name(primitive_definition.name))
+
+        new_enum_value = "test_primitive"
+        update_primitive_definition = primitive_definition.copy()
+        update_primitive_definition.structure[primitive_definition.get_root_key()][DEFINITION_FIELD_VALUES].append(new_enum_value)
+        active_context.update_definition_in_context(primitive_definition)
+
+        actual_primitive_definition = active_context.get_definition_by_name(DEFINITION_NAME_PRIMITIVES)
+        self.assertEqual(primitive_definition, actual_primitive_definition)
+        self.assertNotEqual(primitive_definition, update_primitive_definition)
+
 
 class TestLanguageContextPluginInterface(ActiveContextTestCase):
     def test_language_context_activate_plugins(self):
