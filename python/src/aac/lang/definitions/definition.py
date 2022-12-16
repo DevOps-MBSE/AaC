@@ -50,7 +50,7 @@ class Definition:
 
     def __hash__(self) -> int:
         """Return the hash of this Definition."""
-        return hash(f"{self.name}")
+        return hash(self.name)
 
     def __eq__(self, obj):
         """Equals function for the Definition."""
