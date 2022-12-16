@@ -12,6 +12,7 @@ class AacCommandArgumentEncoder(JSONEncoder):
         """Return a JSON-serializable version of an AaC command argument."""
         if isinstance(object, AacCommandArgument):
             return object.__dict__
+
         return JSONEncoder.default(self, object)
 
 
@@ -20,11 +21,12 @@ class AacCommandEncoder(JSONEncoder):
 
     def default(self, object: AacCommand):
         """Return a JSON-serializable version of an AaC command."""
-        if isinstance(object, (AacCommand)):
+        if isinstance(object, AacCommand):
             arg_encoder = AacCommandArgumentEncoder()
             return {
                 "name": object.name,
                 "description": object.description,
                 "arguments": [arg_encoder.default(arg) for arg in object.arguments],
             }
+
         return JSONEncoder.default(self, object)

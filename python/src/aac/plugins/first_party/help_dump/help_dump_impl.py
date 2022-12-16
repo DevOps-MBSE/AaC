@@ -4,7 +4,7 @@ import json
 
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
-from aac.cli.aac_command_encoder import AacCommandEncoder
+from aac.serialization import AacCommandEncoder
 
 plugin_name = "help-dump"
 

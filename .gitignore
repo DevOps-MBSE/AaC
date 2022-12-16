@@ -25,3 +25,4 @@ node_modules
 aac.log
 AaC_OpenAPI_Schema.json
 generated/
+state.json

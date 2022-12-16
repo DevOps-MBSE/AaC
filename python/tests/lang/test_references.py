@@ -1,14 +1,22 @@
-from unittest import TestCase
-
 from aac.lang.active_context_lifecycle_manager import get_active_context
-from aac.lang.definitions.references import get_definition_type_references_from_list, is_reference_format_valid, get_reference_target_definitions, _drill_into_nested_dict
+from aac.lang.definitions.references import (
+    get_definition_type_references_from_list,
+    is_reference_format_valid,
+    get_reference_target_definitions,
+    _drill_into_nested_dict,
+)
 from aac.io.parser import parse
 
-from tests.helpers.parsed_definitions import create_schema_definition, create_schema_ext_definition, create_field_entry, create_model_definition
+from tests.active_context_test_case import ActiveContextTestCase
+from tests.helpers.parsed_definitions import (
+    create_schema_definition,
+    create_schema_ext_definition,
+    create_field_entry,
+    create_model_definition,
+)
 
 
-class TestLangReferences(TestCase):
-
+class TestLangReferences(ActiveContextTestCase):
     def test_get_definition_type_references_from_list(self):
         source_definition_name = "Source Def"
         source_definition = create_schema_definition(source_definition_name)
@@ -55,8 +63,7 @@ class TestLangReferences(TestCase):
         self.assertFalse(is_reference_format_valid("parent(name=)")[0])
 
     def test_get_reference_target_definitions(self):
-
-        language_context = get_active_context()
+        language_context = get_active_context(reload_context=True)
 
         # invalid reference should return empty list
         self.assertCountEqual(get_reference_target_definitions("", language_context), [])
