@@ -35,18 +35,13 @@ jobs:
 
       - name: Create Dependencies Package
         run: |
-          cd secure_install
-          pip wheel ../
-          pip-compile --generate-hashes ../setup.py
-          mv ../requirements.txt .
-          pip hash aac-*.whl >> requirements.txt
-          tar -cvf secure_install.tar.gz .
+          ./secure_install/pipeline_scripts/create_install_archive.bash
 
       - name: Upload Dependencies Package
         uses: actions/upload-artifact@v2
         with:
           name: secure_install
-          path: python/secure_install/secure_install.tar.gz
+          path: python/secure_install/aac_secure_install_*
 
       - name: Generate API Documentation
         run: |

@@ -163,3 +163,8 @@ html_code_coverage
 _site
 Gemfile.lock
 node_modules
+
+
+# Secure install
+aac_secure_install_*/
+install_dir_name.txt
