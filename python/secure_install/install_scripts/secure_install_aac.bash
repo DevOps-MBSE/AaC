@@ -4,6 +4,5 @@
 
 install_script_dir=$(dirname "$0")
 cd $install_script_dir
-cd ../
 
-pip install --require-hashes -r requirements.txt
+pip install --require-hashes -r requirements.txt --no-index --find-links ./
