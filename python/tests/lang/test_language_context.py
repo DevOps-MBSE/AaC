@@ -364,3 +364,16 @@ class TestLanguageContextPluginInterface(ActiveContextTestCase):
         test_context.deactivate_plugins(inactive_plugins)
         self.assertEqual(len(test_context.get_active_plugins()), 0)
         self.assertLess(len(test_context.definitions), initial_definitions_len)
+
+    def test_language_context_activate_deactivate_missing_plugins(self):
+        # Test that the active context initializes with expected active plugins
+        active_context = get_active_context()
+        initial_plugins_count = len(active_context.plugins)
+
+        invalid_plugin_name = "IDontExist"
+        active_context.activate_plugin_by_name(invalid_plugin_name)
+        self.assertEqual(initial_plugins_count, len(active_context.get_active_plugins()))
+
+        invalid_plugin_name = "IDontExist"
+        active_context.deactivate_plugin_by_name(invalid_plugin_name)
+        self.assertEqual(initial_plugins_count, len(active_context.get_active_plugins()))
