@@ -16,7 +16,7 @@ jobs:
 
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Set up Python ${{ matrix.py_version }}
       uses: actions/setup-python@v4
@@ -77,7 +77,7 @@ jobs:
 
     steps:
       - name: Download Python Wheel
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: aac_wheel
           path: python/dist/
@@ -102,13 +102,13 @@ jobs:
             python-version: 3.9
 
         - name: Download AaC models
-          uses: actions/download-artifact@v2
+          uses: actions/download-artifact@v3
           with:
             name: aac-models
             path: python/model/
 
         - name: Download Python Wheel
-          uses: actions/download-artifact@v2
+          uses: actions/download-artifact@v3
           id: download-wheel
           with:
             name: aac_wheel

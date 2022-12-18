@@ -1,0 +1,69 @@
+on:
+  workflow_call:
+
+defaults:
+  run:
+    working-directory: ./python
+
+jobs:
+  python_tests:
+    name: Python ${{ matrix.py_version }} Tests
+    runs-on: ubuntu-20.04
+
+    strategy:
+      matrix:
+        py_version: ["3.9.0", "3.9.13", "3.10.5"]
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python ${{ matrix.py_version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.py_version }}
+
+    - name: Install the AaC Package
+      run: pip install -e .[all]
+
+    - name: Run Tox Tests
+      if: matrix.py_version != '3.9.13'
+      run: tox -e $(echo py${{ matrix.py_version }} | awk -F "." '{print $1$2;}')
+
+    - name: Run Tox Tests With Coverage
+      if: matrix.py_version == '3.9.13'
+      run: tox -e py39 -- --coverage-report html
+
+    - name: Upload Code Coverage Report
+      uses: actions/upload-artifact@v2
+      if: matrix.py_version == '3.9.13'
+      with:
+        name: test-coverage-report
+        path: python/html_code_coverage/
+
+    - name: Validate Core Spec and Plugin Specs
+      run: |
+        find src -name spec.yaml -print0 | xargs -0 -n1 aac validate
+        find src -name spec.yaml -print0 | xargs -0 -n1 aac validate --definition-name root
+        find src/aac/plugins -name *.yaml -print0 | xargs -0 -n1 aac validate
+
+    - name: Test Gen-Plugin First-Party Plugin
+      run: |
+        mkdir -p src/aac/plugins/first_party/
+        cp model/plugin/plugin.yaml src/aac/plugins/first_party/first_party.yaml
+        echo y | aac gen-plugin src/aac/plugins/first_party/first_party.yaml
+        pip install .[all]
+
+    - name: Test Gen-Plugin Third-Party Plugin
+      run: |
+        echo y | aac gen-plugin model/plugin/plugin.yaml
+        cd model/plugin/
+        pip install .[all]
+        aac -h | grep "test-plugin-command"
+
+    - name: Upload logs from failed runs
+      if: ${{ failure() }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: failed_test_log
+        path: python/src/aac/aac.log
