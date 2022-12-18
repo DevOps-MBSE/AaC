@@ -22,5 +22,4 @@ jobs:
 
   python_cross_platform:
     name: Python Cross Platform Build & Test
-    needs: cross_platform_support
     uses: ./.github/workflows/python-cross-platform-support.yml

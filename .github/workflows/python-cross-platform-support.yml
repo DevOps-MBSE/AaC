@@ -6,24 +6,6 @@ defaults:
     working-directory: ./python
 
 jobs:
-  os_test_matrix_setup:
-    name: Setup OS Test Matrix
-    runs-on: ubuntu-20.04
-
-    outputs:
-      wheel_name: ${{ steps.wheel_artifact.outputs.wheel_name }}
-
-    steps:
-      - name: Download Python Wheel
-        uses: actions/download-artifact@v3
-        with:
-          name: aac_wheel
-          path: python/dist/
-
-      - name: Set Wheel Artifact Name
-        id: wheel_artifact
-        run: echo "::set-output name=wheel_name::$(basename $(ls dist/*.whl))"
-
   os_build_matrix:
     name: Python ${{ matrix.os }} Create Secure Installs
     needs: os_test_matrix_setup
