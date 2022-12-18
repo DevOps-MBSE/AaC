@@ -8,7 +8,7 @@ on:
 jobs:
   build_python_artifacts:
     name: Python Build
-    uses: ./.github/workflows/python-build-artifacts.yml
+    uses: ./.github/workflows/python-build-and-lint.yml
 
   build_vscode_artifacts:
     name: VSCode Extension Build
@@ -16,6 +16,11 @@ jobs:
     uses: ./.github/workflows/vscode-build-artifacts.yml
 
   python_tests:
-    name: Python Tests
+    name: Python Unit Tests
     needs: build_python_artifacts
-    uses: ./.github/workflows/python-tests.yml
+    uses: ./.github/workflows/python-test-python-version.yml
+
+  python_cross_platform:
+    name: Python Cross Platform Build & Test
+    needs: cross_platform_support
+    uses: ./.github/workflows/python-cross-platform-support.yml

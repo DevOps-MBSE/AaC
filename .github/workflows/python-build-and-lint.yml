@@ -1,0 +1,59 @@
+on:
+  workflow_call:
+
+defaults:
+  run:
+    working-directory: ./python
+
+jobs:
+  build_python_artifacts:
+    name: Build Artifacts
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+          cache: 'pip'
+
+      - name: Install the AaC Package
+        run: pip install -e .[all]
+
+      - name: Lint with flake8
+        run: flake8 .
+
+      - name: List Transitive Dependencies
+        run: pipdeptree
+
+      - name: Upload AaC models
+        uses: actions/upload-artifact@v2
+        with:
+          name: aac-models
+          path: python/model/
+
+      - name: Generate API Documentation
+        run: |
+          cp -R ../docs/ ./docs
+          cd ./docs/
+          make html
+
+      - name: Upload API Documentation
+        uses: actions/upload-artifact@v2
+        with:
+          name: api-documentation
+          path: python/docs/build/html/
+
+      - name: Generate RESTful API Documentation
+        run: |
+          mkdir oasv3-spec
+          aac generate-openapi-spec oasv3-spec
+
+      - name: Upload RESTful API Documentation
+        uses: actions/upload-artifact@v2
+        with:
+          name: rest-api-documentation
+          path: python/oasv3-spec
+

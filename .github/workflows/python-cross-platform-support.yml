@@ -1,0 +1,132 @@
+on:
+  workflow_call:
+
+defaults:
+  run:
+    working-directory: ./python
+
+jobs:
+  os_test_matrix_setup:
+    name: Setup OS Test Matrix
+    runs-on: ubuntu-20.04
+
+    outputs:
+      wheel_name: ${{ steps.wheel_artifact.outputs.wheel_name }}
+
+    steps:
+      - name: Download Python Wheel
+        uses: actions/download-artifact@v3
+        with:
+          name: aac_wheel
+          path: python/dist/
+
+      - name: Set Wheel Artifact Name
+        id: wheel_artifact
+        run: echo "::set-output name=wheel_name::$(basename $(ls dist/*.whl))"
+
+  os_build_matrix:
+    name: Python ${{ matrix.os }} Create Secure Installs
+    needs: os_test_matrix_setup
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix: &os
+        os: ["ubuntu-20.04", "macos-latest"] # windows-latest,
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      - name: Install the AaC Package
+        run: python -m pip install -e .[all]
+
+      - name: Create Dependencies Package
+        if: matrix.os != 'windows-latest'
+        run: |
+          ./secure_install/pipeline_scripts/create_install_archive.bash
+
+      - name: Create Dependencies Package
+        if: matrix.os == 'windows-latest'
+        run: |
+          ./secure_install/pipeline_scripts/create_install_archive.batch
+
+      - name: Upload Dependencies Package
+        uses: actions/upload-artifact@v2
+        with:
+          name: secure_install_${{ matrix.os }}
+          path: python/secure_install/aac_secure_install_*
+
+  os_test_matrix:
+    name: Python ${{ matrix.os }} Tests
+    needs: os_test_matrix_setup
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix: *os
+
+    steps:
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      - name: Create Dependencies Package
+        if: matrix.os != 'windows-latest'
+        run: |
+          ./secure_install/pipeline_scripts/create_install_archive.bash
+
+      - name: Download Secure Install
+        uses: actions/download-artifact@v3
+        with:
+          name: secure_install_${{ matrix.os }}
+          path: python/
+
+      - name: Install from Secure Install
+        if: matrix.os != 'windows-latest'
+        run: |
+          ./aac_secure_install_*/install_aac_air_gap.bash
+
+      - name: Get Package Version
+        run: python -m aac version
+
+      - name: Download AaC models
+        uses: actions/download-artifact@v3
+        with:
+          name: aac-models
+          path: python/model/
+
+      - name: Validate Core Spec
+        if: matrix.os != 'windows-latest'
+        run: |
+          spec_file=$(find $pythonLocation -name spec.yaml | head -n1)
+          python -m aac validate $spec_file
+
+      - name: Validate Core Spec
+        if: matrix.os == 'windows-latest'
+        run: |
+          $spec_file=$(gci -r -fi spec.yaml -Name "$Env:pythonLocation")
+          python -m aac validate "$Env:pythonLocation\$spec_file"
+
+      - name: Print out Core Spec
+        run: python -m aac print-spec
+
+      - name: Print out active context
+        run: python -m aac print-active-context
+
+      - name: Validate Example Model
+        run: python -m aac validate model/flow/System.yaml
+
+      - name: Create PlantUML Component Diagram
+        run: python -m aac puml-object model/flow/System.yaml output/
+
+      - name: Upload logs from failed runs
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: failed_test_log
+          path: ${{ env.pythonLocation }}/**/aac.log
