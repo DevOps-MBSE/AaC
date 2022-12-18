@@ -12,8 +12,8 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     strategy:
-      matrix: &os
-        os: ["ubuntu-20.04", "macos-latest"] # windows-latest,
+      matrix:
+        os: ["ubuntu-20.04", "macos-latest"] # windows-latest, Annoyingly, Github actions don't support anchors
 
     steps:
       - name: Checkout Repository
@@ -49,7 +49,8 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     strategy:
-      matrix: *os
+      matrix:
+        os: ["ubuntu-20.04", "macos-latest"] # windows-latest, Annoyingly, Github actions don't support anchors
 
     steps:
       - name: Set up Python 3.9
