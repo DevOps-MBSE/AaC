@@ -18,7 +18,7 @@ from aac.plugins.first_party.rest_api.models.file_model import FilePathModel, Fi
 from aac.spec import get_aac_spec
 from aac.spec.core import _get_aac_spec_file_path
 
-from tests.helpers.io import temporary_test_file
+from tests.helpers.io import temporary_test_file, temporary_test_file_wo_cm
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.parsed_definitions import (
     create_behavior_entry,
@@ -203,15 +203,19 @@ class TestAacRestApiFileEndpoints(ActiveContextTestCase):
     def test_remove_file_from_context(self):
         active_context = get_active_context()
 
-        core_spec_path = _get_aac_spec_file_path()
-        core_definitions = get_aac_spec()
+        test_definition = create_model_definition("TestDefinition")
+        with temporary_test_file(test_definition.to_yaml()) as test_file:
+            parsed_definition, *_ = parse(test_file.name)
+            active_context.add_definition_to_context(parsed_definition)
 
-        response = self.test_client.delete(f"/file?uri={core_spec_path}")
-        self.assertEqual(HTTPStatus.NO_CONTENT, response.status_code)
+            self.assertEqual(1, len(active_context.get_definitions_by_file_uri(test_file.name)))
+            self.assertIsNotNone(active_context.get_definition_by_name(parsed_definition.name))
 
-        self.assertGreater(len(core_definitions), 0)
-        for core_definition in core_definitions:
-            self.assertIsNone(active_context.get_definition_by_name(core_definition.name))
+            response = self.test_client.delete(f"/file?uri={test_file.name}")
+            self.assertEqual(HTTPStatus.NO_CONTENT, response.status_code)
+
+            self.assertEqual(0, len(active_context.get_definitions_by_file_uri(test_file.name)))
+            self.assertIsNone(active_context.get_definition_by_name(parsed_definition.name))
 
 
 class TestAacRestApiDefinitionEndpoints(ActiveContextTestCase):
