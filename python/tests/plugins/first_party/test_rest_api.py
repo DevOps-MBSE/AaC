@@ -18,7 +18,7 @@ from aac.plugins.first_party.rest_api.models.file_model import FilePathModel, Fi
 from aac.spec import get_aac_spec
 from aac.spec.core import _get_aac_spec_file_path
 
-from tests.helpers.io import temporary_test_file, temporary_test_file_wo_cm
+from tests.helpers.io import temporary_test_file
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.parsed_definitions import (
     create_behavior_entry,
