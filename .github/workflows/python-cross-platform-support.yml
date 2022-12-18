@@ -8,7 +8,6 @@ defaults:
 jobs:
   os_build_matrix:
     name: Python ${{ matrix.os }} Create Secure Installs
-    needs: os_test_matrix_setup
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -45,7 +44,7 @@ jobs:
 
   os_test_matrix:
     name: Python ${{ matrix.os }} Tests
-    needs: os_test_matrix_setup
+    needs: os_build_matrix
     runs-on: ${{ matrix.os }}
 
     strategy:
