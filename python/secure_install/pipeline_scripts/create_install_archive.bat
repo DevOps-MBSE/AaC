@@ -18,9 +18,12 @@ mkdir "%install_dir%"
 COPY "%cd%/install_scripts\*" "%install_dir%"
 COPY "%cd%/README.md" "%install_dir%"
 cd "%install_dir%"
+DIR "%cd%"
+DIR "%cd%\..\"
+DIR "%cd%\..\..\"
 python -m pip wheel "%CD%\..\..\"
 python -m piptools compile "--generate-hashes" "%CD%\..\..\setup.py"
 mv "%CD%\..\..\requirements.txt" "."
 REM UNKNOWN: {"type":"Pipeline","commands":[{"type":"Command","name":{"text":"pip","type":"Word"},"suffix":[{"text":"hash","type":"Word"},{"text":"aac-*.whl","type":"Word"}]},{"type":"Command","name":{"text":"sed","type":"Word"},"suffix":[{"text":"-r","type":"Word"},{"text":"s/l:/l \\/g","type":"Word"}]},{"type":"Command","name":{"text":"sed","type":"Word"},"suffix":[{"text":"-r","type":"Word"},{"text":"s/--hash/    --hash/g","type":"Word"},{"type":"Redirect","op":{"text":">>","type":"dgreat"},"file":{"text":"requirements.txt","type":"Word"}}]}]}
-python -m pip hash aac-*.whl
+python -m pip hash "aac-*.whl"
 echo %install_dir% > "%CD%\install_dir_name.txt"
