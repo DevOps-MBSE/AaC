@@ -27,6 +27,15 @@ jobs:
       - name: List Transitive Dependencies
         run: pipdeptree
 
+      - name: Build distribution package
+        run: python setup.py bdist_wheel
+
+      - name: Upload Python Wheel
+        uses: actions/upload-artifact@v2
+        with:
+          name: aac_wheel
+          path: python/dist/
+
       - name: Upload AaC models
         uses: actions/upload-artifact@v2
         with:
