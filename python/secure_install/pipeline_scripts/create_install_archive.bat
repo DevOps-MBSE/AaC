@@ -6,19 +6,17 @@ cd /D "%~dp0"
 echo "%cd%"
 SET install_script_dir="%cd%\..\"
 cd "%install_script_dir%"
-cd "../"
 echo "%cd%"
-echo "t1"
 
 For /F %%A in ('"python -m aac version"') do SET version=%%A
 echo "Version %version%"
-SET install_dir="aac_secure_install_%version%"
+SET install_dir=%cd%"/aac_secure_install_%version%"
 IF EXIST "%install_dir%" (
   DEL /S "%install_dir%"
 )
 mkdir "%install_dir%"
-COPY  "install_scripts\*" "%install_dir%"
-COPY  "README.md" "%install_dir%"
+COPY "%cd%/install_scripts\*" "%install_dir%"
+COPY "%cd%/README.md" "%install_dir%"
 cd "%install_dir%"
 python -m pip wheel "%CD%\..\..\"
 python -m piptools compile "--generate-hashes" "%CD%\..\..\setup.py"
