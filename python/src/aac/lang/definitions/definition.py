@@ -84,7 +84,7 @@ class Definition:
         fields = self.get_top_level_fields()
         return fields.get(DEFINITION_FIELD_DESCRIPTION)
 
-    def get_type(self) -> Optional[list[dict]]:
+    def get_type(self) -> Optional[str]:
         """Return the string for the extension type field, or None if the field isn't defined."""
         fields = self.get_top_level_fields()
         return fields.get(DEFINITION_FIELD_TYPE)

@@ -1,6 +1,8 @@
 import logging
 
 from aac.lang.definitions.definition import Definition
+from aac.lang.definitions.lexeme import Lexeme
+from aac.lang.definitions.source_location import SourceLocation
 from aac.lang.definitions.structure import get_substructures_by_type
 from aac.lang.language_context import LanguageContext
 from aac.plugins.validators import ValidatorFindings, ValidatorResult
@@ -37,15 +39,26 @@ def validate_references(
                 else:
                     undefined_reference_error_message = f"Undefined type '{field_reference}' referenced: {dict_to_validate}"
                     reference_lexeme = definition_under_test.get_lexeme_with_value(field_reference)
-                    findings.add_error_finding(
-                        definition_under_test, undefined_reference_error_message, PLUGIN_NAME, reference_lexeme
-                    )
                     logging.debug(undefined_reference_error_message)
+
+                    if reference_lexeme:
+                        findings.add_error_finding(
+                            definition_under_test, undefined_reference_error_message, PLUGIN_NAME, reference_lexeme
+                        )
+                    else:
+                        logging.debug(f"Value '{field_reference}' doesn't exist in definition. Likely an extension value.")
+
             else:
                 missing_field_in_dictionary = f"Missing field 'type' in validation content dictionary: {dict_to_validate}"
-                name_lexeme = definition_under_test.get_lexeme_with_value(definition_under_test.name)
-                findings.add_error_finding(definition_under_test, missing_field_in_dictionary, PLUGIN_NAME, name_lexeme)
                 logging.debug(missing_field_in_dictionary)
+                name_lexeme = definition_under_test.get_lexeme_with_value(definition_under_test.name)
+
+                if not name_lexeme:
+                    name_lexeme, *_ = definition_under_test.lexemes
+                    name_lexeme = name_lexeme or Lexeme(SourceLocation(0, 0, 0, 0), definition_under_test.source.uri, definition_under_test.name)
+                    logging.error(f"Definition '{definition_under_test.name}' is missing its name lexeme.")
+
+                findings.add_error_finding(definition_under_test, missing_field_in_dictionary, PLUGIN_NAME, name_lexeme)
 
     dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)
     list(map(validate_dict, dicts_to_test))
