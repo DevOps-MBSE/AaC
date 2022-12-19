@@ -219,4 +219,4 @@ def _get_files_to_process(arch_file_path: str) -> list[str]:
             parse_path = path.join(arch_file_dir, imp.removeprefix(f".{path.sep}"))
             files_to_import.update(_get_files_to_process(parse_path))
 
-    return files_to_import
+    return list(files_to_import)
