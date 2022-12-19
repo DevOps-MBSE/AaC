@@ -29,8 +29,6 @@ jobs:
       - name: Create Dependencies Package
         if: matrix.os != 'windows-latest'
         run: |
-          pwd
-          ls
           ./secure_install/pipeline_scripts/create_install_archive.bash
 
       - name: Create Dependencies Package
@@ -67,7 +65,9 @@ jobs:
 
       - name: Install from Secure Install
         if: matrix.os != 'windows-latest'
+        # https://github.com/actions/upload-artifact/issues/38
         run: |
+          chmod +x ./aac_secure_install_*/install_aac_air_gap.bash
           ./aac_secure_install_*/install_aac_air_gap.bash
 
       - name: Get Package Version
