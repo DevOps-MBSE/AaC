@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        os: ["ubuntu-20.04", windows-latest, "macos-latest"] # Annoyingly, Github actions don't support anchors
+        os: [ubuntu-20.04, ubuntu-latest, windows-latest, macos-latest] # Annoyingly, Github actions don't support anchors
 
     steps:
       - name: Checkout Repository
@@ -31,7 +31,6 @@ jobs:
         if: matrix.os != 'windows-latest'
         run: |
           ./secure_install/pipeline_scripts/create_install_archive.bash
-          echo "PLATFORM=$(uname -o)" >> $GITHUB_OUTPUT
 
       - name: Create Dependencies Package
         if: matrix.os == 'windows-latest'
@@ -41,7 +40,7 @@ jobs:
       - name: Upload Dependencies Package
         uses: actions/upload-artifact@v2
         with:
-          name: secure_install_${{ steps.os_id.outputs.PLATFORM }}
+          name: secure_install_${{ matrix.os }}
           path: python/secure_install/aac_secure_install_*
 
   os_test_matrix:
@@ -51,7 +50,7 @@ jobs:
 
     strategy:
       matrix:
-        os: ["ubuntu-20.04", windows-latest, "macos-latest"] # Annoyingly, Github actions don't support anchors
+        os: [ubuntu-20.04, ubuntu-latest, windows-latest, macos-latest] # Annoyingly, Github actions don't support anchors
 
     steps:
       - name: Set up Python 3.9
