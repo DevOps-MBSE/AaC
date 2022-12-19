@@ -12,10 +12,10 @@ class Test{{plugin.name | title | replace('-', '')}}(TestCase):
         # TODO: Write tests for {{command.implementation_name}}
 
         {% for argument in command.input -%}
-        {{argument.name}} = {{argument.type}}()
+        {{argument.name | replace('-', '_')}} = {{argument.type}}()
         {% endfor -%}
         {%- set comma_arg_joiner = joiner(", ") %}
-        result = {{command.implementation_name}}({% for argument in command.input -%}{{comma_arg_joiner()}}{{argument.name}}={{argument.name}}{%- endfor %})
+        result = {{command.implementation_name}}({% for argument in command.input -%}{{comma_arg_joiner()}}{{argument.name | replace('-', '_')}}={{argument.name | replace('-', '_')}}{%- endfor %})
         self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
     {% endfor %}
 
