@@ -16,8 +16,7 @@ from tests.helpers.prebuilt_definition_constants import (
     TEST_TYPES_INVALID_INSTANCE,
     TEST_TYPES_ROOT_KEY,
     SCHEMA_FIELD_INT,
-    SCHEMA_FIELD_BOOL, 
-
+    SCHEMA_FIELD_BOOL,
 )
 
 
@@ -26,23 +25,28 @@ class TestPrimitiveValidation(ActiveContextTestCase):
     INTEGER_VALIDATOR = int_validator.get_validator()
     BOOLEAN_VALIDATOR = bool_validator.get_validator()
 
-    VALID_PRIMITIVES_FILE_CONTENT = DEFINITION_SEPARATOR.join([
-        TEST_TYPES_SCHEMA_DEFINITION.to_yaml(),
-        TEST_TYPES_SCHEMA_EXTENSION_DEFINITION.to_yaml(),
-        TEST_TYPES_VALID_INSTANCE.to_yaml()
-    ])
+    VALID_PRIMITIVES_FILE_CONTENT = DEFINITION_SEPARATOR.join(
+        [
+            TEST_TYPES_SCHEMA_DEFINITION.to_yaml(),
+            TEST_TYPES_SCHEMA_EXTENSION_DEFINITION.to_yaml(),
+            TEST_TYPES_VALID_INSTANCE.to_yaml(),
+        ]
+    )
 
-    INVALID_PRIMITIVES_FILE_CONTENT = DEFINITION_SEPARATOR.join([
-        TEST_TYPES_SCHEMA_DEFINITION.to_yaml(),
-        TEST_TYPES_SCHEMA_EXTENSION_DEFINITION.to_yaml(),
-        TEST_TYPES_INVALID_INSTANCE.to_yaml()
-    ])
+    INVALID_PRIMITIVES_FILE_CONTENT = DEFINITION_SEPARATOR.join(
+        [
+            TEST_TYPES_SCHEMA_DEFINITION.to_yaml(),
+            TEST_TYPES_SCHEMA_EXTENSION_DEFINITION.to_yaml(),
+            TEST_TYPES_INVALID_INSTANCE.to_yaml(),
+        ]
+    )
 
     def test_type_check_valid(self):
         with (
             temporary_test_file(self.VALID_PRIMITIVES_FILE_CONTENT) as test_file,
-            validated_source(test_file.name) as result
+            validated_source(test_file.name) as result,
         ):
+            get_active_context().add_definitions_to_context(result.definitions)
             assert_validator_result_success(result)
 
     def test_type_check_invalid(self):
@@ -71,7 +75,9 @@ class TestPrimitiveValidation(ActiveContextTestCase):
         test_context.add_definitions_to_context([TEST_TYPES_SCHEMA_DEFINITION, TEST_TYPES_SCHEMA_EXTENSION_DEFINITION])
 
         invalid_int_value = 0.5
-        invalid_definition = create_definition(TEST_TYPES_ROOT_KEY, "invalidPrimitives", {SCHEMA_FIELD_INT.get("name"): invalid_int_value})
+        invalid_definition = create_definition(
+            TEST_TYPES_ROOT_KEY, "invalidPrimitives", {SCHEMA_FIELD_INT.get("name"): invalid_int_value}
+        )
 
         finding = self.INTEGER_VALIDATOR.validation_function(invalid_definition, invalid_int_value)
         self.assertIsNotNone(finding)
@@ -81,7 +87,9 @@ class TestPrimitiveValidation(ActiveContextTestCase):
         test_context.add_definitions_to_context([TEST_TYPES_SCHEMA_DEFINITION, TEST_TYPES_SCHEMA_EXTENSION_DEFINITION])
 
         invalid_int_value = "DefinitelyNotAnInt"
-        invalid_definition = create_definition(TEST_TYPES_ROOT_KEY, "invalidPrimitives", {SCHEMA_FIELD_INT.get("name"): invalid_int_value})
+        invalid_definition = create_definition(
+            TEST_TYPES_ROOT_KEY, "invalidPrimitives", {SCHEMA_FIELD_INT.get("name"): invalid_int_value}
+        )
 
         finding = self.INTEGER_VALIDATOR.validation_function(invalid_definition, invalid_int_value)
         self.assertIsNotNone(finding)
@@ -105,7 +113,9 @@ class TestPrimitiveValidation(ActiveContextTestCase):
         test_context.add_definitions_to_context([TEST_TYPES_SCHEMA_DEFINITION, TEST_TYPES_SCHEMA_EXTENSION_DEFINITION])
 
         invalid_bool_value = "WhipperSnapper"
-        invalid_definition = create_definition(TEST_TYPES_ROOT_KEY, "booleanType", {SCHEMA_FIELD_BOOL.get("name"): invalid_bool_value})
+        invalid_definition = create_definition(
+            TEST_TYPES_ROOT_KEY, "booleanType", {SCHEMA_FIELD_BOOL.get("name"): invalid_bool_value}
+        )
 
         finding = self.BOOLEAN_VALIDATOR.validation_function(invalid_definition, invalid_bool_value)
         self.assertIsNotNone(finding)

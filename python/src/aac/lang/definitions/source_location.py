@@ -18,3 +18,12 @@ class SourceLocation:
     column: int = attrib(validator=validators.instance_of(int))
     position: int = attrib(validator=validators.instance_of(int))
     span: int = attrib(validator=validators.instance_of(int))
+
+    def to_tuple(self) -> tuple[int, int, int, int]:
+        """
+        Return a representation of the location as a tuple.
+
+        Returns:
+            An (int, int, int, int) tuple consisting of the line number, column, character start, and the span.
+        """
+        return self.line, self.column, self.position, self.span

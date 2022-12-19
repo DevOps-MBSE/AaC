@@ -174,7 +174,11 @@ def _prepare_and_generate_plugin_files(
     )
 
     if plugin_type == PLUGIN_TYPE_THIRD_STRING:
-        _move_architecture_file_to_plugin_root(architecture_file_path, output_directory, plugin_implementation_name)
+        new_architecture_file_location = _get_new_architecture_file_path(architecture_file_path, output_directory, plugin_implementation_name)
+        _move_architecture_file_to_plugin_root(architecture_file_path, new_architecture_file_location)
+
+        for definition in definitions:
+            definition.source.uri = new_architecture_file_location
 
     generated_templates = _generate_template_files(
         plugin_type, output_directory, template_output_directories, template_properties
@@ -360,20 +364,15 @@ def _get_repository_root_directory_from_path(system_path: str) -> str:
     return system_path[:target_index]
 
 
-def _move_architecture_file_to_plugin_root(architecture_file_path: str, output_directory: str, plugin_name: str) -> None:
-    """Moves the architecture file to the plugin root directory."""
+def _get_new_architecture_file_path(architecture_file_path: str, output_directory: str, generated_plugin_name: str) -> str:
+    """Return the new file path to which the plugin architecture file will be moved."""
     architecture_file_path = path.join(output_directory, architecture_file_path)
     file_name = path.basename(architecture_file_path)
-    new_file_path = path.join(output_directory, plugin_name, file_name)
-    new_file_dir_path = path.dirname(new_file_path)
+    new_file_path = path.join(output_directory, generated_plugin_name, file_name)
+    return new_file_path
 
-    try:
-        if not path.exists(new_file_dir_path):
-            makedirs(new_file_dir_path)
-        rename(architecture_file_path, new_file_path)
-    except OSError as error:
-        rename_file_error_message = (
-            f"Failed to move plugin architecture file to new plugin root directory '{new_file_path}'. Error: {error}"
-        )
-        logging.error(rename_file_error_message)
-        raise GeneratePluginException(rename_file_error_message)
+
+def _move_architecture_file_to_plugin_root(architecture_file_path: str, new_file_path: str) -> None:
+    """Moves the architecture file to the plugin root directory."""
+    makedirs(path.dirname(new_file_path), exist_ok=True)
+    rename(architecture_file_path, new_file_path)

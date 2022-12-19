@@ -1,4 +1,5 @@
 import logging
+import copy
 from contextlib import contextmanager
 from typing import Generator, Any, Optional
 
@@ -34,7 +35,7 @@ def validated_definition(definition: Definition) -> Generator[ValidatorResult, N
     Yields:
         A ValidationResults:py:class:`aac.validate.ValidationResult` indicating the result.
     """
-    yield _with_validation([definition], False)
+    yield _with_validation([definition], get_active_context(), False)
 
 
 @contextmanager
@@ -48,7 +49,7 @@ def validated_definitions(definitions: list[Definition]) -> Generator[ValidatorR
     Yields:
         A ValidationResults:py:class:`aac.validate.ValidationResult` indicating the result.
     """
-    yield _with_validation(definitions)
+    yield _with_validation(definitions, get_active_context())
 
 
 @contextmanager
@@ -62,12 +63,14 @@ def validated_source(source: str) -> Generator[ValidatorResult, None, None]:
     Yields:
         A ValidationResults:py:class:`aac.validate.ValidationResult` indicating the result.
     """
-    yield _with_validation(parse(source))
+    yield _with_validation(parse(source), get_active_context())
 
 
-def _with_validation(user_definitions: list[Definition], validate_context: bool = True) -> ValidatorResult:
+def _with_validation(
+    user_definitions: list[Definition], language_context: LanguageContext, validate_context: bool = True
+) -> ValidatorResult:
     try:
-        result = _validate_definitions(user_definitions, validate_context)
+        result = _validate_definitions(user_definitions, language_context, validate_context)
 
         if result.is_valid():
             return result
@@ -77,25 +80,27 @@ def _with_validation(user_definitions: list[Definition], validate_context: bool 
         raise ValidationError("Failed to validate content due to an internal language error:\n", *error.args)
 
 
-def _validate_definitions(definitions: list[Definition], validate_context: bool) -> ValidatorResult:
-    active_context = get_active_context()
-    active_context.add_definitions_to_context(definitions)
+def _validate_definitions(
+    definitions: list[Definition], language_context: LanguageContext, validate_context: bool
+) -> ValidatorResult:
+    validation_context = copy.deepcopy(language_context)
+    validation_context.add_definitions_to_context(definitions)
 
-    validator_plugins = active_context.get_definition_validations()
+    validator_plugins = validation_context.get_definition_validations()
 
     combined_findings = ValidatorFindings()
 
     def validate_each_definition(definition: Definition):
-        results = _validate_definition(definition, validator_plugins, active_context)
+        results = _validate_definition(definition, validator_plugins, validation_context)
         definition_findings = [result.findings.get_all_findings() for result in results]
         combined_findings.add_findings([finding for finding_list in definition_findings for finding in finding_list])
 
-    context_definitions_to_validate = active_context.definitions
-    definitions_to_validate = set(definitions + context_definitions_to_validate) if validate_context else []
+    context_definitions_to_validate = validation_context.definitions
+    definitions_to_validate = set(definitions + (context_definitions_to_validate if validate_context else []))
     [validate_each_definition(definition) for definition in definitions_to_validate]
 
     # This step is necessary to return validated definitions that have had their inheritance applied.
-    validated_definitions = [active_context.get_definition_by_name(definition.name) for definition in definitions]
+    validated_definitions = [validation_context.get_definition_by_name(definition.name) for definition in definitions]
     return ValidatorResult(validated_definitions, combined_findings)
 
 
@@ -150,7 +155,9 @@ def _validate_primitive_types(definition: Definition, language_context: Language
     findings = ValidatorFindings()
     definition_schema = get_definition_schema(definition, language_context)
     if definition_schema:
-        findings.add_findings(_validate_fields(definition, definition_schema, definition.get_top_level_fields(), language_context))
+        findings.add_findings(
+            _validate_fields(definition, definition_schema, definition.get_top_level_fields(), language_context)
+        )
 
     return ValidatorResult([definition], findings)
 
@@ -183,8 +190,12 @@ def _validate_fields(
     return findings
 
 
-def _validate_primitive_field(source_def: Definition, field_type: str, field_value: Any, language_context: LanguageContext) -> Optional[ValidatorFinding]:
-    validator = [validator for validator in language_context.get_primitive_validations() if validator.primitive_type == field_type]
+def _validate_primitive_field(
+    source_def: Definition, field_type: str, field_value: Any, language_context: LanguageContext
+) -> Optional[ValidatorFinding]:
+    validator = [
+        validator for validator in language_context.get_primitive_validations() if validator.primitive_type == field_type
+    ]
 
     finding = None
     if validator:
@@ -195,7 +206,9 @@ def _validate_primitive_field(source_def: Definition, field_type: str, field_val
     return finding
 
 
-def _validate_schema_field(source_def: Definition, field_type: str, field_value: Any, language_context: LanguageContext) -> list[ValidatorFinding]:
+def _validate_schema_field(
+    source_def: Definition, field_type: str, field_value: Any, language_context: LanguageContext
+) -> list[ValidatorFinding]:
     new_field_schema = language_context.get_definition_by_name(field_type)
     findings = []
     if new_field_schema:

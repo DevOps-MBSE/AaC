@@ -84,7 +84,8 @@ def strip_undefined_fields_from_definition(definition: Definition, context: Lang
     Returns:
         A copy of the original definition with undefined fields removed.
     """
-    def _strip_fields(definition_dict: dict, dict_schema: definition):
+
+    def _strip_fields(definition_dict: dict, dict_schema: Definition):
         defined_top_level_fields = dict_schema.get_top_level_fields().get("fields", {})
         defined_top_level_fields_dict = {field.get("name"): field for field in defined_top_level_fields}
         definition_dict_field_names = list(definition_dict.keys())
@@ -100,14 +101,15 @@ def strip_undefined_fields_from_definition(definition: Definition, context: Lang
                 field_schema = context.get_definition_by_name(remove_list_type_indicator(field_schema_type))
 
                 if field_schema and not context.is_enum_type(field_schema_type):
-                    field_sub_dict = definition_dict.get(field_name)
+                    field_sub_dict = definition_dict.get(field_name, {})
                     field_dicts = [entry for entry in field_sub_dict] if is_array_field else [field_sub_dict]
 
                     for field_sub_dict in field_dicts:
                         _strip_fields(field_sub_dict, field_schema)
 
-    stripped_definition = copy.deepcopy(definition)
-    definition_schema = get_definition_schema(definition, context)
-    definition_structure = stripped_definition.get_top_level_fields()
-    _strip_fields(definition_structure, definition_schema)
-    return stripped_definition
+    if definition:
+        stripped_definition = copy.deepcopy(definition)
+        definition_schema = get_definition_schema(definition, context)
+        definition_structure = stripped_definition.get_top_level_fields()
+        _strip_fields(definition_structure, definition_schema)
+        return stripped_definition
