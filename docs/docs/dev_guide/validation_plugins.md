@@ -227,6 +227,59 @@ validation:
 
 ### Expected Arguments for the Validation Interface
 
+The Validation Interface that is being used is based on arguments that are passed to the validator plugins.
+
+As long as the arguments that are passed through the validator plugins and the returned types are similar then the plugins that are created/used can be used interchangeably and can be utilized based on the usecase.
+
+An example of one of the validator plugins is the `bool_validator.py` plugin that can be found in the `AaC/python/src/aac/plugins/first_party/primitive_type_check/validators/`
+
+```python
+def get_validator() -> PrimitiveValidationContribution:
+    """Return the Primitive Validator for 'boolean'."""
+    return PrimitiveValidationContribution(BOOL_VALIDATION_NAME, PRIMITIVE_TYPE_BOOL, validate_bool)
+
+
+def validate_bool(definition: Definition, value_to_validate: Any) -> Optional[ValidatorFinding]:
+    """
+    Returns a Validation finding if the type isn't valid, otherwise None.
+
+    This function is intended to be used in the Validation apparatus, and for this result
+    to be collated with other finding into a larger ValidatorResult.
+
+    Arge:
+        definition (Definition): The definition that the value belongs to.
+        value_to_validate (Any): The value to be tested.
+
+    Returns:
+        A ValidatorFinding if the value is not a boolean or None.
+    """
+
+```
+
+The return of this validator plugin is the `finding` from the `validate_bool` function. The arguments that are passed through is, the `Definition` and the type of the `value_to_validate` which is checking if the boolean that is being passed is valid. 
+
+Another validator is the `_validate_root_keys.py` plugin which checks and validates the root keys of the definition or schema. An example snippet of the arguments passed are as follows:
+
+```python
+def validate_root_keys(definition_under_test: Definition, target_schema_definition: Definition, language_context: LanguageContext, *validation_args) -> ValidatorResult:
+    """
+    Validates that the definition root key is defined by the root definition.
+
+    Args:
+        definition_under_test (Definition): The definition that's being validated.
+        target_schema_definition (Definition): A definition with applicable validation.
+        language_context (LanguageContext): The language context.
+
+    Returns:
+        A ValidatorResult containing any applicable error messages.
+    """
+```
+
+Since this plugin is a part of the validator as a whole, it differs slightly from the `bool_validator.py` plugin that is a part of the `primitive_type_check` plugin. 
+
+The arguments that are being passed through are simnilar, `Definition`, `LanguageContext`, and then any additional `validation_args`. As seen in the `_validate.py` validator the arguments and the return are quite similar.
+
+As mentioned before earlier the `ValidatorResult` will return the results of the validator from the functions that are being enacted, throughout the validation process, and compiles the results to a final message to notify the user of any `errors`, `warnings` or relevant informational messages regarding the validation.
 
 ### Best Practices for Validation Plugin Development
 
