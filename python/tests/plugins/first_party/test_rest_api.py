@@ -334,27 +334,54 @@ class TestAacRestApiDefinitionEndpoints(ActiveContextTestCase):
     def test_update_definitions(self):
         test_context = get_active_context()
 
-        test_model_definition_name = "TestModel"
-        test_model_definition = create_model_definition(test_model_definition_name)
+        test_model_1_definition_name = "TestModel1"
+        test_model_1_definition = create_model_definition(test_model_1_definition_name)
 
-        test_context.add_definition_to_context(test_model_definition)
+        test_model_2_definition_name = "TestModel2"
+        test_model_2_definition = create_model_definition(test_model_2_definition_name)
 
-        # Update the test definitions
-        test_behavior_name = "TestBehavior"
-        update_test_model_definition = test_model_definition.copy()
-        update_test_model_definition.structure[ROOT_KEY_MODEL][DEFINITION_FIELD_BEHAVIOR] = [
-            create_behavior_entry(test_behavior_name)
-        ]
+        with temporary_test_file(test_model_1_definition.to_yaml()) as file_1, TemporaryDirectory() as temp_dir:
+            file_2 = temporary_test_file_wo_cm(test_model_2_definition.to_yaml(), dir=temp_dir)
 
-        response = self.test_client.put(
-            "/definition", data=json.dumps(jsonable_encoder(to_definition_model(update_test_model_definition)))
-        )
+            parsed_definition_1, *_ = parse(file_1.name)
+            test_context.add_definition_to_context(parsed_definition_1)
 
-        self.assertEqual(HTTPStatus.NO_CONTENT, response.status_code)
+            parsed_definition_2, *_ = parse(file_2.name)
+            test_context.add_definition_to_context(parsed_definition_2)
 
-        updated_definition = test_context.get_definition_by_name(update_test_model_definition.name)
+            # Update definition 1 with new fields
+            test_behavior_name = "TestBehavior"
+            update_test_model_definition_1 = parsed_definition_1.copy()
+            update_test_model_definition_1.structure[ROOT_KEY_MODEL][DEFINITION_FIELD_BEHAVIOR] = [
+                create_behavior_entry(test_behavior_name)
+            ]
 
-        self.assertIn(test_behavior_name, updated_definition.to_yaml())
+            response_1 = self.test_client.put(
+                "/definition", data=json.dumps(jsonable_encoder(to_definition_model(update_test_model_definition_1)))
+            )
+
+            # Update definition 2 to be in file 1
+            update_parsed_definition_2 = parsed_definition_2.copy()
+            update_parsed_definition_2.source.uri = update_test_model_definition_1.source.uri
+
+            response_2 = self.test_client.put(
+                "/definition", data=json.dumps(jsonable_encoder(to_definition_model(update_parsed_definition_2)))
+            )
+
+            # Assert definition 1 new fields
+            self.assertEqual(HTTPStatus.NO_CONTENT, response_1.status_code)
+            updated_definition_1 = test_context.get_definition_by_name(update_test_model_definition_1.name)
+            self.assertIn(test_behavior_name, updated_definition_1.to_yaml())
+
+            # Assert definition 2 new file
+            self.assertEqual(HTTPStatus.NO_CONTENT, response_2.status_code)
+            updated_definition_2 = test_context.get_definition_by_name(update_parsed_definition_2.name)
+            file_1_updated_definitions = parse(update_parsed_definition_2.source.uri)
+            file_1_updated_definitions[0].uid = updated_definition_1.uid  # Set the UID so we can use the built in eq to compare
+            file_1_updated_definitions[1].uid = updated_definition_2.uid  # Set the UID so we can use the built in eq to compare
+            self.assertEqual(file_1_updated_definitions[0], updated_definition_1)
+            self.assertEqual(file_1_updated_definitions[1], updated_definition_2)
+            self.assertFalse(os.path.lexists(parsed_definition_2.source.uri))
 
     def test_update_definitions_not_found(self):
         test_model_definition_name = "TestModel"
@@ -387,6 +414,7 @@ class TestAacRestApiDefinitionEndpoints(ActiveContextTestCase):
             removed_definition = test_context.get_definition_by_name(test_model_definition_name)
 
             self.assertIsNone(removed_definition)
+            self.assertFalse(os.path.lexists(test_aac_file.name))
 
     def test_delete_definitions_not_found(self):
         test_model_definition_name = "TestModel"
