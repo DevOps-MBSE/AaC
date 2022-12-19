@@ -6,29 +6,29 @@ from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 
 plugin_name = "{{plugin.name}}"
 {% for command in commands %}
-{%- set comma_joiner = joiner(", ") %}
+{% set comma_joiner = joiner(", ") %}
 
-def {{command.implementation_name}}({% for command_input in command.input -%}{{comma_joiner()}}{{command_input.name | trim('-') | replace('-', '_')}}: {{command_input.python_type}}{%- endfor %}) -> PluginExecutionResult:
+def {{command.implementation_name}}({% for command_input in command.input %}{{comma_joiner()}}{{command_input.name | trim('-') | replace('-', '_')}}: {{command_input.python_type}}{% endfor %}) -> PluginExecutionResult:
     """
-    {% if command.description is defined -%}
+    {% if command.description is defined %}
     {{command.description}}
-    {%- else -%}
+    {% else %}
     TODO: Write a description
-    {%- endif %}
-    {%- if command.input is defined %}
+    {% endif %}
+    {% if command.input is defined %}
 
     Args:
-    {%- for command_input in command.input %}
-        {{command_input.name | trim('-') | replace('-', '_')}} ({{command_input.python_type}}): {% if command_input.description is defined -%} {{command_input.description}} {%- else -%} TODO add a helpful parameter description {%- endif -%}{% if command_input.default is defined %} (default: {{command_input.default}}){% endif %}
-    {%- endfor %}
-    {%- endif %}
-    {%- if command.output is defined %}
+    {%- for command_input in command.input +%}
+        {{command_input.name | trim('-') | replace('-', '_')}} ({{command_input.python_type}}): {% if command_input.description is defined %}{{command_input.description}}{% else %}TODO add a helpful parameter description{% endif %}{% if command_input.default is defined %} (default: {{command_input.default}}){% endif %}
+    {% endfor +%}
+    {% endif %}
+    {% if command.output is defined %}
 
     Returns:
-    {%- for command_output in command.output %}
-        {{command_output.name | replace('-', '_')}} {% if command_output.description is defined -%} {{command_output.description}} {%- else -%} TODO add a helpful return value description {%- endif -%}
-    {% endfor -%}
-    {%- endif %}
+    {%- for command_output in command.output +%}
+        {{command_output.name | replace('-', '_')}}{% if command_output.description is defined %} {{command_output.description}}{% else %} TODO add a helpful return value description{% endif %}
+    {% endfor +%}
+    {% endif %}
     """
     # TODO add implementation here
     def _implement_and_rename_me():
