@@ -21,7 +21,7 @@ python -m piptools compile "--generate-hashes" "%CD%\..\..\setup.py"
 mv "%CD%\..\..\requirements.txt" "."
 python -m pip wheel -r "%CD%\requirements.txt"
 
-SET aac_wheel=('Get-ChildItem "%CD%" | Where-Object {$_.Name -like 'aac-*.whl'}')
+SET aac_wheel=('Get-ChildItem "%CD%" | where {$_.Name -like 'aac-*.whl'}')
 echo "Wheel: %aac_wheel%"
 python -m pip hash "%aac_wheel%"
 echo %install_dir% > "%CD%\install_dir_name.txt"
