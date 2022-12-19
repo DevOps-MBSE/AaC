@@ -1,5 +1,7 @@
 """AaC Plugin implementation module for the plugin-management plugin."""
 
+from aac.lang.active_context_lifecycle_manager import get_active_context
+from aac.plugins import PluginError
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 
 plugin_name = "plugin-management"
@@ -18,10 +20,22 @@ def list_plugins(all: bool, active: bool, inactive: bool) -> PluginExecutionResu
         plugins The list of plugin names.
     """
 
-    def _implement_and_rename_me():
-        raise NotImplementedError("list_plugins is not implemented.")
+    def collect_plugins():
+        plugins = []
+        active_context = get_active_context()
+        if active:
+            plugins = active_context.get_active_plugins()
+        elif inactive:
+            plugins = active_context.get_inactive_plugins()
+        elif all:
+            plugins = active_context.plugins
 
-    with plugin_result(plugin_name, _implement_and_rename_me) as result:
+        return "\n".join([plugin.name for plugin in plugins])
+
+    if len([arg for arg in [all, active, inactive] if arg]) > 1:
+        raise PluginError(f"Flags are mutually-exclusive - got all: {all}; actived: {active}; inactive: {inactive}")
+
+    with plugin_result(plugin_name, collect_plugins) as result:
         return result
 
 
