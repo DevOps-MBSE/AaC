@@ -16,7 +16,6 @@ IF EXIST "%install_dir%" (
   DEL /S "%install_dir%"
 )
 mkdir "%install_dir%"
-for /R "%cd%\install_scripts\" %%f in (*.bat) do echo %%f "%install_dir%\."
 for /R "%cd%\install_scripts\" %%f in (*.bat) do COPY %%f "%install_dir%\."
 COPY "%cd%\README.md" "%install_dir%"
 cd "%install_dir%"
@@ -24,9 +23,5 @@ cd "%install_dir%"
 python -m piptools compile "--generate-hashes" "%CD%\..\..\setup.py"
 mv "%CD%\..\..\requirements.txt" "."
 python -m pip wheel "%CD%\..\.."
-@PowerShell "(python -m pip hash 'aac-%version%-py3-none-any.whl')"
-@PowerShell "(python -m pip hash 'aac-%version%-py3-none-any.whl')|%%{$_ -Replace 'l:','l \'}"
-@PowerShell "(python -m pip hash 'aac-%version%-py3-none-any.whl')|%%{$_ -Replace 'l:','l \'}|%%{$_ -Replace '--hash','    --hash'}"
 @PowerShell "(python -m pip hash 'aac-%version%-py3-none-any.whl')|%%{$_ -Replace 'l:','l \'}|%%{$_ -Replace '--hash','    --hash'}" >> .\requirements.txt
-type "requirements.txt"
 echo %install_dir% > "%CD%\install_dir_name.txt"
