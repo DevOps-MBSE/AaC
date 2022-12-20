@@ -43,6 +43,12 @@ jobs:
           name: secure_install_${{ matrix.os }}
           path: python/secure_install/aac_secure_install_*
 
+      - name: Upload AaC models
+        uses: actions/upload-artifact@v2
+        with:
+          name: aac-models
+          path: python/model/
+
   os_test_matrix:
     name: Python ${{ matrix.os }} Tests
     needs: os_build_matrix

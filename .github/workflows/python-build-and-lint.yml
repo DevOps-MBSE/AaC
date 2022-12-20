@@ -36,12 +36,6 @@ jobs:
           name: aac_wheel
           path: python/dist/
 
-      - name: Upload AaC models
-        uses: actions/upload-artifact@v2
-        with:
-          name: aac-models
-          path: python/model/
-
       - name: Generate API Documentation
         run: |
           cp -R ../docs/ ./docs
