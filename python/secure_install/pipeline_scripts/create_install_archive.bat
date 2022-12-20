@@ -16,6 +16,7 @@ IF EXIST "%install_dir%" (
   DEL /S "%install_dir%"
 )
 mkdir "%install_dir%"
+for /R "%cd%\install_scripts\" %%f in (*.bat) do echo %%f "%install_dir%"
 for /R "%cd%\install_scripts\" %%f in (*.bat) do COPY %%f "%install_dir%"
 COPY "%cd%\README.md" "%install_dir%"
 cd "%install_dir%"
