@@ -11,13 +11,13 @@ cd "%install_script_dir%"
 
 For /F %%A in ('"python -m aac version"') do SET version=%%A
 echo "Version %version%"
-SET install_dir=%cd%"/aac_secure_install_%version%"
+SET install_dir="%cd%\aac_secure_install_%version%"
 IF EXIST "%install_dir%" (
   DEL /S "%install_dir%"
 )
 mkdir "%install_dir%"
-for /R "%cd%\install_scripts\" %%f in (*.bat) do echo %%f "%install_dir%"
-for /R "%cd%\install_scripts\" %%f in (*.bat) do COPY %%f "%install_dir%"
+for /R "%cd%\install_scripts\" %%f in (*.bat) do echo %%f "%install_dir%\."
+for /R "%cd%\install_scripts\" %%f in (*.bat) do COPY %%f "%install_dir%\."
 COPY "%cd%\README.md" "%install_dir%"
 cd "%install_dir%"
 
