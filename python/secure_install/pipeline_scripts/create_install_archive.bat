@@ -21,6 +21,7 @@ python -m piptools compile "--generate-hashes" "%CD%\..\..\setup.py"
 mv "%CD%\..\..\requirements.txt" "."
 python -m pip wheel -r "%CD%\requirements.txt"
 
+DIR
 For /F %%A in (aac*.whl) do SET aac_wheel=%%A
 @REM SET aac_wheel=('Get-ChildItem -Filter aac*.whl -Name')
 echo "Wheel: %aac_wheel%"
