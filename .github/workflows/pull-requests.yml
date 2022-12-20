@@ -5,19 +5,19 @@ on:
   pull_request:
 
 jobs:
-  build_python_artifacts:
-    name: Python Build
-    uses: ./.github/workflows/python-build-and-lint.yml
+  # build_python_artifacts:
+  #   name: Python Build
+  #   uses: ./.github/workflows/python-build-and-lint.yml
 
-  build_vscode_artifacts:
-    name: VSCode Ext. Build
-    needs: build_python_artifacts
-    uses: ./.github/workflows/vscode-build-artifacts.yml
+  # build_vscode_artifacts:
+  #   name: VSCode Ext. Build
+  #   needs: build_python_artifacts
+  #   uses: ./.github/workflows/vscode-build-artifacts.yml
 
-  python_tests:
-    name: Python Unit Tests
-    needs: build_python_artifacts
-    uses: ./.github/workflows/python-test-python-version.yml
+  # python_tests:
+  #   name: Python Unit Tests
+  #   needs: build_python_artifacts
+  #   uses: ./.github/workflows/python-test-python-version.yml
 
   python_cross_platform:
     name: Python Cross Platform Build & Test

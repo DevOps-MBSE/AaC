@@ -22,7 +22,7 @@ cd "%install_dir%"
 
 python -m piptools compile "--generate-hashes" "%CD%\..\..\setup.py"
 mv "%CD%\..\..\requirements.txt" "."
-python -m pip wheel "%CD%\..\..\"
+python -m pip wheel "%CD%\..\.."
 
 DIR
 For /F %%A in (aac*.whl) do SET aac_wheel=%%A
