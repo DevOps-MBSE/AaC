@@ -27,6 +27,6 @@ python -m pip wheel "%CD%\..\.."
 @PowerShell "(python -m pip hash 'aac-%version%-py3-none-any.whl')"
 @PowerShell "(python -m pip hash 'aac-%version%-py3-none-any.whl')|%%{$_ -Replace 'l:','l \'}"
 @PowerShell "(python -m pip hash 'aac-%version%-py3-none-any.whl')|%%{$_ -Replace 'l:','l \'}|%%{$_ -Replace '--hash','    --hash'}"
-@PowerShell "(python -m pip hash 'aac-%version%-py3-none-any.whl')|%%{$_ -Replace 'l:','l \'}|%%{$_ -Replace '--hash','    --hash'} >> .\requirements.txt"
+@PowerShell "(python -m pip hash 'aac-%version%-py3-none-any.whl')|%%{$_ -Replace 'l:','l \'}|%%{$_ -Replace '--hash','    --hash'}" >> .\requirements.txt
 type "requirements.txt"
 echo %install_dir% > "%CD%\install_dir_name.txt"
