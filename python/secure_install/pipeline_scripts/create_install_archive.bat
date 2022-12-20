@@ -16,8 +16,8 @@ IF EXIST "%install_dir%" (
   DEL /S "%install_dir%"
 )
 mkdir "%install_dir%"
-COPY "%cd%/install_scripts\*" "%install_dir%"
-COPY "%cd%/README.md" "%install_dir%"
+for /R "%cd%\install_scripts\" %%f in (*.bat) do COPY %%f "%install_dir%"
+COPY "%cd%\README.md" "%install_dir%"
 cd "%install_dir%"
 
 python -m piptools compile "--generate-hashes" "%CD%\..\..\setup.py"

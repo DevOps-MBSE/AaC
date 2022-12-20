@@ -82,6 +82,7 @@ jobs:
         # https://github.com/actions/upload-artifact/issues/38
         run: |
           cd (Get-ChildItem -Filter aac_secure_install_*)
+          ls
           Start-Process -FilePath .\install_aac_air_gap.bat
 
       - name: Get Package Version
