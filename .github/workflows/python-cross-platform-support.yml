@@ -81,7 +81,7 @@ jobs:
         if: matrix.os == 'windows-latest'
         # https://github.com/actions/upload-artifact/issues/38
         run: |
-          ./aac_secure_install_*/install_aac_air_gap.bat
+          Start-Process -FilePath (Get-Children -Filter aac_secure_install_*\install_aac_air_gap.bat)
 
       - name: Get Package Version
         run: python -m aac version
