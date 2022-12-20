@@ -86,13 +86,42 @@ The results of this validation are also coinsiding with the results from the `_v
 
 ### Purpose of the Validation Definition
 
-Outlined below is the `validator_implementation` plugin file. The purpose of this plugin is to verify that the 1st and 3rd party plugins have a working python plugin implementation. This also will verify that the `Definition` has a proper implementation also.
+Outlined in the code sample below is the schema of the `Validation Definition`.
 
 ```yaml
-validation: 
-   name: Validation definition has an implementation 
-   description: Verifies that every validation definition has a corresponding python plugin implementation 
+schema:
+  name: Validation
+  fields:
+    - name: name
+      type: string
+      description: |
+        The name of the validation rule and plugin.
+    - name: description
+      type: string
+      description: |
+        A high-level description of the validation plugin.
+    - name: behavior
+      type: Behavior[]
+      description: |
+        A list of behaviors that the validation plugin will perform.
+  validation:
+    - name: Validation definition has an implementation
+    - name: Required fields are present
+      arguments:
+        - name
+        - description
+        - behavior
 ```
+
+The arguments that are passed through this `Validation` Definition are three variables:
+
+1. The name of the `defintion` being validated.
+2. The description of the `definition` being validated.
+3. The behavior of the `definition` that is being validated.
+
+So the validation is taking the `definition` and is checking to make sure that the proper fields, and the arguments that are being passed are there in the declaration of the `definition` being validated.
+
+For example, in our enum schema, we have a validation that is making sure there are fields in the arguments are there in the definition.
 
 ### Meanings of Validation Messages
 
