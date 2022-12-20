@@ -7,7 +7,7 @@ defaults:
 
 jobs:
   os_build_matrix:
-    name: Python ${{ matrix.os }} Create Secure Installs
+    name: Build ${{ matrix.os }} Secure Install Air Gap
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -50,7 +50,7 @@ jobs:
           path: python/model/
 
   os_test_matrix:
-    name: Python ${{ matrix.os }} Tests
+    name: Test ${{ matrix.os }} Secure Install Air Gap
     needs: os_build_matrix
     runs-on: ${{ matrix.os }}
 
@@ -122,11 +122,9 @@ jobs:
 
       - name: Test Gen-Plugin Third-Party Plugin
         run: |
-          echo y | aac gen-plugin model/plugin/plugin.yaml
-          rm src/aac/state.json
+          echo y | python -m aac gen-plugin model/plugin/plugin.yaml
           cd model/plugin/
           pip install .
-          aac -h | grep test-plugin-command
           pip uninstall -y test_plugin
 
       - name: Upload logs from failed runs
