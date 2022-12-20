@@ -23,19 +23,22 @@ def get_plugin() -> Plugin:
 def _get_plugin_commands():
     list_plugins_arguments = [
         AacCommandArgument(
-            "all",
+            "--all",
             "Display a list of all the installed AaC plugins.",
             "bool",
+            default=False,
         ),
         AacCommandArgument(
-            "active",
+            "--active",
             "Display a list of all the active AaC plugins.",
             "bool",
+            default=False,
         ),
         AacCommandArgument(
-            "inactive",
+            "--inactive",
             "Display a list of all the inactive AaC plugins.",
             "bool",
+            default=False,
         ),
     ]
     activate_plugin_arguments = [
