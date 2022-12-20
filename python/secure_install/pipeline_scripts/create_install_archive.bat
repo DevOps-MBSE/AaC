@@ -24,9 +24,5 @@ python -m piptools compile "--generate-hashes" "%CD%\..\..\setup.py"
 mv "%CD%\..\..\requirements.txt" "."
 python -m pip wheel "%CD%\..\.."
 
-DIR
-For /F %%A in (aac*.whl) do SET aac_wheel=%%A
-@REM SET aac_wheel=('Get-ChildItem -Filter aac*.whl -Name')
-echo "Wheel: %aac_wheel%"
-python -m pip hash "%aac_wheel%"
+python -m pip hash "aac-%version%-py3-none-any.whl"
 echo %install_dir% > "%CD%\install_dir_name.txt"
