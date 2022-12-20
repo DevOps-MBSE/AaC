@@ -1,4 +1,7 @@
-REM https://daniel-sc.github.io/bash-shell-to-bat-converter/
+@REM https://daniel-sc.github.io/bash-shell-to-bat-converter/
+@REM This script gathers AaC's runtime dependencies, creates a hash file, pulls in install scripts, and generally
+@REM   prepares the secure installation file. We'll delegate to Github Action's automatic zipping of artifacts to
+@REM   ultimately compress the directory into an archive.
 @echo off
 
 cd /D "%~dp0"
@@ -19,7 +22,7 @@ cd "%install_dir%"
 
 python -m piptools compile "--generate-hashes" "%CD%\..\..\setup.py"
 mv "%CD%\..\..\requirements.txt" "."
-python -m pip wheel -r "%CD%\requirements.txt"
+python -m pip wheel "%CD%\..\..\"
 
 DIR
 For /F %%A in (aac*.whl) do SET aac_wheel=%%A
