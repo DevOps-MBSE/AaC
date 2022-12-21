@@ -121,10 +121,21 @@ jobs:
         run: python -m aac puml-object model/flow/System.yaml output/
 
       - name: Test Gen-Plugin Third-Party Plugin
+        if: matrix.os != 'windows-latest'
         run: |
           echo y | python -m aac gen-plugin model/plugin/plugin.yaml
           cd model/plugin/
           pip install .
+          aac -h | grep test-plugin-command
+          pip uninstall -y test_plugin
+
+      - name: Test Gen-Plugin Third-Party Plugin
+        if: matrix.os == 'windows-latest'
+        run: |
+          echo y | python -m aac gen-plugin model/plugin/plugin.yaml
+          cd model/plugin/
+          pip install .
+          aac -h
           pip uninstall -y test_plugin
 
       - name: Upload logs from failed runs
