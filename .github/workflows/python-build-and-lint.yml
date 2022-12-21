@@ -31,7 +31,7 @@ jobs:
         run: python setup.py bdist_wheel
 
       - name: Upload Python Wheel
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: aac_wheel
           path: python/dist/
@@ -43,7 +43,7 @@ jobs:
           make html
 
       - name: Upload API Documentation
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: api-documentation
           path: python/docs/build/html/
@@ -54,7 +54,7 @@ jobs:
           aac generate-openapi-spec oasv3-spec
 
       - name: Upload RESTful API Documentation
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: rest-api-documentation
           path: python/oasv3-spec

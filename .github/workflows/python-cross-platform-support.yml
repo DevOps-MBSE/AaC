@@ -38,13 +38,13 @@ jobs:
           ./secure_install/pipeline_scripts/create_install_archive.bat
 
       - name: Upload Dependencies Package
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: secure_install_${{ matrix.os }}
           path: python/secure_install/aac_secure_install_*
 
       - name: Upload AaC models
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: aac-models
           path: python/model/
@@ -140,7 +140,7 @@ jobs:
 
       - name: Upload logs from failed runs
         if: ${{ failure() }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: failed_test_log
           path: ${{ env.pythonLocation }}/**/aac.log
