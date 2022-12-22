@@ -116,7 +116,7 @@ jobs:
         run: |
           mkdir -p src/aac/plugins/first_party/test_plugin/
           ls
-          cp model/plugin/test_plugin/plugin.yaml src/aac/plugins/first_party/test_plugin/first_party.yaml
+          cp model/plugin/plugin.yaml src/aac/plugins/first_party/test_plugin/first_party.yaml
           echo y | aac gen-plugin src/aac/plugins/first_party/test_plugin/first_party.yaml
           pip install .[all]
 
