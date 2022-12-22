@@ -64,6 +64,9 @@ jobs:
         with:
           python-version: 3.9
 
+      - name: Checkout Repository # Checked-out repository is necessary to test the first party plugin generation.
+        uses: actions/checkout@v3
+
       - name: Download Secure Install
         uses: actions/download-artifact@v3
         with:
@@ -119,13 +122,6 @@ jobs:
 
       - name: Create PlantUML Component Diagram
         run: python -m aac puml-object model/flow/System.yaml output/
-
-      - name: Test Gen-Plugin First-Party Plugin
-        run: |
-          mkdir -p src/aac/plugins/first_party/test_plugin/
-          cp model/plugin/test_plugin/plugin.yaml src/aac/plugins/first_party/test_plugin/first_party.yaml
-          echo y | aac gen-plugin src/aac/plugins/first_party/test_plugin/first_party.yaml
-          pip install .[all]
 
       - name: Test Gen-Plugin Third-Party Plugin
         if: matrix.os != 'windows-latest'
