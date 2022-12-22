@@ -24,7 +24,7 @@ chmod +x ./install_aac_verified_index.bash
 ```
 
 ## Air-Gapped Installation
-For air-gapped installations without access to PyPI, or which may not want to use the indexed artifacts, we provide a PyPI-less (no index)installation method. You can execute `pip install --require-hashes -r requirements.txt --no-index --find-links ./` or the `install_aac_air_gap` script. This mode will verify the hashes of the AaC and its runtime dependencies, packaged as wheels, and then install them -- the runtime artifacts are not pulled from PyPI.
+For air-gapped installations without access to PyPI, or which may not want to use the indexed artifacts, we provide a PyPI-less (no index) installation method. You can execute `pip install --require-hashes -r requirements.txt --no-index --find-links ./` or the `install_aac_air_gap` script. This mode will verify the hashes of the AaC and its runtime dependencies, packaged as wheels, and then install them -- the runtime artifacts are not pulled from PyPI.
 
 ### Linux/macOS
 Github's artifact archiver doesn't preserve permissions so you'll have to make the script executable.

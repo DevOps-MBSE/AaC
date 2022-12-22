@@ -21,7 +21,7 @@ def get_active_context(reload_context: bool = False) -> LanguageContext:
     """
     global ACTIVE_CONTEXT
 
-    if not ACTIVE_CONTEXT and not reload_context and False:  # Temporary disabling until we get state management plugins.
+    if False and not ACTIVE_CONTEXT and not reload_context:  # Temporary disabling until we get state management plugins.
         ACTIVE_CONTEXT = LanguageContext()
         ACTIVE_CONTEXT.import_from_file(ACTIVE_CONTEXT_STATE_FILE_NAME)
 
