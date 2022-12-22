@@ -43,11 +43,6 @@ jobs:
           name: secure_install_${{ matrix.os }}
           path: python/secure_install/aac_secure_install_*
 
-      - name: Upload AaC models
-        uses: actions/upload-artifact@v3
-        with:
-          name: aac-models
-          path: python/model/
 
   os_test_matrix:
     name: Test ${{ matrix.os }} Secure Install Air Gap
@@ -90,12 +85,6 @@ jobs:
       - name: Get Package Version
         run: python -m aac version
 
-      - name: Download AaC models
-        uses: actions/download-artifact@v3
-        with:
-          name: aac-models
-          path: python/model/
-
       - name: Validate Core Spec
         if: matrix.os != 'windows-latest'
         run: |
@@ -126,6 +115,7 @@ jobs:
       - name: Test Gen-Plugin First-Party Plugin
         run: |
           mkdir -p src/aac/plugins/first_party/test_plugin/
+          ls
           cp model/plugin/test_plugin/plugin.yaml src/aac/plugins/first_party/test_plugin/first_party.yaml
           echo y | aac gen-plugin src/aac/plugins/first_party/test_plugin/first_party.yaml
           pip install .[all]
