@@ -24,7 +24,7 @@ There is also a section listing out the `validation` plugin for the implementati
 
 * [Implementation of a Validation Plugin for Definitions](#implementation-of-a-validation-plugin-for-definitions)
 
-It is also worthy to note that the ways that AaC validates is that ituses a self validating implementation. The validation is entirely data-driven, so with this implementation it can validate based on data present/provided in the definition(s).
+It is also worthy to note that the way that the AaC DSL validates itself is through associating user-defined validation definitions with a corresponding python implementationn which is used to programmatically test that the validation's constraints are met. The validation process is entirely data-driven, so with this implementation it can validate the data in the definition via the very constraints.that are defined as part of the definition.
 
 ### Definition Validations
 
@@ -60,7 +60,7 @@ The following snippet shows how the `_validate.py` validates a `definition` that
      return validator_results 
 ```
 
-With the above snippet this shows an example of how the validator is taking in a `Definition`, a list of other validator plugins, as well as, the `LanguageContext` of the definition that is being validated. The `Definition` validation is limited by *Structural Constraints*. With this in mind the`Definition` validator will take a `definition` that is being passed in and will decompose it into its `sub-definition`s within the primary schema. With this, this validator will take a definition and filter it down by the structures that are present within. These `sub-structure`s are then validated by what is already present in the primary `definition` then all these are run through and passed to the `ValidatorResult` object.
+With the above snippet this shows an example of how the validator is taking in a `Definition`, a list of other validator plugins, as well as, the `LanguageContext` of the definition that is being validated. The `Definition` validation is limited by *Structural Constraints*. With this in mind the`Definition` validator will take a `definition` that is being passed in and will decompose it into its `sub-definition`s within the primary schema. With this, this validator will take a definition and break it down to the structures that are present within. These `sub-structure`s are then validated by passing the sub-structure and corresponding  values to the appropriate validator which may produce finding(s) stored in a `ValidatorResult` object.
 
 `ValidatorResult` object is then parsed through and returned to the user through some output of the latter results. This is also done for the below example in [Primitive Validations](#primitive-validations), but it is primarily targeted towards the `Primitive Types` within the `Definition`s.
 
@@ -275,7 +275,7 @@ def validate_bool(definition: Definition, value_to_validate: Any) -> Optional[Va
     This function is intended to be used in the Validation apparatus, and for this result
     to be collated with other finding into a larger ValidatorResult.
 
-    Arge:
+    Args:
         definition (Definition): The definition that the value belongs to.
         value_to_validate (Any): The value to be tested.
 
@@ -306,7 +306,7 @@ def validate_root_keys(definition_under_test: Definition, target_schema_definiti
 
 Since this plugin is a part of the validator as a whole, it differs slightly from the `bool_validator.py` plugin that is a part of the `primitive_type_check` plugin. 
 
-The arguments that are being passed through are simnilar, `Definition`, `LanguageContext`, and then any additional `validation_args`. As seen in the `_validate.py` validator the arguments and the return are quite similar.
+The arguments that are being passed through are similar, `Definition`, `LanguageContext`, and then any additional `validation_args`. As seen in the `_validate.py` validator the arguments and the return are quite similar.
 
 As mentioned before earlier the `ValidatorResult` will return the results of the validator from the functions that are being enacted, throughout the validation process, and compiles the results to a final message to notify the user of any `errors`, `warnings` or relevant informational messages regarding the validation.
 
@@ -316,4 +316,4 @@ Best practices for the Validation Plugin Development is to do the following:
 
 1. Keep the scope of the validator plugin small in scope; This allows for some flexibility and ease of testing the plugin.
 2. Use `arguments` to validate; This allows for some flexibility for what can be validated.
-3. Unit Tests are your friend; Using Unit Tests allows for better testing of the validator plugin itself. This will help in identifying issues or unforseen problems with the new plugin.
+3. Unit Tests are your friend; Using Unit Tests allows for better testing of the validator plugin itself. This will help in identifying issues or unforeseen problems with the new plugin.
