@@ -111,13 +111,7 @@ def create_scenario_entry(name: str, tags: list[str] = [], given: list[str] = []
     Returns:
         A dictionary representing an AaC scenario definition.
     """
-    return {
-        NAME_STRING: name,
-        TAGS_STRING: tags,
-        GIVEN_STRING: given,
-        WHEN_STRING: when,
-        THEN_STRING: then
-    }
+    return {SCENARIO_STRING: name, TAGS_STRING: tags, GIVEN_STRING: given, WHEN_STRING: when, THEN_STRING: then}
 
 
 def create_enum_definition(name: str, values: list[str]):

@@ -10,7 +10,7 @@ defaults:
 jobs:
   build_deployment_artifacts:
     name: Build Artifacts
-    uses: ./.github/workflows/python-build-artifacts.yml
+    uses: ./.github/workflows/python-build-and-lint.yml
 
   deploy_artifacts:
     name: Deploy Artifacts
@@ -18,7 +18,7 @@ jobs:
     needs: build_deployment_artifacts
     steps:
       - name: Download API Documentation
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: api-documentation
           path: python/docs/build/html/
@@ -27,7 +27,7 @@ jobs:
         run: echo "This is where I'd deploy if I were setup"
 
       - name: Download Python Wheel
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: aac_wheel
           path: python/dist/

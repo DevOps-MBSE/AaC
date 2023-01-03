@@ -1,12 +1,15 @@
 """An Architecture-as-Code definition augmented with metadata and helpful functions."""
 from __future__ import annotations
-from typing import Optional
-from uuid import UUID, uuid4
-from attr import Factory, attrib, attrs, validators
+
 import copy
 import logging
 import yaml
 
+from attr import Factory, attrib, attrs, validators
+from typing import Any, Optional
+from uuid import UUID, uuid4
+
+from aac.io.files.aac_file import AaCFile
 from aac.lang.constants import (
     DEFINITION_FIELD_DESCRIPTION,
     DEFINITION_FIELD_EXTENSION_ENUM,
@@ -21,7 +24,6 @@ from aac.lang.constants import (
     ROOT_KEY_SCHEMA,
 )
 from aac.lang.definitions.lexeme import Lexeme
-from aac.io.files.aac_file import AaCFile
 
 
 @attrs(hash=False)
@@ -82,7 +84,7 @@ class Definition:
         fields = self.get_top_level_fields()
         return fields.get(DEFINITION_FIELD_DESCRIPTION)
 
-    def get_type(self) -> Optional[list[dict]]:
+    def get_type(self) -> Optional[str]:
         """Return the string for the extension type field, or None if the field isn't defined."""
         fields = self.get_top_level_fields()
         return fields.get(DEFINITION_FIELD_TYPE)
@@ -116,7 +118,9 @@ class Definition:
     def is_schema_extension(self) -> bool:
         """Returns true if the definition is a schema extension definition."""
         definition = self.get_top_level_fields()
-        return DEFINITION_FIELD_EXTENSION_SCHEMA in definition and isinstance(definition[DEFINITION_FIELD_EXTENSION_SCHEMA], dict)
+        return DEFINITION_FIELD_EXTENSION_SCHEMA in definition and isinstance(
+            definition[DEFINITION_FIELD_EXTENSION_SCHEMA], dict
+        )
 
     def is_enum_extension(self) -> bool:
         """Returns true if the definition is an enum extension definition."""
@@ -142,3 +146,45 @@ class Definition:
     def copy(self) -> Definition:
         """Return a deep copy of the definition."""
         return copy.deepcopy(self)
+
+    def get_lexeme_with_value(
+        self,
+        search_value: Any,
+        prefix_values: Optional[list[Any]] = None,
+        suffix_values: Optional[list[Any]] = None,
+    ) -> Optional[Lexeme]:
+        """
+        If it exists in definition, return the Lexeme whose value is specified by search_value.
+
+        If provided, prefix_values and suffix_values will be searched before and after, respectively,
+        the specific search_value. The order of elements in prefix_values and suffix_values is
+        considered important for the purposes of this function.
+
+        Args:
+            self (Definition): The definition whose lexemes are being searched for search_value.
+            search_value (Any): The value being searched.
+            prefix_values (Optional[list[Any]]): An ordered list of values that should be found before search_value.
+            suffix_values (Optional[list[Any]]): An ordered list of values that should be found after search_value.
+
+        Returns:
+            If a lexeme was found with the search_value, it is returned. Otherwise, None is returned.
+        """
+        prefix_values = prefix_values or []
+        suffix_values = suffix_values or []
+        values = [*prefix_values, search_value, *suffix_values]
+
+        index = 0
+        possible_match = None
+        for lexeme in self.lexemes:
+            found_all_values = len(values) == index
+
+            if found_all_values:
+                return possible_match
+            elif lexeme.value == str(values[index]):
+                if lexeme.value == str(search_value):
+                    possible_match = lexeme
+                index += 1
+            else:
+                index = 0
+
+        return possible_match
