@@ -60,13 +60,13 @@ The following snippet shows how the `_validate.py` validates a `definition` that
      return validator_results 
 ```
 
-With the above snippet this shows an example of how the validator is taking in a `Definition`, a list of other validator plugins, as well as, the `LanguageContext` of the definition that is being validated. The `Definition` validation is limited by *Structural Constraints*. With this in mind the`Definition` validator will take a `definition` that is being passed in and will decompose it into its `sub-definition`s within the primary schema. With this, this validator will take a definition and break it down to the structures that are present within. These `sub-structure`s are then validated by passing the sub-structure and corresponding  values to the appropriate validator which may produce finding(s) stored in a `ValidatorResult` object.
+The above snippet this shows an example of how the validator takes in a `Definition`, a list of validator plugins, as well as the `LanguageContext` that provides the context to validate the definition within. The `Definition` validations can be alternative described as *Structural Constraints* for data structures (schema definitions). With this in mind the `Definition` validation will take a target `Definition` and decompose it into its `sub-definition`s, other definitions that are components of schema definitions (e.g. `Field` in `schema`). These `sub-structure`s are then validated by passing each sub-structure and corresponding values to the appropriate validator, defined by the validations of each sub-structure, which may produce finding(s) that are returned to the user via the `ValidatorResult` object.
 
-`ValidatorResult` object is then parsed through and returned to the user through some output of the latter results. This is also done for the below example in [Primitive Validations](#primitive-validations), but it is primarily targeted towards the `Primitive Types` within the `Definition`s.
+This approach is also used for in the [Primitive Validations](#primitive-validations), but primitive validation only targets fields defined in the `Primitives` enum definition.
 
 ### Primitive Validations
 
-Primitive Validations are passed into the below function:
+Primitive Validations are handled by the below function:
 
 ```python
 def _validate_primitive_types(definition: Definition, language_context: LanguageContext) -> ValidatorResult: 
@@ -80,9 +80,9 @@ def _validate_primitive_types(definition: Definition, language_context: Language
 
 ```
 
-The above method like the `_validate_definition` function outlined in the previous example takes in a `Definition` and takes in the `LanguageContext` of the defintion that is being validated. However, The primary goal of this snippet is to validate the *Primitive Types* of a definition schema and pass these results to the `ValidatorResult` object for further processing and eventual output to the user. This function is an example of a *Primitive Constraint* with how validations are made/applied.
+The above method, like the `_validate_definition` function outlined in the previous example, takes in a `Definition` and takes in the `LanguageContext` of the defintion that is being validated. However, The primary goal of this snippet is to validate the *Primitive Types* of a definition schema and pass these results to the `ValidatorResult` object for further processing and eventual output to the user. This function is an example of a *Primitive Constraint* with how validations are made/applied.
 
-The results of this validation are also coinsiding with the results from the `_validate_definition` function above and the results are taking in together to the `ValidatorResult` object for further analysis and output for the user to discern.
+The results of this validation are consolidated with the results from the `_validate_definition` function above in the `ValidatorResult` object for further analysis and output for the user to discern.
 
 ### Purpose of the Validation Definition
 
@@ -285,7 +285,7 @@ def validate_bool(definition: Definition, value_to_validate: Any) -> Optional[Va
 
 ```
 
-The return of this validator plugin is the `finding` from the `validate_bool` function. The arguments that are passed through is, the `Definition` and the type of the `value_to_validate` which is checking if the boolean that is being passed is valid. 
+The return of this validator plugin is the `finding` from the `validate_bool` function. The arguments that are passed through are, the `Definition` and the type of the `value_to_validate` which is checking if the boolean that is being passed is valid.
 
 Another validator is the `_validate_root_keys.py` plugin which checks and validates the root keys of the definition or schema. An example snippet of the arguments passed are as follows:
 
@@ -308,12 +308,12 @@ Since this plugin is a part of the validator as a whole, it differs slightly fro
 
 The arguments that are being passed through are similar, `Definition`, `LanguageContext`, and then any additional `validation_args`. As seen in the `_validate.py` validator the arguments and the return are quite similar.
 
-As mentioned before earlier the `ValidatorResult` will return the results of the validator from the functions that are being enacted, throughout the validation process, and compiles the results to a final message to notify the user of any `errors`, `warnings` or relevant informational messages regarding the validation.
+As mentioned before, the `ValidatorResult` will return the results of the validator from the functions that are being invoked, through the validation process, and compile the results into a final message that notifies the user of any `errors`, `warnings` or relevant informational messages regarding the validation.
 
 ### Best Practices for Validation Plugin Development
 
 Best practices for the Validation Plugin Development is to do the following:
 
 1. Keep the scope of the validator plugin small in scope; This allows for some flexibility and ease of testing the plugin.
-2. Use `arguments` to validate; This allows for some flexibility for what can be validated.
+2. Use `arguments`; They allow for some flexibility for what can be validated.
 3. Unit Tests are your friend; Using Unit Tests allows for better testing of the validator plugin itself. This will help in identifying issues or unforeseen problems with the new plugin.
