@@ -24,7 +24,7 @@ There is also a section listing out the `validation` plugin for the implementati
 
 * [Implementation of a Validation Plugin for Definitions](#implementation-of-a-validation-plugin-for-definitions)
 
-It is also worthy to note that the way that the AaC DSL validates itself is through associating user-defined validation definitions with a corresponding python implementationn which is used to programmatically test that the validation's constraints are met. The validation process is entirely data-driven, so with this implementation it can validate the data in the definition via the very constraints.that are defined as part of the definition.
+It is also worthy to note that the way that the AaC DSL validates itself is through associating user-defined validation definitions with a corresponding python implementation which is used to programmatically test that the validation's constraints are met. The validation process is entirely data-driven, so with this implementation it can validate the data in the definition via the very constraints.that are defined as part of the definition.
 
 ### Definition Validations
 
