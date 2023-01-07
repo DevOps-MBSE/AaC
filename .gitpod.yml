@@ -1,10 +1,8 @@
 tasks:
   - name: Deploy Jekyll Docs
     init: |
-      cd docs/
-      bundle install
       export JEKYLL_ENV=production
-    command: cd /workspace/AaC/docs; bundle exec jekyll s
+    command: cd /workspace/AaC/docs; bundle install &&bundle exec jekyll s
 
   - name: VSCode Extension Environment
     init: |
