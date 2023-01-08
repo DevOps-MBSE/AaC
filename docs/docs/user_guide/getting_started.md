@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Getting Started with AaC
-parent: AaC User's Guide
+parent: User's Guide to AaC
 nav_order: 1
 has_children: false
 permalink: docs/user_guide/getting_started
