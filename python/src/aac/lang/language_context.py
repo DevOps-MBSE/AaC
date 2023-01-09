@@ -453,8 +453,9 @@ class LanguageContext:
 
     def activate_plugin_by_name(self, plugin_name: str):
         """Activate the specified plugin in the language context."""
-        plugin, *_ = [plugin for plugin in get_plugins() if plugin.name == plugin_name]
-        self.plugins.append(plugin)
+        plugins = [plugin for plugin in get_plugins() if plugin.name == plugin_name]
+        if len(plugins) == 1:
+            self.activate_plugin(plugins[0])
 
     def deactivate_plugin(self, plugin: Plugin):
         """Deactivate the specified plugin in the language context."""
@@ -467,8 +468,9 @@ class LanguageContext:
 
     def deactivate_plugin_by_name(self, plugin_name: str):
         """Deactivate the specified plugin in the language context."""
-        plugin, *_ = [plugin for plugin in self.get_active_plugins() if plugin.name == plugin_name]
-        self.deactivate_plugin(plugin)
+        plugins = [plugin for plugin in self.get_active_plugins() if plugin.name == plugin_name]
+        if len(plugins) == 1:
+            self.deactivate_plugin(plugins[0])
 
     def get_active_plugins(self) -> list[Plugin]:
         """
