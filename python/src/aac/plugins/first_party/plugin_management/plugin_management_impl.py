@@ -61,10 +61,19 @@ def deactivate_plugin(name: str) -> PluginExecutionResult:
         name (str): The name of the plugin to be deactivated.
     """
 
-    def _implement_and_rename_me():
-        raise NotImplementedError("deactivate_plugin is not implemented.")
+    def deactivate_named_plugin() -> str:
+        if name not in _get_plugin_names(all=True):
+            raise PluginError(f"Plugin {name} cannot be deactivated because it is not installed")
+        elif name in _get_plugin_names(inactive=True):
+            raise PluginError(f"Plugin {name} is already inactive")
 
-    with plugin_result(plugin_name, _implement_and_rename_me) as result:
+        get_active_context().deactivate_plugin_by_name(name)
+
+        deactivation_message = f"Successfully deactivated plugin: {name}"
+        logging.info(deactivation_message)
+        return deactivation_message
+
+    with plugin_result(plugin_name, deactivate_named_plugin) as result:
         return result
 
 

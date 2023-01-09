@@ -7,6 +7,8 @@ from tests.active_context_test_case import ActiveContextTestCase
 
 
 class TestPluginManagement(ActiveContextTestCase):
+    VALID_PLUGIN_NAME = "gen-json"
+
     def test_list_plugins(self):
         result = list_plugins(all=True, active=False, inactive=False)
         self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
@@ -47,13 +49,20 @@ class TestPluginManagement(ActiveContextTestCase):
         self.assertRegexpMatches(exception.message, "Multiple.*options.*all=True.*active=True.*inactive=True")
 
     def test_activate_plugin(self):
-        plugin_name = str()
+        result = activate_plugin(name="not a plugin")
+        self.assertEqual(result.status_code, PluginExecutionStatusCode.PLUGIN_FAILURE)
 
-        result = activate_plugin(name=plugin_name)
+        deactivate_plugin(name=self.VALID_PLUGIN_NAME)
+        self.assertIn(self.VALID_PLUGIN_NAME, [plugin.name for plugin in get_active_context().get_inactive_plugins()])
+        result = activate_plugin(name=self.VALID_PLUGIN_NAME)
+        self.assertIn(self.VALID_PLUGIN_NAME, [plugin.name for plugin in get_active_context().get_active_plugins()])
         self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
 
     def test_deactivate_plugin(self):
-        plugin_name = str()
+        result = deactivate_plugin(name="not a plugin")
+        self.assertEqual(result.status_code, PluginExecutionStatusCode.PLUGIN_FAILURE)
 
-        result = deactivate_plugin(name=plugin_name)
+        self.assertIn(self.VALID_PLUGIN_NAME, [plugin.name for plugin in get_active_context().get_active_plugins()])
+        result = deactivate_plugin(name=self.VALID_PLUGIN_NAME)
+        self.assertIn(self.VALID_PLUGIN_NAME, [plugin.name for plugin in get_active_context().get_inactive_plugins()])
         self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
