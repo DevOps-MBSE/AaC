@@ -10,43 +10,32 @@ class TestPluginManagement(ActiveContextTestCase):
     VALID_PLUGIN_NAME = "gen-json"
 
     def test_list_plugins(self):
+        def plugin_names_to_string(plugins):
+            return "\n".join([plugin.name for plugin in plugins])
+
         result = list_plugins(all=True, active=False, inactive=False)
         self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
-        self.assertEqual(result.messages[0], "\n".join([plugin.name for plugin in get_active_context().plugins]))
+        self.assertEqual(result.messages[0], plugin_names_to_string(get_active_context().plugins))
 
         result = list_plugins(all=False, active=True, inactive=False)
         self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
-        self.assertEqual(result.messages[0], "\n".join([plugin.name for plugin in get_active_context().get_active_plugins()]))
+        self.assertEqual(result.messages[0], plugin_names_to_string(get_active_context().get_active_plugins()))
 
         result = list_plugins(all=False, active=False, inactive=True)
         self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
-        self.assertEqual(
-            result.messages[0], "\n".join([plugin.name for plugin in get_active_context().get_inactive_plugins()])
-        )
+        self.assertEqual(result.messages[0], plugin_names_to_string(get_active_context().get_inactive_plugins()))
 
-        with self.assertRaises(PluginError) as cm:
-            list_plugins(all=True, active=True, inactive=False)
+        result = list_plugins(all=True, active=True, inactive=False)
+        self.assertRegexpMatches(result.get_messages_as_string(), "Multiple.*options.*all=True.*active=True")
 
-        exception = cm.exception
-        self.assertRegexpMatches(exception.message, "Multiple.*options.*all=True.*active=True")
+        result = list_plugins(all=True, active=False, inactive=True)
+        self.assertRegexpMatches(result.get_messages_as_string(), "Multiple.*options.*all=True.*inactive=True")
 
-        with self.assertRaises(PluginError) as cm:
-            list_plugins(all=True, active=False, inactive=True)
+        result = list_plugins(all=False, active=True, inactive=True)
+        self.assertRegexpMatches(result.get_messages_as_string(), "Multiple.*options.*active=True.*inactive=True")
 
-        exception = cm.exception
-        self.assertRegexpMatches(exception.message, "Multiple.*options.*all=True.*inactive=True")
-
-        with self.assertRaises(PluginError) as cm:
-            list_plugins(all=False, active=True, inactive=True)
-
-        exception = cm.exception
-        self.assertRegexpMatches(exception.message, "Multiple.*options.*active=True.*inactive=True")
-
-        with self.assertRaises(PluginError) as cm:
-            list_plugins(all=True, active=True, inactive=True)
-
-        exception = cm.exception
-        self.assertRegexpMatches(exception.message, "Multiple.*options.*all=True.*active=True.*inactive=True")
+        result = list_plugins(all=True, active=True, inactive=True)
+        self.assertRegexpMatches(result.get_messages_as_string(), "Multiple.*options.*all=True.*active=True.*inactive=True")
 
     def test_activate_plugin(self):
         result = activate_plugin(name="not a plugin")
