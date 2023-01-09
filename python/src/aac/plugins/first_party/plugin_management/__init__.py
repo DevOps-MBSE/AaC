@@ -47,14 +47,14 @@ def _get_plugin_commands():
     ]
     activate_plugin_arguments = [
         AacCommandArgument(
-            "plugin-name",
+            "name",
             "The name of the plugin to be activated.",
             "str",
         ),
     ]
     deactivate_plugin_arguments = [
         AacCommandArgument(
-            "plugin-name",
+            "name",
             "The name of the plugin to be deactivated.",
             "str",
         ),
