@@ -488,7 +488,7 @@ class LanguageContext:
         Returns:
             The collection of inactive plugins that are installed on the system, but not active in the context.
         """
-        active_plugins = set(self.plugins)
+        active_plugins = set(self.get_active_plugins())
         installed_plugins = set(get_plugins())
         return list(installed_plugins.difference(active_plugins))
 
