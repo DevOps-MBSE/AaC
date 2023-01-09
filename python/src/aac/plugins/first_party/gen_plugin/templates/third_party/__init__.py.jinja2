@@ -10,7 +10,7 @@ from aac.plugins._common import get_plugin_definitions_from_yaml
 {% endif %}
 {% set comma_joiner = joiner(", ") %}
 {% if commands | length > 0 %}
-from {{plugin.implementation_name}}.{{plugin.implementation_name}}_impl import {% for command in commands %}{{comma_joiner()}}{{command.implementation_name}}{% endfor %}
+from {{plugin.implementation_name}}.{{plugin.implementation_name}}_impl import plugin_name, {% for command in commands %}{{comma_joiner()}}{{command.implementation_name}}{% endfor %}
 {% endif %}
 
 
