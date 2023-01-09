@@ -10,7 +10,7 @@ from aac.plugins._common import get_plugin_definitions_from_yaml
 {% endif %}
 {% set comma_joiner = joiner(", ") %}
 {% if commands | length > 0 %}
-from aac.plugins.{{architecture_file.package_name}}.{{plugin.implementation_name}}_impl import {% for command in commands %}{{comma_joiner()}}{{command.implementation_name}}{% endfor %}
+from aac.plugins.{{architecture_file.package_name}}.{{plugin.implementation_name}}_impl import plugin_name, {% for command in commands %}{{comma_joiner()}}{{command.implementation_name}}{% endfor %}
 {% endif %}
 
 
@@ -22,7 +22,6 @@ def get_plugin() -> Plugin:
     Returns:
         A collection of information about the plugin and what it contributes.
     """
-    *_, plugin_name = __package__.split(".")
     plugin = Plugin(plugin_name)
     {% if commands | length > 0 %}
     plugin.register_commands(_get_plugin_commands())

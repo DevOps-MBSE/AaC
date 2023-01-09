@@ -5,13 +5,13 @@
 from aac.cli.aac_command import AacCommand, AacCommandArgument
 from aac.plugins import hookimpl
 from aac.plugins.plugin import Plugin
-{%- if plugin_definitions | length > 0 %}
+{% if plugin_definitions | length > 0 %}
 from aac.plugins._common import get_plugin_definitions_from_yaml
-{%- endif %}
-{%- set comma_joiner = joiner(", ") %}
-{%- if commands | length > 0 %}
-from {{plugin.implementation_name}}.{{plugin.implementation_name}}_impl import {% for command in commands -%}{{comma_joiner()}}{{command.implementation_name}}{%- endfor %}
-{%- endif %}
+{% endif %}
+{% set comma_joiner = joiner(", ") %}
+{% if commands | length > 0 %}
+from {{plugin.implementation_name}}.{{plugin.implementation_name}}_impl import {% for command in commands %}{{comma_joiner()}}{{command.implementation_name}}{% endfor %}
+{% endif %}
 
 
 @hookimpl
@@ -22,53 +22,52 @@ def get_plugin() -> Plugin:
     Returns:
         A collection of information about the plugin and what it contributes.
     """
-    *_, plugin_name = __package__.split(".")
     plugin = Plugin(plugin_name)
-    {%- if commands | length > 0 %}
+    {% if commands | length > 0 %}
     plugin.register_commands(_get_plugin_commands())
-    {%- endif %}
-    {%- if plugin_definitions | length > 0 %}
+    {% endif %}
+    {% if plugin_definitions | length > 0 %}
     plugin.register_definitions(_get_plugin_definitions())
-    {%- endif %}
+    {% endif %}
     return plugin
-{%- if commands | length > 0 %}
+{% if commands | length > 0 %}
 {# Leave a blank line here since we want 2 space if the expression is true and one if it's false#}
 
 def _get_plugin_commands():
-    {%- for command in commands %}
-    {%- if command.input is defined %}
+    {% for command in commands %}
+    {% if command.input is defined %}
     {{command.implementation_name}}_arguments = [
-    {%- for command_input in command.input %}
+    {% for command_input in command.input %}
         AacCommandArgument(
             "{{command_input.name}}",
-            {% if command_input.description is defined %}"{{command_input.description}}"{% else %}"TODO: fill me out"{%- endif %},
+            {%+ if command_input.description is defined %}"{{command_input.description}}"{% else %}"TODO: fill me out"{% endif %},
             "{{command_input.type}}",
-            {%- if command_input.number_of_arguments is defined %}number_of_arguments={{command_input.number_of_arguments}},{%- endif %}
-            {%- if command_input.default is defined %}default={{command_input.default}},{%- endif %}
+            {% if command_input.number_of_arguments is defined %}number_of_arguments={{command_input.number_of_arguments}},{% endif %}
+            {% if command_input.default is defined %}default={{command_input.default}},{% endif %}
         ),
-    {%- endfor %}
+    {% endfor %}
     ]
-    {%- endif %}
-    {%- endfor %}
+    {% endif %}
+    {% endfor %}
 
     plugin_commands = [
-        {%- for command in commands %}
+        {% for command in commands %}
         AacCommand(
             "{{command.name}}",
             "{{command.description}}",
-            {{command.implementation_name}}{%- if command.input is defined %},
-            {{command.implementation_name}}_arguments,{%- endif %}
+            {{command.implementation_name}}{% if command.input is defined %},
+            {{command.implementation_name}}_arguments,{% endif +%}
         ),
-        {%- endfor %}
+        {% endfor %}
     ]
 
     return plugin_commands
-{%- endif %}
-{%- if plugin_definitions | length > 0 -%}
+{% endif %}
+{% if plugin_definitions | length > 0 %}
 {# Leave a blank line here since we want 2 space if the expression is true and one if it's false#}
-{%- set yaml_file_joiner = joiner("\n---\n") %}
+{% set yaml_file_joiner = joiner("\n---\n") %}
 
 def _get_plugin_definitions():
     return get_plugin_definitions_from_yaml(__package__, "{{architecture_file.name}}")
 
-{%- endif %}
+{% endif %}
