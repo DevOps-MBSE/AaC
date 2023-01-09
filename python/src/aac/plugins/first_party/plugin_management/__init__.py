@@ -3,7 +3,12 @@
 from aac.cli.aac_command import AacCommand, AacCommandArgument
 from aac.plugins import hookimpl
 from aac.plugins.plugin import Plugin
-from aac.plugins.first_party.plugin_management.plugin_management_impl import list_plugins, activate_plugin, deactivate_plugin
+from aac.plugins.first_party.plugin_management.plugin_management_impl import (
+    activate_plugin,
+    deactivate_plugin,
+    list_plugins,
+    plugin_name,
+)
 
 
 @hookimpl
@@ -14,7 +19,6 @@ def get_plugin() -> Plugin:
     Returns:
         A collection of information about the plugin and what it contributes.
     """
-    *_, plugin_name = __package__.split(".")
     plugin = Plugin(plugin_name)
     plugin.register_commands(_get_plugin_commands())
     return plugin
