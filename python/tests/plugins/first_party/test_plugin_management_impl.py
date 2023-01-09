@@ -1,12 +1,12 @@
-from unittest import TestCase
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.plugins import PluginError
-
 from aac.plugins.plugin_execution import PluginExecutionStatusCode
 from aac.plugins.first_party.plugin_management.plugin_management_impl import list_plugins, activate_plugin, deactivate_plugin
 
+from tests.active_context_test_case import ActiveContextTestCase
 
-class TestPluginManagement(TestCase):
+
+class TestPluginManagement(ActiveContextTestCase):
     def test_list_plugins(self):
         result = list_plugins(all=True, active=False, inactive=False)
         self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
