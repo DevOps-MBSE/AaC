@@ -12,10 +12,10 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up NodeJS
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: '16'
           cache: 'yarn'
@@ -39,7 +39,7 @@ jobs:
           python-version: 3.9
 
       - name: Download Python Wheel
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: aac_wheel
           path: python/dist/
@@ -54,7 +54,7 @@ jobs:
         run: yarn package
 
       - name: Upload Extension Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: aac.vsix
           path: vscode_extension/aac.vsix
