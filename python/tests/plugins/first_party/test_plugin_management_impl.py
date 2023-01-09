@@ -1,5 +1,4 @@
 from aac.lang.active_context_lifecycle_manager import get_active_context
-from aac.plugins import PluginError
 from aac.plugins.plugin import Plugin
 from aac.plugins.plugin_execution import PluginExecutionStatusCode
 from aac.plugins.first_party.plugin_management.plugin_management_impl import list_plugins, activate_plugin, deactivate_plugin
