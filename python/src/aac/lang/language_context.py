@@ -158,13 +158,12 @@ class LanguageContext:
             names (list[str]): The list of the names of the definitions that should be loaded into
                 the context.
         """
-        if not lexists(uri):
+        if lexists(uri):
+            definitions = [definition for definition in parse(uri) if definition.name in names]
+            self.update_definitions_in_context(list(set(self.definitions).intersection(definitions)))
+            self.add_definitions_to_context(list(set(definitions).difference(self.definitions)))
+        else:
             logging.warn(f"Skipping {uri} as it could not be found.")
-            return
-
-        definitions = [definition for definition in parse(uri) if definition.name in names]
-        self.update_definitions_in_context(list(set(self.definitions).intersection(definitions)))
-        self.add_definitions_to_context(list(set(definitions).difference(self.definitions)))
 
     def remove_definition_from_context(self, definition: Definition):
         """
@@ -570,8 +569,6 @@ class LanguageContext:
         for definition in self.definitions:
             if definition.source.uri == uri:
                 return definition.source
-
-        return None
 
     def get_definitions_by_file_uri(self, file_uri: str) -> list[Definition]:
         """
