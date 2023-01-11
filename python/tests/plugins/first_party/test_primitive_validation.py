@@ -4,6 +4,7 @@ from aac.validate import validated_source
 from aac.io.constants import DEFINITION_SEPARATOR
 from aac.plugins.first_party.primitive_type_check.validators import int_validator
 from aac.plugins.first_party.primitive_type_check.validators import bool_validator
+from aac.plugins.first_party.primitive_type_check.validators import num_validator
 
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.assertion import assert_validator_result_success
@@ -17,6 +18,7 @@ from tests.helpers.prebuilt_definition_constants import (
     TEST_TYPES_ROOT_KEY,
     SCHEMA_FIELD_INT,
     SCHEMA_FIELD_BOOL,
+    SCHEMA_FIELD_NUMBER,
 )
 
 
@@ -24,6 +26,7 @@ class TestPrimitiveValidation(ActiveContextTestCase):
 
     INTEGER_VALIDATOR = int_validator.get_validator()
     BOOLEAN_VALIDATOR = bool_validator.get_validator()
+    NUMBER_VALIDATOR = num_validator.get_validator()
 
     VALID_PRIMITIVES_FILE_CONTENT = DEFINITION_SEPARATOR.join(
         [
@@ -118,4 +121,58 @@ class TestPrimitiveValidation(ActiveContextTestCase):
         )
 
         finding = self.BOOLEAN_VALIDATOR.validation_function(invalid_definition, invalid_bool_value)
+        self.assertIsNotNone(finding)
+
+    def test_number_type_valid_int(self):
+        test_context = get_active_context()
+        test_context.add_definitions_to_context([TEST_TYPES_SCHEMA_DEFINITION, TEST_TYPES_SCHEMA_EXTENSION_DEFINITION])
+
+        finding = self.NUMBER_VALIDATOR.validation_function(TEST_TYPES_VALID_INSTANCE, 8)
+        self.assertIsNone(finding)
+
+    def test_number_type_valid_octal(self):
+        test_context = get_active_context()
+        testcontext.add_definition_to_context([TEST_TYPES_SCHEMA_DEFINITION, TEST_TYPES_SCHEMA_EXTENSION_DEFINITION])
+
+        finding = self.NUMBER_VALIDATOR.validation_function(TEST_TYPES_VALID_INSTANCE, 0o14)
+        self.assertIsNone(finding)
+
+    def test_number_type_valid_hexadec(self):
+        test_context = get_active_context()
+        test_context.add_definitions_to_context([TEST_TYPES_SCHEMA_DEFINITION, TEST_TYPES_SCHEMA_EXTENSION_DEFINITION])
+
+        finding = self.NUMBER_VALIDATOR.validation_function(TEST_TYPES_VALID_INSTANCE, 0xC)
+        self.assertIsNone(finding)
+
+    def test_number_type_valid_float(self):
+        test_context = get_active_context()
+        test_context.add_definitions_to_context([TEST_TYPES_SCHEMA_DEFINITION, TEST_TYPES_SCHEMA_EXTENSION_DEFINITION])
+
+        finding = self.NUMBER_VALIDATOR.validation_function(TEST_TYPES_VALID_INSTANCE, 13.4)
+        self.assertIsNone(finding)
+
+    def test_number_type_valid_exponential(self):
+        test_context = get_active_context()
+        test_context.add_definitions_to_context([TEST_TYPES_SCHEMA_DEFINITION, TEST_TYPES_SCHEMA_EXTENSION_DEFINITION])
+
+        finding = self.NUMBER_VALIDATOR.validation_function(TEST_TYPES_INVALID_INSTANCE, 1.2e+34)
+        self.assertIsNone(finding)
+
+    def test_number_type_valid_inf(self):
+        test_context = get_active_context()
+        test_context.add_definitions_to_context([TEST_TYPES_SCHEMA_DEFINITION, TEST_TYPES_SCHEMA_EXTENSION_DEFINITION])
+
+        finding = self.NUMBER_VALIDATOR.validation_function(TEST_TYPES_INVALID_INSTANCE, '.inf')
+        self.assertIsNone(finding)
+    
+    def test_number_type_invalid(self):
+        test_context = get_active_context()
+        test_context.add_definitions_to_context([TEST_TYPES_SCHEMA_DEFINITION, TEST_TYPES_SCHEMA_EXTENSION_DEFINITION])
+
+        invalid_numb_value = "ThisIsDefNotANumber"
+        invalid_definition = create_definition(
+            TEST_TYPES_ROOT_KEY, "numberType", {SCHEMA_FIELD_NUMBER.get("name"): invalid_numb_value}
+        )
+
+        finding = self.BOOLEAN_VALIDATOR.validation_function(invalid_definition, invalid_numb_value)
         self.assertIsNotNone(finding)
