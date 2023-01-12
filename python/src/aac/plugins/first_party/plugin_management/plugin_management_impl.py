@@ -5,6 +5,7 @@ import logging
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.plugins import PluginError
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
+from aac.plugins.plugin_manager import get_plugins
 
 plugin_name = "plugin-management"
 
@@ -96,7 +97,7 @@ def _get_plugin_names(*, all: bool = False, active: bool = False, inactive: bool
     option_name, _ = _get_selected_option(all=all, active=active, inactive=inactive)
 
     if option_name == "all":
-        plugins = active_context.plugins
+        plugins = get_plugins()
     elif option_name == "active":
         plugins = active_context.get_active_plugins()
     elif option_name == "inactive":
