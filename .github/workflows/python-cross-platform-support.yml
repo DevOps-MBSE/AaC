@@ -115,7 +115,6 @@ jobs:
       - name: Test Gen-Plugin First-Party Plugin
         run: |
           mkdir -p src/aac/plugins/first_party/test_plugin/
-          ls
           cp model/plugin/plugin.yaml src/aac/plugins/first_party/test_plugin/first_party.yaml
           echo y | aac gen-plugin src/aac/plugins/first_party/test_plugin/first_party.yaml
           pip install .[all]
