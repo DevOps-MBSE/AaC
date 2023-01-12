@@ -49,7 +49,7 @@ model:
             - The command is run with {{active-context.add-file.file-name}}. 
           then: 
             - The file named {{active-context.add-file.file-name}} will be added to the active context.
-
+    - name: reset-context
         
 
 
