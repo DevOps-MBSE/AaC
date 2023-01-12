@@ -65,6 +65,7 @@ class TestPrimitiveValidation(ActiveContextTestCase):
             self.assertIn(self.INTEGER_VALIDATOR.primitive_type, error.exception)
             self.assertIn(self.BOOLEAN_VALIDATOR.name, error.exception)
             self.assertIn(self.BOOLEAN_VALIDATOR.primitive_type, error.exception)
+            self.assertIn(self.NUMBER_VALIDATOR.primitive_type, error.exception)
 
     def test_integer_type_check_valid(self):
         test_context = get_active_context()
@@ -122,26 +123,19 @@ class TestPrimitiveValidation(ActiveContextTestCase):
 
         finding = self.BOOLEAN_VALIDATOR.validation_function(invalid_definition, invalid_bool_value)
         self.assertIsNotNone(finding)
-
-    def test_number_type_valid_int(self):
-        test_context = get_active_context()
-        test_context.add_definitions_to_context([TEST_TYPES_SCHEMA_DEFINITION, TEST_TYPES_SCHEMA_EXTENSION_DEFINITION])
-
-        finding = self.NUMBER_VALIDATOR.validation_function(TEST_TYPES_VALID_INSTANCE, 8)
-        self.assertIsNone(finding)
-
+ 
     def test_number_type_valid_octal(self):
         test_context = get_active_context()
-        testcontext.add_definition_to_context([TEST_TYPES_SCHEMA_DEFINITION, TEST_TYPES_SCHEMA_EXTENSION_DEFINITION])
+        test_context.add_definition_to_context([TEST_TYPES_SCHEMA_DEFINITION, TEST_TYPES_SCHEMA_EXTENSION_DEFINITION])
 
-        finding = self.NUMBER_VALIDATOR.validation_function(TEST_TYPES_VALID_INSTANCE, 0o14)
+        finding = self.NUMBER_VALIDATOR.validation_function(TEST_TYPES_VALID_INSTANCE, '0o14')
         self.assertIsNone(finding)
 
     def test_number_type_valid_hexadec(self):
         test_context = get_active_context()
         test_context.add_definitions_to_context([TEST_TYPES_SCHEMA_DEFINITION, TEST_TYPES_SCHEMA_EXTENSION_DEFINITION])
 
-        finding = self.NUMBER_VALIDATOR.validation_function(TEST_TYPES_VALID_INSTANCE, 0xC)
+        finding = self.NUMBER_VALIDATOR.validation_function(TEST_TYPES_VALID_INSTANCE, '0xC')
         self.assertIsNone(finding)
 
     def test_number_type_valid_float(self):
@@ -162,7 +156,7 @@ class TestPrimitiveValidation(ActiveContextTestCase):
         test_context = get_active_context()
         test_context.add_definitions_to_context([TEST_TYPES_SCHEMA_DEFINITION, TEST_TYPES_SCHEMA_EXTENSION_DEFINITION])
 
-        finding = self.NUMBER_VALIDATOR.validation_function(TEST_TYPES_INVALID_INSTANCE, '.inf')
+        finding = self.NUMBER_VALIDATOR.validation_function(TEST_TYPES_VALID_INSTANCE, '.inf')
         self.assertIsNone(finding)
     
     def test_number_type_invalid(self):
