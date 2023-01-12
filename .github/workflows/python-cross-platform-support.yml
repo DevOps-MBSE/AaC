@@ -126,8 +126,9 @@ jobs:
           echo y | python -m aac gen-plugin model/plugin/plugin.yaml
           cd model/plugin/
           pip install .
-          aac -h | grep test-plugin-command
-          pip uninstall -y test_plugin
+          aac activate-plugin test-plugin
+          aac list-plugins --active | grep test-plugin
+          pip uninstall -y test-plugin
 
       - name: Test Gen-Plugin Third-Party Plugin
         if: matrix.os == 'windows-latest'
@@ -135,8 +136,9 @@ jobs:
           echo y | python -m aac gen-plugin model/plugin/plugin.yaml
           cd model/plugin/
           pip install .
-          aac -h | findstr "test-plugin-command"
-          pip uninstall -y test_plugin
+          aac activate-plugin test-plugin
+          aac list-plugins --active | findstr "test-plugin"
+          pip uninstall -y test-plugin
 
       - name: Upload logs from failed runs
         if: ${{ failure() }}
