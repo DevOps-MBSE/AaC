@@ -2,12 +2,12 @@
 layout: default
 title: Secure Install
 parent: User's Guide to AaC
-nav_order: 1x
+nav_order: 1
 ---
 
 # Architecture-as-Code Secure Installation
 In order to support portability of Architecture-as-Code, and to provide a secure, repeatable installation method for AaC users, we have created
-this one-stop installation package for each release of the AaC python package.
+this one-step installation package for each release of the AaC python package.
 
 In this package we provide a couple different methods to install AaC and its dependencies, depending on your needs and environment.
 
@@ -31,7 +31,7 @@ chmod +x ./install_aac_verified_index.bash
 ```
 
 ## Air-Gapped Installation
-For air-gapped installations without access to PyPI, or which may not want to use the indexed artifacts, we provide a PyPI-less (no index) installation method. You can execute `pip install --require-hashes -r requirements.txt --no-index --find-links ./` or the `install_aac_air_gap` script. This mode will verify the hashes of the AaC and its runtime dependencies, packaged as wheels, and then install them -- the runtime artifacts are not pulled from PyPI.
+For air-gapped installations without access to PyPI, or which may not want to use the indexed artifacts, we provide a PyPI-less (no index) installation method. You can execute `pip install --require-hashes -r requirements.txt --no-index --find-links ./` or the `install_aac_air_gap` script. This mode will verify the hashes of the AaC and its runtime dependencies, packaged as wheels in the secure installation archive, and then it will install them. **The runtime artifacts are not pulled from PyPI.**
 
 ### Linux/macOS
 Github's artifact archiver doesn't preserve permissions so you'll have to make the script executable.
