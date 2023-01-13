@@ -53,7 +53,7 @@ model:
       type: command
       description: Activate a plugin that's available and inactive on the system.
       input:
-        - name: plugin-name
+        - name: name
           type: string
           python_type: str
           description: The name of the plugin to be activated.
@@ -84,7 +84,7 @@ model:
       type: command
       description: Deactivate a plugin that's available and active on the system.
       input:
-        - name: plugin-name
+        - name: name
           type: string
           python_type: str
           description: The name of the plugin to be deactivated.
