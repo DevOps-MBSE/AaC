@@ -13,9 +13,9 @@ model:
       acceptance:
         - scenario: Display a list of all the files in the active context.
           when:
-            - The command is run
+            - The command {{active-context.list-files}} is run
           then:
-            - A list of files in the active context were displayed
+            - A list of files in the active context should be displayed
     - name: remove-file
       type: command
       description: Remove a file from the active context.
@@ -31,21 +31,21 @@ model:
           when:
             - The command is run with {{active-context.remove-file.file}}.
           then:
-            - The file named {{active-context.remove-file.file}} was removed from the active context.
+            - The file named {{active-context.remove-file.file}} should be removed from the active context.
         - scenario: The file is not in the active context.
           given:
             - The file named {{active-context.remove-file.file}} is not in the active context.
           when:
             - The command is run with a file named {{active-context.remove-file.file}}.
           then:
-            - An error message was displayed stating that the file named {{active-context.remove-file.file}} was not in the active context.
+            - An error message should be displayed stating that the file named {{active-context.remove-file.file}} was not in the active context.
         - scenario: The file being removed from the active context is not in the file system.
           given:
             - The file named {{active-context.add-file.file}} is not in the file system.
           when:
             - The command is run with a file named {{active-context.add-file.file}}
           then:
-            - An error message was displayed explaining that the file that was removed was not in the file system.
+            - An error message should be displayed explaining that the file that was removed was not in the file system.
     - name: add-file
       type: command
       description: Add a file to the active context.
@@ -62,7 +62,7 @@ model:
           when:
             - The command is run with file named {{active-context.add-file.file}}.
           then:
-            - The file named {{active-context.add-file.file}} was added to the active context.
+            - The file named {{active-context.add-file.file}} should be added to the active context.
         - scenario: The file being added is already in the active context.
           given:
             - The file named {{active-context.add-file.file}} is in the system.
@@ -70,14 +70,14 @@ model:
           when:
             - The command is run with file named {{active-context.add-file.file}}.
           then:
-            - An error message was displayed explaining the file named {{active-context.add-file.file}} was already in the active context.
+            - An error message should be displayed explaining the file named {{active-context.add-file.file}} was already in the active context.
         - scenario: The file is not in the file system.
           given:
             - The file named {{active-context.add-file.file}} is not in the file system.
           when:
             - The command is run with file named {{active-context.add-file.file}}.
           then:
-            - An error message was displayed explaining the file named {{active-context.add-file.file}} was not in the file system.
+            - An error message should be displayed explaining the file named {{active-context.add-file.file}} was not in the file system.
     - name: reset-context
       type: command
       description: Comamnd to reset the active context.
@@ -88,7 +88,7 @@ model:
           when:
             - The command {{active-context.reset-context}} is run.
           then:
-            - All files in the active context were removed.
+            - All files in the active context should be removed.
     - name: list-definitions
       type: command
       description: List all definitions within the active context.
@@ -102,7 +102,7 @@ model:
           when:
             - The command {{active-context.list-definitions}} is run.
           then:
-            - A list of all the definitions in the active context were displayed.
+            - A list of all the definitions in the active context should be displayed.
     - name: describe-definition
       type: command
       description: Describe a definition in the active context.
@@ -131,4 +131,4 @@ model:
           when:
             - The comamnd {{active-context.describe-definition}} is run.
           then:
-            - A description of the definition named {{active-context.describe-definition.definition-name}} was displayed.
+            - A description of the definition named {{active-context.describe-definition.definition-name}} should be displayed.
