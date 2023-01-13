@@ -132,3 +132,45 @@ model:
             - The comamnd {{active-context.describe-definition}} is run.
           then:
             - A description of the definition named {{active-context.describe-definition.definition-name}} should be displayed.
+    - name: import-state
+      type: command
+      description: Import an existing active context.
+      input:
+
+        - name: state-file
+          type: file
+          python_type: str
+          description: Persistent state file of an existing active context.
+      acceptance:
+        - scenario: Import an existing active context, from a persistence state file.
+          given:
+            - A state file with the name of {{active-context.import-state.state-file}} exists in the file system.
+            - A state file with the name of {{active-context.import-state.state-file}} is not already the present active context state file.
+          when:
+            - The comamnd {{active-context.import-state}} is run.
+          then:
+            - The state file with the name of {{active-context.import-state.state-file}} is imported into the current active context.
+    - name: export-state
+      type: command
+      description: Export the current active context into a state JSON file.
+      input:
+        - name: state-file-name
+          type: string
+          python_type: str
+          description: Name of the exported state file of the current active context.
+        - name: path
+          type: string
+          python_type: str
+          description: Path of where the exported state file should go.
+      output:
+        - name: state-file
+          type: file
+          python_type: str
+          description: Persistent state file of the current active context.
+      acceptance:
+        - scenario: Export the current active context to a state JSON file.
+          when:
+            - The command {{active-context.export-state}} is run.
+          then:
+            - The current active context state file named {{active-context.export-state.input.state-file-name}} should be exported
+            - The exported state file should be located in the {{active-context.export-state.input.path}} of the file system.
