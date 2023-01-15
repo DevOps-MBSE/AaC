@@ -13,15 +13,16 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-20.04, ubuntu-latest, windows-latest, macos-latest] # Annoyingly, Github actions don't support anchors
+        py_version: ["3.9.0", "3.10.0", "3.11.0"]
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Set up Python 3.9
+      - name: Set up Python ${{ matrix.py_version }}
         uses: actions/setup-python@v4
         with:
-          python-version: 3.9
+          python-version: ${{ matrix.py_version }}
 
       - name: Install the AaC Package
         run: python -m pip install -e .[all]
