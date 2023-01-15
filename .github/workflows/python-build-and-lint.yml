@@ -19,7 +19,7 @@ jobs:
           python-version: 3.9
 
       - name: Install the AaC Package
-        run:
+        run: |
           pip install poetry
           poetry install --with development,test
 
