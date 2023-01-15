@@ -12,8 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-20.04, windows-latest, macos-latest] # Annoyingly, Github actions don't support anchors
-        py_version: ["3.9.0", "3.10.0", "3.11.0"]
+        os: [ubuntu-latest, windows-latest, macos-latest] # Annoyingly, Github actions don't support anchors
 
     steps:
       - name: Checkout Repository
@@ -25,7 +24,9 @@ jobs:
           python-version: ${{ matrix.py_version }}
 
       - name: Install the AaC Package
-        run: python -m pip install -e .[all]
+        run: |
+          pip install poetry
+          poetry install --with development,test
 
       - name: Create Dependencies Package
         id: os_id
@@ -46,19 +47,25 @@ jobs:
 
 
   os_test_matrix:
-    name: Test ${{ matrix.os }} Secure Install Air Gap
+    name: Test ${{ matrix.os }}/Py ${{ matrix.py_version }} Secure Install Air Gap
     needs: os_build_matrix
     runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
         os: [ubuntu-20.04, ubuntu-latest, windows-latest, macos-latest] # Annoyingly, Github actions don't support anchors
+        py_version: ["3.9.0", "3.10.0", "3.11.0"]
+        exclude:
+          - os: ubuntu-latest
+            py_version: 3.9.0
+          - os: ubuntu-latest
+            py_version: 3.10.0
 
     steps:
-      - name: Set up Python 3.9
+      - name: Set up Python ${{ matrix.py_version }}
         uses: actions/setup-python@v4
         with:
-          python-version: 3.9
+          python-version: ${{ matrix.py_version }}
 
       - name: Checkout Repository # Checked-out repository is necessary to test the first party plugin generation.
         uses: actions/checkout@v3
