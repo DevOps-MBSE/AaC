@@ -18,9 +18,11 @@ jobs:
         with:
           python-version: 3.9
 
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+
       - name: Install the AaC Package
         run: |
-          pip install poetry
           poetry install --with development,test
 
       - name: Lint with flake8

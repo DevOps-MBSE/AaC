@@ -23,9 +23,11 @@ jobs:
         with:
           python-version: ${{ matrix.py_version }}
 
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+
       - name: Install the AaC Package
         run: |
-          pip install poetry
           poetry install --with development,test
 
       - name: Create Dependencies Package
