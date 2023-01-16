@@ -45,7 +45,7 @@ jobs:
         run: |
           cp -R ../docs/ ./docs
           cd ./docs/
-          source $HOME/.poetry/env
+          source /home/runner/.cache/pypoetry/virtualenvs/aac*/venv/bin/activate
           make html
 
       - name: Upload API Documentation
