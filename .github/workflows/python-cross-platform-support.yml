@@ -21,7 +21,7 @@ jobs:
       - name: Set up Python ${{ matrix.py_version }}
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.py_version }}
+          python-version: 3.9
 
       - name: Install Poetry
         uses: snok/install-poetry@v1
