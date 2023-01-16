@@ -52,6 +52,12 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-20.04, ubuntu-latest, windows-latest, macos-latest] # Annoyingly, Github actions don't support anchors
+        py_version: ["3.9.0", "3.10.0", "3.11.0"]
+        exclude:
+          - os: ubuntu-latest
+            py_version: 3.9.0
+          - os: ubuntu-latest
+            py_version: 3.10.0
 
     steps:
       - name: Set up Python 3.9
