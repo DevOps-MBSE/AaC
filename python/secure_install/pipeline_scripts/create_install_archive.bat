@@ -22,6 +22,7 @@ cd "%install_dir%"
 
 python -m piptools compile "--generate-hashes" "%CD%\..\..\setup.py"
 mv "%CD%\..\..\requirements.txt" "."
+python -m pip wheel "%CD%\..\.."
 python -m pip download --python-version 3.9 -r requirements.txt -d . --no-deps
 python -m pip download --python-version 3.10 -r requirements.txt -d . --no-deps
 python -m pip download --python-version 3.11 -r requirements.txt -d . --no-deps

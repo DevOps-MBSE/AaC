@@ -45,7 +45,7 @@ jobs:
 
 
   os_test_matrix:
-    name: Test ${{ matrix.os }} Secure Install Air Gap
+    name: Test ${{ matrix.os }}/${{ matrix.py_version }} Secure Install Air Gap
     needs: os_build_matrix
     runs-on: ${{ matrix.os }}
 
@@ -63,7 +63,7 @@ jobs:
       - name: Set up Python 3.9
         uses: actions/setup-python@v4
         with:
-          python-version: 3.9
+          python-version:  ${{ matrix.py_version }}
 
       - name: Checkout Repository # Checked-out repository is necessary to test the first party plugin generation.
         uses: actions/checkout@v3
