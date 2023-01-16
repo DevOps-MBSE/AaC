@@ -4,7 +4,7 @@ version = "0.1.6"
 description = "A distinctly different take on Model-Based System Engineering (MBSE) that allows a system modeller to define a system in simple yaml. "
 authors = ["Jondavid Black <jondavid-black@users.noreply.github.com>"]
 maintainers = ["Jondavid Black <jondavid-black@users.noreply.github.com>"]
-readme = "../README.md"
+readme = "README.md"
 license = "MIT"
 homepage = ""
 repository = ""
@@ -51,7 +51,7 @@ types-PyYAML = "^6.0.9"
 
 [tool.poetry.group.test.dependencies]
 tox = "^3.24"
-nose2 = "^0.10.0"
+nose2 = "^0.12.0"
 coverage = "^6.0"
 flake8 = "^4.0"
 flake8-docstrings = "^1.6.0"

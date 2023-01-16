@@ -24,23 +24,22 @@ jobs:
           virtualenvs-create: false
 
       - name: Install the AaC Package
-        run: |
-          poetry install --with development,test
+        run: poetry install --with development,test
 
       - name: Lint with flake8
-        run: flake8 .
+        run: poetry run flake8 .
 
       - name: List Transitive Dependencies
-        run: pipdeptree
+        run: poetry run pipdeptree
 
       - name: Build distribution package
-        run: python setup.py bdist_wheel
+        run: poetry build
 
       - name: Upload Python Wheel
         uses: actions/upload-artifact@v3
         with:
           name: aac_wheel
-          path: python/dist/
+          path: python/dist/*.whl
 
       - name: Generate API Documentation
         run: |
