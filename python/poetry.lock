@@ -969,23 +969,19 @@ files = [
 
 [[package]]
 name = "nose2"
-version = "0.10.0"
-description = "unittest2 with plugins, the succesor to nose"
+version = "0.12.0"
+description = "unittest2 with plugins, the successor to nose"
 category = "dev"
 optional = false
 python-versions = "*"
 files = [
-    {file = "nose2-0.10.0-py2.py3-none-any.whl", hash = "sha256:aa620e759f2c5018d9ba041340391913e282ecebd3c392027f1575847b093ec6"},
-    {file = "nose2-0.10.0.tar.gz", hash = "sha256:886ba617a96de0130c54b24479bd5c2d74d5c940d40f3809c3a275511a0c4a60"},
+    {file = "nose2-0.12.0-py2.py3-none-any.whl", hash = "sha256:da7eb5e3cbe2abb693a053e17b4fbefca98ea9ea79fc729b0b0f41e8b4196304"},
+    {file = "nose2-0.12.0.tar.gz", hash = "sha256:956e79b9bd558ee08b6200c05ad2c76465b7e3860c0c0537686089285c320113"},
 ]
 
-[package.dependencies]
-coverage = ">=4.4.1"
-six = ">=1.7"
-
 [package.extras]
-coverage-plugin = ["coverage (>=4.4.1)"]
-dev = ["Sphinx (>=1.6.5)", "coverage", "mock", "sphinx-rtd-theme"]
+coverage-plugin = ["coverage"]
+dev = ["Sphinx", "mock", "sphinx-issues", "sphinx-rtd-theme"]
 
 [[package]]
 name = "packaging"
@@ -1585,14 +1581,14 @@ jeepney = ">=0.6"
 
 [[package]]
 name = "setuptools"
-version = "65.7.0"
+version = "66.0.0"
 description = "Easily download, build, install, upgrade, and uninstall Python packages"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "setuptools-65.7.0-py3-none-any.whl", hash = "sha256:8ab4f1dbf2b4a65f7eec5ad0c620e84c34111a68d3349833494b9088212214dd"},
-    {file = "setuptools-65.7.0.tar.gz", hash = "sha256:4d3c92fac8f1118bb77a22181355e29c239cabfe2b9effdaa665c66b711136d7"},
+    {file = "setuptools-66.0.0-py3-none-any.whl", hash = "sha256:a78d01d1e2c175c474884671dde039962c9d74c7223db7369771fcf6e29ceeab"},
+    {file = "setuptools-66.0.0.tar.gz", hash = "sha256:bd6eb2d6722568de6d14b87c44a96fac54b2a45ff5e940e639979a3d1792adb6"},
 ]
 
 [package.extras]
@@ -2036,4 +2032,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9,<3.12"
-content-hash = "384910ac1574e029e6a6281159678e67fbccc7dfdd4e863b13a6e57eba744a79"
+content-hash = "af2eefe45f11bf776f9c4e92530e93e47cb26dc04b4cd25609fa93c1f38554e6"
