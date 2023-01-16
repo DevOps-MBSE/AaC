@@ -558,6 +558,8 @@ class LanguageContext:
         """
         Overwrites the architecture file at the uri based on the content in the context and updates the definitions with their new source information.
 
+        If the architecture file would no longer contain definitions, the file will be removed.
+
         Args:
             file_uri (str): The source file URI to update.
         """

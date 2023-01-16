@@ -39,9 +39,7 @@ class TestAacRestApiCommandEndpoints(ActiveContextTestCase):
     def test_get_available_commands(self):
         active_context = get_active_context()
         excluded_rest_api_commands = ["rest-api", "start-lsp-io", "start-lsp-tcp"]
-        expected_result = list(
-            filter(lambda command: command.name not in excluded_rest_api_commands, active_context.get_plugin_commands())
-        )
+        expected_result = [command for command in active_context.get_plugin_commands() if command.name not in excluded_rest_api_commands]
         expected_commands_dict = {command.name: command for command in expected_result}
 
         response = self.test_client.get("/commands")
@@ -351,32 +349,32 @@ class TestAacRestApiDefinitionEndpoints(ActiveContextTestCase):
 
             # Update definition 1 with new fields
             test_behavior_name = "TestBehavior"
-            update_test_model_definition_1 = parsed_definition_1.copy()
-            update_test_model_definition_1.structure[ROOT_KEY_MODEL][DEFINITION_FIELD_BEHAVIOR] = [
+            updated_test_model_definition_1 = parsed_definition_1.copy()
+            updated_test_model_definition_1.structure[ROOT_KEY_MODEL][DEFINITION_FIELD_BEHAVIOR] = [
                 create_behavior_entry(test_behavior_name)
             ]
 
             response_1 = self.test_client.put(
-                "/definition", data=json.dumps(jsonable_encoder(to_definition_model(update_test_model_definition_1)))
+                "/definition", data=json.dumps(jsonable_encoder(to_definition_model(updated_test_model_definition_1)))
             )
 
             # Update definition 2 to be in file 1
-            update_parsed_definition_2 = parsed_definition_2.copy()
-            update_parsed_definition_2.source.uri = update_test_model_definition_1.source.uri
+            updated_parsed_definition_2 = parsed_definition_2.copy()
+            updated_parsed_definition_2.source.uri = updated_test_model_definition_1.source.uri
 
             response_2 = self.test_client.put(
-                "/definition", data=json.dumps(jsonable_encoder(to_definition_model(update_parsed_definition_2)))
+                "/definition", data=json.dumps(jsonable_encoder(to_definition_model(updated_parsed_definition_2)))
             )
 
             # Assert definition 1 new fields
             self.assertEqual(HTTPStatus.NO_CONTENT, response_1.status_code)
-            updated_definition_1 = test_context.get_definition_by_name(update_test_model_definition_1.name)
+            updated_definition_1 = test_context.get_definition_by_name(updated_test_model_definition_1.name)
             self.assertIn(test_behavior_name, updated_definition_1.to_yaml())
 
             # Assert definition 2 new file
             self.assertEqual(HTTPStatus.NO_CONTENT, response_2.status_code)
-            updated_definition_2 = test_context.get_definition_by_name(update_parsed_definition_2.name)
-            file_1_updated_definitions = parse(update_parsed_definition_2.source.uri)
+            updated_definition_2 = test_context.get_definition_by_name(updated_parsed_definition_2.name)
+            file_1_updated_definitions = parse(updated_parsed_definition_2.source.uri)
             file_1_updated_definitions[0].uid = updated_definition_1.uid  # Set the UID so we can use the built in eq to compare
             file_1_updated_definitions[1].uid = updated_definition_2.uid  # Set the UID so we can use the built in eq to compare
             self.assertEqual(file_1_updated_definitions[0], updated_definition_1)
