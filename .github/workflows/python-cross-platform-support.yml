@@ -28,9 +28,14 @@ jobs:
 
       - name: Create Dependencies Package
         id: os_id
+        if: matrix.os != 'windows-latest'
         run: |
           ./secure_install/pipeline_scripts/create_install_archive.bash
-        shell: bash
+
+      - name: Create Dependencies Package
+        if: matrix.os == 'windows-latest'
+        run: |
+          ./secure_install/pipeline_scripts/create_install_archive.bat
 
       - name: Upload Dependencies Package
         uses: actions/upload-artifact@v3
