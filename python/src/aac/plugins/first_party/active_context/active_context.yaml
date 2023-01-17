@@ -115,7 +115,7 @@ model:
           description: The name of a defintion in the active context.
       output:
         - name: definition-structure
-          type: str
+          type: string
           python_type: str
           description: The YAML representation of the structure of the definition.
         - name: definition-source
