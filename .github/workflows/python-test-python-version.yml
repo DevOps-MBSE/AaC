@@ -60,8 +60,9 @@ jobs:
         rm src/aac/state.json
         cd model/plugin/
         pip install .
-        aac -h | grep test-plugin-command
-        pip uninstall -y test_plugin
+        aac activate-plugin test-plugin
+        aac list-plugins --active | grep test-plugin
+        pip uninstall -y test-plugin
 
     - name: Upload logs from failed runs
       if: ${{ failure() }}

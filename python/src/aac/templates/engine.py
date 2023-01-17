@@ -30,6 +30,8 @@ def load_templates(package_name: str, template_directory: str = "templates") -> 
     env = Environment(
         loader=PackageLoader(package_name, template_directory),
         autoescape=True,
+        lstrip_blocks=True,
+        trim_blocks=True,
     )
 
     return _handle_template_error(
@@ -43,7 +45,9 @@ def _is_template(filename: str) -> bool:
     return filename.endswith("jinja2")
 
 
-def generate_templates(templates: list[Template], output_directories: dict[str, str], properties: dict[str, str]) -> dict[str, TemplateOutputFile]:
+def generate_templates(
+    templates: list[Template], output_directories: dict[str, str], properties: dict[str, str]
+) -> dict[str, TemplateOutputFile]:
     """
     Compile a list of Jinja2 Templates with a dict of template properties into a dict of template name to compiled template content.
 
