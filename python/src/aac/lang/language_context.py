@@ -158,13 +158,12 @@ class LanguageContext:
             names (list[str]): The list of the names of the definitions that should be loaded into
                 the context.
         """
-        if not lexists(uri):
+        if lexists(uri):
+            definitions = [definition for definition in parse(uri) if definition.name in names]
+            self.update_definitions_in_context(list(set(self.definitions).intersection(definitions)))
+            self.add_definitions_to_context(list(set(definitions).difference(self.definitions)))
+        else:
             logging.warn(f"Skipping {uri} as it could not be found.")
-            return
-
-        definitions = [definition for definition in parse(uri) if definition.name in names]
-        self.update_definitions_in_context(list(set(self.definitions).intersection(definitions)))
-        self.add_definitions_to_context(list(set(definitions).difference(self.definitions)))
 
     def remove_definition_from_context(self, definition: Definition):
         """
@@ -453,9 +452,9 @@ class LanguageContext:
 
     def activate_plugin_by_name(self, plugin_name: str):
         """Activate the specified plugin in the language context."""
-        plugins = [plugin for plugin in get_plugins() if plugin.name == plugin_name]
-        if plugins:
-            self.plugins.append(plugins[0])
+        plugins = [plugin for plugin in self.get_inactive_plugins() if plugin.name == plugin_name]
+        if len(plugins) >= 1:
+            self.activate_plugin(plugins[0])
         else:
             logging.error(f"No plugin to activate with the plugin name, '{plugin_name}'")
 
@@ -471,7 +470,7 @@ class LanguageContext:
     def deactivate_plugin_by_name(self, plugin_name: str):
         """Deactivate the specified plugin in the language context."""
         plugins = [plugin for plugin in self.get_active_plugins() if plugin.name == plugin_name]
-        if plugins:
+        if len(plugins) >= 1:
             self.deactivate_plugin(plugins[0])
         else:
             logging.error(f"No plugin to deactivate with the plugin name, '{plugin_name}'")
@@ -492,7 +491,7 @@ class LanguageContext:
         Returns:
             The collection of inactive plugins that are installed on the system, but not active in the context.
         """
-        active_plugins = set(self.plugins)
+        active_plugins = set(self.get_active_plugins())
         installed_plugins = set(get_plugins())
         return list(installed_plugins.difference(active_plugins))
 
@@ -570,8 +569,6 @@ class LanguageContext:
         for definition in self.definitions:
             if definition.source.uri == uri:
                 return definition.source
-
-        return None
 
     def get_definitions_by_file_uri(self, file_uri: str) -> list[Definition]:
         """

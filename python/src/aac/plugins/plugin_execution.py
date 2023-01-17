@@ -80,7 +80,7 @@ def plugin_result(name: str, cmd: Callable[..., Any], *args: Tuple[Any], **kwarg
     try:
         result.add_message(cmd(*args, **kwargs))
     except LanguageError as error:
-        result.add_message("Internal error occurred in the AaC language:\n", *error.args, "")
+        result.add_messages(["Internal error occurred in the AaC language:\n", *error.args, ""])
         result.status_code = PluginExecutionStatusCode.GENERAL_FAILURE
     except ParserError as error:
         source, errors = error.args
@@ -93,7 +93,7 @@ def plugin_result(name: str, cmd: Callable[..., Any], *args: Tuple[Any], **kwarg
         result.add_message(f"{error.strerror}: {error.filename}")
         result.status_code = PluginExecutionStatusCode.GENERAL_FAILURE
     except AacTemplateError as error:
-        result.add_messages(error.message)
+        result.add_message(error.message)
         result.status_code = PluginExecutionStatusCode.PLUGIN_FAILURE
     except PluginError as error:
         result.add_message(error.message)
@@ -103,9 +103,10 @@ def plugin_result(name: str, cmd: Callable[..., Any], *args: Tuple[Any], **kwarg
         result.status_code = PluginExecutionStatusCode.OPERATION_CANCELLED
     except Exception as error:
         # Extract the first stack trace, skipping the plugin result we'd expect to find in the first element
-        result.add_messages(_get_error_messages(error))
+        stacktrace_messages = "\n".join(_get_error_messages(error))
+        result.add_message(stacktrace_messages)
         result.status_code = PluginExecutionStatusCode.GENERAL_FAILURE
-        logging.error(f"Plugin {name} failed during execution:\n{extract_tb(error.__traceback__)}")
+        logging.error(f"Plugin {name} failed during execution:\n{stacktrace_messages}")
 
     yield result
 

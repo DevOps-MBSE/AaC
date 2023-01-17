@@ -3,6 +3,14 @@
 .project
 .settings/
 
+# Emacs temporary files
+.#*
+
+# Vim temporary files
+*.sw[po]
+
+*.http
+
 # Occasionally created gitpod .tmp files
 *.tmp
 

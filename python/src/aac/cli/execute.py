@@ -42,7 +42,7 @@ def to_click_parameter(argument: AacCommandArgument) -> Parameter:
     names = [argument.name] if isinstance(argument.name, str) else argument.name
     args = dict(type=to_click_type(argument.data_type), nargs=argument.number_of_arguments, default=argument.default)
     return (
-        Option(names, help=argument.description, show_default=True, **args)
+        Option(names, help=argument.description, show_default=True, is_flag=argument.data_type == "bool", **args)
         if argument.name[0].startswith("-")
         else Argument(names, **args)
     )
