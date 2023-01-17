@@ -75,7 +75,7 @@ def _get_plugin_commands():
         AacCommand(
             "list-files",
             "Display the files in the active context.",
-            list_files
+            list_files,
         ),
         AacCommand(
             "remove-file",
@@ -92,12 +92,12 @@ def _get_plugin_commands():
         AacCommand(
             "reset-context",
             "Reset the active context to a fresh state before any changes have been made.",
-            reset_context
+            reset_context,
         ),
         AacCommand(
             "list-definitions",
             "List all definitions within the active context.",
-            list_definitions
+            list_definitions,
         ),
         AacCommand(
             "describe-definition",
