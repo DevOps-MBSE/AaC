@@ -79,17 +79,17 @@ def list_definitions() -> PluginExecutionResult:
         return result
 
 
-def describe_definition(definition-name: str) -> PluginExecutionResult:
+def describe_definition(definition_name: str) -> PluginExecutionResult:
     """
     Describe a definition in the active context.
 
     Args:
-        definition-name (str): The name of a defintion in the active context.
+        definition_name (str): The name of a defintion in the active context.
 
     Returns:
-        definition-structure The YAML representation of the structure of the definition.
-        definition-source The source file of the definition in the active context.
-        definition-start The line on which the definition starts in {{active-context.describe-definition.output.definition-source}}.
+        definition_structure The YAML representation of the structure of the definition.
+        definition_source The source file of the definition in the active context.
+        definition_start The line on which the definition starts in {{active-context.describe-definition.output.definition-source}}.
     """
     # TODO add implementation here
     def _implement_and_rename_me():
@@ -99,12 +99,12 @@ def describe_definition(definition-name: str) -> PluginExecutionResult:
         return result
 
 
-def import_state(state-file: str) -> PluginExecutionResult:
+def import_state(state_file: str) -> PluginExecutionResult:
     """
     Configure the active context to be initialized with the definitions, plugins, etc from a state file.
 
     Args:
-        state-file (str): The persistent state file from which to get information about how to configure the active context.
+        state_file (str): The persistent state file from which to get information about how to configure the active context.
     """
     # TODO add implementation here
     def _implement_and_rename_me():
@@ -114,16 +114,16 @@ def import_state(state-file: str) -> PluginExecutionResult:
         return result
 
 
-def export_state(state-file-name: str, overwrite: bool) -> PluginExecutionResult:
+def export_state(state_file_name: str, overwrite: bool) -> PluginExecutionResult:
     """
     Export the current active context to a state file.
 
     Args:
-        state-file-name (str): The name of the state file in which to export the current active context.
+        state_file_name (str): The name of the state file in which to export the current active context.
         overwrite (bool): A flag indicating that the state file should be overwritten, if it exists.
 
     Returns:
-        state-file The persistent state file defining the current active context.
+        state_file The persistent state file defining the current active context.
     """
     # TODO add implementation here
     def _implement_and_rename_me():
