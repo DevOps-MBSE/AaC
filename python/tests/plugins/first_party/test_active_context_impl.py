@@ -1,7 +1,16 @@
 from unittest import TestCase
 
 from aac.plugins.plugin_execution import PluginExecutionStatusCode
-from aac.plugins.first_party.active_context.active_context_impl import list_files, remove_file, add_file, reset_context, list_definitions, describe_definition, import_state, export_state
+from aac.plugins.first_party.active_context.active_context_impl import (
+    list_files,
+    remove_file,
+    add_file,
+    reset_context,
+    list_definitions,
+    describe_definition,
+    import_state,
+    export_state,
+)
 
 
 class TestActiveContext(TestCase):
