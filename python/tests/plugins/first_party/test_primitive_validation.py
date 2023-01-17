@@ -123,12 +123,12 @@ class TestPrimitiveValidation(ActiveContextTestCase):
 
         finding = self.BOOLEAN_VALIDATOR.validation_function(invalid_definition, invalid_bool_value)
         self.assertIsNotNone(finding)
- 
+
     def test_number_type_valid_octal(self):
         test_context = get_active_context()
         test_context.add_definition_to_context([TEST_TYPES_SCHEMA_DEFINITION, TEST_TYPES_SCHEMA_EXTENSION_DEFINITION])
 
-        finding = self.NUMBER_VALIDATOR.validation_function(TEST_TYPES_VALID_INSTANCE, '0o14')
+        finding = self.NUMBER_VALIDATOR.validation_function(TEST_TYPES_VALID_INSTANCE, 0o14)
         self.assertIsNone(finding)
 
     def test_number_type_valid_hexadec(self):
@@ -158,7 +158,7 @@ class TestPrimitiveValidation(ActiveContextTestCase):
 
         finding = self.NUMBER_VALIDATOR.validation_function(TEST_TYPES_VALID_INSTANCE, '.inf')
         self.assertIsNone(finding)
-    
+
     def test_number_type_invalid(self):
         test_context = get_active_context()
         test_context.add_definitions_to_context([TEST_TYPES_SCHEMA_DEFINITION, TEST_TYPES_SCHEMA_EXTENSION_DEFINITION])

@@ -20,8 +20,8 @@ def validate_number(definition: Definition, value_to_validate: Any) -> Optional[
     """
     Returns a validator finding for the given value.
 
-    This function is intended to be used in the Validation Apparatus, 
-    and for this result to be collated with other findings into a larger 
+    This function is intended to be used in the Validation Apparatus,
+    and for this result to be collated with other findings into a larger
     ValidatorResult.
 
     Args:
@@ -31,16 +31,8 @@ def validate_number(definition: Definition, value_to_validate: Any) -> Optional[
     Returns:
     - A validator finding for the given value.
     """
-    is_invalid = False
-    try:
-        type_casted_number_float = float(value_to_validate)
-        type_casted_number_int = validate_integer(definition, value_to_validate)
-        is_invalid = str(type_casted_number_float) != str(value_to_validate) or str(type_casted_number_int) != str(value_to_validate)
-    except Exception as e:
-        is_invalid = True
-        logging.debug(f"{PRIMITIVE_TYPE_NUMBER} validation failed for value {value_to_validate} with error:\n{e}")
-        pass
 
+    is_invalid = not isinstance(value_to_validate, (int, float))
     finding = None
     if is_invalid:
         finding_message = f"{value_to_validate} is not a valid value for the number type {PRIMITIVE_TYPE_NUMBER}"
