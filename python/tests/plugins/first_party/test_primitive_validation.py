@@ -128,14 +128,14 @@ class TestPrimitiveValidation(ActiveContextTestCase):
         test_context = get_active_context()
         test_context.add_definition_to_context([TEST_TYPES_SCHEMA_DEFINITION, TEST_TYPES_SCHEMA_EXTENSION_DEFINITION])
 
-        finding = self.NUMBER_VALIDATOR.validation_function(TEST_TYPES_VALID_INSTANCE, 0o14)
+        finding = self.NUMBER_VALIDATOR.validation_function(TEST_TYPES_VALID_INSTANCE, "0o14")
         self.assertIsNone(finding)
 
     def test_number_type_valid_hexadec(self):
         test_context = get_active_context()
         test_context.add_definitions_to_context([TEST_TYPES_SCHEMA_DEFINITION, TEST_TYPES_SCHEMA_EXTENSION_DEFINITION])
 
-        finding = self.NUMBER_VALIDATOR.validation_function(TEST_TYPES_VALID_INSTANCE, '0xC')
+        finding = self.NUMBER_VALIDATOR.validation_function(TEST_TYPES_VALID_INSTANCE, "0xC")
         self.assertIsNone(finding)
 
     def test_number_type_valid_float(self):
