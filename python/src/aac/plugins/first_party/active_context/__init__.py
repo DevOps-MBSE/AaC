@@ -68,6 +68,7 @@ def _get_plugin_commands():
             "overwrite",
             "A flag indicating that the state file should be overwritten, if it exists.",
             "bool",
+            default=False,
         ),
     ]
 
