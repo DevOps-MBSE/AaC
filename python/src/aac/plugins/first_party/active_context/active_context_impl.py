@@ -1,6 +1,7 @@
 """AaC Plugin implementation module for the active-context plugin."""
 
 from aac.lang.active_context_lifecycle_manager import get_active_context
+from aac.plugins import PluginError
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 
 plugin_name = "active-context"
@@ -88,11 +89,16 @@ def describe_definition(definition_name: str) -> PluginExecutionResult:
         definition_source The source file of the definition in the active context.
         definition_start The line on which the definition starts in {{active-context.describe-definition.output.definition-source}}.
     """
-    # TODO add implementation here
-    def _implement_and_rename_me():
-        raise NotImplementedError("describe_definition is not implemented.")
 
-    with plugin_result(plugin_name, _implement_and_rename_me) as result:
+    def get_definition_info() -> str:
+        definition = get_active_context().get_definition_by_name(definition_name)
+        if definition is None:
+            raise PluginError(f"{definition_name} is not in the active context.")
+
+        active_context_message = f"{definition.source.uri} {definition.lexemes[0].location.line + 1}"
+        return active_context_message
+
+    with plugin_result(plugin_name, get_definition_info) as result:
         return result
 
 

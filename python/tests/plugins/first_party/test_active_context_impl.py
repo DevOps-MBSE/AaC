@@ -1,5 +1,6 @@
 from aac.io.files.aac_file import AaCFile
 from aac.lang.active_context_lifecycle_manager import get_active_context
+from aac.lang.constants import DEFINITION_NAME_PRIMITIVES
 from aac.plugins.plugin_execution import PluginExecutionStatusCode
 from aac.plugins.first_party.active_context.active_context_impl import (
     list_files,
@@ -51,13 +52,18 @@ class TestActiveContext(ActiveContextTestCase):
         result = list_definitions()
         self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
 
-    def test_describe_definition(self):
-        # TODO: Write tests for describe_definition
+    def test_describe_definition_not_in_context(self):
+        definition_name = "IAmNotInContext"
+        result = describe_definition(definition_name=definition_name)
+        self.assertRegexpMatches(result.get_messages_as_string(), f"{definition_name}.*not.*in.*context")
 
-        definition_name = str()
+    def test_describe_definition_in_context(self):
+        definition_name = DEFINITION_NAME_PRIMITIVES
 
         result = describe_definition(definition_name=definition_name)
         self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
+        self.assertIn("spec.yaml", result.get_messages_as_string())
+        self.assertIn("255", result.get_messages_as_string())
 
     def test_import_state(self):
         # TODO: Write tests for import_state
