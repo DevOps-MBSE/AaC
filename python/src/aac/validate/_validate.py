@@ -1,5 +1,4 @@
 import logging
-import copy
 from contextlib import contextmanager
 from typing import Generator, Any, Optional
 
@@ -83,8 +82,15 @@ def _with_validation(
 def _validate_definitions(
     definitions: list[Definition], language_context: LanguageContext, validate_context: bool
 ) -> ValidatorResult:
-    validation_context = copy.deepcopy(language_context)
-    validation_context.add_definitions_to_context(definitions)
+    validation_context = language_context.copy()
+
+    for definition in definitions:
+        existing_definition = validation_context.get_definition_by_uid(definition.uid)
+
+        if existing_definition:
+            validation_context.update_definition_in_context(definition)
+        else:
+            validation_context.add_definition_to_context(definition)
 
     validator_plugins = validation_context.get_definition_validations()
 

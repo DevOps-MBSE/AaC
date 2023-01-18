@@ -46,14 +46,13 @@ class TestGenJson(ActiveContextTestCase):
             self.assertEqual(result.status_code, PluginExecutionStatusCode.PARSER_FAILURE)
 
     def test_get_plugin(self):
+        from aac.plugins.first_party.gen_json.gen_json_impl import plugin_name
+
         plugin = get_plugin()
 
-        self.assertEqual(plugin.name, "gen_json")
+        self.assertEqual(plugin.name, plugin_name)
         self.assertEqual(plugin.contributions.get_commands(), _get_plugin_commands())
-        [
-            assert_definitions_equal(d1, d2)
-            for d1, d2 in zip(plugin.contributions.get_definitions(), _get_plugin_definitions())
-        ]
+        [assert_definitions_equal(d1, d2) for d1, d2 in zip(plugin.contributions.get_definitions(), _get_plugin_definitions())]
 
 
 TEST_ARCH_YAML_STRING = """

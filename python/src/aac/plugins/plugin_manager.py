@@ -33,6 +33,7 @@ def get_plugin_manager() -> PluginManager:
         "help_dump",
         "rest_api",
         "primitive_type_check",
+        "plugin_management",
     ]
 
     # register "built-in" commands
