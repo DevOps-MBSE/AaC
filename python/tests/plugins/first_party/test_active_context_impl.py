@@ -1,5 +1,5 @@
-from unittest import TestCase
-
+from aac.io.files.aac_file import AaCFile
+from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.plugins.plugin_execution import PluginExecutionStatusCode
 from aac.plugins.first_party.active_context.active_context_impl import (
     list_files,
@@ -12,13 +12,16 @@ from aac.plugins.first_party.active_context.active_context_impl import (
     export_state,
 )
 
+from tests.active_context_test_case import ActiveContextTestCase
 
-class TestActiveContext(TestCase):
+
+class TestActiveContext(ActiveContextTestCase):
     def test_list_files(self):
-        # TODO: Write tests for list_files
-
         result = list_files()
         self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
+
+        test_context = get_active_context()
+        self.assertEqual(result.get_messages_as_string(), self.file_names_to_string(test_context.get_files_in_context()))
 
     def test_remove_file(self):
         # TODO: Write tests for remove_file
@@ -72,3 +75,6 @@ class TestActiveContext(TestCase):
 
         result = export_state(state_file_name=state_file_name, overwrite=overwrite)
         self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
+
+    def file_names_to_string(self, files: list[AaCFile]) -> str:
+        return "\n".join([file.uri for file in files])

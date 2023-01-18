@@ -1,5 +1,6 @@
 """AaC Plugin implementation module for the active-context plugin."""
 
+from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 
 plugin_name = "active-context"
@@ -12,11 +13,11 @@ def list_files() -> PluginExecutionResult:
     Returns:
         files Files that are in the active context.
     """
-    # TODO add implementation here
-    def _implement_and_rename_me():
-        raise NotImplementedError("list_files is not implemented.")
 
-    with plugin_result(plugin_name, _implement_and_rename_me) as result:
+    def collect_files() -> str:
+        return "\n".join([file.uri for file in get_active_context().get_files_in_context()])
+
+    with plugin_result(plugin_name, collect_files) as result:
         return result
 
 
