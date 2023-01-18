@@ -76,7 +76,7 @@ class GotoDefinitionProvider(LspProvider):
             if definition_to_find:
                 locations.extend(self.get_enum_value_lexeme_location(definition_to_find, name))
 
-        if SymbolType.ROOT_KEY_NAME in symbol_types:
+        if SymbolType.ROOT_KEY in symbol_types:
             definition_to_find = language_context.get_root_keys_definition()
             if definition_to_find:
                 locations.extend(self.get_root_key_definition_lexeme_location(definition_to_find, name))

@@ -74,7 +74,7 @@ class FindReferencesProvider(LspProvider):
             else:
                 locations.extend(self.get_definition_name_reference_locations(definition_to_find, language_context))
 
-        if SymbolType.ROOT_KEY_NAME in symbol_types:
+        if SymbolType.ROOT_KEY in symbol_types:
             locations.extend(self.get_root_key_reference_locations(name, language_context))
 
         return locations
