@@ -34,6 +34,7 @@ def get_plugin_manager() -> PluginManager:
         "rest_api",
         "primitive_type_check",
         "plugin_management",
+        "active_context",
     ]
 
     # register "built-in" commands
