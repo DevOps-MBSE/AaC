@@ -1,4 +1,3 @@
-import copy
 from unittest import TestCase
 
 from aac.lang.definitions.structure import get_substructures_by_type, strip_undefined_fields_from_definition
@@ -111,7 +110,7 @@ class TestDefinitionStructures(TestCase):
         model_component = create_field_entry("ModelComponent", "ModelComponent")
         test_model = create_model_definition("ModelWithExtraFields", components=[model_component], behavior=[model_behavior])
 
-        expected_result = copy.deepcopy(test_model)
+        expected_result = test_model.copy()
 
         extra_top_level_field_name = "extra_top_level_field_name"
         extra_top_level_field_value = "extra_top_level_field_value"
