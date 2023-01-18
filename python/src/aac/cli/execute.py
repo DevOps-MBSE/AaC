@@ -1,7 +1,7 @@
 """The entry-point for the command line interface for the aac tool."""
 
 import sys
-from click import Argument, Command, Option, ParamType, Parameter, Path, UNPROCESSED, echo, group, types
+from click import Argument, Command, Option, ParamType, Parameter, Path, UNPROCESSED, group, secho, types
 
 from aac.cli.aac_command import AacCommand, AacCommandArgument
 from aac.lang.active_context_lifecycle_manager import get_active_context
@@ -19,7 +19,7 @@ def cli():
 def output_result(result: PluginExecutionResult):
     """Output the message from the result of executing the CLI command."""
     error_occurred = not result.is_success
-    echo(result.get_messages_as_string(), err=error_occurred, color=True)
+    secho(result.get_messages_as_string(), err=error_occurred, color=True)
 
     get_active_context().export_to_file(ACTIVE_CONTEXT_STATE_FILE_NAME)
 
