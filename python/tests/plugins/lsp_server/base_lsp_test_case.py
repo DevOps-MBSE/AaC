@@ -66,9 +66,9 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
         Returns:
             The new virtual document
         """
-        self.assertIsNone(self.documents.get(file_name), f"Virtual document {file_name} already exists")
-
         absolute_file_path = self._get_absolute_file_path(file_name)
+        self.assertIsNone(self.documents.get(absolute_file_path), f"Virtual document {file_name} already exists")
+
         self.documents[absolute_file_path] = TextDocument(
             file_path=path.dirname(absolute_file_path), file_name=file_name, content=content
         )
