@@ -1,3 +1,5 @@
+from os.path import basename
+
 from aac.io.files.aac_file import AaCFile
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.constants import DEFINITION_NAME_PRIMITIVES
@@ -14,6 +16,8 @@ from aac.plugins.first_party.active_context.active_context_impl import (
 )
 
 from tests.active_context_test_case import ActiveContextTestCase
+from tests.helpers.io import temporary_test_file
+from tests.helpers.parsed_definitions import create_field_entry, create_schema_definition
 
 
 class TestActiveContext(ActiveContextTestCase):
@@ -24,13 +28,28 @@ class TestActiveContext(ActiveContextTestCase):
         test_context = get_active_context()
         self.assertEqual(result.get_messages_as_string(), self.file_names_to_string(test_context.get_files_in_context()))
 
-    def test_remove_file(self):
-        # TODO: Write tests for remove_file
+    def test_remove_file_success(self):
+        definition = create_schema_definition("TestDefinition", fields=[create_field_entry("a", "int")])
 
-        file = str()
+        with temporary_test_file(definition.to_yaml()) as test_file:
+            test_context = get_active_context()
+            test_context.add_definitions_from_uri(test_file.name, [definition.name])
+            self.assertIn(test_file.name, [file.uri for file in test_context.get_files_in_context()])
 
-        result = remove_file(file=file)
-        self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
+            result = remove_file(file=test_file.name)
+            self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
+            self.assertNotIn(test_file.name, self.file_names_to_string(test_context.get_files_in_context()))
+
+            success_message_regex = f"success.*remove.*{basename(test_file.name)}.*"
+            self.assertRegexpMatches(result.get_messages_as_string().lower(), success_message_regex)
+
+    def test_remove_file_failure(self):
+        test_file_name = "/this/file/is/not/in/the/con.text"
+        result = remove_file(test_file_name)
+        self.assertNotEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
+
+        failure_message_regex = f"not.*remove.*{basename(test_file_name)}.*"
+        self.assertRegexpMatches(result.get_messages_as_string().lower(), failure_message_regex)
 
     def test_add_file(self):
         # TODO: Write tests for add_file

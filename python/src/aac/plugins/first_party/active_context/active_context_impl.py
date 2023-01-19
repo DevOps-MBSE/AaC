@@ -29,11 +29,17 @@ def remove_file(file: str) -> PluginExecutionResult:
     Args:
         file (str): The name of the file that is being removed from the active context.
     """
-    # TODO add implementation here
-    def _implement_and_rename_me():
-        raise NotImplementedError("remove_file is not implemented.")
 
-    with plugin_result(plugin_name, _implement_and_rename_me) as result:
+    def remove_file_if_present() -> str:
+        active_context = get_active_context()
+        file_definitions = active_context.get_definitions_by_file_uri(file)
+        if not file_definitions:
+            raise PluginError(f"Could not remove {file} as it is not in the active context")
+
+        active_context.remove_definitions_from_context(file_definitions)
+        return f"Successfully removed {file} from the active context"
+
+    with plugin_result(plugin_name, remove_file_if_present) as result:
         return result
 
 
