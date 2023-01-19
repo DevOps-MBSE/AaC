@@ -25,10 +25,11 @@ suite("AaC Executable Wrapper Test Suite", () => {
             arguments: [],
         };
 
+
         await aacWrapper.executeCommandWithArguments(helpDumpCommand)
             .then((output: string) => {
                 const searchString = "Validate the AaC definition file";
                 assert.strictEqual(output.includes(searchString), true, `'${searchString}' not found in ${output}`);
             });
-    });
+    }).timeout(1000);
 });
