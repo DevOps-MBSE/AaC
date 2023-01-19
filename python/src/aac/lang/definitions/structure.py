@@ -1,5 +1,4 @@
 """Functions that provide information about the structure of definitions."""
-import copy
 import logging
 
 from aac.lang.definitions.type import is_array_type, remove_list_type_indicator
@@ -108,7 +107,7 @@ def strip_undefined_fields_from_definition(definition: Definition, context: Lang
                         _strip_fields(field_sub_dict, field_schema)
 
     if definition:
-        stripped_definition = copy.deepcopy(definition)
+        stripped_definition = definition.copy()
         definition_schema = get_definition_schema(definition, context)
         definition_structure = stripped_definition.get_top_level_fields()
         _strip_fields(definition_structure, definition_schema)
