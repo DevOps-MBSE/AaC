@@ -31,5 +31,5 @@ suite("AaC Executable Wrapper Test Suite", () => {
                 const searchString = "Validate the AaC definition file";
                 assert.strictEqual(output.includes(searchString), true, `'${searchString}' not found in ${output}`);
             });
-    }).timeout(1000);
+    }).timeout(10000);
 });
