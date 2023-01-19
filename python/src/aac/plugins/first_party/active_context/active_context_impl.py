@@ -1,5 +1,7 @@
 """AaC Plugin implementation module for the active-context plugin."""
 
+from os.path import lexists
+
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.plugins import PluginError
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
@@ -50,11 +52,16 @@ def add_file(file: str) -> PluginExecutionResult:
     Args:
         file (str): The name of the file to add to the active context.
     """
-    # TODO add implementation here
-    def _implement_and_rename_me():
-        raise NotImplementedError("add_file is not implemented.")
 
-    with plugin_result(plugin_name, _implement_and_rename_me) as result:
+    def add_file_if_exists() -> str:
+        active_context = get_active_context()
+        if not lexists(file):
+            raise PluginError(f"Could not add {file} because it doesn't exist")
+
+        active_context.add_definitions_from_uri(file)
+        return f"Successfully added {file} to the active context"
+
+    with plugin_result(plugin_name, add_file_if_exists) as result:
         return result
 
 
