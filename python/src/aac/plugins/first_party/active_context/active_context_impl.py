@@ -67,11 +67,14 @@ def add_file(file: str) -> PluginExecutionResult:
 
 def reset_context() -> PluginExecutionResult:
     """Reset the active context to a fresh state before any changes have been made."""
-    # TODO add implementation here
-    def _implement_and_rename_me():
-        raise NotImplementedError("reset_context is not implemented.")
 
-    with plugin_result(plugin_name, _implement_and_rename_me) as result:
+    def remove_custom_definitions() -> str:
+        active_context = get_active_context()
+        custom_definitions = [definition for definition in active_context.definitions if definition.source.is_user_editable]
+        active_context.remove_definitions_from_context(custom_definitions)
+        return "Successfully reset the active context"
+
+    with plugin_result(plugin_name, remove_custom_definitions) as result:
         return result
 
 

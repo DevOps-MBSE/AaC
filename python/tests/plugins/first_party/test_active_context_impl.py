@@ -96,10 +96,17 @@ class TestActiveContextPlugin(ActiveContextTestCase):
         self.assertRegexpMatches(result.get_messages_as_string().lower(), failure_message_regex)
 
     def test_reset_context(self):
-        # TODO: Write tests for reset_context
+        with temporary_test_file(self.definition.to_yaml()) as test_file:
+            test_context = get_active_context()
+            test_context.add_definitions_from_uri(test_file.name)
+            self.assertIn(self.definition.name, test_context.get_defined_types())
 
-        result = reset_context()
-        self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
+            result = reset_context()
+            self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
+            self.assertNotIn(self.definition.name, test_context.get_defined_types())
+
+            success_message_regex = "success.*reset.*context"
+            self.assertRegexpMatches(result.get_messages_as_string().lower(), success_message_regex)
 
     def test_list_definitions(self):
         # TODO: Write tests for list_definitions
