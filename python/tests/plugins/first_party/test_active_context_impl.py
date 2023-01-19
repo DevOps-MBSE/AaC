@@ -21,7 +21,9 @@ from tests.helpers.io import temporary_test_file
 from tests.helpers.parsed_definitions import create_field_entry, create_schema_definition
 
 
-class TestActiveContext(ActiveContextTestCase):
+class TestActiveContextPlugin(ActiveContextTestCase):
+    definition = create_schema_definition("TestDefinition", fields=[create_field_entry("a", "int")])
+
     def test_list_files(self):
         result = list_files()
         self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
@@ -30,11 +32,9 @@ class TestActiveContext(ActiveContextTestCase):
         self.assertEqual(result.get_messages_as_string(), self.file_names_to_string(test_context.get_files_in_context()))
 
     def test_remove_file_success(self):
-        definition = create_schema_definition("TestDefinition", fields=[create_field_entry("a", "int")])
-
-        with temporary_test_file(definition.to_yaml()) as test_file:
+        with temporary_test_file(self.definition.to_yaml()) as test_file:
             test_context = get_active_context()
-            test_context.add_definitions_from_uri(test_file.name, [definition.name])
+            test_context.add_definitions_from_uri(test_file.name, [self.definition.name])
             self.assertIn(test_file.name, [file.uri for file in test_context.get_files_in_context()])
 
             result = remove_file(file=test_file.name)
@@ -53,9 +53,7 @@ class TestActiveContext(ActiveContextTestCase):
         self.assertRegexpMatches(result.get_messages_as_string().lower(), failure_message_regex)
 
     def test_add_new_file_success(self):
-        definition = create_schema_definition("TestDefinition", fields=[create_field_entry("a", "int")])
-
-        with temporary_test_file(definition.to_yaml()) as test_file:
+        with temporary_test_file(self.definition.to_yaml()) as test_file:
             test_context = get_active_context()
             self.assertNotIn(test_file.name, [file.uri for file in test_context.get_files_in_context()])
 
@@ -67,27 +65,26 @@ class TestActiveContext(ActiveContextTestCase):
             self.assertRegexpMatches(result.get_messages_as_string().lower(), success_message_regex)
 
     def test_update_definitions_from_file_success(self):
-        definition1 = create_schema_definition("TestDefinition1", fields=[create_field_entry("a", "int")])
         definition2 = create_schema_definition("TestDefinition2", fields=[create_field_entry("b", "int")])
 
-        with temporary_test_file(definition1.to_yaml(), mode="r+") as test_file:
+        with temporary_test_file(self.definition.to_yaml(), mode="r+") as test_file:
             test_context = get_active_context()
-            self.assertNotIn(definition1.name, test_context.get_defined_types())
+            self.assertNotIn(self.definition.name, test_context.get_defined_types())
             self.assertNotIn(definition2.name, test_context.get_defined_types())
 
             result = add_file(test_file.name)
             print(result.get_messages_as_string())
             self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
-            self.assertIn(definition1.name, test_context.get_defined_types())
+            self.assertIn(self.definition.name, test_context.get_defined_types())
             self.assertNotIn(definition2.name, test_context.get_defined_types())
 
             # Simulate adding a new definition to the file
-            test_file.write(f"{YAML_DOCUMENT_SEPARATOR}\n".join([definition1.to_yaml(), definition2.to_yaml()]))
+            test_file.write(f"{YAML_DOCUMENT_SEPARATOR}\n".join([self.definition.to_yaml(), definition2.to_yaml()]))
             test_file.seek(0)
 
             result = add_file(test_file.name)
             self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
-            self.assertIn(definition1.name, test_context.get_defined_types())
+            self.assertIn(self.definition.name, test_context.get_defined_types())
             self.assertIn(definition2.name, test_context.get_defined_types())
 
     def test_update_definitions_from_file_failure(self):
