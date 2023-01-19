@@ -147,18 +147,18 @@ class LanguageContext:
         for extension_definition in extension_definitions:
             self.add_definition_to_context(extension_definition)
 
-    def add_definitions_from_uri(self, uri: str, names: list[str]):
+    def add_definitions_from_uri(self, uri: str, names: Optional[list[str]] = None):
         """
         Load the definitions from the provided file URI.
 
         Args:
             uri (str): The file URI from which to load definitions.
             names (list[str]): The list of the names of the definitions that should be loaded into
-                the context.
+                the context. If names is not provided, import all definitions. (default: None)
         """
         if lexists(uri):
-            definitions = [definition for definition in parse(uri) if definition.name in names]
-            self.update_definitions_in_context(list(set(self.definitions).intersection(definitions)))
+            definitions = [definition for definition in parse(uri) if not names or definition.name in names]
+            self.update_definitions_in_context(list(set(definitions).intersection(self.definitions)))
             self.add_definitions_to_context(list(set(definitions).difference(self.definitions)))
         else:
             logging.warn(f"Skipping {uri} as it could not be found.")
@@ -646,6 +646,6 @@ class LanguageContext:
 
     # Misc Helper Functions
 
-    def copy(self) -> 'LanguageContext':
+    def copy(self) -> "LanguageContext":
         """Return a deep copy of the context."""
         return deepcopy(self)
