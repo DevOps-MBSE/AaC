@@ -111,8 +111,7 @@ def describe_definition(definition_name: str) -> PluginExecutionResult:
         if definition is None:
             raise PluginError(f"{definition_name} is not in the active context.")
 
-        active_context_message = f"{definition.source.uri} {definition.lexemes[0].location.line + 1}"
-        return active_context_message
+        return f"{definition.source.uri}:{definition.lexemes[0].location.line + 1}\n\n{definition.to_yaml()}"
 
     with plugin_result(plugin_name, get_definition_info) as result:
         return result

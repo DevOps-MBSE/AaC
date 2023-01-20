@@ -124,8 +124,10 @@ class TestActiveContextPlugin(ActiveContextTestCase):
 
         result = describe_definition(definition_name=definition_name)
         self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
-        self.assertIn("spec.yaml", result.get_messages_as_string())
-        self.assertIn("255", result.get_messages_as_string())
+        primitives_definition = get_active_context().get_definition_by_name(definition_name)
+        self.assertIn(primitives_definition.source.uri, result.get_messages_as_string())
+        self.assertIn(f"{primitives_definition.lexemes[0].location.line + 1}", result.get_messages_as_string())
+        self.assertIn(primitives_definition.to_yaml(), result.get_messages_as_string())
 
     def test_import_state(self):
         # TODO: Write tests for import_state
