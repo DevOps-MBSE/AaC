@@ -1,4 +1,6 @@
-from os.path import basename
+from os import listdir
+from os.path import basename, lexists
+from tempfile import TemporaryDirectory
 from unittest import skip
 
 from aac.io.constants import YAML_DOCUMENT_SEPARATOR
@@ -18,7 +20,7 @@ from aac.plugins.first_party.active_context.active_context_impl import (
 )
 
 from tests.active_context_test_case import ActiveContextTestCase
-from tests.helpers.io import temporary_test_file
+from tests.helpers.io import new_working_dir, temporary_test_file
 from tests.helpers.parsed_definitions import create_field_entry, create_schema_definition
 
 
@@ -147,14 +149,38 @@ class TestActiveContextPlugin(ActiveContextTestCase):
             self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
             self.assertIn(self.definition.name, test_context.get_defined_types())
 
-    def test_export_state(self):
-        # TODO: Write tests for export_state
+    def test_export_state_no_overwrite(self):
+        with TemporaryDirectory() as tmpdir, new_working_dir(tmpdir):
+            self.assertEqual(len(listdir(tmpdir)), 0)
 
-        state_file_name = str()
-        overwrite = bool()
+            state_file_name = "tmp-state.json"
+            result = export_state(state_file_name=state_file_name, overwrite=False)
+            self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
 
-        result = export_state(state_file_name=state_file_name, overwrite=overwrite)
-        self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
+            success_message_regex = f"success.*export.*{state_file_name}"
+            self.assertRegexpMatches(result.get_messages_as_string().lower(), success_message_regex)
+
+            self.assertListEqual(listdir(tmpdir), [state_file_name])
+
+            result = export_state(state_file_name=state_file_name, overwrite=False)
+            self.assertNotEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
+
+            failure_message_regex = f"{state_file_name}.*exists.*overwrite"
+            self.assertRegexpMatches(result.get_messages_as_string().lower(), failure_message_regex)
+
+    def test_export_state_overwrite(self):
+        replaceable_content = "replacable content"
+        with temporary_test_file(replaceable_content, mode="w+") as state_file:
+            self.assertTrue(lexists(state_file.name))
+            self.assertEqual(state_file.read(), replaceable_content)
+
+            result = export_state(state_file_name=state_file.name, overwrite=True)
+            self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
+
+            success_message_regex = f"success.*export.*{basename(state_file.name)}"
+            self.assertRegexpMatches(result.get_messages_as_string().lower(), success_message_regex)
+
+            self.assertNotEqual(state_file.read(), replaceable_content)
 
     def file_names_to_string(self, files: list[AaCFile]) -> str:
         return "\n".join([file.uri for file in files])

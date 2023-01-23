@@ -151,9 +151,13 @@ def export_state(state_file_name: str, overwrite: bool) -> PluginExecutionResult
     Returns:
         state_file The persistent state file defining the current active context.
     """
-    # TODO add implementation here
-    def _implement_and_rename_me():
-        raise NotImplementedError("export_state is not implemented.")
 
-    with plugin_result(plugin_name, _implement_and_rename_me) as result:
+    def export_active_context_to_state_file():
+        if lexists(state_file_name) and not overwrite:
+            raise PluginError(f"The file {state_file_name} already exists and overwrite not specified.")
+
+        get_active_context().export_to_file(state_file_name)
+        return f"Successfully exported active context to {state_file_name}."
+
+    with plugin_result(plugin_name, export_active_context_to_state_file) as result:
         return result
