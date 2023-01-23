@@ -628,6 +628,9 @@ class LanguageContext:
                 self.activate_plugin_by_name(plugin)
 
             self.is_initialized = True
+        else:
+            self.is_initialized = False
+            logging.warning(f"The file {file_uri} could not be imported to initialize the active context.")
 
     def export_to_file(self, file_uri: str) -> None:
         """
