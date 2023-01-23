@@ -112,9 +112,10 @@ class TestActiveContextPlugin(ActiveContextTestCase):
             self.assertRegexpMatches(result.get_messages_as_string().lower(), success_message_regex)
 
     def test_list_definitions(self):
-        # TODO: Write tests for list_definitions
+        definition_in_list = "Primitives"
 
         result = list_definitions()
+        self.assertIn(definition_in_list, result.get_messages_as_string())
         self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
 
     def test_describe_definition_not_in_context(self):

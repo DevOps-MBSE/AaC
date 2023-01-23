@@ -85,11 +85,12 @@ def list_definitions() -> PluginExecutionResult:
     Returns:
         definitions The list of all definitions that are in the active context.
     """
-    # TODO add implementation here
-    def _implement_and_rename_me():
-        raise NotImplementedError("list_definitions is not implemented.")
+    def get_definitions_in_active_context() -> str:
+        current_definitions = get_active_context().get_defined_types()
 
-    with plugin_result(plugin_name, _implement_and_rename_me) as result:
+        return f"Definitions in the active context:\n\n{current_definitions}"
+
+    with plugin_result(plugin_name, get_definitions_in_active_context) as result:
         return result
 
 
@@ -107,7 +108,7 @@ def describe_definition(definition_name: str) -> PluginExecutionResult:
     """
 
     def get_definition_info() -> str:
-        definition = get_active_context().get_definition_by_name(definition_name)
+        definition = get_active_context().get_definitions_by_file_uri(definition_name)
         if definition is None:
             raise PluginError(f"{definition_name} is not in the active context.")
 
