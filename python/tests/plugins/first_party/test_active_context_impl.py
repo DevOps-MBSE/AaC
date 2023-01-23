@@ -1,7 +1,7 @@
 from os import listdir
 from os.path import basename, lexists
 from tempfile import TemporaryDirectory
-from unittest import skip
+from unittest.mock import patch
 
 from aac.io.constants import YAML_DOCUMENT_SEPARATOR
 from aac.io.files.aac_file import AaCFile
@@ -132,11 +132,11 @@ class TestActiveContextPlugin(ActiveContextTestCase):
         self.assertIn(f"{primitives_definition.lexemes[0].location.line + 1}", result.get_messages_as_string())
         self.assertIn(primitives_definition.to_yaml(), result.get_messages_as_string())
 
-    @skip("temporary skip")
     def test_import_state_success(self):
         with (
             temporary_test_file("", mode="w+") as state_file,
             temporary_test_file(self.definition.to_yaml(), mode="w+") as test_file,
+            patch("aac.lang.active_context_lifecycle_manager.ACTIVE_CONTEXT_STATE_FILE_NAME", state_file.name),
         ):
             test_context = get_active_context(reload_context=True)
             test_context.add_definitions_from_uri(test_file.name)
@@ -147,7 +147,19 @@ class TestActiveContextPlugin(ActiveContextTestCase):
 
             result = import_state(state_file=state_file.name)
             self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
+
+            success_message_regex = f"success.*import.*{basename(state_file.name)}"
+            self.assertRegexpMatches(result.get_messages_as_string().lower(), success_message_regex)
+
             self.assertIn(self.definition.name, test_context.get_defined_types())
+
+    def test_import_state_failure(self):
+        nonexisting_file = "/fake/file/path"
+        result = import_state(state_file=nonexisting_file)
+        self.assertNotEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
+
+        failure_message_regex = f"{basename(nonexisting_file)}.*not.*exist"
+        self.assertRegexpMatches(result.get_messages_as_string().lower(), failure_message_regex)
 
     def test_export_state_no_overwrite(self):
         with TemporaryDirectory() as tmpdir, new_working_dir(tmpdir):
