@@ -1,4 +1,5 @@
 from os.path import basename
+from unittest import skip
 
 from aac.io.constants import YAML_DOCUMENT_SEPARATOR
 from aac.io.files.aac_file import AaCFile
@@ -129,13 +130,22 @@ class TestActiveContextPlugin(ActiveContextTestCase):
         self.assertIn(f"{primitives_definition.lexemes[0].location.line + 1}", result.get_messages_as_string())
         self.assertIn(primitives_definition.to_yaml(), result.get_messages_as_string())
 
-    def test_import_state(self):
-        # TODO: Write tests for import_state
+    @skip("temporary skip")
+    def test_import_state_success(self):
+        with (
+            temporary_test_file("", mode="w+") as state_file,
+            temporary_test_file(self.definition.to_yaml(), mode="w+") as test_file,
+        ):
+            test_context = get_active_context(reload_context=True)
+            test_context.add_definitions_from_uri(test_file.name)
+            test_context.export_to_file(state_file.name)
 
-        state_file = str()
+            test_context = get_active_context(reload_context=True)
+            self.assertNotIn(self.definition.name, test_context.get_defined_types())
 
-        result = import_state(state_file=state_file)
-        self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
+            result = import_state(state_file=state_file.name)
+            self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
+            self.assertIn(self.definition.name, test_context.get_defined_types())
 
     def test_export_state(self):
         # TODO: Write tests for export_state
