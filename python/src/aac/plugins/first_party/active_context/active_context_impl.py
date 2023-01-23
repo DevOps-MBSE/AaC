@@ -130,12 +130,7 @@ def import_state(state_file: str) -> PluginExecutionResult:
             raise PluginError(f"The state file {state_file} could not be imported because it doesn't exist.")
 
         active_context = get_active_context()
-
-        active_context.is_initialized = False
-        active_context.definitions = []
-        active_context.plugins = []
-        active_context.definitions_dictionary = {}
-
+        active_context.clear()
         active_context.import_from_file(state_file)
         return f"Successfully imported active context from {state_file}"
 

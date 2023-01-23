@@ -647,3 +647,10 @@ class LanguageContext:
     def copy(self) -> "LanguageContext":
         """Return a deep copy of the context."""
         return deepcopy(self)
+
+    def clear(self) -> None:
+        """Remove all definitions from the language context."""
+        self.is_initialized = False
+        self.definitions = []
+        self.plugins = []
+        self.definitions_dictionary = {}
