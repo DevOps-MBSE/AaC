@@ -138,14 +138,10 @@ class LanguageContext:
 
         initial_definitions = [definition for definition in definitions if definition.name not in secondary_definitions]
 
-        for definition in initial_definitions:
-            self.add_definition_to_context(definition)
+        all_definitions = [*initial_definitions, *sorted_child_definitions, *extension_definitions]
 
-        for definition in sorted_child_definitions:
+        for definition in all_definitions:
             self.add_definition_to_context(definition)
-
-        for extension_definition in extension_definitions:
-            self.add_definition_to_context(extension_definition)
 
     def add_definitions_from_uri(self, uri: str, names: Optional[list[str]] = None):
         """
@@ -215,7 +211,6 @@ class LanguageContext:
         Args:
             definition (Definition): The Definition to update in the context.
         """
-
         if definition.uid in self.definitions_dictionary:
             old_definition = self.definitions_dictionary.get(definition.uid)
 
