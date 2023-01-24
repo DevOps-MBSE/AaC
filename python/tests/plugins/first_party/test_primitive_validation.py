@@ -54,13 +54,13 @@ class TestPrimitiveValidation(ActiveContextTestCase):
             self.assertRaises(Exception) as error,
             validated_source(test_file.name),
         ):
-
             self.assertIsNotNone(error.exception)
 
-            self.assertIn(self.INTEGER_VALIDATOR.name, error.exception)
-            self.assertIn(self.INTEGER_VALIDATOR.primitive_type, error.exception)
-            self.assertIn(self.BOOLEAN_VALIDATOR.name, error.exception)
-            self.assertIn(self.BOOLEAN_VALIDATOR.primitive_type, error.exception)
+            exception_message = str(error.exception)
+            self.assertIn(self.INTEGER_VALIDATOR.name, exception_message)
+            self.assertIn(self.INTEGER_VALIDATOR.primitive_type, exception_message)
+            self.assertIn(self.BOOLEAN_VALIDATOR.name, exception_message)
+            self.assertIn(self.BOOLEAN_VALIDATOR.primitive_type, exception_message)
 
     def test_integer_type_check_valid(self):
         test_context = get_active_context()
