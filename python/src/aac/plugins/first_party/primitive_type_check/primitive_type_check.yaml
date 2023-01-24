@@ -45,3 +45,34 @@ model:
           then:
             - The ValidatorOutput indicates an error
             - The ValidatorOutput indicates the primitive value under test is invalid
+    - name: Validate Boolean Primitives
+      type: request-response
+      description:
+      input:
+        - name: input
+          type: ValidatorInput
+      output:
+        - name: results
+          type: ValidatorOutput
+      acceptance:
+        - scenario: Successfully Validate a Boolean Primitive Value
+          given:
+            - The ValidatorInput content consists of valid AaC definitions
+            - The ValidatorInput contains at least one definition field that is defined as being type `bool`
+            - The value in the primitive `bool` field is a valid boolean YAML value
+          when:
+            - The input is validated
+          then:
+            - The ValidatorOutput does not indicate any errors
+            - The ValidatorOutput does not indicate any warnings
+            - The ValidatorOutput indicates the primitive value under test is valid
+        - scenario: Fail to Validate an Integer Primitive Value Is a non-boolean String
+          given:
+            - The ValidatorInput content consists of AaC definitions
+            - The ValidatorInput contains at least one definition field that is defined as being type `bool`
+            - The value in the primitive `bool` field contains alphabetical letters or punctuation marks that don't represent a YAML boolean value
+          when:
+            - The input is validated
+          then:
+            - The ValidatorOutput indicates an error
+            - The ValidatorOutput indicates the primitive value under test is invalid
