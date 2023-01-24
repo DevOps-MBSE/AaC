@@ -96,7 +96,7 @@ TEST_TYPES_VALID_INSTANCE = create_definition(
     "validPrimitives",
     {
         SCHEMA_FIELD_INT.get("name"): 0,
-        SCHEMA_FIELD_BOOL.get("name"): "yes",
+        SCHEMA_FIELD_BOOL.get("name"): True,
     },
 )
 TEST_TYPES_INVALID_INSTANCE = create_definition(
