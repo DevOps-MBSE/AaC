@@ -85,10 +85,9 @@ def list_definitions() -> PluginExecutionResult:
     Returns:
         definitions The list of all definitions that are in the active context.
     """
-    def get_definitions_in_active_context() -> str:
-        current_definitions = get_active_context().get_defined_types()
 
-        return f"Definitions in the active context:\n\n{current_definitions}"
+    def get_definitions_in_active_context() -> str:
+        return "\n".join(get_active_context().get_defined_types())
 
     with plugin_result(plugin_name, get_definitions_in_active_context) as result:
         return result
