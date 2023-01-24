@@ -27,7 +27,7 @@ model:
             - The ValidatorOutput indicates the primitive value under test is valid
         - scenario: Fail to Validate an Integer Primitive Value is A Float
           given:
-            - The ValidatorInput content consists of valid AaC definitions
+            - The ValidatorInput content consists of AaC definitions
             - The ValidatorInput contains at least one definition field that is defined as being type `int`
             - The value in the primitive `int` field is a decimal number
           when:
@@ -37,7 +37,7 @@ model:
             - The ValidatorOutput indicates the primitive value under test is invalid
         - scenario: Fail to Validate an Integer Primitive Value Is a String
           given:
-            - The ValidatorInput content consists of valid AaC definitions
+            - The ValidatorInput content consists of AaC definitions
             - The ValidatorInput contains at least one definition field that is defined as being type `int`
             - The value in the primitive `int` field contains alphabetical letters or punctuation marks
           when:
