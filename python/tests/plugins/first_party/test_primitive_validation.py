@@ -2,8 +2,7 @@ from aac.lang.active_context_lifecycle_manager import get_active_context
 
 from aac.validate import validated_source
 from aac.io.constants import DEFINITION_SEPARATOR
-from aac.plugins.first_party.primitive_type_check.validators import int_validator
-from aac.plugins.first_party.primitive_type_check.validators import bool_validator
+from aac.plugins.first_party.primitive_type_check.validators import bool_validator, int_validator
 
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.assertion import assert_validator_result_success

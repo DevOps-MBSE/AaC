@@ -20,7 +20,7 @@ from tests.helpers.parsed_definitions import (
     create_field_entry,
     create_schema_ext_definition,
     create_validation_entry,
-    create_definition
+    create_definition,
 )
 
 
@@ -80,12 +80,30 @@ TEST_TYPES_SCHEMA_DEFINITION = create_schema_definition(
         SCHEMA_FIELD_BOOL,
         SCHEMA_FIELD_DATE,
         SCHEMA_FIELD_FILE,
-        SCHEMA_FIELD_REFERENCE
-    ]
+        SCHEMA_FIELD_REFERENCE,
+    ],
 )
 
 TEST_TYPES_ROOT_KEY = "primitive_tests"
 TEST_TYPES_SCHEMA_EXTENSION_FIELD = create_field_entry(TEST_TYPES_ROOT_KEY, TEST_TYPES_SCHEMA_DEFINITION.name)
-TEST_TYPES_SCHEMA_EXTENSION_DEFINITION = create_schema_ext_definition(f"{TEST_TYPES_SCHEMA_DEFINITION.name}Extension", DEFINITION_NAME_ROOT, fields=[TEST_TYPES_SCHEMA_EXTENSION_FIELD])
-TEST_TYPES_VALID_INSTANCE = create_definition(TEST_TYPES_ROOT_KEY, "validPrimitives", {SCHEMA_FIELD_INT.get("name"): 0})
-TEST_TYPES_INVALID_INSTANCE = create_definition(TEST_TYPES_ROOT_KEY, "invalidPrimitives", {SCHEMA_FIELD_INT.get("name"): 0.5})
+TEST_TYPES_SCHEMA_EXTENSION_DEFINITION = create_schema_ext_definition(
+    f"{TEST_TYPES_SCHEMA_DEFINITION.name}Extension",
+    DEFINITION_NAME_ROOT,
+    fields=[TEST_TYPES_SCHEMA_EXTENSION_FIELD],
+)
+TEST_TYPES_VALID_INSTANCE = create_definition(
+    TEST_TYPES_ROOT_KEY,
+    "validPrimitives",
+    {
+        SCHEMA_FIELD_INT.get("name"): 0,
+        SCHEMA_FIELD_BOOL.get("name"): "yes",
+    },
+)
+TEST_TYPES_INVALID_INSTANCE = create_definition(
+    TEST_TYPES_ROOT_KEY,
+    "invalidPrimitives",
+    {
+        SCHEMA_FIELD_INT.get("name"): 0.5,
+        SCHEMA_FIELD_BOOL.get("name"): "maybe",
+    },
+)
