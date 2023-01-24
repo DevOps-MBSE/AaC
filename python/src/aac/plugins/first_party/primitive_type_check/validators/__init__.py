@@ -12,7 +12,7 @@ from aac.lang.constants import (
 
 
 def _create_validator_name(enum_type: str) -> str:
-    return f"{enum_type}_enum_validator"
+    return f"{enum_type}_primitive_validator"
 
 
 plugin_name = "primitive-type-check"
