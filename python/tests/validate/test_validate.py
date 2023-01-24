@@ -1,7 +1,6 @@
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import MagicMock, patch
 from aac.validate._validate import _validate_definitions
 
-from aac.plugins.contributions.contribution_types.definition_validation_contribution import DefinitionValidationContribution
 from aac.io.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.constants import (
@@ -14,7 +13,6 @@ from aac.lang.constants import (
 )
 from aac.lang.definitions.lexeme import Lexeme
 from aac.lang.definitions.source_location import SourceLocation
-from aac.plugins.plugin import Plugin
 from aac.plugins.validators._validator_result import ValidatorFindings, ValidatorResult
 from aac.validate import ValidationError, validated_definitions, validated_source
 from tests.active_context_test_case import ActiveContextTestCase
@@ -23,6 +21,11 @@ from tests.helpers.parsed_definitions import (
     create_field_entry,
     create_schema_definition,
     create_schema_ext_definition,
+)
+from tests.helpers.prebuilt_definition_constants import (
+    ALL_PRIMITIVES_INSTANCE,
+    ALL_PRIMITIVES_TEST_DEFINITION,
+    ALL_PRIMITIVES_TEST_DEFINITION_SCHEMA_EXT,
 )
 
 
@@ -121,8 +124,9 @@ class TestValidate(ActiveContextTestCase):
 
             self.assertTrue(result.is_valid())
 
+
 class TestValidatePlugins(ActiveContextTestCase):
-    """TestSuite focused on specifically testing validate with relation to plugins"""
+    """TestSuite focused on specifically testing validate with relation to plugins."""
 
     def test_validate_definitions_with_invalid_multiple_exclusive_fields(self):
         test_field_entry = create_field_entry("TestField", PRIMITIVE_TYPE_STRING)
@@ -151,7 +155,11 @@ class TestValidatePlugins(ActiveContextTestCase):
         active_validations = [definition.get_validations() for definition in active_context.definitions]
         active_validations = [validation for validation in active_validations if validation and len(validation) > 0]
         active_validation_names = [validation.get("name") for validations in active_validations for validation in validations]
-        definition_validations = [validation for validation in active_context.get_definition_validations() if validation.name in active_validation_names]
+        definition_validations = [
+            validation
+            for validation in active_context.get_definition_validations()
+            if validation.name in active_validation_names
+        ]
         self.assertGreater(len(definition_validations), 0)
 
         for plugin in definition_validations:
@@ -170,21 +178,23 @@ class TestValidatePlugins(ActiveContextTestCase):
             raise RuntimeError("Validator exception.")
 
         active_context = get_active_context()
+        active_context.add_definitions_to_context([ALL_PRIMITIVES_TEST_DEFINITION, ALL_PRIMITIVES_TEST_DEFINITION_SCHEMA_EXT])
         primitive_validations = active_context.get_primitive_validations()
         self.assertGreater(len(primitive_validations), 0)
 
         for plugin in primitive_validations:
             plugin.validation_function = _throw_exception
 
-        validation_result = _validate_definitions([], active_context, True)
+        validation_result = _validate_definitions([ALL_PRIMITIVES_INSTANCE], active_context, False)
         self.assertGreater(len(validation_result.findings.findings), 0)
         findings_message = "\n".join([finding.message for finding in validation_result.findings.findings])
 
         for plugin in primitive_validations:
             self.assertIn(plugin.name, findings_message)
 
+
 class TestValidateExtensions(ActiveContextTestCase):
-    """TestSuite focused on specifically testing validate with relation to extensions"""
+    """TestSuite focused on specifically testing validate with relation to extensions."""
 
     def test_validate_definitions_with_invalid_root_extension(self):
         invalid_type = "InvalidType"

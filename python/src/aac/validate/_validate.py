@@ -221,8 +221,7 @@ def _validate_primitive_field(
         except Exception as exception:
             exception_message = f"Validator '{validator.name}' failed with an exception: {exception}"
             finding_location = FindingLocation(validator.name, source_def.source, 0, 0, 0, 0)
-            exception_finding = ValidatorFinding(source_def, FindingSeverity.ERROR, exception_message, finding_location)
-            validator_finding = ValidatorResult([source_def], ValidatorFindings(findings=[exception_finding]))
+            validator_finding = ValidatorFinding(source_def, FindingSeverity.ERROR, exception_message, finding_location)
     else:
         logging.info(f"No primitive type validation for '{field_type}'")
 
