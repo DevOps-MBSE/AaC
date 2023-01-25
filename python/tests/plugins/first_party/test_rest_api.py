@@ -16,6 +16,7 @@ from aac.lang.constants import (
     DEFINITION_FIELD_NAME,
     ROOT_KEY_MODEL,
 )
+from aac.lang.definitions.json_schema import get_definition_json_schema
 from aac.plugins.first_party.rest_api.aac_rest_app import app, refresh_available_files_in_workspace
 from aac.plugins.first_party.rest_api.models.command_model import CommandRequestModel
 from aac.plugins.first_party.rest_api.models.definition_model import to_definition_model
@@ -254,9 +255,26 @@ class TestAacRestApiDefinitionEndpoints(ActiveContextTestCase):
             self.assertEqual(HTTPStatus.OK, response.status_code)
             self.assertEqual(expected_response.get(DEFINITION_FIELD_NAME), actual_response.get(DEFINITION_FIELD_NAME))
             self.assertEqual(expected_response.get("source_uri"), actual_response.get("source_uri"))
+            self.assertIsNone(actual_response.get("json_schema"))
             successfully_found_definitions.append(actual_response)
 
         self.assertEqual(len(successfully_found_definitions), len(definitions_to_lookup))
+
+    def test_get_definition_by_name_with_schema(self):
+        active_context = get_active_context()
+        definition_to_lookup = get_aac_spec()[0]
+        successfully_found_definitions = []
+
+        response = self.test_client.get(f"/definition?name={definition_to_lookup.name}&include_json_schema=True")
+        actual_response = response.json()
+        expected_response = jsonable_encoder(to_definition_model(definition_to_lookup))
+        expected_response["json_schema"] = get_definition_json_schema(definition_to_lookup, active_context)
+        self.assertEqual(HTTPStatus.OK, response.status_code)
+        self.assertEqual(expected_response.get("name"), actual_response.get("name"))
+        self.assertEqual(expected_response.get("source_uri"), actual_response.get("source_uri"))
+        self.assertIsNotNone(actual_response.get("json_schema"))
+        self.assertEqual(expected_response.get("json_schema"), actual_response.get("json_schema"))
+        successfully_found_definitions.append(actual_response)
 
     def test_get_definition_by_name_not_found(self):
         fake_definition_name = "FakeModel"

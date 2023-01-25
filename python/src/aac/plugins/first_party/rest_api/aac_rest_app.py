@@ -10,6 +10,7 @@ from aac.io.files.find import find_aac_files, is_aac_file
 from aac.io.paths import sanitize_filesystem_path
 from aac.io.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_active_context
+from aac.lang.definitions.json_schema import get_definition_json_schema
 from aac.lang.language_error import LanguageError
 from aac.plugins.plugin_execution import PluginExecutionStatusCode
 from aac.plugins.first_party.rest_api.models.command_model import (
@@ -136,19 +137,25 @@ def get_definitions():
 
 
 @app.get("/definition", status_code=HTTPStatus.OK, response_model=DefinitionModel)
-def get_definition_by_name(name: str):
+def get_definition_by_name(name: str, include_json_schema: bool = False):
     """
     Returns a definition from active context by name, or HTTPStatus.NOT_FOUND not found if the definition doesn't exist.
 
     Returns:
         200 HTTPStatus.OK if successful.
     """
-    definition = get_active_context().get_definition_by_name(name)
+    active_context = get_active_context()
+    definition = active_context.get_definition_by_name(name)
 
     if not definition:
         _report_error_response(HTTPStatus.NOT_FOUND, f"Definition {name} not found in the context.")
     else:
-        return to_definition_model(definition)
+        definition_model = to_definition_model(definition)
+
+        if include_json_schema:
+            definition_model.json_schema = get_definition_json_schema(definition, active_context)
+
+        return definition_model
 
 
 @app.post("/definition", status_code=HTTPStatus.NO_CONTENT)
@@ -196,7 +203,9 @@ def update_definition(definition_model: DefinitionModel) -> None:
     definition_to_update = active_context.get_definition_by_name(definition_model.name)
 
     if definition_to_update:
-        active_context.update_definition_in_context(to_definition_class(definition_model))
+        updated_definition = to_definition_class(definition_model)
+        updated_definition.uid = definition_to_update.uid
+        active_context.update_definition_in_context(updated_definition)
         active_context.update_architecture_file(definition_to_update.source.uri)
 
         if definition_model.source_uri != definition_to_update.source.uri:
@@ -238,17 +247,23 @@ def get_aac_commands():
 
 @app.post("/command", status_code=HTTPStatus.OK, response_model=CommandResponseModel)
 def execute_aac_command(command_request: CommandRequestModel):
-    """Return a list of all available plugin commands."""
+    """Execute the command and return the result."""
     aac_commands_by_name = _get_rest_api_compatible_commands()
     aac_command = aac_commands_by_name.get(command_request.name)
 
     if aac_command is not None:
-        arguments = command_request.arguments
+        aac_command_argument_names = [arg.name for arg in aac_command.arguments]
+        arguments = [arg for arg in command_request.arguments if arg not in aac_command_argument_names]
 
-        result = aac_command.callback(*(arguments or []))
-        success = result.status_code == PluginExecutionStatusCode.SUCCESS
-        result_message = f"{result.name}: {result.status_code.name.lower()}\n\n{result.get_messages_as_string()}"
-        return CommandResponseModel(command_name=result.name, result_message=result_message, success=success)
+        try:
+            result = aac_command.callback(*(arguments or []))
+            success = result.status_code == PluginExecutionStatusCode.SUCCESS
+            result_message = f"{result.name}: {result.status_code.name.lower()}\n\n{result.get_messages_as_string()}"
+        except Exception as error:
+            success = False
+            result_message = f"{result.name}: failure\n\n{error}"
+        finally:
+            return CommandResponseModel(command_name=aac_command.name, result_message=result_message, success=success)
     else:
         _report_error_response(
             HTTPStatus.NOT_FOUND,
@@ -269,6 +284,15 @@ async def refresh_available_files_in_workspace() -> None:
     """Used to refresh the available files. Used in async since it takes too long for being used in request-response flow."""
     global AVAILABLE_AAC_FILES
     AVAILABLE_AAC_FILES = list(_get_available_files_in_workspace())
+
+    # Update the active context with any missing files
+    active_context = get_active_context()
+    files_in_context = {file.uri for file in active_context.get_files_in_context()}
+    available_files = {file.uri for file in AVAILABLE_AAC_FILES}
+    missing_files = available_files.difference(files_in_context)
+    definition_lists_from_missing_files = [parse(file_uri) for file_uri in missing_files]
+    definitions_to_add = {definition.name: definition for definition_list in definition_lists_from_missing_files for definition in definition_list}
+    active_context.add_definitions_to_context(list(definitions_to_add.values()))
 
 
 def _report_error_response(code: HTTPStatus, error: str):

@@ -45,19 +45,25 @@ jobs:
 
 
   os_test_matrix:
-    name: Test ${{ matrix.os }} Secure Install Air Gap
+    name: Test ${{ matrix.os }}/${{ matrix.py_version }} Secure Install Air Gap
     needs: os_build_matrix
     runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
         os: [ubuntu-20.04, ubuntu-latest, windows-latest, macos-latest] # Annoyingly, Github actions don't support anchors
+        py_version: ["3.9.0", "3.10.0", "3.11.0"]
+        exclude:
+          - os: ubuntu-latest
+            py_version: 3.9.0
+          - os: ubuntu-latest
+            py_version: 3.10.0
 
     steps:
       - name: Set up Python 3.9
         uses: actions/setup-python@v4
         with:
-          python-version: 3.9
+          python-version:  ${{ matrix.py_version }}
 
       - name: Checkout Repository # Checked-out repository is necessary to test the first party plugin generation.
         uses: actions/checkout@v3
@@ -70,14 +76,12 @@ jobs:
 
       - name: Install from Secure Install
         if: matrix.os != 'windows-latest'
-        # https://github.com/actions/upload-artifact/issues/38
         run: |
           chmod +x ./aac_secure_install_*/install_aac_air_gap.bash
           ./aac_secure_install_*/install_aac_air_gap.bash
 
       - name: Install from Secure Install
         if: matrix.os == 'windows-latest'
-        # https://github.com/actions/upload-artifact/issues/38
         run: |
           cd (Get-ChildItem -Filter aac_secure_install_*)
           .\install_aac_air_gap.bat

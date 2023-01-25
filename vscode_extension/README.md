@@ -20,6 +20,16 @@ Provides an AaC Language Server. See
 [here](https://jondavid-black.github.io/AaC/docs/vscode_extension/lsp_features) for more
 information.
 
+### Architecture-as-Code Language Server Protocol (LSP)
+The AaC VSCode extension integrates with the AaC python package to provide IDE language features for AaC files.
+
+### Visual Definition Editor
+The AaC VSCode extension can leverage the AaC python package's `rest-api` plugin to provide VSCode users with an in-IDE visual editor for AaC definitions.
+
+Before getting started, make sure that you have the AaC `rest-api` plugin running in your project directory.
+```bash
+aac rest-api --host <hostname|localhost> --port <8000>
+```
 
 ## Requirements
 
@@ -32,15 +42,15 @@ Once the `aac` package is installed, verify that the installation is working
 correctly by running `aac -h` in a terminal. If you are presented with a list of
 commands with accompanying descriptions, the installation was successful.
 
-## Extension Settings
-
-None yet.
-
 ## Known Issues
 
-None yet.
+The Visual Editor is in an early prototype mode, and so there are some issues such as a lack of feedback when a user saves a definition via the visual editor.
+
+YAML files do not automatically get imported, unlike AaC files.
 
 ## Release Notes
 
-### 0.0.1 Initial Pre-release
-*
+### 0.0.3 Early Prototype
+* Included an early version of the Visual Editor
+* Added LSP support for AaC files
+* Provided an initial walkthrough for users
