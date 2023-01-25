@@ -73,18 +73,17 @@ def get_symbol_range_at_position(content: str, line: int, column: int) -> Option
         on_symbol = not line_with_symbol[adjusted_column].isspace()
 
         if on_symbol:
-
             symbol_start = 0
             # Reversed range from the adjusted column to the 0 element in the line
             for i in range(adjusted_column, -1, -1):
-                if line_with_symbol[i].isspace():
+                if line_with_symbol[i] == ':':
                     break
 
                 symbol_start = i
 
             symbol_end = len(line_with_symbol)
             for i in range(adjusted_column, len(line_with_symbol)):
-                if line_with_symbol[i].isspace():
+                if line_with_symbol[i] == ':':
                     break
 
                 symbol_end = i

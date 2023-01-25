@@ -13,7 +13,7 @@ from tests.helpers.parsed_definitions import (
 )
 
 TEST_ENUM = create_enum_definition("Options", ["one", "two", "three"])
-TEST_SCHEMA_A = create_schema_definition("DataA", fields=[create_field_entry("msg", "string")])
+TEST_SCHEMA_A = create_schema_definition("Data A", fields=[create_field_entry("msg", "string")]) # Space in the name is specifically to test #390
 TEST_SCHEMA_B = create_schema_definition("DataB", fields=[create_field_entry("msg", "string")])
 TEST_SCHEMA_C = create_schema_definition("DataC", fields=[create_field_entry("msg", "string")])
 TEST_ROOT_SCHEMA = create_schema_definition("NewRootKeyStructure", fields=[create_field_entry("name", "string"), create_field_entry("test_enum", TEST_ENUM.name)])
