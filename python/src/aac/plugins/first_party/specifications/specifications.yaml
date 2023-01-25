@@ -36,7 +36,7 @@ ext:
 ---
 ext:
   name: addSpecTraceToModel
-  type: Model
+  type: model
   schemaExt:
     add:
       - name: requirements
