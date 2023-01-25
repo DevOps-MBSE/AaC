@@ -4,6 +4,7 @@ import logging
 from attr import Factory, attrib, attrs, validators
 from collections import OrderedDict
 from copy import deepcopy
+from os import remove
 from os.path import lexists
 from typing import Optional
 from uuid import UUID
@@ -13,7 +14,7 @@ from aac.cli.aac_command import AacCommand
 from aac.io.files.aac_file import AaCFile
 from aac.io.parser import parse
 from aac.io.paths import sanitize_filesystem_path
-from aac.io.writer import write_file
+from aac.io.writer import write_file, write_definitions_to_file
 from aac.lang.constants import (
     DEFINITION_FIELD_NAME,
     DEFINITION_NAME_PRIMITIVES,
@@ -215,17 +216,15 @@ class LanguageContext:
         Args:
             definition (Definition): The Definition to update in the context.
         """
-
-        if definition.uid in self.definitions_dictionary:
-            old_definition = self.definitions_dictionary.get(definition.uid)
-
+        old_definition = self.definitions_dictionary.get(definition.uid)
+        if old_definition:
             self.remove_definition_from_context(old_definition)
             self.add_definition_to_context(definition)
         else:
             definitions_in_context = self.get_defined_types()
-            logging.error(
-                f"Definition not present in context, can't be updated. '{definition.name}' not in '{definitions_in_context}'"
-            )
+            missing_target_definition = f"Definition not present in context, can't be updated. '{definition.name}' with uid '{definition.uid}' not present in '{definitions_in_context}'"
+            logging.error(missing_target_definition)
+            raise LanguageError(missing_target_definition)
 
     def update_definitions_in_context(self, definitions: list[Definition]):
         """
@@ -568,6 +567,26 @@ class LanguageContext:
             A list of all the files contributing definitions to the context.
         """
         return list({definition.source for definition in self.definitions})
+
+    def update_architecture_file(self, file_uri: str) -> None:
+        """
+        Overwrites the architecture file at the uri based on the content in the context and updates the definitions with their new source information.
+
+        If the architecture file would no longer contain definitions, the file will be removed.
+
+        Args:
+            file_uri (str): The source file URI to update.
+        """
+        sanitized_file_uri = sanitize_filesystem_path(file_uri)
+        definitions_in_file = self.get_definitions_by_file_uri(sanitized_file_uri)
+
+        if len(definitions_in_file) > 0:
+            write_definitions_to_file(definitions_in_file, sanitized_file_uri)
+            self.remove_definitions_from_context(definitions_in_file)
+            self.add_definitions_to_context(parse(sanitized_file_uri))
+        elif lexists(sanitized_file_uri):
+            logging.info(f"Deleting {sanitized_file_uri} since there are no definitions for the file in the context.")
+            remove(sanitized_file_uri)
 
     def get_file_in_context_by_uri(self, uri: str) -> Optional[AaCFile]:
         """
