@@ -21,7 +21,7 @@ def get_active_context(reload_context: bool = False) -> LanguageContext:
     """
     global ACTIVE_CONTEXT
 
-    if not ACTIVE_CONTEXT and not reload_context:
+    if False and not ACTIVE_CONTEXT and not reload_context: # Disabling persistence for performance reasons.
         ACTIVE_CONTEXT = LanguageContext()
         ACTIVE_CONTEXT.import_from_file(ACTIVE_CONTEXT_STATE_FILE_NAME)
 
