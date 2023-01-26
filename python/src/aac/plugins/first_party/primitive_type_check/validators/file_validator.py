@@ -1,12 +1,13 @@
 """Module for validating primitive file types."""
 
+from os.path import isfile, lexists
 from typing import Any, Optional
 
 from aac.lang.constants import PRIMITIVE_TYPE_FILE
 from aac.lang.definitions.definition import Definition
 from aac.plugins.contributions.contribution_types.primitive_validation_contribution import PrimitiveValidationContribution
 from aac.plugins.first_party.primitive_type_check.validators import FILE_VALIDATION_NAME
-from aac.plugins.validators._validator_finding import ValidatorFinding
+from aac.plugins.validators import FindingLocation, FindingSeverity, ValidatorFinding
 
 
 def get_validator() -> PrimitiveValidationContribution:
@@ -28,4 +29,13 @@ def validate_file(definition: Definition, value_to_validate: Any) -> Optional[Va
     Returns:
         A ValidatorFinding if the value is not file path that exists on the file system, or None.
     """
-    raise NotImplementedError("implement file primitive validator")
+    finding = None
+    is_valid = lexists(value_to_validate) and isfile(value_to_validate)
+    if not is_valid:
+        finding_message = f"{value_to_validate} does not exist or is not a file."
+        finding_location = FindingLocation.from_lexeme(
+            FILE_VALIDATION_NAME, definition.get_lexeme_with_value(str(value_to_validate))
+        )
+        finding = ValidatorFinding(definition, FindingSeverity.WARNING, finding_message, finding_location)
+
+    return finding

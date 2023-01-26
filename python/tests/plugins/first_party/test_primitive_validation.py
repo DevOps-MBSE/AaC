@@ -5,18 +5,20 @@ from tempfile import TemporaryDirectory
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.io.constants import DEFINITION_SEPARATOR
 from aac.plugins.first_party.primitive_type_check.validators import bool_validator, file_validator, int_validator
+from aac.plugins.validators import FindingSeverity
 from aac.validate import validated_source
 
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.assertion import assert_validator_result_success
 from tests.helpers.io import temporary_test_file, temporary_test_file_wo_cm
-from tests.helpers.parsed_definitions import create_definition
+from tests.helpers.parsed_definitions import create_definition, NAME_STRING
 from tests.helpers.prebuilt_definition_constants import (
     TEST_TYPES_SCHEMA_DEFINITION,
     TEST_TYPES_SCHEMA_EXTENSION_DEFINITION,
     TEST_TYPES_ROOT_KEY,
     SCHEMA_FIELD_INT,
     SCHEMA_FIELD_BOOL,
+    SCHEMA_FIELD_FILE,
     get_primitive_definition_values,
 )
 
@@ -149,3 +151,18 @@ class TestPrimitiveValidation(ActiveContextTestCase):
         with temporary_test_file("") as test_file:
             finding = self.FILE_VALIDATOR.validation_function(self.TEST_TYPES_VALID_INSTANCE, test_file.name)
             self.assertIsNone(finding)
+
+    def test_file_type_invalid(self):
+        test_context = get_active_context()
+        test_context.add_definitions_to_context([TEST_TYPES_SCHEMA_DEFINITION, TEST_TYPES_SCHEMA_EXTENSION_DEFINITION])
+
+        fake_file_name = "/nothing/here"
+        invalid_definition = create_definition(
+            TEST_TYPES_ROOT_KEY, "fileType", {SCHEMA_FIELD_FILE.get(NAME_STRING): fake_file_name}
+        )
+        finding = self.FILE_VALIDATOR.validation_function(invalid_definition, fake_file_name)
+        self.assertIsNotNone(finding)
+
+        self.assertEqual(finding.definition.name, invalid_definition.name)
+        self.assertEqual(finding.severity, FindingSeverity.WARNING)
+        self.assertRegexpMatches(finding.message, f"{fake_file_name}.*not.*exist")
