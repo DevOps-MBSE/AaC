@@ -1,5 +1,8 @@
 """Module for providing a consistent set of re-usable definitions for testing."""
+
 import copy
+from typing import Any
+
 from aac.plugins.validators import required_fields
 from aac.plugins.validators import defined_references
 from aac.lang.constants import (
@@ -16,11 +19,11 @@ from aac.lang.constants import (
 )
 
 from tests.helpers.parsed_definitions import (
+    NAME_STRING,
     create_schema_definition,
     create_field_entry,
     create_schema_ext_definition,
     create_validation_entry,
-    create_definition,
 )
 
 
@@ -91,19 +94,12 @@ TEST_TYPES_SCHEMA_EXTENSION_DEFINITION = create_schema_ext_definition(
     DEFINITION_NAME_ROOT,
     fields=[TEST_TYPES_SCHEMA_EXTENSION_FIELD],
 )
-TEST_TYPES_VALID_INSTANCE = create_definition(
-    TEST_TYPES_ROOT_KEY,
-    "validPrimitives",
-    {
-        SCHEMA_FIELD_INT.get("name"): 0,
-        SCHEMA_FIELD_BOOL.get("name"): True,
-    },
-)
-TEST_TYPES_INVALID_INSTANCE = create_definition(
-    TEST_TYPES_ROOT_KEY,
-    "invalidPrimitives",
-    {
-        SCHEMA_FIELD_INT.get("name"): 0.5,
-        SCHEMA_FIELD_BOOL.get("name"): "maybe",
-    },
-)
+
+
+def get_primitive_definition_values(int_value: Any, bool_value: Any, file_value: Any) -> dict[str, Any]:
+    """Return a definition instance with the specified primitive values."""
+    return {
+        SCHEMA_FIELD_INT.get(NAME_STRING): int_value,
+        SCHEMA_FIELD_BOOL.get(NAME_STRING): bool_value,
+        SCHEMA_FIELD_FILE.get(NAME_STRING): file_value,
+    }
