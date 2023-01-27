@@ -122,8 +122,8 @@ jobs:
           echo y | python -m aac gen-plugin model/plugin/plugin.yaml
           cd model/plugin/
           pip install .
-          aac activate-plugin test-plugin
           aac list-plugins --active | grep test-plugin
+          aac deactivate-plugin test-plugin
           pip uninstall -y test-plugin
 
       - name: Test Gen-Plugin Third-Party Plugin
@@ -132,8 +132,8 @@ jobs:
           echo y | python -m aac gen-plugin model/plugin/plugin.yaml
           cd model/plugin/
           pip install .
-          aac activate-plugin test-plugin
           aac list-plugins --active | findstr "test-plugin"
+          aac deactivate-plugin test-plugin
           pip uninstall -y test-plugin
 
       - name: Test Gen-Plugin First-Party Plugin
@@ -141,6 +141,7 @@ jobs:
           mkdir -p src/aac/plugins/first_party/test_plugin/
           cp model/plugin/plugin.yaml src/aac/plugins/first_party/test_plugin/first_party.yaml
           echo y | aac gen-plugin src/aac/plugins/first_party/test_plugin/first_party.yaml
+          aac deactivate-plugin test-plugin
           pip install .[all]
 
       - name: Upload logs from failed runs
