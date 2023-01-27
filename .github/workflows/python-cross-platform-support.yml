@@ -135,8 +135,11 @@ jobs:
           mkdir -p src/aac/plugins/first_party/test_plugin/
           cp model/plugin/plugin.yaml src/aac/plugins/first_party/test_plugin/first_party.yaml
           echo y | aac gen-plugin src/aac/plugins/first_party/test_plugin/first_party.yaml
-          aac deactivate-plugin test-plugin
           pip install .[all]
+          aac list-plugins --active | grep "test-plugin"
+          aac deactivate-plugin test-plugin
+        shell:
+          bash
 
       - name: Upload logs from failed runs
         if: ${{ failure() }}
