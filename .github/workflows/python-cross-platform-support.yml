@@ -119,16 +119,6 @@ jobs:
       - name: Test Gen-Plugin Third-Party Plugin
         if: matrix.os != 'windows-latest'
         run: |
-          echo y | python -m aac gen-plugin model/plugin/plugin.yaml
-          cd model/plugin/
-          pip install .
-          aac list-plugins --active | grep test-plugin
-          aac deactivate-plugin test-plugin
-          pip uninstall -y test-plugin
-
-      - name: Test Gen-Plugin Third-Party Plugin
-        if: matrix.os == 'windows-latest'
-        run: |
           mkdir -p src/aac/plugins/third_party_test/test_plugin/
           cp model/plugin/plugin.yaml model/third_party_test/plugin.yaml
           echo y | python -m aac gen-plugin model/third_party_test/plugin.yaml
@@ -137,6 +127,8 @@ jobs:
           aac list-plugins --active | findstr "test-plugin"
           aac deactivate-plugin test-plugin
           pip uninstall -y test-plugin
+        shell:
+          bash
 
       - name: Test Gen-Plugin First-Party Plugin
         run: |
