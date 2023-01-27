@@ -136,6 +136,7 @@ jobs:
           cp model/plugin/plugin.yaml src/aac/plugins/first_party/test_plugin/first_party.yaml
           echo y | aac gen-plugin src/aac/plugins/first_party/test_plugin/first_party.yaml
           pip install .
+          aac list-plugins --all
           aac list-plugins --active | grep "test-plugin"
           aac deactivate-plugin test-plugin
         shell:
