@@ -116,13 +116,6 @@ jobs:
       - name: Create PlantUML Component Diagram
         run: python -m aac puml-object model/flow/System.yaml output/
 
-      - name: Test Gen-Plugin First-Party Plugin
-        run: |
-          mkdir -p src/aac/plugins/first_party/test_plugin/
-          cp model/plugin/plugin.yaml src/aac/plugins/first_party/test_plugin/first_party.yaml
-          echo y | aac gen-plugin src/aac/plugins/first_party/test_plugin/first_party.yaml
-          pip install .[all]
-
       - name: Test Gen-Plugin Third-Party Plugin
         if: matrix.os != 'windows-latest'
         run: |
@@ -142,6 +135,13 @@ jobs:
           aac activate-plugin test-plugin
           aac list-plugins --active | findstr "test-plugin"
           pip uninstall -y test-plugin
+
+      - name: Test Gen-Plugin First-Party Plugin
+        run: |
+          mkdir -p src/aac/plugins/first_party/test_plugin/
+          cp model/plugin/plugin.yaml src/aac/plugins/first_party/test_plugin/first_party.yaml
+          echo y | aac gen-plugin src/aac/plugins/first_party/test_plugin/first_party.yaml
+          pip install .[all]
 
       - name: Upload logs from failed runs
         if: ${{ failure() }}
