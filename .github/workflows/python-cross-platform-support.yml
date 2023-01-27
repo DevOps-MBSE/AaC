@@ -58,6 +58,8 @@ jobs:
             py_version: 3.9.0
           - os: ubuntu-latest
             py_version: 3.10.0
+          - os: macos-latest
+            py_version: 3.11.0
 
     steps:
       - name: Set up Python 3.9
