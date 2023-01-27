@@ -217,6 +217,7 @@ def _get_files_to_process(arch_file_path: str) -> list[str]:
         for imp in root["import"]:
             arch_file_dir = path.dirname(path.realpath(arch_file_path))
             parse_path = path.join(arch_file_dir, imp.removeprefix(f".{path.sep}"))
-            files_to_import.update(_get_files_to_process(parse_path))
+            sanitized_path = sanitize_filesystem_path(parse_path)
+            files_to_import.update(_get_files_to_process(sanitized_path))
 
     return list(files_to_import)
