@@ -119,7 +119,7 @@ jobs:
       - name: Test Gen-Plugin Third-Party Plugin
         if: matrix.os != 'windows-latest'
         run: |
-          mkdir -p src/aac/plugins/third_party_test/test_plugin/
+          mkdir -p model/third_party_test/
           cp model/plugin/plugin.yaml model/third_party_test/plugin.yaml
           echo y | python -m aac gen-plugin model/third_party_test/plugin.yaml
           cd model/third_party_test/
