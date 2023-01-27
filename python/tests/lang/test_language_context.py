@@ -1,3 +1,4 @@
+from aac.io.parser import parse
 from aac.io.files.aac_file import AaCFile
 from aac.lang.active_context_lifecycle_manager import get_active_context, get_initialized_language_context
 from aac.lang.constants import (
@@ -7,14 +8,17 @@ from aac.lang.constants import (
     DEFINITION_FIELD_FIELDS,
     DEFINITION_FIELD_NAME,
     DEFINITION_FIELD_REQUIRED,
+    DEFINITION_FIELD_TYPE,
     DEFINITION_FIELD_VALUES,
     DEFINITION_NAME_PRIMITIVES,
+    PRIMITIVE_TYPE_DATE,
     PRIMITIVE_TYPE_STRING,
     ROOT_KEY_ENUM,
     ROOT_KEY_EXTENSION,
     ROOT_KEY_MODEL,
     ROOT_KEY_SCHEMA,
 )
+from aac.lang.definitions.collections import get_definition_by_name
 from aac.lang.language_context import LanguageContext
 from aac.lang.language_error import LanguageError
 from aac.spec import get_aac_spec, get_primitives, get_root_keys
@@ -27,6 +31,13 @@ from tests.helpers.parsed_definitions import (
     create_field_entry,
     create_schema_definition,
     create_schema_ext_definition,
+)
+from tests.helpers.prebuilt_definition_constants import (
+    TEST_DOCUMENT_CONTENT,
+    TEST_SCHEMA_A,
+    TEST_SCHEMA_B,
+    TEST_SERVICE_ONE,
+    TEST_SERVICE_TWO,
 )
 
 
@@ -48,13 +59,21 @@ class TestLanguageContext(ActiveContextTestCase):
         schema_ext_field_type = "ExtField"
         ext_field = create_field_entry(schema_ext_field_name, schema_ext_field_type)
         # Adding test_definition_field from the data definition above to simulate extending a definition with a duplicate value
-        test_definition_ext = create_schema_ext_definition(self.TEST_SCHEMA_EXT_DEFINITION_NAME, self.TEST_SCHEMA_DEFINITION_NAME, fields=[ext_field, test_definition_field])
+        test_definition_ext = create_schema_ext_definition(
+            self.TEST_SCHEMA_EXT_DEFINITION_NAME, self.TEST_SCHEMA_DEFINITION_NAME, fields=[ext_field, test_definition_field]
+        )
 
-        test_enum = create_enum_definition(self.TEST_ENUM_DEFINITION_NAME, [self.ENUM_VALUE_EXAMPLE_ONE, self.ENUM_VALUE_EXAMPLE_TWO])
+        test_enum = create_enum_definition(
+            self.TEST_ENUM_DEFINITION_NAME, [self.ENUM_VALUE_EXAMPLE_ONE, self.ENUM_VALUE_EXAMPLE_TWO]
+        )
 
         test_enum_ext_value = "extVal"
         # Adding self.ENUM_VALUE_EXAMPLE_ONE from the enum above to simulate extending an enum with a duplicate value
-        test_enum_ext = create_enum_ext_definition(self.TEST_ENUM_EXT_DEFINITION_NAME, self.TEST_ENUM_DEFINITION_NAME, values=[test_enum_ext_value, self.ENUM_VALUE_EXAMPLE_ONE])
+        test_enum_ext = create_enum_ext_definition(
+            self.TEST_ENUM_EXT_DEFINITION_NAME,
+            self.TEST_ENUM_DEFINITION_NAME,
+            values=[test_enum_ext_value, self.ENUM_VALUE_EXAMPLE_ONE],
+        )
 
         language_context = LanguageContext()
         self.assertEqual(0, len(language_context.definitions))
@@ -116,8 +135,17 @@ class TestLanguageContext(ActiveContextTestCase):
         target_enum_definition_name = DEFINITION_NAME_PRIMITIVES
         schema_extension_field_name = self.TEST_FIELD_DEFINITION_NAME
         schema_extension_field = create_field_entry(schema_extension_field_name, PRIMITIVE_TYPE_STRING)
-        test_schema_extension = create_schema_ext_definition(self.TEST_SCHEMA_EXT_DEFINITION_NAME, target_schema_definition_name, fields=[schema_extension_field], required=[schema_extension_field_name])
-        test_enum_extension = create_enum_ext_definition(self.TEST_ENUM_EXT_DEFINITION_NAME, target_enum_definition_name, values=[self.ENUM_VALUE_EXAMPLE_ONE, self.ENUM_VALUE_EXAMPLE_TWO])
+        test_schema_extension = create_schema_ext_definition(
+            self.TEST_SCHEMA_EXT_DEFINITION_NAME,
+            target_schema_definition_name,
+            fields=[schema_extension_field],
+            required=[schema_extension_field_name],
+        )
+        test_enum_extension = create_enum_ext_definition(
+            self.TEST_ENUM_EXT_DEFINITION_NAME,
+            target_enum_definition_name,
+            values=[self.ENUM_VALUE_EXAMPLE_ONE, self.ENUM_VALUE_EXAMPLE_TWO],
+        )
 
         language_context = get_initialized_language_context(core_spec_only=True)
         language_context.add_definitions_to_context([test_enum_extension, test_schema_extension])
@@ -129,7 +157,10 @@ class TestLanguageContext(ActiveContextTestCase):
         self.assertIn(self.ENUM_VALUE_EXAMPLE_ONE, extended_enum_values)
         self.assertIn(self.ENUM_VALUE_EXAMPLE_TWO, extended_enum_values)
 
-        extended_schema_field_names = [field.get(DEFINITION_FIELD_NAME) for field in extended_schema_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS)]
+        extended_schema_field_names = [
+            field.get(DEFINITION_FIELD_NAME)
+            for field in extended_schema_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS)
+        ]
         self.assertIn(schema_extension_field_name, extended_schema_field_names)
 
         language_context.remove_definitions_from_context([test_enum_extension, test_schema_extension])
@@ -140,7 +171,10 @@ class TestLanguageContext(ActiveContextTestCase):
         self.assertNotIn(self.ENUM_VALUE_EXAMPLE_ONE, unextended_enum_values)
         self.assertNotIn(self.ENUM_VALUE_EXAMPLE_TWO, unextended_enum_values)
 
-        unextended_schema_field_names = [field.get(DEFINITION_FIELD_NAME) for field in unextended_schema_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS)]
+        unextended_schema_field_names = [
+            field.get(DEFINITION_FIELD_NAME)
+            for field in unextended_schema_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS)
+        ]
         self.assertNotIn(schema_extension_field_name, unextended_schema_field_names)
 
     def test_update_extension_definition_in_context(self):
@@ -148,8 +182,17 @@ class TestLanguageContext(ActiveContextTestCase):
         target_enum_definition_name = DEFINITION_NAME_PRIMITIVES
         schema_extension_field_name = self.TEST_FIELD_DEFINITION_NAME
         schema_extension_field = create_field_entry(schema_extension_field_name, PRIMITIVE_TYPE_STRING)
-        test_schema_extension = create_schema_ext_definition(self.TEST_SCHEMA_EXT_DEFINITION_NAME, target_schema_definition_name, fields=[schema_extension_field], required=[schema_extension_field_name])
-        test_enum_extension = create_enum_ext_definition(self.TEST_ENUM_EXT_DEFINITION_NAME, target_enum_definition_name, values=[self.ENUM_VALUE_EXAMPLE_ONE, self.ENUM_VALUE_EXAMPLE_TWO])
+        test_schema_extension = create_schema_ext_definition(
+            self.TEST_SCHEMA_EXT_DEFINITION_NAME,
+            target_schema_definition_name,
+            fields=[schema_extension_field],
+            required=[schema_extension_field_name],
+        )
+        test_enum_extension = create_enum_ext_definition(
+            self.TEST_ENUM_EXT_DEFINITION_NAME,
+            target_enum_definition_name,
+            values=[self.ENUM_VALUE_EXAMPLE_ONE, self.ENUM_VALUE_EXAMPLE_TWO],
+        )
 
         language_context = get_initialized_language_context(core_spec_only=True)
         language_context.add_definitions_to_context([test_enum_extension, test_schema_extension])
@@ -161,17 +204,26 @@ class TestLanguageContext(ActiveContextTestCase):
         self.assertIn(self.ENUM_VALUE_EXAMPLE_ONE, extended_enum_values)
         self.assertIn(self.ENUM_VALUE_EXAMPLE_TWO, extended_enum_values)
 
-        extended_schema_field_names = [field.get(DEFINITION_FIELD_NAME) for field in extended_schema_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS)]
+        extended_schema_field_names = [
+            field.get(DEFINITION_FIELD_NAME)
+            for field in extended_schema_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS)
+        ]
         self.assertIn(schema_extension_field_name, extended_schema_field_names)
 
         # Remove self.ENUM_VALUE_EXAMPLE_TWO from the enum extension
-        test_enum_extension.structure[ROOT_KEY_EXTENSION][DEFINITION_FIELD_EXTENSION_ENUM][DEFINITION_FIELD_ADD].remove(self.ENUM_VALUE_EXAMPLE_TWO)
+        test_enum_extension.structure[ROOT_KEY_EXTENSION][DEFINITION_FIELD_EXTENSION_ENUM][DEFINITION_FIELD_ADD].remove(
+            self.ENUM_VALUE_EXAMPLE_TWO
+        )
 
         # Add an additional field
         additional_schema_extension_field_name = "Additionalfield"
         additional_schema_extension_field = create_field_entry(additional_schema_extension_field_name, PRIMITIVE_TYPE_STRING)
-        test_schema_extension.structure[ROOT_KEY_EXTENSION][DEFINITION_FIELD_EXTENSION_SCHEMA][DEFINITION_FIELD_ADD].append(additional_schema_extension_field)
-        test_schema_extension.structure[ROOT_KEY_EXTENSION][DEFINITION_FIELD_EXTENSION_SCHEMA][DEFINITION_FIELD_REQUIRED].append(additional_schema_extension_field_name)
+        test_schema_extension.structure[ROOT_KEY_EXTENSION][DEFINITION_FIELD_EXTENSION_SCHEMA][DEFINITION_FIELD_ADD].append(
+            additional_schema_extension_field
+        )
+        test_schema_extension.structure[ROOT_KEY_EXTENSION][DEFINITION_FIELD_EXTENSION_SCHEMA][
+            DEFINITION_FIELD_REQUIRED
+        ].append(additional_schema_extension_field_name)
 
         language_context.update_definitions_in_context([test_enum_extension, test_schema_extension])
         updated_schema_definition = language_context.get_definition_by_name(target_schema_definition_name)
@@ -180,7 +232,10 @@ class TestLanguageContext(ActiveContextTestCase):
         updated_enum_values = updated_enum_definition.get_values()
         self.assertNotIn(self.ENUM_VALUE_EXAMPLE_TWO, updated_enum_values)
 
-        updated_schema_field_names = [field.get(DEFINITION_FIELD_NAME) for field in updated_schema_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS)]
+        updated_schema_field_names = [
+            field.get(DEFINITION_FIELD_NAME)
+            for field in updated_schema_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS)
+        ]
         self.assertIn(additional_schema_extension_field_name, updated_schema_field_names)
 
     def test_get_primitives_with_unextended_context(self):
@@ -372,3 +427,63 @@ class TestLanguageContextPluginInterface(ActiveContextTestCase):
         invalid_plugin_name = "IDontExist"
         active_context.deactivate_plugin_by_name(invalid_plugin_name)
         self.assertEqual(initial_plugins_count, len(active_context.get_active_plugins()))
+
+
+class TestLanguageContextFileMethods(ActiveContextTestCase):
+    def test_language_context_write_file(self):
+        active_context = get_active_context()
+
+        with temporary_test_file(TEST_DOCUMENT_CONTENT) as test_file:
+            test_content_definitions = parse(test_file.name)
+            active_context.add_definitions_to_context(test_content_definitions)
+
+            # Assert test content is in the context
+            schema_a_definition = active_context.get_definition_by_name(TEST_SCHEMA_A.name)
+            schema_b_definition = active_context.get_definition_by_name(TEST_SCHEMA_B.name)
+            service_one_definition = active_context.get_definition_by_name(TEST_SERVICE_ONE.name)
+
+            self.assertEqual(3, len(test_content_definitions))
+            self.assertIsNotNone(schema_a_definition)
+            self.assertIsNotNone(schema_b_definition)
+            self.assertIsNotNone(service_one_definition)
+
+            # Update Schema A with a new field
+            schema_a_updated_field = create_field_entry("new_field", PRIMITIVE_TYPE_STRING)
+            schema_a_definition.get_fields().append(schema_a_updated_field)
+            active_context.update_definition_in_context(schema_a_definition)
+
+            # Update Schema B field type
+            schema_b_definition.get_fields()[0][DEFINITION_FIELD_TYPE] = PRIMITIVE_TYPE_DATE
+            active_context.update_definition_in_context(schema_a_definition)
+
+            # Remove Service One
+            active_context.remove_definition_from_context(service_one_definition)
+
+            # Add Service Two
+            service_two_definition = TEST_SERVICE_TWO.copy()
+            service_two_definition.source.uri = test_file.name
+            active_context.add_definition_to_context(service_two_definition)
+
+            # Write changes to file
+            active_context.update_architecture_file(test_file.name)
+
+            # Re-read file and assert changes are as expected.
+            updated_definitions = parse(test_file.name)
+            updated_schema_a_definition = get_definition_by_name(TEST_SCHEMA_A.name, updated_definitions)
+            updated_schema_b_definition = get_definition_by_name(TEST_SCHEMA_B.name, updated_definitions)
+            updated_service_one_definition = get_definition_by_name(TEST_SERVICE_ONE.name, updated_definitions)
+            updated_service_two_definition = get_definition_by_name(TEST_SERVICE_TWO.name, updated_definitions)
+
+            self.assertIsNotNone(updated_schema_a_definition)
+            self.assertIsNotNone(updated_schema_b_definition)
+            self.assertIsNone(updated_service_one_definition)
+            self.assertIsNotNone(updated_service_two_definition)
+
+            self.assertIn(schema_a_updated_field, updated_schema_a_definition.get_fields())
+            self.assertEqual(PRIMITIVE_TYPE_DATE, updated_schema_b_definition.get_fields()[0].get(DEFINITION_FIELD_TYPE))
+
+            # Assert Definition Order is Kept
+            self.assertEqual(3, len(updated_definitions))
+            self.assertEqual(updated_definitions[0].name, test_content_definitions[0].name)
+            self.assertEqual(updated_definitions[1].name, test_content_definitions[1].name)
+            self.assertEqual(updated_definitions[2].name, updated_service_two_definition.name)

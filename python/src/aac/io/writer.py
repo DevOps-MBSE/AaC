@@ -1,5 +1,5 @@
 """AaC Module for easy file writing."""
-
+import sys
 import logging
 from os import path, makedirs
 
@@ -45,7 +45,12 @@ def write_definitions_to_file(definitions: list[Definition], file_uri: str, is_u
         is_user_editable (bool): True if the AaC file can be edited by users.
     """
     def sort_definitions_by_lexeme_line(definition: Definition) -> int:
-        return -1 if not definition.lexemes else definition.lexemes[0].location.line
+        line = sys.maxsize
+
+        if definition.lexemes and definition.lexemes[0].source == file_uri:
+            line = definition.lexemes[0].location.line
+
+        return line
 
     definitions.sort(key=sort_definitions_by_lexeme_line)
 
