@@ -1,6 +1,7 @@
 from aac.lang.definitions.definition import Definition
 from aac.lang.language_context import LanguageContext
 from aac.lang.definitions.structure import get_substructures_by_type
+from aac.lang.definitions.search import search
 from aac.plugins.validators import ValidatorFindings, ValidatorResult
 
 
@@ -29,6 +30,16 @@ def validate_unique_ids(
 
     dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)
     if dicts_to_test:
-        print(f"Specification -> Validate Unique IDs on {definition_under_test.name} {target_schema_definition.name} {dicts_to_test}")
+        
+        spec_roots = language_context.get_definitions_by_root_key("spec")
+        global_ids = set()
+        for spec in spec_roots:
+            for id in search(spec.structure, ["spec", "requirements", "id"]):
+                if id in global_ids:
+                    findings.add_error_finding(
+                        definition_under_test, f"{id} is not a unique requirement id", UNIQUE_REQ_ID_VALIDATOR_NAME, definition_under_test.get_lexeme_with_value("id")
+                    )
+                else:
+                    global_ids.add(id)
 
     return ValidatorResult([definition_under_test], findings)

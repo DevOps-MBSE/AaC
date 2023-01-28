@@ -1,3 +1,6 @@
+import:
+  - SimpleMath_PIDS.yaml
+
 spec:
   name: Calculator System Spec
   description: This is a specification structure to test the spec plugin.
