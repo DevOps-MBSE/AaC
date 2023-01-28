@@ -1,6 +1,6 @@
 import:
-  - ./Power_SRS.yaml
-  - ./SquareRoot_SRS.yaml
+  - ./Calculator_SystemSpec.yaml
+
 spec:
   name: Complex Math PIDS
   description:  This is a representative Prime Item Development Specification for a subsystem called Complex Math.

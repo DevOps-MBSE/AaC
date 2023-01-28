@@ -1,6 +1,6 @@
 import:
-  - ./Add_SRS.yaml
-  - ./Subtract_SRS.yaml
+  - ./Calculator_SystemSpec.yaml
+
 spec:
   name:  Simple Math PIDS
   description:  This is a representative Prime Item Development Specification for a subsystem called Add-Simple Math.

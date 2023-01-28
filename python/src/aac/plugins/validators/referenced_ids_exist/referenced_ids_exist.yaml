@@ -1,0 +1,33 @@
+validation:
+  name: Referenced IDs exist
+  description: Verifies ids in a requirement reference exist within the context.
+  behavior:
+    - name: Verify that requirement references exist.
+      type: request-response
+      description:
+      input:
+        - name: input
+          type: ValidatorInput
+      output:
+        - name: results
+          type: ValidatorOutput
+      acceptance:
+        - scenario: Successfully Validate a requirement reference id exists
+          given:
+            - The ValidatorInput content consists of valid AaC definitions.
+            - The ValidatorInput contains some AaC fields that reference requirement ids.
+          when:
+            - The input is validation
+          then:
+            - The ValidatorOutput does not indicate any errors
+            - The ValidatorOutput does not indicate any warnings
+            - The ValidatorOutput indicates the definition under test is valid
+        - scenario: Fail to validate a definition's requirement reference fields
+          given:
+            - The ValidatorInput content consists of otherwise valid AaC definitions.
+            - The ValidatorInput contains at least one requirement reference id that does not exist.
+          when:
+            - The ValidatorInput is validated
+          then:
+            - The ValidatorOutput has errors
+            - The ValidatorOutput errors indicate that there are invalid requirement id references

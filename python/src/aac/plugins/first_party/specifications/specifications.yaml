@@ -2,22 +2,27 @@ model:
   name: specifications
   description: aac-spec is a Architecture-as-Code plugin that enables requirement definition and traceability in Architecture-as-Code models.
   behavior:
-    - name: spec-validate
+    - name: spec-csv
       type: command
-      description: Validates spec traces within the AaC model
+      description: Generates a comma separated value file (i.e. Excel file) listing requirements.
       input:
         - name: architecture-file
           type: file
           python_type: str
-          description:  The file to validate for spec cross-references.
+          description:  The file to convert into csv.
+        - name: output-directory
+          type: file
+          python_type: str
+          description: The directory where the csv file should be placed.
       acceptance:
-        - scenario: Valid spec traces are modeled.
+        - scenario: Valid spec is converted to csv.
           given:
             - The {{spec-validate.input.architecture-file}} contains a valid architecture specification.
           when:
-            - The aac app is run with the spec-validate command.
+            - The aac app is run with the spec-csv command.
           then:
-            - A message saying spec validation was successful is printed to the console.
+            - A message saying spec csv generation was successful is printed to the console.
+            - a csv file is generated.
 ---
 ext:
   name: addLoggingToBehaviorType
@@ -51,7 +56,7 @@ ext:
         type: RequirementReference
 ---
 ext:
-  name: addSpecTraceToData
+  name: addSpecTraceToSchema
   type: schema
   schemaExt:
     add:
@@ -111,6 +116,9 @@ schema:
       arguments:
         - id
         - shall
+    - name: Requirement ID is unique
+      arguments:
+        - id
 ---
 schema:
   name: RequirementAttribute
@@ -137,5 +145,8 @@ schema:
     - ids
   validation:
     - name: Required fields are present
+      arguments:
+        - ids
+    - name: Referenced IDs exist
       arguments:
         - ids

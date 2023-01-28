@@ -55,6 +55,8 @@ def get_plugin_manager() -> PluginManager:
         "reference_fields",
         "reference_targets",
         "unique_names",
+        "globally_unique_id",
+        "referenced_ids_exist",
     ]
 
     def register_plugin(plugin, package):
