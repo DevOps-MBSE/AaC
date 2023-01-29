@@ -232,19 +232,4 @@ def _get_files_to_process(arch_file_path: str) -> list[str]:
     Traverse the import path starting from the specified Arch-as-Code file and returns a list of
     all files referenced by the model.
     """
-    # files_to_import = {arch_file_path}
-    # content = _read_file_content(arch_file_path)
-    # roots = _parse_yaml(arch_file_path, content)
-    # roots_with_imports = [root for root in roots if "import" in root.keys()]
-
-    # print(f"arch_file_path = {arch_file_path}")
-
-    # for root in roots_with_imports:
-    #     for imp in root["import"]:
-    #         arch_file_dir = path.dirname(path.realpath(arch_file_path))
-    #         parse_path = path.join(arch_file_dir, imp.removeprefix(f".{path.sep}"))
-    #         sanitized_path = sanitize_filesystem_path(parse_path)
-    #         files_to_import.update(_get_files_to_process(sanitized_path))
-
-    # return list(files_to_import)
     return list(_recurse_imports(arch_file_path, set()))

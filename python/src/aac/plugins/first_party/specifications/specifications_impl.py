@@ -14,7 +14,9 @@ def spec_csv(architecture_file: str, output_directory: str) -> PluginExecutionRe
     Generate a csv requirements table from a specification definition.
 
     Args:
-        architecture_file (str): The file to validate for spec cross-references.
+        architecture_file (str): The file to process for spec content.
+
+        output_directory (str): The directory to write csv spec content.
     """
 
     def get_csv():
@@ -60,42 +62,31 @@ def _get_requirements(spec: Definition) -> list[dict]:
 
         # handle the spec root requirements
         for req in spec_dict["spec"]["requirements"]:
-            line = {}
-            line["Spec Name"] = spec_name
-            line["Section"] = " "
-            line["ID"] = req["id"]
-            line["Requirement"] = req["shall"]
-            parent_ids = ""
-            if "parent" in req.keys():
-                for parent_id in req["parent"]["ids"]:
-                    parent_ids = f"{parent_ids} {parent_id}"
-                line["Parents"] = parent_ids
-            child_ids = ""
-            if "child" in req.keys():
-                for child_id in req["child"]["ids"]:
-                    child_ids = f"{child_ids} {child_id}"
-            line["Children"] = child_ids
-            ret_val.append(line)
+            ret_val.append(_gen_spec_line_from_req_dict(spec_name, "", req))
 
         # handle the requirements in each section
         if "sections" in spec_dict["spec"].keys():
             for section in spec_dict["spec"]["sections"]:
                 section_name = section["name"]
                 for req in section["requirements"]:
-                    line = {}
-                    line["Spec Name"] = spec_name
-                    line["Section"] = section_name
-                    line["ID"] = req["id"]
-                    line["Requirement"] = req["shall"]
-                    parent_ids = ""
-                    if "parent" in req.keys():
-                        for parent_id in req["parent"]["ids"]:
-                            parent_ids = f"{parent_ids} {parent_id}"
-                        line["Parents"] = parent_ids
-                    child_ids = ""
-                    if "child" in req.keys():
-                        for child_id in req["child"]["ids"]:
-                            child_ids = f"{child_ids} {child_id}"
-                    line["Children"] = child_ids
-                    ret_val.append(line)
+                    ret_val.append(_gen_spec_line_from_req_dict(spec_name, section_name, req))
     return ret_val
+
+
+def _gen_spec_line_from_req_dict(spec_name: str, section_name: str, req: dict) -> dict:
+    line = {}
+    line["Spec Name"] = spec_name
+    line["Section"] = section_name
+    line["ID"] = req["id"]
+    line["Requirement"] = req["shall"]
+    parent_ids = ""
+    if "parent" in req.keys():
+        for parent_id in req["parent"]["ids"]:
+            parent_ids = f"{parent_ids} {parent_id}"
+        line["Parents"] = parent_ids
+    child_ids = ""
+    if "child" in req.keys():
+        for child_id in req["child"]["ids"]:
+            child_ids = f"{child_ids} {child_id}"
+    line["Children"] = child_ids
+    return line
