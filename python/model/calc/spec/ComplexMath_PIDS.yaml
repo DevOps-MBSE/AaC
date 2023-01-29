@@ -1,5 +1,7 @@
 import:
   - ./Calculator_SystemSpec.yaml
+  - ./SquareRoot_SRS.yaml
+  - ./Power_SRS.yaml
 
 spec:
   name: Complex Math PIDS
