@@ -30,6 +30,11 @@ def _get_plugin_commands():
             "The spec file to convert to csv.",
             "file",
         ),
+        AacCommandArgument(
+            "output-directory",
+            "Output directory for the CSV formatted spec file",
+            "directory",
+        ),
     ]
 
     plugin_commands = [

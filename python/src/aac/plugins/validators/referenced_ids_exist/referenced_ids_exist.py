@@ -1,4 +1,4 @@
-from typing import Set
+from typing import Set, Dict
 
 from aac.lang.definitions.definition import Definition
 from aac.lang.language_context import LanguageContext
@@ -9,6 +9,8 @@ from aac.plugins.validators import ValidatorFindings, ValidatorResult
 SPEC_REF_ID_VALIDATOR_NAME = "Referenced IDs exist"
 
 ALL_REQ_IDS: Set[str] = set()
+
+SPEC_REF_ERRORS: Dict[str, str] = {}
 
 
 def validate_referenced_ids(
@@ -37,9 +39,14 @@ def validate_referenced_ids(
         for req_dict in get_substructures_by_type(definition_under_test, target_schema_definition, language_context):
             for id in req_dict["ids"]:
                 if id not in ALL_REQ_IDS:
-                    findings.add_error_finding(
-                        definition_under_test, f"Referenced requirement '{id}' is not defined", SPEC_REF_ID_VALIDATOR_NAME, definition_under_test.get_lexeme_with_value(id)
-                    )
+                    err_msg = f"Referenced requirement '{id}' is not defined"
+                    if err_msg in SPEC_REF_ERRORS.keys() and SPEC_REF_ERRORS[err_msg] == definition_under_test.source.uri:
+                        pass  # this just prevents duplicate errors for the user
+                    else:
+                        SPEC_REF_ERRORS[err_msg] = definition_under_test.source.uri
+                        findings.add_error_finding(
+                            definition_under_test, err_msg, SPEC_REF_ID_VALIDATOR_NAME, definition_under_test.get_lexeme_with_value(id)
+                        )
 
     return ValidatorResult([definition_under_test], findings)
 

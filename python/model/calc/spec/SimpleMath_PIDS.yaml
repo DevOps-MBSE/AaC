@@ -12,6 +12,9 @@ spec:
       parent:
         ids:
           - "CALC-3"
+      child:
+        ids:
+          - "ADD-1"
       attributes:
         - name: TADI
           value: Test

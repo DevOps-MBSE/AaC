@@ -106,6 +106,8 @@ schema:
       type: string
     - name: parent
       type: RequirementReference
+    - name: child
+      type: RequirementReference
     - name: attributes
       type: RequirementAttribute[]
   required:
