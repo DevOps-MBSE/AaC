@@ -83,11 +83,17 @@ def _gen_spec_line_from_req_dict(spec_name: str, section_name: str, req: dict) -
     parent_ids = ""
     if "parent" in req.keys():
         for parent_id in req["parent"]["ids"]:
-            parent_ids = f"{parent_ids} {parent_id}"
+            if len(parent_ids) == 0:
+                parent_ids = f"{parent_id}"
+            else:
+                parent_ids = f"{parent_ids} {parent_id}"
         line["Parents"] = parent_ids
     child_ids = ""
     if "child" in req.keys():
         for child_id in req["child"]["ids"]:
-            child_ids = f"{child_ids} {child_id}"
+            if len(child_ids) == 0:
+                child_ids = f"{child_id}"
+            else:
+                child_ids = f"{child_ids} {child_id}"
     line["Children"] = child_ids
     return line
