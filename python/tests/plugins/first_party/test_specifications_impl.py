@@ -31,17 +31,17 @@ class TestSpecifications(ActiveContextTestCase):
             with open(os.path.join(temp_dir, "Subsystem.csv")) as subsystem_csv_file:
                 subsystem_csv_contents = subsystem_csv_file.read()
                 # Assert csv contents are present
-                self.assertIn('Spec Name, Section, ID, Requirement, Parents, Children', subsystem_csv_contents)
-                self.assertIn('Subsystem, , SUB-1, When receiving a message, the subsystem shall respond with a value., , ', subsystem_csv_contents)
-                self.assertIn('Subsystem, Other Requirements, SUB-2, Do things., , ', subsystem_csv_contents)
+                self.assertIn('Spec Name,Section,ID,Requirement,Parents,Children', subsystem_csv_contents)
+                self.assertIn('Subsystem,,SUB-1,When receiving a message, the subsystem shall respond with a value.,,', subsystem_csv_contents)
+                self.assertIn('Subsystem,Other Requirements,SUB-2,Do things.,,', subsystem_csv_contents)
 
             # Assert Module.csv contents
             with open(os.path.join(temp_dir, "Module.csv")) as module_csv_file:
                 module_csv_contents = module_csv_file.read()
                 # Assert csv contents are present
-                self.assertIn('Spec Name, Section, ID, Requirement, Parents, Children', module_csv_contents)
-                self.assertIn('Module, , MOD-1, When receiving a message, the module shall respond with a value., SUB-1, ', module_csv_contents)
-                self.assertIn('Module, , MOD-2, When receiving a message do things., SUB-2, ', module_csv_contents)
+                self.assertIn('Spec Name,Section,ID,Requirement,Parents,Children', module_csv_contents)
+                self.assertIn('Module,,MOD-1,When receiving a message, the module shall respond with a value.,SUB-1,', module_csv_contents)
+                self.assertIn('Module,,MOD-2,When receiving a message do things.,SUB-2,', module_csv_contents)
 
 
 VALID_SPEC = """
