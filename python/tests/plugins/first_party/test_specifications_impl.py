@@ -30,6 +30,7 @@ class TestSpecifications(ActiveContextTestCase):
             # Assert Subsystem.csv contents
             with open(os.path.join(temp_dir, "Subsystem.csv")) as subsystem_csv_file:
                 subsystem_csv_contents = subsystem_csv_file.read()
+                subsystem_csv_contents = subsystem_csv_contents.replace("\"", "")  # it's not clear what does and doesn't get quoted by the CSV writer, so eliminate quotes
                 # Assert csv contents are present
                 self.assertIn('Spec Name,Section,ID,Requirement,Parents,Children', subsystem_csv_contents)
                 self.assertIn('Subsystem,,SUB-1,When receiving a message, the subsystem shall respond with a value.,,', subsystem_csv_contents)
@@ -38,6 +39,7 @@ class TestSpecifications(ActiveContextTestCase):
             # Assert Module.csv contents
             with open(os.path.join(temp_dir, "Module.csv")) as module_csv_file:
                 module_csv_contents = module_csv_file.read()
+                module_csv_contents = module_csv_contents.replace("\"", "")  # it's not clear what does and doesn't get quoted by the CSV writer, so eliminate quotes
                 # Assert csv contents are present
                 self.assertIn('Spec Name,Section,ID,Requirement,Parents,Children', module_csv_contents)
                 self.assertIn('Module,,MOD-1,When receiving a message, the module shall respond with a value.,SUB-1,', module_csv_contents)
