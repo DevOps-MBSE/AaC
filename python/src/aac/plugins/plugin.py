@@ -10,8 +10,7 @@ from aac.plugins.contributions.contribution_types import DefinitionValidationCon
 @attrs(hash=False, eq=False)
 class Plugin:
     """
-    Provides a consistent data model for AaC Plugins, and it exposes the plugins' contribution points. These
-        contribution points are used to add features and functionality to the AaC plugins.
+    Provides a consistent data model for AaC Plugins, and it exposes the plugins' contribution points which are used to add features and functionality to the AaC plugins.
 
     Plugins must be told what content they have/provide such as definitions (schemas, extensions, etc),
     AaC commands (validate, gen-plugin, etc), or validation (definitions, primitives). If the content isn't
@@ -81,8 +80,7 @@ class Plugin:
 
     def register_definitions(self, definitions: list[Definition]):
         """
-        Registers definitions for the plugin to provide. Definitions here will be added to the context when
-            the plugin is active.
+        Registers definitions for the plugin to provide. Definitions here will be added to the context when the plugin is active.
 
         Args:
             definitions (list[Definition]): A list of Definition data structures that are provided

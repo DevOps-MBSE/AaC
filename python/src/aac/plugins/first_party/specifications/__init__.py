@@ -59,9 +59,17 @@ def _get_plugin_commands():
 def _get_plugin_definitions() -> list[Definition]:
     return get_plugin_definitions_from_yaml(__package__, "specifications.yaml")
 
+
 def _get_validations(plugin_definitions: list[Definition]) -> list[DefinitionValidationContribution]:
     global_id_validation_definition = get_definition_by_name("Requirement ID is unique", plugin_definitions)
     id_exists_validation_definition = get_definition_by_name("Referenced IDs exist", plugin_definitions)
-    global_id_validation = DefinitionValidationContribution(global_id_validation_definition.name, global_id_validation_definition, validate_unique_ids)
-    id_exists_validation = DefinitionValidationContribution(id_exists_validation_definition.name, id_exists_validation_definition, validate_referenced_ids)
-    return [global_id_validation, id_exists_validation]
+
+    validations = []
+    if global_id_validation_definition and id_exists_validation_definition:
+        global_id_validation = DefinitionValidationContribution(global_id_validation_definition.name, global_id_validation_definition, validate_unique_ids)
+        id_exists_validation = DefinitionValidationContribution(id_exists_validation_definition.name, id_exists_validation_definition, validate_referenced_ids)
+        validations = [global_id_validation, id_exists_validation]
+    else:
+        logging.error("Failed to source expected specification validation definitions.")
+
+    return validations
