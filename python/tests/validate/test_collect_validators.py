@@ -26,9 +26,9 @@ class TestCollectValidators(ActiveContextTestCase):
 
         # get validations from types we know to have assigned validators
         expected_validations = self.get_unique_validations(
-            active_context.get_definition_by_name("schema").get_validations() +
-            active_context.get_definition_by_name("Field").get_validations() +
-            active_context.get_definition_by_name("Requirement").get_validations())
+            active_context.get_definition_by_name("schema").get_validations()
+            + active_context.get_definition_by_name("Field").get_validations()
+            + active_context.get_definition_by_name("Requirement").get_validations())
 
         actual_result = get_applicable_validators_for_definition(test_definition, validation_plugins, active_context)
 
@@ -43,9 +43,9 @@ class TestCollectValidators(ActiveContextTestCase):
 
         # get validations from types we know to have assigned validators
         expected_validations = self.get_unique_validations(
-            active_context.get_definition_by_name("schema").get_validations() +
-            active_context.get_definition_by_name("Field").get_validations() +
-            active_context.get_definition_by_name("Requirement").get_validations())
+            active_context.get_definition_by_name("schema").get_validations()
+            + active_context.get_definition_by_name("Field").get_validations()
+            + active_context.get_definition_by_name("Requirement").get_validations())
 
         actual_result = get_applicable_validators_for_definition(test_definition, validation_plugins, active_context)
 
@@ -60,10 +60,10 @@ class TestCollectValidators(ActiveContextTestCase):
 
         # get validations from types we know to have assigned validators
         expected_validations = self.get_unique_validations(
-            active_context.get_definition_by_name("schema").get_validations() +
-            active_context.get_definition_by_name("Field").get_validations() +
-            active_context.get_definition_by_name("model").get_validations() +
-            active_context.get_definition_by_name("Requirement").get_validations())
+            active_context.get_definition_by_name("schema").get_validations()
+            + active_context.get_definition_by_name("Field").get_validations()
+            + active_context.get_definition_by_name("model").get_validations()
+            + active_context.get_definition_by_name("Requirement").get_validations())
 
         actual_result = get_applicable_validators_for_definition(test_definition, validation_plugins, active_context)
 
