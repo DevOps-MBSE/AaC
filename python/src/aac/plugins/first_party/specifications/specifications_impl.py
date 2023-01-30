@@ -1,6 +1,7 @@
 """AaC Plugin implementation module for the aac-spec plugin."""
 import csv
 import os.path
+from typing import List
 
 from aac.lang.definitions.definition import Definition
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
@@ -48,13 +49,13 @@ def spec_csv(architecture_file: str, output_directory: str) -> PluginExecutionRe
         return result
 
 
-def _get_parsed_models(architecture_file: str) -> list[Definition]:
+def _get_parsed_models(architecture_file: str) -> List[Definition]:
     with validated_source(architecture_file) as result:
         return result.definitions if isinstance(result.definitions, list) else [result.definitions]
 
 
-def _get_requirements(spec: Definition) -> list[dict]:
-    ret_val: list[dict] = []
+def _get_requirements(spec: Definition) -> List[dict]:
+    ret_val: List[dict] = []
     if spec.get_root_key() in ["spec"]:  # make sure we're actually working with a spec here
         # collect data
         spec_dict: dict = spec.structure
