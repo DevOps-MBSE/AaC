@@ -2,9 +2,13 @@
 import logging
 
 from aac.cli.aac_command import AacCommand, AacCommandArgument
+from aac.lang.definitions.collections import get_definition_by_name
+from aac.lang.definitions.definition import Definition
 from aac.plugins import hookimpl
-from aac.plugins.plugin import Plugin
+from aac.plugins.plugin import Plugin, DefinitionValidationContribution
 from aac.plugins.first_party.specifications.specifications_impl import plugin_name, spec_csv
+from aac.plugins.first_party.specifications.globally_unique_id import validate_unique_ids
+from aac.plugins.first_party.specifications.referenced_ids_exist import validate_referenced_ids
 from aac.plugins._common import get_plugin_definitions_from_yaml
 
 
@@ -17,9 +21,12 @@ def get_plugin() -> Plugin:
         A collection of information about the plugin and what it contributes.
     """
     plugin = Plugin(plugin_name)
+    plugin_definitions = _get_plugin_definitions()
     plugin.register_commands(_get_plugin_commands())
-    plugin.register_definitions(_get_plugin_definitions())
-    logging.warn("Spec plugin created.")
+    plugin.register_definitions(plugin_definitions)
+    plugin.register_definition_validations(_get_validations(plugin_definitions))
+    logging.info("Spec plugin created.")
+
     return plugin
 
 
@@ -49,5 +56,12 @@ def _get_plugin_commands():
     return plugin_commands
 
 
-def _get_plugin_definitions():
+def _get_plugin_definitions() -> list[Definition]:
     return get_plugin_definitions_from_yaml(__package__, "specifications.yaml")
+
+def _get_validations(plugin_definitions: list[Definition]) -> list[DefinitionValidationContribution]:
+    global_id_validation_definition = get_definition_by_name("Requirement ID is unique", plugin_definitions)
+    id_exists_validation_definition = get_definition_by_name("Referenced IDs exist", plugin_definitions)
+    global_id_validation = DefinitionValidationContribution(global_id_validation_definition.name, global_id_validation_definition, validate_unique_ids)
+    id_exists_validation = DefinitionValidationContribution(id_exists_validation_definition.name, id_exists_validation_definition, validate_referenced_ids)
+    return [global_id_validation, id_exists_validation]
