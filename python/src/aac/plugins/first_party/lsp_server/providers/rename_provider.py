@@ -108,17 +108,10 @@ class RenameProvider(LspProvider):
         definitions_to_alter = [*definition_references, definition_to_find]
 
         for definition in _filter_editable_definitions(definitions_to_alter):
-
-            def filter_lexeme_by_reference_name(lexeme: Lexeme) -> bool:
-                return remove_list_type_indicator(lexeme.value) == definition_to_find.name
-
-            reference_lexemes = filter(filter_lexeme_by_reference_name, definition.lexemes)
-
-            for lexeme_to_replace in reference_lexemes:
-                document_edits = edits.get(lexeme_to_replace.source, [])
-                replacement_range = get_location_from_lexeme(lexeme_to_replace).range
-                document_edits.append(TextEdit(range=replacement_range, new_text=new_name))
-                edits[str(lexeme_to_replace.source)] = document_edits
+            reference_lexemes = [
+                lexeme for lexeme in definition.lexemes if remove_list_type_indicator(lexeme.value) == definition_to_find.name
+            ]
+            edits.update(self._get_edits_from_lexemes(new_name, reference_lexemes))
 
         return edits
 
@@ -131,12 +124,10 @@ class RenameProvider(LspProvider):
         enum_references_to_alter = [*enum_references, definition_to_find]
 
         for definition in _filter_editable_definitions(enum_references_to_alter):
-            reference_lexemes = [lexeme for lexeme in definition.lexemes if remove_list_type_indicator(lexeme.value) == old_value]
-            for lexeme_to_replace in reference_lexemes:
-                document_edits = edits.get(lexeme_to_replace.source, [])
-                replacement_range = get_location_from_lexeme(lexeme_to_replace).range
-                document_edits.append(TextEdit(range=replacement_range, new_text=new_value))
-                edits[str(lexeme_to_replace.source)] = document_edits
+            reference_lexemes = [
+                lexeme for lexeme in definition.lexemes if remove_list_type_indicator(lexeme.value) == old_value
+            ]
+            edits.update(self._get_edits_from_lexemes(new_value, reference_lexemes))
 
         return edits
 
@@ -151,12 +142,22 @@ class RenameProvider(LspProvider):
         definitions_to_alter = [*definitions_with_root_key, *root_key_references, definition_to_find]
 
         for definition in _filter_editable_definitions(definitions_to_alter):
-            reference_lexemes = [lexeme for lexeme in definition.lexemes if remove_list_type_indicator(lexeme.value) == old_value]
-            for lexeme_to_replace in reference_lexemes:
-                document_edits = edits.get(lexeme_to_replace.source, [])
-                replacement_range = get_location_from_lexeme(lexeme_to_replace).range
-                document_edits.append(TextEdit(range=replacement_range, new_text=new_value))
-                edits[str(lexeme_to_replace.source)] = document_edits
+            reference_lexemes = [
+                lexeme for lexeme in definition.lexemes if remove_list_type_indicator(lexeme.value) == old_value
+            ]
+            edits.update(self._get_edits_from_lexemes(new_value, reference_lexemes))
+
+        return edits
+
+
+    def _get_edits_from_lexemes(self, new_value: str, reference_lexemes: list[Lexeme]) -> dict:
+        edits: dict = {}
+
+        for lexeme_to_replace in reference_lexemes:
+            document_edits = edits.get(lexeme_to_replace.source, [])
+            replacement_range = get_location_from_lexeme(lexeme_to_replace).range
+            document_edits.append(TextEdit(range=replacement_range, new_text=new_value))
+            edits[str(lexeme_to_replace.source)] = document_edits
 
         return edits
 
