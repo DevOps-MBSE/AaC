@@ -1,6 +1,6 @@
 """AaC Plugin implementation module for the aac-spec plugin."""
 import csv
-import os.path
+from os import path, makedirs
 from typing import List
 
 from aac.lang.definitions.definition import Definition
@@ -29,14 +29,14 @@ def spec_csv(architecture_file: str, output_directory: str) -> PluginExecutionRe
         field_names = ["Spec Name", "Section", "ID", "Requirement", "Parents", "Children"]
 
         # just in case, let's make sure the output directory exists
-        if not os.path.exists(output_directory):
-            os.mkdir(output_directory)
+        if not path.lexists(output_directory):
+            makedirs(output_directory)
 
         file_counter = 0
         for spec_name in reqs.keys():
             file_name = spec_name + ".csv"
             file_name = file_name.replace(" ", "_")
-            output_path = os.path.join(output_directory, file_name)
+            output_path = path.join(output_directory, file_name)
             with open(output_path, 'w') as output:
                 writer = csv.DictWriter(output, fieldnames=field_names)
                 writer.writeheader()
@@ -51,7 +51,7 @@ def spec_csv(architecture_file: str, output_directory: str) -> PluginExecutionRe
 
 def _get_parsed_models(architecture_file: str) -> List[Definition]:
     with validated_source(architecture_file) as result:
-        return result.definitions if isinstance(result.definitions, list) else [result.definitions]
+        return result.definitions
 
 
 def _get_requirements(spec: Definition) -> List[dict]:
