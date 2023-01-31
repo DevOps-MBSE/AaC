@@ -20,6 +20,9 @@ cd $install_dir
 pip wheel ../../
 pip-compile --generate-hashes ../../setup.py
 mv ../../requirements.txt .
+pip download --python-version 3.9 -r requirements.txt -d . --no-deps
+pip download --python-version 3.10 -r requirements.txt -d . --no-deps
+pip download --python-version 3.11 -r requirements.txt -d . --no-deps
 pip hash aac-*.whl | sed -r "s/l:/l \\\/g" | sed -r "s/--hash/    --hash/g" >> requirements.txt # This will only work for the main-branch pipeline that is deploying the artifact to PyPI
 
 echo "$install_dir" > ../install_dir_name.txt

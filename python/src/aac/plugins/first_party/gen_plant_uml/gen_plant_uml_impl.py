@@ -11,7 +11,7 @@ from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 from aac.validate import validated_source
 from aac.templates.engine import generate_templates, load_templates, write_generated_templates_to_file
 
-plugin_name = "gen_plant_uml"
+plugin_name = "gen-plant-uml"
 PLANT_UML_FILE_EXTENSION = ".puml"
 COMPONENT_STRING = "component"
 OBJECT_STRING = "object"

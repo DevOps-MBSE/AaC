@@ -11,9 +11,11 @@ class DefinitionModel(BaseModel):
     """REST API Model for the Definition class."""
     uid: Optional[UUID]
     name: str
+    is_user_editable: Optional[bool]
     content: Optional[str]
     source_uri: str
     structure: dict
+    json_schema: Optional[dict]
 
 
 def to_definition_model(definition: Definition) -> DefinitionModel:
@@ -21,6 +23,7 @@ def to_definition_model(definition: Definition) -> DefinitionModel:
     return DefinitionModel(
         uid=definition.uid,
         name=definition.name,
+        is_user_editable=definition.source.is_user_editable,
         content=definition.content,
         source_uri=definition.source.uri,
         structure=definition.structure,

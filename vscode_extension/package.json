@@ -3,7 +3,7 @@
     "publisher": "Arch-as-Code",
     "displayName": "Architecture As Code",
     "description": "A distinctly different take on Model-Based System Engineering (MBSE) that allows a system modeler to define a system in simple yaml",
-    "version": "0.0.2",
+    "version": "0.0.4",
     "engines": {
         "vscode": "^1.60.0"
     },
@@ -31,22 +31,34 @@
                         "id": "aac-path",
                         "title": "AaC Path",
                         "description": "This step will configure the path to the `aac` tool that will be used by the extension.\n[Set AaC Path](command:aac.changeAacPath)",
-                        "media": {"markdown": "media/aac-path.md"},
-                        "completionEvents": ["onSettingChanged:aac.aacPath"]
+                        "media": {
+                            "markdown": "media/aac-path.md"
+                        },
+                        "completionEvents": [
+                            "onSettingChanged:aac.aacPath"
+                        ]
                     },
                     {
                         "id": "view-docs",
                         "title": "View AaC Documentation",
                         "description": "Bookmark and read through the AaC documentation.\n[Open documentation](https://jondavid-black.github.io/AaC)",
-                        "media": {"markdown": "media/view-docs.md"},
-                        "completionEvents": ["onLink:https://jondavid-black.github.io/AaC"]
+                        "media": {
+                            "markdown": "media/view-docs.md"
+                        },
+                        "completionEvents": [
+                            "onLink:https://jondavid-black.github.io/AaC"
+                        ]
                     },
                     {
                         "id": "exec-aac-command",
                         "title": "Execute an AaC command",
                         "description": "Execute your first AaC command via the extension.\n[Execute an AaC Command](command:aac.execute)",
-                        "media": {"markdown": "media/aac-command.md"},
-                        "completionEvents": ["onCommand:aac.execute"]
+                        "media": {
+                            "markdown": "media/aac-command.md"
+                        },
+                        "completionEvents": [
+                            "onCommand:aac.execute"
+                        ]
                     }
                 ]
             }
@@ -85,6 +97,21 @@
                     "maximum": 65535,
                     "default": 5007,
                     "description": "The port to use for establishing a TCP connection with the LSP server."
+                },
+                "aac.rest_api.host": {
+                    "scope": "machine-overridable",
+                    "type": "string",
+                    "pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
+                    "default": "127.0.0.1",
+                    "description": "The host to use for establishing a connection to an AaC RESTful server."
+                },
+                "aac.rest_api.port": {
+                    "scope": "machine-overridable",
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 65535,
+                    "default": 8080,
+                    "description": "The port to use for establishing a connection to an AaC RESTful server."
                 }
             }
         },
@@ -93,6 +120,30 @@
                 "command": "aac.execute",
                 "title": "Execute AaC Command",
                 "category": "AaC"
+            },
+            {
+                "command": "definitionsList.editEntry",
+                "title": "Edit",
+                "icon": {
+                    "light": "src/resources/light/edit.svg",
+                    "dark": "src/resources/dark/edit.svg"
+                }
+            },
+            {
+                "command": "definitionsList.deleteEntry",
+                "title": "Delete",
+                "icon": {
+                    "light": "src/resources/light/delete.svg",
+                    "dark": "src/resources/dark/delete.svg"
+                }
+            },
+            {
+                "command": "definitionsList.refreshEntry",
+                "title": "Refresh",
+                "icon": {
+                    "light": "src/resources/light/refresh.svg",
+                    "dark": "src/resources/dark/refresh.svg"
+                }
             }
         ],
         "languages": [
@@ -115,9 +166,61 @@
                 "language": "aac",
                 "scopeName": "injection.aac.keywords",
                 "path": "./syntaxes/keywords.tmLanguage.plist",
-                "injectTo": ["source.yaml"]
+                "injectTo": [
+                    "source.yaml"
+                ]
             }
-        ]
+        ],
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "aac-visual-editor",
+                    "title": "AaC Visual Explorer",
+                    "icon": "src/resources/tablet-draw.svg"
+                }
+            ]
+        },
+        "views": {
+            "aac-visual-editor": [
+                {
+                    "id": "definitions-in-context",
+                    "name": "Definitions in the Active Context"
+                }
+            ]
+        },
+        "customEditors": [
+            {
+                "viewType": "aac.visualEditor",
+                "displayName": "Edit AaC Definitions",
+                "selector": [
+                    {
+                        "filenamePattern": "*.aac"
+                    }
+                ],
+                "priority": "default"
+            }
+        ],
+        "menus": {
+            "view/title": [
+                {
+                    "command": "definitionsList.refreshEntry",
+                    "when": "view == definitions-in-context",
+                    "group": "navigation"
+                }
+            ],
+            "view/item/context": [
+                {
+                    "command": "definitionsList.editEntry",
+                    "when": "view == definitions-in-context",
+                    "group": "inline"
+                },
+                {
+                    "command": "definitionsList.deleteEntry",
+                    "when": "view == definitions-in-context",
+                    "group": "inline"
+                }
+            ]
+        }
     },
     "extensionKind": [
         "ui",
@@ -130,12 +233,15 @@
         "pretest": "yarn run compile && yarn run lint",
         "lint": "eslint src --ext ts",
         "test": "node ./out/test/runTest.js",
-        "package": "vsce package --yarn -o aac.vsix"
+        "package": "vsce package --yarn -o aac.vsix",
+        "generate:rest_api": "yarn openapi-generator-cli generate -i AaC_OpenAPI_Schema.json -o src/requests/generated/aac_rest_api -g typescript-node"
     },
     "devDependencies": {
+        "@openapitools/openapi-generator-cli": "^2.5.1",
         "@types/glob": "^7.2.0",
         "@types/mocha": "^9.0.0",
         "@types/node": "14.x",
+        "@types/request": "^2.48.8",
         "@types/sinon": "^10.0.11",
         "@types/vscode": "^1.60.0",
         "@typescript-eslint/eslint-plugin": "^5.10.1",
@@ -151,6 +257,8 @@
         "vsce": "^2.6.4"
     },
     "dependencies": {
+        "@json-editor/json-editor": "^2.8.0",
+        "request": "^2.88.2",
         "vscode-languageclient": "^7.0.0"
     }
 }

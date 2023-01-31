@@ -1,91 +1,99 @@
 """AaC Plugin implementation module for the aac-spec plugin."""
+import csv
+from os import path, makedirs
+from typing import List
 
-from aac.lang.definitions.collections import convert_parsed_definitions_to_dict_definition, get_models_by_type
-from aac.lang.definitions.search import search
-from aac.plugins import PluginError
+from aac.lang.definitions.definition import Definition
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 from aac.validate import validated_source
 
 plugin_name = "specification"
 
 
-def spec_validate(architecture_file: str) -> PluginExecutionResult:
+def spec_csv(architecture_file: str, output_directory: str) -> PluginExecutionResult:
     """
-    Validate spec traces within the AaC model.
+    Generate a csv requirements table from a specification definition.
 
     Args:
-        architecture_file (str): The file to validate for spec cross-references.
+        architecture_file (str): The file to process for spec content.
+
+        output_directory (str): The directory to write csv spec content.
     """
 
-    def validate():
-        with validated_source(architecture_file) as result:
-            definitions_dict = convert_parsed_definitions_to_dict_definition(result.definitions)
-            is_valid, validation_errors = _run_spec_validation(definitions_dict)
+    def get_csv():
+        spec_definitions = _get_parsed_models(architecture_file)
+        reqs = {}
+        for spec in spec_definitions:
+            reqs[spec.name] = _get_requirements(spec)
 
-            if is_valid:
-                return f"Spec in {architecture_file} is valid"
+        field_names = ["Spec Name", "Section", "ID", "Requirement", "Parents", "Children"]
 
-            errors = "\n".join(validation_errors)
-            raise SpecValidationError(f"Spec in {architecture_file} is invalid:\n{errors}")
+        # just in case, let's make sure the output directory exists
+        if not path.lexists(output_directory):
+            makedirs(output_directory)
 
-    with plugin_result(plugin_name, validate) as result:
+        file_counter = 0
+        for spec_name in reqs.keys():
+            file_name = spec_name + ".csv"
+            file_name = file_name.replace(" ", "_")
+            output_path = path.join(output_directory, file_name)
+            with open(output_path, 'w') as output:
+                writer = csv.DictWriter(output, fieldnames=field_names)
+                writer.writeheader()
+                writer.writerows(reqs[spec_name])
+                file_counter = file_counter + 1
+
+        return f"{file_counter} CSV spec files written to {output_directory}"
+
+    with plugin_result(plugin_name, get_csv) as result:
         return result
 
 
-def _run_spec_validation(parsed_model: dict):
-    is_valid = True
-    validation_errors = []
-
-    # go through the parsed model to find requirement references
-    requirement_refs = {}
-    for model_name in parsed_model:
-        refs = []
-        refs.extend(search(parsed_model[model_name], ["spec", "requirements", "parent", "ids"]))
-        refs.extend(search(parsed_model[model_name], ["model", "behavior", "requirements", "ids"]))
-        refs.extend(search(parsed_model[model_name], ["schema", "requirements", "ids"]))
-        if refs:
-            requirement_refs[model_name] = refs
-
-    specs = get_models_by_type(parsed_model, "spec")
-    requirements_by_id = _collect_ids_from_specs(specs)
-
-    # ensure all req_refs are present in the referenced location
-    for model_name, id_references in requirement_refs.items():
-
-        # Check the refs exists
-        defined_requirement_ids = list(requirements_by_id.keys())
-        for requirement_id in id_references:
-            if requirement_id not in defined_requirement_ids:
-                is_valid = False
-                validation_errors.append(
-                    f"Invalid requirement id '{requirement_id}' reference in '{model_name}':  {defined_requirement_ids}"
-                )
-
-    return is_valid, validation_errors
+def _get_parsed_models(architecture_file: str) -> List[Definition]:
+    with validated_source(architecture_file) as result:
+        return result.definitions
 
 
-def _collect_ids_from_specs(specs: list[dict]) -> dict:
-    """Return all ids and their definitions as a key-value pair with the id being the key."""
-    requirements_by_id = {}
+def _get_requirements(spec: Definition) -> List[dict]:
+    ret_val: List[dict] = []
+    if spec.get_root_key() in ["spec"]:  # make sure we're actually working with a spec here
+        # collect data
+        spec_dict: dict = spec.structure
+        spec_name = spec_dict["spec"]["name"]
 
-    for spec in specs.values():
-        spec_definition = spec.get("spec")
-        spec_requirements = spec_definition.get("requirements") or []
-        spec_sections = spec_definition.get("sections") or []
+        # handle the spec root requirements
+        for req in spec_dict["spec"]["requirements"]:
+            ret_val.append(_gen_spec_line_from_req_dict(spec_name, "", req))
 
-        for requirement in spec_requirements:
-            requirements_by_id[requirement.get("id")] = requirement
-
-        for section in spec_sections:
-            section_requirements = section.get("requirements")
-
-            for section_requirement in section_requirements:
-                requirements_by_id[section_requirement.get("id")] = section_requirement
-
-    return requirements_by_id
+        # handle the requirements in each section
+        if "sections" in spec_dict["spec"].keys():
+            for section in spec_dict["spec"]["sections"]:
+                section_name = section["name"]
+                for req in section["requirements"]:
+                    ret_val.append(_gen_spec_line_from_req_dict(spec_name, section_name, req))
+    return ret_val
 
 
-class SpecValidationError(PluginError):
-    """An error related to spec validation."""
-
-    pass
+def _gen_spec_line_from_req_dict(spec_name: str, section_name: str, req: dict) -> dict:
+    line = {}
+    line["Spec Name"] = spec_name
+    line["Section"] = section_name
+    line["ID"] = req["id"]
+    line["Requirement"] = req["shall"]
+    parent_ids = ""
+    if "parent" in req.keys():
+        for parent_id in req["parent"]["ids"]:
+            if len(parent_ids) == 0:
+                parent_ids = f"{parent_id}"
+            else:
+                parent_ids = f"{parent_ids} {parent_id}"
+        line["Parents"] = parent_ids
+    child_ids = ""
+    if "child" in req.keys():
+        for child_id in req["child"]["ids"]:
+            if len(child_ids) == 0:
+                child_ids = f"{child_id}"
+            else:
+                child_ids = f"{child_ids} {child_id}"
+    line["Children"] = child_ids
+    return line
