@@ -230,8 +230,8 @@ def _provider_handle_request(provider_name: str, ls: AacLanguageServer, params: 
     provider = ls.providers.get(provider_name)
 
     if provider:
-        diagnostics_results = provider.handle_request(ls, params)
-        logging.debug(f"Publish Diagnostics results for '{provider_name}': {diagnostics_results}")
-        return diagnostics_results
+        results = provider.handle_request(ls, params)
+        logging.debug(f"{provider_name} results: {results}")
+        return results
     else:
-        logging.warning(f"Unable to publish diagnostics; no provider found for '{provider_name}'.")
+        logging.warning(f"No provider found for '{provider_name}'.")
