@@ -2,22 +2,95 @@ model:
   name: specifications
   description: aac-spec is a Architecture-as-Code plugin that enables requirement definition and traceability in Architecture-as-Code models.
   behavior:
-    - name: spec-validate
+    - name: spec-csv
       type: command
-      description: Validates spec traces within the AaC model
+      description: Generates a comma separated value file (i.e. Excel file) listing requirements.
       input:
         - name: architecture-file
           type: file
           python_type: str
-          description:  The file to validate for spec cross-references.
+          description:  The file to convert into csv.
+        - name: output-directory
+          type: file
+          python_type: str
+          description: The directory where the csv file should be placed.
       acceptance:
-        - scenario: Valid spec traces are modeled.
+        - scenario: Valid spec is converted to csv.
           given:
             - The {{spec-validate.input.architecture-file}} contains a valid architecture specification.
           when:
-            - The aac app is run with the spec-validate command.
+            - The aac app is run with the spec-csv command.
           then:
-            - A message saying spec validation was successful is printed to the console.
+            - A message saying spec csv generation was successful is printed to the console.
+            - a csv file is generated.
+---
+validation:
+  name: Referenced IDs exist
+  description: Verifies ids in a requirement reference exist within the context.
+  behavior:
+    - name: Verify that requirement references exist.
+      type: request-response
+      description:
+      input:
+        - name: input
+          type: ValidatorInput
+      output:
+        - name: results
+          type: ValidatorOutput
+      acceptance:
+        - scenario: Successfully Validate a requirement reference id exists
+          given:
+            - The ValidatorInput content consists of valid AaC definitions.
+            - The ValidatorInput contains some AaC fields that reference requirement ids.
+          when:
+            - The input is validation
+          then:
+            - The ValidatorOutput does not indicate any errors
+            - The ValidatorOutput does not indicate any warnings
+            - The ValidatorOutput indicates the definition under test is valid
+        - scenario: Fail to validate a definition's requirement reference fields
+          given:
+            - The ValidatorInput content consists of otherwise valid AaC definitions.
+            - The ValidatorInput contains at least one requirement reference id that does not exist.
+          when:
+            - The ValidatorInput is validated
+          then:
+            - The ValidatorOutput has errors
+            - The ValidatorOutput errors indicate that there are invalid requirement id references
+---
+validation:
+  name: Requirement ID is unique
+  description: Verifies ids in a requirement ID is globally unique within the context.
+  behavior:
+    - name: Verify that requirement ids are globally unique.
+      type: request-response
+      description:
+      input:
+        - name: input
+          type: ValidatorInput
+      output:
+        - name: results
+          type: ValidatorOutput
+      acceptance:
+        - scenario: Successfully Validate a requirement id uniqueness
+          given:
+            - The ValidatorInput content consists of valid AaC definitions.
+            - The ValidatorInput contains some AaC spec definitions where requirement ids are unique.
+          when:
+            - The input is validation
+          then:
+            - The ValidatorOutput does not indicate any errors
+            - The ValidatorOutput does not indicate any warnings
+            - The ValidatorOutput indicates the definition under test is valid
+        - scenario: Fail to validate a requirement id uniqueness
+          given:
+            - The ValidatorInput content consists of otherwise valid AaC definitions.
+            - The ValidatorInput contains some AaC spec definition where duplicate requirement ids are present.
+          when:
+            - The ValidatorInput is validated
+          then:
+            - The ValidatorOutput has errors
+            - The ValidatorOutput errors indicate that there are non-unique requirement ids
 ---
 ext:
   name: addLoggingToBehaviorType
@@ -51,7 +124,7 @@ ext:
         type: RequirementReference
 ---
 ext:
-  name: addSpecTraceToData
+  name: addSpecTraceToSchema
   type: schema
   schemaExt:
     add:
@@ -101,6 +174,8 @@ schema:
       type: string
     - name: parent
       type: RequirementReference
+    - name: child
+      type: RequirementReference
     - name: attributes
       type: RequirementAttribute[]
   required:
@@ -111,6 +186,9 @@ schema:
       arguments:
         - id
         - shall
+    - name: Requirement ID is unique
+      arguments:
+        - id
 ---
 schema:
   name: RequirementAttribute
@@ -137,5 +215,8 @@ schema:
     - ids
   validation:
     - name: Required fields are present
+      arguments:
+        - ids
+    - name: Referenced IDs exist
       arguments:
         - ids

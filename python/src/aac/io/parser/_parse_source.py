@@ -202,13 +202,15 @@ def _read_file_content(arch_file: str) -> str:
         return file.read()
 
 
-def _get_files_to_process(arch_file_path: str) -> list[str]:
-    """Return a list of all files referenced in the model.
+def _recurse_imports(arch_file_path: str, existing: set) -> set:
+    """Recursive portion of _get_files_to_process that keeps track of history so that we can handle circular imports.
 
-    Traverse the import path starting from the specified Arch-as-Code file and returns a list of
-    all files referenced by the model.
+    Discovered an issue during testing where if there exists a cycle in the import sequence across files, the parser
+    will recurse until it crashes.  Unfortunately this led to an error message to the user saying the initial file was
+    invalid yaml, which it was not, creating confusion.  Now this just eliminates duplications when discovered in the
+    import sequence avoiding the issue.
     """
-    files_to_import = {arch_file_path}
+    existing.add(arch_file_path)
     content = _read_file_content(arch_file_path)
     roots = _parse_yaml(arch_file_path, content)
     roots_with_imports = [root for root in roots if "import" in root.keys()]
@@ -218,6 +220,16 @@ def _get_files_to_process(arch_file_path: str) -> list[str]:
             arch_file_dir = path.dirname(path.realpath(arch_file_path))
             parse_path = path.join(arch_file_dir, imp.removeprefix(f".{path.sep}"))
             sanitized_path = sanitize_filesystem_path(parse_path)
-            files_to_import.update(_get_files_to_process(sanitized_path))
+            if sanitized_path not in existing:
+                existing.update(_recurse_imports(sanitized_path, existing))
 
-    return list(files_to_import)
+    return existing
+
+
+def _get_files_to_process(arch_file_path: str) -> list[str]:
+    """Return a list of all files referenced in the model.
+
+    Traverse the import path starting from the specified Arch-as-Code file and returns a list of
+    all files referenced by the model.
+    """
+    return list(_recurse_imports(arch_file_path, set()))
