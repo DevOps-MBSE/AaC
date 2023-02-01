@@ -5,6 +5,7 @@ from typing import List, Optional
 from pygls.server import LanguageServer
 from pygls.lsp.types import Position, RenameParams, WorkspaceEdit, TextEdit, TextDocumentIdentifier
 from pygls.workspace import Document
+from aac.lang.constants import DEFINITION_FIELD_NAME, DEFINITION_FIELD_TYPE
 
 from aac.lang.definitions.definition import Definition
 from aac.lang.language_context import LanguageContext
@@ -62,7 +63,7 @@ class RenameProvider(LspProvider):
 
         return workspace_edit
 
-    def _get_rename_edits(self, symbol: str, new_name: str) -> dict[str, TextEdit]:
+    def _get_rename_edits(self, symbol: str, new_name: str) -> dict[str, list[TextEdit]]:
         """Returns the list of text edits based on the selected symbol's type."""
         if not symbol:
             return None
@@ -89,8 +90,8 @@ class RenameProvider(LspProvider):
 
         if SymbolType.ROOT_KEY in symbol_types:
             root_fields = language_context.get_root_fields()
-            key_schema_field, *_ = [field for field in root_fields if field.get("name") == name]
-            definition_to_find = language_context.get_definition_by_name(key_schema_field.get("type"))
+            key_schema_field, *_ = [field for field in root_fields if field.get(DEFINITION_FIELD_NAME) == name]
+            definition_to_find = language_context.get_definition_by_name(key_schema_field.get(DEFINITION_FIELD_TYPE))
 
             if not definition_to_find:
                 logging.critical(f"Can't find the source definition definition '{name}'.")
@@ -101,9 +102,9 @@ class RenameProvider(LspProvider):
 
     def _get_definition_name_text_edits(
         self, new_name: str, definition_to_find: Definition, language_context: LanguageContext
-    ) -> dict[str, TextEdit]:
+    ) -> dict[str, list[TextEdit]]:
         """Returns a dictionary of document uri to TextEdits where the uri is the key and the list of edits the value."""
-        edits = {}
+        edits: dict[str, list] = {}
         definition_references = get_definition_type_references_from_list(definition_to_find, language_context.definitions)
         definitions_to_alter = [*definition_references, definition_to_find]
 
@@ -111,15 +112,15 @@ class RenameProvider(LspProvider):
             reference_lexemes = [
                 lexeme for lexeme in definition.lexemes if remove_list_type_indicator(lexeme.value) == definition_to_find.name
             ]
-            edits.update(self._get_edits_from_lexemes(new_name, reference_lexemes))
+            self._add_edits_from_lexemes(new_name, reference_lexemes, edits)
 
         return edits
 
     def _get_enum_value_type_text_edits(
         self, old_value: str, new_value: str, definition_to_find: Definition, language_context: LanguageContext
-    ) -> dict[str, TextEdit]:
+    ) -> dict[str, list[TextEdit]]:
         """Returns a dictionary of enum value type uri to TextEdits where the uri is the key and the list of edits is the value."""
-        edits = {}
+        edits: dict[str, list] = {}
         enum_references = get_enum_references_from_context(definition_to_find, language_context)
         enum_references_to_alter = [*enum_references, definition_to_find]
 
@@ -127,15 +128,15 @@ class RenameProvider(LspProvider):
             reference_lexemes = [
                 lexeme for lexeme in definition.lexemes if remove_list_type_indicator(lexeme.value) == old_value
             ]
-            edits.update(self._get_edits_from_lexemes(new_value, reference_lexemes))
+            self._add_edits_from_lexemes(new_value, reference_lexemes, edits)
 
         return edits
 
     def _get_root_key_text_edits(
         self, old_value: str, new_value: str, definition_to_find: Definition, language_context: LanguageContext
-    ) -> dict[str, TextEdit]:
+    ) -> dict[str, list[TextEdit]]:
         """Returns a dictionary of uri to TextEdits where the uri is the key and the list of edits is the value."""
-        edits = {}
+        edits: dict[str, list] = {}
 
         definitions_with_root_key = language_context.get_definitions_by_root_key(old_value)
         root_key_references = get_definition_type_references_from_list(definition_to_find, language_context.definitions)
@@ -145,19 +146,25 @@ class RenameProvider(LspProvider):
             reference_lexemes = [
                 lexeme for lexeme in definition.lexemes if remove_list_type_indicator(lexeme.value) == old_value
             ]
-            edits.update(self._get_edits_from_lexemes(new_value, reference_lexemes))
+            self._add_edits_from_lexemes(new_value, reference_lexemes, edits)
 
         return edits
 
-
-    def _get_edits_from_lexemes(self, new_value: str, reference_lexemes: list[Lexeme]) -> dict:
+    def _add_edits_from_lexemes(self, new_value: str, reference_lexemes: list[Lexeme], edits_list: dict[str, list]):
+        """Converts lexemes to edits and adds them to the edits dictionary."""
         edits: dict = {}
 
+        logging.error(f"Lexemes to replace {reference_lexemes}")
         for lexeme_to_replace in reference_lexemes:
-            document_edits = edits.get(lexeme_to_replace.source, [])
+            lexeme_source = str(lexeme_to_replace.source)
             replacement_range = get_location_from_lexeme(lexeme_to_replace).range
-            document_edits.append(TextEdit(range=replacement_range, new_text=new_value))
-            edits[str(lexeme_to_replace.source)] = document_edits
+            edit = TextEdit(range=replacement_range, new_text=new_value)
+
+            source_edits_list = edits_list.get(lexeme_source)
+            if not source_edits_list:
+                edits_list[lexeme_source] = [edit]
+            else:
+                source_edits_list.append(edit)
 
         return edits
 
