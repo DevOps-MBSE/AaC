@@ -25,7 +25,7 @@ def spec_csv(architecture_file: str, output_directory: str) -> PluginExecutionRe
         reqs = {}
         for spec in spec_definitions:
             file_name = path.basename(spec.source.uri)
-            reqs[file_name] = _get_requirements(spec)
+            reqs[spec.name] = _get_requirements(spec)
 
         field_names = ["Spec Name", "Section", "ID", "Requirement", "Parents", "Children"]
 
