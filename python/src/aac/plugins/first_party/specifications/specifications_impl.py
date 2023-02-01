@@ -24,7 +24,8 @@ def spec_csv(architecture_file: str, output_directory: str) -> PluginExecutionRe
         spec_definitions = _get_parsed_models(architecture_file)
         reqs = {}
         for spec in spec_definitions:
-            reqs[spec.name] = _get_requirements(spec)
+            file_name = path.basename(spec.source.uri)
+            reqs[file_name] = _get_requirements(spec)
 
         field_names = ["Spec Name", "Section", "ID", "Requirement", "Parents", "Children"]
 
@@ -62,8 +63,9 @@ def _get_requirements(spec: Definition) -> List[dict]:
         spec_name = spec_dict["spec"]["name"]
 
         # handle the spec root requirements
-        for req in spec_dict["spec"]["requirements"]:
-            ret_val.append(_gen_spec_line_from_req_dict(spec_name, "", req))
+        if "requirements" in spec_dict["spec"].keys():
+            for req in spec_dict["spec"]["requirements"]:
+                ret_val.append(_gen_spec_line_from_req_dict(spec_name, "", req))
 
         # handle the requirements in each section
         if "sections" in spec_dict["spec"].keys():
