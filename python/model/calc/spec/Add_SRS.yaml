@@ -4,12 +4,14 @@ import:
 spec:
   name: Module Add SRS
   description:  This is a representative Software Requirements Specification for a module called Add.
-  requirements:
-    - id: "ADD-1"
-      shall:  When receiving an add message, the calculator shall respond with the sum of the provided values.
-      parent:
-        ids:
-          - "SM-1"
-      attributes:
-        - name: TADI
-          value: Test
+  sections:
+    - name: Section about adding numbers.
+      requirements:
+        - id: "ADD-1"
+          shall:  When receiving an add message, the calculator shall respond with the sum of the provided values.
+          parent:
+            ids:
+              - "SM-1"
+          attributes:
+            - name: TADI
+              value: Test
