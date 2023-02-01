@@ -25,7 +25,6 @@ def get_plugin() -> Plugin:
     plugin.register_commands(_get_plugin_commands())
     plugin.register_definitions(plugin_definitions)
     plugin.register_definition_validations(_get_validations(plugin_definitions))
-    logging.info("Spec plugin created.")
 
     return plugin
 
