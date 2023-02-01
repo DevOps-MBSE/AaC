@@ -40,8 +40,8 @@ class TestRenameProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         expected_new_name = "DataANew"
         res: RenameResponse = await self.rename(TEST_DOCUMENT_NAME, expected_new_name, 1, 8)
         actual_text_edits = res.get_all_text_edits()
-        expected_test_document_edits = res.get_workspace_edit()
-        self.assertIn(TEST_DOCUMENT_NAME, list(expected_test_document_edits.keys())[0])
+        actual_document_edits = res.get_workspace_edit()
+        self.assertIn(TEST_DOCUMENT_NAME, list(actual_document_edits.keys())[0])
         self.assertIn(expected_new_name, actual_text_edits[0].get("newText"))
         self.assertEqual(2, len(actual_text_edits))
 
