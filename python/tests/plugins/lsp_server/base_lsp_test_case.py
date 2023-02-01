@@ -33,13 +33,14 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
         await super().asyncSetUp()
 
         self.client = LspTestClient()
+        self.active_context = self.client.server.language_context
+        self.temp_documents_directory: TemporaryDirectory = TemporaryDirectory()
+
         await self.client.start()
         await self.client.send_request(
             methods.INITIALIZE,
-            InitializeParams(process_id=12345, capabilities=ClientCapabilities()),
+            InitializeParams(capabilities=ClientCapabilities(), root_uri=self.temp_documents_directory.name),
         )
-        self.active_context = self.client.server.language_context
-        self.temp_documents_directory: TemporaryDirectory = TemporaryDirectory()
 
         # Add the core spec to the virtual docs
         core_spec_virtual_doc = self._create_core_spec_virtual_doc()
