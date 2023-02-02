@@ -2,6 +2,7 @@
 
 from os.path import isfile, lexists
 from typing import Any, Optional
+from aac.io.paths import sanitize_filesystem_path
 
 from aac.lang.constants import PRIMITIVE_TYPE_FILE
 from aac.lang.definitions.definition import Definition
@@ -30,9 +31,10 @@ def validate_file(definition: Definition, value_to_validate: Any) -> Optional[Va
         A ValidatorFinding if the value is not file path that exists on the file system, or None.
     """
     finding = None
-    is_valid = lexists(value_to_validate) and isfile(value_to_validate)
+    file_path_to_test = sanitize_filesystem_path(value_to_validate)
+    is_valid = lexists(file_path_to_test) and isfile(file_path_to_test)
     if not is_valid:
-        finding_message = f"{value_to_validate} does not exist or is not a file."
+        finding_message = f"The file path '{value_to_validate}' (evaluated to '{file_path_to_test}') does not exist or is not a file."
         finding_location = FindingLocation.from_lexeme(
             FILE_VALIDATION_NAME, definition.get_lexeme_with_value(str(value_to_validate))
         )
