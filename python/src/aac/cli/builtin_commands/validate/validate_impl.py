@@ -70,7 +70,8 @@ def _validate_context_and_file(file_path) -> str:
     with validated_source(file_path) as result:
         return _get_validation_success_message(success_message, result)
 
+
 def _get_validation_success_message(default_message, validation_result) -> str:
-        plugin_messages = validation_result.get_messages_as_string()
-        return_message = f"{default_message}{linesep}{plugin_messages}"
-        return return_message
+    plugin_messages = validation_result.get_messages_as_string()
+    return_message = f"{default_message}{linesep}{plugin_messages}"
+    return return_message
