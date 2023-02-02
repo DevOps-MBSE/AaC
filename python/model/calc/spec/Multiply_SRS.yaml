@@ -1,3 +1,6 @@
+import:
+  - IntermediateMath_PIDS.yaml
+
 spec:
   name: Module Multiply SRS
   abbreviation: MULT
@@ -9,5 +12,6 @@ spec:
         ids:
           - "IM-1"
       attributes:
+
         - name: TADI
           value: Test

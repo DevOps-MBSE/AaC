@@ -1,6 +1,8 @@
 from unittest.mock import MagicMock, patch
+from aac.validate._validate import _validate_definitions
 
 from aac.io.parser import parse
+from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.constants import (
     DEFINITION_FIELD_EXTENSION_ENUM,
     DEFINITION_FIELD_TYPE,
@@ -20,9 +22,16 @@ from tests.helpers.parsed_definitions import (
     create_schema_definition,
     create_schema_ext_definition,
 )
+from tests.helpers.prebuilt_definition_constants import (
+    ALL_PRIMITIVES_INSTANCE,
+    ALL_PRIMITIVES_TEST_DEFINITION,
+    ALL_PRIMITIVES_TEST_DEFINITION_SCHEMA_EXT,
+)
 
 
 class TestValidate(ActiveContextTestCase):
+    """TestSuite focused on basic testing of the validate function."""
+
     def test_validate_source_with_valid_definition(self):
         test_field = create_field_entry("TestField", PRIMITIVE_TYPE_STRING)
         test_definition = create_schema_definition("Test", fields=[test_field])
@@ -67,24 +76,6 @@ class TestValidate(ActiveContextTestCase):
         self.assertEqual(ValidationError, type(exception))
         self.assertEqual(len(exception.args), 1)
         self.assertIn("required", exception.args[0].lower())
-
-    def test_validate_definitions_with_invalid_multiple_exclusive_fields(self):
-        test_field_entry = create_field_entry("TestField", PRIMITIVE_TYPE_STRING)
-        test_combined_ext_definition = create_schema_ext_definition("TestSchemaExt", "Behavior", fields=[test_field_entry])
-        test_enum_definition = create_enum_ext_definition("TestEnumExt", DEFINITION_NAME_PRIMITIVES, values=["val1", "val2"])
-        test_combined_ext_definition.structure[ROOT_KEY_EXTENSION][
-            DEFINITION_FIELD_EXTENSION_ENUM
-        ] = test_enum_definition.structure[ROOT_KEY_EXTENSION][DEFINITION_FIELD_EXTENSION_ENUM]
-        test_combined_ext_definition, *_ = parse(test_combined_ext_definition.to_yaml())
-
-        with self.assertRaises(ValidationError) as error:
-            with validated_definitions([test_combined_ext_definition]):
-                pass
-
-        exception = error.exception
-        self.assertEqual(ValidationError, type(exception))
-        self.assertEqual(len(exception.args), 1)
-        self.assertIn("multiple", exception.args[0].lower())
 
     def test_multiple_validate_definitions_with_invalid_definition(self):
         invalid_fields_test_field = create_field_entry("MissingTestField")
@@ -134,7 +125,77 @@ class TestValidate(ActiveContextTestCase):
             self.assertTrue(result.is_valid())
 
 
+class TestValidatePlugins(ActiveContextTestCase):
+    """TestSuite focused on specifically testing validate with relation to plugins."""
+
+    def test_validate_definitions_with_invalid_multiple_exclusive_fields(self):
+        test_field_entry = create_field_entry("TestField", PRIMITIVE_TYPE_STRING)
+        test_combined_ext_definition = create_schema_ext_definition("TestSchemaExt", "Behavior", fields=[test_field_entry])
+        test_enum_definition = create_enum_ext_definition("TestEnumExt", DEFINITION_NAME_PRIMITIVES, values=["val1", "val2"])
+        test_combined_ext_definition.structure[ROOT_KEY_EXTENSION][
+            DEFINITION_FIELD_EXTENSION_ENUM
+        ] = test_enum_definition.structure[ROOT_KEY_EXTENSION][DEFINITION_FIELD_EXTENSION_ENUM]
+        test_combined_ext_definition, *_ = parse(test_combined_ext_definition.to_yaml())
+
+        with self.assertRaises(ValidationError) as error:
+            with validated_definitions([test_combined_ext_definition]):
+                pass
+
+        exception = error.exception
+        self.assertEqual(ValidationError, type(exception))
+        self.assertEqual(len(exception.args), 1)
+        self.assertIn("multiple", exception.args[0].lower())
+
+    def test_validator_plugin_exception_handling_definition_validation(self):
+        def _throw_exception(*args):
+            """The exception-throwing function validators."""
+            raise RuntimeError("Validator exception.")
+
+        active_context = get_active_context()
+        active_validations = [definition.get_validations() for definition in active_context.definitions]
+        active_validations = [validation for validation in active_validations if validation and len(validation) > 0]
+        active_validation_names = [validation.get("name") for validations in active_validations for validation in validations]
+        definition_validations = [
+            validation
+            for validation in active_context.get_definition_validations()
+            if validation.name in active_validation_names
+        ]
+        self.assertGreater(len(definition_validations), 0)
+
+        for plugin in definition_validations:
+            plugin.validation_function = _throw_exception
+
+        validation_result = _validate_definitions([], active_context, True)
+        self.assertGreater(len(validation_result.findings.findings), 0)
+        findings_message = "\n".join([finding.message for finding in validation_result.findings.findings])
+
+        for plugin in definition_validations:
+            self.assertIn(plugin.name, findings_message)
+
+    def test_validator_plugin_exception_handling_primitive_validation(self):
+        def _throw_exception(*args):
+            """The exception-throwing function validators."""
+            raise RuntimeError("Validator exception.")
+
+        active_context = get_active_context()
+        active_context.add_definitions_to_context([ALL_PRIMITIVES_TEST_DEFINITION, ALL_PRIMITIVES_TEST_DEFINITION_SCHEMA_EXT])
+        primitive_validations = active_context.get_primitive_validations()
+        self.assertGreater(len(primitive_validations), 0)
+
+        for plugin in primitive_validations:
+            plugin.validation_function = _throw_exception
+
+        validation_result = _validate_definitions([ALL_PRIMITIVES_INSTANCE], active_context, False)
+        self.assertGreater(len(validation_result.findings.findings), 0)
+        findings_message = "\n".join([finding.message for finding in validation_result.findings.findings])
+
+        for plugin in primitive_validations:
+            self.assertIn(plugin.name, findings_message)
+
+
 class TestValidateExtensions(ActiveContextTestCase):
+    """TestSuite focused on specifically testing validate with relation to extensions."""
+
     def test_validate_definitions_with_invalid_root_extension(self):
         invalid_type = "InvalidType"
         invalid_extension_field = create_field_entry("new_root", invalid_type)
