@@ -1,5 +1,5 @@
 """Module for configuring and maintaining the restful application and its routes."""
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import FastAPI, HTTPException, BackgroundTasks, responses
 from http import HTTPStatus
 import logging
 import os
@@ -9,10 +9,16 @@ from aac.io.files.aac_file import AaCFile
 from aac.io.files.find import find_aac_files, is_aac_file
 from aac.io.paths import sanitize_filesystem_path
 from aac.io.parser import parse
-from aac.io.writer import write_definitions_to_file
 from aac.lang.active_context_lifecycle_manager import get_active_context
+from aac.lang.definitions.json_schema import get_definition_json_schema
+from aac.lang.language_error import LanguageError
 from aac.plugins.plugin_execution import PluginExecutionStatusCode
-from aac.plugins.first_party.rest_api.models.command_model import CommandModel, CommandRequestModel, CommandResponseModel, to_command_model
+from aac.plugins.first_party.rest_api.models.command_model import (
+    CommandModel,
+    CommandRequestModel,
+    CommandResponseModel,
+    to_command_model,
+)
 from aac.plugins.first_party.rest_api.models.definition_model import DefinitionModel, to_definition_class, to_definition_model
 from aac.plugins.first_party.rest_api.models.file_model import FileModel, FilePathModel, FilePathRenameModel, to_file_model
 
@@ -131,19 +137,25 @@ def get_definitions():
 
 
 @app.get("/definition", status_code=HTTPStatus.OK, response_model=DefinitionModel)
-def get_definition_by_name(name: str):
+def get_definition_by_name(name: str, include_json_schema: bool = False):
     """
     Returns a definition from active context by name, or HTTPStatus.NOT_FOUND not found if the definition doesn't exist.
 
     Returns:
         200 HTTPStatus.OK if successful.
     """
-    definition = get_active_context().get_definition_by_name(name)
+    active_context = get_active_context()
+    definition = active_context.get_definition_by_name(name)
 
     if not definition:
         _report_error_response(HTTPStatus.NOT_FOUND, f"Definition {name} not found in the context.")
     else:
-        return to_definition_model(definition)
+        definition_model = to_definition_model(definition)
+
+        if include_json_schema:
+            definition_model.json_schema = get_definition_json_schema(definition, active_context)
+
+        return definition_model
 
 
 @app.post("/definition", status_code=HTTPStatus.NO_CONTENT)
@@ -165,7 +177,7 @@ def add_definition(definition_model: DefinitionModel):
             f"Definition can't be added to a file {definition_source_uri} which is outside of the working directory: {WORKSPACE_DIR}.",
         )
 
-    definition_to_write = to_definition_class(definition_model)
+    definition_to_add = to_definition_class(definition_model)
     active_context = get_active_context()
     existing_definitions = active_context.get_definitions_by_file_uri(definition_source_uri)
 
@@ -179,14 +191,8 @@ def add_definition(definition_model: DefinitionModel):
             f"File {definition_source_uri} can't be edited by users.",
         )
 
-    write_definitions_to_file(
-        [definition_to_write, *existing_definitions],
-        definition_source_uri,
-        is_user_editable,
-    )
-    updated_definition_source_and_lexemes = parse(definition_source_uri)
-    active_context.add_definition_to_context(definition_to_write)
-    active_context.update_definitions_in_context(updated_definition_source_and_lexemes)
+    active_context.add_definition_to_context(definition_to_add)
+    active_context.update_architecture_file(definition_to_add.source.uri)
 
 
 @app.put("/definition", status_code=HTTPStatus.NO_CONTENT)
@@ -197,7 +203,14 @@ def update_definition(definition_model: DefinitionModel) -> None:
     definition_to_update = active_context.get_definition_by_name(definition_model.name)
 
     if definition_to_update:
-        active_context.update_definition_in_context(to_definition_class(definition_model))
+        updated_definition = to_definition_class(definition_model)
+        updated_definition.uid = definition_to_update.uid
+        active_context.update_definition_in_context(updated_definition)
+        active_context.update_architecture_file(definition_to_update.source.uri)
+
+        if definition_model.source_uri != definition_to_update.source.uri:
+            active_context.update_architecture_file(definition_model.source_uri)
+
     else:
         _report_error_response(
             HTTPStatus.NOT_FOUND,
@@ -214,6 +227,7 @@ def remove_definition_by_name(name: str):
 
     if definition_to_remove:
         active_context.remove_definition_from_context(definition_to_remove)
+        active_context.update_architecture_file(definition_to_remove.source.uri)
     else:
         _report_error_response(
             HTTPStatus.NOT_FOUND,
@@ -233,17 +247,23 @@ def get_aac_commands():
 
 @app.post("/command", status_code=HTTPStatus.OK, response_model=CommandResponseModel)
 def execute_aac_command(command_request: CommandRequestModel):
-    """Return a list of all available plugin commands."""
+    """Execute the command and return the result."""
     aac_commands_by_name = _get_rest_api_compatible_commands()
     aac_command = aac_commands_by_name.get(command_request.name)
 
     if aac_command is not None:
-        arguments = command_request.arguments
+        aac_command_argument_names = [arg.name for arg in aac_command.arguments]
+        arguments = [arg for arg in command_request.arguments if arg not in aac_command_argument_names]
 
-        result = aac_command.callback(*(arguments or []))
-        success = result.status_code == PluginExecutionStatusCode.SUCCESS
-        result_message = f"{result.name}: {result.status_code.name.lower()}\n\n{result.get_messages_as_string()}"
-        return CommandResponseModel(command_name=result.name, result_message=result_message, success=success)
+        try:
+            result = aac_command.callback(*(arguments or []))
+            success = result.status_code == PluginExecutionStatusCode.SUCCESS
+            result_message = f"{result.name}: {result.status_code.name.lower()}\n\n{result.get_messages_as_string()}"
+        except Exception as error:
+            success = False
+            result_message = f"{result.name}: failure\n\n{error}"
+        finally:
+            return CommandResponseModel(command_name=aac_command.name, result_message=result_message, success=success)
     else:
         _report_error_response(
             HTTPStatus.NOT_FOUND,
@@ -264,6 +284,15 @@ async def refresh_available_files_in_workspace() -> None:
     """Used to refresh the available files. Used in async since it takes too long for being used in request-response flow."""
     global AVAILABLE_AAC_FILES
     AVAILABLE_AAC_FILES = list(_get_available_files_in_workspace())
+
+    # Update the active context with any missing files
+    active_context = get_active_context()
+    files_in_context = {file.uri for file in active_context.get_files_in_context()}
+    available_files = {file.uri for file in AVAILABLE_AAC_FILES}
+    missing_files = available_files.difference(files_in_context)
+    definition_lists_from_missing_files = [parse(file_uri) for file_uri in missing_files]
+    definitions_to_add = {definition.name: definition for definition_list in definition_lists_from_missing_files for definition in definition_list}
+    active_context.add_definitions_to_context(list(definitions_to_add.values()))
 
 
 def _report_error_response(code: HTTPStatus, error: str):
@@ -290,3 +319,12 @@ def _get_rest_api_compatible_commands() -> dict[str, AacCommand]:
     )
 
     return {command.name: command for command in filtered_aac_and_plugin_commands}
+
+
+# Error Handlers
+
+
+@app.exception_handler(LanguageError)
+async def language_error_exception_handler(request, exc):
+    """If a `LanguageError` exception is encountered, then return a 400 BAD Request with the exception's message."""
+    return responses.PlainTextResponse(str(exc), status_code=400)

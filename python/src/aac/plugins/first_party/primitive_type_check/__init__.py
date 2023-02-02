@@ -2,7 +2,7 @@
 
 from aac.plugins import hookimpl
 from aac.plugins.contributions.contribution_types import PrimitiveValidationContribution
-from aac.plugins.first_party.primitive_type_check.validators import int_validator, bool_validator, plugin_name
+from aac.plugins.first_party.primitive_type_check.validators import int_validator, bool_validator, file_validator, plugin_name
 from aac.plugins.plugin import Plugin
 
 
@@ -20,4 +20,8 @@ def get_plugin() -> Plugin:
 
 
 def _get_primitive_validations() -> list[PrimitiveValidationContribution]:
-    return [int_validator.get_validator(), bool_validator.get_validator()]
+    return [
+        int_validator.get_validator(),
+        bool_validator.get_validator(),
+        file_validator.get_validator(),
+    ]

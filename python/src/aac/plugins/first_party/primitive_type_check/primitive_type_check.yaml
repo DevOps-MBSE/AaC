@@ -27,7 +27,7 @@ model:
             - The ValidatorOutput indicates the primitive value under test is valid
         - scenario: Fail to Validate an Integer Primitive Value is A Float
           given:
-            - The ValidatorInput content consists of valid AaC definitions
+            - The ValidatorInput content consists of AaC definitions
             - The ValidatorInput contains at least one definition field that is defined as being type `int`
             - The value in the primitive `int` field is a decimal number
           when:
@@ -37,7 +37,7 @@ model:
             - The ValidatorOutput indicates the primitive value under test is invalid
         - scenario: Fail to Validate an Integer Primitive Value Is a String
           given:
-            - The ValidatorInput content consists of valid AaC definitions
+            - The ValidatorInput content consists of AaC definitions
             - The ValidatorInput contains at least one definition field that is defined as being type `int`
             - The value in the primitive `int` field contains alphabetical letters or punctuation marks
           when:
@@ -45,3 +45,67 @@ model:
           then:
             - The ValidatorOutput indicates an error
             - The ValidatorOutput indicates the primitive value under test is invalid
+    - name: Validate Boolean Primitives
+      type: request-response
+      description:
+      input:
+        - name: input
+          type: ValidatorInput
+      output:
+        - name: results
+          type: ValidatorOutput
+      acceptance:
+        - scenario: Successfully Validate a Boolean Primitive Value
+          given:
+            - The ValidatorInput content consists of valid AaC definitions
+            - The ValidatorInput contains at least one definition field that is defined as being type `bool`
+            - The value in the primitive `bool` field is a valid boolean YAML value
+          when:
+            - The input is validated
+          then:
+            - The ValidatorOutput does not indicate any errors
+            - The ValidatorOutput does not indicate any warnings
+            - The ValidatorOutput indicates the primitive value under test is valid
+        - scenario: Fail to Validate an Integer Primitive Value Is a non-boolean String
+          given:
+            - The ValidatorInput content consists of AaC definitions
+            - The ValidatorInput contains at least one definition field that is defined as being type `bool`
+            - The value in the primitive `bool` field contains alphabetical letters or punctuation marks that don't represent a YAML boolean value
+          when:
+            - The input is validated
+          then:
+            - The ValidatorOutput indicates an error
+            - The ValidatorOutput indicates the primitive value under test is invalid
+    - name: Validate File Primitives
+      type: request-response
+      description:
+      input:
+        - name: input
+          type: ValidatorInput
+      output:
+        - name: results
+          type: ValidatorOutput
+      acceptance:
+        - scenario: Successfully Validate a File Primitive Value
+          given:
+            - The ValidatorInput content consists of valid AaC definitions
+            - The ValidatorInput contains at least one definition field that is defined as being type `file`
+            - The value in the primitive `file` field is a valid path to a file
+            - The specified file path exists on the file system
+          when:
+            - The input is validated
+          then:
+            - The ValidatorOutput does not indicate any errors
+            - The ValidatorOutput does not indicate any warnings
+            - The ValidatorOutput indicates the primitive value under test is valid
+        - scenario: Warn when validating a File Primitive Value that does not exist
+          given:
+            - The ValidatorInput content consists of valid AaC definitions
+            - The ValidatorInput contains at least one definition field that is defined as being type `file`
+            - The value in the primitive `file` field represents a file path
+            - The specified file path does not exist on the file system
+          when:
+            - The input is validated
+          then:
+            - The ValidatorOutput indicates an warning
+            - The ValidatorOutput indicates the primitive value under test does not exist

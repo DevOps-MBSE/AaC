@@ -33,8 +33,7 @@ class ValidatorResult:
         def format_message(finding: ValidatorFinding) -> str:
             loc = finding.location
             return (
-                f"\nValidation finding from '{loc.validation_name}' of level {finding.severity.name} in {loc.source.uri}. "
-                f"Message:\n {finding.message}"
+                f"\nValidation {finding.severity.name} from '{loc.validation_name}' in {loc.source.uri}. {finding.message}"
             )
 
         return "\n".join([format_message(finding) for finding in self.findings.get_all_findings()])

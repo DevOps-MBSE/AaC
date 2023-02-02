@@ -8,7 +8,7 @@ from aac.plugins.plugin import Plugin
 
 def get_plugin_manager() -> PluginManager:
     """
-    Get the plugin manager and automatically registers internal plugins.
+    Get the plugin manager and automatically registers first-party internal plugins.
 
     Returns:
         The plugin manager.
@@ -16,6 +16,8 @@ def get_plugin_manager() -> PluginManager:
     plugin_manager = PluginManager(PLUGIN_PROJECT_NAME)
     plugin_manager.add_hookspecs(hookspecs)
     plugin_manager.load_setuptools_entrypoints(PLUGIN_PROJECT_NAME)
+
+    # Register 1st Party Plugins because pluggy doesn't provide an alternative solution to automatically register plugins that are packaged in the AaC package.
 
     # register "built-in" plugins
     first_party_plugins_package = "aac.plugins.first_party"
