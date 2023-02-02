@@ -4,6 +4,7 @@
 # flake8: noqa E800
 import copy
 from datetime import datetime
+from typing import Any
 
 from aac.io.constants import DEFINITION_SEPARATOR
 from aac.plugins.validators import required_fields
@@ -183,8 +184,19 @@ TEST_TYPES_SCHEMA_DEFINITION = create_schema_definition(
 TEST_TYPES_ROOT_KEY = "primitive_tests"
 TEST_TYPES_SCHEMA_EXTENSION_FIELD = create_field_entry(TEST_TYPES_ROOT_KEY, TEST_TYPES_SCHEMA_DEFINITION.name)
 TEST_TYPES_SCHEMA_EXTENSION_DEFINITION = create_schema_ext_definition(
-    f"{TEST_TYPES_SCHEMA_DEFINITION.name}Extension", DEFINITION_NAME_ROOT, fields=[TEST_TYPES_SCHEMA_EXTENSION_FIELD]
+    f"{TEST_TYPES_SCHEMA_DEFINITION.name}Extension",
+    DEFINITION_NAME_ROOT,
+    fields=[TEST_TYPES_SCHEMA_EXTENSION_FIELD],
 )
+
+def get_primitive_definition_values(int_value: Any, bool_value: Any, file_value: Any) -> dict[str, Any]:
+    """Return a definition instance with the specified primitive values."""
+    return {
+        SCHEMA_FIELD_INT.get(DEFINITION_FIELD_NAME): int_value,
+        SCHEMA_FIELD_BOOL.get(DEFINITION_FIELD_NAME): bool_value,
+        SCHEMA_FIELD_FILE.get(DEFINITION_FIELD_NAME): file_value,
+    }
+
 TEST_TYPES_VALID_INSTANCE = create_definition(
     TEST_TYPES_ROOT_KEY, "validPrimitives", {SCHEMA_FIELD_INT.get(DEFINITION_FIELD_NAME): 0}
 )
@@ -280,6 +292,7 @@ ALL_PRIMITIVES_INSTANCE_NAME = "ALL_PRIMITIVES_INSTANCE"
 ALL_PRIMITIVES_INSTANCE_STRING_FIELD = create_field_entry(PRIMITIVE_TYPE_STRING.upper(), "testString")
 ALL_PRIMITIVES_INSTANCE_INTEGER_FIELD = create_field_entry(PRIMITIVE_TYPE_INT.upper(), 10)
 ALL_PRIMITIVES_INSTANCE_BOOL_FIELD = create_field_entry(PRIMITIVE_TYPE_BOOL.upper(), True)
+ALL_PRIMITIVES_INSTANCE_FILE_FIELD = create_field_entry(PRIMITIVE_TYPE_FILE.upper(), "./test.aac")
 ALL_PRIMITIVES_INSTANCE_DATE_FIELD = create_field_entry(PRIMITIVE_TYPE_DATE.upper(), datetime.now())
 ALL_PRIMITIVES_INSTANCE_NUMBER_FIELD = create_field_entry(PRIMITIVE_TYPE_NUMBER.upper(), 20.2)
 all_primitives_instance_fields = {
@@ -288,6 +301,7 @@ all_primitives_instance_fields = {
         ALL_PRIMITIVES_INSTANCE_STRING_FIELD,
         ALL_PRIMITIVES_INSTANCE_INTEGER_FIELD,
         ALL_PRIMITIVES_INSTANCE_BOOL_FIELD,
+        ALL_PRIMITIVES_INSTANCE_FILE_FIELD,
         ALL_PRIMITIVES_INSTANCE_DATE_FIELD,
         ALL_PRIMITIVES_INSTANCE_NUMBER_FIELD,
     ]
