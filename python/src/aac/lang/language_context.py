@@ -616,6 +616,9 @@ class LanguageContext:
                     f"Version mismatch: State file written using version {version}; current AaC version {__version__}"
                 )
 
+            # Make sure to clear the state of the context before importing a state file.
+            self.clear()
+
             for file in files:
                 self.add_definitions_from_uri(sanitize_filesystem_path(file), definitions)
 
