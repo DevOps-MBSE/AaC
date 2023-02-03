@@ -18,7 +18,7 @@ def cli():
 @cli.result_callback()
 def output_result(result: PluginExecutionResult):
     """Output the message from the result of executing the CLI command."""
-    error_occurred = not result.is_success
+    error_occurred = not result.is_success()
     secho(result.get_messages_as_string(), err=error_occurred, color=True)
 
     get_active_context().export_to_file(ACTIVE_CONTEXT_STATE_FILE_NAME)
