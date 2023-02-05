@@ -18,7 +18,7 @@ def cli():
 @cli.result_callback()
 def output_result(result: PluginExecutionResult):
     """Output the message from the result of executing the CLI command."""
-    error_occurred = not result.is_success
+    error_occurred = not result.is_success()
     echo(result.get_messages_as_string(), err=error_occurred, color=True)
 
     get_active_context().export_to_file(ACTIVE_CONTEXT_STATE_FILE_NAME)
@@ -42,7 +42,7 @@ def to_click_parameter(argument: AacCommandArgument) -> Parameter:
     names = [argument.name] if isinstance(argument.name, str) else argument.name
     args = dict(type=to_click_type(argument.data_type), nargs=argument.number_of_arguments, default=argument.default)
     return (
-        Option(names, help=argument.description, show_default=True, **args)
+        Option(names, help=argument.description, show_default=True, is_flag=argument.data_type == "bool", **args)
         if argument.name[0].startswith("-")
         else Argument(names, **args)
     )

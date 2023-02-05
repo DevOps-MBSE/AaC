@@ -2,7 +2,7 @@
 In order to support portability of Architecture-as-Code, and to provide a secure, repeatable installation method for AaC users, we have created
 this one-stop installation package for each release of the AaC python package.
 
-In this package we provide a couple different methods to install AaC and its dependencies, depending on your needs and environment.
+In this package we provide a couple different methods to install AaC and its dependencies, depending on your needs and environment. This installation package only supports installing AaC in environments with Python 3.9, 3.10, or 3.11.
 
 ## Hash-Verified PyPI Dependencies
 When we create a release of AaC, we'll include a list of the runtime dependencies for AaC and their hash values. When you install via `pip install --require-hashes -r requirements.txt`

@@ -1,10 +1,9 @@
 """Module for PublishDiagnostics Provider which handles publishing of diagnostics for AaC Language Server."""
-
-from typing import Optional
-
+import logging
 from pygls.lsp import Diagnostic, DiagnosticSeverity, PublishDiagnosticsParams
 from pygls.server import LanguageServer
 from pygls.uris import to_fs_path
+from typing import Optional
 
 from aac.io.parser import parse
 from aac.plugins.first_party.lsp_server.conversion_helpers import source_location_to_range
@@ -30,10 +29,21 @@ class PublishDiagnosticsProvider(LspProvider):
 
     def get_findings_for_document(self, document_uri: str) -> list[ValidatorFinding]:
         """Return all the ValidatorFindings for the specified document."""
-        document = self.language_server.workspace.get_document(document_uri)
-        parsed_definitions = parse(document.source, to_fs_path(document_uri))
-        result = _validate_definitions(parsed_definitions, self.language_server.language_context, validate_context=False)
-        return result.findings.get_all_findings()
+        findings = []
+
+        if self.language_server.workspace:
+            document = self.language_server.workspace.get_document(document_uri)
+
+            if document:
+                parsed_definitions = parse(document.source, to_fs_path(document_uri))
+                result = _validate_definitions(parsed_definitions, self.language_server.language_context, validate_context=False)
+                findings = result.findings.get_all_findings()
+            else:
+                logging.debug(f"Can't provide diagnostics, {document_uri} not found in the workspace.")
+        else:
+            logging.debug("Can't provide diagnostics, the workspace doesn't exist in the LSP.")
+
+        return findings
 
     def finding_to_diagnostic(self, finding: ValidatorFinding) -> Diagnostic:
         """Convert a ValidatorFinding to an LSP Diagnostic."""
