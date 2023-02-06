@@ -189,12 +189,13 @@ TEST_TYPES_SCHEMA_EXTENSION_DEFINITION = create_schema_ext_definition(
     fields=[TEST_TYPES_SCHEMA_EXTENSION_FIELD],
 )
 
-def get_primitive_definition_values(int_value: Any, bool_value: Any, file_value: Any) -> dict[str, Any]:
+def get_primitive_definition_values(int_value: Any, bool_value: Any, file_value: Any, number_value: Any) -> dict[str, Any]:
     """Return a definition instance with the specified primitive values."""
     return {
         SCHEMA_FIELD_INT.get(DEFINITION_FIELD_NAME): int_value,
         SCHEMA_FIELD_BOOL.get(DEFINITION_FIELD_NAME): bool_value,
         SCHEMA_FIELD_FILE.get(DEFINITION_FIELD_NAME): file_value,
+        SCHEMA_FIELD_NUMBER.get(DEFINITION_FIELD_NAME): number_value,
     }
 
 TEST_TYPES_VALID_INSTANCE = create_definition(
