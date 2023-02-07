@@ -7,8 +7,7 @@ from aac.lang.constants import PRIMITIVE_TYPE_DATE
 from aac.lang.definitions.definition import Definition
 from aac.plugins.contributions.contribution_types.primitive_validation_contribution import PrimitiveValidationContribution
 from aac.plugins.first_party.primitive_type_check.validators import DATE_VALIDATION_NAME
-from aac.plugins.validators import FindingLocation
-from aac.plugins.validators._validator_finding import ValidatorFinding, FindingSeverity
+from aac.plugins.validators import FindingLocation, ValidatorFinding, FindingSeverity
 
 
 def get_validator() -> PrimitiveValidationContribution:
