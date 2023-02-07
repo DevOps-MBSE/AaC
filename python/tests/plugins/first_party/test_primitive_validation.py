@@ -5,8 +5,14 @@ from tempfile import TemporaryDirectory
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.io.constants import DEFINITION_SEPARATOR
 from aac.io.parser import parse
-from aac.lang.constants import DEFINITION_FIELD_NAME
-from aac.plugins.first_party.primitive_type_check.validators import bool_validator, file_validator, int_validator, num_validator
+from aac.lang.constants import PRIMITIVE_TYPE_DATE, PRIMITIVE_TYPE_NUMBER
+from aac.plugins.first_party.primitive_type_check.validators import (
+    bool_validator,
+    file_validator,
+    int_validator,
+    num_validator,
+    date_validator,
+)
 from aac.plugins.validators import FindingSeverity
 from aac.validate import validated_source
 
@@ -15,12 +21,14 @@ from tests.helpers.assertion import assert_validator_result_success
 from tests.helpers.io import temporary_test_file, temporary_test_file_wo_cm
 from tests.helpers.parsed_definitions import create_definition, NAME_STRING
 from tests.helpers.prebuilt_definition_constants import (
+    ALL_PRIMITIVES_INSTANCE,
+    ALL_PRIMITIVES_TEST_DEFINITION,
+    ALL_PRIMITIVES_TEST_DEFINITION_SCHEMA_EXT,
     TEST_TYPES_SCHEMA_DEFINITION,
     TEST_TYPES_SCHEMA_EXTENSION_DEFINITION,
     TEST_TYPES_ROOT_KEY,
     SCHEMA_FIELD_INT,
     SCHEMA_FIELD_BOOL,
-    SCHEMA_FIELD_NUMBER,
     SCHEMA_FIELD_FILE,
     get_primitive_definition_values,
 )
@@ -31,6 +39,7 @@ class TestPrimitiveValidation(ActiveContextTestCase):
     BOOLEAN_VALIDATOR = bool_validator.get_validator()
     NUMBER_VALIDATOR = num_validator.get_validator()
     FILE_VALIDATOR = file_validator.get_validator()
+    DATE_VALIDATOR = date_validator.get_validator()
 
     def setUp(self) -> None:
         super().setUp()
@@ -39,7 +48,7 @@ class TestPrimitiveValidation(ActiveContextTestCase):
         self.TEST_FILE = temporary_test_file_wo_cm("", dir=self.TEST_DIRECTORY.name)
 
         self.TEST_TYPES_VALID_INSTANCE = create_definition(
-            TEST_TYPES_ROOT_KEY, "validPrimitives", get_primitive_definition_values(0, True, self.TEST_FILE.name, 0.0)
+            TEST_TYPES_ROOT_KEY, "validPrimitives", get_primitive_definition_values(0, True, self.TEST_FILE.name, 0.0, None)
         )
         self.VALID_PRIMITIVES_FILE_CONTENT = DEFINITION_SEPARATOR.join(
             [
@@ -50,7 +59,7 @@ class TestPrimitiveValidation(ActiveContextTestCase):
         )
 
         self.TEST_TYPES_INVALID_INSTANCE = create_definition(
-            TEST_TYPES_ROOT_KEY, "invalidPrimitives", get_primitive_definition_values(0.5, "maybe", "/does/not/exist", 0.0)
+            TEST_TYPES_ROOT_KEY, "invalidPrimitives", get_primitive_definition_values(0.5, "maybe", "/does/not/exist", 0.0, None)
         )
         self.INVALID_PRIMITIVES_FILE_CONTENT = DEFINITION_SEPARATOR.join(
             [
@@ -97,6 +106,7 @@ class TestPrimitiveValidation(ActiveContextTestCase):
         test_context = get_active_context()
         test_context.add_definitions_to_context([TEST_TYPES_SCHEMA_DEFINITION, TEST_TYPES_SCHEMA_EXTENSION_DEFINITION])
 
+        # Assert that the integer validator does not return a finding because the int value is valid.
         finding = self.INTEGER_VALIDATOR.validation_function(self.TEST_TYPES_VALID_INSTANCE, 0)
         self.assertIsNone(finding)
 
@@ -109,32 +119,36 @@ class TestPrimitiveValidation(ActiveContextTestCase):
             TEST_TYPES_ROOT_KEY, "invalidPrimitives", {SCHEMA_FIELD_INT.get("name"): invalid_int_value}
         )
 
+        # Assert that the integer validator returns a finding because the int value is invalid.
         finding = self.INTEGER_VALIDATOR.validation_function(invalid_definition, invalid_int_value)
         self.assertIsNotNone(finding)
 
     def test_integer_type_check_invalid_string(self):
         test_context = get_active_context()
-        test_context.add_definitions_to_context([TEST_TYPES_SCHEMA_DEFINITION, TEST_TYPES_SCHEMA_EXTENSION_DEFINITION])
+        test_context.add_definitions_to_context([ALL_PRIMITIVES_TEST_DEFINITION_SCHEMA_EXT, ALL_PRIMITIVES_TEST_DEFINITION])
 
         invalid_int_value = "DefinitelyNotAnInt"
         invalid_definition = create_definition(
             TEST_TYPES_ROOT_KEY, "invalidPrimitives", {SCHEMA_FIELD_INT.get("name"): invalid_int_value}
         )
 
+        # Assert that the integer validator returns a finding because the int value is invalid.
         finding = self.INTEGER_VALIDATOR.validation_function(invalid_definition, invalid_int_value)
         self.assertIsNotNone(finding)
 
     def test_boolean_type_valid_true(self):
         test_context = get_active_context()
-        test_context.add_definitions_to_context([TEST_TYPES_SCHEMA_DEFINITION, TEST_TYPES_SCHEMA_EXTENSION_DEFINITION])
+        test_context.add_definitions_to_context([ALL_PRIMITIVES_TEST_DEFINITION_SCHEMA_EXT, ALL_PRIMITIVES_TEST_DEFINITION])
 
-        finding = self.BOOLEAN_VALIDATOR.validation_function(self.TEST_TYPES_VALID_INSTANCE, True)
+        # Assert that the boolean validator will not return a finding because the bool value is valid.
+        finding = self.BOOLEAN_VALIDATOR.validation_function(ALL_PRIMITIVES_INSTANCE, True)
         self.assertIsNone(finding)
 
     def test_boolean_type_valid_false(self):
         test_context = get_active_context()
         test_context.add_definitions_to_context([TEST_TYPES_SCHEMA_DEFINITION, TEST_TYPES_SCHEMA_EXTENSION_DEFINITION])
 
+        # Assert that the boolean validator will not return a finding because the bool value is valid.
         finding = self.BOOLEAN_VALIDATOR.validation_function(self.TEST_TYPES_VALID_INSTANCE, False)
         self.assertIsNone(finding)
 
@@ -147,46 +161,45 @@ class TestPrimitiveValidation(ActiveContextTestCase):
             TEST_TYPES_ROOT_KEY, "booleanType", {SCHEMA_FIELD_BOOL.get("name"): invalid_bool_value}
         )
 
+        # Assert that the boolean validator will not return a finding because the bool value is valid.
         finding = self.BOOLEAN_VALIDATOR.validation_function(invalid_definition, invalid_bool_value)
         self.assertIsNotNone(finding)
 
     def test_number_type_valid_float(self):
-        expected_number = 13.4
-        test_context = get_active_context()
-        test_context.add_definitions_to_context([TEST_TYPES_SCHEMA_DEFINITION, TEST_TYPES_SCHEMA_EXTENSION_DEFINITION])
-        test_definition = self.TEST_TYPES_VALID_INSTANCE.copy()
-        field_key = SCHEMA_FIELD_NUMBER.get(DEFINITION_FIELD_NAME)
-        test_definition.structure[TEST_TYPES_ROOT_KEY][field_key] = expected_number
-        # Re-parse the definition so that we can give it a lexeme for the new value.
-        test_definition, *_ = parse(test_definition.to_yaml(), test_definition.source.uri)
+        valid_numbers = ["13.4", "1.2e+34", "0x14"]
 
-        finding = self.NUMBER_VALIDATOR.validation_function(test_definition, test_definition.structure[TEST_TYPES_ROOT_KEY][field_key])
-        self.assertIsNone(finding)
+        for valid_number in valid_numbers:
+            test_context = get_active_context()
+            test_context.add_definitions_to_context([TEST_TYPES_SCHEMA_DEFINITION, TEST_TYPES_SCHEMA_EXTENSION_DEFINITION])
+            test_definition_yaml = self.TEST_TYPES_VALID_INSTANCE.to_yaml()
+            test_definition_yaml = test_definition_yaml.replace("0.0", valid_number)
 
-    def test_number_type_valid_exponential(self):
-        expected_number = 1.2e+34
-        test_context = get_active_context()
-        test_context.add_definitions_to_context([TEST_TYPES_SCHEMA_DEFINITION, TEST_TYPES_SCHEMA_EXTENSION_DEFINITION])
-        test_definition = self.TEST_TYPES_VALID_INSTANCE.copy()
-        field_key = SCHEMA_FIELD_NUMBER.get(DEFINITION_FIELD_NAME)
-        test_definition.structure[TEST_TYPES_ROOT_KEY][field_key] = expected_number
-        # Re-parse the definition so that we can give it a lexeme for the new value.
-        test_definition, *_ = parse(test_definition.to_yaml(), test_definition.source.uri)
+            # Re-parse the definition so that we can give it a lexeme for the new value.
+            test_definition, *_ = parse(test_definition_yaml, self.TEST_TYPES_VALID_INSTANCE.source.uri)
 
-        finding = self.NUMBER_VALIDATOR.validation_function(test_definition, test_definition.structure[TEST_TYPES_ROOT_KEY][field_key])
-        self.assertIsNone(finding)
+            # Assert that the number validator will not return a finding because the float value is valid.
+            finding = self.NUMBER_VALIDATOR.validation_function(
+                test_definition, test_definition.structure[test_definition.get_root_key()][PRIMITIVE_TYPE_NUMBER.upper()]
+            )
+            self.assertIsNone(finding, f"Failed to validate good number: '{valid_number}'")
 
-    def test_number_type_invalid(self):
-        test_context = get_active_context()
-        test_context.add_definitions_to_context([TEST_TYPES_SCHEMA_DEFINITION, TEST_TYPES_SCHEMA_EXTENSION_DEFINITION])
+    def test_number_type_invalid_float(self):
+        invalid_numbers = ["13.4.7", "1.2e34", "xx14"]
 
-        invalid_numb_value = "ThisIsDefNotANumber"
-        invalid_definition = create_definition(
-            TEST_TYPES_ROOT_KEY, "numberType", {SCHEMA_FIELD_NUMBER.get("name"): invalid_numb_value}
-        )
+        for invalid_number in invalid_numbers:
+            test_context = get_active_context()
+            test_context.add_definitions_to_context([TEST_TYPES_SCHEMA_DEFINITION, TEST_TYPES_SCHEMA_EXTENSION_DEFINITION])
+            test_definition_yaml = self.TEST_TYPES_VALID_INSTANCE.to_yaml()
+            test_definition_yaml = test_definition_yaml.replace("0.0", invalid_number)
 
-        finding = self.BOOLEAN_VALIDATOR.validation_function(invalid_definition, invalid_numb_value)
-        self.assertIsNotNone(finding)
+            # Re-parse the definition so that we can give it a lexeme for the new value.
+            test_definition, *_ = parse(test_definition_yaml, self.TEST_TYPES_VALID_INSTANCE.source.uri)
+
+            # Assert that the number validator will not return a finding because the float value is valid.
+            finding = self.NUMBER_VALIDATOR.validation_function(
+                test_definition, test_definition.structure[test_definition.get_root_key()][PRIMITIVE_TYPE_NUMBER.upper()]
+            )
+            self.assertIsNotNone(finding, f"Failed to identify bad number: '{invalid_number}'")
 
     def test_file_type_valid(self):
         test_context = get_active_context()
@@ -210,3 +223,39 @@ class TestPrimitiveValidation(ActiveContextTestCase):
         self.assertEqual(finding.definition.name, invalid_definition.name)
         self.assertEqual(finding.severity, FindingSeverity.WARNING)
         self.assertRegexpMatches(finding.message, f"{fake_file_name}.*not.*exist")
+
+    def test_data_type_valid_format(self):
+        valid_dates = ["2020-02-08", "2020-W06-5", "2020-039", "2020W065"]
+
+        for valid_date in valid_dates:
+            test_context = get_active_context()
+            test_context.add_definitions_to_context([ALL_PRIMITIVES_TEST_DEFINITION_SCHEMA_EXT, ALL_PRIMITIVES_TEST_DEFINITION])
+            test_definition_yaml = ALL_PRIMITIVES_INSTANCE.to_yaml()
+            test_definition_yaml = test_definition_yaml.replace("1970-01-01 00:00:00", valid_date)
+
+            # Re-parse the definition so that we can give it a lexeme for the new value.
+            test_definition, *_ = parse(test_definition_yaml, ALL_PRIMITIVES_INSTANCE.source.uri)
+
+            # Assert that the number validator will not return a finding because the float value is valid.
+            finding = self.DATE_VALIDATOR.validation_function(
+                test_definition, test_definition.structure[test_definition.get_root_key()][PRIMITIVE_TYPE_DATE.upper()]
+            )
+            self.assertIsNone(finding, f"Failed to validate good date: '{valid_date}'")
+
+    def test_data_type_invalid_format(self):
+        invalid_dates = ["2020-jan:08", "5-06-2020", "1970-01-01TTTT00:00:00Z", "2020T065"]
+
+        for invalid_date in invalid_dates:
+            test_context = get_active_context()
+            test_context.add_definitions_to_context([ALL_PRIMITIVES_TEST_DEFINITION_SCHEMA_EXT, ALL_PRIMITIVES_TEST_DEFINITION])
+            test_definition_yaml = ALL_PRIMITIVES_INSTANCE.to_yaml()
+            test_definition_yaml = test_definition_yaml.replace("1970-01-01 00:00:00", invalid_date)
+
+            # Re-parse the definition so that we can give it a lexeme for the new value.
+            test_definition, *_ = parse(test_definition_yaml, ALL_PRIMITIVES_INSTANCE.source.uri)
+
+            # Assert that the number validator will not return a finding because the float value is valid.
+            finding = self.DATE_VALIDATOR.validation_function(
+                test_definition, test_definition.structure[test_definition.get_root_key()][PRIMITIVE_TYPE_DATE.upper()]
+            )
+            self.assertIsNotNone(finding, f"Failed to identify bad date: '{invalid_date}'")
