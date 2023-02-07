@@ -1,12 +1,8 @@
-from os import remove, removedirs
-from os.path import lexists
-from tempfile import TemporaryDirectory
 from typing import Optional
 
 from aac.lang.active_context_lifecycle_manager import get_active_context
-from aac.io.constants import DEFINITION_SEPARATOR
 from aac.io.parser import parse
-from aac.lang.constants import DEFINITION_FIELD_NAME, PRIMITIVE_TYPE_BOOL, PRIMITIVE_TYPE_DATE, PRIMITIVE_TYPE_FILE, PRIMITIVE_TYPE_INT, PRIMITIVE_TYPE_NUMBER
+from aac.lang.constants import PRIMITIVE_TYPE_BOOL, PRIMITIVE_TYPE_DATE, PRIMITIVE_TYPE_FILE, PRIMITIVE_TYPE_INT, PRIMITIVE_TYPE_NUMBER
 from aac.plugins.first_party.primitive_type_check.validators import (
     bool_validator,
     file_validator,
@@ -14,24 +10,16 @@ from aac.plugins.first_party.primitive_type_check.validators import (
     num_validator,
     date_validator,
 )
-from aac.plugins.validators import ValidatorFinding, FindingSeverity
+from aac.plugins.validators import ValidatorFinding
 from aac.validate import validated_source
 
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.assertion import assert_validator_result_success
-from tests.helpers.io import temporary_test_file, temporary_test_file_wo_cm
-from tests.helpers.parsed_definitions import create_definition, NAME_STRING
+from tests.helpers.io import temporary_test_file
 from tests.helpers.prebuilt_definition_constants import (
     ALL_PRIMITIVES_INSTANCE,
     ALL_PRIMITIVES_TEST_DEFINITION,
     ALL_PRIMITIVES_TEST_DEFINITION_SCHEMA_EXT,
-    TEST_TYPES_SCHEMA_DEFINITION,
-    TEST_TYPES_SCHEMA_EXTENSION_DEFINITION,
-    TEST_TYPES_ROOT_KEY,
-    SCHEMA_FIELD_INT,
-    SCHEMA_FIELD_BOOL,
-    SCHEMA_FIELD_FILE,
-    get_primitive_definition_values,
 )
 
 
@@ -42,54 +30,35 @@ class TestPrimitiveValidation(ActiveContextTestCase):
     FILE_VALIDATOR = file_validator.get_validator()
     DATE_VALIDATOR = date_validator.get_validator()
 
-    def setUp(self) -> None:
-        super().setUp()
-
-        self.TEST_DIRECTORY = TemporaryDirectory()
-        self.TEST_FILE = temporary_test_file_wo_cm("", dir=self.TEST_DIRECTORY.name)
-
-        self.TEST_TYPES_VALID_INSTANCE = create_definition(
-            TEST_TYPES_ROOT_KEY, "validPrimitives", get_primitive_definition_values(0, True, self.TEST_FILE.name, 0.0, None)
-        )
-        self.VALID_PRIMITIVES_FILE_CONTENT = DEFINITION_SEPARATOR.join(
-            [
-                TEST_TYPES_SCHEMA_DEFINITION.to_yaml(),
-                TEST_TYPES_SCHEMA_EXTENSION_DEFINITION.to_yaml(),
-                self.TEST_TYPES_VALID_INSTANCE.to_yaml(),
-            ]
-        )
-
-        self.TEST_TYPES_INVALID_INSTANCE = create_definition(
-            TEST_TYPES_ROOT_KEY,
-            "invalidPrimitives",
-            get_primitive_definition_values(0.5, "maybe", "/does/not/exist", 0.0, None),
-        )
-        self.INVALID_PRIMITIVES_FILE_CONTENT = DEFINITION_SEPARATOR.join(
-            [
-                TEST_TYPES_SCHEMA_DEFINITION.to_yaml(),
-                TEST_TYPES_SCHEMA_EXTENSION_DEFINITION.to_yaml(),
-                self.TEST_TYPES_INVALID_INSTANCE.to_yaml(),
-            ]
-        )
-
-    def tearDown(self) -> None:
-        super().tearDown()
-
-        if lexists(self.TEST_FILE.name):
-            remove(self.TEST_FILE.name)
-            removedirs(self.TEST_DIRECTORY.name)
-
     def test_type_check_valid(self):
+        test_context = get_active_context()
+        test_context.add_definitions_to_context(
+            [ALL_PRIMITIVES_TEST_DEFINITION_SCHEMA_EXT, ALL_PRIMITIVES_TEST_DEFINITION]
+        )
+
         with (
-            temporary_test_file(self.VALID_PRIMITIVES_FILE_CONTENT) as test_file,
+            temporary_test_file(ALL_PRIMITIVES_INSTANCE.to_yaml()) as test_file,
             validated_source(test_file.name) as result,
         ):
             get_active_context().add_definitions_to_context(result.definitions)
             assert_validator_result_success(result)
 
     def test_type_check_invalid(self):
+        test_context = get_active_context()
+        test_context.add_definitions_to_context(
+            [ALL_PRIMITIVES_TEST_DEFINITION_SCHEMA_EXT, ALL_PRIMITIVES_TEST_DEFINITION]
+        )
+
+        root_key = ALL_PRIMITIVES_INSTANCE.get_root_key()
+        test_content = ALL_PRIMITIVES_INSTANCE.to_yaml()
+        test_content.replace(str(ALL_PRIMITIVES_INSTANCE.structure[root_key][PRIMITIVE_TYPE_BOOL.upper()]), "noooo")
+        test_content.replace(str(ALL_PRIMITIVES_INSTANCE.structure[root_key][PRIMITIVE_TYPE_DATE.upper()]), "NotADate")
+        test_content.replace(str(ALL_PRIMITIVES_INSTANCE.structure[root_key][PRIMITIVE_TYPE_FILE.upper()]), "/not/a/file/")
+        test_content.replace(str(ALL_PRIMITIVES_INSTANCE.structure[root_key][PRIMITIVE_TYPE_INT.upper()]), "-0987654321")
+        test_content.replace(str(ALL_PRIMITIVES_INSTANCE.structure[root_key][PRIMITIVE_TYPE_NUMBER.upper()]), "1.2.3")
+
         with (
-            temporary_test_file(self.INVALID_PRIMITIVES_FILE_CONTENT) as test_file,
+            temporary_test_file(test_content) as test_file,
             self.assertRaises(Exception) as error,
             validated_source(test_file.name),
         ):
@@ -141,14 +110,6 @@ class TestPrimitiveValidation(ActiveContextTestCase):
         finding_assertion = ".*not.*exist"
         invalid_numbers = ["/i/don't/exist", "https://google.com"]
         self._test_invalid_primitive_validation(PRIMITIVE_TYPE_FILE, "./test.aac", invalid_numbers, finding_assertion)
-
-    def test_file_type_valid(self):
-        test_context = get_active_context()
-        test_context.add_definitions_to_context([TEST_TYPES_SCHEMA_DEFINITION, TEST_TYPES_SCHEMA_EXTENSION_DEFINITION])
-
-        with temporary_test_file("") as test_file:
-            finding = self.FILE_VALIDATOR.validation_function(self.TEST_TYPES_VALID_INSTANCE, test_file.name)
-            self.assertIsNone(finding)
 
     def test_data_type_valid_format(self):
         valid_dates = ["2020-02-08"]
