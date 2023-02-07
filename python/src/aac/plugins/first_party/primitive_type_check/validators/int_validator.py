@@ -1,4 +1,4 @@
-"""Module for the various type contributions provided by this plugin."""
+"""Module for validating primitive integer types."""
 
 import logging
 from typing import Any, Optional
@@ -38,7 +38,6 @@ def validate_integer(definition: Definition, value_to_validate: Any) -> Optional
     except Exception as error:
         is_invalid = True
         logging.debug(f"{PRIMITIVE_TYPE_INT} validation failed for value {value_to_validate} with error:\n{error}")
-        pass
 
     finding = None
     if is_invalid:

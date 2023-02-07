@@ -1,3 +1,6 @@
+import:
+  - ComplexMath_PIDS.yaml
+
 spec:
   name: Module Power SRS
   description:  This is a representative Software Requirements Specification for a module called Power.
