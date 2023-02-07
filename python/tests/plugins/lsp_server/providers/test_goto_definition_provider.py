@@ -1,4 +1,3 @@
-import logging
 from os import path
 from pygls.lsp import methods
 from pygls.lsp.types.basic_structures import Location, Position, Range
