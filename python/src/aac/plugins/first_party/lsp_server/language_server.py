@@ -4,7 +4,7 @@ import logging
 
 from asyncio import ensure_future
 from os import linesep
-from typing import Optional
+from typing import Any, Optional
 
 from pygls.lsp import (
     CompletionOptions,
@@ -188,63 +188,50 @@ async def did_change(ls: AacLanguageServer, params: DidChangeTextDocumentParams)
 
 async def handle_completion(ls: AacLanguageServer, params: CompletionParams):
     """Handle the completion request."""
-    code_completion_provider = ls.providers.get(methods.COMPLETION)
-    completion_results = code_completion_provider.handle_request(ls, params)
-    logging.debug(f"Completion results: {completion_results}")
-    return completion_results
+    return _provider_handle_request(methods.COMPLETION, ls, params)
 
 
 async def handle_hover(ls: AacLanguageServer, params: HoverParams):
     """Handle the hover request."""
-    hover_provider = ls.providers.get(methods.HOVER)
-    hover_results = hover_provider.handle_request(ls, params)
-    logging.debug(f"Hover results: {hover_results}")
-    return hover_results
+    return _provider_handle_request(methods.HOVER, ls, params)
 
 
 async def handle_goto_definition(ls: AacLanguageServer, params: DefinitionParams):
     """Handle the goto definition request."""
-    goto_definition_provider = ls.providers.get(methods.DEFINITION)
-    goto_definition_results = goto_definition_provider.handle_request(ls, params)
-    logging.debug(f"Goto Definition results: {goto_definition_results}")
-    return goto_definition_results
+    return _provider_handle_request(methods.DEFINITION, ls, params)
 
 
 async def handle_references(ls: AacLanguageServer, params: ReferenceParams):
     """Handle the find references request."""
-    find_references_provider = ls.providers.get(methods.REFERENCES)
-    find_references_results = find_references_provider.handle_request(ls, params)
-    logging.debug(f"Find references results: {find_references_results}")
-    return find_references_results
+    return _provider_handle_request(methods.REFERENCES, ls, params)
 
 
 async def handle_rename(ls: AacLanguageServer, params: RenameParams):
     """Handle the rename definition request."""
-    rename_provider = ls.providers.get(methods.RENAME)
-    rename_results = rename_provider.handle_request(ls, params)
-    logging.debug(f"Rename results: {rename_results}")
-    return rename_results
+    return _provider_handle_request(methods.RENAME, ls, params)
 
 
 async def handle_prepare_rename(ls: AacLanguageServer, params: RenameParams):
     """Handle the prepare rename definition request."""
-    prepare_rename_provider = ls.providers.get(methods.PREPARE_RENAME)
-    prepare_rename_results = prepare_rename_provider.handle_request(ls, params)
-    logging.debug(f"Prepare rename results: {prepare_rename_results}")
-    return prepare_rename_results
+    return _provider_handle_request(methods.PREPARE_RENAME, ls, params)
 
 
 async def handle_semantic_tokens(ls: AacLanguageServer, params: SemanticTokensParams):
     """Handle the semantic tokens request."""
-    semantic_tokens_provider = ls.providers.get(methods.TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL)
-    semantic_tokens_results = semantic_tokens_provider.handle_request(ls, params)
-    logging.debug(f"Semantic tokens results: {semantic_tokens_results}")
-    return semantic_tokens_results
+    return _provider_handle_request(methods.TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL, ls, params)
 
 
 async def handle_publish_diagnostics(ls: AacLanguageServer, params: PublishDiagnosticsParams):
     """Handle the publish diagnostics request."""
-    publish_diagnostics_provider = ls.providers.get(methods.TEXT_DOCUMENT_PUBLISH_DIAGNOSTICS)
-    diagnostics_results = await publish_diagnostics_provider.handle_request(ls, params)
-    logging.debug(f"Publish Diagnostics results: {diagnostics_results}")
-    return diagnostics_results
+    return _provider_handle_request(methods.TEXT_DOCUMENT_PUBLISH_DIAGNOSTICS, ls, params)
+
+
+def _provider_handle_request(provider_name: str, ls: AacLanguageServer, params: Any):
+    provider = ls.providers.get(provider_name)
+
+    if provider:
+        results = provider.handle_request(ls, params)
+        logging.debug(f"{provider_name} results: {results}")
+        return results
+    else:
+        logging.warning(f"No provider found for '{provider_name}'.")

@@ -16,7 +16,7 @@ __version__ = "0.1.9"
 __log_file_name__ = os.path.join(os.path.dirname(__file__), "aac.log")
 
 logging.basicConfig(
-    format="%(asctime)s::%(module)s::%(filename)s::L%(lineno)d::%(levelname)s::%(message)s",
+    format="%(asctime)s::%(pathname)s:%(lineno)d::%(levelname)s::%(message)s",
     filename=__log_file_name__,
     encoding="utf-8",
     level=logging.DEBUG,

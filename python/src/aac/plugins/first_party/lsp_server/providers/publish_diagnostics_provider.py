@@ -15,7 +15,7 @@ from aac.validate._validate import _validate_definitions
 class PublishDiagnosticsProvider(LspProvider):
     """Handler for Publishing Diagnostics for AaC LSP."""
 
-    async def handle_request(self, ls: LanguageServer, params: PublishDiagnosticsParams) -> list[Diagnostic]:
+    def handle_request(self, ls: LanguageServer, params: PublishDiagnosticsParams) -> list[Diagnostic]:
         """Handle publishing validation findings as diagnostics."""
         self.language_server = ls
         diagnostics = self.get_diagnostics(params.uri)
