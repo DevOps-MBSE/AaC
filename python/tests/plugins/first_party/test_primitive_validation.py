@@ -112,7 +112,7 @@ class TestPrimitiveValidation(ActiveContextTestCase):
         self._test_invalid_primitive_validation(PRIMITIVE_TYPE_FILE, "./test.aac", invalid_numbers, finding_assertion)
 
     def test_data_type_valid_format(self):
-        valid_dates = ["2020-02-08"]
+        valid_dates = ["2020-02-08", "2020-12-30T01:23:45", "3020-12-30T01:23:45+06:00"]
         self._test_valid_primitive_validation(PRIMITIVE_TYPE_DATE, "1970-01-01 00:00:00", valid_dates)
 
     def test_data_type_invalid_format(self):
