@@ -88,6 +88,13 @@ def get_symbol_range_at_position(content: str, line: int, column: int) -> Option
 
                 symbol_end = i
 
+            # Strip the whitespace
+            while line_with_symbol[symbol_start].isspace():
+                symbol_start += 1
+
+            while line_with_symbol[symbol_end].isspace():
+                symbol_end -= 1
+
             # Have to add 1 to the end index since slice ends are exclusive.
             symbol_end += 1
 

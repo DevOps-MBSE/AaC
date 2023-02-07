@@ -1,3 +1,4 @@
+import logging
 from os import path
 from pygls.lsp import methods
 from pygls.lsp.types.basic_structures import Location, Position, Range
@@ -34,7 +35,7 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
 
     def get_definition_location_of_name(self, content: str, name: str) -> Location:
         test_document_lines = content.splitlines()
-        target_line = list(filter(lambda line: name in line, test_document_lines))[0]
+        target_line = [line for line in test_document_lines if name in line][0]
         match = search(name, target_line)
         line = test_document_lines.index(target_line)
         return Location(
@@ -110,23 +111,22 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         new_test_document_content = f"{TEST_DOCUMENT_CONTENT}{YAML_DOCUMENT_SEPARATOR}{TEST_SERVICE_THREE.to_yaml()}"
         await self.write_document(TEST_DOCUMENT_NAME, new_test_document_content)
 
-        target_location = self.get_definition_location_of_name(new_test_document_content, TEST_SCHEMA_C.name)
         res: GotoDefinitionResponse = await self.goto_definition(
-            TEST_DOCUMENT_NAME, line=target_location.range.start.line, character=target_location.range.start.character
+            TEST_DOCUMENT_NAME, line=61, character=17
         )
 
-        definition_location = self.get_definition_location_of_name(added_content, TEST_SCHEMA_C.name)
+        expected_location = self.get_definition_location_of_name(added_content, TEST_SCHEMA_C.name)
 
         location = res.get_location()
         self.assertIsNotNone(location)
         self.assertEqual(path.basename(location.uri), path.basename(added_document.file_name))
         self.assertEqual(
             location.range.start,
-            Position(line=definition_location.range.start.line, character=definition_location.range.start.character),
+            Position(line=expected_location.range.start.line, character=expected_location.range.start.character),
         )
         self.assertEqual(
             location.range.end,
-            Position(line=definition_location.range.end.line, character=definition_location.range.end.character),
+            Position(line=expected_location.range.end.line, character=expected_location.range.end.character),
         )
 
     async def test_handles_goto_definition_for_root_keys(self):
