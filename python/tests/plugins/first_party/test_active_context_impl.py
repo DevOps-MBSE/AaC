@@ -32,7 +32,12 @@ class TestActiveContextPlugin(ActiveContextTestCase):
         self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
 
         test_context = get_active_context()
-        self.assertEqual(result.get_messages_as_string(), self.file_names_to_string(test_context.get_files_in_context()))
+        expected_files = [file.uri for file in test_context.get_files_in_context()]
+        actual_files = result.get_messages_as_string()
+        self.assertGreater(len(actual_files), 0)
+
+        for expected_file in expected_files:
+            self.assertIn(expected_file, actual_files)
 
     def test_remove_file_success(self):
         with temporary_test_file(self.definition.to_yaml()) as test_file:

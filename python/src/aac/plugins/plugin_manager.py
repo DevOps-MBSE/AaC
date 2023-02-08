@@ -87,4 +87,4 @@ def get_plugins() -> list[Plugin]:
     if not INSTALLED_PLUGINS:
         INSTALLED_PLUGINS = get_plugin_manager().hook.get_plugin()
 
-    return INSTALLED_PLUGINS
+    return [plugin.copy() for plugin in INSTALLED_PLUGINS]
