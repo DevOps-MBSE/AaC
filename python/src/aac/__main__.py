@@ -1,5 +1,4 @@
 """Main entry point."""
-
 import sys
 
 if sys.argv[0].endswith("__main__.py"):
@@ -8,5 +7,4 @@ if sys.argv[0].endswith("__main__.py"):
 
 if __name__ == "__main__":
     from aac.cli.execute import cli
-
     cli()
