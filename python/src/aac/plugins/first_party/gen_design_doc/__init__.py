@@ -2,7 +2,7 @@
 
 from aac.cli.aac_command import AacCommand, AacCommandArgument
 from aac.plugins import hookimpl
-from aac.plugins.first_party.gen_design_doc.gen_design_doc_impl import gen_design_doc
+from aac.plugins.first_party.gen_design_doc.gen_design_doc_impl import gen_design_doc, plugin_name
 from aac.plugins.plugin import Plugin
 from aac.plugins._common import get_plugin_definitions_from_yaml
 
@@ -15,7 +15,6 @@ def get_plugin() -> Plugin:
     Returns:
         A collection of information about the plugin and what it contributes.
     """
-    *_, plugin_name = __package__.split(".")
     plugin = Plugin(plugin_name)
     plugin.register_commands(_get_plugin_commands())
     plugin.register_definitions(_get_plugin_definitions())

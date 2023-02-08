@@ -1,5 +1,4 @@
 import logging
-import copy
 from contextlib import contextmanager
 from typing import Generator, Any, Optional
 
@@ -19,7 +18,7 @@ from aac.lang.language_context import LanguageContext
 from aac.lang.language_error import LanguageError
 from aac.plugins.contributions.contribution_types import DefinitionValidationContribution
 from aac.plugins.validators import ValidatorFindings, ValidatorResult
-from aac.plugins.validators._validator_finding import ValidatorFinding
+from aac.plugins.validators._validator_finding import ValidatorFinding, FindingSeverity, FindingLocation
 from aac.validate._collect_validators import get_applicable_validators_for_definition
 from aac.validate._validation_error import ValidationError
 
@@ -83,8 +82,15 @@ def _with_validation(
 def _validate_definitions(
     definitions: list[Definition], language_context: LanguageContext, validate_context: bool
 ) -> ValidatorResult:
-    validation_context = copy.deepcopy(language_context)
-    validation_context.add_definitions_to_context(definitions)
+    validation_context = language_context.copy()
+
+    for definition in definitions:
+        existing_definition = validation_context.get_definition_by_uid(definition.uid)
+
+        if existing_definition:
+            validation_context.update_definition_in_context(definition)
+        else:
+            validation_context.add_definition_to_context(definition)
 
     validator_plugins = validation_context.get_definition_validations()
 
@@ -147,7 +153,16 @@ def _apply_validator(
         if validation.get(DEFINITION_FIELD_NAME) == validator_plugin.name:
             validation_args = validation.get(DEFINITION_FIELD_ARGUMENTS) or []
 
-    return validator_plugin.validation_function(definition, target_schema_definition, language_context, *validation_args)
+    validator_result = None
+    try:
+        validator_result = validator_plugin.validation_function(definition, target_schema_definition, language_context, *validation_args)
+    except Exception as exception:
+        exception_message = f"Validator '{validator_plugin.name}' failed with an exception: {exception}"
+        finding_location = FindingLocation(validator_plugin.name, definition.source, 0, 0, 0, 0)
+        exception_finding = ValidatorFinding(definition, FindingSeverity.ERROR, exception_message, finding_location)
+        validator_result = ValidatorResult([definition], ValidatorFindings(findings=[exception_finding]))
+
+    return validator_result
 
 
 def _validate_primitive_types(definition: Definition, language_context: LanguageContext) -> ValidatorResult:
@@ -193,17 +208,24 @@ def _validate_fields(
 def _validate_primitive_field(
     source_def: Definition, field_type: str, field_value: Any, language_context: LanguageContext
 ) -> Optional[ValidatorFinding]:
-    validator = [
+    validators = [
         validator for validator in language_context.get_primitive_validations() if validator.primitive_type == field_type
     ]
 
-    finding = None
-    if validator:
-        finding = validator[0].validation_function(source_def, field_value)
+    validator_finding = None
+
+    if validators:
+        validator, *_ = validators
+        try:
+            validator_finding = validator.validation_function(source_def, field_value)
+        except Exception as exception:
+            exception_message = f"Validator '{validator.name}' failed with an exception: {exception}"
+            finding_location = FindingLocation(validator.name, source_def.source, 0, 0, 0, 0)
+            validator_finding = ValidatorFinding(source_def, FindingSeverity.ERROR, exception_message, finding_location)
     else:
         logging.info(f"No primitive type validation for '{field_type}'")
 
-    return finding
+    return validator_finding
 
 
 def _validate_schema_field(

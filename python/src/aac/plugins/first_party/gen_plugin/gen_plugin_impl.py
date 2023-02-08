@@ -162,7 +162,7 @@ def _prepare_and_generate_plugin_files(
         GeneratePluginException: An error encountered during the plugin generation process.
     """
     parsed_definitions_dictionary = convert_parsed_definitions_to_dict_definition(definitions)
-    template_properties = _gather_template_properties(parsed_definitions_dictionary, architecture_file_path)
+    template_properties = _gather_template_properties(parsed_definitions_dictionary, architecture_file_path, plugin_type)
 
     plugin_name = template_properties.get("plugin").get("name")
     plugin_implementation_name = template_properties.get("plugin").get("implementation_name")
@@ -174,7 +174,9 @@ def _prepare_and_generate_plugin_files(
     )
 
     if plugin_type == PLUGIN_TYPE_THIRD_STRING:
-        new_architecture_file_location = _get_new_architecture_file_path(architecture_file_path, output_directory, plugin_implementation_name)
+        new_architecture_file_location = _get_new_architecture_file_path(
+            architecture_file_path, output_directory, plugin_implementation_name
+        )
         _move_architecture_file_to_plugin_root(architecture_file_path, new_architecture_file_location)
 
         for definition in definitions:
@@ -189,13 +191,16 @@ def _prepare_and_generate_plugin_files(
     return generated_templates
 
 
-def _gather_template_properties(parsed_models: dict[str, dict], architecture_file_path: str) -> dict[str, any]:
+def _gather_template_properties(
+    parsed_models: dict[str, dict], architecture_file_path: str, plugin_type: str
+) -> dict[str, any]:
     """
     Analyzes the models and returns the necessary template data to generate the plugin.
 
     Args:
         parsed_models (dict[str, dict]): Dict representing the plugin models
         architecture_file_path (str): The filepath to the architecture file used to generate the plugin
+        plugin_type (str): Whether the plugin is first or third party
 
     Returns:
         A dictionary of properties to be used when generating the jinja templates.
@@ -223,9 +228,10 @@ def _gather_template_properties(parsed_models: dict[str, dict], architecture_fil
         _add_definitions_yaml_string(definition) for definition in _gather_plugin_aac_definitions(parsed_models)
     ]
 
+    package_name = path.basename(path.dirname(architecture_file_path))
     architecture_file = {
         "name": path.basename(architecture_file_path),
-        "package_name": path.basename(path.dirname(architecture_file_path)),
+        "package_name": f"first_party.{package_name}" if plugin_type == PLUGIN_TYPE_FIRST_STRING else package_name,
     }
 
     template_properties = {

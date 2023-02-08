@@ -45,19 +45,27 @@ jobs:
 
 
   os_test_matrix:
-    name: Test ${{ matrix.os }} Secure Install Air Gap
+    name: Test ${{ matrix.os }}/${{ matrix.py_version }} Secure Install Air Gap
     needs: os_build_matrix
     runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
         os: [ubuntu-20.04, ubuntu-latest, windows-latest, macos-latest] # Annoyingly, Github actions don't support anchors
+        py_version: ["3.9.0", "3.10.0", "3.11.0"]
+        exclude:
+          - os: ubuntu-latest
+            py_version: 3.9.0
+          - os: ubuntu-latest
+            py_version: 3.10.0
+          - os: macos-latest
+            py_version: 3.11.0
 
     steps:
       - name: Set up Python 3.9
         uses: actions/setup-python@v4
         with:
-          python-version: 3.9
+          python-version:  ${{ matrix.py_version }}
 
       - name: Checkout Repository # Checked-out repository is necessary to test the first party plugin generation.
         uses: actions/checkout@v3
@@ -70,14 +78,12 @@ jobs:
 
       - name: Install from Secure Install
         if: matrix.os != 'windows-latest'
-        # https://github.com/actions/upload-artifact/issues/38
         run: |
           chmod +x ./aac_secure_install_*/install_aac_air_gap.bash
           ./aac_secure_install_*/install_aac_air_gap.bash
 
       - name: Install from Secure Install
         if: matrix.os == 'windows-latest'
-        # https://github.com/actions/upload-artifact/issues/38
         run: |
           cd (Get-ChildItem -Filter aac_secure_install_*)
           .\install_aac_air_gap.bat
@@ -112,31 +118,29 @@ jobs:
       - name: Create PlantUML Component Diagram
         run: python -m aac puml-object model/flow/System.yaml output/
 
-      - name: Test Gen-Plugin First-Party Plugin
-        run: |
-          mkdir -p src/aac/plugins/first_party/test_plugin/
-          ls
-          cp model/plugin/plugin.yaml src/aac/plugins/first_party/test_plugin/first_party.yaml
-          echo y | aac gen-plugin src/aac/plugins/first_party/test_plugin/first_party.yaml
-          pip install .[all]
-
       - name: Test Gen-Plugin Third-Party Plugin
         if: matrix.os != 'windows-latest'
         run: |
-          echo y | python -m aac gen-plugin model/plugin/plugin.yaml
-          cd model/plugin/
+          mkdir -p model/third_party_test/
+          cp model/plugin/plugin.yaml model/third_party_test/plugin.yaml
+          echo y | python -m aac gen-plugin model/third_party_test/plugin.yaml
+          cd model/third_party_test/
           pip install .
-          aac -h | grep test-plugin-command
-          pip uninstall -y test_plugin
+          aac activate-plugin test-plugin
+          aac list-plugins --active | grep "test-plugin"
+          aac deactivate-plugin test-plugin
+          pip uninstall -y test-plugin
+        shell:
+          bash
 
-      - name: Test Gen-Plugin Third-Party Plugin
-        if: matrix.os == 'windows-latest'
+      - name: Test Gen-Plugin First-Party Plugin
         run: |
-          echo y | python -m aac gen-plugin model/plugin/plugin.yaml
-          cd model/plugin/
+          mkdir -p src/aac/plugins/first_party/test_plugin/
+          cp model/plugin/plugin.yaml src/aac/plugins/first_party/test_plugin/first_party.yaml
+          echo y | aac gen-plugin src/aac/plugins/first_party/test_plugin/first_party.yaml
           pip install .
-          aac -h | findstr "test-plugin-command"
-          pip uninstall -y test_plugin
+        shell:
+          bash
 
       - name: Upload logs from failed runs
         if: ${{ failure() }}

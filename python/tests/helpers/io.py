@@ -43,6 +43,7 @@ def temporary_test_file(content: str, **extra_file_attrs):
                                  file. These should be valid parameters to NamedTemporaryFile.
                                  (optional)
             Extra file attributes:
+                * mode (default value is "w")
                 * buffering (default value is - 1)
                 * encoding (default value is None)
                 * newline (default value is None)
@@ -55,8 +56,9 @@ def temporary_test_file(content: str, **extra_file_attrs):
     """
     with TemporaryDirectory() as temp_dir:
         new_directory = extra_file_attrs.get("dir") or temp_dir
-        extra_file_attrs |= {"dir": new_directory}
-        with new_working_dir(new_directory), NamedTemporaryFile(mode="w", **extra_file_attrs) as file:
+        mode = extra_file_attrs.get("mode") or "w"
+        extra_file_attrs |= {"dir": new_directory, "mode": mode}
+        with new_working_dir(new_directory), NamedTemporaryFile(**extra_file_attrs) as file:
             file.write(content)
             file.seek(0)
 

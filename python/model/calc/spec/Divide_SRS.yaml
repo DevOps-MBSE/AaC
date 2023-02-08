@@ -1,3 +1,6 @@
+import:
+  - IntermediateMath_PIDS.yaml
+
 spec:
   name: Module Divide SRS
   description:  This is a representative Software Requirements Specification for a module called Divide.

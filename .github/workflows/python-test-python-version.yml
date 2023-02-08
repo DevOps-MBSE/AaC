@@ -7,7 +7,7 @@ defaults:
 
 jobs:
   python_tests:
-    name: Python ${{ matrix.py_version }} Tests
+    name: Python ${{ matrix.py_version }} Unit Tests
     runs-on: ubuntu-20.04
 
     strategy:
@@ -40,28 +40,6 @@ jobs:
       with:
         name: test-coverage-report
         path: python/html_code_coverage/
-
-    - name: Validate Core Spec and Plugin Specs
-      run: |
-        find src -name spec.yaml -print0 | xargs -0 -n1 aac validate
-        find src -name spec.yaml -print0 | xargs -0 -n1 aac validate --definition-name root
-        find src/aac/plugins -name *.yaml -print0 | xargs -0 -n1 aac validate
-
-    - name: Test Gen-Plugin First-Party Plugin
-      run: |
-        mkdir -p src/aac/plugins/first_party/test_plugin/
-        cp model/plugin/plugin.yaml src/aac/plugins/first_party/test_plugin/first_party.yaml
-        echo y | aac gen-plugin src/aac/plugins/first_party/test_plugin/first_party.yaml
-        pip install .[all]
-
-    - name: Test Gen-Plugin Third-Party Plugin
-      run: |
-        echo y | aac gen-plugin model/plugin/plugin.yaml
-        rm src/aac/state.json
-        cd model/plugin/
-        pip install .
-        aac -h | grep test-plugin-command
-        pip uninstall -y test_plugin
 
     - name: Upload logs from failed runs
       if: ${{ failure() }}

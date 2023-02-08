@@ -1,4 +1,5 @@
-"""Module for the various type contributions provided by this plugin."""
+"""Module for validating primitive boolean types."""
+
 from typing import Any, Optional
 
 from aac.lang.constants import PRIMITIVE_TYPE_BOOL
