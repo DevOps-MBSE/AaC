@@ -1,5 +1,4 @@
 """AaC Plugin implementation module for the active-context plugin."""
-
 from os.path import lexists
 
 from aac.lang.active_context_lifecycle_manager import get_active_context
@@ -16,9 +15,11 @@ def list_files() -> PluginExecutionResult:
     Returns:
         files Files that are in the active context.
     """
-
     def collect_files() -> str:
-        return "\n".join([file.uri for file in get_active_context().get_files_in_context()])
+        file_uris = [file.uri for file in get_active_context().get_files_in_context()]
+        file_uris.sort(reverse=True)  # Perform an alphabetical sort
+
+        return "\n".join(file_uris)
 
     with plugin_result(plugin_name, collect_files) as result:
         return result
