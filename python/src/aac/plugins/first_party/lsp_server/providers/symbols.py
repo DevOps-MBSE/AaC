@@ -11,7 +11,7 @@ class SymbolType(Enum):
 
     DEFINITION_NAME = 1
     ENUM_VALUE_TYPE = 2
-    ROOT_KEY_NAME = 3
+    ROOT_KEY = 3
 
 
 def get_possible_symbol_types(name: str, language_context: LanguageContext) -> list[SymbolType]:
@@ -36,7 +36,7 @@ def get_possible_symbol_types(name: str, language_context: LanguageContext) -> l
         symbol_types.append(SymbolType.ENUM_VALUE_TYPE)
 
     if name in language_context.get_root_keys():
-        symbol_types.append(SymbolType.ROOT_KEY_NAME)
+        symbol_types.append(SymbolType.ROOT_KEY)
 
     return symbol_types
 
@@ -73,7 +73,6 @@ def get_symbol_range_at_position(content: str, line: int, column: int) -> Option
         on_symbol = not line_with_symbol[adjusted_column].isspace()
 
         if on_symbol:
-
             symbol_start = 0
             # Reversed range from the adjusted column to the 0 element in the line
             for i in range(adjusted_column, -1, -1):
