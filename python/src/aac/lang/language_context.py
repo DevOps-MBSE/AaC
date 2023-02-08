@@ -139,27 +139,23 @@ class LanguageContext:
 
         initial_definitions = [definition for definition in definitions if definition.name not in secondary_definitions]
 
-        for definition in initial_definitions:
+        all_definitions = [*initial_definitions, *sorted_child_definitions, *extension_definitions]
+
+        for definition in all_definitions:
             self.add_definition_to_context(definition)
 
-        for definition in sorted_child_definitions:
-            self.add_definition_to_context(definition)
-
-        for extension_definition in extension_definitions:
-            self.add_definition_to_context(extension_definition)
-
-    def add_definitions_from_uri(self, uri: str, names: list[str]):
+    def add_definitions_from_uri(self, uri: str, names: Optional[list[str]] = None):
         """
         Load the definitions from the provided file URI.
 
         Args:
             uri (str): The file URI from which to load definitions.
             names (list[str]): The list of the names of the definitions that should be loaded into
-                the context.
+                the context. If names is not provided, import all definitions. (default: None)
         """
         if lexists(uri):
-            definitions = [definition for definition in parse(uri) if definition.name in names]
-            self.update_definitions_in_context(list(set(self.definitions).intersection(definitions)))
+            definitions = [definition for definition in parse(uri) if not names or definition.name in names]
+            self.update_definitions_in_context(list(set(definitions).intersection(self.definitions)))
             self.add_definitions_to_context(list(set(definitions).difference(self.definitions)))
         else:
             logging.warn(f"Skipping {uri} as it could not be found.")
@@ -640,6 +636,9 @@ class LanguageContext:
                     f"Version mismatch: State file written using version {version}; current AaC version {__version__}"
                 )
 
+            # Make sure to clear the state of the context before importing a state file.
+            self.clear()
+
             for file in files:
                 self.add_definitions_from_uri(sanitize_filesystem_path(file), definitions)
 
@@ -647,6 +646,9 @@ class LanguageContext:
                 self.activate_plugin_by_name(plugin)
 
             self.is_initialized = True
+        else:
+            self.is_initialized = False
+            logging.warning(f"The file {file_uri} could not be imported to initialize the active context.")
 
     def export_to_file(self, file_uri: str) -> None:
         """
@@ -665,6 +667,13 @@ class LanguageContext:
 
     # Misc Helper Functions
 
-    def copy(self) -> 'LanguageContext':
+    def copy(self) -> "LanguageContext":
         """Return a deep copy of the context."""
         return deepcopy(self)
+
+    def clear(self) -> None:
+        """Remove all definitions from the language context."""
+        self.is_initialized = False
+        self.definitions = []
+        self.plugins = []
+        self.definitions_dictionary = {}
