@@ -61,7 +61,7 @@ def to_click_command(command: AacCommand) -> Command:
         name=command.name,
         callback=command.callback,
         params=[to_click_parameter(arg) for arg in command.arguments],
-        help=command.description,
+        short_help=command.description,
         no_args_is_help=len([arg for arg in command.arguments if is_required_arg(arg)]) > 0,
     )
 
