@@ -8,7 +8,7 @@ install_script_dir=$(dirname "$0")
 cd $install_script_dir
 cd ../
 
-version=$(aac version)
+version=$(aac version | sed -e 's/\x1b\[[0-9;]*m//g') # Make sure to remove coloring from AaC command output
 install_dir="aac_secure_install_$version"
 
 [[ -d $install_dir ]] && rm -r $install_dir
