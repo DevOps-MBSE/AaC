@@ -6,6 +6,11 @@ from aac.plugins import hookspecs, PLUGIN_PROJECT_NAME
 from aac.plugins.plugin import Plugin
 
 
+# Using an installed plugin cache for performance. This will causes issues if users try to
+#   install new plugins without restarting AaC.
+INSTALLED_PLUGINS = []
+
+
 def get_plugin_manager() -> PluginManager:
     """
     Get the plugin manager and automatically registers first-party internal plugins.
@@ -36,6 +41,7 @@ def get_plugin_manager() -> PluginManager:
         "rest_api",
         "primitive_type_check",
         "plugin_management",
+        "active_context",
     ]
 
     # register "built-in" commands
@@ -72,9 +78,13 @@ def get_plugin_manager() -> PluginManager:
 
 def get_plugins() -> list[Plugin]:
     """
-    Get a list of all the plugins available in the AaC package.
+    Get a list of all the system-wide plugins available to activate in the AaC package.
 
     Returns:
-        A list of plugins that are currently registered.
+        A list of plugins that are currently installed on the system.
     """
-    return get_plugin_manager().hook.get_plugin()
+    global INSTALLED_PLUGINS
+    if not INSTALLED_PLUGINS:
+        INSTALLED_PLUGINS = get_plugin_manager().hook.get_plugin()
+
+    return [plugin.copy() for plugin in INSTALLED_PLUGINS]
