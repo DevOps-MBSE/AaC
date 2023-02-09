@@ -15,6 +15,7 @@ from aac.lang.constants import (
     DEFINITION_FIELD_EXTENSION_ENUM,
     DEFINITION_FIELD_EXTENSION_SCHEMA,
     DEFINITION_FIELD_FIELDS,
+    DEFINITION_FIELD_IMPORT,
     DEFINITION_FIELD_INHERITS,
     DEFINITION_FIELD_TYPE,
     DEFINITION_FIELD_VALIDATION,
@@ -45,6 +46,7 @@ class Definition:
     source: AaCFile = attrib(validator=validators.instance_of(AaCFile))
     lexemes: list[Lexeme] = attrib(default=Factory(list), validator=validators.instance_of(list))
     structure: dict = attrib(default=Factory(dict), validator=validators.instance_of(dict))
+    imports: list[str] = attrib(default=Factory(list), validator=validators.instance_of(list))
 
     def __attrs_post_init__(self):
         """Post-init hook."""
@@ -56,7 +58,7 @@ class Definition:
 
     def get_root_key(self) -> str:
         """Return the root key for the parsed definition."""
-        return list(self.structure.keys())[0]
+        return [key for key in self.structure.keys() if key != DEFINITION_FIELD_IMPORT][0]
 
     # Get Field Functions
 
@@ -108,6 +110,10 @@ class Definition:
         """Return a list of field dictionaries, or None if there are no fields defined."""
         fields = self.get_top_level_fields()
         return fields.get(DEFINITION_FIELD_FIELDS)
+
+    def get_imports(self) -> list[str]:
+        """Return a list of imported aac files, empty if there are no imports."""
+        return self.imports
 
     # Type Test Functions
 

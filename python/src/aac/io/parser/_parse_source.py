@@ -14,6 +14,7 @@ from aac.io.constants import DEFAULT_SOURCE_URI
 from aac.io.files.aac_file import AaCFile
 from aac.io.parser._parser_error import ParserError
 from aac.io.paths import sanitize_filesystem_path
+from aac.lang.constants import DEFINITION_FIELD_NAME, DEFINITION_FIELD_IMPORT
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.lexeme import Lexeme
 from aac.lang.definitions.source_location import SourceLocation
@@ -105,18 +106,16 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
             definition_lexemes = get_lexemes_for_definition(value_tokens, content_start_line, content_end_line)
             root_yaml, *_ = _parse_yaml(source, yaml_text)
 
-            if "import" in root_yaml:
-                del root_yaml["import"]
-
-            root_type, *_ = root_yaml.keys()
-            definition_name = root_yaml.get(root_type, {}).get("name")
+            definition_imports = root_yaml.get(DEFINITION_FIELD_IMPORT, [])
+            root_type = [key for key in root_yaml.keys() if key != DEFINITION_FIELD_IMPORT][0]
+            definition_name = root_yaml.get(root_type, {}).get(DEFINITION_FIELD_NAME)
             source_file = source_files.get(source)
 
             if not source_file:
                 source_file = AaCFile(source, True, False)
                 source_files[source] = source_file
 
-            definitions.append(Definition(definition_name, yaml_text, source_file, definition_lexemes, root_yaml))
+            definitions.append(Definition(definition_name, yaml_text, source_file, definition_lexemes, root_yaml, definition_imports))
         else:
             logging.info(f"Skipping empty content between {start_doc_token}:L{content_start_line} and {end_doc_token}:L{content_end_line} in source {source}")
             logging.debug(f"Source: {source} Content:{model_content}")
@@ -138,7 +137,7 @@ def _parse_yaml(source: str, content: str) -> list[dict]:
     Raises:
         If the YAML is invalid, a ParserError is raised.
         If the model is not a dictionary, a ParserError is raised.
-        If the model does not have (at least) a "name" field, a ParserError is raised.
+        If the model does not have (at least) a DEFINITION_FIELD_NAME field, a ParserError is raised.
     """
     try:
         models = list(yaml.load_all(content, Loader=yaml.SafeLoader))
@@ -173,12 +172,12 @@ def _error_if_not_complete(source, content, models):
     def is_import(model):
         """Return True if the model is an import declaration."""
         type, *_ = model.keys()
-        return type == "import"
+        return type == DEFINITION_FIELD_IMPORT
 
     def assert_definition_has_name(model):
         """Throws a ParserError if the definition doesn't have a name property."""
         type, *_ = model.keys()
-        has_name = model.get(type) and model.get(type).get("name")
+        has_name = model.get(type) and model.get(type).get(DEFINITION_FIELD_NAME)
         if not has_name:
             raise ParserError(source, [f"Definition is missing field 'name': {content}"])
 
@@ -213,10 +212,10 @@ def _recurse_imports(arch_file_path: str, existing: set) -> set:
     existing.add(arch_file_path)
     content = _read_file_content(arch_file_path)
     roots = _parse_yaml(arch_file_path, content)
-    roots_with_imports = [root for root in roots if "import" in root.keys()]
+    roots_with_imports = [root for root in roots if DEFINITION_FIELD_IMPORT in root.keys()]
 
     for root in roots_with_imports:
-        for imp in root["import"]:
+        for imp in root[DEFINITION_FIELD_IMPORT]:
             arch_file_dir = path.dirname(path.realpath(arch_file_path))
             parse_path = path.join(arch_file_dir, imp.removeprefix(f".{path.sep}"))
             sanitized_path = sanitize_filesystem_path(parse_path)
