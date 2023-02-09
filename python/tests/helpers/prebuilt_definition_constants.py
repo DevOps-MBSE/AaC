@@ -17,6 +17,7 @@ from aac.lang.constants import (
     PRIMITIVE_TYPE_DATE,
     PRIMITIVE_TYPE_FILE,
     PRIMITIVE_TYPE_NUMBER,
+    PRIMITIVE_TYPE_DATE,
     PRIMITIVE_TYPE_REFERENCE,
     PRIMITIVE_TYPE_STRING,
     PRIMITIVE_TYPE_INT,
@@ -116,7 +117,9 @@ TEST_SERVICE_THREE = create_model_definition(TEST_SERVICE_THREE_NAME, behavior=[
 
 # Test File/Document data
 TEST_DOCUMENT_NAME = "test.aac"
-TEST_DOCUMENT_CONTENT = DEFINITION_SEPARATOR.join([TEST_SCHEMA_A.to_yaml(), TEST_SCHEMA_B.to_yaml(), TEST_SERVICE_ONE.to_yaml()])
+TEST_DOCUMENT_CONTENT = DEFINITION_SEPARATOR.join(
+    [TEST_SCHEMA_A.to_yaml(), TEST_SCHEMA_B.to_yaml(), TEST_SERVICE_ONE.to_yaml()]
+)
 
 
 # Validation Entries
@@ -189,13 +192,19 @@ TEST_TYPES_SCHEMA_EXTENSION_DEFINITION = create_schema_ext_definition(
     fields=[TEST_TYPES_SCHEMA_EXTENSION_FIELD],
 )
 
-def get_primitive_definition_values(int_value: Any, bool_value: Any, file_value: Any) -> dict[str, Any]:
+
+def get_primitive_definition_values(
+    int_value: Any, bool_value: Any, file_value: Any, number_value: Any, date_value: Any
+) -> dict[str, Any]:
     """Return a definition instance with the specified primitive values."""
     return {
         SCHEMA_FIELD_INT.get(DEFINITION_FIELD_NAME): int_value,
         SCHEMA_FIELD_BOOL.get(DEFINITION_FIELD_NAME): bool_value,
         SCHEMA_FIELD_FILE.get(DEFINITION_FIELD_NAME): file_value,
+        SCHEMA_FIELD_NUMBER.get(DEFINITION_FIELD_NAME): number_value,
+        SCHEMA_FIELD_DATE.get(DEFINITION_FIELD_NAME): date_value,
     }
+
 
 TEST_TYPES_VALID_INSTANCE = create_definition(
     TEST_TYPES_ROOT_KEY, "validPrimitives", {SCHEMA_FIELD_INT.get(DEFINITION_FIELD_NAME): 0}
@@ -293,7 +302,7 @@ ALL_PRIMITIVES_INSTANCE_STRING_FIELD = create_field_entry(PRIMITIVE_TYPE_STRING.
 ALL_PRIMITIVES_INSTANCE_INTEGER_FIELD = create_field_entry(PRIMITIVE_TYPE_INT.upper(), 10)
 ALL_PRIMITIVES_INSTANCE_BOOL_FIELD = create_field_entry(PRIMITIVE_TYPE_BOOL.upper(), True)
 ALL_PRIMITIVES_INSTANCE_FILE_FIELD = create_field_entry(PRIMITIVE_TYPE_FILE.upper(), "./test.aac")
-ALL_PRIMITIVES_INSTANCE_DATE_FIELD = create_field_entry(PRIMITIVE_TYPE_DATE.upper(), datetime.now())
+ALL_PRIMITIVES_INSTANCE_DATE_FIELD = create_field_entry(PRIMITIVE_TYPE_DATE.upper(), datetime.fromisoformat("1970-01-01T00:00:00"))
 ALL_PRIMITIVES_INSTANCE_NUMBER_FIELD = create_field_entry(PRIMITIVE_TYPE_NUMBER.upper(), 20.2)
 all_primitives_instance_fields = {
     field.get(DEFINITION_FIELD_NAME): field.get(DEFINITION_FIELD_TYPE)
@@ -309,14 +318,20 @@ all_primitives_instance_fields = {
 ALL_PRIMITIVES_INSTANCE = create_definition(
     ALL_PRIMITIVES_ROOT_KEY, ALL_PRIMITIVES_INSTANCE_NAME, all_primitives_instance_fields
 )
-TEST_TYPES_SCHEMA_EXTENSION_DEFINITION = create_schema_ext_definition(f"{TEST_TYPES_SCHEMA_DEFINITION.name}Extension", DEFINITION_NAME_ROOT, fields=[TEST_TYPES_SCHEMA_EXTENSION_FIELD])
+TEST_TYPES_SCHEMA_EXTENSION_DEFINITION = create_schema_ext_definition(
+    f"{TEST_TYPES_SCHEMA_DEFINITION.name}Extension", DEFINITION_NAME_ROOT, fields=[TEST_TYPES_SCHEMA_EXTENSION_FIELD]
+)
 TEST_TYPES_VALID_INSTANCE = create_definition(TEST_TYPES_ROOT_KEY, "validPrimitives", {SCHEMA_FIELD_INT.get("name"): 0})
 TEST_TYPES_INVALID_INSTANCE = create_definition(TEST_TYPES_ROOT_KEY, "invalidPrimitives", {SCHEMA_FIELD_INT.get("name"): 0.5})
 
 
 # LSP Test Definitions
-TEST_ROOT_SCHEMA = create_schema_definition("NewRootKeyStructure", fields=[create_field_entry("name", "string"), create_field_entry("test_enum", TEST_ENUM.name)])
-TEST_ROOT_EXTENSION = create_schema_ext_definition("TestRootExtension", DEFINITION_NAME_ROOT, fields=[create_field_entry("test_root", TEST_ROOT_SCHEMA.name)])
+TEST_ROOT_SCHEMA = create_schema_definition(
+    "NewRootKeyStructure", fields=[create_field_entry("name", "string"), create_field_entry("test_enum", TEST_ENUM.name)]
+)
+TEST_ROOT_EXTENSION = create_schema_ext_definition(
+    "TestRootExtension", DEFINITION_NAME_ROOT, fields=[create_field_entry("test_root", TEST_ROOT_SCHEMA.name)]
+)
 TEST_ROOT_INSTANCE = create_definition("test_root", "TestRootInstance", {"test_enum": "one"})
 
 TEST_DOCUMENT_WITH_ENUM_NAME = f"enum_{TEST_DOCUMENT_NAME}"
