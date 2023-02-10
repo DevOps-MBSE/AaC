@@ -1,6 +1,28 @@
 model:
   name: material-model
   description: material-model is an Architecture-as-Code plugin that allows a user to model the physical design of a system.
+  behavior:
+    - name: gen-bom
+      type: command
+      description: Generates a CSV Bill of Materials (BOM) from a list of deployment models.
+      input:
+        - name: architecture-file
+          type: file
+          python_type: str
+          description:  The deployment model to convert into a BOM.
+        - name: output-directory
+          type: file
+          python_type: str
+          description: The directory where the BOM file should be placed.
+      acceptance:
+        - scenario: Valid deployment is converted to a BOM in CSV format.
+          given:
+            - The {{spec-validate.input.architecture-file}} contains a valid architecture specification.
+          when:
+            - The aac app is run with the gen-bom command.
+          then:
+            - A message saying BOM generation was successful is printed to the console.
+            - A csv file is generated.
 ---
 schema:
   name: Part
