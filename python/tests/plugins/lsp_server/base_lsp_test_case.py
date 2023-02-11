@@ -33,7 +33,7 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
         await super().asyncSetUp()
 
         self.client = LspTestClient()
-        self.active_context = self.client.server.language_context
+        self.active_context = self.client.lsp_server.language_context
         self.temp_documents_directory: TemporaryDirectory = TemporaryDirectory()
 
         await self.client.start()
