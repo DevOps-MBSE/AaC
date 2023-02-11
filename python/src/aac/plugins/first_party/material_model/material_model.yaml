@@ -197,6 +197,7 @@ schema:
     - name: Referenced materials exist
       arguments:
         - assembly-ref
+    - name: No circular material references
 ---
 schema:
   name: Deployment
@@ -229,6 +230,7 @@ schema:
         - name
         - description
         - location
+    - name: No circular material references
 ---
 schema:
   name: DeploymentRef

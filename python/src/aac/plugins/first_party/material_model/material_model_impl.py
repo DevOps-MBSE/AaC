@@ -28,16 +28,15 @@ def gen_bom(architecture_file: str, output_directory: str) -> PluginExecutionRes
         for definition in definitions:
             if definition.get_root_key() in ["deployment"]:
                 root_deployments[definition.name] = definition
-                print(f"Found deployment: {definition.name}")
+                # print(f"Found deployment: {definition.name}")
 
-        print(f"root_deployments = {root_deployments.keys()}")
+        # print(f"root_deployments = {root_deployments.keys()}")
 
         field_names = ["A", "B", "C", "D", "E", "F"]
 
         # just in case, let's make sure the output directory exists
         if not path.lexists(output_directory):
             makedirs(output_directory)
-
 
         return f"{len([])} BOM line items written to {output_directory}"
 

@@ -23,7 +23,6 @@ def get_plugin() -> Plugin:
         A collection of information about the plugin and what it contributes.
     """
     plugin = Plugin(plugin_name)
-    print("Running material-model get_plugin()")
     plugin_definitions = _get_plugin_definitions()
     plugin.register_commands(_get_plugin_commands())
     plugin.register_definitions(_get_plugin_definitions())
@@ -54,7 +53,6 @@ def _get_plugin_commands():
         ),
     ]
 
-    print(f"len(plugin_commands) = {len(plugin_commands)}")
     return plugin_commands
 
 

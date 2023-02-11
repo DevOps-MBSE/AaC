@@ -57,7 +57,6 @@ def validate_referenced_materials(
             for part_ref_dict in get_substructures_by_type(root, part_ref_definition, language_context):
                 if part_ref_dict:
                     part_ref = part_ref_dict["part-ref"]
-                    print(f"Checking part ref: {part_ref} = {_definition_name_exists(part_ref, ALL_PART_NAMES)}")
                     if not _definition_name_exists(part_ref, ALL_PART_NAMES):
 
                         lexeme = root.get_lexeme_with_value(part_ref)
@@ -70,7 +69,6 @@ def validate_referenced_materials(
             for assembly_ref_dict in get_substructures_by_type(root, assembly_ref_definition, language_context):
                 if assembly_ref_dict:
                     assembly_ref = assembly_ref_dict["assembly-ref"]
-                    print(f"Checking assembly ref: {assembly_ref} = {_definition_name_exists(assembly_ref, ALL_ASSEMBLY_NAMES)}")
                     if not _definition_name_exists(assembly_ref, ALL_ASSEMBLY_NAMES):
 
                         lexeme = root.get_lexeme_with_value(assembly_ref)
@@ -83,7 +81,6 @@ def validate_referenced_materials(
             for deployment_ref_dict in get_substructures_by_type(root, deployment_ref_definition, language_context):
                 if deployment_ref_dict:
                     deployment_ref = deployment_ref_dict["deployment-ref"]
-                    print(f"Checking deployment ref: {deployment_ref} = {_definition_name_exists(deployment_ref, ALL_DEPLOYMENT_NAMES)}")
                     if not _definition_name_exists(deployment_ref, ALL_DEPLOYMENT_NAMES):
 
                         lexeme = root.get_lexeme_with_value(deployment_ref)
