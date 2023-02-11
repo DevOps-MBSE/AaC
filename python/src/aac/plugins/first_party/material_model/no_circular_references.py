@@ -1,12 +1,9 @@
 """AaC validator implementation module for specification req reference ids."""
-from typing import Set, Dict, List
-
 import traceback
 import logging
 
 from aac.lang.definitions.definition import Definition
 from aac.lang.language_context import LanguageContext
-from aac.lang.definitions.structure import get_substructures_by_type
 from aac.plugins.validators import ValidatorFindings, ValidatorResult
 
 
@@ -79,9 +76,7 @@ def validate_no_circluar_material_refs(
 
 
 def _look_for_dupes(key, visited, pool):
-    """
-    Return duplicate name if found, otherwise None.
-    """
+    """Return duplicate name if found, otherwise None."""
     if key in visited:
         return key
 
@@ -105,6 +100,7 @@ def _get_deployment_tree(language_context):
 
         else:
             deployment_tree[deployment.name] = []
+
 
 def _get_assembly_tree(language_context):
 
