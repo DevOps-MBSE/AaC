@@ -1,6 +1,4 @@
 """AaC validator implementation module for specification req reference ids."""
-from typing import Set, Dict, List
-
 import traceback
 import logging
 
@@ -8,7 +6,6 @@ from aac.lang.definitions.definition import Definition
 from aac.lang.language_context import LanguageContext
 from aac.lang.definitions.structure import get_substructures_by_type
 from aac.plugins.validators import ValidatorFindings, ValidatorResult
-from aac.plugins.first_party.material_model.material_model_impl import plugin_name
 
 
 MATERIAL_REF_VALIDATOR_NAME = "Referenced materials exist"
@@ -16,6 +13,7 @@ MATERIAL_REF_VALIDATOR_NAME = "Referenced materials exist"
 ALL_PART_NAMES = []
 ALL_ASSEMBLY_NAMES = []
 ALL_DEPLOYMENT_NAMES = []
+
 
 def validate_referenced_materials(
     definition_under_test: Definition,
@@ -54,40 +52,13 @@ def validate_referenced_materials(
         for root in assembly_roots + deployment_roots:
 
             # check part refs
-            for part_ref_dict in get_substructures_by_type(root, part_ref_definition, language_context):
-                if part_ref_dict:
-                    part_ref = part_ref_dict["part-ref"]
-                    if not _definition_name_exists(part_ref, ALL_PART_NAMES):
-
-                        lexeme = root.get_lexeme_with_value(part_ref)
-                        message = f"Cannot find referenced part {part_ref} in {lexeme.source} on line {lexeme.location.line + 1}"
-
-                        findings.add_error_finding(definition_under_test, message, MATERIAL_REF_VALIDATOR_NAME, lexeme)
-                        logging.debug(message)
+            _check_refs("part-ref", ALL_PART_NAMES, root, definition_under_test, part_ref_definition, language_context, findings)
 
             # check assembly refs
-            for assembly_ref_dict in get_substructures_by_type(root, assembly_ref_definition, language_context):
-                if assembly_ref_dict:
-                    assembly_ref = assembly_ref_dict["assembly-ref"]
-                    if not _definition_name_exists(assembly_ref, ALL_ASSEMBLY_NAMES):
-
-                        lexeme = root.get_lexeme_with_value(assembly_ref)
-                        message = f"Cannot find referenced assembly {assembly_ref} in {lexeme.source} on line {lexeme.location.line + 1}"
-
-                        findings.add_error_finding(definition_under_test, message, MATERIAL_REF_VALIDATOR_NAME, lexeme)
-                        logging.debug(message)
+            _check_refs("assembly-ref", ALL_ASSEMBLY_NAMES, root, definition_under_test, assembly_ref_definition, language_context, findings)
 
             # check deployment refs
-            for deployment_ref_dict in get_substructures_by_type(root, deployment_ref_definition, language_context):
-                if deployment_ref_dict:
-                    deployment_ref = deployment_ref_dict["deployment-ref"]
-                    if not _definition_name_exists(deployment_ref, ALL_DEPLOYMENT_NAMES):
-
-                        lexeme = root.get_lexeme_with_value(deployment_ref)
-                        message = f"Cannot find referenced deployment {deployment_ref} in {lexeme.source} on line {lexeme.location.line + 1}"
-
-                        findings.add_error_finding(definition_under_test, message, MATERIAL_REF_VALIDATOR_NAME, lexeme)
-                        logging.debug(message)
+            _check_refs("deployment-ref", ALL_DEPLOYMENT_NAMES, root, definition_under_test, deployment_ref_definition, language_context, findings)
 
     except Exception as e:
         print("Caught an exception in validate_referenced_materials")
@@ -95,6 +66,19 @@ def validate_referenced_materials(
         print(traceback.format_exc())
 
     return ValidatorResult([definition_under_test], findings)
+
+
+def _check_refs(ref_type, name_list, root, definition_under_test, ref_definition, language_context, findings):
+    for ref_dict in get_substructures_by_type(root, ref_definition, language_context):
+        if ref_dict:
+            ref = ref_dict[ref_type]
+            if not _definition_name_exists(ref, name_list):
+
+                lexeme = root.get_lexeme_with_value(ref)
+                message = f"Cannot find {ref_type} target {ref} in {lexeme.source} on line {lexeme.location.line + 1}"
+
+                findings.add_error_finding(definition_under_test, message, MATERIAL_REF_VALIDATOR_NAME, lexeme)
+                logging.debug(message)
 
 
 def _get_all_material_names(language_context):
