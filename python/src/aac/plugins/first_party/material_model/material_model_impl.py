@@ -27,7 +27,7 @@ def gen_bom(architecture_file: str, output_directory: str) -> PluginExecutionRes
         architecture_file (str): The deployment model to convert into a BOM.
         output_directory (str): The directory where the BOM file should be placed.
     """
-    # TODO add implementation here
+
     def generate_bom():
         definitions = _get_parsed_models(architecture_file)
 
