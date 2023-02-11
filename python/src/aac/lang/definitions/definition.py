@@ -145,7 +145,13 @@ class Definition:
 
     def to_yaml(self) -> str:
         """Return a yaml string based on the current state of the definition including extensions."""
-        return yaml.dump(self.structure, sort_keys=False)
+        imports_dict = {DEFINITION_FIELD_IMPORT: self.imports}
+        structure_to_convert_to_yaml = self.structure
+        if self.imports:
+            # using | instead of |= or update to force imports at the top of the yaml output
+            structure_to_convert_to_yaml = imports_dict | structure_to_convert_to_yaml
+
+        return yaml.dump(structure_to_convert_to_yaml, sort_keys=False)
 
     # Misc Functions
 
