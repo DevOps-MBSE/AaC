@@ -1,6 +1,8 @@
 """The Language Context manages the highly-contextual AaC DSL."""
+import inspect
 import json
 import logging
+import traceback
 from attr import Factory, attrib, attrs, validators
 from collections import OrderedDict
 from copy import deepcopy
@@ -62,7 +64,7 @@ class LanguageContext:
 
     # Definition Methods
 
-    def add_definition_to_context(self, definition: Definition):
+    def add_definition_to_context(self, definition: Definition) -> None:
         """
         Add the Definition to the list of definitions in the LanguageContext.
 
@@ -103,9 +105,9 @@ class LanguageContext:
                 apply_extension_to_definition(new_definition, target_definition)
 
             else:
-                logging.error(f"Failed to find the target defintion '{target_definition_name}' in the context.")
+                logging.error(f"Failed to find the target definition '{target_definition_name}' in the context.")
 
-    def add_definitions_to_context(self, definitions: list[Definition]):
+    def add_definitions_to_context(self, definitions: list[Definition]) -> None:
         """
         Add the list of Definitions to the list of definitions in the LanguageContext, any extensions are added last.
 
@@ -144,7 +146,7 @@ class LanguageContext:
         for definition in all_definitions:
             self.add_definition_to_context(definition)
 
-    def add_definitions_from_uri(self, uri: str, names: Optional[list[str]] = None):
+    def add_definitions_from_uri(self, uri: str, names: Optional[list[str]] = None) -> None:
         """
         Load the definitions from the provided file URI.
 
@@ -160,7 +162,7 @@ class LanguageContext:
         else:
             logging.warn(f"Skipping {uri} as it could not be found.")
 
-    def remove_definition_from_context(self, definition: Definition):
+    def remove_definition_from_context(self, definition: Definition) -> None:
         """
         Remove the Definition from the list of definitions in the LanguageContext.
 
@@ -185,7 +187,7 @@ class LanguageContext:
             else:
                 logging.error(f"Failed to find the target defintion '{target_definition_name}' in the context.")
 
-    def remove_definitions_from_context(self, definitions: list[Definition]):
+    def remove_definitions_from_context(self, definitions: list[Definition]) -> None:
         """
         Remove the list of Definitions from the list of definitions in the LanguageContext, any extensions are removed last.
 
@@ -205,7 +207,7 @@ class LanguageContext:
         for extension_definition in extension_definitions:
             self.remove_definition_from_context(extension_definition)
 
-    def update_definition_in_context(self, definition: Definition):
+    def update_definition_in_context(self, definition: Definition) -> None:
         """
         Update the Definition in the list of definitions in the LanguageContext, if it exists.
 
@@ -222,7 +224,7 @@ class LanguageContext:
             logging.error(missing_target_definition)
             raise LanguageError(missing_target_definition)
 
-    def update_definitions_in_context(self, definitions: list[Definition]):
+    def update_definitions_in_context(self, definitions: list[Definition]) -> None:
         """
         Update the list of Definitions in the list of definitions in the LanguageContext, any extensions are added last.
 
@@ -396,7 +398,7 @@ class LanguageContext:
                     )
                 return definition_to_return[0]
             else:
-                logging.info(f"Failed to find the definition named '{definition_name}' in the context.")
+                logging.info(f"Failed to find the definition named '{definition_name}' in the context of '{self.get_defined_types()}'.")
         else:
             logging.error(f"No definition name was provided to {self.get_definition_by_name.__name__}")
 
@@ -608,7 +610,7 @@ class LanguageContext:
         Returns:
             A list of definitions belonging to the target file.
         """
-        return [definition for definition in self.definitions if file_uri == definition.source.uri]
+        return [definition for definition in self.definitions if str(file_uri) == str(definition.source.uri)]
 
     def import_from_file(self, file_uri: str) -> None:
         """
@@ -672,7 +674,7 @@ class LanguageContext:
         return deepcopy(self)
 
     def clear(self) -> None:
-        """Remove all definitions from the language context."""
+        """Remove all definitions and plugins from the language context."""
         self.is_initialized = False
         self.definitions = []
         self.plugins = []
