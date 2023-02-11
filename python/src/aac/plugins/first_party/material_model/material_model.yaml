@@ -24,6 +24,74 @@ model:
             - A message saying BOM generation was successful is printed to the console.
             - A csv file is generated.
 ---
+validation:
+  name: Referenced materials exist
+  description: Verifies names within deployment, assembly, and part references exist within the context.
+  behavior:
+    - name: Verify that part references exist.
+      type: request-response
+      description:
+      input:
+        - name: input
+          type: ValidatorInput
+      output:
+        - name: results
+          type: ValidatorOutput
+      acceptance:
+        - scenario: Successfully Validate a part reference name exists
+          given:
+            - The ValidatorInput content consists of valid AaC definitions.
+            - The ValidatorInput contains some AaC fields that reference requirement ids.
+          when:
+            - The input is validation
+          then:
+            - The ValidatorOutput does not indicate any errors
+            - The ValidatorOutput does not indicate any warnings
+            - The ValidatorOutput indicates the definition under test is valid
+        - scenario: Fail to validate a definition's requirement reference fields
+          given:
+            - The ValidatorInput content consists of otherwise valid AaC definitions.
+            - The ValidatorInput contains at least one requirement reference id that does not exist.
+          when:
+            - The ValidatorInput is validated
+          then:
+            - The ValidatorOutput has errors
+            - The ValidatorOutput errors indicate that there are invalid requirement id references
+---
+validation:
+  name: No circular material references
+  description: Verifies the references within material models form a directed acyclic graph.
+  behavior:
+    - name: Verify that no circular references exist.
+      type: request-response
+      description:
+      input:
+        - name: input
+          type: ValidatorInput
+      output:
+        - name: results
+          type: ValidatorOutput
+      acceptance:
+        - scenario: Successfully Validate a no circular references exist
+          given:
+            - The ValidatorInput content consists of valid AaC definitions.
+            - The ValidatorInput contains some AaC fields that reference requirement ids.
+          when:
+            - The input is validation
+          then:
+            - The ValidatorOutput does not indicate any errors
+            - The ValidatorOutput does not indicate any warnings
+            - The ValidatorOutput indicates the definition under test is valid
+        - scenario: Fail to validate a definition's requirement reference fields
+          given:
+            - The ValidatorInput content consists of otherwise valid AaC definitions.
+            - The ValidatorInput contains at least one requirement reference id that does not exist.
+          when:
+            - The ValidatorInput is validated
+          then:
+            - The ValidatorOutput has errors
+            - The ValidatorOutput errors indicate that there are invalid requirement id references
+---
 schema:
   name: Part
   description: A material item used in a system (hardware, software, or service).
@@ -85,7 +153,7 @@ schema:
       arguments:
         - part-ref
         - quantity
-    - name: Reference target valid
+    - name: Referenced materials exist
       arguments:
         - part-ref
 ---
@@ -126,7 +194,7 @@ schema:
       arguments:
         - assembly-ref
         - quantity
-    - name: Reference target valid
+    - name: Referenced materials exist
       arguments:
         - assembly-ref
 ---
@@ -177,7 +245,7 @@ schema:
       arguments:
         - deployment-ref
         - quantity
-    - name: Reference target valid
+    - name: Referenced materials exist
       arguments:
         - deployment-ref
 ---

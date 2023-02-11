@@ -22,8 +22,15 @@ def gen_bom(architecture_file: str, output_directory: str) -> PluginExecutionRes
     """
     # TODO add implementation here
     def generate_bom():
-        deployment_definitions = _get_parsed_models(architecture_file)
-        parts = {}
+        definitions = _get_parsed_models(architecture_file)
+        root_deployments = {}
+
+        for definition in definitions:
+            if definition.get_root_key() in ["deployment"]:
+                root_deployments[definition.name] = definition
+                print(f"Found deployment: {definition.name}")
+
+        print(f"root_deployments = {root_deployments.keys()}")
 
         field_names = ["A", "B", "C", "D", "E", "F"]
 
@@ -32,7 +39,7 @@ def gen_bom(architecture_file: str, output_directory: str) -> PluginExecutionRes
             makedirs(output_directory)
 
 
-        return f"{len(parts.keys())} BOM line items written to {output_directory}"
+        return f"{len([])} BOM line items written to {output_directory}"
 
     with plugin_result(plugin_name, generate_bom) as result:
         return result
