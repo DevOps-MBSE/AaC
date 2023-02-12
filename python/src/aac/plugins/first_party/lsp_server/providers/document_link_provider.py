@@ -5,10 +5,6 @@ from pygls.lsp.types import DocumentLinkParams, DocumentLink
 from pygls.uris import from_fs_path, to_fs_path
 
 from aac.lang.language_context import LanguageContext
-from aac.lang.definitions.collections import get_definitions_by_root_key
-from aac.lang.definitions.references import get_definition_type_references_from_list
-from aac.lang.definitions.type import remove_list_type_indicator
-from aac.plugins.first_party.lsp_server.providers.symbols import get_symbol_at_position, SymbolType, get_possible_symbol_types
 from aac.plugins.first_party.lsp_server.providers.locations import get_location_from_lexeme
 from aac.plugins.first_party.lsp_server.providers.lsp_provider import LspProvider
 

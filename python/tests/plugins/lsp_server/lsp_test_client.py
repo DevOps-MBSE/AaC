@@ -63,7 +63,7 @@ class LspTestClient:
             )
 
         thread = Thread(target=ls.start_io, args=(os.fdopen(reader, "rb"), os.fdopen(writer, "wb")))
-        # thread.daemon = True
+        thread.daemon = True
         return ls, thread
 
     async def start(self):
