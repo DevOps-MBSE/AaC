@@ -50,8 +50,6 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
 
     async def asyncTearDown(self):
         await super().asyncTearDown()
-        for file_name in self.documents.keys():
-            await self.close_document(file_name)
         self.documents.clear()
         self.temp_documents_directory.cleanup()
         await self.client.stop()

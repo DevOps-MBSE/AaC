@@ -5,10 +5,13 @@ The plugin AaC model must define behaviors using the command BehaviorType.  Each
 defined behavior becomes a new command for the aac CLI.
 """
 import logging
+from typing import Any
 import yaml
 
 from os import path, rename, makedirs
 
+from aac import __version__
+from aac.lang.constants import DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_INPUT, DEFINITION_FIELD_NAME, DEFINITION_FIELD_TYPE, ROOT_KEY_ENUM, ROOT_KEY_EXTENSION, ROOT_KEY_MODEL, DEFINITION_FIELD_DESCRIPTION, ROOT_KEY_SCHEMA
 from aac.lang.definitions.collections import convert_parsed_definitions_to_dict_definition, get_models_by_type
 from aac.lang.definitions.search import search
 from aac.lang.definitions.definition import Definition
@@ -57,7 +60,7 @@ def generate_plugin(architecture_file: str) -> PluginExecutionResult:
 def _generate_plugin_files_to_directory(architecture_file_path: str, plugin_output_directory: str, plugin_type: str) -> str:
     with validated_source(architecture_file_path) as validation_result:
         definitions = validation_result.definitions
-        templates = list(
+        templates: list = list(
             _prepare_and_generate_plugin_files(
                 definitions, plugin_type, architecture_file_path, plugin_output_directory
             ).values()
@@ -81,7 +84,7 @@ def _is_plugin_in_aac_repository(architecture_file_path: str) -> bool:
 
 
 def _apply_output_template_properties(
-    output_files: list[TemplateOutputFile],
+    output_files: dict[str, TemplateOutputFile],
     overwite_files: list[str],
     plugin_implementation_name,
 ):
@@ -145,7 +148,7 @@ def _generate_template_files(
 
 def _prepare_and_generate_plugin_files(
     definitions: list[Definition], plugin_type: str, architecture_file_path: str, output_directory: str
-) -> dict[str, list[TemplateOutputFile]]:
+) -> dict[str, TemplateOutputFile]:
     """
     Parse the model and generate the plugin template accordingly.
 
@@ -162,10 +165,10 @@ def _prepare_and_generate_plugin_files(
         GeneratePluginException: An error encountered during the plugin generation process.
     """
     parsed_definitions_dictionary = convert_parsed_definitions_to_dict_definition(definitions)
-    template_properties = _gather_template_properties(parsed_definitions_dictionary, architecture_file_path, plugin_type)
+    template_properties: dict = _gather_template_properties(parsed_definitions_dictionary, architecture_file_path, plugin_type)
 
-    plugin_name = template_properties.get("plugin").get("name")
-    plugin_implementation_name = template_properties.get("plugin").get("implementation_name")
+    plugin_name = template_properties.get("plugin", {}).get(DEFINITION_FIELD_NAME)
+    plugin_implementation_name = template_properties.get("plugin", {}).get("implementation_name")
 
     plugin_implementation_name = _convert_to_implementation_name(plugin_name)
     templates_to_overwrite = _get_overwriteable_templates()
@@ -174,6 +177,7 @@ def _prepare_and_generate_plugin_files(
     )
 
     if plugin_type == PLUGIN_TYPE_THIRD_STRING:
+        template_properties["aac_version"] = __version__
         new_architecture_file_location = _get_new_architecture_file_path(
             architecture_file_path, output_directory, plugin_implementation_name
         )
@@ -193,7 +197,7 @@ def _prepare_and_generate_plugin_files(
 
 def _gather_template_properties(
     parsed_models: dict[str, dict], architecture_file_path: str, plugin_type: str
-) -> dict[str, any]:
+) -> dict[str, Any]:
     """
     Analyzes the models and returns the necessary template data to generate the plugin.
 
@@ -207,20 +211,20 @@ def _gather_template_properties(
     """
 
     # Ensure model is present and valid, get the plugin name
-    plugin_models = get_models_by_type(parsed_models, "model")
+    plugin_models = get_models_by_type(parsed_models, ROOT_KEY_MODEL)
     if len(plugin_models.keys()) != 1:
         raise GeneratePluginException("Plugin Arch-as-Code yaml must contain one and only one model.")
 
-    plugin_model = list(plugin_models.values())[0].get("model")
-    plugin_name = plugin_model.get("name")
+    plugin_model = list(plugin_models.values())[0].get(ROOT_KEY_MODEL, {})
+    plugin_name = plugin_model.get(DEFINITION_FIELD_NAME)
     plugin_implementation_name = _convert_to_implementation_name(plugin_name)
 
     # Prepare template variables/properties
-    behaviors = search(plugin_model, ["behavior"])
+    behaviors = search(plugin_model, [DEFINITION_FIELD_BEHAVIOR])
     commands = _gather_commands(behaviors)
 
     plugin = {
-        "name": plugin_name,
+        DEFINITION_FIELD_NAME: plugin_name,
         "implementation_name": plugin_implementation_name,
     }
 
@@ -230,7 +234,7 @@ def _gather_template_properties(
 
     package_name = path.basename(path.dirname(architecture_file_path))
     architecture_file = {
-        "name": path.basename(architecture_file_path),
+        DEFINITION_FIELD_NAME: path.basename(architecture_file_path),
         "package_name": f"first_party.{package_name}" if plugin_type == PLUGIN_TYPE_FIRST_STRING else package_name,
     }
 
@@ -283,7 +287,7 @@ def _is_user_desired_output_directory(architecture_file_path: str) -> bool:
     return confirmation in ["y", "Y"]
 
 
-def _gather_commands(behaviors: dict) -> list[dict]:
+def _gather_commands(behaviors: list[dict]) -> list[dict]:
     """
     Parse the plugin model's behaviors and return a list of commands derived from the plugin's behavior.
 
@@ -298,10 +302,10 @@ def _gather_commands(behaviors: dict) -> list[dict]:
         """Modify the input and output entries of a behavior definition to reduce complexity in the templates."""
         python_type = in_out_entry.get("python_type")
 
-        in_out_entry["name"] = in_out_entry.get("name").removeprefix("--")
+        in_out_entry[DEFINITION_FIELD_NAME] = in_out_entry.get(DEFINITION_FIELD_NAME, "").removeprefix("--")
 
         if python_type:
-            in_out_entry["type"] = python_type
+            in_out_entry[DEFINITION_FIELD_TYPE] = python_type
             in_out_entry["python_type_default"] = type(python_type)
 
         return in_out_entry
@@ -309,9 +313,9 @@ def _gather_commands(behaviors: dict) -> list[dict]:
     commands = []
 
     for behavior in behaviors:
-        behavior_name = behavior["name"]
-        behavior_description = behavior["description"]
-        behavior_type = behavior.get("type")
+        behavior_name = behavior.get(DEFINITION_FIELD_NAME, "")
+        behavior_description = behavior.get(DEFINITION_FIELD_DESCRIPTION, "")
+        behavior_type = behavior.get(DEFINITION_FIELD_TYPE)
 
         if behavior_type != "command":
             continue
@@ -320,10 +324,11 @@ def _gather_commands(behaviors: dict) -> list[dict]:
         if not behavior_description.endswith("."):
             behavior_description = f"{behavior_description}."
 
-        if behavior.get("input"):
-            behavior["input"] = list(map(modify_command_input_output_entry, behavior.get("input")))
+        behavior_input = behavior.get(DEFINITION_FIELD_INPUT)
+        if behavior_input:
+            behavior["input"] = list(map(modify_command_input_output_entry, behavior_input))
 
-        behavior["description"] = behavior_description
+        behavior[DEFINITION_FIELD_DESCRIPTION] = behavior_description
         behavior["implementation_name"] = _convert_to_implementation_name(behavior_name)
         commands.append(behavior)
 
@@ -340,9 +345,9 @@ def _gather_plugin_aac_definitions(parsed_models: dict[str, dict]) -> list[dict]
     Returns:
         A list of AaC definitions provided by the plugin
     """
-    extension_definitions = list(get_models_by_type(parsed_models, "ext").values())
-    schema_definitions = list(get_models_by_type(parsed_models, "schema").values())
-    enum_definitions = list(get_models_by_type(parsed_models, "enum").values())
+    extension_definitions = list(get_models_by_type(parsed_models, ROOT_KEY_EXTENSION).values())
+    schema_definitions = list(get_models_by_type(parsed_models, ROOT_KEY_SCHEMA).values())
+    enum_definitions = list(get_models_by_type(parsed_models, ROOT_KEY_ENUM).values())
 
     return extension_definitions + schema_definitions + enum_definitions
 
