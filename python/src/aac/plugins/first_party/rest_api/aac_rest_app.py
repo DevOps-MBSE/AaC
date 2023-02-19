@@ -10,6 +10,7 @@ from aac.io.files.find import find_aac_files, is_aac_file
 from aac.io.paths import sanitize_filesystem_path
 from aac.io.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_active_context
+from aac.lang.constants import DEFINITION_FIELD_NAME, DEFINITION_FIELD_TYPE
 from aac.lang.definitions.json_schema import get_definition_json_schema
 from aac.lang.language_error import LanguageError
 from aac.plugins.plugin_execution import PluginExecutionStatusCode
@@ -233,6 +234,45 @@ def remove_definition_by_name(name: str):
             HTTPStatus.NOT_FOUND,
             f"Definition {name} not found in the context; failed to delete definitions.",
         )
+
+
+# Language Context Support
+
+@app.get("/context/schema", status_code=HTTPStatus.OK, response_model=DefinitionModel)
+def get_root_key_schema(key: str):
+    """
+    Returns the JSON schema for the given root key, or HTTPStatus.NOT_FOUND not found if the key doesn't exist.
+
+    Returns:
+        200 HTTPStatus.OK if successful.
+    """
+    active_context = get_active_context()
+    key_fields = active_context.get_root_fields()
+    matching_keys = [key_field for key_field in key_fields if key_field.get("name") == key]
+
+    if not matching_keys:
+        _report_error_response(HTTPStatus.NOT_FOUND, f"No matching key found for {key}.")
+    else:
+        key_definition_name = matching_keys[0].get(DEFINITION_FIELD_TYPE, "")
+        schema_definition = active_context.get_definition_by_name(key_definition_name)
+
+        if not schema_definition:
+            _report_error_response(HTTPStatus.NOT_FOUND, f"Unable to get the schema definition {key_definition_name}.")
+        else:
+            schema_model = to_definition_model(schema_definition)
+            schema_model.json_schema = get_definition_json_schema(schema_definition, active_context)
+            return schema_model
+
+
+@app.get("/context/root_keys", status_code=HTTPStatus.OK, response_model=list[str])
+def get_language_context_root_keys():
+    """
+    Returns a list of root keys from the active context.
+
+    Returns:
+        200 HTTPStatus.OK if successful.
+    """
+    return get_active_context().get_root_keys()
 
 
 # AaC Plugin Commands
