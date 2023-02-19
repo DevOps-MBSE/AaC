@@ -63,7 +63,43 @@ function deleteDefinitionByName(definitionName: string) {
     return Promise.resolve(aacRestApi.removeDefinitionByNameDefinitionDelete(definitionName));
 }
 
-export function createDefinition() {
+export async function createDefinition() {
+    // Prompt the user to pick an AaC file to store the new definition in.
+    const definitionFileOpenDialogOptions: vscode.OpenDialogOptions = {
+        title: "Select the AaC file for the new definition.",
+        canSelectMany: false,
+        canSelectFolders: false,
+    };
+
+    let fileUris: vscode.Uri[] | undefined = await vscode.window.showOpenDialog(definitionFileOpenDialogOptions);
+
+    // Prompt the user to name the new definition.
+    const newDefinitionNameInputBoxOptions: vscode.InputBoxOptions = {
+        title: "Enter a name for the new definition.",
+    };
+
+    let newDefinitionName: string | undefined = await vscode.window.showInputBox(newDefinitionNameInputBoxOptions);
+
+    // Prompt the user to choose the definition's schema type (root key).
+    const newDefinitionRootKeyQuickPick: vscode.QuickPickOptions = {
+        title: `Pick the schema type for ${newDefinitionName}.`,
+        canPickMany: false,
+    };
+
+    let quickPickRootKeys: string[] = await aacRestApi.getLanguageContextRootKeysContextRootKeysGet().then(response => {
+            return response.body ? response.body as string[] : []
+        })
+
+
+    let newDefinitionSchema: string | undefined = await vscode.window.showQuickPick(quickPickRootKeys, newDefinitionRootKeyQuickPick);
+
+    if (newDefinitionSchema && newDefinitionName && fileUris?.length && fileUris?.length > 0) {
+        vscode.commands.executeCommand(
+            "vscode.openWith",
+            vscode.Uri.from({scheme: "untitled", path:`${newDefinitionName}`, query:`new=${true}&file=${fileUris[0]}&schema=${newDefinitionSchema}&name=${newDefinitionName}`}),
+            "aac.visualEditor"
+        );
+    }
 }
 
 export function editDefinition(event: Definition) {
@@ -71,7 +107,7 @@ export function editDefinition(event: Definition) {
         getDefinitionByName(event.definitionModel.name).then(response => {
             vscode.commands.executeCommand(
                 "vscode.openWith",
-                vscode.Uri.from({scheme: "untitled", path:`${response.body.name}`}),
+                vscode.Uri.from({scheme: "untitled", path:`${response.body.name}`, query:`new=${false}`}),
                 "aac.visualEditor"
             );
         });

@@ -31,24 +31,33 @@ var runEditor = () => {
             // Initialize the editor with a JSON schema
             this.editable = data.isUserEditable
             this.sourceUri = data.sourceUri
-            this.rootKey = Object.keys(data.structure)[0];
-            addTitlesToJsonSchema(data.jsonSchema, this.rootKey)
+            this.rootKey ="null_key"
 
             if (this.jsonEditor) {
                 this.jsonEditor.destroy();
             }
 
+            const editorConfig = {
+                collapsed: false,
+                use_default_values: true,
+                prompt_before_delete: false,
+                disable_collapse: false,
+                disable_array_delete_last_row: true,
+                array_controls_top: true,
+                disable_edit_json: true,
+                object_layout: 'table',
+                schema: data.jsonSchema,
+            }
+
+            // Do a check on data existence or soft fail
+            if (data.structure) {
+                this.rootKey = Object.keys(data.structure)[0];
+                addTitlesToJsonSchema(data.jsonSchema, this.rootKey)
+                editorConfig['startval'] = data.structure[this.rootKey]
+            }
+
             this.jsonEditor = new JSONEditor(document.getElementById('main'),
-                {
-                    use_default_values: true,
-                    prompt_before_delete: false,
-                    disable_collapse: false,
-                    disable_array_delete_last_row: true,
-                    array_controls_top: true,
-                    disable_edit_json: true,
-                    schema: data.jsonSchema,
-                    startval: data.structure[this.rootKey]
-                }
+                editorConfig
             );
 
             this.jsonEditor.on('change', () => {
