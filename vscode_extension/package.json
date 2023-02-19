@@ -272,6 +272,7 @@
     "dependencies": {
         "@json-editor/json-editor": "^2.8.0",
         "request": "^2.88.2",
-        "vscode-languageclient": "^7.0.0"
+        "vscode-languageclient": "^7.0.0",
+        "vscode-uri": "^3.0.7"
     }
 }
