@@ -8,56 +8,49 @@ has_children: false
 
 # Validation Plugins for Developers
 
-## Plugin Validations
+## Plugin-provided Validations
+AaC's validation system leverages the larger AaC plugin system to provide a plug-an-play system for creating structural and primitive type validations (constrains) that are used to determine errors and possible issues in systems modeled in AaC.
 
-### General Information surrounding Validation
-
-Any references to code within this document regarding the `validation` plugin can be found here in the AaC project:
-`AaC/python/src/validate/_validate.py`
-
-This validator plugin can be separated into the below sections.
-
-1. [Definition Validations](#definition-validations)
-2. [Primitive Validations](#primitive-validations)
+AaC hsa two classes of plugin-provided validations: definition validations and primitive validations. The [definition validations](#definition-validations) are used to validate the structural parts of definitions such as required fields while [primitive validations](#primitive-validations) check that values in primitive fields adhere to the expectations of the data type such as checking that values listed as integers are in fact integers.
 
 There is also a section listing out the `validation` plugin for the implementation of a validator plugin for 1st and/or 3rd party plugins
 
-* [Implementation of a Validation Plugin for Definitions](#implementation-of-a-validation-plugin-for-definitions)
-
-It is also worthy to note that the way that the AaC DSL validates itself is through associating user-defined validation definitions with a corresponding python implementation which is used to programmatically test that the validation's constraints are met. The validation process is entirely data-driven, so with this implementation it can validate the data in the definition via the very constraints.that are defined as part of the definition.
+<!-- * [Implementation of a Validation Plugin for Definitions](#implementation-of-a-validation-plugin-for-definitions) -->
 
 ### Definition Validations
-
 The following snippet shows how the `_validate.py` validates a `definition` that is being passed through:
 
 ```python
- def _validate_definition( 
-     definition: Definition, validator_plugins: list[DefinitionValidationContribution], language_context: LanguageContext 
- ) -> list[ValidatorResult]: 
-     """Traverse the definition and validate it according to the validator plugins.""" 
-  
-     validator_results = [] 
-  
-     applicable_validator_plugins = get_applicable_validators_for_definition(definition, validator_plugins, language_context) 
-     ancestor_definitions = get_definition_ancestry(definition, language_context) 
-     sub_structure_definitions = get_definition_schema_components(definition, language_context) 
-     all_applicable_definitions = ancestor_definitions + sub_structure_definitions 
-  
-     for target_schema_definition in all_applicable_definitions: 
-         sub_definition_validations = target_schema_definition.get_validations() 
-  
-         if sub_definition_validations: 
-             for validation in sub_definition_validations: 
-                 validation_name = validation.get(DEFINITION_FIELD_NAME) 
-                 validator_plugin = list(filter(lambda plugin: plugin.name == validation_name, applicable_validator_plugins)) 
-  
-                 if validator_plugin: 
-                     validator_results.append( 
-                         _apply_validator(definition, target_schema_definition, language_context, validator_plugin[0]) 
-                     ) 
-  
-     validator_results.append(_validate_primitive_types(definition, language_context)) 
-     return validator_results 
+ def _validate_definition(
+     definition: Definition, validator_plugins: list[DefinitionValidationContribution], language_context: LanguageContext
+ ) -> list[ValidatorResult]:
+     """Traverse the definition and validate it according to the validator plugins."""
+
+     validator_results = []
+
+     # Decompose the definition under validation into any other definitions that compose its sub-structures
+     applicable_validator_plugins = get_applicable_validators_for_definition(definition, validator_plugins, language_context)
+     ancestor_definitions = get_definition_ancestry(definition, language_context)
+     sub_structure_definitions = get_definition_schema_components(definition, language_context)
+     all_applicable_definitions = ancestor_definitions + sub_structure_definitions
+
+     # For every identified sub-structure that is defined by another schema definition, validate it per its corresponding validations
+     for target_schema_definition in all_applicable_definitions:
+         sub_definition_validations = target_schema_definition.get_validations()
+
+         if sub_definition_validations:
+             for validation in sub_definition_validations:
+                 validation_name = validation.get(DEFINITION_FIELD_NAME)
+                 validator_plugin = list(filter(lambda plugin: plugin.name == validation_name, applicable_validator_plugins))
+
+                 if validator_plugin:
+                     # Add the validation results to the overall collection of validation results
+                     validator_results.append(
+                         _apply_validator(definition, target_schema_definition, language_context, validator_plugin[0])
+                     )
+
+     validator_results.append(_validate_primitive_types(definition, language_context))
+     return validator_results
 ```
 
 The above snippet this shows an example of how the validator takes in a `Definition`, a list of validator plugins, as well as the `LanguageContext` that provides the context to validate the definition within. The `Definition` validations can be alternative described as *Structural Constraints* for data structures (schema definitions). With this in mind the `Definition` validation will take a target `Definition` and decompose it into its `sub-definition`s, other definitions that are components of schema definitions (e.g. `Field` in `schema`). These `sub-structure`s are then validated by passing each sub-structure and corresponding values to the appropriate validator, defined by the validations of each sub-structure, which may produce finding(s) that are returned to the user via the `ValidatorResult` object.
@@ -66,17 +59,17 @@ This approach is also used for in the [Primitive Validations](#primitive-validat
 
 ### Primitive Validations
 
-Primitive Validations are handled by the below function:
+Primitive validations are handled after the structural validation by the below function:
 
 ```python
-def _validate_primitive_types(definition: Definition, language_context: LanguageContext) -> ValidatorResult: 
-     """Validates the instances of AaC primitive types.""" 
-     findings = ValidatorFindings() 
-     definition_schema = get_definition_schema(definition, language_context) 
-     if definition_schema: 
-         findings.add_findings(_validate_fields(definition, definition_schema, definition.get_top_level_fields(), language_context)) 
-  
-     return ValidatorResult([definition], findings) 
+def _validate_primitive_types(definition: Definition, language_context: LanguageContext) -> ValidatorResult:
+     """Validates the instances of AaC primitive types."""
+     findings = ValidatorFindings()
+     definition_schema = get_definition_schema(definition, language_context)
+     if definition_schema:
+         findings.add_findings(_validate_fields(definition, definition_schema, definition.get_top_level_fields(), language_context))
+
+     return ValidatorResult([definition], findings)
 
 ```
 
@@ -251,6 +244,110 @@ validation:
 
 ***NOTE***: Without the `implementation_file` the initial validator plugin will spit out an error saying that an implementation file is missing. This is needed for the validator plugin to function properly.
 
+## Implementation of a Validation Plugin for Primitive Types
+
+Examples of a primitive validator plugin can be found by refering the first-party provider for primitive validations [primitive-type-check](https://github.com/jondavid-black/AaC/tree/main/python/src/aac/plugins/first_party/primitive_type_check)
+
+Looking inside this directory the structure of this plugin looks other AaC plugins:
+
+```markdown
+.primitive_type_check
+├── __init__.py
+├── validators
+   ├── __init__.py
+   ├── bool_validator.py
+   ├── date_validator.py
+   ├── file_validator.py
+   ├── int_validator.py
+   └── num_validator.py
+└── primitive_type_check.yaml
+```
+
+So seeing the structure of this validator, there is an `init`, a number of implementations under `validators` and the `yaml` file used to describe the plugin.
+
+Taking a look at the bool validator we'll see the primitive validator interface:
+
+```python
+def validate_bool(definition: Definition, value_to_validate: Any) -> Optional[ValidatorFinding]:
+    """
+    Returns a Validation finding if the type isn't valid, otherwise None.
+    This function is intended to be used in the Validation apparatus, and for this result
+    to be collated with other finding into a larger ValidatorResult.
+    Arge:
+        definition (Definition): The definition that the value belongs to.
+        value_to_validate (Any): The value to be tested.
+    Returns:
+        A ValidatorFinding if the value is not a boolean or None.
+    """
+
+    is_invalid = not isinstance(value_to_validate, bool)
+    finding = None
+    if is_invalid:
+        lexeme, *_ = [lexeme for lexeme in definition.lexemes if lexeme.value.lower() == str(value_to_validate.lower())]
+        finding_message = f"{value_to_validate} is not a valid value for boolean type {PRIMITIVE_TYPE_BOOL}."
+        finding_location = FindingLocation.from_lexeme(BOOL_VALIDATION_NAME, lexeme)
+        finding = ValidatorFinding(definition, FindingSeverity.ERROR, finding_message, finding_location)
+
+    return finding
+```
+
+The yaml for the plugin looks like any other plugin:
+
+```yaml
+model:
+  name: primitive-type-checking
+  description: |
+    Primitive Type Checking is an Architecture-as-Code plugin that provides
+    primitive type validations for the primitive enum types defined in the core specification.
+  behavior:
+    ...
+    - name: Validate Boolean Primitives
+      type: request-response
+      description:
+      input:
+        - name: input
+          type: ValidatorInput
+      output:
+        - name: results
+          type: ValidatorOutput
+      acceptance:
+        - scenario: Successfully Validate a Boolean Primitive Value
+          given:
+            - The ValidatorInput content consists of valid AaC definitions
+            - The ValidatorInput contains at least one definition field that is defined as being type `bool`
+            - The value in the primitive `bool` field is a valid boolean YAML value
+          when:
+            - The input is validated
+          then:
+            - The ValidatorOutput does not indicate any errors
+            - The ValidatorOutput does not indicate any warnings
+            - The ValidatorOutput indicates the primitive value under test is valid
+        - scenario: Fail to Validate an Integer Primitive Value Is a non-boolean String
+          given:
+            - The ValidatorInput content consists of AaC definitions
+            - The ValidatorInput contains at least one definition field that is defined as being type `bool`
+            - The value in the primitive `bool` field contains alphabetical letters or punctuation marks that don't represent a YAML boolean value
+          when:
+            - The input is validated
+          then:
+            - The ValidatorOutput indicates an error
+            - The ValidatorOutput indicates the primitive value under test is invalid
+    ...
+```
+
+Lastly, in order to register the primitive validations, the `primitive-type-check` plugin uses the following plugin method `plugin.register_primitive_validations(...)` to register its several primitive validators:
+```python
+@hookimpl
+def get_plugin() -> Plugin:
+    """
+    Returns information about the plugin.
+    Returns:
+        A collection of information about the plugin and what it contributes.
+    """
+    plugin = Plugin(plugin_name)
+    plugin.register_primitive_validations(_get_primitive_validations()) # <-- This function registers the primitive validators.
+    return plugin
+```
 
 ## Validation Interface & Validator Development Best Practices
 
@@ -304,7 +401,7 @@ def validate_root_keys(definition_under_test: Definition, target_schema_definiti
     """
 ```
 
-Since this plugin is a part of the validator as a whole, it differs slightly from the `bool_validator.py` plugin that is a part of the `primitive_type_check` plugin. 
+Since this plugin is a part of the validator as a whole, it differs slightly from the `bool_validator.py` plugin that is a part of the `primitive_type_check` plugin.
 
 The arguments that are being passed through are similar, `Definition`, `LanguageContext`, and then any additional `validation_args`. As seen in the `_validate.py` validator the arguments and the return are quite similar.
 
