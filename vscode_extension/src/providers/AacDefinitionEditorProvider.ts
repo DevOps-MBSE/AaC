@@ -224,7 +224,7 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
         const updatedDefinitionModel: DefinitionModel = new DefinitionModel();
         updatedDefinitionModel.name = document.originalDefinitionName;
         updatedDefinitionModel.sourceUri = URI.parse(document.originalDefinitionUri).fsPath;
-        updatedDefinitionModel.structure = document.getDefinitionStructure() ?? {};
+        updatedDefinitionModel.structure = document.definitionStructure ?? {};
 
         const response = (await Promise.resolve(aacRestApi.addDefinitionDefinitionPost(updatedDefinitionModel))).response;
         if (response.statusCode !== 204) {
@@ -239,7 +239,7 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
         const updatedDefinitionModel: DefinitionModel = new DefinitionModel();
         updatedDefinitionModel.name = document.originalDefinitionName;
         updatedDefinitionModel.sourceUri = URI.parse(document.originalDefinitionUri).fsPath;
-        updatedDefinitionModel.structure = document.getDefinitionStructure() ?? {};
+        updatedDefinitionModel.structure = document.definitionStructure ?? {};
 
         const response = (await Promise.resolve(aacRestApi.updateDefinitionDefinitionPut(updatedDefinitionModel))).response;
         if (response.statusCode !== 204) {

@@ -90,6 +90,7 @@ export class AacDefinitionsDocument extends Disposable implements vscode.CustomD
     public get originalDefinitionUri() { return this._originalDefinitionUri; }
     public get documentState() { return this._documentState; }
     public set documentState(state) { this._documentState = state; }
+    public get definitionStructure() { return this._definitionStructure; }
 
     private readonly _onDidDispose = this._register(new vscode.EventEmitter<void>());
 
@@ -207,21 +208,5 @@ export class AacDefinitionsDocument extends Disposable implements vscode.CustomD
                 }
             }
         };
-    }
-
-   /**
-     * Get the definition structure/object
-     * @returns an Object that is the definition's structure
-     */
-    async getDefinitionStructure(): Promise<Object> {
-        return this._definitionStructure ?? {};
-    }
-
-    /**
-     * Get the JSON Schema for the definition
-     * @returns an Object that is the definition's JSON schema
-     */
-    async getDefinitionSchema(): Promise<Object> {
-        return this._jsonSchema ?? {};
     }
 }
