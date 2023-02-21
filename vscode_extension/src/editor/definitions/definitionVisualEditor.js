@@ -31,7 +31,7 @@ var runEditor = () => {
             // Initialize the editor with a JSON schema
             this.editable = data.isUserEditable
             this.sourceUri = data.sourceUri
-            this.rootKey ="null_key"
+            this.rootKey = data.rootKey
 
             if (this.jsonEditor) {
                 this.jsonEditor.destroy();
@@ -47,6 +47,7 @@ var runEditor = () => {
                 disable_edit_json: true,
                 object_layout: 'table',
                 schema: data.jsonSchema,
+                form_name_root: this.rootKey
             }
 
             // Do a check on data existence or soft fail

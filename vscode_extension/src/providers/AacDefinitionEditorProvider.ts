@@ -2,10 +2,11 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import { URI } from 'vscode-uri';
 import { disposeAll } from '../disposable';
-import { AacDefinitionsDocument, AacDefinitionEdit, AacEditorEventTypes } from '../editor/definitions/DefinitionsDocument';
+import { AacDefinitionsDocument, AacDefinitionEdit, AacEditorEventTypes, AacDocumentStateTypes } from '../editor/definitions/DefinitionsDocument';
 import { getNonce } from '../nonce';
-import { aacRestApi, DefinitionModel, CommandRequestModel, CommandResponseModel } from "../requests/aacRequests";
+import { aacRestApi, DefinitionModel, CommandRequestModel } from "../requests/aacRequests";
 import { IncomingMessage } from 'http';
+import * as queryKeys from './queryKeyConstants'
 
 /**
  * Provider for AaC visual definition editors.
@@ -160,9 +161,16 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
      * On messages from the editor, perform the appropriate action.
      */
     private onMessage(panel: vscode.WebviewPanel, document: AacDefinitionsDocument, message: any) {
+        const params = new URLSearchParams(document.uri.query);
+        const isNewDefinition = params.get(queryKeys.QUERY_KEY_NEW) == `${true}`
+        const definitionName = params.get(queryKeys.QUERY_KEY_NAME)
+        const definitionSourceFile = params.get(queryKeys.QUERY_KEY_FILE)
+        const definitionSchema = params.get(queryKeys.QUERY_KEY_SCHEMA)
+
         switch (message.type) {
             case AacEditorEventTypes.READY:
-                this.getInitFormData(document).then(formData => {
+                if (isNewDefinition) {}
+                this.getInitFormData(document, isNewDefinition, definitionName, definitionSourceFile, definitionSchema).then(formData => {
                     this.postEditMessage(panel, formData);
                 })
                 return;
@@ -170,8 +178,7 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
                 document.makeEdit(message.body as AacDefinitionEdit);
                 return;
             case AacEditorEventTypes.SAVE:
-                let params = new URLSearchParams(document.uri.query);
-                if (params.get("new")) {
+                if (isNewDefinition && document.documentState == AacDocumentStateTypes.NEW ) {
                     this.createDefinition(document);
                 } else {
                     this.updateDefinition(document);
@@ -187,23 +194,21 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
         }
     }
 
-    private async getInitFormData(document: AacDefinitionsDocument): Promise<AacDefinitionEdit> {
+    private async getInitFormData(document: AacDefinitionsDocument, isNew: boolean, definitionName: string, definitionSource: string, definitionSchema: string): Promise<AacDefinitionEdit> {
         // Either get the info necessary to create a scaffold for a new definition, or get the definition to edit.
         let definitionInfo: AacDefinitionEdit
-        let params = new URLSearchParams(document.uri.query);
-        if (params.get("new")) {
-            let name = params.get("name")
-            let schema = params.get("schema")
-            let uri = params.get("file")
-            let source = URI.parse(uri ? uri : "").fsPath
-            let jsonSchemaResponse = await aacRestApi.getRootKeySchemaContextSchemaGet(schema ? schema : "")
+        if (isNew) {
+            document.documentState = AacDocumentStateTypes.NEW
+            let jsonSchemaResponse = await aacRestApi.getRootKeySchemaContextSchemaGet(definitionSchema)
             definitionInfo =  {
-                name: name,
-                sourceUri: source,
-                jsonSchema: jsonSchemaResponse.body?.jsonSchema
+                name: definitionName,
+                sourceUri: URI.parse(definitionSource).fsPath,
+                jsonSchema: jsonSchemaResponse.body?.jsonSchema,
+                rootKey: definitionSchema
             } as AacDefinitionEdit
         } else {
-            definitionInfo =  await this.getDefinition(document).then(response => {
+            document.documentState = AacDocumentStateTypes.UPDATE
+            definitionInfo =  await aacRestApi.getDefinitionByNameDefinitionGet(definitionName, true).then(response => {
                 return response.body as AacDefinitionEdit
             });
         }
@@ -218,7 +223,7 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
     private async createDefinition(document: AacDefinitionsDocument): Promise<IncomingMessage> {
         const updatedDefinitionModel: DefinitionModel = new DefinitionModel();
         updatedDefinitionModel.name = document.originalDefinitionName;
-        updatedDefinitionModel.sourceUri = document.originalDefinitionUri;
+        updatedDefinitionModel.sourceUri = URI.parse(document.originalDefinitionUri).fsPath;
         updatedDefinitionModel.structure = document.definitionStructure ?? {};
 
         const response = (await Promise.resolve(aacRestApi.addDefinitionDefinitionPost(updatedDefinitionModel))).response;
@@ -226,13 +231,14 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
             vscode.window.showErrorMessage(`Failed to update definition: ${response.statusMessage}`);
         };
 
+        document.documentState = AacDocumentStateTypes.UPDATE
         return response;
     }
 
     private async updateDefinition(document: AacDefinitionsDocument): Promise<IncomingMessage> {
         const updatedDefinitionModel: DefinitionModel = new DefinitionModel();
         updatedDefinitionModel.name = document.originalDefinitionName;
-        updatedDefinitionModel.sourceUri = document.originalDefinitionUri;
+        updatedDefinitionModel.sourceUri = URI.parse(document.originalDefinitionUri).fsPath;
         updatedDefinitionModel.structure = document.definitionStructure ?? {};
 
         const response = (await Promise.resolve(aacRestApi.updateDefinitionDefinitionPut(updatedDefinitionModel))).response;
@@ -240,6 +246,7 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
             vscode.window.showErrorMessage(`Failed to update definition: ${response.statusMessage}`);
         };
 
+        document.documentState = AacDocumentStateTypes.UPDATE
         return response;
     }
 
