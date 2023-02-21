@@ -56,7 +56,10 @@ class Definition:
 
     def get_root_key(self) -> str:
         """Return the root key for the parsed definition."""
-        return list(self.structure.keys())[0]
+        root_key = "null_key"
+        if len(self.structure.keys()) > 0:
+            root_key = list(self.structure.keys())[0]
+        return root_key
 
     # Get Field Functions
 
