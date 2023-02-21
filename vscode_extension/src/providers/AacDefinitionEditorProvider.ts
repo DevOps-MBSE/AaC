@@ -163,14 +163,14 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
     private onMessage(panel: vscode.WebviewPanel, document: AacDefinitionsDocument, message: any) {
         const params = new URLSearchParams(document.uri.query);
         const isNewDefinition = params.get(queryKeys.QUERY_KEY_NEW) == `${true}`
-        const definitionName = params.get(queryKeys.QUERY_KEY_NAME)
-        const definitionSourceFile = params.get(queryKeys.QUERY_KEY_FILE)
-        const definitionSchema = params.get(queryKeys.QUERY_KEY_SCHEMA)
+        let definitionName = params.get(queryKeys.QUERY_KEY_NAME)
+        let definitionSourceFile = params.get(queryKeys.QUERY_KEY_FILE)
+        let definitionSchema = params.get(queryKeys.QUERY_KEY_SCHEMA)
 
         switch (message.type) {
             case AacEditorEventTypes.READY:
                 if (isNewDefinition) {}
-                this.getInitFormData(document, isNewDefinition, definitionName, definitionSourceFile, definitionSchema).then(formData => {
+                this.getInitFormData(document, isNewDefinition, definitionName ?? "", definitionSourceFile ?? "", definitionSchema ?? "").then(formData => {
                     this.postEditMessage(panel, formData);
                 })
                 return;
@@ -224,7 +224,7 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
         const updatedDefinitionModel: DefinitionModel = new DefinitionModel();
         updatedDefinitionModel.name = document.originalDefinitionName;
         updatedDefinitionModel.sourceUri = URI.parse(document.originalDefinitionUri).fsPath;
-        updatedDefinitionModel.structure = document.definitionStructure ?? {};
+        updatedDefinitionModel.structure = document.getDefinitionStructure() ?? {};
 
         const response = (await Promise.resolve(aacRestApi.addDefinitionDefinitionPost(updatedDefinitionModel))).response;
         if (response.statusCode !== 204) {
@@ -239,7 +239,7 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
         const updatedDefinitionModel: DefinitionModel = new DefinitionModel();
         updatedDefinitionModel.name = document.originalDefinitionName;
         updatedDefinitionModel.sourceUri = URI.parse(document.originalDefinitionUri).fsPath;
-        updatedDefinitionModel.structure = document.definitionStructure ?? {};
+        updatedDefinitionModel.structure = document.getDefinitionStructure() ?? {};
 
         const response = (await Promise.resolve(aacRestApi.updateDefinitionDefinitionPut(updatedDefinitionModel))).response;
         if (response.statusCode !== 204) {
