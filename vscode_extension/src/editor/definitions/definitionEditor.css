@@ -35,3 +35,7 @@ input {
 .je-switcher {
     display: none !important;
 }
+
+.je-modal {
+    color: black;
+}
