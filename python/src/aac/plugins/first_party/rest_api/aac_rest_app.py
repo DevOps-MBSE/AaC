@@ -1,5 +1,6 @@
 """Module for configuring and maintaining the restful application and its routes."""
-from fastapi import FastAPI, HTTPException, BackgroundTasks, responses
+from venv import logger
+from fastapi import FastAPI, HTTPException, BackgroundTasks, responses, exceptions, Request
 from http import HTTPStatus
 import logging
 import os
@@ -368,3 +369,9 @@ def _get_rest_api_compatible_commands() -> dict[str, AacCommand]:
 async def language_error_exception_handler(request, exc):
     """If a `LanguageError` exception is encountered, then return a 400 BAD Request with the exception's message."""
     return responses.PlainTextResponse(str(exc), status_code=400)
+
+
+@app.exception_handler(exceptions.RequestValidationError)
+async def validation_exception_handler(request: Request, exc: exceptions.RequestValidationError):
+    """If a `exceptions.RequestValidationError` exception is encountered, then return a 422 UNPROCESSABLE ENTITY with the exception's message."""
+    _report_error_response(HTTPStatus.UNPROCESSABLE_ENTITY, str(exc))
