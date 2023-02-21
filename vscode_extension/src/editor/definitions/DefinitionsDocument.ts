@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
-import * as path from 'path';
 import { Disposable } from '../../disposable';
 import { DefinitionModel } from "../../requests/aacRequests";
 import { IncomingMessage } from 'http';
+import * as queryKeys from '../../providers/queryKeyConstants'
 
 export enum AacEditorEventTypes {
     READY = 1,
@@ -10,6 +10,12 @@ export enum AacEditorEventTypes {
     SAVE = 3,
     DELETE = 4,
     VALIDATE = 5,
+}
+
+export enum AacDocumentStateTypes {
+    INIT = 1, // New document the needs init data
+    NEW = 2, // New definition, not yet saved to the context
+    UPDATE = 3, // Existing definition that will need to be updated in the context
 }
 
 /**
@@ -20,6 +26,7 @@ export interface AacDefinitionEdit {
     readonly sourceUri: string;
     readonly structure: Object;
     readonly jsonSchema?: Object;
+    readonly rootKey?: string;
 }
 
 /**
@@ -50,9 +57,11 @@ export class AacDefinitionsDocument extends Disposable implements vscode.CustomD
     private _savedEdits: Array<AacDefinitionEdit> = [];
 
     // AaC Definition Data Attributes
+    private _documentState: AacDocumentStateTypes;
     private _originalDefinitionName: string;
     private _originalDefinitionUri: string;
     private _definitionStructure?: Object;
+    private _definitionRoot?: string;
     private _jsonSchema?: Object;
 
 
@@ -63,14 +72,24 @@ export class AacDefinitionsDocument extends Disposable implements vscode.CustomD
         super();
         this._documentUri = uri;
         this._delegate = delegate;
-        this._originalDefinitionName = path.basename(uri.path);
-        this._originalDefinitionUri = "";
+
+        const params = new URLSearchParams(this._documentUri.query);
+        const isNewDefinition = params.get(queryKeys.QUERY_KEY_NEW) == `${true}`
+        const definitionName = params.get(queryKeys.QUERY_KEY_NAME)
+        const definitionSourceFile = params.get(queryKeys.QUERY_KEY_FILE)
+        const definitionSchema = params.get(queryKeys.QUERY_KEY_SCHEMA)
+
+        this._originalDefinitionName = definitionName ? definitionName : "Empty Name";
+        this._originalDefinitionUri = definitionSourceFile ? definitionSourceFile : "Empty File";
+        this._definitionRoot = definitionSchema ? definitionSchema : "Empty Root"
+        this._documentState = isNewDefinition ? AacDocumentStateTypes.INIT : AacDocumentStateTypes.UPDATE;
     }
 
     public get uri() { return this._documentUri; }
     public get originalDefinitionName() { return this._originalDefinitionName; }
     public get originalDefinitionUri() { return this._originalDefinitionUri; }
-    public get definitionStructure() { return this._definitionStructure; }
+    public get documentState() { return this._documentState; }
+    public set documentState(state) { this._documentState = state; }
 
     private readonly _onDidDispose = this._register(new vscode.EventEmitter<void>());
 
