@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { Disposable } from '../../disposable';
 import { DefinitionModel } from "../../requests/aacRequests";
 import { IncomingMessage } from 'http';
-import * as queryKeys from '../../providers/queryKeyConstants'
+import * as queryKeys from '../../providers/queryKeyConstants';
 
 export enum AacEditorEventTypes {
     READY = 1,
@@ -74,14 +74,14 @@ export class AacDefinitionsDocument extends Disposable implements vscode.CustomD
         this._delegate = delegate;
 
         const params = new URLSearchParams(this._documentUri.query);
-        const isNewDefinition = params.get(queryKeys.QUERY_KEY_NEW) == `${true}`
-        const definitionName = params.get(queryKeys.QUERY_KEY_NAME)
-        const definitionSourceFile = params.get(queryKeys.QUERY_KEY_FILE)
-        const definitionSchema = params.get(queryKeys.QUERY_KEY_SCHEMA)
+        const isNewDefinition = params.get(queryKeys.QUERY_KEY_NEW) === `${true}`;
+        const definitionName = params.get(queryKeys.QUERY_KEY_NAME);
+        const definitionSourceFile = params.get(queryKeys.QUERY_KEY_FILE);
+        const definitionSchema = params.get(queryKeys.QUERY_KEY_SCHEMA);
 
         this._originalDefinitionName = definitionName ? definitionName : "Empty Name";
         this._originalDefinitionUri = definitionSourceFile ? definitionSourceFile : "Empty File";
-        this._definitionRoot = definitionSchema ? definitionSchema : "Empty Root"
+        this._definitionRoot = definitionSchema ? definitionSchema : "Empty Root";
         this._documentState = isNewDefinition ? AacDocumentStateTypes.INIT : AacDocumentStateTypes.UPDATE;
     }
 

@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { URI } from 'vscode-uri';
 import { aacRestApi, DefinitionModel } from "../requests/aacRequests";
-import * as queryKeys from './queryKeyConstants'
+import * as queryKeys from './queryKeyConstants';
 
 export class AacDefinitionsViewProvider implements vscode.TreeDataProvider<Definition> {
 
@@ -81,15 +81,15 @@ export async function createDefinition() {
     };
 
     let quickPickRootKeys: string[] = await aacRestApi.getLanguageContextRootKeysContextRootKeysGet().then(response => {
-        return response.body ? response.body as string[] : []
-    })
+        return response.body ? response.body as string[] : [];
+    });
 
 
     let newDefinitionSchema: string | undefined = await vscode.window.showQuickPick(quickPickRootKeys, newDefinitionRootKeyQuickPick);
 
     if (newDefinitionSchema && newDefinitionName && fileUris?.length && fileUris?.length > 0) {
-        const query = createDocumentQuery(true, fileUris[0], newDefinitionName, newDefinitionSchema)
-        openDefinitionFile(newDefinitionName, query)
+        const query = createDocumentQuery(true, fileUris[0], newDefinitionName, newDefinitionSchema);
+        openDefinitionFile(newDefinitionName, query);
     }
 }
 
@@ -100,8 +100,8 @@ function getDefinitionByName(definitionName: string) {
 export function editDefinition(event: Definition) {
     if (Object.keys(event.definitionModel).length > 0) {
         getDefinitionByName(event.definitionModel.name).then(response => {
-            const query = createDocumentQuery(false, URI.file(response.body.sourceUri), response.body.name)
-            openDefinitionFile(response.body.name, query)
+            const query = createDocumentQuery(false, URI.file(response.body.sourceUri), response.body.name);
+            openDefinitionFile(response.body.name, query);
         });
     }
 }
@@ -129,7 +129,7 @@ function createDocumentQuery(isNewDefinition: boolean, file: vscode.Uri, name: s
     return `${queryKeys.QUERY_KEY_NEW}=${isNewDefinition}&` +
         `${queryKeys.QUERY_KEY_FILE}=${file}&` +
         `${queryKeys.QUERY_KEY_NAME}=${name}&` +
-        `${queryKeys.QUERY_KEY_SCHEMA}=${schema}`
+        `${queryKeys.QUERY_KEY_SCHEMA}=${schema}`;
 }
 
 function openDefinitionFile(definitionName: string, documentQuery: string) {
