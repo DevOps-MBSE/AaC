@@ -1,5 +1,4 @@
 """Module for configuring and maintaining the restful application and its routes."""
-from venv import logger
 from fastapi import FastAPI, HTTPException, BackgroundTasks, responses, exceptions, Request
 from http import HTTPStatus
 import logging
@@ -11,7 +10,7 @@ from aac.io.files.find import find_aac_files, is_aac_file
 from aac.io.paths import sanitize_filesystem_path
 from aac.io.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_active_context
-from aac.lang.constants import DEFINITION_FIELD_NAME, DEFINITION_FIELD_TYPE
+from aac.lang.constants import DEFINITION_FIELD_TYPE
 from aac.lang.definitions.json_schema import get_definition_json_schema
 from aac.lang.language_error import LanguageError
 from aac.plugins.plugin_execution import PluginExecutionStatusCode
