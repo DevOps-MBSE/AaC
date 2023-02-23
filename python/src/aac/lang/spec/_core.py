@@ -1,4 +1,4 @@
-"""Functions to allow interacting with the core AaC spec."""
+"""Private module for interacting with the core AaC spec."""
 
 from aac.lang.definitions.collections import get_definition_by_name
 from aac.lang.definitions.definition import Definition

@@ -1,4 +1,4 @@
-"""Provide access to the core AaC spec."""
+"""Provides access to the core AaC spec and associated helper functions."""
 
 from aac.lang.spec._core import (
     get_aac_spec,
