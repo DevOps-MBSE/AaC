@@ -5,7 +5,7 @@ from pygls.lsp.types.language_features.definition import DefinitionParams
 from unittest.async_case import IsolatedAsyncioTestCase
 from re import search
 
-from aac.spec.core import get_aac_spec_as_yaml, _get_aac_spec_file_path
+from aac.lang.spec import get_aac_spec_as_yaml, get_aac_spec_file_path
 from aac.plugins.first_party.lsp_server.providers.goto_definition_provider import GotoDefinitionProvider
 from aac.io.constants import YAML_DOCUMENT_SEPARATOR
 
@@ -145,7 +145,7 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         )
 
         expected_location = Location(
-            uri=_get_aac_spec_file_path(),
+            uri=get_aac_spec_file_path(),
             range=Range(start=Position(line=257, character=6), end=Position(line=257, character=12)),
         )
         location = res.get_location()

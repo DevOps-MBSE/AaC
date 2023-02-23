@@ -16,7 +16,7 @@ from pygls.lsp.types.text_synchronization import TextDocumentSyncKind
 from pygls.lsp.types.workspace import DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams
 from pygls.workspace import Document
 
-from aac.spec import core
+from aac.lang.spec import core
 
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.lsp.text_document import TextDocument
@@ -190,5 +190,5 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
 
     def _create_core_spec_virtual_doc(self) -> TextDocument:
         content = core.get_aac_spec_as_yaml()
-        full_file_path = core._get_aac_spec_file_path()
+        full_file_path = core.get_aac_spec_file_path()
         return TextDocument(file_path=path.dirname(full_file_path), file_name=path.basename(full_file_path), content=content)

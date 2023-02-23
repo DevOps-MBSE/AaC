@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.language_context import LanguageContext
-from aac.spec import get_aac_spec
+from aac.lang.spec import get_aac_spec
 
 
 class TestActiveContextLifecycleManager(TestCase):

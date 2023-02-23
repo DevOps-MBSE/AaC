@@ -46,7 +46,7 @@
             "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
                 "validate",
-                "${workspaceFolder}/src/aac/spec/spec.yaml"
+                "${workspaceFolder}/src/aac/lang/spec/spec.yaml"
             ],
             "console": "integratedTerminal",
             "justMyCode": false

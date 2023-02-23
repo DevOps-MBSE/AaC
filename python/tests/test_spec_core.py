@@ -1,4 +1,4 @@
-from aac.spec import core
+from aac.lang.spec import core
 
 from tests.active_context_test_case import ActiveContextTestCase
 

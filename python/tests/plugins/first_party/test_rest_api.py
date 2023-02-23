@@ -21,8 +21,7 @@ from aac.plugins.first_party.rest_api.aac_rest_app import app, refresh_available
 from aac.plugins.first_party.rest_api.models.command_model import CommandRequestModel
 from aac.plugins.first_party.rest_api.models.definition_model import to_definition_model
 from aac.plugins.first_party.rest_api.models.file_model import FilePathModel, FilePathRenameModel, to_file_model
-from aac.spec import get_aac_spec
-from aac.spec.core import _get_aac_spec_file_path
+from aac.lang.spec import get_aac_spec_file_path, get_aac_spec
 
 from tests.helpers.io import temporary_test_file, temporary_test_file_wo_cm, new_working_dir
 from tests.active_context_test_case import ActiveContextTestCase
@@ -148,7 +147,7 @@ class TestAacRestApiFileEndpoints(ActiveContextTestCase):
                 self.assertIn(temp_file2.name, actual_result_files_name)
 
     def test_get_file_in_context_by_uri(self):
-        core_spec_uri = _get_aac_spec_file_path()
+        core_spec_uri = get_aac_spec_file_path()
 
         response = self.test_client.get(f"/file?uri={core_spec_uri}")
         actual_result = response.json()
@@ -211,7 +210,7 @@ class TestAacRestApiFileEndpoints(ActiveContextTestCase):
     def test_remove_file_from_context(self):
         active_context = get_active_context()
 
-        core_spec_path = _get_aac_spec_file_path()
+        core_spec_path = get_aac_spec_file_path()
         core_definitions = get_aac_spec()
 
         response = self.test_client.delete(f"/file?uri={core_spec_path}")
@@ -329,7 +328,7 @@ class TestAacRestApiDefinitionEndpoints(ActiveContextTestCase):
 
     def test_add_definition_fails_to_edit_safe_file(self):
         active_context = get_active_context(True)
-        core_spec_path = _get_aac_spec_file_path()
+        core_spec_path = get_aac_spec_file_path()
         test_source = active_context.get_file_in_context_by_uri(core_spec_path)
 
         self.assertIsNotNone(

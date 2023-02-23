@@ -3,7 +3,7 @@ from tempfile import TemporaryDirectory
 
 from aac.io.constants import YAML_DOCUMENT_EXTENSION, AAC_DOCUMENT_EXTENSION
 from aac.io.files.find import find_aac_files, is_aac_file
-from aac.spec.core import get_aac_spec_as_yaml
+from aac.lang.spec import get_aac_spec_as_yaml
 
 from tests.helpers.io import temporary_test_file
 

@@ -1,5 +1,4 @@
 """The entry-point for the command line interface for the aac tool."""
-
 import sys
 from click import Argument, Command, Option, ParamType, Parameter, Path, UNPROCESSED, group, secho, types
 

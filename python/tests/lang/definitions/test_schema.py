@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.definitions.schema import get_definition_schema, get_root_schema_definitions, get_schema_defined_fields, get_definition_schema_components
-from aac.spec import get_root_fields
+from aac.lang.spec import get_root_fields
 
 from tests.helpers.context import get_core_spec_context
 from tests.helpers.parsed_definitions import (

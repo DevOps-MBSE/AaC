@@ -9,7 +9,7 @@ from aac.lang.definitions.collections import (
 )
 from aac.lang.definitions.search import search
 from aac.lang.definitions.definition import Definition
-from aac.spec import core
+from aac.lang.spec import core
 
 
 class TestDefinitionHelpers(TestCase):

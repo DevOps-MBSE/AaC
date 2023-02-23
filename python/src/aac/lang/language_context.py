@@ -253,7 +253,7 @@ class LanguageContext:
 
             These keys may differ from those provided by the core spec since the LanguageContext applies definitions
             from active plugins and user files, which may extend the set of root keys.
-            See :py:func:`aac.spec.get_root_keys()` for the list of root keys provided by the unaltered core AaC DSL.
+            See :py:func:`aac.lang.spec.get_root_keys()` for the list of root keys provided by the unaltered core AaC DSL.
         """
         return [field.get(DEFINITION_FIELD_NAME) for field in self.get_root_fields()]
 
@@ -318,7 +318,7 @@ class LanguageContext:
 
             These types may differ from those provided by the core spec since the LanguageContext applies definitions
             from active plugins and user files, which may extend the set of root keys.
-            See :py:func:`aac.spec.get_primitives()` for the list of root keys provided by the unaltered core AaC DSL.
+            See :py:func:`aac.lang.spec.get_primitives()` for the list of root keys provided by the unaltered core AaC DSL.
         """
         return self.get_primitives_definition().get_values()
 

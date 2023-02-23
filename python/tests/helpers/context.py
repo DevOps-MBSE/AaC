@@ -2,7 +2,7 @@
 
 from aac.lang.language_context import LanguageContext
 from aac.lang.definitions.definition import Definition
-from aac.spec.core import get_aac_spec
+from aac.lang.spec import get_aac_spec
 
 
 def get_core_spec_context(additional_definitions: list[Definition] = []) -> LanguageContext:

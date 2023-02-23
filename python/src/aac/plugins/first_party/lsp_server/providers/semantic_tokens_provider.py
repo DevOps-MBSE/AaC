@@ -10,7 +10,7 @@ from yaml import Token
 from aac.io.parser._parse_source import _scan_yaml
 from aac.lang.language_context import LanguageContext
 from aac.plugins.first_party.lsp_server.providers.lsp_provider import LspProvider
-from aac.spec.core import get_root_keys, _get_aac_spec_file_path
+from aac.lang.spec import get_root_keys, get_aac_spec_file_path
 
 
 def _is_enum(token: Token, language_context: LanguageContext) -> bool:
@@ -62,7 +62,7 @@ def _is_from_default_library(token: Token, language_context: LanguageContext) ->
     """Return whether the provided token is built-in to the AaC core spec."""
     is_root_key = token.value in get_root_keys()
     enum_definition = language_context.get_enum_definition_by_type(token.value)
-    return is_root_key or (enum_definition.source.uri == _get_aac_spec_file_path() if enum_definition else False)
+    return is_root_key or (enum_definition.source.uri == get_aac_spec_file_path() if enum_definition else False)
 
 
 class SemanticTokensProvider(LspProvider):

@@ -2,7 +2,7 @@
 
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
-from aac.spec.core import get_aac_spec_as_yaml
+from aac.lang.spec import get_aac_spec_as_yaml
 
 
 plugin_name = "print-spec"

@@ -4,7 +4,7 @@ from unittest import TestCase
 
 from aac.io.parser import parse
 from aac.io.writer import write_definitions_to_file
-from aac.spec import core
+from aac.lang.spec import core
 
 from tests.helpers.parsed_definitions import create_enum_definition, create_model_definition
 

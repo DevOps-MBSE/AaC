@@ -3,7 +3,7 @@
 from aac.lang.language_context import LanguageContext
 from aac.persistence import ACTIVE_CONTEXT_STATE_FILE_NAME
 from aac.plugins.plugin_manager import get_plugins
-from aac.spec import get_aac_spec
+from aac.lang.spec import get_aac_spec
 
 
 ACTIVE_CONTEXT = None
