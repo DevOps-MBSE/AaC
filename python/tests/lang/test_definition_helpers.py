@@ -9,7 +9,7 @@ from aac.lang.definitions.collections import (
 )
 from aac.lang.definitions.search import search
 from aac.lang.definitions.definition import Definition
-from aac.lang.spec import core
+from aac.lang.spec import get_aac_spec
 
 
 class TestDefinitionHelpers(TestCase):
@@ -25,7 +25,7 @@ class TestDefinitionHelpers(TestCase):
         def filter_by_root(definition: Definition, root_key: str):
             return definition.get_root_key() == root_key
 
-        aac_core_definitions = core.get_aac_spec()
+        aac_core_definitions = get_aac_spec()
         schema_definitions = list(filter(lambda definition: filter_by_root(definition, "schema"), aac_core_definitions))
         enum_definitions = list(filter(lambda definition: filter_by_root(definition, "enum"), aac_core_definitions))
         model_definitions = list(filter(lambda definition: filter_by_root(definition, "model"), aac_core_definitions))

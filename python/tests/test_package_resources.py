@@ -3,7 +3,7 @@ from unittest import TestCase
 from importlib import resources
 
 from aac import package_resources
-from aac.lang.spec import CORE_SPEC_FILE_NAME
+from aac.lang.spec._core import CORE_SPEC_FILE_NAME
 
 
 class TestPackageResources(TestCase):

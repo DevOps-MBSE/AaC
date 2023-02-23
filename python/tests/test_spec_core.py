@@ -1,4 +1,10 @@
-from aac.lang.spec import core
+from aac.lang.spec import (
+    get_primitives,
+    get_root_keys,
+    get_root_fields,
+    get_aac_spec,
+    get_aac_spec_as_yaml,
+)
 
 from tests.active_context_test_case import ActiveContextTestCase
 
@@ -12,7 +18,7 @@ class TestSpecCore(ActiveContextTestCase):
         """
         expected_results = ["int", "number", "string", "bool", "file", "directory", "date", "reference"]
 
-        result = core.get_primitives()
+        result = get_primitives()
 
         self.assertCountEqual(result, expected_results)
 
@@ -20,7 +26,7 @@ class TestSpecCore(ActiveContextTestCase):
         """
         Unit test for the core.get_root_keys method.
         """
-        result = core.get_root_keys()
+        result = get_root_keys()
 
         self.assertListEqual(result, EXPECTED_ROOT_KEY_NAMES)
 
@@ -28,7 +34,7 @@ class TestSpecCore(ActiveContextTestCase):
         """
         Unit test for the core.get_root_fields method.
         """
-        result = core.get_root_fields()
+        result = get_root_fields()
 
         self.assertEqual(len(result), len(EXPECTED_ROOT_KEY_NAMES))
         for field in result:
@@ -41,7 +47,7 @@ class TestSpecCore(ActiveContextTestCase):
         Unit test for the core.get_aac_spec method.
         """
 
-        aac_definitions = core.get_aac_spec()
+        aac_definitions = get_aac_spec()
 
         self.assertGreater(len(aac_definitions), 0)
 
@@ -50,6 +56,6 @@ class TestSpecCore(ActiveContextTestCase):
         Unit test for the core.get_aac_spec_as_yaml method.
         """
 
-        aac_yaml = core.get_aac_spec_as_yaml()
+        aac_yaml = get_aac_spec_as_yaml()
         self.assertGreater(len(aac_yaml), 0)
         self.assertGreaterEqual(aac_yaml.count("---"), 14)  # there are 14 base types
