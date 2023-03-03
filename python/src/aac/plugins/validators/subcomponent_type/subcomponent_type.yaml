@@ -1,35 +1,42 @@
 validation:
-  name: Subcomponents are models
-  description: Verifies that the type field of every subcomponent refers to a model.
+  name: Reference is type
+  description: |
+    Verifies that the type referenced by a field matches the expected type.
+
+    This validation takes a list of key-value pairs which are used to define reference type constraints
+    for fields. For instance, the KV pair `type: model` would define the field 'type' as model. Any definition
+    reference in the field `type` that is not a `model` definition is invalid.
+
+    The valid types can be root keys or schema definition names, and the fields that can be defined must be top-level fields.
   behavior:
-    - name: Verify that subcomponents are of the model type.
+    - name: Verify that the definition's fields reference the argument-defined root key types.
       type: request-response
       description:
       input:
         - name: input
-          type: ValidatorInput
+          type: ValidatorKeywordInput
       output:
         - name: results
           type: ValidatorOutput
       acceptance:
-        - scenario: Successfully Validate a model definition's subcomponent types
+        - scenario: Successfully validate a definition's fields
           given:
-            - The ValidatorInput content consists of a model definition.
-            - The ValidatorInput contains at least one subcomponent.
-            - All subcomponents are model types.
+            - The ValidatorKeywordInput consists of list of keyword arguments defining fields to validate and reference type constraints.
+            - The definition under test contains at least one populated field given a type constraint via arguments.
+            - The definition fields subject to validation match the constrained field type.
           when:
             - The ValidatorInput is validated
           then:
             - The ValidatorOutput does not indicate any errors
             - The ValidatorOutput does not indicate any warnings
             - The ValidatorOutput indicates the definition under test is valid
-        - scenario: Fail to validate a model's subcomponent types
+        - scenario: Fail to validate a definition's fields
           given:
-            - The ValidatorInput content consists of a model definition.
-            - The ValidatorInput contains at least one subcomponent.
-            - The type of at least one of the subcomponents is not model.
+            - The ValidatorKeywordInput consists of list of keyword arguments defining fields to validate and reference type constraints.
+            - The definition under test contains at least one populated field given a type constraint via arguments.
+            - The definition fields subject to validation do not match the field types constraint.
           when:
             - The ValidatorInput is validated
           then:
             - The ValidatorOutput has errors
-            - The ValidatorOutput errors indicate that the subcomponent(s) are not models.
+            - The ValidatorOutput errors indicate that the field(s) do not match the type constraint.
