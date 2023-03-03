@@ -1,7 +1,7 @@
 from aac.io.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.definitions.source_location import SourceLocation
-from aac.plugins.validators.subcomponent_type._subcomponent_type import validate_subcomponent_types
+from aac.plugins.validators.field_type._field_type import validate_subcomponent_types
 
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.assertion import assert_validator_result_failure, assert_validator_result_success

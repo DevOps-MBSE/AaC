@@ -4,7 +4,7 @@ from aac.plugins import hookimpl
 from aac.plugins.plugin import Plugin
 from aac.plugins._common import get_plugin_definitions_from_yaml
 from aac.plugins.validators._common import get_plugin_validations_from_definitions
-from aac.plugins.validators.subcomponent_type._subcomponent_type import PLUGIN_NAME, validate_subcomponent_types
+from aac.plugins.validators.field_type._field_type import PLUGIN_NAME, validate_subcomponent_types
 
 
 @hookimpl
@@ -22,7 +22,7 @@ def get_plugin() -> Plugin:
 
 
 def _get_plugin_definitions():
-    return get_plugin_definitions_from_yaml(__package__, "subcomponent_type.yaml")
+    return get_plugin_definitions_from_yaml(__package__, "field_type.yaml")
 
 
 def _get_plugin_validations():

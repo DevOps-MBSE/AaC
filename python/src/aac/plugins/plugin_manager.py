@@ -58,7 +58,7 @@ def get_plugin_manager() -> PluginManager:
         "required_fields",
         "validator_implementation",
         "exclusive_fields",
-        "subcomponent_type",
+        "field_type",
         "root_keys",
         "reference_fields",
         "reference_targets",
