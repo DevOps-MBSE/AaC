@@ -16,7 +16,7 @@ from aac.lang.definitions.search import search_definition
 
 
 def get_definition_ancestry(definition: Definition, context: LanguageContext) -> list[Definition]:
-    """Return an ordered list of ancestor definitions starting with the root definition and ending with the argument."""
+    """Return an ordered list of ancestor definitions starting with the root definition and ending with the argument definition."""
 
     ancestors_list = []
     found_self_defined_ancestor = False
