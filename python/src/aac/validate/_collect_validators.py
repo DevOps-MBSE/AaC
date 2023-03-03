@@ -2,9 +2,8 @@ import logging
 from typing import Optional
 
 from aac.lang.language_context import LanguageContext
-from aac.lang.constants import DEFINITION_FIELD_NAME, DEFINITION_FIELD_VALIDATION, ROOT_KEY_SCHEMA
+from aac.lang.constants import DEFINITION_FIELD_NAME, ROOT_KEY_SCHEMA
 from aac.lang.definitions.definition import Definition
-from aac.lang.definitions.search import search_definition
 from aac.lang.definitions.schema import get_definition_schema_components
 from aac.lang.hierarchy import get_definition_ancestry
 from aac.plugins.contributions.contribution_types import DefinitionValidationContribution
@@ -40,7 +39,7 @@ def get_applicable_validators_for_definition(
 
     applicable_validators = {}
     for validation_dict in applicable_validation_dicts:
-        validation_name = validation_dict.get(DEFINITION_FIELD_NAME)
+        validation_name = validation_dict.get(DEFINITION_FIELD_NAME) or ""
         validator_plugin = _get_validator_plugin_by_name(validation_name, validator_plugins)
 
         if validator_plugin:
