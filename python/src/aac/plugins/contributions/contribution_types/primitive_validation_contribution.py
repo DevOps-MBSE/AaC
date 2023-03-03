@@ -1,5 +1,6 @@
 """Type Validation Contribution class."""
 from __future__ import annotations
+from typing import Callable
 from attr import attrib, attrs, validators
 
 
@@ -16,7 +17,7 @@ class PrimitiveValidationContribution:
 
     name: str = attrib(validator=validators.instance_of(str))
     primitive_type: str = attrib(validator=validators.instance_of(str))
-    validation_function: callable = attrib(validator=validators.is_callable())
+    validation_function: Callable = attrib(validator=validators.is_callable())
 
     def __hash__(self) -> int:
         """Return the hash of this TypeValidationContribution."""
