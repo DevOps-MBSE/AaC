@@ -31,11 +31,11 @@ def get_applicable_validators_for_definition(
     ancestor_definitions = get_definition_ancestry(definition, context)
     sub_structure_definitions = get_definition_schema_components(definition, context)
     # For each ancestor definition, pull validation definitions, collapse the 2d list to 1d, and return the list of validations.
-    ancestor_lists = map(_get_validation_entries, ancestor_definitions)
-    substructure_lists = map(_get_validation_entries, sub_structure_definitions)
+    ancestor_validations = list(map(_get_validation_entries, ancestor_definitions))
+    substructure_validations = list(map(_get_validation_entries, sub_structure_definitions))
 
-    applicable_ancestor_validation_dicts = [ancestor for ancestor_list in ancestor_lists for ancestor in ancestor_list]
-    applicable_substructure_validation_dicts = [substructure for substructure_list in substructure_lists for substructure in substructure_list]
+    applicable_ancestor_validation_dicts = [ancestor for ancestor_list in ancestor_validations for ancestor in ancestor_list]
+    applicable_substructure_validation_dicts = [substructure for substructure_list in substructure_validations for substructure in substructure_list]
     applicable_validation_dicts = applicable_ancestor_validation_dicts + applicable_substructure_validation_dicts
 
     applicable_validators = {}
@@ -56,13 +56,15 @@ def get_applicable_validators_for_definition(
 def _get_validation_entries(definition: Definition) -> list[dict]:
     """Return a list of validation entries from the definition."""
 
-    validations = {}
+    validations: dict = {}
+    definition_validations = definition.get_validations()
 
     # Currently validations are only registered in `data` root definitions.
-    if definition.get_root_key() == ROOT_KEY_SCHEMA:
-        validations = search_definition(definition, [ROOT_KEY_SCHEMA, DEFINITION_FIELD_VALIDATION])
+    if definition.get_root_key() == ROOT_KEY_SCHEMA and definition_validations:
+        for validation in definition_validations:
+            validations[validation.get(DEFINITION_FIELD_NAME)] = validation
 
-    return validations
+    return list(validations.values())
 
 
 def _get_validator_plugin_by_name(validator_name: str, validator_plugins: list[DefinitionValidationContribution]) -> Optional[DefinitionValidationContribution]:
