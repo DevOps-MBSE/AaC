@@ -1,6 +1,7 @@
 """Rule Validation Contribution class."""
 from __future__ import annotations
 from attr import attrib, attrs, validators
+from typing import Callable
 
 from aac.lang.definitions.definition import Definition
 
@@ -18,7 +19,7 @@ class DefinitionValidationContribution:
 
     name: str = attrib(validator=validators.instance_of(str))
     definition: Definition = attrib(validator=validators.instance_of(Definition))
-    validation_function: callable = attrib(validator=validators.is_callable())
+    validation_function: Callable = attrib(validator=validators.is_callable())
 
     def __hash__(self) -> int:
         """Return the hash of this DefinitionValidationContribution."""
