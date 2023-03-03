@@ -200,7 +200,15 @@ schema:
     - name: name
       type: string
       description: |
-        The name of the input to the validation rule and plugin.
+        The list of arguments provided to the validator.
+---
+schema:
+  name: ValidatorKeywordInput
+  fields:
+    - name: arguments
+      type: KeyValuePair[]
+      description: |
+        The list of keyword arguments to pass to the validator.
 ---
 schema:
   name: ValidatorOutput
