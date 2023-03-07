@@ -6,7 +6,7 @@ from aac.io.paths import is_same_file
 from aac.lang.definitions.source_location import SourceLocation
 
 
-@attrs(eq=False)
+@attrs(hash=False, eq=False)
 class Lexeme:
     """A lexical unit for a parsed AaC definition.
 
@@ -28,3 +28,7 @@ class Lexeme:
             and self.location == __o.location
             and is_same_file(self.source, __o.source)
         )
+
+    def __hash__(self) -> int:
+        """Return the hash of this Definition."""
+        return hash((self.location, self.source, self.value))

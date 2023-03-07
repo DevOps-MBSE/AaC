@@ -3,7 +3,7 @@
 from attr import attrib, attrs, validators
 
 
-@attrs
+@attrs(hash=False)
 class SourceLocation:
     """The position and span of an AaC structure in the YAML source.
 
@@ -18,6 +18,10 @@ class SourceLocation:
     column: int = attrib(validator=validators.instance_of(int))
     position: int = attrib(validator=validators.instance_of(int))
     span: int = attrib(validator=validators.instance_of(int))
+
+    def __hash__(self) -> int:
+        """Return the hash of this Definition."""
+        return hash((self.line, self.column, self.position, self.span))
 
     def to_tuple(self) -> tuple[int, int, int, int]:
         """
