@@ -15,8 +15,9 @@ from tests.helpers.parsed_definitions import (
 class TestDefinition(TestCase):
     def test_uuid(self):
         self.assertTrue(create_schema_definition("Test").uid.is_safe)
-        self.assertNotEqual(create_schema_definition("Test").uid, create_schema_definition("Test").uid)
+        self.assertEqual(create_schema_definition("Test").uid, create_schema_definition("Test").uid)
         self.assertNotEqual(create_schema_definition("Test1").uid, create_schema_definition("Test2").uid)
+        # TODO add cases for different files
 
     def test_get_fields_with_empty_no_top_level_fields(self):
         test_definition = create_schema_definition("EmptyData")

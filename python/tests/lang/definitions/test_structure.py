@@ -41,9 +41,8 @@ class TestDefinitionStructures(TestCase):
         test_behavior_entry = create_behavior_entry(
             "TestBehavior", input=[test_input_field], acceptance=[test_acceptance_field]
         )
-        test_component_entry = create_field_entry("TestComponent", sub_model_definition.name)
         test_model_definition = create_model_definition(
-            "TestModel", components=[test_component_entry], behavior=[test_behavior_entry]
+            "TestModel", behavior=[test_behavior_entry]
         )
 
         test_context.add_definitions_to_context([test_model_definition, sub_model_definition])
@@ -52,7 +51,7 @@ class TestDefinitionStructures(TestCase):
         field_definition = test_context.get_definition_by_name("Field")
         behavior_definition = test_context.get_definition_by_name("Behavior")
 
-        expected_field_definitions = [test_input_field, test_component_entry]
+        expected_field_definitions = [test_input_field]
         expected_behavior_definitions = [test_behavior_entry]
         expected_scenario_definitions = [test_acceptance_field]
 
@@ -73,11 +72,12 @@ class TestDefinitionStructures(TestCase):
         field_definition = test_context.get_definition_by_name("Field")
         validation_reference_definition = test_context.get_definition_by_name("ValidationReference")
         definition_reference_definition = test_context.get_definition_by_name("DefinitionReference")
+        key_value_reference_definition = test_context.get_definition_by_name("KeyValuePair")
 
-        expected_definitions = [definition_reference_definition, field_definition, validation_reference_definition]
+        expected_definitions = [definition_reference_definition, field_definition, validation_reference_definition, key_value_reference_definition]
         actual_definitions = get_definition_schema_components(schema_definition, test_context)
 
-        self.assertEqual(len(actual_definitions), 3)
+        self.assertEqual(len(actual_definitions), 4)
         self.assertListEqual(expected_definitions, actual_definitions)
 
     def test_get_definition_schema_components_with_model(self):
@@ -86,19 +86,20 @@ class TestDefinitionStructures(TestCase):
         model_definition = create_model_definition("TestModel")
         test_context.add_definition_to_context(model_definition)
 
-        # Per the core spec, we'd expect Field, Behavior, BehaviorType, and Scenario
+        # Per the core spec, we'd expect Field, ModelComponentField, Behavior, BehaviorType, and Scenario
         field_definition = test_context.get_definition_by_name("Field")
+        component_field_definition = test_context.get_definition_by_name("ModelComponentField")
         behavior_definition = test_context.get_definition_by_name("Behavior")
         behavior_type_definition = test_context.get_definition_by_name("BehaviorType")
         scenario_definition = test_context.get_definition_by_name("Scenario")
 
-        expected_definitions = [field_definition, behavior_definition, behavior_type_definition, scenario_definition]
+        expected_definitions = [field_definition, component_field_definition, behavior_definition, behavior_type_definition, scenario_definition]
         actual_definitions = get_definition_schema_components(model_definition, test_context)
+        expected_definitions.sort()
+        actual_definitions.sort()
 
         # Per the core spec, we'd expect Field, Behavior, BehaviorType, and Scenario
-        self.assertEqual(len(actual_definitions), len(expected_definitions))
-        for actual_definition in actual_definitions:
-            self.assertIn(actual_definition, expected_definitions)
+        self.assertListEqual(actual_definitions, expected_definitions)
 
     def test_strip_undefined_fields_from_definition(self):
         test_context = get_core_spec_context()

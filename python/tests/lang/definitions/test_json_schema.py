@@ -99,6 +99,23 @@ EXPECTED_SCHEMA_JSON_SCHEMA = """
                         "items": {
                             "type": "string"
                         }
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "kw_arguments": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "key": {
+                                    "type": "string"
+                                },
+                                "value": {
+                                    "type": "string"
+                                }
+                            }
+                        }
                     }
                 }
             }

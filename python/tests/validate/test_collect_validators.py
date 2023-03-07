@@ -47,6 +47,7 @@ class TestCollectValidators(ActiveContextTestCase):
             active_context.get_definition_by_name(DEFINITION_NAME_SCHEMA).get_validations()
             + active_context.get_definition_by_name(DEFINITION_NAME_FIELD).get_validations()
             + active_context.get_definition_by_name(DEFINITION_NAME_MODEL).get_validations()
+            + active_context.get_definition_by_name("ModelComponentField").get_validations()
             + active_context.get_definition_by_name("Requirement").get_validations())
 
         actual_result = get_applicable_validators_for_definition(test_definition, validation_plugins, active_context)

@@ -44,7 +44,6 @@ def validate_validator_implementations(
             validation_name_lexeme = definition_under_test.get_lexeme_with_value(validation_name)
             findings.add_error_finding(target_schema_definition, registered_plugin_names, PLUGIN_NAME, validation_name_lexeme)
 
-
     dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)
     list(map(validate_dict, dicts_to_test))
 

@@ -115,13 +115,17 @@ class TestDefinitionSchemas(TestCase):
 
         # Per the core spec, we'd expect DefinitionReference, Field, and ValidationReference
         field_definition = test_context.get_definition_by_name("Field")
+        key_val_definition = test_context.get_definition_by_name("KeyValuePair")
         validation_reference_definition = test_context.get_definition_by_name("ValidationReference")
         definition_reference_definition = test_context.get_definition_by_name("DefinitionReference")
 
-        expected_definitions = [definition_reference_definition, field_definition, validation_reference_definition]
+        expected_definitions = [definition_reference_definition, key_val_definition, field_definition, validation_reference_definition]
         actual_definitions = get_definition_schema_components(schema_definition, test_context)
 
-        self.assertEqual(len(actual_definitions), 3)
+        expected_definitions.sort()
+        actual_definitions.sort()
+
+        self.assertEqual(len(actual_definitions), 4)
         self.assertListEqual(expected_definitions, actual_definitions)
 
     def test_get_sub_definitions_with_model(self):
@@ -132,14 +136,15 @@ class TestDefinitionSchemas(TestCase):
 
         # Per the core spec, we'd expect Field, Behavior, BehaviorType, and Scenario
         field_definition = test_context.get_definition_by_name("Field")
+        component_field_definition = test_context.get_definition_by_name("ModelComponentField")
         behavior_definition = test_context.get_definition_by_name("Behavior")
         behavior_type_definition = test_context.get_definition_by_name("BehaviorType")
         scenario_definition = test_context.get_definition_by_name("Scenario")
 
-        expected_definitions = [field_definition, behavior_definition, behavior_type_definition, scenario_definition]
+        expected_definitions = [field_definition, component_field_definition, behavior_definition, behavior_type_definition, scenario_definition]
         actual_definitions = get_definition_schema_components(model_definition, test_context)
+        expected_definitions.sort()
+        actual_definitions.sort()
 
-        # Per the core spec, we'd expect Field, Behavior, BehaviorType, and Scenario
-        self.assertEqual(len(actual_definitions), len(expected_definitions))
-        for actual_definition in actual_definitions:
-            self.assertIn(actual_definition, expected_definitions)
+        # Per the core spec, we'd expect Field, ModelComponentField, Behavior, BehaviorType, and Scenario
+        self.assertListEqual(actual_definitions, expected_definitions)
