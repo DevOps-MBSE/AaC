@@ -7,6 +7,7 @@ from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.constants import (
     DEFINITION_FIELD_NAME,
     DEFINITION_FIELD_ARGUMENTS,
+    DEFINITION_FIELD_KW_ARGUMENTS,
     DEFINITION_FIELD_FIELDS,
     DEFINITION_FIELD_TYPE,
 )
@@ -134,6 +135,8 @@ def _validate_definition(
                     validator_results.append(
                         _apply_validator(definition, target_schema_definition, language_context, validator_plugin[0])
                     )
+                else:
+                    logging.error(f"Didn't find a matching validator plugin for '{validation_name}'")
 
     validator_results.append(_validate_primitive_types(definition, language_context))
     return validator_results
@@ -152,10 +155,11 @@ def _apply_validator(
     for validation in defined_validations:
         if validation.get(DEFINITION_FIELD_NAME) == validator_plugin.name:
             validation_args = validation.get(DEFINITION_FIELD_ARGUMENTS) or []
+            validation_kw_args = validation.get(DEFINITION_FIELD_KW_ARGUMENTS) or {}
 
     validator_result = None
     try:
-        validator_result = validator_plugin.validation_function(definition, target_schema_definition, language_context, *validation_args)
+        validator_result = validator_plugin.validation_function(definition, target_schema_definition, language_context, *validation_args, **validation_kw_args)
     except Exception as exception:
         exception_message = f"Validator '{validator_plugin.name}' failed with an exception: {exception}"
         finding_location = FindingLocation(validator_plugin.name, definition.source, 0, 0, 0, 0)
