@@ -5,11 +5,13 @@ from typing import Generator, Any, Optional
 from aac.io.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.constants import (
+    DEFINITION_FIELD_KEY,
     DEFINITION_FIELD_NAME,
     DEFINITION_FIELD_ARGUMENTS,
     DEFINITION_FIELD_KW_ARGUMENTS,
     DEFINITION_FIELD_FIELDS,
     DEFINITION_FIELD_TYPE,
+    DEFINITION_FIELD_VALUE,
 )
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.schema import get_definition_schema_components, get_definition_schema
@@ -155,11 +157,16 @@ def _apply_validator(
     for validation in defined_validations:
         if validation.get(DEFINITION_FIELD_NAME) == validator_plugin.name:
             validation_args = validation.get(DEFINITION_FIELD_ARGUMENTS) or []
-            validation_kw_args = validation.get(DEFINITION_FIELD_KW_ARGUMENTS) or {}
+            validation_kw_args = {
+                entry.get(DEFINITION_FIELD_KEY): entry.get(DEFINITION_FIELD_VALUE)
+                for entry in (validation.get(DEFINITION_FIELD_KW_ARGUMENTS) or [])
+            }
 
     validator_result = None
     try:
-        validator_result = validator_plugin.validation_function(definition, target_schema_definition, language_context, *validation_args, **validation_kw_args)
+        validator_result = validator_plugin.validation_function(
+            definition, target_schema_definition, language_context, *validation_args, **validation_kw_args
+        )
     except Exception as exception:
         exception_message = f"Validator '{validator_plugin.name}' failed with an exception: {exception}"
         finding_location = FindingLocation(validator_plugin.name, definition.source, 0, 0, 0, 0)

@@ -23,46 +23,50 @@ def validate_reference_types(
         definition_under_test (Definition): The definition that's being validated. (Root validation definitions)
         target_schema_definition (Definition): A definition with applicable validation. ("Validation" definition)
         language_context (LanguageContext): The language context.
+        validation_kw_args (dict[str, str]): A key-value pair where the key is the field name to validate and the value the type constraint
 
     Returns:
         A ValidatorResult containing any applicable error messages.
     """
     findings = ValidatorFindings()
 
-    def validate_model_subcomponents(dict_to_validate: dict):
-        subcomponents = dict_to_validate.get("components", [])
+    def validate_reference_type(dict_to_validate: dict):
 
-        for component in subcomponents:
-            component_type = component.get("type")
+        for field_name, field_type in validation_kw_args.items():
 
-            if component_type:
-                definition = language_context.get_definition_by_name(component_type)
+            field_value_to_test = dict_to_validate.get(field_name) or ""
 
-                expected_type = "model"
-                actual_type = definition and definition.get_root_key()
-                if definition and actual_type != expected_type:
-                    incorrect_subcomponent_type = (
-                        f"Expected '{expected_type}' as the subcomponent type but found '{component_type}' with type "
-                        f"'{actual_type}' in: {dict_to_validate}"
-                    )
-                    component_type_lexeme = definition_under_test.get_lexeme_with_value(component_type)
-                    findings.add_error_finding(
-                        target_schema_definition, incorrect_subcomponent_type, PLUGIN_NAME, component_type_lexeme
-                    )
-                    logging.debug(incorrect_subcomponent_type)
-            else:
-                component_name = component.get("name")
-                component_missing_type = (
-                    f"Expected component '{component_name}' to have the field 'type', but was not present. Bad component:"
-                    f"{component}"
+            root_keys = language_context.get_root_keys()
+            referenced_definition = language_context.get_definition_by_name(field_value_to_test)
+
+            if not referenced_definition:
+                missing_reference = (
+                    f"Can't find the referenced definition '{field_value_to_test}' in the context. "
                 )
-                component_name_lexeme = definition_under_test.get_lexeme_with_value(component_name)
+                reference_lexeme = definition_under_test.get_lexeme_with_value(field_value_to_test)
                 findings.add_error_finding(
-                    target_schema_definition, component_missing_type, PLUGIN_NAME, component_name_lexeme
+                    definition_under_test, missing_reference, PLUGIN_NAME, reference_lexeme
                 )
-                logging.debug(component_missing_type)
+
+            elif field_type not in root_keys:
+                bad_constraint_type = (
+                    f"Expected '{field_type}' to be a root key, but it wasn't found in the current keys: {root_keys}"
+                )
+                reference_lexeme = target_schema_definition.get_lexeme_with_value(field_type)
+                findings.add_warning_finding(
+                    definition_under_test, bad_constraint_type, PLUGIN_NAME, reference_lexeme
+                )
+
+            elif referenced_definition.get_root_key() != field_type:
+                incorrect_reference_type = (
+                    f"Expected the referenced definition '{referenced_definition.name}' to have the root key '{field_type}'."
+                )
+                reference_lexeme = referenced_definition.get_lexeme_with_value(referenced_definition.get_root_key())
+                findings.add_error_finding(
+                    definition_under_test, incorrect_reference_type, PLUGIN_NAME, reference_lexeme
+                )
 
     dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)
-    list(map(validate_model_subcomponents, dicts_to_test))
+    list(map(validate_reference_type, dicts_to_test))
 
     return ValidatorResult([definition_under_test], findings)
