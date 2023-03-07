@@ -185,14 +185,30 @@ schema:
       type: string
       description: |
         The name of the validation definition.
+    - name: description
+      type: string
+      description: Provides a description field for the validation/constraint
     - name: arguments
       type: string[]
       description: |
         A list of arguments to pass to the validator.
+    - name: kw_arguments
+      type: KeyValuePair[]
+      description: |
+        A list of key-value pair arguments to pass to the validator.
   validation:
     - name: Required fields are present
       arguments:
         - name
+    - name: Type references exist
+      description: References to validation names must reference existing validation definitions
+    - name: Mutually exclusive fields
+      description: |
+        The argument and kw_argument fields are mutually exclusive because they both
+        represent a Union of possible argument data structure for validation arguments
+      arguments:
+        - arguments
+        - kw_arguments
 ---
 schema:
   name: ValidatorInput
@@ -323,11 +339,15 @@ schema:
         References and additional arguments for validations to apply to the definition.
   validation:
     - name: Root key is defined
+    - name: Unique definition names
     - name: Required fields are present
       arguments:
         - name
         - fields
-    - name: Unique definition names
+    - name: Reference is type
+      kw_arguments:
+        - key: DefinitionReference
+          value: schema
 ---
 schema:
   name: Behavior
