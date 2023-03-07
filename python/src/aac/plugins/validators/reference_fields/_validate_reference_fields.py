@@ -1,5 +1,4 @@
-import logging
-
+from aac.lang.constants import DEFINITION_FIELD_NAME
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.references import is_reference_format_valid
 from aac.lang.definitions.structure import get_substructures_by_type
@@ -15,6 +14,7 @@ def validate_reference_fields(
     target_schema_definition: Definition,
     language_context: LanguageContext,
     *validation_args,
+    **validation_kw_args,
 ) -> ValidatorResult:
     """
     Validates that the content of all specified reference fields is properly formatted.
@@ -32,7 +32,7 @@ def validate_reference_fields(
 
     reference_field_names = validation_args
     schema_defined_fields_as_list = target_schema_definition.get_top_level_fields().get("fields") or []
-    schema_defined_fields_as_dict = {field.get("name"): field for field in schema_defined_fields_as_list}
+    schema_defined_fields_as_dict = {field.get(DEFINITION_FIELD_NAME): field for field in schema_defined_fields_as_list}
 
     def validate_dict(dict_to_validate: dict) -> None:
         for reference_field_name in reference_field_names:
@@ -46,7 +46,6 @@ def validate_reference_fields(
                 findings.add_error_finding(
                     definition_under_test, non_reference_field, PLUGIN_NAME, reference_field_name_lexeme
                 )
-                logging.debug(non_reference_field)
 
             # field must not be empty
             elif field_value is None:
@@ -55,7 +54,6 @@ def validate_reference_fields(
                 findings.add_error_finding(
                     definition_under_test, missing_reference_field, PLUGIN_NAME, reference_field_name_lexeme
                 )
-                logging.debug(missing_reference_field)
 
             # field must be contain a parsable reference value
             elif not is_reference_format_valid(field_value)[0]:
@@ -64,7 +62,6 @@ def validate_reference_fields(
                 findings.add_error_finding(
                     definition_under_test, invalid_reference_format, PLUGIN_NAME, reference_field_name_lexeme
                 )
-                logging.debug(invalid_reference_format)
 
     dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)
     list(map(validate_dict, dicts_to_test))

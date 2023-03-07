@@ -1,5 +1,3 @@
-import logging
-
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.structure import get_substructures_by_type
 from aac.lang.language_context import LanguageContext
@@ -14,6 +12,7 @@ def validate_validator_implementations(
     target_schema_definition: Definition,
     language_context: LanguageContext,
     *validation_args,
+    **validation_kw_args,
 ) -> ValidatorResult:
     """
     Validates that the validation definition has a corresponding registered DefinitionValidationContribution.
@@ -38,13 +37,13 @@ def validate_validator_implementations(
             registered_plugin_names = f"Validation '{validation_name}' did not have a corresponding implementation. Registered plugin names: {registered_plugin_names}"
             validation_name_lexeme = definition_under_test.get_lexeme_with_value(validation_name)
             findings.add_error_finding(target_schema_definition, registered_plugin_names, PLUGIN_NAME, validation_name_lexeme)
-            logging.debug(registered_plugin_names)
+
         elif validation_plugins and not len(validation_plugins) == 1:
             registered_plugin_names = [plugin.name for plugin in validator_implementations]
             registered_plugin_names = f"Validation '{validation_name}' returned multiple corresponding implementations. Matching plugins: {validation_plugins}"
             validation_name_lexeme = definition_under_test.get_lexeme_with_value(validation_name)
             findings.add_error_finding(target_schema_definition, registered_plugin_names, PLUGIN_NAME, validation_name_lexeme)
-            logging.debug(registered_plugin_names)
+
 
     dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)
     list(map(validate_dict, dicts_to_test))

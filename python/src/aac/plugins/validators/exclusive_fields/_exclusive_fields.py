@@ -1,5 +1,3 @@
-import logging
-
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.structure import get_substructures_by_type
 from aac.lang.language_context import LanguageContext
@@ -14,6 +12,7 @@ def validate_exclusive_fields(
     target_schema_definition: Definition,
     language_context: LanguageContext,
     *validation_args,
+    **validation_kw_args,
 ) -> ValidatorResult:
     """
     Validates that the none of the fields are simultaneously defined.
@@ -41,7 +40,6 @@ def validate_exclusive_fields(
             findings.add_error_finding(
                 definition_under_test, multiple_exclusive_fields, PLUGIN_NAME, second_exclusive_field_lexeme
             )
-            logging.debug(multiple_exclusive_fields)
 
     dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)
     list(map(validate_dict, dicts_to_test))

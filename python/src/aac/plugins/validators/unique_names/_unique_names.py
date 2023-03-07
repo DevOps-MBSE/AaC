@@ -1,4 +1,3 @@
-import logging
 from os import linesep
 from aac.lang.constants import DEFINITION_FIELD_NAME
 
@@ -15,6 +14,7 @@ def validate_unique_names(
     target_schema_definition: Definition,
     language_context: LanguageContext,
     *validation_args,
+    **validation_kw_args,
 ) -> ValidatorResult:
     """Search through the language context ensuring that all definition names are unique."""
 
@@ -37,7 +37,6 @@ def validate_unique_names(
         ]
         for lexeme in definition_name_lexemes:
             findings.add_error_finding(definition_under_test, duplicate_name_message, PLUGIN_NAME, lexeme)
-        logging.debug(duplicate_name_message)
 
     return ValidatorResult([definition_under_test], findings)
 

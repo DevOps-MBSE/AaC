@@ -1,5 +1,3 @@
-import logging
-
 from aac.lang.definitions.definition import Definition
 from aac.lang.language_context import LanguageContext
 from aac.plugins.validators import ValidatorResult
@@ -14,6 +12,7 @@ def validate_root_keys(
     target_schema_definition: Definition,
     language_context: LanguageContext,
     *validation_args,
+    **validation_kw_args,
 ) -> ValidatorResult:
     """
     Validates that the definition root key is defined by the root definition.
@@ -36,6 +35,5 @@ def validate_root_keys(
         undefined_reference_error_message = f"Undefined root key '{root_key}' in definition '{definition_under_test.name}'. Valid root keys {language_context_root_keys}"
         root_key_lexeme = definition_under_test.get_lexeme_with_value(root_key)
         findings.add_error_finding(definition_under_test, undefined_reference_error_message, PLUGIN_NAME, root_key_lexeme)
-        logging.debug(undefined_reference_error_message)
 
     return ValidatorResult([definition_under_test], findings)

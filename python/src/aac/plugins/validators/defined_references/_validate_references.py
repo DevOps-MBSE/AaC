@@ -16,6 +16,7 @@ def validate_references(
     target_schema_definition: Definition,
     language_context: LanguageContext,
     *validation_args,
+    **validation_kw_args,
 ) -> ValidatorResult:
     """
     Validates that the definition has valid type references to either primitive types or other definitions.
@@ -39,7 +40,6 @@ def validate_references(
                 else:
                     undefined_reference_error_message = f"Undefined type '{field_reference}' referenced: {dict_to_validate}"
                     reference_lexeme = definition_under_test.get_lexeme_with_value(field_reference)
-                    logging.debug(undefined_reference_error_message)
 
                     if reference_lexeme:
                         findings.add_error_finding(
@@ -50,7 +50,6 @@ def validate_references(
 
             else:
                 missing_field_in_dictionary = f"Missing field 'type' in validation content dictionary: {dict_to_validate}"
-                logging.debug(missing_field_in_dictionary)
                 name_lexeme = definition_under_test.get_lexeme_with_value(definition_under_test.name)
 
                 if not name_lexeme:

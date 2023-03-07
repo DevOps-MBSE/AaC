@@ -1,4 +1,3 @@
-import logging
 from typing import Any
 
 from aac.lang.definitions.definition import Definition
@@ -16,6 +15,7 @@ def validate_required_fields(
     target_schema_definition: Definition,
     language_context: LanguageContext,
     *validation_args,
+    **validation_kw_args,
 ) -> ValidatorResult:
     """
     Validates that the definition has all required fields populated.
@@ -44,7 +44,6 @@ def validate_required_fields(
                 missing_required_field = f"Required field '{required_field_name}' missing from: {dict_to_validate}"
                 required_field_lexeme = definition_under_test.get_lexeme_with_value(definition_under_test.get_root_key())
                 findings.add_error_finding(definition_under_test, missing_required_field, PLUGIN_NAME, required_field_lexeme)
-                logging.debug(missing_required_field)
 
             elif not _is_field_populated(field_type, field_value):
                 unpopulated_required_field = f"Required field '{required_field_name}' is not populated in: {dict_to_validate}"
@@ -52,7 +51,6 @@ def validate_required_fields(
                 findings.add_error_finding(
                     definition_under_test, unpopulated_required_field, PLUGIN_NAME, required_field_lexeme
                 )
-                logging.debug(unpopulated_required_field)
 
     dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)
     list(map(validate_dict, dicts_to_test))
