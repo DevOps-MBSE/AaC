@@ -9,11 +9,12 @@ from aac.plugins.validators import ValidatorFindings, ValidatorResult
 PLUGIN_NAME = "Reference is type"
 
 
-def validate_subcomponent_types(
+def validate_reference_types(
     definition_under_test: Definition,
     target_schema_definition: Definition,
     language_context: LanguageContext,
     *validation_args,
+    **validation_kw_args,
 ) -> ValidatorResult:
     """
     Validate that the subcomponents of the definition are models.
