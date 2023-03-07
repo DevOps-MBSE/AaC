@@ -1,5 +1,3 @@
-import logging
-
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.structure import get_substructures_by_type
 from aac.lang.language_context import LanguageContext
@@ -17,7 +15,7 @@ def validate_reference_types(
     **validation_kw_args,
 ) -> ValidatorResult:
     """
-    Validate that the subcomponents of the definition are models.
+    Validate that fields listed in the arguments reference definitions with a root key matching the field's corresponding value.
 
     Args:
         definition_under_test (Definition): The definition that's being validated. (Root validation definitions)
