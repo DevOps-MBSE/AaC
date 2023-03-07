@@ -344,10 +344,6 @@ schema:
       arguments:
         - name
         - fields
-    - name: Reference is type
-      kw_arguments:
-        - key: DefinitionReference
-          value: schema
 ---
 schema:
   name: Behavior
@@ -404,7 +400,7 @@ schema:
         An explanatory description for the model including what the
         component/system is modeling and any other relevant information.
     - name: components
-      type: Field[]
+      type: ModelComponentField[]
       description: |
         A list of models that are components of the system.
     - name: behavior
@@ -419,10 +415,32 @@ schema:
         State may be visible between multiple instances of the modeled entity to
         support horizontal scaling.
   validation:
-    - name: Subcomponents are models
     - name: Required fields are present
       arguments:
         - name
+---
+schema:
+  name: ModelComponentField
+  fields:
+    - name: name
+      type: string
+      description: The model's internal component name.
+    - name: type
+      type: string
+      description: The name of the model definition that is the component.
+    - name: description
+      type: string
+      description: |
+        A description for the component
+  validation:
+    - name: Required fields are present
+      arguments:
+        - name
+        - type
+    - name: Reference is type
+      kw_arguments:
+        - key: type
+          value: model
 ---
 schema:
   name: usecase
