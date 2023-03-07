@@ -1,5 +1,6 @@
 """A module that facilitates working with a collection of validator findings."""
 
+import logging
 from attr import Factory, attrib, attrs, validators
 
 from aac.lang.definitions.definition import Definition
@@ -39,6 +40,14 @@ class ValidatorFindings:
     ) -> None:
         location = FindingLocation.from_lexeme(validation_name, lexeme)
         self.add_findings([ValidatorFinding(definition, severity, message, location)])
+        log_message = self._get_last_finding()
+
+        if severity == FindingSeverity.INFO:
+            logging.info(log_message)
+        elif severity == FindingSeverity.WARNING:
+            logging.warning(log_message)
+        elif severity == FindingSeverity.ERROR:
+            logging.error(log_message)
 
     def get_all_findings(self) -> list[ValidatorFinding]:
         """Return a list of all the validator findings."""
@@ -59,3 +68,10 @@ class ValidatorFindings:
     def _get_findings_with_severity(self, severity: FindingSeverity) -> list[ValidatorFinding]:
         """Return a list of findings of the specified severity."""
         return [finding for finding in self.findings if finding.severity == severity]
+
+    def _get_last_finding(self) -> ValidatorFinding:
+        return self._convert_finding_to_log_message(self.findings[-1])
+
+    def _convert_finding_to_log_message(self, finding: ValidatorFinding) -> str:
+        loc = finding.location
+        return f"Validation {finding.severity.name} failed for definition '{finding.definition.name}' from '{loc.validation_name}' in {loc.source.uri}:{finding.location.location.line}. {finding.message}"
