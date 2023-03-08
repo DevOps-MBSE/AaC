@@ -14,10 +14,15 @@ from tests.helpers.parsed_definitions import (
 
 class TestDefinition(TestCase):
     def test_uuid(self):
-        self.assertTrue(create_schema_definition("Test").uid.is_safe)
-        self.assertEqual(create_schema_definition("Test").uid, create_schema_definition("Test").uid)
-        self.assertNotEqual(create_schema_definition("Test1").uid, create_schema_definition("Test2").uid)
-        # TODO add cases for different files
+        test_definition_1 = create_schema_definition("Test1")
+        test_definition_1_alt_source = create_schema_definition("Test1")
+        test_definition_1_alt_source.source.uri = "test1File"
+
+        test_definition_2 = create_schema_definition("Test2")
+
+        self.assertTrue(test_definition_1)
+        self.assertEqual(test_definition_1.uid, test_definition_1.uid)
+        self.assertNotEqual(test_definition_1.uid, test_definition_2.uid)
 
     def test_get_fields_with_empty_no_top_level_fields(self):
         test_definition = create_schema_definition("EmptyData")

@@ -5,7 +5,7 @@ from aac.lang.constants import DEFINITION_FIELD_NAME, PRIMITIVE_TYPE_STRING
 
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.assertion import assert_plugin_failure, assert_plugin_success, assert_validation_failure
-from tests.helpers.parsed_definitions import create_behavior_entry, create_field_entry, create_model_definition, create_schema_definition
+from tests.helpers.parsed_definitions import create_field_entry, create_model_definition, create_schema_definition
 from tests.helpers.io import temporary_test_file
 
 
