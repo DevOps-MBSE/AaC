@@ -19,8 +19,8 @@ class TestValidateCommand(ActiveContextTestCase):
             self.assertIn(f"{valid_model_file.name} is valid", result.get_messages_as_string())
 
     def test_validate_command_fails_with_invalid_definition(self):
-        invalid_model = create_model_definition("Invalid Model", "An invalid model.", [create_behavior_entry("a behavior with an invalid type", "invalid")])
-        with temporary_test_file(invalid_model.content) as invalid_model_file:
+        invalid_schema = create_schema_definition("Invalid Schema", "An invalid schema.", fields=[create_field_entry("invalid_type", "invalid")])
+        with temporary_test_file(invalid_schema.content) as invalid_model_file:
             result = validate(invalid_model_file.name)
 
             assert_validation_failure(result)

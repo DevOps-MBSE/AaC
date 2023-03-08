@@ -29,11 +29,19 @@ class TestCollectValidators(ActiveContextTestCase):
         expected_validations = self.get_unique_validations(
             active_context.get_definition_by_name(DEFINITION_NAME_SCHEMA).get_validations()
             + active_context.get_definition_by_name(DEFINITION_NAME_FIELD).get_validations()
-            + active_context.get_definition_by_name("Requirement").get_validations())
+            + active_context.get_definition_by_name("ValidationReference").get_validations()
+            + active_context.get_definition_by_name("RequirementReference").get_validations()
+            + active_context.get_definition_by_name("KeyValuePair").get_validations())
 
         actual_result = get_applicable_validators_for_definition(test_definition, validation_plugins, active_context)
 
-        self.assertEqual(len(expected_validations), len(actual_result))
+        expected_validation_names = list(expected_validations)
+        actual_validation_names = [definition.name for definition in actual_result]
+
+        expected_validation_names.sort()
+        actual_validation_names.sort()
+
+        self.assertListEqual(expected_validation_names, actual_validation_names)
 
     def test_get_applicable_validators_for_model_definition(self):
         test_field = create_field_entry("TestStateField", PRIMITIVE_TYPE_STRING)
