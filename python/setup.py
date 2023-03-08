@@ -41,7 +41,7 @@ development_dependencies = [
     "platformdirs >= 2.4",
     "coverage >= 6.0",
     "mccabe == 0.6.1",
-    "mypy-extensions == 0.4.3",
+    "mypy-extensions >= 1.0.0",
     "pycodestyle >= 2.8.0",
     "pyflakes >= 2.4",
     "build == 0.7.0",
