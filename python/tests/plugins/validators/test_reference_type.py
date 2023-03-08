@@ -1,14 +1,21 @@
 from aac.io.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_active_context
+from aac.lang.constants import (
+    DEFINITION_FIELD_KEY,
+    DEFINITION_FIELD_KW_ARGUMENTS,
+    DEFINITION_FIELD_VALUE,
+    DEFINITION_NAME_MODEL_COMPONENT,
+)
+from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.source_location import SourceLocation
-from aac.plugins.validators.field_type._field_type import validate_subcomponent_types
+from aac.plugins.validators.reference_type import validate_reference_types, PLUGIN_NAME
 
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.assertion import assert_validator_result_failure, assert_validator_result_success
 from tests.helpers.parsed_definitions import create_field_entry, create_model_definition, create_schema_definition
 
 
-class TestValidationSubcomponentTypes(ActiveContextTestCase):
+class TestValidationReferenceTypes(ActiveContextTestCase):
     def test_validation_of_model_definition_with_no_subcomponents(self):
         test_active_context = get_active_context()
 
@@ -16,9 +23,12 @@ class TestValidationSubcomponentTypes(ActiveContextTestCase):
         def_with_no_subcomponents = create_model_definition(model_name)
 
         test_active_context.add_definition_to_context(def_with_no_subcomponents)
-        target_sub_definition = test_active_context.get_definition_by_name("model")
+        target_sub_definition = test_active_context.get_definition_by_name(DEFINITION_NAME_MODEL_COMPONENT)
+        validation_kw_args = _get_model_reference_validation_args(target_sub_definition)
 
-        actual_result = validate_subcomponent_types(def_with_no_subcomponents, target_sub_definition, test_active_context)
+        actual_result = validate_reference_types(
+            def_with_no_subcomponents, target_sub_definition, test_active_context, *[], **validation_kw_args
+        )
         assert_validator_result_success(actual_result)
 
     def test_validation_of_model_definition_with_model_subcomponents(self):
@@ -32,9 +42,12 @@ class TestValidationSubcomponentTypes(ActiveContextTestCase):
         )
 
         test_active_context.add_definitions_to_context([def_with_subcomponents, valid_subcomponent])
-        target_sub_definition = test_active_context.get_definition_by_name("model")
+        target_sub_definition = test_active_context.get_definition_by_name(DEFINITION_NAME_MODEL_COMPONENT)
+        validation_kw_args = _get_model_reference_validation_args(target_sub_definition)
 
-        actual_result = validate_subcomponent_types(def_with_subcomponents, target_sub_definition, test_active_context)
+        actual_result = validate_reference_types(
+            def_with_subcomponents, target_sub_definition, test_active_context, *[], **validation_kw_args
+        )
 
         assert_validator_result_success(actual_result)
 
@@ -51,13 +64,14 @@ class TestValidationSubcomponentTypes(ActiveContextTestCase):
         expected_finding_location = SourceLocation(5, 10, 77, 20)
 
         test_active_context.add_definitions_to_context([definition_with_invalid_subcomponents, invalid_subcomponent])
-        target_sub_definition = test_active_context.get_definition_by_name("model")
+        target_sub_definition = test_active_context.get_definition_by_name(DEFINITION_NAME_MODEL_COMPONENT)
+        validation_kw_args = _get_model_reference_validation_args(target_sub_definition)
 
-        actual_result = validate_subcomponent_types(
-            definition_with_invalid_subcomponents, target_sub_definition, test_active_context
+        actual_result = validate_reference_types(
+            definition_with_invalid_subcomponents, target_sub_definition, test_active_context, *[], **validation_kw_args
         )
 
-        assert_validator_result_failure(actual_result, "subcomponent type")
+        assert_validator_result_failure(actual_result, PLUGIN_NAME, "Expected", "root", "key", "model")
         self.assertEqual(actual_result.findings.get_error_findings()[0].location.location, expected_finding_location)
 
     def test_validation_of_model_definition_with_subcomponent_missing_type(self):
@@ -67,15 +81,27 @@ class TestValidationSubcomponentTypes(ActiveContextTestCase):
         invalid_subcomponent_name = "invalid subcomponent"
         definition_with_invalid_subcomponents = create_model_definition(
             model_name,
-            components=[create_field_entry(invalid_subcomponent_name)],
+            components=[create_field_entry(invalid_subcomponent_name, "iDontExist")],
         )
-        expected_finding_location = SourceLocation(4, 10, 65, 20)
+        expected_finding_location = SourceLocation(5, 10, 96, 10)
 
         test_active_context.add_definition_to_context(definition_with_invalid_subcomponents)
-        target_sub_definition = test_active_context.get_definition_by_name("model")
+        target_sub_definition = test_active_context.get_definition_by_name(DEFINITION_NAME_MODEL_COMPONENT)
+        validation_kw_args = _get_model_reference_validation_args(target_sub_definition)
 
-        actual_result = validate_subcomponent_types(
-            definition_with_invalid_subcomponents, target_sub_definition, test_active_context
+        actual_result = validate_reference_types(
+            definition_with_invalid_subcomponents, target_sub_definition, test_active_context, *[], **validation_kw_args
         )
-        assert_validator_result_failure(actual_result, "component", invalid_subcomponent_name, "not", "present")
+        assert_validator_result_failure(actual_result, PLUGIN_NAME, "Can't", "find", "referenced", "definition")
         self.assertEqual(actual_result.findings.get_error_findings()[0].location.location, expected_finding_location)
+
+
+def _get_model_reference_validation_args(model_schema_definition: Definition) -> dict:
+    validation_dict = [
+        validation for validation in model_schema_definition.get_validations() if validation.get("name") == PLUGIN_NAME
+    ][0]
+    validation_kw_args = {
+        entry.get(DEFINITION_FIELD_KEY): entry.get(DEFINITION_FIELD_VALUE)
+        for entry in (validation_dict.get(DEFINITION_FIELD_KW_ARGUMENTS) or [])
+    }
+    return validation_kw_args

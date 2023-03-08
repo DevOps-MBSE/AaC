@@ -59,7 +59,7 @@ def validate_reference_types(
                 incorrect_reference_type = (
                     f"Expected the referenced definition '{referenced_definition.name}' to have the root key '{field_type}'."
                 )
-                reference_lexeme = referenced_definition.get_lexeme_with_value(referenced_definition.get_root_key())
+                reference_lexeme = definition_under_test.get_lexeme_with_value(field_value_to_test)
                 findings.add_error_finding(
                     definition_under_test, incorrect_reference_type, PLUGIN_NAME, reference_lexeme
                 )
