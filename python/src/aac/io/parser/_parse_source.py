@@ -10,7 +10,7 @@ from os import path, linesep
 from typing import Optional
 from yaml.parser import ParserError as YAMLParserError
 
-from aac.io.constants import DEFAULT_SOURCE_URI
+from aac.io.constants import DEFAULT_SOURCE_URI, YAML_DOCUMENT_SEPARATOR
 from aac.io.files.aac_file import AaCFile
 from aac.io.parser._parser_error import ParserError
 from aac.io.paths import sanitize_filesystem_path
@@ -34,7 +34,7 @@ def parse(source: str, source_uri: Optional[str] = None) -> list[Definition]:
     sanitized_source = source
     is_file = False
 
-    if linesep not in source:
+    if linesep not in source and YAML_DOCUMENT_SEPARATOR not in source:
         sanitized_source = sanitize_filesystem_path(source)
         if path.lexists(sanitized_source):
             is_file = True
