@@ -66,11 +66,13 @@ def remove_extension_from_definition(extension_definition: Definition, target_de
         if not isinstance(elements_to_remove, list):
             elements_to_remove = [elements_to_remove]
 
+        # Since we're removing items from the 'values' or 'fields' entries, we can always assume it's a list
+        extension_field_values: list = target_definition_fields.get(extension_field_name, [])
         for element_to_remove in elements_to_remove:
-            if extension_field_name in target_definition_fields:
-                target_definition_fields[extension_field_name].remove(element_to_remove)
+            if extension_field_name in extension_field_values:
+                extension_field_values.remove(element_to_remove)
             else:
-                logging.error(f"{element_to_remove} wasn't found in the target '{target_definition.name}' fields: {target_definition_fields[extension_field_name]}")
+                logging.error(f"{element_to_remove} wasn't found in the '{target_definition.name}' definition's field '{extension_field_name}': {extension_field_values}")
     else:
         missing_target_error_message = f"Attempted to remove a missing extension field from the target. Extension name '{extension_definition.name}' target definition '{target_definition.name}'"
         logging.error(missing_target_error_message)
