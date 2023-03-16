@@ -81,7 +81,8 @@ class LanguageContext:
             )
 
         if definition.get_inherits():
-            # This import is located here because the inheritance module uses the language context for lookup, causing a circular dependency at initialization
+            # This import is located here because the inheritance module uses the language context for lookup,
+            #   causing a circular dependency at initialization
             from aac.lang.definitions.inheritance import apply_inherited_attributes_to_definition
 
             apply_inherited_attributes_to_definition(new_definition, self)
@@ -91,19 +92,10 @@ class LanguageContext:
             target_definition = self.get_definition_by_name(target_definition_name)
 
             if target_definition:
-                definitions_with_target_definition_name = [
-                    definition for definition in self.definitions if target_definition.name == definition.name
-                ]
-
-                if len(definitions_with_target_definition_name) > 1:
-                    raise LanguageError(
-                        f"Duplicate target definitions found ({len(definitions_with_target_definition_name)}) with name '{target_definition_name}'."
-                    )
-
                 apply_extension_to_definition(new_definition, target_definition)
 
             else:
-                logging.error(f"Failed to find the target defintion '{target_definition_name}' in the context.")
+                logging.error(f"Failed to find the target definition '{target_definition_name}' in the context.")
 
     def add_definitions_to_context(self, definitions: list[Definition]):
         """
