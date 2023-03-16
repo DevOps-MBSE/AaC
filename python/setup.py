@@ -41,6 +41,7 @@ development_dependencies = [
     "platformdirs >= 2.4",
     "coverage >= 6.0",
     "mccabe == 0.6.1",
+    "mypy ~= 1.1.0",
     "mypy-extensions ~= 1.0.0",
     "pycodestyle >= 2.8.0",
     "pyflakes >= 2.4",
@@ -56,7 +57,6 @@ development_dependencies = [
     "furo == 2021.10.9",
     "pipdeptree >= 2.2.0",
     "Pygments >= 2.5.1",
-    "mypy >= 0.961",
     "types-PyYAML >= 6.0.9",
     "requests >= 2.27.0",
 ]
