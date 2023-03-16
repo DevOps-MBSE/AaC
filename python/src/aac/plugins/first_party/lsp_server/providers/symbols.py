@@ -83,7 +83,7 @@ def get_symbol_range_at_position(content: str, line: int, column: int) -> Option
 
             symbol_end = len(line_with_symbol)
             for i in range(adjusted_column, len(line_with_symbol)):
-                if line_with_symbol[i] == ':':
+                if line_with_symbol[i] == ":":
                     break
 
                 symbol_end = i
