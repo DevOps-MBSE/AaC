@@ -76,7 +76,7 @@ def get_symbol_range_at_position(content: str, line: int, column: int) -> Option
             symbol_start = 0
             # Reversed range from the adjusted column to the 0 element in the line
             for i in range(adjusted_column, -1, -1):
-                if line_with_symbol[i] == ':':
+                if line_with_symbol[i] == ":":
                     break
 
                 symbol_start = i
