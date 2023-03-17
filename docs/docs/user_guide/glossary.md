@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Glossary
-parent: AaC User's Guide
+parent: User's Guide to AaC
 nav_order: 6
 ---
 

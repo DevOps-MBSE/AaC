@@ -126,6 +126,7 @@ jobs:
           echo y | python -m aac gen-plugin model/third_party_test/plugin.yaml
           cd model/third_party_test/
           pip install .
+          aac activate-plugin test-plugin
           aac list-plugins --active | grep "test-plugin"
           aac deactivate-plugin test-plugin
           pip uninstall -y test-plugin

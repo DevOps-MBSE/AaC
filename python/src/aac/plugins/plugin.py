@@ -1,4 +1,5 @@
 """Plugin metadata class."""
+import copy
 from attr import Factory, attrib, attrs, validators
 
 from aac.cli.aac_command import AacCommand
@@ -91,3 +92,7 @@ class Plugin:
     def get_definitions(self) -> list[Definition]:
         """Get the definitions provided by this plugin."""
         return self.contributions.get_definitions_by_plugin_name(self.name)
+
+    def copy(self) -> "Plugin":
+        """Return a deepcopy of the plugin, good for modifying the plugin without altering cached plugins."""
+        return copy.deepcopy(self)
