@@ -3,7 +3,7 @@
 from aac.cli.aac_command import AacCommand
 from aac.plugins import hookimpl
 from aac.plugins.plugin import Plugin
-from aac.plugins.first_party.help_dump.help_dump_impl import help_dump
+from aac.plugins.first_party.help_dump.help_dump_impl import help_dump, plugin_name
 
 
 @hookimpl
@@ -14,7 +14,6 @@ def get_plugin() -> Plugin:
     Returns:
         A collection of information about the plugin and what it contributes.
     """
-    *_, plugin_name = __package__.split(".")
     plugin = Plugin(plugin_name)
     plugin.register_commands(_get_plugin_commands())
     return plugin

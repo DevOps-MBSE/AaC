@@ -33,13 +33,14 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
         await super().asyncSetUp()
 
         self.client = LspTestClient()
+        self.active_context = self.client.server.language_context
+        self.temp_documents_directory: TemporaryDirectory = TemporaryDirectory()
+
         await self.client.start()
         await self.client.send_request(
             methods.INITIALIZE,
-            InitializeParams(process_id=12345, capabilities=ClientCapabilities()),
+            InitializeParams(capabilities=ClientCapabilities(), root_uri=self.temp_documents_directory.name),
         )
-        self.active_context = self.client.server.language_context
-        self.temp_documents_directory: TemporaryDirectory = TemporaryDirectory()
 
         # Add the core spec to the virtual docs
         core_spec_virtual_doc = self._create_core_spec_virtual_doc()
@@ -49,8 +50,6 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
 
     async def asyncTearDown(self):
         await super().asyncTearDown()
-        for file_name in self.documents.keys():
-            await self.close_document(file_name)
         self.documents.clear()
         self.temp_documents_directory.cleanup()
         await self.client.stop()
@@ -66,9 +65,9 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
         Returns:
             The new virtual document
         """
-        self.assertIsNone(self.documents.get(file_name), f"Virtual document {file_name} already exists")
-
         absolute_file_path = self._get_absolute_file_path(file_name)
+        self.assertIsNone(self.documents.get(absolute_file_path), f"Virtual document {file_name} already exists")
+
         self.documents[absolute_file_path] = TextDocument(
             file_path=path.dirname(absolute_file_path), file_name=file_name, content=content
         )

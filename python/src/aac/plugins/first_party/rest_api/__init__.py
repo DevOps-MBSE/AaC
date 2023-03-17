@@ -3,7 +3,7 @@
 from aac.cli.aac_command import AacCommand, AacCommandArgument
 from aac.plugins import hookimpl
 from aac.plugins.plugin import Plugin
-from aac.plugins.first_party.rest_api.aac_rest_api_impl import rest_api, generate_api_spec
+from aac.plugins.first_party.rest_api.aac_rest_api_impl import generate_api_spec, rest_api, plugin_name
 
 
 @hookimpl
@@ -14,7 +14,6 @@ def get_plugin() -> Plugin:
     Returns:
         A collection of information about the plugin and what it contributes.
     """
-    *_, plugin_name = __package__.split(".")
     plugin = Plugin(plugin_name)
     plugin.register_commands(_get_plugin_commands())
     return plugin

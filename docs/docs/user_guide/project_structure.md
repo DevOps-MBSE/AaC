@@ -1,7 +1,7 @@
 ---
 layout: default
 title: AaC Project Structure
-parent: AaC User's Guide
+parent: User's Guide to AaC
 nav_order: 3
 ---
 # Basic Project Structure

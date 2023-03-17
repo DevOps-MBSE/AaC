@@ -1,17 +1,13 @@
 tasks:
   - name: Deploy Jekyll Docs
-    init: |
-      cd docs/
-      bundle install
-      export JEKYLL_ENV=production
-    command: cd docs/; bundle exec jekyll s
+    command: export JEKYLL_ENV=production; cd /workspace/AaC/docs; bundle install && bundle exec jekyll s
 
   - name: VSCode Extension Environment
     init: |
       cd vscode_extension/
       yarn install
       yarn compile
-    command: cd vscode_extension/; yarn watch
+    command: cd /workspace/AaC/vscode_extension/; yarn watch
 
   - name: Python Virtual Environment
     init: |
@@ -20,7 +16,10 @@ tasks:
       python3.9 -m pip install --upgrade pip
       source venv/bin/activate
       pip install -e .[all]
-    command: cd python/; source venv/bin/activate # Always launch a console with our virtual env
+      aac generate-openapi-spec ../vscode_extension/
+      cd ../vscode_extension/
+      yarn generate:rest_api
+    command: cd /workspace/AaC/python/; source venv/bin/activate # Always launch a console with our virtual env
 
 vscode:
   extensions:

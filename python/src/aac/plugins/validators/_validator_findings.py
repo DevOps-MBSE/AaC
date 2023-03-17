@@ -16,7 +16,7 @@ class ValidatorFindings:
         findings: A collection of validator findings.
     """
 
-    findings: list[ValidatorFinding] = attrib(init=False, default=Factory(list), validator=validators.instance_of(list))
+    findings: list[ValidatorFinding] = attrib(default=Factory(list), validator=validators.instance_of(list))
 
     def add_findings(self, new_findings: list[ValidatorFinding]) -> None:
         """Add the new findings to the collection of all findings."""

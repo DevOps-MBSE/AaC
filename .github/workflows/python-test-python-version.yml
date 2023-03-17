@@ -1,0 +1,49 @@
+on:
+  workflow_call:
+
+defaults:
+  run:
+    working-directory: ./python
+
+jobs:
+  python_tests:
+    name: Python ${{ matrix.py_version }} Unit Tests
+    runs-on: ubuntu-20.04
+
+    strategy:
+      matrix:
+        py_version: ["3.9.0", "3.9.13", "3.10.5"]
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python ${{ matrix.py_version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.py_version }}
+
+    - name: Install the AaC Package
+      run: pip install -e .[all]
+
+    - name: Run Tox Tests
+      if: matrix.py_version != '3.9.13'
+      run: tox -e $(echo py${{ matrix.py_version }} | awk -F "." '{print $1$2;}')
+
+    - name: Run Tox Tests With Coverage
+      if: matrix.py_version == '3.9.13'
+      run: tox -e py39 -- --coverage-report html
+
+    - name: Upload Code Coverage Report
+      uses: actions/upload-artifact@v3
+      if: matrix.py_version == '3.9.13'
+      with:
+        name: test-coverage-report
+        path: python/html_code_coverage/
+
+    - name: Upload logs from failed runs
+      if: ${{ failure() }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: failed_test_log
+        path: python/src/aac/aac.log

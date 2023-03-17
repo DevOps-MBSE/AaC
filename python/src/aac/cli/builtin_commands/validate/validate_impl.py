@@ -41,8 +41,8 @@ def _validate_definition_in_file(file_path, definition_name) -> str:
     definitions_in_file = parse(file_path)
     definition_to_validate = get_definition_by_name(definition_name, definitions_in_file)
     if definition_to_validate:
-        with validated_definition(definition_to_validate):
-            return success_message
+        with validated_definition(definition_to_validate) as result:
+            return _get_validation_success_message(success_message, result)
     else:
         active_context = get_active_context()
         target_definition = active_context.get_definition_by_name(definition_name)
@@ -67,5 +67,11 @@ def _validate_definition_in_file(file_path, definition_name) -> str:
 
 def _validate_context_and_file(file_path) -> str:
     success_message = f"{file_path} is valid."
-    with validated_source(file_path):
-        return success_message
+    with validated_source(file_path) as result:
+        return _get_validation_success_message(success_message, result)
+
+
+def _get_validation_success_message(default_message, validation_result) -> str:
+    plugin_messages = validation_result.get_messages_as_string()
+    return_message = f"{default_message}{linesep}{plugin_messages}"
+    return return_message

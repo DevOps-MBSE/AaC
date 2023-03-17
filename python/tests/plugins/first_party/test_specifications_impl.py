@@ -1,28 +1,49 @@
-from tempfile import NamedTemporaryFile
+from tempfile import TemporaryDirectory
 
-from aac.plugins.first_party.specifications.specifications_impl import spec_validate
+import os
+
+from aac.plugins.first_party.specifications.specifications_impl import spec_csv
 
 from tests.active_context_test_case import ActiveContextTestCase
-from tests.helpers.assertion import assert_plugin_failure, assert_plugin_success
+from tests.helpers.assertion import assert_plugin_success
+from tests.helpers.io import temporary_test_file
 
 
 class TestSpecifications(ActiveContextTestCase):
-    def test_spec_validate(self):
-        with NamedTemporaryFile("w") as temp_spec:
-            temp_spec.write(VALID_SPEC)
-            temp_spec.seek(0)
+    def setUp(self) -> None:
+        super().setUp()
+        self.maxDiff = None
 
-            result = spec_validate(temp_spec.name)
+    def test_spec_csv(self):
+
+        with TemporaryDirectory() as temp_dir, temporary_test_file(VALID_SPEC) as temp_arch_file:
+            result = spec_csv(temp_arch_file.name, temp_dir)
             assert_plugin_success(result)
 
-    def test_spec_validate_fails_with_missing_requirement(self):
-        with NamedTemporaryFile("w") as temp_spec:
-            temp_spec.write(INVALID_SPEC_MISSING_REQ_ID)
-            temp_spec.seek(0)
+            # Assert each spec has its own file.
+            generated_file_names = os.listdir(temp_dir)
+            self.assertEqual(2, len(generated_file_names))
 
-            result = spec_validate(temp_spec.name)
-            assert_plugin_failure(result)
-            self.assertIn("Invalid requirement id 'SUB-3'", "\n".join(result.messages))
+            self.assertIn("Subsystem.csv", generated_file_names)
+            self.assertIn("Module.csv", generated_file_names)
+
+            # Assert Subsystem.csv contents
+            with open(os.path.join(temp_dir, "Subsystem.csv")) as subsystem_csv_file:
+                subsystem_csv_contents = subsystem_csv_file.read()
+                subsystem_csv_contents = subsystem_csv_contents.replace("\"", "")  # it's not clear what does and doesn't get quoted by the CSV writer, so eliminate quotes
+                # Assert csv contents are present
+                self.assertIn('Spec Name,Section,ID,Requirement,Parents,Children', subsystem_csv_contents)
+                self.assertIn('Subsystem,,SUB-1,When receiving a message, the subsystem shall respond with a value.,,', subsystem_csv_contents)
+                self.assertIn('Subsystem,Other Requirements,SUB-2,Do things.,,', subsystem_csv_contents)
+
+            # Assert Module.csv contents
+            with open(os.path.join(temp_dir, "Module.csv")) as module_csv_file:
+                module_csv_contents = module_csv_file.read()
+                module_csv_contents = module_csv_contents.replace("\"", "")  # it's not clear what does and doesn't get quoted by the CSV writer, so eliminate quotes
+                # Assert csv contents are present
+                self.assertIn('Spec Name,Section,ID,Requirement,Parents,Children', module_csv_contents)
+                self.assertIn('Module,,MOD-1,When receiving a message, the module shall respond with a value.,SUB-1,', module_csv_contents)
+                self.assertIn('Module,,MOD-2,When receiving a message do things.,SUB-2,', module_csv_contents)
 
 
 VALID_SPEC = """
