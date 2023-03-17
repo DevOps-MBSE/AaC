@@ -282,7 +282,7 @@ class LanguageContext:
         if root_definition:
             return root_definition.get_fields() or []
         else:
-            raise LanguageError("Unable to get the '{DEFINITION_NAME_ROOT}' definition. Check that AaC has the core-spec loaded.")
+            raise LanguageError(f"Unable to get the '{DEFINITION_NAME_ROOT}' definition. Check that AaC has the core-spec loaded.")
 
     def get_root_keys_definition(self) -> Definition:
         """

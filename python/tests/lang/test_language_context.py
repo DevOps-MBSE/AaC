@@ -302,13 +302,13 @@ class TestLanguageContext(ActiveContextTestCase):
         self.assertIsNotNone(active_context.get_definition_by_name(primitive_definition.name))
 
         new_enum_value = "test_primitive"
-        update_primitive_definition = primitive_definition.copy()
-        update_primitive_definition.structure[primitive_definition.get_root_key()][DEFINITION_FIELD_VALUES].append(new_enum_value)
+        updated_primitive_definition = primitive_definition.copy()
+        updated_primitive_definition.structure[primitive_definition.get_root_key()][DEFINITION_FIELD_VALUES].append(new_enum_value)
         active_context.update_definition_in_context(primitive_definition)
 
         actual_primitive_definition = active_context.get_definition_by_name(DEFINITION_NAME_PRIMITIVES)
         self.assertEqual(primitive_definition, actual_primitive_definition)
-        self.assertNotEqual(primitive_definition, update_primitive_definition)
+        self.assertNotEqual(primitive_definition, updated_primitive_definition)
 
 
 class TestLanguageContextPluginInterface(ActiveContextTestCase):
