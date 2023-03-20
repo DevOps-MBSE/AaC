@@ -40,9 +40,7 @@ class TestDocumentLinksProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         await self.create_document(new_file_name, test_schema_definition.to_yaml())
         new_file_path = path.join(self.temp_documents_directory.name, new_file_name)
 
-        res: DocumentLinkResponse = await self.request(
-            text_document=new_file_path
-        )
+        res: DocumentLinkResponse = await self.request(text_document=new_file_path)
 
         document_links = res.get_document_links()
         expected_link = from_fs_path(path.join(self.temp_documents_directory.name, TEST_DOCUMENT_NAME))

@@ -459,9 +459,9 @@ class TestLanguageContextGetDefinitionMethods(ActiveContextTestCase):
             test_context.add_definitions_to_context(test_content_definitions)
 
         actual_definitions = test_context.get_definitions_by_file_uri(test_file.name)
-        parsed_schema_a = [definition for definition in test_content_definitions if definition.name == TEST_SCHEMA_A.name][0]
-        parsed_schema_b = [definition for definition in test_content_definitions if definition.name == TEST_SCHEMA_B.name][0]
-        parsed_service_one = [definition for definition in test_content_definitions if definition.name == TEST_SERVICE_ONE.name][0]
+        parsed_schema_a, *_ = [definition for definition in test_content_definitions if definition.name == TEST_SCHEMA_A.name]
+        parsed_schema_b, *_ = [definition for definition in test_content_definitions if definition.name == TEST_SCHEMA_B.name]
+        parsed_service_one, *_ = [definition for definition in test_content_definitions if definition.name == TEST_SERVICE_ONE.name]
         self.assertIn(parsed_schema_a, actual_definitions)
         self.assertIn(parsed_schema_b, actual_definitions)
         self.assertIn(parsed_service_one, actual_definitions)

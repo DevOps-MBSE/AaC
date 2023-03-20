@@ -26,8 +26,8 @@ class DocumentLinkProvider(LspProvider):
             document (str): The document's file path.
 
         Returns:
-            A list of Locations at which the item at `position` is referenced. If there is nothing
-            found at the specified position, an empty list is returned.
+            A list of DocumentLinks linking the file to the item at the current position. If there is nothing
+            found at the current position, an empty list is returned.
         """
         language_context: LanguageContext = self.language_server.language_context
         links: list[DocumentLink] = []

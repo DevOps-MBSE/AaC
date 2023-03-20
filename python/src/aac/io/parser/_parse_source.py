@@ -107,7 +107,7 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
             root_yaml, *_ = _parse_yaml(source, yaml_text)
 
             definition_imports = root_yaml.get(DEFINITION_FIELD_IMPORT, [])
-            root_type = [key for key in root_yaml.keys() if key != DEFINITION_FIELD_IMPORT][0]
+            root_type, *_ = [key for key in root_yaml.keys() if key != DEFINITION_FIELD_IMPORT]
             definition_name = root_yaml.get(root_type, {}).get(DEFINITION_FIELD_NAME)
             source_file = source_files.get(source)
 
