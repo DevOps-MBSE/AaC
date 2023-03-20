@@ -17,12 +17,19 @@ class HoverProvider(LspProvider):
     def handle_request(self, language_server: LanguageServer, params: HoverParams) -> Optional[Hover]:
         """Return the YAML representation of the item at the specified position."""
         document: Optional[Document] = language_server.workspace.documents.get(params.text_document.uri)
-        position = params.position
-        symbol = get_symbol_at_position(document.source, position.line, position.character)
 
-        if symbol is not None:
-            name = remove_list_type_indicator(symbol).strip(":")
-            definition = language_server.language_context.get_definition_by_name(name)
-            return definition and Hover(
-                contents=MarkupContent(kind=MarkupKind.Markdown, value=f"```\n{definition.content}\n```")
-            )
+        return_hover = None
+        if document:
+            position = params.position
+            symbol = get_symbol_at_position(document.source, position.line, position.character)
+
+            if symbol is not None:
+                name = remove_list_type_indicator(symbol).strip(":")
+                definition = language_server.language_context.get_definition_by_name(name)
+
+                if definition:
+                    return_hover = Hover(
+                        contents=MarkupContent(kind=MarkupKind.Markdown, value=f"```\n{definition.content}\n```")
+                    )
+
+        return return_hover
