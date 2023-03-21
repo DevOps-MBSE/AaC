@@ -37,9 +37,9 @@ class YamlCache:
         cache (dict[int, dict]): The internal cache data structure -- this is intended to be private don't access this directly.
     """
 
+    capacity: int = attrib(default=300, validator=validators.instance_of(int))
     # The internal cache is using a dict with sorting O(n log n) rather than a more complex linked list which would be capable of linear time
     cache: dict[str, CacheEntry] = attrib(default=Factory(dict), validator=validators.instance_of(dict))
-    capacity: int = attrib(default=300, validator=validators.instance_of(int))
 
     def parse_string(self, string: str) -> list[dict]:
         """Parse the YAML string and return the YAML dictionaries."""
