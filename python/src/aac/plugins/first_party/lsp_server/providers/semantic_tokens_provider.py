@@ -3,6 +3,7 @@
 from typing import Any, Callable, Optional
 
 from pygls.lsp import SemanticTokenModifiers, SemanticTokenTypes, SemanticTokens, SemanticTokensLegend, SemanticTokensParams
+from pygls.uris import to_fs_path
 from pygls.server import LanguageServer
 from yaml import Token
 
@@ -86,7 +87,7 @@ class SemanticTokensProvider(LspProvider):
         self.language_server = language_server
 
         token_data = []
-        prev_token, *tokens = get_cache().scan_file(params.text_document.uri)
+        prev_token, *tokens = get_cache().scan_file(to_fs_path(params.text_document.uri))
         tokens = [token for token in tokens if hasattr(token, "value")]
         for token in tokens:
             semantic_token_data = self.convert_to_semantic_token(prev_token, token)
