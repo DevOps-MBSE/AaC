@@ -9,7 +9,7 @@ from typing import Any
 from aac.io.constants import DEFINITION_SEPARATOR
 from aac.plugins.validators import required_fields
 from aac.plugins.validators import defined_references
-from aac.lang.active_context_lifecycle_manager import get_initialized_language_context
+from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.constants import (
     DEFINITION_FIELD_TYPE,
     DEFINITION_NAME_ROOT,
@@ -38,7 +38,7 @@ from tests.helpers.parsed_definitions import (
     create_definition,
 )
 
-REFERENCE_CONTEXT = get_initialized_language_context()
+REFERENCE_CONTEXT = get_active_context().copy()
 
 # Standard Test Schemas
 TEST_SCHEMA_A = create_schema_definition("DataA", fields=[create_field_entry("msg", "string")])

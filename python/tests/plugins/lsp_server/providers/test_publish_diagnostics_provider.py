@@ -24,10 +24,10 @@ class TestPublishDiagnosticsProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
 
     async def asyncSetUp(self):
         await super().asyncSetUp()
-        self.provider = self.client.server.providers.get(methods.TEXT_DOCUMENT_PUBLISH_DIAGNOSTICS)
+        self.provider = self.client.lsp_server.providers.get(methods.TEXT_DOCUMENT_PUBLISH_DIAGNOSTICS)
 
     async def publish_diagnostics(self, file_name: str) -> list[Diagnostic]:
-        self.provider.language_server = self.client.server
+        self.provider.language_server = self.client.lsp_server
         return self.provider.get_diagnostics(self.to_uri(file_name))
 
     async def test_get_diagnostics_for_document_with_valid_definitions(self):

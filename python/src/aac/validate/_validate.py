@@ -89,6 +89,17 @@ def _validate_definitions(
 
     for definition in definitions:
         existing_definition = validation_context.get_definition_by_uid(definition.uid)
+        if not existing_definition:
+            possible_match = validation_context.get_definition_by_name(definition.name)
+
+            # If the definition source, structure, and name match go ahead and assume it's the same definition.
+            if (
+                possible_match
+                and possible_match.source.uri == definition.source.uri
+                and possible_match.structure == definition.structure
+            ):
+                existing_definition = possible_match
+                definition.uid = existing_definition.uid
 
         if existing_definition:
             validation_context.update_definition_in_context(definition)

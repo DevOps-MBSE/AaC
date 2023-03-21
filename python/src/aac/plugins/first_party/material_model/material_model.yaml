@@ -1,6 +1,96 @@
 model:
   name: material-model
   description: material-model is an Architecture-as-Code plugin that allows a user to model the physical design of a system.
+  behavior:
+    - name: gen-bom
+      type: command
+      description: Generates a CSV Bill of Materials (BOM) from a list of deployment models.
+      input:
+        - name: architecture-file
+          type: file
+          python_type: str
+          description:  The deployment model to convert into a BOM.
+        - name: output-directory
+          type: file
+          python_type: str
+          description: The directory where the BOM file should be placed.
+      acceptance:
+        - scenario: Valid deployment is converted to a BOM in CSV format.
+          given:
+            - The {{spec-validate.input.architecture-file}} contains a valid architecture specification.
+          when:
+            - The aac app is run with the gen-bom command.
+          then:
+            - A message saying BOM generation was successful is printed to the console.
+            - A csv file is generated.
+---
+validation:
+  name: Referenced materials exist
+  description: Verifies names within deployment, assembly, and part references exist within the context.
+  behavior:
+    - name: Verify that part references exist.
+      type: request-response
+      description:
+      input:
+        - name: input
+          type: ValidatorInput
+      output:
+        - name: results
+          type: ValidatorOutput
+      acceptance:
+        - scenario: Successfully Validate a part reference name exists
+          given:
+            - The ValidatorInput content consists of valid AaC definitions.
+            - The ValidatorInput contains some AaC fields that reference requirement ids.
+          when:
+            - The input is validation
+          then:
+            - The ValidatorOutput does not indicate any errors
+            - The ValidatorOutput does not indicate any warnings
+            - The ValidatorOutput indicates the definition under test is valid
+        - scenario: Fail to validate a definition's requirement reference fields
+          given:
+            - The ValidatorInput content consists of otherwise valid AaC definitions.
+            - The ValidatorInput contains at least one requirement reference id that does not exist.
+          when:
+            - The ValidatorInput is validated
+          then:
+            - The ValidatorOutput has errors
+            - The ValidatorOutput errors indicate that there are invalid requirement id references
+---
+validation:
+  name: No circular material references
+  description: Verifies the references within material models form a directed acyclic graph.
+  behavior:
+    - name: Verify that no circular references exist.
+      type: request-response
+      description:
+      input:
+        - name: input
+          type: ValidatorInput
+      output:
+        - name: results
+          type: ValidatorOutput
+      acceptance:
+        - scenario: Successfully Validate a no circular references exist
+          given:
+            - The ValidatorInput content consists of valid AaC definitions.
+            - The ValidatorInput contains some AaC fields that reference requirement ids.
+          when:
+            - The input is validation
+          then:
+            - The ValidatorOutput does not indicate any errors
+            - The ValidatorOutput does not indicate any warnings
+            - The ValidatorOutput indicates the definition under test is valid
+        - scenario: Fail to validate a definition's requirement reference fields
+          given:
+            - The ValidatorInput content consists of otherwise valid AaC definitions.
+            - The ValidatorInput contains at least one requirement reference id that does not exist.
+          when:
+            - The ValidatorInput is validated
+          then:
+            - The ValidatorOutput has errors
+            - The ValidatorOutput errors indicate that there are invalid requirement id references
 ---
 schema:
   name: Part
@@ -63,7 +153,7 @@ schema:
       arguments:
         - part-ref
         - quantity
-    - name: Reference target valid
+    - name: Referenced materials exist
       arguments:
         - part-ref
 ---
@@ -104,9 +194,10 @@ schema:
       arguments:
         - assembly-ref
         - quantity
-    - name: Reference target valid
+    - name: Referenced materials exist
       arguments:
         - assembly-ref
+    - name: No circular material references
 ---
 schema:
   name: Deployment
@@ -139,6 +230,7 @@ schema:
         - name
         - description
         - location
+    - name: No circular material references
 ---
 schema:
   name: DeploymentRef
@@ -155,7 +247,7 @@ schema:
       arguments:
         - deployment-ref
         - quantity
-    - name: Reference target valid
+    - name: Referenced materials exist
       arguments:
         - deployment-ref
 ---
