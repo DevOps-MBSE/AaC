@@ -30,12 +30,13 @@ class CacheEntry:
 
 @attrs
 class YamlCache:
-    """A YAML-Parsing cache for strings.
+    """A Least Frequently Used (LFU) YAML-Parsing cache for strings.
 
     Attributes:
         cache (dict[int, dict]): A dictionary of string hashes to yaml dict/maps.
     """
 
+    # The internal cache is using a dict with sorting O(n log n) rather than a more complex linked list which would be capable of linear time
     cache: dict[str, CacheEntry] = attrib(default=Factory(dict), validator=validators.instance_of(dict))
     capacity: int = attrib(default=300, validator=validators.instance_of(int))
 
@@ -91,6 +92,7 @@ class YamlCache:
         if len(self.cache) >= self.capacity:
             entry_to_pop, *_ = self._get_entries_sorted_by_access_count()
             self.cache.pop(entry_to_pop.hash)
+            logging.debug(f"The YAML parser cache has hit its limits, clearing space for a new entry. Current capacity: {self.capacity}")
 
         self.cache[key] = value
 
