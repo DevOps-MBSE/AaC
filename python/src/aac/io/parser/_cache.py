@@ -33,7 +33,8 @@ class YamlCache:
     """A Least Frequently Used (LFU) YAML-Parsing cache for strings.
 
     Attributes:
-        cache (dict[int, dict]): A dictionary of string hashes to yaml dict/maps.
+        capacity (int): The number of cached files/strings before clearing space according to LFU cache behavior.
+        cache (dict[int, dict]): The internal cache data structure -- this is intended to be private don't access this directly.
     """
 
     # The internal cache is using a dict with sorting O(n log n) rather than a more complex linked list which would be capable of linear time
