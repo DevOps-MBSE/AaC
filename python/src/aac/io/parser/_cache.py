@@ -41,20 +41,21 @@ class YamlCache:
 
     def parse_string(self, string: str) -> list[dict]:
         """Parse the YAML string and return the YAML dictionaries."""
-        return self._get_or_parse_string(STRING_YAML_SOURCE, string).yaml_structures
+        yaml_dicts = self._get_or_parse_string(STRING_YAML_SOURCE, string).yaml_structures
+        return yaml_dicts
 
     def parse_file(self, file_path: str) -> list[dict]:
         """Parse the YAML file and return the YAML dictionaries."""
-        yaml_maps = []
+        yaml_dicts = []
         sanitized_file_path = sanitize_filesystem_path(file_path)
         if lexists(sanitized_file_path):
             with open(sanitized_file_path) as yaml_file:
                 file_content = yaml_file.read()
-                yaml_maps = self._get_or_parse_string(sanitized_file_path, file_content).yaml_structures
+                yaml_dicts = self._get_or_parse_string(sanitized_file_path, file_content).yaml_structures
         else:
             logging.error("Can't parse the file '{sanitized_file_path}' because it doesn't exist.")
 
-        return yaml_maps
+        return yaml_dicts
 
     def scan_string(self, string: str) -> list[Token]:
         """Parse the YAML string and return the YAML tokens."""
@@ -75,6 +76,9 @@ class YamlCache:
 
     # Private Methods #
 
+    def _get_entries_sorted_by_access_count(self) -> list[CacheEntry]:
+        return sorted(list(self.cache.values()), key=lambda x: x.times_accessed, reverse=True)
+
     def _get_entry(self, key: str) -> Optional[CacheEntry]:
         entry_to_return = self.cache.get(key)
         if entry_to_return:
@@ -84,27 +88,24 @@ class YamlCache:
 
     def _put_entry(self, key: str, value: CacheEntry) -> None:
 
-        if len(self.cache) > self.capacity:
-            cache_list: list[CacheEntry] = sorted(list(self.cache.values()), key=lambda x: x.times_accessed, reverse=True)
-            entry_to_remove = cache_list[0]
-            del self.cache[entry_to_remove.hash]
+        if len(self.cache) >= self.capacity:
+            entry_to_pop, *_ = self._get_entries_sorted_by_access_count()
+            self.cache.pop(entry_to_pop.hash)
 
         self.cache[key] = value
 
     def _get_or_parse_string(self, content_source: str, content_string: str) -> CacheEntry:
         """Get the cached entry or parse the string and cache it."""
-        content_hash = str(md5(content_string.encode()))
-        cached_dict = self._get_entry(content_hash)
+        content_hash = str(md5(content_string.encode()).hexdigest())
+        cache_entry = self._get_entry(content_hash)
 
-        if not cached_dict:
+        if not cache_entry:
             yaml_dicts = parse_yaml(content_source, content_string)
             yaml_tokens = scan_yaml(content_string)
-            cached_dict = CacheEntry(content_hash, yaml_dicts, yaml_tokens)
-            self._put_entry(cached_dict.hash, cached_dict)
-        else:
-            logging.info("hi")
+            cache_entry = CacheEntry(content_hash, yaml_dicts, yaml_tokens)
+            self._put_entry(cache_entry.hash, cache_entry)
 
-        return cached_dict
+        return cache_entry
 
 
 # Singleton for shared cache access
