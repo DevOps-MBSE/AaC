@@ -1,15 +1,14 @@
 """The Architecture-as-Code Language Server."""
 import difflib
 import logging
-
 from asyncio import ensure_future
 from os import linesep
 from typing import Any, Optional
-
 from pygls.lsp import (
     CompletionOptions,
     CompletionParams,
     DefinitionParams,
+    DocumentLinkParams,
     DidChangeTextDocumentParams,
     DidCloseTextDocumentParams,
     DidOpenTextDocumentParams,
@@ -31,6 +30,7 @@ from aac.lang.active_context_lifecycle_manager import get_initialized_language_c
 from aac.lang.language_context import LanguageContext
 from aac.plugins.first_party.lsp_server.managed_workspace_file import ManagedWorkspaceFile
 from aac.plugins.first_party.lsp_server.providers.code_completion_provider import CodeCompletionProvider
+from aac.plugins.first_party.lsp_server.providers.document_link_provider import DocumentLinkProvider
 from aac.plugins.first_party.lsp_server.providers.find_references_provider import FindReferencesProvider
 from aac.plugins.first_party.lsp_server.providers.goto_definition_provider import GotoDefinitionProvider
 from aac.plugins.first_party.lsp_server.providers.hover_provider import HoverProvider
@@ -86,10 +86,11 @@ class AacLanguageServer(LanguageServer):
         """Configure and setup the providers that make LSP functionality available for the AaC LSP server."""
         self.providers[methods.COMPLETION] = self.providers.get(methods.COMPLETION, CodeCompletionProvider())
         self.providers[methods.DEFINITION] = self.providers.get(methods.DEFINITION, GotoDefinitionProvider())
-        self.providers[methods.REFERENCES] = self.providers.get(methods.REFERENCES, FindReferencesProvider())
+        self.providers[methods.DOCUMENT_LINK] = self.providers.get(methods.DOCUMENT_LINK, DocumentLinkProvider())
         self.providers[methods.HOVER] = self.providers.get(methods.HOVER, HoverProvider())
-        self.providers[methods.RENAME] = self.providers.get(methods.RENAME, RenameProvider())
         self.providers[methods.PREPARE_RENAME] = self.providers.get(methods.PREPARE_RENAME, PrepareRenameProvider())
+        self.providers[methods.REFERENCES] = self.providers.get(methods.REFERENCES, FindReferencesProvider())
+        self.providers[methods.RENAME] = self.providers.get(methods.RENAME, RenameProvider())
         self.providers[methods.TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL] = self.providers.get(
             methods.TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL, SemanticTokensProvider()
         )
@@ -108,12 +109,13 @@ class AacLanguageServer(LanguageServer):
         trigger_and_commit_chars = self.providers.get(methods.COMPLETION).get_trigger_characters()
         completion_options = CompletionOptions(trigger_characters=trigger_and_commit_chars)
         self.feature(methods.COMPLETION, completion_options)(handle_completion)
-        self.feature(methods.HOVER)(handle_hover)
         self.feature(methods.DEFINITION)(handle_goto_definition)
+        self.feature(methods.DOCUMENT_LINK)(handle_document_link)
+        self.feature(methods.HOVER)(handle_hover)
+        self.feature(methods.PREPARE_RENAME)(handle_prepare_rename)
         self.feature(methods.REFERENCES)(handle_references)
         self.feature(methods.RENAME)(handle_rename)
         self.feature(methods.TEXT_DOCUMENT_PUBLISH_DIAGNOSTICS)(handle_publish_diagnostics)
-        self.feature(methods.PREPARE_RENAME)(handle_prepare_rename)
 
         semantic_tokens_legend = self.providers.get(methods.TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL).get_semantic_tokens_legend()
         self.feature(methods.TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL, semantic_tokens_legend)(handle_semantic_tokens)
@@ -132,7 +134,12 @@ async def did_open(ls: AacLanguageServer, params: DidOpenTextDocumentParams):
 
     managed_file.is_client_managed = True
     file_path = to_fs_path(file_uri)
-    ls.language_context.add_definitions_to_context(parse(file_path))
+    file_definitions = parse(file_path)
+
+    if file_definitions:
+        ls.language_context.add_definitions_to_context(file_definitions)
+    else:
+        logging.error(f"Failed to parse definitions from document {file_path}")
 
     ensure_future(handle_publish_diagnostics(ls, PublishDiagnosticsParams(uri=params.text_document.uri, diagnostics=[])))
 
@@ -191,6 +198,11 @@ async def handle_completion(ls: AacLanguageServer, params: CompletionParams):
     return _provider_handle_request(methods.COMPLETION, ls, params)
 
 
+async def handle_document_link(ls: AacLanguageServer, params: DocumentLinkParams):
+    """Handle the completion request."""
+    return _provider_handle_request(methods.DOCUMENT_LINK, ls, params)
+
+
 async def handle_hover(ls: AacLanguageServer, params: HoverParams):
     """Handle the hover request."""
     return _provider_handle_request(methods.HOVER, ls, params)
@@ -231,7 +243,6 @@ def _provider_handle_request(provider_name: str, ls: AacLanguageServer, params: 
 
     if provider:
         results = provider.handle_request(ls, params)
-        logging.debug(f"{provider_name} results: {results}")
         return results
     else:
         logging.warning(f"No provider found for '{provider_name}'.")

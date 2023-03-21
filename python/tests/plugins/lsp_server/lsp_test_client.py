@@ -2,12 +2,12 @@
 
 import os
 import asyncio
-
 from asyncio.tasks import sleep
+from pygls.lsp import methods, Model
+from pygls.protocol import LanguageServerProtocol
+from pygls.server import LanguageServer
 from threading import Thread
 from typing import Optional
-
-from pygls.lsp import methods, Model
 
 from aac.plugins.first_party.lsp_server.language_server import AacLanguageServer
 
@@ -35,10 +35,10 @@ class LspTestClient:
         client_server_reader, client_server_writer = os.pipe()
         server_client_reader, server_client_writer = os.pipe()
 
-        self.server, self._server_thread = self._configure_ls(client_server_reader, server_client_writer)
-        self.client, self._client_thread = self._configure_ls(server_client_reader, client_server_writer)
+        self.lsp_server, self._server_thread = self._configure_ls(client_server_reader, server_client_writer, True)
+        self.lsp_client, self._client_thread = self._configure_ls(server_client_reader, client_server_writer, False)
 
-    def _configure_ls(self, reader: int, writer: int):
+    def _configure_ls(self, reader: int, writer: int, is_aac_server: bool) -> (LanguageServer, Thread):
         """
         Create, configure, and return a new LanguageServer and it's associated thread.
 
@@ -49,7 +49,19 @@ class LspTestClient:
         Returns:
             The newly created LanguageServer and it's associated thread.
         """
-        ls = AacLanguageServer(loop=asyncio.new_event_loop())
+        ls = None
+        if is_aac_server:
+            ls = AacLanguageServer(loop=asyncio.new_event_loop())
+        else:
+            # The LSP client
+            ls = LanguageServer(
+                name="test_client",
+                version="0.0.0",
+                protocol_cls=LanguageServerProtocol,
+                loop=asyncio.new_event_loop(),
+                max_workers=1,
+            )
+
         thread = Thread(target=ls.start_io, args=(os.fdopen(reader, "rb"), os.fdopen(writer, "wb")))
         thread.daemon = True
         return ls, thread
@@ -57,7 +69,7 @@ class LspTestClient:
     async def start(self):
         """Start the test LSP server and client."""
         self._server_thread.start()
-        self.server.thread_id = self._server_thread.ident
+        self.lsp_server.thread_id = self._server_thread.ident
         self._client_thread.start()
 
     async def stop(self):
@@ -68,9 +80,9 @@ class LspTestClient:
         await self.send_notification(methods.EXIT)
         self._server_thread.join()
 
-        self.client._stop_event.set()
+        self.lsp_client._stop_event.set()
         try:
-            self.client.loop._signal_handlers.clear()
+            self.lsp_client.loop._signal_handlers.clear()
         except AttributeError:
             pass
         self._client_thread.join()
@@ -86,7 +98,7 @@ class LspTestClient:
         Returns:
             The LSP response for the sent request.
         """
-        response = self.client.lsp.send_request(method, params)
+        response = self.lsp_client.lsp.send_request(method, params)
         await sleep(SLEEP_TIME)
         return response
 
@@ -98,5 +110,5 @@ class LspTestClient:
             method (str): The LSP method to use for the notification.
             params (Optional[Model]): Optional parameters to send with the notification.
         """
-        self.client.send_notification(method, params)
+        self.lsp_client.send_notification(method, params)
         await sleep(SLEEP_TIME)

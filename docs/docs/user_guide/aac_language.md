@@ -1,7 +1,7 @@
 ---
 layout: default
 title: AaC Modeling Language Reference
-parent: AaC User's Guide
+parent: User's Guide to AaC
 nav_order: 2
 ---
 

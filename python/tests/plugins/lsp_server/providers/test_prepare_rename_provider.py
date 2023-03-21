@@ -8,6 +8,7 @@ from tests.plugins.lsp_server.base_lsp_test_case import BaseLspTestCase
 from tests.plugins.lsp_server.definition_constants import (
     TEST_DOCUMENT_CONTENT,
     TEST_DOCUMENT_NAME,
+    TEST_SCHEMA_A,
 )
 
 
@@ -32,7 +33,7 @@ class TestPrepareRenameProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         )
 
     async def test_prepare_rename_request(self):
-        expected_selection = "DataA"
+        expected_selection = TEST_SCHEMA_A.name
         expected_range_line = 1
         expected_range_character_start = 8
         expected_range_character_end = expected_range_character_start + len(expected_selection)

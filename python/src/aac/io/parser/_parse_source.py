@@ -14,6 +14,7 @@ from aac.io.constants import DEFAULT_SOURCE_URI
 from aac.io.files.aac_file import AaCFile
 from aac.io.parser._cache_manager import get_cache
 from aac.io.paths import sanitize_filesystem_path
+from aac.lang.constants import DEFINITION_FIELD_NAME, DEFINITION_FIELD_IMPORT
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.lexeme import Lexeme
 from aac.lang.definitions.source_location import SourceLocation
@@ -112,18 +113,16 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
             if yaml_dicts:
                 root_yaml = yaml_dicts.pop(0)
 
-                if "import" in root_yaml:
-                    del root_yaml["import"]
-
-                root_type, *_ = root_yaml.keys()
-                definition_name = root_yaml.get(root_type, {}).get("name")
+                definition_imports = root_yaml.get(DEFINITION_FIELD_IMPORT, [])
+                root_type, *_ = [key for key in root_yaml.keys() if key != DEFINITION_FIELD_IMPORT]
+                definition_name = root_yaml.get(root_type, {}).get(DEFINITION_FIELD_NAME)
                 source_file = source_files.get(source)
 
                 if not source_file:
                     source_file = AaCFile(source, True, False)
                     source_files[source] = source_file
 
-                definitions.append(Definition(definition_name, yaml_text, source_file, definition_lexemes, root_yaml))
+                definitions.append(Definition(definition_name, yaml_text, source_file, definition_lexemes, root_yaml, definition_imports))
         else:
             logging.info(f"Skipping empty content between {start_doc_token}:L{content_start_line} and {end_doc_token}:L{content_end_line} in source {source}")
             logging.debug(f"Source: {source} Content:{model_content}")
@@ -157,10 +156,10 @@ def _recurse_imports(arch_file_path: str, existing: set) -> set:
     """
     existing.add(arch_file_path)
     roots = YAML_CACHE.parse_file(arch_file_path)
-    roots_with_imports = [root for root in roots if "import" in root.keys()]
+    roots_with_imports = [root for root in roots if DEFINITION_FIELD_IMPORT in root.keys()]
 
     for root in roots_with_imports:
-        for imp in root["import"]:
+        for imp in root[DEFINITION_FIELD_IMPORT]:
             arch_file_dir = path.dirname(path.realpath(arch_file_path))
             parse_path = path.join(arch_file_dir, imp.removeprefix(f".{path.sep}"))
             sanitized_path = sanitize_filesystem_path(parse_path)

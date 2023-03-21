@@ -8,6 +8,7 @@ from tests.plugins.lsp_server.base_lsp_test_case import BaseLspTestCase
 from tests.plugins.lsp_server.definition_constants import (
     TEST_DOCUMENT_CONTENT,
     TEST_DOCUMENT_NAME,
+    TEST_SCHEMA_A
 )
 
 
@@ -33,7 +34,7 @@ class TestHoverProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
 
     async def test_handles_hover_request(self):
         res: HoverResponse = await self.hover(TEST_DOCUMENT_NAME, 1, 8)
-        self.assertEqual(res.get_content(), self.active_context.get_definition_by_name("DataA").content)
+        self.assertEqual(res.get_content(), self.active_context.get_definition_by_name(TEST_SCHEMA_A.name).content)
 
     async def test_no_hover_when_nothing_under_cursor(self):
         await self.write_document(TEST_DOCUMENT_NAME, f"\n{TEST_DOCUMENT_CONTENT}")
