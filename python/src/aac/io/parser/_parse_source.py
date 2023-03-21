@@ -4,6 +4,7 @@ The AaC parser reads a YAML file, performs validation (if not suppressed) and pr
 the caller with a dictionary of the content keyed by the named type.  This allows you
 to find a certain type in a model by just looking for that key.
 """
+from copy import deepcopy
 import logging
 from yaml import Mark, Token, StreamStartToken, StreamEndToken, DocumentStartToken
 from os import path, linesep
@@ -89,6 +90,8 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
     doc_segment_tokens: list[DocumentStartToken] = [token for token in yaml_tokens if isinstance(token, DocumentStartToken)]
     doc_tokens = [*doc_start_token, *doc_segment_tokens, *doc_end_token]
 
+    yaml_dicts: list[dict] = deepcopy(YAML_CACHE.parse_string(model_content))
+
     source_files: dict[str, AaCFile] = {}
     definitions: list[Definition] = []
     for doc_token_index in range(0, len(doc_tokens) - 1):
@@ -105,20 +108,22 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
 
         if yaml_text.strip():
             definition_lexemes = get_lexemes_for_definition(value_tokens, content_start_line, content_end_line)
-            root_yaml, *_ = YAML_CACHE.parse_string(yaml_text)
 
-            if "import" in root_yaml:
-                del root_yaml["import"]
+            if yaml_dicts:
+                root_yaml = yaml_dicts.pop(0)
 
-            root_type, *_ = root_yaml.keys()
-            definition_name = root_yaml.get(root_type, {}).get("name")
-            source_file = source_files.get(source)
+                if "import" in root_yaml:
+                    del root_yaml["import"]
 
-            if not source_file:
-                source_file = AaCFile(source, True, False)
-                source_files[source] = source_file
+                root_type, *_ = root_yaml.keys()
+                definition_name = root_yaml.get(root_type, {}).get("name")
+                source_file = source_files.get(source)
 
-            definitions.append(Definition(definition_name, yaml_text, source_file, definition_lexemes, root_yaml))
+                if not source_file:
+                    source_file = AaCFile(source, True, False)
+                    source_files[source] = source_file
+
+                definitions.append(Definition(definition_name, yaml_text, source_file, definition_lexemes, root_yaml))
         else:
             logging.info(f"Skipping empty content between {start_doc_token}:L{content_start_line} and {end_doc_token}:L{content_end_line} in source {source}")
             logging.debug(f"Source: {source} Content:{model_content}")
