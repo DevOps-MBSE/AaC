@@ -1,6 +1,3 @@
-from unittest import TestCase
-
-from aac.lang.definitions.definition import Definition
 from aac.io.parser import get_cache
 from aac.io.parser._cache import YamlCache
 from aac.spec.core import get_aac_spec, get_aac_spec_as_yaml, _get_aac_spec_file_path

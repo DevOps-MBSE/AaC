@@ -20,7 +20,6 @@ from aac.lang.constants import (
 )
 from aac.lang.definitions.collections import get_definition_by_name
 from aac.lang.language_context import LanguageContext
-from aac.lang.language_error import LanguageError
 from aac.spec import get_aac_spec, get_primitives, get_root_keys
 
 from tests.active_context_test_case import ActiveContextTestCase
