@@ -24,8 +24,8 @@ class TestSemanticTokensProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
 
     async def asyncSetUp(self):
         await super().asyncSetUp()
-        self.provider = self.client.server.providers.get(methods.TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL)
-        self.provider.language_server = self.client.server
+        self.provider = self.client.lsp_server.providers.get(methods.TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL)
+        self.provider.language_server = self.client.lsp_server
 
     async def semantic_tokens(self, file_name: str) -> SemanticTokensResponse:
         """

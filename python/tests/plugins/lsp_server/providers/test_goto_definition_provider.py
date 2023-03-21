@@ -44,8 +44,8 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
 
     async def asyncSetUp(self) -> None:
         await super().asyncSetUp()
-        self.provider = self.client.server.providers.get(methods.DEFINITION)
-        self.provider.language_server = self.client.server
+        self.provider = self.client.lsp_server.providers.get(methods.DEFINITION)
+        self.provider.language_server = self.client.lsp_server
 
     async def goto_definition(self, file_name: str, line: int = 0, character: int = 0) -> GotoDefinitionResponse:
         """
@@ -183,7 +183,3 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         await self.write_document(TEST_DOCUMENT_NAME, f" \n{TEST_DOCUMENT_CONTENT}")
         res: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=0)
         self.assertIsNone(res.get_location())
-
-
-def _filter_line_containing_target_value(line: str, value: str) -> bool:
-    return value in line
