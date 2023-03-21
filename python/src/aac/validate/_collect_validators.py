@@ -39,7 +39,7 @@ def get_applicable_validators_for_definition(
 
     applicable_validators = {}
     for validation_dict in applicable_validation_dicts:
-        validation_name = validation_dict.get(DEFINITION_FIELD_NAME) or ""
+        validation_name = validation_dict.get(DEFINITION_FIELD_NAME, "")
         validator_plugin = _get_validator_plugin_by_name(validation_name, validator_plugins)
 
         if validator_plugin:

@@ -30,5 +30,5 @@ class Lexeme:
         )
 
     def __hash__(self) -> int:
-        """Return the hash of this Definition."""
+        """Return the hash of this Lexeme."""
         return hash((self.location, self.source, self.value))

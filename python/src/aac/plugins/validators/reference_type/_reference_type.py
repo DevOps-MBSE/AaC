@@ -32,7 +32,7 @@ def validate_reference_types(
 
         for field_name, field_type in validation_kw_args.items():
 
-            field_value_to_test = dict_to_validate.get(field_name) or ""
+            field_value_to_test = dict_to_validate.get(field_name, "")
 
             root_keys = language_context.get_root_keys()
             referenced_definition = language_context.get_definition_by_name(field_value_to_test)

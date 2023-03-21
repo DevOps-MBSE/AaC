@@ -20,7 +20,7 @@ class SourceLocation:
     span: int = attrib(validator=validators.instance_of(int))
 
     def __hash__(self) -> int:
-        """Return the hash of this Definition."""
+        """Return the hash of this SourceLocation."""
         return hash((self.line, self.column, self.position, self.span))
 
     def to_tuple(self) -> tuple[int, int, int, int]:
