@@ -29,7 +29,7 @@ class CacheEntry:
 
 
 @attrs
-class YamlCache:
+class YamlLFUCache:
     """A Least Frequently Used (LFU) YAML-Parsing cache for strings.
 
     Attributes:
@@ -112,4 +112,4 @@ class YamlCache:
 
 
 # Singleton for shared cache access
-YAML_CACHE: YamlCache = YamlCache()
+YAML_CACHE: YamlLFUCache = YamlLFUCache()

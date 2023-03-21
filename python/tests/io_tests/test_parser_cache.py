@@ -1,5 +1,5 @@
 from aac.io.parser import get_cache
-from aac.io.parser._cache import YamlCache
+from aac.io.parser._cache import YamlLFUCache
 from aac.spec.core import get_aac_spec, get_aac_spec_as_yaml, _get_aac_spec_file_path
 from tests.active_context_test_case import ActiveContextTestCase
 
@@ -22,7 +22,7 @@ class TestParserCache(ActiveContextTestCase):
 
     def test_cache_parse_ejects_least_frequently_used_content(self):
         parser_capacity = 4
-        parser_cache = YamlCache(capacity=parser_capacity)
+        parser_cache = YamlLFUCache(capacity=parser_capacity)
 
         used_definition_1_name = "used_definition_1"
         used_definition_1 = create_model_definition(used_definition_1_name)

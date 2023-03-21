@@ -1,11 +1,11 @@
 """This module manages a singleton instance of the YAML Parser Cache."""
-from aac.io.parser._cache import YamlCache
+from aac.io.parser._cache import YamlLFUCache
 
 
-YAML_CACHE: YamlCache = None
+YAML_CACHE: YamlLFUCache = None
 
 
-def get_cache() -> YamlCache:
+def get_cache() -> YamlLFUCache:
     """
     Return the YAML Parser Cache instance.
 
@@ -15,7 +15,7 @@ def get_cache() -> YamlCache:
     global YAML_CACHE
 
     if not YAML_CACHE:
-        YAML_CACHE = YamlCache()
+        YAML_CACHE = YamlLFUCache()
 
     return YAML_CACHE
 
@@ -23,4 +23,4 @@ def get_cache() -> YamlCache:
 def reset_cache() -> None:
     """Resets the cache clearing all data."""
     global YAML_CACHE
-    YAML_CACHE = YamlCache()
+    YAML_CACHE = YamlLFUCache()
