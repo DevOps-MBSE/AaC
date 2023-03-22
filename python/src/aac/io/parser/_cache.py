@@ -17,7 +17,7 @@ class CacheEntry:
     """A cache entry for YAML strings.
 
     Attributes:
-        hash (int): The hash value for the entry.
+        hash (str): The hash value for the entry.
         yaml_structures (dict[str, Any]): A dictionary of string hashes to yaml dict/maps.
         yaml_tokens (list[Token]): A list of YAML tokens used to scan the content.
         times_accessed (int): The number of times this entry has been accessed.
@@ -34,7 +34,7 @@ class YamlLFUCache:
 
     Attributes:
         capacity (int): The number of cached files/strings before clearing space according to LFU cache behavior.
-        cache (dict[int, dict]): The internal cache data structure -- this is intended to be private don't access this directly.
+        cache (dict[str, CacheEntry]): The internal cache data structure -- this is intended to be private, don't access it directly.
     """
 
     capacity: int = attrib(default=300, validator=validators.instance_of(int))
@@ -55,7 +55,7 @@ class YamlLFUCache:
                 file_content = yaml_file.read()
                 yaml_dicts = self._get_or_parse_string(sanitized_file_path, file_content).yaml_structures
         else:
-            logging.error("Can't parse the file '{sanitized_file_path}' because it doesn't exist.")
+            logging.error(f"Can't parse the file '{sanitized_file_path}' because it doesn't exist.")
 
         return yaml_dicts
 
@@ -72,7 +72,7 @@ class YamlLFUCache:
                 file_content = yaml_file.read()
                 token_list = self._get_or_parse_string(sanitized_file_path, file_content).yaml_tokens
         else:
-            logging.error("Can't parse the file '{sanitized_file_path}' because it doesn't exist.")
+            logging.error(f"Can't parse the file '{sanitized_file_path}' because it doesn't exist.")
 
         return token_list
 
