@@ -49,13 +49,10 @@ class YamlLFUCache:
     def parse_file(self, file_path: str) -> list[dict]:
         """Parse the YAML file and return the YAML dictionaries."""
         yaml_dicts = []
-        sanitized_file_path = sanitize_filesystem_path(file_path)
-        if lexists(sanitized_file_path):
-            with open(sanitized_file_path) as yaml_file:
-                file_content = yaml_file.read()
-                yaml_dicts = self._get_or_parse_string(sanitized_file_path, file_content).yaml_structures
-        else:
-            logging.error(f"Can't parse the file '{sanitized_file_path}' because it doesn't exist.")
+        file_cache_entry = self._get_file_content_cache_entry(file_path)
+
+        if file_cache_entry:
+            yaml_dicts = file_cache_entry.yaml_structures
 
         return yaml_dicts
 
@@ -66,17 +63,26 @@ class YamlLFUCache:
     def scan_file(self, file_path: str) -> list[Token]:
         """Parse the YAML file and return the YAML tokens."""
         token_list = []
-        sanitized_file_path = sanitize_filesystem_path(file_path)
-        if lexists(sanitized_file_path):
-            with open(sanitized_file_path) as yaml_file:
-                file_content = yaml_file.read()
-                token_list = self._get_or_parse_string(sanitized_file_path, file_content).yaml_tokens
-        else:
-            logging.error(f"Can't parse the file '{sanitized_file_path}' because it doesn't exist.")
+        file_cache_entry = self._get_file_content_cache_entry(file_path)
+
+        if file_cache_entry:
+            token_list = file_cache_entry.yaml_tokens
 
         return token_list
 
     # Private Methods #
+
+    def _get_file_content_cache_entry(self, file_path: str) -> Optional[CacheEntry]:
+        sanitized_file_path = sanitize_filesystem_path(file_path)
+        cache_entry = None
+        if lexists(sanitized_file_path):
+            with open(sanitized_file_path) as yaml_file:
+                file_content = yaml_file.read()
+                cache_entry = self._get_or_parse_string(sanitized_file_path, file_content)
+        else:
+            logging.error(f"Can't parse the file '{sanitized_file_path}' because it doesn't exist.")
+
+        return cache_entry
 
     def _get_entries_sorted_by_access_count(self) -> list[CacheEntry]:
         return sorted(list(self.cache.values()), key=lambda x: x.times_accessed, reverse=True)
