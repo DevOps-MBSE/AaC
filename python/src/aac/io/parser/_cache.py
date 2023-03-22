@@ -109,7 +109,3 @@ class YamlLFUCache:
             self._put_entry(cache_entry.hash, cache_entry)
 
         return cache_entry
-
-
-# Singleton for shared cache access
-YAML_CACHE: YamlLFUCache = YamlLFUCache()

@@ -35,9 +35,8 @@ def _is_struct(token: Token, language_context: LanguageContext) -> bool:
     return definition.is_schema() if definition else False
 
 
-def _is_string(token: Token, language_context: LanguageContext) -> bool:
+def _is_string(token: Token, _) -> bool:
     """Return whether the provided token represents a string value."""
-    _ = language_context  # Keeping the argument to adhere to the interface
     is_explicit_string = hasattr(token, "style") and token.style and token.style in "|'\""
     contains_spaces = any(map(lambda ch: ch.isspace(), token.value))
     return is_explicit_string or contains_spaces
