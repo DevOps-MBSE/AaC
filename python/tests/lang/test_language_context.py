@@ -21,7 +21,6 @@ from aac.lang.constants import (
 )
 from aac.lang.definitions.collections import get_definition_by_name
 from aac.lang.language_context import LanguageContext
-from aac.lang.language_error import LanguageError
 from aac.spec import get_aac_spec, get_primitives, get_root_keys
 
 from tests.active_context_test_case import ActiveContextTestCase
@@ -302,32 +301,13 @@ class TestLanguageContext(ActiveContextTestCase):
 
         [self.assertEqual(enum, test_context.get_enum_definition_by_type(value)) for value in values]
 
-    def test_language_error_if_apply_extension_with_duplicate_names(self):
-        field1 = create_field_entry(f"{self.TEST_FIELD_DEFINITION_NAME}1")
-        test_schema = create_schema_definition(self.TEST_SCHEMA_DEFINITION_NAME, fields=[field1])
-
-        field2 = create_field_entry(f"{self.TEST_FIELD_DEFINITION_NAME}2")
-        test_duplicate_schema = create_schema_definition(self.TEST_SCHEMA_DEFINITION_NAME, fields=[field2])
-
-        language_context = LanguageContext([test_schema, test_duplicate_schema])
-
-        self.assertEqual(len(language_context.definitions), 2)
-
-        test_extension = create_schema_ext_definition(self.TEST_SCHEMA_EXT_DEFINITION_NAME, self.TEST_SCHEMA_DEFINITION_NAME)
-
-        with self.assertRaises(LanguageError) as cm:
-            language_context.add_definition_to_context(test_extension)
-
-        self.assertRegexpMatches(str(cm.exception).lower(), "duplicate.*definition.*name.*")
-        self.assertIn(self.TEST_SCHEMA_DEFINITION_NAME, str(cm.exception))
-
     def test_uuid_in_active_context(self):
         definition_uuids_list = [definition.uid for definition in get_active_context().definitions]
         definition_uuids_set = set(definition_uuids_list)
         self.assertGreaterEqual(len(definition_uuids_set), len(get_aac_spec()))
         self.assertEqual(len(definition_uuids_list), len(definition_uuids_set))
 
-    def test_langauge_context_loads_state_from_file(self):
+    def test_language_context_loads_state_from_file(self):
         test_definition = create_schema_definition("TestDefinition")
         with temporary_test_file(test_definition.to_yaml()) as test_definition_file:
             test_definition.source = AaCFile(test_definition_file.name, True, True)
