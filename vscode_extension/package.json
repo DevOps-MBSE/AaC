@@ -63,6 +63,11 @@
                 ]
             }
         ],
+        "configurationDefaults": {
+            "aac": {
+                "editor.semanticHighlighting.enabled": true
+            }
+        },
         "configuration": {
             "title": "Architecture-as-Code",
             "properties": {
