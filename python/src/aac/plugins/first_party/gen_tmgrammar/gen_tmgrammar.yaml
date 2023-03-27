@@ -8,11 +8,11 @@ model:
         Generate a TextMate grammar for the AaC VSCode extension.
       input:
         - name: --json
-          type: boolean
+          type: bool
           python_type: bool
           description: Whether to generate the TextMate grammar as a JSON file.
         - name: --plist
-          type: boolean
+          type: bool
           python_type: bool
           description: Whether to generate the TextMate grammar as a plist (XML) file.
       output:
