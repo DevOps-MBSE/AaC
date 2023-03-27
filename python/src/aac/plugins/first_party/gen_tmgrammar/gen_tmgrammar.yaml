@@ -1,5 +1,5 @@
 model:
-  name: Generate TextMate Grammar
+  name: gen_tmgrammar
   description: An AaC plugin for generating a TextMate grammar for the AaC VSCode extension.
   behavior:
     - name: gen-tmgrammar
