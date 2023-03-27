@@ -1,0 +1,7 @@
+model:
+  name: sysml
+  description: |
+    Provides SysML syntax for AaC users as an alternative to the base AaC language.
+
+    This user library is written to the SysML version 1.5 standard found here:
+    https://sysml.org/.res/docs/specs/OMGSysML-v1.5-17-05-01.pdf

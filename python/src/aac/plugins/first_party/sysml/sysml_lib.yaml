@@ -1,0 +1,354 @@
+schema:
+  name: SysML.Comment
+  fields:
+    - name: comment
+      type: string
+---
+schema:
+  name: SysML.Constraint
+  fields:
+    - name: constraint
+      type: string
+---
+schema:
+  name: SysML.ModelElements.ElementGroup
+  description: |
+    The ElementGroup stereotype provides a lightweight mechanism for grouping various and possibly heterogeneous model
+    elements by extending the capability of comments to refer to multiple annotated elements. For example, it can group
+    elements that are associated with a particular release of the model, have a certain risk level, or are associated with a
+    legacy design. The semantics of ElementGroup is modeler-defined. In particular, the body text is not restricted. It can
+    describe the grouped elements as well as elements or values related to the grouped elements.
+  fields:
+    - name: name
+      type: string
+      description: The name of the element group
+    - name: criterion
+      type: string
+      description: Specifies the rationale for being member of the group. Adding an element to the group asserts that the criterion applies to this element.
+    - name: size
+      type: integer
+      description: Number of members in the group.
+    - name: member
+      type: string
+      description: Set specifying the members of the group.
+    - name: orderedMember
+      type: string
+      description: Organize member according to an arbitrary order.
+---
+schema:
+  name: SysML.Model
+---
+schema:
+  name: SysML.Package
+---
+schema:
+  name: SysML.ModelElements.Problem
+  description: |
+    A Problem documents a deficiency, limitation, or failure of one or more model elements to satisfy a requirement or need,
+    or other undesired outcome. It may be used to capture problems identified during analysis, design, verification, or
+    manufacture and associate the problem with the relevant model elements. Problem is a stereotype of comment and may be
+    attached to any other model element in the same manner as a comment.
+  fields:
+    - name: problem
+      type: string
+---
+schema:
+  name: SysML.ModelElements.Rationale
+  description: |
+    A Rationale documents the justification for decisions and the requirements, design, and other decisions. A Rationale can
+    be attached to any model element including relationships. It allows the user, for example, to specify a rationale that may
+    reference more detailed documentation such as a trade study or analysis report. Rationale is a stereotype of comment and
+    may be attached to any other model element in the same manner as a comment.
+  fields:
+    - name: rationale
+      type: string
+---
+schema:
+  name: SysML.ModelElements.Stakeholder
+  description: |
+    A stakeholder represents a role, group, or individual who has concerns that will be addressed by the View of the model.
+  fields:
+    - name: concernList
+      type: SysML.Comment[]
+---
+schema:
+  name: SysML.ModelElements.View
+  description: |
+    A View is a model element that represents a real world artifact that can be presented to stakeholders. The view is the
+    result of querying one or more models that are defined by a viewpoint method. The view shall conform to the viewpoint
+    in terms of the viewpoint stakeholders, concerns, method, language, and presentation requirements.
+
+    Constraints:
+      1. A view shall only conform to a single viewpoint.
+      2. The derived value of the viewpoint shall be the classifier stereotyped by Viewpoint that is the general classifier of the
+          generalization relationship stereotyped by Conform for which the View is the specific classifier.
+      3. The derived values of the stakeholder attribute shall be the names of the classifiers stereotyped by Stakeholder that are the
+          values of the stakeholder attribute of the general classifier of the generalization relationship stereotyped by Conform for
+          which the View is the specific classifier.
+  fields:
+    - name: viewpoint
+      type: SysML.ModelElements.ViewPoint
+      description: The viewpoint for this View is derived from the conform relationship.
+    - name: stakeholder
+      type: SysML.ModelElements.Stakeholder[]
+      description: The list of stakeholders is derived from the viewpoint the view conforms to.
+---
+schema:
+  name: SysML.ModelElements.ViewPoint
+  description: |
+    A Viewpoint is a specification of the conventions and rules for constructing and using a view for the purpose of
+    addressing a set of stakeholder concerns. They specify the elements expected to be represented in the view, and may be
+    formally or informally defined. For example, the security viewpoint may require the security requirements, security
+    functional and physical architecture, and security test cases.
+
+    Constraints:
+      1. The derived values of the method attribute shall be the names of the methods of the operations stereotyped by the UML. Create stereotype on the classifier stereotyped by Viewpoint.
+      2. The property ownedOperation shall include at least one operation named “View” with the UML Create stereotype applied.
+  fields:
+    - name: stakeholder
+      type: SysML.ModelElements.Stakeholder[]
+      description: Set of stakeholders whose concerns are to be addressed by the viewpoint.
+    - name: purpose
+      type: string
+      description: The purpose addresses the stakeholder concerns.
+    - name: concernList
+      type: SysML.Comment[]
+      description: The interests of the stakeholders addressed by this viewpoint.
+    - name: language
+      type: string[]
+      description: |
+        The languages used to express the models that represent content which is represented by the view. The language
+        specification such as its metamodel, profile, or other language specification is referred to by its URI.
+    # Method appears to be a method rather than an attribute.
+    # - name: method
+    #   type: Behavior
+    #   description: |
+    #     The behavior is derived from the method of the operation with the Create stereotype.
+    - name: presentation
+      type: string[]
+      description: |
+        The specifications prescribed for formatting and styling the view.
+---
+schema:
+  name: SysML.ModelElements.Conform
+  description: |
+    A Conform relationship is a generalization between a view and a viewpoint. The view conforms to the specified rules and
+    conventions detailed in the viewpoint. When this is done, the view is said to conform to the viewpoint. Conform extends
+    UML generalization.
+
+    Constraints:
+      1. The general classifier shall be an element stereotyped by Viewpoint.
+      2. The specific classifier shall be an element that is stereotyped by View.
+  fields:
+    - name: name
+      type: string
+    - name: conform
+      type: string
+---
+schema:
+  name: SysML.ModelElements.Expose
+  description: |
+    The expose relationship relates a view to one or more model elements. Each model element is an access point to initiate
+    the query. The view and the model elements related to the view are passed to the constructor when it is invoked. The
+    method describes how the exposed elements are navigated to extract the desired information.
+
+    Constraints:
+      1. The client shall be an element stereotyped by View
+  fields:
+    - name: expose
+      type: string
+---
+schema:
+  name: SysML.Dependency
+  fields:
+    - name: dependency
+      type: string
+---
+enum:
+  name: SysML.PackageImportVisibility
+  values:
+    - public
+    - private
+---
+schema:
+  name: SysML.PackageImport
+  fields:
+    - name: access
+      type: string
+    - name: visibility
+      type: SysML.PackageImportVisibility
+---
+schema:
+  name: SysML.PackageContainment
+  description: Corresponds to the PackageContainment element and abstract syntax reference UML4SysML::Package::ownedElement.
+  fields:
+    - name: contains
+      type: string
+---
+schema:
+  name: SysML.Realization
+  description: Corresponds to the Realization element and abstract syntax reference UML4SysML::Realization.
+  fields:
+    - name: realization
+      type: string
+---
+schema:
+  name: SysML.Refine
+  description: Corresponds to the Refine element and abstract syntax reference UML4SysML::Refine.
+  fields:
+    - name: refine
+      type: string
+---
+schema:
+  name: SysML.Blocks.Package
+  description: Corresponds to the BlockDefinition Diagram element and abstract syntax references SysML::Blocks::Block and UML4SysML::Package.
+  fields:
+    - name: blocks
+      type: SysML.Blocks.Block[]
+---
+schema:
+  name: SysML.Blocks.Block
+  description: Corresponds to the Block element and abstract syntax reference SysML::Blocks::Block.
+  fields:
+    - name: blocks
+      type: string
+---
+schema:
+  name: SysML.Blocks.BoundReference
+  description: Corresponds to the BoundReference element and abstract syntax reference SysML::Blocks::BoundReference.
+  fields:
+    - name: boundReferences
+      type: string[]
+---
+schema:
+  name: SysML.Actor
+  description: Corresponds to the Actor element and abstract syntax reference UML4SysML::Actor.
+  fields:
+    - name: actor
+      type: string
+---
+schema:
+  name: SysML.Blocks.ValueType
+  description: Corresponds to the ValueType element and abstract syntax reference SysML::Blocks::ValueType.
+  fields:
+    - name: valueType
+      type: string
+---
+schema:
+  name: SysML.Enumeration
+  description: Corresponds to the ValueType element and abstract syntax reference UML4SysML::Enumeration.
+  fields:
+    - name: valueType
+      type: string
+---
+schema:
+  name: SysML.Classifier
+  description: |
+    Corresponds to the ValueType element and abstract syntax reference UML4SysML::Classifier.
+
+    Represents AbstractDefinitions when isAbstract set to true
+  fields:
+    - name: name
+      type: string
+    - name: isAbstract
+      type: bool
+---
+schema:
+  name: SysML.Stereotype
+  description: |
+    Corresponds to the Stereotype element and abstract syntax reference UML4SysML::Stereotype.
+  fields:
+    - name: name
+      type: string
+---
+schema:
+  name: SysML.Unit
+  description: |
+    Corresponds to the Unit element and abstract syntax reference UML4SysML::InstanceSpecification.
+  fields:
+    - name: name
+      type: string
+---
+schema:
+  name: SysML.InstanceSpecification
+  description: |
+    Corresponds to the Unit, QuantityKind, and InstanceSpecification elements and abstract syntax reference UML4SysML::InstanceSpecification.
+  fields:
+    - name: name
+      type: string
+---
+schema:
+  name: SysML.Association
+  description: |
+    Corresponds to the Association element and abstract syntax reference UML4SysML::Association.
+  fields:
+    - name: name
+      type: string
+---
+enum:
+  name: SysML.AggregationKind
+  description: |
+    TODO
+  values:
+    - none
+    - composite
+    - shared
+---
+schema:
+  name: SysML.Property
+  description: |
+    Corresponds to the Property element and abstract syntax reference for UML4SysML::Property and UML::Kernel::Property.
+  fields:
+    - name: name
+      type: string
+    - name: aggregationKind
+      type: SysML.AggregationKind
+---
+schema:
+  name: SysML.Generalization
+  description: |
+    Corresponds to the Generalization element and abstract syntax reference for UML4SysML::Generalization.
+  fields:
+    - name: name
+      type: string
+---
+schema:
+  name: SysML.GeneralizationSet
+  description: |
+    Corresponds to the GeneralizationSet element and abstract syntax reference for UML4SysML::GeneralizationSet.
+  fields:
+    - name: name
+      type: string
+---
+schema:
+  name: SysML.BlockNameSpace
+  description: |
+    Corresponds to the BlockNameSpace element and abstract syntax reference for UML4SysML::Class::nestedClassifier.
+  fields:
+    - name: name
+      type: string
+---
+schema:
+  name: SysML.ParticipantProperty
+  description: |
+    Corresponds to the ParticipantProperty element and abstract syntax references for UML4SysML::Property and UML4SysML::AssociationClass.
+  fields:
+    - name: name
+      type: string
+---
+schema:
+  name: SysML.Connector
+  description: |
+    Corresponds to the ConnectorProperty element and abstract syntax references for UML4SysML::Property and UML4SysML::Connector.
+  fields:
+    - name: name
+      type: string
+---
+schema:
+  name: SysML.ConnectorProperty
+  description: |
+    Corresponds to the ConnectorProperty element and abstract syntax references for UML4SysML::Property and UML4SysML::Connector.
+  fields:
+    - name: name
+      type: string
+---
