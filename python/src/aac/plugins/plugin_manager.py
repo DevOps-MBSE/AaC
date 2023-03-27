@@ -33,6 +33,7 @@ def get_plugin_manager() -> PluginManager:
         "gen_design_doc",
         "gen_gherkin_behaviors",
         "gen_plant_uml",
+        "gen_tmgrammar",
         "specifications",
         "print_spec",
         "lsp_server",
