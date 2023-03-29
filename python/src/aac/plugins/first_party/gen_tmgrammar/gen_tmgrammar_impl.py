@@ -4,8 +4,12 @@ from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 
 plugin_name = "gen_tmgrammar"
 
+BASE_SYNTAX_FILE_NAME = "aac-syntax"
+JSON_SYNTAX_FILE_NAME = f"{BASE_SYNTAX_FILE_NAME}.json"
+PLIST_SYNTAX_FILE_NAME = f"{BASE_SYNTAX_FILE_NAME}.plist"
 
-def gen_tmgrammar(json: bool, plist: bool) -> PluginExecutionResult:
+
+def gen_tmgrammar(json: bool = True, plist: bool = False) -> PluginExecutionResult:
     """
     Generate a TextMate grammar for the AaC VSCode extension.
 
@@ -16,9 +20,16 @@ def gen_tmgrammar(json: bool, plist: bool) -> PluginExecutionResult:
     Returns:
         aac_textmate_grammar The TextMate Grammar that provides syntax rules for the AaC VSCode extension.
     """
-    # TODO add implementation here
-    def _implement_and_rename_me():
-        raise NotImplementedError("gen_tmgrammar is not implemented.")
 
-    with plugin_result(plugin_name, _implement_and_rename_me) as result:
+    def write_textmate_grammar_to_file(file_name: str) -> str:
+        with open(file_name, "w"):
+            pass
+
+        return f"{file_name} created successfully."
+
+    with plugin_result(
+        plugin_name,
+        write_textmate_grammar_to_file,
+        JSON_SYNTAX_FILE_NAME if json else PLIST_SYNTAX_FILE_NAME,
+    ) as result:
         return result
