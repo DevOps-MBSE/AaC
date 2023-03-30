@@ -169,11 +169,8 @@
         "grammars": [
             {
                 "language": "aac",
-                "scopeName": "injection.aac.keywords",
-                "path": "./syntaxes/keywords.tmLanguage.plist",
-                "injectTo": [
-                    "source.yaml"
-                ]
+                "scopeName": "source.aac",
+                "path": "./syntaxes/aac-syntax.json"
             }
         ],
         "viewsContainers": {
