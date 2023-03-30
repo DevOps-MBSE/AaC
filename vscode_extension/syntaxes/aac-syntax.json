@@ -196,7 +196,7 @@
                             "name": "constant.numeric.aac-version.aac"
                         }
                     },
-                    "match": "\\G(AAC)[ \\t]+(\\d+\\.\\d+)"
+                    "match": "\\G(YAML)[ \\t]+(\\d+\\.\\d+)"
                 },
                 {
                     "captures": {
