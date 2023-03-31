@@ -163,7 +163,8 @@
                     "Architecture-as-Code",
                     "AaC"
                 ],
-                "configuration": "./aac-language-configuration.json"
+                "configuration": "./aac-language-configuration.json",
+                "semanticHighlighting": true
             }
         ],
         "grammars": [
