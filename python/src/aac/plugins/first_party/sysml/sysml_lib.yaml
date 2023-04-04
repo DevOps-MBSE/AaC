@@ -1,11 +1,142 @@
+ext:
+  name: SysMLDiagramsRootTypeExtension
+  type: root
+  description: This extension adds the variety of SysML diagrams as root types, allowing users to define instances of diagrams in AaC.
+  schemaExt:
+    add:
+      - name: blockDefinitionDiagram
+        type: SysML.BlockDefinitionDiagram
+        description: Used to instantiate a representation of the SysML Block Definition Diagram (BDD) which replaces the UML2 class diagram.
+      - name: internalBlockDiagram
+        type: SysML.InternalBlockDiagram
+        description: Used to instantiate a representation of the SysML Internal Block Diagram (IBD) which replaces the UML2 composite structure diagram.
+      - name: parametericDiagram
+        type: SysML.ParametericDiagram
+        description: Used to instantiate a representation of the SysML Parameteric Diagram, a SysML extension used to analyse system parameters.
+      - name: packageDiagram
+        type: SysML.PackageDiagram
+        description: Used to instantiate a representation of the SysML Package Diagram which is equivalent to the UML2 package diagram.
+      - name: activityDiagram
+        type: SysML.ActivityDiagram
+        description: Used to instantiate a representation of the SysML Activity Diagram which is mostly equivalent to the UML2 activity diagram with some minor SysML modifications.
+      - name: sequenceDiagram
+        type: SysML.SequenceDiagram
+        description: Used to instantiate a representation of the SysML Package Diagram which is equivalent to the UML2 activity diagram.
+      - name: stateMachineDiagram
+        type: SysML.StateMachineDiagram
+        description: Used to instantiate a representation of the SysML State Machine Diagram which is equivalent to the UML2 state chart diagram.
+      - name: usecaseDiagram
+        type: SysML.UsecaseDiagram
+        description: Used to instantiate a representation of the SysML Usecase Diagram which is equivalent to the UML2 use case diagram.
+      - name: requirementsDiagram
+        type: SysML.RequirementsDiagram
+        description: Used to instantiate a representation of the SysML Requirements Diagram which is equivalent to the UML2 requirements diagram.
+---
+  schema:
+    name: SysML.BlockDefinitionDiagram
+    description: |
+      The Block Definition Diagram (abbreviation is bdd) provides a black box representation of a system block i.e. main block, alongside the hierarchy of its composite blocks.
+      The BDD can include blocks of any type including software, hardware, etc. The BDD can be compared with the first page of your furniture instructions, providing
+      the contents inventory and the quantity of each part. In comparison with UML2, the SysML BDD redefines the class diagram by replacing classes with blocks, and
+      introducing flow ports.
+
+      Constraints:
+      1. A SysML.BlockDefinitionDiagram shall have as a defaultNamespace a Class with a Block stereotype or one of its
+        specializations applied or a Package.
+      2. SysML.BlockDefinitionDiagram shall only be applied to a UMLClassDiagram.
+
+      Corresponds to the BlockDefinition Diagram element and abstract syntax references SysML::Blocks::Block and UML4SysML::Package.
+    fields:
+      - name: blocks
+        type: SysML.Block
+---
 schema:
-  name: SysML.Comment
+  name: SysML.InternalBlockDiagram
+  description: |
+    The Internal Block Diagram (abbreviation is ibd) in SysML captures the internal structure of a block in terms of properties and connectors between properties. A block can include properties
+    to specify its values, parts, and references to other blocks.
+
+    Corresponds to the InternalBlockDiagram element and abstract syntax references for SysML::Blocks::Block.
+  fields:
+    - name: name
+      type: string
+---
+schema:
+  name: SysML.ParametericDiagram
+  description:  (abbreviation is par)
   fields:
     - name: comment
       type: string
 ---
 schema:
-  name: SysML.Constraint
+  name: SysML.PackageDiagram
+  description:  (abbreviation is pkg)
+  fields:
+    - name: comment
+      type: string
+---
+schema:
+  name: SysML.ActivityDiagram
+  description: |
+    The Activity Diagram (abbreviation is act) in SysML represents a slightly modified UML activity diagram.
+
+    Constraints:
+      1. A SysMLActivityDiagram shall have as a defaultNamespace an Activity
+      2. SysML.ActivityDiagram shall only be applied to a UMLActivityDiagram. The principal of an applied AdjunctProperty
+          shall be a Connector, CallAction, ObjectNode, Variable, Parameter, submachine State, or InteractionUse.
+  fields:
+    - name: isControlFlowDashed
+      type: bool
+      description: Specifies whether the control flows in the diagram should be represented as dashes.
+---
+schema:
+  name: SysML.SequenceDiagram
+  description:  (abbreviation is sd)
+  fields:
+    - name: comment
+      type: string
+---
+schema:
+  name: SysML.StateMachineDiagram
+  description:  (abbreviation is stm)
+  fields:
+    - name: comment
+      type: string
+---
+schema:
+  name: SysML.UsecaseDiagram
+  description: (abbreviation is us)
+  fields:
+    - name: comment
+      type: string
+---
+schema:
+  name: SysML.RequirementsDiagram
+  description: (abbreviation is req)
+  fields:
+    - name: comment
+      type: string
+---
+schema:
+  name: SysML.Comment
+  description: |
+    Corresponds to the Comment element and abstract syntax reference UML4SysML::Comment.
+  fields:
+    - name: comment
+      type: string
+---
+schema:
+  name: SysML.ConstraintNote
+  description: |
+    Corresponds to the ConstraintNote element and abstract syntax reference UML4SysML::Constraint.
+  fields:
+    - name: constraint
+      type: string
+---
+schema:
+  name: SysML.ConstraintTextualNote
+  description: |
+    Corresponds to the ConstraintTextualNote element and abstract syntax reference UML4SysML::Constraint.
   fields:
     - name: constraint
       type: string
@@ -13,6 +144,8 @@ schema:
 schema:
   name: SysML.ModelElements.ElementGroup
   description: |
+    Corresponds to the ElementGroup element and abstract syntax reference SysML::ModelElements::ElementGroup
+
     The ElementGroup stereotype provides a lightweight mechanism for grouping various and possibly heterogeneous model
     elements by extending the capability of comments to refer to multiple annotated elements. For example, it can group
     elements that are associated with a particular release of the model, have a certain risk level, or are associated with a
@@ -26,7 +159,7 @@ schema:
       type: string
       description: Specifies the rationale for being member of the group. Adding an element to the group asserts that the criterion applies to this element.
     - name: size
-      type: integer
+      type: int
       description: Number of members in the group.
     - name: member
       type: string
@@ -37,13 +170,29 @@ schema:
 ---
 schema:
   name: SysML.Model
+  description: |
+    Corresponds to the Model element and abstract syntax reference UML4SysML::Model.
 ---
 schema:
   name: SysML.Package
+  description: |
+    Corresponds to the PackageDiagram element and abstract syntax reference UML4SysML::Package.
+---
+schema:
+  name: SysML.PackageWithNameInTab
+  description: |
+    Corresponds to the PackageWithNameInTab element and abstract syntax reference UML4SysML::Package.
+---
+schema:
+  name: SysML.PackageWithNameInside
+  description: |
+    Corresponds to the PackageWithNameInside element and abstract syntax reference UML4SysML::Package.
 ---
 schema:
   name: SysML.ModelElements.Problem
   description: |
+    Corresponds to the Problem element and abstract syntax reference SysML::ModelElements::Problem.
+
     A Problem documents a deficiency, limitation, or failure of one or more model elements to satisfy a requirement or need,
     or other undesired outcome. It may be used to capture problems identified during analysis, design, verification, or
     manufacture and associate the problem with the relevant model elements. Problem is a stereotype of comment and may be
@@ -55,6 +204,8 @@ schema:
 schema:
   name: SysML.ModelElements.Rationale
   description: |
+    Corresponds to the Rationale element and abstract syntax reference SysML::ModelElements::Rationale.
+
     A Rationale documents the justification for decisions and the requirements, design, and other decisions. A Rationale can
     be attached to any model element including relationships. It allows the user, for example, to specify a rationale that may
     reference more detailed documentation such as a trade study or analysis report. Rationale is a stereotype of comment and
@@ -66,6 +217,8 @@ schema:
 schema:
   name: SysML.ModelElements.Stakeholder
   description: |
+    Corresponds to the Stakeholder element and abstract syntax reference SysML::ModelElements::Stakeholder.
+
     A stakeholder represents a role, group, or individual who has concerns that will be addressed by the View of the model.
   fields:
     - name: concernList
@@ -74,6 +227,8 @@ schema:
 schema:
   name: SysML.ModelElements.View
   description: |
+    Corresponds to the View element and abstract syntax reference SysML::ModelElements::View.
+
     A View is a model element that represents a real world artifact that can be presented to stakeholders. The view is the
     result of querying one or more models that are defined by a viewpoint method. The view shall conform to the viewpoint
     in terms of the viewpoint stakeholders, concerns, method, language, and presentation requirements.
@@ -96,6 +251,8 @@ schema:
 schema:
   name: SysML.ModelElements.ViewPoint
   description: |
+    Corresponds to the ViewPoint element and abstract syntax reference SysML::ModelElements::ViewPoint.
+
     A Viewpoint is a specification of the conventions and rules for constructing and using a view for the purpose of
     addressing a set of stakeholder concerns. They specify the elements expected to be represented in the view, and may be
     formally or informally defined. For example, the security viewpoint may require the security requirements, security
@@ -132,6 +289,8 @@ schema:
 schema:
   name: SysML.ModelElements.Conform
   description: |
+    Corresponds to the Conform element and abstract syntax reference SysML::ModelElements::Conform.
+
     A Conform relationship is a generalization between a view and a viewpoint. The view conforms to the specified rules and
     conventions detailed in the viewpoint. When this is done, the view is said to conform to the viewpoint. Conform extends
     UML generalization.
@@ -148,6 +307,8 @@ schema:
 schema:
   name: SysML.ModelElements.Expose
   description: |
+    Corresponds to the Conform element and abstract syntax reference SysML::ModelElements::Conform.
+
     The expose relationship relates a view to one or more model elements. Each model element is an access point to initiate
     the query. The view and the model elements related to the view are passed to the constructor when it is invoked. The
     method describes how the exposed elements are navigated to extract the desired information.
@@ -158,12 +319,6 @@ schema:
     - name: expose
       type: string
 ---
-schema:
-  name: SysML.Dependency
-  fields:
-    - name: dependency
-      type: string
----
 enum:
   name: SysML.PackageImportVisibility
   values:
@@ -171,12 +326,20 @@ enum:
     - private
 ---
 schema:
-  name: SysML.PackageImport
+  name: SysML.PublicPackageImport
+  description: |
+    Corresponds to the PublicPackageImport element and abstract syntax reference UML4SysML::PackageImport.
   fields:
     - name: access
       type: string
-    - name: visibility
-      type: SysML.PackageImportVisibility
+---
+schema:
+  name: SysML.PrivatePackageImport
+  description: |
+    Corresponds to the PrivatePackageImport element and abstract syntax reference UML4SysML::PackageImport.
+  fields:
+    - name: access
+      type: string
 ---
 schema:
   name: SysML.PackageContainment
@@ -200,35 +363,92 @@ schema:
       type: string
 ---
 schema:
-  name: SysML.Blocks.Package
-  description: Corresponds to the BlockDefinition Diagram element and abstract syntax references SysML::Blocks::Block and UML4SysML::Package.
-  fields:
-    - name: blocks
-      type: SysML.Blocks.Block[]
----
-schema:
-  name: SysML.Blocks.Block
-  description: Corresponds to the Block element and abstract syntax reference SysML::Blocks::Block.
+  name: SysML.Block
+  description: |
+    Corresponds to the Block element and abstract syntax reference SysML::Blocks::Block.
+
+    A Block is a modular unit that describes the structure of a system or element. It may include both structural and
+    behavioral features, such as properties and operations, that represent the state of the system and behavior that the system
+    may exhibit. Some of these properties may hold parts of a system, which can also be described by blocks that type the
+    properties. Properties without types do not restrict the instances that can be values of the properties, as if they had the
+    most general type possible. A block may include a structure of connectors between its properties to indicate how its parts
+    or other properties relate to one another.
+
+    Constraints:
+    1. For an association in which both ends are typed by blocks, the number of ends shall be exactly two.
+    2. The number of ends of a connector owned by a block shall be exactly two. (In SysML, a binding connector is not typed by
+        an association, so this constraint is not implied entirely by the preceding constraint.)
+    3. In the UML metamodel on which SysML is built, any instance of the Property metaclass that is typed by a block (a Class
+      with the «block» stereotype applied) and which is owned by an Association must [sic] not have a name and may not be
+      defined as a navigable owned end of the association. (While the Property has a “name” property as defined by its
+      NamedElement superclass, the value of the “name” property, which is optional, must be missing.)
+    4. In the UML metamodel on which SysML is built, a Property that is typed by a block must [sic] be defined as an end of an
+        association. (An inverse end of this association, whether owned by another block or the association itself, must always be
+        present so there is always a metamodel element to record the inverse multiplicity of the reference.)
+    5. The following constraint under 9.3.6, “Connector” in the UML 2 standard is removed by SysML: “[3] The
+        ConnectableElements attached as roles to each ConnectorEnd owned by a Connector must [sic] be roles of the Classifier
+        that owned the Connector, or they must be ports of such roles.”
+    6. If a property owned by a SysML Block or SysML ValueType is typed by a SysML ValueType, then the aggregation
+        attribute of the property shall be “composite.”
+    7. Within an instance of a SysML Block, the values of any property with composite aggregation (aggregation = composite)
+        shall not contain the block in any of its own properties that also have composite aggregation, or within any unbroken chain
+        of properties that all have composite aggregation. (Within an instance of a SysML Block, the instances of properties with
+        composite aggregation shall form an acyclic graph.)
+    8. Any classifier that specializes a Block shall also have the Block stereotype or one of its specializations applied.
+    9. The following constraint under 9.3.7, “ConnectorEnd” in the UML 2 standard is removed by SysML: “[3] The property
+        held in self.partWithPort must [sic] not be a Port.”
   fields:
     - name: blocks
       type: string
+    - name: isEncapsulated
+      type: bool
 ---
 schema:
-  name: SysML.Blocks.BoundReference
-  description: Corresponds to the BoundReference element and abstract syntax reference SysML::Blocks::BoundReference.
+  name: SysML.BoundReference
+  description: |
+    The BoundReference stereotype can be applied to properties that have binding connectors, to highlight their usage as
+    constraining other properties. The bound end of the stereotype is a connector end of one of the binding connectors,
+    opposite the stereotyped property. The binding path includes the property at the bound end, and before that, the property
+    path of the bound end, if it is a nested connector end.
+
+    Constraints
+    1. Properties to which BoundReference is applied shall be the role of a connector end of at least one binding connector, or
+        generalized by such a property through redefinition.
+    2. The value of boundEnd shall be a connector end of a binding connector, as identified in constraint 1, opposite the property,
+        as identified in constraint 1.
+    3. The role of boundEnd shall be a property accessible by navigation from instances of the block owning the property to
+        which BoundReference is applied, but shall not be the property to which BoundReference is applied, or one that it is
+        related to by redefinition.
+    4. The last value of bindingPath shall be the role of boundEnd, and the other values shall be the propertyPath of the
+        NestedConnectorEnd applied to boundEnd, if any.
+    5. Properties to which BoundReference is applied shall either be reference properties or value properties.
+    6. Properties with BoundReference applied that have an upper multiplicity greater than one shall be ordered and non-unique.
+    7. BoundReferences shall not be applied to properties that are related by redefinition to other properties with
+      BoundReference applied.
+    8. The binding connector identified in constraint 1 shall not have the same property on both ends, or properties related by
+      redefinition.
+
+    Corresponds to the BoundReference element and abstract syntax reference SysML::Blocks::BoundReference.
   fields:
-    - name: boundReferences
-      type: string[]
+    - name: bindingPath
+      type: SysML.Property[]
+    - name: boundEnd
+      type: SysML.ConnectorEnd
+  validation:
+    - name: Required field exists
+      arguments:
+        - boundReferences
+        - boundEnd
 ---
 schema:
   name: SysML.Actor
   description: Corresponds to the Actor element and abstract syntax reference UML4SysML::Actor.
   fields:
-    - name: actor
+    - name: actorName
       type: string
 ---
 schema:
-  name: SysML.Blocks.ValueType
+  name: SysML.ValueType
   description: Corresponds to the ValueType element and abstract syntax reference SysML::Blocks::ValueType.
   fields:
     - name: valueType
@@ -238,11 +458,21 @@ schema:
   name: SysML.Enumeration
   description: Corresponds to the ValueType element and abstract syntax reference UML4SysML::Enumeration.
   fields:
-    - name: valueType
-      type: string
+    - name: enumeration
+      type: string[]
 ---
 schema:
-  name: SysML.Classifier
+  name: SysML.AbstractDefinition
+  description: |
+    Corresponds to the AbstractDefinition element and abstract syntax reference UML4SysML::Classifier.
+  fields:
+    - name: name
+      type: string
+    - name: isAbstract
+      type: bool
+---
+schema:
+  name: SysML.Classifier # TODO
   description: |
     Corresponds to the ValueType element and abstract syntax reference UML4SysML::Classifier.
 
@@ -254,9 +484,17 @@ schema:
       type: bool
 ---
 schema:
-  name: SysML.Stereotype
+  name: SysML.StereotypePropertyCompartment
   description: |
-    Corresponds to the Stereotype element and abstract syntax reference UML4SysML::Stereotype.
+    Corresponds to the StereotypePropertyCompartment element and abstract syntax reference UML4SysML::Stereotype.
+  fields:
+    - name: name
+      type: string
+---
+schema:
+  name: SysML.BehaviorCompartment
+  description: |
+    Corresponds to the BehaviorCompartment element and abstract syntax reference UML4SysML::Blocks::Block.
   fields:
     - name: name
       type: string
@@ -270,39 +508,77 @@ schema:
       type: string
 ---
 schema:
+  name: SysML.QuantityKind
+  description: |
+    Corresponds to the QuantityKind element and abstract syntax reference UML4SysML::InstanceSpecification.
+  fields:
+    - name: name
+      type: string
+---
+schema:
   name: SysML.InstanceSpecification
   description: |
-    Corresponds to the Unit, QuantityKind, and InstanceSpecification elements and abstract syntax reference UML4SysML::InstanceSpecification.
+    Corresponds to the InstanceSpecification element and abstract syntax reference UML4SysML::InstanceSpecification.
   fields:
     - name: name
       type: string
 ---
 schema:
-  name: SysML.Association
+  name: SysML.Dependency
   description: |
-    Corresponds to the Association element and abstract syntax reference UML4SysML::Association.
+    Corresponds to the Dependency element and abstract syntax reference UML4SysML::Dependency.
   fields:
     - name: name
       type: string
----
-enum:
-  name: SysML.AggregationKind
-  description: |
-    TODO
-  values:
-    - none
-    - composite
-    - shared
 ---
 schema:
-  name: SysML.Property
+  name: SysML.ReferenceAssociation
   description: |
-    Corresponds to the Property element and abstract syntax reference for UML4SysML::Property and UML::Kernel::Property.
+    Corresponds to the ReferenceAssociation element and abstract syntax reference UML4SysML::Association and UML4SysML::Property where aggregationKind = none.
   fields:
     - name: name
       type: string
-    - name: aggregationKind
-      type: SysML.AggregationKind
+---
+schema:
+  name: SysML.PartAssociation
+  description: |
+    Corresponds to the PartAssociation element and abstract syntax reference UML4SysML::Association and UML4SysML::Property where aggregationKind = composite.
+  fields:
+    - name: name
+      type: string
+---
+schema:
+  name: SysML.SharedAssociation
+  description: |
+    Corresponds to the PartAssociation element and abstract syntax reference UML4SysML::Association and UML4SysML::Property where aggregationKind = shared.
+  fields:
+    - name: name
+      type: string
+---
+schema:
+  name: SysML.MultibranchPartAssociations
+  description: |
+    Corresponds to the PartAssociation element and abstract syntax reference UML4SysML::Association and UML::Kernal::Property where aggregationKind = composite.
+  fields:
+    - name: name
+      type: string
+---
+schema:
+  name: SysML.MultibranchSharedAssociations
+  description: |
+    Corresponds to the MultibranchSharedAssociations element and abstract syntax reference UML4SysML::Association and UML::Kernal::Property where aggregationKind = shared.
+  fields:
+    - name: name
+      type: string
+# ---
+# enum:
+#   name: SysML.AggregationKind
+#   description: |
+#     TODO
+#   values:
+#     - none
+#     - composite
+#     - shared
 ---
 schema:
   name: SysML.Generalization
@@ -339,7 +615,7 @@ schema:
 schema:
   name: SysML.Connector
   description: |
-    Corresponds to the ConnectorProperty element and abstract syntax references for UML4SysML::Property and UML4SysML::Connector.
+    Corresponds to the Connector element and abstract syntax references for UML4SysML::Property and UML4SysML::Connector.
   fields:
     - name: name
       type: string
@@ -352,3 +628,86 @@ schema:
     - name: name
       type: string
 ---
+schema:
+  name: SysML.Property
+  description: |
+    Corresponds to the Property element and abstract syntax reference for UML4SysML::Property.
+  fields:
+    - name: name
+      type: string
+---
+schema:
+  name: SysML.ActorPart
+  description: |
+    Corresponds to the ActorPart element and abstract syntax reference for SysML::Blocks::PartProperty typed by UML4SysML::Actor.
+  fields:
+    - name: name
+      type: string
+---
+schema:
+  name: SysML.PropertySpecificType
+  description: |
+    Corresponds to the PropertySpecificType element and abstract syntax reference for SysML::Blocks::PropertySpecifcType.
+  fields:
+    - name: name
+      type: string
+---
+schema:
+  name: SysML.BoundReference
+  description: |
+    Corresponds to the BoundReference element and abstract syntax reference for SysML::Blocks::BoundReference.
+  fields:
+    - name: name
+      type: string
+---
+schema:
+  name: SysML.BoundReference
+  description: |
+    Corresponds to the BoundReference element and abstract syntax reference for SysML::Blocks::BoundReference.
+  fields:
+    - name: name
+      type: string
+---
+schema:
+  name: SysML.Dependency
+  description: |
+    Corresponds to the Dependency element defined in SysML.InternalBlockDiagram and corresponds to the abstract syntax reference for UML4SysML::Dependency.
+  fields:
+    - name: name
+      type: string
+---
+schema:
+  name: SysML.BindingConnector
+  description: |
+    A Binding Connector is a connector which specifies that the properties at both ends of the connector have equal values.
+    If the properties at the ends of a binding connector are typed by a ValueType, the connector specifies that the instances of
+    the properties shall hold equal values, recursively through any nested properties within the connected properties. If the
+    properties at the ends of a binding connector are typed by a Block, the connector specifies that the instances of the
+    properties shall refer to the same block instance. As with any connector owned by a SysML Block, the ends of a binding
+    connector may be nested within a multi-level path of properties accessible from the owning block. The
+    NestedConnectorEnd stereotype is used to represent such nested ends just as for nested ends of other SysML connectors.
+
+    Constraints
+    1. The two ends of a binding connector shall have either the same type or types that are compatible so that equality of their
+        values can be defined.
+
+    Corresponds to the BindingConnector element defined in SysML.InternalBlockDiagram and corresponds to the abstract syntax reference for UML4SysML::Connector.
+  fields:
+    - name: name
+      type: string
+---
+schema:
+  name: SysML.BidirectionalConnector
+  description: |
+    Corresponds to the BidirectionalConnector element defined in SysML.InternalBlockDiagram and corresponds to the abstract syntax reference for UML4SysML::Connector.
+  fields:
+    - name: name
+      type: string
+---
+schema:
+  name: SysML.UnidirectionalConnector
+  description: |
+    Corresponds to the UnidirectionalConnector element defined in SysML.InternalBlockDiagram and corresponds to the abstract syntax reference for UML4SysML::Connector.
+  fields:
+    - name: name
+      type: string
