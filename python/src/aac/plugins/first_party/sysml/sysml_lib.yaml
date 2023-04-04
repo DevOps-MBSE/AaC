@@ -56,6 +56,11 @@ schema:
     The Internal Block Diagram (abbreviation is ibd) in SysML captures the internal structure of a block in terms of properties and connectors between properties. A block can include properties
     to specify its values, parts, and references to other blocks.
 
+    Constraints:
+    1. A SysMLInternalBlockDiagram shall have as a defaultNamespace a Class with a Block stereotype or one of its
+        specializations applied.
+    2. SysMLInternalBlockDiagram shall only be applied to a UMLCompositeStructureDiagram.
+
     Corresponds to the InternalBlockDiagram element and abstract syntax references for SysML::Blocks::Block.
   fields:
     - name: name
@@ -65,12 +70,18 @@ schema:
   name: SysML.ParametericDiagram
   description:  (abbreviation is par)
   fields:
-    - name: comment
-      type: string
+    - name: isConstraintPropertyRounded
+      type: bool
+      description: Specifies whether the constraint properties in the parametric diagram have rounded corners
 ---
 schema:
   name: SysML.PackageDiagram
-  description:  (abbreviation is pkg)
+  description:  |
+    (abbreviation is pkg)
+
+    Constraints:
+    1. A SysMLPackageDiagram shall have as a defaultNamespace a Package.
+    2. SysMLPackageDiagram shall only be applied to a UMLPackageDiagram.
   fields:
     - name: comment
       type: string
@@ -91,30 +102,65 @@ schema:
 ---
 schema:
   name: SysML.SequenceDiagram
-  description:  (abbreviation is sd)
+  description: |
+    The Sequence Diagram (abbreviation is sd) describes the flow of control between actors and systems (blocks) or between parts of a system.
+
+    This diagram represents the sending and receiving of messages between the interacting entities called lifelines, where
+    time is represented along the vertical axis. The sequence diagrams can represent highly complex interactions with special
+    constructs to represent various types of control logic, reference interactions on other sequence diagrams, and
+    decomposition of lifelines into their constituent parts.
+
   fields:
-    - name: comment
+    - name: tbd
       type: string
 ---
 schema:
   name: SysML.StateMachineDiagram
-  description:  (abbreviation is stm)
+  description: |
+    The State Machine Diagram (abbreviation is stm) represents behavior as the state history of an object in terms of its transitions and
+    states. The activities that are invoked during the transition, entry, and exit of the states are specified along with the
+    associated event and guard conditions. Activities that are invoked while in the state are specified as “do Activities,” and
+    can be either continuous or discrete. A composite state has nested states that can be sequential or concurrent.
+
+    Constraints
+    1. A SysMLStateMachineDiagram shall have as a defaultNamespace a StateMachine.
+    2. SysMLStateMachineDiagram shall only be applied to a UMLStateMachineDiagram
   fields:
-    - name: comment
+    - name: tbd
       type: string
 ---
 schema:
   name: SysML.UsecaseDiagram
-  description: (abbreviation is us)
+  description: |
+    The use case diagram (abbreviation is us) describes the usage of a system (subject) by its actors (environment) to achieve a goal, that is
+    realized by the subject providing a set of services to selected actors. The use case can also be viewed as functionality and/
+    or capabilities that are accomplished through the interaction between the subject and its actors. Use case diagrams include
+    the use case and actors and the associated communications between them. Actors represent classifier roles that are
+    external to the system that may correspond to users, systems, and or other environmental entities. They may interact
+    either directly or indirectly with the system. The actors are often specialized to represent a taxonomy of user types or
+    external systems.
+
+    Constraints
+    1. A SysMLUseCaseDiagram shall have as a defaultNamespace a Package.
+    2. SysMLUseCaseDiagram shall only be applied to a UMLUseCaseDiagram.
+
   fields:
-    - name: comment
+    - name: tbd
       type: string
 ---
 schema:
   name: SysML.RequirementsDiagram
-  description: (abbreviation is req)
+  description: |
+    The Requirements Diagram (abbreviation is req) can only display requirements, packages, other classifiers, test cases, and rationale. The
+    relationships for containment, deriveReqt, satisfy, verify, refine, copy, and trace can be shown on a requirement diagram.
+    The callout notation can also be used to reflect the relationship of other model elements to a requirement.
+
+    Constraints
+    1. A SysMLRequirementDiagram shall have as a defaultNamespace a Package or a Class with a Requirement stereotype or
+        one of its specializations applied.
+    2. SysMLRequirementDiagram shall only be applied to a UMLClassDiagram.
   fields:
-    - name: comment
+    - name: tbd
       type: string
 ---
 schema:
@@ -172,21 +218,33 @@ schema:
   name: SysML.Model
   description: |
     Corresponds to the Model element and abstract syntax reference UML4SysML::Model.
+  fields:
+    - name: tbd
+      type: string
 ---
 schema:
   name: SysML.Package
   description: |
     Corresponds to the PackageDiagram element and abstract syntax reference UML4SysML::Package.
+  fields:
+    - name: tbd
+      type: string
 ---
 schema:
   name: SysML.PackageWithNameInTab
   description: |
     Corresponds to the PackageWithNameInTab element and abstract syntax reference UML4SysML::Package.
+  fields:
+    - name: tbd
+      type: string
 ---
 schema:
   name: SysML.PackageWithNameInside
   description: |
     Corresponds to the PackageWithNameInside element and abstract syntax reference UML4SysML::Package.
+  fields:
+    - name: tbd
+      type: string
 ---
 schema:
   name: SysML.ModelElements.Problem
@@ -276,11 +334,6 @@ schema:
       description: |
         The languages used to express the models that represent content which is represented by the view. The language
         specification such as its metamodel, profile, or other language specification is referred to by its URI.
-    # Method appears to be a method rather than an attribute.
-    # - name: method
-    #   type: Behavior
-    #   description: |
-    #     The behavior is derived from the method of the operation with the Create stereotype.
     - name: presentation
       type: string[]
       description: |
@@ -524,14 +577,6 @@ schema:
       type: string
 ---
 schema:
-  name: SysML.Dependency
-  description: |
-    Corresponds to the Dependency element and abstract syntax reference UML4SysML::Dependency.
-  fields:
-    - name: name
-      type: string
----
-schema:
   name: SysML.ReferenceAssociation
   description: |
     Corresponds to the ReferenceAssociation element and abstract syntax reference UML4SysML::Association and UML4SysML::Property where aggregationKind = none.
@@ -648,22 +693,6 @@ schema:
   name: SysML.PropertySpecificType
   description: |
     Corresponds to the PropertySpecificType element and abstract syntax reference for SysML::Blocks::PropertySpecifcType.
-  fields:
-    - name: name
-      type: string
----
-schema:
-  name: SysML.BoundReference
-  description: |
-    Corresponds to the BoundReference element and abstract syntax reference for SysML::Blocks::BoundReference.
-  fields:
-    - name: name
-      type: string
----
-schema:
-  name: SysML.BoundReference
-  description: |
-    Corresponds to the BoundReference element and abstract syntax reference for SysML::Blocks::BoundReference.
   fields:
     - name: name
       type: string
