@@ -6,10 +6,10 @@ ext:
     add:
       - name: blockDefinitionDiagram
         type: SysML.BlockDefinitionDiagram
-        description: Used to instantiate a representation of the SysML Block Definition Diagram (BDD) which replaces the UML2 class diagram.
+        description: Used to instantiate a representation of the SysML Block Definition Diagram which replaces the UML2 class diagram.
       - name: internalBlockDiagram
         type: SysML.InternalBlockDiagram
-        description: Used to instantiate a representation of the SysML Internal Block Diagram (IBD) which replaces the UML2 composite structure diagram.
+        description: Used to instantiate a representation of the SysML Internal Block Diagram which replaces the UML2 composite structure diagram.
       - name: parametericDiagram
         type: SysML.ParametericDiagram
         description: Used to instantiate a representation of the SysML Parameteric Diagram, a SysML extension used to analyse system parameters.
@@ -32,23 +32,23 @@ ext:
         type: SysML.RequirementsDiagram
         description: Used to instantiate a representation of the SysML Requirements Diagram which is equivalent to the UML2 requirements diagram.
 ---
-  schema:
-    name: SysML.BlockDefinitionDiagram
-    description: |
-      The Block Definition Diagram (abbreviation is bdd) provides a black box representation of a system block i.e. main block, alongside the hierarchy of its composite blocks.
-      The BDD can include blocks of any type including software, hardware, etc. The BDD can be compared with the first page of your furniture instructions, providing
-      the contents inventory and the quantity of each part. In comparison with UML2, the SysML BDD redefines the class diagram by replacing classes with blocks, and
-      introducing flow ports.
+schema:
+  name: SysML.BlockDefinitionDiagram
+  description: |
+    The Block Definition Diagram (abbreviation is bdd) provides a black box representation of a system block i.e. main block, alongside the hierarchy of its composite blocks.
+    The BDD can include blocks of any type including software, hardware, etc. The BDD can be compared with the first page of your furniture instructions, providing
+    the contents inventory and the quantity of each part. In comparison with UML2, the SysML BDD redefines the class diagram by replacing classes with blocks, and
+    introducing flow ports.
 
-      Constraints:
-      1. A SysML.BlockDefinitionDiagram shall have as a defaultNamespace a Class with a Block stereotype or one of its
-        specializations applied or a Package.
-      2. SysML.BlockDefinitionDiagram shall only be applied to a UMLClassDiagram.
+    Constraints:
+    1. A SysML.BlockDefinitionDiagram shall have as a defaultNamespace a Class with a Block stereotype or one of its
+      specializations applied or a Package.
+    2. SysML.BlockDefinitionDiagram shall only be applied to a UMLClassDiagram.
 
-      Corresponds to the BlockDefinition Diagram element and abstract syntax references SysML::Blocks::Block and UML4SysML::Package.
-    fields:
-      - name: blocks
-        type: SysML.Block
+    Corresponds to the BlockDefinition Diagram element and abstract syntax references SysML::Blocks::Block and UML4SysML::Package.
+  fields:
+    - name: blocks
+      type: SysML.Block[]
 ---
 schema:
   name: SysML.InternalBlockDiagram
@@ -63,12 +63,18 @@ schema:
 
     Corresponds to the InternalBlockDiagram element and abstract syntax references for SysML::Blocks::Block.
   fields:
-    - name: name
-      type: string
+    - name: properties
+      type: SysML.Property[]
+    - name: references
+      type: SysML.BoundReference[]
 ---
 schema:
   name: SysML.ParametericDiagram
-  description:  (abbreviation is par)
+  description: |
+    The Parametric Diagram (abbreviation is par) is defined as a restricted form of internal block diagram. A parametric diagram may
+    contain constraint properties and their parameters, along with other properties from within the internal block context. All
+    properties that appear, other than the constraints themselves, shall either be bound directly to a constraint parameter, or
+    contain a property that is bound to one through any number of levels of containment.
   fields:
     - name: isConstraintPropertyRounded
       type: bool
@@ -92,7 +98,7 @@ schema:
     The Activity Diagram (abbreviation is act) in SysML represents a slightly modified UML activity diagram.
 
     Constraints:
-      1. A SysMLActivityDiagram shall have as a defaultNamespace an Activity
+      1. A SysML.ActivityDiagram shall have as a defaultNamespace an Activity
       2. SysML.ActivityDiagram shall only be applied to a UMLActivityDiagram. The principal of an applied AdjunctProperty
           shall be a Connector, CallAction, ObjectNode, Variable, Parameter, submachine State, or InteractionUse.
   fields:
@@ -451,8 +457,20 @@ schema:
     9. The following constraint under 9.3.7, “ConnectorEnd” in the UML 2 standard is removed by SysML: “[3] The property
         held in self.partWithPort must [sic] not be a Port.”
   fields:
-    - name: blocks
-      type: string
+    - name: constraints
+      type: tbd[]
+    - name: operations
+      type: tbd[]
+    - name: receptions
+      type: tbd[]
+    - name: parts
+      type: tbd[]
+    - name: references
+      type: tbd[]
+    - name: values
+      type: tbd[]
+    - name: properties
+      type: tbd[]
     - name: isEncapsulated
       type: bool
 ---
@@ -502,10 +520,35 @@ schema:
 ---
 schema:
   name: SysML.ValueType
-  description: Corresponds to the ValueType element and abstract syntax reference SysML::Blocks::ValueType.
+  description: |
+    A ValueType defines types of values that may be used to express information about a system, but cannot be identified as
+    the target of any reference. Since a value cannot be identified except by means of the value itself, each such value within
+    a model is independent of any other, unless other forms of constraints are imposed.
+
+    Constraints:
+    1. Any classifier that specializes a ValueType shall also have the ValueType stereotype applied.
+    2. The unit of a ValueType, if any, shall be an InstanceSpecification classified by SysML’s Unit block in the
+        UnitAndQuantityKind model library or a specialization of it.
+        inv: unit->notEmpty() and unit.classifier->notEmpty()implies unit.classifier->
+        forAll(c | c.oclIsKindOf(Unit))
+    3. The quantityKind of a ValueType, if any, shall be an InstanceSpecification classified by SysML’s QuantityKind block in
+        the UnitAndQuantityKind model library or a specialization of it.
+        inv: quantityKind->notEmpty() and quantityKind.classifier->notEmpty() implies
+        quantityKind.classifier->forAll(c | c.oclIsKindOf(QuantityKind))
+
+    Corresponds to the ValueType element and abstract syntax reference SysML::Blocks::ValueType.
   fields:
-    - name: valueType
-      type: string
+    - name: quantityKind
+      type: SysML.InstanceSpecification
+      description: |
+        A kind of quantity, represented by an InstanceSpecification classified by a kind of SysML QuantityKind, that may be
+        stated by means of units. A value type may optionally specify a quantity kind without any unit. Such a value type may
+        be used to type a value specification to represent it in an abstract form independent of any specific units.
+    - name: unit
+      type: SysML.InstanceSpecification
+      description: |
+        A quantity, represented by an InstanceSpecification classified by a kind of SysML Unit, in terms of which the
+        magnitudes of other quantities that have the same quantity kind can be stated.
 ---
 schema:
   name: SysML.Enumeration
@@ -525,7 +568,7 @@ schema:
       type: bool
 ---
 schema:
-  name: SysML.Classifier # TODO
+  name: SysML.Classifier
   description: |
     Corresponds to the ValueType element and abstract syntax reference UML4SysML::Classifier.
 
@@ -555,18 +598,49 @@ schema:
 schema:
   name: SysML.Unit
   description: |
+    A Unit is a quantity in terms of which the magnitudes of other quantities that have the same quantity kind can be stated.
+    A unit often relies on precise and reproducible ways to measure the unit. For example, a unit of length such as meter may
+    be specified as a multiple of a particular wavelength of light. A unit may also specify less stable or precise ways to
+    express some value, such as a cost expressed in some currency, or a severity rating measured by a numerical scale.
+
     Corresponds to the Unit element and abstract syntax reference UML4SysML::InstanceSpecification.
   fields:
-    - name: name
+    - name: symbol
       type: string
+      description: Short symbolic name of the quantity kind.
+    - name: description
+      type: string
+      description: Textual description of the quantity kind.
+    - name: definitionURI
+      type: string
+      description: URI that references an external definition of the quantity kind.
+    - name: quantityKind
+      type: SysML.QuantityKind[]
+      description: |
+        A Unit may be associated to several QuantityKinds. This one-to-many association capability between “measurement
+        units” (represented as Units) and “kind-of-quantities” (represented as QuantityKinds) reflects a subtle but important
+        distinction that “measurement units of quantities of the same quantity dimension may be designated by the same name and
+        symbol even when the quantities are not of the same kind. For example, joule per kelvin and J/K are respectively the name
+        and symbol of both a measurement unit of heat capacity and a measurement unit of entropy, which are generally not considered
+        to be quantities of the same kind.
 ---
 schema:
   name: SysML.QuantityKind
   description: |
+    A QuantityKind is a kind of quantity that may be stated by means of defined units. For example, the quantity kind of
+    length may be measured by units of meters, kilometers, or feet.
+
     Corresponds to the QuantityKind element and abstract syntax reference UML4SysML::InstanceSpecification.
   fields:
-    - name: name
+    - name: symbol
       type: string
+      description: Short symbolic name of the quantity kind.
+    - name: description
+      type: string
+      description: Textual description of the quantity kind.
+    - name: definitionURI
+      type: string
+      description: URI that references an external definition of the quantity kind.
 ---
 schema:
   name: SysML.InstanceSpecification
@@ -615,15 +689,6 @@ schema:
   fields:
     - name: name
       type: string
-# ---
-# enum:
-#   name: SysML.AggregationKind
-#   description: |
-#     TODO
-#   values:
-#     - none
-#     - composite
-#     - shared
 ---
 schema:
   name: SysML.Generalization
@@ -652,10 +717,24 @@ schema:
 schema:
   name: SysML.ParticipantProperty
   description: |
+    Participant properties can be the ends of connectors owned by an association block. The association block can be the type
+    of multiple other connectors to reuse the same internal structure for all the connectors. The keyword «participant» before
+    a property name indicates the property is stereotyped by ParticipantProperty. The types of participant properties can be
+    omitted if desired. They are always the same as the corresponding association end type.
+
+    Constraints
+    1. ParticipantProperty shall only be applied to properties of association classes stereotyped by Block.
+    2. ParticipantProperty shall not be applied to properties that are member ends of an association.
+    3. The aggregation of a property stereotyped by ParticipantProperty shall be none.
+    4. The end attribute of the applied stereotype shall refer to a member end of the association block owning the property on
+        which the stereotype is applied.
+    5. A property stereotyped by ParticipantProperty shall have the same type as the property referred to by the end attribute.
+    6. A property to which the ParticipantProperty is applied shall have a multiplicity of 1.
+
     Corresponds to the ParticipantProperty element and abstract syntax references for UML4SysML::Property and UML4SysML::AssociationClass.
   fields:
-    - name: name
-      type: string
+    - name: end
+      type: SysML.Property
 ---
 schema:
   name: SysML.Connector
@@ -668,10 +747,23 @@ schema:
 schema:
   name: SysML.ConnectorProperty
   description: |
+    Connectors can be typed by association classes that are stereotyped by Block (association blocks, see ParticipantProperty).
+    These connectors specify instances of the association block created within the instances of the block that owns the connector.
+    The values of a connector property are instances of the association block created due to the connector referred to by the connector property.
+
+    Constraints:
+    1. ConnectorProperty shall only be applied to properties of classes stereotyped by Block.
+    2. The connector attribute of the applied stereotype shall refer to a connector owned or inherited by a block owning the
+        property on which the stereotype is applied.
+    3. The aggregation of a property stereotyped by ConnectorProperty shall be composite.
+    4. The type of the connector referred to by a connector attribute shall be an association class stereotyped by Block.
+    5. A property stereotyped by ConnectorProperty shall have the same name and type as the connector referred to by the
+        connector attribute.
+
     Corresponds to the ConnectorProperty element and abstract syntax references for UML4SysML::Property and UML4SysML::Connector.
   fields:
-    - name: name
-      type: string
+    - name: connector
+      type: SysML.Connector
 ---
 schema:
   name: SysML.Property
