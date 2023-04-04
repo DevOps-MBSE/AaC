@@ -174,15 +174,6 @@
                 "path": "./syntaxes/aac-syntax.json"
             }
         ],
-        "semanticTokenScopes": [
-            {
-                "language": "aac",
-                "scopes": {
-                    "enumMember": ["variable.other.enummember"],
-                    "macro": ["entity.name.label"]
-                }
-            }
-        ],
         "viewsContainers": {
             "activitybar": [
                 {
