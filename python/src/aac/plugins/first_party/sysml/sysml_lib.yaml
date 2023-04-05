@@ -1171,13 +1171,12 @@ schema:
     - name: tbd
       type: string
 ---
-schema:
+enum:
   name: SysML.VerdictKind
   description: |
     Corresponds to the VerdictKind SysML element and corresponds to the abstract syntax reference for SysML::VerdictKind.
-  fields:
-    - name: tbd
-      type: string
+  values:
+    - tbd
 ---
 schema:
   name: SysML.Verify
@@ -1323,13 +1322,14 @@ schema:
     - name: tbd
       type: string
 ---
-schema:
+enum:
   name: SysML.AggregationKind
   description: |
     Corresponds to the AggregationKind UML2 element and corresponds to the abstract syntax reference for UML4SysML::AggregationKind.
-  fields:
-    - name: tbd
-      type: string
+  values:
+    - none
+    - composite
+    - shared
 ---
 schema:
   name: SysML.AnyReceiveEvent
@@ -1411,13 +1411,12 @@ schema:
     - name: tbd
       type: string
 ---
-schema:
+enum:
   name: SysML.CallConcurrencyKind
   description: |
     Corresponds to the CallConcurrencyKind UML2 element and corresponds to the abstract syntax reference for UML4SysML::CallConcurrencyKind.
-  fields:
-    - name: tbd
-      type: string
+  values:
+    - tbd
 ---
 schema:
   name: SysML.CallEvent
@@ -1531,13 +1530,12 @@ schema:
     - name: tbd
       type: string
 ---
-schema:
+enum:
   name: SysML.ConnectorKind
   description: |
     Corresponds to the ConnectorKind UML2 element and corresponds to the abstract syntax reference for UML4SysML::ConnectorKind.
-  fields:
-    - name: tbd
-      type: string
+  values:
+    - tbd
 ---
 schema:
   name: SysML.ConsiderIgnoreFragment
@@ -1963,13 +1961,12 @@ schema:
     - name: tbd
       type: string
 ---
-schema:
+enum:
   name: SysML.InteractionOperatorKind
   description: |
     Corresponds to the InteractionOperatorKind UML2 element and corresponds to the abstract syntax reference for UML4SysML::InteractionOperatorKind.
   fields:
-    - name: tbd
-      type: string
+    - tbd
 ---
 schema:
   name: SysML.InteractionUse
@@ -2227,13 +2224,12 @@ schema:
     - name: tbd
       type: string
 ---
-schema:
+enum:
   name: SysML.ObjectNodeOrderingKind
   description: |
     Corresponds to the ObjectNodeOrderingKind UML2 element and corresponds to the abstract syntax reference for UML4SysML::ObjectNodeOrderingKind.
-  fields:
-    - name: tbd
-      type: string
+  values:
+    - tbd
 ---
 schema:
   name: SysML.Observation
@@ -2315,21 +2311,19 @@ schema:
     - name: tbd
       type: string
 ---
-schema:
+enum:
   name: SysML.ParameterDirectionKind
   description: |
     Corresponds to the ParameterDirectionKind UML2 element and corresponds to the abstract syntax reference for UML4SysML::ParameterDirectionKind.
-  fields:
-    - name: tbd
-      type: string
+  values:
+    - tbd
 ---
-schema:
+enum:
   name: SysML.ParameterEffectKind
   description: |
     Corresponds to the ParameterEffectKind UML2 element and corresponds to the abstract syntax reference for UML4SysML::ParameterEffectKind.
   fields:
-    - name: tbd
-      type: string
+    - tbd
 ---
 schema:
   name: SysML.ParameterSet
@@ -2403,13 +2397,12 @@ schema:
     - name: tbd
       type: string
 ---
-schema:
+enum:
   name: SysML.PseudostateKind
   description: |
     Corresponds to the PseudostateKind UML2 element and corresponds to the abstract syntax reference for UML4SysML::PseudostateKind.
-  fields:
-    - name: tbd
-      type: string
+  values:
+    - tbd
 ---
 schema:
   name: SysML.RaiseExceptionAction
@@ -2739,13 +2732,12 @@ schema:
     - name: tbd
       type: string
 ---
-schema:
+enum:
   name: SysML.TransitionKind
   description: |
     Corresponds to the TransitionKind UML2 element and corresponds to the abstract syntax reference for UML4SysML::TransitionKind.
-  fields:
-    - name: tbd
-      type: string
+  values:
+    - tbd
 ---
 schema:
   name: SysML.Type
@@ -2835,13 +2827,12 @@ schema:
     - name: tbd
       type: string
 ---
-schema:
+enum:
   name: SysML.VisibilityKind
   description: |
     Corresponds to the VisibilityKind UML2 element and corresponds to the abstract syntax reference for UML4SysML::VisibilityKind.
-  fields:
-    - name: tbd
-      type: string
+  values:
+    - tbd
 ---
 schema:
   name: SysML.WriteLinkAction
