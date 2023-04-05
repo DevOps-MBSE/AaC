@@ -1965,7 +1965,7 @@ enum:
   name: SysML.InteractionOperatorKind
   description: |
     Corresponds to the InteractionOperatorKind UML2 element and corresponds to the abstract syntax reference for UML4SysML::InteractionOperatorKind.
-  fields:
+  values:
     - tbd
 ---
 schema:
@@ -2322,7 +2322,7 @@ enum:
   name: SysML.ParameterEffectKind
   description: |
     Corresponds to the ParameterEffectKind UML2 element and corresponds to the abstract syntax reference for UML4SysML::ParameterEffectKind.
-  fields:
+  values:
     - tbd
 ---
 schema:
