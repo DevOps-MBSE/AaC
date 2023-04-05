@@ -832,15 +832,384 @@ schema:
   fields:
     - name: name
       type: string
-
 ---
-  schema:
-    name: SysML.Abstraction
-    description: |
-      Corresponds to the Abstraction UML2 element and corresponds to the abstract syntax reference for UML4SysML::Abstraction.
-    fields:
-      - name: tbd
-        type: string
+schema:
+  name: SysML.AcceptChangeStructuralFeatureEventAction
+  description: |
+    Corresponds to the AcceptChangeStructuralFeatureEventAction SysML element and corresponds to the abstract syntax reference for SysML::AcceptChangeStructuralFeatureEventAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.AdjunctProperty
+  description: |
+    Corresponds to the AdjunctProperty SysML element and corresponds to the abstract syntax reference for SysML::AdjunctProperty.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Allocate
+  description: |
+    Corresponds to the Allocate SysML element and corresponds to the abstract syntax reference for SysML::Allocate.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.AllocateActivityPartition
+  description: |
+    Corresponds to the AllocateActivityPartition SysML element and corresponds to the abstract syntax reference for SysML::AllocateActivityPartition.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ChangeStructuralFeatureEvent
+  description: |
+    Corresponds to the ChangeStructuralFeatureEvent SysML element and corresponds to the abstract syntax reference for SysML::ChangeStructuralFeatureEvent.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ClassifierBehaviorProperty
+  description: |
+    Corresponds to the ClassifierBehaviorProperty SysML element and corresponds to the abstract syntax reference for SysML::ClassifierBehaviorProperty.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Conform
+  description: |
+    Corresponds to the Conform SysML element and corresponds to the abstract syntax reference for SysML::Conform.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ConstraintBlock
+  description: |
+    Corresponds to the ConstraintBlock SysML element and corresponds to the abstract syntax reference for SysML::ConstraintBlock.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Continuous
+  description: |
+    Corresponds to the Continuous SysML element and corresponds to the abstract syntax reference for SysML::Continuous.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ControlOperator
+  description: |
+    Corresponds to the ControlOperator SysML element and corresponds to the abstract syntax reference for SysML::ControlOperator.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ControlValue
+  description: |
+    Corresponds to the ControlValue SysML element and corresponds to the abstract syntax reference for SysML::ControlValue.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Copy
+  description: |
+    Corresponds to the Copy SysML element and corresponds to the abstract syntax reference for SysML::Copy.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.DeriveReqt
+  description: |
+    Corresponds to the DeriveReqt SysML element and corresponds to the abstract syntax reference for SysML::DeriveReqt.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.DirectedFeature
+  description: |
+    Corresponds to the DirectedFeature SysML element and corresponds to the abstract syntax reference for SysML::DirectedFeature.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.DirectedRelationshipPropertyPath
+  description: |
+    Corresponds to the DirectedRelationshipPropertyPath SysML element and corresponds to the abstract syntax reference for SysML::DirectedRelationshipPropertyPath.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Discrete
+  description: |
+    Corresponds to the Discrete SysML element and corresponds to the abstract syntax reference for SysML::Discrete.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.DistributedProperty
+  description: |
+    Corresponds to the DistributedProperty SysML element and corresponds to the abstract syntax reference for SysML::DistributedProperty.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ElementGroup
+  description: |
+    Corresponds to the ElementGroup SysML element and corresponds to the abstract syntax reference for SysML::ElementGroup.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ElementPropertyPath
+  description: |
+    Corresponds to the ElementPropertyPath SysML element and corresponds to the abstract syntax reference for SysML::ElementPropertyPath.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.EndPathMultiplicity
+  description: |
+    Corresponds to the EndPathMultiplicity SysML element and corresponds to the abstract syntax reference for SysML::EndPathMultiplicity.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Expose
+  description: |
+    Corresponds to the Expose SysML element and corresponds to the abstract syntax reference for SysML::Expose.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.FeatureDirection
+  description: |
+    Corresponds to the FeatureDirection SysML element and corresponds to the abstract syntax reference for SysML::FeatureDirection.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.FlowProperty
+  description: |
+    Corresponds to the FlowProperty SysML element and corresponds to the abstract syntax reference for SysML::FlowProperty.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.FullPort
+  description: |
+    The FullPort SysML element is deprecated.
+
+    Corresponds to the FullPort SysML element and corresponds to the abstract syntax reference for SysML::FullPort.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.InterfaceBlock
+  description: |
+    Corresponds to the InterfaceBlock SysML element and corresponds to the abstract syntax reference for SysML::InterfaceBlock.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.InvocationOnNestedPortAction
+  description: |
+    Corresponds to the InvocationOnNestedPortAction SysML element and corresponds to the abstract syntax reference for SysML::InvocationOnNestedPortAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ItemFlow
+  description: |
+    Corresponds to the ItemFlow SysML element and corresponds to the abstract syntax reference for SysML::ItemFlow.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.NestedConnectorEnd
+  description: |
+    Corresponds to the NestedConnectorEnd SysML element and corresponds to the abstract syntax reference for SysML::NestedConnectorEnd.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.NoBuffer
+  description: |
+    Corresponds to the NoBuffer SysML element and corresponds to the abstract syntax reference for SysML::NoBuffer.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Optional
+  description: |
+    Corresponds to the Optional SysML element and corresponds to the abstract syntax reference for SysML::Optional.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Overwrite
+  description: |
+    Corresponds to the Overwrite SysML element and corresponds to the abstract syntax reference for SysML::Overwrite.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Probability
+  description: |
+    Corresponds to the Probability SysML element and corresponds to the abstract syntax reference for SysML::Probability.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Problem
+  description: |
+    Corresponds to the Problem SysML element and corresponds to the abstract syntax reference for SysML::Problem.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ProxyPort
+  description: |
+    Corresponds to the ProxyPort SysML element and corresponds to the abstract syntax reference for SysML::ProxyPort.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Rate
+  description: |
+    Corresponds to the Rate SysML element and corresponds to the abstract syntax reference for SysML::Rate.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Rationale
+  description: |
+    Corresponds to the Rationale SysML element and corresponds to the abstract syntax reference for SysML::Rationale.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Requirement
+  description: |
+    Corresponds to the Requirement SysML element and corresponds to the abstract syntax reference for SysML::Requirement.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Satisfy
+  description: |
+    Corresponds to the Satisfy SysML element and corresponds to the abstract syntax reference for SysML::Satisfy.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Stakeholder
+  description: |
+    Corresponds to the Stakeholder SysML element and corresponds to the abstract syntax reference for SysML::Stakeholder.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.TestCase
+  description: |
+    Corresponds to the TestCase SysML element and corresponds to the abstract syntax reference for SysML::TestCase.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Trace
+  description: |
+    Corresponds to the Trace SysML element and corresponds to the abstract syntax reference for SysML::Trace.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.TriggerOnNestedPort
+  description: |
+    Corresponds to the TriggerOnNestedPort SysML element and corresponds to the abstract syntax reference for SysML::TriggerOnNestedPort.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.VerdictKind
+  description: |
+    Corresponds to the VerdictKind SysML element and corresponds to the abstract syntax reference for SysML::VerdictKind.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Verify
+  description: |
+    Corresponds to the Verify SysML element and corresponds to the abstract syntax reference for SysML::Verify.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.View
+  description: |
+    Corresponds to the View SysML element and corresponds to the abstract syntax reference for SysML::View.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Viewpoint
+  description: |
+    Corresponds to the Viewpoint SysML element and corresponds to the abstract syntax reference for SysML::Viewpoint.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Abstraction
+  description: |
+    Corresponds to the Abstraction UML2 element and corresponds to the abstract syntax reference for UML4SysML::Abstraction.
+  fields:
+    - name: tbd
+      type: string
 ---
 schema:
   name: SysML.AcceptCallAction
@@ -1091,14 +1460,6 @@ schema:
       type: string
 ---
 schema:
-  name: SysML.Classifier
-  description: |
-    Corresponds to the Classifier UML2 element and corresponds to the abstract syntax reference for UML4SysML::Classifier.
-  fields:
-    - name: tbd
-      type: string
----
-schema:
   name: SysML.Clause
   description: |
     Corresponds to the Clause UML2 element and corresponds to the abstract syntax reference for UML4SysML::Clause.
@@ -1110,14 +1471,6 @@ schema:
   name: SysML.ClearAssociationAction
   description: |
     Corresponds to the ClearAssociationAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::ClearAssociationAction.
-  fields:
-    - name: tbd
-      type: string
----
-schema:
-  name: SysML.ClearStructuralFeatureAction
-  description: |
-    Corresponds to the ClearStructuralFeatureAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::ClearStructuralFeatureAction.
   fields:
     - name: tbd
       type: string
@@ -1166,14 +1519,6 @@ schema:
   name: SysML.ConnectionPointReference
   description: |
     Corresponds to the ConnectionPointReference UML2 element and corresponds to the abstract syntax reference for UML4SysML::ConnectionPointReference.
-  fields:
-    - name: tbd
-      type: string
----
-schema:
-  name: SysML.Connector
-  description: |
-    Corresponds to the Connector UML2 element and corresponds to the abstract syntax reference for UML4SysML::Connector.
   fields:
     - name: tbd
       type: string
@@ -1339,14 +1684,6 @@ schema:
       type: string
 ---
 schema:
-  name: SysML.Duration
-  description: |
-    Corresponds to the Duration UML2 element and corresponds to the abstract syntax reference for UML4SysML::Duration.
-  fields:
-    - name: tbd
-      type: string
----
-schema:
   name: SysML.DurationConstraint
   description: |
     Corresponds to the DurationConstraint UML2 element and corresponds to the abstract syntax reference for UML4SysML::DurationConstraint.
@@ -1390,14 +1727,6 @@ schema:
   name: SysML.EncapsulatedClassifier
   description: |
     Corresponds to the EncapsulatedClassifier UML2 element and corresponds to the abstract syntax reference for UML4SysML::EncapsulatedClassifier.
-  fields:
-    - name: tbd
-      type: string
----
-schema:
-  name: SysML.Enumeration
-  description: |
-    Corresponds to the Enumeration UML2 element and corresponds to the abstract syntax reference for UML4SysML::Enumeration.
   fields:
     - name: tbd
       type: string
@@ -1590,14 +1919,6 @@ schema:
   name: SysML.InputPin
   description: |
     Corresponds to the InputPin UML2 element and corresponds to the abstract syntax reference for UML4SysML::InputPin.
-  fields:
-    - name: tbd
-      type: string
----
-schema:
-  name: SysML.InstanceSpecification
-  description: |
-    Corresponds to the InstanceSpecification UML2 element and corresponds to the abstract syntax reference for UML4SysML::InstanceSpecification.
   fields:
     - name: tbd
       type: string
@@ -1963,14 +2284,6 @@ schema:
       type: string
 ---
 schema:
-  name: SysML.Package
-  description: |
-    Corresponds to the Package UML2 element and corresponds to the abstract syntax reference for UML4SysML::Package.
-  fields:
-    - name: tbd
-      type: string
----
-schema:
   name: SysML.PackageImport
   description: |
     Corresponds to the PackageImport UML2 element and corresponds to the abstract syntax reference for UML4SysML::PackageImport.
@@ -2078,14 +2391,6 @@ schema:
   name: SysML.ProfileApplication
   description: |
     Corresponds to the ProfileApplication UML2 element and corresponds to the abstract syntax reference for UML4SysML::ProfileApplication.
-  fields:
-    - name: tbd
-      type: string
----
-schema:
-  name: SysML.Property
-  description: |
-    Corresponds to the Property UML2 element and corresponds to the abstract syntax reference for UML4SysML::Property.
   fields:
     - name: tbd
       type: string
