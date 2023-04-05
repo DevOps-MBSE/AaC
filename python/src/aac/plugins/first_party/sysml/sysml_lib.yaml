@@ -458,19 +458,19 @@ schema:
         held in self.partWithPort must [sic] not be a Port.”
   fields:
     - name: constraints
-      type: tbd[]
+      type: SysML.ConstraintNote[]
     - name: operations
-      type: tbd[]
+      type: SysML.Operation[]
     - name: receptions
-      type: tbd[]
+      type: SysML.Reception[]
     - name: parts
-      type: tbd[]
+      type: SysML.Property[]
     - name: references
-      type: tbd[]
+      type: SysML.BoundReference[]
     - name: values
-      type: tbd[]
+      type: SysML.ValueType[]
     - name: properties
-      type: tbd[]
+      type: SysML.Block[]
     - name: isEncapsulated
       type: bool
 ---
@@ -831,4 +831,1733 @@ schema:
     Corresponds to the UnidirectionalConnector element defined in SysML.InternalBlockDiagram and corresponds to the abstract syntax reference for UML4SysML::Connector.
   fields:
     - name: name
+      type: string
+
+---
+  schema:
+    name: SysML.Abstraction
+    description: |
+      Corresponds to the Abstraction UML2 element and corresponds to the abstract syntax reference for UML4SysML::Abstraction.
+    fields:
+      - name: tbd
+        type: string
+---
+schema:
+  name: SysML.AcceptCallAction
+  description: |
+    Corresponds to the AcceptCallAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::AcceptCallAction.
+  fields:
+    - name: tbd
+      type: string
+---
+  schema:
+    name: SysML.AcceptEventAction
+    description: |
+      Corresponds to the AcceptEventAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::AcceptEventAction.
+    fields:
+      - name: tbd
+        type: string
+---
+schema:
+  name: SysML.Action
+  description: |
+    Corresponds to the Action UML2 element and corresponds to the abstract syntax reference for UML4SysML::Action.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ActionExecutionSpecification
+  description: |
+    Corresponds to the ActionExecutionSpecification UML2 element and corresponds to the abstract syntax reference for UML4SysML::ActionExecutionSpecification.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ActionInputPin
+  description: |
+    Corresponds to the ActionInputPin UML2 element and corresponds to the abstract syntax reference for UML4SysML::ActionInputPin.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Activity
+  description: |
+    Corresponds to the Activity UML2 element and corresponds to the abstract syntax reference for UML4SysML::Activity.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ActivityEdge
+  description: |
+    Corresponds to the ActivityEdge UML2 element and corresponds to the abstract syntax reference for UML4SysML::ActivityEdge.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ActivityFinalNode
+  description: |
+    Corresponds to the ActivityFinalNode UML2 element and corresponds to the abstract syntax reference for UML4SysML::ActivityFinalNode.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ActivityGroup
+  description: |
+    Corresponds to the ActivityGroup UML2 element and corresponds to the abstract syntax reference for UML4SysML::ActivityGroup.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ActivityNode
+  description: |
+    Corresponds to the ActivityNode UML2 element and corresponds to the abstract syntax reference for UML4SysML::ActivityNode.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ActivityParameterNode
+  description: |
+    Corresponds to the ActivityParameterNode UML2 element and corresponds to the abstract syntax reference for UML4SysML::ActivityParameterNode.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ActivityPartition
+  description: |
+    Corresponds to the ActivityPartition UML2 element and corresponds to the abstract syntax reference for UML4SysML::ActivityPartition.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.AddStructuralFeatureValueAction
+  description: |
+    Corresponds to the AddStructuralFeatureValueAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::AddStructuralFeatureValueAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.AddVariableValueAction
+  description: |
+    Corresponds to the AddVariableValueAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::AddVariableValueAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.AggregationKind
+  description: |
+    Corresponds to the AggregationKind UML2 element and corresponds to the abstract syntax reference for UML4SysML::AggregationKind.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.AnyReceiveEvent
+  description: |
+    Corresponds to the AnyReceiveEvent UML2 element and corresponds to the abstract syntax reference for UML4SysML::AnyReceiveEvent.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Association
+  description: |
+    Corresponds to the Association UML2 element and corresponds to the abstract syntax reference for UML4SysML::Association.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.AssociationClass
+  description: |
+    Corresponds to the AssociationClass UML2 element and corresponds to the abstract syntax reference for UML4SysML::AssociationClass.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Behavior
+  description: |
+    Corresponds to the Behavior UML2 element and corresponds to the abstract syntax reference for UML4SysML::Behavior.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.BehaviorExecutionSpecification
+  description: |
+    Corresponds to the BehaviorExecutionSpecification UML2 element and corresponds to the abstract syntax reference for UML4SysML::BehaviorExecutionSpecification.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.BehavioralFeature
+  description: |
+    Corresponds to the BehavioralFeature UML2 element and corresponds to the abstract syntax reference for UML4SysML::BehavioralFeature.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.BehavioredClassifier
+  description: |
+    Corresponds to the BehavioredClassifier UML2 element and corresponds to the abstract syntax reference for UML4SysML::BehavioredClassifier.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.BroadcastSignalAction
+  description: |
+    Corresponds to the BroadcastSignalAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::BroadcastSignalAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.CallAction
+  description: |
+    Corresponds to the CallAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::CallAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.CallBehaviorAction
+  description: |
+    Corresponds to the CallBehaviorAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::CallBehaviorAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.CallConcurrencyKind
+  description: |
+    Corresponds to the CallConcurrencyKind UML2 element and corresponds to the abstract syntax reference for UML4SysML::CallConcurrencyKind.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.CallEvent
+  description: |
+    Corresponds to the CallEvent UML2 element and corresponds to the abstract syntax reference for UML4SysML::CallEvent.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.CallOperationAction
+  description: |
+    Corresponds to the CallOperationAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::CallOperationAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.CentralBufferNode
+  description: |
+    Corresponds to the CentralBufferNode UML2 element and corresponds to the abstract syntax reference for UML4SysML::CentralBufferNode.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ChangeEvent
+  description: |
+    Corresponds to the ChangeEvent UML2 element and corresponds to the abstract syntax reference for UML4SysML::ChangeEvent.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Class
+  description: |
+    Corresponds to the Class UML2 element and corresponds to the abstract syntax reference for UML4SysML::Class.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Classifier
+  description: |
+    Corresponds to the Classifier UML2 element and corresponds to the abstract syntax reference for UML4SysML::Classifier.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Clause
+  description: |
+    Corresponds to the Clause UML2 element and corresponds to the abstract syntax reference for UML4SysML::Clause.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ClearAssociationAction
+  description: |
+    Corresponds to the ClearAssociationAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::ClearAssociationAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ClearStructuralFeatureAction
+  description: |
+    Corresponds to the ClearStructuralFeatureAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::ClearStructuralFeatureAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ClearStructuralFeatureAction
+  description: |
+    Corresponds to the ClearStructuralFeatureAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::ClearStructuralFeatureAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ClearVariableAction
+  description: |
+    Corresponds to the ClearVariableAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::ClearVariableAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.CombinedFragment
+  description: |
+    Corresponds to the CombinedFragment UML2 element and corresponds to the abstract syntax reference for UML4SysML::CombinedFragment.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ConditionalNode
+  description: |
+    Corresponds to the ConditionalNode UML2 element and corresponds to the abstract syntax reference for UML4SysML::ConditionalNode.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ConnectableElement
+  description: |
+    Corresponds to the ConnectableElement UML2 element and corresponds to the abstract syntax reference for UML4SysML::ConnectableElement.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ConnectionPointReference
+  description: |
+    Corresponds to the ConnectionPointReference UML2 element and corresponds to the abstract syntax reference for UML4SysML::ConnectionPointReference.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Connector
+  description: |
+    Corresponds to the Connector UML2 element and corresponds to the abstract syntax reference for UML4SysML::Connector.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ConnectorEnd
+  description: |
+    Corresponds to the ConnectorEnd UML2 element and corresponds to the abstract syntax reference for UML4SysML::ConnectorEnd.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ConnectorKind
+  description: |
+    Corresponds to the ConnectorKind UML2 element and corresponds to the abstract syntax reference for UML4SysML::ConnectorKind.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ConsiderIgnoreFragment
+  description: |
+    Corresponds to the ConsiderIgnoreFragment UML2 element and corresponds to the abstract syntax reference for UML4SysML::ConsiderIgnoreFragment.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Constraint
+  description: |
+    Corresponds to the Constraint UML2 element and corresponds to the abstract syntax reference for UML4SysML::Constraint.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Continuation
+  description: |
+    Corresponds to the Continuation UML2 element and corresponds to the abstract syntax reference for UML4SysML::Continuation.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ControlFlow
+  description: |
+    Corresponds to the ControlFlow UML2 element and corresponds to the abstract syntax reference for UML4SysML::ControlFlow.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ControlNode
+  description: |
+    Corresponds to the ControlNode UML2 element and corresponds to the abstract syntax reference for UML4SysML::ControlNode.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.CreateLinkAction
+  description: |
+    Corresponds to the CreateLinkAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::CreateLinkAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.CreateLinkObjectAction
+  description: |
+    Corresponds to the CreateLinkObjectAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::CreateLinkObjectAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.CreateObjectAction
+  description: |
+    Corresponds to the CreateObjectAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::CreateObjectAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.DataStoreNode
+  description: |
+    Corresponds to the DataStoreNode UML2 element and corresponds to the abstract syntax reference for UML4SysML::DataStoreNode.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.DataType
+  description: |
+    Corresponds to the DataType UML2 element and corresponds to the abstract syntax reference for UML4SysML::DataType.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.DecisionNode
+  description: |
+    Corresponds to the DecisionNode UML2 element and corresponds to the abstract syntax reference for UML4SysML::DecisionNode.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.DeployedArtifact
+  description: |
+    Corresponds to the DeployedArtifact UML2 element and corresponds to the abstract syntax reference for UML4SysML::DeployedArtifact.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.DeploymentTarget
+  description: |
+    Corresponds to the DeploymentTarget UML2 element and corresponds to the abstract syntax reference for UML4SysML::DeploymentTarget.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.DestroyLinkAction
+  description: |
+    Corresponds to the DestroyLinkAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::DestroyLinkAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.DestroyObjectAction
+  description: |
+    Corresponds to the DestroyObjectAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::DestroyObjectAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.DestructionOccurrenceSpecification
+  description: |
+    Corresponds to the DestructionOccurrenceSpecification UML2 element and corresponds to the abstract syntax reference for UML4SysML::DestructionOccurrenceSpecification.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.DirectedRelationship
+  description: |
+    Corresponds to the DirectedRelationship UML2 element and corresponds to the abstract syntax reference for UML4SysML::DirectedRelationship.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Duration
+  description: |
+    Corresponds to the Duration UML2 element and corresponds to the abstract syntax reference for UML4SysML::Duration.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Duration
+  description: |
+    Corresponds to the Duration UML2 element and corresponds to the abstract syntax reference for UML4SysML::Duration.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.DurationConstraint
+  description: |
+    Corresponds to the DurationConstraint UML2 element and corresponds to the abstract syntax reference for UML4SysML::DurationConstraint.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.DurationInterval
+  description: |
+    Corresponds to the DurationInterval UML2 element and corresponds to the abstract syntax reference for UML4SysML::DurationInterval.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.DurationObservation
+  description: |
+    Corresponds to the DurationObservation UML2 element and corresponds to the abstract syntax reference for UML4SysML::DurationObservation.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Element
+  description: |
+    Corresponds to the Element UML2 element and corresponds to the abstract syntax reference for UML4SysML::Element.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ElementImport
+  description: |
+    Corresponds to the ElementImport UML2 element and corresponds to the abstract syntax reference for UML4SysML::Element.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.EncapsulatedClassifier
+  description: |
+    Corresponds to the EncapsulatedClassifier UML2 element and corresponds to the abstract syntax reference for UML4SysML::EncapsulatedClassifier.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Enumeration
+  description: |
+    Corresponds to the Enumeration UML2 element and corresponds to the abstract syntax reference for UML4SysML::Enumeration.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.EnumerationLiteral
+  description: |
+    Corresponds to the EnumerationLiteral UML2 element and corresponds to the abstract syntax reference for UML4SysML::EnumerationLiteral.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Event
+  description: |
+    Corresponds to the Event UML2 element and corresponds to the abstract syntax reference for UML4SysML::Event.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ExecutableNode
+  description: |
+    Corresponds to the ExecutableNode UML2 element and corresponds to the abstract syntax reference for UML4SysML::ExecutableNode.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ExecutionOccurrenceSpecification
+  description: |
+    Corresponds to the ExecutionOccurrenceSpecification UML2 element and corresponds to the abstract syntax reference for UML4SysML::ExecutionOccurrenceSpecification.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ExecutionSpecification
+  description: |
+    Corresponds to the ExecutionSpecification UML2 element and corresponds to the abstract syntax reference for UML4SysML::ExecutionSpecification.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Expression
+  description: |
+    Corresponds to the Expression UML2 element and corresponds to the abstract syntax reference for UML4SysML::Expression.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Extend
+  description: |
+    Corresponds to the Extend UML2 element and corresponds to the abstract syntax reference for UML4SysML::Extend.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Extension
+  description: |
+    Corresponds to the Extension UML2 element and corresponds to the abstract syntax reference for UML4SysML::Extension.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ExtensionEnd
+  description: |
+    Corresponds to the ExtensionEnd UML2 element and corresponds to the abstract syntax reference for UML4SysML::ExtensionEnd.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ExtensionPoint
+  description: |
+    Corresponds to the ExtensionPoint UML2 element and corresponds to the abstract syntax reference for UML4SysML::ExtensionPoint.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Feature
+  description: |
+    Corresponds to the Feature UML2 element and corresponds to the abstract syntax reference for UML4SysML::Feature.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.FinalNode
+  description: |
+    Corresponds to the FinalNode UML2 element and corresponds to the abstract syntax reference for UML4SysML::FinalNode.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.FinalState
+  description: |
+    Corresponds to the FinalState UML2 element and corresponds to the abstract syntax reference for UML4SysML::FinalState.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.FlowFinalNode
+  description: |
+    Corresponds to the FlowFinalNode UML2 element and corresponds to the abstract syntax reference for UML4SysML::FlowFinalNode.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ForkNode
+  description: |
+    Corresponds to the ForkNode UML2 element and corresponds to the abstract syntax reference for UML4SysML::ForkNode.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.FunctionBehavior
+  description: |
+    Corresponds to the FunctionBehavior UML2 element and corresponds to the abstract syntax reference for UML4SysML::FunctionBehavior.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Gate
+  description: |
+    Corresponds to the Gate UML2 element and corresponds to the abstract syntax reference for UML4SysML::Gate.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.GeneralOrdering
+  description: |
+    Corresponds to the GeneralOrdering UML2 element and corresponds to the abstract syntax reference for UML4SysML::GeneralOrdering.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Image
+  description: |
+    Corresponds to the Image UML2 element and corresponds to the abstract syntax reference for UML4SysML::Image.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Include
+  description: |
+    Corresponds to the Include UML2 element and corresponds to the abstract syntax reference for UML4SysML::Include.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.InformationFlow
+  description: |
+    Corresponds to the InformationFlow UML2 element and corresponds to the abstract syntax reference for UML4SysML::InformationFlow.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.InformationItem
+  description: |
+    Corresponds to the InformationItem UML2 element and corresponds to the abstract syntax reference for UML4SysML::InformationItem.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.InitialNode
+  description: |
+    Corresponds to the InitialNode UML2 element and corresponds to the abstract syntax reference for UML4SysML::InitialNode.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.InputPin
+  description: |
+    Corresponds to the InputPin UML2 element and corresponds to the abstract syntax reference for UML4SysML::InputPin.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.InstanceSpecification
+  description: |
+    Corresponds to the InstanceSpecification UML2 element and corresponds to the abstract syntax reference for UML4SysML::InstanceSpecification.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.InstanceValue
+  description: |
+    Corresponds to the InstanceValue UML2 element and corresponds to the abstract syntax reference for UML4SysML::InstanceValue.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Interaction
+  description: |
+    Corresponds to the Interaction UML2 element and corresponds to the abstract syntax reference for UML4SysML::Interaction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.InteractionConstraint
+  description: |
+    Corresponds to the InteractionConstraint UML2 element and corresponds to the abstract syntax reference for UML4SysML::InteractionConstraint.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.InteractionFragment
+  description: |
+    Corresponds to the InteractionFragment UML2 element and corresponds to the abstract syntax reference for UML4SysML::InteractionFragment.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.InteractionOperand
+  description: |
+    Corresponds to the InteractionOperand UML2 element and corresponds to the abstract syntax reference for UML4SysML::InteractionOperand.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.InteractionOperatorKind
+  description: |
+    Corresponds to the InteractionOperatorKind UML2 element and corresponds to the abstract syntax reference for UML4SysML::InteractionOperatorKind.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.InteractionUse
+  description: |
+    Corresponds to the InteractionUse UML2 element and corresponds to the abstract syntax reference for UML4SysML::InteractionUse.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Interface
+  description: |
+    Corresponds to the Interface UML2 element and corresponds to the abstract syntax reference for UML4SysML::Interface.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.InterfaceRealization
+  description: |
+    Corresponds to the InterfaceRealization UML2 element and corresponds to the abstract syntax reference for UML4SysML::InterfaceRealization.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.InterruptibleActivityRegion
+  description: |
+    Corresponds to the InterruptibleActivityRegion UML2 element and corresponds to the abstract syntax reference for UML4SysML::InterruptibleActivityRegion.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Interval
+  description: |
+    Corresponds to the Interval UML2 element and corresponds to the abstract syntax reference for UML4SysML::Interval.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.IntervalConstraint
+  description: |
+    Corresponds to the IntervalConstraint UML2 element and corresponds to the abstract syntax reference for UML4SysML::IntervalConstraint.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.InvocationAction
+  description: |
+    Corresponds to the InvocationAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::InvocationAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.JoinNode
+  description: |
+    Corresponds to the JoinNode UML2 element and corresponds to the abstract syntax reference for UML4SysML::JoinNode.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Lifeline
+  description: |
+    Corresponds to the Lifeline UML2 element and corresponds to the abstract syntax reference for UML4SysML::Lifeline.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.LinkAction
+  description: |
+    Corresponds to the LinkAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::LinkAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.LinkEndCreationData
+  description: |
+    Corresponds to the LinkEndCreationData UML2 element and corresponds to the abstract syntax reference for UML4SysML::LinkEndCreationData.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.LinkEndData
+  description: |
+    Corresponds to the LinkEndData UML2 element and corresponds to the abstract syntax reference for UML4SysML::LinkEndData.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.LinkEndDestructionData
+  description: |
+    Corresponds to the LinkEndDestructionData UML2 element and corresponds to the abstract syntax reference for UML4SysML::LinkEndDestructionData.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.LiteralBoolean
+  description: |
+    Corresponds to the LiteralBoolean UML2 element and corresponds to the abstract syntax reference for UML4SysML::LiteralBoolean.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.LiteralInteger
+  description: |
+    Corresponds to the LiteralInteger UML2 element and corresponds to the abstract syntax reference for UML4SysML::LiteralInteger.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.LiteralNull
+  description: |
+    Corresponds to the LiteralNull UML2 element and corresponds to the abstract syntax reference for UML4SysML::LiteralNull.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.LiteralReal
+  description: |
+    Corresponds to the LiteralReal UML2 element and corresponds to the abstract syntax reference for UML4SysML::LiteralReal.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.LiteralSpecification
+  description: |
+    Corresponds to the LiteralSpecification UML2 element and corresponds to the abstract syntax reference for UML4SysML::LiteralSpecification.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.LiteralString
+  description: |
+    Corresponds to the LiteralString UML2 element and corresponds to the abstract syntax reference for UML4SysML::LiteralString.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.LiteralUnlimitedNatural
+  description: |
+    Corresponds to the LiteralUnlimitedNatural UML2 element and corresponds to the abstract syntax reference for UML4SysML::LiteralUnlimitedNatural.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.LoopNode
+  description: |
+    Corresponds to the LoopNode UML2 element and corresponds to the abstract syntax reference for UML4SysML::LoopNode.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.MergeNode
+  description: |
+    Corresponds to the MergeNode UML2 element and corresponds to the abstract syntax reference for UML4SysML::MergeNode.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Message
+  description: |
+    Corresponds to the Message UML2 element and corresponds to the abstract syntax reference for UML4SysML::Message.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.MessageEnd
+  description: |
+    Corresponds to the MessageEnd UML2 element and corresponds to the abstract syntax reference for UML4SysML::MessageEnd.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.MessageEvent
+  description: |
+    Corresponds to the MessageEvent UML2 element and corresponds to the abstract syntax reference for UML4SysML::MessageEvent.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.MessageOccurrenceSpecification
+  description: |
+    Corresponds to the MessageOccurrenceSpecification UML2 element and corresponds to the abstract syntax reference for UML4SysML::MessageOccurrenceSpecification.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.MessageSort
+  description: |
+    Corresponds to the MessageSort UML2 element and corresponds to the abstract syntax reference for UML4SysML::MessageSort.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.MultiplicityElement
+  description: |
+    Corresponds to the MultiplicityElement UML2 element and corresponds to the abstract syntax reference for UML4SysML::MultiplicityElement.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.NamedElement
+  description: |
+    Corresponds to the NamedElement UML2 element and corresponds to the abstract syntax reference for UML4SysML::NamedElement.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Namespace
+  description: |
+    Corresponds to the Namespace UML2 element and corresponds to the abstract syntax reference for UML4SysML::Namespace.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ObjectFlow
+  description: |
+    Corresponds to the ObjectFlow UML2 element and corresponds to the abstract syntax reference for UML4SysML::ObjectFlow.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ObjectNode
+  description: |
+    Corresponds to the ObjectNode UML2 element and corresponds to the abstract syntax reference for UML4SysML::ObjectNode.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ObjectNodeOrderingKind
+  description: |
+    Corresponds to the ObjectNodeOrderingKind UML2 element and corresponds to the abstract syntax reference for UML4SysML::ObjectNodeOrderingKind.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Observation
+  description: |
+    Corresponds to the Observation UML2 element and corresponds to the abstract syntax reference for UML4SysML::Observation.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.OpaqueAction
+  description: |
+    Corresponds to the OpaqueAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::OpaqueAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.OpaqueBehavior
+  description: |
+    Corresponds to the OpaqueBehavior UML2 element and corresponds to the abstract syntax reference for UML4SysML::OpaqueBehavior.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.OpaqueExpression
+  description: |
+    Corresponds to the OpaqueExpression UML2 element and corresponds to the abstract syntax reference for UML4SysML::OpaqueExpression.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Operation
+  description: |
+    Corresponds to the Operation UML2 element and corresponds to the abstract syntax reference for UML4SysML::Operation.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.OutputPin
+  description: |
+    Corresponds to the OutputPin UML2 element and corresponds to the abstract syntax reference for UML4SysML::OutputPin.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Package
+  description: |
+    Corresponds to the Package UML2 element and corresponds to the abstract syntax reference for UML4SysML::Package.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.PackageImport
+  description: |
+    Corresponds to the PackageImport UML2 element and corresponds to the abstract syntax reference for UML4SysML::PackageImport.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.PackageMerge
+  description: |
+    Corresponds to the PackageMerge UML2 element and corresponds to the abstract syntax reference for UML4SysML::PackageMerge.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.PackageableElement
+  description: |
+    Corresponds to the PackageableElement UML2 element and corresponds to the abstract syntax reference for UML4SysML::PackageableElement.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Parameter
+  description: |
+    Corresponds to the Parameter UML2 element and corresponds to the abstract syntax reference for UML4SysML::Parameter.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ParameterDirectionKind
+  description: |
+    Corresponds to the ParameterDirectionKind UML2 element and corresponds to the abstract syntax reference for UML4SysML::ParameterDirectionKind.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ParameterEffectKind
+  description: |
+    Corresponds to the ParameterEffectKind UML2 element and corresponds to the abstract syntax reference for UML4SysML::ParameterEffectKind.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ParameterSet
+  description: |
+    Corresponds to the ParameterSet UML2 element and corresponds to the abstract syntax reference for UML4SysML::ParameterSet.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ParameterableElement
+  description: |
+    Corresponds to the ParameterableElement UML2 element and corresponds to the abstract syntax reference for UML4SysML::ParameterableElement.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.PartDecomposition
+  description: |
+    Corresponds to the PartDecomposition UML2 element and corresponds to the abstract syntax reference for UML4SysML::PartDecomposition.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Pin
+  description: |
+    Corresponds to the Pin UML2 element and corresponds to the abstract syntax reference for UML4SysML::Pin.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Port
+  description: |
+    Corresponds to the Port UML2 element and corresponds to the abstract syntax reference for UML4SysML::Port.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.PrimitiveType
+  description: |
+    Corresponds to the PrimitiveType UML2 element and corresponds to the abstract syntax reference for UML4SysML::PrimitiveType.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Profile
+  description: |
+    Corresponds to the Profile UML2 element and corresponds to the abstract syntax reference for UML4SysML::Profile.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ProfileApplication
+  description: |
+    Corresponds to the ProfileApplication UML2 element and corresponds to the abstract syntax reference for UML4SysML::ProfileApplication.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Property
+  description: |
+    Corresponds to the Property UML2 element and corresponds to the abstract syntax reference for UML4SysML::Property.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Pseudostate
+  description: |
+    Corresponds to the Pseudostate UML2 element and corresponds to the abstract syntax reference for UML4SysML::Pseudostate.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.PseudostateKind
+  description: |
+    Corresponds to the PseudostateKind UML2 element and corresponds to the abstract syntax reference for UML4SysML::PseudostateKind.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.RaiseExceptionAction
+  description: |
+    Corresponds to the RaiseExceptionAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::RaiseExceptionAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ReadExtentAction
+  description: |
+    Corresponds to the ReadExtentAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::ReadExtentAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ReadIsClassifiedObjectAction
+  description: |
+    Corresponds to the ReadIsClassifiedObjectAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::ReadIsClassifiedObjectAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ReadLinkAction
+  description: |
+    Corresponds to the ReadLinkAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::ReadLinkAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ReadLinkObjectEndAction
+  description: |
+    Corresponds to the ReadLinkObjectEndAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::ReadLinkObjectEndAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ReadSelfAction
+  description: |
+    Corresponds to the ReadSelfAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::ReadSelfAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ReadStructuralFeatureAction
+  description: |
+    Corresponds to the ReadStructuralFeatureAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::ReadStructuralFeatureAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ReadVariableAction
+  description: |
+    Corresponds to the ReadVariableAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::ReadVariableAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Reception
+  description: |
+    Corresponds to the Reception UML2 element and corresponds to the abstract syntax reference for UML4SysML::Reception.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ReclassifyObjectAction
+  description: |
+    Corresponds to the ReclassifyObjectAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::ReclassifyObjectAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.RedefinableElement
+  description: |
+    Corresponds to the RedefinableElement UML2 element and corresponds to the abstract syntax reference for UML4SysML::RedefinableElement.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ReduceAction
+  description: |
+    Corresponds to the ReduceAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::ReduceAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Region
+  description: |
+    Corresponds to the Region UML2 element and corresponds to the abstract syntax reference for UML4SysML::Region.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Relationship
+  description: |
+    Corresponds to the Relationship UML2 element and corresponds to the abstract syntax reference for UML4SysML::Relationship.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.RemoveStructuralFeatureValueAction
+  description: |
+    Corresponds to the RemoveStructuralFeatureValueAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::RemoveStructuralFeatureValueAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.RemoveVariableValueAction
+  description: |
+    Corresponds to the RemoveVariableValueAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::RemoveVariableValueAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ReplyAction
+  description: |
+    Corresponds to the ReplyAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::ReplyAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.SendObjectAction
+  description: |
+    Corresponds to the SendObjectAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::SendObjectAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.SendSignalAction
+  description: |
+    Corresponds to the SendSignalAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::SendSignalAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.SequenceNode
+  description: |
+    Corresponds to the SequenceNode UML2 element and corresponds to the abstract syntax reference for UML4SysML::SequenceNode.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Signal
+  description: |
+    Corresponds to the Signal UML2 element and corresponds to the abstract syntax reference for UML4SysML::Signal.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.SignalEvent
+  description: |
+    Corresponds to the SignalEvent UML2 element and corresponds to the abstract syntax reference for UML4SysML::SignalEvent.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Slot
+  description: |
+    Corresponds to the Slot UML2 element and corresponds to the abstract syntax reference for UML4SysML::Slot.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.StartClassifierBehaviorAction
+  description: |
+    Corresponds to the StartClassifierBehaviorAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::StartClassifierBehaviorAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.StartObjectBehaviorAction
+  description: |
+    Corresponds to the StartObjectBehaviorAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::StartObjectBehaviorAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.State
+  description: |
+    Corresponds to the State UML2 element and corresponds to the abstract syntax reference for UML4SysML::State.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.StateInvariant
+  description: |
+    Corresponds to the StateInvariant UML2 element and corresponds to the abstract syntax reference for UML4SysML::StateInvariant.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.StateMachine
+  description: |
+    Corresponds to the StateMachine UML2 element and corresponds to the abstract syntax reference for UML4SysML::StateMachine.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Stereotype
+  description: |
+    Corresponds to the Stereotype UML2 element and corresponds to the abstract syntax reference for UML4SysML::Stereotype.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.StructuralFeature
+  description: |
+    Corresponds to the StructuralFeature UML2 element and corresponds to the abstract syntax reference for UML4SysML::StructuralFeature.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.StructuralFeatureAction
+  description: |
+    Corresponds to the StructuralFeatureAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::StructuralFeatureAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.StructuredActivityNode
+  description: |
+    Corresponds to the StructuredActivityNode UML2 element and corresponds to the abstract syntax reference for UML4SysML::StructuredActivityNode.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.StructuredClassifier
+  description: |
+    Corresponds to the StructuredClassifier UML2 element and corresponds to the abstract syntax reference for UML4SysML::StructuredClassifier.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Substitution
+  description: |
+    Corresponds to the Substitution UML2 element and corresponds to the abstract syntax reference for UML4SysML::Substitution.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.TestIdentityAction
+  description: |
+    Corresponds to the TestIdentityAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::TestIdentityAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.TimeConstraint
+  description: |
+    Corresponds to the TimeConstraint UML2 element and corresponds to the abstract syntax reference for UML4SysML::TimeConstraint.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.TimeEvent
+  description: |
+    Corresponds to the TimeEvent UML2 element and corresponds to the abstract syntax reference for UML4SysML::TimeEvent.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.TimeExpression
+  description: |
+    Corresponds to the TimeExpression UML2 element and corresponds to the abstract syntax reference for UML4SysML::TimeExpression.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.TimeInterval
+  description: |
+    Corresponds to the TimeInterval UML2 element and corresponds to the abstract syntax reference for UML4SysML::TimeInterval.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.TimeObservation
+  description: |
+    Corresponds to the TimeObservation UML2 element and corresponds to the abstract syntax reference for UML4SysML::TimeObservation.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Transition
+  description: |
+    Corresponds to the Transition UML2 element and corresponds to the abstract syntax reference for UML4SysML::Transition.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.TransitionKind
+  description: |
+    Corresponds to the TransitionKind UML2 element and corresponds to the abstract syntax reference for UML4SysML::TransitionKind.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Type
+  description: |
+    Corresponds to the Type UML2 element and corresponds to the abstract syntax reference for UML4SysML::Type.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.TypedElement
+  description: |
+    Corresponds to the TypedElement UML2 element and corresponds to the abstract syntax reference for UML4SysML::TypedElement.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.UnmarshallAction
+  description: |
+    Corresponds to the UnmarshallAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::UnmarshallAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Usage
+  description: |
+    Corresponds to the Usage UML2 element and corresponds to the abstract syntax reference for UML4SysML::Usage.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.UseCase
+  description: |
+    Corresponds to the UseCase UML2 element and corresponds to the abstract syntax reference for UML4SysML::UseCase.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ValuePin
+  description: |
+    Corresponds to the ValuePin UML2 element and corresponds to the abstract syntax reference for UML4SysML::ValuePin.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ValueSpecification
+  description: |
+    Corresponds to the ValueSpecification UML2 element and corresponds to the abstract syntax reference for UML4SysML::ValueSpecification.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.ValueSpecificationAction
+  description: |
+    Corresponds to the ValueSpecificationAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::ValueSpecificationAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Variable
+  description: |
+    Corresponds to the Variable UML2 element and corresponds to the abstract syntax reference for UML4SysML::Variable.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.VariableAction
+  description: |
+    Corresponds to the VariableAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::VariableAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.Vertex
+  description: |
+    Corresponds to the Vertex UML2 element and corresponds to the abstract syntax reference for UML4SysML::Vertex.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.VisibilityKind
+  description: |
+    Corresponds to the VisibilityKind UML2 element and corresponds to the abstract syntax reference for UML4SysML::VisibilityKind.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.WriteLinkAction
+  description: |
+    Corresponds to the WriteLinkAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::WriteLinkAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.WriteStructuralFeatureAction
+  description: |
+    Corresponds to the WriteStructuralFeatureAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::WriteStructuralFeatureAction.
+  fields:
+    - name: tbd
+      type: string
+---
+schema:
+  name: SysML.WriteVariableAction
+  description: |
+    Corresponds to the WriteVariableAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::WriteVariableAction.
+  fields:
+    - name: tbd
       type: string
