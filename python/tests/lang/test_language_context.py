@@ -347,24 +347,30 @@ class TestLanguageContext(ActiveContextTestCase):
         self.assertNotEqual(primitive_definition, updated_primitive_definition)
 
     def test_language_context_copy(self):
-        test_context = get_active_context()
-        copy_context = test_context.copy()
+        definition_to_add = create_schema_definition("TestAdd", fields=[create_field_entry("field", PRIMITIVE_TYPE_STRING)])
+        definition_to_remove = create_schema_definition("TestRemove", fields=[create_field_entry("field", PRIMITIVE_TYPE_STRING)])
 
-        new_definition = create_schema_definition("Test", fields=[create_field_entry("field", PRIMITIVE_TYPE_STRING)])
-        copy_context.add_definition_to_context(new_definition)
+        # Add the definition to test removing to the original context
+        original_context = get_active_context()
+        original_context.add_definition_to_context(definition_to_remove)
 
-        copy_root_definition = copy_context.get_definition_by_name(DEFINITION_NAME_ROOT)
-        copy_context.remove_definition_from_context(copy_root_definition)
+        # Add the additional definition to the context copy
+        copy_context = original_context.copy()
+        copy_context.add_definition_to_context(definition_to_add)
 
-        # Assert the newly added definition isn't in the original context
-        self.assertIsNone(test_context.get_definition_by_name(new_definition.name))
-        self.assertIsNotNone(copy_context.get_definition_by_name(new_definition.name))
+        # Assert that the additional definition is not in the original context
+        self.assertIsNone(original_context.get_definition_by_name(definition_to_add.name))
+        self.assertIsNotNone(copy_context.get_definition_by_name(definition_to_add.name))
 
-        # Assert the removed definition isn't removed from the original context
-        self.assertIsNotNone(test_context.get_definition_by_name(DEFINITION_NAME_ROOT))
-        self.assertIsNone(copy_context.get_definition_by_name(DEFINITION_NAME_ROOT))
+        # Demonstrate that removing a definition from the original doesn't affect the copy
+        original_context.remove_definition_from_context(definition_to_remove)
 
-        self.assertEqual(len(copy_context.definitions), len(test_context.definitions))
+        # Assert the removed definition isn't removed from the copy context
+        self.assertIsNone(original_context.get_definition_by_name(definition_to_remove.name))
+        self.assertIsNotNone(copy_context.get_definition_by_name(definition_to_remove.name))
+
+        # Assert that the copy context has the additional definition and the definition removed from the original context (+2 definitions in copy context len)
+        self.assertEqual(len(original_context.definitions), len(copy_context.definitions) - 2)
 
 
 class TestLanguageContextPluginInterface(ActiveContextTestCase):
