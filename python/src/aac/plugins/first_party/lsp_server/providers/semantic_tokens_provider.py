@@ -3,11 +3,11 @@
 from typing import Any, Callable, Optional
 
 from pygls.lsp import SemanticTokenModifiers, SemanticTokenTypes, SemanticTokens, SemanticTokensLegend, SemanticTokensParams
-from pygls.server import LanguageServer
 from pygls.uris import to_fs_path
+from pygls.server import LanguageServer
 from yaml import Token
 
-from aac.io.parser._parse_source import _scan_yaml
+from aac.io.parser import get_cache
 from aac.lang.language_context import LanguageContext
 from aac.plugins.first_party.lsp_server.providers.lsp_provider import LspProvider
 from aac.spec.core import get_root_keys, _get_aac_spec_file_path
@@ -35,7 +35,7 @@ def _is_struct(token: Token, language_context: LanguageContext) -> bool:
     return definition.is_schema() if definition else False
 
 
-def _is_string(token: Token, language_context: LanguageContext) -> bool:
+def _is_string(token: Token, _) -> bool:
     """Return whether the provided token represents a string value."""
     is_explicit_string = hasattr(token, "style") and token.style and token.style in "|'\""
     contains_spaces = any(map(lambda ch: ch.isspace(), token.value))
@@ -86,16 +86,15 @@ class SemanticTokensProvider(LspProvider):
         self.language_server = language_server
 
         token_data = []
-        with open(to_fs_path(params.text_document.uri), mode="r") as file:
-            prev_token, *tokens = _scan_yaml(file.read())
-            tokens = [token for token in tokens if hasattr(token, "value")]
-            for token in tokens:
-                semantic_token_data = self.convert_to_semantic_token(prev_token, token)
-                if semantic_token_data:
-                    token_data.extend(list(semantic_token_data))
-                    prev_token = token
+        prev_token, *tokens = get_cache().scan_file(to_fs_path(params.text_document.uri))
+        tokens = [token for token in tokens if hasattr(token, "value")]
+        for token in tokens:
+            semantic_token_data = self.convert_to_semantic_token(prev_token, token)
+            if semantic_token_data:
+                token_data.extend(list(semantic_token_data))
+                prev_token = token
 
-            return SemanticTokens(data=token_data)
+        return SemanticTokens(data=token_data)
 
     def get_semantic_tokens_legend(self) -> SemanticTokensLegend:
         """Return the legend for interpreting the semantic tokens codes."""
