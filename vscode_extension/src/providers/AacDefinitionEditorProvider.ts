@@ -169,7 +169,6 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
 
         switch (message.type) {
             case AacEditorEventTypes.READY:
-                if (isNewDefinition) {}
                 this.getInitFormData(document, isNewDefinition, definitionName ?? "", definitionSourceFile ?? "", definitionSchema ?? "").then(formData => {
                     this.postEditMessage(panel, formData);
                 });
