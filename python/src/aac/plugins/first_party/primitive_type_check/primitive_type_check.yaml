@@ -107,5 +107,5 @@ model:
           when:
             - The input is validated
           then:
-            - The ValidatorOutput indicates an warning
+            - The ValidatorOutput indicates a warning
             - The ValidatorOutput indicates the primitive value under test does not exist
