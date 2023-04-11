@@ -67,6 +67,9 @@ def remove_extension_from_definition(extension_definition: Definition, target_de
             elements_to_remove = [elements_to_remove]
 
         for element_to_remove in elements_to_remove:
+            # debug print
+            print(f"{extension_definition.name} removing edit from '{target_definition.name}'")
+            print(element_to_remove)
             if element_to_remove in target_definition_fields:
                 target_definition_fields[extension_field_name].remove(element_to_remove)
             else:
