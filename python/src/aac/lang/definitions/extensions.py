@@ -67,7 +67,11 @@ def remove_extension_from_definition(extension_definition: Definition, target_de
             elements_to_remove = [elements_to_remove]
 
         for element_to_remove in elements_to_remove:
-            target_definition_fields[extension_field_name].remove(element_to_remove)
+            if element_to_remove in target_definition_fields:
+                target_definition_fields[extension_field_name].remove(element_to_remove)
+            else:
+                missing_extension_fields_message = f"Extension target definition '{target_definition.name}' does not have the target modified field '{element_to_remove}' per the extension '{extension_definition.name}'"
+                logging.error(missing_target_error_message)
     else:
         missing_target_error_message = f"Attempted to remove a missing extension field from the target. Extension name '{extension_definition.name}' target definition '{target_definition.name}'"
         logging.error(missing_target_error_message)
