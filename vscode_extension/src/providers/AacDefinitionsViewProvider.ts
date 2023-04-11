@@ -90,8 +90,8 @@ export async function createDefinition() {
     if (newDefinitionSchema && newDefinitionName && fileUris?.length && fileUris?.length > 0) {
         const query = createDocumentQuery(true, fileUris[0], newDefinitionName, newDefinitionSchema);
         openDefinitionFile(newDefinitionName, query);
-    else {
-        window.showErrorMessage("Definition not added.");
+    } else {
+        vscode.window.showErrorMessage("Definition not added.");
     }
 }
 

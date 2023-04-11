@@ -10,7 +10,7 @@ from aac.io.files.find import find_aac_files, is_aac_file
 from aac.io.paths import sanitize_filesystem_path
 from aac.io.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_active_context
-from aac.lang.constants import DEFINITION_FIELD_TYPE
+from aac.lang.constants import DEFINITION_FIELD_TYPE, DEFINITION_FIELD_NAME
 from aac.lang.definitions.json_schema import get_definition_json_schema
 from aac.lang.language_error import LanguageError
 from aac.plugins.plugin_execution import PluginExecutionStatusCode
@@ -249,7 +249,7 @@ def get_root_key_schema(key: str):
     """
     active_context = get_active_context()
     key_fields = active_context.get_root_fields()
-    matching_keys = [key_field for key_field in key_fields if key_field.get("name") == key]
+    matching_keys = [key_field for key_field in key_fields if key_field.get(DEFINITION_FIELD_NAME) == key]
 
     if not matching_keys:
         _report_error_response(HTTPStatus.NOT_FOUND, f"No root key found called {key}.")
