@@ -141,4 +141,4 @@ model:
             - The input is validated
           then:
             - The ValidatorOutput indicates an error
-            - The ValidatorOutput indicates the primitive value under test does not exist
+            - The ValidatorOutput indicates the primitive value under test is not a valid reference to a definition
