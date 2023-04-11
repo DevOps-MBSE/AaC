@@ -13,7 +13,7 @@ export enum AacEditorEventTypes {
 }
 
 export enum AacDocumentStateTypes {
-    INIT = 1, // New document the needs init data
+    INIT = 1, // New document that needs init data
     NEW = 2, // New definition, not yet saved to the context
     UPDATE = 3, // Existing definition that will need to be updated in the context
 }
@@ -74,7 +74,7 @@ export class AacDefinitionsDocument extends Disposable implements vscode.CustomD
         this._delegate = delegate;
 
         const params = new URLSearchParams(this._documentUri.query);
-        const isNewDefinition = params.get(queryKeys.QUERY_KEY_NEW) === `${true}`;
+        const isNewDefinition = params.get(queryKeys.QUERY_KEY_NEW) === "true";
         const definitionName = params.get(queryKeys.QUERY_KEY_NAME);
         const definitionSourceFile = params.get(queryKeys.QUERY_KEY_FILE);
         const definitionSchema = params.get(queryKeys.QUERY_KEY_SCHEMA);

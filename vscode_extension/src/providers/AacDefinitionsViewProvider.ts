@@ -58,7 +58,7 @@ export class Definition extends vscode.TreeItem {
 }
 
 export async function createDefinition() {
-    // Prompt the user to pick an AaC file to store the new definition in.
+    // Prompt the user to pick an AaC file in which to store the new definition.
     const definitionFileOpenDialogOptions: vscode.OpenDialogOptions = {
         title: "Select the AaC file for the new definition.",
         canSelectMany: false,
@@ -90,6 +90,8 @@ export async function createDefinition() {
     if (newDefinitionSchema && newDefinitionName && fileUris?.length && fileUris?.length > 0) {
         const query = createDocumentQuery(true, fileUris[0], newDefinitionName, newDefinitionSchema);
         openDefinitionFile(newDefinitionName, query);
+    else {
+        window.showErrorMessage("Definition not added.");
     }
 }
 

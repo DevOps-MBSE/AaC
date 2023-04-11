@@ -162,7 +162,7 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
      */
     private onMessage(panel: vscode.WebviewPanel, document: AacDefinitionsDocument, message: any) {
         const params = new URLSearchParams(document.uri.query);
-        const isNewDefinition = params.get(queryKeys.QUERY_KEY_NEW) === `${true}`;
+        const isNewDefinition = params.get(queryKeys.QUERY_KEY_NEW) === "true";
         let definitionName = params.get(queryKeys.QUERY_KEY_NAME);
         let definitionSourceFile = params.get(queryKeys.QUERY_KEY_FILE);
         let definitionSchema = params.get(queryKeys.QUERY_KEY_SCHEMA);
@@ -178,7 +178,7 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
                 document.makeEdit(message.body as AacDefinitionEdit);
                 return;
             case AacEditorEventTypes.SAVE:
-                if (isNewDefinition && document.documentState === AacDocumentStateTypes.NEW ) {
+                if (isNewDefinition && document.documentState === AacDocumentStateTypes.NEW) {
                     this.createDefinition(document);
                 } else {
                     this.updateDefinition(document);
@@ -229,7 +229,7 @@ export class AacDefinitionEditorProvider implements vscode.CustomEditorProvider<
         const response = (await Promise.resolve(aacRestApi.addDefinitionDefinitionPost(updatedDefinitionModel))).response;
         if (response.statusCode !== 204) {
             vscode.window.showErrorMessage(`Failed to update definition: ${response.statusMessage}`);
-        };
+        }
 
         document.documentState = AacDocumentStateTypes.UPDATE;
         return response;

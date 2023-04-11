@@ -245,13 +245,14 @@ def get_root_key_schema(key: str):
 
     Returns:
         200 HTTPStatus.OK if successful.
+        404 HTTPStatus.NOT_FOUND if the key doesn't exist.
     """
     active_context = get_active_context()
     key_fields = active_context.get_root_fields()
     matching_keys = [key_field for key_field in key_fields if key_field.get("name") == key]
 
     if not matching_keys:
-        _report_error_response(HTTPStatus.NOT_FOUND, f"No matching key found for {key}.")
+        _report_error_response(HTTPStatus.NOT_FOUND, f"No root key found called {key}.")
     else:
         key_definition_name = matching_keys[0].get(DEFINITION_FIELD_TYPE, "")
         schema_definition = active_context.get_definition_by_name(key_definition_name)
@@ -270,7 +271,7 @@ def get_language_context_root_keys():
     Returns a list of root keys from the active context.
 
     Returns:
-        200 HTTPStatus.OK if successful.
+        200 HTTPStatus.OK
     """
     return get_active_context().get_root_keys()
 
