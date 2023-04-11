@@ -15,6 +15,7 @@ from aac.lang.constants import (
     DEFINITION_FIELD_EXTENSION_ENUM,
     DEFINITION_FIELD_EXTENSION_SCHEMA,
     DEFINITION_FIELD_FIELDS,
+    DEFINITION_FIELD_IMPORT,
     DEFINITION_FIELD_INHERITS,
     DEFINITION_FIELD_TYPE,
     DEFINITION_FIELD_VALIDATION,
@@ -45,6 +46,7 @@ class Definition:
     source: AaCFile = attrib(validator=validators.instance_of(AaCFile))
     lexemes: list[Lexeme] = attrib(default=Factory(list), validator=validators.instance_of(list))
     structure: dict = attrib(default=Factory(dict), validator=validators.instance_of(dict))
+    imports: list[str] = attrib(default=Factory(list), validator=validators.instance_of(list))
 
     def __attrs_post_init__(self):
         """Post-init hook."""
@@ -56,10 +58,7 @@ class Definition:
 
     def get_root_key(self) -> str:
         """Return the root key for the parsed definition."""
-        root_key = "null_key"
-        if len(self.structure.keys()) > 0:
-            root_key = list(self.structure.keys())[0]
-        return root_key
+        return [key for key in self.structure.keys() if key != DEFINITION_FIELD_IMPORT][0]
 
     # Get Field Functions
 
@@ -112,6 +111,10 @@ class Definition:
         fields = self.get_top_level_fields()
         return fields.get(DEFINITION_FIELD_FIELDS)
 
+    def get_imports(self) -> list[str]:
+        """Return a list of imported aac files, empty if there are no imports."""
+        return self.imports
+
     # Type Test Functions
 
     def is_extension(self) -> bool:
@@ -142,7 +145,13 @@ class Definition:
 
     def to_yaml(self) -> str:
         """Return a yaml string based on the current state of the definition including extensions."""
-        return yaml.dump(self.structure, sort_keys=False)
+        imports_dict = {DEFINITION_FIELD_IMPORT: self.imports}
+        structure_to_convert_to_yaml = self.structure
+        if self.imports:
+            # using | instead of |= or update to force imports at the top of the yaml output
+            structure_to_convert_to_yaml = imports_dict | structure_to_convert_to_yaml
+
+        return yaml.dump(structure_to_convert_to_yaml, sort_keys=False)
 
     # Misc Functions
 

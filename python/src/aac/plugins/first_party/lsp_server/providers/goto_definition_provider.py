@@ -94,11 +94,8 @@ class GotoDefinitionProvider(LspProvider):
         Returns:
             A list, probably consisting of only one element, of locations corresponding to lexemes of definition names
         """
-        def filter_lexeme_by_reference_name(lexeme: Lexeme) -> bool:
-            return lexeme.value == definition.name
-
         locations = []
-        referencing_lexemes = filter(filter_lexeme_by_reference_name, definition.lexemes)
+        referencing_lexemes = [lexeme for lexeme in definition.lexemes if lexeme.value == definition.name]
         for lexeme in referencing_lexemes:
             previous_lexeme = definition.lexemes[definition.lexemes.index(lexeme) - 1]
             if "name" in previous_lexeme.value:

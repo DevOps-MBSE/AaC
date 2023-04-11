@@ -33,7 +33,7 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
         await super().asyncSetUp()
 
         self.client = LspTestClient()
-        self.active_context = self.client.server.language_context
+        self.active_context = self.client.lsp_server.language_context
         self.temp_documents_directory: TemporaryDirectory = TemporaryDirectory()
 
         await self.client.start()
@@ -50,8 +50,6 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
 
     async def asyncTearDown(self):
         await super().asyncTearDown()
-        for file_name in self.documents.keys():
-            await self.close_document(file_name)
         self.documents.clear()
         self.temp_documents_directory.cleanup()
         await self.client.stop()
@@ -188,7 +186,14 @@ class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
         return response_type(response.result())
 
     def _get_absolute_file_path(self, file_name: str):
-        return path.realpath(path.join(self.temp_documents_directory.name, file_name))
+        file_path = file_name
+        if self.temp_documents_directory.name not in file_name:
+            file_path = path.realpath(path.join(self.temp_documents_directory.name, file_name))
+
+        if file_name.startswith("file:/"):
+            file_path = uris.to_fs_path(file_path)
+
+        return file_path
 
     def _create_core_spec_virtual_doc(self) -> TextDocument:
         content = core.get_aac_spec_as_yaml()
