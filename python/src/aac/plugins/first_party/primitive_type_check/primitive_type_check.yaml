@@ -109,3 +109,36 @@ model:
           then:
             - The ValidatorOutput indicates a warning
             - The ValidatorOutput indicates the primitive value under test does not exist
+    - name: Validate Reference Primitives
+      type: request-response
+      description:
+      input:
+        - name: input
+          type: ValidatorInput
+      output:
+        - name: results
+          type: ValidatorOutput
+      acceptance:
+        - scenario: Successfully Validate a Reference Primitive Value
+          given:
+            - The ValidatorInput content consists of valid AaC definitions
+            - The ValidatorInput contains at least one definition field that is defined as being type `reference`
+            - The value in the primitive `reference` field is the name of an AaC definition.
+            - The specified definition exists in the active context.
+          when:
+            - The input is validated
+          then:
+            - The ValidatorOutput does not indicate any errors
+            - The ValidatorOutput does not indicate any warnings
+            - The ValidatorOutput indicates the primitive value under test is valid
+        - scenario: Error when validating a Reference Primitive Value that does not exist
+          given:
+            - The ValidatorInput content consists of valid AaC definitions
+            - The ValidatorInput contains at least one definition field that is defined as being type `reference`
+            - The value in the primitive `reference` field is a string value
+            - The specified reference does not exist in the active context
+          when:
+            - The input is validated
+          then:
+            - The ValidatorOutput indicates an error
+            - The ValidatorOutput indicates the primitive value under test does not exist
