@@ -1,6 +1,15 @@
 """Module for handling Definitions and Extensions."""
 
 import logging
+from aac.lang.constants import (
+    DEFINITION_FIELD_ADD,
+    DEFINITION_FIELD_ARGUMENTS,
+    DEFINITION_FIELD_EXTENSION_ENUM,
+    DEFINITION_FIELD_EXTENSION_SCHEMA,
+    DEFINITION_FIELD_FIELDS,
+    DEFINITION_FIELD_NAME,
+    DEFINITION_FIELD_VALIDATION,
+)
 
 from aac.lang.definitions.definition import Definition
 from aac.lang.language_error import LanguageError
@@ -25,8 +34,8 @@ def apply_extension_to_definition(extension_definition: Definition, target_defin
     if original_field_values is not None:
         updated_values = []
 
-        if extension_additional_content is not None and "add" in extension_additional_content:
-            new_values = extension_additional_content.get("add") or []
+        if extension_additional_content is not None and DEFINITION_FIELD_ADD in extension_additional_content:
+            new_values = extension_additional_content.get(DEFINITION_FIELD_ADD) or []
             if extension_definition.is_enum_extension():
                 updated_values = _combine_enum_values(original_field_values, new_values)
             else:
@@ -41,7 +50,7 @@ def apply_extension_to_definition(extension_definition: Definition, target_defin
             raise LanguageError(missing_ext_content_message)
 
     else:
-        extension_type = "enum" if extension_definition.is_enum_extension() else "schema"
+        extension_type = get_extension_definition_type(extension_definition)
         incorrect_target_error_message = f"Attempted to apply the extension '{extension_definition.name}' ({extension_type}) to an incompatible target definition '{target_definition.name}' ({target_definition.get_root_key()})"
         logging.error(incorrect_target_error_message)
 
@@ -60,21 +69,24 @@ def remove_extension_from_definition(extension_definition: Definition, target_de
     target_definition_fields = target_definition.get_top_level_fields()
     extension_additional_content = _get_extension_additional_content_dict(extension_definition)
     extension_field_name = _get_extension_field_name(extension_definition)
+    extension_target_field = target_definition_fields.get(extension_field_name)
 
-    if target_definition_fields.get(extension_field_name):
-        elements_to_remove = extension_additional_content.get("add")
+    if extension_target_field:
+        elements_to_remove = extension_additional_content.get(DEFINITION_FIELD_ADD)
         if not isinstance(elements_to_remove, list):
             elements_to_remove = [elements_to_remove]
 
         for element_to_remove in elements_to_remove:
-            # debug print
-            print(f"{extension_definition.name} removing edit from '{target_definition.name}'")
-            print(element_to_remove)
-            if element_to_remove in target_definition_fields:
-                target_definition_fields[extension_field_name].remove(element_to_remove)
+
+            if extension_definition.is_schema_extension():
+                field_name_to_remove = element_to_remove.get(DEFINITION_FIELD_NAME, "")
+                _remove_schema_extension_from_fields(field_name_to_remove, extension_target_field)
+            elif extension_definition.is_enum_extension():
+                _remove_enum_extension_from_values(element_to_remove, extension_target_field)
             else:
-                missing_extension_fields_message = f"Extension target definition '{target_definition.name}' does not have the target modified field '{element_to_remove}' per the extension '{extension_definition.name}'"
-                logging.error(missing_extension_fields_message)
+                logging.error(
+                    f"Unrecognized extension type found in '{extension_definition}'. Valid types are '{DEFINITION_FIELD_EXTENSION_ENUM}' and '{DEFINITION_FIELD_EXTENSION_SCHEMA}'"
+                )
     else:
         missing_target_error_message = f"Attempted to remove a missing extension field from the target. Extension name '{extension_definition.name}' target definition '{target_definition.name}'"
         logging.error(missing_target_error_message)
@@ -83,17 +95,40 @@ def remove_extension_from_definition(extension_definition: Definition, target_de
     _remove_extension_required_fields_to_definition(target_definition_fields, extension_additional_content)
 
 
+def get_extension_definition_type(definition: Definition) -> str:
+    """Returns the extension's substructure type based on whether the extension is extending an enum or schema definition."""
+    return DEFINITION_FIELD_EXTENSION_ENUM if definition.is_enum_extension() else DEFINITION_FIELD_EXTENSION_ENUM
+
+
+def _remove_schema_extension_from_fields(field_name_to_remove: str, target_definition_fields: list[dict]):
+    """Specifically remove the extension's field from the target definition's fields."""
+    matching_fields = [field for field in target_definition_fields if field.get(DEFINITION_FIELD_NAME) == field_name_to_remove]
+
+    if len(matching_fields) == 0:
+        logging.error(f"Failed to find the field '{field_name_to_remove}' in the target fields '{target_definition_fields}'")
+    else:
+        matching_field, *_ = matching_fields
+        target_definition_fields.remove(matching_field)
+
+
+def _remove_enum_extension_from_values(enum_to_remove: str, target_enum_values: list[str]):
+    """Specifically remove the extension's enum value from the target definition's enum values."""
+    if enum_to_remove not in target_enum_values:
+        logging.error(f"Failed to find the enum value '{enum_to_remove}' in the target values '{target_enum_values}'")
+    else:
+        target_enum_values.remove(enum_to_remove)
+
+
 def _get_extension_additional_content_dict(extension_definition: Definition) -> dict:
     """Return the extension's additive information fields based on the extension's sub-type (enumExt/dataExt)."""
     extension_definition_fields = extension_definition.get_top_level_fields()
-    extension_type = "enum" if extension_definition.is_enum_extension() else "schema"
-    ext_type = f"{extension_type}Ext"
-    return extension_definition_fields.get(ext_type)
+    extension_type = get_extension_definition_type(extension_definition)
+    return extension_definition_fields.get(extension_type)
 
 
 def _get_extension_field_name(extension_definition: Definition) -> str:
     """Get the appropriate field name (values/fields) for the extension's additional content."""
-    return "values" if extension_definition.is_enum_extension() else "fields"
+    return "values" if extension_definition.is_enum_extension() else DEFINITION_FIELD_FIELDS
 
 
 def _combine_enum_values(original_values: list[str], new_values: list[str]) -> list[str]:
@@ -103,9 +138,9 @@ def _combine_enum_values(original_values: list[str], new_values: list[str]) -> l
 
 def _combine_schema_fields(original_fields: list[dict], new_fields: list[dict]) -> list[dict]:
     """Return a list of all unique original and new data fields combined together."""
-    updated_fields_dict = {value.get("name"): value for value in original_fields}
-    unique_new_fields = [field for field in new_fields if field.get("name") not in updated_fields_dict.keys()]
-    new_fields_dict = {value.get("name"): value for value in unique_new_fields}
+    updated_fields_dict = {value.get(DEFINITION_FIELD_NAME): value for value in original_fields}
+    unique_new_fields = [field for field in new_fields if field.get(DEFINITION_FIELD_NAME) not in updated_fields_dict.keys()]
+    new_fields_dict = {value.get(DEFINITION_FIELD_NAME): value for value in unique_new_fields}
     updated_fields_dict.update(new_fields_dict)
     return list(updated_fields_dict.values())
 
@@ -119,26 +154,32 @@ def _remove_enum_values(target_values: list, values_to_remove: list) -> list:
 
 def _remove_schema_fields(target_fields: list, fields_to_remove: list):
     """Return a list of the target fields sans any of the fields to remove."""
-    dict_of_fields_to_remove = {field.get("name"): field for field in fields_to_remove}
-    updated_fields_list = {field.get("name"): field for field in target_fields if field.get("name") not in dict_of_fields_to_remove}
+    dict_of_fields_to_remove = {field.get(DEFINITION_FIELD_NAME): field for field in fields_to_remove}
+    updated_fields_list = {
+        field.get(DEFINITION_FIELD_NAME): field for field in target_fields if field.get(DEFINITION_FIELD_NAME) not in dict_of_fields_to_remove
+    }
     return list(updated_fields_list.values())
 
 
-def _add_extension_required_fields_to_definition(target_definition_fields: dict, extension_additional_content_fields: dict) -> None:
+def _add_extension_required_fields_to_definition(
+    target_definition_fields: dict, extension_additional_content_fields: dict
+) -> None:
     """Add any additional required fields from the extension to the target definition."""
     extension_required_fields = extension_additional_content_fields.get("required")
     definition_validations = _get_definition_validations(target_definition_fields)
 
     if not definition_validations:
-        target_definition_fields["validation"] = []
+        target_definition_fields[DEFINITION_FIELD_VALIDATION] = []
 
     required_fields_validation = _get_required_fields_validation_for_definition(target_definition_fields)
     if extension_required_fields:
-        target_definition_fields["validation"].append(required_fields_validation)
-        required_fields_validation["arguments"].extend(extension_required_fields)
+        target_definition_fields[DEFINITION_FIELD_VALIDATION].append(required_fields_validation)
+        required_fields_validation[DEFINITION_FIELD_ARGUMENTS].extend(extension_required_fields)
 
 
-def _remove_extension_required_fields_to_definition(target_definition_fields: dict, extension_additional_content_fields: dict) -> None:
+def _remove_extension_required_fields_to_definition(
+    target_definition_fields: dict, extension_additional_content_fields: dict
+) -> None:
     """Remove the extension's required fields from the target definition's required fields."""
     target_required_fields = []
     definition_validations = _get_definition_validations(target_definition_fields)
@@ -146,7 +187,7 @@ def _remove_extension_required_fields_to_definition(target_definition_fields: di
 
     if definition_validations:
         required_fields_validation = _get_required_fields_validation_for_definition(target_definition_fields)
-        target_required_fields = required_fields_validation.get("arguments")
+        target_required_fields = required_fields_validation.get(DEFINITION_FIELD_ARGUMENTS)
 
     for required_field in extension_required_fields:
         if required_field in target_required_fields:
@@ -160,6 +201,7 @@ def _remove_extension_required_fields_to_definition(target_definition_fields: di
 def _get_required_fields_validation_string() -> str:
     """Return the name of the required fields validation."""
     from aac.plugins.validators.required_fields import PLUGIN_NAME
+
     return PLUGIN_NAME
 
 
@@ -167,8 +209,8 @@ def _get_required_fields_validation_for_definition(definition_fields: dict) -> d
     """Return the required fields validation on the specified definition."""
     definition_validations = _get_definition_validations(definition_fields)
     required_fields_validation_name = _get_required_fields_validation_string()
-    required_fields_validation = [v for v in definition_validations if v.get("name") == required_fields_validation_name]
-    empty_required_fields_validation = {"name": required_fields_validation_name, "arguments": []}
+    required_fields_validation = [v for v in definition_validations if v.get(DEFINITION_FIELD_NAME) == required_fields_validation_name]
+    empty_required_fields_validation = {DEFINITION_FIELD_NAME: required_fields_validation_name, DEFINITION_FIELD_ARGUMENTS: []}
 
     return required_fields_validation[0] if required_fields_validation else empty_required_fields_validation
 
