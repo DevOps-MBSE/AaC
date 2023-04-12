@@ -169,6 +169,10 @@ class Definition:
         """Return a deep copy of the definition."""
         return copy.deepcopy(self)
 
+    def get_source_file(self) -> AaCFile:
+        """Returns the AaCFile the definition can be found in."""
+
+
     def get_lexeme_with_value(
         self,
         search_value: Any,
