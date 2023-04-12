@@ -97,7 +97,7 @@ def remove_extension_from_definition(extension_definition: Definition, target_de
 
 def get_extension_definition_type(definition: Definition) -> str:
     """Returns the extension's substructure type based on whether the extension is extending an enum or schema definition."""
-    return DEFINITION_FIELD_EXTENSION_ENUM if definition.is_enum_extension() else DEFINITION_FIELD_EXTENSION_ENUM
+    return DEFINITION_FIELD_EXTENSION_ENUM if definition.is_enum_extension() else DEFINITION_FIELD_EXTENSION_SCHEMA
 
 
 def _remove_schema_extension_from_fields(field_name_to_remove: str, target_definition_fields: list[dict]):
