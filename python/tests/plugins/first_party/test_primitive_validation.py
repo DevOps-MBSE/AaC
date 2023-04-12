@@ -42,14 +42,18 @@ class TestPrimitiveValidation(ActiveContextTestCase):
 
     def test_type_check_valid(self):
         test_context = get_active_context()
-        test_context.add_definitions_to_context([ALL_PRIMITIVES_TEST_DEFINITION_SCHEMA_EXT, ALL_PRIMITIVES_TEST_DEFINITION])
+        test_context.add_definitions_to_context(
+            [ALL_PRIMITIVES_TEST_DEFINITION_SCHEMA_EXT, ALL_PRIMITIVES_TEST_DEFINITION, TEST_SCHEMA_A]
+        )
 
         with (
+            temporary_test_file("") as empty_test_file,
             temporary_test_file(ALL_PRIMITIVES_INSTANCE.to_yaml()) as test_file,
-            validated_source(test_file.name) as result,
         ):
-            get_active_context().add_definitions_to_context(result.definitions)
-            assert_validator_result_success(result)
+            empty_test_file.name = "test.aac"
+            with validated_source(test_file.name) as result:
+                get_active_context().add_definitions_to_context(result.definitions)
+                assert_validator_result_success(result)
 
     def test_type_check_invalid(self):
         test_context = get_active_context()
