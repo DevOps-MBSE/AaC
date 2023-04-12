@@ -69,7 +69,7 @@ class TestExclusiveFieldsPlugin(ActiveContextTestCase):
         self.assertEqual(expected_result, actual_result)
 
     def test_validate_exclusive_fields_multiple_defined_exclusive_fields(self):
-        test_active_context = get_active_context()
+        test_context = get_active_context()
 
         test_field_entry = create_field_entry("TestField", PRIMITIVE_TYPE_STRING)
         test_combined_ext_definition = create_schema_ext_definition(
@@ -80,14 +80,13 @@ class TestExclusiveFieldsPlugin(ActiveContextTestCase):
         test_combined_ext_definition.structure[ROOT_KEY_EXTENSION][DEFINITION_FIELD_EXTENSION_ENUM] = enum_definition_structure
         test_combined_ext_definition, *_ = parse(test_combined_ext_definition.to_yaml())
 
-        ext_schema = get_definition_by_name("extension", test_active_context.definitions)
-        ext_schema_args = ext_schema.get_validations()[1].get(DEFINITION_FIELD_ARGUMENTS)
+        ext_schema = get_definition_by_name("extension", test_context.definitions)
+        ext_schema_validations, *_ = ext_schema.get_validations()
+        ext_schema_args = ext_schema_validations.get(DEFINITION_FIELD_ARGUMENTS)
 
         expected_finding_location = SourceLocation(10, 2, 164, 7)
 
-        actual_result = validate_exclusive_fields(
-            test_combined_ext_definition, ext_schema, test_active_context, *ext_schema_args
-        )
+        actual_result = validate_exclusive_fields(test_combined_ext_definition, ext_schema, test_context, *ext_schema_args)
 
         self.assertFalse(actual_result.is_valid())
         self.assertEqual(
