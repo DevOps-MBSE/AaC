@@ -129,7 +129,7 @@ def _get_extension_additional_content_dict(extension_definition: Definition) -> 
 
 def _get_extension_field_name(extension_definition: Definition) -> str:
     """Get the appropriate field name (values/fields) for the extension's additional content."""
-    return "values" if extension_definition.is_enum_extension() else DEFINITION_FIELD_FIELDS
+    return DEFINITION_FIELD_VALUES if extension_definition.is_enum_extension() else DEFINITION_FIELD_FIELDS
 
 
 def _combine_enum_values(original_values: list[str], new_values: list[str]) -> list[str]:
