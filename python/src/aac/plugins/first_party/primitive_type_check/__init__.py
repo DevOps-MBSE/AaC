@@ -10,6 +10,7 @@ from aac.plugins.first_party.primitive_type_check.validators import (
     num_validator,
     date_validator,
     reference_validator,
+    string_validator,
 )
 from aac.plugins.plugin import Plugin
 
@@ -35,4 +36,5 @@ def _get_primitive_validations() -> list[PrimitiveValidationContribution]:
         num_validator.get_validator(),
         date_validator.get_validator(),
         reference_validator.get_validator(),
+        string_validator.get_validator(),
     ]

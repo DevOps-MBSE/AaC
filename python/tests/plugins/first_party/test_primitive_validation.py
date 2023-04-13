@@ -9,6 +9,7 @@ from aac.lang.constants import (
     PRIMITIVE_TYPE_INT,
     PRIMITIVE_TYPE_NUMBER,
     PRIMITIVE_TYPE_REFERENCE,
+    PRIMITIVE_TYPE_STRING,
 )
 from aac.plugins.first_party.primitive_type_check.validators import (
     bool_validator,
@@ -17,6 +18,7 @@ from aac.plugins.first_party.primitive_type_check.validators import (
     num_validator,
     date_validator,
     reference_validator,
+    string_validator,
 )
 from aac.plugins.validators import ValidatorFinding
 from aac.validate import validated_source
@@ -39,6 +41,7 @@ class TestPrimitiveValidation(ActiveContextTestCase):
     FILE_VALIDATOR = file_validator.get_validator()
     DATE_VALIDATOR = date_validator.get_validator()
     REFERENCE_VALIDATOR = reference_validator.get_validator()
+    STRING_VALIDATOR = string_validator.get_validator()
 
     def test_type_check_valid(self):
         test_context = get_active_context()
@@ -69,6 +72,7 @@ class TestPrimitiveValidation(ActiveContextTestCase):
         test_content.replace(
             str(ALL_PRIMITIVES_INSTANCE.structure[root_key][PRIMITIVE_TYPE_REFERENCE.upper()]), "NotAReference"
         )
+        test_content.replace(str(ALL_PRIMITIVES_INSTANCE.structure[root_key][PRIMITIVE_TYPE_STRING.upper()]), "123")
 
         with (
             temporary_test_file(test_content) as test_file,
@@ -88,6 +92,8 @@ class TestPrimitiveValidation(ActiveContextTestCase):
             self.assertIn(self.FILE_VALIDATOR.primitive_type, exception_message)
             self.assertIn(self.REFERENCE_VALIDATOR.name, exception_message)
             self.assertIn(self.REFERENCE_VALIDATOR.primitive_type, exception_message)
+            self.assertIn(self.STRING_VALIDATOR.name, exception_message)
+            self.assertIn(self.STRING_VALIDATOR.primitive_type, exception_message)
 
     def test_integer_type_valid(self):
         valid_int = ["10", "012345678", "999999999999999999"]
@@ -146,6 +152,15 @@ class TestPrimitiveValidation(ActiveContextTestCase):
             PRIMITIVE_TYPE_REFERENCE, TEST_SCHEMA_A.name, invalid_references, finding_assertion
         )
 
+    def test_string_type_valid(self):
+        valid_strings = ["hello, world", "abc", "''"]
+        self._test_valid_primitive_validation(PRIMITIVE_TYPE_STRING, "testString", valid_strings)
+
+    def test_string_type_invalid(self):
+        finding_assertion = f".*not.*valid.*{PRIMITIVE_TYPE_STRING}"
+        invalid_strings = ["1", "1.2", "True", "null", "[1, 2, 3]"]
+        self._test_invalid_primitive_validation(PRIMITIVE_TYPE_STRING, "testString", invalid_strings, finding_assertion)
+
     def _test_valid_primitive_validation(self, primitive_type: str, default_value: str, test_values: list[str]):
         """Test apparatus for asserting that the primitive validators don't report errors for valid values.
 
@@ -174,12 +189,12 @@ class TestPrimitiveValidation(ActiveContextTestCase):
             test_values: (list[str]): The list of values that will replace default_value
             finding_regex_assertion (str): A regex string used to assert that expected components are present in the message
         """
-        for valid_value in test_values:
+        for invalid_value in test_values:
             self._test_primitive_validation(
                 primitive_type,
                 default_value,
-                valid_value,
-                f"Failed to identify bad {primitive_type}: '{valid_value}'",
+                invalid_value,
+                f"Failed to identify bad {primitive_type}: '{invalid_value}'",
                 self.assertIsNotNone,
                 finding_regex_assertion,
             )
@@ -200,6 +215,7 @@ class TestPrimitiveValidation(ActiveContextTestCase):
             PRIMITIVE_TYPE_BOOL: self.BOOLEAN_VALIDATOR,
             PRIMITIVE_TYPE_FILE: self.FILE_VALIDATOR,
             PRIMITIVE_TYPE_REFERENCE: self.REFERENCE_VALIDATOR,
+            PRIMITIVE_TYPE_STRING: self.STRING_VALIDATOR,
         }
 
         test_context = get_active_context()
