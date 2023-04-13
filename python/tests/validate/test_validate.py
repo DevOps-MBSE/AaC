@@ -226,11 +226,9 @@ class TestValidateExtensions(ActiveContextTestCase):
         exception = error.exception
         self.assertEqual(ValidationError, type(exception))
         self.assertEqual(len(exception.args), 1)
-        self.assertIn("undefined", exception.args[0].lower())
-        self.assertIn(invalid_target, exception.args[0])
+        self.assertRegexpMatches(exception.args[0], f"{invalid_target}.*not.*valid.*reference")
 
     def test_validate_definitions_with_duplicate_name_extension_targets(self):
-
         def _assert_validation_results(result):
             self.assertFalse(result.is_valid())
             self.assertIn("unique definition names", result.get_messages_as_string())
