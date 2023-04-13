@@ -197,7 +197,7 @@
                 "displayName": "Edit AaC Definitions",
                 "selector": [
                     {
-                        "filenamePattern": "*.aac"
+                        "filenamePattern": "."
                     }
                 ],
                 "priority": "default"
