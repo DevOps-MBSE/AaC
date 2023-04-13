@@ -5,9 +5,10 @@ from pygls.lsp.types.language_features.definition import DefinitionParams
 from unittest.async_case import IsolatedAsyncioTestCase
 from re import search
 
+from aac.io.constants import YAML_DOCUMENT_SEPARATOR
+from aac.lang.constants import BEHAVIOR_TYPE_REQUEST_RESPONSE, PRIMITIVE_TYPE_STRING
 from aac.spec.core import get_aac_spec_as_yaml, _get_aac_spec_file_path
 from aac.plugins.first_party.lsp_server.providers.goto_definition_provider import GotoDefinitionProvider
-from aac.io.constants import YAML_DOCUMENT_SEPARATOR
 
 from tests.helpers.lsp.responses.goto_definition_response import GotoDefinitionResponse
 from tests.plugins.lsp_server.base_lsp_test_case import BaseLspTestCase
@@ -110,9 +111,7 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         new_test_document_content = f"{TEST_DOCUMENT_CONTENT}{YAML_DOCUMENT_SEPARATOR}{TEST_SERVICE_THREE.to_yaml()}"
         await self.write_document(TEST_DOCUMENT_NAME, new_test_document_content)
 
-        res: GotoDefinitionResponse = await self.goto_definition(
-            TEST_DOCUMENT_NAME, line=61, character=17
-        )
+        res: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=61, character=17)
 
         expected_location = self.get_definition_location_of_name(added_content, TEST_SCHEMA_C.name)
 
@@ -138,14 +137,14 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         self.assertEqual(location.range.json(), schema_definition_location.range.json())
 
     async def test_handles_goto_definition_for_enums(self):
-        string_location = self.get_definition_location_of_name(TEST_DOCUMENT_CONTENT, "string")
+        string_location = self.get_definition_location_of_name(TEST_DOCUMENT_CONTENT, PRIMITIVE_TYPE_STRING)
         res: GotoDefinitionResponse = await self.goto_definition(
             TEST_DOCUMENT_NAME, string_location.range.start.line, character=string_location.range.start.character
         )
 
         expected_location = Location(
             uri=_get_aac_spec_file_path(),
-            range=Range(start=Position(line=257, character=6), end=Position(line=257, character=12)),
+            range=Range(start=Position(line=254, character=6), end=Position(line=254, character=12)),
         )
         location = res.get_location()
         self.assertIsNotNone(location)
@@ -153,12 +152,14 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         self.assertEqual(location.range.json(), expected_location.range.json())
 
     async def test_handles_goto_definition_for_symbols_with_hyphens(self):
-        string_location = self.get_definition_location_of_name(TEST_DOCUMENT_CONTENT, "request-response")
+        string_location = self.get_definition_location_of_name(TEST_DOCUMENT_CONTENT, BEHAVIOR_TYPE_REQUEST_RESPONSE)
         res: GotoDefinitionResponse = await self.goto_definition(
             TEST_DOCUMENT_NAME, line=string_location.range.start.line, character=string_location.range.start.character
         )
 
-        request_response_definition_location = self.get_definition_location_of_name(get_aac_spec_as_yaml(), "request-response")
+        request_response_definition_location = self.get_definition_location_of_name(
+            get_aac_spec_as_yaml(), BEHAVIOR_TYPE_REQUEST_RESPONSE
+        )
         location = res.get_location()
         self.assertIsNotNone(location)
         self.assertEqual(location.range.json(), request_response_definition_location.range.json())

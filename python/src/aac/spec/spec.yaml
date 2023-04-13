@@ -91,7 +91,7 @@ schema:
       description: |
         The name of the extension.
     - name: type
-      type: string
+      type: reference
       description: |
         The name of the 'schema' or 'enum' definition that this definition is
         extending.
@@ -114,9 +114,6 @@ schema:
 
         See also, 'SchemaExtension'
   validation:
-    - name: Type references exist
-      arguments:
-        - type
     - name: Mutually exclusive fields
       arguments:
         - schemaExt

@@ -230,7 +230,7 @@ def _validate_primitive_field(
     if validators:
         validator, *_ = validators
         try:
-            validator_finding = validator.validation_function(source_def, field_value)
+            validator_finding = validator.validation_function(source_def, field_value, language_context)
         except Exception as exception:
             exception_message = f"Validator '{validator.name}' failed with an exception: {exception}"
             finding_location = FindingLocation(validator.name, source_def.source, 0, 0, 0, 0)
