@@ -41,7 +41,7 @@ from tests.helpers.parsed_definitions import (
 REFERENCE_CONTEXT = get_active_context().copy()
 
 # Standard Test Schemas
-TEST_SCHEMA_A = create_schema_definition("DataA", fields=[create_field_entry("msg", "string")])
+TEST_SCHEMA_A = create_schema_definition("Data A", fields=[create_field_entry("msg", "string")])
 TEST_SCHEMA_B = create_schema_definition("DataB", fields=[create_field_entry("msg", "string")])
 TEST_SCHEMA_C = create_schema_definition("DataC", fields=[create_field_entry("msg", "string")])
 
