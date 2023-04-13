@@ -9,9 +9,9 @@ has_children: false
 # Validation Plugins for Developers
 
 ## Plugin-provided Validations
-AaC's validation system leverages the larger AaC plugin system to provide a plug-an-play system for creating structural and primitive type validations (constrains) that are used to determine errors and possible issues in systems modeled in AaC.
+AaC's approach to validation leverages the larger AaC plugin mechanism to provide a plug-and-play system for creating structural and primitive type validations (constraints) that are used to detect errors and possible issues in systems modeled with AaC.
 
-AaC hsa two classes of plugin-provided validations: definition validations and primitive validations. The [definition validations](#definition-validations) are used to validate the structural parts of definitions such as required fields while [primitive validations](#primitive-validations) check that values in primitive fields adhere to the expectations of the data type such as checking that values listed as integers are in fact integers.
+AaC makes use of two classes of plugin-provided validations: definition validations and primitive validations. The [definition validations](#definition-validations) are used to validate the structural parts of definitions such as required fields while [primitive validations](#primitive-validations) check that values in primitive fields adhere to the expectations of the data type such as checking that values listed as integers are, in fact, integers.
 
 There is also a section listing out the `validation` plugin for the implementation of a validator plugin for 1st and/or 3rd party plugins
 
@@ -263,7 +263,7 @@ Looking inside this directory the structure of this plugin looks other AaC plugi
 └── primitive_type_check.yaml
 ```
 
-So seeing the structure of this validator, there is an `init`, a number of implementations under `validators` and the `yaml` file used to describe the plugin.
+Seeing the structure of this validator, there is an `init` module, there are a number of implementations in the `validators` package, and the `yaml` file used to describe the plugin.
 
 Taking a look at the bool validator we'll see the primitive validator interface:
 
@@ -291,7 +291,7 @@ def validate_bool(definition: Definition, value_to_validate: Any) -> Optional[Va
     return finding
 ```
 
-The yaml for the plugin looks like any other plugin:
+The yaml for the plugin looks like any other plugin definition file:
 
 ```yaml
 model:
@@ -335,7 +335,7 @@ model:
     ...
 ```
 
-Lastly, in order to register the primitive validations, the `primitive-type-check` plugin uses the following plugin method `plugin.register_primitive_validations(...)` to register its several primitive validators:
+Lastly, the `primitive-type-check` plugin uses the following `Plugin` method `plugin.register_primitive_validations(...)` to register its several primitive validators:
 ```python
 @hookimpl
 def get_plugin() -> Plugin:

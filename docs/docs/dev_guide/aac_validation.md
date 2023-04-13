@@ -9,7 +9,7 @@ has_children: false
 # What is Validation in the AaC Language?
 Because the AaC DSL is leveraging plain-text YAML as the underpinning of the DSL, there is little to no functionality to guide users in the correctness of their YAML AaC structures. AaC has implemented a self-validating language feature so that users can reference which rules are applied to which AaC DSL components, and so that users can define validation for their own user-defined structures. To this end, AaC employs a plugin-based validator system where plugins provide Python-based validator implementations that can be referenced and applied to definitions in the AaC DSL.
 
-Data structure, or schema, validation rules in AaC are defined with the `validation` definition, which are required to have a corresponding implementation, called a validator plugin. This enables AaC's self-validating mechanism even though YAML is just a markup language. Each data structure is decomposed into its smaller structures, and then the structural constraints (validations) are applied. Additionally, AaC also provides the ability to validate primitive types. Primitive validations are distinct from schema validations, but they work in the same general way -- when definitions are validated any fields with a 'primitive' type (e.g. string, number, integer, etc) are picked up and validated against the corresponding primitive type validator, if it exists.
+Data structure, or `schema`, validation rules in AaC are defined with the `validation` definition, which require a corresponding implementation, called a validator plugin. The validator plugin is what enables AaC's self-validating mechanism even though YAML is just a markup language. Each data structure is decomposed into its smaller structures, and then the structural constraints (validations) are applied. It is worth keeping in mind that, currently, we make no guarantees regarding the order in which validations are applied. Additionally, AaC also provides the ability to validate primitive types. Primitive validations are distinct from schema validations, but they work in the same general way -- when definitions are validated, any fields with a 'Primitive' type (e.g. string, number, boolean, etc) are validated against the corresponding primitive type validator, if it exists. If no such primitive type validator exists, then the type is treated as a string having a valid value, regardless of the actual value.
 
 Adhereing to AaC's goal of extensibility, users are capable of building plugins that contribute both schema and primitive validations. To read more on how those are created, check out the page on [creating validation plugins](../validation_plugins/).
 
@@ -133,12 +133,12 @@ The internal logic of the function is up to the user, but the plugins generally 
 3. If the definition under test doesn't meet the constraints of the validator, register and return an error message
 
 ## Primitive Validation
-Primitive validation is AaC's way of enforcing constraints for 'primitive' types such as `integer`, `number`, `file`, `date`, `string`, things that don't need a data structure to represent. All primitive types in the core AaC langauge have corresponding primitive validations in the first party plugin `primitive-type-check` [(link)](https://github.com/jondavid-black/AaC/tree/main/python/src/aac/plugins/first_party/primitive_type_check)
+Primitive validation is AaC's way of enforcing constraints for 'Primitive' types such as `integer`, `number`, `file`, `date`, `string`, things that don't need a separate data structure to be represented effectively. All primitive types in the core AaC language have (or will have in coming releases) corresponding primitive validations in the first party plugin [`primitive-type-check`](https://github.com/jondavid-black/AaC/tree/main/python/src/aac/plugins/first_party/primitive_type_check)
 
-### Primitive Validation Validator Plugins
-Each plugin can register multiple primitive validators, each of which provides a validation function that's used to validate a corresponding primitive type. It's recommended that plugins have a small, narrow scope of responsibility by focusing on a single validation, but multiple validators can be registered. Primitive validators are registered via the plugin function `plugin.register_primitive_validations(...)`.
+### Primitive Validator Plugins
+Each plugin can register multiple primitive validators, each of which provides a validation function that's used to validate a corresponding primitive type. Primitive validators are registered via the plugin function `plugin.register_primitive_validations(...)`.
 
-Each validator plugin should provide one validation function with the following signature:
+Each primitive validator should provide one validation function with the following signature:
 ```python
 def validate_primitive(definition: Definition, value_to_validate: Any) -> Optional[ValidatorFinding]:
     """
