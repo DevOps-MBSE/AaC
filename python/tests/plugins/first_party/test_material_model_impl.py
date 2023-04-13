@@ -1,37 +1,40 @@
 from unittest import TestCase
-
-import os
 from tempfile import TemporaryDirectory
 
-from tests.helpers.assertion import assert_plugin_success, assert_validation_failure
 from aac.plugins.first_party.material_model.material_model_impl import gen_bom
-from tests.helpers.io import temporary_test_file
+
+from tests.helpers.assertion import assert_plugin_success, assert_validation_failure
+from tests.helpers.io import new_working_dir, temporary_test_file
 
 
 class TestMaterialModel(TestCase):
-
     def test_gen_bom(self):
-
-        with TemporaryDirectory() as temp_dir, temporary_test_file(VALID_MATERIAL_MODEL) as temp_arch_file:
+        with (
+            TemporaryDirectory() as temp_dir,
+            temporary_test_file(VALID_MATERIAL_MODEL, dir=temp_dir) as temp_arch_file,
+            new_working_dir(temp_dir),
+        ):
             result = gen_bom(temp_arch_file.name, temp_dir)
             assert_plugin_success(result)
 
             # assert BOM was actually written
-            with open(os.path.join(temp_dir, "bom.csv")) as bom_csv_file:
-                bom_csv_contents = bom_csv_file.read()
-                bom_csv_contents = bom_csv_contents.replace("\"", "")  # it's not clear what does and doesn't get quoted by the CSV writer, so eliminate quotes
+            with open("bom.csv") as bom_csv_file:
+                # it's not clear what does and doesn't get quoted by the CSV writer, so eliminate quotes
+                bom_csv_contents = bom_csv_file.read().replace('"', "")
+
                 # Assert csv contents are present
                 self.assertIn("name,make,model,description,quantity,unit_cost,total_cost,need_date,location", bom_csv_contents)
-                self.assertIn("My_New_Apartment / Kitchen / Appliances / Blender,Grind House,Liquificationinator 1000,7 setting industrial strength blender with pulse,1,99.99,99.99,,Crystal Terrace Apartments Unit 1234 / The room with the sink and the stove", bom_csv_contents)
+                self.assertIn(
+                    "My_New_Apartment / Kitchen / Appliances / Blender,Grind House,Liquificationinator 1000,7 setting industrial strength blender with pulse,1,99.99,99.99,,Crystal Terrace Apartments Unit 1234 / The room with the sink and the stove",
+                    bom_csv_contents,
+                )
 
     def test_gen_bom_circular_reference(self):
-
         with TemporaryDirectory() as temp_dir, temporary_test_file(CIRCULAR_DEPLOYMENT_REF) as temp_arch_file:
             result = gen_bom(temp_arch_file.name, temp_dir)
             assert_validation_failure(result)
 
     def test_gen_bom_bad_reference(self):
-
         with TemporaryDirectory() as temp_dir, temporary_test_file(BAD_MATERIAL_REFERENCE) as temp_arch_file:
             result = gen_bom(temp_arch_file.name, temp_dir)
             assert_validation_failure(result)
