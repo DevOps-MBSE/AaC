@@ -171,6 +171,7 @@ class Definition:
 
     def get_source_file(self) -> AaCFile:
         """Returns the AaCFile the definition can be found in."""
+        return self.source
 
     def get_lexeme_with_value(
         self,

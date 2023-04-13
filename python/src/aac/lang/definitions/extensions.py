@@ -9,6 +9,7 @@ from aac.lang.constants import (
     DEFINITION_FIELD_FIELDS,
     DEFINITION_FIELD_NAME,
     DEFINITION_FIELD_VALIDATION,
+    DEFINITION_FIELD_VALUES,
 )
 
 from aac.lang.definitions.definition import Definition
