@@ -4,6 +4,7 @@ from typing import Any, Optional
 
 from aac.lang.constants import PRIMITIVE_TYPE_BOOL
 from aac.lang.definitions.definition import Definition
+from aac.lang.language_context import LanguageContext
 from aac.plugins.contributions.contribution_types import PrimitiveValidationContribution
 from aac.plugins.first_party.primitive_type_check.validators import BOOL_VALIDATION_NAME
 from aac.plugins.validators._validator_finding import ValidatorFinding, FindingSeverity, FindingLocation
@@ -14,7 +15,7 @@ def get_validator() -> PrimitiveValidationContribution:
     return PrimitiveValidationContribution(BOOL_VALIDATION_NAME, PRIMITIVE_TYPE_BOOL, validate_bool)
 
 
-def validate_bool(definition: Definition, value_to_validate: Any) -> Optional[ValidatorFinding]:
+def validate_bool(definition: Definition, value_to_validate: Any, _: LanguageContext) -> Optional[ValidatorFinding]:
     """
     Returns a Validation finding if the type isn't valid, otherwise None.
 
@@ -24,6 +25,7 @@ def validate_bool(definition: Definition, value_to_validate: Any) -> Optional[Va
     Arge:
         definition (Definition): The definition that the value belongs to.
         value_to_validate (Any): The value to be tested.
+        _ (LanguageContext): The current LanguageContext.
 
     Returns:
         A ValidatorFinding if the value is not a boolean or None.

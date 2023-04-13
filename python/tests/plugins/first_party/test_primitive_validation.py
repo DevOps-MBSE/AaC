@@ -230,7 +230,7 @@ class TestPrimitiveValidation(ActiveContextTestCase):
         # Assert that the number validator will not return a finding because the float value is valid.
         self.assertIn(primitive_type, validators_lookup)
         finding = validators_lookup.get(primitive_type).validation_function(
-            test_definition, test_definition.structure[test_definition.get_root_key()][primitive_type.upper()]
+            test_definition, test_definition.structure[test_definition.get_root_key()][primitive_type.upper()], test_context
         )
 
         assertion_function(finding, assertion_error)
