@@ -1,10 +1,8 @@
 """An Architecture-as-Code definition augmented with metadata and helpful functions."""
 from __future__ import annotations
-
 import copy
 import logging
 import yaml
-
 from attr import Factory, attrib, attrs, validators
 from typing import Any, Optional
 from uuid import UUID, uuid4
@@ -27,7 +25,7 @@ from aac.lang.constants import (
 from aac.lang.definitions.lexeme import Lexeme
 
 
-@attrs(hash=False)
+@attrs(hash=False, eq=False)
 class Definition:
     """An Architecture-as-Code definition.
 
@@ -55,6 +53,16 @@ class Definition:
     def __hash__(self) -> int:
         """Return the hash of this Definition."""
         return hash(self.name)
+
+    def __eq__(self, obj):
+        """Equals function for the Definition."""
+
+        def is_equal() -> bool:
+            equal = self.name == obj.name
+            equal = equal and self.structure == obj.structure
+            return equal
+
+        return isinstance(obj, Definition) and is_equal()
 
     def get_root_key(self) -> str:
         """Return the root key for the parsed definition."""
@@ -84,12 +92,14 @@ class Definition:
     def get_description(self) -> Optional[str]:
         """Return the description for the current definition, or None if it isn't defined."""
         fields = self.get_top_level_fields()
-        return fields.get(DEFINITION_FIELD_DESCRIPTION)
+        description = fields.get(DEFINITION_FIELD_DESCRIPTION)
+        return str(description) if description else None
 
     def get_type(self) -> Optional[str]:
         """Return the string for the extension type field, or None if the field isn't defined."""
         fields = self.get_top_level_fields()
-        return fields.get(DEFINITION_FIELD_TYPE)
+        type_field = fields.get(DEFINITION_FIELD_TYPE)
+        return str(type_field) if type_field else None
 
     def get_validations(self) -> Optional[list[dict]]:
         """Return a list of validation entry dictionaries, or None if the field isn't defined."""
@@ -158,6 +168,10 @@ class Definition:
     def copy(self) -> Definition:
         """Return a deep copy of the definition."""
         return copy.deepcopy(self)
+
+    def get_source_file(self) -> AaCFile:
+        """Returns the AaCFile the definition can be found in."""
+        return self.source
 
     def get_lexeme_with_value(
         self,

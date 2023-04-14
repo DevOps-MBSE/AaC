@@ -34,6 +34,9 @@ from aac.plugins.plugin import Plugin
 from aac.plugins.plugin_manager import get_plugins
 
 
+MISSING_TYPE = 'missing_type'
+
+
 @attrs(slots=True, auto_attribs=True)
 class LanguageContext:
     """
@@ -88,7 +91,7 @@ class LanguageContext:
             apply_inherited_attributes_to_definition(new_definition, self)
 
         if definition.is_extension():
-            target_definition_name = definition.get_type()
+            target_definition_name = definition.get_type() or MISSING_TYPE
             target_definition = self.get_definition_by_name(target_definition_name)
 
             if target_definition:
@@ -113,7 +116,7 @@ class LanguageContext:
                 sorted_definitions[definition.name] = definition
 
             for definition in definitions:
-                inherited_definition_names = definition.get_inherits()
+                inherited_definition_names = definition.get_inherits() or []
                 for inherited_definition_name in inherited_definition_names:
                     if inherited_definition_name in sorted_definitions:
                         sorted_definitions.move_to_end(definition.name)
@@ -159,7 +162,7 @@ class LanguageContext:
         Args:
             definition (Definition): The Definition to remove from the context.
         """
-        if definition.uid in self.definitions_dictionary:
+        if definition.uid in self.definitions_dictionary and self._is_definition_editable(definition):
             definition.source.is_loaded_in_context = False
             self.definitions_dictionary.pop(definition.uid)
             self.definitions.remove(definition)
@@ -170,12 +173,12 @@ class LanguageContext:
             )
 
         if definition.is_extension():
-            target_definition_name = definition.get_type()
+            target_definition_name = definition.get_type() or MISSING_TYPE
             target_definition = self.get_definition_by_name(target_definition_name)
             if target_definition:
                 remove_extension_from_definition(definition, target_definition)
             else:
-                logging.error(f"Failed to find the target defintion '{target_definition_name}' in the context.")
+                logging.error(f"Failed to find the target definition '{target_definition_name}' in the context.")
 
     def remove_definitions_from_context(self, definitions: list[Definition]) -> None:
         """
@@ -204,11 +207,13 @@ class LanguageContext:
         Args:
             definition (Definition): The Definition to update in the context.
         """
-        old_definition = self.definitions_dictionary.get(definition.uid)
-        if old_definition:
+
+        if definition.uid in self.definitions_dictionary:
+            old_definition = self.definitions_dictionary.get(definition.uid)
+
             self.remove_definition_from_context(old_definition)
             self.add_definition_to_context(definition)
-        else:
+        elif definition.uid not in self.definitions_dictionary:
             definitions_in_context = self.get_defined_types()
             missing_target_definition = f"Definition not present in context, can't be updated. '{definition.name}' with uid '{definition.uid}' not present in '{definitions_in_context}'"
             logging.error(missing_target_definition)
@@ -247,7 +252,7 @@ class LanguageContext:
             from active plugins and user files, which may extend the set of root keys.
             See :py:func:`aac.spec.get_root_keys()` for the list of root keys provided by the unaltered core AaC DSL.
         """
-        return [field.get(DEFINITION_FIELD_NAME) for field in self.get_root_fields()]
+        return [str(field.get(DEFINITION_FIELD_NAME)) for field in self.get_root_fields()]
 
     def get_root_fields(self) -> list[dict]:
         """
@@ -259,7 +264,12 @@ class LanguageContext:
             These fields may differ from those provided by the core spec since the LanguageContext applies definitions
             from active plugins and user files, which may extend the set of root fields.
         """
-        return self.get_definition_by_name(DEFINITION_NAME_ROOT).get_fields()
+        root_definition = self.get_definition_by_name(DEFINITION_NAME_ROOT)
+
+        if root_definition:
+            return root_definition.get_fields() or []
+        else:
+            raise LanguageError(f"Unable to get the '{DEFINITION_NAME_ROOT}' definition. Check that AaC has the core-spec loaded.")
 
     def get_root_keys_definition(self) -> Definition:
         """
@@ -312,7 +322,7 @@ class LanguageContext:
             from active plugins and user files, which may extend the set of root keys.
             See :py:func:`aac.spec.get_primitives()` for the list of root keys provided by the unaltered core AaC DSL.
         """
-        return self.get_primitives_definition().get_values()
+        return self.get_primitives_definition().get_values() or []
 
     def get_defined_types(self) -> list[str]:
         """
@@ -669,3 +679,17 @@ class LanguageContext:
         self.definitions = []
         self.plugins = []
         self.definitions_dictionary = {}
+
+    # Private methods
+
+    def _is_definition_editable(self, definition: Definition) -> bool:
+        """Returns true if the definition can be edited, otherwise false. No source also returns false."""
+        is_editable = False
+        if definition.source:
+            is_editable = definition.source.is_user_editable
+        else:
+            logging.error(
+                f"Definition '{definition.name}' was not modified, because its source '{definition.source.uri or 'no-source'}' is not editable."
+            )
+
+        return is_editable
