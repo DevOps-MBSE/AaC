@@ -112,7 +112,7 @@ schema:
 ### Definition Validator Plugins
 Each plugin can register multiple definition validators, each of which provides a validation function that's used to validate any corresponding definition structures. It's recommended that plugins have a small, narrow scope of responsibility by focusing on a single validation, but multiple validators can be registered. Definition validators are registered via the plugin function `plugin.register_definition_validations(...)`
 
-Each validator plugin should provide one validation function with the following signature:
+Each schema validator must implement a validation function with the following signature/interface:
 ```python
 def validate_example(definition_under_test: Definition, target_schema_definition: Definition, language_context: LanguageContext, *validation_args) -> ValidatorResult:
     """

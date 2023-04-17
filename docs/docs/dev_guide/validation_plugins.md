@@ -15,7 +15,6 @@ AaC makes use of two classes of plugin-provided validations: definition validati
 
 There is also a section listing out the `validation` plugin for the implementation of a validator plugin for 1st and/or 3rd party plugins
 
-<!-- * [Implementation of a Validation Plugin for Definitions](#implementation-of-a-validation-plugin-for-definitions) -->
 
 ### Definition Validations
 The following snippet shows how the `_validate.py` validates a `definition` that is being passed through:
