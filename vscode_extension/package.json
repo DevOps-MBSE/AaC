@@ -127,6 +127,14 @@
                 "category": "AaC"
             },
             {
+                "command": "definitionsList.createEntry",
+                "title": "Create",
+                "icon": {
+                    "light": "src/resources/light/create.svg",
+                    "dark": "src/resources/dark/create.svg"
+                }
+            },
+            {
                 "command": "definitionsList.editEntry",
                 "title": "Edit",
                 "icon": {
@@ -209,6 +217,11 @@
                     "command": "definitionsList.refreshEntry",
                     "when": "view == definitions-in-context",
                     "group": "navigation"
+                },
+                {
+                    "command": "definitionsList.createEntry",
+                    "when": "view == definitions-in-context",
+                    "group": "navigation"
                 }
             ],
             "view/item/context": [
@@ -262,6 +275,7 @@
     "dependencies": {
         "@json-editor/json-editor": "^2.8.0",
         "request": "^2.88.2",
-        "vscode-languageclient": "^7.0.0"
+        "vscode-languageclient": "^7.0.0",
+        "vscode-uri": "^3.0.7"
     }
 }

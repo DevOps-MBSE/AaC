@@ -3,7 +3,7 @@ import { AacLanguageServerClient } from "./AacLanguageServer";
 import { executeAacCommand } from "./aacExecutableWrapper";
 import { getOutputChannel } from "./outputChannel";
 import { AacDefinitionEditorProvider } from "./providers/AacDefinitionEditorProvider";
-import { AacDefinitionsViewProvider, Definition, editDefinition, deleteDefinition, onDefinitionNodeSelection } from "./providers/AacDefinitionsViewProvider";
+import { AacDefinitionsViewProvider, Definition, editDefinition, deleteDefinition, onDefinitionNodeSelection, createDefinition } from "./providers/AacDefinitionsViewProvider";
 import { setFilePathConfigurationItem } from "./configuration";
 
 let aacLspClient: AacLanguageServerClient = AacLanguageServerClient.getLspClient();
@@ -32,6 +32,7 @@ function registerCommands(context: ExtensionContext) {
         [EXECUTE_AAC_COMMAND_NAME, executeAacCommand],
         [CHANGE_AAC_PATH_SETTING_NAME, () => setFilePathConfigurationItem("aacPath", "Select the AaC executable")],
         [TREE_VIEW_PROVIDER.COMMAND_DEFINITIONS_LIST_REFRESH, () => { TREE_VIEW_PROVIDER.refresh(); }],
+        [TREE_VIEW_PROVIDER.COMMAND_DEFINITIONS_LIST_CREATE, () => { createDefinition(); }],
         [TREE_VIEW_PROVIDER.COMMAND_DEFINITIONS_LIST_EDIT, (e: Definition) => { editDefinition(e); }],
         [TREE_VIEW_PROVIDER.COMMAND_DEFINITIONS_LIST_DELETE, (e: Definition) => { deleteDefinition(e, TREE_VIEW_PROVIDER); }],
     ];
