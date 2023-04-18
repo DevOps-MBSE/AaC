@@ -247,7 +247,7 @@ validation:
 
 Examples of a primitive validator plugin can be found by refering the first-party provider for primitive validations [primitive-type-check](https://github.com/jondavid-black/AaC/tree/main/python/src/aac/plugins/first_party/primitive_type_check)
 
-Looking inside this directory the structure of this plugin looks other AaC plugins:
+Looking inside this directory, the structure of this plugin looks like other AaC plugins:
 
 ```markdown
 .primitive_type_check
