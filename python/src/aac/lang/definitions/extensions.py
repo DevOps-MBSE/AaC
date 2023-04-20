@@ -46,7 +46,7 @@ def apply_extension_to_definition(extension_definition: Definition, target_defin
             _add_extension_required_fields_to_definition(target_definition_fields_dict, extension_additional_content)
 
         else:
-            missing_ext_content_message = f"Error when attempting to applying extension '{extension_definition.name}'. The extension is missing the appropriate extension content field '{target_definition.get_root_key()}Ext'"
+            missing_ext_content_message = f"Error when attempting to apply extension '{extension_definition.name}'. The extension is missing the appropriate extension content field '{target_definition.get_root_key()}Ext'"
             logging.error(missing_ext_content_message)
             raise LanguageError(missing_ext_content_message)
 
