@@ -57,12 +57,21 @@ schema:
         the specification of any plugins you may have installed.
 
         You can extend any 'enum' and 'schema' definition.
+    - name: plugin
+      type: Plugin
+      description: |
+        A reference to a plugin. Plugins can provide any extra functionality
+        desired on top of AaC-modeled systems from document generation to code
+        generation and everything in between.
+
+        Plugins are referenced by name.
     - name: validation
       type: Validation
       description: |
-        A reference to a validation plugin. Validation plugins provide verification and validation
-        for the definition to which they are attached and any uses of that definition, depending
-        on the validation plugins referenced by it.
+        A reference to a validation plugin. Validation plugins provide
+        verification and validation for the definition to which they are
+        attached and any uses of that definition, depending on the validation
+        plugins referenced by it.
 
         Validators are referenced by name.
 ---
@@ -521,3 +530,43 @@ schema:
     - name: Type references exist
       arguments:
         - name
+---
+schema:
+  name: PluginCommand
+  fields:
+    - name: name
+      type: string
+    - name: description
+      type: string
+    - name: group
+      type: string
+    - name: inputs
+      type: Field[]
+    - name: outputs
+      type: Field[]
+  validation:
+    - name: Required fields are present
+      arguments:
+        - name
+        - description
+---
+schema:
+  name: Plugin
+  fields:
+    - name: name
+      type: string
+    - name: description
+      type: string
+    - name: commands
+      type: PluginCommand[]
+    - name: addedDefinitionPaths
+      type: file[]
+    - name: definitionValidations
+      type: ValidationReference[]
+    - name: primitiveValidations
+      type: ValidationReference[]
+  validation:
+    - name: Required fields are present
+      arguments:
+        - name
+        - description
