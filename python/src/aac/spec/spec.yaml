@@ -188,17 +188,13 @@ schema:
   name: ValidationReference
   fields:
     - name: name
-      type: string
+      type: reference
       description: |
         The name of the validation definition.
     - name: arguments
       type: string[]
       description: |
         A list of arguments to pass to the validator.
-  validation:
-    - name: Required fields are present
-      arguments:
-        - name
 ---
 schema:
   name: ValidatorInput
@@ -525,11 +521,7 @@ schema:
   name: DefinitionReference
   fields:
     - name: name
-      type: string
-  validation:
-    - name: Type references exist
-      arguments:
-        - name
+      type: reference
 ---
 schema:
   name: PluginCommand
