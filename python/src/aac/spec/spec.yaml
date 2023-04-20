@@ -551,7 +551,7 @@ schema:
       type: string
     - name: commands
       type: PluginCommand[]
-    - name: addedDefinitionPaths
+    - name: definitionSources
       type: file[]
     - name: definitionValidations
       type: ValidationReference[]
