@@ -110,7 +110,7 @@ model:
       description: Describe a definition in the active context.
       input:
         - name: definition-name
-          type: string
+          type: reference
           python_type: str
           description: The name of a defintion in the active context.
       output:
