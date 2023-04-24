@@ -556,6 +556,11 @@ schema:
     - name: name
       type: string
       description: The name of the command.
+    - name: display
+      type: string
+      description: |
+        The display name of the command for use in user interfaces. If not
+        provided, 'name' will be used.
     - name: group
       type: reference
       description: The command group under which to place this command.
