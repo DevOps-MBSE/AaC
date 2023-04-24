@@ -1,20 +1,25 @@
-model:
-  name: gen-plugin
-  description: An Architecture-as-Code plugin that generates opinionated plugin stubs for easier and quicker plugin development.
-  behavior:
+commandGroup:
+  name: Generation
+  display: gen
+  helpText: Generation-related commands
+---
+plugin:
+  name: Generate Plugin
+  description: An AaC plugin that generates opinionated plugin stubs for easier and quicker plugin development.
+  commands:
     - name: gen-plugin
-      type: command
-      description: Generate
+      group: Generation
+      helpText: Generate stubs for an AaC plugin.
       input:
         - name: architecture-file
           type: file
           python_type: str
-          description: filepath to the architecture file.
+          description: The path to the architecture file with the plugin definition.
       acceptance:
         - scenario: Generate first party plugin stub files.
           given:
-            - The {{gen-plugin.input.architecture-file}} contains a valid model.
-            - The {{gen-plugin.input.architecture-file}} is in the AaC repository under the directory path "src/aac/plugins/".
+            - The {{Generate AaC Plugin.input.architecture-file}} contains a valid model.
+            - The {{Generate AaC Plugin.input.architecture-file}} is in the AaC repository under the directory path "src/aac/plugins/".
           when:
             - The aac app is run with the gen-plugin command.
           then:
@@ -27,7 +32,6 @@ model:
             - The value of {{gen-plugin.input.architecture-file}} does not contain "src/aac/plugins/".
           then:
             - Stubbed third party plugin files are not generated.
-
 ---
 enum:
   name: PythonDataType
@@ -58,10 +62,3 @@ ext:
           type: int
         - name: default
           type: PythonDataType
----
-ext:
-   name: CommandBehaviorType
-   type: BehaviorType
-   enumExt:
-      add:
-         - command
