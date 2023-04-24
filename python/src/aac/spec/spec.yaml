@@ -534,11 +534,21 @@ schema:
     - name: name
       type: string
       description: The name of the command group.
+    - name: display
+      type: string
+      description: |
+        The display name of the command group for use in user interfaces. If not
+        provided, 'name' will be used.
     - name: helpText
       type: string
       description: |
         The text that will be displayed as help text when displaying command
         group usage.
+  validation:
+    - name: Required fields are present
+      arguments:
+        - name
+        - helpText
 ---
 schema:
   name: PluginCommand
