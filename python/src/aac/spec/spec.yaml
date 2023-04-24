@@ -57,6 +57,11 @@ schema:
         the specification of any plugins you may have installed.
 
         You can extend any 'enum' and 'schema' definition.
+    - name: commandGroup
+      type: CommandGroup
+      description: |
+        A reference to a command group under which one, or more, plugins can
+        nest related commands.
     - name: plugin
       type: Plugin
       description: |
@@ -524,23 +529,52 @@ schema:
       type: reference
 ---
 schema:
+  name: CommandGroup
+  fields:
+    - name: name
+      type: string
+      description: The name of the command group.
+    - name: helpText
+      type: string
+      description: |
+        The text that will be displayed as help text when displaying command
+        group usage.
+---
+schema:
   name: PluginCommand
   fields:
     - name: name
       type: string
-    - name: description
-      type: string
+      description: The name of the command.
     - name: group
+      type: reference
+      description: The command group under which to place this command.
+    - name: helpText
       type: string
-    - name: inputs
+      description: |
+        A description that will be displayed as help text when displaying
+        command usage.
+    - name: input
       type: Field[]
-    - name: outputs
+      description: |
+        The list of all the fields that are inputs to the component when the
+        command is executed.
+    - name: output
       type: Field[]
+      description: |
+        The list of all the fields that are outputs from the component when the
+        command is executed.
+    - name: acceptance
+      type: Scenario[]
+      description: |
+        A list of scenarios that define the acceptance criteria to signify that
+        the command is behaving as expected.
   validation:
     - name: Required fields are present
       arguments:
         - name
-        - description
+        - helpText
+        - acceptance
 ---
 schema:
   name: Plugin
