@@ -45,22 +45,22 @@ class TestLangReferences(ActiveContextTestCase):
         self.assertTrue(is_reference_format_valid("parent.child"))
         self.assertTrue(is_reference_format_valid("the_parent.child"))
         self.assertTrue(is_reference_format_valid("the-parent.child"))
-        self.assertTrue(is_reference_format_valid("parent(name=\"MyModel\")"))
+        self.assertTrue(is_reference_format_valid('parent(name="MyModel")'))
         self.assertTrue(is_reference_format_valid("parent(name=MyModel)"))
-        self.assertTrue(is_reference_format_valid("parent.child(name=\"MyModel\")"))
-        self.assertTrue(is_reference_format_valid("parent(name=\"MyModel\").child"))
+        self.assertTrue(is_reference_format_valid('parent.child(name="MyModel")'))
+        self.assertTrue(is_reference_format_valid('parent(name="MyModel").child'))
 
-        self.assertFalse(is_reference_format_valid("")[0])
-        self.assertFalse(is_reference_format_valid("parent(name=value")[0])
-        self.assertFalse(is_reference_format_valid("parent name=value)")[0])
-        self.assertFalse(is_reference_format_valid("parent(name value)")[0])
-        self.assertFalse(is_reference_format_valid("parent$.child")[0])
-        self.assertFalse(is_reference_format_valid("parent.child#")[0])
-        self.assertFalse(is_reference_format_valid("parent(name%=value)")[0])
-        self.assertFalse(is_reference_format_valid("the parent.child")[0])
-        self.assertFalse(is_reference_format_valid("parent.the child")[0])
-        self.assertFalse(is_reference_format_valid("parent(the name=value")[0])
-        self.assertFalse(is_reference_format_valid("parent(name=)")[0])
+        self.assertFalse(is_reference_format_valid(""))
+        self.assertFalse(is_reference_format_valid("parent(name=value"))
+        self.assertFalse(is_reference_format_valid("parent name=value)"))
+        self.assertFalse(is_reference_format_valid("parent(name value)"))
+        self.assertFalse(is_reference_format_valid("parent$.child"))
+        self.assertFalse(is_reference_format_valid("parent.child#"))
+        self.assertFalse(is_reference_format_valid("parent(name%=value)"))
+        self.assertFalse(is_reference_format_valid("the parent.child"))
+        self.assertFalse(is_reference_format_valid("parent.the child"))
+        self.assertFalse(is_reference_format_valid("parent(the name=value"))
+        self.assertFalse(is_reference_format_valid("parent(name=)"))
 
     def test_get_reference_target_definitions(self):
         language_context = get_active_context(reload_context=True)
@@ -74,9 +74,9 @@ class TestLangReferences(ActiveContextTestCase):
         # get model with optional child field
         self.assertGreater(len(get_reference_target_definitions("model.behavior.input.python_type", language_context)), 0)
         # get model with inline selector
-        self.assertEqual(len(get_reference_target_definitions("model.behavior(name=gen-plugin).input", language_context)), 1)
+        self.assertEqual(len(get_reference_target_definitions("plugin.commands(name=gen-plugin).input", language_context)), 1)
         # get model with multiple inline selectors
-        self.assertEqual(len(get_reference_target_definitions("model(name=gen-plugin).behavior(type=command).input", language_context)), 1)
+        self.assertEqual(len(get_reference_target_definitions('plugin(name="Generate Plugin").commands(group=Generation).input', language_context)), 1)
 
         # get non-existent root
         self.assertEqual(len(get_reference_target_definitions("not_a_valid_root", language_context)), 0)
