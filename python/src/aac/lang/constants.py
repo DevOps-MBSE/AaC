@@ -12,6 +12,8 @@ ROOT_KEY_SCHEMA = "schema"
 ROOT_KEY_MODEL = "model"
 ROOT_KEY_USECASE = "usecase"
 ROOT_KEY_EXTENSION = "ext"
+ROOT_KEY_COMMAND_GROUP = "commandGroup"
+ROOT_KEY_PLUGIN = "plugin"
 ROOT_KEY_VALIDATION = "validation"
 
 # Common Definition Field Names
@@ -30,6 +32,7 @@ DEFINITION_FIELD_VALIDATION = "validation"
 DEFINITION_FIELD_VALUES = "values"
 DEFINITION_FIELD_INPUT = "input"
 DEFINITION_FIELD_OUTPUT = "output"
+DEFINITION_FIELD_COMMANDS = "commands"
 
 # Core AaC Definition Names
 DEFINITION_NAME_PRIMITIVES = "Primitives"

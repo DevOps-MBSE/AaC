@@ -4,6 +4,13 @@ from tempfile import NamedTemporaryFile, TemporaryDirectory
 from nose2.tools import params
 
 from aac.io import parser
+from aac.lang.constants import (
+    DEFINITION_FIELD_COMMANDS,
+    DEFINITION_FIELD_DESCRIPTION,
+    DEFINITION_FIELD_INPUT,
+    DEFINITION_FIELD_NAME,
+    ROOT_KEY_PLUGIN,
+)
 from aac.lang.definitions.collections import get_definition_by_name, get_definitions_as_yaml
 from aac.lang.definitions.search import search, search_definition
 from aac.plugins.first_party.gen_gherkin_behaviors import (
@@ -23,29 +30,32 @@ from tests.helpers.assertion import assert_plugin_success
 class TestGenerateGherkinBehaviorsPlugin(ActiveContextTestCase):
     def test_gen_gherkin_get_commands_conforms_with_plugin_model(self):
         with resources.open_text(gen_gherkin_behaviors_module_name, "gen_gherkin_behaviors.yaml") as plugin_model_file:
-            plugin_name = "aac-gen-gherkin-behaviors"
+            plugin_name = "Generate Gherkin Feature Files"
             plugin_parsed_definitions = parser.parse(plugin_model_file.name)
 
-            commands_yaml = list(map(
-                _filter_command_behaviors,
-                search_definition(get_definition_by_name(plugin_name, plugin_parsed_definitions), ["model", "behavior"])
-            ))
+            commands_yaml = [
+                _filter_command_behaviors(definition)
+                for definition in search_definition(
+                    get_definition_by_name(plugin_name, plugin_parsed_definitions),
+                    [ROOT_KEY_PLUGIN, DEFINITION_FIELD_COMMANDS],
+                )
+            ]
 
             # Assert that the commands returned by the plugin matches those defined in the yaml file
             commands_yaml_dict = {}
             for command_yaml in commands_yaml:
-                commands_yaml_dict[command_yaml.get("name")] = command_yaml
+                commands_yaml_dict[command_yaml.get(DEFINITION_FIELD_NAME)] = command_yaml
 
             for command in _get_plugin_commands():
                 self.assertIn(command.name, commands_yaml_dict)
                 command_yaml = commands_yaml_dict.get(command.name)
 
                 # Assert help messages match
-                self.assertEqual(command.description, search(command_yaml, ["description"])[0])
+                self.assertEqual(command.description, search(command_yaml, [DEFINITION_FIELD_DESCRIPTION])[0])
 
                 for argument in command.arguments:
-                    yaml_arguments = command_yaml.get("input")
-                    arg_names = [search(arg, ["name"])[0] for arg in yaml_arguments]
+                    yaml_arguments = command_yaml.get(DEFINITION_FIELD_INPUT)
+                    arg_names = [search(arg, [DEFINITION_FIELD_NAME])[0] for arg in yaml_arguments]
                     # Assert argument is defined
                     self.assertIn(argument.name, arg_names)
 
@@ -63,18 +73,14 @@ class TestGenerateGherkinBehaviorsPlugin(ActiveContextTestCase):
         # Scenario 1
         behavior_scenario_1 = "convert inspiration to magical beans"
         behavior_scenario_1_given_1 = "a feeling of hope from the universe"
-        behavior_scenario_1_when_1 = (
-            "the feeling of hope is empowering and it instills inspiration"
-        )
+        behavior_scenario_1_when_1 = "the feeling of hope is empowering and it instills inspiration"
         behavior_scenario_1_then_1 = "the energy of inspiration manifests as magical beans"
 
         # Scenario 2
         behavior_scenario_2 = "convert inspiration to magical beans"
         behavior_scenario_2_given_1 = "a feeling of wonder from the universe"
         behavior_scenario_2_given_2 = "a feeling of awe from the universe"
-        behavior_scenario_2_when_1 = (
-            "the feelings of wonder and awe are empowering and they instill inspiration"
-        )
+        behavior_scenario_2_when_1 = "the feelings of wonder and awe are empowering and they instill inspiration"
         behavior_scenario_2_then_1 = "the energy of inspiration manifests as magical beans"
 
         VALID_MODEL_WITH_SEVERAL_BEHAVIORS = f"""
@@ -145,9 +151,7 @@ model:
         behavior_scenario_1_given_2 = "Given a feeling of awe from the universe"
         behavior_scenario_1_when_1 = "Then the feelings of wonder and awe are empowering"
         behavior_scenario_1_when_2 = "Then the feelings empowerment instills inspiration"
-        behavior_scenario_1_then_1 = (
-            "When the energy of inspiration manifests as a magical beanstalk"
-        )
+        behavior_scenario_1_then_1 = "When the energy of inspiration manifests as a magical beanstalk"
         behavior_scenario_1_then_2 = "When the magical beanstalk grows magical bean pods"
 
         VALID_MODEL_WITH_SEVERAL_BEHAVIORS = f"""
