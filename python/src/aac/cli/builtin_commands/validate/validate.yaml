@@ -1,10 +1,9 @@
-model:
-  name: validate
-  description: Validate the provided Architecture-as-Code definition file.
-  behavior:
+plugin:
+  name: Validate
+  description: An AaC plugin that validates the definition(s) in a file.
+  commands:
     - name: validate
-      type: command
-      description: Validate the AaC definition file.
+      helpText: Validate one, or more, AaC definitions in a file.
       input:
         - name: architecture-file
           type: file
