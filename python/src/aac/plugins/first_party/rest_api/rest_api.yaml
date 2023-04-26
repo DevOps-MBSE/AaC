@@ -1,10 +1,12 @@
-model:
-  name: aac-rest-api
-  description: Provides a RESTful API for managing and interacting with the AaC Python package.
-  behavior:
+plugin:
+  name: Rest API
+  description: |
+    An AaC plugin that provides a RESTful API for managing and interacting with
+    the AaC Python package.
+  commands:
     - name: rest-api
-      type: command
-      description: Start a RESTful interface for interacting with and managing AaC.
+      group: Backend
+      helpText: Start a RESTful interface for interacting with and managing AaC.
       input:
         - name: --host
           type: string
@@ -31,9 +33,9 @@ model:
           then:
             - The RESTful API is accessible on the port specified by the port argument
             - The RESTful API returns links to itself with the hostname specified by the host argument
-    - name: generate-openapi-spec
-      type: command
-      description: Write the OpenAPI schema to a JSON file.
+    - name: gen-openapi-spec
+      group: Generation
+      helpText: Write the OpenAPI schema to a JSON file.
       input:
         - name: output_directory
           type: directory
