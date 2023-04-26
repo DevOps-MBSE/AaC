@@ -1,10 +1,10 @@
-model:
-  name: active-context
-  description: The active-context plugin manages the active context from the CLI.
-  behavior:
+plugin:
+  name: Active Context Manager
+  description: An AaC plugin that manages the active context.
+  commands:
     - name: list-files
-      type: command
-      description: Display the files in the active context.
+      group: Management
+      helpText: Display the files in the active context.
       output:
         - name: files
           type: string[]
@@ -17,8 +17,8 @@ model:
           then:
             - A list of the files in the active context will be displayed.
     - name: remove-file
-      type: command
-      description: Remove a file from the active context.
+      group: Management
+      helpText: Remove a file from the active context.
       input:
         - name: file
           type: file
@@ -48,8 +48,8 @@ model:
           then:
             - An error message will be displayed stating that the file is not on the file system.
     - name: add-file
-      type: command
-      description: Add a file to the active context.
+      group: Management
+      helpText: Add a file to the active context.
       input:
         - name: file
           type: file
@@ -81,8 +81,8 @@ model:
           then:
             - An error message will be displayed stating that the file {{active-context.add-file.input.file}} is not on the file system.
     - name: reset-context
-      type: command
-      description: Reset the active context to a fresh state before any changes have been made.
+      group: Management
+      helpText: Reset the active context to a fresh state before any changes have been made.
       acceptance:
         - scenario: The active context gets reset.
           given:
@@ -92,8 +92,8 @@ model:
           then:
             - All user-provided definitions are removed from the active context.
     - name: list-definitions
-      type: command
-      description: List all definitions within the active context.
+      group: Management
+      helpText: List all definitions within the active context.
       output:
         - name: definitions
           type: string[]
@@ -106,8 +106,8 @@ model:
           then:
             - A list of all the definitions in the active context will be displayed.
     - name: describe-definition
-      type: command
-      description: Describe a definition in the active context.
+      group: Management
+      helpText: Describe a definition in the active context.
       input:
         - name: definition-name
           type: reference
@@ -142,8 +142,8 @@ model:
           then:
             - An error message is displayed to the user stating that the definition named {{active-context.describe-definition.input.definition-name}} is not in the active context.
     - name: import-state
-      type: command
-      description: Configure the active context to be initialized with the definitions, plugins, etc from a state file.
+      group: Management
+      helpText: Configure the active context to be initialized with the definitions, plugins, etc from a state file.
       input:
         - name: state-file
           type: file
@@ -168,8 +168,8 @@ model:
             - An error message is displayed to the user stating that the state file {{active-context.import-state.input.state-file}} does not exist.
             - The current active context is not modified.
     - name: export-state
-      type: command
-      description: Export the current active context to a state file.
+      group: Management
+      helpText: Export the current active context to a state file.
       input:
         - name: state-file-name
           type: string
