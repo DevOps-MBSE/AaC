@@ -628,3 +628,8 @@ commandGroup:
   name: Internal
   display: internal
   helpText: Internal commands not intended for use by end-users or non-AaC developers.
+---
+commandGroup:
+  name: Backend
+  display: backend
+  helpText: Commands that enable a client/server style workflow.
