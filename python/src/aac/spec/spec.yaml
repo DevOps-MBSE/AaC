@@ -62,6 +62,8 @@ schema:
       description: |
         A reference to a command group under which one, or more, plugins can
         nest related commands.
+
+        CommandGroups are referenced by name.
     - name: plugin
       type: Plugin
       description: |
