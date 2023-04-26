@@ -633,3 +633,8 @@ commandGroup:
   name: Backend
   display: backend
   helpText: Commands that enable a client/server style workflow.
+---
+commandGroup:
+  name: Query
+  display: show
+  helpText: Commands whose purpose is to show specific information.

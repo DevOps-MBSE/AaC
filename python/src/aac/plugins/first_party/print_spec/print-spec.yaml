@@ -1,10 +1,10 @@
-model:
-  name: print-spec
+plugin:
+  name: Print Core Spec
   description: Print the AaC core specification
-  behavior:
+  commands:
     - name: print-spec
-      type: command
-      description: Print the AaC model describing core AaC data types and enumerations.
+      group: Query
+      helpText: Print the AaC model describing core AaC data types and enumerations.
       acceptance:
         - scenario: Print the AaC Core specification
           when:
@@ -12,8 +12,8 @@ model:
           then:
             - The AaC core specification is written to the console.
     - name: print-active-context
-      type: command
-      description: Print the AaC active language context including data types and enumerations added by plugins.
+      group: Query
+      helpText: Print the AaC active language context including data types and enumerations added by plugins.
       acceptance:
         - scenario: Print the AaC active language context
           when:
