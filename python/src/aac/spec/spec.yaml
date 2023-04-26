@@ -196,12 +196,10 @@ schema:
   fields:
     - name: name
       type: reference
-      description: |
-        The name of the validation definition.
+      description: The name of the validation definition.
     - name: arguments
       type: string[]
-      description: |
-        A list of arguments to pass to the validator.
+      description: A list of arguments to pass to the validator.
 ---
 schema:
   name: ValidatorInput
