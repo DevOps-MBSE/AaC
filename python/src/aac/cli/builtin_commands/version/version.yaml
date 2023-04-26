@@ -1,10 +1,9 @@
-model:
+plugin:
   name: version
   description: Outputs Architecture-as-Code Python package version
-  behavior:
+  commands:
     - name: version
-      type: command
-      description: Print the AaC package version
+      helpText: Print the AaC package version
       acceptance:
         - scenario: Output the AaC package version
           when:
