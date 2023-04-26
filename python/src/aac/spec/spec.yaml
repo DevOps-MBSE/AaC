@@ -615,12 +615,12 @@ schema:
 commandGroup:
   name: Generation
   display: gen
-  helpText: Generation-related commands
+  helpText: Commands used for generating artifacts.
 ---
 commandGroup:
   name: Management
   display: mgmt
-  helpText: Management commands
+  helpText: Commands that enable management of AaC data.
 ---
 commandGroup:
   name: Internal

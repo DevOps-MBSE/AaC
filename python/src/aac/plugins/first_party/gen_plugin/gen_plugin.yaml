@@ -13,8 +13,8 @@ plugin:
       acceptance:
         - scenario: Generate first party plugin stub files.
           given:
-            - The {{Generate AaC Plugin.input.architecture-file}} contains a valid model.
-            - The {{Generate AaC Plugin.input.architecture-file}} is in the AaC repository under the directory path "src/aac/plugins/".
+            - The {{gen-plugin.input.architecture-file}} contains a valid model.
+            - The {{gen-plugin.input.architecture-file}} is in the AaC repository under the directory path "src/aac/plugins/".
           when:
             - The aac app is run with the gen-plugin command.
           then:

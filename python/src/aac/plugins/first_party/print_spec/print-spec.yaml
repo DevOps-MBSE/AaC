@@ -1,12 +1,12 @@
 plugin:
   name: Print Core Spec
-  description: Print the AaC core specification
+  description: Print the AaC core specification.
   commands:
     - name: print-spec
       group: Query
       helpText: Print the AaC model describing core AaC data types and enumerations.
       acceptance:
-        - scenario: Print the AaC Core specification
+        - scenario: Print the AaC Core specification.
           when:
             - The aac application is run with the print-spec command.
           then:
@@ -15,7 +15,7 @@ plugin:
       group: Query
       helpText: Print the AaC active language context including data types and enumerations added by plugins.
       acceptance:
-        - scenario: Print the AaC active language context
+        - scenario: Print the AaC active language context.
           when:
             - The aac application is run with the print-active-context command.
           then:

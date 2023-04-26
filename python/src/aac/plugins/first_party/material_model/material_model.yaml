@@ -16,7 +16,7 @@ plugin:
         - name: output-directory
           type: file
           python_type: str
-          description: The directory where the BOM file should be placed.
+          description: The output directory into which the BOM file will be written.
       acceptance:
         - scenario: Valid deployment is converted to a BOM in CSV format.
           given:
@@ -26,7 +26,10 @@ plugin:
             - The aac app is run with the gen-bom command.
           then:
             - A message saying BOM generation was successful is printed to the console.
-            - A csv file is generated with the generated BOM.
+            - A CSV file is generated with the generated BOM.
+  definitionValidations:
+    - name: Referenced materials exist
+    - name: No circular material references
 ---
 validation:
   name: Referenced materials exist
@@ -42,25 +45,25 @@ validation:
         - name: results
           type: ValidatorOutput
       acceptance:
-        - scenario: Successfully Validate a part reference name exists
+        - scenario: Successfully validate a part reference name exists
           given:
             - The ValidatorInput content consists of valid AaC definitions.
-            - The ValidatorInput contains some AaC fields that reference requirement ids.
+            - The ValidatorInput contains some AaC fields that reference defined materials.
           when:
-            - The input is validation
+            - The ValidatorInput is validated.
           then:
-            - The ValidatorOutput does not indicate any errors
-            - The ValidatorOutput does not indicate any warnings
-            - The ValidatorOutput indicates the definition under test is valid
-        - scenario: Fail to validate a definition's requirement reference fields
+            - The ValidatorOutput does not indicate any errors.
+            - The ValidatorOutput does not indicate any warnings.
+            - The ValidatorOutput indicates the definition under test is valid.
+        - scenario: Fail to validate a definition's part reference fields.
           given:
             - The ValidatorInput content consists of otherwise valid AaC definitions.
-            - The ValidatorInput contains at least one requirement reference id that does not exist.
+            - The ValidatorInput contains at least one part reference that does not exist.
           when:
-            - The ValidatorInput is validated
+            - The ValidatorInput is validated.
           then:
-            - The ValidatorOutput has errors
-            - The ValidatorOutput errors indicate that there are invalid requirement id references
+            - The ValidatorOutput has errors.
+            - The ValidatorOutput errors indicate that there are invalid material references.
 ---
 validation:
   name: No circular material references
@@ -76,25 +79,26 @@ validation:
         - name: results
           type: ValidatorOutput
       acceptance:
-        - scenario: Successfully Validate a no circular references exist
+        - scenario: Successfully validate that no circular references exist.
           given:
             - The ValidatorInput content consists of valid AaC definitions.
-            - The ValidatorInput contains some AaC fields that reference requirement ids.
+            - The ValidatorInput contains some AaC fields that reference defined materials.
+            - The ValidatorInput does not have any circular references.
           when:
-            - The input is validation
+            - The ValidatorInput is validated.
           then:
-            - The ValidatorOutput does not indicate any errors
-            - The ValidatorOutput does not indicate any warnings
-            - The ValidatorOutput indicates the definition under test is valid
-        - scenario: Fail to validate a definition's requirement reference fields
+            - The ValidatorOutput does not indicate any errors.
+            - The ValidatorOutput does not indicate any warnings.
+            - The ValidatorOutput indicates the definition under test is valid.
+        - scenario: Fail to validate a definition's requirement reference fields.
           given:
             - The ValidatorInput content consists of otherwise valid AaC definitions.
-            - The ValidatorInput contains at least one requirement reference id that does not exist.
+            - The ValidatorInput contains at least one material reference that does not exist.
           when:
-            - The ValidatorInput is validated
+            - The ValidatorInput is validated.
           then:
-            - The ValidatorOutput has errors
-            - The ValidatorOutput errors indicate that there are invalid requirement id references
+            - The ValidatorOutput has errors.
+            - The ValidatorOutput errors indicate that there are invalid material references.
 ---
 schema:
   name: Part
@@ -102,25 +106,25 @@ schema:
   fields:
     - name: name
       type: string
-      description:  Unique name of the part
+      description: Unique name of the part.
     - name: make
       type: string
-      description:  The source supplier
+      description: The source supplier.
     - name: model
       type: string
-      description:  The source supplier's model number
+      description: The source supplier's model number.
     - name: description
       type: string
-      description:  A short description of the part
+      description: A short description of the part.
     - name: unit_cost
       type: number
-      description:  The cost of this item
+      description: The cost of this item.
     - name: lead_time
       type: int
-      description: The quoted or estimated lead time to receive the part once put on order (in days)
+      description: The quoted or estimated lead time to receive the part once put on order (in days).
     - name: quote_type
       type: QuoteType
-      description:  How the unit cost (and probably lead time) was obtained
+      description: How the unit cost (and probably lead time) was obtained.
     - name: quote_source
       type: string
       description:  Pointer to material supporting the unit cost. Quote type will have a bearing on field content.
@@ -144,7 +148,7 @@ enum:
 ---
 schema:
   name: PartRef
-  description:  Reference to a part with quantity
+  description: Reference to a part with quantity.
   fields:
     - name: part-ref
       type: reference
@@ -185,7 +189,7 @@ schema:
 ---
 schema:
   name: AssemblyRef
-  description:  Reference to an assembly with quantity
+  description: Reference to an assembly with quantity.
   fields:
     - name: assembly-ref
       type: reference
@@ -238,7 +242,7 @@ schema:
 ---
 schema:
   name: DeploymentRef
-  description:  Reference to a deployment with quantity
+  description: Reference to a deployment with quantity.
   fields:
     - name: deployment-ref
       type: reference

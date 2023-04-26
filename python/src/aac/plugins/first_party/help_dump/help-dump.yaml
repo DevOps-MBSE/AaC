@@ -1,5 +1,5 @@
 plugin:
-  name: help-dump
+  name: Dump AaC Commands
   description: |
     An AaC plugin that produces a consistently-formatted representation of all
     the AaC commands and their corresponding attributes.

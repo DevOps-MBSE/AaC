@@ -16,7 +16,7 @@ plugin:
             The name of one definition to validate. (optional)
             This argument will cause only the definition provided by the argument to be validated.
       acceptance:
-        - scenario: The definitions are valid
+        - scenario: The definitions are valid.
           given:
             - The file path at {{validate.input.architecture-file}} exists.
             - The contents of {{validate.input.architecture-file}} are a valid AaC definition.
@@ -24,7 +24,7 @@ plugin:
             - The aac application is run with the validate command.
           then:
             - A successful validation status is displayed to the user.
-        - scenario: The definitions are invalid
+        - scenario: The definitions are invalid.
           given:
             - The file path at {{validate.input.architecture-file}} exists.
             - The contents of {{validate.input.architecture-file}} do not represent a valid AaC definition.

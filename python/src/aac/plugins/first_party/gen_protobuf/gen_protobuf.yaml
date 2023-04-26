@@ -4,16 +4,20 @@ plugin:
   behavior:
     - name: gen-protobuf
       group: Generation
-      helpText: Generate Protobuf3 messages from AaC definitions
+      helpText: Generate Protobuf messages from AaC definitions.
       input:
         - name: architecture-file
           type: file
           python_type: str
-          description: The yaml file containing the data models to generate as Protobuf messages.
+          description: |
+            The YAML file containing the schema definitions from which to
+            generate Protobuf messages.
         - name: output-directory
           type: directory
           python_type: str
-          description: The directory to write the generated Protobuf messages to.
+          description: |
+            The output directory into which the generated Protobuf messages will
+            be written.
       acceptance:
         - scenario: Output protobuf messages for behavior input/output entries in an Architecture model.
           given:
