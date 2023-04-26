@@ -613,3 +613,13 @@ schema:
       arguments:
         - name
         - description
+---
+commandGroup:
+  name: Generation
+  display: gen
+  helpText: Generation-related commands
+---
+commandGroup:
+  name: Management
+  display: mgmt
+  helpText: Management commands

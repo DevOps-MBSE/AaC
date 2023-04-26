@@ -1,13 +1,3 @@
-commandGroup:
-  name: Generation
-  display: gen
-  helpText: Generation-related commands
----
-commandGroup:
-  name: Management
-  display: mgmt
-  helpText: Management commands
----
 plugin:
   name: Generate Plugin
   description: An AaC plugin that generates opinionated plugin stubs for easier and quicker plugin development.
