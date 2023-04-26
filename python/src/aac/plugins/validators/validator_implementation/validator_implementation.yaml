@@ -1,3 +1,9 @@
+plugin:
+  name: Validate implementations for validators
+  description: An AaC plugin that ensures an implementation exists for all validators.
+  definitionValidations:
+    - name: Validation definition has an implementation
+---
 validation:
   name: Validation definition has an implementation
   description: Verifies that every validation definition has a corresponding python plugin implementation

@@ -1,3 +1,9 @@
+plugin:
+  name: Validate names are not duplicated
+  description: An AaC plugin that enables validating the uniqueness of definition names.
+  definitionValidations:
+    - name: Unique definition names
+---
 validation:
   name: Unique definition names
   description: Verifies that all Definitions have unique names.

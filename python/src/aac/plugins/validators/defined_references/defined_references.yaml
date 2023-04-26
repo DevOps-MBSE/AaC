@@ -1,3 +1,9 @@
+plugin:
+  name: Validate type references
+  description: An AaC plugin that enables validating the types of references.
+  definitionValidations:
+    - name: Type references exist
+---
 validation:
   name: Type references exist
   description: Verify that references to definitions and models are defined

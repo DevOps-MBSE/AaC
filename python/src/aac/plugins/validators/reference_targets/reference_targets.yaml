@@ -1,3 +1,9 @@
+plugin:
+  name: Validate query reference targets
+  description: An AaC plugin that enables validating query reference targets.
+  definitionValidations:
+    - name: Reference target valid
+---
 validation:
   name: Reference target valid
   description: Verifies every field declared as reference are valid and reference an existing model element

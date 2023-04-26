@@ -1,3 +1,9 @@
+plugin:
+  name: Validate root keys
+  description: An AaC plugin that enables validating that the root key of a definition is defined.
+  definitionValidations:
+    - name: Root key is defined
+---
 validation:
   name: Root key is defined
   description: Verify that the definition's root key is defined

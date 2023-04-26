@@ -1,3 +1,9 @@
+plugin:
+  name: Validate required fields
+  description: An AaC plugin that enables validating all required fields are present in a definition.
+  definitionValidations:
+    - name: Required fields are present
+---
 validation:
   name: Required fields are present
   description: Verifies every field declared as required is present and populated

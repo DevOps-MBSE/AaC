@@ -1,3 +1,9 @@
+plugin:
+  name: Validate query reference format
+  description: An AaC plugin that enables validating the format of a query reference.
+  definitionValidations:
+    - name: Reference format valid
+---
 validation:
   name: Reference format valid
   description: Verifies every field declared as reference is properly formatted for processing

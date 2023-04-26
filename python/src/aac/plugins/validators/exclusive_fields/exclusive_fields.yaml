@@ -1,3 +1,9 @@
+plugin:
+  name: Validate mutually exlusive fields
+  description: An AaC plugin that enables validating the presence of only one of a number of mutually exclusive fields on a definition.
+  definitionValidations:
+    - name: Mutually exclusive fields
+---
 validation:
   name: Mutually exclusive fields
   description: |

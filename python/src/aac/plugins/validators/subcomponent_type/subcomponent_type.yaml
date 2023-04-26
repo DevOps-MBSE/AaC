@@ -1,3 +1,9 @@
+plugin:
+  name: Validate model subcomponents
+  description: An AaC plugin that enables validating subcomponents of a model are models.
+  definitionValidations:
+    - name: Subcomponents are models
+---
 validation:
   name: Subcomponents are models
   description: Verifies that the type field of every subcomponent refers to a model.
