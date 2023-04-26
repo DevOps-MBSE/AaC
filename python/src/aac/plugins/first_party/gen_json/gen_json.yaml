@@ -1,21 +1,21 @@
-model:
-  name: gen-json
-  description: An Architecture-as-Code plugin that generates json representations of the AaC yaml DSL.
+plugin:
+  name: Generate JSON
+  description: An AaC plugin that generates JSON representations of one, or more, AaC definitions.
   behavior:
     - name: gen-json
-      type: command
-      description: Generate JSON representation of AaC yaml DSL
+      group: Generation
+      helpText: Generate a JSON representation of one, or more, AaC definitions
       input:
         - name: architecture-files
           type: file
           python_type: list[str]
-          description: File paths to AaC file(s) containing models to parse and print as JSON.
+          description: File paths to AaC file(s) containing definitions to output as JSON
         - name: --output-directory
           type: directory
           python_type: str
           description: Directory in which JSON files will be written
       acceptance:
-        - scenario: Output JSON representation.
+        - scenario: Output a JSON representation of AaC definitions
           given:
             - The {{gen-json.input.architecture-files}} contains a valid model.
           when:
