@@ -68,11 +68,11 @@ class TestLangReferences(ActiveContextTestCase):
         # invalid reference should return empty list
         self.assertCountEqual(get_reference_target_definitions("", language_context), [])
         # get all models
-        self.assertGreater(len(get_reference_target_definitions("model", language_context)), 0)
+        self.assertGreater(len(get_reference_target_definitions("plugin", language_context)), 0)
         # get schema with the name model
         self.assertEqual(len(get_reference_target_definitions("schema(name=model)", language_context)), 1)
         # get model with optional child field
-        self.assertGreater(len(get_reference_target_definitions("model.behavior.input.python_type", language_context)), 0)
+        self.assertGreater(len(get_reference_target_definitions("plugin.commands.input.python_type", language_context)), 0)
         # get model with inline selector
         self.assertEqual(len(get_reference_target_definitions("plugin.commands(name=gen-plugin).input", language_context)), 1)
         # get model with multiple inline selectors
