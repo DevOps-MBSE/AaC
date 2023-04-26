@@ -1,13 +1,12 @@
-model:
+plugin:
   name: help-dump
   description: |
-    An Architecture-as-Code plugin that produces a consistently-formatted representation of all the commands, command
-    arguments, and descriptions for each.
-  behavior:
+    An AaC plugin that produces a consistently-formatted representation of all
+    the AaC commands and their corresponding attributes.
+  commands:
     - name: help-dump
-      type: command
-      description: |
-        Produce a formatted string containing all commands, their arguments, and each of their descriptions.
+      group: Internal
+      helpText: Produce a formatted string containing all AaC commands and their attributes.
       output:
         - name: help-output
           type: string

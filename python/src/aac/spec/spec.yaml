@@ -623,3 +623,8 @@ commandGroup:
   name: Management
   display: mgmt
   helpText: Management commands
+---
+commandGroup:
+  name: Internal
+  display: internal
+  helpText: Internal commands not intended for use by end-users or non-AaC developers.
