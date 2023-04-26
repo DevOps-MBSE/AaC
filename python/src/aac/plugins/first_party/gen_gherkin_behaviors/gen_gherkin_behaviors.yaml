@@ -1,7 +1,7 @@
 plugin:
   name: Generate Gherkin Feature Files
   description: An AaC plugin that generates Gherkin feature files from model behavior scenarios.
-  behavior:
+  commands:
     - name: gen-gherkin-behaviors
       group: Generation
       helpText: Generate Gherkin feature files from AaC model behavior scenarios.

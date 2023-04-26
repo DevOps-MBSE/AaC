@@ -1,12 +1,13 @@
 import os
 from importlib import resources
 from tempfile import NamedTemporaryFile, TemporaryDirectory
+
 from nose2.tools import params
 
 from aac.io import parser
 from aac.lang.constants import (
     DEFINITION_FIELD_COMMANDS,
-    DEFINITION_FIELD_DESCRIPTION,
+    DEFINITION_FIELD_HELP_TEXT,
     DEFINITION_FIELD_INPUT,
     DEFINITION_FIELD_NAME,
     ROOT_KEY_PLUGIN,
@@ -14,15 +15,14 @@ from aac.lang.constants import (
 from aac.lang.definitions.collections import get_definition_by_name, get_definitions_as_yaml
 from aac.lang.definitions.search import search, search_definition
 from aac.plugins.first_party.gen_gherkin_behaviors import (
-    _get_plugin_definitions,
-    _get_plugin_commands,
     __name__ as gen_gherkin_behaviors_module_name,
+    _get_plugin_commands,
+    _get_plugin_definitions,
 )
 from aac.plugins.first_party.gen_gherkin_behaviors.gen_gherkin_behaviors_impl import (
     _create_gherkin_feature_file_name,
     gen_gherkin_behaviors,
 )
-
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.assertion import assert_plugin_success
 
@@ -33,13 +33,10 @@ class TestGenerateGherkinBehaviorsPlugin(ActiveContextTestCase):
             plugin_name = "Generate Gherkin Feature Files"
             plugin_parsed_definitions = parser.parse(plugin_model_file.name)
 
-            commands_yaml = [
-                _filter_command_behaviors(definition)
-                for definition in search_definition(
-                    get_definition_by_name(plugin_name, plugin_parsed_definitions),
-                    [ROOT_KEY_PLUGIN, DEFINITION_FIELD_COMMANDS],
-                )
-            ]
+            commands_yaml = search_definition(
+                get_definition_by_name(plugin_name, plugin_parsed_definitions),
+                [ROOT_KEY_PLUGIN, DEFINITION_FIELD_COMMANDS],
+            )
 
             # Assert that the commands returned by the plugin matches those defined in the yaml file
             commands_yaml_dict = {}
@@ -51,7 +48,7 @@ class TestGenerateGherkinBehaviorsPlugin(ActiveContextTestCase):
                 command_yaml = commands_yaml_dict.get(command.name)
 
                 # Assert help messages match
-                self.assertEqual(command.description, search(command_yaml, [DEFINITION_FIELD_DESCRIPTION])[0])
+                self.assertEqual(command.description, search(command_yaml, [DEFINITION_FIELD_HELP_TEXT])[0])
 
                 for argument in command.arguments:
                     yaml_arguments = command_yaml.get(DEFINITION_FIELD_INPUT)
@@ -233,7 +230,3 @@ model:
 
 def _remove_first_word_in_string(string: str) -> str:
     return string.split(None, 1)[1]
-
-
-def _filter_command_behaviors(behavior_definition: dict):
-    return behavior_definition if behavior_definition.get("type") == "command" else None
