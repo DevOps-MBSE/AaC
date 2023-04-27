@@ -1,6 +1,8 @@
 plugin:
   name: Validate mutually exlusive fields
-  description: An AaC plugin that enables validating the presence of only one of a number of mutually exclusive fields on a definition.
+  description: |
+    An AaC plugin that enables validating the presence of only one of a number
+    of mutually exclusive fields on a definition.
   definitionValidations:
     - name: Mutually exclusive fields
 ---
@@ -9,7 +11,8 @@ validation:
   description: |
     Verify that only one of the fields are defined at any time.
 
-    Exclusive fields are defined by declaring the exclusive field names as validation arguments.
+    Exclusive fields are defined by declaring the exclusive field names as
+    validation arguments.
   behavior:
     - name: Verify mutually exclusive fields
       type: request-response
@@ -21,32 +24,32 @@ validation:
         - name: results
           type: ValidatorOutput
       acceptance:
-        - scenario: Successfully validate one exclusive field
+        - scenario: Successfully validate one exclusive field.
           given:
             - The ValidatorInput content consists of valid AaC definitions.
             - The ValidatorInput contains some AaC definitions with only one of the mutually exclusive fields defined.
           when:
-            - The input is validation
+            - The validator plugin is executed.
           then:
-            - The ValidatorOutput does not indicate any errors
-            - The ValidatorOutput does not indicate any warnings
-            - The ValidatorOutput indicates the validator plugin under test is valid
-        - scenario: Successfully validate zero exclusive fields
+            - The ValidatorOutput does not indicate any errors.
+            - The ValidatorOutput does not indicate any warnings.
+            - The ValidatorOutput indicates the validator plugin under test is valid.
+        - scenario: Successfully validate zero exclusive fields.
           given:
             - The ValidatorInput content consists of valid AaC definitions.
             - The ValidatorInput contains some AaC definitions with none of the mutually exclusive fields defined.
           when:
-            - The input is validation
+            - The validator plugin is executed.
           then:
-            - The ValidatorOutput does not indicate any errors
-            - The ValidatorOutput does not indicate any warnings
-            - The ValidatorOutput indicates the validator plugin under test is valid
-        - scenario: Fail to validate multiple exclusive fields
+            - The ValidatorOutput does not indicate any errors.
+            - The ValidatorOutput does not indicate any warnings.
+            - The ValidatorOutput indicates the validator plugin under test is valid.
+        - scenario: Fail to validate multiple exclusive fields.
           given:
             - The ValidatorInput content consists of otherwise valid AaC definitions.
             - The ValidatorInput contains some AaC definitions with more than one of the mutually exclusive fields defined.
           when:
-            - The ValidatorInput is validated
+            - The validator plugin is executed.
           then:
-            - The ValidatorOutput has errors
+            - The ValidatorOutput has errors.
             - The ValidatorOutput errors indicate that mutually exclusive fields are simultaneously defined.

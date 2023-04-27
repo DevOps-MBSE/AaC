@@ -46,7 +46,7 @@ validation:
             - The ValidatorInput content consists of valid AaC definitions.
             - The ValidatorInput contains some AaC fields that reference requirement IDs.
           when:
-            - The ValidatorInput is validated.
+            - The validator plugin is executed.
           then:
             - The ValidatorOutput does not indicate any errors.
             - The ValidatorOutput does not indicate any warnings.
@@ -56,7 +56,7 @@ validation:
             - The ValidatorInput content consists of otherwise valid AaC definitions.
             - The ValidatorInput contains at least one requirement reference id that does not exist.
           when:
-            - The ValidatorInput is validated.
+            - The validator plugin is executed.
           then:
             - The ValidatorOutput has errors.
             - The ValidatorOutput errors indicate that there are invalid requirement id references.
@@ -80,7 +80,7 @@ validation:
             - The ValidatorInput content consists of valid AaC definitions.
             - The ValidatorInput contains some AaC spec definitions where requirement IDs are unique.
           when:
-            - The ValidatorInput is validated.
+            - The validator plugin is executed.
           then:
             - The ValidatorOutput does not indicate any errors.
             - The ValidatorOutput does not indicate any warnings.
@@ -90,7 +90,7 @@ validation:
             - The ValidatorInput content consists of otherwise valid AaC definitions.
             - The ValidatorInput contains some AaC spec definition where duplicate requirement IDs are present.
           when:
-            - The ValidatorInput is validated.
+            - The validator plugin is executed.
           then:
             - The ValidatorOutput has errors.
             - The ValidatorOutput errors indicate that there are non-unique requirement IDs.

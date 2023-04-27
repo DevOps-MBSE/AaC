@@ -1,16 +1,17 @@
 plugin:
   name: Validate root keys
-  description: An AaC plugin that enables validating that the root key of a definition is defined.
+  description: |
+    An AaC plugin that enables validating that the root key of a definition is
+    defined.
   definitionValidations:
     - name: Root key is defined
 ---
 validation:
   name: Root key is defined
-  description: Verify that the definition's root key is defined
+  description: Verify that the definition's root key is defined.
   behavior:
-    - name: Verify that the definition's root key is defined
+    - name: Verify that the definition's root key is defined.
       type: request-response
-      description:
       input:
         - name: input
           type: ValidatorInput
@@ -18,33 +19,33 @@ validation:
         - name: results
           type: ValidatorOutput
       acceptance:
-        - scenario: Successfully validate definition root key
+        - scenario: Successfully validate definition root key.
           given:
             - The ValidatorInput content consists of valid AaC definitions.
             - The ValidatorInput contains some AaC definition that has a root key defined by the 'root' definition in the core specification.
           when:
-            - The ValidatorInput is validated
+            - The validator plugin is executed.
           then:
-            - The ValidatorOutput does not indicate any errors
-            - The ValidatorOutput does not indicate any warnings
-            - The ValidatorOutput indicates the definition under test is valid
-        - scenario: Successfully validate an extended root key
+            - The ValidatorOutput does not indicate any errors.
+            - The ValidatorOutput does not indicate any warnings.
+            - The ValidatorOutput indicates the definition under test is valid.
+        - scenario: Successfully validate an extended root key.
           given:
             - The ValidatorInput content consists of valid AaC definitions.
             - The ValidatorInput content of an extension definition that adds a new root key.
             - The ValidatorInput contains some AaC definition that has a root key that has been added to the 'root' definition in the core specification.
           when:
-            - The ValidatorInput is validated
+            - The validator plugin is executed.
           then:
-            - The ValidatorOutput does not indicate any errors
-            - The ValidatorOutput does not indicate any warnings
-            - The ValidatorOutput indicates the definition under test is valid
-        - scenario: Fail to validate definitions that reference keys that are not defined by the 'root' definition
+            - The ValidatorOutput does not indicate any errors.
+            - The ValidatorOutput does not indicate any warnings.
+            - The ValidatorOutput indicates the definition under test is valid.
+        - scenario: Fail to validate definitions that reference keys that are not defined by the 'root' definition.
           given:
             - The ValidatorInput content consists of otherwise valid AaC definitions.
             - The ValidatorInput contains at least one AaC definition that has a root key not defined by the 'root' definition in the core specification.
           when:
-            - The ValidatorInput is validated
+            - The validator plugin is executed.
           then:
-            - The ValidatorOutput has errors
+            - The ValidatorOutput has errors.
             - The ValidatorOutput errors indicate that the root key is not defined in the root keys definition.

@@ -50,7 +50,7 @@ validation:
             - The ValidatorInput content consists of valid AaC definitions.
             - The ValidatorInput contains some AaC fields that reference defined materials.
           when:
-            - The ValidatorInput is validated.
+            - The validator plugin is executed.
           then:
             - The ValidatorOutput does not indicate any errors.
             - The ValidatorOutput does not indicate any warnings.
@@ -60,7 +60,7 @@ validation:
             - The ValidatorInput content consists of otherwise valid AaC definitions.
             - The ValidatorInput contains at least one part reference that does not exist.
           when:
-            - The ValidatorInput is validated.
+            - The validator plugin is executed.
           then:
             - The ValidatorOutput has errors.
             - The ValidatorOutput errors indicate that there are invalid material references.
@@ -85,7 +85,7 @@ validation:
             - The ValidatorInput contains some AaC fields that reference defined materials.
             - The ValidatorInput does not have any circular references.
           when:
-            - The ValidatorInput is validated.
+            - The validator plugin is executed.
           then:
             - The ValidatorOutput does not indicate any errors.
             - The ValidatorOutput does not indicate any warnings.
@@ -95,7 +95,7 @@ validation:
             - The ValidatorInput content consists of otherwise valid AaC definitions.
             - The ValidatorInput contains at least one material reference that does not exist.
           when:
-            - The ValidatorInput is validated.
+            - The validator plugin is executed.
           then:
             - The ValidatorOutput has errors.
             - The ValidatorOutput errors indicate that there are invalid material references.

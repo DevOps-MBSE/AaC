@@ -6,7 +6,7 @@ plugin:
 ---
 validation:
   name: Required fields are present
-  description: Verifies every field declared as required is present and populated
+  description: Verify every field declared as required is present and populated.
   behavior:
     - name: Verify that definition fields marked as required are populated.
       type: request-response
@@ -17,23 +17,23 @@ validation:
         - name: results
           type: ValidatorOutput
       acceptance:
-        - scenario: Successfully Validate a definition's required fields
+        - scenario: Successfully Validate a definition's required fields.
           given:
             - The ValidatorInput content consists of valid AaC definitions.
             - The ValidatorInput contains some AaC definitions that reference other definitions.
           when:
-            - The input is validation
+            - The validator plugin is executed.
           then:
-            - The ValidatorOutput does not indicate any errors
-            - The ValidatorOutput does not indicate any warnings
-            - The ValidatorOutput indicates the validator plugin under test is valid
-        - scenario: Fail to validate a definition's required fields
+            - The ValidatorOutput does not indicate any errors.
+            - The ValidatorOutput does not indicate any warnings.
+            - The ValidatorOutput indicates the validator plugin under test is valid.
+        - scenario: Fail to validate a definition's required fields.
           given:
             - The ValidatorInput content consists of otherwise valid AaC definitions.
             - The ValidatorInput contains at least one field that is required.
             - The ValidatorInput contains at least one required field that is missing.
           when:
-            - The ValidatorInput is validated
+            - The validator plugin is executed.
           then:
-            - The ValidatorOutput has errors
-            - The ValidatorOutput errors indicate that there are missing required fields
+            - The ValidatorOutput has errors.
+            - The ValidatorOutput errors indicate that there are missing required fields.
