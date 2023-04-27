@@ -1,19 +1,19 @@
 # {{ title }}
 
-{%- if interfaces | length > 0 %}
+{% if interfaces | length > 0 %}
 
 ## Interfaces
 {% include 'datum.md.jinja2' with context %}
-{%- endif %}
+{% endif %}
 
-{%- if models | length > 0 %}
+{% if models | length > 0 %}
 
 ## System Components
 {% include 'model.md.jinja2' with context %}
-{%- endif %}
+{% endif %}
 
-{%- if usecases | length > 0 %}
+{% if usecases | length > 0 %}
 
 ## Use Cases
 {% include 'usecase.md.jinja2' with context %}
-{%- endif %}
+{% endif %}
