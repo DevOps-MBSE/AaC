@@ -1,4 +1,4 @@
-"""AaC Plugin implementation module for the aac-gen-design-doc plugin."""
+"""AaC Plugin implementation module for the Generate System Design Document plugin."""
 
 import os
 
@@ -17,7 +17,7 @@ from aac.templates.engine import (
 )
 from aac.validate import validated_source
 
-plugin_name = "gen-design-doc"
+plugin_name = "Generate System Design Document"
 
 
 def gen_design_doc(architecture_file: str, output_directory: str) -> PluginExecutionResult:

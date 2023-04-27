@@ -6,7 +6,7 @@ from aac.plugins.validators import ValidatorResult
 from aac.plugins.validators._validator_findings import ValidatorFindings
 
 
-PLUGIN_NAME = "Root key is defined"
+PLUGIN_NAME = "Validate root keys"
 
 
 def validate_root_keys(

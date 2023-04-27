@@ -1,27 +1,33 @@
-"""
-A plugin to generate new plugins based on a specifically structured AaC model file.
+"""AaC Plugin implementation module for the Generate Plugin plugin."""
 
-The plugin AaC model must define behaviors using the command BehaviorType.  Each
-defined behavior becomes a new command for the aac CLI.
-"""
 import logging
-from typing import Any
 import yaml
 
 from os import path, rename, makedirs
+from typing import Any
 
 from aac import __version__
-from aac.lang.constants import DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_INPUT, DEFINITION_FIELD_NAME, DEFINITION_FIELD_TYPE, ROOT_KEY_ENUM, ROOT_KEY_EXTENSION, ROOT_KEY_MODEL, DEFINITION_FIELD_DESCRIPTION, ROOT_KEY_SCHEMA
+from aac.lang.constants import (
+    DEFINITION_FIELD_BEHAVIOR,
+    DEFINITION_FIELD_INPUT,
+    DEFINITION_FIELD_NAME,
+    DEFINITION_FIELD_TYPE,
+    ROOT_KEY_ENUM,
+    ROOT_KEY_EXTENSION,
+    ROOT_KEY_MODEL,
+    DEFINITION_FIELD_DESCRIPTION,
+    ROOT_KEY_SCHEMA,
+)
 from aac.lang.definitions.collections import convert_parsed_definitions_to_dict_definition, get_models_by_type
 from aac.lang.definitions.search import search
 from aac.lang.definitions.definition import Definition
-from aac.templates.engine import TemplateOutputFile, generate_templates, load_templates, write_generated_templates_to_file
 from aac.plugins import OperationCancelled
 from aac.plugins.first_party.gen_plugin.GeneratePluginException import GeneratePluginException
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
+from aac.templates.engine import TemplateOutputFile, generate_templates, load_templates, write_generated_templates_to_file
 from aac.validate import validated_source
 
-plugin_name = "gen-plugin"
+plugin_name = "Generate Plugin"
 
 PLUGIN_TYPE_FIRST_STRING = "first"
 PLUGIN_TYPE_THIRD_STRING = "third"

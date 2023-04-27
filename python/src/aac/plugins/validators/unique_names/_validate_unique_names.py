@@ -7,7 +7,7 @@ from aac.lang.language_context import LanguageContext
 from aac.plugins.validators._validator_result import ValidatorFindings, ValidatorResult
 
 
-PLUGIN_NAME = "Unique definition names"
+PLUGIN_NAME = "Validate names are not duplicated"
 
 
 def validate_unique_names(

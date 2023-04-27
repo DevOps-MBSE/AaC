@@ -6,7 +6,7 @@ from aac.lang.language_context import LanguageContext
 from aac.plugins.validators import ValidatorFindings, ValidatorResult
 
 
-PLUGIN_NAME = "Mutually exclusive fields"
+PLUGIN_NAME = "Validate mutually exlusive fields"
 
 
 def validate_exclusive_fields(

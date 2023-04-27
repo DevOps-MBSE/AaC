@@ -15,7 +15,7 @@ def _create_validator_name(enum_type: str) -> str:
     return f"{enum_type}_primitive_validator"
 
 
-plugin_name = "primitive-type-check"
+plugin_name = "Primitive Type Check"
 
 STRING_VALIDATION_NAME = _create_validator_name(PRIMITIVE_TYPE_STRING)
 INT_VALIDATION_NAME = _create_validator_name(PRIMITIVE_TYPE_INT)

@@ -8,7 +8,7 @@ from aac.lang.language_context import LanguageContext
 from aac.plugins.validators import ValidatorFindings, ValidatorResult
 
 
-PLUGIN_NAME = "Type references exist"
+PLUGIN_NAME = "Validate type references"
 
 
 def validate_references(

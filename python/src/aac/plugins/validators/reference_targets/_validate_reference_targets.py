@@ -8,7 +8,7 @@ from aac.lang.language_context import LanguageContext
 from aac.plugins.validators import FindingLocation, ValidatorFindings, ValidatorResult
 
 
-PLUGIN_NAME = "Reference target valid"
+PLUGIN_NAME = "Validate query reference targets"
 
 
 def validate_reference_targets(

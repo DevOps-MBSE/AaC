@@ -6,7 +6,7 @@ from aac.lang.language_context import LanguageContext
 from aac.plugins.validators import ValidatorFindings, ValidatorResult
 
 
-PLUGIN_NAME = "Subcomponents are models"
+PLUGIN_NAME = "Validate model subcomponents"
 
 
 def validate_subcomponent_types(

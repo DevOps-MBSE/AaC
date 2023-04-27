@@ -1,4 +1,4 @@
-"""AaC Plugin implementation module for the aac-gen-gherkin-behaviors plugin."""
+"""AaC Plugin implementation module for the Generate Gherkin Feature Files plugin."""
 
 from aac.lang.definitions.collections import get_models_by_type, convert_parsed_definitions_to_dict_definition
 from aac.plugins import PluginError

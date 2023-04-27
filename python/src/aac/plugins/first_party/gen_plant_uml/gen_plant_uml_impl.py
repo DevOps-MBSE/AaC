@@ -1,6 +1,7 @@
-"""AaC Plugin implementation module for the aac-plantuml plugin."""
+"""AaC Plugin implementation module for the Generate PlantUML Diagrams plugin."""
 
 import os
+
 from typing import Callable
 
 from aac.lang.active_context_lifecycle_manager import get_active_context
@@ -8,10 +9,10 @@ from aac.lang.definitions.collections import get_definitions_by_root_key
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.search import search_definition
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
-from aac.validate import validated_source
 from aac.templates.engine import generate_templates, load_templates, write_generated_templates_to_file
+from aac.validate import validated_source
 
-plugin_name = "gen-plant-uml"
+plugin_name = "Generate PlantUML Diagrams"
 PLANT_UML_FILE_EXTENSION = ".puml"
 COMPONENT_STRING = "component"
 OBJECT_STRING = "object"

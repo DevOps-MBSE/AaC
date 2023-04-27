@@ -6,7 +6,7 @@ from aac.lang.language_context import LanguageContext
 from aac.plugins.validators import ValidatorFindings, ValidatorResult
 
 
-PLUGIN_NAME = "Validation definition has an implementation"
+PLUGIN_NAME = "Validate implementations for validators"
 
 
 def validate_validator_implementations(
