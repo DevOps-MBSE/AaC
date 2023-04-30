@@ -9,6 +9,7 @@ from aac.plugins.validators import ValidatorFindings, ValidatorResult
 
 
 PLUGIN_NAME = "Validate required fields"
+VALIDATION_NAME = "Required fields are present"
 
 
 def validate_required_fields(

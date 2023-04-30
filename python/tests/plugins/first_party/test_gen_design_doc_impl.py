@@ -53,10 +53,7 @@ class TestGenerateDesignDocumentPlugin(TestCase):
     def assert_schema(self, markdown: str) -> None:
         names = ["x", "y", "z", "i", "j", "direction"]
         required = [n for n in names if n != "direction"]
-        [
-            self.assertIn(f"number {n}{' (required)' if n in required else ''}", markdown)
-            for n in names
-        ]
+        [self.assertIn(f"number {n}{' (required)' if n in required else ''}", markdown) for n in names]
 
     def assert_model(self, markdown: str) -> None:
         patterns = [
