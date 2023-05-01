@@ -23,7 +23,7 @@ Include pertinent changes of fixing the bug.
 - None
 
 ### Breaking Changes
-Include pertinent changes that qualify as breaking changes. Be sure to include information of the impact to end users and additional information for addressing the break if more than a version transition is necessary for mitigating. 
+Include pertinent changes that qualify as breaking changes. Be sure to include information about the impact to end users and additional information for addressing the break if more than a version transition is necessary for mitigating. 
 - None
 
 ### Feature Improvement Changes
@@ -31,11 +31,11 @@ Include pertinent changes that are improvements to existing features.
 - None
 
 # Checklist:
-- [ ] Code follows the style guidelines of this project
-- [ ] Code is commented (at minimum new code, but if legacy code is missing comments try to update.)
-- [ ] Updated documentation accordingly
-- [ ] My changes generate no new warnings
-- [ ] Have updated new and existing unit tests accordingly
-- [ ] Unit tests pass locally
-- [ ] Pipeline completes and passes all stages
-- [ ] Linked associated items to be closed
+- [ ] Code follows the style guidelines of this project.
+- [ ] Code is commented (at minimum new code, but if legacy code is missing comments, try to update.)
+- [ ] Updated documentation accordingly.
+- [ ] My changes generate no new warnings.
+- [ ] Have updated new and existing unit tests accordingly.
+- [ ] Unit tests pass locally.
+- [ ] Pipeline completes and passes all stages.
+- [ ] Linked associated items to be closed.
