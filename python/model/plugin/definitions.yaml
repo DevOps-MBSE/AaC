@@ -1,0 +1,13 @@
+enum:
+  name: CommandEnum
+  values:
+    - VALUE_A
+    - VALUE_B
+    - VALUE_C
+---
+ext:
+  name: AnotherPrimitive
+  type: Primitives
+  enumExt:
+    add:
+      - complex
