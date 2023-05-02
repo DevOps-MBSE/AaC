@@ -30,7 +30,6 @@ Include pertinent changes that are improvements to existing features.
 - None
 
 # Checklist:
-- [ ] Code is commented (at minimum new code, but if legacy code is missing comments, try to update.)
 - [ ] Updated documentation accordingly.
 - [ ] My changes generate no new warnings.
 - [ ] Have updated new and existing unit tests accordingly.
