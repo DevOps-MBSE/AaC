@@ -66,11 +66,12 @@ class RenameProvider(LspProvider):
 
     def _get_rename_edits(self, symbol: str, new_name: str) -> dict[str, list[TextEdit]]:
         """Returns the list of text edits based on the selected symbol's type."""
-        language_context = self.language_server.language_context
 
         # Strip any ':' that accompany yaml keys from the incoming replacement text
         sanitized_new_name = new_name.strip(":")
-        text_to_replace = remove_list_type_indicator(symbol).strip(":")
+        text_to_replace = remove_list_type_indicator(symbol)
+
+        language_context = self.language_server.language_context
         symbol_types = get_possible_symbol_types(text_to_replace, language_context)
 
         edits = {}
@@ -172,3 +173,5 @@ class RenameProvider(LspProvider):
 def _filter_editable_definitions(definitions_to_filter: List[Definition]) -> List[Definition]:
     filtered_definitions = {definition for definition in definitions_to_filter if definition.source.is_user_editable}
     return list(filtered_definitions)
+
+
