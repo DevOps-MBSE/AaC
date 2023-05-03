@@ -85,7 +85,7 @@ class TestRenameProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         self.assertIsNone(res.response)
 
     async def test_rename_request_doesnt_duplicate_colons(self):
-        """Covers bugfix #597"""
+        """Covers bugfix #597."""
         lsp_client_new_text = "DataANew:"
         expected_new_name = lsp_client_new_text.strip(":")
 

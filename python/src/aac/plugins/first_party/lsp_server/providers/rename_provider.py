@@ -173,5 +173,3 @@ class RenameProvider(LspProvider):
 def _filter_editable_definitions(definitions_to_filter: List[Definition]) -> List[Definition]:
     filtered_definitions = {definition for definition in definitions_to_filter if definition.source.is_user_editable}
     return list(filtered_definitions)
-
-
