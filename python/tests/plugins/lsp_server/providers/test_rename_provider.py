@@ -94,6 +94,5 @@ class TestRenameProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         actual_document_edits = res.get_workspace_edit()
 
         self.assertIn(TEST_DOCUMENT_NAME, list(actual_document_edits.keys())[0])
-        print(actual_text_edits[0].get("newText"))
         self.assertEqual(expected_new_name, actual_text_edits[0].get("newText"))
         self.assertEqual(2, len(actual_text_edits))
