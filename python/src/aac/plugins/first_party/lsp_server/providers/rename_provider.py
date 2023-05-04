@@ -53,9 +53,10 @@ class RenameProvider(LspProvider):
 
         if document:
             symbol = get_symbol_at_position(document.source, position.line, position.character)
-            edits = self._get_rename_edits(symbol, new_name) if symbol else {}
 
             if symbol:
+                edits = self._get_rename_edits(symbol, new_name)
+
                 try:
                     workspace_edit = WorkspaceEdit(text_document=TextDocumentIdentifier(uri=document.uri), changes=edits)
                 except Exception as error:
@@ -65,38 +66,38 @@ class RenameProvider(LspProvider):
 
     def _get_rename_edits(self, symbol: str, new_name: str) -> dict[str, list[TextEdit]]:
         """Returns the list of text edits based on the selected symbol's type."""
-        if not symbol:
-            return None
+
+        # Strip any ':' that accompany yaml keys from the incoming replacement text
+        sanitized_new_name = new_name.strip(":")
+        text_to_replace = remove_list_type_indicator(symbol)
 
         language_context = self.language_server.language_context
-
-        name = remove_list_type_indicator(symbol).strip(":")
-        symbol_types = get_possible_symbol_types(name, language_context)
+        symbol_types = get_possible_symbol_types(text_to_replace, language_context)
 
         edits = {}
         if SymbolType.DEFINITION_NAME in symbol_types:
-            definition_to_find = language_context.get_definition_by_name(name)
+            definition_to_find = language_context.get_definition_by_name(text_to_replace)
             if not definition_to_find:
-                logging.warn(f"Can't find references for non-definition {name}")
+                logging.warn(f"Can't find references for non-definition {text_to_replace}")
             else:
-                edits = self._get_definition_name_text_edits(new_name, definition_to_find, language_context)
+                edits = self._get_definition_name_text_edits(sanitized_new_name, definition_to_find, language_context)
 
         if SymbolType.ENUM_VALUE_TYPE in symbol_types:
-            enum_to_find = language_context.get_enum_definition_by_type(name)
+            enum_to_find = language_context.get_enum_definition_by_type(text_to_replace)
             if not enum_to_find:
-                logging.warn(f"Can't find references for non-enum {name}")
+                logging.warn(f"Can't find references for non-enum {text_to_replace}")
             else:
-                edits = self._get_enum_value_type_text_edits(name, new_name, enum_to_find, language_context)
+                edits = self._get_enum_value_type_text_edits(text_to_replace, sanitized_new_name, enum_to_find, language_context)
 
         if SymbolType.ROOT_KEY in symbol_types:
             root_fields = language_context.get_root_fields()
-            key_schema_field, *_ = [field for field in root_fields if field.get(DEFINITION_FIELD_NAME) == name]
+            key_schema_field, *_ = [field for field in root_fields if field.get(DEFINITION_FIELD_NAME) == text_to_replace]
             definition_to_find = language_context.get_definition_by_name(key_schema_field.get(DEFINITION_FIELD_TYPE))
 
             if not definition_to_find:
-                logging.critical(f"Can't find the source definition definition '{name}'.")
+                logging.critical(f"Can't find the source definition definition '{text_to_replace}'.")
             else:
-                edits = self._get_root_key_text_edits(name, new_name, definition_to_find, language_context)
+                edits = self._get_root_key_text_edits(text_to_replace, sanitized_new_name, definition_to_find, language_context)
 
         return edits
 

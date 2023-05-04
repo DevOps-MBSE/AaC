@@ -22,7 +22,7 @@ Include pertinent changes of fixing the bug.
 - None
 
 ### Breaking Changes
-Include pertinent changes that qualify as breaking changes. Be sure to include information about the impact to end users and additional information for addressing the break if more than a version transition is necessary for mitigating. 
+Include pertinent changes that qualify as breaking changes. Be sure to include information about the impact to end users and additional information for addressing the break if more than a version transition is necessary for mitigating.
 - None
 
 ### Feature Improvement Changes
@@ -34,3 +34,4 @@ Include pertinent changes that are improvements to existing features.
 - [ ] My changes generate no new warnings.
 - [ ] Have updated new and existing unit tests accordingly.
 - [ ] Linked associated items to be closed.
+- [ ] Have you bumped the version if there will be a release?
