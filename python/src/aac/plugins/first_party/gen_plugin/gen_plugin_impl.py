@@ -200,13 +200,14 @@ def _prepare_and_generate_plugin_files(
 
     if plugin_type == PLUGIN_TYPE_THIRD_STRING:
         template_properties["aac_version"] = __version__
-        new_architecture_file_location = _get_new_architecture_file_path(
-            architecture_file_path, output_directory, plugin_implementation_name
-        )
-        _move_architecture_file_to_plugin_root(architecture_file_path, new_architecture_file_location)
+        new_sources = {}
+        definition_sources = {definition.source.uri for definition in definitions}
+        for source in definition_sources:
+            new_sources[source] = _get_updated_file_path(source, output_directory, plugin_implementation_name)
+            _move_architecture_file_to_plugin_root(source, new_sources[source])
 
         for definition in definitions:
-            definition.source.uri = new_architecture_file_location
+            definition.source.uri = new_sources.get(definition.source.uri)
 
     generated_templates = _generate_template_files(
         plugin_type, output_directory, template_output_directories, template_properties
@@ -401,7 +402,7 @@ def _get_repository_root_directory_from_path(system_path: str) -> str:
     return system_path[:target_index]
 
 
-def _get_new_architecture_file_path(architecture_file_path: str, output_directory: str, generated_plugin_name: str) -> str:
+def _get_updated_file_path(architecture_file_path: str, output_directory: str, generated_plugin_name: str) -> str:
     """Return the new file path to which the plugin architecture file will be moved."""
     architecture_file_path = path.join(output_directory, architecture_file_path)
     file_name = path.basename(architecture_file_path)
@@ -410,6 +411,6 @@ def _get_new_architecture_file_path(architecture_file_path: str, output_director
 
 
 def _move_architecture_file_to_plugin_root(architecture_file_path: str, new_file_path: str) -> None:
-    """Moves the architecture file to the plugin root directory."""
+    """Move the architecture file to the plugin root directory."""
     makedirs(path.dirname(new_file_path), exist_ok=True)
     rename(architecture_file_path, new_file_path)
