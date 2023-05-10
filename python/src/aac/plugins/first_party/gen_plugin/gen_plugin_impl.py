@@ -350,7 +350,7 @@ def _gather_command_properties(plugin_definition: Definition) -> list[dict]:
         command[DEFINITION_FIELD_DISPLAY] = cmd.get(DEFINITION_FIELD_NAME, command_name)
         command[DEFINITION_FIELD_GROUP] = cmd.get(DEFINITION_FIELD_GROUP)
         command["implementation_name"] = _convert_to_implementation_name(command_name)
-        commands.append(cmd)
+        commands.append(command)
 
     return commands
 
