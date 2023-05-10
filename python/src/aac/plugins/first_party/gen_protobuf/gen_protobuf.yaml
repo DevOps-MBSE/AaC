@@ -1,7 +1,7 @@
 plugin:
   name: Generate Protobuf Messages
   description: An AaC plugin that generates Protobuf message definitions from AaC definitions.
-  behavior:
+  commands:
     - name: gen-protobuf
       group: Generation
       helpText: Generate Protobuf messages from AaC definitions.
