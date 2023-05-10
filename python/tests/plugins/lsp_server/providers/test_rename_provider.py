@@ -83,3 +83,16 @@ class TestRenameProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         await self.write_document(TEST_DOCUMENT_NAME, f"\n{TEST_DOCUMENT_CONTENT}")
         res: RenameResponse = await self.rename(TEST_DOCUMENT_NAME, expected_new_name)
         self.assertIsNone(res.response)
+
+    async def test_rename_request_doesnt_duplicate_colons(self):
+        """Covers bugfix #597."""
+        lsp_client_new_text = "DataANew:"
+        expected_new_name = lsp_client_new_text.strip(":")
+
+        res: RenameResponse = await self.rename(TEST_DOCUMENT_NAME, lsp_client_new_text, 1, 8)
+        actual_text_edits = res.get_all_text_edits()
+        actual_document_edits = res.get_workspace_edit()
+
+        self.assertIn(TEST_DOCUMENT_NAME, list(actual_document_edits.keys())[0])
+        self.assertEqual(expected_new_name, actual_text_edits[0].get("newText"))
+        self.assertEqual(2, len(actual_text_edits))

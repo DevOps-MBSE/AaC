@@ -5,7 +5,7 @@ import logging
 import yaml
 from attr import Factory, attrib, attrs, validators
 from typing import Any, Optional
-from uuid import UUID, uuid4
+from uuid import UUID, uuid5, NAMESPACE_DNS
 
 from aac.io.files.aac_file import AaCFile
 from aac.lang.constants import (
@@ -48,7 +48,7 @@ class Definition:
 
     def __attrs_post_init__(self):
         """Post-init hook."""
-        self.uid = uuid4()
+        self.uid = uuid5(NAMESPACE_DNS, str(self.__hash__()))
 
     def __hash__(self) -> int:
         """Return the hash of this Definition."""
