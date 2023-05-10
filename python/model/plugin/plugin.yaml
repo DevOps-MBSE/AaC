@@ -1,5 +1,5 @@
 plugin:
-  name: test-plugin
+  name: Test Plugin
   description: |
     A test plugin with a contributed definition, a command, a definition
     validation, and a primitive validation.
