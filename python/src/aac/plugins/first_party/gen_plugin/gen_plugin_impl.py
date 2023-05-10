@@ -246,7 +246,13 @@ def _gather_template_properties(
         "implementation_name": plugin_implementation_name,
     }
 
-    plugin_aac_definitions = [definition.to_yaml() for definition in _gather_plugin_aac_definitions(parsed_definitions)]
+    plugin_aac_definitions = [
+        {
+            "type": definition.get_root_key(),
+            "type_name": definition.name,
+            "yaml": definition.to_yaml(),
+        } for definition in _gather_plugin_aac_definitions(parsed_definitions)
+    ]
 
     package_name = path.basename(path.dirname(architecture_file_path))
     architecture_file = {

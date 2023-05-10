@@ -6,7 +6,7 @@
 
 ### Command: {{command.name}}
 
-{{command.description}}
+{{command.helpText}}
 
 Example shell usage:
 
@@ -29,11 +29,10 @@ Example shell usage:
 ## Plugin Extensions and Definitions
 
 {% for def in plugin_definitions %}
-{% set type = def | rejectattr('yaml') | list | first %}
 
-### {{type | title}} - {{def[type].name}}
+### {{def.root_key | title}} - {{def.type_name}}
 
-TODO: Add descriptive information about {{def[type].name}}
+TODO: Add descriptive information about {{def.type_name}}
 
 ```yaml
 {{def.yaml}}

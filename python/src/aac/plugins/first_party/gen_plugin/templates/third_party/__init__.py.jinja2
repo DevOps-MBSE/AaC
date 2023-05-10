@@ -66,7 +66,6 @@ def _get_plugin_commands():
 {% endif %}
 {% if plugin_definitions | length > 0 %}
 {# Leave a blank line here since we want 2 space if the expression is true and one if it's false#}
-{% set yaml_file_joiner = joiner("\n---\n") %}
 
 def _get_plugin_definitions():
     return get_plugin_definitions_from_yaml(__package__, "{{architecture_file.name}}")
