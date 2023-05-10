@@ -1,7 +1,6 @@
 """AaC Plugin implementation module for the Generate Plugin plugin."""
 
 import logging
-import yaml
 
 from os import makedirs, path, rename
 from typing import Any
@@ -22,6 +21,7 @@ from aac.lang.constants import (
     ROOT_KEY_EXTENSION,
     ROOT_KEY_PLUGIN,
     ROOT_KEY_SCHEMA,
+    ROOT_KEY_VALIDATION,
 )
 from aac.lang.definitions.collections import get_definitions_by_root_key
 from aac.lang.definitions.definition import Definition
@@ -249,7 +249,7 @@ def _gather_template_properties(
 
     plugin_aac_definitions = [
         {
-            "type": definition.get_root_key(),
+            "root_key": definition.get_root_key(),
             "type_name": definition.name,
             "yaml": definition.to_yaml(),
         } for definition in _gather_plugin_aac_definitions(parsed_definitions)
@@ -372,16 +372,12 @@ def _gather_plugin_aac_definitions(parsed_definitions: list[Definition]) -> list
     Returns:
         A list of AaC definitions provided by the plugin
     """
+    validation_definitions = get_definitions_by_root_key(ROOT_KEY_VALIDATION, parsed_definitions)
     extension_definitions = get_definitions_by_root_key(ROOT_KEY_EXTENSION, parsed_definitions)
     schema_definitions = get_definitions_by_root_key(ROOT_KEY_SCHEMA, parsed_definitions)
     enum_definitions = get_definitions_by_root_key(ROOT_KEY_ENUM, parsed_definitions)
 
-    return extension_definitions + schema_definitions + enum_definitions
-
-
-def _add_definitions_yaml_string(structure: dict) -> dict:
-    structure["yaml"] = yaml.dump(structure)
-    return structure
+    return validation_definitions + extension_definitions + schema_definitions + enum_definitions
 
 
 def _convert_to_implementation_name(original_name: str) -> str:

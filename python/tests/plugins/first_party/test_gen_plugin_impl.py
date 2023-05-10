@@ -200,9 +200,11 @@ class TestGenPlugin(ActiveContextTestCase):
         generated_readme_file_contents = generated_templates.get(README_TEMPLATE_NAME).content
         self.assertIn("# Test Plugin", generated_readme_file_contents)
         self.assertIn("## Command:", generated_readme_file_contents)
-        self.assertIn("## Plugin Extensions and Definitions", generated_readme_file_contents)
         self.assertIn("$ aac test-plugin-command", generated_readme_file_contents)
-        self.assertIn("### Validation", generated_readme_file_contents)
+        self.assertIn("## Plugin Extensions and Definitions", generated_readme_file_contents)
+        self.assertIn("### Schema - TestPluginData", generated_readme_file_contents)
+        self.assertIn("### Validation - Test definition validation", generated_readme_file_contents)
+        self.assertIn("### Validation - Test primitive validation", generated_readme_file_contents)
 
         generated_tox_config_file_contents = generated_templates.get(TOX_CONFIG_TEMPLATE_NAME).content
         self.assertIn("[testenv]", generated_tox_config_file_contents)
@@ -281,7 +283,7 @@ plugin:
             - Stuff happens
 ---
 schema:
-  name: TestPluginData1
+  name: TestPluginData
   fields:
     - name: value1
       type: string
