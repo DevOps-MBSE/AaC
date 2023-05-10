@@ -26,22 +26,32 @@ def clear_directory(dirspec: str, file_list: Optional[list[str]] = None, dir_lis
     """
 
     def should_remove(pathspec: str, paths_to_remove: Optional[list[str]]):
-        return isinstance(pathspec, str) and (paths_to_remove and pathspec in paths_to_remove) or not paths_to_remove
+        return (paths_to_remove and pathspec in paths_to_remove) or not paths_to_remove
+
+    def get_abspath(pathspec: str):
+        return os.path.join(dirspec, pathspec)
+
+    def should_remove_file(pathspec: str, file_list: Optional[list[str]]):
+        return os.path.isfile(get_abspath(pathspec)) and should_remove(pathspec, file_list)
+
+    def should_remove_dir(pathspec: str, dir_list: Optional[list[str]]):
+        return os.path.isdir(get_abspath(pathspec)) and should_remove(pathspec, dir_list)
 
     def remove_file(pathspec: str):
-        os.remove(os.path.join(dirspec, pathspec))
+        os.remove(get_abspath(pathspec))
 
     def remove_directory(pathspec: str):
-        directory = os.path.join(dirspec, pathspec)
-        clear_directory(directory)
-        os.rmdir(directory)
+        directory = get_abspath(pathspec)
+        with new_working_dir(directory):
+            clear_directory(directory)
+            os.rmdir(directory)
 
     items = os.listdir(dirspec)
 
-    files = filter(lambda pathspec: os.path.isfile(pathspec) and should_remove(pathspec, file_list), items)
+    files = filter(lambda pathspec: should_remove_file(pathspec, file_list), items)
     list(map(remove_file, files))
 
-    dirs = filter(lambda pathspec: os.path.isdir(pathspec) and should_remove(pathspec, dir_list), items)
+    dirs = filter(lambda pathspec: should_remove_dir(pathspec, dir_list), items)
     list(map(remove_directory, dirs))
 
 
