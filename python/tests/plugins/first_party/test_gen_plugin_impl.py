@@ -21,8 +21,8 @@ from aac.validate import validated_source
 
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.assertion import assert_plugin_failure, assert_plugin_success
-from tests.helpers.io.TemporaryTestFile import TemporaryTestFile
-from tests.helpers.io.directory import new_working_dir
+from tests.helpers.io2.TemporaryTestFile import TemporaryTestFile
+from tests.helpers.io2.directory import new_working_dir
 
 
 INIT_TEMPLATE_NAME = "__init__.py.jinja2"
