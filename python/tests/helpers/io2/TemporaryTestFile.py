@@ -25,7 +25,7 @@ class TemporaryTestFile:
 
         Arguments:
             content (str): A string to use as the contents of the file.
-            name (Optional[str]): (default: None)
+            name (Optional[str]): An optional name to give to the file. (default: None)
             clean_up (Optional[str]): Whether to clean up the test file/directory after exiting the context manager.
               Recognized Options:
                 'all': Remove `dir` along with all files and directories under `dir`. (default)
