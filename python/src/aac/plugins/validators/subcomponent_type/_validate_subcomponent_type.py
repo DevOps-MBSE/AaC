@@ -7,6 +7,7 @@ from aac.plugins.validators import ValidatorFindings, ValidatorResult
 
 
 PLUGIN_NAME = "Validate model subcomponents"
+VALIDATION_NAME = "Subcomponents are models"
 
 
 def validate_subcomponent_types(

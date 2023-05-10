@@ -9,6 +9,7 @@ from aac.plugins.validators import FindingLocation, ValidatorFindings, Validator
 
 
 PLUGIN_NAME = "Validate query reference targets"
+VALIDATION_NAME = "Reference target valid"
 
 
 def validate_reference_targets(

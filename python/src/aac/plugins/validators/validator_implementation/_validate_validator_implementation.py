@@ -7,6 +7,7 @@ from aac.plugins.validators import ValidatorFindings, ValidatorResult
 
 
 PLUGIN_NAME = "Validate implementations for validators"
+VALIDATION_NAME = "Validation definition has an implementation"
 
 
 def validate_validator_implementations(

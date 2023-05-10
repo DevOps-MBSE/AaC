@@ -1,13 +1,14 @@
 import logging
 from os import linesep
-from aac.lang.constants import DEFINITION_FIELD_NAME
 
+from aac.lang.constants import DEFINITION_FIELD_NAME
 from aac.lang.definitions.definition import Definition
 from aac.lang.language_context import LanguageContext
 from aac.plugins.validators._validator_result import ValidatorFindings, ValidatorResult
 
 
 PLUGIN_NAME = "Validate names are not duplicated"
+VALIDATION_NAME = "Unique definition names"
 
 
 def validate_unique_names(

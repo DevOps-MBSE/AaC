@@ -8,6 +8,7 @@ from aac.plugins.validators import ValidatorFindings, ValidatorResult
 
 
 PLUGIN_NAME = "Validate query reference format"
+VALIDATION_NAME = "Reference format valid"
 
 
 def validate_reference_fields(

@@ -12,10 +12,10 @@ from aac.lang.constants import (
 
 
 def _create_validator_name(enum_type: str) -> str:
-    return f"{enum_type}_primitive_validator"
+    return f"Validate {enum_type.capitalize()} Primitives"
 
 
-plugin_name = "Primitive Type Check"
+plugin_name = "Primitive Type Checking"
 
 STRING_VALIDATION_NAME = _create_validator_name(PRIMITIVE_TYPE_STRING)
 INT_VALIDATION_NAME = _create_validator_name(PRIMITIVE_TYPE_INT)

@@ -8,7 +8,7 @@ from aac.lang.definitions.structure import get_substructures_by_type
 from aac.plugins.validators import ValidatorFindings, ValidatorResult
 
 
-MATERIAL_REF_VALIDATOR_NAME = "Referenced materials exist"
+VALIDATION_NAME = "Referenced materials exist"
 
 ALL_PART_NAMES = []
 ALL_ASSEMBLY_NAMES = []
@@ -52,13 +52,31 @@ def validate_referenced_materials(
         for root in assembly_roots + deployment_roots:
 
             # check part refs
-            _check_refs("part-ref", ALL_PART_NAMES, root, definition_under_test, part_ref_definition, language_context, findings)
+            _check_refs(
+                "part-ref", ALL_PART_NAMES, root, definition_under_test, part_ref_definition, language_context, findings
+            )
 
             # check assembly refs
-            _check_refs("assembly-ref", ALL_ASSEMBLY_NAMES, root, definition_under_test, assembly_ref_definition, language_context, findings)
+            _check_refs(
+                "assembly-ref",
+                ALL_ASSEMBLY_NAMES,
+                root,
+                definition_under_test,
+                assembly_ref_definition,
+                language_context,
+                findings,
+            )
 
             # check deployment refs
-            _check_refs("deployment-ref", ALL_DEPLOYMENT_NAMES, root, definition_under_test, deployment_ref_definition, language_context, findings)
+            _check_refs(
+                "deployment-ref",
+                ALL_DEPLOYMENT_NAMES,
+                root,
+                definition_under_test,
+                deployment_ref_definition,
+                language_context,
+                findings,
+            )
 
     except Exception as e:
         print("Caught an exception in validate_referenced_materials")
@@ -77,7 +95,7 @@ def _check_refs(ref_type, name_list, root, definition_under_test, ref_definition
                 lexeme = root.get_lexeme_with_value(ref)
                 message = f"Cannot find {ref_type} target {ref} in {lexeme.source} on line {lexeme.location.line + 1}"
 
-                findings.add_error_finding(definition_under_test, message, MATERIAL_REF_VALIDATOR_NAME, lexeme)
+                findings.add_error_finding(definition_under_test, message, VALIDATION_NAME, lexeme)
                 logging.debug(message)
 
 

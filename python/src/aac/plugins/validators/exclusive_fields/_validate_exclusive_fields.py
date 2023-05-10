@@ -7,6 +7,7 @@ from aac.plugins.validators import ValidatorFindings, ValidatorResult
 
 
 PLUGIN_NAME = "Validate mutually exlusive fields"
+VALIDATION_NAME = "Mutually exclusive fields"
 
 
 def validate_exclusive_fields(
