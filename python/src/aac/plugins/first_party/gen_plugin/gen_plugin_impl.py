@@ -85,10 +85,14 @@ def _generate_plugin_files_to_directory(architecture_file_path: str, plugin_outp
 
 
 def _collect_all_plugin_definitions(architecture_file_path: str) -> list[Definition]:
+
+    def get_definition_source_path(pathspec: str) -> str:
+        return pathspec if pathspec.startswith(path.sep) else path.join(path.dirname(architecture_file_path), pathspec)
+
     definitions = parse(architecture_file_path)
     plugin, *_ = get_definitions_by_root_key(ROOT_KEY_PLUGIN, definitions)
     definition_sources = plugin.get_top_level_fields().get(DEFINITION_FIELD_DEFINITION_SOURCES, [])
-    definition_sources_definitions = [definition for path in definition_sources for definition in parse(path)]
+    definition_sources_definitions = [definition for path in definition_sources for definition in parse(get_definition_source_path(path))]
     return definitions + definition_sources_definitions
 
 
