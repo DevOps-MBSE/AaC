@@ -4,14 +4,14 @@ plugin:
     A test plugin with a contributed definition, a command, a definition
     validation, and a primitive validation.
   definitionSources:
-    - definitions.yaml
+    - ./definitions.yaml
   definitionValidations:
     - name: Test definition validation
   primitiveValidations:
     - name: Test primitive validation
   commands:
     - name: test-plugin-command
-      description: Test plugin generation
+      helpText: Test plugin generation
       input:
         - name: architecture_file
           type: file
