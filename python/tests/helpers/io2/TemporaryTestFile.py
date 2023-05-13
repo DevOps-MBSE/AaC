@@ -31,6 +31,7 @@ class TemporaryTestFile:
                 'all': Remove `dir` along with all files and directories under `dir`. (default)
                 'files': Remove all files under `dir` only.
                 'directories': Remove all directories under `dir` only.
+
             The below parameters are the same as those provided to `NamedTemporaryFile`:
               mode (str): The `mode` argument to `NamedTemporaryFile`. (default: "w")
               buffering (int): The `buffering` argument to `NamedTemporaryFile`. (default: -1)
