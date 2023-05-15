@@ -1,6 +1,14 @@
 from unittest import TestCase
 from aac.lang.active_context_lifecycle_manager import get_initialized_language_context
-from aac.lang.constants import DEFINITION_NAME_BEHAVIOR, DEFINITION_NAME_BEHAVIOR_TYPE, DEFINITION_NAME_FIELD, DEFINITION_NAME_MODEL, DEFINITION_NAME_PRIMITIVES, DEFINITION_NAME_SCENARIO, DEFINITION_NAME_SCHEMA
+from aac.lang.constants import (
+    DEFINITION_NAME_BEHAVIOR,
+    DEFINITION_NAME_BEHAVIOR_TYPE,
+    DEFINITION_NAME_FIELD,
+    DEFINITION_NAME_MODEL,
+    DEFINITION_NAME_PRIMITIVES,
+    DEFINITION_NAME_SCENARIO,
+    DEFINITION_NAME_SCHEMA,
+)
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.metadata_structure import compute_metadata_structure
 from aac.lang.definitions.structural_node import NodeType, StructuralNode
@@ -12,8 +20,6 @@ from tests.helpers.prebuilt_definition_constants import (
 
 
 class TestDefinitionNodeStructure(TestCase):
-    """Exercises' the parser's behavior when building the internal node structure."""
-
     def test_parser_builds_node_structure_schema(self):
 
         test_context = get_initialized_language_context()
@@ -119,11 +125,15 @@ class TestDefinitionNodeStructure(TestCase):
 
         # Test the 'behavior' fields entry 1 input field entry 1 name
         behaviors_entry1_input_entry1_name_node = behaviors_entry1_input_entry1_node.children[0]
-        _assert_structural_node(self, behaviors_entry1_input_entry1_name_node, NodeType.SCHEMA_STRUCTURE, primitives_definition, 1)
+        _assert_structural_node(
+            self, behaviors_entry1_input_entry1_name_node, NodeType.SCHEMA_STRUCTURE, primitives_definition, 1
+        )
 
         # Test the 'behavior' fields entry 1 input field entry 1 name value
         behaviors_entry1_input_entry1_name_value_node = behaviors_entry1_input_entry1_name_node.children[0]
-        _assert_structural_node(self, behaviors_entry1_input_entry1_name_value_node, NodeType.PRIMITIVE_VALUE, primitives_definition, 0)
+        _assert_structural_node(
+            self, behaviors_entry1_input_entry1_name_value_node, NodeType.PRIMITIVE_VALUE, primitives_definition, 0
+        )
 
         # Test the 'behavior' fields entry 1 acceptance field
         behaviors_entry1_acceptance_node = behaviors_entry1_node.children[6]
@@ -135,14 +145,24 @@ class TestDefinitionNodeStructure(TestCase):
 
         # Test the 'behavior' fields entry 1 acceptance field entry 1 scenario
         behaviors_entry1_acceptance_entry1_scenario_node = behaviors_entry1_input_entry1_node.children[0]
-        _assert_structural_node(self, behaviors_entry1_acceptance_entry1_scenario_node, NodeType.SCHEMA_STRUCTURE, primitives_definition, 1)
+        _assert_structural_node(
+            self, behaviors_entry1_acceptance_entry1_scenario_node, NodeType.SCHEMA_STRUCTURE, primitives_definition, 1
+        )
 
         # Test the 'behavior' fields entry 1 acceptance field entry 1 scenario value
         behaviors_entry1_acceptance_entry1_scenario_value_node = behaviors_entry1_acceptance_entry1_scenario_node.children[0]
-        _assert_structural_node(self, behaviors_entry1_acceptance_entry1_scenario_value_node, NodeType.PRIMITIVE_VALUE, primitives_definition, 0)
+        _assert_structural_node(
+            self, behaviors_entry1_acceptance_entry1_scenario_value_node, NodeType.PRIMITIVE_VALUE, primitives_definition, 0
+        )
 
 
-def _assert_structural_node(test_case: TestCase, actual_node: StructuralNode, expected_node_type: NodeType, expected_defining_definition: Definition, expected_child_count: int):
+def _assert_structural_node(
+    test_case: TestCase,
+    actual_node: StructuralNode,
+    expected_node_type: NodeType,
+    expected_defining_definition: Definition,
+    expected_child_count: int,
+):
     test_case.assertEqual(expected_node_type, actual_node.node_type)
     test_case.assertEqual(expected_defining_definition, actual_node.defining_definition)
     test_case.assertEqual(expected_child_count, len(actual_node.children))
