@@ -1,8 +1,35 @@
 from unittest import TestCase
 
 from aac.lang.active_context_lifecycle_manager import get_active_context
-from aac.lang.constants import DEFINITION_FIELD_ACCEPTANCE, DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_COMPONENTS, DEFINITION_FIELD_DESCRIPTION, DEFINITION_FIELD_GIVEN, DEFINITION_FIELD_INPUT, DEFINITION_FIELD_NAME, DEFINITION_FIELD_OUTPUT, DEFINITION_FIELD_SCENARIO, DEFINITION_FIELD_STATE, DEFINITION_FIELD_TAGS, DEFINITION_FIELD_THEN, DEFINITION_FIELD_TYPE, DEFINITION_FIELD_WHEN, DEFINITION_NAME_BEHAVIOR, DEFINITION_NAME_BEHAVIOR_TYPE, DEFINITION_NAME_FIELD, DEFINITION_NAME_MODEL, DEFINITION_NAME_PRIMITIVES, DEFINITION_NAME_SCENARIO
-from aac.lang.definitions.schema import get_definition_schema, get_root_schema_definitions, get_schema_defined_fields, get_definition_schema_components, get_schema_for_field
+from aac.lang.constants import (
+    DEFINITION_FIELD_ACCEPTANCE,
+    DEFINITION_FIELD_BEHAVIOR,
+    DEFINITION_FIELD_COMPONENTS,
+    DEFINITION_FIELD_DESCRIPTION,
+    DEFINITION_FIELD_GIVEN,
+    DEFINITION_FIELD_INPUT,
+    DEFINITION_FIELD_NAME,
+    DEFINITION_FIELD_OUTPUT,
+    DEFINITION_FIELD_SCENARIO,
+    DEFINITION_FIELD_STATE,
+    DEFINITION_FIELD_TAGS,
+    DEFINITION_FIELD_THEN,
+    DEFINITION_FIELD_TYPE,
+    DEFINITION_FIELD_WHEN,
+    DEFINITION_NAME_BEHAVIOR,
+    DEFINITION_NAME_BEHAVIOR_TYPE,
+    DEFINITION_NAME_FIELD,
+    DEFINITION_NAME_MODEL,
+    DEFINITION_NAME_PRIMITIVES,
+    DEFINITION_NAME_SCENARIO,
+)
+from aac.lang.definitions.schema import (
+    get_definition_schema,
+    get_root_schema_definitions,
+    get_schema_defined_fields,
+    get_definition_schema_components,
+    get_schema_for_field,
+)
 from aac.spec import get_root_fields
 
 from tests.helpers.context import get_core_spec_context
@@ -173,16 +200,40 @@ class TestDefinitionSchemas(TestCase):
             ([DEFINITION_NAME_MODEL, DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_DESCRIPTION], primitives_definition),
             ([DEFINITION_NAME_MODEL, DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_TAGS], primitives_definition),
             ([DEFINITION_NAME_MODEL, DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_INPUT], field_definition),
-            ([DEFINITION_NAME_MODEL, DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_INPUT, DEFINITION_FIELD_NAME], primitives_definition),
-            ([DEFINITION_NAME_MODEL, DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_INPUT, DEFINITION_FIELD_TYPE], primitives_definition),
-            ([DEFINITION_NAME_MODEL, DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_INPUT, DEFINITION_FIELD_DESCRIPTION], primitives_definition),
+            (
+                [DEFINITION_NAME_MODEL, DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_INPUT, DEFINITION_FIELD_NAME],
+                primitives_definition,
+            ),
+            (
+                [DEFINITION_NAME_MODEL, DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_INPUT, DEFINITION_FIELD_TYPE],
+                primitives_definition,
+            ),
+            (
+                [DEFINITION_NAME_MODEL, DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_INPUT, DEFINITION_FIELD_DESCRIPTION],
+                primitives_definition,
+            ),
             ([DEFINITION_NAME_MODEL, DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_OUTPUT], field_definition),
             ([DEFINITION_NAME_MODEL, DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_ACCEPTANCE], scenario_definition),
-            ([DEFINITION_NAME_MODEL, DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_ACCEPTANCE, DEFINITION_FIELD_SCENARIO], primitives_definition),
-            ([DEFINITION_NAME_MODEL, DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_ACCEPTANCE, DEFINITION_FIELD_TAGS], primitives_definition),
-            ([DEFINITION_NAME_MODEL, DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_ACCEPTANCE, DEFINITION_FIELD_GIVEN], primitives_definition),
-            ([DEFINITION_NAME_MODEL, DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_ACCEPTANCE, DEFINITION_FIELD_WHEN], primitives_definition),
-            ([DEFINITION_NAME_MODEL, DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_ACCEPTANCE, DEFINITION_FIELD_THEN], primitives_definition),
+            (
+                [DEFINITION_NAME_MODEL, DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_ACCEPTANCE, DEFINITION_FIELD_SCENARIO],
+                primitives_definition,
+            ),
+            (
+                [DEFINITION_NAME_MODEL, DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_ACCEPTANCE, DEFINITION_FIELD_TAGS],
+                primitives_definition,
+            ),
+            (
+                [DEFINITION_NAME_MODEL, DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_ACCEPTANCE, DEFINITION_FIELD_GIVEN],
+                primitives_definition,
+            ),
+            (
+                [DEFINITION_NAME_MODEL, DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_ACCEPTANCE, DEFINITION_FIELD_WHEN],
+                primitives_definition,
+            ),
+            (
+                [DEFINITION_NAME_MODEL, DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_ACCEPTANCE, DEFINITION_FIELD_THEN],
+                primitives_definition,
+            ),
         ]
 
         for test_keys, expected in test_cases:
