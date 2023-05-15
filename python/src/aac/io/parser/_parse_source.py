@@ -104,7 +104,7 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
 
         end_of_file_offset = 1 if isinstance(end_doc_token, StreamEndToken) else 0
 
-        yaml_text = linesep.join(model_content.splitlines()[content_start_line : content_end_line + end_of_file_offset])
+        yaml_text = linesep.join(model_content.splitlines()[content_start_line: content_end_line + end_of_file_offset])
         yaml_text += linesep
 
         if yaml_text.strip():
