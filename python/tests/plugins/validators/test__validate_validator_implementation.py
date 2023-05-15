@@ -4,6 +4,7 @@ from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.constants import ROOT_KEY_VALIDATION
 from aac.lang.definitions.collections import get_definitions_by_root_key
 from aac.lang.definitions.source_location import SourceLocation
+from aac.plugins.plugin import Plugin
 from aac.plugins.contributions.contribution_types import DefinitionValidationContribution
 from aac.plugins.validators.validator_implementation import (
     _get_plugin_definitions,
@@ -13,7 +14,6 @@ from aac.plugins.validators.validator_implementation import (
 
 from tests.helpers.assertion import assert_definitions_equal
 from tests.helpers.parsed_definitions import create_plugin_definition, create_validation_definition, create_validation_entry
-from tests.helpers.plugins import create_plugin
 
 
 class TestValidationImplementPlugin(TestCase):
@@ -56,11 +56,9 @@ class TestValidationImplementPlugin(TestCase):
 
         test_plugin_name = "Test Plugin"
         test_plugin_definition = create_plugin_definition(test_plugin_name, definition_validations=[test_validation_entry])
-        test_plugin = create_plugin(
-            test_plugin_name,
-            definitions=[test_plugin_definition, test_validation_definition],
-            definition_validations=[test_validation_contribution],
-        )
+        test_plugin = Plugin(test_plugin_name)
+        test_plugin.register_definitions([test_plugin_definition, test_validation_definition])
+        test_plugin.register_definition_validations([test_validation_contribution])
 
         validation_definition = test_active_context.get_definition_by_name("Validation")
 
