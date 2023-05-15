@@ -188,52 +188,33 @@ class TestDefinitionSchemas(TestCase):
         behavior_type_definition = test_context.get_definition_by_name(DEFINITION_NAME_BEHAVIOR_TYPE)
         scenario_definition = test_context.get_definition_by_name(DEFINITION_NAME_SCENARIO)
 
+        # prepared key lists for brevity
+        model_keys = [DEFINITION_NAME_MODEL]
+        model_behavior_keys = [DEFINITION_NAME_MODEL, DEFINITION_FIELD_BEHAVIOR]
+        model_behavior_acceptance_keys = [DEFINITION_NAME_MODEL, DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_ACCEPTANCE]
+
         test_cases = [
-            ([DEFINITION_NAME_MODEL], model_definition),
-            ([DEFINITION_NAME_MODEL, DEFINITION_FIELD_NAME], primitives_definition),
-            ([DEFINITION_NAME_MODEL, DEFINITION_FIELD_DESCRIPTION], primitives_definition),
-            ([DEFINITION_NAME_MODEL, DEFINITION_FIELD_COMPONENTS], field_definition),
-            ([DEFINITION_NAME_MODEL, DEFINITION_FIELD_BEHAVIOR], behavior_definition),
-            ([DEFINITION_NAME_MODEL, DEFINITION_FIELD_STATE], field_definition),
-            ([DEFINITION_NAME_MODEL, DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_NAME], primitives_definition),
-            ([DEFINITION_NAME_MODEL, DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_TYPE], behavior_type_definition),
-            ([DEFINITION_NAME_MODEL, DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_DESCRIPTION], primitives_definition),
-            ([DEFINITION_NAME_MODEL, DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_TAGS], primitives_definition),
-            ([DEFINITION_NAME_MODEL, DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_INPUT], field_definition),
-            (
-                [DEFINITION_NAME_MODEL, DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_INPUT, DEFINITION_FIELD_NAME],
-                primitives_definition,
-            ),
-            (
-                [DEFINITION_NAME_MODEL, DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_INPUT, DEFINITION_FIELD_TYPE],
-                primitives_definition,
-            ),
-            (
-                [DEFINITION_NAME_MODEL, DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_INPUT, DEFINITION_FIELD_DESCRIPTION],
-                primitives_definition,
-            ),
-            ([DEFINITION_NAME_MODEL, DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_OUTPUT], field_definition),
-            ([DEFINITION_NAME_MODEL, DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_ACCEPTANCE], scenario_definition),
-            (
-                [DEFINITION_NAME_MODEL, DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_ACCEPTANCE, DEFINITION_FIELD_SCENARIO],
-                primitives_definition,
-            ),
-            (
-                [DEFINITION_NAME_MODEL, DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_ACCEPTANCE, DEFINITION_FIELD_TAGS],
-                primitives_definition,
-            ),
-            (
-                [DEFINITION_NAME_MODEL, DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_ACCEPTANCE, DEFINITION_FIELD_GIVEN],
-                primitives_definition,
-            ),
-            (
-                [DEFINITION_NAME_MODEL, DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_ACCEPTANCE, DEFINITION_FIELD_WHEN],
-                primitives_definition,
-            ),
-            (
-                [DEFINITION_NAME_MODEL, DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_ACCEPTANCE, DEFINITION_FIELD_THEN],
-                primitives_definition,
-            ),
+            ([*model_keys], model_definition),
+            ([*model_keys, DEFINITION_FIELD_NAME], primitives_definition),
+            ([*model_keys, DEFINITION_FIELD_DESCRIPTION], primitives_definition),
+            ([*model_keys, DEFINITION_FIELD_COMPONENTS], field_definition),
+            ([*model_keys, DEFINITION_FIELD_BEHAVIOR], behavior_definition),
+            ([*model_keys, DEFINITION_FIELD_STATE], field_definition),
+            ([*model_behavior_keys, DEFINITION_FIELD_NAME], primitives_definition),
+            ([*model_behavior_keys, DEFINITION_FIELD_TYPE], behavior_type_definition),
+            ([*model_behavior_keys, DEFINITION_FIELD_DESCRIPTION], primitives_definition),
+            ([*model_behavior_keys, DEFINITION_FIELD_TAGS], primitives_definition),
+            ([*model_behavior_keys, DEFINITION_FIELD_INPUT], field_definition),
+            ([*model_behavior_keys, DEFINITION_FIELD_INPUT, DEFINITION_FIELD_NAME], primitives_definition),
+            ([*model_behavior_keys, DEFINITION_FIELD_INPUT, DEFINITION_FIELD_TYPE], primitives_definition),
+            ([*model_behavior_keys, DEFINITION_FIELD_INPUT, DEFINITION_FIELD_DESCRIPTION], primitives_definition),
+            ([*model_behavior_keys, DEFINITION_FIELD_OUTPUT], field_definition),
+            ([*model_behavior_acceptance_keys], scenario_definition),
+            ([*model_behavior_acceptance_keys, DEFINITION_FIELD_SCENARIO], primitives_definition),
+            ([*model_behavior_acceptance_keys, DEFINITION_FIELD_TAGS], primitives_definition),
+            ([*model_behavior_acceptance_keys, DEFINITION_FIELD_GIVEN], primitives_definition),
+            ([*model_behavior_acceptance_keys, DEFINITION_FIELD_WHEN], primitives_definition),
+            ([*model_behavior_acceptance_keys, DEFINITION_FIELD_THEN], primitives_definition),
         ]
 
         for test_keys, expected in test_cases:
