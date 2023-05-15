@@ -78,6 +78,18 @@ class TemporaryTestFile:
 
     def __exit__(self, *_):
         """Clean the temporary test file."""
+
+        def get_items_to_remove(checker):
+            return [item for item in os.listdir(self.directory) if checker(os.path.join(self.directory, item))]
+
+        def get_files_to_remove():
+            if self.clean_up == "files":
+                return get_items_to_remove(os.path.isfile)
+
+        def get_dirs_to_remove():
+            if self.clean_up == "directories":
+                return get_items_to_remove(os.path.isdir)
+
         if self.clean_up and os.path.exists(self.directory):
-            clear_directory(self.directory)
+            clear_directory(self.directory, file_list=get_files_to_remove(), dir_list=get_dirs_to_remove())
             os.removedirs(self.directory)
