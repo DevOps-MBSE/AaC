@@ -29,18 +29,6 @@ def create_plugin(
     return plugin
 
 
-def create_definition_validation_contribution(
-    name: str, definition: Definition, validation_fn: Callable
-) -> DefinitionValidationContribution:
-    return DefinitionValidationContribution(name, definition, validation_fn)
-
-
-def create_primitive_validation_contribution(
-    name: str, primitive_type: str, validation_fn: Callable
-) -> PrimitiveValidationContribution:
-    return PrimitiveValidationContribution(name, primitive_type, validation_fn)
-
-
 def check_generated_file_contents(path: str, checker: Callable, *args, **kwargs):
     """Check the contents of the provided file at path according to checker.
 

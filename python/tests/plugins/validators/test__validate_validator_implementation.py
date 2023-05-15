@@ -13,7 +13,7 @@ from aac.plugins.validators.validator_implementation import (
 
 from tests.helpers.assertion import assert_definitions_equal
 from tests.helpers.parsed_definitions import create_plugin_definition, create_validation_definition, create_validation_entry
-from tests.helpers.plugins import create_plugin, create_definition_validation_contribution
+from tests.helpers.plugins import create_plugin
 
 
 class TestValidationImplementPlugin(TestCase):
@@ -52,9 +52,7 @@ class TestValidationImplementPlugin(TestCase):
         test_validation_name = "Test validation"
         test_validation_entry = create_validation_entry(test_validation_name)
         test_validation_definition = create_validation_definition(test_validation_name)
-        test_validation_contribution = create_definition_validation_contribution(
-            test_validation_name, test_validation_definition, None
-        )
+        test_validation_contribution = DefinitionValidationContribution(test_validation_name, test_validation_definition, None)
 
         test_plugin_name = "Test Plugin"
         test_plugin_definition = create_plugin_definition(test_plugin_name, definition_validations=[test_validation_entry])
