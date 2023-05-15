@@ -226,7 +226,7 @@ def _to_template_properties_dict(
         "message_description": description,
         "file_type": file_type,
         "enums": enums,
-        DEFINITION_FIELD_FIELDS: fields,
+       "fields": fields,
         "imports": imports,
         "options": options,
     }
@@ -283,9 +283,9 @@ def _get_schema_properties(interface_structures: dict[str, Definition], data_def
 
         message_fields.append(
             {
-                DEFINITION_FIELD_NAME: proto_field_name,
-                DEFINITION_FIELD_DESCRIPTION: description_as_proto_comment,
-                DEFINITION_FIELD_TYPE: sanitized_proto_field_type,
+               "name": proto_field_name,
+               "description": description_as_proto_comment,
+               "type": sanitized_proto_field_type,
                 "repeat": is_array_type(proto_field_type),
             }
         )
