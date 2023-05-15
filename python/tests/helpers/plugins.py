@@ -1,4 +1,44 @@
-from typing import Callable
+from typing import Callable, Optional
+
+from aac.cli.aac_command import AacCommand
+from aac.lang.definitions.definition import Definition
+from aac.plugins.plugin import Plugin, DefinitionValidationContribution, PrimitiveValidationContribution
+
+
+def create_plugin(
+    name: str,
+    definitions: Optional[list[Definition]] = None,
+    commands: Optional[list[AacCommand]] = None,
+    definition_validations: Optional[list[DefinitionValidationContribution]] = None,
+    primitive_validations: Optional[list[PrimitiveValidationContribution]] = None,
+) -> Plugin:
+    plugin = Plugin(name)
+
+    if definitions:
+        plugin.register_definitions(definitions)
+
+    if commands:
+        plugin.register_commands(commands)
+
+    if definition_validations:
+        plugin.register_definition_validations(definition_validations)
+
+    if primitive_validations:
+        plugin.register_primitive_validations(primitive_validations)
+
+    return plugin
+
+
+def create_definition_validation_contribution(
+    name: str, definition: Definition, validation_fn: Callable
+) -> DefinitionValidationContribution:
+    return DefinitionValidationContribution(name, definition, validation_fn)
+
+
+def create_primitive_validation_contribution(
+    name: str, primitive_type: str, validation_fn: Callable
+) -> PrimitiveValidationContribution:
+    return PrimitiveValidationContribution(name, primitive_type, validation_fn)
 
 
 def check_generated_file_contents(path: str, checker: Callable, *args, **kwargs):
