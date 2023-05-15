@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Callable, Optional
+from typing import Callable
 
 from attr import attrib, attrs, validators
 
@@ -10,6 +10,8 @@ from attr import attrib, attrs, validators
 @attrs(hash=False)
 class PrimitiveValidationContribution:
     """
+    A contribution for validating a primitive value.
+
     A class that contains all the relevant information to manage and execute type validator
     contributions against type-value enums in the validation process.
 

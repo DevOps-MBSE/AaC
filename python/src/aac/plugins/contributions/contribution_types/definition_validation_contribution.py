@@ -12,6 +12,8 @@ from aac.lang.definitions.definition import Definition
 @attrs(hash=False)
 class DefinitionValidationContribution:
     """
+    A contribution for validating a definition.
+
     A class that contains all the relevant information to manage and execute definition validation
     contributions with the validation process.
 
