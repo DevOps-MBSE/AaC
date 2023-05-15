@@ -15,7 +15,6 @@ from aac.lang.definitions.lexeme import Lexeme
 
 class NodeType(Enum):
     """Enumeration values to easily distinguish structural node types."""
-
     SCHEMA_STRUCTURE = auto()
     ENUM_VALUE = auto()
     ROOT_KEY = auto()
@@ -37,7 +36,6 @@ class StructuralNode:
         parent (Optional[StructuralNode]): Reference to the node's parent; null if the node is the root node.
         children (List[StructuralNode]): Reference the the node's children; empty if there are no children.
     """
-
     node_type: NodeType = attrib(validator=validators.instance_of(NodeType))
     defining_definition: Optional['Definition'] = attrib()  # Can't reference Definition here for validation without creating a circular dependency.
     token: Optional[Lexeme] = attrib(validator=validators.optional(validators.instance_of(Lexeme)))
