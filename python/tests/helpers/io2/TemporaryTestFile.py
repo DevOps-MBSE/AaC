@@ -11,7 +11,7 @@ class TemporaryTestFile:
         self,
         content: str,
         name: str = "",
-        clean_up: bool = True,
+        clean_up: str = "all",
         mode: str = "w",
         buffering: int = -1,
         encoding: Optional[str] = None,
@@ -25,8 +25,8 @@ class TemporaryTestFile:
 
         Arguments:
             content (str): A string to use as the contents of the file.
-            name (Optional[str]): An optional name to give to the file. (default: None)
-            clean_up (Optional[str]): Whether to clean up the test file/directory after exiting the context manager.
+            name (str): An optional name to give to the file. (default: "")
+            clean_up (str): Whether to clean up the test file/directory after exiting the context manager.
               Recognized Options:
                 'all': Remove `dir` along with all files and directories under `dir`. (default)
                 'files': Remove all files under `dir` only.
