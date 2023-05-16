@@ -1,6 +1,8 @@
 """This module provides functions to collate and build a meta structure for an AaC definition."""
+
 from copy import deepcopy
 from typing import Any, Optional
+
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.lexeme import Lexeme
 from aac.lang.definitions.schema import get_root_schema_definitions, get_schema_for_field
@@ -10,11 +12,11 @@ from aac.lang.language_context import LanguageContext
 
 def compute_metadata_structure(definition: Definition, language_context: LanguageContext) -> None:
     """
-    Builds the metadata structure for the definition and attaches it the passed-in definition's metastructure attribute.
+    Builds the metadata structure for the definition and attaches it to the passed-in definition's `meta_structure` attribute.
 
     Args:
-        definition (Definition): The definition to compute a metastructure for
-        language_context (LanguageContext): The language context used to provide the metadata
+        definition (Definition): The definition for which to compute a meta-structure.
+        language_context (LanguageContext): The language context used to provide the metadata.
     """
     token_traversal_list = definition.lexemes.copy()  # Create a copy to avoid altering the referenced list
     yaml_traversal_structure = deepcopy(definition.structure)  # Create a copy to avoid altering the referenced yaml structure
@@ -39,7 +41,7 @@ def _recursive_meta_structure_build(
     traversed_keys: list[str],
     language_context: LanguageContext,
 ) -> None:
-    """Recursively builds the meta structure nodes and attaches them to the parent node."""
+    """Recursively builds the meta-structure nodes and attaches them to the parent node."""
 
     child_nodes = []
 
