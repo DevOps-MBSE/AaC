@@ -40,8 +40,13 @@ class StructuralNode:
     node_type: NodeType = attrib(validator=validators.instance_of(NodeType))
     defining_definition: Optional[Definition] = attrib()  # Can't reference Definition here for validation without creating a circular dependency.
     token: Optional[Lexeme] = attrib(validator=validators.optional(validators.instance_of(Lexeme)))
-    parent: Optional[StructuralNode] = attrib()  # Python/Attrs isn't capable of supporting self-referencing types for self-referential type validator
+    parent: Optional[StructuralNode] = attrib()
     children: list[StructuralNode] = attrib(validator=validators.instance_of(list))
+
+    @parent.validator
+    def _validate_is_structural_node(self, attribute, value):
+        if value is not None or not isinstance(value, StructuralNode):
+            raise ValueError(f"{attribute} is not valid!")
 
     def __init__(self, node_type: NodeType, defining_definition: Optional['Definition'] = None, token: Optional[Lexeme] = None, parent: Optional[StructuralNode] = None, children: list[StructuralNode] = []):
         """
