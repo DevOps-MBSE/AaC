@@ -24,16 +24,17 @@ class NodeType(Enum):
 
 @attrs(hash=False, eq=False)
 class StructuralNode:
-    """An Architecture-as-Code definition structural node.
+    """
+    An Architecture-as-Code definition structural node.
 
     These nodes are used to build a traversable tree for the definition's structure as opposed to leveraging the
         unstructured dictionaries, lists, and primitives supplied by just parsing the yaml structure.
 
     Attributes:
-        node_type (NodeType): Enum value used to quickly distinguish between node types
-        defining_definition (Definition): The definition that defines the structure or enumeration values for the token.
+        node_type (NodeType): Enum value used to quickly distinguish between node types.
+        defining_definition (Optional[Definition]): The `Definition` that defines the structure or enumeration values for the token.
         token (Optional[Lexeme]): The corresponding token within the definition's yaml structure. Optional as nodes representing entries in a list will not have tokens.
-        parent (Optional[StructuralNode]): Reference to the node's parent; null if the node is the root node.
+        parent (Optional[StructuralNode]): Reference to the node's parent; None if the node is the root node.
         children (List[StructuralNode]): Reference the the node's children; empty if there are no children.
     """
     node_type: NodeType = attrib(validator=validators.instance_of(NodeType))
@@ -44,7 +45,7 @@ class StructuralNode:
 
     def __init__(self, node_type: NodeType, defining_definition: Optional['Definition'] = None, token: Optional[Lexeme] = None, parent: Optional[StructuralNode] = None, children: list[StructuralNode] = []):
         """
-        Init the Structural Node Class.
+        Initialize a Structural Node object.
 
         Args:
             node_type (NodeType): Enum value used to quickly distinguish between node types
