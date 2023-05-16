@@ -45,8 +45,8 @@ class StructuralNode:
 
     @parent.validator
     def _validate_is_structural_node(self, attribute, value):
-        if value is not None or not isinstance(value, StructuralNode):
-            raise ValueError(f"{attribute} is not valid!")
+        if value is not None and not isinstance(value, StructuralNode):
+            raise ValueError(f"{value} is not valid for {attribute.name}!")
 
     def __init__(self, node_type: NodeType, defining_definition: Optional['Definition'] = None, token: Optional[Lexeme] = None, parent: Optional[StructuralNode] = None, children: list[StructuralNode] = []):
         """
