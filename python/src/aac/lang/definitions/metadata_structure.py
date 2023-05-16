@@ -26,14 +26,14 @@ def compute_metadata_structure(definition: Definition, language_context: Languag
 
     root_node = StructuralNode(NodeType.ROOT_KEY, root_definition, root_token, None, [])
     root_yaml_structure = yaml_traversal_structure.get(root_token.value, {})
-    _recursive_meta_structure_build(
+    _build_recursive_meta_structure(
         definition, token_traversal_list, root_yaml_structure, root_node, [root_token.value], language_context
     )
 
     definition.meta_structure = root_node
 
 
-def _recursive_meta_structure_build(
+def _build_recursive_meta_structure(
     definition: Definition,
     tokens: list[Lexeme],
     yaml_structure: dict[str, Any],
@@ -62,7 +62,7 @@ def _recursive_meta_structure_build(
     if isinstance(yaml_structure, list):
         for child_structure in yaml_structure:
             list_entry_node = _create_node(NodeType.LIST_ENTRY)
-            _recursive_meta_structure_build(
+            _build_recursive_meta_structure(
                 definition, tokens, child_structure, list_entry_node, traversed_keys, language_context
             )
 
@@ -70,7 +70,7 @@ def _recursive_meta_structure_build(
         for child_value in yaml_structure.values():
             node_token, traversal_keys, node_definition = _get_node_token_keys_and_definition()
             new_node = _create_node(NodeType.SCHEMA_STRUCTURE, node_token, node_definition)
-            _recursive_meta_structure_build(definition, tokens, child_value, new_node, traversal_keys, language_context)
+            _build_recursive_meta_structure(definition, tokens, child_value, new_node, traversal_keys, language_context)
 
     else:
         node_token, traversal_keys, node_definition = _get_node_token_keys_and_definition()
