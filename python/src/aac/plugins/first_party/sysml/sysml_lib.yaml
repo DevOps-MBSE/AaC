@@ -32,6 +32,19 @@ ext:
         type: SysML.RequirementsDiagram
         description: Used to instantiate a representation of the SysML Requirements Diagram which is equivalent to the UML2 requirements diagram.
 ---
+ext:
+  name: SysMLDiagramElementsRootExtension
+  type: root
+  description: This extension adds the variety of SysML diagram elements as root types, allowing users to define instances of SysML diagram elements in AaC.
+  schemaExt:
+    add:
+      - name: block
+        type: SysML.Block
+        description: Used to define an instance a of the SysML Block diagram element.
+      - name: valueType
+        type: SysML.ValueType
+        description: Used to define an instance a of the SysML ValueType diagram element.
+---
 schema:
   name: SysML.BlockDefinitionDiagram
   description: |
@@ -47,8 +60,29 @@ schema:
 
     Corresponds to the BlockDefinition Diagram element and abstract syntax references SysML::Blocks::Block and UML4SysML::Package.
   fields:
+    - name: defaultNamespace
+      type: reference
+      description: |
+        Specifies the default namespace of the SysML diagram can be a Class with a Block stereotype or one of the Block stereotype
+        specializations applied to it or a Package.
+
+        Reference limitations are SysML.Class or SysML.Package.
+    - name: description
+      type: string
+      description: |
+        This field is specifically an AaC modification to allow users to more easily add non-functional contextual
+        information about their SysML diagram.
     - name: blocks
-      type: SysML.Block[]
+      type: reference
+      description: References should be typed to SysML.Block[]
+    - name: flowPorts
+      type: SysML.FlowPort[]
+    - name: flowSpecifications
+      type: SysML.FlowSpecification[]
+  validation:
+    - name: Required fields are present
+      arguments:
+        - defaultNamespace
 ---
 schema:
   name: SysML.InternalBlockDiagram
@@ -63,10 +97,45 @@ schema:
 
     Corresponds to the InternalBlockDiagram element and abstract syntax references for SysML::Blocks::Block.
   fields:
+    - name: defaultNamespace
+      type: reference
+      description: |
+        Per the constraint, "A SysMLInternalBlockDiagram shall have as a defaultNamespace a Class with a Block stereotype or one of its
+        specializations applied."
     - name: properties
       type: SysML.Property[]
+    - name: actors
+      type: SysML.ActorPart[]
     - name: references
       type: SysML.BoundReference[]
+    - name: dependencies
+      type: SysML.Dependency[]
+      description: |
+        Used to declare Dependency elements in the diagram.
+
+        It's intended to roll this connector field into a generic type 'connectors' field.
+    - name: bindingConnectors
+      type: SysML.BindingConnector[]
+      description: |
+        Used to declare BindingConnector elements in the diagram.
+
+        It's intended to roll this connector field into a generic type 'connectors' field.
+    - name: bidirectionalConnectors
+      type: SysML.BidrectionalConnector[]
+      description: |
+        Used to declare BidrectionalConnector elements in the diagram.
+
+        It's intended to roll this connector field into a generic type 'connectors' field.
+    - name: unidirectionalConnectors
+      type: SysML.UnidirectionalConnector[]
+      description: |
+        Used to declare UnidirectionalConnector elements in the diagram.
+
+        It's intended to roll this connector field into a generic type 'connectors' field.
+    - name: flowPorts
+      type: SysML.FlowPort[]
+    - name: itemFlows
+      type: SysML.ItemFlow[]
 ---
 schema:
   name: SysML.ParametericDiagram
@@ -424,7 +493,8 @@ schema:
 schema:
   name: SysML.Block
   description: |
-    Corresponds to the Block element and abstract syntax reference SysML::Blocks::Block.
+    Corresponds to the Block element and abstract syntax reference SysML::Blocks::Block. This is equivalent to a SysML class
+      with the block stereotype applied to it.
 
     A Block is a modular unit that describes the structure of a system or element. It may include both structural and
     behavioral features, such as properties and operations, that represent the state of the system and behavior that the system
@@ -457,6 +527,8 @@ schema:
     9. The following constraint under 9.3.7, “ConnectorEnd” in the UML 2 standard is removed by SysML: “[3] The property
         held in self.partWithPort must [sic] not be a Port.”
   fields:
+    - name: name
+      type: string
     - name: constraints
       type: SysML.ConstraintNote[]
     - name: operations
