@@ -57,7 +57,7 @@ def _recursive_meta_structure_build(
         node_value = node_token.value
         node_traversal_keys = [*traversed_keys, node_value]
         node_definition = get_schema_for_field(definition, node_traversal_keys, language_context)
-        return (node_token, node_traversal_keys, node_definition)
+        return node_token, node_traversal_keys, node_definition
 
     if isinstance(yaml_structure, list):
         for child_structure in yaml_structure:

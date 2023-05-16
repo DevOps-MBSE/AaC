@@ -115,14 +115,14 @@ def get_schema_for_field(
     source_definition: Definition, field_keys: list[str], context: LanguageContext
 ) -> Optional[Definition]:
     """
-    Returns the schema definition for a field using a list of field names (keys) to target the field.
+    Return the schema definition that defines the structure for the field specified by the keys listed in field_keys.
 
     For example, if you wanted to know the definition for ['model','component'] you'd get 'Field' because components is an array of `Field`.
 
     Args:
-        source_definition (Definition): The definition to search through
-        field_keys (list[str]): The list of keys used to identify the target field in the source definition
-        context (LanguageContext): The language context, used to navigate the structure and lookup definitions
+        source_definition (Definition): The definition to search.
+        field_keys (list[str]): The list of keys used to identify the target field in the source definition.
+        context (LanguageContext): The language context, used to navigate the structure and lookup definitions.
 
     Returns:
         The schema that defines the field structure, the enum definition defined for an enum field, or the primitives definition for primitive fields.
