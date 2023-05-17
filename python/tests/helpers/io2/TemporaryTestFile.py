@@ -31,6 +31,7 @@ class TemporaryTestFile:
                 'all': Remove `dir` along with all files and directories under `dir`. (default)
                 'files': Remove all files under `dir` only.
                 'directories': Remove all directories under `dir` only.
+                'none': Do not remove any files/directories under `dir`.
 
             The below parameters are the same as those provided to `NamedTemporaryFile`:
               mode (str): The `mode` argument to `NamedTemporaryFile`. (default: "w")
@@ -41,7 +42,7 @@ class TemporaryTestFile:
               prefix (Optional[str]): The `prefix` argument to `NamedTemporaryFile`. (default: None)
               dir (Optional[str]): The `dir` argument to `NamedTemporaryFile`. (default: `TemporaryDirectory()`)
         """
-        self.clean_up = clean_up
+        self.clean_up = clean_up or "all"
         self.directory = dir or TemporaryDirectory().name
         self.test_file = NamedTemporaryFile(
             mode=mode,
@@ -60,7 +61,7 @@ class TemporaryTestFile:
         self.test_file.write(content)
         self.test_file.seek(0)
 
-    def __maybe_rename_file(self, name: Optional[str] = None):
+    def __maybe_rename_file(self, name: str):
         self._original_name = self.test_file.name
         if name:
             full_path = os.path.join(self.directory, name)
@@ -90,6 +91,6 @@ class TemporaryTestFile:
             if self.clean_up == "directories":
                 return get_items_to_remove(os.path.isdir)
 
-        if self.clean_up and os.path.exists(self.directory):
+        if self.clean_up != "none" and os.path.exists(self.directory):
             clear_directory(self.directory, file_list=get_files_to_remove(), dir_list=get_dirs_to_remove())
             os.removedirs(self.directory)
