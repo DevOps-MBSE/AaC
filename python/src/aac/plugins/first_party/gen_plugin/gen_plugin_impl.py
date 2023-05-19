@@ -125,7 +125,7 @@ def _get_template_output_directories(plugin_type: str, architecture_file_path: s
         "__init__.py.jinja2": architecture_file_directory_path,
     }
 
-    # Third party files are generated a level belowthe architecture file
+    # Third party files are generated a level below the architecture file
     third_party_directories = {
         "test_plugin_impl.py.jinja2": "tests",
         "README.md.jinja2": "",
