@@ -5,7 +5,7 @@ parent: AaC Project Structure
 nav_order: 3
 ---
 # Contributing Definitions to a User Library
-One of the primary contributions a User Library type plugin would provide to AaC are definitions to be exposed to the AaC space. Definitions are a key concept and functionality within AaC, so for maximized integration and utilization for a new plugin its definitions need to be exposed to AaC. 
+One of the primary contributions a User Library type plugin would provide to AaC are definitions to be exposed to the AaC space. Definitions are a key concept and functionality within AaC, so for maximized integration and utilization for a new plugin its definitions need to be exposed to AaC. To understand more about definitions and their role in AaC, see [AaC Modeling Language Reference](./aac_language/#definitions).
 
 To do so a plugin will include its definitions as part of its registration with AaC. For registering a plugin, see [Plugins](../../old/Plugins) and [Plugin Developer Guide](../dev_guide/plugin_dev_guide)
 
@@ -31,7 +31,13 @@ Once you have verified that your plugin has been activated, you are able to chec
 `<include screen shot of list results of plugin commands>`
 
 # Contributing Root Keys to a User Library
+A Root Key is another key concept of AaC that provides functionality and extensibility to a plugin because of AaC's usage of YAML. 
 
+## Defining a Root Key
+
+## Adding a Root Key
+
+## Leveraging a Root Key
 # Utilizing a User Library
 
 ## As a plugin user
