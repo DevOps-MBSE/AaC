@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Callable
+from typing import Callable, Optional
 
 from attr import attrib, attrs, validators
 
@@ -23,7 +23,7 @@ class PrimitiveValidationContribution:
 
     name: str = attrib(validator=validators.instance_of(str))
     primitive_type: str = attrib(validator=validators.instance_of(str))
-    validation_function: Callable = attrib()
+    validation_function: Optional[Callable] = attrib(validator=validators.optional(validators.is_callable()))
 
     def __hash__(self) -> int:
         """Return the hash of this TypeValidationContribution."""
