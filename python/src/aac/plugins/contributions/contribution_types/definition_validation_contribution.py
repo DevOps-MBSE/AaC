@@ -20,7 +20,7 @@ class DefinitionValidationContribution:
     Attributes:
         name (str): A string with the name of the command argument.
         definition (str): The AaC definition of the Validator Plugin.
-        validation_function (Callable): The validation callback function.
+        validation_function (Optional[Callable]): The validation callback function.
     """
 
     name: str = attrib(validator=validators.instance_of(str))
