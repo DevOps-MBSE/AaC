@@ -26,11 +26,11 @@ runtime_dependencies = [
     "MarkupSafe ~= 2.1.1",
     "pygls ~= 0.13.1",
     "fastapi ~= 0.89.0",
-    "starlette ~= 0.22.0",
+    "starlette >= 0.22.0",
     "anyio < 5, ~= 3.6.2",
     "sniffio ~= 1.3.0",
     "uvicorn ~= 0.20.0",
-    "requests ~= 2.28.1",
+    "requests >= 2.28.1",
 ]
 
 development_dependencies = [
