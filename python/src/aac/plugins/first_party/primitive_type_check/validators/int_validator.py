@@ -1,10 +1,12 @@
 """Module for validating primitive integer types."""
 
 import logging
+
 from typing import Any, Optional
 
 from aac.lang.constants import PRIMITIVE_TYPE_INT
 from aac.lang.definitions.definition import Definition
+from aac.lang.language_context import LanguageContext
 from aac.plugins.contributions.contribution_types.primitive_validation_contribution import PrimitiveValidationContribution
 from aac.plugins.first_party.primitive_type_check.validators import INT_VALIDATION_NAME
 from aac.plugins.validators import FindingLocation
@@ -16,7 +18,7 @@ def get_validator() -> PrimitiveValidationContribution:
     return PrimitiveValidationContribution(INT_VALIDATION_NAME, PRIMITIVE_TYPE_INT, validate_integer)
 
 
-def validate_integer(definition: Definition, value_to_validate: Any) -> Optional[ValidatorFinding]:
+def validate_integer(definition: Definition, value_to_validate: Any, _: LanguageContext) -> Optional[ValidatorFinding]:
     """
     Returns a Validation finding if the type isn't valid, otherwise None.
 
@@ -26,6 +28,7 @@ def validate_integer(definition: Definition, value_to_validate: Any) -> Optional
     Args:
         definition (Definition): The definition that the value belongs to.
         value_to_validate (Any): The value to test.
+        _ (LanguageContext): The current LanguageContext.
 
     Returns:
         A ValidatorFinding if the value is not an integer, or None.

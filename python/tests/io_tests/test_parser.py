@@ -1,14 +1,18 @@
 import os
 from tempfile import TemporaryDirectory
 from unittest import TestCase
+from aac.lang.constants import DEFINITION_FIELD_NAME, ROOT_KEY_ENUM, ROOT_KEY_IMPORT, ROOT_KEY_MODEL, ROOT_KEY_SCHEMA
 
 from aac.lang.definitions import collections
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.source_location import SourceLocation
-from aac.io.constants import YAML_DOCUMENT_SEPARATOR
+from aac.io.constants import AAC_DOCUMENT_EXTENSION, YAML_DOCUMENT_SEPARATOR
 from aac.io.parser import parse, ParserError
 
 from tests.helpers.io import temporary_test_file
+
+
+PARSER_TEST_SOURCE = "<parser test>"
 
 
 class TestParser(TestCase):
@@ -21,8 +25,8 @@ class TestParser(TestCase):
 
     def check_model_name(self, model, name, type):
         self.assertIsNotNone(model.get(type))
-        self.assertIsNotNone(model.get(type).get("name"))
-        self.assertEqual(name, model.get(type).get("name"))
+        self.assertIsNotNone(model.get(type).get(DEFINITION_FIELD_NAME))
+        self.assertEqual(name, model.get(type).get(DEFINITION_FIELD_NAME))
 
     def check_parser_errors(self, filespec: str, *error_messages: list[str]):
         with self.assertRaises(ParserError) as cm:
@@ -43,7 +47,7 @@ class TestParser(TestCase):
 
             first, second, *_ = parsed_definition.lexemes
             self.assertEqual(first.source, test_yaml.name)
-            self.assertEqual(first.value, "schema")
+            self.assertEqual(first.value, ROOT_KEY_SCHEMA)
             self.assertEqual(first.location, SourceLocation(0, 0, 0, 6))
 
             self.assertEqual(second.source, test_yaml.name)
@@ -53,9 +57,9 @@ class TestParser(TestCase):
     def test_can_handle_architecture_file_with_imports(self):
         with (
             TemporaryDirectory() as temp_dir,
-            temporary_test_file(TEST_MESSAGE_FILE_CONTENTS, dir=temp_dir, suffix=".aac") as import1,
-            temporary_test_file(TEST_STATUS_FILE_CONTENTS, dir=temp_dir, suffix=".aac") as import2,
-            temporary_test_file(self.get_test_model(import1.name, import2.name), dir=temp_dir, suffix=".aac") as test_yaml,
+            temporary_test_file(TEST_MESSAGE_FILE_CONTENTS, dir=temp_dir, suffix=AAC_DOCUMENT_EXTENSION) as import1,
+            temporary_test_file(TEST_STATUS_FILE_CONTENTS, dir=temp_dir, suffix=AAC_DOCUMENT_EXTENSION) as import2,
+            temporary_test_file(self.get_test_model(import1.name, import2.name), dir=temp_dir, suffix=AAC_DOCUMENT_EXTENSION) as test_yaml,
         ):
             parsed_models = parse(test_yaml.name)
 
@@ -65,9 +69,9 @@ class TestParser(TestCase):
             enum_status_definition = collections.get_definition_by_name("Status", parsed_models)
             model_echosvc_definition = collections.get_definition_by_name("EchoService", parsed_models)
 
-            self.check_model_name(schema_message_definition.structure, "Message", "schema")
-            self.check_model_name(enum_status_definition.structure, "Status", "enum")
-            self.check_model_name(model_echosvc_definition.structure, "EchoService", "model")
+            self.check_model_name(schema_message_definition.structure, "Message", ROOT_KEY_SCHEMA)
+            self.check_model_name(enum_status_definition.structure, "Status", ROOT_KEY_ENUM)
+            self.check_model_name(model_echosvc_definition.structure, "EchoService", ROOT_KEY_MODEL)
 
             # For some reason MacOS prepends /private to temporary files/directories
             self.assertEqual(schema_message_definition.source.uri, import1.name)
@@ -76,7 +80,7 @@ class TestParser(TestCase):
 
             first, second, *_ = model_echosvc_definition.lexemes
             self.assertEqual(first.source, test_yaml.name)
-            self.assertEqual(first.value, "import")
+            self.assertEqual(first.value, ROOT_KEY_IMPORT)
             self.assertEqual(first.location, SourceLocation(0, 0, 0, 6))
 
             import1_basename = os.path.basename(import1.name)
@@ -85,12 +89,12 @@ class TestParser(TestCase):
             self.assertEqual(second.location, SourceLocation(1, 4, 12, 2 + len(import1_basename)))
 
     def test_errors_when_parsing_invalid_yaml(self):
-        content = "model: ]["
+        content = f"{ROOT_KEY_MODEL}: ]["
         with temporary_test_file(content) as test_yaml:
             self.check_parser_errors(test_yaml.name, "invalid YAML", content)
 
     def test_errors_when_parsing_incomplete_model(self):
-        content = "model:"
+        content = f"{ROOT_KEY_MODEL}:"
         with temporary_test_file(content) as test_yaml:
             self.check_parser_errors(test_yaml.name, "Definition is missing field 'name'", content)
 
@@ -101,7 +105,7 @@ class TestParser(TestCase):
 
     def test_content_is_split_by_yaml_documents(self):
         content = f"{TEST_MESSAGE_FILE_CONTENTS}{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_FILE_CONTENTS}"
-        parsed_definitions = parse(content, source_uri="<parser test>")
+        parsed_definitions = parse(content, source_uri=PARSER_TEST_SOURCE)
 
         self.assertEqual(len(parsed_definitions), 2)
 
@@ -122,7 +126,7 @@ class TestParser(TestCase):
 
     def test_lexemes_are_split_by_yaml_documents(self):
         content = f"{TEST_MESSAGE_FILE_CONTENTS}{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_FILE_CONTENTS}"
-        parsed_definitions = parse(content, source_uri="<parser test>")
+        parsed_definitions = parse(content, source_uri=PARSER_TEST_SOURCE)
 
         self.assertEqual(len(parsed_definitions), 2)
 
@@ -152,11 +156,11 @@ class TestParser(TestCase):
             )
 
     def test_does_not_add_doc_separator_if_not_already_present(self):
-        definition, *_ = parse(TEST_MESSAGE_FILE_CONTENTS, source_uri="<parser test>")
+        definition, *_ = parse(TEST_MESSAGE_FILE_CONTENTS, source_uri=PARSER_TEST_SOURCE)
         self.assertEqual(definition.content, TEST_MESSAGE_FILE_CONTENTS)
 
         definitions = parse(
-            f"{TEST_MESSAGE_FILE_CONTENTS}{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_FILE_CONTENTS}", source_uri="<parser test>"
+            f"{TEST_MESSAGE_FILE_CONTENTS}{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_FILE_CONTENTS}", source_uri=PARSER_TEST_SOURCE
         )
 
         message_definition, *_ = [

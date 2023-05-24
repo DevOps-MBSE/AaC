@@ -86,6 +86,17 @@ def _validate_definitions(
 
     for definition in definitions:
         existing_definition = validation_context.get_definition_by_uid(definition.uid)
+        if not existing_definition:
+            possible_match = validation_context.get_definition_by_name(definition.name)
+
+            # If the definition source, structure, and name match go ahead and assume it's the same definition.
+            if (
+                possible_match
+                and possible_match.source.uri == definition.source.uri
+                and possible_match.structure == definition.structure
+            ):
+                existing_definition = possible_match
+                definition.uid = existing_definition.uid
 
         if existing_definition:
             validation_context.update_definition_in_context(definition)
@@ -155,7 +166,9 @@ def _apply_validator(
 
     validator_result = None
     try:
-        validator_result = validator_plugin.validation_function(definition, target_schema_definition, language_context, *validation_args)
+        validator_result = validator_plugin.validation_function(
+            definition, target_schema_definition, language_context, *validation_args
+        )
     except Exception as exception:
         exception_message = f"Validator '{validator_plugin.name}' failed with an exception: {exception}"
         finding_location = FindingLocation(validator_plugin.name, definition.source, 0, 0, 0, 0)
@@ -217,7 +230,7 @@ def _validate_primitive_field(
     if validators:
         validator, *_ = validators
         try:
-            validator_finding = validator.validation_function(source_def, field_value)
+            validator_finding = validator.validation_function(source_def, field_value, language_context)
         except Exception as exception:
             exception_message = f"Validator '{validator.name}' failed with an exception: {exception}"
             finding_location = FindingLocation(validator.name, source_def.source, 0, 0, 0, 0)

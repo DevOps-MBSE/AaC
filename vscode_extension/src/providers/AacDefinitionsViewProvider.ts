@@ -1,9 +1,12 @@
 import * as vscode from 'vscode';
+import { URI } from 'vscode-uri';
 import { aacRestApi, DefinitionModel } from "../requests/aacRequests";
+import * as queryKeys from './queryKeyConstants';
 
 export class AacDefinitionsViewProvider implements vscode.TreeDataProvider<Definition> {
 
     public COMMAND_DEFINITIONS_LIST_REFRESH = "definitionsList.refreshEntry";
+    public COMMAND_DEFINITIONS_LIST_CREATE = "definitionsList.createEntry";
     public COMMAND_DEFINITIONS_LIST_EDIT = "definitionsList.editEntry";
     public COMMAND_DEFINITIONS_LIST_DELETE = "definitionsList.deleteEntry";
     private _onDidChangeTreeData: vscode.EventEmitter<Definition | undefined | void> = new vscode.EventEmitter<Definition | undefined | void>();
@@ -54,24 +57,59 @@ export class Definition extends vscode.TreeItem {
     private definitionType: string;
 }
 
-function getDefinitionByName(definitionName: string) {
-    return Promise.resolve(aacRestApi.getDefinitionByNameDefinitionGet(definitionName, true));
+export async function createDefinition() {
+    // Prompt the user to pick an AaC file in which to store the new definition.
+    const definitionFileOpenDialogOptions: vscode.OpenDialogOptions = {
+        title: "Select the AaC file for the new definition.",
+        canSelectMany: false,
+        canSelectFolders: false,
+    };
+
+    let fileUris: vscode.Uri[] | undefined = await vscode.window.showOpenDialog(definitionFileOpenDialogOptions);
+
+    // Prompt the user to name the new definition.
+    const newDefinitionNameInputBoxOptions: vscode.InputBoxOptions = {
+        title: "Enter a name for the new definition.",
+    };
+
+    let newDefinitionName: string | undefined = await vscode.window.showInputBox(newDefinitionNameInputBoxOptions);
+
+    // Prompt the user to choose the definition's schema type (root key).
+    const newDefinitionRootKeyQuickPick: vscode.QuickPickOptions = {
+        title: `Pick the schema type for ${newDefinitionName}.`,
+        canPickMany: false,
+    };
+
+    let quickPickRootKeys: string[] = await aacRestApi.getLanguageContextRootKeysContextRootKeysGet().then(response => {
+        return response.body ? response.body as string[] : [];
+    });
+
+
+    let newDefinitionSchema: string | undefined = await vscode.window.showQuickPick(quickPickRootKeys, newDefinitionRootKeyQuickPick);
+
+    if (newDefinitionSchema && newDefinitionName && fileUris?.length && fileUris?.length > 0) {
+        const query = createDocumentQuery(true, fileUris[0], newDefinitionName, newDefinitionSchema);
+        openDefinitionFile(newDefinitionName, query);
+    } else {
+        vscode.window.showErrorMessage("Definition not added.");
+    }
 }
 
-function deleteDefinitionByName(definitionName: string) {
-    return Promise.resolve(aacRestApi.removeDefinitionByNameDefinitionDelete(definitionName));
+function getDefinitionByName(definitionName: string) {
+    return Promise.resolve(aacRestApi.getDefinitionByNameDefinitionGet(definitionName, true));
 }
 
 export function editDefinition(event: Definition) {
     if (Object.keys(event.definitionModel).length > 0) {
         getDefinitionByName(event.definitionModel.name).then(response => {
-            vscode.commands.executeCommand(
-                "vscode.openWith",
-                vscode.Uri.from({scheme: "untitled", path:`${response.body.name}`}),
-                "aac.visualEditor"
-            );
+            const query = createDocumentQuery(false, URI.file(response.body.sourceUri), response.body.name);
+            openDefinitionFile(response.body.name, query);
         });
     }
+}
+
+function deleteDefinitionByName(definitionName: string) {
+    return Promise.resolve(aacRestApi.removeDefinitionByNameDefinitionDelete(definitionName));
 }
 
 export function deleteDefinition(event: Definition, viewProvider: AacDefinitionsViewProvider) {
@@ -82,14 +120,24 @@ export function deleteDefinition(event: Definition, viewProvider: AacDefinitions
     }
 }
 
+// Executed when a user selects a definition 'node' in the VSCode treeview listing the definitions in the context.
 export function onDefinitionNodeSelection(event: vscode.TreeViewSelectionChangeEvent<Definition>) {
     if (event.selection.length > 0) {
-        getDefinitionByName(event.selection[0].definitionModel.name).then(response => {
-            vscode.commands.executeCommand(
-                "vscode.openWith",
-                vscode.Uri.from({scheme: "untitled", path:`${response.body.name}`}),
-                "aac.visualEditor"
-            );
-        });
+        editDefinition(event.selection[0]);
     }
+}
+
+function createDocumentQuery(isNewDefinition: boolean, file: vscode.Uri, name: string, schema: string = ""): string {
+    return `${queryKeys.QUERY_KEY_NEW}=${isNewDefinition}&` +
+        `${queryKeys.QUERY_KEY_FILE}=${file}&` +
+        `${queryKeys.QUERY_KEY_NAME}=${name}&` +
+        `${queryKeys.QUERY_KEY_SCHEMA}=${schema}`;
+}
+
+function openDefinitionFile(definitionName: string, documentQuery: string) {
+    vscode.commands.executeCommand(
+        "vscode.openWith",
+        vscode.Uri.from({scheme: "untitled", path: definitionName, query: documentQuery}),
+        "aac.visualEditor"
+    );
 }

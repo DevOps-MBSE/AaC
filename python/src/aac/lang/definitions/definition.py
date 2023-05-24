@@ -1,13 +1,11 @@
 """An Architecture-as-Code definition augmented with metadata and helpful functions."""
 from __future__ import annotations
-
 import copy
 import logging
 import yaml
-
 from attr import Factory, attrib, attrs, validators
 from typing import Any, Optional
-from uuid import UUID, uuid4
+from uuid import UUID, uuid5, NAMESPACE_DNS
 
 from aac.io.files.aac_file import AaCFile
 from aac.lang.constants import (
@@ -15,6 +13,7 @@ from aac.lang.constants import (
     DEFINITION_FIELD_EXTENSION_ENUM,
     DEFINITION_FIELD_EXTENSION_SCHEMA,
     DEFINITION_FIELD_FIELDS,
+    DEFINITION_FIELD_IMPORT,
     DEFINITION_FIELD_INHERITS,
     DEFINITION_FIELD_TYPE,
     DEFINITION_FIELD_VALIDATION,
@@ -23,10 +22,12 @@ from aac.lang.constants import (
     ROOT_KEY_EXTENSION,
     ROOT_KEY_SCHEMA,
 )
+
 from aac.lang.definitions.lexeme import Lexeme
+from aac.lang.definitions.structural_node import StructuralNode
 
 
-@attrs(hash=False)
+@attrs(hash=False, eq=False)
 class Definition:
     """An Architecture-as-Code definition.
 
@@ -37,6 +38,7 @@ class Definition:
         source (AaCFile): The source document containing the definition.
         lexemes (list[Lexeme]): A list of lexemes for each item in the parsed definition.
         structure (dict): The dictionary representation of the definition.
+        meta_structure (Optional[StructuralNode]): The node-based representation of the definition's structure and collated metadata
     """
 
     uid: UUID = attrib(init=False, validator=validators.instance_of(UUID))
@@ -45,18 +47,32 @@ class Definition:
     source: AaCFile = attrib(validator=validators.instance_of(AaCFile))
     lexemes: list[Lexeme] = attrib(default=Factory(list), validator=validators.instance_of(list))
     structure: dict = attrib(default=Factory(dict), validator=validators.instance_of(dict))
+    imports: list[str] = attrib(default=Factory(list), validator=validators.instance_of(list))
+    meta_structure: Optional[StructuralNode] = attrib(
+        default=None, validator=validators.optional(validators.instance_of(StructuralNode))
+    )
 
     def __attrs_post_init__(self):
         """Post-init hook."""
-        self.uid = uuid4()
+        self.uid = uuid5(NAMESPACE_DNS, str(self.__hash__()))
 
     def __hash__(self) -> int:
         """Return the hash of this Definition."""
         return hash(self.name)
 
+    def __eq__(self, obj):
+        """Equals function for the Definition."""
+
+        def is_equal() -> bool:
+            equal = self.name == obj.name
+            equal = equal and self.structure == obj.structure
+            return equal
+
+        return isinstance(obj, Definition) and is_equal()
+
     def get_root_key(self) -> str:
         """Return the root key for the parsed definition."""
-        return list(self.structure.keys())[0]
+        return [key for key in self.structure.keys() if key != DEFINITION_FIELD_IMPORT][0]
 
     # Get Field Functions
 
@@ -82,12 +98,14 @@ class Definition:
     def get_description(self) -> Optional[str]:
         """Return the description for the current definition, or None if it isn't defined."""
         fields = self.get_top_level_fields()
-        return fields.get(DEFINITION_FIELD_DESCRIPTION)
+        description = fields.get(DEFINITION_FIELD_DESCRIPTION)
+        return str(description) if description else None
 
     def get_type(self) -> Optional[str]:
         """Return the string for the extension type field, or None if the field isn't defined."""
         fields = self.get_top_level_fields()
-        return fields.get(DEFINITION_FIELD_TYPE)
+        type_field = fields.get(DEFINITION_FIELD_TYPE)
+        return str(type_field) if type_field else None
 
     def get_validations(self) -> Optional[list[dict]]:
         """Return a list of validation entry dictionaries, or None if the field isn't defined."""
@@ -108,6 +126,10 @@ class Definition:
         """Return a list of field dictionaries, or None if there are no fields defined."""
         fields = self.get_top_level_fields()
         return fields.get(DEFINITION_FIELD_FIELDS)
+
+    def get_imports(self) -> list[str]:
+        """Return a list of imported aac files, empty if there are no imports."""
+        return self.imports
 
     # Type Test Functions
 
@@ -139,13 +161,23 @@ class Definition:
 
     def to_yaml(self) -> str:
         """Return a yaml string based on the current state of the definition including extensions."""
-        return yaml.dump(self.structure, sort_keys=False)
+        imports_dict = {DEFINITION_FIELD_IMPORT: self.imports}
+        structure_to_convert_to_yaml = self.structure
+        if self.imports:
+            # using | instead of |= or update to force imports at the top of the yaml output
+            structure_to_convert_to_yaml = imports_dict | structure_to_convert_to_yaml
+
+        return yaml.dump(structure_to_convert_to_yaml, sort_keys=False)
 
     # Misc Functions
 
     def copy(self) -> Definition:
         """Return a deep copy of the definition."""
         return copy.deepcopy(self)
+
+    def get_source_file(self) -> AaCFile:
+        """Returns the AaCFile the definition can be found in."""
+        return self.source
 
     def get_lexeme_with_value(
         self,

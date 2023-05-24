@@ -1,5 +1,5 @@
 """Module for configuring and maintaining the restful application and its routes."""
-from fastapi import FastAPI, HTTPException, BackgroundTasks, responses
+from fastapi import FastAPI, HTTPException, BackgroundTasks, responses, exceptions, Request
 from http import HTTPStatus
 import logging
 import os
@@ -10,6 +10,7 @@ from aac.io.files.find import find_aac_files, is_aac_file
 from aac.io.paths import sanitize_filesystem_path
 from aac.io.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_active_context
+from aac.lang.constants import DEFINITION_FIELD_TYPE, DEFINITION_FIELD_NAME
 from aac.lang.definitions.json_schema import get_definition_json_schema
 from aac.lang.language_error import LanguageError
 from aac.plugins.plugin_execution import PluginExecutionStatusCode
@@ -235,6 +236,46 @@ def remove_definition_by_name(name: str):
         )
 
 
+# Language Context Support
+
+@app.get("/context/schema", status_code=HTTPStatus.OK, response_model=DefinitionModel)
+def get_root_key_schema(key: str):
+    """
+    Returns the JSON schema for the given root key, or HTTPStatus.NOT_FOUND not found if the key doesn't exist.
+
+    Returns:
+        200 HTTPStatus.OK if successful.
+        404 HTTPStatus.NOT_FOUND if the key doesn't exist.
+    """
+    active_context = get_active_context()
+    key_fields = active_context.get_root_fields()
+    matching_keys = [key_field for key_field in key_fields if key_field.get(DEFINITION_FIELD_NAME) == key]
+
+    if not matching_keys:
+        _report_error_response(HTTPStatus.NOT_FOUND, f"No root key found called {key}.")
+    else:
+        key_definition_name = matching_keys[0].get(DEFINITION_FIELD_TYPE, "")
+        schema_definition = active_context.get_definition_by_name(key_definition_name)
+
+        if not schema_definition:
+            _report_error_response(HTTPStatus.NOT_FOUND, f"Unable to get the schema definition {key_definition_name}.")
+        else:
+            schema_model = to_definition_model(schema_definition)
+            schema_model.json_schema = get_definition_json_schema(schema_definition, active_context)
+            return schema_model
+
+
+@app.get("/context/root_keys", status_code=HTTPStatus.OK, response_model=list[str])
+def get_language_context_root_keys():
+    """
+    Returns a list of root keys from the active context.
+
+    Returns:
+        200 HTTPStatus.OK
+    """
+    return get_active_context().get_root_keys()
+
+
 # AaC Plugin Commands
 
 
@@ -328,3 +369,9 @@ def _get_rest_api_compatible_commands() -> dict[str, AacCommand]:
 async def language_error_exception_handler(request, exc):
     """If a `LanguageError` exception is encountered, then return a 400 BAD Request with the exception's message."""
     return responses.PlainTextResponse(str(exc), status_code=400)
+
+
+@app.exception_handler(exceptions.RequestValidationError)
+async def validation_exception_handler(request: Request, exc: exceptions.RequestValidationError):
+    """If a `exceptions.RequestValidationError` exception is encountered, then return a 422 UNPROCESSABLE ENTITY with the exception's message."""
+    _report_error_response(HTTPStatus.UNPROCESSABLE_ENTITY, str(exc))

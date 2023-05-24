@@ -1,10 +1,10 @@
 @startuml {{title}} Sequence Diagram
 title {{title}} Sequence Diagram
-{%- for participant in participants %}
+{% for participant in participants %}
 participant {{participant.type}} as {{participant.name}}
-{%- endfor %}
+{% endfor %}
 
-{%- for sequence in sequences %}
+{% for sequence in sequences %}
 {{sequence.source}} -> {{sequence.target}} : {{sequence.action}}
-{%- endfor %}
+{% endfor %}
 @enduml

@@ -20,7 +20,6 @@ from aac.lang.constants import (
 )
 from aac.lang.definitions.collections import get_definition_by_name
 from aac.lang.language_context import LanguageContext
-from aac.lang.language_error import LanguageError
 from aac.spec import get_aac_spec, get_primitives, get_root_keys
 
 from tests.active_context_test_case import ActiveContextTestCase
@@ -301,73 +300,85 @@ class TestLanguageContext(ActiveContextTestCase):
 
         [self.assertEqual(enum, test_context.get_enum_definition_by_type(value)) for value in values]
 
-    def test_language_error_if_apply_extension_with_duplicate_names(self):
-        field1 = create_field_entry(f"{self.TEST_FIELD_DEFINITION_NAME}1")
-        test_schema = create_schema_definition(self.TEST_SCHEMA_DEFINITION_NAME, fields=[field1])
-
-        field2 = create_field_entry(f"{self.TEST_FIELD_DEFINITION_NAME}2")
-        test_duplicate_schema = create_schema_definition(self.TEST_SCHEMA_DEFINITION_NAME, fields=[field2])
-
-        language_context = LanguageContext([test_schema, test_duplicate_schema])
-
-        self.assertEqual(len(language_context.definitions), 2)
-
-        test_extension = create_schema_ext_definition(self.TEST_SCHEMA_EXT_DEFINITION_NAME, self.TEST_SCHEMA_DEFINITION_NAME)
-
-        with self.assertRaises(LanguageError) as cm:
-            language_context.add_definition_to_context(test_extension)
-
-        self.assertRegexpMatches(str(cm.exception).lower(), "duplicate.*definition.*name.*")
-        self.assertIn(self.TEST_SCHEMA_DEFINITION_NAME, str(cm.exception))
-
     def test_uuid_in_active_context(self):
         definition_uuids_list = [definition.uid for definition in get_active_context().definitions]
         definition_uuids_set = set(definition_uuids_list)
         self.assertGreaterEqual(len(definition_uuids_set), len(get_aac_spec()))
         self.assertEqual(len(definition_uuids_list), len(definition_uuids_set))
 
-    def test_langauge_context_loads_state_from_file(self):
+    def test_language_context_loads_state_from_file(self):
         test_definition = create_schema_definition("TestDefinition")
         with temporary_test_file(test_definition.to_yaml()) as test_definition_file:
             test_definition.source = AaCFile(test_definition_file.name, True, True)
 
-            active_context = get_active_context()
-            active_context.add_definition_to_context(test_definition)
+            test_context = get_active_context()
+            test_context.add_definition_to_context(test_definition)
 
             with temporary_test_file("") as state_file:
-                active_context.export_to_file(state_file.name)
+                test_context.export_to_file(state_file.name)
 
                 new_context = LanguageContext()
                 new_context.import_from_file(state_file.name)
 
                 imported_definitions = set(new_context.get_defined_types())
-                exported_definitions = set(active_context.get_defined_types())
+                exported_definitions = set(test_context.get_defined_types())
                 self.assertSetEqual(imported_definitions, exported_definitions)
 
                 imported_plugins = {plugin.name for plugin in new_context.get_active_plugins()}
-                exported_plugins = {plugin.name for plugin in active_context.get_active_plugins()}
+                exported_plugins = {plugin.name for plugin in test_context.get_active_plugins()}
                 self.assertSetEqual(imported_plugins, exported_plugins)
 
-    def test_language_context_copy(self):
+    def test_language_context_editable_files(self):
         active_context = get_active_context()
-        copy_context = active_context.copy()
 
-        new_definition = create_schema_definition("Test", fields=[create_field_entry("field", PRIMITIVE_TYPE_STRING)])
-        copy_context.add_definition_to_context(new_definition)
+        primitive_definition = active_context.get_definition_by_name(DEFINITION_NAME_PRIMITIVES)
+        active_context.remove_definition_from_context(primitive_definition)
 
-        self.assertIsNone(active_context.get_definition_by_name(new_definition.name))
-        self.assertIsNotNone(copy_context.get_definition_by_name(new_definition.name))
+        self.assertIsNotNone(active_context.get_definition_by_name(primitive_definition.name))
 
-        self.assertGreater(len(copy_context.definitions), len(active_context.definitions))
+        new_enum_value = "test_primitive"
+        updated_primitive_definition = primitive_definition.copy()
+        updated_primitive_definition.structure[primitive_definition.get_root_key()][DEFINITION_FIELD_VALUES].append(new_enum_value)
+        active_context.update_definition_in_context(primitive_definition)
+
+        actual_primitive_definition = active_context.get_definition_by_name(DEFINITION_NAME_PRIMITIVES)
+        self.assertEqual(primitive_definition, actual_primitive_definition)
+        self.assertNotEqual(primitive_definition, updated_primitive_definition)
+
+    def test_language_context_copy(self):
+        definition_to_add = create_schema_definition("TestAdd", fields=[create_field_entry("field", PRIMITIVE_TYPE_STRING)])
+        definition_to_remove = create_schema_definition("TestRemove", fields=[create_field_entry("field", PRIMITIVE_TYPE_STRING)])
+
+        # Add the definition to test removing to the original context
+        original_context = get_active_context()
+        original_context.add_definition_to_context(definition_to_remove)
+
+        # Add the additional definition to the context copy
+        copy_context = original_context.copy()
+        copy_context.add_definition_to_context(definition_to_add)
+
+        # Assert that the additional definition is not in the original context
+        self.assertIsNone(original_context.get_definition_by_name(definition_to_add.name))
+        self.assertIsNotNone(copy_context.get_definition_by_name(definition_to_add.name))
+
+        # Demonstrate that removing a definition from the original doesn't affect the copy
+        original_context.remove_definition_from_context(definition_to_remove)
+
+        # Assert the removed definition isn't removed from the copy context
+        self.assertIsNone(original_context.get_definition_by_name(definition_to_remove.name))
+        self.assertIsNotNone(copy_context.get_definition_by_name(definition_to_remove.name))
+
+        # Assert that the copy context has the additional definition and the definition removed from the original context (+2 definitions in copy context len)
+        self.assertEqual(len(original_context.definitions), len(copy_context.definitions) - 2)
 
 
 class TestLanguageContextPluginInterface(ActiveContextTestCase):
     def test_language_context_activate_plugins(self):
         # Test that the active context initializes with expected active plugins
-        active_context = get_active_context()
+        test_context = get_active_context()
         # TODO adjust once we update the active context's default plugin strategy. # noqa: T101
-        self.assertEqual(len(active_context.get_inactive_plugins()), 0)
-        self.assertGreater(len(active_context.get_active_plugins()), 0)
+        self.assertEqual(len(test_context.get_inactive_plugins()), 0)
+        self.assertGreater(len(test_context.get_active_plugins()), 0)
 
         test_context = get_initialized_language_context(core_spec_only=True)
         initial_definitions_len = len(test_context.definitions)
@@ -391,10 +402,10 @@ class TestLanguageContextPluginInterface(ActiveContextTestCase):
 
     def test_language_context_deactivate_plugins(self):
         # Test that the active context initializes with expected active plugins
-        active_context = get_active_context()
+        test_context = get_active_context()
         # TODO adjust once we update the active context's default plugin strategy. # noqa: T101
-        self.assertEqual(len(active_context.get_inactive_plugins()), 0)
-        self.assertGreater(len(active_context.get_active_plugins()), 0)
+        self.assertEqual(len(test_context.get_inactive_plugins()), 0)
+        self.assertGreater(len(test_context.get_active_plugins()), 0)
 
         test_context = get_initialized_language_context(core_spec_only=True)
         inactive_plugins = test_context.get_inactive_plugins()
@@ -417,30 +428,59 @@ class TestLanguageContextPluginInterface(ActiveContextTestCase):
 
     def test_language_context_activate_deactivate_missing_plugins(self):
         # Test that the active context initializes with expected active plugins
-        active_context = get_active_context()
-        initial_plugins_count = len(active_context.plugins)
+        test_context = get_active_context()
+        initial_plugins_count = len(test_context.plugins)
 
         invalid_plugin_name = "IDontExist"
-        active_context.activate_plugin_by_name(invalid_plugin_name)
-        self.assertEqual(initial_plugins_count, len(active_context.get_active_plugins()))
+        test_context.activate_plugin_by_name(invalid_plugin_name)
+        self.assertEqual(initial_plugins_count, len(test_context.get_active_plugins()))
 
         invalid_plugin_name = "IDontExist"
-        active_context.deactivate_plugin_by_name(invalid_plugin_name)
-        self.assertEqual(initial_plugins_count, len(active_context.get_active_plugins()))
+        test_context.deactivate_plugin_by_name(invalid_plugin_name)
+        self.assertEqual(initial_plugins_count, len(test_context.get_active_plugins()))
+
+
+class TestLanguageContextGetDefinitionMethods(ActiveContextTestCase):
+    def test_language_context_get_definitions_by_name(self):
+        test_context = get_active_context()
+
+        with temporary_test_file(TEST_DOCUMENT_CONTENT) as test_file:
+            test_content_definitions = parse(test_file.name)
+            test_context.add_definitions_to_context(test_content_definitions)
+
+        self.assertIn(test_file.name, [file.uri for file in test_context.get_files_in_context()])
+        self.assertIn(TEST_SCHEMA_A.name, test_context.get_defined_types())
+        self.assertIn(TEST_SCHEMA_B.name, test_context.get_defined_types())
+        self.assertIn(TEST_SERVICE_ONE.name, test_context.get_defined_types())
+
+    def test_language_context_get_definitions_by_file_uri(self):
+        test_context = get_active_context()
+
+        with temporary_test_file(TEST_DOCUMENT_CONTENT) as test_file:
+            test_content_definitions = parse(test_file.name)
+            test_context.add_definitions_to_context(test_content_definitions)
+
+        actual_definitions = test_context.get_definitions_by_file_uri(test_file.name)
+        parsed_schema_a, *_ = [definition for definition in test_content_definitions if definition.name == TEST_SCHEMA_A.name]
+        parsed_schema_b, *_ = [definition for definition in test_content_definitions if definition.name == TEST_SCHEMA_B.name]
+        parsed_service_one, *_ = [definition for definition in test_content_definitions if definition.name == TEST_SERVICE_ONE.name]
+        self.assertIn(parsed_schema_a, actual_definitions)
+        self.assertIn(parsed_schema_b, actual_definitions)
+        self.assertIn(parsed_service_one, actual_definitions)
 
 
 class TestLanguageContextFileMethods(ActiveContextTestCase):
     def test_language_context_write_file(self):
-        active_context = get_active_context()
+        test_context = get_active_context()
 
         with temporary_test_file(TEST_DOCUMENT_CONTENT) as test_file:
             test_content_definitions = parse(test_file.name)
-            active_context.add_definitions_to_context(test_content_definitions)
+            test_context.add_definitions_to_context(test_content_definitions)
 
             # Assert test content is in the context
-            schema_a_definition = active_context.get_definition_by_name(TEST_SCHEMA_A.name)
-            schema_b_definition = active_context.get_definition_by_name(TEST_SCHEMA_B.name)
-            service_one_definition = active_context.get_definition_by_name(TEST_SERVICE_ONE.name)
+            schema_a_definition = test_context.get_definition_by_name(TEST_SCHEMA_A.name)
+            schema_b_definition = test_context.get_definition_by_name(TEST_SCHEMA_B.name)
+            service_one_definition = test_context.get_definition_by_name(TEST_SERVICE_ONE.name)
 
             self.assertEqual(3, len(test_content_definitions))
             self.assertIsNotNone(schema_a_definition)
@@ -450,22 +490,22 @@ class TestLanguageContextFileMethods(ActiveContextTestCase):
             # Update Schema A with a new field
             schema_a_updated_field = create_field_entry("new_field", PRIMITIVE_TYPE_STRING)
             schema_a_definition.get_fields().append(schema_a_updated_field)
-            active_context.update_definition_in_context(schema_a_definition)
+            test_context.update_definition_in_context(schema_a_definition)
 
             # Update Schema B field type
             schema_b_definition.get_fields()[0][DEFINITION_FIELD_TYPE] = PRIMITIVE_TYPE_DATE
-            active_context.update_definition_in_context(schema_a_definition)
+            test_context.update_definition_in_context(schema_a_definition)
 
             # Remove Service One
-            active_context.remove_definition_from_context(service_one_definition)
+            test_context.remove_definition_from_context(service_one_definition)
 
             # Add Service Two
             service_two_definition = TEST_SERVICE_TWO.copy()
             service_two_definition.source.uri = test_file.name
-            active_context.add_definition_to_context(service_two_definition)
+            test_context.add_definition_to_context(service_two_definition)
 
             # Write changes to file
-            active_context.update_architecture_file(test_file.name)
+            test_context.update_architecture_file(test_file.name)
 
             # Re-read file and assert changes are as expected.
             updated_definitions = parse(test_file.name)

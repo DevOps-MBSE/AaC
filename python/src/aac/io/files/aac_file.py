@@ -2,7 +2,7 @@
 from attr import attrib, attrs, validators
 
 
-@attrs(eq=False)
+@attrs(hash=False, eq=False)
 class AaCFile:
     """
     An Architecture-as-Code file containing AaC definitions.

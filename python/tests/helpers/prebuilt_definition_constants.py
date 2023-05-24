@@ -9,7 +9,7 @@ from typing import Any
 from aac.io.constants import DEFINITION_SEPARATOR
 from aac.plugins.validators import required_fields
 from aac.plugins.validators import defined_references
-from aac.lang.active_context_lifecycle_manager import get_initialized_language_context
+from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.constants import (
     DEFINITION_FIELD_TYPE,
     DEFINITION_NAME_ROOT,
@@ -38,10 +38,10 @@ from tests.helpers.parsed_definitions import (
     create_definition,
 )
 
-REFERENCE_CONTEXT = get_initialized_language_context()
+REFERENCE_CONTEXT = get_active_context().copy()
 
 # Standard Test Schemas
-TEST_SCHEMA_A = create_schema_definition("DataA", fields=[create_field_entry("msg", "string")])
+TEST_SCHEMA_A = create_schema_definition("Data A", fields=[create_field_entry("msg", "string")])
 TEST_SCHEMA_B = create_schema_definition("DataB", fields=[create_field_entry("msg", "string")])
 TEST_SCHEMA_C = create_schema_definition("DataC", fields=[create_field_entry("msg", "string")])
 
@@ -295,6 +295,9 @@ ALL_PRIMITIVES_TEST_DEFINITION_SCHEMA_EXT = create_schema_ext_definition(
 #  - name: number
 #    type: 20.2
 #    description: ''
+#  - name: reference
+#    type: extension
+#    description: ''
 # "
 
 ALL_PRIMITIVES_INSTANCE_NAME = "ALL_PRIMITIVES_INSTANCE"
@@ -304,6 +307,7 @@ ALL_PRIMITIVES_INSTANCE_BOOL_FIELD = create_field_entry(PRIMITIVE_TYPE_BOOL.uppe
 ALL_PRIMITIVES_INSTANCE_FILE_FIELD = create_field_entry(PRIMITIVE_TYPE_FILE.upper(), "./test.aac")
 ALL_PRIMITIVES_INSTANCE_DATE_FIELD = create_field_entry(PRIMITIVE_TYPE_DATE.upper(), datetime.fromisoformat("1970-01-01T00:00:00"))
 ALL_PRIMITIVES_INSTANCE_NUMBER_FIELD = create_field_entry(PRIMITIVE_TYPE_NUMBER.upper(), 20.2)
+ALL_PRIMITIVES_INSTANCE_REFERENCE_FIELD = create_field_entry(PRIMITIVE_TYPE_REFERENCE.upper(), TEST_SCHEMA_A.name)
 all_primitives_instance_fields = {
     field.get(DEFINITION_FIELD_NAME): field.get(DEFINITION_FIELD_TYPE)
     for field in [
@@ -313,6 +317,7 @@ all_primitives_instance_fields = {
         ALL_PRIMITIVES_INSTANCE_FILE_FIELD,
         ALL_PRIMITIVES_INSTANCE_DATE_FIELD,
         ALL_PRIMITIVES_INSTANCE_NUMBER_FIELD,
+        ALL_PRIMITIVES_INSTANCE_REFERENCE_FIELD,
     ]
 }
 ALL_PRIMITIVES_INSTANCE = create_definition(

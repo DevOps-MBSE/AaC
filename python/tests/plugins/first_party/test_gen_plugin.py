@@ -46,7 +46,7 @@ class TestGenPlugin(ActiveContextTestCase):
                 self.assertEqual(len(os.listdir(temp_directory)), 2)
 
                 # Assert the test was generated
-                generated_test_file = os.listdir(f"{temp_directory}/tests/plugins/")
+                generated_test_file = os.listdir(f"{temp_directory}/tests/plugins/first_party")
                 self.assertEqual(len(generated_test_file), 1)
                 self.assertIn(f"test_{TEST_PLUGIN_NAME}_impl.py", generated_test_file)
 

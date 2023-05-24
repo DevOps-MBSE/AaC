@@ -2,13 +2,23 @@ from typing import Optional
 
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.io.parser import parse
-from aac.lang.constants import PRIMITIVE_TYPE_BOOL, PRIMITIVE_TYPE_DATE, PRIMITIVE_TYPE_FILE, PRIMITIVE_TYPE_INT, PRIMITIVE_TYPE_NUMBER
+from aac.lang.constants import (
+    PRIMITIVE_TYPE_BOOL,
+    PRIMITIVE_TYPE_DATE,
+    PRIMITIVE_TYPE_FILE,
+    PRIMITIVE_TYPE_INT,
+    PRIMITIVE_TYPE_NUMBER,
+    PRIMITIVE_TYPE_REFERENCE,
+    PRIMITIVE_TYPE_STRING,
+)
 from aac.plugins.first_party.primitive_type_check.validators import (
     bool_validator,
     file_validator,
     int_validator,
     num_validator,
     date_validator,
+    reference_validator,
+    string_validator,
 )
 from aac.plugins.validators import ValidatorFinding
 from aac.validate import validated_source
@@ -20,6 +30,7 @@ from tests.helpers.prebuilt_definition_constants import (
     ALL_PRIMITIVES_INSTANCE,
     ALL_PRIMITIVES_TEST_DEFINITION,
     ALL_PRIMITIVES_TEST_DEFINITION_SCHEMA_EXT,
+    TEST_SCHEMA_A,
 )
 
 
@@ -29,25 +40,27 @@ class TestPrimitiveValidation(ActiveContextTestCase):
     NUMBER_VALIDATOR = num_validator.get_validator()
     FILE_VALIDATOR = file_validator.get_validator()
     DATE_VALIDATOR = date_validator.get_validator()
+    REFERENCE_VALIDATOR = reference_validator.get_validator()
+    STRING_VALIDATOR = string_validator.get_validator()
 
     def test_type_check_valid(self):
         test_context = get_active_context()
         test_context.add_definitions_to_context(
-            [ALL_PRIMITIVES_TEST_DEFINITION_SCHEMA_EXT, ALL_PRIMITIVES_TEST_DEFINITION]
+            [ALL_PRIMITIVES_TEST_DEFINITION_SCHEMA_EXT, ALL_PRIMITIVES_TEST_DEFINITION, TEST_SCHEMA_A]
         )
 
         with (
+            temporary_test_file("") as empty_test_file,
             temporary_test_file(ALL_PRIMITIVES_INSTANCE.to_yaml()) as test_file,
-            validated_source(test_file.name) as result,
         ):
-            get_active_context().add_definitions_to_context(result.definitions)
-            assert_validator_result_success(result)
+            empty_test_file.name = "test.aac"
+            with validated_source(test_file.name) as result:
+                get_active_context().add_definitions_to_context(result.definitions)
+                assert_validator_result_success(result)
 
     def test_type_check_invalid(self):
         test_context = get_active_context()
-        test_context.add_definitions_to_context(
-            [ALL_PRIMITIVES_TEST_DEFINITION_SCHEMA_EXT, ALL_PRIMITIVES_TEST_DEFINITION]
-        )
+        test_context.add_definitions_to_context([ALL_PRIMITIVES_TEST_DEFINITION_SCHEMA_EXT, ALL_PRIMITIVES_TEST_DEFINITION])
 
         root_key = ALL_PRIMITIVES_INSTANCE.get_root_key()
         test_content = ALL_PRIMITIVES_INSTANCE.to_yaml()
@@ -56,6 +69,10 @@ class TestPrimitiveValidation(ActiveContextTestCase):
         test_content.replace(str(ALL_PRIMITIVES_INSTANCE.structure[root_key][PRIMITIVE_TYPE_FILE.upper()]), "/not/a/file/")
         test_content.replace(str(ALL_PRIMITIVES_INSTANCE.structure[root_key][PRIMITIVE_TYPE_INT.upper()]), "-0987654321")
         test_content.replace(str(ALL_PRIMITIVES_INSTANCE.structure[root_key][PRIMITIVE_TYPE_NUMBER.upper()]), "1.2.3")
+        test_content.replace(
+            str(ALL_PRIMITIVES_INSTANCE.structure[root_key][PRIMITIVE_TYPE_REFERENCE.upper()]), "NotAReference"
+        )
+        test_content.replace(str(ALL_PRIMITIVES_INSTANCE.structure[root_key][PRIMITIVE_TYPE_STRING.upper()]), "123")
 
         with (
             temporary_test_file(test_content) as test_file,
@@ -73,6 +90,10 @@ class TestPrimitiveValidation(ActiveContextTestCase):
             self.assertIn(self.NUMBER_VALIDATOR.primitive_type, exception_message)
             self.assertIn(self.FILE_VALIDATOR.name, exception_message)
             self.assertIn(self.FILE_VALIDATOR.primitive_type, exception_message)
+            self.assertIn(self.REFERENCE_VALIDATOR.name, exception_message)
+            self.assertIn(self.REFERENCE_VALIDATOR.primitive_type, exception_message)
+            self.assertIn(self.STRING_VALIDATOR.name, exception_message)
+            self.assertIn(self.STRING_VALIDATOR.primitive_type, exception_message)
 
     def test_integer_type_valid(self):
         valid_int = ["10", "012345678", "999999999999999999"]
@@ -120,6 +141,26 @@ class TestPrimitiveValidation(ActiveContextTestCase):
         invalid_dates = ["2020-jan:08", "5-06-2020", "1970-01-01TTTT00:00:00Z", "2020T065"]
         self._test_invalid_primitive_validation(PRIMITIVE_TYPE_DATE, "1970-01-01 00:00:00", invalid_dates, finding_assertion)
 
+    def test_reference_type_valid(self):
+        valid_references = get_active_context().get_defined_types()
+        self._test_valid_primitive_validation(PRIMITIVE_TYPE_REFERENCE, TEST_SCHEMA_A.name, valid_references)
+
+    def test_reference_type_invalid(self):
+        finding_assertion = f".*not.*valid.*{PRIMITIVE_TYPE_REFERENCE}"
+        invalid_references = ["NotAReference", "hello world"]
+        self._test_invalid_primitive_validation(
+            PRIMITIVE_TYPE_REFERENCE, TEST_SCHEMA_A.name, invalid_references, finding_assertion
+        )
+
+    def test_string_type_valid(self):
+        valid_strings = ["hello, world", "abc", "''"]
+        self._test_valid_primitive_validation(PRIMITIVE_TYPE_STRING, "testString", valid_strings)
+
+    def test_string_type_invalid(self):
+        finding_assertion = f".*not.*valid.*{PRIMITIVE_TYPE_STRING}"
+        invalid_strings = ["1", "1.2", "True", "null", "[1, 2, 3]"]
+        self._test_invalid_primitive_validation(PRIMITIVE_TYPE_STRING, "testString", invalid_strings, finding_assertion)
+
     def _test_valid_primitive_validation(self, primitive_type: str, default_value: str, test_values: list[str]):
         """Test apparatus for asserting that the primitive validators don't report errors for valid values.
 
@@ -137,7 +178,9 @@ class TestPrimitiveValidation(ActiveContextTestCase):
                 self.assertIsNone,
             )
 
-    def _test_invalid_primitive_validation(self, primitive_type: str, default_value: str, test_values: list[str], finding_regex_assertion: str):
+    def _test_invalid_primitive_validation(
+        self, primitive_type: str, default_value: str, test_values: list[str], finding_regex_assertion: str
+    ):
         """Test apparatus for asserting that the primitive validators do report errors for invalid values.
 
         Args:
@@ -146,14 +189,14 @@ class TestPrimitiveValidation(ActiveContextTestCase):
             test_values: (list[str]): The list of values that will replace default_value
             finding_regex_assertion (str): A regex string used to assert that expected components are present in the message
         """
-        for valid_value in test_values:
+        for invalid_value in test_values:
             self._test_primitive_validation(
                 primitive_type,
                 default_value,
-                valid_value,
-                f"Failed to identify bad {primitive_type}: '{valid_value}'",
+                invalid_value,
+                f"Failed to identify bad {primitive_type}: '{invalid_value}'",
                 self.assertIsNotNone,
-                finding_regex_assertion
+                finding_regex_assertion,
             )
 
     def _test_primitive_validation(
@@ -163,7 +206,7 @@ class TestPrimitiveValidation(ActiveContextTestCase):
         test_value: str,
         assertion_error: str,
         assertion_function: callable,
-        finding_regex_assertion: str = ""
+        finding_regex_assertion: str = "",
     ) -> Optional[ValidatorFinding]:
         validators_lookup = {
             PRIMITIVE_TYPE_DATE: self.DATE_VALIDATOR,
@@ -171,12 +214,12 @@ class TestPrimitiveValidation(ActiveContextTestCase):
             PRIMITIVE_TYPE_INT: self.INTEGER_VALIDATOR,
             PRIMITIVE_TYPE_BOOL: self.BOOLEAN_VALIDATOR,
             PRIMITIVE_TYPE_FILE: self.FILE_VALIDATOR,
+            PRIMITIVE_TYPE_REFERENCE: self.REFERENCE_VALIDATOR,
+            PRIMITIVE_TYPE_STRING: self.STRING_VALIDATOR,
         }
 
         test_context = get_active_context()
-        test_context.add_definitions_to_context(
-            [ALL_PRIMITIVES_TEST_DEFINITION_SCHEMA_EXT, ALL_PRIMITIVES_TEST_DEFINITION]
-        )
+        test_context.add_definitions_to_context([ALL_PRIMITIVES_TEST_DEFINITION_SCHEMA_EXT, ALL_PRIMITIVES_TEST_DEFINITION])
         test_definition_yaml = ALL_PRIMITIVES_INSTANCE.to_yaml()
         test_definition_yaml = test_definition_yaml.replace(default_value, test_value)
         self.assertIn(test_value, test_definition_yaml)
@@ -187,7 +230,7 @@ class TestPrimitiveValidation(ActiveContextTestCase):
         # Assert that the number validator will not return a finding because the float value is valid.
         self.assertIn(primitive_type, validators_lookup)
         finding = validators_lookup.get(primitive_type).validation_function(
-            test_definition, test_definition.structure[test_definition.get_root_key()][primitive_type.upper()]
+            test_definition, test_definition.structure[test_definition.get_root_key()][primitive_type.upper()], test_context
         )
 
         assertion_function(finding, assertion_error)

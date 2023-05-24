@@ -34,6 +34,9 @@ from aac.plugins.plugin import Plugin
 from aac.plugins.plugin_manager import get_plugins
 
 
+MISSING_TYPE = 'missing_type'
+
+
 @attrs(slots=True, auto_attribs=True)
 class LanguageContext:
     """
@@ -62,7 +65,7 @@ class LanguageContext:
 
     # Definition Methods
 
-    def add_definition_to_context(self, definition: Definition):
+    def add_definition_to_context(self, definition: Definition) -> None:
         """
         Add the Definition to the list of definitions in the LanguageContext.
 
@@ -81,31 +84,23 @@ class LanguageContext:
             )
 
         if definition.get_inherits():
-            # This import is located here because the inheritance module uses the language context for lookup, causing a circular dependency at initialization
+            # This import is located here because the inheritance module uses the language context for lookup,
+            #   causing a circular dependency at initialization
             from aac.lang.definitions.inheritance import apply_inherited_attributes_to_definition
 
             apply_inherited_attributes_to_definition(new_definition, self)
 
         if definition.is_extension():
-            target_definition_name = definition.get_type()
+            target_definition_name = definition.get_type() or MISSING_TYPE
             target_definition = self.get_definition_by_name(target_definition_name)
 
             if target_definition:
-                definitions_with_target_definition_name = [
-                    definition for definition in self.definitions if target_definition.name == definition.name
-                ]
-
-                if len(definitions_with_target_definition_name) > 1:
-                    raise LanguageError(
-                        f"Duplicate target definitions found ({len(definitions_with_target_definition_name)}) with name '{target_definition_name}'."
-                    )
-
                 apply_extension_to_definition(new_definition, target_definition)
 
             else:
-                logging.error(f"Failed to find the target defintion '{target_definition_name}' in the context.")
+                logging.error(f"Failed to find the target definition '{target_definition_name}' in the context.")
 
-    def add_definitions_to_context(self, definitions: list[Definition]):
+    def add_definitions_to_context(self, definitions: list[Definition]) -> None:
         """
         Add the list of Definitions to the list of definitions in the LanguageContext, any extensions are added last.
 
@@ -121,7 +116,7 @@ class LanguageContext:
                 sorted_definitions[definition.name] = definition
 
             for definition in definitions:
-                inherited_definition_names = definition.get_inherits()
+                inherited_definition_names = definition.get_inherits() or []
                 for inherited_definition_name in inherited_definition_names:
                     if inherited_definition_name in sorted_definitions:
                         sorted_definitions.move_to_end(definition.name)
@@ -144,7 +139,7 @@ class LanguageContext:
         for definition in all_definitions:
             self.add_definition_to_context(definition)
 
-    def add_definitions_from_uri(self, uri: str, names: Optional[list[str]] = None):
+    def add_definitions_from_uri(self, uri: str, names: Optional[list[str]] = None) -> None:
         """
         Load the definitions from the provided file URI.
 
@@ -160,14 +155,14 @@ class LanguageContext:
         else:
             logging.warn(f"Skipping {uri} as it could not be found.")
 
-    def remove_definition_from_context(self, definition: Definition):
+    def remove_definition_from_context(self, definition: Definition) -> None:
         """
         Remove the Definition from the list of definitions in the LanguageContext.
 
         Args:
             definition (Definition): The Definition to remove from the context.
         """
-        if definition.uid in self.definitions_dictionary:
+        if definition.uid in self.definitions_dictionary and self._is_definition_editable(definition):
             definition.source.is_loaded_in_context = False
             self.definitions_dictionary.pop(definition.uid)
             self.definitions.remove(definition)
@@ -178,14 +173,14 @@ class LanguageContext:
             )
 
         if definition.is_extension():
-            target_definition_name = definition.get_type()
+            target_definition_name = definition.get_type() or MISSING_TYPE
             target_definition = self.get_definition_by_name(target_definition_name)
             if target_definition:
                 remove_extension_from_definition(definition, target_definition)
             else:
-                logging.error(f"Failed to find the target defintion '{target_definition_name}' in the context.")
+                logging.error(f"Failed to find the target definition '{target_definition_name}' in the context.")
 
-    def remove_definitions_from_context(self, definitions: list[Definition]):
+    def remove_definitions_from_context(self, definitions: list[Definition]) -> None:
         """
         Remove the list of Definitions from the list of definitions in the LanguageContext, any extensions are removed last.
 
@@ -205,24 +200,26 @@ class LanguageContext:
         for extension_definition in extension_definitions:
             self.remove_definition_from_context(extension_definition)
 
-    def update_definition_in_context(self, definition: Definition):
+    def update_definition_in_context(self, definition: Definition) -> None:
         """
         Update the Definition in the list of definitions in the LanguageContext, if it exists.
 
         Args:
             definition (Definition): The Definition to update in the context.
         """
-        old_definition = self.definitions_dictionary.get(definition.uid)
-        if old_definition:
+
+        if definition.uid in self.definitions_dictionary:
+            old_definition = self.definitions_dictionary.get(definition.uid)
+
             self.remove_definition_from_context(old_definition)
             self.add_definition_to_context(definition)
-        else:
+        elif definition.uid not in self.definitions_dictionary:
             definitions_in_context = self.get_defined_types()
             missing_target_definition = f"Definition not present in context, can't be updated. '{definition.name}' with uid '{definition.uid}' not present in '{definitions_in_context}'"
             logging.error(missing_target_definition)
             raise LanguageError(missing_target_definition)
 
-    def update_definitions_in_context(self, definitions: list[Definition]):
+    def update_definitions_in_context(self, definitions: list[Definition]) -> None:
         """
         Update the list of Definitions in the list of definitions in the LanguageContext, any extensions are added last.
 
@@ -255,7 +252,7 @@ class LanguageContext:
             from active plugins and user files, which may extend the set of root keys.
             See :py:func:`aac.spec.get_root_keys()` for the list of root keys provided by the unaltered core AaC DSL.
         """
-        return [field.get(DEFINITION_FIELD_NAME) for field in self.get_root_fields()]
+        return [str(field.get(DEFINITION_FIELD_NAME)) for field in self.get_root_fields()]
 
     def get_root_fields(self) -> list[dict]:
         """
@@ -267,7 +264,12 @@ class LanguageContext:
             These fields may differ from those provided by the core spec since the LanguageContext applies definitions
             from active plugins and user files, which may extend the set of root fields.
         """
-        return self.get_definition_by_name(DEFINITION_NAME_ROOT).get_fields()
+        root_definition = self.get_definition_by_name(DEFINITION_NAME_ROOT)
+
+        if root_definition:
+            return root_definition.get_fields() or []
+        else:
+            raise LanguageError(f"Unable to get the '{DEFINITION_NAME_ROOT}' definition. Check that AaC has the core-spec loaded.")
 
     def get_root_keys_definition(self) -> Definition:
         """
@@ -320,7 +322,7 @@ class LanguageContext:
             from active plugins and user files, which may extend the set of root keys.
             See :py:func:`aac.spec.get_primitives()` for the list of root keys provided by the unaltered core AaC DSL.
         """
-        return self.get_primitives_definition().get_values()
+        return self.get_primitives_definition().get_values() or []
 
     def get_defined_types(self) -> list[str]:
         """
@@ -396,7 +398,7 @@ class LanguageContext:
                     )
                 return definition_to_return[0]
             else:
-                logging.info(f"Failed to find the definition named '{definition_name}' in the context.")
+                logging.info(f"Failed to find the definition named '{definition_name}' in the context of '{self.get_defined_types()}'.")
         else:
             logging.error(f"No definition name was provided to {self.get_definition_by_name.__name__}")
 
@@ -608,7 +610,7 @@ class LanguageContext:
         Returns:
             A list of definitions belonging to the target file.
         """
-        return [definition for definition in self.definitions if file_uri == definition.source.uri]
+        return [definition for definition in self.definitions if str(file_uri) == str(definition.source.uri)]
 
     def import_from_file(self, file_uri: str) -> None:
         """
@@ -672,8 +674,22 @@ class LanguageContext:
         return deepcopy(self)
 
     def clear(self) -> None:
-        """Remove all definitions from the language context."""
+        """Remove all definitions and plugins from the language context."""
         self.is_initialized = False
         self.definitions = []
         self.plugins = []
         self.definitions_dictionary = {}
+
+    # Private methods
+
+    def _is_definition_editable(self, definition: Definition) -> bool:
+        """Returns true if the definition can be edited, otherwise false. No source also returns false."""
+        is_editable = False
+        if definition.source:
+            is_editable = definition.source.is_user_editable
+        else:
+            logging.error(
+                f"Definition '{definition.name}' was not modified, because its source '{definition.source.uri or 'no-source'}' is not editable."
+            )
+
+        return is_editable
