@@ -22,11 +22,11 @@ Verify the plugin has been activated by running the following command: `aac --ac
 
 `<include screen shot of list results of the active command>`
 
-Once you have verified that your plugin has been activated, you are able to check what plugin definitions, plugin commands, and such are available by running these commands: `aac <plugin name> --definitions`
+Once you have verified that your plugin has been activated, you are able to check what plugin definitions, plugin commands, and such are available by running these commands: `aac <plugin name> --definitions` *think this is the correct command, please correct if not*
 
 `<include screen shot of list results of plugin definitions>`
 
-`aac <plugin name> --commands`
+`aac <plugin name> --commands` *think this is the correct command, please correct if not*
 
 `<include screen shot of list results of plugin commands>`
 
@@ -39,7 +39,9 @@ A Root Key is a way of creating a representation for a type of element to be lev
 There is information about how the core spec is utilized as well as information and an example of how to extend the DSL for use via an additional plugin within the [Base DSL and Extended DSL](./aac_language/#the-base-dsl-core-spec) sections of the AaC Modeling Language Reference page. 
 
 # Utilizing a User Library
-
+*Not sure what additional information would really need to go in these pieces that isn't covered by the other plugin documentation pages*
 ## As a plugin user
+For information about creating or using a User Library Plugin as a user, see [User's Guide to AaC](./index)
 
 ## As a plugin developer
+For information about creating or using a User Library Plugin as a developer, see [Developer's Guide to AaC](../dev_guide/index).
