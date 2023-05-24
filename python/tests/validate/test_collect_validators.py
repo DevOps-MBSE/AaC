@@ -1,6 +1,12 @@
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.definitions.collections import get_definition_by_name
-from aac.lang.constants import DEFINITION_NAME_FIELD, DEFINITION_NAME_MODEL, DEFINITION_NAME_SCHEMA, DEFINITION_FIELD_NAME, PRIMITIVE_TYPE_STRING
+from aac.lang.constants import (
+    DEFINITION_NAME_FIELD,
+    DEFINITION_NAME_MODEL,
+    DEFINITION_NAME_SCHEMA,
+    DEFINITION_FIELD_NAME,
+    PRIMITIVE_TYPE_STRING,
+)
 from aac.validate import get_applicable_validators_for_definition
 from aac.validate._collect_validators import _get_validation_entries, _get_validator_plugin_by_name
 
@@ -29,7 +35,7 @@ class TestCollectValidators(ActiveContextTestCase):
         expected_validations = self.get_unique_validations(
             active_context.get_definition_by_name(DEFINITION_NAME_SCHEMA).get_validations()
             + active_context.get_definition_by_name(DEFINITION_NAME_FIELD).get_validations()
-            + active_context.get_definition_by_name("Requirement").get_validations())
+        )
 
         actual_result = get_applicable_validators_for_definition(test_definition, validation_plugins, active_context)
 
@@ -47,7 +53,7 @@ class TestCollectValidators(ActiveContextTestCase):
             active_context.get_definition_by_name(DEFINITION_NAME_SCHEMA).get_validations()
             + active_context.get_definition_by_name(DEFINITION_NAME_FIELD).get_validations()
             + active_context.get_definition_by_name(DEFINITION_NAME_MODEL).get_validations()
-            + active_context.get_definition_by_name("Requirement").get_validations())
+        )
 
         actual_result = get_applicable_validators_for_definition(test_definition, validation_plugins, active_context)
 

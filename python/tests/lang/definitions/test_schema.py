@@ -6,6 +6,7 @@ from aac.lang.constants import (
     DEFINITION_FIELD_BEHAVIOR,
     DEFINITION_FIELD_COMPONENTS,
     DEFINITION_FIELD_DESCRIPTION,
+    DEFINITION_FIELD_FIELDS,
     DEFINITION_FIELD_GIVEN,
     DEFINITION_FIELD_INPUT,
     DEFINITION_FIELD_NAME,
@@ -18,10 +19,16 @@ from aac.lang.constants import (
     DEFINITION_FIELD_WHEN,
     DEFINITION_NAME_BEHAVIOR,
     DEFINITION_NAME_BEHAVIOR_TYPE,
+    DEFINITION_NAME_DEFINITION_REFERENCE,
     DEFINITION_NAME_FIELD,
     DEFINITION_NAME_MODEL,
     DEFINITION_NAME_PRIMITIVES,
+    DEFINITION_NAME_REQUIREMENT_REFERENCE,
     DEFINITION_NAME_SCENARIO,
+    DEFINITION_NAME_VALIDATION_REFERENCE,
+    ROOT_KEY_ENUM,
+    ROOT_KEY_MODEL,
+    ROOT_KEY_SCHEMA,
 )
 from aac.lang.definitions.schema import (
     get_definition_schema,
@@ -50,7 +57,7 @@ class TestDefinitionSchemas(TestCase):
 
         self.assertGreater(len(core_root_fields), 0)
         for root_field in core_root_fields:
-            root_name = root_field.get("name")
+            root_name = root_field.get(DEFINITION_FIELD_NAME)
             root_type = root_field.get("type")
 
             if test_context.is_definition_type(root_type):
@@ -68,7 +75,7 @@ class TestDefinitionSchemas(TestCase):
         self.assertGreaterEqual(len(context_root_fields), len(get_root_fields()))
 
         for root_field in context_root_fields:
-            root_name = root_field.get("name")
+            root_name = root_field.get(DEFINITION_FIELD_NAME)
             root_type = root_field.get("type")
 
             if test_context.is_definition_type(root_type):
@@ -78,7 +85,7 @@ class TestDefinitionSchemas(TestCase):
 
     def test_get_definition_root_schema_with_self_defined_data(self):
         test_context = get_core_spec_context()
-        test_definition = test_context.get_definition_by_name("schema")
+        test_definition = test_context.get_definition_by_name(ROOT_KEY_SCHEMA)
 
         expected_result = test_definition
         actual_result = get_definition_schema(test_definition, test_context)
@@ -90,7 +97,7 @@ class TestDefinitionSchemas(TestCase):
         test_definition = create_schema_definition("TestData")
         test_context.add_definition_to_context(test_definition)
 
-        expected_result = test_context.get_definition_by_name("schema")
+        expected_result = test_context.get_definition_by_name(ROOT_KEY_SCHEMA)
         actual_result = get_definition_schema(test_definition, test_context)
 
         self.assertEqual(expected_result, actual_result)
@@ -110,7 +117,7 @@ class TestDefinitionSchemas(TestCase):
         test_definition = create_enum_definition("TestEnum", ["val1"])
         test_context.add_definition_to_context(test_definition)
 
-        expected_result = test_context.get_definition_by_name("enum")
+        expected_result = test_context.get_definition_by_name(ROOT_KEY_ENUM)
         actual_result = get_definition_schema(test_definition, test_context)
 
         self.assertEqual(expected_result, actual_result)
@@ -120,8 +127,10 @@ class TestDefinitionSchemas(TestCase):
         test_definition = create_schema_definition("TestData")
         test_context.add_definition_to_context(test_definition)
 
-        expected_fields = test_context.get_definition_by_name("schema").get_top_level_fields().get("fields")
-        expected_result = {field.get("name"): field for field in expected_fields}
+        expected_fields = (
+            test_context.get_definition_by_name(ROOT_KEY_SCHEMA).get_top_level_fields().get(DEFINITION_FIELD_FIELDS)
+        )
+        expected_result = {field.get(DEFINITION_FIELD_NAME): field for field in expected_fields}
         actual_result = get_schema_defined_fields(test_definition, test_context)
 
         self.assertDictEqual(expected_result, actual_result)
@@ -131,8 +140,10 @@ class TestDefinitionSchemas(TestCase):
         test_definition = create_model_definition("TestModel")
         test_context.add_definition_to_context(test_definition)
 
-        expected_fields = test_context.get_definition_by_name("model").get_top_level_fields().get("fields")
-        expected_result = {field.get("name"): field for field in expected_fields}
+        expected_fields = (
+            test_context.get_definition_by_name(ROOT_KEY_MODEL).get_top_level_fields().get(DEFINITION_FIELD_FIELDS)
+        )
+        expected_result = {field.get(DEFINITION_FIELD_NAME): field for field in expected_fields}
         actual_result = get_schema_defined_fields(test_definition, test_context)
 
         self.assertDictEqual(expected_result, actual_result)
@@ -140,17 +151,21 @@ class TestDefinitionSchemas(TestCase):
     def test_get_definition_schema_components_with_data(self):
         test_context = get_core_spec_context()
 
-        schema_definition = test_context.get_definition_by_name("schema")
+        schema_definition = test_context.get_definition_by_name(ROOT_KEY_SCHEMA)
 
-        # Per the core spec, we'd expect DefinitionReference, Field, and ValidationReference
-        field_definition = test_context.get_definition_by_name("Field")
-        validation_reference_definition = test_context.get_definition_by_name("ValidationReference")
-        definition_reference_definition = test_context.get_definition_by_name("DefinitionReference")
+        field_definition = test_context.get_definition_by_name(DEFINITION_NAME_FIELD)
+        validation_reference_definition = test_context.get_definition_by_name(DEFINITION_NAME_VALIDATION_REFERENCE)
+        definition_reference_definition = test_context.get_definition_by_name(DEFINITION_NAME_DEFINITION_REFERENCE)
+        requirement_reference_definition = test_context.get_definition_by_name(DEFINITION_NAME_REQUIREMENT_REFERENCE)
 
-        expected_definitions = [definition_reference_definition, field_definition, validation_reference_definition]
+        expected_definitions = [
+            definition_reference_definition,
+            field_definition,
+            validation_reference_definition,
+            requirement_reference_definition,
+        ]
         actual_definitions = get_definition_schema_components(schema_definition, test_context)
 
-        self.assertEqual(len(actual_definitions), 3)
         self.assertListEqual(expected_definitions, actual_definitions)
 
     def test_get_sub_definitions_with_model(self):
@@ -159,16 +174,21 @@ class TestDefinitionSchemas(TestCase):
         model_definition = create_model_definition("TestModel")
         test_context.add_definition_to_context(model_definition)
 
-        # Per the core spec, we'd expect Field, Behavior, BehaviorType, and Scenario
-        field_definition = test_context.get_definition_by_name("Field")
-        behavior_definition = test_context.get_definition_by_name("Behavior")
-        behavior_type_definition = test_context.get_definition_by_name("BehaviorType")
-        scenario_definition = test_context.get_definition_by_name("Scenario")
+        field_definition = test_context.get_definition_by_name(DEFINITION_NAME_FIELD)
+        behavior_definition = test_context.get_definition_by_name(DEFINITION_NAME_BEHAVIOR)
+        behavior_type_definition = test_context.get_definition_by_name(DEFINITION_NAME_BEHAVIOR_TYPE)
+        scenario_definition = test_context.get_definition_by_name(DEFINITION_NAME_SCENARIO)
+        requirement_reference_definition = test_context.get_definition_by_name(DEFINITION_NAME_REQUIREMENT_REFERENCE)
 
-        expected_definitions = [field_definition, behavior_definition, behavior_type_definition, scenario_definition]
+        expected_definitions = [
+            field_definition,
+            behavior_definition,
+            behavior_type_definition,
+            scenario_definition,
+            requirement_reference_definition,
+        ]
         actual_definitions = get_definition_schema_components(model_definition, test_context)
 
-        # Per the core spec, we'd expect Field, Behavior, BehaviorType, and Scenario
         self.assertEqual(len(actual_definitions), len(expected_definitions))
         for actual_definition in actual_definitions:
             self.assertIn(actual_definition, expected_definitions)
