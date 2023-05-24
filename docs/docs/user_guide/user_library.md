@@ -5,7 +5,7 @@ parent: AaC Project Structure
 nav_order: 3
 ---
 # Contributing Definitions to a User Library
-One of the primary contributions a User Library type plugin would provide to AaC are definitions to be exposed to the AaC space. Definitions are a key concept and functionality within AaC, so for maximized integration and utilization for a new plugin its definitions need to be exposed to AaC. To understand more about definitions and their role in AaC, see [AaC Modeling Language Reference](./aac_language/#definitions).
+One of the primary contributions a User Library type plugin would provide to AaC are definitions to be exposed to the AaC space. Definitions are a key concept and functionality within AaC, so for maximized integration and utilization for a new plugin its definitions need to be exposed to AaC. To understand more about definitions and their role in AaC, see [Definitions](./aac_language/#definitions) section of the AaC Modeling Language Reference page.
 
 To do so a plugin will include its definitions as part of its registration with AaC. For registering a plugin, see [Plugins](../../old/Plugins) and [Plugin Developer Guide](../dev_guide/plugin_dev_guide)
 
@@ -31,13 +31,13 @@ Once you have verified that your plugin has been activated, you are able to chec
 `<include screen shot of list results of plugin commands>`
 
 # Contributing Root Keys to a User Library
-A Root Key is another key concept of AaC that provides functionality and extensibility to a plugin because of AaC's usage of YAML. 
+A Root Key is another key concept of AaC that provides functionality and extensibility to a plugin because of AaC's usage of YAML. For information on pre-defined Root Keys, see the [Root Keys](./aac_language/#root-keys) section of the AaC Modeling Language Reference page.
 
-## Defining a Root Key
+## Defining, adding, and leveraging a Root Key
+A Root Key is a way of creating a representation for a type of element to be leveraged by AaC. So if a plugin is planning to provide a different type of element than what is in the base DSL, the new Root Keys need to be defined in a similar manner as wthin the [core spec](https://github.com/jondavid-black/AaC/blob/bbe61782720d5958e2794308d7fe397fc6398bd3/python/src/aac/spec/spec.yaml#L2-L6). 
 
-## Adding a Root Key
+There is information about how the core spec is utilized as well as information and an example of how to extend the DSL for use via an additional plugin within the [Base DSL and Extended DSL](./aac_language/#the-base-dsl-core-spec) sections of the AaC Modeling Language Reference page. 
 
-## Leveraging a Root Key
 # Utilizing a User Library
 
 ## As a plugin user
