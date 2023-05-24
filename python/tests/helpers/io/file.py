@@ -4,7 +4,7 @@ import os
 
 from tempfile import NamedTemporaryFile, TemporaryDirectory
 
-from tests.helpers.io2.directory import new_working_dir
+from tests.helpers.io.directory import new_working_dir
 
 
 def temporary_test_file_wo_cm(content: str, **extra_file_attrs):

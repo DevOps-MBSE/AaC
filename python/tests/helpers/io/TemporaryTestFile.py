@@ -1,9 +1,9 @@
 import os
 
-from tempfile import TemporaryDirectory, NamedTemporaryFile
+from tempfile import NamedTemporaryFile, TemporaryDirectory
 from typing import Optional
 
-from tests.helpers.io2.directory import clear_directory
+from tests.helpers.io.directory import clear_directory
 
 
 class TemporaryTestFile:
@@ -43,7 +43,8 @@ class TemporaryTestFile:
               dir (Optional[str]): The `dir` argument to `NamedTemporaryFile`. (default: `TemporaryDirectory()`)
         """
         self.clean_up = clean_up or "all"
-        self.directory = dir or TemporaryDirectory().name
+        self.directory = dir or os.path.realpath(TemporaryDirectory().name)
+        os.makedirs(self.directory, exist_ok=True)
         self.test_file = NamedTemporaryFile(
             mode=mode,
             buffering=buffering,
@@ -91,6 +92,6 @@ class TemporaryTestFile:
             if self.clean_up == "directories":
                 return get_items_to_remove(os.path.isdir)
 
-        if self.clean_up != "none" and os.path.exists(self.directory):
+        if self.clean_up != "none" and self.directory and os.path.exists(self.directory):
             clear_directory(self.directory, file_list=get_files_to_remove(), dir_list=get_dirs_to_remove())
             os.removedirs(self.directory)

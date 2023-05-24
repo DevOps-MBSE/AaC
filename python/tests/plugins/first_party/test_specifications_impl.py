@@ -6,7 +6,7 @@ from aac.plugins.first_party.specifications.specifications_impl import spec_csv
 
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.assertion import assert_plugin_success
-from tests.helpers.io import temporary_test_file
+from tests.helpers.io import TemporaryTestFile
 
 
 class TestSpecifications(ActiveContextTestCase):
@@ -16,7 +16,7 @@ class TestSpecifications(ActiveContextTestCase):
 
     def test_spec_csv(self):
 
-        with TemporaryDirectory() as temp_dir, temporary_test_file(VALID_SPEC) as temp_arch_file:
+        with TemporaryDirectory() as temp_dir, TemporaryTestFile(VALID_SPEC) as temp_arch_file:
             result = spec_csv(temp_arch_file.name, temp_dir)
             assert_plugin_success(result)
 
