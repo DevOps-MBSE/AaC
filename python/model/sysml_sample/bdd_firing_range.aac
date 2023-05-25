@@ -1,11 +1,12 @@
 blockDefinitionDiagram:
+    name: FiringRange
     description: |
         This model provides a simple use-case example for the the BDD diagram 'FiringRange' described in figure E.22 of
             the SysML v1.6 specification, found on page 355.
-    defaultNamespace: FiringRange
+    defaultNamespace: FiringRangeNamespace
 ---
 block:
-    name: FiringRange
+    name: FiringRangeNamespace
 ---
 block:
     name: Cannon
