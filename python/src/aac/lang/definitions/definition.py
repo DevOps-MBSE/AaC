@@ -54,7 +54,8 @@ class Definition:
 
     def __hash__(self) -> int:
         """Return the hash of this Definition."""
-        return hash(f"{self.name}:{self.lexemes[0].location.line}:{self.source.uri}")
+        token_line = self.lexemes[0].location.line if len(self.lexemes) > 0 else -1
+        return hash(f"{self.name}:{token_line}:{self.source.uri}")
 
     def get_root_key(self) -> str:
         """Return the root key for the parsed definition."""
