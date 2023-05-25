@@ -2,7 +2,19 @@ from aac.spec import core
 
 from tests.active_context_test_case import ActiveContextTestCase
 
-EXPECTED_ROOT_KEY_NAMES = ["import", "enum", "schema", "map", "model", "usecase", "ext", "validation", "spec"]
+EXPECTED_ROOT_KEY_NAMES = [
+    "import",
+    "enum",
+    "schema",
+    "map",
+    "model",
+    "usecase",
+    "ext",
+    "commandGroup",
+    "plugin",
+    "validation",
+    "spec",
+]
 
 
 class TestSpecCore(ActiveContextTestCase):

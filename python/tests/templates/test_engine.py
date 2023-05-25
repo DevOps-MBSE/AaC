@@ -17,7 +17,7 @@ from aac.templates.engine import (
 from aac.plugins.first_party.gen_plugin import __package__ as gen_plugin_package
 from aac.templates.error import AacTemplateError
 
-from tests.helpers.io import temporary_test_file
+from tests.helpers.io import TemporaryTestFile
 
 
 class TestTemplateEngine(TestCase):
@@ -131,7 +131,7 @@ class TestTemplateEngine(TestCase):
     def test_does_not_overwrite_existing_file_with_overwrite_false(self):
         content = "original content"
         new_content = "new content"
-        with TemporaryDirectory() as temp_dir, temporary_test_file(content, dir=temp_dir) as test_file:
+        with TemporaryDirectory() as temp_dir, TemporaryTestFile(content, dir=temp_dir) as test_file:
             test_template = TemplateOutputFile(
                 output_directory=temp_dir,
                 template_name="test-template",
@@ -162,7 +162,7 @@ class TestTemplateEngine(TestCase):
         _is_template.return_value = True
 
         template_content = """{% if True %}true{% else %}false{% endif }"""
-        with temporary_test_file(template_content) as test_template:
+        with TemporaryTestFile(template_content) as test_template:
             sys.path.append("/")
 
             temp_package_name = os.path.dirname(test_template.name)[1:].replace("/", ".")

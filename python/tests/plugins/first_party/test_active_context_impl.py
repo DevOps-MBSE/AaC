@@ -20,7 +20,7 @@ from aac.plugins.first_party.active_context.active_context_impl import (
 )
 
 from tests.active_context_test_case import ActiveContextTestCase
-from tests.helpers.io import new_working_dir, temporary_test_file
+from tests.helpers.io import new_working_dir, TemporaryTestFile
 from tests.helpers.parsed_definitions import create_field_entry, create_schema_definition
 
 
@@ -40,7 +40,7 @@ class TestActiveContextPlugin(ActiveContextTestCase):
             self.assertIn(expected_file, actual_files)
 
     def test_remove_file_success(self):
-        with temporary_test_file(self.definition.to_yaml()) as test_file:
+        with TemporaryTestFile(self.definition.to_yaml()) as test_file:
             test_context = get_active_context()
             test_context.add_definitions_from_uri(test_file.name, [self.definition.name])
             self.assertIn(test_file.name, [file.uri for file in test_context.get_files_in_context()])
@@ -61,7 +61,7 @@ class TestActiveContextPlugin(ActiveContextTestCase):
         self.assertRegexpMatches(result.get_messages_as_string().lower(), failure_message_regex)
 
     def test_add_new_file_success(self):
-        with temporary_test_file(self.definition.to_yaml()) as test_file:
+        with TemporaryTestFile(self.definition.to_yaml()) as test_file:
             test_context = get_active_context()
             self.assertNotIn(test_file.name, [file.uri for file in test_context.get_files_in_context()])
 
@@ -75,7 +75,7 @@ class TestActiveContextPlugin(ActiveContextTestCase):
     def test_update_definitions_from_file_success(self):
         definition2 = create_schema_definition("TestDefinition2", fields=[create_field_entry("b", "int")])
 
-        with temporary_test_file(self.definition.to_yaml(), mode="r+") as test_file:
+        with TemporaryTestFile(self.definition.to_yaml(), mode="r+") as test_file:
             test_context = get_active_context()
             self.assertNotIn(self.definition.name, test_context.get_defined_types())
             self.assertNotIn(definition2.name, test_context.get_defined_types())
@@ -104,7 +104,7 @@ class TestActiveContextPlugin(ActiveContextTestCase):
         self.assertRegexpMatches(result.get_messages_as_string().lower(), failure_message_regex)
 
     def test_reset_context(self):
-        with temporary_test_file(self.definition.to_yaml()) as test_file:
+        with TemporaryTestFile(self.definition.to_yaml()) as test_file:
             test_context = get_active_context()
             test_context.add_definitions_from_uri(test_file.name)
             self.assertIn(self.definition.name, test_context.get_defined_types())
@@ -140,8 +140,8 @@ class TestActiveContextPlugin(ActiveContextTestCase):
 
     def test_import_state_success(self):
         with (
-            temporary_test_file("", mode="w+") as state_file,
-            temporary_test_file(self.definition.to_yaml(), mode="w+") as test_file,
+            TemporaryTestFile("", mode="w+") as state_file,
+            TemporaryTestFile(self.definition.to_yaml(), mode="w+") as test_file,
             patch("aac.lang.active_context_lifecycle_manager.ACTIVE_CONTEXT_STATE_FILE_NAME", state_file.name),
         ):
             test_context = get_active_context(reload_context=True)
@@ -188,7 +188,7 @@ class TestActiveContextPlugin(ActiveContextTestCase):
 
     def test_export_state_overwrite(self):
         replaceable_content = "replacable content"
-        with temporary_test_file(replaceable_content, mode="w+") as state_file:
+        with TemporaryTestFile(replaceable_content, mode="w+") as state_file:
             self.assertTrue(lexists(state_file.name))
             self.assertEqual(state_file.read(), replaceable_content)
 

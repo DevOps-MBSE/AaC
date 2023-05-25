@@ -46,7 +46,7 @@ def apply_extension_to_definition(extension_definition: Definition, target_defin
             _add_extension_required_fields_to_definition(target_definition_fields_dict, extension_additional_content)
 
         else:
-            missing_ext_content_message = f"Error when attempting to applying extension '{extension_definition.name}'. The extension is missing the appropriate extension content field '{target_definition.get_root_key()}Ext'"
+            missing_ext_content_message = f"Error when attempting to apply extension '{extension_definition.name}'. The extension is missing the appropriate extension content field '{target_definition.get_root_key()}Ext'"
             logging.error(missing_ext_content_message)
             raise LanguageError(missing_ext_content_message)
 
@@ -157,7 +157,9 @@ def _remove_schema_fields(target_fields: list, fields_to_remove: list):
     """Return a list of the target fields sans any of the fields to remove."""
     dict_of_fields_to_remove = {field.get(DEFINITION_FIELD_NAME): field for field in fields_to_remove}
     updated_fields_list = {
-        field.get(DEFINITION_FIELD_NAME): field for field in target_fields if field.get(DEFINITION_FIELD_NAME) not in dict_of_fields_to_remove
+        field.get(DEFINITION_FIELD_NAME): field
+        for field in target_fields
+        if field.get(DEFINITION_FIELD_NAME) not in dict_of_fields_to_remove
     }
     return list(updated_fields_list.values())
 
@@ -201,16 +203,18 @@ def _remove_extension_required_fields_to_definition(
 
 def _get_required_fields_validation_string() -> str:
     """Return the name of the required fields validation."""
-    from aac.plugins.validators.required_fields import PLUGIN_NAME
+    from aac.plugins.validators.required_fields import VALIDATION_NAME
 
-    return PLUGIN_NAME
+    return VALIDATION_NAME
 
 
 def _get_required_fields_validation_for_definition(definition_fields: dict) -> dict:
     """Return the required fields validation on the specified definition."""
     definition_validations = _get_definition_validations(definition_fields)
     required_fields_validation_name = _get_required_fields_validation_string()
-    required_fields_validation = [v for v in definition_validations if v.get(DEFINITION_FIELD_NAME) == required_fields_validation_name]
+    required_fields_validation = [
+        v for v in definition_validations if v.get(DEFINITION_FIELD_NAME) == required_fields_validation_name
+    ]
     empty_required_fields_validation = {DEFINITION_FIELD_NAME: required_fields_validation_name, DEFINITION_FIELD_ARGUMENTS: []}
 
     return required_fields_validation[0] if required_fields_validation else empty_required_fields_validation

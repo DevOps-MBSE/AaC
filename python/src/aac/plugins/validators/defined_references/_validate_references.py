@@ -8,7 +8,8 @@ from aac.lang.language_context import LanguageContext
 from aac.plugins.validators import ValidatorFindings, ValidatorResult
 
 
-PLUGIN_NAME = "Type references exist"
+PLUGIN_NAME = "Validate type references"
+VALIDATION_NAME = "Type references exist"
 
 
 def validate_references(
@@ -55,7 +56,9 @@ def validate_references(
 
                 if not name_lexeme:
                     name_lexeme, *_ = definition_under_test.lexemes
-                    name_lexeme = name_lexeme or Lexeme(SourceLocation(0, 0, 0, 0), definition_under_test.source.uri, definition_under_test.name)
+                    name_lexeme = name_lexeme or Lexeme(
+                        SourceLocation(0, 0, 0, 0), definition_under_test.source.uri, definition_under_test.name
+                    )
                     logging.error(f"Definition '{definition_under_test.name}' is missing its name lexeme.")
 
                 findings.add_error_finding(definition_under_test, missing_field_in_dictionary, PLUGIN_NAME, name_lexeme)

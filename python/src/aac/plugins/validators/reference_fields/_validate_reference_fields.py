@@ -7,7 +7,8 @@ from aac.lang.language_context import LanguageContext
 from aac.plugins.validators import ValidatorFindings, ValidatorResult
 
 
-PLUGIN_NAME = "Reference format valid"
+PLUGIN_NAME = "Validate query reference format"
+VALIDATION_NAME = "Reference format valid"
 
 
 def validate_reference_fields(
@@ -58,8 +59,8 @@ def validate_reference_fields(
                 logging.debug(missing_reference_field)
 
             # field must be contain a parsable reference value
-            elif not is_reference_format_valid(field_value)[0]:
-                invalid_reference_format = f"Reference field '{reference_field_name}' is not properly formatted: {field_value} - {is_reference_format_valid(field_value)[1]}"
+            elif not is_reference_format_valid(field_value):
+                invalid_reference_format = f"Reference field '{reference_field_name}' is not properly formatted: {field_value}"
                 reference_field_name_lexeme = definition_under_test.get_lexeme_with_value(reference_field_name)
                 findings.add_error_finding(
                     definition_under_test, invalid_reference_format, PLUGIN_NAME, reference_field_name_lexeme

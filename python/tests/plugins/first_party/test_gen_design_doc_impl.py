@@ -4,12 +4,12 @@ from unittest import TestCase
 from aac.plugins.first_party.gen_design_doc.gen_design_doc_impl import gen_design_doc
 
 from tests.helpers.assertion import assert_plugin_success
-from tests.helpers.io import temporary_test_file
+from tests.helpers.io import TemporaryTestFile
 
 
 class TestGenerateDesignDocumentPlugin(TestCase):
     def test_can_generate_design_doc_with_models(self):
-        with temporary_test_file(TEST_MODEL) as test_model:
+        with TemporaryTestFile(TEST_MODEL) as test_model:
             temp_dir = os.path.dirname(test_model.name)
             result = gen_design_doc(test_model.name, temp_dir)
             assert_plugin_success(result)
@@ -24,7 +24,7 @@ class TestGenerateDesignDocumentPlugin(TestCase):
                 self.assert_use_case(markdown)
 
     def test_can_handle_names_with_dots(self):
-        with temporary_test_file(TEST_MODEL_2) as test_yaml:
+        with TemporaryTestFile(TEST_MODEL_2) as test_yaml:
             temp_dir = os.path.dirname(test_yaml.name)
 
             result = gen_design_doc(test_yaml.name, temp_dir)
@@ -53,10 +53,7 @@ class TestGenerateDesignDocumentPlugin(TestCase):
     def assert_schema(self, markdown: str) -> None:
         names = ["x", "y", "z", "i", "j", "direction"]
         required = [n for n in names if n != "direction"]
-        [
-            self.assertIn(f"number {n}{' (required)' if n in required else ''}", markdown)
-            for n in names
-        ]
+        [self.assertIn(f"number {n}{' (required)' if n in required else ''}", markdown) for n in names]
 
     def assert_model(self, markdown: str) -> None:
         patterns = [

@@ -1,10 +1,9 @@
-model:
-  name: validate
-  description: Validate the provided Architecture-as-Code definition file.
-  behavior:
+plugin:
+  name: Validate
+  description: An AaC plugin that validates the definition(s) in a file.
+  commands:
     - name: validate
-      type: command
-      description: Validate the AaC definition file.
+      helpText: Validate one, or more, AaC definitions in a file.
       input:
         - name: architecture-file
           type: file
@@ -17,7 +16,7 @@ model:
             The name of one definition to validate. (optional)
             This argument will cause only the definition provided by the argument to be validated.
       acceptance:
-        - scenario: The definitions are valid
+        - scenario: The definitions are valid.
           given:
             - The file path at {{validate.input.architecture-file}} exists.
             - The contents of {{validate.input.architecture-file}} are a valid AaC definition.
@@ -25,7 +24,7 @@ model:
             - The aac application is run with the validate command.
           then:
             - A successful validation status is displayed to the user.
-        - scenario: The definitions are invalid
+        - scenario: The definitions are invalid.
           given:
             - The file path at {{validate.input.architecture-file}} exists.
             - The contents of {{validate.input.architecture-file}} do not represent a valid AaC definition.

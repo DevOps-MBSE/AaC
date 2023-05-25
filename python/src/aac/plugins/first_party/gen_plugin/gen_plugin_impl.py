@@ -1,27 +1,43 @@
-"""
-A plugin to generate new plugins based on a specifically structured AaC model file.
+"""AaC Plugin implementation module for the Generate Plugin plugin."""
 
-The plugin AaC model must define behaviors using the command BehaviorType.  Each
-defined behavior becomes a new command for the aac CLI.
-"""
 import logging
-from typing import Any
-import yaml
 
-from os import path, rename, makedirs
+from os import makedirs, path, rename
+from typing import Any
 
 from aac import __version__
-from aac.lang.constants import DEFINITION_FIELD_BEHAVIOR, DEFINITION_FIELD_INPUT, DEFINITION_FIELD_NAME, DEFINITION_FIELD_TYPE, ROOT_KEY_ENUM, ROOT_KEY_EXTENSION, ROOT_KEY_MODEL, DEFINITION_FIELD_DESCRIPTION, ROOT_KEY_SCHEMA
-from aac.lang.definitions.collections import convert_parsed_definitions_to_dict_definition, get_models_by_type
-from aac.lang.definitions.search import search
+from aac.io.parser import parse
+from aac.lang.constants import (
+    DEFINITION_FIELD_COMMANDS,
+    DEFINITION_FIELD_DEFINITION_SOURCES,
+    DEFINITION_FIELD_DISPLAY,
+    DEFINITION_FIELD_GROUP,
+    DEFINITION_FIELD_HELP_TEXT,
+    DEFINITION_FIELD_INPUT,
+    DEFINITION_FIELD_NAME,
+    DEFINITION_FIELD_OUTPUT,
+    DEFINITION_FIELD_TYPE,
+    ROOT_KEY_ENUM,
+    ROOT_KEY_EXTENSION,
+    ROOT_KEY_PLUGIN,
+    ROOT_KEY_SCHEMA,
+    ROOT_KEY_VALIDATION,
+)
+from aac.lang.definitions.collections import get_definitions_by_root_key
 from aac.lang.definitions.definition import Definition
-from aac.templates.engine import TemplateOutputFile, generate_templates, load_templates, write_generated_templates_to_file
 from aac.plugins import OperationCancelled
 from aac.plugins.first_party.gen_plugin.GeneratePluginException import GeneratePluginException
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
-from aac.validate import validated_source
+from aac.templates.engine import (
+    TemplateOutputFile,
+    generate_templates,
+    load_templates,
+    write_generated_templates_to_file,
+)
+from aac.validate import validated_definitions
 
-plugin_name = "gen-plugin"
+
+plugin_name = "Generate Plugin"
 
 PLUGIN_TYPE_FIRST_STRING = "first"
 PLUGIN_TYPE_THIRD_STRING = "third"
@@ -58,15 +74,26 @@ def generate_plugin(architecture_file: str) -> PluginExecutionResult:
 
 
 def _generate_plugin_files_to_directory(architecture_file_path: str, plugin_output_directory: str, plugin_type: str) -> str:
-    with validated_source(architecture_file_path) as validation_result:
-        definitions = validation_result.definitions
+    with validated_definitions(_collect_all_plugin_definitions(architecture_file_path)) as validation_result:
         templates: list = list(
             _prepare_and_generate_plugin_files(
-                definitions, plugin_type, architecture_file_path, plugin_output_directory
+                validation_result.definitions, plugin_type, architecture_file_path, plugin_output_directory
             ).values()
         )
         write_generated_templates_to_file(templates)
         return f"Successfully created a {plugin_type}-party plugin in {plugin_output_directory}"
+
+
+def _collect_all_plugin_definitions(architecture_file_path: str) -> list[Definition]:
+
+    def get_definition_source_path(pathspec: str) -> str:
+        return pathspec if pathspec.startswith(path.sep) else path.join(path.dirname(architecture_file_path), pathspec)
+
+    definitions = parse(architecture_file_path)
+    plugin, *_ = get_definitions_by_root_key(ROOT_KEY_PLUGIN, definitions)
+    definition_sources = plugin.get_top_level_fields().get(DEFINITION_FIELD_DEFINITION_SOURCES, [])
+    definition_sources_definitions = [definition for path in definition_sources for definition in parse(get_definition_source_path(path))]
+    return definitions + definition_sources_definitions
 
 
 def _is_plugin_in_aac_repository(architecture_file_path: str) -> bool:
@@ -150,10 +177,10 @@ def _prepare_and_generate_plugin_files(
     definitions: list[Definition], plugin_type: str, architecture_file_path: str, output_directory: str
 ) -> dict[str, TemplateOutputFile]:
     """
-    Parse the model and generate the plugin template accordingly.
+    Parse the plugin definitions and generate the plugin template accordingly.
 
     Args:
-        parsed_models (dict[str, dict]): Dict representing the plugin models.
+        definitions (list[Definition]): A list of definitions
         plugin_type (str): A string representing the plugin type {PLUGIN_TYPE_FIRST_STRING, PLUGIN_TYPE_THIRD_STRING}
         architecture_file_path (str): The filepath to the architecture file used to generate the plugin.
         output_directory (str): The directory in which to output the generated plugin files.
@@ -164,13 +191,12 @@ def _prepare_and_generate_plugin_files(
     Raises:
         GeneratePluginException: An error encountered during the plugin generation process.
     """
-    parsed_definitions_dictionary = convert_parsed_definitions_to_dict_definition(definitions)
-    template_properties: dict = _gather_template_properties(parsed_definitions_dictionary, architecture_file_path, plugin_type)
+    template_properties = _gather_template_properties(definitions, architecture_file_path, plugin_type)
 
-    plugin_name = template_properties.get("plugin", {}).get(DEFINITION_FIELD_NAME)
-    plugin_implementation_name = template_properties.get("plugin", {}).get("implementation_name")
-
+    plugin_name = template_properties.get(ROOT_KEY_PLUGIN, {}).get(DEFINITION_FIELD_NAME)
+    plugin_implementation_name = template_properties.get(ROOT_KEY_PLUGIN, {}).get("implementation_name")
     plugin_implementation_name = _convert_to_implementation_name(plugin_name)
+
     templates_to_overwrite = _get_overwriteable_templates()
     template_output_directories = _get_template_output_directories(
         plugin_type, architecture_file_path, plugin_implementation_name
@@ -178,13 +204,14 @@ def _prepare_and_generate_plugin_files(
 
     if plugin_type == PLUGIN_TYPE_THIRD_STRING:
         template_properties["aac_version"] = __version__
-        new_architecture_file_location = _get_new_architecture_file_path(
-            architecture_file_path, output_directory, plugin_implementation_name
-        )
-        _move_architecture_file_to_plugin_root(architecture_file_path, new_architecture_file_location)
+        new_sources = {}
+        definition_sources = {definition.source.uri for definition in definitions}
+        for source in definition_sources:
+            new_sources[source] = _get_updated_file_path(source, output_directory, plugin_implementation_name)
+            _move_architecture_file_to_plugin_root(source, new_sources[source])
 
         for definition in definitions:
-            definition.source.uri = new_architecture_file_location
+            definition.source.uri = new_sources.get(definition.source.uri)
 
     generated_templates = _generate_template_files(
         plugin_type, output_directory, template_output_directories, template_properties
@@ -196,40 +223,40 @@ def _prepare_and_generate_plugin_files(
 
 
 def _gather_template_properties(
-    parsed_models: dict[str, dict], architecture_file_path: str, plugin_type: str
+    parsed_definitions: list[Definition], architecture_file_path: str, plugin_type: str
 ) -> dict[str, Any]:
     """
     Analyzes the models and returns the necessary template data to generate the plugin.
 
     Args:
-        parsed_models (dict[str, dict]): Dict representing the plugin models
-        architecture_file_path (str): The filepath to the architecture file used to generate the plugin
-        plugin_type (str): Whether the plugin is first or third party
+        parsed_definitions (list[Definition]): A list of plugin definitions.
+        architecture_file_path (str): The filepath to the architecture file used to generate the plugin.
+        plugin_type (str): Whether the plugin is first or third party.
 
     Returns:
         A dictionary of properties to be used when generating the jinja templates.
     """
+    plugins = get_definitions_by_root_key(ROOT_KEY_PLUGIN, parsed_definitions)
+    if len(plugins) != 1:
+        raise GeneratePluginException("Plugin AaC YAML must contain one, and only one, plugin definition.")
 
-    # Ensure model is present and valid, get the plugin name
-    plugin_models = get_models_by_type(parsed_models, ROOT_KEY_MODEL)
-    if len(plugin_models.keys()) != 1:
-        raise GeneratePluginException("Plugin Arch-as-Code yaml must contain one and only one model.")
-
-    plugin_model = list(plugin_models.values())[0].get(ROOT_KEY_MODEL, {})
-    plugin_name = plugin_model.get(DEFINITION_FIELD_NAME)
-    plugin_implementation_name = _convert_to_implementation_name(plugin_name)
+    plugin, *_ = plugins
+    plugin_implementation_name = _convert_to_implementation_name(plugin.name)
 
     # Prepare template variables/properties
-    behaviors = search(plugin_model, [DEFINITION_FIELD_BEHAVIOR])
-    commands = _gather_commands(behaviors)
+    commands = _gather_command_properties(plugin)
 
     plugin = {
-        DEFINITION_FIELD_NAME: plugin_name,
+        DEFINITION_FIELD_NAME: plugin.name,
         "implementation_name": plugin_implementation_name,
     }
 
     plugin_aac_definitions = [
-        _add_definitions_yaml_string(definition) for definition in _gather_plugin_aac_definitions(parsed_models)
+        {
+            "root_key": definition.get_root_key(),
+            "type_name": definition.name,
+            "yaml": definition.to_yaml(),
+        } for definition in _gather_plugin_aac_definitions(parsed_definitions)
     ]
 
     package_name = path.basename(path.dirname(architecture_file_path))
@@ -259,7 +286,7 @@ def _convert_template_name_to_file_name(template_name: str, plugin_name: str) ->
     Returns:
         A string containing the customized/pythonic file name.
     """
-    return template_name.replace(".jinja2", "").replace("plugin", plugin_name)
+    return template_name.replace(".jinja2", "").replace("plugin", plugin_name.lower())
 
 
 def _is_user_desired_output_directory(architecture_file_path: str) -> bool:
@@ -287,22 +314,22 @@ def _is_user_desired_output_directory(architecture_file_path: str) -> bool:
     return confirmation in ["y", "Y"]
 
 
-def _gather_commands(behaviors: list[dict]) -> list[dict]:
+def _gather_command_properties(plugin_definition: Definition) -> list[dict]:
     """
-    Parse the plugin model's behaviors and return a list of commands derived from the plugin's behavior.
+    Parse the plugin definition's commands and return a list of each command's template properties.
 
     Args:
-        behaviors: The plugin's modeled behaviors
+        plugin_definition (Definition): The plugin definition.
 
     Returns:
-        list of command-type behaviors dicts
+        A list of template property dicts for the plugin's commands.
     """
 
     def modify_command_input_output_entry(in_out_entry: dict):
         """Modify the input and output entries of a behavior definition to reduce complexity in the templates."""
         python_type = in_out_entry.get("python_type")
 
-        in_out_entry[DEFINITION_FIELD_NAME] = in_out_entry.get(DEFINITION_FIELD_NAME, "").removeprefix("--")
+        in_out_entry[DEFINITION_FIELD_NAME] = in_out_entry.get(DEFINITION_FIELD_NAME).removeprefix("--")
 
         if python_type:
             in_out_entry[DEFINITION_FIELD_TYPE] = python_type
@@ -312,54 +339,54 @@ def _gather_commands(behaviors: list[dict]) -> list[dict]:
 
     commands = []
 
-    for behavior in behaviors:
-        behavior_name = behavior.get(DEFINITION_FIELD_NAME, "")
-        behavior_description = behavior.get(DEFINITION_FIELD_DESCRIPTION, "")
-        behavior_type = behavior.get(DEFINITION_FIELD_TYPE)
-
-        if behavior_type != "command":
-            continue
+    for cmd in plugin_definition.get_top_level_fields().get(DEFINITION_FIELD_COMMANDS, []):
+        command = {}
 
         # First line should end with a period. flake8(D400)
-        if not behavior_description.endswith("."):
-            behavior_description = f"{behavior_description}."
+        command_help_text = cmd.get(DEFINITION_FIELD_HELP_TEXT)
+        if not command_help_text.endswith("."):
+            command_help_text = f"{command_help_text}."
 
-        behavior_input = behavior.get(DEFINITION_FIELD_INPUT)
-        if behavior_input:
-            behavior["input"] = list(map(modify_command_input_output_entry, behavior_input))
+        command_input = cmd.get(DEFINITION_FIELD_INPUT)
+        if command_input:
+            command[DEFINITION_FIELD_INPUT] = [modify_command_input_output_entry(i) for i in command_input]
 
-        behavior[DEFINITION_FIELD_DESCRIPTION] = behavior_description
-        behavior["implementation_name"] = _convert_to_implementation_name(behavior_name)
-        commands.append(behavior)
+        command_output = cmd.get(DEFINITION_FIELD_OUTPUT)
+        if command_output:
+            command[DEFINITION_FIELD_OUTPUT] = [modify_command_input_output_entry(o) for o in command_output]
+
+        command_name = cmd.get(DEFINITION_FIELD_NAME)
+        command[DEFINITION_FIELD_NAME] = command_name
+        command[DEFINITION_FIELD_HELP_TEXT] = command_help_text
+        command[DEFINITION_FIELD_DISPLAY] = cmd.get(DEFINITION_FIELD_NAME, command_name)
+        command[DEFINITION_FIELD_GROUP] = cmd.get(DEFINITION_FIELD_GROUP)
+        command["implementation_name"] = _convert_to_implementation_name(command_name)
+        commands.append(command)
 
     return commands
 
 
-def _gather_plugin_aac_definitions(parsed_models: dict[str, dict]) -> list[dict]:
+def _gather_plugin_aac_definitions(parsed_definitions: list[Definition]) -> list[Definition]:
     """
     Gather all AaC definitions declared by the model.
 
     Args:
-        parsed_models (dict[str, dict]): Dict representing the plugin models
+        parsed_definitions (list[Definition]): The list of plugin definitions.
 
     Returns:
         A list of AaC definitions provided by the plugin
     """
-    extension_definitions = list(get_models_by_type(parsed_models, ROOT_KEY_EXTENSION).values())
-    schema_definitions = list(get_models_by_type(parsed_models, ROOT_KEY_SCHEMA).values())
-    enum_definitions = list(get_models_by_type(parsed_models, ROOT_KEY_ENUM).values())
+    validation_definitions = get_definitions_by_root_key(ROOT_KEY_VALIDATION, parsed_definitions)
+    extension_definitions = get_definitions_by_root_key(ROOT_KEY_EXTENSION, parsed_definitions)
+    schema_definitions = get_definitions_by_root_key(ROOT_KEY_SCHEMA, parsed_definitions)
+    enum_definitions = get_definitions_by_root_key(ROOT_KEY_ENUM, parsed_definitions)
 
-    return extension_definitions + schema_definitions + enum_definitions
-
-
-def _add_definitions_yaml_string(model: dict) -> dict:
-    model["yaml"] = yaml.dump(model)
-    return model
+    return validation_definitions + extension_definitions + schema_definitions + enum_definitions
 
 
 def _convert_to_implementation_name(original_name: str) -> str:
     """Converts a plugin name to a pythonic version for implementation."""
-    return original_name.replace("-", "_")
+    return original_name.replace("-", "_").replace(" ", "_").lower()
 
 
 def _get_repository_root_directory_from_path(system_path: str) -> str:
@@ -375,7 +402,7 @@ def _get_repository_root_directory_from_path(system_path: str) -> str:
     return system_path[:target_index]
 
 
-def _get_new_architecture_file_path(architecture_file_path: str, output_directory: str, generated_plugin_name: str) -> str:
+def _get_updated_file_path(architecture_file_path: str, output_directory: str, generated_plugin_name: str) -> str:
     """Return the new file path to which the plugin architecture file will be moved."""
     architecture_file_path = path.join(output_directory, architecture_file_path)
     file_name = path.basename(architecture_file_path)
@@ -384,6 +411,6 @@ def _get_new_architecture_file_path(architecture_file_path: str, output_director
 
 
 def _move_architecture_file_to_plugin_root(architecture_file_path: str, new_file_path: str) -> None:
-    """Moves the architecture file to the plugin root directory."""
+    """Move the architecture file to the plugin root directory."""
     makedirs(path.dirname(new_file_path), exist_ok=True)
     rename(architecture_file_path, new_file_path)

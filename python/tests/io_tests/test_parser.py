@@ -9,7 +9,7 @@ from aac.lang.definitions.source_location import SourceLocation
 from aac.io.constants import AAC_DOCUMENT_EXTENSION, YAML_DOCUMENT_SEPARATOR
 from aac.io.parser import parse, ParserError
 
-from tests.helpers.io import temporary_test_file
+from tests.helpers.io import TemporaryTestFile
 
 
 PARSER_TEST_SOURCE = "<parser test>"
@@ -38,7 +38,7 @@ class TestParser(TestCase):
         self.assertEqual(cm.exception.source, filespec)
 
     def test_can_get_lexemes_from_parsed_architecture_file(self):
-        with temporary_test_file(TEST_MESSAGE_FILE_CONTENTS.strip()) as test_yaml:
+        with TemporaryTestFile(TEST_MESSAGE_FILE_CONTENTS.strip()) as test_yaml:
             parsed_definitions = parse(test_yaml.name)
             self.assertEqual(1, len(parsed_definitions))
             parsed_definition = parsed_definitions[0]
@@ -57,9 +57,11 @@ class TestParser(TestCase):
     def test_can_handle_architecture_file_with_imports(self):
         with (
             TemporaryDirectory() as temp_dir,
-            temporary_test_file(TEST_MESSAGE_FILE_CONTENTS, dir=temp_dir, suffix=AAC_DOCUMENT_EXTENSION) as import1,
-            temporary_test_file(TEST_STATUS_FILE_CONTENTS, dir=temp_dir, suffix=AAC_DOCUMENT_EXTENSION) as import2,
-            temporary_test_file(self.get_test_model(import1.name, import2.name), dir=temp_dir, suffix=AAC_DOCUMENT_EXTENSION) as test_yaml,
+            TemporaryTestFile(TEST_MESSAGE_FILE_CONTENTS, dir=temp_dir, suffix=AAC_DOCUMENT_EXTENSION) as import1,
+            TemporaryTestFile(TEST_STATUS_FILE_CONTENTS, dir=temp_dir, suffix=AAC_DOCUMENT_EXTENSION) as import2,
+            TemporaryTestFile(
+                self.get_test_model(import1.name, import2.name), dir=temp_dir, suffix=AAC_DOCUMENT_EXTENSION
+            ) as test_yaml,
         ):
             parsed_models = parse(test_yaml.name)
 
@@ -90,17 +92,17 @@ class TestParser(TestCase):
 
     def test_errors_when_parsing_invalid_yaml(self):
         content = f"{ROOT_KEY_MODEL}: ]["
-        with temporary_test_file(content) as test_yaml:
+        with TemporaryTestFile(content) as test_yaml:
             self.check_parser_errors(test_yaml.name, "invalid YAML", content)
 
     def test_errors_when_parsing_incomplete_model(self):
         content = f"{ROOT_KEY_MODEL}:"
-        with temporary_test_file(content) as test_yaml:
+        with TemporaryTestFile(content) as test_yaml:
             self.check_parser_errors(test_yaml.name, "Definition is missing field 'name'", content)
 
     def test_errors_when_parsing_non_yaml(self):
         content = "not yaml"
-        with temporary_test_file(content) as test_yaml:
+        with TemporaryTestFile(content) as test_yaml:
             self.check_parser_errors(test_yaml.name, "not YAML", content)
 
     def test_content_is_split_by_yaml_documents(self):
@@ -115,7 +117,7 @@ class TestParser(TestCase):
 
     def test_file_content_is_split_by_yaml_documents(self):
         content = f"{TEST_MESSAGE_FILE_CONTENTS}{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_FILE_CONTENTS}"
-        with temporary_test_file(content) as test_yaml:
+        with TemporaryTestFile(content) as test_yaml:
             parsed_definitions = parse(test_yaml.name)
 
             self.assertEqual(len(parsed_definitions), 2)
@@ -141,7 +143,7 @@ class TestParser(TestCase):
 
     def test_file_lexemes_are_split_by_yaml_documents(self):
         content = f"{TEST_MESSAGE_FILE_CONTENTS}{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_FILE_CONTENTS}"
-        with temporary_test_file(content) as test_yaml:
+        with TemporaryTestFile(content) as test_yaml:
             parsed_definitions = parse(test_yaml.name)
 
             self.assertEqual(len(parsed_definitions), 2)
