@@ -13,7 +13,7 @@ from aac.lang.constants import (
 )
 from aac.lang.definitions.extensions import apply_extension_to_definition, remove_extension_from_definition
 from aac.lang.language_error import LanguageError
-from aac.plugins.validators.required_fields import PLUGIN_NAME
+from aac.plugins.validators.required_fields import VALIDATION_NAME
 
 from tests.helpers.parsed_definitions import (
     create_schema_definition,
@@ -79,7 +79,7 @@ class TestDefinitionExtensions(TestCase):
         # Assert Altered Extension State
         required_fields_validation, *_ = [validation for validation in test_schema.get_validations()]
         self.assertEqual(2, len(test_schema.structure[ROOT_KEY_SCHEMA][DEFINITION_FIELD_FIELDS]))
-        self.assertEqual(PLUGIN_NAME, required_fields_validation.get(DEFINITION_FIELD_NAME))
+        self.assertEqual(VALIDATION_NAME, required_fields_validation.get(DEFINITION_FIELD_NAME))
         self.assertEqual(1, len(required_fields_validation.get(DEFINITION_FIELD_ARGUMENTS)))
         self.assertIn(schema_ext_field_name, test_schema.to_yaml())
         self.assertIn(schema_ext_field_type, test_schema.to_yaml())
@@ -92,7 +92,7 @@ class TestDefinitionExtensions(TestCase):
 
         # Assert Removed Extension State
         self.assertEqual(1, len(test_schema.structure[ROOT_KEY_SCHEMA][DEFINITION_FIELD_FIELDS]))
-        self.assertNotIn(PLUGIN_NAME, test_schema.get_validations())
+        self.assertNotIn(VALIDATION_NAME, test_schema.get_validations())
         self.assertNotIn(schema_ext_field_name, test_schema.to_yaml())
         self.assertNotIn(schema_ext_field_type, test_schema.to_yaml())
 

@@ -1,4 +1,4 @@
-"""AaC Plugin implementation module for the aac-gen-protobuf plugin."""
+"""AaC Plugin implementation module for the Generate Protobuf Messages plugin."""
 
 import logging
 import os
@@ -15,7 +15,7 @@ from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 from aac.templates.engine import TemplateOutputFile, generate_template, load_templates, write_generated_templates_to_file
 from aac.validate import validated_source
 
-plugin_name = "gen-protobuf"
+plugin_name = "Generate Protobuf Messages"
 
 
 def gen_protobuf(architecture_file: str, output_directory: str) -> PluginExecutionResult:

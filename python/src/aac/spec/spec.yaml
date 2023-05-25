@@ -57,12 +57,28 @@ schema:
         the specification of any plugins you may have installed.
 
         You can extend any 'enum' and 'schema' definition.
+    - name: commandGroup
+      type: CommandGroup
+      description: |
+        A reference to a command group under which one, or more, plugins can
+        nest related commands.
+
+        CommandGroups are referenced by name.
+    - name: plugin
+      type: Plugin
+      description: |
+        A reference to a plugin. Plugins can provide any extra functionality
+        desired on top of AaC-modeled systems from document generation to code
+        generation and everything in between.
+
+        Plugins are referenced by name.
     - name: validation
       type: Validation
       description: |
-        A reference to a validation plugin. Validation plugins provide verification and validation
-        for the definition to which they are attached and any uses of that definition, depending
-        on the validation plugins referenced by it.
+        A reference to a validation plugin. Validation plugins provide
+        verification and validation for the definition to which they are
+        attached and any uses of that definition, depending on the validation
+        plugins referenced by it.
 
         Validators are referenced by name.
 ---
@@ -179,17 +195,11 @@ schema:
   name: ValidationReference
   fields:
     - name: name
-      type: string
-      description: |
-        The name of the validation definition.
+      type: reference
+      description: The name of the validation definition.
     - name: arguments
       type: string[]
-      description: |
-        A list of arguments to pass to the validator.
-  validation:
-    - name: Required fields are present
-      arguments:
-        - name
+      description: A list of arguments to pass to the validator.
 ---
 schema:
   name: ValidatorInput
@@ -516,8 +526,113 @@ schema:
   name: DefinitionReference
   fields:
     - name: name
+      type: reference
+---
+schema:
+  name: CommandGroup
+  fields:
+    - name: name
       type: string
+      description: The name of the command group.
+    - name: display
+      type: string
+      description: |
+        The display name of the command group for use in user interfaces. If not
+        provided, 'name' will be used.
+    - name: helpText
+      type: string
+      description: |
+        The text that will be displayed as help text when displaying command
+        group usage.
   validation:
-    - name: Type references exist
+    - name: Required fields are present
       arguments:
         - name
+        - helpText
+---
+schema:
+  name: PluginCommand
+  fields:
+    - name: name
+      type: string
+      description: The name of the command.
+    - name: display
+      type: string
+      description: |
+        The display name of the command for use in user interfaces. If not
+        provided, 'name' will be used.
+    - name: group
+      type: reference
+      description: The command group under which to place this command.
+    - name: helpText
+      type: string
+      description: |
+        A description that will be displayed as help text when displaying
+        command usage.
+    - name: input
+      type: Field[]
+      description: |
+        The list of all the fields that are inputs to the component when the
+        command is executed.
+    - name: output
+      type: Field[]
+      description: |
+        The list of all the fields that are outputs from the component when the
+        command is executed.
+    - name: acceptance
+      type: Scenario[]
+      description: |
+        A list of scenarios that define the acceptance criteria to signify that
+        the command is behaving as expected.
+  validation:
+    - name: Required fields are present
+      arguments:
+        - name
+        - helpText
+        - acceptance
+---
+schema:
+  name: Plugin
+  fields:
+    - name: name
+      type: string
+    - name: description
+      type: string
+    - name: commands
+      type: PluginCommand[]
+    - name: definitionSources
+      type: file[]
+    - name: definitionValidations
+      type: ValidationReference[]
+    - name: primitiveValidations
+      type: ValidationReference[]
+  validation:
+    - name: Required fields are present
+      arguments:
+        - name
+        - description
+---
+commandGroup:
+  name: Generation
+  display: gen
+  helpText: Commands used for generating artifacts.
+---
+commandGroup:
+  name: Management
+  display: mgmt
+  helpText: Commands that enable management of AaC data.
+---
+commandGroup:
+  name: Internal
+  display: internal
+  helpText: Internal commands not intended for use by end-users or non-AaC developers.
+---
+commandGroup:
+  name: Backend
+  display: backend
+  helpText: Commands that enable a client/server style workflow.
+---
+commandGroup:
+  name: Query
+  display: show
+  helpText: Commands whose purpose is to show specific information.

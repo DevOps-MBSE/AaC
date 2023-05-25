@@ -1,32 +1,35 @@
-model:
-  name: specifications
-  description: aac-spec is a Architecture-as-Code plugin that enables requirement definition and traceability in Architecture-as-Code models.
-  behavior:
+plugin:
+  name: Specifications
+  description: An AaC plugin that enables requirement definition and traceability in Architecture-as-Code.
+  commands:
     - name: spec-csv
-      type: command
-      description: Generates a comma separated value file (i.e. Excel file) listing requirements.
+      group: Generation
+      helpText: Generate a CSV file listing requirements.
       input:
         - name: architecture-file
           type: file
           python_type: str
-          description:  The file to convert into csv.
+          description:  The file to convert into CSV.
         - name: output-directory
           type: file
           python_type: str
-          description: The directory where the csv file should be placed.
+          description: The directory into which the CSV file will be generated.
       acceptance:
-        - scenario: Valid spec is converted to csv.
+        - scenario: A CSV file is generated from a valid specification.
           given:
-            - The {{spec-validate.input.architecture-file}} contains a valid architecture specification.
+            - The {{spec-csv.input.architecture-file}} contains a valid architecture specification.
           when:
             - The aac app is run with the spec-csv command.
           then:
-            - A message saying spec csv generation was successful is printed to the console.
-            - a csv file is generated.
+            - A message saying spec CSV generation was successful is printed to the console.
+            - A CSV file is generated.
+  definitionValidations:
+    - name: Referenced IDs exist
+    - name: Requirement ID is unique
 ---
 validation:
   name: Referenced IDs exist
-  description: Verifies ids in a requirement reference exist within the context.
+  description: Verifies IDs in a requirement reference exist within the context.
   behavior:
     - name: Verify that requirement references exist.
       type: request-response
@@ -38,31 +41,31 @@ validation:
         - name: results
           type: ValidatorOutput
       acceptance:
-        - scenario: Successfully Validate a requirement reference id exists
+        - scenario: Successfully Validate a requirement reference id exists.
           given:
             - The ValidatorInput content consists of valid AaC definitions.
-            - The ValidatorInput contains some AaC fields that reference requirement ids.
+            - The ValidatorInput contains some AaC fields that reference requirement IDs.
           when:
-            - The input is validation
+            - The validator plugin is executed.
           then:
-            - The ValidatorOutput does not indicate any errors
-            - The ValidatorOutput does not indicate any warnings
-            - The ValidatorOutput indicates the definition under test is valid
-        - scenario: Fail to validate a definition's requirement reference fields
+            - The ValidatorOutput does not indicate any errors.
+            - The ValidatorOutput does not indicate any warnings.
+            - The ValidatorOutput indicates the definition under test is valid.
+        - scenario: Fail to validate a definition's requirement reference fields.
           given:
             - The ValidatorInput content consists of otherwise valid AaC definitions.
             - The ValidatorInput contains at least one requirement reference id that does not exist.
           when:
-            - The ValidatorInput is validated
+            - The validator plugin is executed.
           then:
-            - The ValidatorOutput has errors
-            - The ValidatorOutput errors indicate that there are invalid requirement id references
+            - The ValidatorOutput has errors.
+            - The ValidatorOutput errors indicate that there are invalid requirement id references.
 ---
 validation:
   name: Requirement ID is unique
-  description: Verifies ids in a requirement ID is globally unique within the context.
+  description: Verifies IDs in a requirement ID is globally unique within the context.
   behavior:
-    - name: Verify that requirement ids are globally unique.
+    - name: Verify that requirement IDs are globally unique.
       type: request-response
       description:
       input:
@@ -72,25 +75,25 @@ validation:
         - name: results
           type: ValidatorOutput
       acceptance:
-        - scenario: Successfully Validate a requirement id uniqueness
+        - scenario: Successfully validate a requirement ID's uniqueness.
           given:
             - The ValidatorInput content consists of valid AaC definitions.
-            - The ValidatorInput contains some AaC spec definitions where requirement ids are unique.
+            - The ValidatorInput contains some AaC spec definitions where requirement IDs are unique.
           when:
-            - The input is validation
+            - The validator plugin is executed.
           then:
-            - The ValidatorOutput does not indicate any errors
-            - The ValidatorOutput does not indicate any warnings
-            - The ValidatorOutput indicates the definition under test is valid
-        - scenario: Fail to validate a requirement id uniqueness
+            - The ValidatorOutput does not indicate any errors.
+            - The ValidatorOutput does not indicate any warnings.
+            - The ValidatorOutput indicates the definition under test is valid.
+        - scenario: Fail to validate a requirement id uniqueness.
           given:
             - The ValidatorInput content consists of otherwise valid AaC definitions.
-            - The ValidatorInput contains some AaC spec definition where duplicate requirement ids are present.
+            - The ValidatorInput contains some AaC spec definition where duplicate requirement IDs are present.
           when:
-            - The ValidatorInput is validated
+            - The validator plugin is executed.
           then:
-            - The ValidatorOutput has errors
-            - The ValidatorOutput errors indicate that there are non-unique requirement ids
+            - The ValidatorOutput has errors.
+            - The ValidatorOutput errors indicate that there are non-unique requirement IDs.
 ---
 ext:
   name: addLoggingToBehaviorType

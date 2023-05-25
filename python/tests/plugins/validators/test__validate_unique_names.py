@@ -3,7 +3,7 @@ from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.constants import DEFINITION_FIELD_NAME, ROOT_KEY_SCHEMA
 from aac.lang.definitions.source_location import SourceLocation
 from aac.plugins.validators import FindingLocation
-from aac.plugins.validators.unique_names._unique_names import validate_unique_names
+from aac.plugins.validators.unique_names._validate_unique_names import validate_unique_names
 
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.assertion import assert_validator_result_failure, assert_validator_result_success

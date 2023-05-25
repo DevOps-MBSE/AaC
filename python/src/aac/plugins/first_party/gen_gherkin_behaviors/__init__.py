@@ -40,7 +40,7 @@ def _get_plugin_commands() -> list[AacCommand]:
     plugin_commands = [
         AacCommand(
             "gen-gherkin-behaviors",
-            "Generate Gherkin feature files from Arch-as-Code model behavior scenarios.",
+            "Generate Gherkin feature files from AaC model behavior scenarios.",
             gen_gherkin_behaviors,
             gen_gherkin_behaviors_arguments,
         ),

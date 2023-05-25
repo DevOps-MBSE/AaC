@@ -10,8 +10,8 @@ plugin_name = "{{plugin.name}}"
 
 def {{command.implementation_name}}({% for command_input in command.input %}{{comma_joiner()}}{{command_input.name | trim('-') }}: {{command_input.python_type}}{% endfor %}) -> PluginExecutionResult:
     """
-    {% if command.description is defined %}
-    {{command.description}}
+    {% if command.helpText is defined %}
+    {{command.helpText}}
     {% else %}
     TODO: Write a description
     {% endif %}

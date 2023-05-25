@@ -13,7 +13,7 @@ from aac.lang.constants import (
     DEFINITION_FIELD_EXTENSION_ENUM,
     DEFINITION_FIELD_EXTENSION_SCHEMA,
     DEFINITION_FIELD_FIELDS,
-    DEFINITION_FIELD_IMPORT,
+    ROOT_KEY_IMPORT,
     DEFINITION_FIELD_INHERITS,
     DEFINITION_FIELD_TYPE,
     DEFINITION_FIELD_VALIDATION,
@@ -66,7 +66,7 @@ class Definition:
 
     def get_root_key(self) -> str:
         """Return the root key for the parsed definition."""
-        return [key for key in self.structure.keys() if key != DEFINITION_FIELD_IMPORT][0]
+        return [key for key in self.structure.keys() if key != ROOT_KEY_IMPORT][0]
 
     # Get Field Functions
 
@@ -155,7 +155,7 @@ class Definition:
 
     def to_yaml(self) -> str:
         """Return a yaml string based on the current state of the definition including extensions."""
-        imports_dict = {DEFINITION_FIELD_IMPORT: self.imports}
+        imports_dict = {ROOT_KEY_IMPORT: self.imports}
         structure_to_convert_to_yaml = self.structure
         if self.imports:
             # using | instead of |= or update to force imports at the top of the yaml output

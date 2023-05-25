@@ -24,7 +24,7 @@ from aac.plugins.first_party.rest_api.models.file_model import FilePathModel, Fi
 from aac.spec import get_aac_spec
 from aac.spec.core import _get_aac_spec_file_path
 
-from tests.helpers.io import temporary_test_file, temporary_test_file_wo_cm, new_working_dir
+from tests.helpers.io import TemporaryTestFile, temporary_test_file_wo_cm, new_working_dir
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.parsed_definitions import (
     create_behavior_entry,
@@ -66,7 +66,7 @@ class TestAacRestApiCommandEndpoints(ActiveContextTestCase):
         command_name = "validate"
         test_model = create_model_definition("Model")
 
-        with temporary_test_file(test_model.to_yaml()) as temp_file:
+        with TemporaryTestFile(test_model.to_yaml()) as temp_file:
             request_arguments = CommandRequestModel(name=command_name, arguments=[temp_file.name])
             response = self.test_client.post("/command", data=json.dumps(jsonable_encoder(request_arguments)))
 
@@ -81,7 +81,7 @@ class TestAacRestApiCommandEndpoints(ActiveContextTestCase):
         test_model_name = "Model"
         test_model = create_model_definition(test_model_name)
 
-        with temporary_test_file(test_model.to_yaml()) as temp_file:
+        with TemporaryTestFile(test_model.to_yaml()) as temp_file:
             temp_directory = os.path.dirname(temp_file.name)
             self.assertEqual(len(os.listdir(temp_directory)), 1)
 
@@ -132,8 +132,8 @@ class TestAacRestApiFileEndpoints(ActiveContextTestCase):
         with TemporaryDirectory() as temp_directory:
 
             patch_manager = patch("aac.plugins.first_party.rest_api.aac_rest_app.WORKSPACE_DIR", temp_directory)
-            file1_manager = temporary_test_file(file1_content, dir=temp_directory, suffix=YAML_DOCUMENT_EXTENSION)
-            file2_manager = temporary_test_file(file2_content, dir=temp_directory, suffix=AAC_DOCUMENT_EXTENSION)
+            file1_manager = TemporaryTestFile(file1_content, dir=temp_directory, suffix=YAML_DOCUMENT_EXTENSION)
+            file2_manager = TemporaryTestFile(file2_content, dir=temp_directory, suffix=AAC_DOCUMENT_EXTENSION)
 
             with patch_manager, file1_manager as temp_file1, file2_manager as temp_file2:
 
@@ -167,7 +167,7 @@ class TestAacRestApiFileEndpoints(ActiveContextTestCase):
         with TemporaryDirectory() as temp_directory:
 
             patch_manager = patch("aac.plugins.first_party.rest_api.aac_rest_app.WORKSPACE_DIR", temp_directory)
-            file_manager = temporary_test_file(file_content, dir=temp_directory, suffix=YAML_DOCUMENT_EXTENSION)
+            file_manager = TemporaryTestFile(file_content, dir=temp_directory, suffix=YAML_DOCUMENT_EXTENSION)
             with patch_manager, file_manager as temp_file:
                 file_path_model = FilePathModel(uri=temp_file.name)
 
@@ -212,7 +212,7 @@ class TestAacRestApiFileEndpoints(ActiveContextTestCase):
         active_context = get_active_context()
 
         test_definition = create_model_definition("TestDefinition")
-        with temporary_test_file(test_definition.to_yaml()) as test_file:
+        with TemporaryTestFile(test_definition.to_yaml()) as test_file:
             parsed_definition, *_ = parse(test_file.name)
             active_context.add_definition_to_context(parsed_definition)
 
@@ -360,7 +360,7 @@ class TestAacRestApiDefinitionEndpoints(ActiveContextTestCase):
         test_model_2_definition_name = "TestModel2"
         test_model_2_definition = create_model_definition(test_model_2_definition_name)
 
-        with temporary_test_file(test_model_1_definition.to_yaml()) as file_1, TemporaryDirectory() as temp_dir:
+        with TemporaryTestFile(test_model_1_definition.to_yaml()) as file_1, TemporaryDirectory() as temp_dir:
             file_2 = temporary_test_file_wo_cm(test_model_2_definition.to_yaml(), dir=temp_dir)
 
             parsed_definition_1, *_ = parse(file_1.name)

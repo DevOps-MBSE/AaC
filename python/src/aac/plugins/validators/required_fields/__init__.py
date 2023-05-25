@@ -1,11 +1,16 @@
 """Validation plugin to ensure that each definition has all required fields populated."""
 
+from aac.lang.constants import DEFINITION_FIELD_ARGUMENTS, DEFINITION_FIELD_NAME
 from aac.lang.definitions.definition import Definition
 from aac.plugins import hookimpl
 from aac.plugins.plugin import Plugin
 from aac.plugins._common import get_plugin_definitions_from_yaml
 from aac.plugins.validators._common import get_plugin_validations_from_definitions
-from aac.plugins.validators.required_fields._validate_required_fields import PLUGIN_NAME, validate_required_fields
+from aac.plugins.validators.required_fields._validate_required_fields import (
+    PLUGIN_NAME,
+    VALIDATION_NAME,
+    validate_required_fields,
+)
 
 
 @hookimpl
@@ -40,5 +45,5 @@ def get_required_fields(definition: Definition) -> list[str]:
     Returns:
         The list of field names declared as required fields in the definition.
     """
-    required_validation = [v for v in definition.get_validations() or [] if v.get("name") == PLUGIN_NAME]
-    return len(required_validation) == 1 and required_validation[0].get("arguments") or []
+    required_validation = [v for v in definition.get_validations() or [] if v.get(DEFINITION_FIELD_NAME) == VALIDATION_NAME]
+    return len(required_validation) == 1 and required_validation[0].get(DEFINITION_FIELD_ARGUMENTS) or []

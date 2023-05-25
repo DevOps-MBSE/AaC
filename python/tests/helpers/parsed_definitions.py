@@ -3,7 +3,23 @@
 import yaml
 
 from aac.io.parser import parse
+from aac.lang.constants import (
+    DEFINITION_FIELD_COMMANDS,
+    DEFINITION_FIELD_DEFINITION_SOURCES,
+    DEFINITION_FIELD_DEFINITION_VALIDATIONS,
+    DEFINITION_FIELD_DESCRIPTION,
+    DEFINITION_FIELD_DISPLAY,
+    DEFINITION_FIELD_GROUP,
+    DEFINITION_FIELD_HELP_TEXT,
+    DEFINITION_FIELD_INPUT,
+    DEFINITION_FIELD_NAME,
+    DEFINITION_FIELD_OUTPUT,
+    DEFINITION_FIELD_PRIMITIVE_VALIDATIONS,
+    ROOT_KEY_PLUGIN,
+    ROOT_KEY_VALIDATION,
+)
 from aac.lang.definitions.definition import Definition
+
 
 ACCEPTANCE_STRING = "acceptance"
 ACTION_STRING = "action"
@@ -203,11 +219,51 @@ def create_validation_definition(name: str, description: str = "", behavior: lis
         BEHAVIOR_STRING: behavior,
     }
 
-    return create_definition("validation", name, definition_dict)
+    return create_definition(ROOT_KEY_VALIDATION, name, definition_dict)
+
+
+def create_plugin_definition(
+    name: str,
+    description: str = "",
+    definition_sources: list[str] = [],
+    commands: list[dict] = [],
+    definition_validations: list[dict] = [],
+    primitive_validations: list[dict] = [],
+) -> Definition:
+    definition_dict = {
+        DEFINITION_FIELD_NAME: name,
+        DEFINITION_FIELD_DESCRIPTION: description,
+        DEFINITION_FIELD_DEFINITION_SOURCES: definition_sources,
+        DEFINITION_FIELD_COMMANDS: commands,
+        DEFINITION_FIELD_DEFINITION_VALIDATIONS: definition_validations,
+        DEFINITION_FIELD_PRIMITIVE_VALIDATIONS: primitive_validations,
+    }
+    return create_definition(ROOT_KEY_PLUGIN, name, definition_dict)
+
+
+def create_plugin_command_definition(
+    name: str,
+    display: str = "",
+    group: str = "",
+    help_text: str = "",
+    input: list[dict] = [],
+    output: list[dict] = [],
+    acceptance: list[dict] = [],
+) -> Definition:
+    definition_dict = {
+        DEFINITION_FIELD_NAME: name,
+        DEFINITION_FIELD_HELP_TEXT: help_text,
+        DEFINITION_FIELD_INPUT: input,
+        DEFINITION_FIELD_OUTPUT: output,
+        ACCEPTANCE_STRING: acceptance,
+        DEFINITION_FIELD_DISPLAY: display,
+        DEFINITION_FIELD_GROUP: group,
+    }
+    return create_definition("PluginCommand", name, definition_dict)
 
 
 def create_definition(root_key: str, name: str, other_fields: dict = {}) -> Definition:
     """The base Parsed Definition creation function."""
-    name_field = {"name": name}
+    name_field = {DEFINITION_FIELD_NAME: name}
     definition_dict = {root_key: name_field | other_fields}
     return parse(yaml.dump(definition_dict, sort_keys=False), "<test>")[0]

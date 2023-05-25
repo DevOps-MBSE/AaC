@@ -1,4 +1,5 @@
 """AaC validator implementation module for specification req reference ids."""
+
 import traceback
 import logging
 
@@ -7,7 +8,7 @@ from aac.lang.language_context import LanguageContext
 from aac.plugins.validators import ValidatorFindings, ValidatorResult
 
 
-CIRCULAR_REF_VALIDATOR_NAME = "No circular material references"
+VALIDATION_NAME = "No circular material references"
 
 deployment_tree = {}
 assembly_tree = {}
@@ -52,7 +53,7 @@ def validate_no_circluar_material_refs(
                     lexeme = root.get_lexeme_with_value(dupe)
                     message = f"Circular deployment reference detected for {dupe} in {lexeme.source} on line {lexeme.location.line + 1}"
 
-                    findings.add_error_finding(definition_under_test, message, CIRCULAR_REF_VALIDATOR_NAME, lexeme)
+                    findings.add_error_finding(definition_under_test, message, VALIDATION_NAME, lexeme)
                     logging.debug(message)
 
             # check assemblies for cycles
@@ -64,7 +65,7 @@ def validate_no_circluar_material_refs(
                     lexeme = root.get_lexeme_with_value(dupe)
                     message = f"Circular assembly reference detected for {dupe} in {lexeme.source} on line {lexeme.location.line + 1}"
 
-                    findings.add_error_finding(definition_under_test, message, CIRCULAR_REF_VALIDATOR_NAME, lexeme)
+                    findings.add_error_finding(definition_under_test, message, VALIDATION_NAME, lexeme)
                     logging.debug(message)
 
     except Exception as e:

@@ -7,7 +7,7 @@ from tests.active_context_test_case import ActiveContextTestCase
 
 
 class TestPluginManagement(ActiveContextTestCase):
-    VALID_PLUGIN_NAME = "gen-json"
+    VALID_PLUGIN_NAME = "Generate JSON"
 
     def test_list_plugins(self):
         active_context = get_active_context()

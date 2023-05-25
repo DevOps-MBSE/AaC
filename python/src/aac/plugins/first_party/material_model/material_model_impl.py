@@ -1,4 +1,4 @@
-"""AaC Plugin implementation module for the material-model plugin."""
+"""AaC Plugin implementation module for the Material Model plugin."""
 
 import csv
 import math
@@ -9,7 +9,7 @@ from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 from aac.validate import validated_source
 from aac.lang.definitions.definition import Definition
 
-plugin_name = "material-model"
+plugin_name = "Material Model"
 
 DEPLOYMENTS = {}
 ASSEMBLIES = {}
