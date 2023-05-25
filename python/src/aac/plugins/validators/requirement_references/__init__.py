@@ -4,7 +4,7 @@ from aac.plugins import hookimpl
 from aac.plugins.plugin import Plugin
 from aac.plugins._common import get_plugin_definitions_from_yaml
 from aac.plugins.validators._common import get_plugin_validations_from_definitions
-from aac.plugins.validators.requirement_reference_id_exists.referenced_ids_exist import PLUGIN_NAME, validate_referenced_ids
+from aac.plugins.validators.requirement_references._validate_requirement_references import PLUGIN_NAME, validate_referenced_ids
 
 
 @hookimpl
@@ -22,7 +22,7 @@ def get_plugin() -> Plugin:
 
 
 def _get_plugin_definitions():
-    return get_plugin_definitions_from_yaml(__package__, "referenced_ids_exist.yaml")
+    return get_plugin_definitions_from_yaml(__package__, "requirement_references.yaml")
 
 
 def _get_plugin_validations():
