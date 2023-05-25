@@ -5,7 +5,7 @@ from aac.cli.aac_command import AacCommand, AacCommandArgument
 from aac.plugins import hookimpl
 from aac.plugins._common import get_plugin_definitions_from_yaml
 from aac.plugins.plugin import Plugin
-from aac.plugins.first_party.sysml.sysml_impl import convert_aac_core_definition_to_sysml_definition, convert_sysml_definition_to_aac_core_definition
+from aac.plugins.first_party.sysml.sysml_impl import aac_to_sysml, sysml_to_aac
 
 PLUGIN_NAME = "sysml"
 
@@ -23,13 +23,19 @@ def get_plugin() -> Plugin:
     plugin.register_commands(_get_plugin_commands())
     return plugin
 
+
 def _get_plugin_commands():
     sysml_to_aac_command_arguments = [
         AacCommandArgument(
             "architecture-file",
             "Path to a yaml file containing a model or modeled system written in the AaC SysML DSL.",
             "file",
-        )
+        ),
+        AacCommandArgument(
+            "output-directory",
+            "Output directory for the PlantUML (.puml) diagram file",
+            "directory",
+        ),
     ]
 
     aac_to_sysml_command_arguments = [
@@ -37,25 +43,31 @@ def _get_plugin_commands():
             "architecture-file",
             "Path to a yaml file containing a model or modeled system written in the core AaC DSL.",
             "file",
-        )
+        ),
+        AacCommandArgument(
+            "output-directory",
+            "Output directory for the PlantUML (.puml) diagram file",
+            "directory",
+        ),
     ]
 
     plugin_commands = [
         AacCommand(
             "sysml-to-aac",
             "Converts an AaC model captured in the SysML plugin DSL to the core AaC DSL.",
-            convert_sysml_definition_to_aac_core_definition,
+            sysml_to_aac,
             sysml_to_aac_command_arguments,
         ),
         AacCommand(
             "aac-to-sysml",
             "Converts an AaC model captured in the core AaC DSL to the SysML plugin's AaC DSL.",
-            convert_aac_core_definition_to_sysml_definition,
+            aac_to_sysml,
             aac_to_sysml_command_arguments,
         ),
     ]
 
     return plugin_commands
+
 
 def _get_plugin_definitions():
     plugin_definition = get_plugin_definitions_from_yaml(__package__, "sysml_plugin.yaml")
