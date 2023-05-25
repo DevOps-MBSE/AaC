@@ -18,7 +18,7 @@ class PrimitiveValidationContribution:
     Attributes:
         name (str): The name of the enum validator
         primitive_type (str): The enum type
-        validation_function (Callable): The validation callback function
+        validation_function (Optional[Callable]): The validation callback function
     """
 
     name: str = attrib(validator=validators.instance_of(str))
