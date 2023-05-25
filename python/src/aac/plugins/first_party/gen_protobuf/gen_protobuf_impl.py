@@ -4,6 +4,19 @@ import logging
 import os
 import re
 
+from aac.lang.constants import (
+    DEFINITION_FIELD_BEHAVIOR,
+    DEFINITION_FIELD_DESCRIPTION,
+    DEFINITION_FIELD_FIELDS,
+    DEFINITION_FIELD_INPUT,
+    DEFINITION_FIELD_NAME,
+    DEFINITION_FIELD_OUTPUT,
+    DEFINITION_FIELD_TYPE,
+    DEFINITION_FIELD_VALUES,
+    ROOT_KEY_ENUM,
+    ROOT_KEY_MODEL,
+    ROOT_KEY_SCHEMA,
+)
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.type import is_array_type, remove_list_type_indicator
 from aac.lang.definitions.collections import get_definitions_by_root_key
@@ -48,7 +61,7 @@ def generate_protobuf_messages(architecture_file: str, output_directory: str) ->
         # Get the validated model definitions
         validated_definitions = validation_result.definitions
         get_active_context().add_definitions_to_context(validated_definitions)
-        model_definitions = get_definitions_by_root_key("model", validated_definitions)
+        model_definitions = get_definitions_by_root_key(ROOT_KEY_MODEL, validated_definitions)
 
         model_interface_messages = _get_model_interface_data_structures(model_definitions)
         protobuf_message_template_properties = _get_message_template_properties(model_interface_messages)
@@ -95,12 +108,12 @@ def _get_model_interface_data_structures(model_definitions: list[Definition]) ->
 
 def _get_model_behavior_input_output_definitions(model_definition: Definition) -> dict[str, Definition]:
     """Return a list of definitions that are defined in the input and output of model behavior's."""
-    model_behavior_keys = ["model", "behavior"]
+    model_behavior_keys = [ROOT_KEY_MODEL, DEFINITION_FIELD_BEHAVIOR]
 
     model_interface_messages = []
-    model_interface_messages += search_definition(model_definition, model_behavior_keys + ["input"])
-    model_interface_messages += search_definition(model_definition, model_behavior_keys + ["output"])
-    model_interface_message_names = [field.get("type") for field in model_interface_messages]
+    model_interface_messages += search_definition(model_definition, model_behavior_keys + [DEFINITION_FIELD_INPUT])
+    model_interface_messages += search_definition(model_definition, model_behavior_keys + [DEFINITION_FIELD_OUTPUT])
+    model_interface_message_names = [field.get(DEFINITION_FIELD_TYPE) for field in model_interface_messages]
 
     active_context = get_active_context()
     interface_definitions = [active_context.get_definition_by_name(name) for name in model_interface_message_names]
@@ -112,7 +125,9 @@ def _get_embedded_data_structures(schema_definition: Definition, active_context:
     """Return a dict of schema definition structures that make up the structure of the definition."""
 
     interface_message_substructures = {}
-    definition_names_to_traverse = set([field.get("type") for field in schema_definition.get_top_level_fields().get("fields")])
+    definition_names_to_traverse = set(
+        [field.get(DEFINITION_FIELD_TYPE) for field in schema_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS)]
+    )
 
     while len(definition_names_to_traverse) > 0:
         target_definition_name = definition_names_to_traverse.pop()
@@ -125,7 +140,8 @@ def _get_embedded_data_structures(schema_definition: Definition, active_context:
 
             if target_definition.is_schema():
                 target_definition_field_types = [
-                    field.get("type") for field in target_definition.get_top_level_fields().get("fields")
+                    field.get(DEFINITION_FIELD_TYPE)
+                    for field in target_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS)
                 ]
 
                 # filter out already visited definitions
@@ -182,7 +198,7 @@ def _to_template_properties_dict(
         A dictionary containing the properties in a consistent structure.
     """
     active_context = get_active_context()
-    file_type = "enum" if active_context.is_enum_type(name) else "schema"
+    file_type = ROOT_KEY_ENUM if active_context.is_enum_type(name) else ROOT_KEY_SCHEMA
 
     # Check if the value is a string, then format the string value it properly for protobuf.
     for option_entry in options:
@@ -201,9 +217,9 @@ def _to_template_properties_dict(
 
     # Format the field strings
     for field in fields:
-        field["name"] = _sanitize_string_to_snake_case(field.get("name"))
-        if field["type"] not in active_context.get_primitive_types():
-            field["type"] = _sanitize_string_to_pascal_case(field.get("type"))
+        field[DEFINITION_FIELD_NAME] = _sanitize_string_to_snake_case(field.get(DEFINITION_FIELD_NAME))
+        if field[DEFINITION_FIELD_TYPE] not in active_context.get_primitive_types():
+            field[DEFINITION_FIELD_TYPE] = _sanitize_string_to_pascal_case(field.get(DEFINITION_FIELD_TYPE))
 
     return {
         "message_name": name,
@@ -228,8 +244,8 @@ def _get_enum_properties(enum_definition: Definition) -> dict[str, any]:
     """
     enum_name = enum_definition.name
     enum_definition_fields = enum_definition.get_top_level_fields()
-    enum_values = enum_definition_fields.get("values") or []
-    enum_description = enum_definition_fields.get("description") or ""
+    enum_values = enum_definition_fields.get(DEFINITION_FIELD_VALUES) or []
+    enum_description = enum_definition_fields.get(DEFINITION_FIELD_DESCRIPTION) or ""
     description_as_proto_comment = _convert_description_to_protobuf_comment(enum_description)
     definition_options = enum_definition_fields.get("protobuf_message_options") or []
 
@@ -249,19 +265,19 @@ def _get_schema_properties(interface_structures: dict[str, Definition], data_def
     """
     active_context = get_active_context()
     definition_fields = data_definition.get_top_level_fields()
-    structure_fields = definition_fields.get("fields")
+    structure_fields = definition_fields.get(DEFINITION_FIELD_FIELDS)
 
     definition_name = data_definition.name
-    definition_description = definition_fields.get("description") or ""
+    definition_description = definition_fields.get(DEFINITION_FIELD_DESCRIPTION) or ""
     definition_description_as_proto_comment = _convert_description_to_protobuf_comment(definition_description)
     definition_options = definition_fields.get("protobuf_message_options") or []
 
     message_fields = []
     message_imports = []
     for field in structure_fields:
-        proto_field_name = field.get("name")
-        proto_field_description = field.get("description") or ""
-        proto_field_type = field.get("type")
+        proto_field_name = field.get(DEFINITION_FIELD_NAME)
+        proto_field_description = field.get(DEFINITION_FIELD_DESCRIPTION) or ""
+        proto_field_type = field.get(DEFINITION_FIELD_TYPE)
         sanitized_proto_field_type = remove_list_type_indicator(proto_field_type)
         description_as_proto_comment = _convert_description_to_protobuf_comment(proto_field_description, 1)
 
@@ -439,7 +455,7 @@ def _convert_description_to_protobuf_comment(description: str, indent_level: int
     """
     Return the description as a protobuf multiline comment.
 
-    The returned string is expected to slot into a template multitine comment like such:
+    The returned string is expected to slot into a template multiline comment like such:
         1. The first line isn't indented or starred
         2. every subsequent line break is indented and starred
     """
@@ -462,7 +478,7 @@ def _convert_description_to_protobuf_comment(description: str, indent_level: int
             if i == 0:
                 comment_line_prefix = ""
 
-            # if the final line in the description, don't add a line seperator
+            # if the final line in the description, don't add a line separator
             if i == len(description_newlines) - 1:
                 comment_newline_value = " */"
 

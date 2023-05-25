@@ -22,7 +22,9 @@ from aac.lang.constants import (
     ROOT_KEY_EXTENSION,
     ROOT_KEY_SCHEMA,
 )
+
 from aac.lang.definitions.lexeme import Lexeme
+from aac.lang.definitions.structural_node import StructuralNode
 
 
 @attrs(hash=False, eq=False)
@@ -36,6 +38,7 @@ class Definition:
         source (AaCFile): The source document containing the definition.
         lexemes (list[Lexeme]): A list of lexemes for each item in the parsed definition.
         structure (dict): The dictionary representation of the definition.
+        meta_structure (Optional[StructuralNode]): The node-based representation of the definition's structure and collated metadata
     """
 
     uid: UUID = attrib(init=False, validator=validators.instance_of(UUID))
@@ -45,6 +48,9 @@ class Definition:
     lexemes: list[Lexeme] = attrib(default=Factory(list), validator=validators.instance_of(list))
     structure: dict = attrib(default=Factory(dict), validator=validators.instance_of(dict))
     imports: list[str] = attrib(default=Factory(list), validator=validators.instance_of(list))
+    meta_structure: Optional[StructuralNode] = attrib(
+        default=None, validator=validators.optional(validators.instance_of(StructuralNode))
+    )
 
     def __attrs_post_init__(self):
         """Post-init hook."""

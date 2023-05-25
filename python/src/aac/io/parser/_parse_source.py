@@ -104,7 +104,7 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
 
         end_of_file_offset = 1 if isinstance(end_doc_token, StreamEndToken) else 0
 
-        yaml_text = linesep.join(model_content.splitlines()[content_start_line:content_end_line + end_of_file_offset])
+        yaml_text = linesep.join(model_content.splitlines()[content_start_line: content_end_line + end_of_file_offset])
         yaml_text += linesep
 
         if yaml_text.strip():
@@ -122,9 +122,20 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
                     source_file = AaCFile(source, True, False)
                     source_files[source] = source_file
 
-                definitions.append(Definition(definition_name, yaml_text, source_file, definition_lexemes, root_yaml, definition_imports))
+                new_definition = Definition(
+                    name=definition_name,
+                    content=yaml_text,
+                    source=source_file,
+                    meta_structure=None,
+                    lexemes=definition_lexemes,
+                    structure=root_yaml,
+                    imports=definition_imports,
+                )
+                definitions.append(new_definition)
         else:
-            logging.info(f"Skipping empty content between {start_doc_token}:L{content_start_line} and {end_doc_token}:L{content_end_line} in source {source}")
+            logging.info(
+                f"Skipping empty content between {start_doc_token}:L{content_start_line} and {end_doc_token}:L{content_end_line} in source {source}"
+            )
             logging.debug(f"Source: {source} Content:{model_content}")
             logging.debug(f"Content lines:{model_content.splitlines()}")
 
