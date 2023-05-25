@@ -4,7 +4,7 @@ from aac.plugins import hookimpl
 from aac.plugins.plugin import Plugin
 from aac.plugins._common import get_plugin_definitions_from_yaml
 from aac.plugins.validators._common import get_plugin_validations_from_definitions
-from aac.plugins.validators.unique_requirement_id._validate_unique_requirement_ids import PLUGIN_NAME, validate_unique_ids
+from aac.plugins.validators.unique_requirement_ids._validate_unique_requirement_ids import PLUGIN_NAME, validate_unique_ids
 
 
 @hookimpl
