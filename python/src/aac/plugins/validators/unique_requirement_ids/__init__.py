@@ -4,7 +4,7 @@ from aac.plugins import hookimpl
 from aac.plugins.plugin import Plugin
 from aac.plugins._common import get_plugin_definitions_from_yaml
 from aac.plugins.validators._common import get_plugin_validations_from_definitions
-from aac.plugins.validators.unique_requirement_id.globally_unique_id import UNIQUE_REQ_ID_VALIDATOR_NAME, validate_unique_ids
+from aac.plugins.validators.unique_requirement_id._validate_unique_requirement_ids import PLUGIN_NAME, validate_unique_ids
 
 
 @hookimpl
@@ -15,14 +15,14 @@ def get_plugin() -> Plugin:
     Returns:
         A collection of information about the plugin and what it contributes.
     """
-    plugin = Plugin(UNIQUE_REQ_ID_VALIDATOR_NAME)
+    plugin = Plugin(PLUGIN_NAME)
     plugin.register_definitions(_get_plugin_definitions())
     plugin.register_definition_validations(_get_plugin_validations())
     return plugin
 
 
 def _get_plugin_definitions():
-    return get_plugin_definitions_from_yaml(__package__, "globally_unique_id.yaml")
+    return get_plugin_definitions_from_yaml(__package__, "unique_requirement_ids.yaml")
 
 
 def _get_plugin_validations():

@@ -1,13 +1,14 @@
-"""AaC validator implementation module for specification global req id uniqueness."""
 from typing import Tuple, Set, Dict
 
+from aac.lang.constants import ROOT_KEY_SPEC
 from aac.lang.definitions.definition import Definition
 from aac.lang.language_context import LanguageContext
 from aac.lang.definitions.structure import get_substructures_by_type
 from aac.plugins.validators import ValidatorFindings, ValidatorResult
 
 
-UNIQUE_REQ_ID_VALIDATOR_NAME = "Requirement id is unique"
+PLUGIN_NAME = "Validate requirement IDs are not duplicated"
+VALIDATION_NAME = "Requirement ID is unique"
 
 # this has to be global so that it persists across validator invocations on each definition
 ERROR_MSGS = set()
@@ -35,14 +36,19 @@ def validate_unique_ids(
 
     # this test must be performed globally
     global_ids: Dict[str, Definition] = {}
-    spec_roots = language_context.get_definitions_by_root_key("spec")
+    spec_roots = language_context.get_definitions_by_root_key(ROOT_KEY_SPEC)
     for spec in spec_roots:
         unique_ids, duplicate_ids = _test_spec_ids(spec, target_schema_definition, language_context)
         if len(duplicate_ids) > 0:
             for id in duplicate_ids:
-                if spec.get_lexeme_with_value(id):  # have to do this because you sometimes get duplicate ids form imported specs
+                if spec.get_lexeme_with_value(
+                    id
+                ):  # have to do this because you sometimes get duplicate ids form imported specs
                     findings.add_error_finding(
-                        spec, f"{id} is not a unique requirement id within spec {spec.name}", UNIQUE_REQ_ID_VALIDATOR_NAME, spec.get_lexeme_with_value(id)
+                        spec,
+                        f"{id} is not a unique requirement id within spec {spec.name}",
+                        VALIDATION_NAME,
+                        spec.get_lexeme_with_value(id),
                     )
         for id in unique_ids:
             if id in global_ids:
@@ -51,15 +57,17 @@ def validate_unique_ids(
                 if msg not in ERROR_MSGS:  # if we don't do this check we'll get the same findings multiple times
                     ERROR_MSGS.add(msg)
                     # issue two findings, one for each file
-                    findings.add_error_finding(spec, msg, UNIQUE_REQ_ID_VALIDATOR_NAME, spec.get_lexeme_with_value(id))
-                    findings.add_error_finding(global_ids[id], msg, UNIQUE_REQ_ID_VALIDATOR_NAME, global_ids[id].get_lexeme_with_value(id))
+                    findings.add_error_finding(spec, msg, VALIDATION_NAME, spec.get_lexeme_with_value(id))
+                    findings.add_error_finding(global_ids[id], msg, VALIDATION_NAME, global_ids[id].get_lexeme_with_value(id))
             else:
                 global_ids[id] = spec
 
     return ValidatorResult([definition_under_test], findings)
 
 
-def _test_spec_ids(spec_definition: Definition, requirement_definition: Definition, language_context: LanguageContext) -> Tuple[Set, Set]:
+def _test_spec_ids(
+    spec_definition: Definition, requirement_definition: Definition, language_context: LanguageContext
+) -> Tuple[Set, Set]:
     """
     Searches a given spec definition for duplicate ids.
 

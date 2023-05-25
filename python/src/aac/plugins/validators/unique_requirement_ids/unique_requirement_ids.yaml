@@ -1,0 +1,39 @@
+plugin:
+  name: Validate requirement IDs are not duplicated.
+  description: An AaC plugin that enables validating the uniqueness of requirement IDs.
+  definitionValidations:
+    - name: Requirement ID is unique
+---
+validation:
+  name: Requirement ID is unique
+  description: Verify the IDs in a requirement reference is globally unique within the context.
+  behavior:
+    - name: Verify that requirement IDs are globally unique.
+      type: request-response
+      description:
+      input:
+        - name: input
+          type: ValidatorInput
+      output:
+        - name: results
+          type: ValidatorOutput
+      acceptance:
+        - scenario: Successfully validate a requirement ID's uniqueness.
+          given:
+            - The ValidatorInput content consists of valid AaC definitions.
+            - The ValidatorInput contains some AaC spec definitions where requirement IDs are unique.
+          when:
+            - The validator plugin is executed.
+          then:
+            - The ValidatorOutput does not indicate any errors.
+            - The ValidatorOutput does not indicate any warnings.
+            - The ValidatorOutput indicates the definition under test is valid.
+        - scenario: Fail to validate a requirement ID uniqueness.
+          given:
+            - The ValidatorInput content consists of otherwise valid AaC definitions.
+            - The ValidatorInput contains some AaC spec definition where duplicate requirement IDs are present.
+          when:
+            - The validator plugin is executed.
+          then:
+            - The ValidatorOutput has errors.
+            - The ValidatorOutput errors indicate that there are non-unique requirement IDs.
