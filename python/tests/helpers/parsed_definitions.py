@@ -154,7 +154,7 @@ def create_usecase_definition(name: str, description: str, participants: list[di
 
 
 def create_model_definition(
-    name: str, description: str = "", components: list[dict] = [], behavior: list[dict] = [], state: list[str] = []
+    name: str, description: str = "", components: list[str] = [], behavior: list[dict] = [], state: list[str] = []
 ):
     """Return a simulated model definition."""
     definition_dict = {
