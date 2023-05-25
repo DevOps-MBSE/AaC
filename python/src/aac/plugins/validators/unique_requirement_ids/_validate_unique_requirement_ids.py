@@ -21,13 +21,12 @@ def validate_unique_ids(
     *validation_args,
 ) -> ValidatorResult:
     """
-    Validates that the id of a Requirement is globally unique within the context.
+    Validate that the ID of a Requirement is globally unique within the context.
 
     Args:
         definition_under_test (Definition): The definition that's being validated.
         target_schema_definition (Definition): A definition with applicable validation.
         language_context (LanguageContext): The language context.
-        *validation_args: The names of the required fields.
 
     Returns:
         A ValidatorResult containing any applicable error messages.
@@ -41,9 +40,7 @@ def validate_unique_ids(
         unique_ids, duplicate_ids = _test_spec_ids(spec, target_schema_definition, language_context)
         if len(duplicate_ids) > 0:
             for id in duplicate_ids:
-                if spec.get_lexeme_with_value(
-                    id
-                ):  # have to do this because you sometimes get duplicate ids form imported specs
+                if spec.get_lexeme_with_value(id):
                     findings.add_error_finding(
                         spec,
                         f"{id} is not a unique requirement id within spec {spec.name}",
@@ -69,15 +66,15 @@ def _test_spec_ids(
     spec_definition: Definition, requirement_definition: Definition, language_context: LanguageContext
 ) -> Tuple[Set, Set]:
     """
-    Searches a given spec definition for duplicate ids.
+    Search a given spec definition for duplicate IDs.
 
     Args:
         spec_definition (Definition): The definition that's being validated.
-        requirements_definition (Definition): A definition for the Requirement type.
+        requirement_definition (Definition): A definition for the Requirement type.
         language_context (LanguageContext): The language context.
 
     Returns:
-        A set of discovered local requirement ids and a set of duplicate ids within the definition.
+        A set of discovered local requirement IDs and a set of duplicate IDs within the definition.
     """
     local_ids = set()
     duplicate_ids = set()
