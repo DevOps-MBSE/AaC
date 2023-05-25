@@ -1,9 +1,17 @@
 import os
 
+from enum import Enum, auto
 from tempfile import NamedTemporaryFile, TemporaryDirectory
 from typing import Optional
 
 from tests.helpers.io.directory import clear_directory
+
+
+class CleanUpOption(Enum):
+    ALL = auto()
+    FILES = auto()
+    DIRECTORIES = auto()
+    NONE = auto()
 
 
 class TemporaryTestFile:
@@ -11,7 +19,7 @@ class TemporaryTestFile:
         self,
         content: str,
         name: str = "",
-        clean_up: str = "all",
+        clean_up: CleanUpOption = CleanUpOption.ALL,
         mode: str = "w",
         buffering: int = -1,
         encoding: Optional[str] = None,
@@ -26,12 +34,12 @@ class TemporaryTestFile:
         Arguments:
             content (str): A string to use as the contents of the file.
             name (str): An optional name to give to the file. (default: "")
-            clean_up (str): Whether to clean up the test file/directory after exiting the context manager.
+            clean_up (CleanUpOption): Whether to clean up the test file/directory after exiting the context manager.
               Recognized Options:
-                'all': Remove `dir` along with all files and directories under `dir`. (default)
-                'files': Remove all files under `dir` only.
-                'directories': Remove all directories under `dir` only.
-                'none': Do not remove any files/directories under `dir`.
+                ALL: Remove `dir` along with all files and directories under `dir`. (default)
+                FILES: Remove all files under `dir` only.
+                DIRECTORIES: Remove all directories under `dir` only.
+                NONE: Do not remove any files/directories under `dir`.
 
             The below parameters are the same as those provided to `NamedTemporaryFile`:
               mode (str): The `mode` argument to `NamedTemporaryFile`. (default: "w")
@@ -42,7 +50,7 @@ class TemporaryTestFile:
               prefix (Optional[str]): The `prefix` argument to `NamedTemporaryFile`. (default: None)
               dir (Optional[str]): The `dir` argument to `NamedTemporaryFile`. (default: `TemporaryDirectory()`)
         """
-        self.clean_up = clean_up or "all"
+        self.clean_up = clean_up or CleanUpOption.ALL
         self.directory = dir or os.path.realpath(TemporaryDirectory().name)
         os.makedirs(self.directory, exist_ok=True)
         self.test_file = NamedTemporaryFile(
@@ -85,13 +93,13 @@ class TemporaryTestFile:
             return [item for item in os.listdir(self.directory) if checker(os.path.join(self.directory, item))]
 
         def get_files_to_remove():
-            if self.clean_up == "files":
+            if self.clean_up == CleanUpOption.FILES:
                 return get_items_to_remove(os.path.isfile)
 
         def get_dirs_to_remove():
-            if self.clean_up == "directories":
+            if self.clean_up == CleanUpOption.DIRECTORIES:
                 return get_items_to_remove(os.path.isdir)
 
-        if self.clean_up != "none" and self.directory and os.path.exists(self.directory):
+        if self.clean_up != CleanUpOption.NONE and self.directory and os.path.exists(self.directory):
             clear_directory(self.directory, file_list=get_files_to_remove(), dir_list=get_dirs_to_remove())
             os.removedirs(self.directory)
