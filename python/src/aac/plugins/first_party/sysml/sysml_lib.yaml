@@ -121,9 +121,9 @@ schema:
 
         It's intended to roll this connector field into a generic type 'connectors' field.
     - name: bidirectionalConnectors
-      type: SysML.BidrectionalConnector[]
+      type: SysML.BidirectionalConnector[]
       description: |
-        Used to declare BidrectionalConnector elements in the diagram.
+        Used to declare BidirectionalConnector elements in the diagram.
 
         It's intended to roll this connector field into a generic type 'connectors' field.
     - name: unidirectionalConnectors
@@ -1087,6 +1087,22 @@ schema:
     Corresponds to the FlowProperty SysML element and corresponds to the abstract syntax reference for SysML::FlowProperty.
   fields:
     - name: tbd
+      type: string
+---
+schema:
+  name: SysML.FlowSpecification
+  description: |
+    Corresponds to the FlowSpecification element and abstract syntax reference SysML::PortsAndFlows::FlowSpecification.
+  fields:
+    - name: comment
+      type: string
+---
+schema:
+  name: SysML.FlowPort
+  description: |
+    Corresponds to the FlowPort element and abstract syntax reference SysML::FlowPort.
+  fields:
+    - name: comment
       type: string
 ---
 schema:
