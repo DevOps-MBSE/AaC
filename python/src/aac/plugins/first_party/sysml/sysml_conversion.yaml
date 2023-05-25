@@ -5,7 +5,7 @@ ext:
   type: schema
   schemaExt:
     add:
-      - name: sysml_element
+      - name: sysmlElement
         type: reference
         description: Defines the corresponding SysML model's datastructure.
       - name: sysml_stereotypes
@@ -19,7 +19,7 @@ ext:
   type: model
   schemaExt:
     add:
-      - name: sysml_element
+      - name: sysmlElement
         type: reference
         description: Defines the corresponding SysML model's datastructure.
       - name: sysml_stereotypes
