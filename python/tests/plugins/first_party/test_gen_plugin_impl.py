@@ -1,11 +1,9 @@
 import os
 
 from tempfile import TemporaryDirectory
-from typing import Optional
 from unittest.mock import patch
 
 from aac.io.constants import YAML_DOCUMENT_EXTENSION, YAML_DOCUMENT_SEPARATOR
-from aac.plugins.contributions.contribution_types.definition_validation_contribution import DefinitionValidationContribution
 from aac.plugins.first_party.gen_plugin.GeneratePluginException import GeneratePluginException
 from aac.plugins.first_party.gen_plugin.gen_plugin_impl import (
     EXPECTED_FIRST_PARTY_DIRECTORY_PATH,
@@ -33,11 +31,9 @@ TOX_CONFIG_TEMPLATE_NAME = "tox.ini.jinja2"
 
 
 class TestGenPlugin(ActiveContextTestCase):
-    @patch("aac.validate._collect_validators._get_validator_plugin_by_name")
     @patch("aac.plugins.first_party.gen_plugin.gen_plugin_impl._is_user_desired_output_directory")
-    def test_generate_first_party_plugin(self, is_user_desired_output_dir, get_validator_plugin_by_name):
+    def test_generate_first_party_plugin(self, is_user_desired_output_dir):
         is_user_desired_output_dir.return_value = True
-        get_validator_plugin_by_name.side_effect = _ignore_missing_validator_implementations_error_for_test_validations
 
         with TemporaryDirectory() as tmpdir:
             self.assertEqual(len(os.listdir(tmpdir)), 0)
@@ -69,11 +65,9 @@ class TestGenPlugin(ActiveContextTestCase):
                 self.assertIn(f"{TEST_PLUGIN_NAME}_impl.py", generated_plugin_files)
                 self.assertIn(os.path.basename(test_file.name), generated_plugin_files)
 
-    @patch("aac.validate._collect_validators._get_validator_plugin_by_name")
     @patch("aac.plugins.first_party.gen_plugin.gen_plugin_impl._is_user_desired_output_directory")
-    def test_generate_third_party_plugin(self, is_user_desired_output_dir, get_validator_plugin_by_name):
+    def test_generate_third_party_plugin(self, is_user_desired_output_dir):
         is_user_desired_output_dir.return_value = True
-        get_validator_plugin_by_name.side_effect = _ignore_missing_validator_implementations_error_for_test_validations
 
         with (
             TemporaryDirectory() as tmpdir,
@@ -91,11 +85,9 @@ class TestGenPlugin(ActiveContextTestCase):
             self.assertEqual(len([file for file in generated_plugin_files if os.path.basename(test_file.name) in file]), 1)
             self.assertGreater(len([file for file in generated_plugin_files if TEST_PLUGIN_NAME in file]), 0)
 
-    @patch("aac.validate._collect_validators._get_validator_plugin_by_name")
     @patch("aac.plugins.first_party.gen_plugin.gen_plugin_impl._is_user_desired_output_directory")
-    def test_generate_plugin_fails_with_multiple_plugins(self, is_user_desired_output_dir, get_validator_plugin_by_name):
+    def test_generate_plugin_fails_with_multiple_plugins(self, is_user_desired_output_dir):
         is_user_desired_output_dir.return_value = True
-        get_validator_plugin_by_name.side_effect = _ignore_missing_validator_implementations_error_for_test_validations
 
         with (
             TemporaryDirectory() as tmpdir,
@@ -234,17 +226,6 @@ class TestGenPlugin(ActiveContextTestCase):
         actual_result = _get_repository_root_directory_from_path(path)
 
         self.assertEqual(expected_result, actual_result)
-
-
-def _ignore_missing_validator_implementations_error_for_test_validations(
-    validator_name: str, validator_plugins: list[DefinitionValidationContribution]
-) -> Optional[DefinitionValidationContribution]:
-    """Don't require test validation plugins to have implementations."""
-
-    from aac.plugins.validators.validator_implementation._validate_validator_implementation import VALIDATION_NAME
-
-    plugins = [plugin for plugin in validator_plugins if validator_name != VALIDATION_NAME and plugin.name == validator_name]
-    return plugins[0] if len(plugins) == 1 else None
 
 
 TEST_PLUGIN_NAME = "test_plugin"
