@@ -3,6 +3,9 @@
 # This script gathers AaC's runtime dependencies, creates a hash file, pulls in install scripts, and generally
 #   prepares the secure installation file. We'll delegate to Github Action's automatic zipping of artifacts to
 #   ultimately compress the directory into an archive.
+# This script expects one argument of 'bash' or 'bat' dependening on the target platform's scripting tools.
+
+SCRIPT_EXTENSIONS="$1"
 
 install_script_dir=$(dirname "$0")
 cd $install_script_dir
@@ -13,7 +16,8 @@ install_dir="aac_secure_install_$version"
 
 [[ -d $install_dir ]] && rm -r $install_dir
 mkdir $install_dir
-cp -p -r install_scripts/*.bash $install_dir
+find ./install_scripts -type f -name "*.${SCRIPT_EXTENSIONS}" -exec cp {} $install_dir \;
+# cp -p -r "install_scripts/*.${SCRIPT_EXTENSIONS}" $install_dir
 cp README.md $install_dir
 cd $install_dir
 
