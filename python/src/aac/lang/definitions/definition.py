@@ -1,10 +1,8 @@
 """An Architecture-as-Code definition augmented with metadata and helpful functions."""
 from __future__ import annotations
-
 import copy
 import logging
 import yaml
-
 from attr import Factory, attrib, attrs, validators
 from typing import Any, Optional
 from uuid import UUID, uuid5, NAMESPACE_DNS
@@ -24,10 +22,12 @@ from aac.lang.constants import (
     ROOT_KEY_EXTENSION,
     ROOT_KEY_SCHEMA,
 )
+
 from aac.lang.definitions.lexeme import Lexeme
+from aac.lang.definitions.structural_node import StructuralNode
 
 
-@attrs(hash=False)
+@attrs(hash=False, eq=False)
 class Definition:
     """An Architecture-as-Code definition.
 
@@ -38,6 +38,7 @@ class Definition:
         source (AaCFile): The source document containing the definition.
         lexemes (list[Lexeme]): A list of lexemes for each item in the parsed definition.
         structure (dict): The dictionary representation of the definition.
+        meta_structure (Optional[StructuralNode]): The node-based representation of the definition's structure and collated metadata
     """
 
     uid: UUID = attrib(init=False, validator=validators.instance_of(UUID))
@@ -47,6 +48,9 @@ class Definition:
     lexemes: list[Lexeme] = attrib(default=Factory(list), validator=validators.instance_of(list))
     structure: dict = attrib(default=Factory(dict), validator=validators.instance_of(dict))
     imports: list[str] = attrib(default=Factory(list), validator=validators.instance_of(list))
+    meta_structure: Optional[StructuralNode] = attrib(
+        default=None, validator=validators.optional(validators.instance_of(StructuralNode))
+    )
 
     def __attrs_post_init__(self):
         """Post-init hook."""
@@ -56,6 +60,16 @@ class Definition:
         """Return the hash of this Definition."""
         token_line = self.lexemes[0].location.line if len(self.lexemes) > 0 else -1
         return hash(f"{self.name}:{token_line}:{self.source.uri}")
+
+    def __eq__(self, obj):
+        """Equals function for the Definition."""
+
+        def is_equal() -> bool:
+            equal = self.name == obj.name
+            equal = equal and self.structure == obj.structure
+            return equal
+
+        return isinstance(obj, Definition) and is_equal()
 
     def get_root_key(self) -> str:
         """Return the root key for the parsed definition."""
@@ -85,12 +99,14 @@ class Definition:
     def get_description(self) -> Optional[str]:
         """Return the description for the current definition, or None if it isn't defined."""
         fields = self.get_top_level_fields()
-        return fields.get(DEFINITION_FIELD_DESCRIPTION)
+        description = fields.get(DEFINITION_FIELD_DESCRIPTION)
+        return str(description) if description else None
 
     def get_type(self) -> Optional[str]:
         """Return the string for the extension type field, or None if the field isn't defined."""
         fields = self.get_top_level_fields()
-        return fields.get(DEFINITION_FIELD_TYPE)
+        type_field = fields.get(DEFINITION_FIELD_TYPE)
+        return str(type_field) if type_field else None
 
     def get_validations(self) -> Optional[list[dict]]:
         """Return a list of validation entry dictionaries, or None if the field isn't defined."""
@@ -159,6 +175,10 @@ class Definition:
     def copy(self) -> Definition:
         """Return a deep copy of the definition."""
         return copy.deepcopy(self)
+
+    def get_source_file(self) -> AaCFile:
+        """Returns the AaCFile the definition can be found in."""
+        return self.source
 
     def get_lexeme_with_value(
         self,

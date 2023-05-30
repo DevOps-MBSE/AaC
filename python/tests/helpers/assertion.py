@@ -47,7 +47,7 @@ def assert_validation_failure(plugin_result: PluginExecutionResult):
 
 def _assert_plugin_state(plugin_result: PluginExecutionResult, code: PluginExecutionStatusCode):
     if plugin_result.status_code != code:
-        raise AssertionError(f"PluginResult did not return {code} as expected. Messages:\n{plugin_result.messages}")
+        raise AssertionError(f"PluginResult did not return {code} as expected. Messages:\n{plugin_result.get_messages_as_string()}")
 
 
 def assert_validator_result_failure(validator_result: ValidatorResult, *expected_error_message_contents):

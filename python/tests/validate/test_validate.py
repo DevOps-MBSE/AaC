@@ -17,6 +17,7 @@ from aac.plugins.validators._validator_result import ValidatorFindings, Validato
 from aac.validate import ValidationError, validated_definitions, validated_source
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.parsed_definitions import (
+    create_enum_definition,
     create_enum_ext_definition,
     create_field_entry,
     create_schema_definition,
@@ -225,5 +226,30 @@ class TestValidateExtensions(ActiveContextTestCase):
         exception = error.exception
         self.assertEqual(ValidationError, type(exception))
         self.assertEqual(len(exception.args), 1)
-        self.assertIn("undefined", exception.args[0].lower())
-        self.assertIn(invalid_target, exception.args[0])
+        self.assertRegexpMatches(exception.args[0], f"{invalid_target}.*not.*valid.*reference")
+
+    def test_validate_definitions_with_duplicate_name_extension_targets(self):
+        def _assert_validation_results(result):
+            self.assertFalse(result.is_valid())
+            self.assertIn("unique definition names", result.get_messages_as_string())
+            self.assertIn(duplicate_definition_name, result.get_messages_as_string())
+
+        duplicate_definition_name = "DuplicateDefinitionName"
+        schema_target_definition = create_schema_definition(duplicate_definition_name)
+        enum_target_definition = create_enum_definition(duplicate_definition_name, ["val"])
+
+        invalid_extension_field = create_field_entry("new_field", PRIMITIVE_TYPE_STRING)
+        invalid_target_extension = create_schema_ext_definition("NewTarget", duplicate_definition_name, fields=[invalid_extension_field])
+
+        with self.assertRaises(ValidationError):
+            with validated_definitions([enum_target_definition, schema_target_definition, invalid_target_extension]) as result:
+                pass
+
+            _assert_validation_results(result)
+
+        # Reverse the duplicate definition order to demonstrate that the test passes regardless of the order of duplicate definitions in the context.
+        with self.assertRaises(ValidationError):
+            with validated_definitions([schema_target_definition, enum_target_definition, invalid_target_extension]) as result:
+                pass
+
+            _assert_validation_results(result)
