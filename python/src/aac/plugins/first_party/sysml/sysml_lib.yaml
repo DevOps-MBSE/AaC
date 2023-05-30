@@ -73,7 +73,7 @@ schema:
         This field is specifically an AaC modification to allow users to more easily add non-functional contextual
         information about their SysML diagram.
     - name: blocks
-      type: reference
+      type: reference[]
       description: References should be typed to SysML.Block[]
     - name: flowPorts
       type: SysML.FlowPort[]

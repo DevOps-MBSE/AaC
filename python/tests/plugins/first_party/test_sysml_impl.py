@@ -29,7 +29,9 @@ from tests.helpers.parsed_definitions import create_field_entry, create_model_de
 
 class TestSysmlPlugin(ActiveContextTestCase):
     def test_sysml_to_aac_command(self):
-        test_file_content = f"{TEST_BLOCK_DEFINITION.to_yaml()}{DEFINITION_SEPARATOR}{TEST_BLOCK_DEFINITION_DIAGRAM.to_yaml()}"
+        sysml_test_definitions = [TEST_BLOCK_DEFINITION, TEST_NAMESPACE_BLOCK_DEFINITION, TEST_BLOCK_DEFINITION_DIAGRAM]
+        sysml_test_definitions_content = [definition.to_yaml() for definition in sysml_test_definitions]
+        test_file_content = DEFINITION_SEPARATOR.join(sysml_test_definitions_content)
 
         with temporary_test_file(test_file_content) as arch_file:
             output_directory = os.path.dirname(arch_file.name)
@@ -43,12 +45,15 @@ class TestSysmlPlugin(ActiveContextTestCase):
             self.assertTrue(os.path.isfile(expected_output_file_path))
 
             actual_models = parse(expected_output_file_path)
-            self.assertEqual(2, len(actual_models))
+            self.assertEqual(3, len(actual_models))
 
             actual_block_model = actual_models[0]
             self.assertEqual(TEST_BLOCK_DEFINITION.name, actual_block_model.name)
 
-            actual_block_diagram_model = actual_models[1]
+            actual_namespace_block_model = actual_models[1]
+            self.assertEqual(TEST_NAMESPACE_BLOCK_DEFINITION.name, actual_namespace_block_model.name)
+
+            actual_block_diagram_model = actual_models[2]
             self.assertEqual(TEST_BLOCK_DEFINITION_DIAGRAM.name, actual_block_diagram_model.name)
             components_fields = actual_block_diagram_model.get_top_level_fields().get(DEFINITION_FIELD_COMPONENTS, {})
             components_field_types = [field.get(DEFINITION_FIELD_TYPE) for field in components_fields]
@@ -115,6 +120,8 @@ TEST_BLOCK_DEFINITION_NAME = "TestBlock"
 TEST_BLOCK_DEFINITION = create_block(TEST_BLOCK_DEFINITION_NAME)
 
 TEST_NAMESPACE = "TestNamespace"
+TEST_NAMESPACE_BLOCK_DEFINITION = create_block(TEST_NAMESPACE)
+
 TEST_BLOCK_DEFINITION_DIAGRAM_NAME = "TestBlockDiagram"
 TEST_BLOCK_DEFINITION_DIAGRAM = create_block_definition_diagram(
     TEST_BLOCK_DEFINITION_DIAGRAM_NAME, TEST_NAMESPACE, [TEST_BLOCK_DEFINITION_NAME]
