@@ -33,8 +33,10 @@ def parse_yaml(source: str, content: str) -> list[dict]:
         _error_if_not_complete(source, content, models)
         return models
     except YAMLParserError as error:
+        print(f"Hit yaml parse error. source: {source} error-context: {error.context} error-problem: {error.problem} content: {content}")
         raise ParserError(source, [f"Failed to parse file, invalid YAML {error.context} {error.problem}", content])
     except Exception as error:
+        print(f"parsing error exception. source: {source} error-context: {error} content: {content}")
         raise ParserError(source, [f"Failed to parse file, invalid YAML {error}", content])
 
 
