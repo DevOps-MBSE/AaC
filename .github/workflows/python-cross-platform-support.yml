@@ -71,6 +71,7 @@ jobs:
       - name: Fix Windows Filepath Deficiencies
         if: matrix.os == 'windows-latest'
         run: |
+          cd ${{GITHUB_WORKSPACE}}
           reg add HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem /v LongPathsEnabled /d 1 /f
         shell: pwsh
 
