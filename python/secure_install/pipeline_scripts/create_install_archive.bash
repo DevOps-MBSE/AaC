@@ -17,7 +17,6 @@ install_dir="aac_secure_install_$version"
 [[ -d $install_dir ]] && rm -r $install_dir
 mkdir $install_dir
 find ./install_scripts -type f -name "*.${SCRIPT_EXTENSIONS}" -exec cp {} $install_dir \;
-# cp -p -r "install_scripts/*.${SCRIPT_EXTENSIONS}" $install_dir
 cp README.md $install_dir
 cd $install_dir
 
