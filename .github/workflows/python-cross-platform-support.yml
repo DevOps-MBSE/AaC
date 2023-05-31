@@ -68,12 +68,6 @@ jobs:
         with:
           python-version:  ${{ matrix.py_version }}
 
-      - name: Fix Windows Filepath Deficiencies
-        if: matrix.os == 'windows-latest'
-        run: reg add HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem /v LongPathsEnabled /d 1 /f
-        shell: pwsh
-        working-directory: ${{ vars.GITHUB_WORKSPACE }}
-
       - name: Checkout Repository # Checked-out repository is necessary to test the first party plugin generation.
         uses: actions/checkout@v3
 

@@ -48,13 +48,20 @@ def sanitize_filesystem_path(file_path: str) -> str:
     # Replace instances of \ / with os-specific filepath separator
     os_specific_separator_file_path = ascii_string_file_path.replace("/", os.path.sep)
     os_specific_separator_file_path = os_specific_separator_file_path.replace("\\", os.path.sep)
-
     normalized_path = os.path.normpath(os_specific_separator_file_path)
-    real_path = os.path.realpath(normalized_path)
-    abs_norm_path = os.path.abspath(real_path)
-    logging.info(f"Sanitized and converted path '{file_path}' to '{abs_norm_path}'.")
 
-    return abs_norm_path
+    sanitized_path = normalized_path
+    try:
+        # Some links leverage symbolic links to avoid antiquated Windows file path restrictions, getting the canonical path may cause a windows error.
+        real_path = os.path.realpath(normalized_path)
+        sanitized_path = os.path.abspath(real_path)
+        logging.info(f"Sanitized and converted path '{file_path}' to '{sanitized_path}'.")
+    except ValueError as error:
+        # Windows filepath length errors manifest as value errors
+        error = f"Unable to remove symbolic links or get the absolute path for '{sanitized_path}' due to filepath error {error.__str__()}"
+        logging.error(error)
+
+    return sanitized_path
 
 
 def is_same_file(path1: str, path2: str) -> bool:
