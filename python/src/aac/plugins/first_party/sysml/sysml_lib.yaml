@@ -151,7 +151,7 @@ schema:
 ---
 schema:
   name: SysML.PackageDiagram
-  description:  |
+  description: |
     (abbreviation is pkg)
 
     Constraints:
@@ -1306,13 +1306,13 @@ schema:
     - name: tbd
       type: string
 ---
-  schema:
-    name: SysML.AcceptEventAction
-    description: |
-      Corresponds to the AcceptEventAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::AcceptEventAction.
-    fields:
-      - name: tbd
-        type: string
+schema:
+  name: SysML.AcceptEventAction
+  description: |
+    Corresponds to the AcceptEventAction UML2 element and corresponds to the abstract syntax reference for UML4SysML::AcceptEventAction.
+  fields:
+    - name: tbd
+      type: string
 ---
 schema:
   name: SysML.Action
