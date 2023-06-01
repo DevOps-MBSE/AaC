@@ -5,12 +5,9 @@ schema:
     not explicitly included in a model file
   fields:
     - name: import
-      type: string[]
+      type: file[]
       description: |
-        A list of references to other models composing the current model.
-
-        Component model definitions must be visible from the current model's
-        scope.
+        A list of files where referenced definitions are defined.
     - name: enum
       type: enum
       description: |
