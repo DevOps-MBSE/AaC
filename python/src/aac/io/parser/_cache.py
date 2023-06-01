@@ -109,6 +109,7 @@ class YamlLFUCache:
         cache_entry = self._get_entry(content_hash)
 
         if not cache_entry:
+            print("not cache entry, parsing yaml")
             yaml_dicts = parse_yaml(content_source, content_string)
             yaml_tokens = scan_yaml(content_string)
             cache_entry = CacheEntry(content_hash, yaml_dicts, yaml_tokens)

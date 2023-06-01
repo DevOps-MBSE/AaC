@@ -27,8 +27,10 @@ def validate(architecture_file: str, definition_name: Optional[str] = None) -> P
 
     def _validate() -> str:
         if definition_name:
+            print("validating definition")
             return _validate_definition_in_file(architecture_file, definition_name)
         else:
+            print("validating file")
             return _validate_context_and_file(architecture_file)
 
     with plugin_result(plugin_name, _validate) as result:
@@ -42,7 +44,6 @@ def _validate_definition_in_file(file_path, definition_name) -> str:
     definition_to_validate = get_definition_by_name(definition_name, definitions_in_file)
     if definition_to_validate:
         with validated_definition(definition_to_validate) as result:
-            print("validated definition in validate_impl") # Debugging statement
             return _get_validation_success_message(success_message, result)
     else:
         active_context = get_active_context()
@@ -61,7 +62,6 @@ def _validate_definition_in_file(file_path, definition_name) -> str:
                 possible_source_message
             ]
         )
-        print("missing definition in file from validate_impl")
         logging.error(missing_definition_error_message)
         raise PluginError(missing_definition_error_message)
 
@@ -69,12 +69,10 @@ def _validate_definition_in_file(file_path, definition_name) -> str:
 def _validate_context_and_file(file_path) -> str:
     success_message = f"{file_path} is valid."
     with validated_source(file_path) as result:
-        print("validated file in validate_impl")
         return _get_validation_success_message(success_message, result)
 
 
 def _get_validation_success_message(default_message, validation_result) -> str:
     plugin_messages = validation_result.get_messages_as_string()
     return_message = f"{default_message}{linesep}{plugin_messages}"
-    print("validation success in validat_impl")
     return return_message
