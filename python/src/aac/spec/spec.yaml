@@ -81,6 +81,14 @@ schema:
         plugins referenced by it.
 
         Validators are referenced by name.
+    - name: spec
+      type: Specification
+      description: |
+        A requirement specification definition to capture desired behavior or attributes of the system being modeled.
+
+        Within many contexts requirements remain the central element of any Model-Based System Engineering solution.
+        AaC supports the definition, derivation, and trace of requirements throughout the model using the spec type and
+        associated reference capabilities.
 ---
 schema:
   name: enum
@@ -258,6 +266,7 @@ enum:
     - request-response
     - startup
     - timer
+    - logging
 ---
 enum:
   name: Primitives
@@ -320,6 +329,10 @@ schema:
       type: ValidationReference[]
       description: |
         References and additional arguments for validations to apply to the definition.
+    - name: requirements
+      type: RequirementReference
+      description: |
+        A list of requirements that define the characteristics to be satisfied by the schema.
   validation:
     - name: Root key is defined
     - name: Required fields are present
@@ -364,6 +377,10 @@ schema:
       description: |
         A list of scenarios that define the acceptance criteria to signify that
         the system is behaving as expected.
+    - name: requirements
+      type: RequirementReference
+      description: |
+        A list of allocated requirements defining the expected behavior to be provided.
   validation:
     - name: Required fields are present
       arguments:
@@ -397,6 +414,10 @@ schema:
         State is visible within the model but is not visible to other models.
         State may be visible between multiple instances of the modeled entity to
         support horizontal scaling.
+    - name: requirements
+      type: RequirementReference
+      description: |
+        A reference to requirements relevant to the modeled item.
   validation:
     - name: Subcomponents are models
     - name: Required fields are present
@@ -636,3 +657,93 @@ commandGroup:
   name: Query
   display: show
   helpText: Commands whose purpose is to show specific information.
+---
+schema:
+  name: Specification
+  fields:
+    - name: name
+      type: string
+    - name: description
+      type: string
+    - name: sections
+      type: SpecSection[]
+    - name: requirements
+      type: Requirement[]
+  required:
+    - name
+  validation:
+    - name: Required fields are present
+      arguments:
+        - name
+---
+schema:
+  name: SpecSection
+  fields:
+    - name: name
+      type: string
+    - name: description
+      type: string
+    - name: requirements
+      type: Requirement[]
+  required:
+    - name
+  validation:
+    - name: Required fields are present
+      arguments:
+        - name
+---
+schema:
+  name: Requirement
+  fields:
+    - name: id
+      type: string
+    - name: shall
+      type: string
+    - name: parent
+      type: RequirementReference
+    - name: child
+      type: RequirementReference
+    - name: attributes
+      type: RequirementAttribute[]
+  required:
+    - id
+    - shall
+  validation:
+    - name: Required fields are present
+      arguments:
+        - id
+        - shall
+    - name: Requirement ID is unique
+      arguments:
+        - id
+---
+schema:
+  name: RequirementAttribute
+  fields:
+    - name: name
+      type: string
+    - name: value
+      type: string
+  required:
+    - name
+    - value
+  validation:
+    - name: Required fields are present
+      arguments:
+        - name
+        - value
+---
+schema:
+  name: RequirementReference
+  fields:
+    - name: ids
+      type: string[]
+  required:
+    - ids
+  validation:
+    - name: Required fields are present
+      arguments:
+        - ids
+    - name: Referenced IDs exist
+      arguments:
+        - ids

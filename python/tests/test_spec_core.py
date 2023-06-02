@@ -13,6 +13,7 @@ EXPECTED_ROOT_KEY_NAMES = [
     "commandGroup",
     "plugin",
     "validation",
+    "spec",
 ]
 
 

@@ -85,6 +85,17 @@ EXPECTED_SCHEMA_JSON_SCHEMA = """
                 }
             }
         },
+        "requirements": {
+            "properties": {
+                "ids": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                }
+            },
+            "type": "object"
+        },
         "validation": {
             "type": "array",
             "items":
@@ -149,11 +160,23 @@ EXPECTED_MODEL_JSON_SCHEMA = """
                             "pub-sub",
                             "request-response",
                             "startup",
-                            "timer"
+                            "timer",
+                            "logging"
                         ]
                     },
                     "description": {
                         "type": "string"
+                    },
+                    "requirements": {
+                        "properties": {
+                            "ids": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "type": "object"
                     },
                     "tags": {
                         "type": "array",
@@ -232,6 +255,17 @@ EXPECTED_MODEL_JSON_SCHEMA = """
                     }
                 }
             }
+        },
+        "requirements": {
+            "properties": {
+                "ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "type": "object"
         },
         "state": {
             "type": "array",
