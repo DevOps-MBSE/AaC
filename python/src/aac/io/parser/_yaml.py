@@ -36,20 +36,18 @@ def parse_yaml(source: str, content: str) -> list[dict]:
         _error_if_not_complete(source, content, models)
         return models
     except YAMLParserError as error:
-        logging.error(f"Error-Problem: {error.problem}. Ecountered in: {source} at {error.context}")
+        logging.error(f"Error-Problem: {error.problem}. Encountered in: {source} at {error.context}")
         if error.problem_mark:
             logging.error(f"Error occurs at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}")
         logging.error(f"Content of error: {content}")
         raise ParserError(f"Failed to parse file: {source}", [f"Encountered the following error: {error.problem}",
-                                                              f"Ecountered error at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}",
+                                                              f"Encountered error at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}",
                                                               f"Context of the error: {error.context}"])
     except Exception as error:
-        logging.error(f"Error: {error}. Encountered in: {source}")
-        if error.__traceback__.tb_lineno:
-            logging.error(f"Error occurs at line: {error.__traceback__.tb_lineno}")
-        logging.error(f"Content of error: {content}")
-        raise ParserError(f"Failed to parse file: {source}", [f"Encountered the following error: {error}", 
-                                                              f"Ecountered error at line: {error.__traceback__.tb_lineno}"])
+        print(f"Failed to parse file: {source}", f"Encountered the following error: {error}")
+        # logging.error(f"Error: {error}. Encountered in: {source}"))
+        # logging.error(f"Content of error: {content}")
+        # raise ParserError(f"Failed to parse file: {source}", [f"Encountered the following error: {error}"])
 
 
 def _error_if_not_yaml(source, content, models):
