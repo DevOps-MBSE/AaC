@@ -27,10 +27,8 @@ def validate(architecture_file: str, definition_name: Optional[str] = None) -> P
 
     def _validate() -> str:
         if definition_name:
-            print("validating definition")
             return _validate_definition_in_file(architecture_file, definition_name)
         else:
-            print("validating file")
             return _validate_context_and_file(architecture_file)
 
     with plugin_result(plugin_name, _validate) as result:

@@ -1,4 +1,7 @@
 """YAML-specific parsing and scanning functions."""
+import logging
+import traceback
+
 from yaml import scan, load_all, SafeLoader, Token
 from yaml.parser import ParserError as YAMLParserError
 
@@ -33,11 +36,20 @@ def parse_yaml(source: str, content: str) -> list[dict]:
         _error_if_not_complete(source, content, models)
         return models
     except YAMLParserError as error:
-        print(f"Hit yaml parse error. source: {source} error-context: {error.context} error-problem: {error.problem} content: {content}")
-        raise ParserError(source, [f"Failed to parse file, invalid YAML {error.context} {error.problem}", content])
+        logging.error(f"Error-Problem: {error.problem}. Ecountered in: {source} at {error.context}")
+        if error.problem_mark:
+            logging.error(f"Error occurs at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}")
+        logging.error(f"Content of error: {content}")
+        raise ParserError(f"Failed to parse file: {source}", [f"Encountered the following error: {error.problem}",
+                                                              f"Ecountered error at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}",
+                                                              f"Context of the error: {error.context}"])
     except Exception as error:
-        print(f"parsing error exception. source: {source} error-context: {error} content: {content}")
-        raise ParserError(source, [f"Failed to parse file, invalid YAML {error}", content])
+        logging.error(f"Error: {error}. Encountered in: {source}")
+        if error.__traceback__.tb_lineno:
+            logging.error(f"Error occurs at line: {error.__traceback__.tb_lineno}")
+        logging.error(f"Content of error: {content}")
+        raise ParserError(f"Failed to parse file: {source}", [f"Encountered the following error: {error}", 
+                                                              f"Ecountered error at line: {error.__traceback__.tb_lineno}"])
 
 
 def _error_if_not_yaml(source, content, models):
