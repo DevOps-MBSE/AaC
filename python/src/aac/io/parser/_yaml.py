@@ -42,23 +42,25 @@ def parse_yaml(source: str, content: str) -> list[dict]:
         if error.problem_mark:
             logging.error(f"Error occurs at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}")
         logging.error(f"Content of error: {content}")
-        raise ParserError(f"Failed to parse file: {source}", [f"Encountered the following parser error: {error.problem}",
-                                                              f"Encountered error at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}",
-                                                              f"Context of the error: {error.context}"])
+        # raise ParserError(f"Failed to parse file: {source}", [f"Encountered the following parser error: {error.problem}",
+        #                                                       f"Encountered error at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}",
+        #                                                       f"Context of the error: {error.context}"])
     except YAMLScannerError as error:
-        traceback.print_exc(limit=0)
+        print("hit yaml scanner error")
+        # traceback.print_exc(limit=0)
+        print(f"Error: {error.problem}, error source: {source}, context of error: {error.context}")
         logging.error(f"Encountered YAML Scanner Error-Problem: {error.problem}. Encountered in: {source} at {error.context}")
         if error.problem_mark:
             logging.error(f"Error occurs at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}")
         logging.error(f"Content of error: {content}")
-        raise ParserError(f"Failed to parse file: {source}", [f"Encountered the following scanner error: {error.problem}",
-                                                              f"Encountered error at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}",
-                                                              f"Context of the error: {error.context}"])
+        # raise ParserError(f"Failed to parse file: {source}", [f"Encountered the following scanner error: {error.problem}",
+        #                                                       f"Encountered error at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}",
+        #                                                       f"Context of the error: {error.context}"])
     except Exception as error:
         traceback.print_exc(limit=0)
         logging.error(f"Error: {error}. Encountered in: {source}")
         logging.error(f"Content of error: {content}")
-        raise ParserError(f"Failed to parse file: {source}", [f"Encountered the following error: {error}"])
+        # raise ParserError(f"Failed to parse file: {source}", [f"Encountered the following error: {error}"])
 
 
 def _error_if_not_yaml(source, content, models):
