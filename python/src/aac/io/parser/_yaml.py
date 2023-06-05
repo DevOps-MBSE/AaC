@@ -44,7 +44,7 @@ def parse_yaml(source: str, content: str) -> list[dict]:
                                                               f"Encountered error at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}",
                                                               f"Context of the error: {error.context}"])
     except Exception as error:
-        traceback.print_last()
+        traceback.print_exc(limit=0)
         # print(f"Failed to parse file: {source}", f"Encountered the following error: {error}")
         logging.error(f"Error: {error}. Encountered in: {source}")
         logging.error(f"Content of error: {content}")
