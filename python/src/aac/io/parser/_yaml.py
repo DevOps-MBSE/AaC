@@ -4,6 +4,7 @@ import traceback
 
 from yaml import scan, load_all, SafeLoader, Token
 from yaml.parser import ParserError as YAMLParserError
+from yaml.scanner import ScannerError as YAMLScannerError
 
 from aac.io.parser._parser_error import ParserError
 
@@ -36,16 +37,25 @@ def parse_yaml(source: str, content: str) -> list[dict]:
         _error_if_not_complete(source, content, models)
         return models
     except YAMLParserError as error:
-        logging.error(f"Error-Problem: {error.problem}. Encountered in: {source} at {error.context}")
+        traceback.print_exc(limit=0)
+        logging.error(f"Encountered YAML Parsing Error-Problem: {error.problem}. Encountered in: {source} at {error.context}")
         if error.problem_mark:
             logging.error(f"Error occurs at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}")
         logging.error(f"Content of error: {content}")
-        raise ParserError(f"Failed to parse file: {source}", [f"Encountered the following error: {error.problem}",
+        raise ParserError(f"Failed to parse file: {source}", [f"Encountered the following parser error: {error.problem}",
+                                                              f"Encountered error at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}",
+                                                              f"Context of the error: {error.context}"])
+    except YAMLScannerError as error:
+        traceback.print_exc(limit=0)
+        logging.error(f"Encountered YAML Scanner Error-Problem: {error.problem}. Encountered in: {source} at {error.context}")
+        if error.problem_mark:
+            logging.error(f"Error occurs at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}")
+        logging.error(f"Content of error: {content}")
+        raise ParserError(f"Failed to parse file: {source}", [f"Encountered the following scanner error: {error.problem}",
                                                               f"Encountered error at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}",
                                                               f"Context of the error: {error.context}"])
     except Exception as error:
         traceback.print_exc(limit=0)
-        # print(f"Failed to parse file: {source}", f"Encountered the following error: {error}")
         logging.error(f"Error: {error}. Encountered in: {source}")
         logging.error(f"Content of error: {content}")
         raise ParserError(f"Failed to parse file: {source}", [f"Encountered the following error: {error}"])
