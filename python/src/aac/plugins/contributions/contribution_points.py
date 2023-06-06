@@ -194,6 +194,7 @@ class ContributionPoints:
             # traceback.print_exc(limit=0)
         except ParserError as error:
             print("hit parser error in contribution_points in _register_contributions()")
+            raise ParserError(error.source, error.errors)
         else:
             self.contributions.add(PluginContribution(plugin_name, contribution_name, contribution_items))
 
