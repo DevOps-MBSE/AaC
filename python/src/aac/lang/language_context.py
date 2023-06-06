@@ -12,7 +12,7 @@ from uuid import UUID
 from aac import __version__
 from aac.cli.aac_command import AacCommand
 from aac.io.files.aac_file import AaCFile
-from aac.io.parser import parse
+from aac.io.parser import parse, ParserError
 from aac.io.paths import sanitize_filesystem_path
 from aac.io.writer import write_file, write_definitions_to_file
 from aac.lang.constants import (
@@ -153,6 +153,8 @@ class LanguageContext:
                 definitions = [definition for definition in parse(uri) if not names or definition.name in names]
             except TypeError as error:
                 print("hit type error in launguage_context in add_definitions_from_uri()")
+            except ParserError as error:
+                print("hit parser error in language_context in add_definitions_from_uri()")
             else:
                 self.update_definitions_in_context(list(set(definitions).intersection(self.definitions)))
                 self.add_definitions_to_context(list(set(definitions).difference(self.definitions)))

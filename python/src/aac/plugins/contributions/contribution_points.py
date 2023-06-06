@@ -1,10 +1,13 @@
 """A module for contribution point functionality."""
+import logging
+import traceback
 
 from typing import Any, Callable, Optional, Union
 
 from attr import Factory, attrib, attrs, validators
 
 from aac.cli.aac_command import AacCommand
+from aac.io.parser import ParserError
 from aac.lang.definitions.definition import Definition
 from aac.plugins.contributions.contribution_types import ContributionType, DefinitionValidationContribution, PrimitiveValidationContribution
 from aac.plugins.contributions.plugin_contribution import PluginContribution
@@ -185,7 +188,12 @@ class ContributionPoints:
             for item in items:
                 register_contribution(item)
         except TypeError as error:
-            print("hit type error in contribution_points in _regiser_contributions()")
+            print("hit type error in contribution_points in _register_contributions()")
+            # logging.error(f"Error: {error}. Encountered during parsing for registration of {item.name} as a {contribution_name} for {plugin_name}")
+
+            # traceback.print_exc(limit=0)
+        except ParserError as error:
+            print("hit parser error in contribution_points in _register_contributions()")
         else:
             self.contributions.add(PluginContribution(plugin_name, contribution_name, contribution_items))
 

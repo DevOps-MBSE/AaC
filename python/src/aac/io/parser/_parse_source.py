@@ -4,14 +4,16 @@ The AaC parser reads a YAML file, performs validation (if not suppressed) and pr
 the caller with a dictionary of the content keyed by the named type.  This allows you
 to find a certain type in a model by just looking for that key.
 """
-from copy import deepcopy
 import logging
+
+from copy import deepcopy
 from yaml import Mark, Token, StreamStartToken, StreamEndToken, DocumentStartToken
 from os import path, linesep
 from typing import Optional
 
 from aac.io.constants import DEFAULT_SOURCE_URI
 from aac.io.files.aac_file import AaCFile
+from aac.io.parser import ParserError
 from aac.io.parser._cache_manager import get_cache
 from aac.io.paths import sanitize_filesystem_path
 from aac.lang.constants import DEFINITION_FIELD_NAME, DEFINITION_FIELD_IMPORT
@@ -60,6 +62,8 @@ def _parse_file(arch_file: str) -> list[Definition]:
         aac_definitions = [definition for definition_list in definition_lists for definition in definition_list]
     except TypeError as error:
         print("hit type error in parse-source in _parse_file()")
+    except ParserError as error:
+        print("hit parser error in parse_source in _parse_file()")
     else:
         return aac_definitions
 
@@ -100,6 +104,8 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
         yaml_dicts: list[dict] = deepcopy(YAML_CACHE.parse_string(model_content))
     except TypeError as error:
         print("hit type error in parse_source, parse_str()")
+    except ParserError as error:
+        print("hit parser error in parse_source in _parse_str()")
     else:
         source_files: dict[str, AaCFile] = {}
         definitions: list[Definition] = []
