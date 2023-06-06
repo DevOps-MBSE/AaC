@@ -99,7 +99,15 @@ def create_validation_entry(name: str, arguments: list[str] = []) -> dict:
     }
 
 
-def create_behavior_entry(name: str, behavior_type: str = "pub-sub", description: str = "", tags: list[str] = [], input: list[dict] = [], output: list[dict] = [], acceptance: list[dict] = []) -> dict:
+def create_behavior_entry(
+    name: str,
+    behavior_type: str = "pub-sub",
+    description: str = "",
+    tags: list[str] = [],
+    input: list[dict] = [],
+    output: list[dict] = [],
+    acceptance: list[dict] = [],
+) -> dict:
     """
     Creates a single behavior entry for definitions.
 
@@ -119,7 +127,9 @@ def create_behavior_entry(name: str, behavior_type: str = "pub-sub", description
     }
 
 
-def create_scenario_entry(name: str, tags: list[str] = [], given: list[str] = [], when: list[str] = [], then: list[str] = []) -> dict:
+def create_scenario_entry(
+    name: str, tags: list[str] = [], given: list[str] = [], when: list[str] = [], then: list[str] = []
+) -> dict:
     """
     Creates a single scenario entry for definitions.
 
@@ -139,7 +149,9 @@ def create_enum_definition(name: str, values: list[str]):
     return create_definition("enum", name, definition_dict)
 
 
-def create_schema_definition(name: str, description: str = "", fields: list[dict] = [], validations: list[dict] = [], inherits: list[str] = []):
+def create_schema_definition(
+    name: str, description: str = "", fields: list[dict] = [], validations: list[dict] = [], inherits: list[str] = []
+):
     """Return a simulated schema definition."""
     definition_dict = {NAME_STRING: name}
 
@@ -185,7 +197,9 @@ def create_model_definition(
     return create_definition("model", name, definition_dict)
 
 
-def create_schema_ext_definition(name: str, type: str, description: str = "", fields: list[dict] = [], required: list[str] = []):
+def create_schema_ext_definition(
+    name: str, type: str, description: str = "", fields: list[dict] = [], required: list[str] = []
+):
     """Return a simulated schema extension definition."""
     definition_dict = {
         NAME_STRING: name,
