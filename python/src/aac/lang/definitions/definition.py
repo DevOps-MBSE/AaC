@@ -90,7 +90,9 @@ class Definition:
         """
         fields = self.structure.get(self.get_root_key())
 
-        if not fields:
+        if self.is_import():
+            fields = {ROOT_KEY_IMPORT: fields}
+        elif not fields:
             logging.debug(f"Failed to find any fields defined in the definition. Definition:\n{self.structure}")
             fields = {}
 
@@ -131,7 +133,7 @@ class Definition:
     def get_imports(self) -> Optional[list[str]]:
         """Return a list of imported files, or None if the definition is not import."""
         imports = self.get_top_level_fields()
-        return imports if self.is_import() else None
+        return imports.get(ROOT_KEY_IMPORT)
 
     # Type Test Functions
 
