@@ -7,6 +7,7 @@ import:
   - ../spec/SquareRoot_SRS.yaml
   - ./MathRequest.yaml
   - ./MathResponse.yaml
+---
 model:
   name: MathMessageHandler
   description: Api handler for math functions.

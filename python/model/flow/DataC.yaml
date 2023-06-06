@@ -1,5 +1,6 @@
 import:
   - ./DataMessage.yaml
+---
 schema:
   name: DataC
   inherits:

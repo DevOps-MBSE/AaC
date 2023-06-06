@@ -1,6 +1,7 @@
 import:
   - ./DataA.yaml
   - ./DataB.yaml
+---
 model:
   name: ServiceOne
   behavior:

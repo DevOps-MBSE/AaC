@@ -1,5 +1,6 @@
 import:
   - ./Message.yaml
+---
 model:
   name: EchoService
   description: This is a message mirror.

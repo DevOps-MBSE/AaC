@@ -1,5 +1,6 @@
 import:
   - ./Data.aac
+---
 model:
   name: ServiceOne
   behavior:
@@ -20,8 +21,6 @@ model:
           then:
             - The user receives a DataB response
 ---
-import:
-  - ./Data.aac
 model:
   name: ServiceTwo
   behavior:
@@ -42,8 +41,6 @@ model:
           then:
             - The user receives a response with DataC
 ---
-import:
-  - ./Data.aac
 model:
   name: ServiceThree
   behavior:

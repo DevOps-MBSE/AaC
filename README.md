@@ -112,37 +112,38 @@ Here's an example of the EchoService broken into two files:
 - Message.yaml
     ```yaml
     schema:
-    name: Message
-    fields:
-    - name: body
-        type: string
-    - name: sender
-        type: string
+      name: Message
+      fields:
+        - name: body
+          type: string
+        - name: sender
+          type: string
     ```
 - EchoService.yaml
     ```yaml
     import:
     - ./Message.yaml
+    ---
     model:
-    name: EchoService
-    description: This is a message mirror.
-    behavior:
+      name: EchoService
+      description: This is a message mirror.
+      behavior:
         - name: echo
-        type: request-response
-        description: This is the one thing it does.
-        input:
+          type: request-response
+          description: This is the one thing it does.
+          input:
             - name: inbound
             type: Message
-        output:
+          output:
             - name: outbound
             type: Message
-        acceptance:
+          acceptance:
             - scenario: onReceive
-            given:
-            - The EchoService is running.
-            when:
+              given:
+                - The EchoService is running.
+              when:
                 - The user sends a message to EchoService.
-            then:
+              then:
                 - The user receives the same message from EchoService.
 
     ```

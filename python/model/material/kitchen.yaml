@@ -1,7 +1,7 @@
 import:
   - ./apartment_provided.yaml
   - ./amazon_parts.yaml
-
+---
 assembly:
   name: Appliances
   description: Things that make a kitchen work.
@@ -17,9 +17,6 @@ assembly:
     - part-ref: Blender
       quantity: 1
 ---
-import:
-  - ./amazon_parts.yaml
-
 assembly:
   name: Cook_Ware
   description:  Pots, pans, and such.

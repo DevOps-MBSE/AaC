@@ -1,6 +1,7 @@
 import:
   - ./alarm_clock.yaml
   - ./external.yaml
+---
 usecase:
   name: Set Alarm Time
   description: The user sets the time for the alarm clock.
@@ -21,9 +22,6 @@ usecase:
       target: timer
       action: setTime
 ---
-import:
-  - ./alarm_clock.yaml
-  - ./external.yaml
 usecase:
   name: Trigger Alarm
   description: The alarm emits a noise at the user-specified time

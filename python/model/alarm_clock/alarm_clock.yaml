@@ -1,5 +1,7 @@
 import:
   - ./structures.yaml
+  - ../alarm_clock/structures.yaml
+---
 model:
   name: AlarmClock
   description: A simple alarm clock
@@ -24,8 +26,6 @@ model:
           then:
             - The alarm is triggered when the clock reaches the specified time
 ---
-import:
-  - ../alarm_clock/structures.yaml
 model:
   name: Clock
   description: A simple clock that keeps track of the current time

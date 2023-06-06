@@ -2,6 +2,7 @@ import:
   - ./DataB.yaml
   - ./DataC.yaml
   - ./ServiceTwo.yaml
+---
 model:
   name: Subsystem
   components:
