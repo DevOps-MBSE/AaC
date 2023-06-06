@@ -12,7 +12,7 @@ from uuid import UUID
 from aac import __version__
 from aac.cli.aac_command import AacCommand
 from aac.io.files.aac_file import AaCFile
-from aac.io.parser import parse, ParserError
+from aac.io.parser import parse
 from aac.io.paths import sanitize_filesystem_path
 from aac.io.writer import write_file, write_definitions_to_file
 from aac.lang.constants import (
@@ -148,6 +148,9 @@ class LanguageContext:
             names (list[str]): The list of the names of the definitions that should be loaded into
                 the context. If names is not provided, import all definitions. (default: None)
         """
+        # This import is located here because the inheritance module uses the language context for lookup,
+        #   causing a circular dependency at initialization
+        from aac.io.parser import ParserError
         if lexists(uri):
             try:
                 definitions = [definition for definition in parse(uri) if not names or definition.name in names]

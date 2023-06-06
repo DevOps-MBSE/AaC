@@ -13,7 +13,6 @@ from typing import Optional
 
 from aac.io.constants import DEFAULT_SOURCE_URI
 from aac.io.files.aac_file import AaCFile
-from aac.io.parser import ParserError
 from aac.io.parser._cache_manager import get_cache
 from aac.io.paths import sanitize_filesystem_path
 from aac.lang.constants import DEFINITION_FIELD_NAME, DEFINITION_FIELD_IMPORT
@@ -57,6 +56,9 @@ def _parse_file(arch_file: str) -> list[Definition]:
     Returns:
         The AaC definitions extracted from the specified file.
     """
+    # This import is located here because the inheritance module uses the language context for lookup,
+    #   causing a circular dependency at initialization
+    from aac.io.parser import ParserError
     try:
         definition_lists = [_parse_str(file, _read_file_content(file)) for file in _get_files_to_process(arch_file)]
         aac_definitions = [definition for definition_list in definition_lists for definition in definition_list]
@@ -78,6 +80,9 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
     Returns:
         The AaC definitions that were built from the model contents.
     """
+    # This import is located here because the inheritance module uses the language context for lookup,
+    #   causing a circular dependency at initialization
+    from aac.io.parser import ParserError
 
     def mark_to_source_location(start: Mark, end: Mark) -> SourceLocation:
         return SourceLocation(start.line, start.column, start.index, end.column - start.column)
