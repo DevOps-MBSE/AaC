@@ -15,6 +15,7 @@ from aac.lang.constants import (
     DEFINITION_FIELD_NAME,
     DEFINITION_FIELD_OUTPUT,
     DEFINITION_FIELD_PRIMITIVE_VALIDATIONS,
+    ROOT_KEY_IMPORT,
     ROOT_KEY_PLUGIN,
     ROOT_KEY_VALIDATION,
 )
@@ -260,6 +261,11 @@ def create_plugin_command_definition(
         DEFINITION_FIELD_GROUP: group,
     }
     return create_definition("PluginCommand", name, definition_dict)
+
+
+def create_import_definition(imports: list[str]) -> Definition:
+    definition_dict = {ROOT_KEY_IMPORT: imports}
+    return parse(yaml.dump(definition_dict, sort_keys=False), "<test>")[0]
 
 
 def create_definition(root_key: str, name: str, other_fields: dict = {}) -> Definition:
