@@ -119,6 +119,10 @@ class YamlLFUCache:
                 cache_entry = CacheEntry(content_hash, yaml_dicts, yaml_tokens)
             except TypeError as error:
                 print("hit a type error in cache in _get_or_parse_string()")
+            except ParserError as error:
+                print("hit parser error in cache in _get_or_parse_string()")
+                print(f"error source: {error.source} \n errors: {error.errors}")
+                raise ParserError(error.source, error.errors) from None
             else:
                 self._put_entry(cache_entry.hash, cache_entry)
 

@@ -159,7 +159,7 @@ class LanguageContext:
             except ParserError as error:
                 print("hit parser error in language_context in add_definitions_from_uri()")
                 print(f"error source: {error.source} \n errors: {error.errors}")
-                raise ParserError(error.source, error.errors)
+                raise ParserError(error.source, error.errors) from None
             else:
                 self.update_definitions_in_context(list(set(definitions).intersection(self.definitions)))
                 self.add_definitions_to_context(list(set(definitions).difference(self.definitions)))
