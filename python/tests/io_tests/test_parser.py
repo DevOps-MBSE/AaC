@@ -11,6 +11,7 @@ from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.source_location import SourceLocation
 
 from tests.helpers.io import TemporaryTestFile
+from tests.helpers.parsed_definitions import create_enum_definition, create_import_definition
 
 
 PARSER_TEST_SOURCE = "<parser test>"
@@ -87,6 +88,26 @@ class TestParser(TestCase):
             self.assertEqual(second.source, test_yaml.name)
             self.assertEqual(second.value, f"./{TEST_MESSAGE_FILE_NAME}")
             self.assertEqual(second.location, SourceLocation(2, 4, 13, 2 + len(TEST_MESSAGE_FILE_NAME)))
+
+    def test_handles_multiple_import_sections_per_file(self):
+        another_definition = create_enum_definition("TestEnum", ["a", "b", "c"])
+        with (
+            TemporaryDirectory() as temp_dir,
+            TemporaryTestFile(another_definition.to_yaml(), dir=temp_dir, name=TEST_STATUS_FILE_NAME) as import1,
+            TemporaryTestFile(TEST_MESSAGE_CONTENTS, dir=temp_dir, name=TEST_MESSAGE_FILE_NAME) as import2,
+            TemporaryTestFile(TEST_STATUS_CONTENTS, dir=temp_dir, name=TEST_STATUS_FILE_NAME) as import3,
+        ):
+            another_import_definition = create_import_definition([import1.name])
+            content = f"{another_import_definition.to_yaml()}{YAML_DOCUMENT_SEPARATOR}{TEST_MODEL_CONTENTS}"
+            with TemporaryTestFile(content, dir=temp_dir) as main:
+                definitions = parse(main.name)
+                self.assertEqual(len(definitions), 5)
+
+                import_def_1, import_def_2, *_ = collections.get_definitions_by_root_key(ROOT_KEY_IMPORT, definitions)
+                import_basenames = [basename(imp) for imp in import_def_1.get_imports() + import_def_2.get_imports()]
+                self.assertIn(basename(import1.name), import_basenames)
+                self.assertIn(basename(import2.name), import_basenames)
+                self.assertIn(basename(import3.name), import_basenames)
 
     def test_errors_when_parsing_invalid_yaml(self):
         content = f"{ROOT_KEY_MODEL}: ]["
