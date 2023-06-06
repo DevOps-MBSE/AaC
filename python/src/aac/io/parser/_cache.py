@@ -65,8 +65,8 @@ class YamlLFUCache:
             print("hit attribute error in cache in scan_string()")
         except ParserError as error:
             print("hit parser error in cache in scan_string()")
-            print(f"error source: {error.source} \n errors: {error.errors}")
-            raise ParserError(error.source, error.errors) from None
+            # print(f"error source: {error.source} \n errors: {error.errors}")
+            # raise ParserError(error.source, error.errors) from None
         else:
             return tokens
     def scan_file(self, file_path: str) -> list[Token]:
@@ -126,8 +126,8 @@ class YamlLFUCache:
                 print("hit a type error in cache in _get_or_parse_string()")
             except ParserError as error:
                 print("hit parser error in cache in _get_or_parse_string()")
-                print(f"error source: {error.source} \n errors: {error.errors}")
-                raise ParserError(error.source, error.errors) from None
+                # print(f"error source: {error.source} \n errors: {error.errors}")
+                # raise ParserError(error.source, error.errors) from None
             else:
                 self._put_entry(cache_entry.hash, cache_entry)
 
