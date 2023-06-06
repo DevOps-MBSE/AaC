@@ -31,7 +31,7 @@ def scan_yaml(source: str, content: str) -> list[Token]:
             logging.error(f"Error occurs at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}")
         logging.error(f"Content of error: {content}")
 
-        traceback.print_exc(limit=0)
+        # traceback.print_exc(limit=0)
 
         raise ParserError(source, [f"Encountered the following scanner error: {error.problem}",
                                                               f"Encountered error at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}",
@@ -43,7 +43,7 @@ def scan_yaml(source: str, content: str) -> list[Token]:
         logging.error(f"Error: {error}. Encountered in: {source}")
         logging.error(f"Content of error: {content}")
 
-        traceback.print_exc(limit=0)
+        # traceback.print_exc(limit=0)
 
         raise ParserError(source, [f"Encountered the following error: {error}"]) from None
     else:
@@ -79,7 +79,7 @@ def parse_yaml(source: str, content: str) -> list[dict]:
             logging.error(f"Error occurs at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}")
         logging.error(f"Content of error: {content}")
 
-        traceback.print_exc(limit=0)
+        # traceback.print_exc(limit=0)
 
         raise ParserError(source, [f"Encountered the following parser error: {error.problem}",
                                                               f"Encountered error at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}",
@@ -92,7 +92,7 @@ def parse_yaml(source: str, content: str) -> list[dict]:
             logging.error(f"Error occurs at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}")
         logging.error(f"Content of error: {content}")
 
-        traceback.print_exc(limit=0)
+        # traceback.print_exc(limit=0)
 
         raise ParserError(source, [f"Encountered the following scanner error: {error.problem}",
                                                               f"Encountered error at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}",
@@ -103,7 +103,7 @@ def parse_yaml(source: str, content: str) -> list[dict]:
         logging.error(f"Error: {error}. Encountered in: {source}")
         logging.error(f"Content of error: {content}")
 
-        traceback.print_exc(limit=0)
+        # traceback.print_exc(limit=0)
 
         raise ParserError(source, [f"Encountered the following error: {error}"]) from None
     else:
