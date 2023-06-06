@@ -181,10 +181,13 @@ class ContributionPoints:
 
         contribution_items = set()
 
-        for item in items:
-            register_contribution(item)
-
-        self.contributions.add(PluginContribution(plugin_name, contribution_name, contribution_items))
+        try:
+            for item in items:
+                register_contribution(item)
+        except TypeError as error:
+            print("hit type error in contribution_points in _regiser_contributions()")
+        else:
+            self.contributions.add(PluginContribution(plugin_name, contribution_name, contribution_items))
 
     def _get_contributions_by_type(self, contribution_type: ContributionType) -> list[PluginContribution]:
         return [contrib for contrib in self.contributions if contrib.is_contribution_type(contribution_type)]

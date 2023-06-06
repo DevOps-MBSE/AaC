@@ -149,9 +149,13 @@ class LanguageContext:
                 the context. If names is not provided, import all definitions. (default: None)
         """
         if lexists(uri):
-            definitions = [definition for definition in parse(uri) if not names or definition.name in names]
-            self.update_definitions_in_context(list(set(definitions).intersection(self.definitions)))
-            self.add_definitions_to_context(list(set(definitions).difference(self.definitions)))
+            try:
+                definitions = [definition for definition in parse(uri) if not names or definition.name in names]
+            except TypeError as error:
+                print("hit type error in launguage_context in add_definitions_from_uri()")
+            else:
+                self.update_definitions_in_context(list(set(definitions).intersection(self.definitions)))
+                self.add_definitions_to_context(list(set(definitions).difference(self.definitions)))
         else:
             logging.warn(f"Skipping {uri} as it could not be found.")
 
