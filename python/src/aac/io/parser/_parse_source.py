@@ -44,8 +44,15 @@ def parse(source: str, source_uri: Optional[str] = None) -> list[Definition]:
         sanitized_source = sanitize_filesystem_path(source)
         if path.lexists(sanitized_source):
             is_file = True
-
-    return _parse_file(sanitized_source) if is_file else _parse_str(source_uri or DEFAULT_SOURCE_URI, source)
+    try:
+        parsed_definitions = _parse_file(sanitized_source) if is_file else _parse_str(source_uri or DEFAULT_SOURCE_URI, source)
+    except ParserError as error:
+        print("hit parser error in parse_source in parse()")
+        print("bubbled up parser error")
+        print(f"error source: {error.source} \n errors: {error.errors}")
+        raise ParserError(error.source, error.errors) from None
+    else:
+        return parsed_definitions
 
 
 def _parse_file(arch_file: str) -> list[Definition]:
@@ -66,7 +73,7 @@ def _parse_file(arch_file: str) -> list[Definition]:
         print("hit parser error in parse_source in _parse_file()")
         print("bubbled up parser error")
         print(f"error source: {error.source} \n errors: {error.errors}")
-        # raise ParserError(error.source, error.errors) from None
+        raise ParserError(error.source, error.errors) from None
     else:
         return aac_definitions
 
@@ -110,7 +117,7 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
         print("hit parser error in parse_source in _parse_str()")
         print("bubbled up parser error")
         print(f"error source: {error.source} \n errors: {error.errors}")
-        # raise ParserError(error.source, error.errors) from None
+        raise ParserError(error.source, error.errors) from None
     else:
         source_files: dict[str, AaCFile] = {}
         definitions: list[Definition] = []
