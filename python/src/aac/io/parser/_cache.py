@@ -66,8 +66,8 @@ class YamlLFUCache:
         except ParserError as error:
             print("hit parser error in cache in scan_string()")
             print("bubbled up parser error")
-            # print(f"error source: {error.source} \n errors: {error.errors}")
-            # raise ParserError(error.source, error.errors) from None
+            print(f"error source: {error.source} \n errors: {error.errors}")
+            raise ParserError(error.source, error.errors) from None
         else:
             return tokens
     def scan_file(self, file_path: str) -> list[Token]:

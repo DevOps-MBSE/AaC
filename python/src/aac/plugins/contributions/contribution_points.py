@@ -195,7 +195,7 @@ class ContributionPoints:
         except ParserError as error:
             print("hit parser error in contribution_points in _register_contributions()")
             print("bubbled up parser error")
-            # print(f"error source: {error.source} \n errors: {error.errors}")
+            print(f"error source: {error.source} \n errors: {error.errors}")
             # raise ParserError(error.source, error.errors) from None
         else:
             self.contributions.add(PluginContribution(plugin_name, contribution_name, contribution_items))

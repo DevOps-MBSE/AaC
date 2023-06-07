@@ -57,9 +57,6 @@ def _parse_file(arch_file: str) -> list[Definition]:
     Returns:
         The AaC definitions extracted from the specified file.
     """
-    # This import is located here because the inheritance module uses the language context for lookup,
-    #   causing a circular dependency at initialization
-    # from aac.io.parser import ParserError
     try:
         definition_lists = [_parse_str(file, _read_file_content(file)) for file in _get_files_to_process(arch_file)]
         aac_definitions = [definition for definition_list in definition_lists for definition in definition_list]
@@ -69,7 +66,7 @@ def _parse_file(arch_file: str) -> list[Definition]:
         print("hit parser error in parse_source in _parse_file()")
         print("bubbled up parser error")
         print(f"error source: {error.source} \n errors: {error.errors}")
-        # raise ParserError(error.source, error.errors) from None
+        raise ParserError(error.source, error.errors) from None
     else:
         return aac_definitions
 
@@ -84,10 +81,6 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
     Returns:
         The AaC definitions that were built from the model contents.
     """
-    # This import is located here because the inheritance module uses the language context for lookup,
-    #   causing a circular dependency at initialization
-    # from aac.io.parser import ParserError
-
     def mark_to_source_location(start: Mark, end: Mark) -> SourceLocation:
         return SourceLocation(start.line, start.column, start.index, end.column - start.column)
 
@@ -116,8 +109,8 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
     except ParserError as error:
         print("hit parser error in parse_source in _parse_str()")
         print("bubbled up parser error")
-        # print(f"error source: {error.source} \n errors: {error.errors}")
-        # raise ParserError(error.source, error.errors) from None
+        print(f"error source: {error.source} \n errors: {error.errors}")
+        raise ParserError(error.source, error.errors) from None
     else:
         source_files: dict[str, AaCFile] = {}
         definitions: list[Definition] = []
