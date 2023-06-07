@@ -96,7 +96,7 @@ def parse_yaml(source: str, content: str) -> list[dict]:
 
         raise ParserError(source, [f"Encountered the following scanner error: {error.problem}",
                                                               f"Encountered error at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}",
-                                                              f"Context of the error: <Context placeholder>"]) from None
+                                                              f"Context of the error: {error.context}"]) from None
     except Exception as error:
         print("hit exception in yaml in parse_yaml()")
 
