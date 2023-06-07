@@ -65,6 +65,7 @@ class YamlLFUCache:
             print("hit attribute error in cache in scan_string()")
         except ParserError as error:
             print("hit parser error in cache in scan_string()")
+            print("bubbled up parser error")
             # print(f"error source: {error.source} \n errors: {error.errors}")
             # raise ParserError(error.source, error.errors) from None
         else:
@@ -126,6 +127,7 @@ class YamlLFUCache:
                 print("hit a type error in cache in _get_or_parse_string()")
             except ParserError as error:
                 print("hit parser error in cache in _get_or_parse_string()")
+                print("bubbled up parser error")
                 # print(f"error source: {error.source} \n errors: {error.errors}")
                 # raise ParserError(error.source, error.errors) from None
             else:

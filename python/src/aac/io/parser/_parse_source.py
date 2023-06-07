@@ -67,6 +67,7 @@ def _parse_file(arch_file: str) -> list[Definition]:
         print("hit type error in parse-source in _parse_file()")
     except ParserError as error:
         print("hit parser error in parse_source in _parse_file()")
+        print("bubbled up parser error")
         # print(f"error source: {error.source} \n errors: {error.errors}")
         # raise ParserError(error.source, error.errors) from None
     else:
@@ -114,6 +115,7 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
         print("hit type error in parse_source, parse_str()")
     except ParserError as error:
         print("hit parser error in parse_source in _parse_str()")
+        print("bubbled up parser error")
         # print(f"error source: {error.source} \n errors: {error.errors}")
         # raise ParserError(error.source, error.errors) from None
     else:
