@@ -15,4 +15,5 @@ def get_plugin_definitions_from_yaml(package, filename) -> list[Definition]:
         print("bubbled up parser error")
         print(f"error source: {error.source} \n errors: {error.errors}")
         raise ParserError(error.source, error.errors) from None
-    return 
+    else:
+        return yaml_definitions
