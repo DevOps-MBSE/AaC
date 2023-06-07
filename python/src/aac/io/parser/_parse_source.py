@@ -68,7 +68,7 @@ def _parse_file(arch_file: str) -> list[Definition]:
     except ParserError as error:
         print("hit parser error in parse_source in _parse_file()")
         print("bubbled up parser error")
-        # print(f"error source: {error.source} \n errors: {error.errors}")
+        print(f"error source: {error.source} \n errors: {error.errors}")
         # raise ParserError(error.source, error.errors) from None
     else:
         return aac_definitions

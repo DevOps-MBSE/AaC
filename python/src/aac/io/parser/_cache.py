@@ -128,7 +128,7 @@ class YamlLFUCache:
             except ParserError as error:
                 print("hit parser error in cache in _get_or_parse_string()")
                 print("bubbled up parser error")
-                # print(f"error source: {error.source} \n errors: {error.errors}")
+                print(f"error source: {error.source} \n errors: {error.errors}")
                 # raise ParserError(error.source, error.errors) from None
             else:
                 self._put_entry(cache_entry.hash, cache_entry)
