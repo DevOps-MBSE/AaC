@@ -221,6 +221,7 @@ _usecase.yaml_
 import:
   - ./alarm_clock.yaml
   - ./external.yaml
+---
 usecase:
   name: Set Alarm Time
   description: The user sets the time for the alarm clock.

@@ -65,21 +65,22 @@ _schemaA.yaml_
 ```yaml
 import:
   - ./schemaB.yaml
+---
 schema:
-    name: schemaA
-    fields:
-        - name: sub-datastructure
-          type: schemaB
-        - name: integer
-          type: int
+  name: schemaA
+  fields:
+    - name: sub-datastructure
+      type: schemaB
+    - name: integer
+      type: int
 ```
 _schemaB.yaml_
 ```yaml
 schema:
-    name: schemaB
-    fields:
-        - name: string
-          type: string
+  name: schemaB
+  fields:
+    - name: string
+      type: string
 ```
 
 ## Embedding AaC files alongside your implementation
