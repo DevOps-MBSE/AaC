@@ -44,15 +44,7 @@ def parse(source: str, source_uri: Optional[str] = None) -> list[Definition]:
         sanitized_source = sanitize_filesystem_path(source)
         if path.lexists(sanitized_source):
             is_file = True
-    # try:
-    parsed_definitions = _parse_file(sanitized_source) if is_file else _parse_str(source_uri or DEFAULT_SOURCE_URI, source)
-    # except ParserError as error:
-    #     print("hit parser error in parse_source in parse()")
-    #     print("bubbled up parser error")
-    #     print(f"error source: {error.source} \n errors: {error.errors}")
-    #     raise ParserError(error.source, error.errors) from None
-    # else:
-    return parsed_definitions
+    return _parse_file(sanitized_source) if is_file else _parse_str(source_uri or DEFAULT_SOURCE_URI, source)
 
 
 def _parse_file(arch_file: str) -> list[Definition]:
@@ -64,18 +56,8 @@ def _parse_file(arch_file: str) -> list[Definition]:
     Returns:
         The AaC definitions extracted from the specified file.
     """
-    # try:
     definition_lists = [_parse_str(file, _read_file_content(file)) for file in _get_files_to_process(arch_file)]
-    aac_definitions = [definition for definition_list in definition_lists for definition in definition_list]
-    # except TypeError as error:
-    #     print("hit type error in parse-source in _parse_file()")
-    # except ParserError as error:
-    #     print("hit parser error in parse_source in _parse_file()")
-    #     print("bubbled up parser error")
-    #     print(f"error source: {error.source} \n errors: {error.errors}")
-    #     raise ParserError(error.source, error.errors) from None
-    # else:
-    return aac_definitions
+    return [definition for definition_list in definition_lists for definition in definition_list]
 
 
 def _parse_str(source: str, model_content: str) -> list[Definition]:
@@ -102,7 +84,6 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
     def is_token_between_locations(token, inclusive_line_start: int, inclusive_line_end: int) -> list[Lexeme]:
         return token.start_mark.line >= inclusive_line_start and token.end_mark.line <= inclusive_line_end
 
-    # try:
     yaml_tokens: list[Token] = YAML_CACHE.scan_string(model_content)
     value_tokens: list[Token] = [token for token in yaml_tokens if hasattr(token, "value")]
     doc_start_token: list[StreamStartToken] = [token for token in yaml_tokens if isinstance(token, StreamStartToken)]
@@ -111,14 +92,6 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
     doc_tokens = [*doc_start_token, *doc_segment_tokens, *doc_end_token]
 
     yaml_dicts: list[dict] = deepcopy(YAML_CACHE.parse_string(model_content))
-    # except TypeError as error:
-    #     print("hit type error in parse_source, parse_str()")
-    # except ParserError as error:
-    #     print("hit parser error in parse_source in _parse_str()")
-    #     print("bubbled up parser error")
-    #     print(f"error source: {error.source} \n errors: {error.errors}")
-    #     raise ParserError(error.source, error.errors) from None
-    # else:
     source_files: dict[str, AaCFile] = {}
     definitions: list[Definition] = []
     for doc_token_index in range(0, len(doc_tokens) - 1):

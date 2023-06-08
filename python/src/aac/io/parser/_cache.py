@@ -59,18 +59,8 @@ class YamlLFUCache:
 
     def scan_string(self, string: str) -> list[Token]:
         """Parse the YAML string and return the YAML tokens."""
-        # try:
-        tokens = self._get_or_parse_string(STRING_YAML_SOURCE, string).yaml_tokens
-        # except AttributeError as error:
-        #     print("hit attribute error in cache in scan_string()")
-        # except ParserError as error:
-        #     print("hit parser error in cache in scan_string()")
-        #     print("bubbled up parser error")
-        #     print(f"error source: {error.source} \n errors: {error.errors}")
-        #     raise ParserError(error.source, error.errors) from None
-        # else:
-        return tokens
-    
+        return self._get_or_parse_string(STRING_YAML_SOURCE, string).yaml_tokens
+
     def scan_file(self, file_path: str) -> list[Token]:
         """Parse the YAML file and return the YAML tokens."""
         token_list = []
@@ -122,16 +112,7 @@ class YamlLFUCache:
         if not cache_entry:
             yaml_dicts = parse_yaml(content_source, content_string)
             yaml_tokens = scan_yaml(content_source, content_string)
-            # try:
             cache_entry = CacheEntry(content_hash, yaml_dicts, yaml_tokens)
-            # except TypeError as error:
-            #     print("hit a type error in cache in _get_or_parse_string()")
-            # except ParserError as error:
-            #     print("hit parser error in cache in _get_or_parse_string()")
-            #     print("bubbled up parser error")
-            #     print(f"error source: {error.source} \n errors: {error.errors}")
-            #     # raise ParserError(error.source, error.errors) from None
-            # else:
             self._put_entry(cache_entry.hash, cache_entry)
 
         return cache_entry

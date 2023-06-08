@@ -152,8 +152,6 @@ class LanguageContext:
         if lexists(uri):
             try:
                 definitions = [definition for definition in parse(uri) if not names or definition.name in names]
-            except TypeError as error:
-                print("hit type error in launguage_context in add_definitions_from_uri()")
             except ParserError as error:
                 print("hit parser error in language_context in add_definitions_from_uri()")
                 print("bubbled up parser error")
