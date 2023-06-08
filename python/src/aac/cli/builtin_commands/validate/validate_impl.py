@@ -11,6 +11,7 @@ from aac.plugins import PluginError
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 from aac.validate import validated_source, validated_definition
 from aac.io.parser import parse
+from aac.io.parser._parser_error import ParserError
 from aac.lang.definitions.collections import get_definition_by_name
 
 plugin_name = "validate"
@@ -38,30 +39,36 @@ def validate(architecture_file: str, definition_name: Optional[str] = None) -> P
 def _validate_definition_in_file(file_path, definition_name) -> str:
     success_message = f"'{definition_name}' in {file_path} is valid."
 
-    definitions_in_file = parse(file_path)
-    definition_to_validate = get_definition_by_name(definition_name, definitions_in_file)
-    if definition_to_validate:
-        with validated_definition(definition_to_validate) as result:
-            return _get_validation_success_message(success_message, result)
+    try:
+        definitions_in_file = parse(file_path)
+    except ParserError as error:
+        print("hit parser error in validate_impl in validate_devintion_in_file()")
+        print("bubbled up parser error")
+        print(f"error source: {error.source} \n or {file_path} \n errors: {error.errors}")
     else:
-        active_context = get_active_context()
-        target_definition = active_context.get_definition_by_name(definition_name)
+        definition_to_validate = get_definition_by_name(definition_name, definitions_in_file)
+        if definition_to_validate:
+            with validated_definition(definition_to_validate) as result:
+                return _get_validation_success_message(success_message, result)
+        else:
+            active_context = get_active_context()
+            target_definition = active_context.get_definition_by_name(definition_name)
 
-        possible_source_message = ""
-        if target_definition:
-            possible_source_message = f"Definition '{definition_name}' can be found in '{target_definition.source.uri}'"
+            possible_source_message = ""
+            if target_definition:
+                possible_source_message = f"Definition '{definition_name}' can be found in '{target_definition.source.uri}'"
 
-        possible_definitions_in_file = [definition.name for definition in definitions_in_file]
+            possible_definitions_in_file = [definition.name for definition in definitions_in_file]
 
-        missing_definition_error_message = linesep.join(
-            [
-                f"'{definition_name}' was not found in the file.",
-                f"Definitions available in '{file_path}' are {possible_definitions_in_file}",
-                possible_source_message
-            ]
-        )
-        logging.error(missing_definition_error_message)
-        raise PluginError(missing_definition_error_message)
+            missing_definition_error_message = linesep.join(
+                [
+                    f"'{definition_name}' was not found in the file.",
+                    f"Definitions available in '{file_path}' are {possible_definitions_in_file}",
+                    possible_source_message
+                ]
+            )
+            logging.error(missing_definition_error_message)
+            raise PluginError(missing_definition_error_message)
 
 
 def _validate_context_and_file(file_path) -> str:

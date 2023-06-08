@@ -6,6 +6,7 @@ from pygls.uris import to_fs_path
 from typing import Optional
 
 from aac.io.parser import parse
+from aac.io.parser._parser_error import ParserError
 from aac.plugins.first_party.lsp_server.conversion_helpers import source_location_to_range
 from aac.plugins.first_party.lsp_server.providers.lsp_provider import LspProvider
 from aac.plugins.validators._validator_finding import ValidatorFinding, FindingSeverity
@@ -28,16 +29,31 @@ class PublishDiagnosticsProvider(LspProvider):
         return [self.finding_to_diagnostic(finding) for finding in findings]
 
     def get_findings_for_document(self, document_uri: str) -> list[ValidatorFinding]:
-        """Return all the ValidatorFindings for the specified document."""
+        """
+        Return all the ValidatorFindings for the specified document.
+        
+        Args:
+            self (PublishDiagnosticsProvider): Instance of class.
+            document_uri (str): Specified document.
+
+        Returns:
+            List of ValidatorFindings for the definitions within the specified document.
+        """
         findings = []
 
         if self.language_server.workspace:
             document = self.language_server.workspace.get_document(document_uri)
 
             if document:
-                parsed_definitions = parse(document.source, to_fs_path(document_uri))
-                result = _validate_definitions(parsed_definitions, self.language_server.language_context, validate_context=False)
-                findings = result.findings.get_all_findings()
+                try:
+                    parsed_definitions = parse(document.source, to_fs_path(document_uri))
+                except ParserError as error:
+                    print("hit parser error in publish_diagnostics_provider in get_findings_for_document()")
+                    print("bubbled up parser error")
+                    print(f"error source: {error.source} \n or {document.source} \n errors: {error.errors}")
+                else:
+                    result = _validate_definitions(parsed_definitions, self.language_server.language_context, validate_context=False)
+                    findings = result.findings.get_all_findings()
             else:
                 logging.debug(f"Can't provide diagnostics, {document_uri} not found in the workspace.")
         else:

@@ -3,6 +3,7 @@ from contextlib import contextmanager
 from typing import Generator, Any, Optional
 
 from aac.io.parser import parse
+from aac.io.parser._parser_error import ParserError
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.constants import (
     DEFINITION_FIELD_NAME,
@@ -62,7 +63,14 @@ def validated_source(source: str) -> Generator[ValidatorResult, None, None]:
     Yields:
         A ValidationResults:py:class:`aac.validate.ValidationResult` indicating the result.
     """
-    yield _with_validation(parse(source), get_active_context())
+    try:
+        validation_result = _with_validation(parse(source), get_active_context())
+    except ParserError as error:
+        print("hit parser error in _validate in validated_source()")
+        print("bubbled up parser error")
+        print(f"error source: {error.source} \n or {source} \n errors: {error.errors}")
+    else:
+        yield validation_result
 
 
 def _with_validation(

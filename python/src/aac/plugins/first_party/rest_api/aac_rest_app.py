@@ -9,6 +9,7 @@ from aac.io.files.aac_file import AaCFile
 from aac.io.files.find import find_aac_files, is_aac_file
 from aac.io.paths import sanitize_filesystem_path
 from aac.io.parser import parse
+from aac.io.parser._parser_error import ParserError
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.constants import DEFINITION_FIELD_TYPE, DEFINITION_FIELD_NAME
 from aac.lang.definitions.json_schema import get_definition_json_schema
@@ -64,8 +65,14 @@ def get_file_by_uri(uri: str):
 
 
 @app.post("/files/import", status_code=HTTPStatus.NO_CONTENT)
-def import_files_to_context(file_models: list[FilePathModel]):
-    """Import the list of files into the context."""
+def import_files_to_context(file_models: list[FilePathModel]) -> None:
+    """
+    Import the list of files into the context.
+    
+    Args:
+        file_models (list[FilePathModel]): List of file models for import.
+        
+    """
     files_to_import = set([str(model.uri) for model in file_models])
     valid_aac_files = set(filter(is_aac_file, files_to_import))
     invalid_files = files_to_import.difference(valid_aac_files)
@@ -76,8 +83,14 @@ def import_files_to_context(file_models: list[FilePathModel]):
             f"Invalid files were asked to imported. Invalid files: {invalid_files}.",
         )
     else:
-        new_file_definitions = [parse(file) for file in valid_aac_files]
-        list(map(get_active_context().add_definitions_to_context, new_file_definitions))
+        try:
+            new_file_definitions = [parse(file) for file in valid_aac_files]
+        except ParserError as error:
+                print("hit parser error in language_context in add_definitions_from_uri()")
+                print("bubbled up parser error")
+                print(f"error source: {error.source} \n errors: {error.errors}")
+        else:
+            list(map(get_active_context().add_definitions_to_context, new_file_definitions))
 
 
 @app.put("/file", status_code=HTTPStatus.NO_CONTENT)

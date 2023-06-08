@@ -26,6 +26,7 @@ from pygls.uris import to_fs_path
 
 from aac import __version__ as AAC_VERSION
 from aac.io.parser import parse
+from aac.io.parser._parser_error import ParserError
 from aac.lang.active_context_lifecycle_manager import get_initialized_language_context
 from aac.lang.language_context import LanguageContext
 from aac.plugins.first_party.lsp_server.managed_workspace_file import ManagedWorkspaceFile
@@ -134,7 +135,12 @@ async def did_open(ls: AacLanguageServer, params: DidOpenTextDocumentParams):
 
     managed_file.is_client_managed = True
     file_path = to_fs_path(file_uri)
-    file_definitions = parse(file_path)
+    try:
+        file_definitions = parse(file_path)
+    except ParserError as error:
+        print("hit parser error in language_context in add_definitions_from_uri()")
+        print("bubbled up parser error")
+        print(f"error source: {error.source} \n or {file_path} \n errors: {error.errors}")
 
     if file_definitions:
         ls.language_context.add_definitions_to_context(file_definitions)
@@ -161,36 +167,42 @@ async def did_change(ls: AacLanguageServer, params: DidChangeTextDocumentParams)
     ensure_future(handle_publish_diagnostics(ls, PublishDiagnosticsParams(uri=params.text_document.uri, diagnostics=[])))
 
     file_content = params.content_changes[0].text
-    incoming_definitions_dict = {definition.name: definition for definition in parse(file_content, document_path)}
-    new_definitions = []
-    altered_definitions = []
+    try: 
+        incoming_definitions_dict = {definition.name: definition for definition in parse(file_content, document_path)}
+    except ParserError as error:
+        print("hit parser error in language_server in did_change()")
+        print("bubbled up parser error")
+        print(f"error source: {error.source} \n or {document_path}\n errors: {error.errors}")
+    else:
+        new_definitions = []
+        altered_definitions = []
 
-    old_definitions = ls.language_context.get_definitions_by_file_uri(document_path)
-    old_definitions_to_update_dict = {
-        definition.name: definition for definition in old_definitions if definition.name in incoming_definitions_dict
-    }
-    old_definitions_to_delete = [
-        definition for definition in old_definitions if definition.name not in incoming_definitions_dict
-    ]
+        old_definitions = ls.language_context.get_definitions_by_file_uri(document_path)
+        old_definitions_to_update_dict = {
+            definition.name: definition for definition in old_definitions if definition.name in incoming_definitions_dict
+        }
+        old_definitions_to_delete = [
+            definition for definition in old_definitions if definition.name not in incoming_definitions_dict
+        ]
 
-    for incoming_definition_name, incoming_definition in incoming_definitions_dict.items():
-        old_definition = old_definitions_to_update_dict.get(incoming_definition_name)
+        for incoming_definition_name, incoming_definition in incoming_definitions_dict.items():
+            old_definition = old_definitions_to_update_dict.get(incoming_definition_name)
 
-        if old_definition:
-            incoming_definition.uid = old_definition.uid
-            altered_definitions.append(incoming_definition)
+            if old_definition:
+                incoming_definition.uid = old_definition.uid
+                altered_definitions.append(incoming_definition)
 
-            old_definition_lines = old_definition.to_yaml().split(linesep)
-            altered_definition_lines = incoming_definition.to_yaml().split(linesep)
-            changes = linesep.join(list(difflib.ndiff(old_definition_lines, altered_definition_lines))).strip()
-            logging.info(f"Updating definition: {old_definition.name}.\n Differences:\n{changes}")
-        else:
-            logging.info(f"Adding definition: {incoming_definition.name}.")
-            new_definitions.append(incoming_definition)
+                old_definition_lines = old_definition.to_yaml().split(linesep)
+                altered_definition_lines = incoming_definition.to_yaml().split(linesep)
+                changes = linesep.join(list(difflib.ndiff(old_definition_lines, altered_definition_lines))).strip()
+                logging.info(f"Updating definition: {old_definition.name}.\n Differences:\n{changes}")
+            else:
+                logging.info(f"Adding definition: {incoming_definition.name}.")
+                new_definitions.append(incoming_definition)
 
-    ls.language_context.add_definitions_to_context(new_definitions)
-    ls.language_context.update_definitions_in_context(altered_definitions)
-    ls.language_context.remove_definitions_from_context(old_definitions_to_delete)
+        ls.language_context.add_definitions_to_context(new_definitions)
+        ls.language_context.update_definitions_in_context(altered_definitions)
+        ls.language_context.remove_definitions_from_context(old_definitions_to_delete)
 
 
 async def handle_completion(ls: AacLanguageServer, params: CompletionParams):
