@@ -3,6 +3,7 @@ import copy
 from attr import Factory, attrib, attrs, validators
 
 from aac.cli.aac_command import AacCommand
+from aac.io.parser._parser_error import ParserError
 from aac.lang.definitions.definition import Definition
 from aac.plugins.contributions.contribution_points import ContributionPoints
 from aac.plugins.contributions.contribution_types import DefinitionValidationContribution, PrimitiveValidationContribution
@@ -87,7 +88,12 @@ class Plugin:
             definitions (list[Definition]): A list of Definition data structures that are provided
                 by the definition.
         """
-        self.contributions.register_definitions(self.name, definitions)
+        try:
+            self.contributions.register_definitions(self.name, definitions)
+        except ParserError as error:
+            print("hit parser error in plugin in register_definitions()")
+            print("bubbled up parser error")
+            print(f"error source: {error.source} \n errors: {error.errors}")
 
     def get_definitions(self) -> list[Definition]:
         """Get the definitions provided by this plugin."""
