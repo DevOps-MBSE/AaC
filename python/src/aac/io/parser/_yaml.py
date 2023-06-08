@@ -34,8 +34,8 @@ def scan_yaml(source: str, content: str) -> list[Token]:
         # traceback.print_exc(limit=0)
 
         raise ParserError(source, [f"Encountered the following scanner error: {error.problem}",
-                                                              f"Encountered error at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}",
-                                                              f"Context of the error: {error.context}"]) from None
+                                   f"Encountered error at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}",
+                                   f"Context of the error: {error.context}"]) from None
 
     except Exception as error:
         print("hit another exception in yaml in scan_yaml()")
@@ -82,8 +82,8 @@ def parse_yaml(source: str, content: str) -> list[dict]:
         # traceback.print_exc(limit=0)
 
         raise ParserError(source, [f"Encountered the following parser error: {error.problem}",
-                                                              f"Encountered error at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}",
-                                                              f"Context of the error: {error.context}"]) from None
+                                   f"Encountered error at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}",
+                                   f"Context of the error: {error.context}"]) from None
     except YAMLScannerError as error:
         print("hit yaml scanner error in yaml in parse_yaml()")
 
@@ -95,8 +95,8 @@ def parse_yaml(source: str, content: str) -> list[dict]:
         # traceback.print_exc(limit=0)
 
         raise ParserError(source, [f"Encountered the following scanner error: {error.problem}",
-                                                              f"Encountered error at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}",
-                                                              f"Context of the error: {error.context}"]) from None
+                                   f"Encountered error at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}",
+                                   f"Context of the error: {error.context}"]) from None
     except Exception as error:
         print("hit exception in yaml in parse_yaml()")
 

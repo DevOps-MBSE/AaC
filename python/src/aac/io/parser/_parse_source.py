@@ -44,15 +44,15 @@ def parse(source: str, source_uri: Optional[str] = None) -> list[Definition]:
         sanitized_source = sanitize_filesystem_path(source)
         if path.lexists(sanitized_source):
             is_file = True
-    try:
-        parsed_definitions = _parse_file(sanitized_source) if is_file else _parse_str(source_uri or DEFAULT_SOURCE_URI, source)
-    except ParserError as error:
-        print("hit parser error in parse_source in parse()")
-        print("bubbled up parser error")
-        print(f"error source: {error.source} \n errors: {error.errors}")
-        raise ParserError(error.source, error.errors) from None
-    else:
-        return parsed_definitions
+    # try:
+    parsed_definitions = _parse_file(sanitized_source) if is_file else _parse_str(source_uri or DEFAULT_SOURCE_URI, source)
+    # except ParserError as error:
+    #     print("hit parser error in parse_source in parse()")
+    #     print("bubbled up parser error")
+    #     print(f"error source: {error.source} \n errors: {error.errors}")
+    #     raise ParserError(error.source, error.errors) from None
+    # else:
+    return parsed_definitions
 
 
 def _parse_file(arch_file: str) -> list[Definition]:
@@ -64,18 +64,18 @@ def _parse_file(arch_file: str) -> list[Definition]:
     Returns:
         The AaC definitions extracted from the specified file.
     """
-    try:
-        definition_lists = [_parse_str(file, _read_file_content(file)) for file in _get_files_to_process(arch_file)]
-        aac_definitions = [definition for definition_list in definition_lists for definition in definition_list]
-    except TypeError as error:
-        print("hit type error in parse-source in _parse_file()")
-    except ParserError as error:
-        print("hit parser error in parse_source in _parse_file()")
-        print("bubbled up parser error")
-        print(f"error source: {error.source} \n errors: {error.errors}")
-        raise ParserError(error.source, error.errors) from None
-    else:
-        return aac_definitions
+    # try:
+    definition_lists = [_parse_str(file, _read_file_content(file)) for file in _get_files_to_process(arch_file)]
+    aac_definitions = [definition for definition_list in definition_lists for definition in definition_list]
+    # except TypeError as error:
+    #     print("hit type error in parse-source in _parse_file()")
+    # except ParserError as error:
+    #     print("hit parser error in parse_source in _parse_file()")
+    #     print("bubbled up parser error")
+    #     print(f"error source: {error.source} \n errors: {error.errors}")
+    #     raise ParserError(error.source, error.errors) from None
+    # else:
+    return aac_definitions
 
 
 def _parse_str(source: str, model_content: str) -> list[Definition]:
@@ -102,70 +102,70 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
     def is_token_between_locations(token, inclusive_line_start: int, inclusive_line_end: int) -> list[Lexeme]:
         return token.start_mark.line >= inclusive_line_start and token.end_mark.line <= inclusive_line_end
 
-    try:
-        yaml_tokens: list[Token] = YAML_CACHE.scan_string(model_content)
-        value_tokens: list[Token] = [token for token in yaml_tokens if hasattr(token, "value")]
-        doc_start_token: list[StreamStartToken] = [token for token in yaml_tokens if isinstance(token, StreamStartToken)]
-        doc_end_token: list[StreamEndToken] = [token for token in yaml_tokens if isinstance(token, StreamEndToken)]
-        doc_segment_tokens: list[DocumentStartToken] = [token for token in yaml_tokens if isinstance(token, DocumentStartToken)]
-        doc_tokens = [*doc_start_token, *doc_segment_tokens, *doc_end_token]
+    # try:
+    yaml_tokens: list[Token] = YAML_CACHE.scan_string(model_content)
+    value_tokens: list[Token] = [token for token in yaml_tokens if hasattr(token, "value")]
+    doc_start_token: list[StreamStartToken] = [token for token in yaml_tokens if isinstance(token, StreamStartToken)]
+    doc_end_token: list[StreamEndToken] = [token for token in yaml_tokens if isinstance(token, StreamEndToken)]
+    doc_segment_tokens: list[DocumentStartToken] = [token for token in yaml_tokens if isinstance(token, DocumentStartToken)]
+    doc_tokens = [*doc_start_token, *doc_segment_tokens, *doc_end_token]
 
-        yaml_dicts: list[dict] = deepcopy(YAML_CACHE.parse_string(model_content))
-    except TypeError as error:
-        print("hit type error in parse_source, parse_str()")
-    except ParserError as error:
-        print("hit parser error in parse_source in _parse_str()")
-        print("bubbled up parser error")
-        print(f"error source: {error.source} \n errors: {error.errors}")
-        raise ParserError(error.source, error.errors) from None
-    else:
-        source_files: dict[str, AaCFile] = {}
-        definitions: list[Definition] = []
-        for doc_token_index in range(0, len(doc_tokens) - 1):
-            start_doc_token = doc_tokens[doc_token_index]
-            end_doc_token = doc_tokens[doc_token_index + 1]
+    yaml_dicts: list[dict] = deepcopy(YAML_CACHE.parse_string(model_content))
+    # except TypeError as error:
+    #     print("hit type error in parse_source, parse_str()")
+    # except ParserError as error:
+    #     print("hit parser error in parse_source in _parse_str()")
+    #     print("bubbled up parser error")
+    #     print(f"error source: {error.source} \n errors: {error.errors}")
+    #     raise ParserError(error.source, error.errors) from None
+    # else:
+    source_files: dict[str, AaCFile] = {}
+    definitions: list[Definition] = []
+    for doc_token_index in range(0, len(doc_tokens) - 1):
+        start_doc_token = doc_tokens[doc_token_index]
+        end_doc_token = doc_tokens[doc_token_index + 1]
 
-            content_start_line = start_doc_token.start_mark.line
-            content_end_line = end_doc_token.end_mark.line
+        content_start_line = start_doc_token.start_mark.line
+        content_end_line = end_doc_token.end_mark.line
 
-            end_of_file_offset = 1 if isinstance(end_doc_token, StreamEndToken) else 0
+        end_of_file_offset = 1 if isinstance(end_doc_token, StreamEndToken) else 0
 
-            yaml_text = linesep.join(model_content.splitlines()[content_start_line: content_end_line + end_of_file_offset])
-            yaml_text += linesep
+        yaml_text = linesep.join(model_content.splitlines()[content_start_line: content_end_line + end_of_file_offset])
+        yaml_text += linesep
 
-            if yaml_text.strip():
-                definition_lexemes = get_lexemes_for_definition(value_tokens, content_start_line, content_end_line)
+        if yaml_text.strip():
+            definition_lexemes = get_lexemes_for_definition(value_tokens, content_start_line, content_end_line)
 
-                if yaml_dicts:
-                    root_yaml = yaml_dicts.pop(0)
+            if yaml_dicts:
+                root_yaml = yaml_dicts.pop(0)
 
-                    definition_imports = root_yaml.get(DEFINITION_FIELD_IMPORT, [])
-                    root_type, *_ = [key for key in root_yaml.keys() if key != DEFINITION_FIELD_IMPORT]
-                    definition_name = root_yaml.get(root_type, {}).get(DEFINITION_FIELD_NAME)
-                    source_file = source_files.get(source)
+                definition_imports = root_yaml.get(DEFINITION_FIELD_IMPORT, [])
+                root_type, *_ = [key for key in root_yaml.keys() if key != DEFINITION_FIELD_IMPORT]
+                definition_name = root_yaml.get(root_type, {}).get(DEFINITION_FIELD_NAME)
+                source_file = source_files.get(source)
 
-                    if not source_file:
-                        source_file = AaCFile(source, True, False)
-                        source_files[source] = source_file
+                if not source_file:
+                    source_file = AaCFile(source, True, False)
+                    source_files[source] = source_file
 
-                    new_definition = Definition(
-                        name=definition_name,
-                        content=yaml_text,
-                        source=source_file,
-                        meta_structure=None,
-                        lexemes=definition_lexemes,
-                        structure=root_yaml,
-                        imports=definition_imports,
-                    )
-                    definitions.append(new_definition)
-            else:
-                logging.info(
-                    f"Skipping empty content between {start_doc_token}:L{content_start_line} and {end_doc_token}:L{content_end_line} in source {source}"
+                new_definition = Definition(
+                    name=definition_name,
+                    content=yaml_text,
+                    source=source_file,
+                    meta_structure=None,
+                    lexemes=definition_lexemes,
+                    structure=root_yaml,
+                    imports=definition_imports,
                 )
-                logging.debug(f"Source: {source} Content:{model_content}")
-                logging.debug(f"Content lines:{model_content.splitlines()}")
+                definitions.append(new_definition)
+        else:
+            logging.info(
+                f"Skipping empty content between {start_doc_token}:L{content_start_line} and {end_doc_token}:L{content_end_line} in source {source}"
+            )
+            logging.debug(f"Source: {source} Content:{model_content}")
+            logging.debug(f"Content lines:{model_content.splitlines()}")
 
-        return definitions
+    return definitions
 
 
 def _read_file_content(arch_file: str) -> str:

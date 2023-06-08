@@ -184,21 +184,21 @@ class ContributionPoints:
 
         contribution_items = set()
 
-        try:
-            for item in items:
-                register_contribution(item)
-        except TypeError as error:
-            print("hit type error in contribution_points in _register_contributions()")
+        # try:
+        for item in items:
+            register_contribution(item)
+        # except TypeError as error:
+        #     print("hit type error in contribution_points in _register_contributions()")
             # logging.error(f"Error: {error}. Encountered during parsing for registration of {item.name} as a {contribution_name} for {plugin_name}")
 
             # traceback.print_exc(limit=0)
-        except ParserError as error:
-            print("hit parser error in contribution_points in _register_contributions()")
-            print("bubbled up parser error")
-            print(f"error source: {error.source} \n errors: {error.errors}")
+        # except ParserError as error:
+        #     print("hit parser error in contribution_points in _register_contributions()")
+        #     print("bubbled up parser error")
+        #     print(f"error source: {error.source} \n errors: {error.errors}")
             # raise ParserError(error.source, error.errors) from None
-        else:
-            self.contributions.add(PluginContribution(plugin_name, contribution_name, contribution_items))
+        # else:
+        self.contributions.add(PluginContribution(plugin_name, contribution_name, contribution_items))
 
     def _get_contributions_by_type(self, contribution_type: ContributionType) -> list[PluginContribution]:
         return [contrib for contrib in self.contributions if contrib.is_contribution_type(contribution_type)]
