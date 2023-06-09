@@ -6,10 +6,10 @@ nav_order: 3
 ---
 
 # The AaC Style Guide
-This style guide documents a set of coding standards for the AaC Domain-specific language. This standard is applied to to Core Specification and first-party plugins. Users are not required to implement this style, but it is recommended that users leverage a consistent style and standard for their models. Consistent styling reduces complexity and overhead for users as they don't have to manage the idiosyncrasies of different naming conventions for user libraries or plugins.
+This style guide documents a set of coding standards for the AaC Domain-specific language. This standard is implemented in the Core Specification and first-party plugins. Users are not required to implement this style, but it is recommended that users leverage a consistent style and standard for their models. Consistent styling reduces complexity and overhead for users as they don't have to manage the idiosyncrasies of different naming conventions for user libraries or plugins.
 
 # Declaring Multiple Definitions Per AaC File
-The AaC DSL is based on YAML, and as such can not support multiple declarations of the same root key in the document. If users declare multiple definitions without the special YAML document token `---`, then AaC will be unable to correctly ingest those definitions in the AaC file.
+The AaC DSL is based on YAML, and as such, cannot support multiple declarations of the same root key in the document. If users declare multiple definitions without the special YAML document token `---`, then AaC will be unable to correctly ingest those definitions in the AaC file.
 
 Correctly defining multiple definitions in the same file:
 
@@ -40,7 +40,7 @@ Every entry in AaC is referred to as a definition, and definitions are the basic
 
 
 ## Definition Fields and Attributes
-Due to the self-defining nature of AaC, definitions are just instances and compositions of fields and attributes defined by other `schema` definitions. In order to maintain a consistent experience for users interacting with these data structures, users should be use camelCase for field names.
+Due to the self-defining nature of AaC, definitions are just instances and compositions of fields and attributes defined by other `schema` definitions. In order to maintain a consistent experience for users interacting with these data structures, users should use camelCase for field names.
 
 The following definitions follow the style of naming fields and attributes in camelCase.
 
@@ -114,7 +114,7 @@ schema:
           type: sample_enum
 ```
 
-In this example, a user unfamiliar with the project can easily be mistaken into thinking that `simple_enum` is a primitive type.
+In this example, a user unfamiliar with the project can easily mistake `simple_enum` as a primitive type.
 
 ## Enumeration Values
 Enumeration values in AaC are all UPPSERCASE, following the common style for enumeration values and constants in programming languages such as Python and Java.
@@ -138,9 +138,9 @@ Like the Primitive Types, the available root keys in AaC are defined in the defi
 Like primitive types, root keys should follow the snake_case style, but emphasize succint, descriptive names. Example root keys are `import`, `schema`, `model`, etc. If a one-word type isn't descriptive enough for your root key, keeping it succint (e.g. `spring_boot_service`, `cloud_gateway`) is preferable. Long-named root keys, or roots keys that aren't snake_case, will not conform to the standard employed by the Core Specification and first-party plugin making it less obvious to users what the key is.
 
 # Organizing Imports
-Each AaC file has a file-wide import declaration. Using an `import` definition allows users to reference definitions provided via other user files and can be used to decompose large, complex models into multiple files.
+Each AaC file has a file-wide import declaration definition. Using an `import` definition allows users to reference definitions provided via other user files and can be used to decompose large, complex models into multiple files.
 
-Because `import` decalarations are file-wide, these clauses should be the first clause in AaC files. There is no internal logic that dictates the order of the entries in an AaC file, but maintaining the `import` clause as the first definition in AaC files makes the file-wide dependencies immediately visible and immediately informs readers on the dependencies of file.
+Because `import` decalarations are file-wide, these clauses should be the first clause in AaC files. There is no internal logic that dictates the order of the entries in an AaC file, but maintaining the `import` clause as the first definition in AaC files makes the file-wide dependencies immediately visible and informs readers on the dependencies of file.
 
 An example file with an import clause at the top:
 
