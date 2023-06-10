@@ -48,4 +48,11 @@ def _get_plugin_commands():
 
 
 def _get_plugin_definitions():
-    return get_plugin_definitions_from_yaml(__package__, "gen_design_doc.yaml")
+    try:
+        plugin_definitions = get_plugin_definitions_from_yaml(__package__, "gen_design_doc.yaml")
+    except ParserError as error:
+        print("hit parser error in gen_design init in get_plugin_definitions()")
+        print("bubbled up parser error")
+        print(f"error source: {error.source} \n errors: {error.errors}")
+    else:
+        return plugin_definitions
