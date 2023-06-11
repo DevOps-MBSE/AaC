@@ -139,8 +139,7 @@ async def did_open(ls: AacLanguageServer, params: DidOpenTextDocumentParams):
         file_definitions = parse(file_path)
     except ParserError as error:
         print("hit parser error in language_context in add_definitions_from_uri()")
-        print("bubbled up parser error")
-        print(f"error source: {error.source} \n or {file_path} \n errors: {error.errors}")
+        raise ParserError(error.source, error.errors)
 
     if file_definitions:
         ls.language_context.add_definitions_to_context(file_definitions)
@@ -171,8 +170,7 @@ async def did_change(ls: AacLanguageServer, params: DidChangeTextDocumentParams)
         incoming_definitions_dict = {definition.name: definition for definition in parse(file_content, document_path)}
     except ParserError as error:
         print("hit parser error in language_server in did_change()")
-        print("bubbled up parser error")
-        print(f"error source: {error.source} \n or {document_path}\n errors: {error.errors}")
+        raise ParserError(error.source, error.errors)
     else:
         new_definitions = []
         altered_definitions = []

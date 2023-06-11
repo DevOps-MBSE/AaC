@@ -67,8 +67,7 @@ def validated_source(source: str) -> Generator[ValidatorResult, None, None]:
         validation_result = _with_validation(parse(source), get_active_context())
     except ParserError as error:
         print("hit parser error in _validate in validated_source()")
-        print("bubbled up parser error")
-        print(f"error source: {error.source} \n or {source} \n errors: {error.errors}")
+        raise ParserError(error.source, error.errors)
     else:
         yield validation_result
 

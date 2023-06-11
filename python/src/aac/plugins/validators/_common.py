@@ -23,8 +23,7 @@ def get_validation_definition_from_plugin_yaml(plugin_definitions_string: str) -
         validation_definition = get_validation_definition_from_plugin_definitions(parse(plugin_definitions_string))
     except ParserError as error:
         print("hit parser error in validators/commin in get_validation_definition_from_plugin_yaml()")
-        print("bubbled up parser error")
-        print(f"error source: {error.source} \n errors: {error.errors}")
+        raise ParserError(error.source, error.errors)
     else:
         return validation_definition
 

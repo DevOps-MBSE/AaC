@@ -92,6 +92,7 @@ def parse_yaml(source: str, content: str) -> list[dict]:
             logging.error(f"Error occurs at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}")
         logging.error(f"Content of error: {content}")
 
+        
         # traceback.print_exc(limit=0)
 
         raise ParserError(source, [f"Encountered the following scanner error: {error.problem}",

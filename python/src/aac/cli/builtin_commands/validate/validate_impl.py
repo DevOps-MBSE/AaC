@@ -45,6 +45,7 @@ def _validate_definition_in_file(file_path, definition_name) -> str:
         print("hit parser error in validate_impl in validate_devintion_in_file()")
         print("bubbled up parser error")
         print(f"error source: {error.source} \n or {file_path} \n errors: {error.errors}")
+        raise ParserError(error.source, error.errors)
     else:
         definition_to_validate = get_definition_by_name(definition_name, definitions_in_file)
         if definition_to_validate:

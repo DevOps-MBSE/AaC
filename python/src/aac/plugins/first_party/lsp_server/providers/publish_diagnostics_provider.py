@@ -49,8 +49,7 @@ class PublishDiagnosticsProvider(LspProvider):
                     parsed_definitions = parse(document.source, to_fs_path(document_uri))
                 except ParserError as error:
                     print("hit parser error in publish_diagnostics_provider in get_findings_for_document()")
-                    print("bubbled up parser error")
-                    print(f"error source: {error.source} \n or {document.source} \n errors: {error.errors}")
+                    raise ParserError(error.source, error.errors)
                 else:
                     result = _validate_definitions(parsed_definitions, self.language_server.language_context, validate_context=False)
                     findings = result.findings.get_all_findings()

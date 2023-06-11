@@ -88,12 +88,7 @@ class Plugin:
             definitions (list[Definition]): A list of Definition data structures that are provided
                 by the definition.
         """
-        try:
-            self.contributions.register_definitions(self.name, definitions)
-        except ParserError as error:
-            print("hit parser error in plugin in register_definitions()")
-            print("bubbled up parser error")
-            print(f"error source: {error.source} \n errors: {error.errors}")
+        self.contributions.register_definitions(self.name, definitions)
 
     def get_definitions(self) -> list[Definition]:
         """Get the definitions provided by this plugin."""

@@ -75,9 +75,8 @@ def _get_reference_completion_items(language_server: LanguageServer, params: Com
     try:
         file_definitions = parse(_get_code_completion_parent_text_file(language_server, params))
     except ParserError as error:
-            print("hit parser error in code_completion_provider in get_reference_completion_items()")
-            print("bubbled up parser error")
-            print(f"error source: {error.source} \n errors: {error.errors}")
+        print("hit parser error in code_completion_provider in get_reference_completion_items()")
+        raise ParserError(error.source, error.errors)
     else:
         file_schema_references = _convert_definitions_to_name_description_dict(
             get_definitions_by_root_key("schema", file_definitions)
