@@ -14,7 +14,6 @@ from typing import Optional
 from aac.io.constants import DEFAULT_SOURCE_URI
 from aac.io.files.aac_file import AaCFile
 from aac.io.parser._cache_manager import get_cache
-from aac.io.parser._parser_error import ParserError
 from aac.io.paths import sanitize_filesystem_path
 from aac.lang.constants import DEFINITION_FIELD_NAME, DEFINITION_FIELD_IMPORT
 from aac.lang.definitions.definition import Definition
@@ -44,6 +43,7 @@ def parse(source: str, source_uri: Optional[str] = None) -> list[Definition]:
         sanitized_source = sanitize_filesystem_path(source)
         if path.lexists(sanitized_source):
             is_file = True
+
     return _parse_file(sanitized_source) if is_file else _parse_str(source_uri or DEFAULT_SOURCE_URI, source)
 
 
@@ -70,6 +70,7 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
     Returns:
         The AaC definitions that were built from the model contents.
     """
+
     def mark_to_source_location(start: Mark, end: Mark) -> SourceLocation:
         return SourceLocation(start.line, start.column, start.index, end.column - start.column)
 
@@ -92,6 +93,7 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
     doc_tokens = [*doc_start_token, *doc_segment_tokens, *doc_end_token]
 
     yaml_dicts: list[dict] = deepcopy(YAML_CACHE.parse_string(model_content))
+    
     source_files: dict[str, AaCFile] = {}
     definitions: list[Definition] = []
     for doc_token_index in range(0, len(doc_tokens) - 1):
