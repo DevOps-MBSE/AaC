@@ -70,10 +70,8 @@ try:
     active_context = get_active_context()
 except ParserError as error:
     print("hit parser error in execute in to_click_command()")
-    print("bubbled up parser error")
-    print(f"error source: {error.source} \n errors: {error.errors}")
     raise ParserError(error.source, error.errors) from None
-    
+
 commands = [to_click_command(cmd) for cmd in active_context.get_plugin_commands()]
 for command in commands:
     cli.add_command(command)

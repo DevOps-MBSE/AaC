@@ -20,13 +20,7 @@ def get_plugin() -> Plugin:
     """
     plugin = Plugin(plugin_name)
     plugin.register_commands(_get_plugin_commands())
-    try:
-        plugin.register_definitions(_get_plugin_definitions())
-    except ParserError as error:
-        print("hit parser error in gen_plugin init in get_plugin_definitions()")
-        print("bubbled up parser error")
-        print(f"error source: {error.source} \n errors: {error.errors}")
-        raise ParserError(error.source, error.errors) from None
+    plugin.register_definitions(_get_plugin_definitions())
     return plugin
 
 
