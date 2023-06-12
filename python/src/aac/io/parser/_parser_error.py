@@ -1,5 +1,4 @@
 """Custom ParserError class that represents errors encountered during the parsing process."""
-import traceback
 from attr import Factory, attrib, attrs, validators
 
 
