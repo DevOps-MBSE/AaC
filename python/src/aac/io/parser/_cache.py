@@ -7,7 +7,6 @@ from typing import Optional
 from yaml import Token
 
 from aac.io.paths import sanitize_filesystem_path
-from aac.io.parser._parser_error import ParserError
 from aac.io.parser._yaml import parse_yaml, scan_yaml
 
 STRING_YAML_SOURCE = "string"

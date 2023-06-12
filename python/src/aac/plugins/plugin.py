@@ -3,7 +3,6 @@ import copy
 from attr import Factory, attrib, attrs, validators
 
 from aac.cli.aac_command import AacCommand
-from aac.io.parser._parser_error import ParserError
 from aac.lang.definitions.definition import Definition
 from aac.plugins.contributions.contribution_points import ContributionPoints
 from aac.plugins.contributions.contribution_types import DefinitionValidationContribution, PrimitiveValidationContribution
