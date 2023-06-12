@@ -12,8 +12,6 @@ def get_plugin_definitions_from_yaml(package, filename) -> list[Definition]:
         yaml_definitions = parse(get_resource_file_contents(package, filename), get_resource_file_path(package, filename))
     except ParserError as error:
         print("hit parser error in common in get_plugin_definitions_from_yaml()")
-        print("bubbled up parser error")
-        print(f"error source: {error.source} \n errors: {error.errors}")
         raise ParserError(error.source, error.errors) from None
     else:
         return yaml_definitions
