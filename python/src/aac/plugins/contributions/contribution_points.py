@@ -1,4 +1,5 @@
 """A module for contribution point functionality."""
+
 from typing import Any, Callable, Optional, Union
 
 from attr import Factory, attrib, attrs, validators
