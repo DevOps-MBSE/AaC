@@ -48,4 +48,4 @@ def _get_plugin_commands():
 
 
 def _get_plugin_definitions():
-        return get_plugin_definitions_from_yaml(__package__, "gen_design_doc.yaml")
+    return get_plugin_definitions_from_yaml(__package__, "gen_design_doc.yaml")
