@@ -1,13 +1,9 @@
 """A module for contribution point functionality."""
-import logging
-import traceback
-
 from typing import Any, Callable, Optional, Union
 
 from attr import Factory, attrib, attrs, validators
 
 from aac.cli.aac_command import AacCommand
-from aac.io.parser._parser_error import ParserError
 from aac.lang.definitions.definition import Definition
 from aac.plugins.contributions.contribution_types import ContributionType, DefinitionValidationContribution, PrimitiveValidationContribution
 from aac.plugins.contributions.plugin_contribution import PluginContribution
