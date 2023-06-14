@@ -85,7 +85,7 @@ class Definition:
         Return a dictionary of the top-level fields that are populated in the definition where the key is the field name.
 
         Schema/data definitions will return their top-level fields, including a "fields" field. Because schema/data
-        is self-defining, it may be easy to confuse the intention of this function and assume that it will returns the
+        is self-defining, it may be easy to confuse the intention of this function and assume that it returns the
         entries in a schema/data definition's `fields` field, which is not the case.
 
         The resulting structure is not a copy, but a reference to the Definition's underlying structure. Editing this
