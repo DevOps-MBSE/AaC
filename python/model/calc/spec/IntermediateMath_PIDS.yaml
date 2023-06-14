@@ -1,7 +1,8 @@
 import:
-  - ./Calculator_SystemSpec.yaml
-  - ./Multiply_SRS.yaml
-  - ./Divide_SRS.yaml
+  files:
+    - ./Calculator_SystemSpec.yaml
+    - ./Multiply_SRS.yaml
+    - ./Divide_SRS.yaml
 ---
 spec:
   name: Intermediate Math PIDS

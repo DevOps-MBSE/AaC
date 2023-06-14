@@ -1,6 +1,7 @@
 import:
-  - ./living_room.yaml
-  - ./kitchen.yaml
+  files:
+    - ./living_room.yaml
+    - ./kitchen.yaml
 ---
 deployment:
   name: My_New_Apartment

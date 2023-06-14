@@ -1,6 +1,7 @@
 import:
-  - ./amazon_parts.yaml
-  - ./furniture_store.yaml
+  files:
+    - ./amazon_parts.yaml
+    - ./furniture_store.yaml
 ---
 assembly:
   name: Seating_Area

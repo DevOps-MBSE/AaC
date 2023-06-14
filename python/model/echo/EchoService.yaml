@@ -1,5 +1,6 @@
 import:
-  - ./Message.yaml
+  files:
+    - ./Message.yaml
 ---
 model:
   name: EchoService

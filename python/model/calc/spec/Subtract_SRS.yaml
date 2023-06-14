@@ -1,5 +1,6 @@
 import:
- - SimpleMath_PIDS.yaml
+  files:
+   - SimpleMath_PIDS.yaml
 ---
 spec:
   name: Module Subtract SRS

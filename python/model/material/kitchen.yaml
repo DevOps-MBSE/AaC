@@ -1,6 +1,7 @@
 import:
-  - ./apartment_provided.yaml
-  - ./amazon_parts.yaml
+  files:
+    - ./apartment_provided.yaml
+    - ./amazon_parts.yaml
 ---
 assembly:
   name: Appliances

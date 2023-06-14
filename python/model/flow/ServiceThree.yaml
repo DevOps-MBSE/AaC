@@ -1,6 +1,7 @@
 import:
-  - ./DataC.yaml
-  - ./DataD.yaml
+  files:
+    - ./DataC.yaml
+    - ./DataD.yaml
 ---
 model:
   name: ServiceThree

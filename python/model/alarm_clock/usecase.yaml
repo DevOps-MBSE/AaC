@@ -1,6 +1,7 @@
 import:
-  - ./alarm_clock.yaml
-  - ./external.yaml
+  files:
+    - ./alarm_clock.yaml
+    - ./external.yaml
 ---
 usecase:
   name: Set Alarm Time

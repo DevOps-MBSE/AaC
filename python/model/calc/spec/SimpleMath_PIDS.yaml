@@ -1,7 +1,8 @@
 import:
-  - ./Calculator_SystemSpec.yaml
-  - ./Add_SRS.yaml
-  - ./Subtract_SRS.yaml
+  files:
+    - ./Calculator_SystemSpec.yaml
+    - ./Add_SRS.yaml
+    - ./Subtract_SRS.yaml
 ---
 spec:
   name:  Simple Math PIDS

@@ -1,6 +1,7 @@
 import:
-  - ./DataB.yaml
-  - ./DataC.yaml
+  files:
+    - ./DataB.yaml
+    - ./DataC.yaml
 ---
 model:
   name: ServiceTwo

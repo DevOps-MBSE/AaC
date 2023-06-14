@@ -1,6 +1,7 @@
 import:
-  - ./Data.aac
-  - ./Services.aac
+  files:
+    - ./Data.aac
+    - ./Services.aac
 ---
 model:
   name: Subsystem

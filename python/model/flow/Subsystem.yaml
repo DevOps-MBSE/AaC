@@ -1,7 +1,8 @@
 import:
-  - ./DataB.yaml
-  - ./DataC.yaml
-  - ./ServiceTwo.yaml
+  files:
+    - ./DataB.yaml
+    - ./DataC.yaml
+    - ./ServiceTwo.yaml
 ---
 model:
   name: Subsystem

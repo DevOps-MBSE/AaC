@@ -1,7 +1,8 @@
 import:
-  - ./EventCount.yaml
-  - ./Request.yaml
-  - ./Response.yaml
+  files:
+    - ./EventCount.yaml
+    - ./Request.yaml
+    - ./Response.yaml
 ---
 model:
   name: Counter

@@ -1,7 +1,8 @@
 import:
-  - ./mathmessagehandler.yaml
-  - ./mathlogger.yaml
-  - ../spec/Calculator_SystemSpec.yaml
+  files:
+    - ./mathmessagehandler.yaml
+    - ./mathlogger.yaml
+    - ../spec/Calculator_SystemSpec.yaml
 ---
 model:
   name: Calculator
