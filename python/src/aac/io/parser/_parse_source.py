@@ -17,7 +17,7 @@ from aac.io.constants import DEFAULT_SOURCE_URI
 from aac.io.files.aac_file import AaCFile
 from aac.io.parser._cache_manager import get_cache
 from aac.io.paths import sanitize_filesystem_path
-from aac.lang.constants import DEFINITION_FIELD_NAME, ROOT_KEY_IMPORT
+from aac.lang.constants import DEFINITION_FIELD_FILES, DEFINITION_FIELD_NAME, ROOT_KEY_IMPORT
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.lexeme import Lexeme
 from aac.lang.definitions.source_location import SourceLocation
@@ -122,11 +122,7 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
 
                 root_yaml = yaml_dicts.pop(0)
                 root_type, *_ = root_yaml.keys()
-                definition_name = (
-                    f"{ROOT_KEY_IMPORT}:{source}"
-                    if root_type == ROOT_KEY_IMPORT
-                    else root_yaml.get(root_type, {}).get(DEFINITION_FIELD_NAME)
-                )
+                definition_name = root_yaml.get(root_type, {}).get(DEFINITION_FIELD_NAME, "")
 
                 new_definition = Definition(
                     name=definition_name,
@@ -171,7 +167,7 @@ def _get_files_to_process(arch_file_path: str) -> list[str]:
     def collect_imports(arch_file_path: str, unique_imports: set[str]) -> set[str]:
         unique_imports.add(arch_file_path)
         structures = [structure for structure in YAML_CACHE.parse_file(arch_file_path) if structure.get(ROOT_KEY_IMPORT)]
-        imports = [imp for root in structures for imp in root.get(ROOT_KEY_IMPORT, [])]
+        imports = [imp for root in structures for imp in root.get(ROOT_KEY_IMPORT, {}).get(DEFINITION_FIELD_FILES, [])]
 
         for imp in imports:
             arch_file_dir = path.dirname(path.realpath(arch_file_path))

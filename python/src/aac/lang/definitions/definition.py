@@ -15,6 +15,7 @@ from aac.lang.constants import (
     DEFINITION_FIELD_EXTENSION_ENUM,
     DEFINITION_FIELD_EXTENSION_SCHEMA,
     DEFINITION_FIELD_FIELDS,
+    DEFINITION_FIELD_FILES,
     ROOT_KEY_IMPORT,
     DEFINITION_FIELD_INHERITS,
     DEFINITION_FIELD_TYPE,
@@ -56,6 +57,8 @@ class Definition:
     def __attrs_post_init__(self):
         """Post-init hook."""
         self.uid = uuid5(NAMESPACE_DNS, str(self.__hash__()))
+        if self.is_import():
+            self.name = str(self.uid)
 
     def __hash__(self) -> int:
         """Return the hash of this Definition."""
@@ -88,13 +91,10 @@ class Definition:
         The resulting structure is not a copy, but a reference to the Definition's underlying structure. Editing this
         data structure will alter the fields in the Definition.
         """
-        fields = self.structure.get(self.get_root_key())
+        fields = self.structure.get(self.get_root_key(), {})
 
-        if self.is_import():
-            fields = {ROOT_KEY_IMPORT: fields}
-        elif not fields:
+        if not fields:
             logging.debug(f"Failed to find any fields defined in the definition. Definition:\n{self.structure}")
-            fields = {}
 
         return fields
 
@@ -133,7 +133,7 @@ class Definition:
     def get_imports(self) -> Optional[list[str]]:
         """Return a list of imported files, or None if the definition is not import."""
         imports = self.get_top_level_fields()
-        return imports.get(ROOT_KEY_IMPORT)
+        return imports.get(DEFINITION_FIELD_FILES)
 
     # Type Test Functions
 

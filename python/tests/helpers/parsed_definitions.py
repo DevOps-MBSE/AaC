@@ -9,6 +9,7 @@ from aac.lang.constants import (
     DEFINITION_FIELD_DEFINITION_VALIDATIONS,
     DEFINITION_FIELD_DESCRIPTION,
     DEFINITION_FIELD_DISPLAY,
+    DEFINITION_FIELD_FILES,
     DEFINITION_FIELD_GROUP,
     DEFINITION_FIELD_HELP_TEXT,
     DEFINITION_FIELD_INPUT,
@@ -278,8 +279,8 @@ def create_plugin_command_definition(
 
 
 def create_import_definition(imports: list[str]) -> Definition:
-    definition_dict = {ROOT_KEY_IMPORT: imports}
-    return parse(yaml.dump(definition_dict, sort_keys=False), "<test>")[0]
+    definition_dict = {DEFINITION_FIELD_FILES: imports}
+    return create_definition(ROOT_KEY_IMPORT, "", definition_dict)
 
 
 def create_definition(root_key: str, name: str, other_fields: dict = {}) -> Definition:

@@ -1,4 +1,4 @@
-from os.path import basename
+from os.path import basename, sep
 from tempfile import TemporaryDirectory
 from typing import Optional
 from unittest import TestCase
@@ -80,14 +80,14 @@ class TestParser(TestCase):
             self.assertEqual(enum_status_definition.source.uri, import2.name)
             self.assertEqual(model_echosvc_definition.source.uri, test_yaml.name)
 
-            first, second, *_ = imports_definition.lexemes
+            first, _, third, *_ = imports_definition.lexemes
             self.assertEqual(first.source, test_yaml.name)
             self.assertEqual(first.value, ROOT_KEY_IMPORT)
             self.assertEqual(first.location, SourceLocation(1, 0, 1, 6))
 
-            self.assertEqual(second.source, test_yaml.name)
-            self.assertEqual(second.value, f"./{TEST_MESSAGE_FILE_NAME}")
-            self.assertEqual(second.location, SourceLocation(2, 4, 13, 2 + len(TEST_MESSAGE_FILE_NAME)))
+            self.assertEqual(third.source, test_yaml.name)
+            self.assertEqual(third.value, f"./{TEST_MESSAGE_FILE_NAME}")
+            self.assertEqual(third.location, SourceLocation(3, 6, 24, 2 + len(TEST_MESSAGE_FILE_NAME)))
 
     def test_handles_multiple_import_sections_per_file(self):
         another_definition = create_enum_definition("TestEnum", ["a", "b", "c"])
@@ -216,8 +216,9 @@ enum:
 """
 TEST_MODEL_CONTENTS = f"""
 import:
-  - ./{TEST_MESSAGE_FILE_NAME}
-  - {TEST_STATUS_FILE_NAME}
+  files:
+    - .{sep}{TEST_MESSAGE_FILE_NAME}
+    - {TEST_STATUS_FILE_NAME}
 ---
 model:
   name: {TEST_MODEL_NAME}

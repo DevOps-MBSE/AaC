@@ -44,5 +44,5 @@ class TestDocumentLinksProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         expected_link = from_fs_path(path.join(self.temp_documents_directory.name, TEST_DOCUMENT_NAME))
         self.assertIsNotNone(document_links)
         self.assertEqual(expected_link, document_links[0].target)
-        self.assertEqual(1, document_links[0].range.start.line)
-        self.assertEqual(1, document_links[0].range.end.line)
+        self.assertEqual(3, document_links[0].range.start.line)
+        self.assertEqual(3, document_links[0].range.end.line)
