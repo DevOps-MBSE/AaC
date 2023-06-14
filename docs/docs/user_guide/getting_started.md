@@ -221,8 +221,9 @@ Note the use of `import` to make definitions in separate files accesible to the 
 _usecase.yaml_
 ```yaml
 import:
-  - ./alarm_clock.yaml
-  - ./external.yaml
+  files:
+    - ./alarm_clock.yaml
+    - ./external.yaml
 ---
 usecase:
   name: Set Alarm Time

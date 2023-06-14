@@ -66,7 +66,8 @@ Additionally, while it's possible to have multiple `import` definitions in a fil
 _schemaA.yaml_
 ```yaml
 import:
-  - ./schemaB.yaml
+  files:
+    - ./schemaB.yaml
 ---
 schema:
   name: schemaA

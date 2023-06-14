@@ -56,7 +56,8 @@ schema:
 Example data structure with inheritance from `python/model/flow/DataA.yaml`:
 ```yaml
 import:
-  - ./DataMessage.yaml
+  files:
+    - ./DataMessage.yaml
 ---
 schema:
   inherits:
