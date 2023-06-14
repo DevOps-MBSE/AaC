@@ -112,12 +112,12 @@ Here's an example of the EchoService broken into two files:
 *Message.yaml*
 ```yaml
 schema:
-    name: Message
-    fields:
+  name: Message
+  fields:
     - name: body
-        type: string
+      type: string
     - name: sender
-        type: string
+      type: string
 ```
 *EchoService.yaml*
 ```yaml
