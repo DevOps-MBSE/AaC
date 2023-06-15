@@ -25,6 +25,7 @@ def get_validation_definition_from_plugin_yaml(plugin_definitions_string: str) -
         validation_definition = get_validation_definition_from_plugin_definitions(parse(plugin_definitions_string))
     except ParserError as error:
         logging.error(f"Encountered error in: {error.source} with the following errors: \n {error.errors}")
+        raise ParserError(error.source, error.errors) from None
     else:
         return validation_definition
 

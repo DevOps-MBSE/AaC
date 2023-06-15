@@ -139,7 +139,7 @@ async def did_open(ls: AacLanguageServer, params: DidOpenTextDocumentParams):
         file_definitions = parse(file_path)
     except ParserError as error:
         logging.error(f"Encountered error in: {error.source} with the following errors: \n {error.errors}")
-
+        raise ParserError(error.source, error.errors) from None
     if file_definitions:
         ls.language_context.add_definitions_to_context(file_definitions)
     else:
@@ -169,6 +169,7 @@ async def did_change(ls: AacLanguageServer, params: DidChangeTextDocumentParams)
         incoming_definitions_dict = {definition.name: definition for definition in parse(file_content, document_path)}
     except ParserError as error:
         logging.error(f"Encountered error in: {error.source} with the following errors: \n {error.errors}")
+        raise ParserError(error.source, error.errors) from None
     else:
         new_definitions = []
         altered_definitions = []

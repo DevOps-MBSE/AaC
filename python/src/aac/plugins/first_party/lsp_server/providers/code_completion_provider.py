@@ -76,6 +76,7 @@ def _get_reference_completion_items(language_server: LanguageServer, params: Com
         file_definitions = parse(_get_code_completion_parent_text_file(language_server, params))
     except ParserError as error:
         logging.error(f"Encountered error in: {error.source} with the following errors: \n {error.errors}")
+        raise ParserError(error.source, error.errors) from None
     else:
         file_schema_references = _convert_definitions_to_name_description_dict(
             get_definitions_by_root_key("schema", file_definitions)

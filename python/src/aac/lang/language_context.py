@@ -154,6 +154,7 @@ class LanguageContext:
                 definitions = [definition for definition in parse(uri) if not names or definition.name in names]
             except ParserError as error:
                 logging.error(f"Encountered error in: {error.source} with the following errors: \n {error.errors}")
+                raise ParserError(error.source, error.errors) from None
             else:
                 self.update_definitions_in_context(list(set(definitions).intersection(self.definitions)))
                 self.add_definitions_to_context(list(set(definitions).difference(self.definitions)))
@@ -590,6 +591,7 @@ class LanguageContext:
                 self.add_definitions_to_context(parse(sanitized_file_uri))
             except ParserError as error:
                 logging.error(f"Encountered error in: {error.source} with the following errors: \n {error.errors}")
+                raise ParserError(error.source, error.errors) from None
 
         elif lexists(sanitized_file_uri):
             logging.info(f"Deleting {sanitized_file_uri} since there are no definitions for the file in the context.")
