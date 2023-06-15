@@ -1,6 +1,4 @@
 """Functions to allow interacting with the core AaC spec."""
-import logging
-
 from aac.lang.definitions.collections import get_definition_by_name
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.search import search_definition

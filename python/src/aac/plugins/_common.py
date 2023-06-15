@@ -1,6 +1,4 @@
 """Common utilities usable by all the plugins."""
-import logging
-
 from aac.io.parser import parse
 from aac.io.parser._parser_error import ParserError
 from aac.lang.definitions.definition import Definition

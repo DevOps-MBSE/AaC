@@ -1,6 +1,4 @@
 """Module for common, shared functions specifically for the validator subclass of plugins."""
-import logging
-
 from typing import Callable
 
 from aac.io.parser import parse

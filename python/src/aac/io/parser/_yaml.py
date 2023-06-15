@@ -9,7 +9,8 @@ from aac.io.parser._parser_error import ParserError
 
 
 def scan_yaml(source: str, content: str) -> list[Token]:
-    """Parse the YAML string and produce a list of scanning tokens.
+    """
+    Parse the YAML string and produce a list of scanning tokens.
 
     Args:
         source (str): The source of the YAML content. Used to provide better error messages.
@@ -19,7 +20,8 @@ def scan_yaml(source: str, content: str) -> list[Token]:
         The scanned YAML parse content.
 
     Raises:
-        If the YAML is invalid, a ParserError is raised."""
+        If the YAML is invalid, a ParserError is raised.
+    """
     try:
         tokens = list(scan(content, Loader=SafeLoader))
     except YAMLScannerError as error:
@@ -44,7 +46,8 @@ def scan_yaml(source: str, content: str) -> list[Token]:
 
 
 def parse_yaml(source: str, content: str) -> list[dict]:
-    """Parse content as a YAML string and return the resulting structure.
+    """
+    Parse content as a YAML string and return the resulting structure.
 
     Be sure to use the YAML Parser Cache instead of this function.
 

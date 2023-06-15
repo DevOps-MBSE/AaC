@@ -66,6 +66,7 @@ def to_click_command(command: AacCommand) -> Command:
         no_args_is_help=len([arg for arg in command.arguments if is_required_arg(arg)]) > 0,
     )
 
+
 try:
     active_context = get_active_context()
 except ParserError as error:
