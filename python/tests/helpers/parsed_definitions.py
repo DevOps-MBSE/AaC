@@ -1,5 +1,4 @@
 """This module contains helpers for creating Definitions for use with unit tests."""
-import logging
 import yaml
 
 from aac.io.parser import parse
@@ -215,3 +214,5 @@ def create_definition(root_key: str, name: str, other_fields: dict = {}) -> Defi
         parsed_definitions = parse(yaml.dump(definition_dict, sort_keys=False), "<test>")[0]
     except ParserError as error:
         raise ParserError(error.source, error.errors) from None
+    else:
+        return parsed_definitions
