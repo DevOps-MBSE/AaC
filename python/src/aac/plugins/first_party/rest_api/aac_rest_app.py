@@ -68,10 +68,10 @@ def get_file_by_uri(uri: str):
 def import_files_to_context(file_models: list[FilePathModel]) -> None:
     """
     Import the list of files into the context.
-    
+
     Args:
         file_models (list[FilePathModel]): List of file models for import.
-        
+
     """
     files_to_import = set([str(model.uri) for model in file_models])
     valid_aac_files = set(filter(is_aac_file, files_to_import))
@@ -86,8 +86,7 @@ def import_files_to_context(file_models: list[FilePathModel]) -> None:
         try:
             new_file_definitions = [parse(file) for file in valid_aac_files]
         except ParserError as error:
-            print("hit parser error in language_context in add_definitions_from_uri()")
-            raise ParserError(error.source, error.errors)
+            logging.error(f"Encountered error in: {error.source} with the following errors: \n {error.errors}")
         else:
             list(map(get_active_context().add_definitions_to_context, new_file_definitions))
 
@@ -346,8 +345,7 @@ async def refresh_available_files_in_workspace() -> None:
     try:
         definition_lists_from_missing_files = [parse(file_uri) for file_uri in missing_files]
     except ParserError as error:
-        print("hit parser error in aac_rest_app in refresh_avail_files()")
-        raise ParserError(error.source, error.errors)
+        logging.error(f"Encountered error in: {error.source} with the following errors: \n {error.errors}")
     definitions_to_add = {definition.name: definition for definition_list in definition_lists_from_missing_files for definition in definition_list}
     active_context.add_definitions_to_context(list(definitions_to_add.values()))
 

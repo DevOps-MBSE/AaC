@@ -1,6 +1,5 @@
 """YAML-specific parsing and scanning functions."""
 import logging
-import traceback
 
 from yaml import scan, load_all, SafeLoader, Token
 from yaml.parser import ParserError as YAMLParserError
@@ -24,26 +23,18 @@ def scan_yaml(source: str, content: str) -> list[Token]:
     try:
         tokens = list(scan(content, Loader=SafeLoader))
     except YAMLScannerError as error:
-        print("hit another yaml scanner error in yaml in scan_yaml()")
-        
         logging.error(f"Encountered YAML Scanner Error-Problem: {error.problem}. Encountered in: {source} at {error.context}")
         if error.problem_mark:
             logging.error(f"Error occurs at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}")
         logging.error(f"Content of error: {content}")
-
-        # traceback.print_exc(limit=0)
 
         raise ParserError(source, [f"Encountered the following scanner error: {error.problem}",
                                    f"Encountered error at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}",
                                    f"Context of the error: {error.context}"]) from None
 
     except Exception as error:
-        print("hit another exception in yaml in scan_yaml()")
-
         logging.error(f"Error: {error}. Encountered in: {source}")
         logging.error(f"Content of error: {content}")
-
-        # traceback.print_exc(limit=0)
 
         raise ParserError(source, [f"Encountered the following error: {error}"]) from None
     else:
@@ -72,39 +63,26 @@ def parse_yaml(source: str, content: str) -> list[dict]:
         _error_if_not_yaml(source, content, models)
         _error_if_not_complete(source, content, models)
     except YAMLParserError as error:
-        print("hit yaml parse error in yaml in parse_yaml()")
-
         logging.error(f"Encountered YAML Parsing Error-Problem: {error.problem}. Encountered in: {source} at {error.context}")
         if error.problem_mark:
             logging.error(f"Error occurs at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}")
         logging.error(f"Content of error: {content}")
 
-        # traceback.print_exc(limit=0)
-
         raise ParserError(source, [f"Encountered the following parser error: {error.problem}",
                                    f"Encountered error at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}",
                                    f"Context of the error: {error.context}"]) from None
     except YAMLScannerError as error:
-        print("hit yaml scanner error in yaml in parse_yaml()")
-
         logging.error(f"Encountered YAML Scanner Error-Problem: {error.problem}. Encountered in: {source} at {error.context}")
         if error.problem_mark:
             logging.error(f"Error occurs at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}")
         logging.error(f"Content of error: {content}")
 
-        
-        # traceback.print_exc(limit=0)
-
         raise ParserError(source, [f"Encountered the following scanner error: {error.problem}",
                                    f"Encountered error at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}",
                                    f"Context of the error: {error.context}"]) from None
     except Exception as error:
-        print("hit exception in yaml in parse_yaml()")
-
         logging.error(f"Error: {error}. Encountered in: {source}")
         logging.error(f"Content of error: {content}")
-
-        # traceback.print_exc(limit=0)
 
         raise ParserError(source, [f"Encountered the following error: {error}"]) from None
     else:

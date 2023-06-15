@@ -1,4 +1,6 @@
 """Module for common, shared functions specifically for the validator subclass of plugins."""
+import logging
+
 from typing import Callable
 
 from aac.io.parser import parse
@@ -22,8 +24,7 @@ def get_validation_definition_from_plugin_yaml(plugin_definitions_string: str) -
     try:
         validation_definition = get_validation_definition_from_plugin_definitions(parse(plugin_definitions_string))
     except ParserError as error:
-        print("hit parser error in validators/commin in get_validation_definition_from_plugin_yaml()")
-        raise ParserError(error.source, error.errors)
+        logging.error(f"Encountered error in: {error.source} with the following errors: \n {error.errors}")
     else:
         return validation_definition
 

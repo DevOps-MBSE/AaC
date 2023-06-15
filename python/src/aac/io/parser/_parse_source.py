@@ -93,7 +93,7 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
     doc_tokens = [*doc_start_token, *doc_segment_tokens, *doc_end_token]
 
     yaml_dicts: list[dict] = deepcopy(YAML_CACHE.parse_string(model_content))
-    
+
     source_files: dict[str, AaCFile] = {}
     definitions: list[Definition] = []
     for doc_token_index in range(0, len(doc_tokens) - 1):

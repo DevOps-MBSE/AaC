@@ -138,8 +138,7 @@ async def did_open(ls: AacLanguageServer, params: DidOpenTextDocumentParams):
     try:
         file_definitions = parse(file_path)
     except ParserError as error:
-        print("hit parser error in language_context in add_definitions_from_uri()")
-        raise ParserError(error.source, error.errors)
+        logging.error(f"Encountered error in: {error.source} with the following errors: \n {error.errors}")
 
     if file_definitions:
         ls.language_context.add_definitions_to_context(file_definitions)
@@ -166,11 +165,10 @@ async def did_change(ls: AacLanguageServer, params: DidChangeTextDocumentParams)
     ensure_future(handle_publish_diagnostics(ls, PublishDiagnosticsParams(uri=params.text_document.uri, diagnostics=[])))
 
     file_content = params.content_changes[0].text
-    try: 
+    try:
         incoming_definitions_dict = {definition.name: definition for definition in parse(file_content, document_path)}
     except ParserError as error:
-        print("hit parser error in language_server in did_change()")
-        raise ParserError(error.source, error.errors)
+        logging.error(f"Encountered error in: {error.source} with the following errors: \n {error.errors}")
     else:
         new_definitions = []
         altered_definitions = []

@@ -1,4 +1,5 @@
 """Functions to allow interacting with the core AaC spec."""
+import logging
 
 from aac.lang.definitions.collections import get_definition_by_name
 from aac.lang.definitions.definition import Definition
@@ -33,8 +34,7 @@ def get_aac_spec() -> list[Definition]:
         try:
             AAC_CORE_SPEC_DEFINITIONS = parse(core_spec_as_yaml, _get_aac_spec_file_path())
         except ParserError as error:
-            print("hit parser error in core in get_aac_spec()")
-            raise ParserError(error.source, error.errors)
+            logging.error(f"Encountered error in: {error.source} with the following errors: \n {error.errors}")
         else:
             list(map(set_files_to_not_user_editable, AAC_CORE_SPEC_DEFINITIONS))
 

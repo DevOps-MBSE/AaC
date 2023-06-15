@@ -31,7 +31,7 @@ class PublishDiagnosticsProvider(LspProvider):
     def get_findings_for_document(self, document_uri: str) -> list[ValidatorFinding]:
         """
         Return all the ValidatorFindings for the specified document.
-        
+
         Args:
             self (PublishDiagnosticsProvider): Instance of class.
             document_uri (str): Specified document.
@@ -48,8 +48,7 @@ class PublishDiagnosticsProvider(LspProvider):
                 try:
                     parsed_definitions = parse(document.source, to_fs_path(document_uri))
                 except ParserError as error:
-                    print("hit parser error in publish_diagnostics_provider in get_findings_for_document()")
-                    raise ParserError(error.source, error.errors)
+                    logging.error(f"Encountered error in: {error.source} with the following errors: \n {error.errors}")
                 else:
                     result = _validate_definitions(parsed_definitions, self.language_server.language_context, validate_context=False)
                     findings = result.findings.get_all_findings()
