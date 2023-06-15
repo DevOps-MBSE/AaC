@@ -48,7 +48,6 @@ class PublishDiagnosticsProvider(LspProvider):
                 try:
                     parsed_definitions = parse(document.source, to_fs_path(document_uri))
                 except ParserError as error:
-                    logging.error(f"Encountered error in: {error.source} with the following errors: \n {error.errors}")
                     raise ParserError(error.source, error.errors) from None
                 else:
                     result = _validate_definitions(parsed_definitions, self.language_server.language_context, validate_context=False)

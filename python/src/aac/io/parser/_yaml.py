@@ -33,6 +33,8 @@ def scan_yaml(source: str, content: str) -> list[Token]:
                                    f"Context of the error: {error.context}"]) from None
 
     except Exception as error:
+        print("hit another exception in yaml in scan_yaml()")
+
         logging.error(f"Error: {error}. Encountered in: {source}")
         logging.error(f"Content of error: {content}")
 

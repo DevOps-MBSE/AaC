@@ -1,6 +1,4 @@
 """This module manages a singleton instance of LanguageContext and its lifecycle."""
-
-from aac.io.parser._parser_error import ParserError
 from aac.lang.language_context import LanguageContext
 from aac.persistence import ACTIVE_CONTEXT_STATE_FILE_NAME
 from aac.plugins.plugin_manager import get_plugins
@@ -24,11 +22,7 @@ def get_active_context(reload_context: bool = False) -> LanguageContext:
 
     if not ACTIVE_CONTEXT and not reload_context:
         ACTIVE_CONTEXT = LanguageContext()
-        # try:
         ACTIVE_CONTEXT.import_from_file(ACTIVE_CONTEXT_STATE_FILE_NAME)
-        # except ParserError as error:
-        #     print('hit parser error in active_context_lifecycle_manager in get_active_context')
-        #     raise ParserError(error.source, error.errors) from None
 
     if not ACTIVE_CONTEXT or reload_context or not ACTIVE_CONTEXT.is_initialized:
         ACTIVE_CONTEXT = get_initialized_language_context()

@@ -86,7 +86,6 @@ def import_files_to_context(file_models: list[FilePathModel]) -> None:
         try:
             new_file_definitions = [parse(file) for file in valid_aac_files]
         except ParserError as error:
-            logging.error(f"Encountered error in: {error.source} with the following errors: \n {error.errors}")
             raise ParserError(error.source, error.errors) from None
         else:
             list(map(get_active_context().add_definitions_to_context, new_file_definitions))
@@ -346,7 +345,6 @@ async def refresh_available_files_in_workspace() -> None:
     try:
         definition_lists_from_missing_files = [parse(file_uri) for file_uri in missing_files]
     except ParserError as error:
-        logging.error(f"Encountered error in: {error.source} with the following errors: \n {error.errors}")
         raise ParserError(error.source, error.errors) from None
     else:
         definitions_to_add = {definition.name: definition for definition_list in definition_lists_from_missing_files for definition in definition_list}

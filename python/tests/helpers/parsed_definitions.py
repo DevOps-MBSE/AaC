@@ -214,5 +214,4 @@ def create_definition(root_key: str, name: str, other_fields: dict = {}) -> Defi
     try:
         parsed_definitions = parse(yaml.dump(definition_dict, sort_keys=False), "<test>")[0]
     except ParserError as error:
-        logging.error(f"Encountered error in: {error.source} with the following errors: \n {error.errors}")
         raise ParserError(error.source, error.errors) from None

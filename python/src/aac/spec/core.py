@@ -34,7 +34,6 @@ def get_aac_spec() -> list[Definition]:
         try:
             AAC_CORE_SPEC_DEFINITIONS = parse(core_spec_as_yaml, _get_aac_spec_file_path())
         except ParserError as error:
-            logging.error(f"Encountered error in: {error.source} with the following errors: \n {error.errors}")
             raise ParserError(error.source, error.errors) from None
         else:
             list(map(set_files_to_not_user_editable, AAC_CORE_SPEC_DEFINITIONS))

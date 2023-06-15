@@ -42,7 +42,6 @@ def _validate_definition_in_file(file_path, definition_name) -> str:
     try:
         definitions_in_file = parse(file_path)
     except ParserError as error:
-        logging.error(f"Encountered error in: {error.source} with the following errors: \n {error.errors}")
         raise ParserError(error.source, error.errors) from None
     else:
         definition_to_validate = get_definition_by_name(definition_name, definitions_in_file)
