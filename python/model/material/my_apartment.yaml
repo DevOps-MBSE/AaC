@@ -1,3 +1,8 @@
+import:
+  files:
+    - ./living_room.yaml
+    - ./kitchen.yaml
+---
 deployment:
   name: My_New_Apartment
   description: The place I'm going to live.
@@ -8,9 +13,6 @@ deployment:
     - deployment-ref: Kitchen
       quantity: 1
 ---
-import:
-  - ./living_room.yaml
-
 deployment:
   name: Living_Room
   description:  The place I'll hang out a lot.
@@ -21,9 +23,6 @@ deployment:
     - assembly-ref: Seating_Area
       quantity: 1
 ---
-import:
-  - ./kitchen.yaml
-
 deployment:
   name: Kitchen
   description:  Where I'll cook my food.

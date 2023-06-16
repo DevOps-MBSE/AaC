@@ -1,5 +1,7 @@
 import:
-  - ./GoogleAuthApi.aac
+  files:
+    - ./GoogleAuthApi.aac
+---
 schema:
   name: UserRequest
   description: |

@@ -216,11 +216,15 @@ Finally, we can also model the interactions between our models; say that we want
 
 For example, if we were to model the usecase of a user setting the alarm on our alarm clock, it might look something like:
 
+Note the use of `import` to make definitions in separate files accesible to the current definitions.
+
 _usecase.yaml_
 ```yaml
 import:
-  - ./alarm_clock.yaml
-  - ./external.yaml
+  files:
+    - ./alarm_clock.yaml
+    - ./external.yaml
+---
 usecase:
   name: Set Alarm Time
   description: The user sets the time for the alarm clock.

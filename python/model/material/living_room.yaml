@@ -1,7 +1,8 @@
 import:
-  - ./amazon_parts.yaml
-  - ./furniture_store.yaml
-
+  files:
+    - ./amazon_parts.yaml
+    - ./furniture_store.yaml
+---
 assembly:
   name: Seating_Area
   description:  The place I'll hang out a lot.
@@ -19,9 +20,6 @@ assembly:
     - part-ref: Coasters
       quantity: 1
 ---
-import:
-  - ./amazon_parts.yaml
-
 assembly:
   name: Entertainment_System
   description:  Mostly electronic toys

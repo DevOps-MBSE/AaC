@@ -1,8 +1,9 @@
 import:
-  - ./Calculator_SystemSpec.yaml
-  - ./Multiply_SRS.yaml
-  - ./Divide_SRS.yaml
-
+  files:
+    - ./Calculator_SystemSpec.yaml
+    - ./Multiply_SRS.yaml
+    - ./Divide_SRS.yaml
+---
 spec:
   name: Intermediate Math PIDS
   description:  This is a representative Prime Item Development Specification for a subsystem called Intermediate Math.
