@@ -4,7 +4,10 @@ from aac.plugins import hookimpl
 from aac.plugins.plugin import Plugin
 from aac.plugins._common import get_plugin_definitions_from_yaml
 from aac.plugins.validators._common import get_plugin_validations_from_definitions
-from aac.plugins.validators.validator_implementation._validator_implementation import PLUGIN_NAME, validate_validator_implementations
+from aac.plugins.validators.validator_implementation._validate_validator_implementation import (
+    PLUGIN_NAME,
+    validate_validator_implementations,
+)
 
 
 @hookimpl

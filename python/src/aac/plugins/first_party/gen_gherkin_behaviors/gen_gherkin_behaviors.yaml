@@ -1,19 +1,19 @@
-model:
-  name: aac-gen-gherkin-behaviors
-  description: aac-gen-gherkin-behaviors is an Architecture-as-Code plugin that generates Gherkin feature files from model behavior scenarios.
-  behavior:
+plugin:
+  name: Generate Gherkin Feature Files
+  description: An AaC plugin that generates Gherkin feature files from model behavior scenarios.
+  commands:
     - name: gen-gherkin-behaviors
-      type: command
-      description: Generate Gherkin feature files from Arch-as-Code model behavior scenarios.
+      group: Generation
+      helpText: Generate Gherkin feature files from AaC model behavior scenarios.
       input:
         - name: architecture-file
           type: file
           python_type: str
-          description: The yaml file containing the data models to generate as Gherkin feature files.
+          description: The YAML file containing the data models from which to generate Gherkin feature files.
         - name: output-directory
           type: directory
           python_type: str
-          description: The directory to write the generated Gherkin feature files to.
+          description: The directory into which the generated Gherkin feature files will be written.
       acceptance:
         - scenario: Output Gherkin feature files for behavior scenarios in an Architecture model.
           given:

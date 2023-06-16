@@ -1,4 +1,3 @@
-"""AaC validator implementation module for specification req reference ids."""
 from typing import Set, Dict
 
 from aac.lang.definitions.definition import Definition
@@ -7,7 +6,8 @@ from aac.lang.definitions.structure import get_substructures_by_type
 from aac.plugins.validators import ValidatorFindings, ValidatorResult
 
 
-SPEC_REF_ID_VALIDATOR_NAME = "Referenced IDs exist"
+PLUGIN_NAME = "Validate referenced IDs"
+VALIDATION_NAME = "Referenced IDs exist"
 
 ALL_REQ_IDS: Set[str] = set()
 
@@ -46,7 +46,7 @@ def validate_referenced_ids(
                     else:
                         SPEC_REF_ERRORS[err_msg] = definition_under_test.source.uri
                         findings.add_error_finding(
-                            definition_under_test, err_msg, SPEC_REF_ID_VALIDATOR_NAME, definition_under_test.get_lexeme_with_value(id)
+                            definition_under_test, err_msg, VALIDATION_NAME, definition_under_test.get_lexeme_with_value(id)
                         )
 
     return ValidatorResult([definition_under_test], findings)

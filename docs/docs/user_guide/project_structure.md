@@ -57,29 +57,33 @@ schema:
 ```
 
 ## Referencing AaC structures across files
-Another consideration when deciding how to organize AaC definitions is which definitions reference each other. If `definition A` references `definition B`, then both definitions will need to be either declared in the same AaC file or `definition A` will need to define an import including the relative path to the file containing `definition B`.
+Another consideration when deciding how to organize AaC definitions is which definitions reference each other. If `definition A` references `definition B`, then both definitions will need to be either declared in the same AaC file or `definition A` will need to define an `import` including the absolute or relative path to the file containing `definition B`.
 
 For this example, `schemaA` references `schemaB`, and both definitions are in separate files, as a result `schemaA` is importing the file containing `schemaB`.
+
+Additionally, while it's possible to have multiple `import` definitions in a file, good style would suggest using a single `import` list per file.
 
 _schemaA.yaml_
 ```yaml
 import:
-  - ./schemaB.yaml
+  files:
+    - ./schemaB.yaml
+---
 schema:
-    name: schemaA
-    fields:
-        - name: sub-datastructure
-          type: schemaB
-        - name: integer
-          type: int
+  name: schemaA
+  fields:
+    - name: sub-datastructure
+      type: schemaB
+    - name: integer
+      type: int
 ```
 _schemaB.yaml_
 ```yaml
 schema:
-    name: schemaB
-    fields:
-        - name: string
-          type: string
+  name: schemaB
+  fields:
+    - name: string
+      type: string
 ```
 
 ## Embedding AaC files alongside your implementation

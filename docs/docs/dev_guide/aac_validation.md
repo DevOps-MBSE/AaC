@@ -53,7 +53,7 @@ validation:
             - The ValidatorInput content consists of valid AaC definitions.
             - The ValidatorInput contains some AaC definitions with only one of the mutually exclusive fields defined.
           when:
-            - The input is validation
+            - The validator plugin is executed.
           then:
             - The ValidatorOutput does not indicate any errors
             - The ValidatorOutput does not indicate any warnings
@@ -63,7 +63,7 @@ validation:
             - The ValidatorInput content consists of valid AaC definitions.
             - The ValidatorInput contains some AaC definitions with none of the mutually exclusive fields defined.
           when:
-            - The input is validation
+            - The validator plugin is executed.
           then:
             - The ValidatorOutput does not indicate any errors
             - The ValidatorOutput does not indicate any warnings

@@ -1,16 +1,17 @@
-"""AaC Plugin implementation module for the aac-rest-api plugin."""
+"""AaC Plugin implementation module for the REST API plugin."""
 
-from fastapi.openapi.utils import get_openapi
 import asyncio
 import json
 import logging
 import os
 import uvicorn
 
+from fastapi.openapi.utils import get_openapi
+
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 from aac.plugins.first_party.rest_api.aac_rest_app import app, refresh_available_files_in_workspace
 
-plugin_name = "rest-api"
+plugin_name = "REST API"
 
 
 def rest_api(host: str = "0.0.0.0", port: int = 8000) -> PluginExecutionResult:

@@ -1,7 +1,8 @@
-"""A plugin to print JSON schema of AaC model files."""
+"""AaC Plugin implementation module for the Generate JSON plugin."""
 
 import json
 import os
+
 from typing import Optional
 
 from aac.io.writer import write_file
@@ -10,7 +11,7 @@ from aac.plugins.plugin_execution import PluginExecutionResult, PluginExecutionS
 from aac.validate import validated_source
 
 
-plugin_name = "gen-json"
+plugin_name = "Generate JSON"
 
 
 def print_json(architecture_files: list[str], output_directory: Optional[str] = None) -> PluginExecutionResult:

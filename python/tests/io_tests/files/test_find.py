@@ -5,69 +5,66 @@ from aac.io.constants import YAML_DOCUMENT_EXTENSION, AAC_DOCUMENT_EXTENSION
 from aac.io.files.find import find_aac_files, is_aac_file
 from aac.spec.core import get_aac_spec_as_yaml
 
-from tests.helpers.io import temporary_test_file
+from tests.helpers.io import TemporaryTestFile
 
 
 class TestFindFiles(TestCase):
     def test_is_aac_file_with_valid_yaml_file(self):
         test_file_content = get_aac_spec_as_yaml()
-        with temporary_test_file(test_file_content, suffix=YAML_DOCUMENT_EXTENSION) as test_yaml:
+        with TemporaryTestFile(test_file_content, suffix=YAML_DOCUMENT_EXTENSION) as test_yaml:
             actual_result = is_aac_file(test_yaml.name)
 
         self.assertTrue(actual_result)
 
     def test_is_aac_file_with_valid_aac_file(self):
         test_file_content = get_aac_spec_as_yaml()
-        with temporary_test_file(test_file_content, suffix=AAC_DOCUMENT_EXTENSION) as test_yaml:
+        with TemporaryTestFile(test_file_content, suffix=AAC_DOCUMENT_EXTENSION) as test_yaml:
             actual_result = is_aac_file(test_yaml.name)
 
         self.assertTrue(actual_result)
 
     def test_is_aac_file_with_invalid_yaml_file(self):
-        with temporary_test_file(VALID_NON_AAC_YAML_CONTENT, suffix=YAML_DOCUMENT_EXTENSION) as test_yaml:
+        with TemporaryTestFile(VALID_NON_AAC_YAML_CONTENT, suffix=YAML_DOCUMENT_EXTENSION) as test_yaml:
             actual_result = is_aac_file(test_yaml.name)
 
         self.assertFalse(actual_result)
 
     def test_is_aac_file_with_invalid_aac_file(self):
-        with temporary_test_file(NON_YAML_FILE_CONTENT, suffix=AAC_DOCUMENT_EXTENSION) as test_yaml:
+        with TemporaryTestFile(NON_YAML_FILE_CONTENT, suffix=AAC_DOCUMENT_EXTENSION) as test_yaml:
             actual_result = is_aac_file(test_yaml.name)
 
         self.assertFalse(actual_result)
 
     def test_is_aac_file_with_invalid_file_extension(self):
         test_file_content = get_aac_spec_as_yaml()
-        with temporary_test_file(test_file_content, suffix=".notYamlOrAac") as test_yaml:
+        with TemporaryTestFile(test_file_content, suffix=".notYamlOrAac") as test_yaml:
             actual_result = is_aac_file(test_yaml.name)
 
         self.assertFalse(actual_result)
 
     def test_find_aac_files(self):
-
         with (
             TemporaryDirectory() as l1_temp_dir,
-            temporary_test_file(get_aac_spec_as_yaml(), dir=l1_temp_dir, suffix=AAC_DOCUMENT_EXTENSION) as l1_aac_file_aac,
-            temporary_test_file(
+            TemporaryTestFile(get_aac_spec_as_yaml(), dir=l1_temp_dir, suffix=AAC_DOCUMENT_EXTENSION) as l1_aac_file_aac,
+            TemporaryTestFile(
                 VALID_NON_AAC_YAML_CONTENT, dir=l1_temp_dir, suffix=AAC_DOCUMENT_EXTENSION
             ) as l1_invalid_file_aac,
         ):
 
             with (
                 TemporaryDirectory(dir=l1_temp_dir) as l2_temp_dir,
-                temporary_test_file(
-                    get_aac_spec_as_yaml(), dir=l2_temp_dir, suffix=YAML_DOCUMENT_EXTENSION
-                ) as l2_aac_file_yaml,
-                temporary_test_file(
+                TemporaryTestFile(get_aac_spec_as_yaml(), dir=l2_temp_dir, suffix=YAML_DOCUMENT_EXTENSION) as l2_aac_file_yaml,
+                TemporaryTestFile(
                     VALID_NON_AAC_YAML_CONTENT, dir=l2_temp_dir, suffix=YAML_DOCUMENT_EXTENSION
                 ) as l2_invalid_file_yaml,
             ):
 
                 with (
                     TemporaryDirectory(dir=l2_temp_dir) as l3_temp_dir,
-                    temporary_test_file(
+                    TemporaryTestFile(
                         get_aac_spec_as_yaml(), dir=l3_temp_dir, suffix=AAC_DOCUMENT_EXTENSION
                     ) as l3_aac_file_aac,
-                    temporary_test_file(
+                    TemporaryTestFile(
                         VALID_NON_AAC_YAML_CONTENT, dir=l3_temp_dir, suffix=AAC_DOCUMENT_EXTENSION
                     ) as l3_invalid_file_aac,
                 ):

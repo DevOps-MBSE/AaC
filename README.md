@@ -109,43 +109,45 @@ structured and organized.  To help with this AaC allows you to define each item 
 then import it as needed.  To do this just put an **import** at the root of your model file.
 
 Here's an example of the EchoService broken into two files:
-- Message.yaml
-    ```yaml
-    schema:
-    name: Message
-    fields:
+*Message.yaml*
+```yaml
+schema:
+  name: Message
+  fields:
     - name: body
-        type: string
+      type: string
     - name: sender
-        type: string
-    ```
-- EchoService.yaml
-    ```yaml
-    import:
+      type: string
+```
+*EchoService.yaml*
+```yaml
+import:
+  files:
     - ./Message.yaml
-    model:
-    name: EchoService
-    description: This is a message mirror.
-    behavior:
-        - name: echo
-        type: request-response
-        description: This is the one thing it does.
-        input:
-            - name: inbound
-            type: Message
-        output:
-            - name: outbound
-            type: Message
-        acceptance:
-            - scenario: onReceive
-            given:
-            - The EchoService is running.
-            when:
-                - The user sends a message to EchoService.
-            then:
-                - The user receives the same message from EchoService.
+---
+model:
+  name: EchoService
+  description: This is a message mirror.
+  behavior:
+    - name: echo
+      type: request-response
+      description: This is the one thing it does.
+      input:
+        - name: inbound
+          type: Message
+      output:
+        - name: outbound
+          type: Message
+      acceptance:
+        - scenario: onReceive
+          given:
+          - The EchoService is running.
+          when:
+          - The user sends a message to EchoService.
+          then:
+          - The user receives the same message from EchoService.
+```
 
-    ```
 Ok, so that's interesting, but what can you do with the AaC model once you've built it?
 AaC is designed and built on years of experimentation, experience, and learning.  But this version
 is a brand new implementation rewritten entirely in Python in an attempt to make AaC more user friendly

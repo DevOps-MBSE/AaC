@@ -1,9 +1,11 @@
 import:
-  - ./DataA.yaml
-  - ./DataD.yaml
-  - ./ServiceOne.yaml
-  - ./Subsystem.yaml
-  - ./ServiceThree.yaml
+  files:
+    - ./DataA.yaml
+    - ./DataD.yaml
+    - ./ServiceOne.yaml
+    - ./Subsystem.yaml
+    - ./ServiceThree.yaml
+---
 model:
   name: System
   description: A simple distributed system model

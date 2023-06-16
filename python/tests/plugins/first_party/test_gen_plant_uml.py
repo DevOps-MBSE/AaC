@@ -19,7 +19,7 @@ from aac.plugins.first_party.gen_plant_uml.gen_plant_uml_impl import (
 
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.assertion import assert_plugin_success
-from tests.helpers.io import temporary_test_file
+from tests.helpers.io import TemporaryTestFile
 from tests.helpers.plugins import check_generated_file_contents
 
 
@@ -64,8 +64,10 @@ class TestGenPlantUml(ActiveContextTestCase):
             )
 
     def test_puml_component_diagram_to_file(self):
-        with (TemporaryDirectory() as temp_directory,
-              temporary_test_file(TEST_PUML_ARCH_YAML, dir=temp_directory, suffix=YAML_DOCUMENT_EXTENSION) as plugin_yaml):
+        with (
+            TemporaryDirectory() as temp_directory,
+            TemporaryTestFile(TEST_PUML_ARCH_YAML, dir=temp_directory, suffix=YAML_DOCUMENT_EXTENSION) as plugin_yaml,
+        ):
             result = puml_component(plugin_yaml.name, temp_directory)
 
             full_output_dir = os.path.join(temp_directory, COMPONENT_STRING)
@@ -86,8 +88,10 @@ class TestGenPlantUml(ActiveContextTestCase):
                 check_generated_file_contents(path, self._get_checker_from_filepath(parts[-1], COMPONENT_STRING))
 
     def test_puml_object_diagram_to_file(self):
-        with (TemporaryDirectory() as temp_directory,
-              temporary_test_file(TEST_PUML_ARCH_YAML, dir=temp_directory, suffix=YAML_DOCUMENT_EXTENSION) as plugin_yaml):
+        with (
+            TemporaryDirectory() as temp_directory,
+            TemporaryTestFile(TEST_PUML_ARCH_YAML, dir=temp_directory, suffix=YAML_DOCUMENT_EXTENSION) as plugin_yaml,
+        ):
             full_output_dir = os.path.join(temp_directory, OBJECT_STRING)
 
             result = puml_object(plugin_yaml.name, temp_directory)
@@ -104,8 +108,10 @@ class TestGenPlantUml(ActiveContextTestCase):
                 self._check_object_diagram_content(generated_puml_file.read())
 
     def test_puml_sequence_diagram_to_file(self):
-        with (TemporaryDirectory() as temp_directory,
-              temporary_test_file(TEST_PUML_ARCH_YAML, dir=temp_directory, suffix=YAML_DOCUMENT_EXTENSION) as plugin_yaml):
+        with (
+            TemporaryDirectory() as temp_directory,
+            TemporaryTestFile(TEST_PUML_ARCH_YAML, dir=temp_directory, suffix=YAML_DOCUMENT_EXTENSION) as plugin_yaml,
+        ):
             result = puml_sequence(plugin_yaml.name, temp_directory)
 
             full_output_dir = os.path.join(temp_directory, SEQUENCE_STRING)

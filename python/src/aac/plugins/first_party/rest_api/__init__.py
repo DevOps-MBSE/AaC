@@ -51,7 +51,7 @@ def _get_plugin_commands():
             rest_api_arguments,
         ),
         AacCommand(
-            "generate-openapi-spec",
+            "gen-openapi-spec",
             "Write the OpenAPI schema to a JSON file.",
             generate_api_spec,
             generate_api_spec_arguments,

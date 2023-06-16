@@ -1,10 +1,10 @@
-model:
-  name: plugin-management
-  description: An AaC plugin that manages which plugins available in the language context.
-  behavior:
+plugin:
+  name: Plugin Management
+  description: An AaC plugin that manages which plugins are available in the language context.
+  commands:
     - name: list-plugins
-      type: command
-      description: Display a list of available plugins.
+      group: Management
+      helpText: Display a list of available plugins.
       input:
         - name: --all
           type: bool
@@ -26,17 +26,17 @@ model:
       acceptance:
         - scenario: Display a list of all installed plugins.
           when:
-            - The command is run with the {{plugin-management.input.--all}} flag.
+            - The command is run with the {{list-plugins.input.--all}} flag.
           then:
             - A list of all plugins installed on the system will be displayed.
         - scenario: Display a list of all plugins that are active on the system.
           when:
-            - The command is run with the {{plugin-management.input.--active}} flag.
+            - The command is run with the {{list-plugins.input.--active}} flag.
           then:
             - A list of all plugins installed on the system that are active will be displayed.
         - scenario: Display a list of all plugins that are installed but not active on the system.
           when:
-            - The command is run with the {{plugin-management.input.--inactive}} flag.
+            - The command is run with the {{list-plugins.input.--inactive}} flag.
           then:
             - A list of all plugins installed on the system that are inactive will be displayed.
         - scenario: Help displayed when no flags given.
@@ -50,8 +50,8 @@ model:
           then:
             - An error is displayed to the user stating that flags are mutually exclusive.
     - name: activate-plugin
-      type: command
-      description: Activate a plugin that's available and inactive on the system.
+      group: Management
+      helpText: Activate a plugin that's available and inactive on the system.
       input:
         - name: name
           type: string
@@ -60,29 +60,29 @@ model:
       acceptance:
         - scenario: Plugin is activated.
           given:
-            - The plugin named {{plugin-management.activate-plugin.plugin-name}} is installed on the system.
-            - The plugin named {{plugin-management.activate-plugin.plugin-name}} is inactive on the system.
+            - The plugin named {{activate-plugin.input.name}} is installed on the system.
+            - The plugin named {{activate-plugin.input.name}} is inactive on the system.
           when:
-            - The command is run with {{plugin-management.activate-plugin.plugin-name}}.
+            - The command is run with {{activate-plugin.input.name}}.
           then:
-            - The plugin named {{plugin-management.activate-plugin.plugin-name}} is activated.
+            - The plugin named {{activate-plugin.input.name}} is activated.
         - scenario: Error when plugin is not installed.
           given:
-            - The plugin named {{plugin-management.activate-plugin.plugin-name}} is not installed on the system.
+            - The plugin named {{activate-plugin.input.name}} is not installed on the system.
           when:
-            - The command is run with {{plugin-management.activate-plugin.plugin-name}}.
+            - The command is run with {{activate-plugin.input.name}}.
           then:
             - An error message is displayed to the user stating the plugin is not installed on the system.
         - scenario: Error when plugin is active.
           given:
-            - The plugin named {{plugin-management.activate-plugin.plugin-name}} is active.
+            - The plugin named {{activate-plugin.input.name}} is active.
           when:
-            - The command is run with {{plugin-management.activate-plugin.plugin-name}}.
+            - The command is run with {{activate-plugin.input.name}}.
           then:
             - An error message is displayed to the user stating the plugin is active.
     - name: deactivate-plugin
-      type: command
-      description: Deactivate a plugin that's available and active on the system.
+      group: Management
+      helpText: Deactivate a plugin that's available and active on the system.
       input:
         - name: name
           type: string
@@ -91,23 +91,23 @@ model:
       acceptance:
         - scenario: Plugin is deactivated.
           given:
-            - The plugin named {{plugin-management.activate-plugin.plugin-name}} is installed on the system.
-            - The plugin named {{plugin-management.activate-plugin.plugin-name}} is active on the system.
+            - The plugin named {{deactivate-plugin.input.name}} is installed on the system.
+            - The plugin named {{deactivate-plugin.input.name}} is active on the system.
           when:
-            - The command is run with {{plugin-management.activate-plugin.plugin-name}}.
+            - The command is run with {{deactivate-plugin.input.name}}.
           then:
-            - The plugin named {{plugin-management.activate-plugin.plugin-name}} is deactivated.
+            - The plugin named {{deactivate-plugin.input.name}} is deactivated.
         - scenario: Error when plugin is not installed.
           given:
-            - The plugin named {{plugin-management.activate-plugin.plugin-name}} is not installed on the system.
+            - The plugin named {{deactivate-plugin.input.name}} is not installed on the system.
           when:
-            - The command is run with {{plugin-management.activate-plugin.plugin-name}}.
+            - The command is run with {{deactivate-plugin.input.name}}.
           then:
             - An error message is displayed to the user stating the plugin is not installed on the system.
         - scenario: Error when plugin is not active.
           given:
-            - The plugin named {{plugin-management.activate-plugin.plugin-name}} is inactive.
+            - The plugin named {{deactivate-plugin.input.name}} is inactive.
           when:
-            - The command is run with {{plugin-management.activate-plugin.plugin-name}}.
+            - The command is run with {{deactivate-plugin.input.name}}.
           then:
             - An error message is displayed to the user stating the plugin is inactive.

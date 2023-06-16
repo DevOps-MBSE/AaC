@@ -1,6 +1,11 @@
 import:
-  - ./System.yaml
-  - ./External.yaml
+  files:
+    - ./System.yaml
+    - ./ServiceOne.yaml
+    - ./Subsystem.yaml
+    - ./ServiceThree.yaml
+    - ./External.yaml
+---
 usecase:
   name: Nominal flow of data through the system.
   description: Something happens.
@@ -19,11 +24,6 @@ usecase:
       target: user
       action: response
 ---
-import:
-  - ./System.yaml
-  - ./ServiceOne.yaml
-  - ./Subsystem.yaml
-  - ./ServiceThree.yaml
 usecase:
   name: Nominal flow within the system.
   description:

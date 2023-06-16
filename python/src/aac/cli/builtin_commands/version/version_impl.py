@@ -1,9 +1,9 @@
-"""AaC Plugin implementation module for the version plugin."""
+"""AaC Plugin implementation module for the Version plugin."""
 
 from aac import __version__
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 
-plugin_name = "version"
+plugin_name = "Version"
 
 
 def version() -> PluginExecutionResult:

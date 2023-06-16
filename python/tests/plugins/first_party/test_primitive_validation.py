@@ -25,7 +25,7 @@ from aac.validate import validated_source
 
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.assertion import assert_validator_result_success
-from tests.helpers.io import temporary_test_file
+from tests.helpers.io import TemporaryTestFile
 from tests.helpers.prebuilt_definition_constants import (
     ALL_PRIMITIVES_INSTANCE,
     ALL_PRIMITIVES_TEST_DEFINITION,
@@ -50,8 +50,8 @@ class TestPrimitiveValidation(ActiveContextTestCase):
         )
 
         with (
-            temporary_test_file("") as empty_test_file,
-            temporary_test_file(ALL_PRIMITIVES_INSTANCE.to_yaml()) as test_file,
+            TemporaryTestFile("") as empty_test_file,
+            TemporaryTestFile(ALL_PRIMITIVES_INSTANCE.to_yaml()) as test_file,
         ):
             empty_test_file.name = "test.aac"
             with validated_source(test_file.name) as result:
@@ -75,7 +75,7 @@ class TestPrimitiveValidation(ActiveContextTestCase):
         test_content.replace(str(ALL_PRIMITIVES_INSTANCE.structure[root_key][PRIMITIVE_TYPE_STRING.upper()]), "123")
 
         with (
-            temporary_test_file(test_content) as test_file,
+            TemporaryTestFile(test_content) as test_file,
             self.assertRaises(Exception) as error,
             validated_source(test_file.name),
         ):
@@ -123,7 +123,7 @@ class TestPrimitiveValidation(ActiveContextTestCase):
         self._test_invalid_primitive_validation(PRIMITIVE_TYPE_NUMBER, "20.2", invalid_numbers, finding_assertion)
 
     def test_file_type_valid_file(self):
-        with temporary_test_file("") as test_file:
+        with TemporaryTestFile("") as test_file:
             valid_files = [test_file.name]
             self._test_valid_primitive_validation(PRIMITIVE_TYPE_FILE, "./test.aac", valid_files)
 

@@ -1,10 +1,10 @@
-model:
-  name: gen-design-doc
-  description: gen-design-doc is an Architecture-as-Code plugin that generates a System Design Document from Architecture-as-Code models.
-  behavior:
+plugin:
+  name: Generate System Design Document
+  description: An AaC plugin that generates a System Design Document from AaC definitions.
+  commands:
     - name: gen-design-doc
-      type: command
-      description: Generate a System Design Document from Architecture-as-Code models.
+      group: Generation
+      helpText: Generate a System Design Document from Architecture-as-Code models.
       input:
         - name: architecture-file
           type: file
