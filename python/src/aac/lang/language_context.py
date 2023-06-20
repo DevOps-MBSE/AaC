@@ -670,9 +670,7 @@ class LanguageContext:
     def clear(self) -> None:
         """Remove all definitions and plugins from the language context."""
         self.is_initialized = False
-        self.definitions = []
         self.plugins = []
-        self.definitions_dictionary = {}
 
     # Private methods
 

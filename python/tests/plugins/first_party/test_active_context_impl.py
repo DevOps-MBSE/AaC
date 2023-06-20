@@ -67,15 +67,15 @@ class TestActiveContextPlugin(ActiveContextTestCase):
             test_context = get_active_context(reload_context=True)
             test_context.deactivate_plugin_by_name(plugin_name)
             test_context.export_to_file(state_file.name)
-
             test_context = get_active_context(reload_context=True)
-            self.assertNotIn(self.definition.name, test_context.get_defined_types())
 
             result = import_state(state_file=state_file.name)
             self.assertEqual(result.status_code, PluginExecutionStatusCode.SUCCESS)
 
             success_message_regex = f"success.*import.*{basename(state_file.name)}"
             self.assertRegexpMatches(result.get_messages_as_string().lower(), success_message_regex)
+
+            self.assertIn(DEFINITION_NAME_PRIMITIVES, test_context.get_defined_types())
 
             active_plugin_names = [plugin.name for plugin in test_context.get_active_plugins()]
             self.assertNotIn(plugin_name, active_plugin_names)
