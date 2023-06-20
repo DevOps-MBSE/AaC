@@ -15,8 +15,6 @@ from tests.helpers.parsed_definitions import (
     create_model_definition,
 )
 
-import unittest
-
 
 class TestLangReferences(ActiveContextTestCase):
     def test_get_definition_type_references_from_list(self):
@@ -89,7 +87,6 @@ class TestLangReferences(ActiveContextTestCase):
         # get non-existent intermediate selector
         self.assertEqual(len(get_reference_target_definitions("model.behavior(name=not_a_valid_name).input", language_context)), 0)
 
-    @unittest.skip("There currently is no definition in the core spec that has a non string primitive value to support this test.  When we removed the material plugin this test became invalid.  In the future we may update this.")
     def test_get_reference_target_definitions_with_non_string_selector_value(self):
         # get model using selector that targets a non-string value
         language_context = get_active_context()
@@ -135,6 +132,16 @@ class TestLangReferences(ActiveContextTestCase):
 
 
 TEST_MODEL_WITH_NON_STRING_VALUE = """
+ext:
+  name: MaterialRootItems
+  type: root
+  schemaExt:
+    add:
+      - name: assembly
+        type: Assembly
+      - name: deployment
+        type: Deployment
+---
 deployment:
   name: My_New_Apartment
   description: The place I'm going to live.
