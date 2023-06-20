@@ -36,7 +36,6 @@ def get_plugin_manager() -> PluginManager:
         "specifications",
         "print_spec",
         "lsp_server",
-        "material_model",
         "help_dump",
         "rest_api",
         "primitive_type_check",
