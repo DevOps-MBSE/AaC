@@ -6,9 +6,6 @@ from aac.plugins.plugin import Plugin
 from aac.plugins.first_party.active_context.active_context_impl import (
     plugin_name,
     list_files,
-    remove_file,
-    add_file,
-    reset_context,
     list_definitions,
     describe_definition,
     import_state,
@@ -30,20 +27,6 @@ def get_plugin() -> Plugin:
 
 
 def _get_plugin_commands():
-    remove_file_arguments = [
-        AacCommandArgument(
-            "file",
-            "The name of the file that is being removed from the active context.",
-            "str",
-        ),
-    ]
-    add_file_arguments = [
-        AacCommandArgument(
-            "file",
-            "The name of the file to add to the active context.",
-            "str",
-        ),
-    ]
     describe_definition_arguments = [
         AacCommandArgument(
             "definition-name",
@@ -77,23 +60,6 @@ def _get_plugin_commands():
             "list-files",
             "Display the files in the active context.",
             list_files,
-        ),
-        AacCommand(
-            "remove-file",
-            "Remove a file from the active context.",
-            remove_file,
-            remove_file_arguments,
-        ),
-        AacCommand(
-            "add-file",
-            "Add a file to the active context.",
-            add_file,
-            add_file_arguments,
-        ),
-        AacCommand(
-            "reset-context",
-            "Reset the active context to a fresh state before any changes have been made.",
-            reset_context,
         ),
         AacCommand(
             "list-definitions",
