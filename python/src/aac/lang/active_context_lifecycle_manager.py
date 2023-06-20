@@ -22,7 +22,7 @@ def get_active_context(reload_context: bool = False) -> LanguageContext:
     global ACTIVE_CONTEXT
 
     if not ACTIVE_CONTEXT and not reload_context:
-        ACTIVE_CONTEXT = LanguageContext()
+        ACTIVE_CONTEXT = get_initialized_language_context(core_spec_only=True)
         ACTIVE_CONTEXT.import_from_file(ACTIVE_CONTEXT_STATE_FILE_NAME)
 
     if not ACTIVE_CONTEXT or reload_context or not ACTIVE_CONTEXT.is_initialized:
