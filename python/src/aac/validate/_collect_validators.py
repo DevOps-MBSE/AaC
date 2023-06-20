@@ -2,9 +2,8 @@ import logging
 from typing import Optional
 
 from aac.lang.language_context import LanguageContext
-from aac.lang.constants import DEFINITION_FIELD_NAME, DEFINITION_FIELD_VALIDATION, ROOT_KEY_SCHEMA
+from aac.lang.constants import DEFINITION_FIELD_NAME, ROOT_KEY_SCHEMA
 from aac.lang.definitions.definition import Definition
-from aac.lang.definitions.search import search_definition
 from aac.lang.definitions.schema import get_definition_schema_components
 from aac.lang.hierarchy import get_definition_ancestry
 from aac.plugins.contributions.contribution_types import DefinitionValidationContribution
@@ -40,27 +39,22 @@ def get_applicable_validators_for_definition(
 
     applicable_validators = {}
     for validation_dict in applicable_validation_dicts:
-        validation_name = validation_dict.get(DEFINITION_FIELD_NAME)
+        validation_name = validation_dict.get(DEFINITION_FIELD_NAME, "")
         validator_plugin = _get_validator_plugin_by_name(validation_name, validator_plugins)
 
         if validator_plugin:
             applicable_validators[validation_name] = validator_plugin
-        else:
-            logging.error(
-                f"Failed to find applicable validator plugin for name '{validation_name}' out of the available plugins:\n{applicable_validation_dicts}"
-            )
 
     return list(applicable_validators.values())
 
 
 def _get_validation_entries(definition: Definition) -> list[dict]:
     """Return a list of validation entries from the definition."""
+    validations = []
 
-    validations = {}
-
-    # Currently validations are only registered in `data` root definitions.
+    # Currently validations are only registered in `schema` root definitions.
     if definition.get_root_key() == ROOT_KEY_SCHEMA:
-        validations = search_definition(definition, [ROOT_KEY_SCHEMA, DEFINITION_FIELD_VALIDATION])
+        validations = definition.get_validations() or []
 
     return validations
 

@@ -30,12 +30,13 @@ jobs:
         id: os_id
         if: matrix.os != 'windows-latest'
         run: |
-          ./secure_install/pipeline_scripts/create_install_archive.bash
+          ./secure_install/pipeline_scripts/create_install_archive.bash bash
 
       - name: Create Dependencies Package
         if: matrix.os == 'windows-latest'
         run: |
-          ./secure_install/pipeline_scripts/create_install_archive.bat
+          ./secure_install/pipeline_scripts/create_install_archive.bash bat
+        shell: bash
 
       - name: Upload Dependencies Package
         uses: actions/upload-artifact@v3

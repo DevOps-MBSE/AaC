@@ -58,7 +58,8 @@ class Definition:
 
     def __hash__(self) -> int:
         """Return the hash of this Definition."""
-        return hash(self.name)
+        token_line = self.lexemes[0].location.line if len(self.lexemes) > 0 else -1
+        return hash(f"{self.name}:{token_line}:{self.source.uri}")
 
     def __eq__(self, obj):
         """Equals function for the Definition."""

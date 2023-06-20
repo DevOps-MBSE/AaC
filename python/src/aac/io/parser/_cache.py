@@ -76,7 +76,7 @@ class YamlLFUCache:
         sanitized_file_path = sanitize_filesystem_path(file_path)
         cache_entry = None
         if lexists(sanitized_file_path):
-            with open(sanitized_file_path) as yaml_file:
+            with open(file=sanitized_file_path, encoding='utf-8') as yaml_file:
                 file_content = yaml_file.read()
                 cache_entry = self._get_or_parse_string(sanitized_file_path, file_content)
         else:

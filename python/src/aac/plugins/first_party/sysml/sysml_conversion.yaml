@@ -1,0 +1,27 @@
+ext:
+  name: SysmlSchemaMetadata
+  description: |
+    Provides SysML-specific metadata information necessary to facilitate converting between the core AaC language schemas and the AaC SysML user library.
+  type: schema
+  schemaExt:
+    add:
+      - name: sysmlElement
+        type: reference
+        description: Defines the corresponding SysML model's datastructure.
+      - name: sysml_stereotypes
+        type: reference[]
+        description: Defines any SysML stereotypes applied to this entity.
+---
+ext:
+  name: SysmlModelMetadata
+  description: |
+    Provides SysML-specific metadata information necessary to facilitate converting between the core AaC language models and the AaC SysML user library.
+  type: model
+  schemaExt:
+    add:
+      - name: sysmlElement
+        type: reference
+        description: Defines the corresponding SysML model's datastructure.
+      - name: sysml_stereotypes
+        type: reference[]
+        description: Defines any SysML stereotypes applied to this entity.

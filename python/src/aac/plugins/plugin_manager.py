@@ -42,6 +42,7 @@ def get_plugin_manager() -> PluginManager:
         "primitive_type_check",
         "plugin_management",
         "active_context",
+        "sysml",
     ]
 
     # register "built-in" commands

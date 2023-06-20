@@ -10,7 +10,7 @@ model:
           type: string
           python_type: str
           description: Set the hostname of the service. Useful for operating behind proxies.
-          defualt: 0.0.0.0
+          default: 0.0.0.0
         - name: --port
           type: int
           python_type: int

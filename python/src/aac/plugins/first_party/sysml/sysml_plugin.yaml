@@ -1,0 +1,49 @@
+model:
+  name: SysMLPlugin
+  description: |
+    Provides SysML syntax for AaC users as an alternative to the base AaC language.
+
+    This user library is written to the SysML version 1.5 standard found here:
+    https://sysml.org/.res/docs/specs/OMGSysML-v1.5-17-05-01.pdf
+  behavior:
+    - name: sysml-to-aac
+      type: command
+      description: Converts an AaC model captured in the SysML plugin DSL to the core AaC DSL.
+      input:
+        - name: architecture-file
+          type: file
+          python_type: str
+          description: Path to a yaml file containing a model or modeled system written in the AaC SysML DSL.
+        - name: output-directory
+          type: directory
+          python_type: str
+          description: Output directory for generated core AaC model(s).
+    - name: aac-to-sysml
+      type: command
+      description: Converts an AaC model captured in the core AaC DSL to the SysML plugin's AaC DSL.
+      input:
+        - name: architecture-file
+          type: file
+          python_type: str
+          description: Path to a yaml file containing a model or modeled system written in the core AaC DSL.
+        - name: output-directory
+          type: directory
+          python_type: str
+          description: Output directory for generated SysML AaC model(s).
+      acceptance:
+        - scenario: Generate a core AaC DSL model from a SysML AaC model.
+          given:
+            - The {{aac-to-sysml.input.architecture-file}} contains a valid model written in the SysML DSL.
+          when:
+            - The aac app is run with the aac-to-sysml command.
+          then:
+            - An AaC core DSL model is generated in the output directory.
+        - scenario: Generate a SysML AaC DSL model from a core AaC DSL model.
+          given:
+            - The {{aac-to-sysml.input.architecture-file}} contains a valid model written in the core AaC DSL.
+          when:
+            - The aac app is run with the aac-to-sysml command.
+          then:
+            - An AaC core DSL model is generated in the output directory.
+
+

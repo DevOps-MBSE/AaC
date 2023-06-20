@@ -153,7 +153,7 @@ def _read_file_content(arch_file: str) -> str:
         The contents of the file as a string.
     """
     arch_file_path = arch_file
-    with open(arch_file_path, "r") as file:
+    with open(arch_file_path, "r", encoding='utf-8') as file:
         return file.read()
 
 
