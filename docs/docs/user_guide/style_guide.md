@@ -125,7 +125,7 @@ schema:
 In this example, a user unfamiliar with the project can easily mistake `simple_enum` as a primitive type.
 
 ## Enumeration Values
-Enumeration values in AaC are all `UPPSERCASE`, following the common style for enumeration values and constants in programming languages such as Python and Java.
+Enumeration values in AaC are all `UPPERCASE`, following the common style for enumeration values and constants in programming languages such as Python and Java.
 
 ```yaml
 enum:
@@ -148,7 +148,7 @@ Like primitive types, root keys should follow the `snake_case` style, but emphas
 # Organizing Imports
 Each AaC file has a file-wide import declaration definition. Using an `import` definition allows users to reference definitions provided via other user files and can be used to decompose large, complex models into multiple files.
 
-Because `import` decalarations are file-wide, these clauses should be the first clause in AaC files. There is no internal logic that dictates the order of the entries in an AaC file, but maintaining the `import` clause as the first definition in AaC files makes the file-wide dependencies immediately visible and informs readers on the dependencies of file. Additionally, while it's possible to include multiple `import` definitions in a single file, the preferred approach is to list all imported files into a single `import` definition in each file.
+Because `import` decalarations are file-wide, these clauses should be the first clause in AaC files. There is no internal logic that dictates the order of the entries in an AaC file, but maintaining the `import` clause as the first definition in AaC files makes the file-wide dependencies immediately visible and informs readers on the dependencies of file. Additionally, while it's possible to include multiple `import` definitions in a single file, the preferred approach is to list all imported files in a single `import` definition in each file.
 
 An example file with an import clause at the top:
 
