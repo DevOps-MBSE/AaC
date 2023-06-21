@@ -1,8 +1,10 @@
 import:
-  - ./Data.aac
-  - ./Services.aac
-  - ./Subsystem.aac
-  - ./External.aac
+  files:
+    - ./Data.aac
+    - ./Services.aac
+    - ./Subsystem.aac
+    - ./External.aac
+---
 model:
   name: System
   description: A simple distributed system model

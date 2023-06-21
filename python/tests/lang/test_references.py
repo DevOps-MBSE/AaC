@@ -132,6 +132,16 @@ class TestLangReferences(ActiveContextTestCase):
 
 
 TEST_MODEL_WITH_NON_STRING_VALUE = """
+ext:
+  name: MaterialRootItems
+  type: root
+  schemaExt:
+    add:
+      - name: assembly
+        type: Assembly
+      - name: deployment
+        type: Deployment
+---
 deployment:
   name: My_New_Apartment
   description: The place I'm going to live.

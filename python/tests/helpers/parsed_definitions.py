@@ -9,12 +9,14 @@ from aac.lang.constants import (
     DEFINITION_FIELD_DEFINITION_VALIDATIONS,
     DEFINITION_FIELD_DESCRIPTION,
     DEFINITION_FIELD_DISPLAY,
+    DEFINITION_FIELD_FILES,
     DEFINITION_FIELD_GROUP,
     DEFINITION_FIELD_HELP_TEXT,
     DEFINITION_FIELD_INPUT,
     DEFINITION_FIELD_NAME,
     DEFINITION_FIELD_OUTPUT,
     DEFINITION_FIELD_PRIMITIVE_VALIDATIONS,
+    ROOT_KEY_IMPORT,
     ROOT_KEY_PLUGIN,
     ROOT_KEY_VALIDATION,
 )
@@ -98,7 +100,15 @@ def create_validation_entry(name: str, arguments: list[str] = []) -> dict:
     }
 
 
-def create_behavior_entry(name: str, behavior_type: str = "pub-sub", description: str = "", tags: list[str] = [], input: list[dict] = [], output: list[dict] = [], acceptance: list[dict] = []) -> dict:
+def create_behavior_entry(
+    name: str,
+    behavior_type: str = "pub-sub",
+    description: str = "",
+    tags: list[str] = [],
+    input: list[dict] = [],
+    output: list[dict] = [],
+    acceptance: list[dict] = [],
+) -> dict:
     """
     Creates a single behavior entry for definitions.
 
@@ -118,7 +128,9 @@ def create_behavior_entry(name: str, behavior_type: str = "pub-sub", description
     }
 
 
-def create_scenario_entry(name: str, tags: list[str] = [], given: list[str] = [], when: list[str] = [], then: list[str] = []) -> dict:
+def create_scenario_entry(
+    name: str, tags: list[str] = [], given: list[str] = [], when: list[str] = [], then: list[str] = []
+) -> dict:
     """
     Creates a single scenario entry for definitions.
 
@@ -138,7 +150,9 @@ def create_enum_definition(name: str, values: list[str]):
     return create_definition("enum", name, definition_dict)
 
 
-def create_schema_definition(name: str, description: str = "", fields: list[dict] = [], validations: list[dict] = [], inherits: list[str] = []):
+def create_schema_definition(
+    name: str, description: str = "", fields: list[dict] = [], validations: list[dict] = [], inherits: list[str] = []
+):
     """Return a simulated schema definition."""
     definition_dict = {NAME_STRING: name}
 
@@ -184,7 +198,9 @@ def create_model_definition(
     return create_definition("model", name, definition_dict)
 
 
-def create_schema_ext_definition(name: str, type: str, description: str = "", fields: list[dict] = [], required: list[str] = []):
+def create_schema_ext_definition(
+    name: str, type: str, description: str = "", fields: list[dict] = [], required: list[str] = []
+):
     """Return a simulated schema extension definition."""
     definition_dict = {
         NAME_STRING: name,
@@ -260,6 +276,11 @@ def create_plugin_command_definition(
         DEFINITION_FIELD_GROUP: group,
     }
     return create_definition("PluginCommand", name, definition_dict)
+
+
+def create_import_definition(imports: list[str]) -> Definition:
+    definition_dict = {DEFINITION_FIELD_FILES: imports}
+    return create_definition(ROOT_KEY_IMPORT, "", definition_dict)
 
 
 def create_definition(root_key: str, name: str, other_fields: dict = {}) -> Definition:
