@@ -15,7 +15,7 @@ plugin:
 ---
 validator:
   name: Validate String Primitives
-  type: request-response
+  type: REQUEST_RESPONSE
   description:
   input:
     - name: input
@@ -58,7 +58,7 @@ validator:
 ---
 validator:
   name: Validate Integer Primitives
-  type: request-response
+  type: REQUEST_RESPONSE
   description:
   input:
     - name: input
@@ -101,7 +101,7 @@ validator:
 ---
 validator:
   name: Validate Number Primitives
-  type: request-response
+  type: REQUEST_RESPONSE
   description:
   input:
     - name: input
@@ -145,7 +145,7 @@ validator:
 ---
 validator:
   name: Validate Boolean Primitives
-  type: request-response
+  type: REQUEST_RESPONSE
   input:
     - name: input
       type: ValidatorInput
@@ -177,7 +177,7 @@ validator:
 ---
 validator:
   name: Validate Date Primitives
-  type: request-response
+  type: REQUEST_RESPONSE
   input:
     - name: input
       type: ValidatorInput
@@ -209,7 +209,7 @@ validator:
 ---
 validator:
   name: Validate File Primitives
-  type: request-response
+  type: REQUEST_RESPONSE
   input:
     - name: input
       type: ValidatorInput
@@ -243,7 +243,7 @@ validator:
 ---
 validator:
   name: Validate Directory Primitives
-  type: request-response
+  type: REQUEST_RESPONSE
   input:
     - name: input
       type: ValidatorInput
@@ -277,7 +277,7 @@ validator:
 ---
 validation:
   name: Validate Reference Primitives
-  type: request-response
+  type: REQUEST_RESPONSE
   input:
     - name: input
       type: ValidatorInput

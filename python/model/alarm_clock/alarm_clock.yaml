@@ -15,7 +15,7 @@ model:
       type: ClockAlarm
   behavior:
     - name: setAlarm
-      type: request-response
+      type: REQUEST_RESPONSE
       description: Set the alarm timer
       input:
         - name: targetTime
@@ -32,7 +32,7 @@ model:
   description: A simple clock that keeps track of the current time
   behavior:
     - name: getTime
-      type: timer
+      type: TIMER
       description: Get the current time
       output:
         - name: currentTime
@@ -47,13 +47,13 @@ model:
       description: The target timestamp indicating when to fire the alarm alert.
   behavior:
     - name: setTime
-      type: request-response
+      type: REQUEST_RESPONSE
       description: Set the target time for the timer
       input:
         - name: targetTime
           type: Timestamp
     - name: triggerTimer
-      type: timer
+      type: TIMER
       description: Dispatch the TimerAlert when the current time matches the target time
       input:
         - name: currentTime
@@ -67,7 +67,7 @@ model:
   description: A simple alarm that produces noise.
   behavior:
     - name: triggerAlarm
-      type: request-response
+      type: REQUEST_RESPONSE
       description: Trigger the alarm noise when a TimerAlert is received.
       input:
         - name: timerAlert

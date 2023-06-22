@@ -14,7 +14,7 @@ model:
   description: Api handler for math functions.
   behavior:
     - name: api
-      type: request-response
+      type: REQUEST_RESPONSE
       requirements:
         ids:
           - "ADD-1"

@@ -9,7 +9,7 @@ validation:
   description: Verify every field declared as required is present and populated.
   behavior:
     - name: Verify that definition fields marked as required are populated.
-      type: request-response
+      type: REQUEST_RESPONSE
       input:
         - name: input
           type: ValidatorInput

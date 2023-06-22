@@ -17,7 +17,7 @@ model:
       type: ServiceThree
   behavior:
     - name: doFlow
-      type: request-response
+      type: REQUEST_RESPONSE
       description:  process UserRequest and respond with DataD
       input:
         - name: in

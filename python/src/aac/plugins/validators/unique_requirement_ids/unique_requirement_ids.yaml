@@ -9,7 +9,7 @@ validation:
   description: Verify the IDs in a requirement reference is globally unique within the context.
   behavior:
     - name: Verify that requirement IDs are globally unique.
-      type: request-response
+      type: REQUEST_RESPONSE
       description:
       input:
         - name: input

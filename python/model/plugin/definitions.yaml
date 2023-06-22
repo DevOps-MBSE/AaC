@@ -17,7 +17,7 @@ validation:
   description: A test definition validator.
   behavior:
     - name: Validate a definition
-      type: request-response
+      type: REQUEST_RESPONSE
       input:
         - name: input
           type: ValidatorInput
@@ -40,7 +40,7 @@ validation:
   description: A test primitive validator.
   behavior:
     - name: Validate a primitive
-      type: request-response
+      type: REQUEST_RESPONSE
       input:
         - name: input
           type: ValidatorInput

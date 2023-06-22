@@ -15,7 +15,7 @@ validation:
     validation arguments.
   behavior:
     - name: Verify mutually exclusive fields
-      type: request-response
+      type: REQUEST_RESPONSE
       description:
       input:
         - name: input

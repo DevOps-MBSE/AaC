@@ -7,5 +7,5 @@ schema:
     - DataMessage
   name: DataA
   fields:
-  - name: request
-    type: string
+    - name: request
+      type: string

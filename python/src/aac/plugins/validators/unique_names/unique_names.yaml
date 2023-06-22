@@ -9,7 +9,7 @@ validation:
   description: Verify that all Definitions have unique names.
   behavior:
     - name: Verify that Definitions have unique names.
-      type: request-response
+      type: REQUEST_RESPONSE
       input:
         - name: definitions
           type: ValidatorInput

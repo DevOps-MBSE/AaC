@@ -1,9 +1,9 @@
 enum:
   name: MathFunction
   values:
-    - add
-    - subtract
-    - multiply
-    - divide
-    - power
-    - square-root
+    - ADD
+    - SUBTRACT
+    - MULTIPLY
+    - DIVIDE
+    - POWER
+    - SQUARE_ROOT

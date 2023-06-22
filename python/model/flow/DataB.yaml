@@ -7,5 +7,5 @@ schema:
   inherits:
     - DataMessage
   fields:
-  - name: transformed_request
-    type: string
+    - name: transformed_request
+      type: string

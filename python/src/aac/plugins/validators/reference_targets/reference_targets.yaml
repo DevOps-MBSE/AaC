@@ -11,7 +11,7 @@ validation:
     existing model element.
   behavior:
     - name: Reference target is valid.
-      type: request-response
+      type: REQUEST_RESPONSE
       description:
       input:
         - name: input

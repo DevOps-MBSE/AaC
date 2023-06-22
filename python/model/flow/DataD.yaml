@@ -7,5 +7,5 @@ schema:
   inherits:
     - DataMessage
   fields:
-  - name: response
-    type: string
+    - name: response
+      type: string
