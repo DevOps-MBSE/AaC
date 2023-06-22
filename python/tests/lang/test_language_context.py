@@ -282,6 +282,9 @@ class TestLanguageContext(ActiveContextTestCase):
         expected_results = get_root_keys()
         actual_results = test_context.get_root_keys()
 
+        expected_results.sort()
+        actual_results.sort()
+
         self.assertEqual(expected_results, actual_results)
 
     def test_get_enum_definition_by_type_when_enum_is_in_core_spec(self):
