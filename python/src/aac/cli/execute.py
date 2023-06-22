@@ -70,7 +70,6 @@ def to_click_command(command: AacCommand) -> Command:
 try:
     active_context = get_active_context()
 except ParserError as error:
-    print("hit parser error in execute in to_click_command()")
     raise ParserError(error.source, error.errors) from None
 
 commands = [to_click_command(cmd) for cmd in active_context.get_plugin_commands()]

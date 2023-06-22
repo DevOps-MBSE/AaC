@@ -25,15 +25,8 @@ def scan_yaml(source: str, content: str) -> list[Token]:
     try:
         tokens = list(scan(content, Loader=SafeLoader))
     except YAMLScannerError as error:
-        logging.error(f"Encountered YAML Scanner Error-Problem: {error.problem}. Encountered in: {source} at {error.context}")
-        if error.problem_mark:
-            logging.error(f"Error occurs at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}")
-        logging.error(f"Content of error: {content}")
-
-        raise ParserError(source, [f"Encountered an invalid YAML with the following scanner error: {error.problem}",
-                                   f"Encountered error at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}",
-                                   f"Context of the error: {error.context}"]) from None
-
+        _yaml_error_logging("Scanner", error, source, content)
+        _yaml_error("scanner", error, source)
     except Exception as error:
         logging.error(f"Error: {error}. Encountered in: {source}")
         logging.error(f"Content of error: {content}")
@@ -66,23 +59,11 @@ def parse_yaml(source: str, content: str) -> list[dict]:
         _error_if_not_yaml(source, content, models)
         _error_if_not_complete(source, content, models)
     except YAMLParserError as error:
-        logging.error(f"Encountered YAML Parsing Error-Problem: {error.problem}. Encountered in: {source} at {error.context}")
-        if error.problem_mark:
-            logging.error(f"Error occurs at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}")
-        logging.error(f"Content of error: {content}")
-
-        raise ParserError(source, ["Encountered an invalid YAML with the following parser error: {error.problem}",
-                                   f"Encountered error at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}",
-                                   f"Context of the error: {error.context}"]) from None
+        _yaml_error_logging("Parsing", error, source, content)
+        _yaml_error("parser", source, error)
     except YAMLScannerError as error:
-        logging.error(f"Encountered YAML Scanner Error-Problem: {error.problem}. Encountered in: {source} at {error.context}")
-        if error.problem_mark:
-            logging.error(f"Error occurs at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}")
-        logging.error(f"Content of error: {content}")
-
-        raise ParserError(source, [f"Encountered an invalid YAML with the following scanner error: {error.problem}",
-                                   f"Encountered error at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}",
-                                   f"Context of the error: {error.context}"]) from None
+        _yaml_error_logging("Scanner", error, source, content)
+        _yaml_error("scanner", source, error)
     except Exception as error:
         logging.error(f"Error: {error}. Encountered in: {source}")
         logging.error(f"Content of error: {content}")
@@ -122,3 +103,16 @@ def _error_if_not_complete(source, content, models):
     # Raise an error if any of the loaded YAML models are incomplete.
     models_without_imports = list(filter(lambda m: not is_import(m), models))
     all(map(assert_definition_has_name, models_without_imports))
+
+
+def _yaml_error_logging(error_type, error, source, content):
+    logging.error(f"Encountered YAML {error_type} Error-Problem: {error.problem}. Encountered in: {source} at {error.context}")
+    if error.problem_mark:
+        logging.error(f"Error occurs at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}")
+    logging.error(f"Content of error: {content}")
+
+
+def _yaml_error(error_type, error, source):
+    raise ParserError(source, [f"Encountered an invalid YAML with the following {error_type} error: {error.problem}",
+                                   f"Encountered error at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}",
+                                   f"Context of the error: {error.context}"]) from None
