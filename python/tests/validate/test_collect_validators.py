@@ -4,7 +4,7 @@ from aac.lang.constants import (
     DEFINITION_NAME_FIELD,
     DEFINITION_NAME_MODEL,
     DEFINITION_NAME_REQUIREMENT,
-    ROOT_KEY_SCHEMA,
+    DEFINITION_NAME_SCHEMA,
     DEFINITION_FIELD_NAME,
     PRIMITIVE_TYPE_STRING,
 )
@@ -34,7 +34,7 @@ class TestCollectValidators(ActiveContextTestCase):
 
         # get validations from types we know to have assigned validators
         expected_validations = self.get_unique_validations(
-            active_context.get_definition_by_name(ROOT_KEY_SCHEMA).get_validations()
+            active_context.get_definition_by_name(DEFINITION_NAME_SCHEMA).get_validations()
             + active_context.get_definition_by_name(DEFINITION_NAME_FIELD).get_validations()
             + active_context.get_definition_by_name(DEFINITION_NAME_REQUIREMENT).get_validations()
         )
@@ -52,7 +52,7 @@ class TestCollectValidators(ActiveContextTestCase):
 
         # get validations from types we know to have assigned validators
         expected_validations = self.get_unique_validations(
-            active_context.get_definition_by_name(ROOT_KEY_SCHEMA).get_validations()
+            active_context.get_definition_by_name(DEFINITION_NAME_SCHEMA).get_validations()
             + active_context.get_definition_by_name(DEFINITION_NAME_FIELD).get_validations()
             + active_context.get_definition_by_name(DEFINITION_NAME_MODEL).get_validations()
             + active_context.get_definition_by_name(DEFINITION_NAME_REQUIREMENT).get_validations()
@@ -85,7 +85,7 @@ class TestCollectValidators(ActiveContextTestCase):
         validation_plugins = active_context.get_definition_validations()
 
         enum_definition = create_enum_definition("Test Enum", ["val1", "val2"])
-        schema_definition = get_definition_by_name(ROOT_KEY_SCHEMA, active_context.definitions)
+        schema_definition = active_context.get_definition_by_name(DEFINITION_NAME_SCHEMA)
 
         actual_result = get_applicable_validators_for_definition(enum_definition, validation_plugins, active_context)
         actual_plugin_names = [plugin.name for plugin in actual_result]

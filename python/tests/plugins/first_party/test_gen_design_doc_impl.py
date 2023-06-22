@@ -1,13 +1,14 @@
 import os
-from unittest import TestCase
+from aac.lang.constants import BEHAVIOR_TYPE_PUBLISH_SUBSCRIBE
 
 from aac.plugins.first_party.gen_design_doc.gen_design_doc_impl import gen_design_doc
+from tests.active_context_test_case import ActiveContextTestCase
 
 from tests.helpers.assertion import assert_plugin_success
 from tests.helpers.io import TemporaryTestFile
 
 
-class TestGenerateDesignDocumentPlugin(TestCase):
+class TestGenerateDesignDocumentPlugin(ActiveContextTestCase):
     def test_can_generate_design_doc_with_models(self):
         with TemporaryTestFile(TEST_MODEL) as test_model:
             temp_dir = os.path.dirname(test_model.name)
@@ -59,7 +60,7 @@ class TestGenerateDesignDocumentPlugin(TestCase):
         patterns = [
             "test model",
             "a system to do things",
-            "pub-sub",
+            BEHAVIOR_TYPE_PUBLISH_SUBSCRIBE,
             "- Point alpha",
             "- Point beta",
             "- number gamma",
@@ -75,7 +76,7 @@ class TestGenerateDesignDocumentPlugin(TestCase):
         [self.assertIn(pattern, markdown) for pattern in patterns]
 
 
-TEST_MODEL = """
+TEST_MODEL = f"""
 schema:
   name: Vector
   fields:
@@ -114,7 +115,7 @@ model:
   behavior:
     - name: do something great
       description: have the system do something great
-      type: pub-sub
+      type: {BEHAVIOR_TYPE_PUBLISH_SUBSCRIBE}
       input:
         - name: alpha
           type: Point

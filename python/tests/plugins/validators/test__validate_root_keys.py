@@ -2,6 +2,7 @@ import logging
 
 from aac.io.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_active_context
+from aac.lang.constants import DEFINITION_NAME_ROOT, DEFINITION_NAME_SCHEMA, PRIMITIVE_TYPE_STRING, ROOT_KEY_VALIDATION
 from aac.lang.definitions.collections import get_definition_by_name, get_definitions_by_root_key
 from aac.plugins.contributions.contribution_types import DefinitionValidationContribution
 from aac.plugins.validators.root_keys import _get_plugin_definitions, _get_plugin_validations, validate_root_keys
@@ -19,7 +20,7 @@ class TestRootKeysValidator(ActiveContextTestCase):
     def test_module_register_validators(self):
         actual_validator_plugins = _get_plugin_validations()
 
-        validation_definitions = get_definitions_by_root_key("validation", _get_plugin_definitions())
+        validation_definitions = get_definitions_by_root_key(ROOT_KEY_VALIDATION, _get_plugin_definitions())
         self.assertEqual(1, len(validation_definitions))
 
         validation_definition = validation_definitions[0]
@@ -30,13 +31,13 @@ class TestRootKeysValidator(ActiveContextTestCase):
         assert_definitions_equal(expected_definition_validation.definition, actual_validator_plugins[0].definition)
 
     def test_validate_root_keys_valid_key(self):
-        test_primitive_reference_field = create_field_entry("ValidPrimitiveField", "string")
+        test_primitive_reference_field = create_field_entry("ValidPrimitiveField", PRIMITIVE_TYPE_STRING)
         test_definition = create_schema_definition("TestData", fields=[test_primitive_reference_field])
 
         test_active_context = get_active_context()
         test_active_context.add_definition_to_context(test_definition)
 
-        target_schema_definition = get_definition_by_name("schema", test_active_context.definitions)
+        target_schema_definition = get_definition_by_name(DEFINITION_NAME_SCHEMA, test_active_context.definitions)
         actual_result = validate_root_keys(test_definition, target_schema_definition, test_active_context)
 
         assert_validator_result_success(actual_result)
@@ -66,11 +67,11 @@ class TestRootKeysValidator(ActiveContextTestCase):
         del test_definition.structure[test_definition.get_root_key()]
 
         new_root_field = create_field_entry(fake_extended_root_key, fake_extended_root_key)
-        root_key_extension = create_schema_ext_definition("NewRootKeys", "root", fields=[new_root_field])
+        root_key_extension = create_schema_ext_definition("NewRootKeys", DEFINITION_NAME_ROOT, fields=[new_root_field])
         test_active_context = get_active_context()
         test_active_context.add_definitions_to_context([test_definition, root_key_extension])
 
-        target_schema_definition = get_definition_by_name("schema", test_active_context.definitions)
+        target_schema_definition = get_definition_by_name(DEFINITION_NAME_SCHEMA, test_active_context.definitions)
         actual_result = validate_root_keys(test_definition, target_schema_definition, test_active_context)
 
         assert_validator_result_success(actual_result)

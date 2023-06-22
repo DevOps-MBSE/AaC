@@ -5,7 +5,14 @@ from unittest import TestCase
 
 from aac.io.constants import AAC_DOCUMENT_EXTENSION, YAML_DOCUMENT_SEPARATOR
 from aac.io.parser import parse, ParserError
-from aac.lang.constants import DEFINITION_FIELD_NAME, ROOT_KEY_ENUM, ROOT_KEY_IMPORT, ROOT_KEY_MODEL, ROOT_KEY_SCHEMA
+from aac.lang.constants import (
+    BEHAVIOR_TYPE_REQUEST_RESPONSE,
+    DEFINITION_FIELD_NAME,
+    ROOT_KEY_ENUM,
+    ROOT_KEY_IMPORT,
+    ROOT_KEY_MODEL,
+    ROOT_KEY_SCHEMA,
+)
 from aac.lang.definitions import collections
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.source_location import SourceLocation
@@ -225,7 +232,7 @@ model:
   description: This is a message mirror.
   behavior:
     - name: echo
-      type: request-response
+      type: {BEHAVIOR_TYPE_REQUEST_RESPONSE}
       description: This is the one thing it does.
       input:
         - name: inbound

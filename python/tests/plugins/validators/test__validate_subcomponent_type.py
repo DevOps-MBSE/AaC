@@ -1,5 +1,6 @@
 from aac.io.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_active_context
+from aac.lang.constants import DEFINITION_NAME_MODEL
 from aac.lang.definitions.source_location import SourceLocation
 from aac.plugins.validators.subcomponent_type._validate_subcomponent_type import validate_subcomponent_types
 
@@ -16,7 +17,7 @@ class TestValidationSubcomponentTypes(ActiveContextTestCase):
         def_with_no_subcomponents = create_model_definition(model_name)
 
         test_active_context.add_definition_to_context(def_with_no_subcomponents)
-        target_sub_definition = test_active_context.get_definition_by_name("model")
+        target_sub_definition = test_active_context.get_definition_by_name(DEFINITION_NAME_MODEL)
 
         actual_result = validate_subcomponent_types(def_with_no_subcomponents, target_sub_definition, test_active_context)
         assert_validator_result_success(actual_result)
@@ -32,7 +33,7 @@ class TestValidationSubcomponentTypes(ActiveContextTestCase):
         )
 
         test_active_context.add_definitions_to_context([def_with_subcomponents, valid_subcomponent])
-        target_sub_definition = test_active_context.get_definition_by_name("model")
+        target_sub_definition = test_active_context.get_definition_by_name(DEFINITION_NAME_MODEL)
 
         actual_result = validate_subcomponent_types(def_with_subcomponents, target_sub_definition, test_active_context)
 
@@ -51,7 +52,7 @@ class TestValidationSubcomponentTypes(ActiveContextTestCase):
         expected_finding_location = SourceLocation(5, 10, 77, 20)
 
         test_active_context.add_definitions_to_context([definition_with_invalid_subcomponents, invalid_subcomponent])
-        target_sub_definition = test_active_context.get_definition_by_name("model")
+        target_sub_definition = test_active_context.get_definition_by_name(DEFINITION_NAME_MODEL)
 
         actual_result = validate_subcomponent_types(
             definition_with_invalid_subcomponents, target_sub_definition, test_active_context
@@ -72,7 +73,7 @@ class TestValidationSubcomponentTypes(ActiveContextTestCase):
         expected_finding_location = SourceLocation(4, 10, 65, 20)
 
         test_active_context.add_definition_to_context(definition_with_invalid_subcomponents)
-        target_sub_definition = test_active_context.get_definition_by_name("model")
+        target_sub_definition = test_active_context.get_definition_by_name(DEFINITION_NAME_MODEL)
 
         actual_result = validate_subcomponent_types(
             definition_with_invalid_subcomponents, target_sub_definition, test_active_context

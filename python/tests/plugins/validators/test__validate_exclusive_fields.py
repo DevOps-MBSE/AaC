@@ -4,6 +4,7 @@ from aac.lang.constants import (
     DEFINITION_FIELD_ARGUMENTS,
     DEFINITION_FIELD_EXTENSION_ENUM,
     DEFINITION_FIELD_EXTENSION_SCHEMA,
+    DEFINITION_NAME_EXTENSION,
     DEFINITION_NAME_PRIMITIVES,
     PRIMITIVE_TYPE_STRING,
     ROOT_KEY_EXTENSION,
@@ -44,7 +45,7 @@ class TestExclusiveFieldsPlugin(ActiveContextTestCase):
         test_definition = create_schema_ext_definition("TestSchemaExt", ROOT_KEY_SCHEMA, fields=[test_field_entry])
         del test_definition.structure[ROOT_KEY_EXTENSION][DEFINITION_FIELD_EXTENSION_SCHEMA]
 
-        ext_schema = get_definition_by_name("extension", test_active_context.definitions)
+        ext_schema = get_definition_by_name(DEFINITION_NAME_EXTENSION, test_active_context.definitions)
         ext_schema_args = ext_schema.get_validations()[0].get(DEFINITION_FIELD_ARGUMENTS)
 
         expected_result = ValidatorResult([test_definition])
@@ -59,7 +60,7 @@ class TestExclusiveFieldsPlugin(ActiveContextTestCase):
         test_field_entry = create_field_entry("TestField", PRIMITIVE_TYPE_STRING)
         test_definition = create_schema_ext_definition("TestSchemaExt", ROOT_KEY_SCHEMA, fields=[test_field_entry])
 
-        ext_schema = get_definition_by_name("extension", test_active_context.definitions)
+        ext_schema = get_definition_by_name(DEFINITION_NAME_EXTENSION, test_active_context.definitions)
         ext_schema_args = ext_schema.get_validations()[0].get(DEFINITION_FIELD_ARGUMENTS)
 
         expected_result = ValidatorResult([test_definition])
@@ -80,7 +81,7 @@ class TestExclusiveFieldsPlugin(ActiveContextTestCase):
         test_combined_ext_definition.structure[ROOT_KEY_EXTENSION][DEFINITION_FIELD_EXTENSION_ENUM] = enum_definition_structure
         test_combined_ext_definition, *_ = parse(test_combined_ext_definition.to_yaml())
 
-        ext_schema = get_definition_by_name("extension", test_context.definitions)
+        ext_schema = get_definition_by_name(DEFINITION_NAME_EXTENSION, test_context.definitions)
         ext_schema_validations, *_ = ext_schema.get_validations()
         ext_schema_args = ext_schema_validations.get(DEFINITION_FIELD_ARGUMENTS)
 

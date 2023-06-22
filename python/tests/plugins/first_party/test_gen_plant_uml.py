@@ -4,6 +4,7 @@ from tempfile import TemporaryDirectory
 from typing import Callable
 
 from aac.io.constants import YAML_DOCUMENT_EXTENSION
+from aac.lang.constants import BEHAVIOR_TYPE_REQUEST_RESPONSE
 from aac.plugins.first_party.gen_plant_uml.gen_plant_uml_impl import (
     COMPONENT_STRING,
     OBJECT_STRING,
@@ -289,7 +290,7 @@ model:
       type: {TEST_PUML_SERVICE_TWO_TYPE}
   behavior:
     - name: Process {TEST_PUML_DATA_A_TYPE} Request to {TEST_PUML_DATA_C_TYPE} Response
-      type: request-response
+      type: {BEHAVIOR_TYPE_REQUEST_RESPONSE}
       description: process {TEST_PUML_DATA_A_TYPE} and respond with {TEST_PUML_DATA_C_TYPE}
       input:
         - name: in
@@ -314,7 +315,7 @@ model:
   name: {TEST_PUML_SERVICE_ONE_TYPE}
   behavior:
     - name: Process {TEST_PUML_DATA_A_TYPE} Request
-      type: request-response
+      type: {BEHAVIOR_TYPE_REQUEST_RESPONSE}
       description: Process a {TEST_PUML_DATA_A_TYPE} request and return a {TEST_PUML_DATA_B_TYPE} response
       input:
         - name: in
@@ -343,7 +344,7 @@ model:
   name: {TEST_PUML_SERVICE_TWO_TYPE}
   behavior:
     - name: Process {TEST_PUML_DATA_B_TYPE} Request
-      type: request-response
+      type: {BEHAVIOR_TYPE_REQUEST_RESPONSE}
       description: Process a {TEST_PUML_DATA_B_TYPE} request and return a {TEST_PUML_DATA_C_TYPE} response
       input:
         - name: in
