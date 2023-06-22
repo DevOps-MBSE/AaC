@@ -44,7 +44,7 @@ ext:
     - name: spec
       type: Specification
   name: addSpecificationToRoot
-  type: root
+  type: Root
 
 ```
 

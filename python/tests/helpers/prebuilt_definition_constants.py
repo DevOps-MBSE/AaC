@@ -258,7 +258,7 @@ ALL_PRIMITIVES_ROOT_KEY = ALL_PRIMITIVES_TEST_DEFINITION_SCHEMA_NAME.lower()
 
 # "ext:
 #  name: ALL_PRIMITIVES_TEST_DEFINITION_SCHEMA_EXT
-#  type: root
+#  type: Root
 #  description: ''
 #  schemaExt:
 #    add:
