@@ -297,7 +297,7 @@ ALL_PRIMITIVES_TEST_DEFINITION_SCHEMA_EXT = create_schema_ext_definition(
 #    type: 20.2
 #    description: ''
 #  - name: reference
-#    type: extension
+#    type: Extension
 #    description: ''
 # "
 
