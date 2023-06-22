@@ -109,6 +109,9 @@ jobs:
       - name: Print out active context
         run: python -m aac print-active-context
 
+      - name: Validate Primitive Type Check Plugin
+        run: python -m aac validate src/aac/plugins/first_party/primitive_type_check/primitive_type_check.yaml
+
       - name: Validate Example Model
         run: python -m aac validate model/flow/System.yaml
 
