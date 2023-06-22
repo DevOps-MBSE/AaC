@@ -247,6 +247,9 @@ class TestLanguageContext(ActiveContextTestCase):
         expected_results = get_primitives()
         actual_results = test_context.get_primitive_types()
 
+        expected_results.sort()
+        actual_results.sort()
+
         self.assertEqual(expected_results, actual_results)
 
     def test_get_defined_types_with_unextended_context(self):
