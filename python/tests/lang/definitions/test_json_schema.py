@@ -55,12 +55,7 @@ EXPECTED_SCHEMA_JSON_SCHEMA = """
     "properties": {
         "inherits": {
             "items": {
-                "properties": {
-                    "name": {
-                        "type": "string"
-                        }
-                    },
-                    "type": "object"
+                "type": "string"
             },
             "type": "array"
         },
@@ -157,11 +152,11 @@ EXPECTED_MODEL_JSON_SCHEMA = """
                     "type": {
                         "type": "string",
                         "enum": [
-                            "pub-sub",
-                            "request-response",
-                            "startup",
-                            "timer",
-                            "logging"
+                            "PUB_SUB",
+                            "REQUEST_RESPONSE",
+                            "STARTUP",
+                            "TIMER",
+                            "LOGGING"
                         ]
                     },
                     "description": {
