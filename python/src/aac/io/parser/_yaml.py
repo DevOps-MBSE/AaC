@@ -26,7 +26,7 @@ def scan_yaml(source: str, content: str) -> list[Token]:
         tokens = list(scan(content, Loader=SafeLoader))
     except YAMLScannerError as error:
         _yaml_error_logging("Scanner", error, source, content)
-        _yaml_error("scanner", error, source)
+        _yaml_raise_error("scanner", error, source)
     except Exception as error:
         logging.error(f"Error: {error}. Encountered in: {source}")
         logging.error(f"Content of error: {content}")
@@ -60,10 +60,10 @@ def parse_yaml(source: str, content: str) -> list[dict]:
         _error_if_not_complete(source, content, models)
     except YAMLParserError as error:
         _yaml_error_logging("Parsing", error, source, content)
-        _yaml_error("parser", source, error)
+        _yaml_raise_error("parser", source, error)
     except YAMLScannerError as error:
         _yaml_error_logging("Scanner", error, source, content)
-        _yaml_error("scanner", source, error)
+        _yaml_raise_error("scanner", source, error)
     except Exception as error:
         logging.error(f"Error: {error}. Encountered in: {source}")
         logging.error(f"Content of error: {content}")
@@ -112,7 +112,7 @@ def _yaml_error_logging(error_type, error, source, content):
     logging.error(f"Content of error: {content}")
 
 
-def _yaml_error(error_type, error, source):
+def _yaml_raise_error(error_type, error, source):
     raise ParserError(source, [f"Encountered an invalid YAML with the following {error_type} error: {error.problem}",
-                                   f"Encountered error at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}",
-                                   f"Context of the error: {error.context}"]) from None
+                               f"Encountered error at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}",
+                               f"Context of the error: {error.context}"]) from None
