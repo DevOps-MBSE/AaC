@@ -1,5 +1,5 @@
 schema:
-  name: root
+  name: Root
   description: |
     root is a special case representing the root of the architecture model and
     not explicitly included in a model file
@@ -91,7 +91,7 @@ schema:
         - files
 ---
 schema:
-  name: enum
+  name: Enum
   fields:
     - name: name
       type: string
