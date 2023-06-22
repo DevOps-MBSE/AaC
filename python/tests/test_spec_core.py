@@ -54,11 +54,7 @@ class TestSpecCore(ActiveContextTestCase):
 
         result = core.get_primitives()
 
-        # Sort the results
-        expected_results.sort()
-        result.sort()
-
-        self.assertListEqual(result, expected_results)
+        self.assertCountEqual(result, expected_results)
 
     def test_get_root_keys(self):
         """
@@ -66,11 +62,7 @@ class TestSpecCore(ActiveContextTestCase):
         """
         result = core.get_root_keys()
 
-        # Sort for comparison
-        EXPECTED_ROOT_KEY_NAMES.sort()
-        result.sort()
-
-        self.assertListEqual(result, EXPECTED_ROOT_KEY_NAMES)
+        self.assertCountEqual(result, EXPECTED_ROOT_KEY_NAMES)
 
     def test_get_root_fields(self):
         """

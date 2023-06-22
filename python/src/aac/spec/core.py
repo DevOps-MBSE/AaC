@@ -1,6 +1,7 @@
 """Functions to allow interacting with the core AaC spec."""
 
 import copy
+
 from aac.lang.constants import DEFINITION_FIELD_FIELDS, DEFINITION_NAME_ROOT, ROOT_KEY_SCHEMA
 from aac.lang.definitions.collections import get_definition_by_name
 from aac.lang.definitions.definition import Definition

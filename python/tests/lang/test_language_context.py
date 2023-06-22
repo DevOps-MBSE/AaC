@@ -247,10 +247,7 @@ class TestLanguageContext(ActiveContextTestCase):
         expected_results = get_primitives()
         actual_results = test_context.get_primitive_types()
 
-        expected_results.sort()
-        actual_results.sort()
-
-        self.assertEqual(expected_results, actual_results)
+        self.assertCountEqual(expected_results, actual_results)
 
     def test_get_defined_types_with_unextended_context(self):
         core_spec = get_aac_spec()
@@ -282,10 +279,7 @@ class TestLanguageContext(ActiveContextTestCase):
         expected_results = get_root_keys()
         actual_results = test_context.get_root_keys()
 
-        expected_results.sort()
-        actual_results.sort()
-
-        self.assertEqual(expected_results, actual_results)
+        self.assertCountEqual(expected_results, actual_results)
 
     def test_get_enum_definition_by_type_when_enum_is_in_core_spec(self):
         core_spec = get_aac_spec()
