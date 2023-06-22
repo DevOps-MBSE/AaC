@@ -1,5 +1,6 @@
 """Functions to allow interacting with the core AaC spec."""
 
+import copy
 from aac.lang.constants import DEFINITION_FIELD_FIELDS, DEFINITION_NAME_ROOT, ROOT_KEY_SCHEMA
 from aac.lang.definitions.collections import get_definition_by_name
 from aac.lang.definitions.definition import Definition
@@ -69,7 +70,7 @@ def get_primitives(reload: bool = False) -> list[str]:
     if len(PRIMITIVES) == 0 or reload:
         aac_definitions = get_aac_spec()
         primitives_definition = get_definition_by_name("Primitives", aac_definitions)
-        PRIMITIVES = search_definition(primitives_definition, ["enum", "values"])
+        PRIMITIVES = copy.deepcopy(search_definition(primitives_definition, ["enum", "values"]))
 
     return PRIMITIVES
 
