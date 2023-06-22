@@ -61,7 +61,7 @@ class TestSemanticTokensProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
 
         props = {
             enum.name: {
-                enum.get_root_key(): (SemanticTokenTypes.Keyword, 0b11),
+                enum.get_root_key(): (SemanticTokenTypes.Keyword, 0b10),
                 enum.name: (SemanticTokenTypes.Enum, 0b0),
                 **{value: (SemanticTokenTypes.EnumMember, 0b0) for value in enum.get_values()},
             }
@@ -83,7 +83,7 @@ class TestSemanticTokensProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
 
         props = {
             schema.name: {
-                schema.get_root_key(): (SemanticTokenTypes.Keyword, 0b11),
+                schema.get_root_key(): (SemanticTokenTypes.Keyword, 0b10),
                 schema.name: (SemanticTokenTypes.Struct, 0b0),
                 schema.get_description(): (SemanticTokenTypes.String, 0b0),
                 **{f.get("type"): (SemanticTokenTypes.EnumMember, 0b11) for f in fields},
@@ -121,21 +121,21 @@ class TestSemanticTokensProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
 
         props = {
             data_a.name: {
-                data_a.get_root_key(): (SemanticTokenTypes.Keyword, 0b11),
+                data_a.get_root_key(): (SemanticTokenTypes.Keyword, 0b10),
                 data_a.name: (SemanticTokenTypes.Struct, 0b0),
                 data_a.get_description(): (SemanticTokenTypes.String, 0b0),
                 **{f.get("type"): (SemanticTokenTypes.EnumMember, 0b11) for f in data_a.get_fields()},
                 **{f.get("description"): (SemanticTokenTypes.String, 0b0) for f in data_a.get_fields()},
             },
             data_b.name: {
-                data_b.get_root_key(): (SemanticTokenTypes.Keyword, 0b11),
+                data_b.get_root_key(): (SemanticTokenTypes.Keyword, 0b10),
                 data_b.name: (SemanticTokenTypes.Struct, 0b0),
                 data_b.get_description(): (SemanticTokenTypes.String, 0b0),
                 **{f.get("type"): (SemanticTokenTypes.EnumMember, 0b11) for f in data_b.get_fields()},
                 **{f.get("description"): (SemanticTokenTypes.String, 0b0) for f in data_b.get_fields()},
             },
             service_one.name: {
-                service_one.get_root_key(): (SemanticTokenTypes.Keyword, 0b11),
+                service_one.get_root_key(): (SemanticTokenTypes.Keyword, 0b10),
                 service_one.name: (SemanticTokenTypes.Macro, 0b0),
                 service_one.get_description(): (SemanticTokenTypes.String, 0b0),
                 behavior.get("name"): (SemanticTokenTypes.String, 0b0),
