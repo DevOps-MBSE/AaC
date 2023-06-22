@@ -60,10 +60,10 @@ def parse_yaml(source: str, content: str) -> list[dict]:
         _error_if_not_complete(source, content, models)
     except YAMLParserError as error:
         _yaml_error_logging("Parsing", error, source, content)
-        _yaml_raise_error("parser", source, error)
+        _yaml_raise_error("parser", error, source)
     except YAMLScannerError as error:
         _yaml_error_logging("Scanner", error, source, content)
-        _yaml_raise_error("scanner", source, error)
+        _yaml_raise_error("scanner", error, source)
     except Exception as error:
         logging.error(f"Error: {error}. Encountered in: {source}")
         logging.error(f"Content of error: {content}")
