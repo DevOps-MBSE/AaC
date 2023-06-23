@@ -64,7 +64,7 @@ class TestAacRestApiCommandEndpoints(ActiveContextTestCase):
 
     def test_execute_validate_command(self):
         command_name = "validate"
-        test_model = create_model_definition("Model")
+        test_model = create_model_definition("TestModel")
 
         with TemporaryTestFile(test_model.to_yaml()) as temp_file:
             request_arguments = CommandRequestModel(name=command_name, arguments=[temp_file.name])
@@ -78,8 +78,7 @@ class TestAacRestApiCommandEndpoints(ActiveContextTestCase):
 
     def test_execute_puml_component_command(self):
         command_name = "puml-component"
-        test_model_name = "Model"
-        test_model = create_model_definition(test_model_name)
+        test_model = create_model_definition("TestModel")
 
         with TemporaryTestFile(test_model.to_yaml()) as temp_file:
             temp_directory = os.path.dirname(temp_file.name)
@@ -98,7 +97,7 @@ class TestAacRestApiCommandEndpoints(ActiveContextTestCase):
             self.assertIn("component", os.listdir(temp_directory))
             self.assertEqual(len(os.listdir(component_directory)), 1)
             self.assertIn(
-                f"{os.path.basename(temp_file.name)}_{test_model_name.lower()}.puml", os.listdir(component_directory)
+                f"{os.path.basename(temp_file.name)}_{test_model.name.lower()}.puml", os.listdir(component_directory)
             )
 
     def test_execute_rest_api_command_fails(self):

@@ -11,7 +11,7 @@ validation:
     implementation.
   behavior:
     - name: Verify validation definition and implementation.
-      type: request-response
+      type: REQUEST_RESPONSE
       description:
       input:
         - name: input

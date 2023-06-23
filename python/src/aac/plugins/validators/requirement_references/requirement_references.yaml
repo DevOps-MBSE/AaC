@@ -9,7 +9,7 @@ validation:
   description: Verify the IDs in a requirement reference exist within the context.
   behavior:
     - name: Verify that requirement references exist.
-      type: request-response
+      type: REQUEST_RESPONSE
       description:
       input:
         - name: input

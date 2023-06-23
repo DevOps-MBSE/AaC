@@ -7,5 +7,5 @@ schema:
   inherits:
     - DataMessage
   fields:
-  - name: internal_state_change
-    type: string
+    - name: internal_state_change
+      type: string

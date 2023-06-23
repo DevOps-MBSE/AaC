@@ -10,7 +10,7 @@ validation:
   description: Verify that every field declared as reference is properly formatted for processing.
   behavior:
     - name: Verify that reference fields are properly formatted.
-      type: request-response
+      type: REQUEST_RESPONSE
       description:
       input:
         - name: input

@@ -11,6 +11,7 @@ from aac.plugins.validators import required_fields
 from aac.plugins.validators import defined_references
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.constants import (
+    BEHAVIOR_TYPE_REQUEST_RESPONSE,
     DEFINITION_FIELD_TYPE,
     DEFINITION_NAME_ROOT,
     PRIMITIVE_TYPE_BOOL,
@@ -52,7 +53,7 @@ TEST_ENUM = create_enum_definition("Options", ["one", "two", "three"])
 TEST_SERVICE_ONE_NAME = "ServiceOne"
 TEST_SERVICE_ONE_BEHAVIOR = create_behavior_entry(
     f"Process {TEST_SCHEMA_A.name} Request",
-    "request-response",
+    BEHAVIOR_TYPE_REQUEST_RESPONSE,
     f"Process a {TEST_SCHEMA_A.name} request and return a {TEST_SCHEMA_B.name} response",
     input=[create_field_entry("in", TEST_SCHEMA_A.name)],
     output=[create_field_entry("out", TEST_SCHEMA_B.name)],
@@ -79,7 +80,7 @@ TEST_SERVICE_ONE = create_model_definition(TEST_SERVICE_ONE_NAME, behavior=[TEST
 TEST_SERVICE_TWO_NAME = "ServiceTwo"
 TEST_SERVICE_TWO_BEHAVIOR = create_behavior_entry(
     f"Process {TEST_SCHEMA_B.name} Request",
-    "request-response",
+    BEHAVIOR_TYPE_REQUEST_RESPONSE,
     f"Process a {TEST_SCHEMA_B.name} request and return a DataC response",
     input=[create_field_entry("in", TEST_SCHEMA_B.name)],
     output=[create_field_entry("out", TEST_SCHEMA_C.name)],
@@ -100,7 +101,7 @@ TEST_SERVICE_TWO = create_model_definition(TEST_SERVICE_TWO_NAME, behavior=[TEST
 TEST_SERVICE_THREE_NAME = "ServiceThree"
 TEST_SERVICE_THREE_BEHAVIOR = create_behavior_entry(
     "Pass through",
-    "request-response",
+    BEHAVIOR_TYPE_REQUEST_RESPONSE,
     f"Process a {TEST_SCHEMA_C.name} request and return a {TEST_SCHEMA_C.name} response",
     input=[create_field_entry("in", TEST_SCHEMA_C.name)],
     output=[create_field_entry("out", TEST_SCHEMA_C.name)],
@@ -257,7 +258,7 @@ ALL_PRIMITIVES_ROOT_KEY = ALL_PRIMITIVES_TEST_DEFINITION_SCHEMA_NAME.lower()
 
 # "ext:
 #  name: ALL_PRIMITIVES_TEST_DEFINITION_SCHEMA_EXT
-#  type: root
+#  type: Root
 #  description: ''
 #  schemaExt:
 #    add:
@@ -296,7 +297,7 @@ ALL_PRIMITIVES_TEST_DEFINITION_SCHEMA_EXT = create_schema_ext_definition(
 #    type: 20.2
 #    description: ''
 #  - name: reference
-#    type: extension
+#    type: Extension
 #    description: ''
 # "
 
@@ -366,7 +367,7 @@ model:
   {MALFORMED_EXTRA_FIELD_NAME}: {MALFORMED_EXTRA_FIELD_CONTENT}
   behavior:
     - name: Process {TEST_SCHEMA_B.name} Request
-      type: request-response
+      type: {BEHAVIOR_TYPE_REQUEST_RESPONSE}
       description: Process a {TEST_SCHEMA_B.name} request and return a {TEST_SCHEMA_C.name} response
       input:
         - name: in

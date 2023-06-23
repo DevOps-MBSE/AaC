@@ -11,7 +11,7 @@ validation:
   description: Verify that the definition's root key is defined.
   behavior:
     - name: Verify that the definition's root key is defined.
-      type: request-response
+      type: REQUEST_RESPONSE
       input:
         - name: input
           type: ValidatorInput

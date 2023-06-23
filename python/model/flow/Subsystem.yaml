@@ -11,7 +11,7 @@ model:
       type: ServiceTwo
   behavior:
     - name: Delegate Processing DataB Request
-      type: request-response
+      type: REQUEST_RESPONSE
       input:
         - name: in
           type: DataB

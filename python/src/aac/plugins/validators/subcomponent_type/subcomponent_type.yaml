@@ -11,7 +11,7 @@ validation:
     Verify that the type field of every subcomponent refers to a model.
   behavior:
     - name: Verify that subcomponents are of the model type.
-      type: request-response
+      type: REQUEST_RESPONSE
       description:
       input:
         - name: input

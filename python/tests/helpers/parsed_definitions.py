@@ -3,53 +3,53 @@
 import yaml
 
 from aac.io.parser import parse
+
 from aac.lang.constants import (
+    BEHAVIOR_TYPE_PUBLISH_SUBSCRIBE,
+    DEFINITION_FIELD_ACCEPTANCE,
+    DEFINITION_FIELD_ACTION,
+    DEFINITION_FIELD_ADD,
+    DEFINITION_FIELD_ARGUMENTS,
+    DEFINITION_FIELD_BEHAVIOR,
     DEFINITION_FIELD_COMMANDS,
+    DEFINITION_FIELD_COMPONENTS,
     DEFINITION_FIELD_DEFINITION_SOURCES,
     DEFINITION_FIELD_DEFINITION_VALIDATIONS,
     DEFINITION_FIELD_DESCRIPTION,
-    DEFINITION_FIELD_DISPLAY,
+    DEFINITION_FIELD_EXTENSION_ENUM,
+    DEFINITION_FIELD_EXTENSION_SCHEMA,
+    DEFINITION_FIELD_FIELDS,
     DEFINITION_FIELD_FILES,
-    DEFINITION_FIELD_GROUP,
-    DEFINITION_FIELD_HELP_TEXT,
+    DEFINITION_FIELD_GIVEN,
+    DEFINITION_FIELD_INHERITS,
     DEFINITION_FIELD_INPUT,
     DEFINITION_FIELD_NAME,
     DEFINITION_FIELD_OUTPUT,
+    DEFINITION_FIELD_PARTICIPANTS,
     DEFINITION_FIELD_PRIMITIVE_VALIDATIONS,
+    DEFINITION_FIELD_REQUIRED,
+    DEFINITION_FIELD_SCENARIO,
+    DEFINITION_FIELD_SOURCE,
+    DEFINITION_FIELD_STATE,
+    DEFINITION_FIELD_STEP,
+    DEFINITION_FIELD_STEPS,
+    DEFINITION_FIELD_TAGS,
+    DEFINITION_FIELD_TARGET,
+    DEFINITION_FIELD_THEN,
+    DEFINITION_FIELD_TYPE,
+    DEFINITION_FIELD_VALIDATION,
+    DEFINITION_FIELD_VALUES,
+    DEFINITION_FIELD_WHEN,
     ROOT_KEY_IMPORT,
+    ROOT_KEY_ENUM,
+    ROOT_KEY_EXTENSION,
+    ROOT_KEY_MODEL,
     ROOT_KEY_PLUGIN,
+    ROOT_KEY_SCHEMA,
+    ROOT_KEY_USECASE,
     ROOT_KEY_VALIDATION,
 )
 from aac.lang.definitions.definition import Definition
-
-
-ACCEPTANCE_STRING = "acceptance"
-ACTION_STRING = "action"
-ADD_STRING = "add"
-ARGUMENTS_STRING = "arguments"
-BEHAVIOR_CAPITALIZED_STRING = "Behavior"
-BEHAVIOR_STRING = "behavior"
-COMPONENTS_STRING = "components"
-INHERITS_STRING = "inherits"
-DESCRIPTION_STRING = "description"
-FIELDS_STRING = "fields"
-GIVEN_STRING = "given"
-INPUT_STRING = "input"
-NAME_STRING = "name"
-OUTPUT_STRING = "output"
-PARTICIPANTS_STRING = "participants"
-REQUIRED_STRING = "required"
-SCENARIO_STRING = "scenario"
-SOURCE_STRING = "source"
-STATE_STRING = "state"
-STEP_STRING = "step"
-STEPS_STRING = "steps"
-TAGS_STRING = "tags"
-TARGET_STRING = "target"
-THEN_STRING = "then"
-TYPE_STRING = "type"
-VALIDATION_STRING = "validation"
-WHEN_STRING = "when"
 
 
 def create_field_entry(name: str, type: str = "", description: str = "") -> dict:
@@ -62,9 +62,9 @@ def create_field_entry(name: str, type: str = "", description: str = "") -> dict
         A dictionary representing an AaC Field definition.
     """
     return {
-        NAME_STRING: name,
-        TYPE_STRING: type,
-        DESCRIPTION_STRING: description,
+        DEFINITION_FIELD_NAME: name,
+        DEFINITION_FIELD_TYPE: type,
+        DEFINITION_FIELD_DESCRIPTION: description,
     }
 
 
@@ -78,10 +78,10 @@ def create_step_entry(title: str, source: str, target: str, action: str) -> dict
         A dictionary representing an AaC Step definition.
     """
     return {
-        STEP_STRING: title,
-        SOURCE_STRING: source,
-        TARGET_STRING: target,
-        ACTION_STRING: action,
+        DEFINITION_FIELD_STEP: title,
+        DEFINITION_FIELD_SOURCE: source,
+        DEFINITION_FIELD_TARGET: target,
+        DEFINITION_FIELD_ACTION: action,
     }
 
 
@@ -95,14 +95,14 @@ def create_validation_entry(name: str, arguments: list[str] = []) -> dict:
         A dictionary representing an AaC validation definition.
     """
     return {
-        NAME_STRING: name,
-        ARGUMENTS_STRING: arguments,
+        DEFINITION_FIELD_NAME: name,
+        DEFINITION_FIELD_ARGUMENTS: arguments,
     }
 
 
 def create_behavior_entry(
     name: str,
-    behavior_type: str = "pub-sub",
+    behavior_type: str = BEHAVIOR_TYPE_PUBLISH_SUBSCRIBE,
     description: str = "",
     tags: list[str] = [],
     input: list[dict] = [],
@@ -118,13 +118,13 @@ def create_behavior_entry(
         A dictionary representing an AaC behavior definition.
     """
     return {
-        NAME_STRING: name,
-        TYPE_STRING: behavior_type,
-        DESCRIPTION_STRING: description,
-        TAGS_STRING: tags,
-        INPUT_STRING: input,
-        OUTPUT_STRING: output,
-        ACCEPTANCE_STRING: acceptance,
+        DEFINITION_FIELD_NAME: name,
+        DEFINITION_FIELD_TYPE: behavior_type,
+        DEFINITION_FIELD_DESCRIPTION: description,
+        DEFINITION_FIELD_TAGS: tags,
+        DEFINITION_FIELD_INPUT: input,
+        DEFINITION_FIELD_OUTPUT: output,
+        DEFINITION_FIELD_ACCEPTANCE: acceptance,
     }
 
 
@@ -139,48 +139,54 @@ def create_scenario_entry(
     Returns:
         A dictionary representing an AaC scenario definition.
     """
-    return {SCENARIO_STRING: name, TAGS_STRING: tags, GIVEN_STRING: given, WHEN_STRING: when, THEN_STRING: then}
+    return {
+        DEFINITION_FIELD_SCENARIO: name,
+        DEFINITION_FIELD_TAGS: tags,
+        DEFINITION_FIELD_GIVEN: given,
+        DEFINITION_FIELD_WHEN: when,
+        DEFINITION_FIELD_THEN: then,
+    }
 
 
 def create_enum_definition(name: str, values: list[str]):
     """Return a simulated enum definition."""
 
-    definition_dict = {NAME_STRING: name, "values": values}
+    definition_dict = {DEFINITION_FIELD_NAME: name, DEFINITION_FIELD_VALUES: values}
 
-    return create_definition("enum", name, definition_dict)
+    return create_definition(ROOT_KEY_ENUM, name, definition_dict)
 
 
 def create_schema_definition(
     name: str, description: str = "", fields: list[dict] = [], validations: list[dict] = [], inherits: list[str] = []
 ):
     """Return a simulated schema definition."""
-    definition_dict = {NAME_STRING: name}
+    definition_dict = {DEFINITION_FIELD_NAME: name}
 
     if inherits:
-        definition_dict[INHERITS_STRING] = inherits
+        definition_dict[DEFINITION_FIELD_INHERITS] = inherits
 
     if description:
-        definition_dict[DESCRIPTION_STRING] = description
+        definition_dict[DEFINITION_FIELD_DESCRIPTION] = description
 
     # Placing this here to preserve an expected order
-    definition_dict[FIELDS_STRING] = fields
+    definition_dict[DEFINITION_FIELD_FIELDS] = fields
 
     if validations:
-        definition_dict[VALIDATION_STRING] = validations
+        definition_dict[DEFINITION_FIELD_VALIDATION] = validations
 
-    return create_definition("schema", name, definition_dict)
+    return create_definition(ROOT_KEY_SCHEMA, name, definition_dict)
 
 
 def create_usecase_definition(name: str, description: str, participants: list[dict] = [], steps: list[dict] = []):
     """Return a simulated usecase definition."""
     definition_dict = {
-        NAME_STRING: name,
-        DESCRIPTION_STRING: description,
-        PARTICIPANTS_STRING: participants,
-        STEPS_STRING: steps,
+        DEFINITION_FIELD_NAME: name,
+        DEFINITION_FIELD_DESCRIPTION: description,
+        DEFINITION_FIELD_PARTICIPANTS: participants,
+        DEFINITION_FIELD_STEPS: steps,
     }
 
-    return create_definition("usecase", name, definition_dict)
+    return create_definition(ROOT_KEY_USECASE, name, definition_dict)
 
 
 def create_model_definition(
@@ -188,14 +194,14 @@ def create_model_definition(
 ):
     """Return a simulated model definition."""
     definition_dict = {
-        NAME_STRING: name,
-        DESCRIPTION_STRING: description,
-        COMPONENTS_STRING: components,
-        BEHAVIOR_STRING: behavior,
-        STATE_STRING: state,
+        DEFINITION_FIELD_NAME: name,
+        DEFINITION_FIELD_DESCRIPTION: description,
+        DEFINITION_FIELD_COMPONENTS: components,
+        DEFINITION_FIELD_BEHAVIOR: behavior,
+        DEFINITION_FIELD_STATE: state,
     }
 
-    return create_definition("model", name, definition_dict)
+    return create_definition(ROOT_KEY_MODEL, name, definition_dict)
 
 
 def create_schema_ext_definition(
@@ -203,36 +209,36 @@ def create_schema_ext_definition(
 ):
     """Return a simulated schema extension definition."""
     definition_dict = {
-        NAME_STRING: name,
-        TYPE_STRING: type,
-        DESCRIPTION_STRING: description,
-        "schemaExt": {
-            ADD_STRING: fields,
-            REQUIRED_STRING: required,
+        DEFINITION_FIELD_NAME: name,
+        DEFINITION_FIELD_TYPE: type,
+        DEFINITION_FIELD_DESCRIPTION: description,
+        DEFINITION_FIELD_EXTENSION_SCHEMA: {
+            DEFINITION_FIELD_ADD: fields,
+            DEFINITION_FIELD_REQUIRED: required,
         },
     }
 
-    return create_definition("ext", name, definition_dict)
+    return create_definition(ROOT_KEY_EXTENSION, name, definition_dict)
 
 
 def create_enum_ext_definition(name: str, type: str, description: str = "", values: list[str] = []):
     """Return a simulated enum extension definition."""
     definition_dict = {
-        NAME_STRING: name,
-        TYPE_STRING: type,
-        DESCRIPTION_STRING: description,
-        "enumExt": {
-            ADD_STRING: values,
+        DEFINITION_FIELD_NAME: name,
+        DEFINITION_FIELD_TYPE: type,
+        DEFINITION_FIELD_DESCRIPTION: description,
+        DEFINITION_FIELD_EXTENSION_ENUM: {
+            DEFINITION_FIELD_ADD: values,
         },
     }
-    return create_definition("ext", name, definition_dict)
+    return create_definition(ROOT_KEY_EXTENSION, name, definition_dict)
 
 
 def create_validation_definition(name: str, description: str = "", behavior: list[dict] = []):
     """Return a simulated validation definition."""
     definition_dict = {
-        DESCRIPTION_STRING: description,
-        BEHAVIOR_STRING: behavior,
+        DEFINITION_FIELD_DESCRIPTION: description,
+        DEFINITION_FIELD_BEHAVIOR: behavior,
     }
 
     return create_definition(ROOT_KEY_VALIDATION, name, definition_dict)
@@ -255,27 +261,6 @@ def create_plugin_definition(
         DEFINITION_FIELD_PRIMITIVE_VALIDATIONS: primitive_validations,
     }
     return create_definition(ROOT_KEY_PLUGIN, name, definition_dict)
-
-
-def create_plugin_command_definition(
-    name: str,
-    display: str = "",
-    group: str = "",
-    help_text: str = "",
-    input: list[dict] = [],
-    output: list[dict] = [],
-    acceptance: list[dict] = [],
-) -> Definition:
-    definition_dict = {
-        DEFINITION_FIELD_NAME: name,
-        DEFINITION_FIELD_HELP_TEXT: help_text,
-        DEFINITION_FIELD_INPUT: input,
-        DEFINITION_FIELD_OUTPUT: output,
-        ACCEPTANCE_STRING: acceptance,
-        DEFINITION_FIELD_DISPLAY: display,
-        DEFINITION_FIELD_GROUP: group,
-    }
-    return create_definition("PluginCommand", name, definition_dict)
 
 
 def create_import_definition(imports: list[str]) -> Definition:

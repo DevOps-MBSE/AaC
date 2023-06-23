@@ -1,19 +1,38 @@
+from aac.lang.constants import (
+    PRIMITIVE_TYPE_BOOL,
+    PRIMITIVE_TYPE_DATE,
+    PRIMITIVE_TYPE_DIRECTORY,
+    PRIMITIVE_TYPE_FILE,
+    PRIMITIVE_TYPE_INT,
+    PRIMITIVE_TYPE_NUMBER,
+    PRIMITIVE_TYPE_REFERENCE,
+    PRIMITIVE_TYPE_STRING,
+    ROOT_KEY_COMMAND_GROUP,
+    ROOT_KEY_ENUM,
+    ROOT_KEY_EXTENSION,
+    ROOT_KEY_IMPORT,
+    ROOT_KEY_MODEL,
+    ROOT_KEY_PLUGIN,
+    ROOT_KEY_SCHEMA,
+    ROOT_KEY_SPECIFICATION,
+    ROOT_KEY_USECASE,
+    ROOT_KEY_VALIDATION,
+)
 from aac.spec import core
 
 from tests.active_context_test_case import ActiveContextTestCase
 
 EXPECTED_ROOT_KEY_NAMES = [
-    "import",
-    "enum",
-    "schema",
-    "map",
-    "model",
-    "usecase",
-    "ext",
-    "commandGroup",
-    "plugin",
-    "validation",
-    "spec",
+    ROOT_KEY_COMMAND_GROUP,
+    ROOT_KEY_ENUM,
+    ROOT_KEY_EXTENSION,
+    ROOT_KEY_IMPORT,
+    ROOT_KEY_MODEL,
+    ROOT_KEY_PLUGIN,
+    ROOT_KEY_SCHEMA,
+    ROOT_KEY_SPECIFICATION,
+    ROOT_KEY_USECASE,
+    ROOT_KEY_VALIDATION,
 ]
 
 
@@ -22,7 +41,16 @@ class TestSpecCore(ActiveContextTestCase):
         """
         Unit test for the core.get_primitive method.
         """
-        expected_results = ["int", "number", "string", "bool", "file", "directory", "date", "reference"]
+        expected_results = [
+            PRIMITIVE_TYPE_BOOL,
+            PRIMITIVE_TYPE_DATE,
+            PRIMITIVE_TYPE_DIRECTORY,
+            PRIMITIVE_TYPE_FILE,
+            PRIMITIVE_TYPE_INT,
+            PRIMITIVE_TYPE_NUMBER,
+            PRIMITIVE_TYPE_REFERENCE,
+            PRIMITIVE_TYPE_STRING,
+        ]
 
         result = core.get_primitives()
 
@@ -34,7 +62,7 @@ class TestSpecCore(ActiveContextTestCase):
         """
         result = core.get_root_keys()
 
-        self.assertListEqual(result, EXPECTED_ROOT_KEY_NAMES)
+        self.assertCountEqual(result, EXPECTED_ROOT_KEY_NAMES)
 
     def test_get_root_fields(self):
         """

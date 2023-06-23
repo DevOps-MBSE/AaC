@@ -5,6 +5,7 @@ import logging
 import os
 
 from aac.lang.active_context_lifecycle_manager import get_active_context
+from aac.lang.constants import BEHAVIOR_TYPE_REQUEST_RESPONSE
 from aac.plugins.first_party.gen_protobuf.gen_protobuf_impl import (
     gen_protobuf,
     _convert_message_name_to_file_name,
@@ -244,7 +245,7 @@ def _to_message_template_field_properties(name: str, type: str, description: str
     }
 
 
-TEST_ARCH_YAML_STRING = """
+TEST_ARCH_YAML_STRING = f"""
 model:
   name: System
   description: A simple distributed system model
@@ -255,7 +256,7 @@ model:
       type: ServiceTwo
   behavior:
     - name: doFlow
-      type: request-response
+      type: {BEHAVIOR_TYPE_REQUEST_RESPONSE}
       description:  process DataA and respond with DataD
       input:
         - name: in
@@ -276,7 +277,7 @@ model:
   name: ServiceOne
   behavior:
     - name: ProcessDataA
-      type: request-response
+      type: {BEHAVIOR_TYPE_REQUEST_RESPONSE}
       input:
         - name: in
           type: Data A
@@ -296,7 +297,7 @@ model:
   name: ServiceTwo
   behavior:
     - name: Process DataB
-      type: request-response
+      type: {BEHAVIOR_TYPE_REQUEST_RESPONSE}
       input:
         - name: in
           type: DataB

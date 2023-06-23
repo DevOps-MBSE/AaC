@@ -13,298 +13,327 @@ plugin:
     - name: Validate Directory Primitives
     - name: Validate Reference Primitives
 ---
-validator:
+validation:
   name: Validate String Primitives
-  type: request-response
-  description:
-  input:
-    - name: input
-      type: ValidatorInput
-  output:
-    - name: results
-      type: ValidatorOutput
-  acceptance:
-    - scenario: Successfully validate a string primitive value.
-      given:
-        - The ValidatorInput content consists of valid AaC definitions.
-        - The ValidatorInput contains at least one definition field that is defined as being type `string`.
-        - The value in the primitive `string` field is a YAML value that can be interpretted as a `string`.
-      when:
-        - The input is validated.
-      then:
-        - The ValidatorOutput does not indicate any errors.
-        - The ValidatorOutput does not indicate any warnings.
-        - The ValidatorOutput indicates the primitive value under test is valid.
-    - scenario: Fail to validate a string primitive value that is numeric.
-      given:
-        - The ValidatorInput content consists of AaC definitions.
-        - The ValidatorInput contains at least one definition field that is defined as being type `string`.
-        - The value in the primitive `string` field is a decimal number.
-      when:
-        - The input is validated.
-      then:
-        - The ValidatorOutput indicates an error.
-        - The ValidatorOutput indicates the primitive value under test is invalid.
-    - scenario: Fail to validate a string primitive value that is null.
-      given:
-        - The ValidatorInput content consists of AaC definitions.
-        - The ValidatorInput contains at least one definition field that is defined as being type `string`.
-        - The value in the primitive `string` field is `null`.
-      when:
-        - The input is validated.
-      then:
-        - The ValidatorOutput indicates an error.
-        - The ValidatorOutput indicates the primitive value under test is invalid.
+  description: Provides validation for the primitive AaC type string.
+  behavior:
+    - name: validate string primitive
+      description: Provides an error message if the value in a string field is not parsed as a string.
+      type: REQUEST_RESPONSE
+      input:
+        - name: input
+          type: ValidatorInput
+      output:
+        - name: results
+          type: ValidatorOutput
+      acceptance:
+        - scenario: Successfully validate a string primitive value.
+          given:
+            - The ValidatorInput content consists of valid AaC definitions.
+            - The ValidatorInput contains at least one definition field that is defined as being type `string`.
+            - The value in the primitive `string` field is a YAML value that can be interpreted as a `string`.
+          when:
+            - The input is validated.
+          then:
+            - The ValidatorOutput does not indicate any errors.
+            - The ValidatorOutput does not indicate any warnings.
+            - The ValidatorOutput indicates the primitive value under test is valid.
+        - scenario: Fail to validate a string primitive value that is numeric.
+          given:
+            - The ValidatorInput content consists of AaC definitions.
+            - The ValidatorInput contains at least one definition field that is defined as being type `string`.
+            - The value in the primitive `string` field is a decimal number.
+          when:
+            - The input is validated.
+          then:
+            - The ValidatorOutput indicates an error.
+            - The ValidatorOutput indicates the primitive value under test is invalid.
+        - scenario: Fail to validate a string primitive value that is null.
+          given:
+            - The ValidatorInput content consists of AaC definitions.
+            - The ValidatorInput contains at least one definition field that is defined as being type `string`.
+            - The value in the primitive `string` field is `null`.
+          when:
+            - The input is validated.
+          then:
+            - The ValidatorOutput indicates an error.
+            - The ValidatorOutput indicates the primitive value under test is invalid.
 ---
-validator:
+validation:
   name: Validate Integer Primitives
-  type: request-response
-  description:
-  input:
-    - name: input
-      type: ValidatorInput
-  output:
-    - name: results
-      type: ValidatorOutput
-  acceptance:
-    - scenario: Successfully validate an integer primitive value.
-      given:
-        - The ValidatorInput content consists of valid AaC definitions.
-        - The ValidatorInput contains at least one definition field that is defined as being type `int`.
-        - The value in the primitive `int` field is a non-string whole number.
-      when:
-        - The input is validated.
-      then:
-        - The ValidatorOutput does not indicate any errors.
-        - The ValidatorOutput does not indicate any warnings.
-        - The ValidatorOutput indicates the primitive value under test is valid.
-    - scenario: Fail to validate an integer primitive value that is a float.
-      given:
-        - The ValidatorInput content consists of AaC definitions.
-        - The ValidatorInput contains at least one definition field that is defined as being type `int`.
-        - The value in the primitive `int` field is a decimal number.
-      when:
-        - The input is validated.
-      then:
-        - The ValidatorOutput indicates an error.
-        - The ValidatorOutput indicates the primitive value under test is invalid.
-    - scenario: Fail to validate an integer primitive value that is a string.
-      given:
-        - The ValidatorInput content consists of AaC definitions.
-        - The ValidatorInput contains at least one definition field that is defined as being type `int`.
-        - The value in the primitive `int` field contains alphabetical letters or punctuation marks.
-      when:
-        - The input is validated.
-      then:
-        - The ValidatorOutput indicates an error.
-        - The ValidatorOutput indicates the primitive value under test is invalid.
+  description: Provides validation for the primitive AaC type int.
+  behavior:
+    - name: validate integer primitive
+      description: Provides an error message if the value in an int field is not parsed as an integer.
+      type: REQUEST_RESPONSE
+      input:
+        - name: input
+          type: ValidatorInput
+      output:
+        - name: results
+          type: ValidatorOutput
+      acceptance:
+        - scenario: Successfully validate an integer primitive value.
+          given:
+            - The ValidatorInput content consists of valid AaC definitions.
+            - The ValidatorInput contains at least one definition field that is defined as being type `int`.
+            - The value in the primitive `int` field is a non-string whole number.
+          when:
+            - The input is validated.
+          then:
+            - The ValidatorOutput does not indicate any errors.
+            - The ValidatorOutput does not indicate any warnings.
+            - The ValidatorOutput indicates the primitive value under test is valid.
+        - scenario: Fail to validate an integer primitive value that is a float.
+          given:
+            - The ValidatorInput content consists of AaC definitions.
+            - The ValidatorInput contains at least one definition field that is defined as being type `int`.
+            - The value in the primitive `int` field is a decimal number.
+          when:
+            - The input is validated.
+          then:
+            - The ValidatorOutput indicates an error.
+            - The ValidatorOutput indicates the primitive value under test is invalid.
+        - scenario: Fail to validate an integer primitive value that is a string.
+          given:
+            - The ValidatorInput content consists of AaC definitions.
+            - The ValidatorInput contains at least one definition field that is defined as being type `int`.
+            - The value in the primitive `int` field contains alphabetical letters or punctuation marks.
+          when:
+            - The input is validated.
+          then:
+            - The ValidatorOutput indicates an error.
+            - The ValidatorOutput indicates the primitive value under test is invalid.
 ---
-validator:
+validation:
   name: Validate Number Primitives
-  type: request-response
-  description:
-  input:
-    - name: input
-      type: ValidatorInput
-  output:
-    - name: results
-      type: ValidatorOutput
-  acceptance:
-    - scenario: Successfully validate a number primitive value.
-      given:
-        - The ValidatorInput content consists of valid AaC definitions.
-        - The ValidatorInput contains at least one definition field that is defined as being type `number`.
-        - The value in the primitive `number` field is a non-string whole number.
-      when:
-        - The input is validated.
-      then:
-        - The ValidatorOutput does not indicate any errors.
-        - The ValidatorOutput does not indicate any warnings.
-        - The ValidatorOutput indicates the primitive value under test is valid.
-    - scenario: Successfully validate a number primitive value that is an integer.
-      given:
-        - The ValidatorInput content consists of AaC definitions.
-        - The ValidatorInput contains at least one definition field that is defined as being type `number`.
-        - The value in the primitive `number` field is an integer.
-      when:
-        - The input is validated.
-      then:
-        - The ValidatorOutput does not indicate any errors.
-        - The ValidatorOutput does not indicate any warnings.
-        - The ValidatorOutput indicates the primitive value under test is valid.
-    - scenario: Fail to validate a number primitive value that is a string.
-      given:
-        - The ValidatorInput content consists of AaC definitions.
-        - The ValidatorInput contains at least one definition field that is defined as being type `number`.
-        - The value in the primitive `number` field contains alphabetical letters or punctuation marks.
-      when:
-        - The input is validated.
-      then:
-        - The ValidatorOutput indicates an error.
-        - The ValidatorOutput indicates the primitive value under test is invalid.
+  description: Provides validation for the primitive AaC type number.
+  behavior:
+  - name: validate number primitive
+    description: Provides an error message if the value in a number field is not parsed as a number.
+    type: REQUEST_RESPONSE
+    input:
+      - name: input
+        type: ValidatorInput
+    output:
+      - name: results
+        type: ValidatorOutput
+    acceptance:
+      - scenario: Successfully validate a number primitive value.
+        given:
+          - The ValidatorInput content consists of valid AaC definitions.
+          - The ValidatorInput contains at least one definition field that is defined as being type `number`.
+          - The value in the primitive `number` field is a non-string whole number.
+        when:
+          - The input is validated.
+        then:
+          - The ValidatorOutput does not indicate any errors.
+          - The ValidatorOutput does not indicate any warnings.
+          - The ValidatorOutput indicates the primitive value under test is valid.
+      - scenario: Successfully validate a number primitive value that is an integer.
+        given:
+          - The ValidatorInput content consists of AaC definitions.
+          - The ValidatorInput contains at least one definition field that is defined as being type `number`.
+          - The value in the primitive `number` field is an integer.
+        when:
+          - The input is validated.
+        then:
+          - The ValidatorOutput does not indicate any errors.
+          - The ValidatorOutput does not indicate any warnings.
+          - The ValidatorOutput indicates the primitive value under test is valid.
+      - scenario: Fail to validate a number primitive value that is a string.
+        given:
+          - The ValidatorInput content consists of AaC definitions.
+          - The ValidatorInput contains at least one definition field that is defined as being type `number`.
+          - The value in the primitive `number` field contains alphabetical letters or punctuation marks.
+        when:
+          - The input is validated.
+        then:
+          - The ValidatorOutput indicates an error.
+          - The ValidatorOutput indicates the primitive value under test is invalid.
 ---
-validator:
+validation:
   name: Validate Boolean Primitives
-  type: request-response
-  input:
-    - name: input
-      type: ValidatorInput
-  output:
-    - name: results
-      type: ValidatorOutput
-  acceptance:
-    - scenario: Successfully validate a boolean primitive value.
-      given:
-        - The ValidatorInput content consists of valid AaC definitions.
-        - The ValidatorInput contains at least one definition field that is defined as being type `bool`.
-        - The value in the primitive `bool` field is a valid boolean YAML value.
-      when:
-        - The input is validated.
-      then:
-        - The ValidatorOutput does not indicate any errors.
-        - The ValidatorOutput does not indicate any warnings.
-        - The ValidatorOutput indicates the primitive value under test is valid.
-    - scenario: Fail to validate an integer primitive value is a non-boolean string.
-      given:
-        - The ValidatorInput content consists of AaC definitions.
-        - The ValidatorInput contains at least one definition field that is defined as being type `bool`.
-        - The value in the primitive `bool` field contains alphabetical letters or punctuation marks that don't represent a YAML boolean value.
-      when:
-        - The input is validated.
-      then:
-        - The ValidatorOutput indicates an error.
-        - The ValidatorOutput indicates the primitive value under test is invalid.
+  description: Provides validation for the primitive AaC type bool.
+  behavior:
+  - name: validate boolean primitive
+    description: Provides an error message if the value in a bool field is not parsed as a boolean (True/False).
+    type: REQUEST_RESPONSE
+    input:
+      - name: input
+        type: ValidatorInput
+    output:
+      - name: results
+        type: ValidatorOutput
+    acceptance:
+      - scenario: Successfully validate a boolean primitive value.
+        given:
+          - The ValidatorInput content consists of valid AaC definitions.
+          - The ValidatorInput contains at least one definition field that is defined as being type `bool`.
+          - The value in the primitive `bool` field is a valid boolean YAML value.
+        when:
+          - The input is validated.
+        then:
+          - The ValidatorOutput does not indicate any errors.
+          - The ValidatorOutput does not indicate any warnings.
+          - The ValidatorOutput indicates the primitive value under test is valid.
+      - scenario: Fail to validate an integer primitive value is a non-boolean string.
+        given:
+          - The ValidatorInput content consists of AaC definitions.
+          - The ValidatorInput contains at least one definition field that is defined as being type `bool`.
+          - The value in the primitive `bool` field contains alphabetical letters or punctuation marks that don't represent a YAML boolean value.
+        when:
+          - The input is validated.
+        then:
+          - The ValidatorOutput indicates an error.
+          - The ValidatorOutput indicates the primitive value under test is invalid.
 ---
-validator:
+validation:
   name: Validate Date Primitives
-  type: request-response
-  input:
-    - name: input
-      type: ValidatorInput
-  output:
-    - name: results
-      type: ValidatorOutput
-  acceptance:
-    - scenario: Successfully validate a date primitive value.
-      given:
-        - The ValidatorInput content consists of valid AaC definitions.
-        - The ValidatorInput contains at least one definition field that is defined as being type `date`.
-        - The value in the primitive `date` field is a valid date YAML value.
-      when:
-        - The input is validated.
-      then:
-        - The ValidatorOutput does not indicate any errors.
-        - The ValidatorOutput does not indicate any warnings.
-        - The ValidatorOutput indicates the primitive value under test is valid.
-    - scenario: Fail to validate a date primitive value that is a non-date string.
-      given:
-        - The ValidatorInput content consists of AaC definitions.
-        - The ValidatorInput contains at least one definition field that is defined as being type `date`.
-        - The value in the primitive `date` field contains alphabetical letters or punctuation marks that don't represent a YAML date value.
-      when:
-        - The input is validated.
-      then:
-        - The ValidatorOutput indicates an error.
-        - The ValidatorOutput indicates the primitive value under test is invalid.
+  description: Provides validation for the primitive AaC type date.
+  behavior:
+  - name: validate date primitive
+    description: Provides an error message if the value in a date field is not parsed as a date.
+    type: REQUEST_RESPONSE
+    input:
+      - name: input
+        type: ValidatorInput
+    output:
+      - name: results
+        type: ValidatorOutput
+    acceptance:
+      - scenario: Successfully validate a date primitive value.
+        given:
+          - The ValidatorInput content consists of valid AaC definitions.
+          - The ValidatorInput contains at least one definition field that is defined as being type `date`.
+          - The value in the primitive `date` field is a valid date YAML value.
+        when:
+          - The input is validated.
+        then:
+          - The ValidatorOutput does not indicate any errors.
+          - The ValidatorOutput does not indicate any warnings.
+          - The ValidatorOutput indicates the primitive value under test is valid.
+      - scenario: Fail to validate a date primitive value that is a non-date string.
+        given:
+          - The ValidatorInput content consists of AaC definitions.
+          - The ValidatorInput contains at least one definition field that is defined as being type `date`.
+          - The value in the primitive `date` field contains alphabetical letters or punctuation marks that don't represent a YAML date value.
+        when:
+          - The input is validated.
+        then:
+          - The ValidatorOutput indicates an error.
+          - The ValidatorOutput indicates the primitive value under test is invalid.
 ---
-validator:
+validation:
   name: Validate File Primitives
-  type: request-response
-  input:
-    - name: input
-      type: ValidatorInput
-  output:
-    - name: results
-      type: ValidatorOutput
-  acceptance:
-    - scenario: Successfully validate a file primitive value.
-      given:
-        - The ValidatorInput content consists of valid AaC definitions.
-        - The ValidatorInput contains at least one definition field that is defined as being type `file`.
-        - The value in the primitive `file` field is a valid path to a file.
-        - The specified file path exists on the file system.
-      when:
-        - The input is validated.
-      then:
-        - The ValidatorOutput does not indicate any errors.
-        - The ValidatorOutput does not indicate any warnings.
-        - The ValidatorOutput indicates the primitive value under test is valid.
-    - scenario: Warn when validating a file primitive value that does not exist.
-      given:
-        - The ValidatorInput content consists of valid AaC definitions.
-        - The ValidatorInput contains at least one definition field that is defined as being type `file`.
-        - The value in the primitive `file` field represents a file path.
-        - The specified file path does not exist on the file system.
-      when:
-        - The input is validated.
-      then:
-        - The ValidatorOutput indicates a warning.
-        - The ValidatorOutput indicates the primitive value under test does not exist.
+  description: Provides validation for the primitive AaC type file.
+  behavior:
+  - name: validate file primitive
+    description: Provides an error message if the value in a file field is not a valid file on the file system.
+    type: REQUEST_RESPONSE
+    input:
+      - name: input
+        type: ValidatorInput
+    output:
+      - name: results
+        type: ValidatorOutput
+    acceptance:
+      - scenario: Successfully validate a file primitive value.
+        given:
+          - The ValidatorInput content consists of valid AaC definitions.
+          - The ValidatorInput contains at least one definition field that is defined as being type `file`.
+          - The value in the primitive `file` field is a valid path to a file.
+          - The specified file path exists on the file system.
+        when:
+          - The input is validated.
+        then:
+          - The ValidatorOutput does not indicate any errors.
+          - The ValidatorOutput does not indicate any warnings.
+          - The ValidatorOutput indicates the primitive value under test is valid.
+      - scenario: Warn when validating a file primitive value that does not exist.
+        given:
+          - The ValidatorInput content consists of valid AaC definitions.
+          - The ValidatorInput contains at least one definition field that is defined as being type `file`.
+          - The value in the primitive `file` field represents a file path.
+          - The specified file path does not exist on the file system.
+        when:
+          - The input is validated.
+        then:
+          - The ValidatorOutput indicates a warning.
+          - The ValidatorOutput indicates the primitive value under test does not exist.
 ---
-validator:
+validation:
   name: Validate Directory Primitives
-  type: request-response
-  input:
-    - name: input
-      type: ValidatorInput
-  output:
-    - name: results
-      type: ValidatorOutput
-  acceptance:
-    - scenario: Successfully validate a directory primitive value.
-      given:
-        - The ValidatorInput content consists of valid AaC definitions.
-        - The ValidatorInput contains at least one definition field that is defined as being type `directory`.
-        - The value in the primitive `directory` field is a valid path to a directory.
-        - The specified directory path exists on the file system.
-      when:
-        - The input is validated.
-      then:
-        - The ValidatorOutput does not indicate any errors.
-        - The ValidatorOutput does not indicate any warnings.
-        - The ValidatorOutput indicates the primitive value under test is valid.
-    - scenario: Warn when validating a directory primitive value that does not exist.
-      given:
-        - The ValidatorInput content consists of valid AaC definitions.
-        - The ValidatorInput contains at least one definition field that is defined as being type `directory`.
-        - The value in the primitive `directory` field represents a directory path.
-        - The specified directory path does not exist on the file system.
-      when:
-        - The input is validated.
-      then:
-        - The ValidatorOutput indicates a warning.
-        - The ValidatorOutput indicates the primitive value under test does not exist.
+  description: Provides validation for the primitive AaC type directory.
+  behavior:
+  - name: validate directory primitive
+    description: Provides an error message if the value in a directory field is not a valid directory on the filesystem.
+    type: REQUEST_RESPONSE
+    input:
+      - name: input
+        type: ValidatorInput
+    output:
+      - name: results
+        type: ValidatorOutput
+    acceptance:
+      - scenario: Successfully validate a directory primitive value.
+        given:
+          - The ValidatorInput content consists of valid AaC definitions.
+          - The ValidatorInput contains at least one definition field that is defined as being type `directory`.
+          - The value in the primitive `directory` field is a valid path to a directory.
+          - The specified directory path exists on the file system.
+        when:
+          - The input is validated.
+        then:
+          - The ValidatorOutput does not indicate any errors.
+          - The ValidatorOutput does not indicate any warnings.
+          - The ValidatorOutput indicates the primitive value under test is valid.
+      - scenario: Warn when validating a directory primitive value that does not exist.
+        given:
+          - The ValidatorInput content consists of valid AaC definitions.
+          - The ValidatorInput contains at least one definition field that is defined as being type `directory`.
+          - The value in the primitive `directory` field represents a directory path.
+          - The specified directory path does not exist on the file system.
+        when:
+          - The input is validated.
+        then:
+          - The ValidatorOutput indicates a warning.
+          - The ValidatorOutput indicates the primitive value under test does not exist.
 ---
 validation:
   name: Validate Reference Primitives
-  type: request-response
-  input:
-    - name: input
-      type: ValidatorInput
-  output:
-    - name: results
-      type: ValidatorOutput
-  acceptance:
-    - scenario: Successfully validate a reference primitive value.
-      given:
-        - The ValidatorInput content consists of valid AaC definitions.
-        - The ValidatorInput contains at least one definition field that is defined as being type `reference`.
-        - The value in the primitive `reference` field is the name of an AaC definition.
-        - The specified definition exists in the active context.
-      when:
-        - The input is validated.
-      then:
-        - The ValidatorOutput does not indicate any errors.
-        - The ValidatorOutput does not indicate any warnings.
-        - The ValidatorOutput indicates the primitive value under test is valid.
-    - scenario: Error when validating a reference primitive value that does not exist.
-      given:
-        - The ValidatorInput content consists of valid AaC definitions.
-        - The ValidatorInput contains at least one definition field that is defined as being type `reference`.
-        - The value in the primitive `reference` field is a string value.
-        - The specified reference does not exist in the active context.
-      when:
-        - The input is validated.
-      then:
-        - The ValidatorOutput indicates an error.
-        - The ValidatorOutput indicates the primitive value under test is not a valid reference to a definition.
+  description: Provides validation for the primitive AaC type reference.
+  behavior:
+  - name: validate reference primitive
+    description: Provides an error message if the value in a reference field is not a reference to another definition.
+    type: REQUEST_RESPONSE
+    input:
+      - name: input
+        type: ValidatorInput
+    output:
+      - name: results
+        type: ValidatorOutput
+    acceptance:
+      - scenario: Successfully validate a reference primitive value.
+        given:
+          - The ValidatorInput content consists of valid AaC definitions.
+          - The ValidatorInput contains at least one definition field that is defined as being type `reference`.
+          - The value in the primitive `reference` field is the name of an AaC definition.
+          - The specified definition exists in the active context.
+        when:
+          - The input is validated.
+        then:
+          - The ValidatorOutput does not indicate any errors.
+          - The ValidatorOutput does not indicate any warnings.
+          - The ValidatorOutput indicates the primitive value under test is valid.
+      - scenario: Error when validating a reference primitive value that does not exist.
+        given:
+          - The ValidatorInput content consists of valid AaC definitions.
+          - The ValidatorInput contains at least one definition field that is defined as being type `reference`.
+          - The value in the primitive `reference` field is a string value.
+          - The specified reference does not exist in the active context.
+        when:
+          - The input is validated.
+        then:
+          - The ValidatorOutput indicates an error.
+          - The ValidatorOutput indicates the primitive value under test is not a valid reference to a definition.

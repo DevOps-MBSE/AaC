@@ -7,7 +7,7 @@ from aac.lang.constants import (
     DEFINITION_NAME_MODEL,
     DEFINITION_NAME_PRIMITIVES,
     DEFINITION_NAME_SCENARIO,
-    ROOT_KEY_SCHEMA,
+    DEFINITION_NAME_SCHEMA,
 )
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.metadata_structure import compute_metadata_structure
@@ -28,7 +28,7 @@ class TestDefinitionNodeStructure(TestCase):
         compute_metadata_structure(test_definition, test_context)
 
         # Expected defining definition
-        schema_definition = test_context.get_definition_by_name(ROOT_KEY_SCHEMA)
+        schema_definition = test_context.get_definition_by_name(DEFINITION_NAME_SCHEMA)
         primitives_definition = test_context.get_definition_by_name(DEFINITION_NAME_PRIMITIVES)
         field_definition = test_context.get_definition_by_name(DEFINITION_NAME_FIELD)
 

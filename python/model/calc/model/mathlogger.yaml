@@ -3,7 +3,7 @@ model:
   description:  A log management service for calculator.
   behavior:
     - name: api
-      type: logging
+      type: LOGGING
       input:
         - name: log-message
           type: string

@@ -1,5 +1,5 @@
 schema:
-  name: root
+  name: Root
   description: |
     root is a special case representing the root of the architecture model and
     not explicitly included in a model file
@@ -10,43 +10,35 @@ schema:
         A definition that represents the list of imported files containing
         externally-defined definitions that are referenced in the current file.
     - name: enum
-      type: enum
+      type: Enum
       description: |
         A definition that represents an enumerated type of value.
 
         An example of when to use an 'enum' is when you want to provide several
         different options for a single value.
     - name: schema
-      type: schema
+      type: Schema
       description: |
         A definition that defines the schema/structure of definitions.
 
         A 'schema' definition can alternatively be thought as a defining the
         data structure of a definition.
-    - name: map
-      type: Map
-      description: |
-        A definition that represents a key-value pair. Used to define Maps
-        and the types for the keys and values.
-
-        An example use of Map would be to declare a key-value data structure
-        with keys of type A and values of type B.
     - name: model
-      type: model
+      type: Model
       description: |
         A definition that represents a system and/or component model.
 
         An example of when to use a 'model' is when you want to define the
         behavior for some component of the system.
     - name: usecase
-      type: usecase
+      type: Usecase
       description: |
         A definition that represents a usecase for the system.
 
         An example of when to use a 'usecase' is when you want to define how the
         system might be used in a particular instance.
     - name: ext
-      type: extension
+      type: Extension
       description: |
         A meta definition used for adding information to another definition.
 
@@ -99,7 +91,7 @@ schema:
         - files
 ---
 schema:
-  name: enum
+  name: Enum
   fields:
     - name: name
       type: string
@@ -116,7 +108,7 @@ schema:
         - values
 ---
 schema:
-  name: extension
+  name: Extension
   fields:
     - name: name
       type: string
@@ -270,11 +262,11 @@ schema:
 enum:
   name: BehaviorType
   values:
-    - pub-sub
-    - request-response
-    - startup
-    - timer
-    - logging
+    - PUB_SUB
+    - REQUEST_RESPONSE
+    - STARTUP
+    - TIMER
+    - LOGGING
 ---
 enum:
   name: Primitives
@@ -319,14 +311,14 @@ schema:
         - type
 ---
 schema:
-  name: schema
+  name: Schema
   fields:
     - name: name
       type: string
       description: |
         The name of the schema definition.
     - name: inherits
-      type: DefinitionReference[]
+      type: reference[]
       description: |
         A list of Schema definition names that this definition inherits from.
     - name: fields
@@ -396,7 +388,7 @@ schema:
         - type
 ---
 schema:
-  name: model
+  name: Model
   fields:
     - name: name
       type: string
@@ -433,7 +425,7 @@ schema:
         - name
 ---
 schema:
-  name: usecase
+  name: Usecase
   fields:
     - name: name
       type: string
@@ -514,48 +506,6 @@ schema:
       arguments:
         - condition
         - steps
----
-schema:
-  name: Map
-  description: Defines a map/key-value pair data structure, and the typing.
-  fields:
-    - name: name
-      type: string
-      description: The name of the Map type
-    - name: key_type
-      type: string
-      description: The key type for elements in the map.
-    - name: value_type
-      type: string
-      description: The value type for elements in the map.
-  validation:
-    - name: Required fields are present
-      arguments:
-        - name
-        - key_type
-        - value_type
----
-schema:
-  name: KeyValuePair
-  description: Defines a key-value pair, use in list to create key-value pairs in AaC.
-  fields:
-    - name: key
-      type: string
-      description: The key map entry.
-    - name: value
-      type: string
-      description: The value map entry.
-  validation:
-    - name: Required fields are present
-      arguments:
-        - key
-        - value
----
-schema:
-  name: DefinitionReference
-  fields:
-    - name: name
-      type: reference
 ---
 schema:
   name: CommandGroup

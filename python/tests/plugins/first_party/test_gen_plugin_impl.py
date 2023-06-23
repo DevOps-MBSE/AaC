@@ -4,6 +4,7 @@ from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
 from aac.io.constants import YAML_DOCUMENT_EXTENSION, YAML_DOCUMENT_SEPARATOR
+from aac.lang.constants import BEHAVIOR_TYPE_REQUEST_RESPONSE
 from aac.plugins.first_party.gen_plugin.GeneratePluginException import GeneratePluginException
 from aac.plugins.first_party.gen_plugin.gen_plugin_impl import (
     EXPECTED_FIRST_PARTY_DIRECTORY_PATH,
@@ -275,13 +276,13 @@ schema:
         - value1
 """
 
-TEST_PLUGIN_DEFINITIONS_YAML_STRING = """
+TEST_PLUGIN_DEFINITIONS_YAML_STRING = f"""
 validation:
   name: Test definition validation
   description: A test definition validator.
   behavior:
     - name: Validate a definition
-      type: request-response
+      type: {BEHAVIOR_TYPE_REQUEST_RESPONSE}
       input:
         - name: input
           type: ValidatorInput
@@ -304,7 +305,7 @@ validation:
   description: A test primitive validator.
   behavior:
     - name: Validate a primitive
-      type: request-response
+      type: {BEHAVIOR_TYPE_REQUEST_RESPONSE}
       input:
         - name: input
           type: ValidatorInput

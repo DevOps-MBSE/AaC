@@ -2,6 +2,7 @@ from aac.io.parser import parse
 from aac.io.files.aac_file import AaCFile
 from aac.lang.active_context_lifecycle_manager import get_active_context, get_initialized_language_context
 from aac.lang.constants import (
+    BEHAVIOR_TYPE_PUBLISH_SUBSCRIBE,
     DEFINITION_FIELD_ADD,
     DEFINITION_FIELD_EXTENSION_ENUM,
     DEFINITION_FIELD_EXTENSION_SCHEMA,
@@ -10,12 +11,14 @@ from aac.lang.constants import (
     DEFINITION_FIELD_REQUIRED,
     DEFINITION_FIELD_TYPE,
     DEFINITION_FIELD_VALUES,
+    DEFINITION_NAME_BEHAVIOR_TYPE,
+    DEFINITION_NAME_MODEL,
     DEFINITION_NAME_PRIMITIVES,
+    DEFINITION_NAME_SCHEMA,
     PRIMITIVE_TYPE_DATE,
     PRIMITIVE_TYPE_STRING,
     ROOT_KEY_ENUM,
     ROOT_KEY_EXTENSION,
-    ROOT_KEY_MODEL,
     ROOT_KEY_SCHEMA,
 )
 from aac.lang.definitions.collections import get_definition_by_name
@@ -130,7 +133,7 @@ class TestLanguageContext(ActiveContextTestCase):
         self.assertNotEqual(original_context_definition.structure, altered_context_definition.structure)
 
     def test_remove_extension_definition_from_context(self):
-        target_schema_definition_name = ROOT_KEY_MODEL
+        target_schema_definition_name = DEFINITION_NAME_MODEL
         target_enum_definition_name = DEFINITION_NAME_PRIMITIVES
         schema_extension_field_name = self.TEST_FIELD_DEFINITION_NAME
         schema_extension_field = create_field_entry(schema_extension_field_name, PRIMITIVE_TYPE_STRING)
@@ -177,7 +180,7 @@ class TestLanguageContext(ActiveContextTestCase):
         self.assertNotIn(schema_extension_field_name, unextended_schema_field_names)
 
     def test_update_extension_definition_in_context(self):
-        target_schema_definition_name = ROOT_KEY_MODEL
+        target_schema_definition_name = DEFINITION_NAME_MODEL
         target_enum_definition_name = DEFINITION_NAME_PRIMITIVES
         schema_extension_field_name = self.TEST_FIELD_DEFINITION_NAME
         schema_extension_field = create_field_entry(schema_extension_field_name, PRIMITIVE_TYPE_STRING)
@@ -244,7 +247,7 @@ class TestLanguageContext(ActiveContextTestCase):
         expected_results = get_primitives()
         actual_results = test_context.get_primitive_types()
 
-        self.assertEqual(expected_results, actual_results)
+        self.assertCountEqual(expected_results, actual_results)
 
     def test_get_defined_types_with_unextended_context(self):
         core_spec = get_aac_spec()
@@ -266,7 +269,7 @@ class TestLanguageContext(ActiveContextTestCase):
         core_spec = get_aac_spec()
         test_context = LanguageContext(core_spec)
 
-        self.assertTrue(test_context.is_definition_type(ROOT_KEY_SCHEMA))
+        self.assertTrue(test_context.is_definition_type(DEFINITION_NAME_SCHEMA))
         self.assertFalse(test_context.is_definition_type("daaaaaaaaaata"))
 
     def test_get_root_keys(self):
@@ -276,17 +279,17 @@ class TestLanguageContext(ActiveContextTestCase):
         expected_results = get_root_keys()
         actual_results = test_context.get_root_keys()
 
-        self.assertEqual(expected_results, actual_results)
+        self.assertCountEqual(expected_results, actual_results)
 
     def test_get_enum_definition_by_type_when_enum_is_in_core_spec(self):
         core_spec = get_aac_spec()
         test_context = LanguageContext(core_spec)
 
         primitives_definition = test_context.get_definition_by_name(DEFINITION_NAME_PRIMITIVES)
-        behavior_type_definition = test_context.get_definition_by_name("BehaviorType")
+        behavior_type_definition = test_context.get_definition_by_name(DEFINITION_NAME_BEHAVIOR_TYPE)
 
         self.assertEqual(primitives_definition, test_context.get_enum_definition_by_type(PRIMITIVE_TYPE_STRING))
-        self.assertEqual(behavior_type_definition, test_context.get_enum_definition_by_type("pub-sub"))
+        self.assertEqual(behavior_type_definition, test_context.get_enum_definition_by_type(BEHAVIOR_TYPE_PUBLISH_SUBSCRIBE))
 
     def test_get_enum_definition_by_type_when_enum_is_added(self):
         test_context = LanguageContext()
@@ -338,7 +341,9 @@ class TestLanguageContext(ActiveContextTestCase):
 
         new_enum_value = "test_primitive"
         updated_primitive_definition = primitive_definition.copy()
-        updated_primitive_definition.structure[primitive_definition.get_root_key()][DEFINITION_FIELD_VALUES].append(new_enum_value)
+        updated_primitive_definition.structure[primitive_definition.get_root_key()][DEFINITION_FIELD_VALUES].append(
+            new_enum_value
+        )
         active_context.update_definition_in_context(primitive_definition)
 
         actual_primitive_definition = active_context.get_definition_by_name(DEFINITION_NAME_PRIMITIVES)
@@ -347,7 +352,9 @@ class TestLanguageContext(ActiveContextTestCase):
 
     def test_language_context_copy(self):
         definition_to_add = create_schema_definition("TestAdd", fields=[create_field_entry("field", PRIMITIVE_TYPE_STRING)])
-        definition_to_remove = create_schema_definition("TestRemove", fields=[create_field_entry("field", PRIMITIVE_TYPE_STRING)])
+        definition_to_remove = create_schema_definition(
+            "TestRemove", fields=[create_field_entry("field", PRIMITIVE_TYPE_STRING)]
+        )
 
         # Add the definition to test removing to the original context
         original_context = get_active_context()
@@ -463,7 +470,9 @@ class TestLanguageContextGetDefinitionMethods(ActiveContextTestCase):
         actual_definitions = test_context.get_definitions_by_file_uri(test_file.name)
         parsed_schema_a, *_ = [definition for definition in test_content_definitions if definition.name == TEST_SCHEMA_A.name]
         parsed_schema_b, *_ = [definition for definition in test_content_definitions if definition.name == TEST_SCHEMA_B.name]
-        parsed_service_one, *_ = [definition for definition in test_content_definitions if definition.name == TEST_SERVICE_ONE.name]
+        parsed_service_one, *_ = [
+            definition for definition in test_content_definitions if definition.name == TEST_SERVICE_ONE.name
+        ]
         self.assertIn(parsed_schema_a, actual_definitions)
         self.assertIn(parsed_schema_b, actual_definitions)
         self.assertIn(parsed_service_one, actual_definitions)
