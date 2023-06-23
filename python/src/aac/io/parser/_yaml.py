@@ -25,12 +25,12 @@ def scan_yaml(source: str, content: str) -> list[Token]:
     try:
         tokens = list(scan(content, Loader=SafeLoader))
     except YAMLScannerError as error:
-        _yaml_error_logging("Scanner", error, source, content)
-        _yaml_raise_error("scanner", error, source)
+        error_messages = _yaml_error_messages("scanner", error, content)
+        _log_yaml_error(source, error_messages)
+        raise ParserError(source, error_messages)
     except Exception as error:
         logging.error(f"Error: {error}. Encountered in: {source}")
         logging.error(f"Content of error: {content}")
-
         raise ParserError(source, [f"Encountered the following error: {error}"]) from None
     else:
         return tokens
@@ -59,15 +59,16 @@ def parse_yaml(source: str, content: str) -> list[dict]:
         _error_if_not_yaml(source, content, models)
         _error_if_not_complete(source, content, models)
     except YAMLParserError as error:
-        _yaml_error_logging("Parsing", error, source, content)
-        _yaml_raise_error("parser", error, source)
+        error_messages = _yaml_error_messages("parser", error, content)
+        _log_yaml_error(source, error_messages)
+        raise ParserError(source, error_messages)
     except YAMLScannerError as error:
-        _yaml_error_logging("Scanner", error, source, content)
-        _yaml_raise_error("scanner", error, source)
+        error_messages = _yaml_error_messages("scanner", error, content)
+        _log_yaml_error(source, error_messages)
+        raise ParserError(source, error_messages)
     except Exception as error:
         logging.error(f"Error: {error}. Encountered in: {source}")
         logging.error(f"Content of error: {content}")
-
         raise ParserError(source, [f"Encountered the following error: {error}"]) from None
     else:
         return models
@@ -105,14 +106,14 @@ def _error_if_not_complete(source, content, models):
     all(map(assert_definition_has_name, models_without_imports))
 
 
-def _yaml_error_logging(error_type, error, source, content):
-    logging.error(f"Encountered YAML {error_type} Error-Problem: {error.problem}. Encountered in: {source} at {error.context}")
-    if error.problem_mark:
-        logging.error(f"Error occurs at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}")
-    logging.error(f"Content of error: {content}")
+def _yaml_error_messages(error_type, error, content) -> list[str]:
+    error_messages = f"Encountered an invalid YAML with the following {error_type} error: {error.problem}", 
+                     f"Encountered error at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}",
+                     f"Content of the error: {content}"
+    return error_messages
 
 
-def _yaml_raise_error(error_type, error, source):
-    raise ParserError(source, [f"Encountered an invalid YAML with the following {error_type} error: {error.problem}",
-                               f"Encountered error at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}",
-                               f"Context of the error: {error.context}"]) from None
+def _log_yaml_error(source, error_messages):
+     logging.error(f"YAML error with the following file: {source}")
+     for error_message in error_messages:
+          logging.error(error_message)
