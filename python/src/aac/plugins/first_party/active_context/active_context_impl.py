@@ -27,60 +27,6 @@ def list_files() -> PluginExecutionResult:
         return result
 
 
-def remove_file(file: str) -> PluginExecutionResult:
-    """
-    Remove a file from the active context.
-
-    Args:
-        file (str): The name of the file that is being removed from the active context.
-    """
-
-    def remove_file_if_present() -> str:
-        active_context = get_active_context()
-        file_definitions = active_context.get_definitions_by_file_uri(file)
-        if not file_definitions:
-            raise PluginError(f"Could not remove {file} as it is not in the active context")
-
-        active_context.remove_definitions_from_context(file_definitions)
-        return f"Successfully removed {file} from the active context"
-
-    with plugin_result(plugin_name, remove_file_if_present) as result:
-        return result
-
-
-def add_file(file: str) -> PluginExecutionResult:
-    """
-    Add a file to the active context.
-
-    Args:
-        file (str): The name of the file to add to the active context.
-    """
-
-    def add_file_if_exists() -> str:
-        active_context = get_active_context()
-        if not lexists(file):
-            raise PluginError(f"Could not add {file} because it doesn't exist")
-
-        active_context.add_definitions_from_uri(file)
-        return f"Successfully added {file} to the active context"
-
-    with plugin_result(plugin_name, add_file_if_exists) as result:
-        return result
-
-
-def reset_context() -> PluginExecutionResult:
-    """Reset the active context to a fresh state before any changes have been made."""
-
-    def remove_custom_definitions() -> str:
-        active_context = get_active_context()
-        custom_definitions = [definition for definition in active_context.definitions if definition.source.is_user_editable]
-        active_context.remove_definitions_from_context(custom_definitions)
-        return "Successfully reset the active context"
-
-    with plugin_result(plugin_name, remove_custom_definitions) as result:
-        return result
-
-
 def list_definitions() -> PluginExecutionResult:
     """
     List all definitions within the active context.

@@ -323,10 +323,6 @@ class TestLanguageContext(ActiveContextTestCase):
                 new_context = LanguageContext()
                 new_context.import_from_file(state_file.name)
 
-                imported_definitions = set(new_context.get_defined_types())
-                exported_definitions = set(test_context.get_defined_types())
-                self.assertSetEqual(imported_definitions, exported_definitions)
-
                 imported_plugins = {plugin.name for plugin in new_context.get_active_plugins()}
                 exported_plugins = {plugin.name for plugin in test_context.get_active_plugins()}
                 self.assertSetEqual(imported_plugins, exported_plugins)

@@ -34,7 +34,7 @@ from aac.plugins.plugin import Plugin
 from aac.plugins.plugin_manager import get_plugins
 
 
-MISSING_TYPE = 'missing_type'
+MISSING_TYPE = "missing_type"
 
 
 @attrs(slots=True, auto_attribs=True)
@@ -269,7 +269,9 @@ class LanguageContext:
         if root_definition:
             return root_definition.get_fields() or []
         else:
-            raise LanguageError(f"Unable to get the '{DEFINITION_NAME_ROOT}' definition. Check that AaC has the core-spec loaded.")
+            raise LanguageError(
+                f"Unable to get the '{DEFINITION_NAME_ROOT}' definition. Check that AaC has the core-spec loaded."
+            )
 
     def get_root_keys_definition(self) -> Definition:
         """
@@ -398,7 +400,9 @@ class LanguageContext:
                     )
                 return definition_to_return[0]
             else:
-                logging.info(f"Failed to find the definition named '{definition_name}' in the context of '{self.get_defined_types()}'.")
+                logging.info(
+                    f"Failed to find the definition named '{definition_name}' in the context of '{self.get_defined_types()}'."
+                )
         else:
             logging.error(f"No definition name was provided to {self.get_definition_by_name.__name__}")
 
@@ -623,15 +627,10 @@ class LanguageContext:
         def decode_state_file():
             with open(file_uri) as state_file:
                 object = json.loads(state_file.read()) or {}
-                return (
-                    object.get("aac_version"),
-                    object.get("files"),
-                    object.get("definitions"),
-                    object.get("plugins"),
-                )
+                return object.get("aac_version"), object.get("plugins")
 
         if lexists(file_uri):
-            version, files, definitions, plugins = decode_state_file()
+            version, plugins = decode_state_file()
 
             if version != __version__:
                 raise StateFileError(
@@ -640,9 +639,6 @@ class LanguageContext:
 
             # Make sure to clear the state of the context before importing a state file.
             self.clear()
-
-            for file in files:
-                self.add_definitions_from_uri(sanitize_filesystem_path(file), definitions)
 
             for plugin in plugins:
                 self.activate_plugin_by_name(plugin)
@@ -661,8 +657,6 @@ class LanguageContext:
         """
         data = dict(
             aac_version=__version__,
-            files=[file.uri for file in self.get_files_in_context()],
-            definitions=self.get_defined_types(),
             plugins=[plugin.name for plugin in self.get_active_plugins()],
         )
         write_file(file_uri, json.dumps(data, indent=2), True)
@@ -676,9 +670,7 @@ class LanguageContext:
     def clear(self) -> None:
         """Remove all definitions and plugins from the language context."""
         self.is_initialized = False
-        self.definitions = []
         self.plugins = []
-        self.definitions_dictionary = {}
 
     # Private methods
 
