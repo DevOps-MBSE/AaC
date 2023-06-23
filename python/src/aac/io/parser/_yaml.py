@@ -107,7 +107,7 @@ def _error_if_not_complete(source, content, models):
 
 
 def _yaml_error_messages(error_type, error, content) -> list[str]:
-    error_messages = [f"Encountered an invalid YAML with the following {error_type} error: {error.problem}", 
+    error_messages = [f"Encountered an invalid YAML with the following {error_type} error: {error.problem}",
                       f"Encountered error at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}",
                       f"Content of the error: {content}"]
     return error_messages
