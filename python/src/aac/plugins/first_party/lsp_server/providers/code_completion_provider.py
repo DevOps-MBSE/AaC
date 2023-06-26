@@ -8,6 +8,7 @@ from pygls.lsp import CompletionParams, CompletionList, CompletionItem, Completi
 from pygls.server import LanguageServer
 
 from aac.io.parser import parse
+from aac.io.parser._parser_error import ParserError
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.definitions.collections import get_definitions_by_root_key
 from aac.lang.definitions.definition import Definition
@@ -71,19 +72,23 @@ def _get_reference_completion_items(language_server: LanguageServer, params: Com
         active_context.get_definitions_by_root_key("schema")
     )
 
-    file_definitions = parse(_get_code_completion_parent_text_file(language_server, params))
-    file_schema_references = _convert_definitions_to_name_description_dict(
-        get_definitions_by_root_key("schema", file_definitions)
-    )
-    available_references = primitive_references | schema_definition_references | file_schema_references
+    try:
+        file_definitions = parse(_get_code_completion_parent_text_file(language_server, params))
+    except ParserError as error:
+        raise ParserError(error.source, error.errors) from None
+    else:
+        file_schema_references = _convert_definitions_to_name_description_dict(
+            get_definitions_by_root_key("schema", file_definitions)
+        )
+        available_references = primitive_references | schema_definition_references | file_schema_references
 
-    return CompletionList(
-        is_incomplete=False,
-        items=[
-            CompletionItem(label=name, kind=CompletionItemKind.Reference, documentation=description)
-            for name, description in available_references.items()
-        ],
-    )
+        return CompletionList(
+            is_incomplete=False,
+            items=[
+                CompletionItem(label=name, kind=CompletionItemKind.Reference, documentation=description)
+                for name, description in available_references.items()
+            ],
+        )
 
 
 def _get_code_completion_parent_text_file(language_server: LanguageServer, params: CompletionParams):

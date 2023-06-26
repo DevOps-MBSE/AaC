@@ -1,5 +1,4 @@
 """This module manages a singleton instance of LanguageContext and its lifecycle."""
-
 from aac.lang.language_context import LanguageContext
 from aac.persistence import ACTIVE_CONTEXT_STATE_FILE_NAME
 from aac.plugins.plugin_manager import get_plugins

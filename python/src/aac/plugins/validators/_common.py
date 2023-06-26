@@ -1,8 +1,8 @@
 """Module for common, shared functions specifically for the validator subclass of plugins."""
-
 from typing import Callable
-from aac.io.parser import parse
 
+from aac.io.parser import parse
+from aac.io.parser._parser_error import ParserError
 from aac.lang.definitions.collections import get_definitions_by_root_key
 from aac.lang.definitions.definition import Definition
 from aac.plugins import PluginError
@@ -19,7 +19,12 @@ def get_validation_definition_from_plugin_yaml(plugin_definitions_string: str) -
     Returns:
         The validation definition for the plugin.
     """
-    return get_validation_definition_from_plugin_definitions(parse(plugin_definitions_string))
+    try:
+        validation_definition = get_validation_definition_from_plugin_definitions(parse(plugin_definitions_string))
+    except ParserError as error:
+        raise ParserError(error.source, error.errors) from None
+    else:
+        return validation_definition
 
 
 def get_validation_definition_from_plugin_definitions(validator_definitions: list[Definition]) -> Definition:

@@ -9,6 +9,7 @@ from aac.io.files.aac_file import AaCFile
 from aac.io.files.find import find_aac_files, is_aac_file
 from aac.io.paths import sanitize_filesystem_path
 from aac.io.parser import parse
+from aac.io.parser._parser_error import ParserError
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.constants import DEFINITION_FIELD_TYPE, DEFINITION_FIELD_NAME
 from aac.lang.definitions.json_schema import get_definition_json_schema
@@ -64,8 +65,14 @@ def get_file_by_uri(uri: str):
 
 
 @app.post("/files/import", status_code=HTTPStatus.NO_CONTENT)
-def import_files_to_context(file_models: list[FilePathModel]):
-    """Import the list of files into the context."""
+def import_files_to_context(file_models: list[FilePathModel]) -> None:
+    """
+    Import the list of files into the context.
+
+    Args:
+        file_models (list[FilePathModel]): List of file models for import.
+
+    """
     files_to_import = set([str(model.uri) for model in file_models])
     valid_aac_files = set(filter(is_aac_file, files_to_import))
     invalid_files = files_to_import.difference(valid_aac_files)
@@ -76,8 +83,12 @@ def import_files_to_context(file_models: list[FilePathModel]):
             f"Invalid files were asked to imported. Invalid files: {invalid_files}.",
         )
     else:
-        new_file_definitions = [parse(file) for file in valid_aac_files]
-        list(map(get_active_context().add_definitions_to_context, new_file_definitions))
+        try:
+            new_file_definitions = [parse(file) for file in valid_aac_files]
+        except ParserError as error:
+            raise ParserError(error.source, error.errors) from None
+        else:
+            list(map(get_active_context().add_definitions_to_context, new_file_definitions))
 
 
 @app.put("/file", status_code=HTTPStatus.NO_CONTENT)
@@ -331,9 +342,13 @@ async def refresh_available_files_in_workspace() -> None:
     files_in_context = {file.uri for file in active_context.get_files_in_context()}
     available_files = {file.uri for file in AVAILABLE_AAC_FILES}
     missing_files = available_files.difference(files_in_context)
-    definition_lists_from_missing_files = [parse(file_uri) for file_uri in missing_files]
-    definitions_to_add = {definition.name: definition for definition_list in definition_lists_from_missing_files for definition in definition_list}
-    active_context.add_definitions_to_context(list(definitions_to_add.values()))
+    try:
+        definition_lists_from_missing_files = [parse(file_uri) for file_uri in missing_files]
+    except ParserError as error:
+        raise ParserError(error.source, error.errors) from None
+    else:
+        definitions_to_add = {definition.name: definition for definition_list in definition_lists_from_missing_files for definition in definition_list}
+        active_context.add_definitions_to_context(list(definitions_to_add.values()))
 
 
 def _report_error_response(code: HTTPStatus, error: str):

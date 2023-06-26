@@ -110,7 +110,7 @@ class YamlLFUCache:
 
         if not cache_entry:
             yaml_dicts = parse_yaml(content_source, content_string)
-            yaml_tokens = scan_yaml(content_string)
+            yaml_tokens = scan_yaml(content_source, content_string)
             cache_entry = CacheEntry(content_hash, yaml_dicts, yaml_tokens)
             self._put_entry(cache_entry.hash, cache_entry)
 

@@ -4,8 +4,9 @@ The AaC parser reads a YAML file, performs validation (if not suppressed) and pr
 the caller with a dictionary of the content keyed by the named type.  This allows you
 to find a certain type in a model by just looking for that key.
 """
-from copy import deepcopy
 import logging
+
+from copy import deepcopy
 from yaml import Mark, Token, StreamStartToken, StreamEndToken, DocumentStartToken
 from os import path, linesep
 from typing import Optional

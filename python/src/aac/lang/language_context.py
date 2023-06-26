@@ -13,6 +13,7 @@ from aac import __version__
 from aac.cli.aac_command import AacCommand
 from aac.io.files.aac_file import AaCFile
 from aac.io.parser import parse
+from aac.io.parser._parser_error import ParserError
 from aac.io.paths import sanitize_filesystem_path
 from aac.io.writer import write_file, write_definitions_to_file
 from aac.lang.constants import (
@@ -149,9 +150,13 @@ class LanguageContext:
                 the context. If names is not provided, import all definitions. (default: None)
         """
         if lexists(uri):
-            definitions = [definition for definition in parse(uri) if not names or definition.name in names]
-            self.update_definitions_in_context(list(set(definitions).intersection(self.definitions)))
-            self.add_definitions_to_context(list(set(definitions).difference(self.definitions)))
+            try:
+                definitions = [definition for definition in parse(uri) if not names or definition.name in names]
+            except ParserError as error:
+                raise ParserError(error.source, error.errors) from None
+            else:
+                self.update_definitions_in_context(list(set(definitions).intersection(self.definitions)))
+                self.add_definitions_to_context(list(set(definitions).difference(self.definitions)))
         else:
             logging.warn(f"Skipping {uri} as it could not be found.")
 
@@ -585,7 +590,11 @@ class LanguageContext:
         if len(definitions_in_file) > 0:
             write_definitions_to_file(definitions_in_file, sanitized_file_uri)
             self.remove_definitions_from_context(definitions_in_file)
-            self.add_definitions_to_context(parse(sanitized_file_uri))
+            try:
+                self.add_definitions_to_context(parse(sanitized_file_uri))
+            except ParserError as error:
+                raise ParserError(error.source, error.errors) from None
+
         elif lexists(sanitized_file_uri):
             logging.info(f"Deleting {sanitized_file_uri} since there are no definitions for the file in the context.")
             remove(sanitized_file_uri)

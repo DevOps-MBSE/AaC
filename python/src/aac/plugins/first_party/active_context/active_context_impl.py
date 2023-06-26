@@ -47,7 +47,7 @@ def describe_definition(definition_name: str) -> PluginExecutionResult:
     Describe a definition in the active context.
 
     Args:
-        definition_name (str): The name of a defintion in the active context.
+        definition_name (str): The name of a definition in the active context.
 
     Returns:
         definition_structure The YAML representation of the structure of the definition.
