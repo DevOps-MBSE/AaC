@@ -1,5 +1,4 @@
 """Functions to allow interacting with the core AaC spec."""
-
 import copy
 
 from aac.lang.constants import DEFINITION_FIELD_FIELDS, DEFINITION_NAME_ROOT, ROOT_KEY_SCHEMA
@@ -8,6 +7,7 @@ from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.search import search_definition
 from aac.package_resources import get_resource_file_contents, get_resource_file_path
 from aac.io.parser import parse
+from aac.io.parser._parser_error import ParserError
 
 PRIMITIVES: list[str] = []
 ROOT_NAMES: list[str] = []
@@ -33,8 +33,12 @@ def get_aac_spec() -> list[Definition]:
     global AAC_CORE_SPEC_DEFINITIONS
     if not len(AAC_CORE_SPEC_DEFINITIONS) > 0:
         core_spec_as_yaml = get_aac_spec_as_yaml()
-        AAC_CORE_SPEC_DEFINITIONS = parse(core_spec_as_yaml, _get_aac_spec_file_path())
-        list(map(set_files_to_not_user_editable, AAC_CORE_SPEC_DEFINITIONS))
+        try:
+            AAC_CORE_SPEC_DEFINITIONS = parse(core_spec_as_yaml, _get_aac_spec_file_path())
+        except ParserError as error:
+            raise ParserError(error.source, error.errors) from None
+        else:
+            list(map(set_files_to_not_user_editable, AAC_CORE_SPEC_DEFINITIONS))
 
     return AAC_CORE_SPEC_DEFINITIONS
 

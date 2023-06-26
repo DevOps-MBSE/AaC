@@ -4,6 +4,7 @@ import sys
 from click import Argument, Command, Option, ParamType, Parameter, Path, UNPROCESSED, group, secho, types
 
 from aac.cli.aac_command import AacCommand, AacCommandArgument
+from aac.io.parser._parser_error import ParserError
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.persistence import ACTIVE_CONTEXT_STATE_FILE_NAME
 from aac.plugins.plugin_execution import PluginExecutionResult
@@ -66,7 +67,11 @@ def to_click_command(command: AacCommand) -> Command:
     )
 
 
-active_context = get_active_context()
+try:
+    active_context = get_active_context()
+except ParserError as error:
+    raise ParserError(error.source, error.errors) from None
+
 commands = [to_click_command(cmd) for cmd in active_context.get_plugin_commands()]
 for command in commands:
     cli.add_command(command)

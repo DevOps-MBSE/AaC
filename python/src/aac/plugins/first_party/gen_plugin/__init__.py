@@ -20,6 +20,7 @@ def get_plugin() -> Plugin:
     plugin = Plugin(plugin_name)
     plugin.register_commands(_get_plugin_commands())
     plugin.register_definitions(_get_plugin_definitions())
+
     return plugin
 
 

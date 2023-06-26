@@ -119,7 +119,7 @@ class TestParser(TestCase):
     def test_errors_when_parsing_invalid_yaml(self):
         content = f"{ROOT_KEY_MODEL}: ]["
         with TemporaryTestFile(content) as test_yaml:
-            self.check_parser_errors(test_yaml.name, "invalid YAML", content)
+            self.check_parser_errors(test_yaml.name, "invalid YAML")
 
     def test_errors_when_parsing_incomplete_model(self):
         content = f"{ROOT_KEY_MODEL}:"

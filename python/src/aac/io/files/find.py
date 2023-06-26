@@ -34,9 +34,9 @@ def is_aac_file(filepath: str) -> bool:
         try:
             parse(filepath)
         except ParserError as error:
-            logging.info(f"File '{filepath}' is not a valid AaC file. Reason: {error.errors}")
+            logging.error(f"File '{filepath}' is not a valid AaC file. Reason: {error.errors}")
         except Exception as error:
-            logging.info(f"File '{filepath}' could not be parsed. Reason: {error}")
+            logging.error(f"File '{filepath}' could not be parsed. Reason: {error}")
         else:
             is_valid_aac_file = True
 
