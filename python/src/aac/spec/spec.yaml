@@ -47,7 +47,7 @@ schema:
         the specification of any plugins you may have installed.
 
         You can extend any 'enum' and 'schema' definition.
-    - name: commandGroup
+    - name: command_group
       type: CommandGroup
       description: |
         A reference to a command group under which one, or more, plugins can
@@ -591,27 +591,27 @@ schema:
         - name
         - description
 ---
-commandGroup:
+command_group:
   name: Generation
   display: gen
   helpText: Commands used for generating artifacts.
 ---
-commandGroup:
+command_group:
   name: Management
   display: mgmt
   helpText: Commands that enable management of AaC data.
 ---
-commandGroup:
+command_group:
   name: Internal
   display: internal
   helpText: Internal commands not intended for use by end-users or non-AaC developers.
 ---
-commandGroup:
+command_group:
   name: Backend
   display: backend
   helpText: Commands that enable a client/server style workflow.
 ---
-commandGroup:
+command_group:
   name: Query
   display: show
   helpText: Commands whose purpose is to show specific information.

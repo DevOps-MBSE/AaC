@@ -1,6 +1,6 @@
 from typing import Tuple, Set, Dict
 
-from aac.lang.constants import ROOT_KEY_SPEC
+from aac.lang.constants import ROOT_KEY_SPECIFICATION
 from aac.lang.definitions.definition import Definition
 from aac.lang.language_context import LanguageContext
 from aac.lang.definitions.structure import get_substructures_by_type
@@ -35,7 +35,7 @@ def validate_unique_ids(
 
     # this test must be performed globally
     global_ids: Dict[str, Definition] = {}
-    spec_roots = language_context.get_definitions_by_root_key(ROOT_KEY_SPEC)
+    spec_roots = language_context.get_definitions_by_root_key(ROOT_KEY_SPECIFICATION)
     for spec in spec_roots:
         unique_ids, duplicate_ids = _test_spec_ids(spec, target_schema_definition, language_context)
         if len(duplicate_ids) > 0:
