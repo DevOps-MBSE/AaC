@@ -3,7 +3,7 @@ plugin:
   description: |
     An AaC plugin that enables PlantUML diagrams to be generated from AaC
     definitions.
-  behavior:
+  commands:
     - name: puml-component
       group: Generation
       helpText: Converts an AaC-defined system to a PlantUML component diagram.
