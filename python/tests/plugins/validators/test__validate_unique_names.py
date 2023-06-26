@@ -1,9 +1,9 @@
 from aac.io.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_active_context
-from aac.lang.constants import DEFINITION_FIELD_NAME, ROOT_KEY_SCHEMA
+from aac.lang.constants import DEFINITION_FIELD_NAME, DEFINITION_NAME_SCHEMA
 from aac.lang.definitions.source_location import SourceLocation
 from aac.plugins.validators import FindingLocation
-from aac.plugins.validators.unique_names._unique_names import validate_unique_names
+from aac.plugins.validators.unique_names._validate_unique_names import validate_unique_names
 
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.assertion import assert_validator_result_failure, assert_validator_result_success
@@ -67,11 +67,11 @@ class TestValidateUniqueNames(ActiveContextTestCase):
 
     def test_validation_fails_with_duplicated_name_from_spec(self):
         test_active_context = get_active_context()
-        schema_definition = test_active_context.get_definition_by_name(ROOT_KEY_SCHEMA)
-        schema_lexeme = schema_definition.get_lexeme_with_value(schema_definition.get_root_key(), [DEFINITION_FIELD_NAME])
-        expected_finding_location = FindingLocation.from_lexeme("", schema_lexeme).location
+        schema_definition = test_active_context.get_definition_by_name(DEFINITION_NAME_SCHEMA)
+        schema_definition_lexeme = schema_definition.get_lexeme_with_value(DEFINITION_NAME_SCHEMA, [DEFINITION_FIELD_NAME])
+        expected_finding_location = FindingLocation.from_lexeme("", schema_definition_lexeme).location
 
-        new_definition = create_schema_definition("schema")
+        new_definition = create_schema_definition(DEFINITION_NAME_SCHEMA)
         unused_definition = create_schema_definition("unused")
         actual_result = validate_unique_names(new_definition, unused_definition, test_active_context)
 

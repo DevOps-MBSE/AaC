@@ -5,6 +5,7 @@ import logging
 import os
 
 from aac.lang.active_context_lifecycle_manager import get_active_context
+from aac.lang.constants import BEHAVIOR_TYPE_REQUEST_RESPONSE
 from aac.plugins.first_party.gen_protobuf.gen_protobuf_impl import (
     gen_protobuf,
     _convert_message_name_to_file_name,
@@ -15,7 +16,7 @@ from aac.plugins.first_party.gen_protobuf.gen_protobuf_impl import (
 
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.assertion import assert_plugin_failure, assert_plugin_success
-from tests.helpers.io import temporary_test_file
+from tests.helpers.io import TemporaryTestFile
 from tests.helpers.parsed_definitions import create_enum_definition, create_field_entry, create_schema_definition
 
 
@@ -43,7 +44,7 @@ class TestGenerateProtobufPlugin(ActiveContextTestCase):
         self.maxDiff = None
 
     def test_gen_protobuf(self):
-        with TemporaryDirectory() as temp_dir, temporary_test_file(TEST_ARCH_YAML_STRING) as temp_arch_file:
+        with TemporaryDirectory() as temp_dir, TemporaryTestFile(TEST_ARCH_YAML_STRING) as temp_arch_file:
             result = gen_protobuf(temp_arch_file.name, temp_dir)
 
             # The assert needs to be outside of the plugin_result context manager or the assertion error is masked.
@@ -68,8 +69,8 @@ class TestGenerateProtobufPlugin(ActiveContextTestCase):
                 self.assertIn('import "message_type.proto"', data_a_proto_file_contents)
 
                 # Assert Data A Message Descripton
-                self.assertIn('Description for the DataA Message', data_a_proto_file_contents)
-                self.assertIn('Description for the DataA MessageMetadataData', data_a_proto_file_contents)
+                self.assertIn("Description for the DataA Message", data_a_proto_file_contents)
+                self.assertIn("Description for the DataA MessageMetadataData", data_a_proto_file_contents)
 
                 # Assert data_a structure
                 self.assertIn("MessageMetadataData metadata", data_a_proto_file_contents)
@@ -84,7 +85,7 @@ class TestGenerateProtobufPlugin(ActiveContextTestCase):
 
                 # Assert Options for the protobuf message
                 self.assertIn('option java_package = "com.example.foo";', data_b_proto_file_contents)
-                self.assertIn('option boolean_property = false;', data_b_proto_file_contents)
+                self.assertIn("option boolean_property = false;", data_b_proto_file_contents)
 
                 # Assert data_b structure
                 self.assertIn("MessageMetadataData metadata", data_b_proto_file_contents)
@@ -244,7 +245,7 @@ def _to_message_template_field_properties(name: str, type: str, description: str
     }
 
 
-TEST_ARCH_YAML_STRING = """
+TEST_ARCH_YAML_STRING = f"""
 model:
   name: System
   description: A simple distributed system model
@@ -255,7 +256,7 @@ model:
       type: ServiceTwo
   behavior:
     - name: doFlow
-      type: request-response
+      type: {BEHAVIOR_TYPE_REQUEST_RESPONSE}
       description:  process DataA and respond with DataD
       input:
         - name: in
@@ -276,7 +277,7 @@ model:
   name: ServiceOne
   behavior:
     - name: ProcessDataA
-      type: request-response
+      type: {BEHAVIOR_TYPE_REQUEST_RESPONSE}
       input:
         - name: in
           type: Data A
@@ -296,7 +297,7 @@ model:
   name: ServiceTwo
   behavior:
     - name: Process DataB
-      type: request-response
+      type: {BEHAVIOR_TYPE_REQUEST_RESPONSE}
       input:
         - name: in
           type: DataB

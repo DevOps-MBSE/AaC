@@ -2,7 +2,7 @@
 layout: default
 title: Secure Install
 parent: User's Guide to AaC
-nav_order: 1
+nav_order: 4
 ---
 
 # Architecture-as-Code Secure Installation

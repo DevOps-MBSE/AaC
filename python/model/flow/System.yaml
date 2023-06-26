@@ -1,9 +1,11 @@
 import:
-  - ./DataA.yaml
-  - ./DataD.yaml
-  - ./ServiceOne.yaml
-  - ./Subsystem.yaml
-  - ./ServiceThree.yaml
+  files:
+    - ./DataA.yaml
+    - ./DataD.yaml
+    - ./ServiceOne.yaml
+    - ./Subsystem.yaml
+    - ./ServiceThree.yaml
+---
 model:
   name: System
   description: A simple distributed system model
@@ -16,7 +18,7 @@ model:
       type: ServiceThree
   behavior:
     - name: Process DataA Request to DataD Response
-      type: request-response
+      type: REQUEST_RESPONSE
       description: process DataA and respond with DataD
       input:
         - name: in

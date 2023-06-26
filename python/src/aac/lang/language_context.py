@@ -329,7 +329,7 @@ class LanguageContext:
             from active plugins and user files, which may extend the set of root keys.
             See :py:func:`aac.spec.get_primitives()` for the list of root keys provided by the unaltered core AaC DSL.
         """
-        return self.get_primitives_definition().get_values() or []
+        return deepcopy(self.get_primitives_definition().get_values()) or []
 
     def get_defined_types(self) -> list[str]:
         """

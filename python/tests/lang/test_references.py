@@ -1,4 +1,5 @@
 from aac.lang.active_context_lifecycle_manager import get_active_context
+from aac.lang.constants import DEFINITION_NAME_MODEL, DEFINITION_NAME_ROOT
 from aac.lang.definitions.references import (
     get_definition_type_references_from_list,
     is_reference_format_valid,
@@ -23,7 +24,9 @@ class TestLangReferences(ActiveContextTestCase):
 
         reference_definition1_name = "Reference Def 1"
         reference_definition1_component1 = create_field_entry("Component1", source_definition_name)
-        reference_definition1 = create_model_definition(reference_definition1_name, components=[reference_definition1_component1])
+        reference_definition1 = create_model_definition(
+            reference_definition1_name, components=[reference_definition1_component1]
+        )
 
         reference_definition2_name = "Reference Def 2"
         reference_definition1_component1 = create_field_entry("New Field", "NewFieldType")
@@ -45,22 +48,22 @@ class TestLangReferences(ActiveContextTestCase):
         self.assertTrue(is_reference_format_valid("parent.child"))
         self.assertTrue(is_reference_format_valid("the_parent.child"))
         self.assertTrue(is_reference_format_valid("the-parent.child"))
-        self.assertTrue(is_reference_format_valid("parent(name=\"MyModel\")"))
+        self.assertTrue(is_reference_format_valid('parent(name="MyModel")'))
         self.assertTrue(is_reference_format_valid("parent(name=MyModel)"))
-        self.assertTrue(is_reference_format_valid("parent.child(name=\"MyModel\")"))
-        self.assertTrue(is_reference_format_valid("parent(name=\"MyModel\").child"))
+        self.assertTrue(is_reference_format_valid('parent.child(name="MyModel")'))
+        self.assertTrue(is_reference_format_valid('parent(name="MyModel").child'))
 
-        self.assertFalse(is_reference_format_valid("")[0])
-        self.assertFalse(is_reference_format_valid("parent(name=value")[0])
-        self.assertFalse(is_reference_format_valid("parent name=value)")[0])
-        self.assertFalse(is_reference_format_valid("parent(name value)")[0])
-        self.assertFalse(is_reference_format_valid("parent$.child")[0])
-        self.assertFalse(is_reference_format_valid("parent.child#")[0])
-        self.assertFalse(is_reference_format_valid("parent(name%=value)")[0])
-        self.assertFalse(is_reference_format_valid("the parent.child")[0])
-        self.assertFalse(is_reference_format_valid("parent.the child")[0])
-        self.assertFalse(is_reference_format_valid("parent(the name=value")[0])
-        self.assertFalse(is_reference_format_valid("parent(name=)")[0])
+        self.assertFalse(is_reference_format_valid(""))
+        self.assertFalse(is_reference_format_valid("parent(name=value"))
+        self.assertFalse(is_reference_format_valid("parent name=value)"))
+        self.assertFalse(is_reference_format_valid("parent(name value)"))
+        self.assertFalse(is_reference_format_valid("parent$.child"))
+        self.assertFalse(is_reference_format_valid("parent.child#"))
+        self.assertFalse(is_reference_format_valid("parent(name%=value)"))
+        self.assertFalse(is_reference_format_valid("the parent.child"))
+        self.assertFalse(is_reference_format_valid("parent.the child"))
+        self.assertFalse(is_reference_format_valid("parent(the name=value"))
+        self.assertFalse(is_reference_format_valid("parent(name=)"))
 
     def test_get_reference_target_definitions(self):
         language_context = get_active_context(reload_context=True)
@@ -68,15 +71,22 @@ class TestLangReferences(ActiveContextTestCase):
         # invalid reference should return empty list
         self.assertCountEqual(get_reference_target_definitions("", language_context), [])
         # get all models
-        self.assertGreater(len(get_reference_target_definitions("model", language_context)), 0)
+        self.assertGreater(len(get_reference_target_definitions("plugin", language_context)), 0)
         # get schema with the name model
-        self.assertEqual(len(get_reference_target_definitions("schema(name=model)", language_context)), 1)
+        self.assertEqual(len(get_reference_target_definitions(f"schema(name={DEFINITION_NAME_MODEL})", language_context)), 1)
         # get model with optional child field
-        self.assertGreater(len(get_reference_target_definitions("model.behavior.input.python_type", language_context)), 0)
+        self.assertGreater(len(get_reference_target_definitions("plugin.commands.input.python_type", language_context)), 0)
         # get model with inline selector
-        self.assertEqual(len(get_reference_target_definitions("model.behavior(name=gen-plugin).input", language_context)), 1)
+        self.assertEqual(len(get_reference_target_definitions("plugin.commands(name=gen-plugin).input", language_context)), 1)
         # get model with multiple inline selectors
-        self.assertEqual(len(get_reference_target_definitions("model(name=gen-plugin).behavior(type=command).input", language_context)), 1)
+        self.assertEqual(
+            len(
+                get_reference_target_definitions(
+                    'plugin(name="Generate Plugin").commands(group=Generation).input', language_context
+                )
+            ),
+            1,
+        )
 
         # get non-existent root
         self.assertEqual(len(get_reference_target_definitions("not_a_valid_root", language_context)), 0)
@@ -85,7 +95,9 @@ class TestLangReferences(ActiveContextTestCase):
         # get non-existent child
         self.assertEqual(len(get_reference_target_definitions("model.behavior(name=not_a_valid_name)", language_context)), 0)
         # get non-existent intermediate selector
-        self.assertEqual(len(get_reference_target_definitions("model.behavior(name=not_a_valid_name).input", language_context)), 0)
+        self.assertEqual(
+            len(get_reference_target_definitions("model.behavior(name=not_a_valid_name).input", language_context)), 0
+        )
 
     def test_get_reference_target_definitions_with_non_string_selector_value(self):
         # get model using selector that targets a non-string value
@@ -131,7 +143,17 @@ class TestLangReferences(ActiveContextTestCase):
         self.assertListEqual(_drill_into_nested_dict(search_keys, nested_dict), expected_result)
 
 
-TEST_MODEL_WITH_NON_STRING_VALUE = """
+TEST_MODEL_WITH_NON_STRING_VALUE = f"""
+ext:
+  name: MaterialRootItems
+  type: {DEFINITION_NAME_ROOT}
+  schemaExt:
+    add:
+      - name: assembly
+        type: Assembly
+      - name: deployment
+        type: Deployment
+---
 deployment:
   name: My_New_Apartment
   description: The place I'm going to live.

@@ -36,7 +36,6 @@ def get_plugin_manager() -> PluginManager:
         "specifications",
         "print_spec",
         "lsp_server",
-        "material_model",
         "help_dump",
         "rest_api",
         "primitive_type_check",
@@ -55,14 +54,16 @@ def get_plugin_manager() -> PluginManager:
     validator_plugins_package = "aac.plugins.validators"
     validator_plugins = [
         "defined_references",
-        "required_fields",
-        "validator_implementation",
         "exclusive_fields",
-        "subcomponent_type",
-        "root_keys",
         "reference_fields",
         "reference_targets",
+        "required_fields",
+        "requirement_references",
+        "root_keys",
+        "subcomponent_type",
         "unique_names",
+        "unique_requirement_ids",
+        "validator_implementation",
     ]
 
     def register_plugin(plugin, package):

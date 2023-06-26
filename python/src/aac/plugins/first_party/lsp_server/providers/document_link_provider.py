@@ -33,8 +33,7 @@ class DocumentLinkProvider(LspProvider):
         links: list[DocumentLink] = []
 
         for definition in language_context.get_definitions_by_file_uri(document_uri):
-            imports = definition.get_imports()
-
+            imports = definition.get_imports() if definition.is_import() else []
             for import_path in imports:
                 absolute_import_path = import_path
                 if not path.isabs(import_path):
@@ -45,7 +44,9 @@ class DocumentLinkProvider(LspProvider):
                 target_uri = from_fs_path(absolute_import_path)
                 file_name = path.basename(absolute_import_path)
                 tooltip = f"Go to {absolute_import_path}"
-                link_lexeme = [lexeme for lexeme in definition.lexemes if file_name in lexeme.value or file_name == lexeme.value][0]
+                link_lexeme, *_ = [
+                    lexeme for lexeme in definition.lexemes if file_name in lexeme.value or file_name == lexeme.value
+                ]
                 link_location = get_location_from_lexeme(link_lexeme)
                 links.append(DocumentLink(range=link_location.range, target=target_uri, tooltip=tooltip))
 

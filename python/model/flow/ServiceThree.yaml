@@ -1,11 +1,13 @@
 import:
-  - ./DataC.yaml
-  - ./DataD.yaml
+  files:
+    - ./DataC.yaml
+    - ./DataD.yaml
+---
 model:
   name: ServiceThree
   behavior:
     - name: Process DataC Request
-      type: request-response
+      type: REQUEST_RESPONSE
       input:
         - name: in
           type: DataC

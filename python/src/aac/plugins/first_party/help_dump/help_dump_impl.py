@@ -1,4 +1,4 @@
-"""AaC Plugin implementation module for the help-dump plugin."""
+"""AaC Plugin implementation module for the Dump Commands plugin."""
 
 import json
 
@@ -6,7 +6,7 @@ from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 from aac.serialization import AacCommandEncoder
 
-plugin_name = "help-dump"
+plugin_name = "Dump Commands"
 
 
 def help_dump() -> PluginExecutionResult:

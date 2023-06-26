@@ -16,7 +16,7 @@ from aac.plugins.first_party.active_context.active_context_impl import (
 )
 
 from tests.active_context_test_case import ActiveContextTestCase
-from tests.helpers.io import new_working_dir, temporary_test_file
+from tests.helpers.io import new_working_dir, TemporaryTestFile
 from tests.helpers.parsed_definitions import create_field_entry, create_schema_definition
 
 
@@ -61,7 +61,7 @@ class TestActiveContextPlugin(ActiveContextTestCase):
         from aac.plugins.first_party.gen_design_doc import plugin_name
 
         with (
-            temporary_test_file("", mode="w+") as state_file,
+            TemporaryTestFile("", mode="w+") as state_file,
             patch("aac.lang.active_context_lifecycle_manager.ACTIVE_CONTEXT_STATE_FILE_NAME", state_file.name),
         ):
             test_context = get_active_context(reload_context=True)
@@ -112,7 +112,7 @@ class TestActiveContextPlugin(ActiveContextTestCase):
 
     def test_export_state_overwrite(self):
         replaceable_content = "replacable content"
-        with temporary_test_file(replaceable_content, mode="w+") as state_file:
+        with TemporaryTestFile(replaceable_content, mode="w+") as state_file:
             self.assertTrue(lexists(state_file.name))
             self.assertEqual(state_file.read(), replaceable_content)
 

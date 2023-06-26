@@ -1,4 +1,4 @@
-"""AaC Plugin implementation module for the aac-gen-gherkin-behaviors plugin."""
+"""AaC Plugin implementation module for the Generate Gherkin Feature Files plugin."""
 
 from aac.lang.definitions.collections import get_models_by_type, convert_parsed_definitions_to_dict_definition
 from aac.plugins import PluginError
@@ -6,7 +6,7 @@ from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 from aac.templates.engine import TemplateOutputFile, generate_template, load_templates, write_generated_templates_to_file
 from aac.validate import validated_source
 
-plugin_name = "gen-gherkin-behaviors"
+plugin_name = "Generate Gherkin Feature Files"
 
 
 def gen_gherkin_behaviors(architecture_file: str, output_directory: str) -> PluginExecutionResult:

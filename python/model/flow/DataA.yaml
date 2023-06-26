@@ -1,9 +1,11 @@
 import:
-  - ./DataMessage.yaml
+  files:
+    - ./DataMessage.yaml
+---
 schema:
   inherits:
     - DataMessage
   name: DataA
   fields:
-  - name: request
-    type: string
+    - name: request
+      type: string

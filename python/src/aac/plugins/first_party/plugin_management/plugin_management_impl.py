@@ -1,4 +1,4 @@
-"""AaC Plugin implementation module for the plugin-management plugin."""
+"""AaC Plugin implementation module for the Plugin Management plugin."""
 
 import logging
 
@@ -7,7 +7,7 @@ from aac.plugins import PluginError
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 from aac.plugins.plugin_manager import get_plugins
 
-plugin_name = "plugin-management"
+plugin_name = "Plugin Management"
 
 
 def list_plugins(all: bool, active: bool, inactive: bool) -> PluginExecutionResult:

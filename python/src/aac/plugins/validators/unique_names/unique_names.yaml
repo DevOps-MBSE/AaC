@@ -1,9 +1,15 @@
+plugin:
+  name: Validate names are not duplicated
+  description: An AaC plugin that enables validating the uniqueness of definition names.
+  definitionValidations:
+    - name: Unique definition names
+---
 validation:
   name: Unique definition names
-  description: Verifies that all Definitions have unique names.
+  description: Verify that all Definitions have unique names.
   behavior:
     - name: Verify that Definitions have unique names.
-      type: request-response
+      type: REQUEST_RESPONSE
       input:
         - name: definitions
           type: ValidatorInput
@@ -16,17 +22,17 @@ validation:
             - The ValidatorInput, definitions, contains a collection of Definitions.
             - All of the Definition names are unique in the collection of Definitions.
           when:
-            - The "Unique definition names" validator plugin is executed.
+            - The validator plugin is executed.
           then:
             - The ValidatorOutput does not indicate any errors.
-            - The ValidatorOutput does not indicate any warnings
+            - The ValidatorOutput does not indicate any warnings.
             - The ValidatorOutput indicates the ValidatorInput under test is valid.
         - scenario: Fail to validate a collection of definitions with duplicated names.
           given:
             - The ValidatorInput, definitions, contains a collection of Definitions.
             - There are at least two Definitions in the collection with the same name.
           when:
-            - The "Unique definition names" validator plugin is executed.
+            - The validator plugin is executed.
           then:
             - The ValidatorOutput has errors.
             - The ValidatorOutput errors indicate that there are at least two Definitions with the same name.

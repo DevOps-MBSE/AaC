@@ -1,10 +1,10 @@
-model:
-  name: active-context
-  description: The active-context plugin manages the active context from the CLI.
-  behavior:
+plugin:
+  name: Active Context Manager
+  description: An AaC plugin that manages the active context.
+  commands:
     - name: list-files
-      type: command
-      description: Display the files in the active context.
+      group: Management
+      helpText: Display the files in the active context.
       output:
         - name: files
           type: string[]
@@ -13,12 +13,12 @@ model:
       acceptance:
         - scenario: Display a list of all the files in the active context.
           when:
-            - The command {{active-context.list-files}} is run.
+            - The command {{list-files}} is run.
           then:
             - A list of the files in the active context will be displayed.
     - name: list-definitions
-      type: command
-      description: List all definitions within the active context.
+      group: Management
+      helpText: List all definitions within the active context.
       output:
         - name: definitions
           type: string[]
@@ -27,15 +27,15 @@ model:
       acceptance:
         - scenario: Display a list of all the definitions in the active context.
           when:
-            - The command {{active-context.list-definitions}} is run.
+            - The command {{list-definitions}} is run.
           then:
             - A list of all the definitions in the active context will be displayed.
     - name: describe-definition
-      type: command
-      description: Describe a definition in the active context.
+      group: Management
+      helpText: Describe a definition in the active context.
       input:
         - name: definition-name
-          type: string
+          type: reference
           python_type: str
           description: The name of a defintion in the active context.
       output:
@@ -50,25 +50,25 @@ model:
         - name: definition-start
           type: int
           python_type: int
-          description: The line on which the definition starts in {{active-context.describe-definition.output.definition-source}}.
+          description: The line on which the definition starts in {{describe-definition.output.definition-source}}.
       acceptance:
         - scenario: Display information about a definition in the active context.
           given:
-            - Definition named {{active-context.describe-definition.input.definition-name}} is in the active context.
+            - Definition named {{describe-definition.input.definition-name}} is in the active context.
           when:
-            - The comamnd {{active-context.describe-definition}} is run.
+            - The comamnd {{describe-definition}} is run.
           then:
-            - A description of the definition named {{active-context.describe-definition.input.definition-name}} will be displayed.
+            - A description of the definition named {{describe-definition.input.definition-name}} will be displayed.
         - scenario: An error occurs when the named definition is not in the active context.
           given:
-            - Definition named {{active-context.describe-definition.input.definition-name}} is not in the active context.
+            - Definition named {{describe-definition.input.definition-name}} is not in the active context.
           when:
-            - The comamnd {{active-context.describe-definition}} is run.
+            - The comamnd {{describe-definition}} is run.
           then:
-            - An error message is displayed to the user stating that the definition named {{active-context.describe-definition.input.definition-name}} is not in the active context.
+            - An error message is displayed to the user stating that the definition named {{describe-definition.input.definition-name}} is not in the active context.
     - name: import-state
-      type: command
-      description: Configure the active context to be initialized with the definitions, plugins, etc from a state file.
+      group: Management
+      helpText: Configure the active context to be initialized with the definitions, plugins, etc from a state file.
       input:
         - name: state-file
           type: file
@@ -77,24 +77,24 @@ model:
       acceptance:
         - scenario: Import an existing active context from a persistence state file.
           given:
-            - The state file {{active-context.import-state.input.state-file}} exists on the file system.
-            - The state file {{active-context.import-state.input.state-file}} defines a valid active context.
+            - The state file {{import-state.input.state-file}} exists on the file system.
+            - The state file {{import-state.input.state-file}} defines a valid active context.
           when:
-            - The comamnd {{active-context.import-state}} is run.
+            - The comamnd {{import-state}} is run.
           then:
-            - The active context is configured to include all definitions defined by {{active-context.import-state.input.state-file}}.
-            - The active context is configured to include all plugins defined by {{active-context.import-state.input.state-file}}.
+            - The active context is configured to include all definitions defined by {{import-state.input.state-file}}.
+            - The active context is configured to include all plugins defined by {{import-state.input.state-file}}.
         - scenario: The state file does not exist on the file system.
           given:
-            - The state file {{active-context.import-state.input.state-file}} does not exist on the file system.
+            - The state file {{import-state.input.state-file}} does not exist on the file system.
           when:
-            - The comamnd {{active-context.import-state}} is run.
+            - The comamnd {{import-state}} is run.
           then:
-            - An error message is displayed to the user stating that the state file {{active-context.import-state.input.state-file}} does not exist.
+            - An error message is displayed to the user stating that the state file {{import-state.input.state-file}} does not exist.
             - The current active context is not modified.
     - name: export-state
-      type: command
-      description: Export the current active context to a state file.
+      group: Management
+      helpText: Export the current active context to a state file.
       input:
         - name: state-file-name
           type: string
@@ -112,23 +112,23 @@ model:
       acceptance:
         - scenario: Export the current active context to a state file.
           given:
-            - The file {{active-context.export-state.output.state-file}} does not exist.
+            - The file {{export-state.output.state-file}} does not exist.
           when:
-            - The command {{active-context.export-state}} is run with {{active-context.export-state.input.state-file-name}}.
+            - The command {{export-state}} is run with {{export-state.input.state-file-name}}.
           then:
-            - The state file {{active-context.export-state.output.state-file}} is written to the file system with the expected information.
+            - The state file {{export-state.output.state-file}} is written to the file system with the expected information.
         - scenario: Export the current active context to a state file that already exists.
           given:
-            - The file {{active-context.export-state.output.state-file}} already exists on the file system.
+            - The file {{export-state.output.state-file}} already exists on the file system.
           when:
-            - The command {{active-context.export-state}} is run with {{active-context.export-state.input.state-file-name}} and {{active-context.export-state.input.--overwrite}}.
+            - The command {{export-state}} is run with {{export-state.input.state-file-name}} and {{export-state.input.--overwrite}}.
           then:
-            - The state file {{active-context.export-state.output.state-file}} is written to the file system with the expected information.
+            - The state file {{export-state.output.state-file}} is written to the file system with the expected information.
         - scenario: Do not export the active context when the state file that already exists.
           given:
-            - The file {{active-context.export-state.output.state-file}} already exists on the file system.
+            - The file {{export-state.output.state-file}} already exists on the file system.
           when:
-            - The command {{active-context.export-state}} is run with {{active-context.export-state.input.state-file-name}}.
+            - The command {{export-state}} is run with {{export-state.input.state-file-name}}.
           then:
-            - An error message is displayed to the user stating that the file {{active-context.export-state.output.state-file}} already exists.
-            - The state file {{active-context.export-state.output.state-file}} is not modified.
+            - An error message is displayed to the user stating that the file {{export-state.output.state-file}} already exists.
+            - The state file {{export-state.output.state-file}} is not modified.

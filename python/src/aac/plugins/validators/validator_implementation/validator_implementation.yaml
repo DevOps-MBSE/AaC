@@ -1,9 +1,17 @@
+plugin:
+  name: Validate implementations for validators
+  description: An AaC plugin that ensures an implementation exists for all validators.
+  definitionValidations:
+    - name: Validation definition has an implementation
+---
 validation:
   name: Validation definition has an implementation
-  description: Verifies that every validation definition has a corresponding python plugin implementation
+  description: |
+    Verify that every validation definition has a corresponding python plugin
+    implementation.
   behavior:
-    - name: Verify validation definition and implementation
-      type: request-response
+    - name: Verify validation definition and implementation.
+      type: REQUEST_RESPONSE
       description:
       input:
         - name: input
@@ -12,22 +20,22 @@ validation:
         - name: results
           type: ValidatorOutput
       acceptance:
-        - scenario: Successfully Validate a Validator Plugin
+        - scenario: Successfully validate a validator plugin.
           given:
             - The validation plugin has a valid `validation` definition.
             - The validation definition has a corresponding python implementation.
           when:
-            - The validator plugin is tested
+            - The validator plugin is executed.
           then:
-            - The ValidatorOutput does not indicate any errors
-            - The ValidatorOutput does not indicate any warnings
-            - The ValidatorOutput indicates the validator plugin under test is valid
-        - scenario: Fail to Validate a Validator Plugin with Missing Python Implementation
+            - The ValidatorOutput does not indicate any errors.
+            - The ValidatorOutput does not indicate any warnings.
+            - The ValidatorOutput indicates the validator plugin under test is valid.
+        - scenario: Fail to validate a validator plugin with missing python implementation.
           given:
             - The validation plugin has a valid `validation` definition.
             - The validation does not have definition has a corresponding python implementation.
           when:
-            - The validator plugin is tested
+            - The validator plugin is executed.
           then:
-            - The ValidatorOutput has errors
-            - The ValidatorOutput errors indicate that there is no corresponding python implementation
+            - The ValidatorOutput has errors.
+            - The ValidatorOutput errors indicate that there is no corresponding python implementation.

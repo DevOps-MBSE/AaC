@@ -1,11 +1,13 @@
 import:
-  - ./DataB.yaml
-  - ./DataC.yaml
+  files:
+    - ./DataB.yaml
+    - ./DataC.yaml
+---
 model:
   name: ServiceTwo
   behavior:
     - name: Process DataB Request
-      type: request-response
+      type: REQUEST_RESPONSE
       description: Process a DataB request and return a DataC response
       input:
         - name: in

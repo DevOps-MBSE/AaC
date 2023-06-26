@@ -1,7 +1,9 @@
 import:
-  - ./EventCount.yaml
-  - ./Request.yaml
-  - ./Response.yaml
+  files:
+    - ./EventCount.yaml
+    - ./Request.yaml
+    - ./Response.yaml
+---
 model:
   name: Counter
   description: This is service that counts events.
@@ -10,7 +12,7 @@ model:
       type: EventCount
   behavior:
     - name: onRequest
-      type: request-response
+      type: REQUEST_RESPONSE
       description: This an event to be counted.
       input:
         - name: request
@@ -28,7 +30,7 @@ model:
             - The user receives a response from Counter.
             - The eventCount is incremented by 1.
     - name: onEventCount
-      type: request-response
+      type: REQUEST_RESPONSE
       description: This provides the event count and will not be counted.
       output:
         - name: count

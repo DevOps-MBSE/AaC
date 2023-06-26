@@ -2,7 +2,16 @@ from typing import Any
 
 from aac.io.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_active_context
+from aac.lang.constants import (
+    DEFINITION_FIELD_FIELDS,
+    PRIMITIVE_TYPE_BOOL,
+    PRIMITIVE_TYPE_INT,
+    PRIMITIVE_TYPE_STRING,
+    ROOT_KEY_SCHEMA,
+    ROOT_KEY_VALIDATION,
+)
 from aac.lang.definitions.collections import get_definitions_by_root_key
+from aac.lang.definitions.schema import get_definition_schema
 from aac.lang.definitions.source_location import SourceLocation
 from aac.plugins.contributions.contribution_types import DefinitionValidationContribution
 from aac.plugins.validators.required_fields import (
@@ -28,7 +37,7 @@ class TestRequiredFieldsPlugin(ActiveContextTestCase):
     def test_module_register_validators(self):
         actual_validator_plugins = _get_plugin_validations()
 
-        validation_definitions = get_definitions_by_root_key("validation", _get_plugin_definitions())
+        validation_definitions = get_definitions_by_root_key(ROOT_KEY_VALIDATION, _get_plugin_definitions())
         self.assertEqual(1, len(validation_definitions))
 
         validation_definition = validation_definitions[0]
@@ -44,8 +53,8 @@ class TestRequiredFieldsPlugin(ActiveContextTestCase):
         test_field_entry = create_field_entry("TestField", "string")
         test_definition = create_schema_definition("TestData", fields=[test_field_entry])
 
-        required_fields_definition = test_active_context.get_definition_by_name(test_definition.get_root_key())
-        actual_result = validate_required_fields(test_definition, required_fields_definition, test_active_context)
+        test_definition_schema = get_definition_schema(test_definition, test_active_context)
+        actual_result = validate_required_fields(test_definition, test_definition_schema, test_active_context)
 
         assert_validator_result_success(actual_result)
 
@@ -55,8 +64,8 @@ class TestRequiredFieldsPlugin(ActiveContextTestCase):
         test_behavior_entry = create_behavior_entry("TestBehavior")
         test_model_definition = create_model_definition("TestModel", behavior=[test_behavior_entry])
 
-        required_fields_definition = test_active_context.get_definition_by_name(test_model_definition.get_root_key())
-        actual_result = validate_required_fields(test_model_definition, required_fields_definition, test_active_context)
+        test_model_schema = get_definition_schema(test_model_definition, test_active_context)
+        actual_result = validate_required_fields(test_model_definition, test_model_schema, test_active_context)
 
         assert_validator_result_success(actual_result)
 
@@ -64,14 +73,14 @@ class TestRequiredFieldsPlugin(ActiveContextTestCase):
         test_active_context = get_active_context()
 
         test_definition = create_schema_definition("TestData")
-        del test_definition.structure["schema"]["fields"]
+        del test_definition.structure[ROOT_KEY_SCHEMA][DEFINITION_FIELD_FIELDS]
         test_definition, *_ = parse(test_definition.to_yaml())
         expected_finding_location = SourceLocation(0, 0, 0, 6)
 
-        required_fields_definition = test_active_context.get_definition_by_name(test_definition.get_root_key())
-        required_fields = get_required_fields(required_fields_definition)
+        test_definition_schema = get_definition_schema(test_definition, test_active_context)
+        required_fields = get_required_fields(test_definition_schema)
         actual_result = validate_required_fields(
-            test_definition, required_fields_definition, test_active_context, *required_fields
+            test_definition, test_definition_schema, test_active_context, *required_fields
         )
 
         assert_validator_result_failure(actual_result, "field", "fields", "missing")
@@ -83,10 +92,10 @@ class TestRequiredFieldsPlugin(ActiveContextTestCase):
         test_definition = create_schema_definition("TestData")
         expected_finding_location = SourceLocation(0, 0, 0, 6)
 
-        required_fields_definition = test_active_context.get_definition_by_name(test_definition.get_root_key())
-        required_fields = get_required_fields(required_fields_definition)
+        test_definition_schema = get_definition_schema(test_definition, test_active_context)
+        required_fields = get_required_fields(test_definition_schema)
         actual_result = validate_required_fields(
-            test_definition, required_fields_definition, test_active_context, *required_fields
+            test_definition, test_definition_schema, test_active_context, *required_fields
         )
 
         assert_validator_result_failure(actual_result, "fields", "not populated")
@@ -96,7 +105,7 @@ class TestRequiredFieldsPlugin(ActiveContextTestCase):
         test_active_context = get_active_context()
 
         schema_field_name = "TestField1"
-        schema_field = create_field_entry(schema_field_name, "string")
+        schema_field = create_field_entry(schema_field_name, PRIMITIVE_TYPE_STRING)
         test_definition = create_schema_definition("TestSchema", fields=[schema_field])
 
         test_active_context.add_definition_to_context(test_definition)
@@ -105,7 +114,7 @@ class TestRequiredFieldsPlugin(ActiveContextTestCase):
         self.assertEqual(len(get_required_fields(required_fields_definition)), 0)
 
         schema_extension_field_name = "TestField2"
-        schema_extension_field = create_field_entry(schema_extension_field_name, "string")
+        schema_extension_field = create_field_entry(schema_extension_field_name, PRIMITIVE_TYPE_STRING)
         test_extension = create_schema_ext_definition(
             f"{test_definition.name}Ext",
             test_definition.name,
@@ -127,14 +136,14 @@ class TestRequiredFieldsPlugin(ActiveContextTestCase):
             self.assertEqual((expected_value, field_type, field_value), (actual_result, field_type, field_value))
 
         params = [
-            (True, "string", "Non-empty string"),
-            (False, "string", ""),
-            (False, "string", None),
-            (True, "int", 1),
-            (False, "int", None),
-            (True, "bool", True),
-            (True, "bool", False),
-            (False, "bool", None),
+            (True, PRIMITIVE_TYPE_STRING, "Non-empty string"),
+            (False, PRIMITIVE_TYPE_STRING, ""),
+            (False, PRIMITIVE_TYPE_STRING, None),
+            (True, PRIMITIVE_TYPE_INT, 1),
+            (False, PRIMITIVE_TYPE_INT, None),
+            (True, PRIMITIVE_TYPE_BOOL, True),
+            (True, PRIMITIVE_TYPE_BOOL, False),
+            (False, PRIMITIVE_TYPE_BOOL, None),
         ]
 
         for param in params:

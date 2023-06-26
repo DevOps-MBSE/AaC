@@ -1,4 +1,7 @@
 """Functions to allow interacting with the core AaC spec."""
+import copy
+
+from aac.lang.constants import DEFINITION_FIELD_FIELDS, DEFINITION_NAME_ROOT, ROOT_KEY_SCHEMA
 from aac.lang.definitions.collections import get_definition_by_name
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.search import search_definition
@@ -23,6 +26,7 @@ def get_aac_spec() -> list[Definition]:
         Returns a list of parsed definitions that compose the core
         AaC specification.
     """
+
     def set_files_to_not_user_editable(definition):
         definition.source.is_user_editable = False
 
@@ -71,7 +75,7 @@ def get_primitives(reload: bool = False) -> list[str]:
     if len(PRIMITIVES) == 0 or reload:
         aac_definitions = get_aac_spec()
         primitives_definition = get_definition_by_name("Primitives", aac_definitions)
-        PRIMITIVES = search_definition(primitives_definition, ["enum", "values"])
+        PRIMITIVES = copy.deepcopy(search_definition(primitives_definition, ["enum", "values"]))
 
     return PRIMITIVES
 
@@ -107,9 +111,9 @@ def get_root_fields(reload: bool = False) -> list[dict]:
     """
 
     aac_definitions = get_aac_spec()
-    root_definition = get_definition_by_name("root", aac_definitions)
+    root_definition = get_definition_by_name(DEFINITION_NAME_ROOT, aac_definitions)
 
-    return search_definition(root_definition, ["schema", "fields"])
+    return search_definition(root_definition, [ROOT_KEY_SCHEMA, DEFINITION_FIELD_FIELDS])
 
 
 def _get_aac_spec_file_path() -> str:

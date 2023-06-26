@@ -2,7 +2,7 @@
 layout: default
 title: Creating a User Library
 parent: User's Guide to AaC
-nav_order: 3
+nav_order: 9
 permalink: docs/user_guide/user_library
 ---
 # Contributing Definitions to a User Library
@@ -53,7 +53,7 @@ AaC uses a set of root-level keys to define instances of modeled 'things' that a
 Due to AaC's self-defining design, users must extend the `root` definition because each field is a mapping of a root key to its defined structure. See [Definition Extensions](../advanced_user_topics/language_extensions.md) for more information on extending definitions in AaC.
 There is information and examplesabout how the core spec is utilized and how to extend the DSL for use via an additional plugin within the [Base DSL and Extended DSL](./aac_language/#the-base-dsl-core-spec) sections of the AaC Modeling Language Reference page.
 
-For a plugin to provide custom root keys, it must have a `schemaExt` type extenstion targeting the `root` definition providing additional fields to the `root` definition. Each new field in the `root` definition defines a root key and corresponding data structure in the AaC language. User Library key roots can be used to define instances of modeled things such as cars, furniture, electronic networks, cloud networks, etc. 
+For a plugin to provide custom root keys, it must have a `schemaExt` type extenstion targeting the `root` definition providing additional fields to the `root` definition. Each new field in the `root` definition defines a root key and corresponding data structure in the AaC language. User Library key roots can be used to define instances of modeled things such as cars, furniture, electronic networks, cloud networks, etc.
 
 *Be aware, plugins not intentionally built to process the data modeled in a User Library will likely be incompatible with any new root keys and data structures. Such incompatabilities can lead to generating incomplete artifacts.*
 

@@ -1,0 +1,59 @@
+enum:
+  name: CommandEnum
+  values:
+    - VALUE_A
+    - VALUE_B
+    - VALUE_C
+---
+ext:
+  name: AnotherPrimitive
+  type: Primitives
+  enumExt:
+    add:
+      - complex
+---
+validation:
+  name: Test definition validation
+  description: A test definition validator.
+  behavior:
+    - name: Validate a definition
+      type: REQUEST_RESPONSE
+      input:
+        - name: input
+          type: ValidatorInput
+      output:
+        - name: results
+          type: ValidatorOutput
+      acceptance:
+        - scenario: Successfully validate the definition
+          given:
+            - The ValidatorInput content consists of valid AaC definitions.
+          when:
+            - The validator plugin is executed.
+          then:
+            - The ValidatorOutput does not indicate any errors.
+            - The ValidatorOutput does not indicate any warnings.
+            - The ValidatorOutput indicates the validator plugin under test is valid.
+---
+validation:
+  name: Test primitive validation
+  description: A test primitive validator.
+  behavior:
+    - name: Validate a primitive
+      type: REQUEST_RESPONSE
+      input:
+        - name: input
+          type: ValidatorInput
+      output:
+        - name: results
+          type: ValidatorOutput
+      acceptance:
+        - scenario: Successfully validate the primitive
+          given:
+            - The ValidatorInput content consists of a valid primitive value.
+          when:
+            - The validator plugin is executed.
+          then:
+            - The ValidatorOutput does not indicate any errors.
+            - The ValidatorOutput does not indicate any warnings.
+            - The ValidatorOutput indicates the validator plugin under test is valid.

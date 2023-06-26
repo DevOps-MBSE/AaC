@@ -1,6 +1,8 @@
 import:
-  - ./Data.aac
-  - ./Services.aac
+  files:
+    - ./Data.aac
+    - ./Services.aac
+---
 model:
   name: Subsystem
   components:
@@ -8,7 +10,7 @@ model:
       type: ServiceTwo
   behavior:
     - name: processDataB
-      type: request-response
+      type: REQUEST_RESPONSE
       input:
         - name: in
           type: DataB

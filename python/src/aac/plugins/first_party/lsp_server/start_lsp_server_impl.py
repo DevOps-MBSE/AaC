@@ -1,10 +1,11 @@
-"""AaC Plugin implementation module for the start-lsp plugin."""
+"""AaC Plugin implementation module for the LSP Server plugin."""
 
 from typing import Callable
+
 from aac.plugins.first_party.lsp_server.language_server import AacLanguageServer
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 
-plugin_name = "start-lsp"
+plugin_name = "LSP Server"
 
 
 def start_lsp_io():

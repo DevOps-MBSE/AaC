@@ -1,5 +1,7 @@
-"""AaC Plugin implementation module for the aac-spec plugin."""
+"""AaC Plugin implementation module for the Specifications plugin."""
+
 import csv
+
 from os import path, makedirs
 from typing import List
 
@@ -7,7 +9,7 @@ from aac.lang.definitions.definition import Definition
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 from aac.validate import validated_source
 
-plugin_name = "specification"
+plugin_name = "Specifications"
 
 
 def spec_csv(architecture_file: str, output_directory: str) -> PluginExecutionResult:
@@ -38,7 +40,7 @@ def spec_csv(architecture_file: str, output_directory: str) -> PluginExecutionRe
             file_name = spec_name + ".csv"
             file_name = file_name.replace(" ", "_")
             output_path = path.join(output_directory, file_name)
-            with open(output_path, 'w') as output:
+            with open(output_path, "w") as output:
                 writer = csv.DictWriter(output, fieldnames=field_names)
                 writer.writeheader()
                 writer.writerows(reqs[spec_name])

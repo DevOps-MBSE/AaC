@@ -1,10 +1,11 @@
-"""AaC Plugin implementation module for the aac-gen-design-doc plugin."""
+"""AaC Plugin implementation module for the Generate System Design Document plugin."""
 
 import os
 
 from jinja2 import Template
 
 
+from aac.lang.constants import ROOT_KEY_MODEL, ROOT_KEY_SCHEMA, ROOT_KEY_USECASE
 from aac.lang.definitions.collections import get_definitions_by_root_key
 from aac.lang.definitions.definition import Definition
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
@@ -17,7 +18,7 @@ from aac.templates.engine import (
 )
 from aac.validate import validated_source
 
-plugin_name = "gen-design-doc"
+plugin_name = "Generate System Design Document"
 
 
 def gen_design_doc(architecture_file: str, output_directory: str) -> PluginExecutionResult:
@@ -56,9 +57,9 @@ def _get_parsed_models(architecture_file: str) -> list[Definition]:
 
 def _make_template_properties(parsed_definitions: list[Definition], arch_file: str) -> dict:
     title = _get_document_title(arch_file)
-    models = _get_and_prepare_definitions_by_type(parsed_definitions, "model")
-    usecases = _get_and_prepare_definitions_by_type(parsed_definitions, "usecase")
-    interfaces = _get_and_prepare_definitions_by_type(parsed_definitions, "schema")
+    models = _get_and_prepare_definitions_by_type(parsed_definitions, ROOT_KEY_MODEL)
+    usecases = _get_and_prepare_definitions_by_type(parsed_definitions, ROOT_KEY_USECASE)
+    interfaces = _get_and_prepare_definitions_by_type(parsed_definitions, ROOT_KEY_SCHEMA)
     return {
         "title": title,
         "models": models,
@@ -87,7 +88,7 @@ def _get_and_prepare_definitions_by_type(parsed_definitions: list[Definition], a
 
     filtered_definitions = get_definitions_by_root_key(aac_type, parsed_definitions)
     definition_template_properties = []
-    if aac_type == "schema":
+    if aac_type == ROOT_KEY_SCHEMA:
         definition_template_properties = [
             get_definition_structure_with_required_fields(definition) for definition in filtered_definitions
         ]

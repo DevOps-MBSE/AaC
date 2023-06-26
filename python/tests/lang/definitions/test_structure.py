@@ -1,4 +1,17 @@
 from unittest import TestCase
+from aac.lang.constants import (
+    DEFINITION_FIELD_BEHAVIOR,
+    DEFINITION_FIELD_INPUT,
+    DEFINITION_FIELD_OUTPUT,
+    DEFINITION_NAME_BEHAVIOR,
+    DEFINITION_NAME_BEHAVIOR_TYPE,
+    DEFINITION_NAME_FIELD,
+    DEFINITION_NAME_REQUIREMENT_REFERENCE,
+    DEFINITION_NAME_SCHEMA,
+    DEFINITION_NAME_VALIDATION_REFERENCE,
+    DEFINITION_NAME_SCENARIO,
+    ROOT_KEY_MODEL,
+)
 
 from aac.lang.definitions.structure import get_substructures_by_type, strip_undefined_fields_from_definition
 from aac.lang.definitions.schema import get_definition_schema_components
@@ -14,7 +27,6 @@ from tests.helpers.parsed_definitions import (
 
 
 class TestDefinitionStructures(TestCase):
-
     def test_get_substructures_by_type_with_user_defined_data(self):
         test_context = get_core_spec_context()
 
@@ -24,7 +36,7 @@ class TestDefinitionStructures(TestCase):
 
         test_context.add_definition_to_context(test_schema_definition)
 
-        field_definition = test_context.get_definition_by_name("Field")
+        field_definition = test_context.get_definition_by_name(DEFINITION_NAME_FIELD)
         expected_field_definitions = [test_string_field_entry, test_file_field_entry]
 
         actual_field_definitions = get_substructures_by_type(test_schema_definition, field_definition, test_context)
@@ -48,9 +60,9 @@ class TestDefinitionStructures(TestCase):
 
         test_context.add_definitions_to_context([test_model_definition, sub_model_definition])
 
-        scenario_definition = test_context.get_definition_by_name("Scenario")
-        field_definition = test_context.get_definition_by_name("Field")
-        behavior_definition = test_context.get_definition_by_name("Behavior")
+        scenario_definition = test_context.get_definition_by_name(DEFINITION_NAME_SCENARIO)
+        field_definition = test_context.get_definition_by_name(DEFINITION_NAME_FIELD)
+        behavior_definition = test_context.get_definition_by_name(DEFINITION_NAME_BEHAVIOR)
 
         expected_field_definitions = [test_input_field, test_component_entry]
         expected_behavior_definitions = [test_behavior_entry]
@@ -67,17 +79,19 @@ class TestDefinitionStructures(TestCase):
     def test_get_definition_schema_components_with_data(self):
         test_context = get_core_spec_context()
 
-        schema_definition = test_context.get_definition_by_name("schema")
+        schema_definition = test_context.get_definition_by_name(DEFINITION_NAME_SCHEMA)
 
-        # Per the core spec, we'd expect DefinitionReference, Field, and ValidationReference
-        field_definition = test_context.get_definition_by_name("Field")
-        validation_reference_definition = test_context.get_definition_by_name("ValidationReference")
-        definition_reference_definition = test_context.get_definition_by_name("DefinitionReference")
+        field_definition = test_context.get_definition_by_name(DEFINITION_NAME_FIELD)
+        validation_reference_definition = test_context.get_definition_by_name(DEFINITION_NAME_VALIDATION_REFERENCE)
+        requirement_reference_requirement = test_context.get_definition_by_name(DEFINITION_NAME_REQUIREMENT_REFERENCE)
 
-        expected_definitions = [definition_reference_definition, field_definition, validation_reference_definition]
+        expected_definitions = [
+            field_definition,
+            validation_reference_definition,
+            requirement_reference_requirement,
+        ]
         actual_definitions = get_definition_schema_components(schema_definition, test_context)
 
-        self.assertEqual(len(actual_definitions), 3)
         self.assertListEqual(expected_definitions, actual_definitions)
 
     def test_get_definition_schema_components_with_model(self):
@@ -86,13 +100,19 @@ class TestDefinitionStructures(TestCase):
         model_definition = create_model_definition("TestModel")
         test_context.add_definition_to_context(model_definition)
 
-        # Per the core spec, we'd expect Field, Behavior, BehaviorType, and Scenario
-        field_definition = test_context.get_definition_by_name("Field")
-        behavior_definition = test_context.get_definition_by_name("Behavior")
-        behavior_type_definition = test_context.get_definition_by_name("BehaviorType")
-        scenario_definition = test_context.get_definition_by_name("Scenario")
+        field_definition = test_context.get_definition_by_name(DEFINITION_NAME_FIELD)
+        behavior_definition = test_context.get_definition_by_name(DEFINITION_NAME_BEHAVIOR)
+        behavior_type_definition = test_context.get_definition_by_name(DEFINITION_NAME_BEHAVIOR_TYPE)
+        scenario_definition = test_context.get_definition_by_name(DEFINITION_NAME_SCENARIO)
+        requirement_reference_definition = test_context.get_definition_by_name(DEFINITION_NAME_REQUIREMENT_REFERENCE)
 
-        expected_definitions = [field_definition, behavior_definition, behavior_type_definition, scenario_definition]
+        expected_definitions = [
+            field_definition,
+            behavior_definition,
+            behavior_type_definition,
+            scenario_definition,
+            requirement_reference_definition,
+        ]
         actual_definitions = get_definition_schema_components(model_definition, test_context)
 
         # Per the core spec, we'd expect Field, Behavior, BehaviorType, and Scenario
@@ -121,9 +141,13 @@ class TestDefinitionStructures(TestCase):
         behavior_output_extra_field_name = "behavior_output_extra_field_name"
         behavior_output_extra_field_value = "behavior_output_extra_field_value"
 
-        test_model.structure["model"][extra_top_level_field_name] = extra_top_level_field_value
-        test_model.structure["model"]["behavior"][0]["input"][0][behavior_input_extra_field_name] = behavior_input_extra_field_value
-        test_model.structure["model"]["behavior"][0]["output"][0][behavior_output_extra_field_name] = behavior_output_extra_field_value
+        test_model.structure[ROOT_KEY_MODEL][extra_top_level_field_name] = extra_top_level_field_value
+        test_model.structure[ROOT_KEY_MODEL][DEFINITION_FIELD_BEHAVIOR][0][DEFINITION_FIELD_INPUT][0][
+            behavior_input_extra_field_name
+        ] = behavior_input_extra_field_value
+        test_model.structure[ROOT_KEY_MODEL][DEFINITION_FIELD_BEHAVIOR][0][DEFINITION_FIELD_OUTPUT][0][
+            behavior_output_extra_field_name
+        ] = behavior_output_extra_field_value
 
         actual_result = strip_undefined_fields_from_definition(test_model, test_context)
         actual_result_yaml_dump = actual_result.to_yaml()

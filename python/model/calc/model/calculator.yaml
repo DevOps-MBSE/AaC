@@ -1,7 +1,9 @@
 import:
-  - ./mathmessagehandler.yaml
-  - ./mathlogger.yaml
-  - ../spec/Calculator_SystemSpec.yaml
+  files:
+    - ./mathmessagehandler.yaml
+    - ./mathlogger.yaml
+    - ../spec/Calculator_SystemSpec.yaml
+---
 model:
   name: Calculator
   description:  A simple calculator.
@@ -12,7 +14,7 @@ model:
       type: MathLogger
   behavior:
     - name: Perform simple math function (add or subtract)
-      type: request-response
+      type: REQUEST_RESPONSE
       description: Add or subtract numbers
       requirements:
           ids:

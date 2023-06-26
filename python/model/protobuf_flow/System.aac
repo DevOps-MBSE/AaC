@@ -1,8 +1,10 @@
 import:
-  - ./Data.aac
-  - ./Services.aac
-  - ./Subsystem.aac
-  - ./External.aac
+  files:
+    - ./Data.aac
+    - ./Services.aac
+    - ./Subsystem.aac
+    - ./External.aac
+---
 model:
   name: System
   description: A simple distributed system model
@@ -15,7 +17,7 @@ model:
       type: ServiceThree
   behavior:
     - name: doFlow
-      type: request-response
+      type: REQUEST_RESPONSE
       description:  process UserRequest and respond with DataD
       input:
         - name: in

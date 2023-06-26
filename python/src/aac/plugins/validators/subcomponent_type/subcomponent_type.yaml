@@ -1,9 +1,17 @@
+plugin:
+  name: Validate model subcomponents
+  description: |
+    An AaC plugin that enables validating subcomponents of a model are models.
+  definitionValidations:
+    - name: Subcomponents are models
+---
 validation:
   name: Subcomponents are models
-  description: Verifies that the type field of every subcomponent refers to a model.
+  description: |
+    Verify that the type field of every subcomponent refers to a model.
   behavior:
     - name: Verify that subcomponents are of the model type.
-      type: request-response
+      type: REQUEST_RESPONSE
       description:
       input:
         - name: input
@@ -12,24 +20,24 @@ validation:
         - name: results
           type: ValidatorOutput
       acceptance:
-        - scenario: Successfully Validate a model definition's subcomponent types
+        - scenario: Successfully Validate a model definition's subcomponent types.
           given:
             - The ValidatorInput content consists of a model definition.
             - The ValidatorInput contains at least one subcomponent.
             - All subcomponents are model types.
           when:
-            - The ValidatorInput is validated
+            - The validator plugin is executed.
           then:
-            - The ValidatorOutput does not indicate any errors
-            - The ValidatorOutput does not indicate any warnings
-            - The ValidatorOutput indicates the definition under test is valid
-        - scenario: Fail to validate a model's subcomponent types
+            - The ValidatorOutput does not indicate any errors.
+            - The ValidatorOutput does not indicate any warnings.
+            - The ValidatorOutput indicates the definition under test is valid.
+        - scenario: Fail to validate a model's subcomponent types.
           given:
             - The ValidatorInput content consists of a model definition.
             - The ValidatorInput contains at least one subcomponent.
             - The type of at least one of the subcomponents is not model.
           when:
-            - The ValidatorInput is validated
+            - The validator plugin is executed.
           then:
-            - The ValidatorOutput has errors
+            - The ValidatorOutput has errors.
             - The ValidatorOutput errors indicate that the subcomponent(s) are not models.

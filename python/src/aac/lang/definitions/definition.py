@@ -1,8 +1,10 @@
 """An Architecture-as-Code definition augmented with metadata and helpful functions."""
 from __future__ import annotations
+
 import copy
 import logging
 import yaml
+
 from attr import Factory, attrib, attrs, validators
 from typing import Any, Optional
 from uuid import UUID, uuid5, NAMESPACE_DNS
@@ -13,7 +15,8 @@ from aac.lang.constants import (
     DEFINITION_FIELD_EXTENSION_ENUM,
     DEFINITION_FIELD_EXTENSION_SCHEMA,
     DEFINITION_FIELD_FIELDS,
-    DEFINITION_FIELD_IMPORT,
+    DEFINITION_FIELD_FILES,
+    ROOT_KEY_IMPORT,
     DEFINITION_FIELD_INHERITS,
     DEFINITION_FIELD_TYPE,
     DEFINITION_FIELD_VALIDATION,
@@ -47,7 +50,6 @@ class Definition:
     source: AaCFile = attrib(validator=validators.instance_of(AaCFile))
     lexemes: list[Lexeme] = attrib(default=Factory(list), validator=validators.instance_of(list))
     structure: dict = attrib(default=Factory(dict), validator=validators.instance_of(dict))
-    imports: list[str] = attrib(default=Factory(list), validator=validators.instance_of(list))
     meta_structure: Optional[StructuralNode] = attrib(
         default=None, validator=validators.optional(validators.instance_of(StructuralNode))
     )
@@ -55,6 +57,8 @@ class Definition:
     def __attrs_post_init__(self):
         """Post-init hook."""
         self.uid = uuid5(NAMESPACE_DNS, str(self.__hash__()))
+        if self.is_import():
+            self.name = str(self.uid)
 
     def __hash__(self) -> int:
         """Return the hash of this Definition."""
@@ -72,7 +76,7 @@ class Definition:
 
     def get_root_key(self) -> str:
         """Return the root key for the parsed definition."""
-        return [key for key in self.structure.keys() if key != DEFINITION_FIELD_IMPORT][0]
+        return list(self.structure.keys())[0]
 
     # Get Field Functions
 
@@ -81,17 +85,16 @@ class Definition:
         Return a dictionary of the top-level fields that are populated in the definition where the key is the field name.
 
         Schema/data definitions will return their top-level fields, including a "fields" field. Because schema/data
-        is self-defining, it may be easy to confuse the intention of this function and assume that it will returns the
+        is self-defining, it may be easy to confuse the intention of this function and assume that it returns the
         entries in a schema/data definition's `fields` field, which is not the case.
 
         The resulting structure is not a copy, but a reference to the Definition's underlying structure. Editing this
         data structure will alter the fields in the Definition.
         """
-        fields = self.structure.get(self.get_root_key())
+        fields = self.structure.get(self.get_root_key(), {})
 
         if not fields:
             logging.debug(f"Failed to find any fields defined in the definition. Definition:\n{self.structure}")
-            fields = {}
 
         return fields
 
@@ -127,47 +130,46 @@ class Definition:
         fields = self.get_top_level_fields()
         return fields.get(DEFINITION_FIELD_FIELDS)
 
-    def get_imports(self) -> list[str]:
-        """Return a list of imported aac files, empty if there are no imports."""
-        return self.imports
+    def get_imports(self) -> Optional[list[str]]:
+        """Return a list of imported files, or None if the definition is not import."""
+        imports = self.get_top_level_fields()
+        return imports.get(DEFINITION_FIELD_FILES)
 
     # Type Test Functions
 
     def is_extension(self) -> bool:
-        """Returns true if the definition is an extension definition."""
+        """Return true if the definition is an extension definition."""
         return self.get_root_key() == ROOT_KEY_EXTENSION
 
     def is_schema_extension(self) -> bool:
-        """Returns true if the definition is a schema extension definition."""
+        """Return true if the definition is a schema extension definition."""
         definition = self.get_top_level_fields()
         return DEFINITION_FIELD_EXTENSION_SCHEMA in definition and isinstance(
             definition[DEFINITION_FIELD_EXTENSION_SCHEMA], dict
         )
 
     def is_enum_extension(self) -> bool:
-        """Returns true if the definition is an enum extension definition."""
+        """Return true if the definition is an enum extension definition."""
         definition = self.get_top_level_fields()
         return DEFINITION_FIELD_EXTENSION_ENUM in definition and isinstance(definition[DEFINITION_FIELD_EXTENSION_ENUM], dict)
 
     def is_schema(self) -> bool:
-        """Returns true if the definition is a schema definition."""
+        """Return true if the definition is a schema definition."""
         return self.get_root_key() == ROOT_KEY_SCHEMA
 
     def is_enum(self) -> bool:
-        """Returns true if the definition is an enum definition."""
+        """Return true if the definition is an enum definition."""
         return self.get_root_key() == ROOT_KEY_ENUM
+
+    def is_import(self) -> bool:
+        """Return True if the definition is an import definition."""
+        return self.get_root_key() == ROOT_KEY_IMPORT
 
     # IO Functions
 
     def to_yaml(self) -> str:
         """Return a yaml string based on the current state of the definition including extensions."""
-        imports_dict = {DEFINITION_FIELD_IMPORT: self.imports}
-        structure_to_convert_to_yaml = self.structure
-        if self.imports:
-            # using | instead of |= or update to force imports at the top of the yaml output
-            structure_to_convert_to_yaml = imports_dict | structure_to_convert_to_yaml
-
-        return yaml.dump(structure_to_convert_to_yaml, sort_keys=False)
+        return yaml.dump(self.structure, sort_keys=False)
 
     # Misc Functions
 

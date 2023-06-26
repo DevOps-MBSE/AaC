@@ -1,54 +1,44 @@
 schema:
-  name: root
+  name: Root
   description: |
     root is a special case representing the root of the architecture model and
     not explicitly included in a model file
   fields:
     - name: import
-      type: string[]
+      type: Import
       description: |
-        A list of references to other models composing the current model.
-
-        Component model definitions must be visible from the current model's
-        scope.
+        A definition that represents the list of imported files containing
+        externally-defined definitions that are referenced in the current file.
     - name: enum
-      type: enum
+      type: Enum
       description: |
         A definition that represents an enumerated type of value.
 
         An example of when to use an 'enum' is when you want to provide several
         different options for a single value.
     - name: schema
-      type: schema
+      type: Schema
       description: |
         A definition that defines the schema/structure of definitions.
 
         A 'schema' definition can alternatively be thought as a defining the
         data structure of a definition.
-    - name: map
-      type: Map
-      description: |
-        A definition that represents a key-value pair. Used to define Maps
-        and the types for the keys and values.
-
-        An example use of Map would be to declare a key-value data structure
-        with keys of type A and values of type B.
     - name: model
-      type: model
+      type: Model
       description: |
         A definition that represents a system and/or component model.
 
         An example of when to use a 'model' is when you want to define the
         behavior for some component of the system.
     - name: usecase
-      type: usecase
+      type: Usecase
       description: |
         A definition that represents a usecase for the system.
 
         An example of when to use a 'usecase' is when you want to define how the
         system might be used in a particular instance.
     - name: ext
-      type: extension
+      type: Extension
       description: |
         A meta definition used for adding information to another definition.
 
@@ -57,17 +47,51 @@ schema:
         the specification of any plugins you may have installed.
 
         You can extend any 'enum' and 'schema' definition.
+    - name: command_group
+      type: CommandGroup
+      description: |
+        A reference to a command group under which one, or more, plugins can
+        nest related commands.
+
+        CommandGroups are referenced by name.
+    - name: plugin
+      type: Plugin
+      description: |
+        A reference to a plugin. Plugins can provide any extra functionality
+        desired on top of AaC-modeled systems from document generation to code
+        generation and everything in between.
+
+        Plugins are referenced by name.
     - name: validation
       type: Validation
       description: |
-        A reference to a validation plugin. Validation plugins provide verification and validation
-        for the definition to which they are attached and any uses of that definition, depending
-        on the validation plugins referenced by it.
+        A reference to a validation plugin. Validation plugins provide
+        verification and validation for the definition to which they are
+        attached and any uses of that definition, depending on the validation
+        plugins referenced by it.
 
         Validators are referenced by name.
+    - name: spec
+      type: Specification
+      description: |
+        A requirement specification definition to capture desired behavior or attributes of the system being modeled.
+
+        Within many contexts requirements remain the central element of any Model-Based System Engineering solution.
+        AaC supports the definition, derivation, and trace of requirements throughout the model using the spec type and
+        associated reference capabilities.
 ---
 schema:
-  name: enum
+  name: Import
+  fields:
+    - name: files
+      type: file[]
+  validation:
+    - name: Required fields are present
+      arguments:
+        - files
+---
+schema:
+  name: Enum
   fields:
     - name: name
       type: string
@@ -84,7 +108,7 @@ schema:
         - values
 ---
 schema:
-  name: extension
+  name: Extension
   fields:
     - name: name
       type: string
@@ -179,17 +203,11 @@ schema:
   name: ValidationReference
   fields:
     - name: name
-      type: string
-      description: |
-        The name of the validation definition.
+      type: reference
+      description: The name of the validation definition.
     - name: arguments
       type: string[]
-      description: |
-        A list of arguments to pass to the validator.
-  validation:
-    - name: Required fields are present
-      arguments:
-        - name
+      description: A list of arguments to pass to the validator.
 ---
 schema:
   name: ValidatorInput
@@ -244,10 +262,11 @@ schema:
 enum:
   name: BehaviorType
   values:
-    - pub-sub
-    - request-response
-    - startup
-    - timer
+    - PUB_SUB
+    - REQUEST_RESPONSE
+    - STARTUP
+    - TIMER
+    - LOGGING
 ---
 enum:
   name: Primitives
@@ -292,14 +311,14 @@ schema:
         - type
 ---
 schema:
-  name: schema
+  name: Schema
   fields:
     - name: name
       type: string
       description: |
         The name of the schema definition.
     - name: inherits
-      type: DefinitionReference[]
+      type: reference[]
       description: |
         A list of Schema definition names that this definition inherits from.
     - name: fields
@@ -310,6 +329,10 @@ schema:
       type: ValidationReference[]
       description: |
         References and additional arguments for validations to apply to the definition.
+    - name: requirements
+      type: RequirementReference
+      description: |
+        A list of requirements that define the characteristics to be satisfied by the schema.
   validation:
     - name: Root key is defined
     - name: Required fields are present
@@ -354,6 +377,10 @@ schema:
       description: |
         A list of scenarios that define the acceptance criteria to signify that
         the system is behaving as expected.
+    - name: requirements
+      type: RequirementReference
+      description: |
+        A list of allocated requirements defining the expected behavior to be provided.
   validation:
     - name: Required fields are present
       arguments:
@@ -361,7 +388,7 @@ schema:
         - type
 ---
 schema:
-  name: model
+  name: Model
   fields:
     - name: name
       type: string
@@ -387,6 +414,10 @@ schema:
         State is visible within the model but is not visible to other models.
         State may be visible between multiple instances of the modeled entity to
         support horizontal scaling.
+    - name: requirements
+      type: RequirementReference
+      description: |
+        A reference to requirements relevant to the modeled item.
   validation:
     - name: Subcomponents are models
     - name: Required fields are present
@@ -394,7 +425,7 @@ schema:
         - name
 ---
 schema:
-  name: usecase
+  name: Usecase
   fields:
     - name: name
       type: string
@@ -477,47 +508,200 @@ schema:
         - steps
 ---
 schema:
-  name: Map
-  description: Defines a map/key-value pair data structure, and the typing.
+  name: CommandGroup
   fields:
     - name: name
       type: string
-      description: The name of the Map type
-    - name: key_type
+      description: The name of the command group.
+    - name: display
       type: string
-      description: The key type for elements in the map.
-    - name: value_type
+      description: |
+        The display name of the command group for use in user interfaces. If not
+        provided, 'name' will be used.
+    - name: helpText
       type: string
-      description: The value type for elements in the map.
+      description: |
+        The text that will be displayed as help text when displaying command
+        group usage.
   validation:
     - name: Required fields are present
       arguments:
         - name
-        - key_type
-        - value_type
+        - helpText
 ---
 schema:
-  name: KeyValuePair
-  description: Defines a key-value pair, use in list to create key-value pairs in AaC.
+  name: PluginCommand
   fields:
-    - name: key
+    - name: name
       type: string
-      description: The key map entry.
-    - name: value
+      description: The name of the command.
+    - name: display
       type: string
-      description: The value map entry.
+      description: |
+        The display name of the command for use in user interfaces. If not
+        provided, 'name' will be used.
+    - name: group
+      type: reference
+      description: The command group under which to place this command.
+    - name: helpText
+      type: string
+      description: |
+        A description that will be displayed as help text when displaying
+        command usage.
+    - name: input
+      type: Field[]
+      description: |
+        The list of all the fields that are inputs to the component when the
+        command is executed.
+    - name: output
+      type: Field[]
+      description: |
+        The list of all the fields that are outputs from the component when the
+        command is executed.
+    - name: acceptance
+      type: Scenario[]
+      description: |
+        A list of scenarios that define the acceptance criteria to signify that
+        the command is behaving as expected.
   validation:
     - name: Required fields are present
       arguments:
-        - key
+        - name
+        - helpText
+        - acceptance
+---
+schema:
+  name: Plugin
+  fields:
+    - name: name
+      type: string
+    - name: description
+      type: string
+    - name: commands
+      type: PluginCommand[]
+    - name: definitionSources
+      type: file[]
+    - name: definitionValidations
+      type: ValidationReference[]
+    - name: primitiveValidations
+      type: ValidationReference[]
+  validation:
+    - name: Required fields are present
+      arguments:
+        - name
+        - description
+---
+command_group:
+  name: Generation
+  display: gen
+  helpText: Commands used for generating artifacts.
+---
+command_group:
+  name: Management
+  display: mgmt
+  helpText: Commands that enable management of AaC data.
+---
+command_group:
+  name: Internal
+  display: internal
+  helpText: Internal commands not intended for use by end-users or non-AaC developers.
+---
+command_group:
+  name: Backend
+  display: backend
+  helpText: Commands that enable a client/server style workflow.
+---
+command_group:
+  name: Query
+  display: show
+  helpText: Commands whose purpose is to show specific information.
+---
+schema:
+  name: Specification
+  fields:
+    - name: name
+      type: string
+    - name: description
+      type: string
+    - name: sections
+      type: SpecSection[]
+    - name: requirements
+      type: Requirement[]
+  required:
+    - name
+  validation:
+    - name: Required fields are present
+      arguments:
+        - name
+---
+schema:
+  name: SpecSection
+  fields:
+    - name: name
+      type: string
+    - name: description
+      type: string
+    - name: requirements
+      type: Requirement[]
+  required:
+    - name
+  validation:
+    - name: Required fields are present
+      arguments:
+        - name
+---
+schema:
+  name: Requirement
+  fields:
+    - name: id
+      type: string
+    - name: shall
+      type: string
+    - name: parent
+      type: RequirementReference
+    - name: child
+      type: RequirementReference
+    - name: attributes
+      type: RequirementAttribute[]
+  required:
+    - id
+    - shall
+  validation:
+    - name: Required fields are present
+      arguments:
+        - id
+        - shall
+    - name: Requirement ID is unique
+      arguments:
+        - id
+---
+schema:
+  name: RequirementAttribute
+  fields:
+    - name: name
+      type: string
+    - name: value
+      type: string
+  required:
+    - name
+    - value
+  validation:
+    - name: Required fields are present
+      arguments:
+        - name
         - value
 ---
 schema:
-  name: DefinitionReference
+  name: RequirementReference
   fields:
-    - name: name
-      type: string
+    - name: ids
+      type: string[]
+  required:
+    - ids
   validation:
-    - name: Type references exist
+    - name: Required fields are present
       arguments:
-        - name
+        - ids
+    - name: Referenced IDs exist
+      arguments:
+        - ids

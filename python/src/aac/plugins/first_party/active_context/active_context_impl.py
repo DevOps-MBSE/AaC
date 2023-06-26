@@ -1,4 +1,4 @@
-"""AaC Plugin implementation module for the active-context plugin."""
+"""AaC Plugin implementation module for the Active Context Manager plugin."""
 
 from os.path import lexists
 
@@ -6,7 +6,7 @@ from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.plugins import PluginError
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 
-plugin_name = "active-context"
+plugin_name = "Active Context Manager"
 
 
 def list_files() -> PluginExecutionResult:

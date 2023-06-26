@@ -1,10 +1,12 @@
 import:
-  - ./Data.aac
+  files:
+    - ./Data.aac
+---
 model:
   name: ServiceOne
   behavior:
     - name: ProcessUserRequest
-      type: request-response
+      type: REQUEST_RESPONSE
       input:
         - name: in
           type: UserRequest
@@ -20,13 +22,11 @@ model:
           then:
             - The user receives a DataB response
 ---
-import:
-  - ./Data.aac
 model:
   name: ServiceTwo
   behavior:
     - name: Process DataB
-      type: request-response
+      type: REQUEST_RESPONSE
       input:
         - name: in
           type: DataB
@@ -42,13 +42,11 @@ model:
           then:
             - The user receives a response with DataC
 ---
-import:
-  - ./Data.aac
 model:
   name: ServiceThree
   behavior:
     - name: ProcessDataC
-      type: request-response
+      type: REQUEST_RESPONSE
       input:
         - name: in
           type: DataC

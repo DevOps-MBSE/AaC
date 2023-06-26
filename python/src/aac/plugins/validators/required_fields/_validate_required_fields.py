@@ -8,7 +8,8 @@ from aac.lang.language_context import LanguageContext
 from aac.plugins.validators import ValidatorFindings, ValidatorResult
 
 
-PLUGIN_NAME = "Required fields are present"
+PLUGIN_NAME = "Validate required fields"
+VALIDATION_NAME = "Required fields are present"
 
 
 def validate_required_fields(

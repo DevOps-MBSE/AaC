@@ -1,19 +1,23 @@
-model:
-  name: gen-protobuf
-  description: gen-protobuf is an Architecture-as-Code plugin that generates protobuf message definitions from Architecture-as-Code models.
-  behavior:
+plugin:
+  name: Generate Protobuf Messages
+  description: An AaC plugin that generates Protobuf message definitions from AaC definitions.
+  commands:
     - name: gen-protobuf
-      type: command
-      description: Generate protobuf messages from Arch-as-Code models
+      group: Generation
+      helpText: Generate Protobuf messages from AaC definitions.
       input:
         - name: architecture-file
           type: file
           python_type: str
-          description: The yaml file containing the data models to generate as Protobuf messages.
+          description: |
+            The YAML file containing the schema definitions from which to
+            generate Protobuf messages.
         - name: output-directory
           type: directory
           python_type: str
-          description: The directory to write the generated Protobuf messages to.
+          description: |
+            The output directory into which the generated Protobuf messages will
+            be written.
       acceptance:
         - scenario: Output protobuf messages for behavior input/output entries in an Architecture model.
           given:
@@ -42,9 +46,45 @@ ext:
       - string
       - bytes
 ---
+schema:
+  name: Map
+  description: Defines a map/key-value pair data structure, and the typing.
+  fields:
+    - name: name
+      type: string
+      description: The name of the Map type
+    - name: key_type
+      type: string
+      description: The key type for elements in the map.
+    - name: value_type
+      type: string
+      description: The value type for elements in the map.
+  validation:
+    - name: Required fields are present
+      arguments:
+        - name
+        - key_type
+        - value_type
+---
+schema:
+  name: KeyValuePair
+  description: Defines a key-value pair, use in list to create key-value pairs in AaC.
+  fields:
+    - name: key
+      type: string
+      description: The key map entry.
+    - name: value
+      type: string
+      description: The value map entry.
+  validation:
+    - name: Required fields are present
+      arguments:
+        - key
+        - value
+---
 ext:
    name: SchemaMessageOptions
-   type: schema
+   type: Schema
    schemaExt:
       add:
         - name: protobuf_message_options
@@ -52,7 +92,7 @@ ext:
 ---
 ext:
    name: EnumMessageOptions
-   type: enum
+   type: Enum
    schemaExt:
       add:
         - name: protobuf_message_options

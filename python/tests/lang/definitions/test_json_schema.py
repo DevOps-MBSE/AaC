@@ -55,12 +55,7 @@ EXPECTED_SCHEMA_JSON_SCHEMA = """
     "properties": {
         "inherits": {
             "items": {
-                "properties": {
-                    "name": {
-                        "type": "string"
-                        }
-                    },
-                    "type": "object"
+                "type": "string"
             },
             "type": "array"
         },
@@ -84,6 +79,17 @@ EXPECTED_SCHEMA_JSON_SCHEMA = """
                     }
                 }
             }
+        },
+        "requirements": {
+            "properties": {
+                "ids": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                }
+            },
+            "type": "object"
         },
         "validation": {
             "type": "array",
@@ -146,14 +152,26 @@ EXPECTED_MODEL_JSON_SCHEMA = """
                     "type": {
                         "type": "string",
                         "enum": [
-                            "pub-sub",
-                            "request-response",
-                            "startup",
-                            "timer"
+                            "PUB_SUB",
+                            "REQUEST_RESPONSE",
+                            "STARTUP",
+                            "TIMER",
+                            "LOGGING"
                         ]
                     },
                     "description": {
                         "type": "string"
+                    },
+                    "requirements": {
+                        "properties": {
+                            "ids": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "type": "object"
                     },
                     "tags": {
                         "type": "array",
@@ -232,6 +250,17 @@ EXPECTED_MODEL_JSON_SCHEMA = """
                     }
                 }
             }
+        },
+        "requirements": {
+            "properties": {
+                "ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "type": "object"
         },
         "state": {
             "type": "array",

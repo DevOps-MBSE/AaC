@@ -1,11 +1,13 @@
 import:
-  - ./DataA.yaml
-  - ./DataB.yaml
+  files:
+    - ./DataA.yaml
+    - ./DataB.yaml
+---
 model:
   name: ServiceOne
   behavior:
     - name: Process DataA Request
-      type: request-response
+      type: REQUEST_RESPONSE
       description: Process a DataA request and return a DataB response
       input:
         - name: in
