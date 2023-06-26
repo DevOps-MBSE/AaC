@@ -1,3 +1,4 @@
+"""AaC validator implementation module for specification global req id uniqueness."""
 from typing import Tuple, Set, Dict
 
 from aac.lang.constants import ROOT_KEY_SPECIFICATION
