@@ -3,11 +3,10 @@
 import logging
 
 from os import makedirs, path, rename
-from parser import ParserError
 from typing import Any
 
 from aac import __version__
-from aac.io.parser import parse
+from aac.io.parser import parse, ParserError
 from aac.lang.constants import (
     DEFINITION_FIELD_COMMANDS,
     DEFINITION_FIELD_DEFINITION_SOURCES,
