@@ -1,7 +1,7 @@
 plugin:
   name: Generate JSON
   description: An AaC plugin that generates JSON representations of one, or more, AaC definitions.
-  behavior:
+  commands:
     - name: gen-json
       group: Generation
       helpText: Generate a JSON representation of one, or more, AaC definitions.
