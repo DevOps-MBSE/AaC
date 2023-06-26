@@ -6,14 +6,13 @@ between these values and the core spec will be caught by testing.
 """
 
 # Root Keys
-ROOT_KEY_COMMAND_GROUP = "commandGroup"
+ROOT_KEY_COMMAND_GROUP = "command_group"
 ROOT_KEY_ENUM = "enum"
 ROOT_KEY_EXTENSION = "ext"
 ROOT_KEY_IMPORT = "import"
 ROOT_KEY_MODEL = "model"
 ROOT_KEY_PLUGIN = "plugin"
 ROOT_KEY_SCHEMA = "schema"
-ROOT_KEY_SPEC = "spec"
 ROOT_KEY_SPECIFICATION = "spec"
 ROOT_KEY_USECASE = "usecase"
 ROOT_KEY_VALIDATION = "validation"
