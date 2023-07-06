@@ -33,7 +33,6 @@ def get_plugin_manager() -> PluginManager:
         "gen_design_doc",
         "gen_gherkin_behaviors",
         "gen_plant_uml",
-        "specifications",
         "print_spec",
         "lsp_server",
         "help_dump",
@@ -46,6 +45,7 @@ def get_plugin_manager() -> PluginManager:
     # register "built-in" commands
     builtin_command_plugins_package = "aac.cli.builtin_commands"
     builtin_command_plugins = [
+        "specifications",
         "validate",
         "version",
     ]
