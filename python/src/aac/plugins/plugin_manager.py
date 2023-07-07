@@ -1,7 +1,8 @@
 """Provide access to plugins and plugin data."""
 
+from functools import wraps
 from importlib import import_module
-from typing import List
+from typing import Callable, Dict, List, Optional
 
 from pluggy import PluginManager
 
@@ -13,6 +14,7 @@ from aac.plugins.plugin import Plugin
 
 INSTALLED_PLUGINS: List[Plugin] = []
 
+REGISTERED_PLUGINS: Dict[str, str] = {}
 
 
 def get_plugin_manager() -> PluginManager:
@@ -97,3 +99,32 @@ def get_plugins() -> list[Plugin]:
         INSTALLED_PLUGINS = get_plugin_manager().hook.get_plugin()
 
     return [plugin.copy() for plugin in INSTALLED_PLUGINS]
+
+
+def register_plugin_command(function: Callable) -> Callable:
+    """
+    A decorator to simplify plugin command registration.
+
+    Args:
+        function (Callable): The function to wrap.
+    """
+    global REGISTERED_PLUGINS
+
+    @wraps(function)
+    def wrapper(plugin_name: str, command_name: Optional[str] = None):
+        """
+        Register a plugin command with the associated plugin.
+
+        Args:
+            plugin_name (str): The name of the plugin on which the command will be registered.
+            command_name (str): The name of the command to be registered. (default: plugin_name)
+        """
+        command_name = command_name or plugin_name
+        if plugin_name in REGISTERED_PLUGINS:
+            REGISTERED_PLUGINS[plugin_name].append(command_name)
+        else:
+            REGISTERED_PLUGINS[plugin_name] = [command_name]
+
+        return function()
+
+    return wrapper
