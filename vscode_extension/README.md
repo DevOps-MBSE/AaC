@@ -77,7 +77,7 @@ aac rest-api --host <hostname|localhost> --port <8000>
 The AaC VSCode extension does not require configuration as long as the `aac`
 Python tool is in your system `PATH`. Nonetheless, there are configuration options
 available, so for detailed instructions on configuring the AaC VSCode Extension,
-refer to [this](https://jondavid-black.github.io/AaC/docs/vscode_extension) page.
+refer to the [AaC VSCode Extension](https://jondavid-black.github.io/AaC/docs/vscode_extension) github page.
 
 ### Setting: Server Mode
 
@@ -99,15 +99,12 @@ To start the AaC LSP TCP server, execute the following command:
 aac start-lsp-tcp
 ```
 
-###### Host and Port
+##### Host and Port
 
 When starting the LSP TCP server, it's possible to specify a host and port on
 which to run the server. If you do not specify either the `--host` or the
 `--port` options, the defaults will be used. The default host and port are
 already set as options in the VSCode extension.
-
-If you choose to use a different host or port, you must specify that in the TCP
-settings.
 
 ## Requirements
 
