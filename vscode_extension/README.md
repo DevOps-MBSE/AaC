@@ -1,6 +1,6 @@
 # Architecture-as-Code VSCode Extension
 
-Architecture-as-Code is a novel approach to Model-Based Systems Engineering (MBSE) that captures modeled systems in a YAML-based DSL. AaC's novel approach allows large development teams to overcome team silos that often arise from the use of expensive and proprietary MBSE modeling tools because AaC models are captured in YAML, can be seen and edited by all team members, and is built with automation and CI/CD integration in mind.
+Architecture-as-Code is a novel approach to Model-Based Systems Engineering (MBSE) that captures modeled systems in a YAML-based DSL. AaC's novel approach allows large development teams to overcome team silos that often arise from the use of expensive and proprietary MBSE modeling tools because AaC models are captured in YAML, they can be seen and edited by all team members, and the AaC tool is built with automation and CI/CD integration in mind.
 
 The AaC tool is a Python3 Package and can be found on PyPI under the name [aac](https://pypi.org/project/aac/). For more information on the AaC tool, check out the Github Repository [jondavid-black/AaC](https://github.com/jondavid-black/AaC).
 
@@ -18,9 +18,9 @@ The AaC tool implements the Language Server Protocol (LSP), and the AaC VSCode E
 
 #### Rename
 
-AaC supports renameing, which performs a workspace-wide rename of a symbol.
+AaC supports renaming, which performs a workspace-wide rename of a symbol.
 
-AaC currently only supports renaming Definitions.
+AaC currently only supports renaming Definition names -- an important feature given that Definition names are used to reference modeled components and behaviors.
 
 ![LSP Rename Example](./images/readme/aac_lsp_rename.gif)
 
@@ -96,8 +96,8 @@ commands with accompanying descriptions, the installation was successful.
 ## Known Issues
 
 ### LSP
-* Sometimes the LSP will get into a bad state and won't be repsonsive. When experiencing this, you can reload the window via the VSCode Command `Developer: Reload Window`.
+* Sometimes the LSP will get into a bad state and won't be responsive. When experiencing this, you can reload the window using the VSCode Command `Developer: Reload Window`.
 
 ### Visual Editor
 * The Visual Editor is in an early prototype mode, and so there are some issues such as a lack of feedback when a user saves a definition via the visual editor.
-* Files with the extension `.yaml` are not automatically imported, unlike files with the `.aac` extension.
+* Files with the extension `.yaml` are not automatically imported unlike files with the `.aac` extension.
