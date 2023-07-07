@@ -1,6 +1,6 @@
 # Architecture-as-Code VSCode Extension
 
-Architecture-as-Code is a novel approach to Model-Based Systems Engineering (MBSE) that captures modeled systems in a YAML-based DSL. AaC's novel approach allows large development teams to overcome team silos that often arise from the use of expensive and proprietary MBSE modeling tools because AaC models are captured in YAML, they can be seen and edited by all team members, and the AaC tool is built with automation and CI/CD integration in mind.
+Architecture-as-Code is a novel approach to Model-Based Systems Engineering (MBSE) that captures modeled systems in a YAML-based DSL. AaC's novel approach allows large development teams to overcome team silos that often arise from the use of expensive and proprietary MBSE modeling tools. Because AaC models are captured in YAML, they can be seen and edited by all team members, and the AaC tool is built with automation and CI/CD integration in mind.
 
 The AaC tool is a Python3 Package and can be found on PyPI under the name [aac](https://pypi.org/project/aac/). For more information on the AaC tool, check out the Github Repository [jondavid-black/AaC](https://github.com/jondavid-black/AaC).
 
@@ -11,7 +11,6 @@ The AaC tool is a Python3 Package and can be found on PyPI under the name [aac](
 
 The AaC VSCode Extension allows users to execute AaC commands without having to access the terminal. Start a VSCode command with `F1` and type `AaC: Execute AaC Command`.
 
-
 ### Architecture-as-Code Language Server (LSP)
 
 The AaC tool implements the Language Server Protocol (LSP), and the AaC VSCode Extension integrates with the tool's LSP features to bring common programming IDE features to the AaC DSL and AaC files.
@@ -20,7 +19,7 @@ The AaC tool implements the Language Server Protocol (LSP), and the AaC VSCode E
 
 AaC supports renaming, which performs a workspace-wide rename of a symbol.
 
-AaC currently only supports renaming Definition names -- an important feature given that Definition names are used to reference modeled components and behaviors.
+AaC currently only supports renaming Definition names -- an important feature given that Definition names are used to reference other modeled components and behaviors.
 
 ![LSP Rename Example](./images/readme/aac_lsp_rename.gif)
 
@@ -30,13 +29,11 @@ AaC supports finding references, which performs a workspace-wide search for any 
 
 ![LSP Go to/Find All References Example](./images/readme/aac_lsp_find_all_references.gif)
 
-
 #### Go To Definition
 
 AaC supports go to definitions, which performs a workspace-wide search for the declaration of a particular symbol.
 
 ![LSP Go to Definition Example](./images/readme/aac_lsp_goto_definition.gif)
-
 
 #### Diagnostics
 
@@ -81,6 +78,36 @@ The AaC VSCode extension does not require configuration as long as the `aac`
 Python tool is in your system `PATH`. Nonetheless, there are configuration options
 available, so for detailed instructions on configuring the AaC VSCode Extension,
 refer to [this](https://jondavid-black.github.io/AaC/docs/vscode_extension) page.
+
+### Setting: Server Mode
+
+There are two types of LSP servers available - "IO" and "TCP". Currently, the
+server intended for use by users of the AaC language is the "IO" server (which
+is the default) but, on occasion, it can be beneficial to run the TCP server for
+debugging the tool. In that case, users can switch the "Server Mode" setting to
+"TCP". Otherwise, the recommendation is to keep the "Server Mode" as "IO".
+
+##### TCP
+
+Should you choose to use the "TCP" server mode, you will need to start the LSP
+TCP server separately. After that, there are further settings to configure in
+the VSCode extension.
+
+To start the AaC LSP TCP server, execute the following command:
+
+```bash
+aac start-lsp-tcp
+```
+
+###### Host and Port
+
+When starting the LSP TCP server, it's possible to specify a host and port on
+which to run the server. If you do not specify either the `--host` or the
+`--port` options, the defaults will be used. The default host and port are
+already set as options in the VSCode extension.
+
+If you choose to use a different host or port, you must specify that in the TCP
+settings.
 
 ## Requirements
 
