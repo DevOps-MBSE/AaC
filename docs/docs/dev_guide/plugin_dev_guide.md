@@ -15,7 +15,7 @@ When performing the steps listed in the [Developer Guide](./index.md). Please ma
 
 `aac version`
 
-If this command is executable please continue with this guide for developing plugins for AaC. 
+If this command is executable please continue with this guide for developing plugins for AaC.
 
 ## Generating AaC Plugins (Gen-Plugin Command)
 
@@ -101,8 +101,22 @@ To install the plugin make sure that you are in the directory where the `setup.p
 
 Once the plugin is installed in the python environment, when you run the `aac -h` command, the plugin that was just installed, should populate the available plugins/commands.
 
+### Registering Plugin Commands
+
+Plugins that contribute commands to AaC must register those commands so they can be executed. To register a plugin command, we use the `register_plugin_command`decorator applied to the function that returns the `AacCommand`object defining the contributed command.
+
+The following example shows how a plugin would register a command.
+
+```python
+@register_pulgin_command(plugin_name, command_name)
+def get_command_name_command():
+    return AacCommand(command_name, "A command description. ", command_fn)
+```
+
+The above associates the command `command_name` with plugin `plugin_name`.
+
 ### Testing the Plugin
 
 One of the files generated from the `gen-plugin` command is a test file for the plugin implementation, which is generated with a stubbed test. This templated output is only a stub, and it will need to be further developed to provide results.
 
-After doing this the test can be executed either through VSCode or through terminal with the execution of `nose2` or `tox` commands. 
+After doing this the test can be executed either through VSCode or through terminal with the execution of `nose2` or `tox` commands.
