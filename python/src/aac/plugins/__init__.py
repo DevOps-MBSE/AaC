@@ -3,6 +3,22 @@
 from attr import attrs, attrib, validators
 from pluggy import HookimplMarker, HookspecMarker
 
+
+from aac.plugins.plugin import Plugin
+from aac.plugins._common import get_plugin_definitions_from_yaml, register_plugin_command
+
+
+__all__ = (
+    "PLUGIN_PROJECT_NAME",
+    "hookimpl",
+    "hookspec",
+    "Plugin",
+    "PluginError",
+    "OperationCancelled",
+    "get_plugin_definitions_from_yaml",
+    "register_plugin_command",
+)
+
 PLUGIN_PROJECT_NAME = "aac"
 hookimpl = HookimplMarker(PLUGIN_PROJECT_NAME)
 hookspec = HookspecMarker(PLUGIN_PROJECT_NAME)
