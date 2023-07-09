@@ -9,7 +9,7 @@ from aac.lang.definitions.definition import Definition
 from aac.package_resources import get_resource_file_contents, get_resource_file_path
 
 
-REGISTERED_PLUGINS: Dict[str, List[str]] = {}
+REGISTERED_PLUGIN_COMMANDS: Dict[str, List[str]] = {}
 
 
 def get_plugin_definitions_from_yaml(package, filename) -> list[Definition]:
@@ -30,17 +30,17 @@ def register_plugin_command(plugin_name: str, command_name: Optional[str] = None
         plugin_name (str): The name of the plugin on which the command will be registered.
         command_name (str): The name of the command to be registered. (default: plugin_name)
     """
-    global REGISTERED_PLUGINS
+    global REGISTERED_PLUGIN_COMMANDS
 
     command_name = command_name or plugin_name
 
     def wrapper(function: Callable):
         @wraps(function)
         def wrapped(*args, **kwargs):
-            if plugin_name in REGISTERED_PLUGINS:
-                REGISTERED_PLUGINS[plugin_name].append(command_name)
+            if plugin_name in REGISTERED_PLUGIN_COMMANDS:
+                REGISTERED_PLUGIN_COMMANDS[plugin_name].append(command_name)
             else:
-                REGISTERED_PLUGINS[plugin_name] = [command_name]
+                REGISTERED_PLUGIN_COMMANDS[plugin_name] = [command_name]
 
             return function(*args, **kwargs)
 

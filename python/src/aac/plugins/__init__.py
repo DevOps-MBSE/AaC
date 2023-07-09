@@ -5,11 +5,12 @@ from pluggy import HookimplMarker, HookspecMarker
 
 
 from aac.plugins.plugin import Plugin
-from aac.plugins._common import get_plugin_definitions_from_yaml, register_plugin_command
+from aac.plugins._common import REGISTERED_PLUGIN_COMMANDS, get_plugin_definitions_from_yaml, register_plugin_command
 
 
 __all__ = (
     "PLUGIN_PROJECT_NAME",
+    "REGISTERED_PLUGIN_COMMANDS",
     "hookimpl",
     "hookspec",
     "Plugin",
