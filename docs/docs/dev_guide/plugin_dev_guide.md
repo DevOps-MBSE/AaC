@@ -34,13 +34,20 @@ The `gen-plugin` command takes input from an architecture file and will produce 
 > *The below example can be found under this path -> `/python/model/plugin/plugin.yaml`*
 
 ```yaml
-model:
-  name: test-plugin
-  description: A test plugin
-  behavior:
+plugin:
+  name: Test Plugin
+  description: |
+    A test plugin with a contributed definition, a command, a definition
+    validation, and a primitive validation.
+  definitionSources:
+    - ./definitions.yaml
+  definitionValidations:
+    - name: Test definition validation
+  primitiveValidations:
+    - name: Test primitive validation
+  commands:
     - name: test-plugin-command
-      type: command
-      description: Test plugin generation
+      helpText: Test plugin generation
       input:
         - name: architecture_file
           type: file
@@ -49,9 +56,9 @@ model:
       acceptance:
         - scenario: Test some stuff
           given:
-            - The {{test-plugin-command.input.architecture_file}} represent a valid system architecture.
+            - The definitions in {{test-plugin-command.input.architecture_file}} represent a valid system architecture.
           when:
-            - The command is run
+            - The command is run with the expected arguments.
           then:
             - Then stuff happens
 ---
