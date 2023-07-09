@@ -29,9 +29,8 @@ class TestSpecifications(ActiveContextTestCase):
             # Assert Subsystem.csv contents
             with open(os.path.join(temp_dir, "Subsystem.csv")) as subsystem_csv_file:
                 subsystem_csv_contents = subsystem_csv_file.read()
-                subsystem_csv_contents = subsystem_csv_contents.replace(
-                    '"', ""
-                )  # it's not clear what does and doesn't get quoted by the CSV writer, so eliminate quotes
+                # it's not clear what does and doesn't get quoted by the CSV writer, so eliminate quotes
+                subsystem_csv_contents = subsystem_csv_contents.replace('"', "") 
                 # Assert csv contents are present
                 self.assertIn("Spec Name,Section,ID,Requirement,Parents,Children", subsystem_csv_contents)
                 self.assertIn(
@@ -43,9 +42,8 @@ class TestSpecifications(ActiveContextTestCase):
             # Assert Module.csv contents
             with open(os.path.join(temp_dir, "Module.csv")) as module_csv_file:
                 module_csv_contents = module_csv_file.read()
-                module_csv_contents = module_csv_contents.replace(
-                    '"', ""
-                )  # it's not clear what does and doesn't get quoted by the CSV writer, so eliminate quotes
+                # it's not clear what does and doesn't get quoted by the CSV writer, so eliminate quotes
+                module_csv_contents = module_csv_contents.replace('"', "")
                 # Assert csv contents are present
                 self.assertIn("Spec Name,Section,ID,Requirement,Parents,Children", module_csv_contents)
                 self.assertIn(
