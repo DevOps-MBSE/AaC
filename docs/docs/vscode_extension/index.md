@@ -113,3 +113,5 @@ right corner for "aac" with an open ".yaml" or ".aac" file.
 
 If this says anything other than "aac", then you should click that item and pick
 "aac" from the popup to activate the extension for the current file.
+
+For further information on the VSCode Extension features, check out the Extension's readme in the [VSCode Marketplace](https://marketplace.visualstudio.com/items?itemName=Arch-as-Code.aac).
