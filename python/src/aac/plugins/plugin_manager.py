@@ -1,14 +1,16 @@
 """Provide access to plugins and plugin data."""
+
 from importlib import import_module
+from typing import List
+
 from pluggy import PluginManager
 
-from aac.plugins import hookspecs, PLUGIN_PROJECT_NAME
-from aac.plugins.plugin import Plugin
+from aac.plugins import PLUGIN_PROJECT_NAME, Plugin, hookspecs
 
+# Using an installed plugin cache for performance. This will causes issues if
+# users try to install new plugins without restarting AaC.
 
-# Using an installed plugin cache for performance. This will causes issues if users try to
-#   install new plugins without restarting AaC.
-INSTALLED_PLUGINS = []
+INSTALLED_PLUGINS: List[Plugin] = []
 
 
 def get_plugin_manager() -> PluginManager:
@@ -22,7 +24,9 @@ def get_plugin_manager() -> PluginManager:
     plugin_manager.add_hookspecs(hookspecs)
     plugin_manager.load_setuptools_entrypoints(PLUGIN_PROJECT_NAME)
 
-    # Register 1st Party Plugins because pluggy doesn't provide an alternative solution to automatically register plugins that are packaged in the AaC package.
+    # Register 1st Party Plugins because pluggy doesn't provide an alternative
+    # solution to automatically register plugins that are packaged in the AaC
+    # package.
 
     # register "built-in" plugins
     first_party_plugins_package = "aac.plugins.first_party"
@@ -33,7 +37,6 @@ def get_plugin_manager() -> PluginManager:
         "gen_design_doc",
         "gen_gherkin_behaviors",
         "gen_plant_uml",
-        "specifications",
         "print_spec",
         "lsp_server",
         "help_dump",
@@ -46,6 +49,7 @@ def get_plugin_manager() -> PluginManager:
     # register "built-in" commands
     builtin_command_plugins_package = "aac.cli.builtin_commands"
     builtin_command_plugins = [
+        "specifications",
         "validate",
         "version",
     ]
@@ -66,13 +70,15 @@ def get_plugin_manager() -> PluginManager:
         "validator_implementation",
     ]
 
-    def register_plugin(plugin, package):
+    plugins = [
+        *zip([first_party_plugins_package] * len(first_party_plugins), first_party_plugins),
+        *zip([builtin_command_plugins_package] * len(builtin_command_plugins), builtin_command_plugins),
+        *zip([validator_plugins_package] * len(validator_plugins), validator_plugins),
+    ]
+
+    for package, plugin in plugins:
         plugin_module = import_module(f"{package}.{plugin}")
         plugin_manager.register(plugin_module)
-
-    [register_plugin(name, first_party_plugins_package) for name in first_party_plugins]
-    [register_plugin(name, builtin_command_plugins_package) for name in builtin_command_plugins]
-    [register_plugin(name, validator_plugins_package) for name in validator_plugins]
 
     return plugin_manager
 

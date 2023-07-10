@@ -4,7 +4,7 @@ from aac.cli.aac_command import AacCommand, AacCommandArgument
 from aac.lang.definitions.definition import Definition
 from aac.plugins import hookimpl
 from aac.plugins.plugin import Plugin
-from aac.plugins.first_party.specifications.specifications_impl import plugin_name, spec_csv
+from aac.cli.builtin_commands.specifications.specifications_impl import plugin_name, spec_csv
 from aac.plugins._common import get_plugin_definitions_from_yaml
 
 
