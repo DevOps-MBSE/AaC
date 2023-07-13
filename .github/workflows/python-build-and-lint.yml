@@ -40,7 +40,6 @@ jobs:
         run: |
           cp -R ../docs/ ./docs
           cd ./docs/
-          make html
           make github
 
       - name: Upload API Documentation
