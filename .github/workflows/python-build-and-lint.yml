@@ -41,12 +41,17 @@ jobs:
           cp -R ../docs/ ./docs
           cd ./docs/
           make html
+          make github
 
       - name: Upload API Documentation
         uses: actions/upload-artifact@v3
         with:
           name: api-documentation
           path: python/docs/build/html/
+
+      - name: Upload API Documentation to GitHub Pages
+        run: |
+
 
       - name: Generate RESTful API Documentation
         run: |

@@ -15,7 +15,7 @@ While "code" is in the name, AaC isn't solely for coders, programmers, or softwa
 | Interface                         | Implementation Status    | References                                  |
 |-----------------------------------|--------------------------|---------------------------------------------|
 | Command-line Interface            | ✅ Implemented           | [AaC Command Line Interface](./aac_cli)     |
-| Application Programming Interface | ✅ Implemented (Python)  | [AaC API Documentation](../dev_guide/aac_api/index.html)                                         |
+| Application Programming Interface | ✅ Implemented (Python)  | [AaC API Documentation](../dev_guide/aac_api/index.md)                                         |
 | Visualization                     | ⚠️ In-progress           | [AaC VSCode Extension](../vscode_extension/index.md) |
 
 # Getting Started
