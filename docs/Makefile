@@ -14,6 +14,11 @@ help:
 
 .PHONY: help Makefile
 
+github:
+	@make html
+	@rm -rf ./docs/dev_guide/aac_api
+	@cp -a _build/html/. ./docs/dev_guide/aac_api 
+
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 %: Makefile
