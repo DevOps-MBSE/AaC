@@ -1,0 +1,36 @@
+aac.plugins.first\_party.gen\_protobuf.gen\_protobuf\_impl
+==========================================================
+
+.. automodule:: aac.plugins.first_party.gen_protobuf.gen_protobuf_impl
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      gen_protobuf
+      generate_protobuf_messages
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Exceptions
+
+   .. autosummary::
+   
+      GenerateProtobufException
+   
+   
+
+
+

@@ -1,0 +1,30 @@
+aac.lang.definitions.structure
+==============================
+
+.. automodule:: aac.lang.definitions.structure
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      get_substructures_by_type
+      strip_undefined_fields_from_definition
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

@@ -1,0 +1,44 @@
+aac.lang.definitions
+====================
+
+.. automodule:: aac.lang.definitions
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   aac.lang.definitions.collections
+   aac.lang.definitions.definition
+   aac.lang.definitions.extensions
+   aac.lang.definitions.inheritance
+   aac.lang.definitions.json_schema
+   aac.lang.definitions.lexeme
+   aac.lang.definitions.metadata_structure
+   aac.lang.definitions.references
+   aac.lang.definitions.schema
+   aac.lang.definitions.search
+   aac.lang.definitions.source_location
+   aac.lang.definitions.structural_node
+   aac.lang.definitions.structure
+   aac.lang.definitions.type
+

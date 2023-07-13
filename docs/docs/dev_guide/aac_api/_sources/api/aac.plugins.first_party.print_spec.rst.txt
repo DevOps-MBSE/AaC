@@ -1,0 +1,37 @@
+aac.plugins.first\_party.print\_spec
+====================================
+
+.. automodule:: aac.plugins.first_party.print_spec
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      get_plugin
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   aac.plugins.first_party.print_spec.print_spec_impl
+

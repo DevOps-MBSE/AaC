@@ -1,0 +1,38 @@
+aac.plugins.first\_party.gen\_design\_doc
+=========================================
+
+.. automodule:: aac.plugins.first_party.gen_design_doc
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      get_plugin
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   aac.plugins.first_party.gen_design_doc.gen_design_doc_impl
+   aac.plugins.first_party.gen_design_doc.templates
+

@@ -1,0 +1,29 @@
+aac.plugins.hookspecs
+=====================
+
+.. automodule:: aac.plugins.hookspecs
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      get_plugin
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

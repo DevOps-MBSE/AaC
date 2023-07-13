@@ -1,0 +1,29 @@
+aac.plugins.validators.subcomponent\_type
+=========================================
+
+.. automodule:: aac.plugins.validators.subcomponent_type
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      get_plugin
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

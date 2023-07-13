@@ -1,0 +1,29 @@
+aac.cli.builtin\_commands.specifications.specifications\_impl
+=============================================================
+
+.. automodule:: aac.cli.builtin_commands.specifications.specifications_impl
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      spec_csv
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

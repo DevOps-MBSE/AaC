@@ -1,0 +1,31 @@
+aac.persistence
+===============
+
+.. automodule:: aac.persistence
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   aac.persistence.state_file_error
+

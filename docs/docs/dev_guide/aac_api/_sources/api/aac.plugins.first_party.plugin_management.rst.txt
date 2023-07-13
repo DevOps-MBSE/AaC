@@ -1,0 +1,37 @@
+aac.plugins.first\_party.plugin\_management
+===========================================
+
+.. automodule:: aac.plugins.first_party.plugin_management
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      get_plugin
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   aac.plugins.first_party.plugin_management.plugin_management_impl
+

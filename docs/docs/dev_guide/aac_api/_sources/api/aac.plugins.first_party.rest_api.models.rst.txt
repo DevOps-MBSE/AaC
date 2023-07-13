@@ -1,0 +1,33 @@
+aac.plugins.first\_party.rest\_api.models
+=========================================
+
+.. automodule:: aac.plugins.first_party.rest_api.models
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   aac.plugins.first_party.rest_api.models.command_model
+   aac.plugins.first_party.rest_api.models.definition_model
+   aac.plugins.first_party.rest_api.models.file_model
+

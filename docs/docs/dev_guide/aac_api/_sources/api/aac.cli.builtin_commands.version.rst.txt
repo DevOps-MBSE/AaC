@@ -1,0 +1,37 @@
+aac.cli.builtin\_commands.version
+=================================
+
+.. automodule:: aac.cli.builtin_commands.version
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      get_plugin
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   aac.cli.builtin_commands.version.version_impl
+

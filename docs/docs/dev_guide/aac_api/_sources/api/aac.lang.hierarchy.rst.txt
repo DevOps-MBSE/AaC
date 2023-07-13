@@ -1,0 +1,30 @@
+aac.lang.hierarchy
+==================
+
+.. automodule:: aac.lang.hierarchy
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      get_definition_ancestry
+      get_root_definition_by_key
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

@@ -1,0 +1,37 @@
+aac.plugins.first\_party.gen\_gherkin\_behaviors
+================================================
+
+.. automodule:: aac.plugins.first_party.gen_gherkin_behaviors
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      get_plugin
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   aac.plugins.first_party.gen_gherkin_behaviors.gen_gherkin_behaviors_impl
+

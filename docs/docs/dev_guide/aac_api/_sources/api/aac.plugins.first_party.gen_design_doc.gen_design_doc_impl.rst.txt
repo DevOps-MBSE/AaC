@@ -1,0 +1,29 @@
+aac.plugins.first\_party.gen\_design\_doc.gen\_design\_doc\_impl
+================================================================
+
+.. automodule:: aac.plugins.first_party.gen_design_doc.gen_design_doc_impl
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      gen_design_doc
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

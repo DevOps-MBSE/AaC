@@ -1,0 +1,32 @@
+aac.lang.definitions.references
+===============================
+
+.. automodule:: aac.lang.definitions.references
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      get_definition_type_references_from_list
+      get_enum_references_from_context
+      get_reference_target_definitions
+      is_reference_format_valid
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

@@ -1,0 +1,39 @@
+aac.plugins.first\_party.rest\_api.models.command\_model
+========================================================
+
+.. automodule:: aac.plugins.first_party.rest_api.models.command_model
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      to_command_argument_model
+      to_command_model
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      CommandArgumentModel
+      CommandModel
+      CommandRequestModel
+      CommandResponseModel
+   
+   
+
+   
+   
+   
+
+
+

@@ -1,0 +1,29 @@
+aac.lang.definitions.metadata\_structure
+========================================
+
+.. automodule:: aac.lang.definitions.metadata_structure
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      compute_metadata_structure
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

@@ -1,0 +1,29 @@
+aac.io.files.aac\_file
+======================
+
+.. automodule:: aac.io.files.aac_file
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      AaCFile
+   
+   
+
+   
+   
+   
+
+
+

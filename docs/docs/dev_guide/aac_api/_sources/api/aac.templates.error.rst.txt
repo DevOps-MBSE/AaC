@@ -1,0 +1,29 @@
+aac.templates.error
+===================
+
+.. automodule:: aac.templates.error
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Exceptions
+
+   .. autosummary::
+   
+      AacTemplateError
+   
+   
+
+
+

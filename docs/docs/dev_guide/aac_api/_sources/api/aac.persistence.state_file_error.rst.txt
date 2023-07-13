@@ -1,0 +1,29 @@
+aac.persistence.state\_file\_error
+==================================
+
+.. automodule:: aac.persistence.state_file_error
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Exceptions
+
+   .. autosummary::
+   
+      StateFileError
+   
+   
+
+
+

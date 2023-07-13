@@ -1,0 +1,30 @@
+aac.plugins.first\_party.primitive\_type\_check.validators.file\_validator
+==========================================================================
+
+.. automodule:: aac.plugins.first_party.primitive_type_check.validators.file_validator
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      get_validator
+      validate_file
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

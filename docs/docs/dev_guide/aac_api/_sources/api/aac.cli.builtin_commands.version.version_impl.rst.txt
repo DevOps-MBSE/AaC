@@ -1,0 +1,29 @@
+aac.cli.builtin\_commands.version.version\_impl
+===============================================
+
+.. automodule:: aac.cli.builtin_commands.version.version_impl
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      version
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

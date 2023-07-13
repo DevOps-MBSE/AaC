@@ -1,0 +1,30 @@
+aac.lang.definitions.structural\_node
+=====================================
+
+.. automodule:: aac.lang.definitions.structural_node
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      NodeType
+      StructuralNode
+   
+   
+
+   
+   
+   
+
+
+

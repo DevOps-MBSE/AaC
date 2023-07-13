@@ -1,0 +1,29 @@
+aac.plugins.contributions.plugin\_contribution
+==============================================
+
+.. automodule:: aac.plugins.contributions.plugin_contribution
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      PluginContribution
+   
+   
+
+   
+   
+   
+
+
+

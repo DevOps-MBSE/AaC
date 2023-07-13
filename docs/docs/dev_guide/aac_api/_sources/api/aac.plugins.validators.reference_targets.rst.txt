@@ -1,0 +1,29 @@
+aac.plugins.validators.reference\_targets
+=========================================
+
+.. automodule:: aac.plugins.validators.reference_targets
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      get_plugin
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

@@ -1,0 +1,30 @@
+aac.plugins.first\_party.rest\_api.aac\_rest\_api\_impl
+=======================================================
+
+.. automodule:: aac.plugins.first_party.rest_api.aac_rest_api_impl
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      generate_api_spec
+      rest_api
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

@@ -1,0 +1,31 @@
+aac.spec
+========
+
+.. automodule:: aac.spec
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   aac.spec.core
+

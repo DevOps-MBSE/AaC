@@ -1,0 +1,31 @@
+aac.serialization
+=================
+
+.. automodule:: aac.serialization
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   aac.serialization.aac_command_encoder
+

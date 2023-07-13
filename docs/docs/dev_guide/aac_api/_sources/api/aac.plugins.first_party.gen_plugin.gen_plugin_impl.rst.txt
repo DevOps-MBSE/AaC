@@ -1,0 +1,29 @@
+aac.plugins.first\_party.gen\_plugin.gen\_plugin\_impl
+======================================================
+
+.. automodule:: aac.plugins.first_party.gen_plugin.gen_plugin_impl
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      generate_plugin
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

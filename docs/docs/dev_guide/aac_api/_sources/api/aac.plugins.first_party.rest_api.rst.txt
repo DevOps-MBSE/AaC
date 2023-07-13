@@ -1,0 +1,39 @@
+aac.plugins.first\_party.rest\_api
+==================================
+
+.. automodule:: aac.plugins.first_party.rest_api
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      get_plugin
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   aac.plugins.first_party.rest_api.aac_rest_api_impl
+   aac.plugins.first_party.rest_api.aac_rest_app
+   aac.plugins.first_party.rest_api.models
+

@@ -1,0 +1,33 @@
+aac.cli
+=======
+
+.. automodule:: aac.cli
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   aac.cli.aac_command
+   aac.cli.builtin_commands
+   aac.cli.execute
+

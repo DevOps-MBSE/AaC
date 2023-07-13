@@ -1,0 +1,30 @@
+aac.lang.definitions.search
+===========================
+
+.. automodule:: aac.lang.definitions.search
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      search
+      search_definition
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

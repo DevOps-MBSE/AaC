@@ -1,0 +1,29 @@
+aac.plugins.first\_party.gen\_plugin.GeneratePluginException
+============================================================
+
+.. automodule:: aac.plugins.first_party.gen_plugin.GeneratePluginException
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Exceptions
+
+   .. autosummary::
+   
+      GeneratePluginException
+   
+   
+
+
+

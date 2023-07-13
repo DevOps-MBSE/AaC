@@ -1,0 +1,30 @@
+aac.lang.definitions.type
+=========================
+
+.. automodule:: aac.lang.definitions.type
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      is_array_type
+      remove_list_type_indicator
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

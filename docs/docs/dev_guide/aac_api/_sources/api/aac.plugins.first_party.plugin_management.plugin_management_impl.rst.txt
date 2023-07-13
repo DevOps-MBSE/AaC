@@ -1,0 +1,31 @@
+aac.plugins.first\_party.plugin\_management.plugin\_management\_impl
+====================================================================
+
+.. automodule:: aac.plugins.first_party.plugin_management.plugin_management_impl
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      activate_plugin
+      deactivate_plugin
+      list_plugins
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

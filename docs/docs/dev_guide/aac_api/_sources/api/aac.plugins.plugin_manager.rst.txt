@@ -1,0 +1,30 @@
+aac.plugins.plugin\_manager
+===========================
+
+.. automodule:: aac.plugins.plugin_manager
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      get_plugin_manager
+      get_plugins
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

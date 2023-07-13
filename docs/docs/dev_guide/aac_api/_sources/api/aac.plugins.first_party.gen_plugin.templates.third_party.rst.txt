@@ -1,0 +1,23 @@
+aac.plugins.first\_party.gen\_plugin.templates.third\_party
+===========================================================
+
+.. automodule:: aac.plugins.first_party.gen_plugin.templates.third_party
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

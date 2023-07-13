@@ -1,0 +1,23 @@
+aac.plugins.first\_party.gen\_design\_doc.templates
+===================================================
+
+.. automodule:: aac.plugins.first_party.gen_design_doc.templates
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

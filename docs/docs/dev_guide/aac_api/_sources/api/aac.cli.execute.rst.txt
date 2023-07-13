@@ -1,0 +1,32 @@
+aac.cli.execute
+===============
+
+.. automodule:: aac.cli.execute
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      output_result
+      to_click_command
+      to_click_parameter
+      to_click_type
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

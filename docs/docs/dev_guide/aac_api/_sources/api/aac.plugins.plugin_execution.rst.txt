@@ -1,0 +1,36 @@
+aac.plugins.plugin\_execution
+=============================
+
+.. automodule:: aac.plugins.plugin_execution
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      plugin_result
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      PluginExecutionResult
+      PluginExecutionStatusCode
+   
+   
+
+   
+   
+   
+
+
+

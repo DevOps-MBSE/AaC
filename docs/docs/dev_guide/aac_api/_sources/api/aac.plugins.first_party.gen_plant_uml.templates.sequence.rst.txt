@@ -1,0 +1,23 @@
+aac.plugins.first\_party.gen\_plant\_uml.templates.sequence
+===========================================================
+
+.. automodule:: aac.plugins.first_party.gen_plant_uml.templates.sequence
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

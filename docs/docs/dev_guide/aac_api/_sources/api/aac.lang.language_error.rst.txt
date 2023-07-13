@@ -1,0 +1,29 @@
+aac.lang.language\_error
+========================
+
+.. automodule:: aac.lang.language_error
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Exceptions
+
+   .. autosummary::
+   
+      LanguageError
+   
+   
+
+
+
