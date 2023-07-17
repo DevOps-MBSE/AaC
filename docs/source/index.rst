@@ -3,10 +3,9 @@ Welcome to Architecture-as-Code's documentation!
 
 .. toctree::
    :maxdepth: 3
-   :caption: API Documentation:
 
    api
-
+   ./docs/docs_index
 
 Indices and tables
 ------------------

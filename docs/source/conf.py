@@ -39,6 +39,7 @@ extensions = [
     "sphinx.ext.coverage",
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
+    "myst_parser",
 ]
 
 # -- Ext: autodoc configuration ----------------------------------------------
@@ -50,12 +51,10 @@ autodoc_preserve_defaults = True
 autodoc_inherit_docstrings = True
 
 # -- Ext: autosummary configuration ------------------------------------------
-
 autosummary_generate = True
 autosummary_generate_overwrite = False
 
 # -- Ext: Napoleon configuration ---------------------------------------------
-
 napoleon_google_docstring = True
 napoleon_include_init_with_doc = False
 napoleon_include_private_with_doc = False
@@ -83,10 +82,18 @@ exclude_patterns = []
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-#
-html_theme = "furo"
+html_theme = "classic"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
+
+# The file extensions of source files. Sphinx considers the files with this
+# suffix as sources. The value can be a dictionary mapping file extensions
+# to file types.
+source_suffix = {
+    ".rst": "restructuredtext",
+    ".txt": "restructuredtext",
+    ".md": "markdown",
+}
