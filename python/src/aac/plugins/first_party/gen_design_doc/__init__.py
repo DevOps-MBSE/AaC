@@ -1,10 +1,19 @@
 """The gen-design-doc plugin module."""
 
 from aac.cli.aac_command import AacCommand, AacCommandArgument
-from aac.plugins import hookimpl
+from aac.lang.constants import (
+    DEFINITION_FIELD_COMMANDS,
+    DEFINITION_FIELD_HELP_TEXT,
+    DEFINITION_FIELD_INPUT,
+    DEFINITION_FIELD_NAME,
+    DEFINITION_FIELD_TYPE,
+)
+from aac.lang.definitions.collections import get_definition_by_name
+from aac.plugins import Plugin, get_plugin_definitions_from_yaml, hookimpl, register_plugin_command
+
+# I realize this causes a dependency on the gen-plugin plugin
+from aac.plugins.first_party.gen_plugin import DEFINITION_FIELD_NUMBER_OF_ARGUMENTS, DEFINITION_FIELD_DEFAULT
 from aac.plugins.first_party.gen_design_doc.gen_design_doc_impl import gen_design_doc, plugin_name
-from aac.plugins.plugin import Plugin
-from aac.plugins._common import get_plugin_definitions_from_yaml
 
 
 @hookimpl
@@ -22,27 +31,33 @@ def get_plugin() -> Plugin:
 
 
 def _get_plugin_commands():
-    gen_design_doc_arguments = [
-        AacCommandArgument(
-            "architecture-file",
-            "An AaC file containing the modeled system for which to generate the System Design document.",
-            "file",
-        ),
-        AacCommandArgument(
-            "output-directory",
-            "The directory to which the System Design document will be written.",
-            "directory",
-        ),
-    ]
+    definition = get_definition_by_name(plugin_name, _get_plugin_definitions())
+    command_structures = definition.get_top_level_fields().get(DEFINITION_FIELD_COMMANDS, []) if definition else []
 
-    plugin_commands = [
-        AacCommand(
-            "gen-design-doc",
-            "Generate a System Design Document from Architecture-as-Code models.",
-            gen_design_doc,
-            gen_design_doc_arguments,
-        ),
-    ]
+    plugin_commands = []
+    for structure in command_structures:
+        arguments = [
+            AacCommandArgument(
+                name=argument.get(DEFINITION_FIELD_NAME),
+                description=argument.get(DEFINITION_FIELD_HELP_TEXT, ""),
+                data_type=argument.get(DEFINITION_FIELD_TYPE),
+                number_of_arguments=argument.get(DEFINITION_FIELD_NUMBER_OF_ARGUMENTS, 1),
+                default=argument.get(DEFINITION_FIELD_DEFAULT),
+            )
+            for argument in structure.get(DEFINITION_FIELD_INPUT, [])
+        ]
+        plugin_commands.append(
+            AacCommand(
+                structure.get(DEFINITION_FIELD_NAME),
+                structure.get(DEFINITION_FIELD_HELP_TEXT, ""),
+                # We need to figure out how to get this to work for multiple commands
+                gen_design_doc,
+                arguments,
+            )
+        )
+
+        # This doesn't do anything, really, since we're not using it as a decorator.
+        register_plugin_command(plugin_name, structure.get(DEFINITION_FIELD_NAME))
 
     return plugin_commands
 
