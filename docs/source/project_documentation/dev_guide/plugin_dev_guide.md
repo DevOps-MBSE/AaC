@@ -115,7 +115,7 @@ Plugins that contribute commands to AaC must register those commands so they can
 The following example shows how a plugin would register a command.
 
 ```python
-@register_pulgin_command(plugin_name, command_name)
+@register_plugin_command(plugin_name, command_name)
 def get_command_name_command():
     return AacCommand(command_name, "A command description. ", command_fn)
 ```

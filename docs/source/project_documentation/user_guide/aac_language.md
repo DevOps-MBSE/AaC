@@ -54,7 +54,7 @@ The basic root keys can be located in the [base AaC DSL specification.](https://
 | schema | Used to define data structures |
 | model | Used to define a system, model, or component |
 | usecase | Used to define usecases, or interactions between models |
-| ext | Used to define extensions to `enum` or `schema` defintions |
+| ext | Used to define extensions to `enum` or `schema` definitions |
 | validation | Used to define validation rules for AaC definitions |
 
 

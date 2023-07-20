@@ -137,7 +137,7 @@ enum:
 ```
 
 ## Primitive Types
-Primitive types in AaC are defined by the enumeration values in the `Primitives` definition. Each enum value respresents a uniquely special set of enumeration values that define the core AaC language's primitive types. Users who extend `Primitives` should maintain the same style of `snake_case` and keep primitive type names succinct: in other words, names should be descriptive, but short.
+Primitive types in AaC are defined by the enumeration values in the `Primitives` definition. Each enum value represents a uniquely special set of enumeration values that define the core AaC language's primitive types. Users who extend `Primitives` should maintain the same style of `snake_case` and keep primitive type names succinct: in other words, names should be descriptive, but short.
 
 
 ## Root Keys
@@ -148,7 +148,7 @@ Like primitive types, root keys should follow the `snake_case` style, but emphas
 # Organizing Imports
 Each AaC file has a file-wide import declaration definition. Using an `import` definition allows users to reference definitions provided via other user files and can be used to decompose large, complex models into multiple files.
 
-Because `import` decalarations are file-wide, these clauses should be the first clause in AaC files. There is no internal logic that dictates the order of the entries in an AaC file, but maintaining the `import` clause as the first definition in AaC files makes the file-wide dependencies immediately visible and informs readers on the dependencies of file. Additionally, while it's possible to include multiple `import` definitions in a single file, the preferred approach is to list all imported files in a single `import` definition in each file.
+Because `import` declarations are file-wide, these clauses should be the first clause in AaC files. There is no internal logic that dictates the order of the entries in an AaC file, but maintaining the `import` clause as the first definition in AaC files makes the file-wide dependencies immediately visible and informs readers on the dependencies of file. Additionally, while it's possible to include multiple `import` definitions in a single file, the preferred approach is to list all imported files in a single `import` definition in each file.
 
 An example file with an import clause at the top:
 

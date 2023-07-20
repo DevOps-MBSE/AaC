@@ -2,7 +2,7 @@
 layout: default
 title: Definition Extensions
 parent: Advanced User Topics
-permalink: docs/advanced_user_topics/definition_extensions
+permalink: project_documentation/advanced_user_topics/definition_extensions
 ---
 
 # Extensibility of AaC

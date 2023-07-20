@@ -80,7 +80,7 @@ def _validate_primitive_types(definition: Definition, language_context: Language
 
 ```
 
-The above method, like the `_validate_definition` function outlined in the previous example, takes in a `Definition` and takes in the `LanguageContext` of the defintion that is being validated. However, The primary goal of this snippet is to validate the *Primitive Types* of a definition schema and pass these results to the `ValidatorResult` object for further processing and eventual output to the user. This function is an example of a *Primitive Constraint* with how validations are made/applied.
+The above method, like the `_validate_definition` function outlined in the previous example, takes in a `Definition` and takes in the `LanguageContext` of the definition that is being validated. However, The primary goal of this snippet is to validate the *Primitive Types* of a definition schema and pass these results to the `ValidatorResult` object for further processing and eventual output to the user. This function is an example of a *Primitive Constraint* with how validations are made/applied.
 
 The results of this validation are consolidated with the results from the `_validate_definition` function above in the `ValidatorResult` object for further analysis and output for the user to discern.
 
@@ -115,7 +115,7 @@ schema:
 
 The arguments that are passed through this `Validation` Definition are three variables:
 
-1. The name of the `defintion` being validated.
+1. The name of the `definition` being validated.
 2. The description of the `definition` being validated.
 3. The behavior of the `definition` that is being validated.
 

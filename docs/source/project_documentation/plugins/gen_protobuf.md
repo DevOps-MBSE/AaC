@@ -141,19 +141,19 @@ enum MessageType {
 ```
 
 ## Reserved Types
-[Reserved Types](https://developers.google.com/protocol-buffers/docs/proto3#reserved_values) aren't implemented yet.
+[Reserved Types](https://developers.google.com/protocol-buffers/docs/proto3#reserved_values) is not currently implemented.
 
 ## OneOf
-[OneOf](https://developers.google.com/protocol-buffers/docs/proto3#oneof) is not currently implemented
+[OneOf](https://developers.google.com/protocol-buffers/docs/proto3#oneof) is not currently implemented.
 
 ## Maps
-Protobuf 3 [maps](https://developers.google.com/protocol-buffers/docs/proto3#maps) aren't currently implemented.
+Protobuf 3 [maps](https://developers.google.com/protocol-buffers/docs/proto3#maps) is not currently implemented.
 
 
 [Maps Backwards compatibility](https://developers.google.com/protocol-buffers/docs/proto3#backwards_compatibility)
 
 ## Packages
-[Packages](https://developers.google.com/protocol-buffers/docs/proto3#packages) aren't implemented yet.
+[Packages](https://developers.google.com/protocol-buffers/docs/proto3#packages) is not currently implemented.
 
 ## Defining Services
 [Defining Services](https://developers.google.com/protocol-buffers/docs/proto3#services) is not currently implemented.

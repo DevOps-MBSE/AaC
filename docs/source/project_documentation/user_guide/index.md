@@ -3,7 +3,7 @@ layout: default
 title: User's Guide to AaC
 nav_order: 3
 has_children: true
-permalink: docs/user_guide
+permalink: project_documentation/user_guide
 ---
 
 # What is Architecture-as-Code?

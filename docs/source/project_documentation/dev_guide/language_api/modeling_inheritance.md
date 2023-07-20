@@ -93,7 +93,7 @@ Definition(
 ```
 
 ## Looking up Inherited Definitions
-If you're interested in obtaining the definitions that are inherited by another definition, you can easily access the list of inherited definitions by acessing the `inherits` field, which returns a list of strings (definition names).
+If you're interested in obtaining the definitions that are inherited by another definition, you can easily access the list of inherited definitions by accessing the `inherits` field, which returns a list of strings (definition names).
 ```python
 active_context = get_active_context()
 data_a_definition = get_active_context().get_definition_by_name("DataA")

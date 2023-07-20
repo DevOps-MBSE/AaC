@@ -4,7 +4,7 @@ title: Getting Started with AaC
 parent: User's Guide to AaC
 nav_order: 1
 has_children: false
-permalink: docs/user_guide/getting_started
+permalink: project_documentation/user_guide/getting_started
 ---
 
 # Getting Started
@@ -12,7 +12,7 @@ permalink: docs/user_guide/getting_started
 ## Github Template Repository - Quickstart
 We have a [Github Template Repository](https://github.com/Coffee2Bits/AaC-User-Template-Repository) that's setup to allow users exploring AaC to immediately create an AaC-ready github repository and development environment using [Gitpod](gitpod.io).
 
-The repository is pre-populated with a simple example model and Github Action workflow. All that you have to do is hit the "Use this Template" button at the top of the template repository. ![Use this Template Button Picture](../../assets/images/github/github_repo_template_button.png)
+The repository is pre-populated with a simple example model and Github Action workflow. All that you have to do is hit the "Use this Template" button at the top of the template repository. ![Use this Template Button Picture](../../images/github/github_repo_template_button.png)
 
 Alternatively, if you're opposed to visiting the template repository and searching for the template button, you can just click this one.
 
@@ -141,7 +141,7 @@ AlarmClock *-- ClockAlarm
 ```
 
 More interestingly, this PlantUML diagram produces the following graphic when rendered:
-![alarm clock PlantUML object diagram](../../assets/images/alarm_clock/alarm_object_puml.png)
+![alarm clock PlantUML object diagram](../../images/alarm_clock/alarm_object_puml.png)
 
 # Defining a Data Structure
 Now that we have a basic alarm clock and some components, we can start defining the data structures that will be used in our example model. What better data for an alarm clock than a timestamp? We can define our timestamp data structure with the `schema` tag like so:
@@ -209,14 +209,14 @@ model:
 If we were to generate a component diagram from our model at this point, we'll be able to visualize the components and interfaces of our alarm clock model.
 
 If we run the command `aac puml-component alarm_clock.yaml diagrams` to generate a component diagram, the resulting diagram will render to something like this:
-![alarm clock PlantUML component diagram](../../assets/images/alarm_clock/alarm_component_puml.png)
+![alarm clock PlantUML component diagram](../../images/alarm_clock/alarm_component_puml.png)
 
 # Defining the Interactions Between Models
 Finally, we can also model the interactions between our models; say that we want to define the scenario when a user sets the time on the alarm clock. These interactions are defined by using the `usecase` root key, listing the actors in our `usecase` under `usecase.participants`, and the steps that are involved in the `usecase` under `usecase.steps`.
 
 For example, if we were to model the usecase of a user setting the alarm on our alarm clock, it might look something like:
 
-Note the use of `import` to make definitions in separate files accesible to the current definitions.
+Note the use of `import` to make definitions in separate files accessible to the current definitions.
 
 _usecase.yaml_
 ```yaml
@@ -257,6 +257,6 @@ model:
 
 With that usecase defined, we can generate a PlantUML sequence diagram `aac puml-sequence usecase.yaml diagrams`, which renders to:
 
-![alarm clock PlantUML sequence diagram](../../assets/images/alarm_clock/alarm_sequence_puml.png)
+![alarm clock PlantUML sequence diagram](../../images/alarm_clock/alarm_sequence_puml.png)
 
 Voila! You've covered the basic parts of Architecture-as-Code!

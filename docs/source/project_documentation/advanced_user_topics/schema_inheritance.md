@@ -2,7 +2,7 @@
 layout: default
 title: Modeling Data Structure Inheritance
 parent: Advanced User Topics
-permalink: docs/advanced_user_topics/schema_inheritance
+permalink: project_documentation/advanced_user_topics/schema_inheritance
 ---
 
 # Inheritance in AaC
@@ -23,7 +23,7 @@ schema:
           type: string
         - name: destination
           type: string
-    validaton:
+    validation:
         - name: Required fields are present
           arguments:
             - source

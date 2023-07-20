@@ -3,7 +3,7 @@ layout: default
 title: AaC Plugins
 nav_order: 4
 has_children: true
-permalink: docs/plugins
+permalink: project_documentation/plugins
 ---
 
 # AaC Plugins
@@ -31,7 +31,7 @@ The plugin generator does support generating first-party and third-party plugins
 ## Third Party Plugins
 
 AaC can be extended by anyone, wether they are part of our core team or not.  We recommend any plugin developer
-use the "aac-" prefix when building and puglishing AaC plugins.  Search (PyPI)[https://pypi.org/] for additional 3rd party Plugins.
+use the "aac-" prefix when building and publishing AaC plugins.  Search (PyPI)[https://pypi.org/] for additional 3rd party Plugins.
 
 ## AaC Core Plugins
 

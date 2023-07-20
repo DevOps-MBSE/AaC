@@ -3,7 +3,7 @@ layout: default
 title: Advanced User Topics
 nav_order: 4
 has_children: true
-permalink: docs/advanced_user_topics
+permalink: project_documentation/advanced_user_topics
 ---
 
 # Advanced User Guide Topics
