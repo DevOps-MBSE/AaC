@@ -1,5 +1,7 @@
 """Common utilities usable by all the plugins."""
 
+import re
+
 from functools import wraps
 from typing import Callable, Dict, List, Optional
 
@@ -32,7 +34,7 @@ def register_plugin_command(plugin_name: str, command_name: Optional[str] = None
     """
     global REGISTERED_PLUGIN_COMMANDS
 
-    command_name = command_name or plugin_name
+    command_name, *_ = re.subn(r"[_ ]", "-", (command_name or plugin_name).lower())
 
     def wrapper(function: Callable):
         @wraps(function)
