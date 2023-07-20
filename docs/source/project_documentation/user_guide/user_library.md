@@ -15,17 +15,17 @@ While AaC plugins aren't limited to only contributing definitions, this is the o
 ## Inactive User Library Plugin
 When a plugin has definitions associated with it, but the plugin has not been activated, the definitions are not available for use by AaC. To confirm a plugin has been installed, but not activated, run the following command: `aac --inactive`.
 
-![Inactive Plugins](../../../images/user_library/inactive_plugins.png)
+![Inactive Plugins](../../images/user_library/inactive_plugins.png)
 ## Active User Library Plugin
 In order to use the definitions in a user library plugin, you must make sure that it is actively contributing definitions to the context.
 
 You can activate a registered plugin by using the following command: `aac activate-plugin <plugin name>`.
 
-![Activate Command](../../../images/user_library/activate_command.png)
+![Activate Command](../../images/user_library/activate_command.png)
 
 Verify the plugin has been activated by running the following command: `aac --active`
 
-![List Active](../../../images/user_library/list_active.png)
+![List Active](../../images/user_library/list_active.png)
 
 Once you have verified that your plugin has been activated, you are able begin referencing the definitions in your plugin.
 
@@ -40,11 +40,11 @@ schema:
 ```
 
 It references a type `int64` provided by the plugin `gen-protobuf`. If we validate this file with the plugin active, it'll successfully validate.
-![Validate example](../../../images/user_library/validate_example.png)
+![Validate example](../../images/user_library/validate_example.png)
 
 If we deactivate `gen-protobuf` and run the validation again, we'll see an error indicating our plugin type isn't defined.
 
-![Revalidate example](../../../images/user_library/revalidate_example.png)
+![Revalidate example](../../images/user_library/revalidate_example.png)
 
 # Contributing Root Keys to a User Library
 AaC uses a set of root-level keys to define instances of modeled 'things' that are defined data structures (schemas). An example is the root key `schema`, which defines an instance of a data structure that can be referenced. The core AaC specification has several root keys, but users are capable of defining custom root keys.  Custom root keys allow users to define instances of models or modeled components. For more information on pre-defined Root Keys, see the [Root Keys](./aac_language/#root-keys) section of the AaC Modeling Language Reference page.

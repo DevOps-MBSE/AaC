@@ -28,7 +28,7 @@ To install the AaC VSCode Extension, open the Extensions panel and enter
 "arch-as-code" into the search, and install the "Architecture As Code" extension
 by clicking the "Install" button.
 
-![Install the AaC Extension](/images/vscode_extension/install-aac-extension.png)
+![Install the AaC Extension](../../images/vscode_extension/install-aac-extension.png)
 The AaC VSCode Extension can be found in the
 [VSCode Marketplace](https://marketplace.visualstudio.com/items?itemName=Arch-as-Code.aac)
 and the [OpenVSX registry](https://open-vsx.org/extension/Arch-as-Code/aac).
@@ -42,12 +42,12 @@ To access the VSCode settings for configuring the extension, select the "Manage"
 menu in the bottom left corner of the VSCode application and select the
 "Settings" option.
 
-![Open the Settings window](/images/vscode_extension/open-settings.png)
+![Open the Settings window](../../images/vscode_extension/open-settings.png)
 
 Once the "Settings" window is open, select the "Extensions > Architecture-as-Code"
 option.
 
-![Architecture-as-Code Extension Settings](/images/vscode_extension/aac-extension-settings.png)
+![Architecture-as-Code Extension Settings](../../images/vscode_extension/aac-extension-settings.png)
 
 ### Aac Path
 
@@ -109,7 +109,7 @@ To gain access to any of these features, the AaC extension must be active while
 editing your files. To verify that the extension is active, look in the bottom
 right corner for "aac" with an open ".yaml" or ".aac" file.
 
-![Confirm the AaC VSCode extension is applied](/images/vscode_extension/aac-extension-applied.png)
+![Confirm the AaC VSCode extension is applied](../../images/vscode_extension/aac-extension-applied.png)
 
 If this says anything other than "aac", then you should click that item and pick
 "aac" from the popup to activate the extension for the current file.

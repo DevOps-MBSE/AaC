@@ -69,6 +69,9 @@ napoleon_preprocess_types = False
 napoleon_type_aliases = None
 napoleon_attr_annotations = True
 
+# -- Ext: MYST configuration ---------------------------------------------
+myst_heading_anchors = 4
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 

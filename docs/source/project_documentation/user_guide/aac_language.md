@@ -10,7 +10,7 @@ Architecture-as-Code comes with a highly-specialized Domain-Specific Language (D
 
 Architecture-as-Code's DSL allows teams to employ Model-Based Systems Engineering (MBSE) practices that seamlessly integrate with development teams. To meet this goal, AaC captures modeled systems in plain-text YAML syntax. Using plain-text YAML allows for easy integration with version-control software such as Git and [leveraging GitOps practices.](../aac_gitops)
 
-### Definitions
+## Definitions
 At the core of the AaC language are the yaml entries that _define_ modeled systems, components, behaviors, interactions, and even elements of the AaC DSL itself -- hence the self-defining attribute of the language. Each of these entries is called a "definition". Each definition requires a root key to indicate to the AaC DSL, tooling, and the user, the expected structure of the YAML entry. **Definitions require unique names and are referenced by name.**
 
 In the following example model, the first key `model` indicates that this yaml entry will have model-specific fields, such as `components` and/or `behavior`.
