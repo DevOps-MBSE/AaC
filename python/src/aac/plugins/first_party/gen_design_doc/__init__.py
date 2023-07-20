@@ -3,6 +3,8 @@
 from aac.cli.aac_command import AacCommand, AacCommandArgument
 from aac.lang.constants import (
     DEFINITION_FIELD_COMMANDS,
+    DEFINITION_FIELD_DESCRIPTION,
+    DEFINITION_FIELD_DISPLAY,
     DEFINITION_FIELD_HELP_TEXT,
     DEFINITION_FIELD_INPUT,
     DEFINITION_FIELD_NAME,
@@ -39,7 +41,7 @@ def _get_plugin_commands():
         arguments = [
             AacCommandArgument(
                 name=argument.get(DEFINITION_FIELD_NAME),
-                description=argument.get(DEFINITION_FIELD_HELP_TEXT, ""),
+                description=argument.get(DEFINITION_FIELD_DESCRIPTION, ""),
                 data_type=argument.get(DEFINITION_FIELD_TYPE),
                 number_of_arguments=argument.get(DEFINITION_FIELD_NUMBER_OF_ARGUMENTS, 1),
                 default=argument.get(DEFINITION_FIELD_DEFAULT),
@@ -48,7 +50,7 @@ def _get_plugin_commands():
         ]
         plugin_commands.append(
             AacCommand(
-                structure.get(DEFINITION_FIELD_NAME),
+                structure.get(DEFINITION_FIELD_DISPLAY) or structure.get(DEFINITION_FIELD_NAME),
                 structure.get(DEFINITION_FIELD_HELP_TEXT, ""),
                 # We need to figure out how to get this to work for multiple commands
                 gen_design_doc,
