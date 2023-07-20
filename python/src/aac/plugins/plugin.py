@@ -28,15 +28,12 @@ class Plugin:
         name (str): A string with the name of the plugin.
         contributions (ContributionPoints): A ContributionPoints object
             containing plugin contributions.
-        manual_registration (bool): A flag indicating whether to use hard-coded
-            plugin data.
     """
 
     name: str = attrib(validator=validators.instance_of(str))
     contributions: ContributionPoints = attrib(
         init=False, default=Factory(ContributionPoints), validator=validators.instance_of(ContributionPoints)
     )
-    manual_registration: bool = attrib(default=True, validator=validators.instance_of(bool))
 
     def __hash__(self) -> int:
         """Return the hash for this Plugin object."""
