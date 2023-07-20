@@ -12,8 +12,6 @@ from aac.lang.constants import (
 )
 from aac.lang.definitions.collections import get_definition_by_name
 from aac.plugins import Plugin, get_plugin_definitions_from_yaml, hookimpl, register_plugin_command
-
-# I realize this causes a dependency on the gen-plugin plugin
 from aac.plugins.first_party.gen_plugin import DEFINITION_FIELD_NUMBER_OF_ARGUMENTS, DEFINITION_FIELD_DEFAULT
 from aac.plugins.first_party.gen_design_doc.gen_design_doc_impl import gen_design_doc, plugin_name
 
@@ -52,13 +50,11 @@ def _get_plugin_commands():
             AacCommand(
                 structure.get(DEFINITION_FIELD_DISPLAY) or structure.get(DEFINITION_FIELD_NAME),
                 structure.get(DEFINITION_FIELD_HELP_TEXT, ""),
-                # We need to figure out how to get this to work for multiple commands
                 gen_design_doc,
                 arguments,
             )
         )
 
-        # This doesn't do anything, really, since we're not using it as a decorator.
         register_plugin_command(plugin_name, structure.get(DEFINITION_FIELD_NAME))
 
     return plugin_commands
