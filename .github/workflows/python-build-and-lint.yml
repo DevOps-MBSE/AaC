@@ -48,6 +48,13 @@ jobs:
           name: api-documentation
           path: python/docs/docs/html
 
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        if: github.ref == 'refs/heads/main'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs/docs/html
+
       - name: Generate RESTful API Documentation
         run: |
           mkdir oasv3-spec
