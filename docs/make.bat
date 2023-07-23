@@ -8,17 +8,9 @@ if "%SPHINXBUILD%" == "" (
 	set SPHINXBUILD=sphinx-build
 )
 set SOURCEDIR=source
-set BUILDDIR=build
+set BUILDDIR=docs
 
 if "%1" == "" goto help
-
-if "%1" == "github" (
-    %SPHINXBUILD% -M html %SOURCEDIR% %BUILDDIR% %SPHINXOPTS%
-	del /s /q ./docs/dev_guide/aac_api
-    robocopy %BUILDDIR%/html ./docs/dev_guide/aac_api /E > nul
-    echo.Generated files copied to ./docs/dev_guide/aac_api
-    goto end
-)
 
 %SPHINXBUILD% >NUL 2>NUL
 if errorlevel 9009 (
