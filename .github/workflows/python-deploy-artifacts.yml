@@ -28,7 +28,7 @@ jobs:
         if: github.ref == 'refs/heads/main'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: docs/docs/html
+          publish_dir: python/docs/docs/html
 
       - name: Download Python Wheel
         uses: actions/download-artifact@v3

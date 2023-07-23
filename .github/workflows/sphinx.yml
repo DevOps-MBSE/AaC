@@ -9,7 +9,7 @@ jobs:
       - uses: sphinx-toolbox/sphinx-action@master
         with:
           pre-build-command: "pip install .[docs]"
-          docs-folder: "docs/source/program_documentation"
+          docs-folder: "docs/"
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         if: github.ref == 'refs/heads/master'
