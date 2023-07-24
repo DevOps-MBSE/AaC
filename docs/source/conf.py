@@ -73,7 +73,7 @@ napoleon_attr_annotations = True
 myst_heading_anchors = 4
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ["_templates"]
+templates_path = ["_templates", "_layouts"]
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -90,7 +90,7 @@ html_theme = "classic"
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ["_static"]
+html_static_path = ["_sass"]
 
 # The file extensions of source files. Sphinx considers the files with this
 # suffix as sources. The value can be a dictionary mapping file extensions

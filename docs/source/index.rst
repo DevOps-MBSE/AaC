@@ -11,6 +11,7 @@ Welcome to Architecture-as-Code's documentation!
    :maxdepth: 5
    :caption: Project Documentation
 
+   Homepage <project_documentation/index>
    User Guide <project_documentation/user_guide/index>
    Advanced User Topics <project_documentation/advanced_user_topics/index>
    Developer Guide <project_documentation/dev_guide/index>

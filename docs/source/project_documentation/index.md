@@ -8,7 +8,7 @@ permalink: /
 
 # Architecture-as-Code (AaC)
 
-[Get started now](docs/user_guide){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 } [View it on GitHub](https://github.com/jondavid-black/AaC){: .btn .fs-5 .mb-4 .mb-md-0 }
+[Get started now](/user_guide){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 } [View it on GitHub](https://github.com/jondavid-black/AaC){: .btn .fs-5 .mb-4 .mb-md-0 }
 
 ## What is Architecture-as-Code (AaC)?
 
