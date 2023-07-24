@@ -10,7 +10,7 @@ permalink: project_documentation/user_guide/getting_started
 # Getting Started
 
 ## Github Template Repository - Quickstart
-We have a [Github Template Repository](https://github.com/Coffee2Bits/AaC-User-Template-Repository) that's setup to allow users exploring AaC to immediately create an AaC-ready github repository and development environment using [Gitpod](gitpod.io).
+We have a [Github Template Repository](https://github.com/Coffee2Bits/AaC-User-Template-Repository) that's setup to allow users exploring AaC to immediately create an AaC-ready github repository and development environment using [Gitpod](https://gitpod.io/new/#https://github.com/jondavid-black/AaC).
 
 The repository is pre-populated with a simple example model and Github Action workflow. All that you have to do is hit the "Use this Template" button at the top of the template repository. ![Use this Template Button Picture](../../images/github/github_repo_template_button.png)
 
@@ -127,7 +127,7 @@ model:
 Once again, we can check to confirm that this model is valid. Even better, we can use something this simple to start driving value. We can generate a simple object diagram by using the first-party plugin GenPlantUML with the command `aac puml-object alarm_clock.yaml diagrams` which will generate a file with the following PlantUML content:
 
 _diagrams/object/alarm_clock_alarm_clock.puml_
-```puml
+```plantuml
 @startuml  Object Diagram
 title  Object Diagram
 object AlarmClock

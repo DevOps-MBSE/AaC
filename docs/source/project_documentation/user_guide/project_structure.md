@@ -97,4 +97,4 @@ There is no requirement to maintain these files in any sort of relationship or d
 ## Creating a User Library for your project
 Because of the extensibility and reusability goals of AaC, a plugin can also be designed as a library for a project. By making a plugin to function more as a library, it exposes itself as a tool to be utilized in a larger context throughout the AaC space.
 
-For more information on making a User Library, view [Creating a User Library](../user_library).
+For more information on making a User Library, view [Creating a User Library](user_library).

@@ -10,7 +10,7 @@ One of the primary contributions that AaC plugins provide are sets of AaC defini
 
 To understand more about definitions and their role in AaC, see the [Definitions](./aac_language/#definitions) section of the AaC Modeling Language Reference page.
 
-While AaC plugins aren't limited to only contributing definitions, this is the only plugin functionality necessary to create a distributable user library for the AaC tool. In order to support user libraries, plugins include their definitions as part of their registration in AaC. For references on how to register an AaC plugin, see [Plugins](../../old/Plugins) and [Plugin Developer Guide](../dev_guide/plugin_dev_guide)
+While AaC plugins aren't limited to only contributing definitions, this is the only plugin functionality necessary to create a distributable user library for the AaC tool. In order to support user libraries, plugins include their definitions as part of their registration in AaC. For references on how to register an AaC plugin, see [Plugin Developer Guide](../dev_guide/plugin_dev_guide)
 
 ## Inactive User Library Plugin
 When a plugin has definitions associated with it, but the plugin has not been activated, the definitions are not available for use by AaC. To confirm a plugin has been installed, but not activated, run the following command: `aac --inactive`.
@@ -47,7 +47,7 @@ If we deactivate `gen-protobuf` and run the validation again, we'll see an error
 ![Revalidate example](../../images/user_library/revalidate_example.png)
 
 # Contributing Root Keys to a User Library
-AaC uses a set of root-level keys to define instances of modeled 'things' that are defined data structures (schemas). An example is the root key `schema`, which defines an instance of a data structure that can be referenced. The core AaC specification has several root keys, but users are capable of defining custom root keys.  Custom root keys allow users to define instances of models or modeled components. For more information on pre-defined Root Keys, see the [Root Keys](./aac_language/#root-keys) section of the AaC Modeling Language Reference page.
+AaC uses a set of root-level keys to define instances of modeled 'things' that are defined data structures (schemas). An example is the root key `schema`, which defines an instance of a data structure that can be referenced. The core AaC specification has several root keys, but users are capable of defining custom root keys.  Custom root keys allow users to define instances of models or modeled components. For more information on pre-defined Root Keys, see the [Root Keys](./aac_language/#root-keys)) section of the AaC Modeling Language Reference page.
 
 ## Defining, adding, and leveraging a Root Key
 Due to AaC's self-defining design, users must extend the `root` definition because each field is a mapping of a root key to its defined structure. See [Definition Extensions](../advanced_user_topics/language_extensions.md) for more information on extending definitions in AaC.
