@@ -5,10 +5,14 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: ammaraskar/sphinx-action@0.4
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Build Documentation
+        uses: ammaraskar/sphinx-action@0.4
         with:
           docs-folder: "docs/"
+          
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         if: github.ref == 'refs/heads/master'

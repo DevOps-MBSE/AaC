@@ -23,13 +23,6 @@ jobs:
           name: api-documentation
           path: python/docs/docs/html/
 
-      - name: Github Pages and Sphinx Deployment
-        uses: peaceiris/actions-gh-pages@v3
-        if: github.ref == 'refs/heads/main'
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: python/docs/docs/html
-
       - name: Download Python Wheel
         uses: actions/download-artifact@v3
         with:
