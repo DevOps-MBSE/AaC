@@ -11,8 +11,9 @@ jobs:
       - name: Build Documentation
         uses: ammaraskar/sphinx-action@0.4
         with:
+          pre-build-command: "pip install aac"
           docs-folder: "docs/"
-          
+
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         if: github.ref == 'refs/heads/master'
