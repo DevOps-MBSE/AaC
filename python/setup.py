@@ -47,7 +47,7 @@ development_dependencies = [
     "pyflakes >= 2.4",
     "build == 0.7.0",
     "twine == 3.4.2",
-    "Sphinx >= 6.1.3",
+    "sphinx >= 6.1.3",
     "sphinxcontrib-applehelp == 1.0.2",
     "sphinxcontrib-devhelp == 1.0.2",
     "sphinxcontrib-htmlhelp == 2.0.0",
