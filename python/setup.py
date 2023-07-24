@@ -56,6 +56,7 @@ development_dependencies = [
     "sphinxcontrib-serializinghtml == 1.1.5",
     "furo == 2021.10.9",
     "docutils >= 0.19",
+    "myst-parser>=2.0.0",
     "pipdeptree >= 2.2.0",
     "Pygments >= 2.5.1",
     "types-PyYAML >= 6.0.9",
