@@ -81,6 +81,17 @@ templates_path = ["_templates", "_layouts"]
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
 
+# The master toctree document.
+master_doc = 'index'
+
+# The file extensions of source files. Sphinx considers the files with this
+# suffix as sources. The value can be a dictionary mapping file extensions
+# to file types.
+source_suffix = {
+    ".rst": "restructuredtext",
+    ".txt": "restructuredtext",
+    ".md": "markdown",
+}
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -92,12 +103,3 @@ html_theme = "classic"
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_sass"]
-
-# The file extensions of source files. Sphinx considers the files with this
-# suffix as sources. The value can be a dictionary mapping file extensions
-# to file types.
-source_suffix = {
-    ".rst": "restructuredtext",
-    ".txt": "restructuredtext",
-    ".md": "markdown",
-}

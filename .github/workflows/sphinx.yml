@@ -6,9 +6,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: ammaraskar/sphinx-action@master
+      - uses: ammaraskar/sphinx-action@0.4
         with:
-          docs-folder: "docs/source"
+          docs-folder: "docs/"
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         if: github.ref == 'refs/heads/master'
