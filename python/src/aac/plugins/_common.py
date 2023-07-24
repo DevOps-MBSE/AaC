@@ -1,17 +1,27 @@
 """Common utilities usable by all the plugins."""
 
-import re
+import logging
 
 from functools import wraps
-from typing import Callable, Dict, List, Optional
+from typing import Callable, Dict, List
 
-from aac.io.parser import parse
-from aac.io.parser._parser_error import ParserError
+from aac.cli import AacCommand, AacCommandArgument
+from aac.io.parser import ParserError, parse
+from aac.lang.constants import (
+    DEFINITION_FIELD_NAME,
+    DEFINITION_FIELD_DESCRIPTION,
+    DEFINITION_FIELD_COMMANDS,
+    DEFINITION_FIELD_HELP_TEXT,
+    DEFINITION_FIELD_DISPLAY,
+    DEFINITION_FIELD_TYPE,
+    DEFINITION_FIELD_INPUT,
+)
+from aac.lang.definitions.collections import get_definition_by_name
 from aac.lang.definitions.definition import Definition
 from aac.package_resources import get_resource_file_contents, get_resource_file_path
 
 
-REGISTERED_PLUGIN_COMMANDS: Dict[str, List[str]] = {}
+REGISTERED_PLUGIN_COMMANDS: Dict[str, Dict[str, Callable]] = {}
 
 
 def get_plugin_definitions_from_yaml(package, filename) -> list[Definition]:
@@ -24,28 +34,69 @@ def get_plugin_definitions_from_yaml(package, filename) -> list[Definition]:
         return yaml_definitions
 
 
-def register_plugin_command(plugin_name: str, command_name: Optional[str] = None) -> Callable:
+def register_plugin_command(plugin_name: str, command_name: str) -> Callable:
     """
     Register a plugin command with the associated plugin.
 
     Args:
         plugin_name (str): The name of the plugin on which the command will be registered.
-        command_name (str): The name of the command to be registered. (default: plugin_name)
+        command_name (str): The name of the command to be registered.
     """
     global REGISTERED_PLUGIN_COMMANDS
 
-    command_name, *_ = re.subn(r"[_ ]", "-", (command_name or plugin_name).lower())
-
     def wrapper(function: Callable):
+        if plugin_name in REGISTERED_PLUGIN_COMMANDS:
+            if command_name in REGISTERED_PLUGIN_COMMANDS[plugin_name]:
+                logging.warn(f"Overwriting implementation of command {command_name} in plugin {plugin_name}")
+
+            REGISTERED_PLUGIN_COMMANDS[plugin_name].update({command_name: function})
+        else:
+            REGISTERED_PLUGIN_COMMANDS[plugin_name] = {command_name: function}
+
         @wraps(function)
         def wrapped(*args, **kwargs):
-            if plugin_name in REGISTERED_PLUGIN_COMMANDS:
-                REGISTERED_PLUGIN_COMMANDS[plugin_name].append(command_name)
-            else:
-                REGISTERED_PLUGIN_COMMANDS[plugin_name] = [command_name]
-
             return function(*args, **kwargs)
 
         return wrapped
 
     return wrapper
+
+
+def get_plugin_commands_from_definitions(plugin_name: str, plugin_definitions: List[Definition]) -> List[AacCommand]:
+    """
+    Return the AacCommands for the specified plugin.
+
+    Args:
+        plugin_name (str): The plugin name.
+        plugin_definitions (List[Definition]): A collection of definitions contributed by the plugin.
+    """
+
+    from aac.plugins.first_party.gen_plugin import DEFINITION_FIELD_NUMBER_OF_ARGUMENTS, DEFINITION_FIELD_DEFAULT
+
+    definition = get_definition_by_name(plugin_name, plugin_definitions)
+    command_structures = definition.get_top_level_fields().get(DEFINITION_FIELD_COMMANDS, []) if definition else []
+
+    plugin_commands = []
+    for structure in command_structures:
+        arguments = [
+            AacCommandArgument(
+                name=argument.get(DEFINITION_FIELD_NAME),
+                description=argument.get(DEFINITION_FIELD_DESCRIPTION, ""),
+                data_type=argument.get(DEFINITION_FIELD_TYPE),
+                number_of_arguments=argument.get(DEFINITION_FIELD_NUMBER_OF_ARGUMENTS, 1),
+                default=argument.get(DEFINITION_FIELD_DEFAULT),
+            )
+            for argument in structure.get(DEFINITION_FIELD_INPUT, [])
+        ]
+
+        command_name = structure.get(DEFINITION_FIELD_DISPLAY) or structure.get(DEFINITION_FIELD_NAME)
+        plugin_commands.append(
+            AacCommand(
+                command_name,
+                structure.get(DEFINITION_FIELD_HELP_TEXT, ""),
+                REGISTERED_PLUGIN_COMMANDS[plugin_name][command_name],
+                arguments,
+            )
+        )
+
+    return plugin_commands
