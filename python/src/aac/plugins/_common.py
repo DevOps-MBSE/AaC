@@ -81,10 +81,10 @@ def get_plugin_commands_from_definitions(plugin_name: str, plugin_definitions: L
 
     registered_commands = set(REGISTERED_PLUGIN_COMMANDS[plugin_name])
     modelled_commands = {get_command_name(cmd) for cmd in command_structures}
-    unmodelled_commands = registered_commands.difference(modelled_commands)
+    undefined_commands = registered_commands.difference(modelled_commands)
 
-    if unmodelled_commands:
-        log.warn(f"There are commands that are not modelled in the '{plugin_name}' plugin definition: {unmodelled_commands}")
+    if undefined_commands:
+        log.warn(f"There are commands that are not modelled in the '{plugin_name}' plugin definition: {undefined_commands}")
 
     plugin_commands = []
     for structure in command_structures:
