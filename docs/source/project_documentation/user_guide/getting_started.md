@@ -74,7 +74,7 @@ If the plugin provides new command functionality you will see the new command(s)
 aac --help
 ```
 
-# Using AaC to Model Your System
+## Using AaC to Model Your System
 The general pattern for decomposing whatever you want to model in AaC is begin by asking a few questions of the system, and correlate what aspects you want to define to corresponding AaC YAML entries, also referred to as AaC definitions.
 
 For example:
@@ -83,7 +83,7 @@ For example:
 * If you want to define an interface for something (models) you would populate the `behavior` field in your `model`
 * If you want to define an interaction between your things (models) you would create a `usecase` definition incorporating the steps and actors in that interaction
 
-# Defining Your First Model
+## Defining Your First Model
 Because AaC is an MBSE tool, `model` is a pretty central item to define. Let's start with an example of modeling an alarm clock. We can create a model for our overall alarm clock system/model by creating a new file in an AaC environment with the following content:
 
 _alarm_clock.yaml_
@@ -143,7 +143,7 @@ AlarmClock *-- ClockAlarm
 More interestingly, this PlantUML diagram produces the following graphic when rendered:
 ![alarm clock PlantUML object diagram](../../images/alarm_clock/alarm_object_puml.png)
 
-# Defining a Data Structure
+## Defining a Data Structure
 Now that we have a basic alarm clock and some components, we can start defining the data structures that will be used in our example model. What better data for an alarm clock than a timestamp? We can define our timestamp data structure with the `schema` tag like so:
 
 _data_structures.yaml_
@@ -180,7 +180,7 @@ model:
       description: The target timestamp indicating when to fire an alert to the alarm component.
 ```
 
-# Defining Model Interfaces
+## Defining Model Interfaces
 Data structures are also used when defining interfaces between models/components of your system. What these interfaces translate to is highly dependent upon your needs and which plugins you're using. For instance, the GenProtobuf plugin identifies the data structures defined in `model.behavior` fields and generates Protobuf3 equivalent messages of those data structures for use in software messaging/communication.
 
 If we return to our alarm clock example, then we can define the interface to our alarm system. In this example we'll re-use the timestamp data structure for simplicity since it fairly represents the data that we'd expect a user to provide to an alarm clock:
@@ -211,7 +211,7 @@ If we were to generate a component diagram from our model at this point, we'll b
 If we run the command `aac puml-component alarm_clock.yaml diagrams` to generate a component diagram, the resulting diagram will render to something like this:
 ![alarm clock PlantUML component diagram](../../images/alarm_clock/alarm_component_puml.png)
 
-# Defining the Interactions Between Models
+## Defining the Interactions Between Models
 Finally, we can also model the interactions between our models; say that we want to define the scenario when a user sets the time on the alarm clock. These interactions are defined by using the `usecase` root key, listing the actors in our `usecase` under `usecase.participants`, and the steps that are involved in the `usecase` under `usecase.steps`.
 
 For example, if we were to model the usecase of a user setting the alarm on our alarm clock, it might look something like:

@@ -11,7 +11,7 @@ Because the AaC DSL is leveraging plain-text YAML as the underpinning of the DSL
 
 Validation rules in AaC are defined with the `validation` definition, which are required to have a corresponding implementation, called a validator plugin. This enables AaC's self-validating mechanism even though YAML is just a markup language.
 
-# Validating the AaC Language
+## Validating the AaC Language
 The overall validation mechanism follows this flow:
 1. A definition is identified as needing to be validated
 2. The definition is parsed for any nested AaC structures
@@ -24,7 +24,7 @@ The overall validation mechanism follows this flow:
   a. If there are no errors, the definition successfully validates
   b. If there are errors, the definition fails validation
 
-# Validation Definitions
+## Validation Definitions
 In order for users to document the self-validating constraints in the AaC DSL, they have to declare validation rules via `validation` definitions. These definitions also provide contextual information for the validation as well as behaviors and acceptance criteria -- something to leverage for automatically generating functional/integration tests in the future.
 
 
@@ -106,7 +106,7 @@ schema:
         - behavior
 ```
 
-# Validator Plugins
+## Validator Plugins
 Each validator plugin provides its validation function to the core package via pluggy hooks. Each validator plugin should provide one validation function with the following signature:
 ```python
 def validate_example(definition_under_test: Definition, target_schema_definition: Definition, language_context: LanguageContext, *validation_args) -> ValidatorResult:
@@ -126,3 +126,5 @@ The internal logic of the function is up to the user, but the plugins generally 
 1. Extract all instances of the `target_schema_definition` from the `definition_under_test`
 2. For each instance of the target schema, which is represented as a dictionary, apply your validation specific logic
 3. If the definition under test doesn't meet the constraints of the validator, register and return an error message
+
+For more information on creating and utilizing validator plugins, please view the [Validation Plugins for Developers](validation_plugins).

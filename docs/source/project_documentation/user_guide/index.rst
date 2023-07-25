@@ -11,7 +11,7 @@ User Guide Documentation
    Project Structure <project_structure>
    AaC CLI <aac_cli>
    AaC GitOps <aac_gitops>
-   AaC Language <aac_language>
+   AaC DSL <aac_language>
    User Library <user_library>
    Glossary <glossary>
 

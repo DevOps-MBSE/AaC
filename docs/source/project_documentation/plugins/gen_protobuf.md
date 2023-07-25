@@ -28,7 +28,7 @@ In order to use this plugin, you'll have to extend your `model`s to provide nece
 
 Protobuf messages will only be generated for data structures identified as interface messages between `model`s. This requires that the modeled systems and components include behaviors with defined inputs and outputs. `schema:` definitions that are referenced in `model:behavior:` fields: `input:` and `output:` are identified as interface messages. Any substructure or embedded `enum` in the interface messages will also be included in the generated Protobuf messages -- so you can nest `schema` definitions for complex user-defined messages.
 
-# Protobuf 3 Features
+## Protobuf 3 Features
 
 Feature Implementation:
 
@@ -49,7 +49,7 @@ Feature Implementation:
 | [Optional Keyword](#optional-keyword) | ❗️❌❗️ Won't Implement |
 
 
-## Scalar Values
+### Scalar Values
 All primitive/scalar [Protobuf 3 value types](https://developers.google.com/protocol-buffers/docs/proto3#scalar) types are supported.
 The full list can be found in the plugin's definition, [`ProtobufPrimitiveTypesExtension`](https://github.com/jondavid-black/AaC/blob/main/python/src/aac/plugins/gen_protobuf/gen_protobuf.yaml).
 
@@ -66,10 +66,10 @@ schema:
       description: A description for some_numbers
 ```
 
-## User-defined Message Types
+### User-defined Message Types
 This plugin generates Protobuf [user-defined](https://developers.google.com/protocol-buffers/docs/proto3#adding_more_message_types) messages, one per file, for every non-primitive type referenced. For each `schema:` definition identified as an interface message, or a substructure of an interface messages, a user-defined message type is generated.
 
-## Embedded Comments
+### Embedded Comments
 This plugin leverages the `description` field in AaC models to generate corresponding [comments](https://developers.google.com/protocol-buffers/docs/proto3#adding_comments) in the Protobuf messages.
 
 `schema:` and `enum:` definitions support generating comments for Protobuf messages by populating those definition's top-level `description` field.
@@ -106,14 +106,14 @@ message SomeDataMessage {
 }
 ```
 
-## Assigning Field Numbers
+### Assigning Field Numbers
 [assigning field numbers](https://developers.google.com/protocol-buffers/docs/proto3#assigning_field_numbers) isn't implemented yet. Field numbers are currently assigned by the field's position in the definition, starting at the first field being assigned the field number `1`.
 
 
-## Reserved Fields
+### Reserved Fields
 [Reserved Fields](https://developers.google.com/protocol-buffers/docs/proto3#reserved) aren't implemented yet.
 
-## Enums
+### Enums
 Protobuf [enums](https://developers.google.com/protocol-buffers/docs/proto3#enum) can easily be defined by defining AaC enums.
 
 An example AaC enum definition would look like:
@@ -140,25 +140,25 @@ enum MessageType {
 }
 ```
 
-## Reserved Types
+### Reserved Types
 [Reserved Types](https://developers.google.com/protocol-buffers/docs/proto3#reserved_values) is not currently implemented.
 
-## OneOf
+### OneOf
 [OneOf](https://developers.google.com/protocol-buffers/docs/proto3#oneof) is not currently implemented.
 
-## Maps
+### Maps
 Protobuf 3 [maps](https://developers.google.com/protocol-buffers/docs/proto3#maps) is not currently implemented.
 
 
 [Maps Backwards compatibility](https://developers.google.com/protocol-buffers/docs/proto3#backwards_compatibility)
 
-## Packages
+### Packages
 [Packages](https://developers.google.com/protocol-buffers/docs/proto3#packages) is not currently implemented.
 
-## Defining Services
+### Defining Services
 [Defining Services](https://developers.google.com/protocol-buffers/docs/proto3#services) is not currently implemented.
 
-## Options
+### Options
 Protobuf allows for special [options](https://developers.google.com/protocol-buffers/docs/proto3#options) that provide customization and context for the Protobuf tooling. Users can specify options for Protobuf messages by defining the field `protobuf_message_options` in `schema:` or `enum:`
 definitions.
 
@@ -194,7 +194,7 @@ message SomeDataMessage {
 }
 ```
 
-## Optional Keyword
+### Optional Keyword
 Protobuf 3.15 implemented the `optional` keyword, however, the `optional` keyword is considered a anti-pattern in Protobuf 3 messages, because all fields are inherently optional in Protobuf 3 messages.
 
 Because optional keywords are anti-patterns, and are used for VERY specific cases, we currently don't plan to implement the `optional` keyword for generated Protobuf 3 messages.

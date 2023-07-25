@@ -99,6 +99,12 @@ source_suffix = {
 # a list of builtin themes.
 html_theme = "classic"
 
+# These options are generally used to change the look and feel of the theme.
+html_theme_options ={
+    "externalrefs": "true",
+    "stickysidebar": "true",
+}
+
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".

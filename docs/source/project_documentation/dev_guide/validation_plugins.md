@@ -8,9 +8,7 @@ has_children: false
 
 # Validation Plugins for Developers
 
-## Plugin Validations
-
-### General Information surrounding Validation
+## General Information surrounding Validation
 
 Any references to code within this document regarding the `validation` plugin can be found here in the AaC project:
 `AaC/python/src/validate/_validate.py`
@@ -26,7 +24,7 @@ There is also a section listing out the `validation` plugin for the implementati
 
 It is also worthy to note that the way that the AaC DSL validates itself is through associating user-defined validation definitions with a corresponding python implementation which is used to programmatically test that the validation's constraints are met. The validation process is entirely data-driven, so with this implementation it can validate the data in the definition via the very constraints.that are defined as part of the definition.
 
-### Definition Validations
+## Definition Validations
 
 The following snippet shows how the `_validate.py` validates a `definition` that is being passed through:
 
@@ -64,7 +62,7 @@ The above snippet this shows an example of how the validator takes in a `Definit
 
 This approach is also used for in the [Primitive Validations](#primitive-validations), but primitive validation only targets fields defined in the `Primitives` enum definition.
 
-### Primitive Validations
+## Primitive Validations
 
 Primitive Validations are handled by the below function:
 
@@ -84,7 +82,7 @@ The above method, like the `_validate_definition` function outlined in the previ
 
 The results of this validation are consolidated with the results from the `_validate_definition` function above in the `ValidatorResult` object for further analysis and output for the user to discern.
 
-### Purpose of the Validation Definition
+## Purpose of the Validation Definition
 
 Outlined in the code sample below is the schema of the `Validation Definition`.
 
@@ -123,7 +121,7 @@ So the validation is taking the `definition` and is checking to make sure that t
 
 For example, in our enum schema, we have a validation that is making sure there are fields in the arguments are there in the definition.
 
-### Meanings of Validation Messages
+## Meanings of Validation Messages
 
 The messages that are returned by the `ValidatorResult` object are formatted according to the severity of the validation issues.
 However, the severity and cases for those severities can be outlined as such:

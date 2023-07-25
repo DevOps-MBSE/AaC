@@ -76,10 +76,10 @@ optional arguments:
 
 *If you expect to see a command that's not present, it's likely that the plugin providing the command has not been installed correctly.*
 
-# Built-In Commands
+## Built-In Commands
 While AaC primarily sources CLI commands from plugins, AaC has a couple foundational commands that will always be present regardless of which plugins you have enabled or installed.
 
-## Version
+### Version
 The version command provides an easy-to-access semantic version of the AaC python tool.
 
 Usage:
@@ -90,7 +90,7 @@ version: success
 0.2.1
 ```
 
-## Validate
+### Validate
 The validate command provides the ability to validate an AaC file or a definition therein.
 
 To validate an AaC file, and any files it may import, run the validate command with a single argument which is the path to the file you want to validate.
