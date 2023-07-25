@@ -1,12 +1,37 @@
-name: "Sphinx Documentation"
-on: [push, pull_request]
+name: Build and Deploy Sphinx Documentation
+on:
+  # Automated runs
+  push:
+    branches: [$default-branch]
+
+  # Manual runs
+  workflow_dispatch:
+
+# Set token permissions
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment, skip queued between in progress and latest.
+# But do NOT cancel in progress.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
-  docs:
+  #Single deploy job
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
 
       - name: Build Documentation
         uses: ammaraskar/sphinx-action@0.4
@@ -14,9 +39,16 @@ jobs:
           pre-build-command: "pip install aac"
           docs-folder: "docs/"
 
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
-        if: github.ref == 'refs/heads/master'
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v2
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/docs/html
+          path: ./docs/docs/html
+
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v2
+        # uses: peaceiris/actions-gh-pages@v3
+        # if: github.ref == 'refs/heads/master'
+        # with:
+        #   github_token: ${{ secrets.GITHUB_TOKEN }}
+        #   publish_dir: ./docs/docs/html
