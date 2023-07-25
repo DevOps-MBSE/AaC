@@ -18,9 +18,10 @@ sys.path.insert(0, os.path.abspath("."))
 
 
 # -- Project information -----------------------------------------------------
+from datetime import date
 
 project = "Architecture-as-Code"
-copyright = "2021, AaC Project Contributors"
+copyright = f"2021 - {str(date.today().year)} , AaC Project Contributors"
 author = "AaC Project Contributors"
 
 # The full version, including alpha/beta/rc tags
@@ -41,6 +42,8 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
     "myst_parser",
+    "sphinx_contributors",
+    "sphinx_copybutton",
 ]
 
 # -- Ext: autodoc configuration ----------------------------------------------
@@ -74,7 +77,7 @@ napoleon_attr_annotations = True
 myst_heading_anchors = 4
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ["_templates", "_layouts"]
+templates_path = ["_templates",]
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -97,13 +100,16 @@ source_suffix = {
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = "classic"
+html_theme = "furo"
+
+# The style name to use for Pygments highlighting of source code. If not set,
+# either the theme’s default style or 'sphinx' is selected for HTML output.
+pygments_style = "sphinx"
+pygments_dark_style = "monokai"
 
 # These options are generally used to change the look and feel of the theme.
-html_theme_options ={
-    "externalrefs": "true",
-    "stickysidebar": "true",
-}
+html_theme_options ={}
+
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

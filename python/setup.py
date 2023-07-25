@@ -54,7 +54,7 @@ development_dependencies = [
     "sphinxcontrib-jsmath == 1.0.1",
     "sphinxcontrib-qthelp == 1.0.3",
     "sphinxcontrib-serializinghtml == 1.1.5",
-    "furo == 2021.10.9",
+    "furo >= 2023.05.20",
     "docutils >= 0.19",
     "myst-parser>=2.0.0",
     "pipdeptree >= 2.2.0",

@@ -2,6 +2,7 @@ name: Build and Deploy Sphinx Documentation
 on:
   # Automated runs
   push:
+    # branches: [$default-branch]
 
   # Manual runs
   workflow_dispatch:
@@ -46,8 +47,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deploy
         uses: actions/deploy-pages@v2
-        # uses: peaceiris/actions-gh-pages@v3
-        # if: github.ref == 'refs/heads/master'
-        # with:
-        #   github_token: ${{ secrets.GITHUB_TOKEN }}
-        #   publish_dir: ./docs/docs/html
