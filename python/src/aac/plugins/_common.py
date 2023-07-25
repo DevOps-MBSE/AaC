@@ -1,6 +1,6 @@
 """Common utilities usable by all the plugins."""
 
-import logging
+import logging as log
 
 from functools import wraps
 from typing import Callable, Dict, List
@@ -47,7 +47,7 @@ def register_plugin_command(plugin_name: str, command_name: str) -> Callable:
     def wrapper(function: Callable):
         if plugin_name in REGISTERED_PLUGIN_COMMANDS:
             if command_name in REGISTERED_PLUGIN_COMMANDS[plugin_name]:
-                logging.warn(f"Overwriting implementation of command {command_name} in plugin {plugin_name}")
+                log.warn(f"Overwriting implementation of command {command_name} in plugin {plugin_name}")
 
             REGISTERED_PLUGIN_COMMANDS[plugin_name].update({command_name: function})
         else:
@@ -73,8 +73,18 @@ def get_plugin_commands_from_definitions(plugin_name: str, plugin_definitions: L
 
     from aac.plugins.first_party.gen_plugin import DEFINITION_FIELD_NUMBER_OF_ARGUMENTS, DEFINITION_FIELD_DEFAULT
 
+    def get_command_name(structure):
+        return structure.get(DEFINITION_FIELD_DISPLAY) or structure.get(DEFINITION_FIELD_NAME)
+
     definition = get_definition_by_name(plugin_name, plugin_definitions)
     command_structures = definition.get_top_level_fields().get(DEFINITION_FIELD_COMMANDS, []) if definition else []
+
+    registered_commands = set(REGISTERED_PLUGIN_COMMANDS[plugin_name])
+    modelled_commands = {get_command_name(cmd) for cmd in command_structures}
+    unmodelled_commands = registered_commands.difference(modelled_commands)
+
+    if unmodelled_commands:
+        log.warn(f"There are commands that are not modelled in the '{plugin_name}' plugin definition: {unmodelled_commands}")
 
     plugin_commands = []
     for structure in command_structures:
@@ -89,14 +99,17 @@ def get_plugin_commands_from_definitions(plugin_name: str, plugin_definitions: L
             for argument in structure.get(DEFINITION_FIELD_INPUT, [])
         ]
 
-        command_name = structure.get(DEFINITION_FIELD_DISPLAY) or structure.get(DEFINITION_FIELD_NAME)
-        plugin_commands.append(
-            AacCommand(
-                command_name,
-                structure.get(DEFINITION_FIELD_HELP_TEXT, ""),
-                REGISTERED_PLUGIN_COMMANDS[plugin_name][command_name],
-                arguments,
+        command_name = get_command_name(structure)
+        if command_name in REGISTERED_PLUGIN_COMMANDS[plugin_name]:
+            plugin_commands.append(
+                AacCommand(
+                    command_name,
+                    structure.get(DEFINITION_FIELD_HELP_TEXT, ""),
+                    REGISTERED_PLUGIN_COMMANDS[plugin_name][command_name],
+                    arguments,
+                )
             )
-        )
+        else:
+            log.warn(f"The command {command_name} is not registered with the '{plugin_name}' plugin.")
 
     return plugin_commands
