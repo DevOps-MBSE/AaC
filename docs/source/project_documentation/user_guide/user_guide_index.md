@@ -34,7 +34,7 @@ Ready to start creating more than a few definitions in a file? Checkout how our 
 AaC's use of plain-text YAML representation allows AaC users to leverage version control software tools (such as Git) and Continuous Integration/Continuous Delivery practices for extremely high levels of automation.
 [AaC and GitOps](./aac_gitops)
 
-# Glossary
+# AaC Glossary
 While we strive to be clear by avoiding the overuse of jargon, we do reference a few things that may not be clear, at first. For context on all of those acronyms or ambiguous words we use, check out the
 [AaC Glossary.](./glossary)
 

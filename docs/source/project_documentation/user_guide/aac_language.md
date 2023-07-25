@@ -42,7 +42,7 @@ schema:
 
 The two example aboves demonstrate the basic structure of the AaC language: each YAML entry/AaC definition starts with a defined root key which correlates to a registered schema that governs the YAML structure.
 
-### Root Keys
+### DSL Root Keys
 Because the AaC DSL is leveraging YAML, which is just a key-value mapping with loose schema, the AaC DSL must define the schema for each definition type via root keys. The AaC DSL comes with several pre-defined root keys that you can use to define various aspects of your system.
 
 The basic root keys can be located in the [base AaC DSL specification.](https://github.com/jondavid-black/AaC/blob/bbe61782720d5958e2794308d7fe397fc6398bd3/python/src/aac/spec/spec.yaml#L2-L67) Some of the root key provided by the base DSL are:

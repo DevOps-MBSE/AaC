@@ -5,7 +5,7 @@ nav_order: 6
 has_children: true
 ---
 
-# Getting started
+# Getting Started as a Developer
 
 ## VSCode Workspaces
 
@@ -88,7 +88,7 @@ pip install -e .[all]
 
 `zsh` command:
 
-```zsh 
+```zsh
 pip install -e '.[all]'
 ```
 
@@ -211,10 +211,8 @@ The type of profiling that is being described for the AaC Python Package is betw
 is a set of statistics that help to determine which portions of code are being run often and for how long. This can help to identify the flow of execution. Using the output data from these profilers can be imported into `pstats`
 for reporting.
 
-Documentation on the Setup and Justifications between the `cProfile` and `Profile` can be located here -> [Profiling in AaC Setup](./profiling.md)
+Documentation on the Setup and Justifications between the `cProfile` and `Profile` can be located here -> [Profiling in AaC Setup](profiling)
 
 ## Development of Plugins
 
-### Plugin Developer Guide
-
-Guidelines on how to contribute and develop plugins for AaC can be found [Plugin Developer Guide](./plugin_dev_guide.md).
+Guidelines on how to contribute and develop plugins for AaC can be found in [Plugin Developer Guide](plugin_dev_guide).

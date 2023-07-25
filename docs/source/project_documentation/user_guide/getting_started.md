@@ -7,7 +7,7 @@ has_children: false
 permalink: project_documentation/user_guide/getting_started
 ---
 
-# Getting Started
+# Getting Started as a User
 
 ## Github Template Repository - Quickstart
 We have a [Github Template Repository](https://github.com/Coffee2Bits/AaC-User-Template-Repository) that's setup to allow users exploring AaC to immediately create an AaC-ready github repository and development environment using [Gitpod](https://gitpod.io/new/#https://github.com/jondavid-black/AaC).
@@ -39,7 +39,7 @@ aac version
 
 AaC user features, any command that you use, are managed and implemented via a plugin system. If you want to add or extend the features of the AaC package, all you need to do is install a plugin or build it yourself. This allows us to maintain a small footprint for each user feature while providing the ability for users to completely customize their tooling and environment to their needs.
 
-## Built-in Commands
+## Built-in AaC Commands
 AaC does have two universal commands that are always available:
 - validate:  Ensures your model is correctly defined per the AaC DSL
 - version: Get the version of the AaC package installed

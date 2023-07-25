@@ -11,7 +11,7 @@ nav_order: 5
 
 ### AaC Setup (Prerequisites)
 
-When performing the steps listed in the [Developer Guide](./index.md). Please make sure that AaC Plugin is executable with the execution of the below command:
+When performing the steps listed in the [Developer Guide](dev_guide_index). Please make sure that AaC Plugin is executable with the execution of the below command:
 
 `aac version`
 

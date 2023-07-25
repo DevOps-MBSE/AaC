@@ -139,7 +139,6 @@ enum:
 ## Primitive Types
 Primitive types in AaC are defined by the enumeration values in the `Primitives` definition. Each enum value represents a uniquely special set of enumeration values that define the core AaC language's primitive types. Users who extend `Primitives` should maintain the same style of `snake_case` and keep primitive type names succinct: in other words, names should be descriptive, but short.
 
-
 ## Root Keys
 Like the primitive types, the available root keys in AaC are defined in the definition `Root`. Each field entry in the `Root` definition specifies the root key (the field's name) and a corresponding schema definition (the field type). Additional root keys can be defined by users via an extension to the `Root` definition.
 
