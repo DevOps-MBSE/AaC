@@ -16,7 +16,7 @@ The repository is pre-populated with a simple example model and Github Action wo
 
 Alternatively, if you're opposed to visiting the template repository and searching for the template button, you can just click this one.
 
-[Generate my AaC Github Repo](https://github.com/Coffee2Bits/AaC-User-Template-Repository/generate){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
+[Generate my AaC Github Repo](https://github.com/Coffee2Bits/AaC-User-Template-Repository/generate)
 
 ## Installing AaC
 If you're not using a prepared environment, then you will need to install AaC and its Python dependencies. AaC is written in Python to help make it more approachable for casual users and easily extensible for power users.

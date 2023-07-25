@@ -1,5 +1,8 @@
+User Guide Documentation
+========================
+
 .. toctree::
-   :caption: User Guide
+   :maxdepth: 1
 
    What is AaC? <user_guide_index>
    Getting Started <getting_started>

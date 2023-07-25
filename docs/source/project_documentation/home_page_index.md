@@ -8,7 +8,9 @@ permalink: /
 
 # Architecture-as-Code (AaC)
 
-[Get started now](user_guide/index){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 } [View it on GitHub](https://github.com/jondavid-black/AaC){: .btn .fs-5 .mb-4 .mb-md-0 }
+[Get started now](user_guide/index) by reading the User Guide documentation.
+
+[View it on GitHub](https://github.com/jondavid-black/AaC) and walk through the code base.
 
 ## What is Architecture-as-Code (AaC)?
 
@@ -127,7 +129,7 @@ Just the Docs is distributed by an [MIT license](https://github.com/jondavid-bla
 
 ### Contributing
 
-When contributing to this repository, please first discuss the change you wish to make via issue or discussion topic with the owners of this repository before making a change. Read more about becoming a contributor in [our GitHub repo](https://github.com/pmarsceill/just-the-docs#contributing).
+When contributing to this repository, please first discuss the change you wish to make via issue or discussion topic with the owners of this repository before making a change. Read more about becoming a contributor on [GitHub contributions](https://github.com/pmarsceill/just-the-docs#contributing) and see our [current contribution status](https://github.com/jondavid-black/AaC/blob/main/README.md#note-to-contributors).
 
 *Thank you to the contributors of Architecture-as-Code!*
 

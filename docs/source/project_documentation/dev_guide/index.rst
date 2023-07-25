@@ -1,5 +1,8 @@
+Developer Guide Documentation
+=============================
+
 .. toctree::
-   :caption: Developers Guide
+   :maxdepth: 1
 
    Getting Started <dev_guide_index>
    Documentation <docs>

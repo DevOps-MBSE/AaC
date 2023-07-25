@@ -1,5 +1,8 @@
+Advanced User Topics Documentation
+==================================
+
 .. toctree::
-   :caption: Advanced User Topics
+   :maxdepth: 1
 
    Topics <advanced_user_topics_index>
    Language Extensions <language_extensions>
