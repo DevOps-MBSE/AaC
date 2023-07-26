@@ -126,7 +126,7 @@ About the project
 
 .. include:: <isonum.txt>
 
-Architecture-as-Code (AaC) is |copy| 2021-present by `DevOps for Defense <http://devopsfordefense.org>`_.
+Architecture-as-Code (AaC) is |copy| 2021-present by AaC Project Contributors.
 
 License
 -------
