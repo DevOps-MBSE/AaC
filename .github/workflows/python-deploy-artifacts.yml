@@ -21,10 +21,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: api-documentation
-          path: python/docs/build/html/
-
-      - name: Github Pages and Sphinx Deployment
-        run: echo "This is where I'd deploy if I were setup"
+          path: python/docs/docs/html/
 
       - name: Download Python Wheel
         uses: actions/download-artifact@v3
