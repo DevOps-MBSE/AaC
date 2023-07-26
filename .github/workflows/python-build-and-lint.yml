@@ -36,17 +36,17 @@ jobs:
           name: aac_wheel
           path: python/dist/
 
-      - name: Generate API Documentation
-        run: |
-          cp -R ../docs/ ./docs
-          cd ./docs/
-          make html
+      - name: Build Documentation
+        uses: ammaraskar/sphinx-action@0.4
+        with:
+          pre-build-command: "pip install aac"
+          docs-folder: "docs/"
 
-      - name: Upload API Documentation
+      - name: Upload Documentation
         uses: actions/upload-artifact@v3
         with:
-          name: api-documentation
-          path: python/docs/docs/html
+          name: aac-documentation
+          path: ./docs/docs/html
 
       - name: Generate RESTful API Documentation
         run: |
