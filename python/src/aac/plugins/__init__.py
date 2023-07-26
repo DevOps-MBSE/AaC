@@ -5,7 +5,12 @@ from pluggy import HookimplMarker, HookspecMarker
 
 
 from aac.plugins.plugin import Plugin
-from aac.plugins._common import REGISTERED_PLUGIN_COMMANDS, get_plugin_definitions_from_yaml, register_plugin_command
+from aac.plugins._common import (
+    REGISTERED_PLUGIN_COMMANDS,
+    get_plugin_commands_from_definitions,
+    get_plugin_definitions_from_yaml,
+    register_plugin_command,
+)
 
 
 __all__ = (
@@ -16,6 +21,7 @@ __all__ = (
     "Plugin",
     "PluginError",
     "OperationCancelled",
+    "get_plugin_commands_from_definitions",
     "get_plugin_definitions_from_yaml",
     "register_plugin_command",
 )

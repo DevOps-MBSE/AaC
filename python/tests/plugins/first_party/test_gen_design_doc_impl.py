@@ -1,9 +1,9 @@
 import os
+
 from aac.lang.constants import BEHAVIOR_TYPE_PUBLISH_SUBSCRIBE
-
 from aac.plugins.first_party.gen_design_doc.gen_design_doc_impl import gen_design_doc
-from tests.active_context_test_case import ActiveContextTestCase
 
+from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.assertion import assert_plugin_success
 from tests.helpers.io import TemporaryTestFile
 
