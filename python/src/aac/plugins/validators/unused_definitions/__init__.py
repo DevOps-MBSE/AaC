@@ -3,7 +3,7 @@
 from aac.plugins import hookimpl
 from aac.plugins.plugin import Plugin
 from aac.plugins._common import get_plugin_definitions_from_yaml
-from aac.plugins.validators.unreferenced_definitions._validate_referenced_definitions import PLUGIN_NAME, validate_referenced_definitions
+from aac.plugins.validators.unused_definitions._validate_used_definitions import PLUGIN_NAME, validate_used_definitions
 from aac.plugins.validators._common import get_plugin_validations_from_definitions
 
 
@@ -22,8 +22,8 @@ def get_plugin() -> Plugin:
 
 
 def _get_plugin_definitions():
-    return get_plugin_definitions_from_yaml(__package__, "unreferenced_definitions.yaml")
+    return get_plugin_definitions_from_yaml(__package__, "unused_definitions.yaml")
 
 
 def _get_plugin_validations():
-    return get_plugin_validations_from_definitions(_get_plugin_definitions(), validate_referenced_definitions)
+    return get_plugin_validations_from_definitions(_get_plugin_definitions(), validate_used_definitions)
