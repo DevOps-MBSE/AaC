@@ -1,8 +1,7 @@
 name: Build and Deploy Sphinx Documentation
 on:
-  # Automated runs
-  push:
-    branches: [$default-branch]
+  # Call from main workflow
+  workflow_call:
 
   # Manual runs
   workflow_dispatch:
