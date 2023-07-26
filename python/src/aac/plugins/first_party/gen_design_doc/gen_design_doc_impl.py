@@ -8,6 +8,7 @@ from jinja2 import Template
 from aac.lang.constants import ROOT_KEY_MODEL, ROOT_KEY_SCHEMA, ROOT_KEY_USECASE
 from aac.lang.definitions.collections import get_definitions_by_root_key
 from aac.lang.definitions.definition import Definition
+from aac.plugins import register_plugin_command
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 from aac.plugins.validators.required_fields import get_required_fields
 from aac.templates.engine import (
@@ -21,6 +22,7 @@ from aac.validate import validated_source
 plugin_name = "Generate System Design Document"
 
 
+@register_plugin_command(plugin_name, "gen-design-doc")
 def gen_design_doc(architecture_file: str, output_directory: str) -> PluginExecutionResult:
     """
     Generate a System Design Document from Architecture-as-Code models.

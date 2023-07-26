@@ -34,7 +34,7 @@ runtime_dependencies = [
 ]
 
 development_dependencies = [
-    "wheel >= 0.40.0",
+    "wheel ~= 0.41.0",
     "pip-tools >= 6.9.0",
     "tomli < 2.0.0",
     "black == 22.3.0",

@@ -1,4 +1,5 @@
 """Plugin metadata class."""
+
 import copy
 from attr import Factory, attrib, attrs, validators
 
@@ -11,15 +12,22 @@ from aac.plugins.contributions.contribution_types import DefinitionValidationCon
 @attrs(hash=False, eq=False)
 class Plugin:
     """
-    Provides a consistent data model for AaC Plugins, and it exposes the plugins' contribution points which are used to add features and functionality to the AaC plugins.
+    A representation of an AaC plugin.
 
-    Plugins must be told what content they have/provide such as definitions (schemas, extensions, etc),
-    AaC commands (validate, gen-plugin, etc), or validation (definitions, primitives). If the content isn't
-    registered to the plugin model then it will not show up when AaC commands are run or when definitions are validated.
+    Provides a consistent data model for AaC Plugins, and it exposes the
+    plugins' contribution points which are used to add features and
+    functionality to the AaC plugins.
+
+    Plugins must be told what content they have/provide such as definitions
+    (schemas, extensions, etc), AaC commands (validate, gen-plugin, etc), or
+    validation (definitions, primitives). If the content isn't registered to the
+    plugin model then it will not show up when AaC commands are run or when
+    definitions are validated.
 
     Attributes:
-        name: A string with the name of the plugin.
-        contributions: A ContributionPoints object containing plugin contributions.
+        name (str): A string with the name of the plugin.
+        contributions (ContributionPoints): A ContributionPoints object
+            containing plugin contributions.
     """
 
     name: str = attrib(validator=validators.instance_of(str))
