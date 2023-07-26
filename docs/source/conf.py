@@ -12,13 +12,13 @@
 
 import os
 import sys
+from datetime import date
 from importlib import metadata
 
 sys.path.insert(0, os.path.abspath("."))
 
 
 # -- Project information -----------------------------------------------------
-from datetime import date
 
 project = "Architecture-as-Code"
 copyright = f"2021 - {str(date.today().year)} , AaC Project Contributors"
@@ -77,7 +77,7 @@ napoleon_attr_annotations = True
 myst_heading_anchors = 4
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ["_templates",]
+templates_path = ["_templates"]
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -108,7 +108,12 @@ pygments_style = "sphinx"
 pygments_dark_style = "monokai"
 
 # These options are generally used to change the look and feel of the theme.
-html_theme_options ={}
+html_theme_options = {}
+
+# If given, this must be the name of an image file (path relative to the
+# configuration directory) that is the favicon of the docs, or URL that
+# points an image file for the favicon.
+html_favicon = "favicon.ico"
 
 
 # Add any paths that contain custom static files (such as style sheets) here,
