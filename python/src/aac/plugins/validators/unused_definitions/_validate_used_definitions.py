@@ -45,7 +45,7 @@ def validate_references(
                 else:
                     logging.error(f"Definition '{reference_to_validate}' doesn't exist.")
 
-    definitions_to_test = get_definition_type_references_from_list(definition_under_test, target_schema_definition)
+    definitions_to_test = get_definition_type_references_from_list(target_schema_definition, definition_under_test)
     list(map(validate_used_definitions, definitions_to_test))
 
     return ValidatorResult([definition_under_test], findings)

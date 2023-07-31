@@ -1,6 +1,7 @@
 import logging
 from typing import Any
 
+from aac.lang.constants import DEFINITION_FIELD_FIELDS, DEFINITION_FIELD_NAME, DEFINITION_FIELD_TYPE
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.structure import get_substructures_by_type
 from aac.lang.definitions.type import is_array_type
@@ -33,13 +34,13 @@ def validate_required_fields(
     findings = ValidatorFindings()
 
     required_field_names = validation_args
-    schema_defined_fields_as_list = target_schema_definition.get_top_level_fields().get("fields") or []
-    schema_defined_fields_as_dict = {field.get("name"): field for field in schema_defined_fields_as_list}
+    schema_defined_fields_as_list = target_schema_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS) or []
+    schema_defined_fields_as_dict = {field.get(DEFINITION_FIELD_NAME): field for field in schema_defined_fields_as_list}
 
     def validate_dict(dict_to_validate: dict) -> None:
         for required_field_name in required_field_names:
             field_value = dict_to_validate.get(required_field_name)
-            field_type = schema_defined_fields_as_dict.get(required_field_name, {}).get("type")
+            field_type = schema_defined_fields_as_dict.get(required_field_name, {}).get(DEFINITION_FIELD_TYPE)
 
             if field_value is None:
                 missing_required_field = f"Required field '{required_field_name}' missing from: {dict_to_validate}"
