@@ -67,6 +67,7 @@ def get_plugin_manager() -> PluginManager:
         "subcomponent_type",
         "unique_names",
         "unique_requirement_ids",
+        "unused_definitions",
         "validator_implementation",
     ]
 
