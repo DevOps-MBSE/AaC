@@ -2,11 +2,12 @@ from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.definitions.collections import get_definition_by_name
 from aac.lang.definitions.lexeme import Lexeme
 from aac.lang.definitions.source_location import SourceLocation
+from aac.plugins.validators import ValidatorFindings, ValidatorResult
 from aac.plugins.validators.unused_definitions import validate_used_definitions
 
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.context import get_core_spec_context
-from tests.helpers.parsed_definitions import create_schema_definition
+from tests.helpers.parsed_definitions import create_schema_definition, create_field_entry
 
 
 class TestValidateUsedDefinitions(ActiveContextTestCase):
