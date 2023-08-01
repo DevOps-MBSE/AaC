@@ -14,8 +14,8 @@ from tests.helpers.parsed_definitions import create_schema_definition, create_en
 
 
 class TestValidateUsedDefinitions(ActiveContextTestCase):
-    def test_validate_references_valid_references(self):
-        test_primitive_reference_field = create_field_entry("ValidPrimitiveField", "string")
+    def test_validate_references_valid_definition_reference(self):
+        test_valid_definition_field = create_field_entry("ValidDefinitionField", "string")
         test_definition = create_schema_definition("TestData", fields=[test_primitive_reference_field])
 
         expected_result = ValidatorResult()

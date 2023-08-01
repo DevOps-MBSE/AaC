@@ -10,7 +10,7 @@ PLUGIN_NAME = "Validate definition references"
 VALIDATION_NAME = "Definition references exist"
 
 
-def validate_references(
+def validate_used_definitions(
     definition_under_test: Definition,
     target_schema_definition: Definition,
     language_context: LanguageContext,
@@ -29,21 +29,19 @@ def validate_references(
     """
     findings = ValidatorFindings()
 
-    def validate_used_definitions(definition_to_validate: Definition) -> None:
-        for reference_to_validate in validation_args:
-            if language_context.is_definition_type(reference_to_validate):
-                logging.debug(f"Valid definition reference. Definition '{reference_to_validate}' in content: {definition_to_validate}")
-            else:
-                undefined_reference_error_message = f"Unused definition '{reference_to_validate}' referenced: {definition_to_validate}"
-                reference_lexeme = definition_under_test.get_lexeme_with_value(reference_to_validate)
-                logging.info(undefined_reference_error_message)
+    if language_context.get_definition_by_name(definition_under_test.name):
+        logging.debug(f"Valid definition reference.")
+    else:
+        undefined_reference_error_message = f"Unused definition '{definition_under_test.name}'."
+        reference_lexeme = definition_under_test.get_lexeme_with_value(definition_under_test.name)
+        logging.info(undefined_reference_error_message)
 
-                if reference_lexeme:
-                    findings.add_error_finding(
-                        definition_under_test, undefined_reference_error_message, PLUGIN_NAME, reference_lexeme
-                    )
-                else:
-                    logging.error(f"Definition '{reference_to_validate}' doesn't exist.")
+        if reference_lexeme:
+            findings.add_error_finding(
+                definition_under_test, undefined_reference_error_message, PLUGIN_NAME, reference_lexeme
+            )
+        else:
+            logging.error(f"Definition '{reference_to_validate}' doesn't exist.")
 
     definitions_to_test = get_definition_type_references_from_list(target_schema_definition, definition_under_test)
     list(map(validate_used_definitions, definitions_to_test))
