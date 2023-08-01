@@ -29,21 +29,22 @@ def validate_used_definitions(
     """
     findings = ValidatorFindings()
 
-    if language_context.get_definition_by_name(definition_under_test.name):
-        logging.debug(f"Valid definition reference.")
+    if language_context.get_definition_by_name(target_schema_definition.name):
+        logging.debug(f"Valid definition: {target_schema_definition.name}.")
+        
+        definitions_to_test = get_definition_type_references_from_list(target_schema_definition, definition_under_test)
+        if len(definitions_to_test) > 0:
+            logging.info(f"The definition {definition_under_test.name} references a valid definition {target_schema_definition.name}")
+        else:
+            logging.info(f"The definition {definition_under_test.name} does not reference another definition.")
     else:
-        undefined_reference_error_message = f"Unused definition '{definition_under_test.name}'."
-        reference_lexeme = definition_under_test.get_lexeme_with_value(definition_under_test.name)
-        logging.info(undefined_reference_error_message)
+        undefined_definition_error_message = f"Nonexistant definition: '{target_schema_definition.name}'."
+        reference_lexeme = target_schema_definition.get_lexeme_with_value(target_schema_definition.name)
+        logging.info(undefined_definition_error_message)
 
         if reference_lexeme:
             findings.add_error_finding(
-                definition_under_test, undefined_reference_error_message, PLUGIN_NAME, reference_lexeme
+                definition_under_test, undefined_definition_error_message, PLUGIN_NAME, reference_lexeme
             )
-        else:
-            logging.error(f"Definition '{reference_to_validate}' doesn't exist.")
-
-    definitions_to_test = get_definition_type_references_from_list(target_schema_definition, definition_under_test)
-    list(map(validate_used_definitions, definitions_to_test))
 
     return ValidatorResult([definition_under_test], findings)
