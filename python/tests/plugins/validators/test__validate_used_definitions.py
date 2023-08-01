@@ -53,5 +53,5 @@ class TestValidateUsedDefinitions(ActiveContextTestCase):
 
         self.assertEqual(expected_result.is_valid(), actual_result.is_valid())
         self.assertEqual(expected_finding_location, actual_result.findings.get_error_findings()[0].location.location)
-        self.assertIn("Undefined", actual_result_message)
+        self.assertIn("Nonexistant", actual_result_message)
         self.assertIn(invalid_definition_type, actual_result_message)
