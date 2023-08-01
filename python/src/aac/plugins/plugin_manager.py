@@ -1,9 +1,9 @@
 """Provide access to plugins and plugin data."""
 
 from importlib import import_module
-from typing import List
-
+from pkgutil import iter_modules
 from pluggy import PluginManager
+from typing import List
 
 from aac.plugins import PLUGIN_PROJECT_NAME, Plugin, hookspecs
 
@@ -24,63 +24,32 @@ def get_plugin_manager() -> PluginManager:
     plugin_manager.add_hookspecs(hookspecs)
     plugin_manager.load_setuptools_entrypoints(PLUGIN_PROJECT_NAME)
 
-    # Register 1st Party Plugins because pluggy doesn't provide an alternative
-    # solution to automatically register plugins that are packaged in the AaC
-    # package.
-
-    # register "built-in" plugins
-    first_party_plugins_package = "aac.plugins.first_party"
-    first_party_plugins = [
-        "gen_json",
-        "gen_plugin",
-        "gen_protobuf",
-        "gen_design_doc",
-        "gen_gherkin_behaviors",
-        "gen_plant_uml",
-        "print_spec",
-        "lsp_server",
-        "help_dump",
-        "rest_api",
-        "primitive_type_check",
-        "plugin_management",
-        "active_context",
-    ]
-
-    # register "built-in" commands
-    builtin_command_plugins_package = "aac.cli.builtin_commands"
-    builtin_command_plugins = [
-        "specifications",
-        "validate",
-        "version",
-    ]
-
-    # register "built-in" validation plugins
-    validator_plugins_package = "aac.plugins.validators"
-    validator_plugins = [
-        "defined_references",
-        "exclusive_fields",
-        "reference_fields",
-        "reference_targets",
-        "required_fields",
-        "requirement_references",
-        "root_keys",
-        "subcomponent_type",
-        "unique_names",
-        "unique_requirement_ids",
-        "validator_implementation",
-    ]
-
     plugins = [
-        *zip([first_party_plugins_package] * len(first_party_plugins), first_party_plugins),
-        *zip([builtin_command_plugins_package] * len(builtin_command_plugins), builtin_command_plugins),
-        *zip([validator_plugins_package] * len(validator_plugins), validator_plugins),
+        *register_plugins_in_package("aac.cli.builtin_commands"),
+        *register_plugins_in_package("aac.plugins.first_party"),
+        *register_plugins_in_package("aac.plugins.validators"),
     ]
 
-    for package, plugin in plugins:
-        plugin_module = import_module(f"{package}.{plugin}")
-        plugin_manager.register(plugin_module)
+    for plugin in plugins:
+        plugin_manager.register(plugin)
 
     return plugin_manager
+
+
+def register_plugins_in_package(package: str):
+    """
+    Register all the plugins in the specified package.
+
+    Note, this function depends on the ability to import package and it's direct child packages.
+
+    Args:
+        package (str): The package in which to find plugins to be registered.
+
+    Returns:
+        A list of top-level plugin modules that define implemented plugins.
+    """
+    plugins_package = import_module(package)
+    return [import_module(f"{package}.{module_name}") for _, module_name, _ in iter_modules(plugins_package.__path__)]
 
 
 def get_plugins() -> list[Plugin]:
