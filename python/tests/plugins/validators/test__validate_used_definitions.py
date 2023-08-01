@@ -1,22 +1,18 @@
-from aac.io.parser import parse
 from aac.lang.active_context_lifecycle_manager import get_active_context
-from aac.lang.constants import DEFINITION_FIELD_NAME, DEFINITION_NAME_SCHEMA
-from aac.lang.definitions.collections import get_definition_by_name, get_definitions_by_root_key
+from aac.lang.definitions.collections import get_definition_by_name
 from aac.lang.definitions.lexeme import Lexeme
 from aac.lang.definitions.source_location import SourceLocation
-from aac.plugins.validators import FindingLocation
 from aac.plugins.validators.unused_definitions import validate_used_definitions
 
 from tests.active_context_test_case import ActiveContextTestCase
-from tests.helpers.assertion import assert_validator_result_failure, assert_validator_result_success
 from tests.helpers.context import get_core_spec_context
-from tests.helpers.parsed_definitions import create_schema_definition, create_enum_definition
+from tests.helpers.parsed_definitions import create_schema_definition
 
 
 class TestValidateUsedDefinitions(ActiveContextTestCase):
     def test_validate_references_valid_definition_reference(self):
         test_valid_definition_field = create_field_entry("ValidDefinitionField", "string")
-        test_definition = create_schema_definition("TestData", fields=[test_primitive_reference_field])
+        test_definition = create_schema_definition("TestData", fields=[test_valid_definition_field])
 
         expected_result = ValidatorResult()
 
