@@ -1,8 +1,8 @@
 plugin:
-    name: Validate definition references
-    description: An AaC plugin that enables validating the references to definitions.
-    definitionValidations:
-      - name: Definition references exist
+  name: Validate definition references
+  description: An AaC plugin that enables validating the references to definitions.
+  definitionValidations:
+    - name: Definition references exist
   ---
   validation:
     name: Definition references exist
