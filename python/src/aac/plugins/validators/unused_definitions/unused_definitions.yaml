@@ -3,38 +3,38 @@ plugin:
   description: An AaC plugin that enables validating the references to definitions.
   definitionValidations:
     - name: Definition references exist
-  ---
-  validation:
-    name: Definition references exist
-    description: Verify that references to definitions and models exist.
-    behavior:
-      - name: Verify that referenced definitions exist.
-        type: REQUEST_RESPONSE
-        description:
-        input:
-          - name: input
-            type: ValidatorInput
-        output:
-          - name: results
-            type: ValidatorOutput
-        acceptance:
-          - scenario: Successfully validate definition references.
-            given:
-              - The ValidatorInput content consists of valid AaC definitions.
-              - The ValidatorInput contains some AaC definitions that reference other definitions.
-            when:
-              - The validator plugin is executed.
-            then:
-              - The ValidatorOutput does not indicate any errors.
-              - The ValidatorOutput does not indicate any warnings.
-              - The ValidatorOutput indicates the validator plugin under test is valid.
-          - scenario: Fail to validate definition references.
-            given:
-              - The ValidatorInput content consists of otherwise valid AaC definitions.
-              - The ValidatorInput contains at least one AaC definition that references a definition that does not exist.
-            when:
-              - The validator plugin is executed.
-            then:
-              - The ValidatorOutput has errors.
-              - The ValidatorOutput errors indicate that there is no corresponding definition with the same name.
+---
+validation:
+  name: Definition references exist
+  description: Verify that references to definitions and models exist.
+  behavior:
+    - name: Verify that referenced definitions exist.
+      type: REQUEST_RESPONSE
+      description:
+      input:
+        - name: input
+          type: ValidatorInput
+      output:
+        - name: results
+          type: ValidatorOutput
+      acceptance:
+        - scenario: Successfully validate definition references.
+          given:
+            - The ValidatorInput content consists of valid AaC definitions.
+            - The ValidatorInput contains some AaC definitions that reference other definitions.
+          when:
+            - The validator plugin is executed.
+          then:
+            - The ValidatorOutput does not indicate any errors.
+            - The ValidatorOutput does not indicate any warnings.
+            - The ValidatorOutput indicates the validator plugin under test is valid.
+        - scenario: Fail to validate definition references.
+          given:
+            - The ValidatorInput content consists of otherwise valid AaC definitions.
+            - The ValidatorInput contains at least one AaC definition that references a definition that does not exist.
+          when:
+            - The validator plugin is executed.
+          then:
+            - The ValidatorOutput has errors.
+            - The ValidatorOutput errors indicate that there is no corresponding definition with the same name.
   
