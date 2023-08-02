@@ -31,7 +31,7 @@ def validate_used_definitions(
 
     if language_context.get_definition_by_name(target_schema_definition.name):
         logging.debug(f"Valid definition: {target_schema_definition.name}.")
-        
+
         definitions_to_test = get_definition_type_references_from_list(target_schema_definition, definition_under_test)
         if len(definitions_to_test) > 0:
             logging.info(f"The definition {definition_under_test.name} references a valid definition {target_schema_definition.name}")
