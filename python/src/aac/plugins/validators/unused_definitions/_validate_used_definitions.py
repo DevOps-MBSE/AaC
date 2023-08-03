@@ -7,7 +7,7 @@ from aac.plugins.validators import ValidatorFindings, ValidatorResult
 
 
 PLUGIN_NAME = "Validate definition references"
-VALIDATION_NAME = "Definition references exist"
+VALIDATION_NAME = "Definition is referenced"
 
 
 def validate_used_definitions(
