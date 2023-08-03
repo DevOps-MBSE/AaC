@@ -20,7 +20,7 @@ from aac.validate import validated_source
 
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.assertion import assert_plugin_failure, assert_plugin_success
-from tests.helpers.io import TemporaryTestFile, new_working_dir
+from tests.helpers.io import TemporaryAaCTestFile, new_working_dir
 
 
 INIT_TEMPLATE_NAME = "__init__.py.jinja2"
@@ -45,8 +45,8 @@ class TestGenPlugin(ActiveContextTestCase):
             # Write the plugin file into the "fake" test repo path
             with (
                 new_working_dir(plugin_dir),
-                TemporaryTestFile(TEST_PLUGIN_YAML_STRING, dir=plugin_dir) as test_file,
-                TemporaryTestFile(TEST_PLUGIN_DEFINITIONS_YAML_STRING, dir=plugin_dir, name=TEST_PLUGIN_DEFINITIONS_FILE_NAME),
+                TemporaryAaCTestFile(TEST_PLUGIN_YAML_STRING, dir=plugin_dir) as test_file,
+                TemporaryAaCTestFile(TEST_PLUGIN_DEFINITIONS_YAML_STRING, dir=plugin_dir, name=TEST_PLUGIN_DEFINITIONS_FILE_NAME),
             ):
                 result = generate_plugin(test_file.name)
                 assert_plugin_success(result)
@@ -73,8 +73,8 @@ class TestGenPlugin(ActiveContextTestCase):
         with (
             TemporaryDirectory() as tmpdir,
             new_working_dir(tmpdir),
-            TemporaryTestFile(TEST_PLUGIN_YAML_STRING, dir=tmpdir) as test_file,
-            TemporaryTestFile(TEST_PLUGIN_DEFINITIONS_YAML_STRING, dir=tmpdir, name=TEST_PLUGIN_DEFINITIONS_FILE_NAME),
+            TemporaryAaCTestFile(TEST_PLUGIN_YAML_STRING, dir=tmpdir) as test_file,
+            TemporaryAaCTestFile(TEST_PLUGIN_DEFINITIONS_YAML_STRING, dir=tmpdir, name=TEST_PLUGIN_DEFINITIONS_FILE_NAME),
         ):
             self.assertEqual(len(os.listdir(tmpdir)), 2)
 
@@ -93,8 +93,8 @@ class TestGenPlugin(ActiveContextTestCase):
         with (
             TemporaryDirectory() as tmpdir,
             new_working_dir(tmpdir),
-            TemporaryTestFile(f"{TEST_PLUGIN_YAML_STRING}\n---\n{SECONDARY_PLUGIN_YAML_STRING}", dir=tmpdir) as test_file,
-            TemporaryTestFile(TEST_PLUGIN_DEFINITIONS_YAML_STRING, dir=tmpdir, name=TEST_PLUGIN_DEFINITIONS_FILE_NAME),
+            TemporaryAaCTestFile(f"{TEST_PLUGIN_YAML_STRING}\n---\n{SECONDARY_PLUGIN_YAML_STRING}", dir=tmpdir) as test_file,
+            TemporaryAaCTestFile(TEST_PLUGIN_DEFINITIONS_YAML_STRING, dir=tmpdir, name=TEST_PLUGIN_DEFINITIONS_FILE_NAME),
         ):
             result = generate_plugin(test_file.name)
 
@@ -110,7 +110,7 @@ class TestGenPlugin(ActiveContextTestCase):
         with TemporaryDirectory() as temp_directory:
             self.assertEqual(len(os.listdir(temp_directory)), 0)
 
-            with TemporaryTestFile(TEST_PLUGIN_YAML_STRING, dir=temp_directory) as plugin_yaml:
+            with TemporaryAaCTestFile(TEST_PLUGIN_YAML_STRING, dir=temp_directory) as plugin_yaml:
                 result = generate_plugin(plugin_yaml.name)
 
                 temp_directory_files = os.listdir(temp_directory)
@@ -140,8 +140,8 @@ class TestGenPlugin(ActiveContextTestCase):
         with (
             TemporaryDirectory() as tmpdir,
             new_working_dir(tmpdir),
-            TemporaryTestFile(TEST_PLUGIN_YAML_STRING, dir=tmpdir) as test_file,
-            TemporaryTestFile(TEST_PLUGIN_DEFINITIONS_YAML_STRING, dir=tmpdir, name=TEST_PLUGIN_DEFINITIONS_FILE_NAME),
+            TemporaryAaCTestFile(TEST_PLUGIN_YAML_STRING, dir=tmpdir) as test_file,
+            TemporaryAaCTestFile(TEST_PLUGIN_DEFINITIONS_YAML_STRING, dir=tmpdir, name=TEST_PLUGIN_DEFINITIONS_FILE_NAME),
         ):
             generated_templates = _prepare_and_generate_plugin_files(
                 _collect_all_plugin_definitions(test_file.name), PLUGIN_TYPE_THIRD_STRING, test_file.name, tmpdir

@@ -25,6 +25,7 @@ from aac.plugins.first_party.gen_gherkin_behaviors.gen_gherkin_behaviors_impl im
 )
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.assertion import assert_plugin_success
+from tests.helpers.io import TemporaryAaCTestFile
 
 
 class TestGenerateGherkinBehaviorsPlugin(ActiveContextTestCase):
@@ -107,10 +108,9 @@ model:
                 - {behavior_scenario_2_then_1}
 """
 
-        with TemporaryDirectory() as temp_output_dir:
-            temp_arch_file = NamedTemporaryFile(mode="w")
-            temp_arch_file.write(VALID_MODEL_WITH_SEVERAL_BEHAVIORS)
-            temp_arch_file.seek(0)
+        with TemporaryDirectory() as temp_output_dir, TemporaryAaCTestFile(
+            VALID_MODEL_WITH_SEVERAL_BEHAVIORS
+        ) as temp_arch_file:
 
             # Generate gherkin files to temp directory
             result = gen_gherkin_behaviors(temp_arch_file.name, temp_output_dir)
@@ -173,10 +173,9 @@ model:
                 - {behavior_scenario_1_then_2}
 """
 
-        with TemporaryDirectory() as temp_output_dir:
-            temp_arch_file = NamedTemporaryFile(mode="w")
-            temp_arch_file.write(VALID_MODEL_WITH_SEVERAL_BEHAVIORS)
-            temp_arch_file.seek(0)
+        with TemporaryDirectory() as temp_output_dir, TemporaryAaCTestFile(
+            VALID_MODEL_WITH_SEVERAL_BEHAVIORS
+        ) as temp_arch_file:
 
             # Generate gherkin files to temp directory
             result = gen_gherkin_behaviors(temp_arch_file.name, temp_output_dir)
