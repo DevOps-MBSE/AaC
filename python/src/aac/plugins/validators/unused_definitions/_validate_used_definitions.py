@@ -21,30 +21,39 @@ def validate_used_definitions(
 
     Args:
         definition_under_test (Definition): The definition that's being validated.
-        target_schema_definition (Definition): A definition with applicable validation.
-        language_context (LanguageContext): The language context.
+        target_schema_definition (Definition): The schema definition with the validation rules that trigger the validation.
+        language_context (LanguageContext): A management and utility classfor the contextual AaC domain-specific language.
 
     Returns:
         A ValidatorResult containing any applicable error messages.
     """
     findings = ValidatorFindings()
 
-    if language_context.get_definition_by_name(target_schema_definition.name):
-        logging.debug(f"Valid definition: {target_schema_definition.name}.")
+    # Check that definition to test does exist within the language context
+    if language_context.get_definition_by_name(definition_under_test.name):
 
-        definitions_to_test = get_definition_type_references_from_list(target_schema_definition, definition_under_test)
-        if len(definitions_to_test) > 0:
-            logging.info(f"The definition {definition_under_test.name} references a valid definition {target_schema_definition.name}")
-        else:
-            logging.info(f"The definition {definition_under_test.name} does not reference another definition.")
+        # Check for additional references within the language context of the tested defintion
+        referenced_definitions = get_definition_type_references_from_list(definition_under_test, language_context.definitions)
+
+        # Get lexme for contributing to findings messages
+        reference_lexeme = definition_under_test.get_lexeme_with_value(definition_under_test.name)
+
+        if len(referenced_definitions) == 0:
+            no_references_found_message = f"No references to '{definition_under_test.name}' in the language context."
+
+            logging.info(no_references_found_message)
+ 
+            if reference_lexeme:
+                findings.add_info_finding(
+                    definition_under_test, no_references_found_message, PLUGIN_NAME, reference_lexeme
+                )
     else:
-        undefined_definition_error_message = f"Nonexistant definition: '{target_schema_definition.name}'."
-        reference_lexeme = target_schema_definition.get_lexeme_with_value(target_schema_definition.name)
-        logging.info(undefined_definition_error_message)
+        no_definition_message = f"No definition with the name '{definition_under_test.name}' was found in the language context."
+        logging.error(no_definition_message)
 
         if reference_lexeme:
             findings.add_error_finding(
-                definition_under_test, undefined_definition_error_message, PLUGIN_NAME, reference_lexeme
+                definition_under_test, no_definition_message, PLUGIN_NAME, reference_lexeme
             )
 
     return ValidatorResult([definition_under_test], findings)
