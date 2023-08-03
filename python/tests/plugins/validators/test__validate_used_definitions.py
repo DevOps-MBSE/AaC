@@ -26,29 +26,26 @@ class TestValidateUsedDefinitions(ActiveContextTestCase):
         self.assertEqual(expected_result.is_valid(), actual_result.is_valid())
 
     def test_validate_references_invalid_definition_reference(self):
-        invalid_definition_type = "ThisTypeStringWontAppearInTheCoreSpecIHope"
-
-        test_invalid_definition_reference_field = create_field_entry("InvalidBehaviorField", invalid_definition_type)
-        test_invalid_schema_definition = create_schema_definition(
-            "InvalidSchema", fields=[test_invalid_definition_reference_field]
+        test_unreferenced_schema_definition = create_schema_definition(
+            "UnreferencedSchema", fields=[]
         )
-
         invalid_reference_error_message = ""
+        
         test_findings = ValidatorFindings()
-        expected_finding_location = SourceLocation(4, 10, 81, 42)
+        expected_finding_location = SourceLocation(1, 8, 16, 18)
         lexeme = Lexeme(expected_finding_location, "", "")
-        test_findings.add_error_finding(
-            test_invalid_schema_definition, invalid_reference_error_message, "validate thing", lexeme
+        test_findings.add_info_finding(
+            test_unreferenced_schema_definition, invalid_reference_error_message, "validate thing", lexeme
         )
-        expected_result = ValidatorResult([test_invalid_schema_definition], test_findings)
-
-        test_active_context = get_core_spec_context([test_invalid_schema_definition])
+        expected_result = ValidatorResult([test_unreferenced_schema_definition], test_findings)
+        
+        test_active_context = get_core_spec_context([test_unreferenced_schema_definition])
         field_definition = test_active_context.get_definition_by_name("Field")
-
-        actual_result = validate_used_definitions(test_invalid_schema_definition, field_definition, test_active_context, "type")
+        
+        actual_result = validate_used_definitions(test_unreferenced_schema_definition, field_definition, test_active_context, "type")
         actual_result_message = actual_result.get_messages_as_string()
-
+        
         self.assertEqual(expected_result.is_valid(), actual_result.is_valid())
-        self.assertEqual(expected_finding_location, actual_result.findings.get_error_findings()[0].location.location)
-        self.assertIn("Nonexistant", actual_result_message)
-        self.assertIn(invalid_definition_type, actual_result_message)
+        self.assertEqual(expected_finding_location, actual_result.findings.get_info_findings()[0].location.location)
+        self.assertIn("No references", actual_result_message)
+        self.assertIn(test_unreferenced_schema_definition.name, actual_result_message)

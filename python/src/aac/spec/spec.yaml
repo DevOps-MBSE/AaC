@@ -340,9 +340,7 @@ schema:
         - name
         - fields
     - name: Unique definition names
-    - name: Definition references exist
-      arguments:
-        - name
+    - name: Definition is referenced
 ---
 schema:
   name: Behavior
