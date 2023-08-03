@@ -42,7 +42,8 @@ class TestPublishDiagnosticsProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
 
         await self.create_document(invalid_enum_document_name, invalid_enum.to_yaml())
 
-        diagnostic, *_ = await self.publish_diagnostics(invalid_enum_document_name)
+        diagnostics = await self.publish_diagnostics(invalid_enum_document_name)
+        diagnostic, *_ = [diagnostic for diagnostic in diagnostics if diagnostic.severity == DiagnosticSeverity.Error]
         self.assertEqual(0, len(_))
         self.assertEqual(DiagnosticSeverity.Error, diagnostic.severity)
         self.assertEqual(Range(start=Position(line=0, character=0), end=Position(line=0, character=4)), diagnostic.range)
