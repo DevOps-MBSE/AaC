@@ -18,13 +18,12 @@ from pygls.workspace import Document
 
 from aac.spec import core
 
-from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.lsp.text_document import TextDocument
 from tests.plugins.lsp_server.definition_constants import TEST_DOCUMENT_CONTENT, TEST_DOCUMENT_NAME
 from tests.plugins.lsp_server.lsp_test_client import LspTestClient
 
 
-class BaseLspTestCase(ActiveContextTestCase, IsolatedAsyncioTestCase):
+class BaseLspTestCase(IsolatedAsyncioTestCase):
     """Base test case providing set up and tear down for LSP tests."""
 
     documents: dict[str, TextDocument] = {}

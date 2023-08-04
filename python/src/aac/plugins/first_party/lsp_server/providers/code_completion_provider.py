@@ -9,9 +9,9 @@ from pygls.server import LanguageServer
 
 from aac.io.parser import parse
 from aac.io.parser._parser_error import ParserError
-from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.definitions.collections import get_definitions_by_root_key
 from aac.lang.definitions.definition import Definition
+from aac.lang.language_context import LanguageContext
 from aac.plugins.first_party.lsp_server.providers.lsp_provider import LspProvider
 
 SPACE_TRIGGER = " "
@@ -61,7 +61,7 @@ def _handle_space_code_completion(language_server: LanguageServer, params: Compl
 
 
 def _get_reference_completion_items(language_server: LanguageServer, params: CompletionParams):
-    active_context = get_active_context()
+    active_context = language_server.language_context
     primitives_definition = active_context.get_primitives_definition()
 
     primitive_references = {}
