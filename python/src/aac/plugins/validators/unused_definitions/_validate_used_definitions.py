@@ -29,21 +29,18 @@ def validate_used_definitions(
     """
     findings = ValidatorFindings()
 
-    # Check that definition to test does exist within the language context
-    if language_context.get_definition_by_name(definition_under_test.name):
+    # Check for additional references within the language context of the tested defintion
+    referenced_definitions = get_definition_type_references_from_list(definition_under_test, language_context.definitions)
 
-        # Check for additional references within the language context of the tested defintion
-        referenced_definitions = get_definition_type_references_from_list(definition_under_test, language_context.definitions)
+    # Get lexme for contributing to findings messages
+    reference_lexeme = definition_under_test.get_lexeme_with_value(definition_under_test.name)
 
-        # Get lexme for contributing to findings messages
-        reference_lexeme = definition_under_test.get_lexeme_with_value(definition_under_test.name)
-
-        if len(referenced_definitions) == 0:
-            no_references_found_message = f"No references to '{definition_under_test.name}' in the language context."
-            logging.info(no_references_found_message)
-            if reference_lexeme:
-                findings.add_info_finding(
-                    definition_under_test, no_references_found_message, PLUGIN_NAME, reference_lexeme
+    if len(referenced_definitions) == 0:
+        no_references_found_message = f"No references to '{definition_under_test.name}' in the language context."
+        logging.info(no_references_found_message)
+        if reference_lexeme:
+            findings.add_info_finding(
+                definition_under_test, no_references_found_message, PLUGIN_NAME, reference_lexeme
                 )
     else:
         no_definition_message = f"No definition with the name '{definition_under_test.name}' was found in the language context."
