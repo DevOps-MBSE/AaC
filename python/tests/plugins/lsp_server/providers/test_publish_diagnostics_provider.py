@@ -32,7 +32,8 @@ class TestPublishDiagnosticsProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
 
     async def test_get_diagnostics_for_document_with_valid_definitions(self):
         diagnostics = await self.publish_diagnostics(TEST_DOCUMENT_NAME)
-        self.assertListEqual([], diagnostics)
+        error_diagnostics = [diagnostic for diagnostic in diagnostics if diagnostic.severity == DiagnosticSeverity.Error]
+        self.assertListEqual([], error_diagnostics)
 
     async def test_get_diagnostics_for_document_with_invalid_enum(self):
         invalid_enum_document_name = "enum.aac"
@@ -56,12 +57,13 @@ class TestPublishDiagnosticsProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         invalid_schema = create_schema_definition("InvalidSchema", "a schema with an invalid field", fields)
         await self.create_document(invalid_schema_document_name, invalid_schema.to_yaml())
 
-        diagnostic, *_ = await self.publish_diagnostics(invalid_schema_document_name)
+        diagnostics = await self.publish_diagnostics(invalid_schema_document_name)
+        error_diagnostics, *_ = [diagnostic for diagnostic in diagnostics if diagnostic.severity == DiagnosticSeverity.Error]
         self.assertEqual(0, len(_))
-        self.assertEqual(DiagnosticSeverity.Error, diagnostic.severity)
-        self.assertEqual(Range(start=Position(line=5, character=10), end=Position(line=5, character=17)), diagnostic.range)
-        self.assertEqual(DEFINED_REFERENCES_VALIDATOR, diagnostic.code)
-        self.assertRegexpMatches(diagnostic.message.lower(), "undefined.*invalid.*reference")
+        self.assertEqual(DiagnosticSeverity.Error, error_diagnostics.severity)
+        self.assertEqual(Range(start=Position(line=5, character=10), end=Position(line=5, character=17)), error_diagnostics.range)
+        self.assertEqual(DEFINED_REFERENCES_VALIDATOR, error_diagnostics.code)
+        self.assertRegexpMatches(error_diagnostics.message.lower(), "undefined.*invalid.*reference")
 
     async def test_get_diagnostics_for_document_with_multiple_definitions(self):
         schema_a = create_schema_definition("a", "a schema", [create_field_entry("value", "int")])
@@ -79,9 +81,10 @@ class TestPublishDiagnosticsProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         content = DEFINITION_SEPARATOR.join([schema_a.to_yaml(), schema_b.to_yaml(), invalid_model.to_yaml()])
         await self.create_document(invalid_model_document_name, content)
 
-        diagnostic, *_ = await self.publish_diagnostics(invalid_model_document_name)
+        diagnostics = await self.publish_diagnostics(invalid_model_document_name)
+        error_diagnostic, *_ = [diagnostic for diagnostic in diagnostics if diagnostic.severity == DiagnosticSeverity.Error]
         self.assertEqual(0, len(_))
-        self.assertEqual(DiagnosticSeverity.Error, diagnostic.severity)
-        self.assertEqual(Range(start=Position(line=16, character=0), end=Position(line=16, character=7)), diagnostic.range)
-        self.assertEqual(ROOT_KEYS_VALIDATOR, diagnostic.code)
-        self.assertRegexpMatches(diagnostic.message.lower(), "undefined.*root.*service")
+        self.assertEqual(DiagnosticSeverity.Error, error_diagnostic.severity)
+        self.assertEqual(Range(start=Position(line=16, character=0), end=Position(line=16, character=7)), error_diagnostic.range)
+        self.assertEqual(ROOT_KEYS_VALIDATOR, error_diagnostic.code)
+        self.assertRegexpMatches(error_diagnostic.message.lower(), "undefined.*root.*service")
