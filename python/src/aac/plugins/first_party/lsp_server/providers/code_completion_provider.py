@@ -11,7 +11,6 @@ from aac.io.parser import parse
 from aac.io.parser._parser_error import ParserError
 from aac.lang.definitions.collections import get_definitions_by_root_key
 from aac.lang.definitions.definition import Definition
-from aac.lang.language_context import LanguageContext
 from aac.plugins.first_party.lsp_server.providers.lsp_provider import LspProvider
 
 SPACE_TRIGGER = " "
