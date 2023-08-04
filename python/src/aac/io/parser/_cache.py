@@ -41,9 +41,9 @@ class YamlLFUCache:
     # The internal cache is using a dict with sorting O(n log n) rather than a more complex linked list which would be capable of linear time
     cache: dict[str, CacheEntry] = attrib(default=Factory(dict), validator=validators.instance_of(dict))
 
-    def parse_string(self, string: str) -> list[dict]:
+    def parse_string(self, string: str, source: str = STRING_YAML_SOURCE) -> list[dict]:
         """Parse the YAML string and return the YAML dictionaries."""
-        yaml_dicts = self._get_or_parse_string(STRING_YAML_SOURCE, string).yaml_structures
+        yaml_dicts = self._get_or_parse_string(source, string).yaml_structures
         return yaml_dicts
 
     def parse_file(self, file_path: str) -> list[dict]:
@@ -56,9 +56,9 @@ class YamlLFUCache:
 
         return yaml_dicts
 
-    def scan_string(self, string: str) -> list[Token]:
+    def scan_string(self, string: str, source: str = STRING_YAML_SOURCE) -> list[Token]:
         """Parse the YAML string and return the YAML tokens."""
-        return self._get_or_parse_string(STRING_YAML_SOURCE, string).yaml_tokens
+        return self._get_or_parse_string(source, string).yaml_tokens
 
     def scan_file(self, file_path: str) -> list[Token]:
         """Parse the YAML file and return the YAML tokens."""
