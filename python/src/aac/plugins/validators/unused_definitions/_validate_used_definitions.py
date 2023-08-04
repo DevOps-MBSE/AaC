@@ -42,13 +42,5 @@ def validate_used_definitions(
             findings.add_info_finding(
                 definition_under_test, no_references_found_message, PLUGIN_NAME, reference_lexeme
             )
-    else:
-        no_definition_message = f"No definition with the name '{definition_under_test.name}' was found in the language context."
-        logging.error(no_definition_message)
-
-        if reference_lexeme:
-            findings.add_error_finding(
-                definition_under_test, no_definition_message, PLUGIN_NAME, reference_lexeme
-            )
 
     return ValidatorResult([definition_under_test], findings)
