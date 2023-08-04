@@ -1,4 +1,4 @@
-from os.path import basename, sep
+from os.path import basename, sep, isfile
 from tempfile import TemporaryDirectory
 from typing import Optional
 from unittest import TestCase
@@ -17,7 +17,7 @@ from aac.lang.definitions import collections
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.source_location import SourceLocation
 
-from tests.helpers.io import TemporaryTestFile
+from tests.helpers.io import TemporaryAaCTestFile
 from tests.helpers.parsed_definitions import create_enum_definition, create_import_definition
 
 
@@ -44,7 +44,7 @@ class TestParser(TestCase):
         self.assertEqual(cm.exception.source, filespec)
 
     def test_can_get_lexemes_from_parsed_architecture_file(self):
-        with TemporaryTestFile(TEST_MESSAGE_CONTENTS.strip()) as test_yaml:
+        with TemporaryAaCTestFile(TEST_MESSAGE_CONTENTS.strip()) as test_yaml:
             parsed_definitions = parse(test_yaml.name)
             self.assertEqual(1, len(parsed_definitions))
             parsed_definition = parsed_definitions[0]
@@ -60,12 +60,102 @@ class TestParser(TestCase):
             self.assertEqual(second.value, DEFINITION_FIELD_NAME)
             self.assertEqual(second.location, SourceLocation(1, 2, 10, 4))
 
+    def test_errors_when_parsing_invalid_yaml(self):
+        content = f"{ROOT_KEY_MODEL}: ]["
+        with TemporaryAaCTestFile(content) as test_yaml:
+            self.check_parser_errors(test_yaml.name, "invalid YAML")
+
+    def test_errors_when_parsing_incomplete_model(self):
+        content = f"{ROOT_KEY_MODEL}:"
+        with TemporaryAaCTestFile(content) as test_yaml:
+            self.check_parser_errors(test_yaml.name, "Definition is missing field 'name'", content)
+
+    def test_errors_when_parsing_non_yaml(self):
+        content = "not yaml"
+        with TemporaryAaCTestFile(content) as test_yaml:
+            self.check_parser_errors(test_yaml.name, "not YAML", content)
+
+    def test_content_is_split_by_yaml_documents(self):
+        content = f"{TEST_MESSAGE_CONTENTS}{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_CONTENTS}"
+        parsed_definitions = parse(content, source_uri=PARSER_TEST_SOURCE)
+
+        self.assertEqual(len(parsed_definitions), 2)
+
+        contents = [definition.content for definition in parsed_definitions]
+        self.assertIn(TEST_MESSAGE_CONTENTS, contents)
+        self.assertIn(f"{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_CONTENTS}", contents)
+
+    def test_file_content_is_split_by_yaml_documents(self):
+        content = f"{TEST_MESSAGE_CONTENTS}{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_CONTENTS}"
+        with TemporaryAaCTestFile(content) as test_yaml:
+            parsed_definitions = parse(test_yaml.name)
+
+            self.assertEqual(len(parsed_definitions), 2)
+
+            contents = [definition.content for definition in parsed_definitions]
+            self.assertIn(TEST_MESSAGE_CONTENTS, contents)
+            self.assertIn(f"{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_CONTENTS}", contents)
+
+    def test_lexemes_are_split_by_yaml_documents(self):
+        content = f"{TEST_MESSAGE_CONTENTS}{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_CONTENTS}"
+        parsed_definitions = parse(content, source_uri=PARSER_TEST_SOURCE)
+
+        self.assertEqual(len(parsed_definitions), 2)
+
+        self.assertNotIn(
+            TEST_STATUS_NAME,
+            self.get_lexeme_values_for_definition(TEST_MESSAGE_NAME, parsed_definitions),
+        )
+        self.assertNotIn(
+            TEST_MESSAGE_NAME,
+            self.get_lexeme_values_for_definition(TEST_STATUS_NAME, parsed_definitions),
+        )
+
+    def test_file_lexemes_are_split_by_yaml_documents(self):
+        content = f"{TEST_MESSAGE_CONTENTS}{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_CONTENTS}"
+        with TemporaryAaCTestFile(content) as test_yaml:
+            parsed_definitions = parse(test_yaml.name)
+
+            self.assertEqual(len(parsed_definitions), 2)
+
+            self.assertNotIn(
+                TEST_STATUS_NAME,
+                self.get_lexeme_values_for_definition(TEST_MESSAGE_NAME, parsed_definitions),
+            )
+            self.assertNotIn(
+                TEST_MESSAGE_NAME,
+                self.get_lexeme_values_for_definition(TEST_STATUS_NAME, parsed_definitions),
+            )
+
+    def test_does_not_add_doc_separator_if_not_already_present(self):
+        definition, *_ = parse(TEST_MESSAGE_CONTENTS, source_uri=PARSER_TEST_SOURCE)
+        self.assertEqual(definition.content, TEST_MESSAGE_CONTENTS)
+
+        definitions = parse(
+            f"{TEST_MESSAGE_CONTENTS}{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_CONTENTS}", source_uri=PARSER_TEST_SOURCE
+        )
+
+        message_definition, *_ = [definition for definition in definitions if definition.name == TEST_MESSAGE_NAME]
+        self.assertFalse(message_definition.content.startswith(YAML_DOCUMENT_SEPARATOR))
+
+        status_definition, *_ = [definition for definition in definitions if definition.name == TEST_STATUS_NAME]
+        self.assertTrue(status_definition.content.startswith(YAML_DOCUMENT_SEPARATOR))
+
+
+class TestParserImports(TestCase):
+    """Exercises the import functionality of the parser."""
+
+    def check_definition(self, definition: Optional[Definition], name: str, type: str):
+        self.assertIsNotNone(definition)
+        self.assertEqual(type, definition.get_root_key())
+        self.assertEqual(name, definition.name)
+
     def test_can_handle_architecture_file_with_imports(self):
         with (
             TemporaryDirectory() as temp_dir,
-            TemporaryTestFile(TEST_MESSAGE_CONTENTS, dir=temp_dir, name=TEST_MESSAGE_FILE_NAME) as import1,
-            TemporaryTestFile(TEST_STATUS_CONTENTS, dir=temp_dir, name=TEST_STATUS_FILE_NAME) as import2,
-            TemporaryTestFile(TEST_MODEL_CONTENTS, dir=temp_dir, suffix=AAC_DOCUMENT_EXTENSION) as test_yaml,
+            TemporaryAaCTestFile(TEST_MESSAGE_CONTENTS, dir=temp_dir, name=TEST_MESSAGE_FILE_NAME) as import1,
+            TemporaryAaCTestFile(TEST_STATUS_CONTENTS, dir=temp_dir, name=TEST_STATUS_FILE_NAME) as import2,
+            TemporaryAaCTestFile(TEST_MODEL_CONTENTS, dir=temp_dir) as test_yaml,
         ):
             definitions = parse(test_yaml.name)
             self.assertEqual(len(definitions), 4)
@@ -100,13 +190,13 @@ class TestParser(TestCase):
         another_definition = create_enum_definition("TestEnum", ["a", "b", "c"])
         with (
             TemporaryDirectory() as temp_dir,
-            TemporaryTestFile(another_definition.to_yaml(), dir=temp_dir, name=TEST_STATUS_FILE_NAME) as import1,
-            TemporaryTestFile(TEST_MESSAGE_CONTENTS, dir=temp_dir, name=TEST_MESSAGE_FILE_NAME) as import2,
-            TemporaryTestFile(TEST_STATUS_CONTENTS, dir=temp_dir, name=TEST_STATUS_FILE_NAME) as import3,
+            TemporaryAaCTestFile(another_definition.to_yaml(), dir=temp_dir, name=TEST_STATUS_FILE_NAME) as import1,
+            TemporaryAaCTestFile(TEST_MESSAGE_CONTENTS, dir=temp_dir, name=TEST_MESSAGE_FILE_NAME) as import2,
+            TemporaryAaCTestFile(TEST_STATUS_CONTENTS, dir=temp_dir, name=TEST_STATUS_FILE_NAME) as import3,
         ):
             another_import_definition = create_import_definition([import1.name])
             content = f"{another_import_definition.to_yaml()}{YAML_DOCUMENT_SEPARATOR}{TEST_MODEL_CONTENTS}"
-            with TemporaryTestFile(content, dir=temp_dir) as main:
+            with TemporaryAaCTestFile(content, dir=temp_dir) as main:
                 definitions = parse(main.name)
                 self.assertEqual(len(definitions), 5)
 
@@ -116,86 +206,55 @@ class TestParser(TestCase):
                 self.assertIn(basename(import2.name), import_basenames)
                 self.assertIn(basename(import3.name), import_basenames)
 
-    def test_errors_when_parsing_invalid_yaml(self):
-        content = f"{ROOT_KEY_MODEL}: ]["
-        with TemporaryTestFile(content) as test_yaml:
-            self.check_parser_errors(test_yaml.name, "invalid YAML")
+    def test_parsed_file_imports_non_existent_file(self):
+        non_existent_import_definition = create_import_definition(["non_existent_path.aac"])
+        test_message_contents_with_bad_import = YAML_DOCUMENT_SEPARATOR.join([non_existent_import_definition.to_yaml(), TEST_MESSAGE_CONTENTS])
+        with (
+            TemporaryDirectory() as temp_dir,
+            TemporaryAaCTestFile(test_message_contents_with_bad_import, dir=temp_dir, name=TEST_MESSAGE_FILE_NAME) as initial_file,
+        ):
+            definitions = parse(initial_file.name)
+            parsed_non_existent_import_definition, *_ = collections.get_definitions_by_root_key(ROOT_KEY_IMPORT, definitions)
 
-    def test_errors_when_parsing_incomplete_model(self):
-        content = f"{ROOT_KEY_MODEL}:"
-        with TemporaryTestFile(content) as test_yaml:
-            self.check_parser_errors(test_yaml.name, "Definition is missing field 'name'", content)
+            """ Asserting that the bad import definition was parsed and that this assertion was allowed to complete without error is the
+                assertion that the parse mechanism softly handled the bad import. """
+            self.assertEqual(non_existent_import_definition, parsed_non_existent_import_definition)
 
-    def test_errors_when_parsing_non_yaml(self):
-        content = "not yaml"
-        with TemporaryTestFile(content) as test_yaml:
-            self.check_parser_errors(test_yaml.name, "not YAML", content)
+    def test_parsed_file_imports_empty_file(self):
+        empty_file_name = "empty_file.aac"
+        non_existent_import_definition = create_import_definition([empty_file_name])
+        test_message_contents_with_bad_import = YAML_DOCUMENT_SEPARATOR.join([non_existent_import_definition.to_yaml(), TEST_MESSAGE_CONTENTS])
+        with (
+            TemporaryDirectory() as temp_dir,
+            TemporaryAaCTestFile(test_message_contents_with_bad_import, dir=temp_dir, name=TEST_MESSAGE_FILE_NAME) as initial_file,
+            TemporaryAaCTestFile("", dir=temp_dir, name=empty_file_name) as empty_file,
+        ):
+            definitions = parse(initial_file.name)
+            parsed_non_existent_import_definition, *_ = collections.get_definitions_by_root_key(ROOT_KEY_IMPORT, definitions)
 
-    def test_content_is_split_by_yaml_documents(self):
-        content = f"{TEST_MESSAGE_CONTENTS}{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_CONTENTS}"
-        parsed_definitions = parse(content, source_uri=PARSER_TEST_SOURCE)
+            self.assertTrue(isfile(empty_file.name))
 
-        self.assertEqual(len(parsed_definitions), 2)
+            """ Asserting that the bad import definition was parsed and that this assertion was allowed to complete without error is the
+                assertion that the parse mechanism softly handled the bad import. """
+            self.assertEqual(non_existent_import_definition, parsed_non_existent_import_definition)
 
-        contents = [definition.content for definition in parsed_definitions]
-        self.assertIn(TEST_MESSAGE_CONTENTS, contents)
-        self.assertIn(f"{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_CONTENTS}", contents)
+    def test_parsed_file_imports_invalid_file(self):
+        invalid_yaml_file_name = "invalid_yaml_file.aac"
+        non_existent_import_definition = create_import_definition([invalid_yaml_file_name])
+        test_message_contents_with_bad_import = YAML_DOCUMENT_SEPARATOR.join([non_existent_import_definition.to_yaml(), TEST_MESSAGE_CONTENTS])
+        with (
+            TemporaryDirectory() as temp_dir,
+            TemporaryAaCTestFile(test_message_contents_with_bad_import, dir=temp_dir, name=TEST_MESSAGE_FILE_NAME) as initial_file,
+            TemporaryAaCTestFile("", dir=temp_dir, name=invalid_yaml_file_name) as invalid_yaml_file,
+        ):
+            definitions = parse(initial_file.name)
+            parsed_non_existent_import_definition, *_ = collections.get_definitions_by_root_key(ROOT_KEY_IMPORT, definitions)
 
-    def test_file_content_is_split_by_yaml_documents(self):
-        content = f"{TEST_MESSAGE_CONTENTS}{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_CONTENTS}"
-        with TemporaryTestFile(content) as test_yaml:
-            parsed_definitions = parse(test_yaml.name)
+            self.assertTrue(isfile(invalid_yaml_file.name))
 
-            self.assertEqual(len(parsed_definitions), 2)
-
-            contents = [definition.content for definition in parsed_definitions]
-            self.assertIn(TEST_MESSAGE_CONTENTS, contents)
-            self.assertIn(f"{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_CONTENTS}", contents)
-
-    def test_lexemes_are_split_by_yaml_documents(self):
-        content = f"{TEST_MESSAGE_CONTENTS}{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_CONTENTS}"
-        parsed_definitions = parse(content, source_uri=PARSER_TEST_SOURCE)
-
-        self.assertEqual(len(parsed_definitions), 2)
-
-        self.assertNotIn(
-            TEST_STATUS_NAME,
-            self.get_lexeme_values_for_definition(TEST_MESSAGE_NAME, parsed_definitions),
-        )
-        self.assertNotIn(
-            TEST_MESSAGE_NAME,
-            self.get_lexeme_values_for_definition(TEST_STATUS_NAME, parsed_definitions),
-        )
-
-    def test_file_lexemes_are_split_by_yaml_documents(self):
-        content = f"{TEST_MESSAGE_CONTENTS}{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_CONTENTS}"
-        with TemporaryTestFile(content) as test_yaml:
-            parsed_definitions = parse(test_yaml.name)
-
-            self.assertEqual(len(parsed_definitions), 2)
-
-            self.assertNotIn(
-                TEST_STATUS_NAME,
-                self.get_lexeme_values_for_definition(TEST_MESSAGE_NAME, parsed_definitions),
-            )
-            self.assertNotIn(
-                TEST_MESSAGE_NAME,
-                self.get_lexeme_values_for_definition(TEST_STATUS_NAME, parsed_definitions),
-            )
-
-    def test_does_not_add_doc_separator_if_not_already_present(self):
-        definition, *_ = parse(TEST_MESSAGE_CONTENTS, source_uri=PARSER_TEST_SOURCE)
-        self.assertEqual(definition.content, TEST_MESSAGE_CONTENTS)
-
-        definitions = parse(
-            f"{TEST_MESSAGE_CONTENTS}{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_CONTENTS}", source_uri=PARSER_TEST_SOURCE
-        )
-
-        message_definition, *_ = [definition for definition in definitions if definition.name == TEST_MESSAGE_NAME]
-        self.assertFalse(message_definition.content.startswith(YAML_DOCUMENT_SEPARATOR))
-
-        status_definition, *_ = [definition for definition in definitions if definition.name == TEST_STATUS_NAME]
-        self.assertTrue(status_definition.content.startswith(YAML_DOCUMENT_SEPARATOR))
+            """ Asserting that the bad import definition was parsed and that this assertion was allowed to complete without error is the
+                assertion that the parse mechanism softly handled the bad import. """
+            self.assertEqual(non_existent_import_definition, parsed_non_existent_import_definition)
 
 
 TEST_MODEL_NAME = "EchoService"
