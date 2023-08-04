@@ -1,7 +1,6 @@
 import os
 from importlib import resources
-from tempfile import NamedTemporaryFile, TemporaryDirectory
-
+from tempfile import TemporaryDirectory
 from nose2.tools import params
 
 from aac.io import parser

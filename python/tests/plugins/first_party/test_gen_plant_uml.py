@@ -20,7 +20,7 @@ from aac.plugins.first_party.gen_plant_uml.gen_plant_uml_impl import (
 
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.assertion import assert_plugin_success
-from tests.helpers.io import TemporaryTestFile, TemporaryAaCTestFile
+from tests.helpers.io import TemporaryTestFile
 from tests.helpers.plugins import check_generated_file_contents
 
 

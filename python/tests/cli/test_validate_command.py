@@ -1,5 +1,5 @@
 from aac.cli.builtin_commands.validate.validate_impl import validate
-from aac.io.constants import DEFINITION_SEPARATOR, AAC_DOCUMENT_EXTENSION
+from aac.io.constants import DEFINITION_SEPARATOR
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.constants import DEFINITION_FIELD_NAME, PRIMITIVE_TYPE_STRING
 
