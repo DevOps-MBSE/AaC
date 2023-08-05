@@ -15,7 +15,7 @@ from aac.plugins.first_party.lsp_server.language_server import AacLanguageServer
 # We have to sleep to give the server enough time to finish processing changes to the active
 # context, etc. Just awaiting the send_request function isn't enough since the request will get
 # sent and return.
-SLEEP_TIME = 1
+SLEEP_TIME = 2
 DEFAULT_TIMEOUT_IN_SECONDS = 3
 
 
