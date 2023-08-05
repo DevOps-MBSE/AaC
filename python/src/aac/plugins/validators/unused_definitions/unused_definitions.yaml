@@ -6,9 +6,9 @@ plugin:
 ---
 validation:
   name: Definition is referenced
-  description: Verify that references to definitions and models exist.
+  description: Informs the user when a definition isn't referenced by other definitions.
   behavior:
-    - name: Verify that referenced definitions exist.
+    - name: Idenfity definitions that aren't referenced or used.
       type: REQUEST_RESPONSE
       description:
       input:
@@ -18,23 +18,23 @@ validation:
         - name: results
           type: ValidatorOutput
       acceptance:
-        - scenario: Successfully validate definition references.
+        - scenario: Identify unused definitions.
           given:
             - The ValidatorInput content consists of valid AaC definitions.
-            - The ValidatorInput contains some AaC definitions that reference other definitions.
+            - The ValidatorInput contains only AaC definitions that are referenced by other definitions.
           when:
             - The validator plugin is executed.
           then:
             - The ValidatorOutput does not indicate any errors.
             - The ValidatorOutput does not indicate any warnings.
             - The ValidatorOutput indicates the validator plugin under test is valid.
-        - scenario: Fail to validate definition references.
+        - scenario: Unused definitions are identified.
           given:
             - The ValidatorInput content consists of otherwise valid AaC definitions.
-            - The ValidatorInput contains at least one AaC definition that references a definition that does not exist.
+            - The ValidatorInput contains at least one AaC definition that isn't referenced by any other definitions.
           when:
             - The validator plugin is executed.
           then:
-            - The ValidatorOutput has errors.
-            - The ValidatorOutput errors indicate that there is no corresponding definition with the same name.
+            - The ValidatorOutput has info severity findings.
+            - The ValidatorOutput info findings indicate that there are no other definitions that reference the validated definition.
   
