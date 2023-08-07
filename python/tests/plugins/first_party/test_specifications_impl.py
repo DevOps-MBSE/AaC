@@ -6,7 +6,7 @@ from aac.cli.builtin_commands.specifications.specifications_impl import spec_csv
 
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.assertion import assert_plugin_success
-from tests.helpers.io import TemporaryTestFile
+from tests.helpers.io import TemporaryAaCTestFile
 
 
 class TestSpecifications(ActiveContextTestCase):
@@ -15,7 +15,7 @@ class TestSpecifications(ActiveContextTestCase):
         self.maxDiff = None
 
     def test_spec_csv(self):
-        with TemporaryDirectory() as temp_dir, TemporaryTestFile(VALID_SPEC) as temp_arch_file:
+        with TemporaryDirectory() as temp_dir, TemporaryAaCTestFile(VALID_SPEC) as temp_arch_file:
             result = spec_csv(temp_arch_file.name, temp_dir)
             assert_plugin_success(result)
 
@@ -30,7 +30,7 @@ class TestSpecifications(ActiveContextTestCase):
             with open(os.path.join(temp_dir, "Subsystem.csv")) as subsystem_csv_file:
                 subsystem_csv_contents = subsystem_csv_file.read()
                 # it's not clear what does and doesn't get quoted by the CSV writer, so eliminate quotes
-                subsystem_csv_contents = subsystem_csv_contents.replace('"', "") 
+                subsystem_csv_contents = subsystem_csv_contents.replace('"', "")
                 # Assert csv contents are present
                 self.assertIn("Spec Name,Section,ID,Requirement,Parents,Children", subsystem_csv_contents)
                 self.assertIn(

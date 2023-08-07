@@ -24,7 +24,7 @@ from aac.plugins.first_party.rest_api.models.file_model import FilePathModel, Fi
 from aac.spec import get_aac_spec
 from aac.spec.core import _get_aac_spec_file_path
 
-from tests.helpers.io import TemporaryTestFile, temporary_test_file_wo_cm, new_working_dir
+from tests.helpers.io import TemporaryTestFile, TemporaryAaCTestFile, temporary_test_file_wo_cm, new_working_dir
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.parsed_definitions import (
     create_behavior_entry,
@@ -40,7 +40,9 @@ class TestAacRestApiCommandEndpoints(ActiveContextTestCase):
     def test_get_available_commands(self):
         active_context = get_active_context()
         excluded_rest_api_commands = ["rest-api", "start-lsp-io", "start-lsp-tcp"]
-        expected_result = [command for command in active_context.get_plugin_commands() if command.name not in excluded_rest_api_commands]
+        expected_result = [
+            command for command in active_context.get_plugin_commands() if command.name not in excluded_rest_api_commands
+        ]
         expected_commands_dict = {command.name: command for command in expected_result}
 
         response = self.test_client.get("/commands")
@@ -66,7 +68,7 @@ class TestAacRestApiCommandEndpoints(ActiveContextTestCase):
         command_name = "validate"
         test_model = create_model_definition("TestModel")
 
-        with TemporaryTestFile(test_model.to_yaml()) as temp_file:
+        with TemporaryAaCTestFile(test_model.to_yaml()) as temp_file:
             request_arguments = CommandRequestModel(name=command_name, arguments=[temp_file.name])
             response = self.test_client.post("/command", data=json.dumps(jsonable_encoder(request_arguments)))
 
@@ -80,7 +82,7 @@ class TestAacRestApiCommandEndpoints(ActiveContextTestCase):
         command_name = "puml-component"
         test_model = create_model_definition("TestModel")
 
-        with TemporaryTestFile(test_model.to_yaml()) as temp_file:
+        with TemporaryAaCTestFile(test_model.to_yaml()) as temp_file:
             temp_directory = os.path.dirname(temp_file.name)
             self.assertEqual(len(os.listdir(temp_directory)), 1)
 
@@ -88,6 +90,7 @@ class TestAacRestApiCommandEndpoints(ActiveContextTestCase):
             response = self.test_client.post("/command", data=json.dumps(jsonable_encoder(request_arguments)))
 
             component_directory = os.path.join(temp_directory, "component")
+            temp_file_name, *_ = os.path.splitext(temp_file.name)
 
             self.assertEqual(HTTPStatus.OK, response.status_code)
             self.assertTrue(response.json().get("success"))
@@ -97,7 +100,7 @@ class TestAacRestApiCommandEndpoints(ActiveContextTestCase):
             self.assertIn("component", os.listdir(temp_directory))
             self.assertEqual(len(os.listdir(component_directory)), 1)
             self.assertIn(
-                f"{os.path.basename(temp_file.name)}_{test_model.name.lower()}.puml", os.listdir(component_directory)
+                f"{os.path.basename(temp_file_name)}_{test_model.name.lower()}.puml", os.listdir(component_directory)
             )
 
     def test_execute_rest_api_command_fails(self):
@@ -211,7 +214,7 @@ class TestAacRestApiFileEndpoints(ActiveContextTestCase):
         active_context = get_active_context()
 
         test_definition = create_model_definition("TestDefinition")
-        with TemporaryTestFile(test_definition.to_yaml()) as test_file:
+        with TemporaryAaCTestFile(test_definition.to_yaml()) as test_file:
             parsed_definition, *_ = parse(test_file.name)
             active_context.add_definition_to_context(parsed_definition)
 
@@ -359,8 +362,11 @@ class TestAacRestApiDefinitionEndpoints(ActiveContextTestCase):
         test_model_2_definition_name = "TestModel2"
         test_model_2_definition = create_model_definition(test_model_2_definition_name)
 
-        with TemporaryTestFile(test_model_1_definition.to_yaml()) as file_1, TemporaryDirectory() as temp_dir:
-            file_2 = temporary_test_file_wo_cm(test_model_2_definition.to_yaml(), dir=temp_dir)
+        with TemporaryAaCTestFile(
+            test_model_1_definition.to_yaml()
+        ) as file_1, TemporaryDirectory() as temp_dir, TemporaryAaCTestFile(
+            test_model_2_definition.to_yaml(), dir=temp_dir
+        ) as file_2:
 
             parsed_definition_1, *_ = parse(file_1.name)
             test_context.add_definition_to_context(parsed_definition_1)
@@ -396,8 +402,12 @@ class TestAacRestApiDefinitionEndpoints(ActiveContextTestCase):
             self.assertEqual(HTTPStatus.NO_CONTENT, response_2.status_code)
             updated_definition_2 = test_context.get_definition_by_name(updated_parsed_definition_2.name)
             file_1_updated_definitions = parse(updated_parsed_definition_2.source.uri)
-            file_1_updated_definitions[0].uid = updated_definition_1.uid  # Set the UID so we can use the built in eq to compare
-            file_1_updated_definitions[1].uid = updated_definition_2.uid  # Set the UID so we can use the built in eq to compare
+            file_1_updated_definitions[
+                0
+            ].uid = updated_definition_1.uid  # Set the UID so we can use the built in eq to compare
+            file_1_updated_definitions[
+                1
+            ].uid = updated_definition_2.uid  # Set the UID so we can use the built in eq to compare
             self.assertEqual(file_1_updated_definitions[0], updated_definition_1)
             self.assertEqual(file_1_updated_definitions[1], updated_definition_2)
             self.assertFalse(os.path.lexists(parsed_definition_2.source.uri))

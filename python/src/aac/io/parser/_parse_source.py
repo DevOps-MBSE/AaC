@@ -12,11 +12,12 @@ from os import path, linesep
 from typing import Optional
 from yaml import Mark, Token, StreamStartToken, StreamEndToken, DocumentStartToken
 
-from aac.io.constants import DEFAULT_SOURCE_URI
+from aac.io.constants import DEFAULT_SOURCE_URI, YAML_DOCUMENT_EXTENSION, AAC_DOCUMENT_EXTENSION
 from aac.io.files.aac_file import AaCFile
 from aac.io.parser._cache_manager import get_cache
 from aac.io.paths import sanitize_filesystem_path
-from aac.lang.constants import DEFINITION_FIELD_FILES, DEFINITION_FIELD_NAME, ROOT_KEY_IMPORT
+from aac.lang.constants import DEFINITION_FIELD_NAME, ROOT_KEY_IMPORT
+from aac.lang.definitions.collections import get_definitions_by_root_key
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.lexeme import Lexeme
 from aac.lang.definitions.source_location import SourceLocation
@@ -43,7 +44,7 @@ def parse(source: str, source_uri: Optional[str] = None) -> list[Definition]:
 
     if linesep not in source:
         sanitized_source = sanitize_filesystem_path(source)
-        if path.lexists(sanitized_source):
+        if path.isfile(sanitized_source):
             is_file = True
 
     return _parse_file(sanitized_source) if is_file else _parse_str(source_uri or DEFAULT_SOURCE_URI, source)
@@ -51,7 +52,7 @@ def parse(source: str, source_uri: Optional[str] = None) -> list[Definition]:
 
 def _parse_file(arch_file: str) -> list[Definition]:
     """
-    Parse an Architecture-as-Code YAML file and return the definitions in it.
+    Parse an Architecture-as-Code YAML file and return the definitions in it and its imported files.
 
     Args:
         arch_file (str): The Architecture-as-Code YAML file to be parsed.
@@ -59,8 +60,21 @@ def _parse_file(arch_file: str) -> list[Definition]:
     Returns:
         The AaC definitions extracted from the specified file.
     """
-    definition_lists = [_parse_str(file, _read_file_content(file)) for file in _get_files_to_process(arch_file)]
-    return [definition for definition_list in definition_lists for definition in definition_list]
+    definitions_list = []
+    parsed_files = set()
+
+    def parse_file_contents(file: str):
+        if file not in parsed_files:
+            file_content = _read_arch_file_content(file)
+            parsed_files.add(file)
+
+            if file_content:
+                parsed_definitions = _parse_str(file, file_content)
+                definitions_list.extend(parsed_definitions)
+                [parse_file_contents(imp_file) for imp_file in _get_files_to_import_from_definitions(file, parsed_definitions)]
+
+    parse_file_contents(arch_file)
+    return definitions_list
 
 
 def _parse_str(source: str, model_content: str) -> list[Definition]:
@@ -89,14 +103,14 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
     def is_token_between_locations(token, inclusive_line_start: int, inclusive_line_end: int) -> list[Lexeme]:
         return token.start_mark.line >= inclusive_line_start and token.end_mark.line <= inclusive_line_end
 
-    yaml_tokens: list[Token] = YAML_CACHE.scan_string(model_content)
+    yaml_tokens: list[Token] = YAML_CACHE.scan_string(model_content, source)
     value_tokens: list[Token] = [token for token in yaml_tokens if hasattr(token, "value")]
     doc_start_token: list[StreamStartToken] = [token for token in yaml_tokens if isinstance(token, StreamStartToken)]
     doc_end_token: list[StreamEndToken] = [token for token in yaml_tokens if isinstance(token, StreamEndToken)]
     doc_segment_tokens: list[DocumentStartToken] = [token for token in yaml_tokens if isinstance(token, DocumentStartToken)]
     doc_tokens = [*doc_start_token, *doc_segment_tokens, *doc_end_token]
 
-    yaml_dicts: list[dict] = deepcopy(YAML_CACHE.parse_string(model_content))
+    yaml_dicts: list[dict] = deepcopy(YAML_CACHE.parse_string(model_content, source))
 
     source_files: dict[str, AaCFile] = {}
     definitions: list[Definition] = []
@@ -142,9 +156,9 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
     return definitions
 
 
-def _read_file_content(arch_file: str) -> str:
+def _read_arch_file_content(arch_file: str) -> str:
     """
-    Read file content method extracts text content from the specified file.
+    Read file content method extracts text content from the specified architecture as code file.
 
     Args:
         arch_file: The file to read.
@@ -152,29 +166,41 @@ def _read_file_content(arch_file: str) -> str:
     Returns:
         The contents of the file as a string.
     """
-    with open(arch_file, "r") as file:
-        return file.read()
+    content = ""
+    acceptable_file_extensions = [YAML_DOCUMENT_EXTENSION, AAC_DOCUMENT_EXTENSION]
+
+    _, file_ext = path.splitext(arch_file)
+    if file_ext in acceptable_file_extensions:
+        try:
+            with open(arch_file, "r") as file:
+                content = file.read()
+        except IOError as error:
+            logging.error(f"Failed to parse {arch_file} with error {error}")
+
+        if not content:
+            logging.error(f"Failed to parse {arch_file}, it's an empty file.")
+    else:
+        logging.error(
+            f"Failed to parse {arch_file}, the file is not an accepted Architecture-as-Code file extension {acceptable_file_extensions}."
+        )
+
+    return content
 
 
-def _get_files_to_process(arch_file_path: str) -> list[str]:
+def _get_files_to_import_from_definitions(source_file_path: str, definitions: list[Definition]) -> list[str]:
     """
-    Return a list of all files referenced in the model.
+    Return a list of files to import from the list of definitions.
 
-    Traverse the import path starting from the specified file and return a list of all files referenced by the model.
+    This function assumes the list of definitions contains some import definitions, and it returns
+    the list of file paths to import adjusted with the location of the source in case of relative import paths.
     """
+    import_paths = set()
 
-    def collect_imports(arch_file_path: str, unique_imports: set[str]) -> set[str]:
-        unique_imports.add(arch_file_path)
-        structures = [structure for structure in YAML_CACHE.parse_file(arch_file_path) if structure.get(ROOT_KEY_IMPORT)]
-        imports = [imp for root in structures for imp in root.get(ROOT_KEY_IMPORT, {}).get(DEFINITION_FIELD_FILES, [])]
+    import_definitions = get_definitions_by_root_key(ROOT_KEY_IMPORT, definitions)
+    for definition in import_definitions:
+        for import_path in definition.get_imports() or []:
+            arch_file_dir = path.dirname(path.realpath(source_file_path))
+            parse_path = path.join(arch_file_dir, import_path.removeprefix(f".{path.sep}"))
+            import_paths.add(sanitize_filesystem_path(parse_path))
 
-        for imp in imports:
-            arch_file_dir = path.dirname(path.realpath(arch_file_path))
-            parse_path = path.join(arch_file_dir, imp.removeprefix(f".{path.sep}"))
-            sanitized_path = sanitize_filesystem_path(parse_path)
-            if sanitized_path not in unique_imports:
-                unique_imports.update(collect_imports(sanitized_path, unique_imports))
-
-        return unique_imports
-
-    return list(collect_imports(arch_file_path, set()))
+    return list(import_paths)

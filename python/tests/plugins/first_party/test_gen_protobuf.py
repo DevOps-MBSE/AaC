@@ -16,7 +16,7 @@ from aac.plugins.first_party.gen_protobuf.gen_protobuf_impl import (
 
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.assertion import assert_plugin_failure, assert_plugin_success
-from tests.helpers.io import TemporaryTestFile
+from tests.helpers.io import TemporaryAaCTestFile
 from tests.helpers.parsed_definitions import create_enum_definition, create_field_entry, create_schema_definition
 
 
@@ -44,7 +44,7 @@ class TestGenerateProtobufPlugin(ActiveContextTestCase):
         self.maxDiff = None
 
     def test_gen_protobuf(self):
-        with TemporaryDirectory() as temp_dir, TemporaryTestFile(TEST_ARCH_YAML_STRING) as temp_arch_file:
+        with TemporaryDirectory() as temp_dir, TemporaryAaCTestFile(TEST_ARCH_YAML_STRING) as temp_arch_file:
             result = gen_protobuf(temp_arch_file.name, temp_dir)
 
             # The assert needs to be outside of the plugin_result context manager or the assertion error is masked.

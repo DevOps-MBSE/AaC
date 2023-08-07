@@ -5,27 +5,28 @@ from aac.plugins.first_party.gen_design_doc.gen_design_doc_impl import gen_desig
 
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.assertion import assert_plugin_success
-from tests.helpers.io import TemporaryTestFile
+from tests.helpers.io import TemporaryAaCTestFile
 
 
 class TestGenerateDesignDocumentPlugin(ActiveContextTestCase):
     def test_can_generate_design_doc_with_models(self):
-        with TemporaryTestFile(TEST_MODEL) as test_model:
-            temp_dir = os.path.dirname(test_model.name)
-            result = gen_design_doc(test_model.name, temp_dir)
+        with TemporaryAaCTestFile(TEST_MODEL) as test_model_file:
+            test_model_file_name, *_ = os.path.splitext(test_model_file.name)
+            temp_dir = os.path.dirname(test_model_file.name)
+            result = gen_design_doc(test_model_file.name, temp_dir)
             assert_plugin_success(result)
             files = os.listdir(temp_dir)
             self.assertEqual(len(files), 2)
-            test_design_doc_file_name, *_ = [f for f in files if f != os.path.basename(test_model.name)]
+            test_design_doc_file_name, *_ = [f for f in files if f != os.path.basename(test_model_file.name)]
             with open(os.path.join(temp_dir, test_design_doc_file_name)) as markdown_file:
                 markdown = markdown_file.read()
-                self.assert_headings(markdown, os.path.basename(test_model.name))
+                self.assert_headings(markdown, os.path.basename(test_model_file_name))
                 self.assert_schema(markdown)
                 self.assert_model(markdown)
                 self.assert_use_case(markdown)
 
     def test_can_handle_names_with_dots(self):
-        with TemporaryTestFile(TEST_MODEL_2) as test_yaml:
+        with TemporaryAaCTestFile(TEST_MODEL_2) as test_yaml:
             temp_dir = os.path.dirname(test_yaml.name)
 
             result = gen_design_doc(test_yaml.name, temp_dir)

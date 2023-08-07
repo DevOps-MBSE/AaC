@@ -26,7 +26,7 @@ from aac.lang.language_context import LanguageContext
 from aac.spec import get_aac_spec, get_primitives, get_root_keys
 
 from tests.active_context_test_case import ActiveContextTestCase
-from tests.helpers.io import TemporaryTestFile
+from tests.helpers.io import TemporaryTestFile, TemporaryAaCTestFile
 from tests.helpers.parsed_definitions import (
     create_enum_definition,
     create_enum_ext_definition,
@@ -311,7 +311,7 @@ class TestLanguageContext(ActiveContextTestCase):
 
     def test_language_context_loads_state_from_file(self):
         test_definition = create_schema_definition("TestDefinition")
-        with TemporaryTestFile(test_definition.to_yaml()) as test_definition_file:
+        with TemporaryAaCTestFile(test_definition.to_yaml()) as test_definition_file:
             test_definition.source = AaCFile(test_definition_file.name, True, True)
 
             test_context = get_active_context()
@@ -447,7 +447,7 @@ class TestLanguageContextGetDefinitionMethods(ActiveContextTestCase):
     def test_language_context_get_definitions_by_name(self):
         test_context = get_active_context()
 
-        with TemporaryTestFile(TEST_DOCUMENT_CONTENT) as test_file:
+        with TemporaryAaCTestFile(TEST_DOCUMENT_CONTENT) as test_file:
             test_content_definitions = parse(test_file.name)
             test_context.add_definitions_to_context(test_content_definitions)
 
@@ -459,7 +459,7 @@ class TestLanguageContextGetDefinitionMethods(ActiveContextTestCase):
     def test_language_context_get_definitions_by_file_uri(self):
         test_context = get_active_context()
 
-        with TemporaryTestFile(TEST_DOCUMENT_CONTENT) as test_file:
+        with TemporaryAaCTestFile(TEST_DOCUMENT_CONTENT) as test_file:
             test_content_definitions = parse(test_file.name)
             test_context.add_definitions_to_context(test_content_definitions)
 
@@ -478,7 +478,7 @@ class TestLanguageContextFileMethods(ActiveContextTestCase):
     def test_language_context_write_file(self):
         test_context = get_active_context()
 
-        with TemporaryTestFile(TEST_DOCUMENT_CONTENT) as test_file:
+        with TemporaryAaCTestFile(TEST_DOCUMENT_CONTENT) as test_file:
             test_content_definitions = parse(test_file.name)
             test_context.add_definitions_to_context(test_content_definitions)
 
