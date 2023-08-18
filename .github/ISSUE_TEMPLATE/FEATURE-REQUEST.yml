@@ -1,0 +1,46 @@
+name: "💡 Feature Request"
+description: Create a new ticket for a new feature request
+title: "💡 [REQUEST] - <title>"
+labels: [
+  "question", 
+  "enhancement"
+]
+projects: [
+  "jondavid-black/AaC Prototype"
+]
+body:
+  - type: textarea
+    id: reference_issues
+    attributes:
+      label: "Reference Issues"
+      placeholder: "#<Issues IDs>"
+    validations:
+      required: false
+  - type: textarea
+    id: summary
+    attributes:
+      label: "Summary"
+      placeholder: Describe in a few lines your feature request.
+    validations:
+      required: true
+  - type: textarea
+    id: basic_example
+    attributes:
+      label: "Basic Example"
+      placeholder: A few specific words about your feature request.
+    validations:
+      required: true
+  - type: textarea
+    id: drawbacks
+    attributes:
+      label: "What are the drawbacks/impacts of your feature request?"
+      placeholder: Identify the drawbacks and impacts while being neutral on your feature request.
+    validations:
+      required: true
+  - type: textarea
+    id: unresolved_question
+    attributes:
+      label: "Unresolved questions"
+      placeholder: Identify any unresolved issues.
+    validations:
+      required: false
