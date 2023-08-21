@@ -141,6 +141,12 @@ class TestParser(TestCase):
         status_definition, *_ = [definition for definition in definitions if definition.name == TEST_STATUS_NAME]
         self.assertTrue(status_definition.content.startswith(YAML_DOCUMENT_SEPARATOR))
 
+    def test_no_errors_for_empty_definitions(self):
+        definitions = parse(
+            f"{TEST_MESSAGE_CONTENTS}{YAML_DOCUMENT_SEPARATOR}\n{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_CONTENTS}"
+        )
+        self.assertEqual(len(definitions), 2)
+
 
 class TestParserImports(TestCase):
     """Exercises the import functionality of the parser."""
