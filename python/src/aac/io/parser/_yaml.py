@@ -1,4 +1,5 @@
 """YAML-specific parsing and scanning functions."""
+
 import logging
 
 from yaml import scan, load_all, SafeLoader, Token
@@ -55,7 +56,7 @@ def parse_yaml(source: str, content: str) -> list[dict]:
         If the model does not have (at least) a "name" field, a ParserError is raised.
     """
     try:
-        models = list(load_all(content, Loader=SafeLoader))
+        models = [model for model in load_all(content, Loader=SafeLoader) if model]
         _error_if_not_yaml(source, content, models)
         _error_if_not_complete(source, content, models)
     except YAMLParserError as error:
@@ -107,9 +108,11 @@ def _error_if_not_complete(source, content, models):
 
 
 def _yaml_error_messages(error_type, error, content) -> list[str]:
-    error_messages = [f"Encountered an invalid YAML with the following {error_type} error: {error.problem}",
-                      f"Encountered error at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}",
-                      f"Content of the error: {content}"]
+    error_messages = [
+        f"Encountered an invalid YAML with the following {error_type} error: {error.problem}",
+        f"Encountered error at line, column: {error.problem_mark.line+1}, {error.problem_mark.column+1}",
+        f"Content of the error: {content}",
+    ]
     return error_messages
 
 
