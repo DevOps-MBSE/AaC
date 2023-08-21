@@ -1,6 +1,6 @@
-name: " Documentation Request"
+name: "✏️📘 Documentation Request"
 description: Create a new ticket for a new feature request
-title: "💡 [Documentation] - <title>"
+title: "✏️📘 [Documentation] - <title>"
 labels: [
   "documentation"
 ]
