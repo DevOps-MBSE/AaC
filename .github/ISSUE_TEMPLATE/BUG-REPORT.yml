@@ -14,12 +14,17 @@ body:
       label: "Pre-requisites"
       description: Please answer the following questions for yourself before submitting an issue.
       options:
-      - label: I am running the latest version.
-        required: true
       - label: I checked the documentation and found no answer.
         required: true
       - label: I checked to make sure that this issue has not already been filed.
         required: true
+  - type: input
+    id: version-pre-req
+    attributes:
+      label: "What version of the AaC package are you using? Check your version with `aac version`."
+      placeholder: i.e. 0.1.7
+    validations:
+      required: true
   - type: textarea
     id: description
     attributes:
