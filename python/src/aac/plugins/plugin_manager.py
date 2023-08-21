@@ -2,6 +2,7 @@
 
 from importlib import import_module
 from pkgutil import iter_modules
+from types import ModuleType
 from pluggy import PluginManager
 from typing import List
 
@@ -36,7 +37,7 @@ def get_plugin_manager() -> PluginManager:
     return plugin_manager
 
 
-def register_plugins_in_package(package: str):
+def register_plugins_in_package(package: str) -> List[ModuleType]:
     """
     Register all the plugins in the specified package.
 
@@ -64,3 +65,33 @@ def get_plugins() -> list[Plugin]:
         INSTALLED_PLUGINS = get_plugin_manager().hook.get_plugin()
 
     return [plugin.copy() for plugin in INSTALLED_PLUGINS]
+
+
+def register_plugin(plugin: Plugin) -> None:
+    """
+    Manually register an AaC plugin object without leveraging Pluggy hooks.
+
+    This function is intended to be used to manually register plugins after the plugin manager
+        has been initialized. This function should be used for testing where plugins are manually registered.
+        If you're using this function outside of a test then you should re-evaluate why your approach includes
+        manual registration as opposed to using the documented plugin interface and registration methods that can
+        be found in the official AaC documentation.
+    """
+    global INSTALLED_PLUGINS
+
+    if isinstance(plugin, Plugin):
+        INSTALLED_PLUGINS.append(plugin)
+
+
+def clear_plugins() -> None:
+    """
+    Manually clear the installed AaC plugins.
+
+    This function is intended to be used to manually clear registered plugins after the plugin manager
+        has been initialized. This function should be used for testing where plugins are manually registered.
+        If you're using this function outside of a test then you should re-evaluate why your approach includes
+        manual clearing of registered plugins as opposed to using the documented plugin interface and registration
+        methods that can be found in the official AaC documentation.
+    """
+    global INSTALLED_PLUGINS
+    INSTALLED_PLUGINS = []
