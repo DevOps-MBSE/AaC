@@ -155,6 +155,7 @@ def puml_object(architecture_file: str, output_directory: str) -> PluginExecutio
                 object_hierarchies.append({"parent": parent, "child": child})
 
         aac_file_name = _extract_aac_file_name(architecture_file)
+        print("test")
         return [
             {
                 "filename": _get_generated_file_name(aac_file_name, OBJECT_STRING, aac_file_name, output_directory),
