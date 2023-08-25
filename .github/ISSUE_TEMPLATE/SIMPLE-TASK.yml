@@ -1,0 +1,41 @@
+name: "📋 Task"
+description: Create a new ticket for a task to go with a feature
+title: "📋 [TASK] - <title>"
+labels: [ 
+  "enhancement"
+]
+projects: [
+  "DevOps-MBSE/AaC"
+]
+body:
+  - type: textarea
+    id: parent_feature
+    attributes:
+      label: "Parent Feature"
+      placeholder: "Please list associated feature: #<Issue ID>"
+    validations:
+      required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: "Task Description"
+      placeholder: Describe in a few lines your task that can be associated with the parent feature.
+    validations:
+      required: true
+  - type: textarea
+    id: ac
+    attributes:
+      label: "Acceptance Criteria"
+      placeholder: | 
+        Provide initial criteria to determine when the work is complete and elligible for merging.
+        i.e. - [ ] Include unit tests for new thing
+             - [ ] Update documentation with new thing
+    validations:
+      required: true
+  - type: textarea
+    id: unresolved_question
+    attributes:
+      label: "Unresolved questions"
+      placeholder: Identify any unresolved issues.
+    validations:
+      required: false
