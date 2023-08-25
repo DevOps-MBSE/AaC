@@ -12,7 +12,7 @@ body:
     id: parent_feature
     attributes:
       label: "Parent Feature"
-      placeholder: "Please list associated feature: #<Issue ID>"
+      placeholder: "#<Issue ID>"
     validations:
       required: true
   - type: textarea
