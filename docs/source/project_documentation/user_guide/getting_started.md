@@ -10,7 +10,7 @@ permalink: project_documentation/user_guide/getting_started
 # Getting Started as a User
 
 ## Github Template Repository - Quickstart
-We have a [Github Template Repository](https://github.com/Coffee2Bits/AaC-User-Template-Repository) that's setup to allow users exploring AaC to immediately create an AaC-ready github repository and development environment using [Gitpod](https://gitpod.io/new/#https://github.com/jondavid-black/AaC).
+We have a [Github Template Repository](https://github.com/Coffee2Bits/AaC-User-Template-Repository) that's setup to allow users exploring AaC to immediately create an AaC-ready github repository and development environment using [Gitpod](https://gitpod.io/new/#https://github.com/DevOps-MBSE/AaC).
 
 The repository is pre-populated with a simple example model and Github Action workflow. All that you have to do is hit the "Use this Template" button at the top of the template repository. ![Use this Template Button Picture](../../images/github/github_repo_template_button.png)
 
