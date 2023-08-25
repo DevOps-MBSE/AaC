@@ -8,7 +8,7 @@ projects: [
   "DevOps-MBSE/AaC"
 ]
 body:
-  - type: textarea
+  - type: input
     id: parent_feature
     attributes:
       label: "Parent Feature"
