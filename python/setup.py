@@ -47,20 +47,25 @@ development_dependencies = [
     "pyflakes >= 2.4",
     "build == 0.7.0",
     "twine == 3.4.2",
+    "pipdeptree >= 2.2.0",
+    "Pygments >= 2.5.1",
+    "types-PyYAML >= 6.0.9",
+    "requests >= 2.27.0",
+]
+
+documentation_dependencies = [
     "sphinx >= 6.1.3",
     "sphinxcontrib-applehelp == 1.0.2",
     "sphinxcontrib-devhelp == 1.0.2",
     "sphinxcontrib-htmlhelp == 2.0.0",
     "sphinxcontrib-jsmath == 1.0.1",
     "sphinxcontrib-qthelp == 1.0.3",
-    "sphinxcontrib-serializinghtml == 1.1.5",
+    "sphinxcontrib-serializinghtml == 1.1.9",
+    "sphinx-copybutton == 0.5.2",
+    "sphinx-autobuild == 2021.3.14",
     "furo >= 2023.05.20",
     "docutils >= 0.19",
     "myst-parser>=2.0.0",
-    "pipdeptree >= 2.2.0",
-    "Pygments >= 2.5.1",
-    "types-PyYAML >= 6.0.9",
-    "requests >= 2.27.0",
 ]
 
 test_dependencies = [
@@ -99,7 +104,8 @@ setup(
     extras_require={
         "test": test_dependencies,
         "dev": development_dependencies,
-        "all": test_dependencies + development_dependencies,
+        "docs": documentation_dependencies,
+        "all": test_dependencies + development_dependencies + documentation_dependencies,
     },
     classifiers=[
         "Programming Language :: Python :: 3.9",
