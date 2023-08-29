@@ -2,7 +2,7 @@
 Architecture-as-Code (AaC)
 ==========================
 
-Get started now by reading the :doc:`User Guide Documentation <user_guide/index>`.
+Get started now by reading the :doc:`User Guide Documentation <../project_documentation/user_guide/index>`.
 
 `View it on GitHub <https://github.com/jondavid-black/AaC>`_ and walk through the code base.
 
