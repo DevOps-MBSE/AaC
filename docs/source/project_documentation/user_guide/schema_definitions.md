@@ -8,7 +8,7 @@ Users can define these extensions locally in their user-defined AaC files, or th
 
 ## Utilizing Schema Definitions
 
-`Schema` definitions serve multiple roles in the AaC DSL. Some examples are provided below for common use cases: custom data structures, registering unique root keys, and crafting message interfaces.
+`Schema` definitions serve multiple roles in the AaC DSL. Some examples are provided below for common use cases: crafting message interfaces, custom data structures, and defining new definition instance types.
 
 ### Crafting Message Interfaces
 
