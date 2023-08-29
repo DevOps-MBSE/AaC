@@ -1,10 +1,3 @@
----
-layout: default
-title: AaC Modeling Language Reference
-parent: User's Guide to AaC
-nav_order: 2
----
-
 # What is the Architecture-as-Code Domain-Specific Language?
 Architecture-as-Code comes with a highly-specialized Domain-Specific Language (DSL) that enables the AaC language to be self-defining and self-validating. These attributes allow the AaC DSL to be highly extensible and customizable in order to support and address the needs of any team and the wide-range of stakeholders.
 

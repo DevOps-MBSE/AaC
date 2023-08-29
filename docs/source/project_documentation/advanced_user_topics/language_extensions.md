@@ -1,10 +1,3 @@
----
-layout: default
-title: Definition Extensions
-parent: Advanced User Topics
-permalink: project_documentation/advanced_user_topics/definition_extensions
----
-
 # Extensibility of AaC
 One of our primary goals for AaC is that its extensible enough to meet the needs of AaC's diverse use base. To this goal, we have given the AaC DSL a mechanism to add additional information to Schema and Enum definitions. Allowing users to extend these two types of definitions allows users to extend the existing AaC DSL data structures, data types, and enumeration values.
 
