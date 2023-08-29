@@ -1,10 +1,3 @@
----
-layout: default
-title: Secure Install
-parent: User's Guide to AaC
-nav_order: 4
----
-
 # Architecture-as-Code Secure Installation
 In order to support portability of Architecture-as-Code, and to provide a secure, repeatable installation method for AaC users, we have created
 this one-step installation package for each release of the AaC python package.

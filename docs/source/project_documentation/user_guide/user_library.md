@@ -1,11 +1,3 @@
----
-layout: default
-title: Creating a User Library
-parent: User's Guide to AaC
-nav_order: 9
-permalink: project_documentation/user_guide/user_library
----
-
 # User Libraries
 Because of the extensibility and reusability goals of AaC, a plugin can also be designed as a library for a project. By making a plugin to function more as a library, it exposes itself as a tool to be utilized in a larger context throughout the AaC space.
 

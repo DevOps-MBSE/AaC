@@ -1,10 +1,3 @@
----
-layout: default
-title: AaC Command Line
-parent: User's Guide to AaC
-nav_order: 5
----
-
 # The AaC Command Line
 
 ## Plugins and CLI Commands
