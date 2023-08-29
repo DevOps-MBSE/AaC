@@ -1,12 +1,3 @@
----
-layout: default
-title: Getting Started with AaC
-parent: User's Guide to AaC
-nav_order: 1
-has_children: false
-permalink: project_documentation/user_guide/getting_started
----
-
 # Getting Started as a User
 
 ## Github Template Repository - Quickstart

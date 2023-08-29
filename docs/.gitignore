@@ -1,0 +1,3 @@
+# Ignore the generated api docs and auto-build docs
+source/api
+gen_docs
