@@ -20,7 +20,7 @@ In our Alarm Clock model example, the `behavior` entry defines the input and beh
 .. literalinclude:: ../../../../python/model/alarm_clock/alarm_clock.yaml
     :language: yaml
     :emphasize-lines: 17
-    :lines: 6-28
+    :lines: 6-30
 ```
 
 The `Timestamp` `schema` definition below outlines the fields required to define an exact alarm time.
