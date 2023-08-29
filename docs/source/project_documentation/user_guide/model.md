@@ -23,22 +23,13 @@ Whether your system is a monolith or a collection of microservices, the `model`
 root key is used to represent how components fit together as part of the system
 and what those components do as part of the system.
 
-To compose a system from individual `component`s, one uses the `components` key.
+To compose a system from individual `component`s, one specifies additional `models` in the system `model`'s `components` field.
 
-```yaml
-model:
-  name: AlarmClock
-  description: A simple alarm clock
-  components:
-    - name: clock
-      type: Clock
-    - name: timer
-      type: ClockTimer
-    - name: alarm
-      type: ClockAlarm
-  behavior:
-    - ...
-```
+```{eval-rst}
+.. literalinclude:: ../../../../python/model/alarm_clock/alarm_clock.yaml
+    :language: yaml
+    :lines: 6-28
+    :emphasize-lines: 4-10
 
 ### Defining System Behavior In Models
 
@@ -47,7 +38,7 @@ behaviors. These behaviors include a descrpition of `input`s, `output`s, and
 `scenario`s that show how the model interacts with different components in the
 system.
 
-Each `behavior` requires a `BehaviorType` which represents the method of
+Each `behavior` requires a `BehaviorType` which represents the mode of
 interaction for that behavior.
 
 A `behavior` can also have any combination of `input`s and `output`s.
@@ -56,26 +47,11 @@ Additionally, the action of every behavior is represented by the `scenario`
 structure. Each `scenario` describes necessary pre-conditions (`given`),
 triggers (`when`), and post-conditions (`then`) for the behavior.
 
-```yaml
-model:
-  name: AlarmClock
-  description: A simple alarm clock
-  components:
-    - ...
-  behavior:
-    - name: setAlarm
-      type: REQUEST_RESPONSE
-      description: Set the alarm timer
-      input:
-        - name: targetTime
-          type: Timestamp
-      acceptance:
-        - scenario: setTimer
-          when:
-            - The user sets the alarm timer
-          then:
-            - The alarm is triggered when the clock reaches the specified time
-```
+```{eval-rst}
+.. literalinclude:: ../../../../python/model/alarm_clock/alarm_clock.yaml
+    :language: yaml
+    :emphasize-lines: 18-23
+    :lines: 6-28
 
 ### Defining System State In Models
 
