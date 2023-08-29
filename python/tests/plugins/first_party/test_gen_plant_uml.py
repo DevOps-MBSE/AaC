@@ -93,17 +93,19 @@ class TestGenPlantUml(ActiveContextTestCase):
             TemporaryDirectory() as temp_directory,
             TemporaryTestFile(TEST_PUML_ARCH_YAML, dir=temp_directory, suffix=YAML_DOCUMENT_EXTENSION) as plugin_yaml,
         ):
-            full_output_dir = os.path.join(temp_directory, OBJECT_STRING)
-
             result = puml_object(plugin_yaml.name, temp_directory)
+
+            full_output_dir = os.path.join(temp_directory, OBJECT_STRING)
             self.assertIn(full_output_dir, result.get_messages_as_string())
             assert_plugin_success(result)
 
+            filename = _convert_aac_filepath_to_filename(plugin_yaml.name)
+            expected_puml_file_path = _get_generated_file_name(filename, OBJECT_STRING, TEST_PUML_SERVICE_TWO_TYPE, temp_directory)
+
             temp_directory_files = os.listdir(full_output_dir)
 
-            filename = _convert_aac_filepath_to_filename(plugin_yaml.name)
-            expected_puml_file_path = _get_generated_file_name(filename, OBJECT_STRING, filename, temp_directory)
-            self.assertIn(os.path.basename(expected_puml_file_path), temp_directory_files)
+            basename = os.path.basename(expected_puml_file_path)
+            self.assertIn(basename, temp_directory_files)
 
             with open(expected_puml_file_path) as generated_puml_file:
                 self._check_object_diagram_content(generated_puml_file.read())

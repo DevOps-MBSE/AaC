@@ -37,7 +37,7 @@ development_dependencies = [
     "wheel ~= 0.41.0",
     "pip-tools >= 6.9.0",
     "tomli < 2.0.0",
-    "black == 22.3.0",
+    "black >= 22.3.0",
     "platformdirs >= 2.4",
     "coverage >= 6.0",
     "mccabe >= 0.6.1",

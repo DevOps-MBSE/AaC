@@ -102,9 +102,10 @@ def puml_sequence(architecture_file: str, output_directory: str) -> PluginExecut
                 )
 
             aac_file_name = _extract_aac_file_name(architecture_file)
+            generated_file_name = _get_generated_file_name(aac_file_name, SEQUENCE_STRING, use_case_title, output_directory)
             properties.append(
                 {
-                    "filename": _get_generated_file_name(aac_file_name, SEQUENCE_STRING, use_case_title, output_directory),
+                    "filename": generated_file_name,
                     "title": use_case_title,
                     "participants": participants,
                     "sequences": sequences,
@@ -155,9 +156,10 @@ def puml_object(architecture_file: str, output_directory: str) -> PluginExecutio
                 object_hierarchies.append({"parent": parent, "child": child})
 
         aac_file_name = _extract_aac_file_name(architecture_file)
+        generated_filename = _get_generated_file_name(aac_file_name, OBJECT_STRING, model_name, output_directory)
         return [
             {
-                "filename": _get_generated_file_name(aac_file_name, OBJECT_STRING, aac_file_name, output_directory),
+                "filename": generated_filename,
                 "objects": object_declarations,
                 "object_hierarchies": object_hierarchies,
             }
