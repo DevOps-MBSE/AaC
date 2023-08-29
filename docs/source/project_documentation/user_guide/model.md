@@ -23,7 +23,8 @@ Whether your system is a monolith or a collection of microservices, the `model`
 root key is used to represent how components fit together as part of the system
 and what those components do as part of the system.
 
-To compose a system from individual `component`s, one specifies additional `models` in the system `model`'s `components` field.
+To compose a system from individual `component`s, one specifies additional
+`models` in the system `model`'s `components` field.
 
 ```{eval-rst}
 .. literalinclude:: ../../../../python/model/alarm_clock/alarm_clock.yaml
