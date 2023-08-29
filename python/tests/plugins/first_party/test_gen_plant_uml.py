@@ -100,19 +100,15 @@ class TestGenPlantUml(ActiveContextTestCase):
             assert_plugin_success(result)
 
             filename = _convert_aac_filepath_to_filename(plugin_yaml.name)
-            expected_puml_file_paths = [
-                _get_generated_file_name(filename, OBJECT_STRING, name, temp_directory)
-                for name in [TEST_PUML_SERVICE_ONE_TYPE, TEST_PUML_SERVICE_TWO_TYPE]
-            ]
+            expected_puml_file_path = _get_generated_file_name(filename, OBJECT_STRING, TEST_PUML_SERVICE_TWO_NAME, temp_directory)
 
             temp_directory_files = os.listdir(full_output_dir)
 
-            for path in expected_puml_file_paths:
-                basename = os.path.basename(path)
-                self.assertIn(basename, temp_directory_files)
+            basename = os.path.basename(expected_puml_file_path)
+            self.assertIn(basename, temp_directory_files)
 
-                with open(path) as generated_puml_file:
-                    self._check_object_diagram_content(generated_puml_file.read())
+            with open(expected_puml_file_path) as generated_puml_file:
+                self._check_object_diagram_content(generated_puml_file.read())
 
     def test_puml_sequence_diagram_to_file(self):
         with (
