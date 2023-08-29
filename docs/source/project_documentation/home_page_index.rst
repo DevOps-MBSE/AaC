@@ -2,9 +2,10 @@
 Architecture-as-Code (AaC)
 ==========================
 
-Get started now by reading the :doc:`User Guide Documentation <../project_documentation/user_guide/index>`.
+Get started now by reading the `User Guide Documentation`_.
 
-`View it on GitHub <https://github.com/jondavid-black/AaC>`_ and walk through the code base.
+
+`View it on GitHub <https://github.com/DevOps-MBSE/AaC>`_ and walk through the code base.
 
 What is Architecture-as-Code (AaC)?
 ===================================
@@ -131,7 +132,7 @@ Architecture-as-Code (AaC) is |copy| 2021-present by AaC Project Contributors.
 License
 -------
 
-Arcitecture-as-Code is distributed by an `MIT license <https://github.com/jondavid-black/AaC/blob/main/LICENESE>`_.
+Arcitecture-as-Code is distributed by an `MIT license <https://github.com/DevOps-MBSE/AaC/blob/main/LICENSE>`_.
 
 Contributing
 ------------
@@ -140,7 +141,7 @@ When contributing to this repository, please first discuss the change you wish t
 
 *Thank you to the contributors of Architecture-as-Code!*
 
-.. contributors:: jondavid-black/AaC
+.. contributors:: DevOps-MBSE/AaC
     :avatars:
     :order: ASC
 
@@ -149,4 +150,4 @@ Code of Conduct
 
 Architecture-as-Code is committed to fostering a welcoming community.
 
-`View our Code of Conduct <https://github.com/jondavid-black/AaC/blob/main/CODE_OF_CONDUCT.md>`_ on our GitHub repository.
+`View our Code of Conduct <https://github.com/DevOps-MBSE/AaC/blob/main/CODE_OF_CONDUCT.md>`_ on our GitHub repository.
