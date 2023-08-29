@@ -1,11 +1,19 @@
 tasks:
-  - name: Deploy Jekyll Docs
-    command: export JEKYLL_ENV=production; cd /workspace/AaC/docs; bundle install && bundle exec jekyll s
+  - name: Serve Sphinx Docs
+    init: |
+      cd /workspace/AaC/docs/
+      sleep 120 # Gitpod often takes a long time to install the python environment
+      source /workspace/AaC/python/venv/bin/activate
+    command: sphinx-autobuild source gen_docs
 
   - name: VSCode Extension Environment
     init: |
-      cd vscode_extension/
+      cd /workspace/AaC/vscode_extension/
       yarn install
+      sleep 120 # Gitpod often takes a long time to install the python environment
+      source /workspace/AaC/python/venv/bin/activate
+      aac gen-openapi-spec
+      yarn generate:rest_api
       yarn compile
     command: cd /workspace/AaC/vscode_extension/; yarn watch
 
@@ -13,12 +21,8 @@ tasks:
     init: |
       cd python/
       python3.9 -m venv venv --system-site-packages
-      python3.9 -m pip install --upgrade pip
       source venv/bin/activate
       pip install -e .[all]
-      aac gen-openapi-spec ../vscode_extension/
-      cd ../vscode_extension/
-      yarn generate:rest_api
     command: cd /workspace/AaC/python/; source venv/bin/activate # Always launch a console with our virtual env
 
 vscode:
