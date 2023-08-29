@@ -51,7 +51,7 @@ Feature Implementation:
 
 ### Scalar Values
 All primitive/scalar [Protobuf 3 value types](https://developers.google.com/protocol-buffers/docs/proto3#scalar) types are supported.
-The full list can be found in the plugin's definition, [`ProtobufPrimitiveTypesExtension`](https://github.com/jondavid-black/AaC/blob/main/python/src/aac/plugins/gen_protobuf/gen_protobuf.yaml).
+The full list can be found in the plugin's definition, [`ProtobufPrimitiveTypesExtension`](https://github.com/DevOps-MBSE/AaC/blob/main/python/src/aac/plugins/first_party/gen_protobuf/gen_protobuf.yaml).
 
 The scalar values are added to the `Primitives` defintion and can be used inline very easily.
 ```yaml
