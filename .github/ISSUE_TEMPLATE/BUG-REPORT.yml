@@ -5,7 +5,7 @@ labels: [
   "bug"
 ]
 projects: [
-  "jondavid-black/AaC Prototype"
+  "DevOps-MBSE/AaC"
 ]
 body:
   - type: checkboxes
@@ -38,7 +38,7 @@ body:
       label: "Reproduction URL"
       placeholder: ex. https://github.com/USERNAME/REPO-NAME
     validations:
-      required: true
+      required: false
   - type: textarea
     id: reproduction-steps
     attributes:
