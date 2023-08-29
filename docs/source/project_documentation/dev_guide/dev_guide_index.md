@@ -24,7 +24,7 @@ You can open a workspace in VSCode by:
 
 ## Gitpod Environment
 
-This project prioritizes supporting accessible, reproducible, and easy to use development environments which is why we support and recommend users use the already-curated [Gitpod](https://Gitpod.io/#https://github.com/jondavid-black/AaC) Architecture-as-Code development environment. The Gitpod environment handles all the setup and configuration necessary to begin developing AaC. You can immediately open a vscode workspace file and begin debugging the Python and Typescript applications.
+This project prioritizes supporting accessible, reproducible, and easy to use development environments which is why we support and recommend users use the already-curated [Gitpod](https://gitpod.io/new/#https://github.com/DevOps-MBSE/AaC) Architecture-as-Code development environment. The Gitpod environment handles all the setup and configuration necessary to begin developing AaC. You can immediately open a vscode workspace file and begin debugging the Python and Typescript applications.
 
 If it's your first time using Gitpod, you'll be prompted to make an account or use SSO provided by Gitlab and Github. Gitpod provides a free tier, so you're not required to pay before using it.
 
