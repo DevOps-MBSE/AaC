@@ -10,9 +10,9 @@ User Guide Documentation
    Style Guide <style_guide>
    AaC Project Structure <project_structure>
    Schema Definitions <schema_definitions>
+   Model Definitions <model_definitions>
    AaC CLI <aac_cli>
    AaC GitOps <aac_gitops>
    AaC DSL <aac_language>
    User Library <user_library>
    Glossary <glossary>
-   Model <model>
