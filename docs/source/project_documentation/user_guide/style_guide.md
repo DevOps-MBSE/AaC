@@ -1,10 +1,3 @@
----
-layout: default
-title: AaC Style Guide
-parent: User's Guide to AaC
-nav_order: 3
----
-
 # The AaC Style Guide
 This style guide documents a set of coding standards for the AaC Domain-Specific Language. This standard is implemented in the Core Specification and first-party plugins. Users are not required to implement this style, but it is recommended that users leverage a consistent style and standard for their models. Consistent styling reduces complexity and overhead for users as they don't have to manage the idiosyncrasies of different naming conventions for user libraries or plugins.
 

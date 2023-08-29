@@ -1,10 +1,3 @@
----
-layout: default
-title: AaC and GitOps
-parent: User's Guide to AaC
-nav_order: 5
----
-
 # Configuration Management
 One of the main benefits of using Architecture-as-Code is that your models and systems are stored in plain-text YAML files instead of binary or database formats. Storing models as plain-text allows version control tools, like Git, to easily track and manage changes to your models and systems. Leveraging tools like Git opens modeling teams to using software development practices such as [feature branch workflows](https://www.atlassian.com/git/tutorials/comparing-workflows/feature-branch-workflow) to enable parallel development of the models or systems.
 
