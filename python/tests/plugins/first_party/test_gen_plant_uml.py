@@ -100,7 +100,7 @@ class TestGenPlantUml(ActiveContextTestCase):
             assert_plugin_success(result)
 
             filename = _convert_aac_filepath_to_filename(plugin_yaml.name)
-            expected_puml_file_path = _get_generated_file_name(filename, OBJECT_STRING, TEST_PUML_SERVICE_TWO_NAME, temp_directory)
+            expected_puml_file_path = _get_generated_file_name(filename, OBJECT_STRING, TEST_PUML_SERVICE_TWO_TYPE, temp_directory)
 
             temp_directory_files = os.listdir(full_output_dir)
 
