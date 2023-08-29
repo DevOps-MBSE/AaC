@@ -22,6 +22,8 @@ model:
           type: Timestamp
       acceptance:
         - scenario: setTimer
+          given:
+            - The alarm timer is not set
           when:
             - The user sets the alarm timer
           then:
