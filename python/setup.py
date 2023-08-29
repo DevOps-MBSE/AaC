@@ -64,7 +64,7 @@ documentation_dependencies = [
     "sphinx-copybutton == 0.5.2",
     "sphinx_contributors == 0.2.7",
     "sphinx-autobuild == 2021.3.14",
-    "furo ~= 2023.05.20",
+    "furo ~= 2023.8.19",
     "docutils ~= 0.19",
     "myst-parser ~= 2.0.0",
     "pytz == 2023.3"
