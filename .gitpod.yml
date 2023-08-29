@@ -4,6 +4,7 @@ tasks:
       cd /workspace/AaC/docs/
       sleep 120 # Gitpod often takes a long time to install the python environment
       source /workspace/AaC/python/venv/bin/activate
+      sphinx-build source gen_docs # Pre-build the docs so that when Gitpod opens the port it's ready to serve
     command: sphinx-autobuild source gen_docs
 
   - name: VSCode Extension Environment
