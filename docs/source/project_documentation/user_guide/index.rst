@@ -14,4 +14,4 @@ User Guide Documentation
    AaC DSL <aac_language>
    User Library <user_library>
    Glossary <glossary>
-
+   Model <model>

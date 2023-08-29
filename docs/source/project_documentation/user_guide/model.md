@@ -6,17 +6,16 @@ Architecture (MSA) design.
 
 In its most basic form, a `model` must have a `name` that distinguishes it from
 other AaC definitions. At the same time, however, a `model` that defines nothing
-more than a `name` is of little use for anything more than representing external
-components or actors.
+more than a name should be treated as incomplete unless the intention is to
+represent external components or actors.
 
-It is recommended to include some amount of `behavior` definitions for each
-model as that allows users and the AaC package to understand the component as a
-part of the system. Some questions we can answer for `model`s with defined
-`behavior`s are:
+It is recommended to include `behavior` definitions for each model to allow
+users and the AaC package to understand the component as part of the system.
+Some questions we can answer for `model`s with defined `behavior`s are:
 
 1. What does the component do?
 1. What inputs does it expect?
-1. What outputs can other components expect from this component?
+1. What outputs can the system or other components expect from this component?
 
 ## Defining Systems Through Model Composition
 
@@ -80,4 +79,5 @@ model:
 
 ### Defining System State In Models
 
-TBD
+*Pending an accurate model representation and sufficient implementation of state
+within models, this section will not be covered yet.*
