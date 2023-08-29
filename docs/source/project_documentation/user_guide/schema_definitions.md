@@ -8,13 +8,13 @@ Users can define these extensions locally in their user-defined AaC files, or th
 
 ## Utilizing Schema Definitions
 
-Expanding on this, `schema` definitions serve multiple roles in the AaC DSL. We present specific examples below for various common use cases, including defining instances of custom data structures via `schema` definitions, registering unique root keys for new data structures, and crafting message interfaces for internal and external system messages.
+`Schema` definitions serve multiple roles in the AaC DSL. Some examples are provided below for common use cases: custom data structures, registering unique root keys, and crafting message interfaces.
 
-### Crafting Custom Data Structures
+### Crafting Message Interfaces
 
-One prevalent application of `schema` definitions is crafting and defining interface message structures for communication within your system or between system components. These interface messages define payloads exchanged with external systems, software applications, external actors like users, input for plugins, and intricate data inputs for validation purposes. The way you leverage a `schema` definition depends on the context; if used in the input of a `model` definition's `behavior:input` or `behavior:output`, the `schema` acts as an interface message, documenting the data structure flowing into or out of a component within your modeled system. This is particularly useful for documenting software application behavior inputs or outputs.
+Interface message structures provide structures for communication within your system or between system components. Using `schemas` one can define payloads exchanged with external systems, software applications, external actors, input for plugins, and intricate data inputs for validation purposes. Leveraging a `schema` definition as the `input` of a `model` definition's `behavior:input` or `behavior:output`, the `schema` acts as an interface message, documenting the data structure flowing into or out of a component within your modeled system. A useful way of documenting software application behavior inputs or outputs.
 
-For instance, in our Alarm Clock model example, the `behavior` entry defines the input and behavior of our alarm clock model. In the following example, the behavior contains an input named `Timestamp`, which is a `schema`-defined data structure representing information needed to set the alarm.
+In our Alarm Clock model example, the `behavior` entry defines the input and behavior of our Alarm Clock model. The `behavior` contains an `input` named `Timestamp`, which is a `schema`-defined data structure representing information needed to set the alarm.
 
 ```{eval-rst}
 .. literalinclude:: ../../../../python/model/alarm_clock/alarm_clock.yaml
@@ -36,7 +36,7 @@ While this example is simplified and not representative of a software system, th
 
 ### Crafting Custom Data Structures
 
-Given AaC's self-defining nature, users can employ the `schema` definition to craft their own data structures. In the context of our Alarm Clock example, users simply need to define a new data structure using the `schema` root key. `Timestamp` serves as an example of a defined data structure that can be referenced by name, as demonstrated in the Alarm Clock model's `behavior`, or used as a component in more intricate data structures.
+Given AaC's self-defining nature, users can employ the `schema` definition to craft their own data structures by using the `schema` root key. `Timestamp` serves as an example of a defined data structure with a `schema` root key that can be referenced by name, as demonstrated in the Alarm Clock model's `behavior`, or used as a component in more intricate data structures.
 
 ```{eval-rst}
 .. literalinclude:: ../../../../python/model/alarm_clock/structures.yaml
@@ -45,7 +45,7 @@ Given AaC's self-defining nature, users can employ the `schema` definition to cr
     :lines: 12-28
 ```
 
-### Constructing Complex Data Structures via Composition
+#### Constructing Complex Data Structures via Composition
 
 Each `schema` definition in AaC outlines a set of fields for the definition. These fields can be primitive types as per the AaC DSL, custom enum types, or references to other `schema` definitions. When a `schema` definition references other `schema` definitions within its field types, it assembles more intricate data structures through [composition](https://en.wikipedia.org/wiki/Object_composition). In our Alarm Clock model example, the definition `TimerAlert` references `Timestamp` as a field type.
 
