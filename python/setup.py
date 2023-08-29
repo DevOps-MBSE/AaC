@@ -54,7 +54,7 @@ development_dependencies = [
 ]
 
 documentation_dependencies = [
-    "sphinx >= 6.1.3",
+    "sphinx ~= 6.1.3",
     "sphinxcontrib-applehelp == 1.0.2",
     "sphinxcontrib-devhelp == 1.0.2",
     "sphinxcontrib-htmlhelp == 2.0.0",
@@ -62,10 +62,12 @@ documentation_dependencies = [
     "sphinxcontrib-qthelp == 1.0.3",
     "sphinxcontrib-serializinghtml == 1.1.9",
     "sphinx-copybutton == 0.5.2",
+    "sphinx_contributors == 0.2.7",
     "sphinx-autobuild == 2021.3.14",
-    "furo >= 2023.05.20",
-    "docutils >= 0.19",
-    "myst-parser>=2.0.0",
+    "furo ~= 2023.05.20",
+    "docutils ~= 0.19",
+    "myst-parser ~= 2.0.0",
+    "pytz == 2023.3"
 ]
 
 test_dependencies = [
