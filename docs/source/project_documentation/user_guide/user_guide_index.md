@@ -1,11 +1,3 @@
----
-layout: default
-title: User's Guide to AaC
-nav_order: 3
-has_children: true
-permalink: project_documentation/user_guide
----
-
 # What is Architecture-as-Code?
 Architecture-as-Code (AaC) is a distinctly different take on Model-Based System Engineering (MBSE) that allows system modellers to define a system in simple plain-text YAML that can be leveraged to drive value and design consensus with developers. AaC's approach to storing models as YAML allows engineers to apply tools and practices including rigorous configuration management of their baselines, automated quality and testing gates, automated artifact generation, and automated deployment of artifacts which were previously only the domain of software development teams.
 

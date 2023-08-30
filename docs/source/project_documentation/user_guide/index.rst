@@ -8,10 +8,11 @@ User Guide Documentation
    Getting Started <getting_started>
    Secure Install <secure_install>
    Style Guide <style_guide>
-   Project Structure <project_structure>
+   AaC Project Structure <project_structure>
+   Schema Definitions <schema_definitions>
+   Model Definitions <model_definitions>
    AaC CLI <aac_cli>
    AaC GitOps <aac_gitops>
    AaC DSL <aac_language>
    User Library <user_library>
    Glossary <glossary>
-   Model <model>
