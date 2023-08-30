@@ -21,7 +21,16 @@ model:
         - name: targetTime
           type: Timestamp
       acceptance:
-        - scenario: setTimer
+        - scenario: Set timer
+          given:
+            - The alarm timer is not set
+          when:
+            - The user sets the alarm timer
+          then:
+            - The alarm is triggered when the clock reaches the specified time
+        - scenario: Update timer
+          given:
+            - The alarm timer is set
           when:
             - The user sets the alarm timer
           then:
