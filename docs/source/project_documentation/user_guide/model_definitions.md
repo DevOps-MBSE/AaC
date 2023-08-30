@@ -29,7 +29,7 @@ To compose a system from individual `component`s, one specifies additional
 ```{eval-rst}
 .. literalinclude:: ../../../../python/model/alarm_clock/alarm_clock.yaml
     :language: yaml
-    :lines: 6-30
+    :lines: 6-37
     :emphasize-lines: 9-15
 ```
 
@@ -52,8 +52,8 @@ triggers (`when`), and post-conditions (`then`) for the behavior.
 ```{eval-rst}
 .. literalinclude:: ../../../../python/model/alarm_clock/alarm_clock.yaml
     :language: yaml
-    :emphasize-lines: 17-30
-    :lines: 6-30
+    :emphasize-lines: 23-37
+    :lines: 6-37
 ```
 
 ### Defining System State In Models

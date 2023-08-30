@@ -14,13 +14,13 @@ Users can define these extensions locally in their user-defined AaC files, or th
 
 Interface message structures provide structures for communication within your system or between system components. Using `schemas` one can define payloads exchanged with external systems, software applications, external actors, input for plugins, and intricate data inputs for validation purposes. Leveraging a `schema` definition as the `input` of a `model` definition's `behavior:input` or `behavior:output`, the `schema` acts as an interface message, documenting the data structure flowing into or out of a component within your modeled system. A useful way of documenting software application behavior inputs or outputs.
 
-In our Alarm Clock model example, the `behavior` entry defines the input and behavior of our Alarm Clock model. The `behavior` contains an `input` named `Timestamp`, which is a `schema`-defined data structure representing information needed to set the alarm.
+In our Alarm Clock model example, the `behavior` entry defines the input and behavior of our Alarm Clock model. The `behavior` contains an `input` named `targetTimestamp`, which is a `schema`-defined data structure representing information needed to set the alarm.
 
 ```{eval-rst}
 .. literalinclude:: ../../../../python/model/alarm_clock/alarm_clock.yaml
     :language: yaml
-    :emphasize-lines: 17
-    :lines: 6-30
+    :emphasize-lines: 21
+    :lines: 6-37
 ```
 
 The `Timestamp` `schema` definition below outlines the fields required to define an exact alarm time.
