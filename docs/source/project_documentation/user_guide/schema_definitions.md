@@ -19,7 +19,7 @@ In our Alarm Clock model example, the `behavior` entry defines the input and beh
 ```{eval-rst}
 .. literalinclude:: ../../../../python/model/alarm_clock/alarm_clock.yaml
     :language: yaml
-    :emphasize-lines: 21
+    :emphasize-lines: 16-17
     :lines: 6-37
 ```
 
