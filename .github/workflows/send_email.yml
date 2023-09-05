@@ -1,0 +1,38 @@
+name: Release Available Notice
+on:
+  # Automated runs
+  release:
+    types: [published]
+
+  # Manual runs
+  workflow_dispatch:
+
+jobs:
+  email:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send mail
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.MAIL_SERVER}}
+          # Server port, default 25:
+          server_port: ${{ secrets.MAIL_PORT }}
+          # Optional whether this connection use TLS (default is true if server_port is 465)
+          secure: true
+          # Optional (recommended) mail server username:
+          username: ${{ secrets.MAIL_USERNAME }}
+          # Optional (recommended) mail server password:
+          password: ${{ secrets.MAIL_APP_PASSWORD }}
+          # Required mail subject:
+          subject: GitHub Release Available
+          # Required recipients' addresses:
+          to: ashley.condrey@ngc.com
+          # Required sender full name (address can be skipped):
+          from: ${{ secrets.MAIL_USERNAME }} # <user@example.com>
+          # Optional plain body:
+          body: New Release ${{ github.event.release.tag_name }} for ${{ github.repository }} has published successfully!
+          # Optional converting Markdown to HTML (set content_type to text/html too):
+          convert_markdown: true
+          # Optional priority: 'high', 'normal' (default) or 'low'
+          priority: low
