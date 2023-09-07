@@ -1,6 +1,6 @@
 # Usecase Definitions in AaC
 
-One of AaC's goal is to allow for a system to be modeled in a way that various disciplined users would be able to understand and implement the model for their contribution to the system. One of the system model aspects captured within AaC is the behavior of the system, which has a rootkey of `usecase`. The `usecase` describes a system behavior, who is involved with the system behavior, and outlines the steps for achieving the described system behavior. 
+One of AaC's goal is to allow for a system to be modeled in a way that various disciplined users would be able to understand and implement the model for their contribution to the system. One of the system model aspects captured within AaC is the behavior of the system, which has a rootkey of `usecase`. The `usecase` describes a system behavior, who is involved with the system behavior, and outlines the steps for achieving the described system behavior.
 
 ## Utilizing Usecase Definitions
 
@@ -11,26 +11,26 @@ There is an example usecase within our alarm clock model example for setting the
     :language: yaml
     :lines: 6-24
 ```
-By incorporating the `usecase`s for various system behaviors, the alarm clock is able to be evaluated for functional completeness that cannot be seen in the alarm clock model alone. 
+By incorporating the `usecase`s for various system behaviors, the alarm clock is able to be evaluated for functional completeness that cannot be seen in the alarm clock model alone.
 
-Some questions that can when evaluating the system for functional completeness are below. They can be addressed with the incorporation of a `usecase` definition for the system. 
+Some questions that can when evaluating the system for functional completeness are below. They can be addressed with the incorporation of a `usecase` definition for the system.
 
-1. Does the system allow for necessary participants? 
-2. Are all necessary functionalities feasible with the current system components? 
+1. Does the system allow for necessary participants?
+2. Are all necessary functionalities feasible with the current system components?
 3. Can the system be understood enough to be tested?
 
 ### Crafting Usecase Participants
 
-The `participants` of the `usecase` are included as a portion of the `usecase` definition, highlighted below. 
+The `participants` of the `usecase` are included as a portion of the `usecase` definition, highlighted below.
 
 ```{eval-rst}
 .. literalinclude:: ../../../../python/model/alarm_clock/usecase.yaml
     :language: yaml
-    :emphasize-lines: 9-15
+    :emphasize-lines: 4-10
     :lines: 6-24
 ```
 
-`participants` are actors (who) can perform the action on the system and what part(s) of the system are necessary for the action to be accomplished. Therefore we see three participants in the above example: `user`, `alarm`, and `timer`. 
+`participants` are actors (who) can perform the action on the system and what part(s) of the system are necessary for the action to be accomplished. Therefore we see three participants in the above example: `user`, `alarm`, and `timer`.
 
 The `user` is the actor that wants to make a change in the alarm clock system.
 
@@ -45,7 +45,7 @@ The `steps` of the `usecase` are included as a portion of the `usecase` definiti
 ```{eval-rst}
 .. literalinclude:: ../../../../python/model/alarm_clock/usecase.yaml
     :language: yaml
-    :emphasize-lines: 16-24
+    :emphasize-lines: 11-19
     :lines: 6-24
 ```
 
@@ -54,5 +54,6 @@ The `steps` of the `usecase` are included as a portion of the `usecase` definiti
 ```{eval-rst}
 .. literalinclude:: ../../../../python/model/alarm_clock/usecase.yaml
     :language: yaml
+    :emphasize-lines: 3-5
     :lines: 16-20
 ```

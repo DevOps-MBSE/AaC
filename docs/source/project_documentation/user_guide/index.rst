@@ -9,7 +9,7 @@ User Guide Documentation
    Secure Install <secure_install>
    Style Guide <style_guide>
    AaC Project Structure <project_structure>
-   Definitions <defintitions>
+   Definitions <definitions.rst>
    AaC CLI <aac_cli>
    AaC GitOps <aac_gitops>
    AaC DSL <aac_language>
