@@ -456,6 +456,7 @@ schema:
         - name
         - participants
         - steps
+    - name: Usecase sources and targets refer to defined participants
 ---
 schema:
   name: Step
