@@ -1,5 +1,5 @@
 Definition Types in AaC
-==================
+=======================
 
 There are various types of definitions utilized in AaC to provide various system components. They are each represnted by a designated root key.
 
