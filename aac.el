@@ -46,7 +46,7 @@
                                     :test-dir "src/test/suite/"
                                     :test-suffix ".test"))
 
-(with-eval-after-load 'lsp-mode
+(with-eval-after-load 'lsp
   (setq lsp-file-watch-ignored-directories
         (cl-remove-duplicates
           (append lsp-file-watch-ignored-directories
@@ -66,7 +66,7 @@
                     "[/\\\\].vscode\\'"
                     "[/\\\\].vscode-test\\'")))))
 
-(with-eval-after-load 'dap-mode
+(with-eval-after-load 'dap
   (add-hook 'dap-stopped-hook (lambda (arg) (call-interactively #'dap-hydra)))
   (require 'dap-variables)
   (advice-add 'dap-launch-find-launch-json :around
