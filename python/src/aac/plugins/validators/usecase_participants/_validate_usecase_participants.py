@@ -34,36 +34,38 @@ def validate_usecase_participants(
     Returns:
         A ValidatorResult containing any applicable error messages.
     """
-
-    def get_invalid_reference_message(step_name: str, endpoint_type: str, endpoint: str):
-        return (
-            f"{endpoint_type.capitalize()} '{endpoint}' of step '{step_name}' does not refer to a participant of the usecase."
-        )
-
-    def validate_step_endpoint(step: dict[str, str], endpoint_type: str):
-        step_name = step.get(DEFINITION_FIELD_STEP)
-        endpoint = step.get(endpoint_type)
-        if endpoint not in participants:
-            invalid_endpoint_reference_message = get_invalid_reference_message(step_name, endpoint_type, endpoint)
-            findings.add_error_finding(
-                definition_under_test,
-                invalid_endpoint_reference_message,
-                VALIDATION_NAME,
-                definition_under_test.get_lexeme_with_value(endpoint, prefix_values=[endpoint_type]),
-            )
-            logging.error(invalid_endpoint_reference_message)
-
     findings = ValidatorFindings()
 
     if definition_under_test.get_root_key() == ROOT_KEY_USECASE:
-        fields = definition_under_test.get_top_level_fields()
-
-        participants = [field.get(DEFINITION_FIELD_NAME) for field in fields.get(DEFINITION_FIELD_PARTICIPANTS, [])]
-        for step in fields.get(DEFINITION_FIELD_STEPS, []):
-            validate_step_endpoint(step, DEFINITION_FIELD_SOURCE)
-            validate_step_endpoint(step, DEFINITION_FIELD_TARGET)
+        findings.add_findings(_get_findings_from_invalid_step_endpoint(definition_under_test, DEFINITION_FIELD_SOURCE))
+        findings.add_findings(_get_findings_from_invalid_step_endpoint(definition_under_test, DEFINITION_FIELD_TARGET))
 
     else:
         logging.warn(f"Definition {definition_under_test.name} is not a {ROOT_KEY_USECASE}")
 
     return ValidatorResult([definition_under_test], findings)
+
+
+def _get_findings_from_invalid_step_endpoint(definition: Definition, endpoint_type: str) -> ValidatorFindings:
+    findings = ValidatorFindings()
+
+    fields = definition.get_top_level_fields()
+    participant_names = [field.get(DEFINITION_FIELD_NAME) for field in fields.get(DEFINITION_FIELD_PARTICIPANTS, [])]
+    for step in fields.get(DEFINITION_FIELD_STEPS, []):
+        step_name = step.get(DEFINITION_FIELD_STEP)
+        endpoint = step.get(endpoint_type)
+        if endpoint not in participant_names:
+            invalid_endpoint_reference_message = _get_invalid_reference_message(step_name, endpoint_type, endpoint)
+            logging.error(invalid_endpoint_reference_message)
+            findings.add_error_finding(
+                definition,
+                invalid_endpoint_reference_message,
+                VALIDATION_NAME,
+                definition.get_lexeme_with_value(endpoint, prefix_values=[endpoint_type]),
+            )
+
+    return findings
+
+
+def _get_invalid_reference_message(step_name: str, endpoint_type: str, endpoint: str):
+    return f"{endpoint_type.capitalize()} '{endpoint}' of step '{step_name}' does not refer to a participant of the usecase."
