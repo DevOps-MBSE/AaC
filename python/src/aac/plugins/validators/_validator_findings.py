@@ -1,6 +1,7 @@
 """A module that facilitates working with a collection of validator findings."""
 
 from attr import Factory, attrib, attrs, validators
+from typing import Union
 
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.lexeme import Lexeme
@@ -18,9 +19,10 @@ class ValidatorFindings:
 
     findings: list[ValidatorFinding] = attrib(default=Factory(list), validator=validators.instance_of(list))
 
-    def add_findings(self, new_findings: list[ValidatorFinding]) -> None:
+    def add_findings(self, new_findings: Union[list[ValidatorFinding], "ValidatorFindings"]) -> None:
         """Add the new findings to the collection of all findings."""
-        self.findings.extend(new_findings)
+        findings = new_findings if isinstance(new_findings, list) else new_findings.get_all_findings()
+        self.findings.extend(findings)
 
     def add_error_finding(self, definition: Definition, message: str, validation_name: str, lexeme: Lexeme) -> None:
         """Add the finding as an error finding."""
