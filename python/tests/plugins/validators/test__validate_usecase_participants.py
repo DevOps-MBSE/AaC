@@ -46,3 +46,35 @@ class TestUsecaseParticipants(ActiveContextTestCase):
         result = validate_usecase_participants(test_usecase, target_schema_definition, test_active_context)
 
         self.assertTrue(result.is_valid())
+
+    def test_validate_usecase_with_valid_source_invalid_target(self):
+        test_participant = create_field_entry("user1", "SomeModel")
+        test_step_valid_source = create_step_entry("step1", "user1", "notUser1", "action")
+        test_usecase = create_usecase_definition("TestUsecase", "", [test_participant], [test_step_valid_source])
+
+        test_active_context = get_active_context(reload_context=True)
+        test_active_context.add_definition_to_context(test_usecase)
+        target_schema_definition = get_definition_by_name(DEFINITION_NAME_USECASE, test_active_context.definitions)
+
+        result = validate_usecase_participants(test_usecase, target_schema_definition, test_active_context)
+
+        self.assertFalse(result.is_valid())
+
+        target = test_step_valid_source.get(DEFINITION_FIELD_TARGET)
+        self.assertRegexpMatches(result.get_messages_as_string(), f".*{target}.*not.*participant.*")
+
+    def test_validate_usecase_with_invalid_source_valid_target(self):
+        test_participant = create_field_entry("user1", "SomeModel")
+        test_step_valid_target = create_step_entry("step1", "notUser1", "user1", "action")
+        test_usecase = create_usecase_definition("TestUsecase", "", [test_participant], [test_step_valid_target])
+
+        test_active_context = get_active_context(reload_context=True)
+        test_active_context.add_definition_to_context(test_usecase)
+        target_schema_definition = get_definition_by_name(DEFINITION_NAME_USECASE, test_active_context.definitions)
+
+        result = validate_usecase_participants(test_usecase, target_schema_definition, test_active_context)
+
+        self.assertFalse(result.is_valid())
+
+        source = test_step_valid_target.get(DEFINITION_FIELD_SOURCE)
+        self.assertRegexpMatches(result.get_messages_as_string(), f".*{source}.*not.*participant.*")
