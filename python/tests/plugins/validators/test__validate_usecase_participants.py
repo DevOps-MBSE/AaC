@@ -60,6 +60,9 @@ class TestUsecaseParticipants(ActiveContextTestCase):
 
         self.assertFalse(result.is_valid())
 
+        source = test_step_valid_source.get(DEFINITION_FIELD_SOURCE)
+        self.assertNotRegexpMatches(result.get_messages_as_string(), f".*{source}.*not.*participant.*")
+
         target = test_step_valid_source.get(DEFINITION_FIELD_TARGET)
         self.assertRegexpMatches(result.get_messages_as_string(), f".*{target}.*not.*participant.*")
 
@@ -78,3 +81,6 @@ class TestUsecaseParticipants(ActiveContextTestCase):
 
         source = test_step_valid_target.get(DEFINITION_FIELD_SOURCE)
         self.assertRegexpMatches(result.get_messages_as_string(), f".*{source}.*not.*participant.*")
+
+        target = test_step_valid_target.get(DEFINITION_FIELD_TARGET)
+        self.assertNotRegexpMatches(result.get_messages_as_string(), f".*{target}.*not.*participant.*")
