@@ -15,7 +15,7 @@ By incorporating the `usecase`s for various system behaviors, the alarm clock is
 
 Some questions that come up when evaluating the system for functional completeness are outlined below. They can be addressed with the incorporation of a `usecase` definition for the system.
 
-1. Does the system allow for necessary participants?
+1. Does the system define the necessary participants?
 2. Are all necessary functionalities feasible with the current system components?
 3. Can the system be understood enough to be tested?
 
