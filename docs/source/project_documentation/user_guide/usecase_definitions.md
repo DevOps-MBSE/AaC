@@ -1,6 +1,6 @@
 # Usecase Definitions in AaC
 
-One of AaC's goal is to allow for a system to be modeled in a way that various disciplined users would be able to understand and implement the model for their contribution to the system. One of the system model aspects captured within AaC is the behavior of the system, which has a rootkey of `usecase`. The `usecase` describes a system behavior, who is involved with the system behavior, and outlines the steps for achieving the described system behavior.
+One of AaC's goals is to allow for a system to be modeled in a way that various disciplined users are able to understand and implement the model for their area of responsibility in the overall system. One of the system model aspects captured within AaC is the behavior of the system, which has a root key of `usecase`. The `usecase` describes a system behavior, who is involved with the system behavior, and outlines the steps for achieving the described system behavior.
 
 ## Utilizing Usecase Definitions
 
