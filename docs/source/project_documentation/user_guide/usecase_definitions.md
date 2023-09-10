@@ -13,7 +13,7 @@ There is an example usecase within our alarm clock model example for setting the
 ```
 By incorporating the `usecase`s for various system behaviors, the alarm clock is able to be evaluated for functional completeness that cannot be seen in the alarm clock model alone.
 
-Some questions that can when evaluating the system for functional completeness are below. They can be addressed with the incorporation of a `usecase` definition for the system.
+Some questions that come up when evaluating the system for functional completeness are outlined below. They can be addressed with the incorporation of a `usecase` definition for the system.
 
 1. Does the system allow for necessary participants?
 2. Are all necessary functionalities feasible with the current system components?
