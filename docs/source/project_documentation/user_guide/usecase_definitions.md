@@ -1,6 +1,6 @@
 # Usecase Definitions in AaC
 
-One of AaC's goal is to allow for a system to be modeled in a way that various disciplined users would be able to understand and implement the model for their contribution to the system. One of the system model aspects captured within AaC is the behavior of the system, which has a rootkey of `usecase`. The `usecase` describes a system behavior, who is involved with the system behavior, and outlines the steps for achieving the described system behavior.
+One of AaC's goals is to allow for a system to be modeled in a way that various disciplined users are able to understand and implement the model for their area of responsibility in the overall system. One of the system model aspects captured within AaC is the behavior of the system, which has a root key of `usecase`. The `usecase` describes a system behavior, who is involved with the system behavior, and outlines the steps for achieving the described system behavior.
 
 ## Utilizing Usecase Definitions
 
@@ -13,9 +13,9 @@ There is an example usecase within our alarm clock model example for setting the
 ```
 By incorporating the `usecase`s for various system behaviors, the alarm clock is able to be evaluated for functional completeness that cannot be seen in the alarm clock model alone.
 
-Some questions that can when evaluating the system for functional completeness are below. They can be addressed with the incorporation of a `usecase` definition for the system.
+Some questions that come up when evaluating the system for functional completeness are outlined below. They can be addressed with the incorporation of a `usecase` definition for the system.
 
-1. Does the system allow for necessary participants?
+1. Does the system define the necessary participants?
 2. Are all necessary functionalities feasible with the current system components?
 3. Can the system be understood enough to be tested?
 
