@@ -2,6 +2,11 @@ name: Deploy VSCode Artifacts
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - vscode_extension/**
 
 jobs:
   build_python_artifacts:
