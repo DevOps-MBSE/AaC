@@ -273,26 +273,6 @@ class LanguageContext:
         """
         return [definition for definition in self.definitions if definition.get_root()]
 
-    def get_root_keys_definition(self) -> Definition:
-        """
-        Return the root keys type definition in the LanguageContext.
-
-        Returns:
-            The definition that defines the root key types.
-
-        Raises:
-            LanguageError - An error indicating the root key definition is not in the context.
-        """
-        # TODO This is only used once and can potentially be deleted if there is not longer a root schema present.
-        root_definition = self.get_definition_by_name(DEFINITION_NAME_ROOT)
-        if root_definition:
-            return root_definition
-        else:
-            missing_root_definition_error_message = (
-                f"The root-key defining definition '{DEFINITION_NAME_ROOT}' is not in the context."
-            )
-            logging.critical(missing_root_definition_error_message)
-            raise LanguageError(missing_root_definition_error_message)
 
     def get_primitives_definition(self) -> Definition:
         """
