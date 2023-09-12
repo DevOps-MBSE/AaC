@@ -30,8 +30,9 @@ Include pertinent changes that are improvements to existing features.
 - None
 
 # Checklist:
-- [ ] Updated documentation accordingly.
+
+- [ ] I updated project documentation to reflect my changes.
 - [ ] My changes generate no new warnings.
-- [ ] Have updated new and existing unit tests accordingly.
-- [ ] Linked associated items to be closed.
-- [ ] Have you bumped the version if there will be a release?
+- [ ] I updated new and existing unit tests to account for my changes.
+- [ ] I linked the associated item(s) to be closed.
+- [ ] I bumped the version.
