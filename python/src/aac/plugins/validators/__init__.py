@@ -7,14 +7,16 @@ from aac.plugins.validators._validator_result import ValidatorResult
 from aac.plugins.validators._common import (
     get_validation_definition_from_plugin_yaml,
     get_validation_definition_from_plugin_definitions,
+    get_plugin_validations_from_definitions,
 )
 
 __all__ = (
-    ValidatorResult.__name__,
-    ValidatorFinding.__name__,
-    ValidatorFindings.__name__,
-    FindingLocation.__name__,
-    FindingSeverity.__name__,
-    get_validation_definition_from_plugin_yaml.__name__,
-    get_validation_definition_from_plugin_definitions.__name__,
+    "ValidatorResult",
+    "ValidatorFinding",
+    "ValidatorFindings",
+    "FindingLocation",
+    "FindingSeverity",
+    "get_validation_definition_from_plugin_yaml",
+    "get_validation_definition_from_plugin_definitions",
+    "get_plugin_validations_from_definitions",
 )
