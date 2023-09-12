@@ -49,7 +49,7 @@ The `steps` of the `usecase` are included as a portion of the `usecase` definiti
     :lines: 6-24
 ```
 
-`steps` are actions that the system follows to accomplish the desired described behavior of the `usecase`. The number of steps varies based on how many interactions between the `participants` need to happen for the behavior to be accomplished. Each of the `steps` should involve only two `participants`. One participant (`source`) performing an `action` on another participant (`target`).
+`steps` are actions that the system follows to accomplish the desired described behavior of the `usecase`. The number of steps varies based on how many interactions between the `participants` need to happen for the behavior to be accomplished. Each of the `steps` should involve only two `participants`. One participant (`source`) performing an `action` on another participant (`target`). Each action must be defined as a behavior in the `target`. For example, the model `AlarmClock` must have a behavior named `setAlarm` that can be invoked by the source `user`.
 
 ```{eval-rst}
 .. literalinclude:: ../../../../python/model/alarm_clock/usecase.yaml
