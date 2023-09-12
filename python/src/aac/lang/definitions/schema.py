@@ -31,12 +31,12 @@ def get_definition_schema(source_definition: Definition, context: LanguageContex
 
 def get_root_schema_definitions(context: LanguageContext) -> dict[str, Definition]:
     """Return a dictionary of root keys to definitions."""
-    root_definitions_entries = context.get_root_fields()
+    root_definitions_entries = context.get_root_definitions()
 
     root_definitions_dict = {}
     for root in root_definitions_entries:
-        root_name = root.get(DEFINITION_FIELD_NAME)
-        root_type = root.get(DEFINITION_FIELD_TYPE)
+        root_name = root.get_root()
+        root_type = root.name
 
         # We only care about definitions, which excludes primitive types
         if context.is_definition_type(root_type):

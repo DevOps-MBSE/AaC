@@ -259,14 +259,14 @@ def get_root_key_schema(key: str):
         404 HTTPStatus.NOT_FOUND if the key doesn't exist.
     """
     active_context = get_active_context()
-    key_fields = active_context.get_root_fields()
-    matching_keys = [key_field for key_field in key_fields if key_field.get(DEFINITION_FIELD_NAME) == key]
+    root_definitions = active_context.get_root_definitions()
+    matching_definitions = [definition for definition in root_definitions if definition.name == key]
 
-    if not matching_keys:
+    if not matching_definitions:
         _report_error_response(HTTPStatus.NOT_FOUND, f"No root key found called {key}.")
     else:
-        key_definition_name = matching_keys[0].get(DEFINITION_FIELD_TYPE, "")
-        schema_definition = active_context.get_definition_by_name(key_definition_name)
+        key_definition_name = matching_definitions[0].name
+        schema_definition = matching_definitions[0]
 
         if not schema_definition:
             _report_error_response(HTTPStatus.NOT_FOUND, f"Unable to get the schema definition {key_definition_name}.")

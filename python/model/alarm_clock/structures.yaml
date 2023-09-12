@@ -1,5 +1,6 @@
 schema:
   name: TimerAlert
+  root: timer_alert
   description: Data structure for timer alerts.
   fields:
     - name: name

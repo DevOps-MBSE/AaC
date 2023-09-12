@@ -257,7 +257,11 @@ class LanguageContext:
             from active plugins and user files, which may extend the set of root keys.
             See :py:func:`aac.spec.get_root_keys()` for the list of root keys provided by the unaltered core AaC DSL.
         """
-        return [str(field.get(DEFINITION_FIELD_NAME)) for field in self.get_root_fields()]
+
+        # original return value
+        # return [str(field.get(DEFINITION_FIELD_NAME)) for field in self.get_root_fields()]
+
+        return [str(definition.get_root()) for definition in self.definitions if definition.get_root()]
 
     def get_root_fields(self) -> list[dict]:
         """
@@ -269,14 +273,29 @@ class LanguageContext:
             These fields may differ from those provided by the core spec since the LanguageContext applies definitions
             from active plugins and user files, which may extend the set of root fields.
         """
+        # TODO I think this just needs to be removed.  Reviewing the usage makes be believe we really need a dict with root key to type.  Perhaps we replace with a list of Definitions where root is populated?
         root_definition = self.get_definition_by_name(DEFINITION_NAME_ROOT)
 
         if root_definition:
+            print(f"DEBUG: get_root_fields returns {root_definition.get_fields() or []}")
             return root_definition.get_fields() or []
         else:
             raise LanguageError(
                 f"Unable to get the '{DEFINITION_NAME_ROOT}' definition. Check that AaC has the core-spec loaded."
             )
+
+    def get_root_definitions(self) -> list[Definition]:
+        """
+        Get the list of root definitions as defined in the LanguageContext.
+
+        Returns:
+           A list of Definitions, one Definition for each schema which defines a root key.
+
+           These Definitions may differ from those provided by teh core spec since the LanguageContext applied definitions
+           from active plugins and user files, which may extend the set of root definitions.
+
+        """
+        return [definition for definition in self.definitions if definition.get_root()]
 
     def get_root_keys_definition(self) -> Definition:
         """
@@ -288,6 +307,7 @@ class LanguageContext:
         Raises:
             LanguageError - An error indicating the root key definition is not in the context.
         """
+        # TODO This is only used once and can potentially be deleted if there is not longer a root schema present.
         root_definition = self.get_definition_by_name(DEFINITION_NAME_ROOT)
         if root_definition:
             return root_definition

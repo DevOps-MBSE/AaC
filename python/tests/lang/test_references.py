@@ -144,15 +144,23 @@ class TestLangReferences(ActiveContextTestCase):
 
 
 TEST_MODEL_WITH_NON_STRING_VALUE = f"""
-ext:
-  name: MaterialRootItems
-  type: {DEFINITION_NAME_ROOT}
-  schemaExt:
-    add:
-      - name: assembly
-        type: Assembly
-      - name: deployment
-        type: Deployment
+schema:
+  name: Deployment
+  root: deployment
+  fields:
+    - name: my_name
+      type: string
+      description: |
+        Some random string.
+---
+schema:
+  name: Assembly
+  root: assembly
+  fields:
+    - name: my_other_name
+      type: string
+      description: |
+        Some random string.
 ---
 deployment:
   name: My_New_Apartment

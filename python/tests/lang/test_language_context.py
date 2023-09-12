@@ -281,6 +281,14 @@ class TestLanguageContext(ActiveContextTestCase):
 
         self.assertCountEqual(expected_results, actual_results)
 
+    def test_get_root_definitions(self):
+        core_spec = get_aac_spec()
+        test_context = LanguageContext(core_spec)
+
+        actual_results = test_context.get_root_definitions()
+        expected_root_type_names = ['Import', 'Enum', 'Extension', 'Validation', 'Schema', 'Model', 'Usecase', 'CommandGroup', 'Plugin', 'Specification']
+        self.assertListEqual(sorted([definition.name for definition in actual_results]), sorted(expected_root_type_names))
+
     def test_get_enum_definition_by_type_when_enum_is_in_core_spec(self):
         core_spec = get_aac_spec()
         test_context = LanguageContext(core_spec)

@@ -82,6 +82,7 @@ schema:
 ---
 schema:
   name: Import
+  root: import
   fields:
     - name: files
       type: file[]
@@ -92,6 +93,7 @@ schema:
 ---
 schema:
   name: Enum
+  root: enum
   fields:
     - name: name
       type: string
@@ -109,6 +111,7 @@ schema:
 ---
 schema:
   name: Extension
+  root: ext
   fields:
     - name: name
       type: string
@@ -178,6 +181,7 @@ schema:
 ---
 schema:
   name: Validation
+  root: validation
   fields:
     - name: name
       type: string
@@ -312,11 +316,16 @@ schema:
 ---
 schema:
   name: Schema
+  root: schema
   fields:
     - name: name
       type: string
       description: |
         The name of the schema definition.
+    - name: root
+      type: string
+      description: |
+        The yaml key used to represent the type when defined at the root of the AaC model file.
     - name: inherits
       type: reference[]
       description: |
@@ -390,6 +399,7 @@ schema:
 ---
 schema:
   name: Model
+  root: model
   fields:
     - name: name
       type: string
@@ -427,6 +437,7 @@ schema:
 ---
 schema:
   name: Usecase
+  root: usecase
   fields:
     - name: name
       type: string
@@ -511,6 +522,7 @@ schema:
 ---
 schema:
   name: CommandGroup
+  root: command_group
   fields:
     - name: name
       type: string
@@ -574,6 +586,7 @@ schema:
 ---
 schema:
   name: Plugin
+  root: plugin
   fields:
     - name: name
       type: string
@@ -620,6 +633,7 @@ command_group:
 ---
 schema:
   name: Specification
+  root: spec
   fields:
     - name: name
       type: string
