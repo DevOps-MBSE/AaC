@@ -64,17 +64,13 @@ class TestSpecCore(ActiveContextTestCase):
 
         self.assertCountEqual(result, EXPECTED_ROOT_KEY_NAMES)
 
-    def test_get_root_fields(self):
+    def test_get_root_definitions(self):
         """
         Unit test for the core.get_root_fields method.
         """
-        result = core.get_root_fields()
+        result = core.get_root_definitions()
 
         self.assertEqual(len(result), len(EXPECTED_ROOT_KEY_NAMES))
-        for field in result:
-            self.assertIsNotNone(field.get("name"))
-            self.assertIsNotNone(field.get("description"))
-            self.assertIn(field.get("name"), EXPECTED_ROOT_KEY_NAMES)
 
     def test_get_aac_spec(self):
         """

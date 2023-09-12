@@ -48,7 +48,6 @@ class GotoDefinitionProvider(LspProvider):
         Return the location(s) where the AaC reference is defined.
 
         Args:
-            documents (dict[str, Document]): The documents in the workspace in which to search for name.
             name (str): The name of the item whose location is being determined.
 
         Returns:
@@ -76,10 +75,10 @@ class GotoDefinitionProvider(LspProvider):
             if definition_to_find:
                 locations.extend(self.get_enum_value_lexeme_location(definition_to_find, name))
 
-        if SymbolType.ROOT_KEY in symbol_types:
-            definition_to_find = language_context.get_root_keys_definition()
-            if definition_to_find:
-                locations.extend(self.get_root_key_definition_lexeme_location(definition_to_find, name))
+        # if SymbolType.ROOT_KEY in symbol_types:
+        #     definition_to_find = language_context.get_root_keys_definition()
+        #     if definition_to_find:
+        #         locations.extend(self.get_root_key_definition_lexeme_location(definition_to_find, name))
 
         return locations
 
