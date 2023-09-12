@@ -62,14 +62,12 @@ class TestRootKeysValidator(ActiveContextTestCase):
 
     def test_validate_root_keys_valid_extended_root_key(self):
         fake_extended_root_key = "extended_root_key"
-        test_definition = create_schema_definition("Test")
+        test_definition = create_schema_definition("Test", root=fake_extended_root_key)
         test_definition.structure[fake_extended_root_key] = test_definition.structure[test_definition.get_root_key()]
         del test_definition.structure[test_definition.get_root_key()]
 
-        new_root_field = create_field_entry(fake_extended_root_key, fake_extended_root_key)
-        root_key_extension = create_schema_ext_definition("NewRootKeys", DEFINITION_NAME_ROOT, fields=[new_root_field])
         test_active_context = get_active_context()
-        test_active_context.add_definitions_to_context([test_definition, root_key_extension])
+        test_active_context.add_definitions_to_context([test_definition])
 
         target_schema_definition = get_definition_by_name(DEFINITION_NAME_SCHEMA, test_active_context.definitions)
         actual_result = validate_root_keys(test_definition, target_schema_definition, test_active_context)

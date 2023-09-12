@@ -250,11 +250,14 @@ for field_type in REFERENCE_CONTEXT.get_primitive_types():
 #    type: reference
 #    description: ''
 # "
-ALL_PRIMITIVES_TEST_DEFINITION = create_schema_definition(
-    ALL_PRIMITIVES_TEST_DEFINITION_SCHEMA_NAME, fields=all_primitives_fields
-)
 
 ALL_PRIMITIVES_ROOT_KEY = ALL_PRIMITIVES_TEST_DEFINITION_SCHEMA_NAME.lower()
+
+ALL_PRIMITIVES_TEST_DEFINITION = create_schema_definition(
+    ALL_PRIMITIVES_TEST_DEFINITION_SCHEMA_NAME, root=ALL_PRIMITIVES_ROOT_KEY, fields=all_primitives_fields
+)
+
+
 
 # "ext:
 #  name: ALL_PRIMITIVES_TEST_DEFINITION_SCHEMA_EXT

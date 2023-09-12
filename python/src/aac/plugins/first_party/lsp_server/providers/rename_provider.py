@@ -90,9 +90,10 @@ class RenameProvider(LspProvider):
                 edits = self._get_enum_value_type_text_edits(text_to_replace, sanitized_new_name, enum_to_find, language_context)
 
         if SymbolType.ROOT_KEY in symbol_types:
-            root_fields = language_context.get_root_fields()
-            key_schema_field, *_ = [field for field in root_fields if field.get(DEFINITION_FIELD_NAME) == text_to_replace]
-            definition_to_find = language_context.get_definition_by_name(key_schema_field.get(DEFINITION_FIELD_TYPE))
+            root_definitions = language_context.get_root_definitions()
+            key_schema_definition_name, *_ = [definition.name for definition in root_definitions if definition.name == text_to_replace]
+
+            definition_to_find = language_context.get_definition_by_name(key_schema_definition_name)
 
             if not definition_to_find:
                 logging.critical(f"Can't find the source definition definition '{text_to_replace}'.")

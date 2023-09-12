@@ -257,32 +257,8 @@ class LanguageContext:
             from active plugins and user files, which may extend the set of root keys.
             See :py:func:`aac.spec.get_root_keys()` for the list of root keys provided by the unaltered core AaC DSL.
         """
-
-        # original return value
-        # return [str(field.get(DEFINITION_FIELD_NAME)) for field in self.get_root_fields()]
-
         return [str(definition.get_root()) for definition in self.definitions if definition.get_root()]
 
-    def get_root_fields(self) -> list[dict]:
-        """
-        Get the list of root fields as defined in the LanguageContext.
-
-        Returns:
-            A list of dictionaries, one dictionary for each root field including name and type.
-
-            These fields may differ from those provided by the core spec since the LanguageContext applies definitions
-            from active plugins and user files, which may extend the set of root fields.
-        """
-        # TODO I think this just needs to be removed.  Reviewing the usage makes be believe we really need a dict with root key to type.  Perhaps we replace with a list of Definitions where root is populated?
-        root_definition = self.get_definition_by_name(DEFINITION_NAME_ROOT)
-
-        if root_definition:
-            print(f"DEBUG: get_root_fields returns {root_definition.get_fields() or []}")
-            return root_definition.get_fields() or []
-        else:
-            raise LanguageError(
-                f"Unable to get the '{DEFINITION_NAME_ROOT}' definition. Check that AaC has the core-spec loaded."
-            )
 
     def get_root_definitions(self) -> list[Definition]:
         """

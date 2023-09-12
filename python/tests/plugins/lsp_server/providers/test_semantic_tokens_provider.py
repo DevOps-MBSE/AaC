@@ -74,7 +74,7 @@ class TestSemanticTokensProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
             for i, type in enumerate(["string", "int", "file"])
         ]
         validations = [create_validation_entry("sample validation")]
-        schema = create_schema_definition("SchemaName", "a test schema", fields, validations)
+        schema = create_schema_definition("SchemaName", description="a test schema", fields=fields, validations=validations)
 
         document_name = "sample.aac"
         await self.create_document(document_name, schema.content)

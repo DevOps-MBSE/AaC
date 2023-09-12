@@ -163,7 +163,7 @@ class TestGenerateProtobufPlugin(ActiveContextTestCase):
         expected_result = _to_message_template_properties(TEST_MESSAGE_A_NAME, TEST_MESSAGE_A_DESCRIPTION, SCHEMA_FILE_TYPE, [test_field])
 
         test_message_field = create_field_entry(TEST_FIELD_A_NAME, f"{INT64_TYPE}[]")
-        test_message_definition = create_schema_definition(TEST_MESSAGE_A_NAME, TEST_MESSAGE_A_DESCRIPTION, [test_message_field])
+        test_message_definition = create_schema_definition(TEST_MESSAGE_A_NAME, description=TEST_MESSAGE_A_DESCRIPTION, fields=[test_message_field])
 
         actual_result = _get_message_template_properties({test_message_definition.name: test_message_definition})
         self.assertDictEqual(expected_result, actual_result[0])

@@ -26,6 +26,7 @@ from aac.lang.constants import (
     DEFINITION_FIELD_PARTICIPANTS,
     DEFINITION_FIELD_PRIMITIVE_VALIDATIONS,
     DEFINITION_FIELD_REQUIRED,
+    DEFINITION_FIELD_ROOT,
     DEFINITION_FIELD_SCENARIO,
     DEFINITION_FIELD_SOURCE,
     DEFINITION_FIELD_STATE,
@@ -155,7 +156,7 @@ def create_enum_definition(name: str, values: list[str]):
 
 
 def create_schema_definition(
-    name: str, description: str = "", fields: list[dict] = [], validations: list[dict] = [], inherits: list[str] = []
+    name: str, root: str = "", description: str = "", fields: list[dict] = [], validations: list[dict] = [], inherits: list[str] = []
 ):
     """Return a simulated schema definition."""
     definition_dict = {DEFINITION_FIELD_NAME: name}
@@ -165,6 +166,9 @@ def create_schema_definition(
 
     if description:
         definition_dict[DEFINITION_FIELD_DESCRIPTION] = description
+
+    if root:
+        definition_dict[DEFINITION_FIELD_ROOT] = root
 
     # Placing this here to preserve an expected order
     definition_dict[DEFINITION_FIELD_FIELDS] = fields
