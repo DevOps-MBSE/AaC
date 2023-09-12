@@ -17,6 +17,7 @@
                  (python-tab-width . 4)
                  (python-format-on-save . nil)
                  (python-sort-imports-on-save . nil)
+                 (python-auto-set-local-pyvenv-virtualenv . on-project-switch)
                  (blacken-line-length . fill)))
  (typescript-mode . ((eval . (with-eval-after-load 'projectile
                                (projectile-register-project-type 'yarn '("package.json")

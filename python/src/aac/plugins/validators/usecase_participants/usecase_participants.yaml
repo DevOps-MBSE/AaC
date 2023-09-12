@@ -1,0 +1,53 @@
+plugin:
+  name: Validate usecase participants
+  description: An AaC plugin that validates usecase sources or targets are defined participants.
+  definitionValidations:
+    - name: Usecase sources and targets refer to defined participants
+---
+validation:
+  name: Usecase sources and targets refer to defined participants
+  description: Verify that the source and target fields of a usecase definition refer to valid usecase participants.
+  behavior:
+    - name: Verify that the source or target fields of a usecase refer to a defined usecase participant.
+      type: REQUEST_RESPONSE
+      input:
+        - name: input
+          type: ValidatorInput
+      output:
+        - name: results
+          type: ValidatorOutput
+      acceptance:
+        - scenario: Verify that the source field of a usecase refers to a defined usecase participant.
+          given:
+            - The ValidatorInput content consists of a source field that refers to a defined participant.
+          when:
+            - The validator plugin is executed.
+          then:
+            - The ValidatorOutput does not indicate any errors.
+            - The ValidatorOutput does not indicate any warnings.
+            - The ValidatorOutput indicates the definition under test is valid.
+        - scenario: Verify that the target field of a usecase refers to a defined usecase participant.
+          given:
+            - The ValidatorInput content consists of a target field that refers to a defined participant.
+          when:
+            - The validator plugin is executed.
+          then:
+            - The ValidatorOutput does not indicate any errors.
+            - The ValidatorOutput does not indicate any warnings.
+            - The ValidatorOutput indicates the definition under test is valid.
+        - scenario: Fail to validate usecase participant with invalid source.
+          given:
+            - The ValidatorInput content consists of a source field that does not refer to a defined participant.
+          when:
+            - The validator plugin is executed.
+          then:
+            - The ValidatorOutput has errors.
+            - The ValidatorOutput errors indicate that there is no corresponding participant with the value provided in the source field.
+        - scenario: Fail to validate usecase participant with invalid target.
+          given:
+            - The ValidatorInput content consists of a target field that does not refer to a defined participant.
+          when:
+            - The validator plugin is executed.
+          then:
+            - The ValidatorOutput has errors.
+            - The ValidatorOutput errors indicate that there is no corresponding participant with the value provided in the target field.
