@@ -43,6 +43,13 @@ system.
 Each `behavior` requires a `BehaviorType` which represents the mode of
 interaction for that behavior.
 
+```{eval-rst}
+.. literalinclude:: ../../../../python/model/alarm_clock/alarm_clock.yaml
+    :language: yaml
+    :lines: 6-37
+    :emphasize-lines: 11-17
+```
+
 A `behavior` can also have any combination of `input`s and `output`s.
 
 Additionally, the action of every behavior is represented by the `scenario`
@@ -53,7 +60,7 @@ triggers (`when`), and post-conditions (`then`) for the behavior.
 .. literalinclude:: ../../../../python/model/alarm_clock/alarm_clock.yaml
     :language: yaml
     :lines: 6-37
-    :emphasize-lines: 18-37
+    :emphasize-lines: 19-32
 ```
 
 ### Defining System State In Models

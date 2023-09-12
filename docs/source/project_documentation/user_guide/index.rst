@@ -9,8 +9,7 @@ User Guide Documentation
    Secure Install <secure_install>
    Style Guide <style_guide>
    AaC Project Structure <project_structure>
-   Schema Definitions <schema_definitions>
-   Model Definitions <model_definitions>
+   Definition Types <definition_types.rst>
    AaC CLI <aac_cli>
    AaC GitOps <aac_gitops>
    AaC DSL <aac_language>
