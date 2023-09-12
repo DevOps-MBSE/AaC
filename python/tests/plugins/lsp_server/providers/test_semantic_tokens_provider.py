@@ -99,8 +99,8 @@ class TestSemanticTokensProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
             create_field_entry(f"Field{i}", type, f"Field{i} of type {type} in schema {x}")
             for i, type in enumerate(["string", "int", "file"])
         ]
-        schema1 = create_schema_definition("SchemaOneName", "test schema 1", fields(1))
-        schema2 = create_schema_definition("SchemaTwoName", "test schema 2", fields(2))
+        schema1 = create_schema_definition("SchemaOneName", description="test schema 1", fields=fields(1))
+        schema2 = create_schema_definition("SchemaTwoName", description="test schema 2", fields=fields(2))
 
         behavior = create_behavior_entry(
             "Some behavior",
