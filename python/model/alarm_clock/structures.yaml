@@ -82,14 +82,6 @@ enum:
     - KLAXON
     - DOG_BARKING
 ---
-ext:
-  name: AddTimerAlertRootNode
-  type: Root
-  schemaExt:
-    add:
-      - name: timer_alert
-        type: TimerAlert
----
 timer_alert:
   name: my_alert
   triggeredTime:
