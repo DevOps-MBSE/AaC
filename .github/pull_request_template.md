@@ -1,33 +1,34 @@
 # Description
-Please include a summary of the changes and the related issue. List any dependencies that are required for this change.
+
+Include a summary of the changes and the related issue. List any dependencies that are required for this change.
 
 # Linked Items:
-Please include the items resolved by and/or associated with this Pull Request using the following syntax to link them for closure upon completion.
-`Closes #<Issue Number>` or
-`Fixes #<Issue Number>` or
-`Resolves #<Issue Number>`
 
-## Type of change
-- [ ] New feature (non-breaking change which adds functionality)
-- [ ] Bug fix (non-breaking change which fixes an issue)
-- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
-- [ ] Feature improvement
+Closes/Fixes/Resolves #XYZ
 
-### Feature Additions
-Include pertinent changes as a result of adding the new feature.
-- None
+### Added
 
-### Bug Fixes
-Include pertinent changes of fixing the bug.
-- None
+- _Describe any new features._
 
-### Breaking Changes
-Include pertinent changes that qualify as breaking changes. Be sure to include information about the impact to end users and additional information for addressing the break if more than a version transition is necessary for mitigating.
-- None
+### Changed
 
-### Feature Improvement Changes
-Include pertinent changes that are improvements to existing features.
-- None
+- _Describe any changes in existing functionality._
+
+### Deprecated
+
+- _Describe any deprecated features._
+
+### Removed
+
+- _Describe any removed features._
+
+### Fixed
+
+- _Describe any bug fixes._
+
+### Security
+
+- _Describe any security-related changes._
 
 # Checklist:
 
