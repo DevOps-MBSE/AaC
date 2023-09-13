@@ -9,7 +9,7 @@ from aac.plugins.validators.root_keys import _get_plugin_definitions, _get_plugi
 
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.assertion import assert_definitions_equal, assert_validator_result_failure, assert_validator_result_success
-from tests.helpers.parsed_definitions import create_field_entry, create_schema_definition, create_schema_ext_definition
+from tests.helpers.parsed_definitions import create_field_entry, create_schema_definition
 
 
 class TestRootKeysValidator(ActiveContextTestCase):
