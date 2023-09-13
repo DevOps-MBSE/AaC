@@ -2,17 +2,9 @@
 import logging
 from typing import Optional
 
-from aac.lang.constants import (
-    DEFINITION_FIELD_FIELDS,
-    DEFINITION_FIELD_NAME,
-    DEFINITION_FIELD_TYPE,
-    DEFINITION_NAME_ROOT,
-    ROOT_KEY_SCHEMA,
-)
+from aac.lang.constants import ROOT_KEY_SCHEMA
 from aac.lang.language_context import LanguageContext
-from aac.lang.definitions.collections import get_definition_by_name
 from aac.lang.definitions.definition import Definition
-from aac.lang.definitions.search import search_definition
 from aac.lang.definitions.schema import get_definition_schema
 
 
@@ -33,11 +25,12 @@ def get_definition_ancestry(definition: Definition, context: LanguageContext) ->
         A list of definitions that define the schema and the schema's parent schemas.
     """
 
-    ancestors_list = []
+    ancestors_list: list[Definition] = []
 
     # If the definition key isn't defined, return an empty ancestor list.
     if definition.get_root_key() not in context.get_root_keys():
-        ancestors_list.append(get_root_definition_by_key(ROOT_KEY_SCHEMA, context.definitions))
+        # I finally figured out why this is here.  It's because we're using Schema as a hack to hold a list of "Global Validator" declarations.
+        ancestors_list.append(get_root_definition_by_key(ROOT_KEY_SCHEMA, context))
         logging.error(f"The definition '{definition.name}' does not have a defined root key '{definition.get_root_key()}'.")
     else:
         found_self_defined_ancestor = False
@@ -48,13 +41,13 @@ def get_definition_ancestry(definition: Definition, context: LanguageContext) ->
             ancestor_root_schema = get_definition_schema(ancestor_definition, context)
             found_self_defined_ancestor = ancestor_definition == ancestor_root_schema
             ancestors_list.append(ancestor_definition)
-            ancestor_definition = get_root_definition_by_key(ancestor_definition.get_root_key(), context.definitions)
+            ancestor_definition = get_root_definition_by_key(ancestor_definition.get_root_key(), context)
 
     ancestors_list.reverse()
     return ancestors_list
 
 
-def get_root_definition_by_key(root_key: str, definitions: list[Definition]) -> Optional[Definition]:
+def get_root_definition_by_key(root_key: str, context: LanguageContext) -> Optional[Definition]:
     """
     Return the definition that defines the structure of the root key.
 
@@ -65,25 +58,15 @@ def get_root_definition_by_key(root_key: str, definitions: list[Definition]) -> 
     Args:
         root_key (str): The root key to search for
         definitions (list[Definition]): A list of definitions to search, must include the root Definition.
+        context (LanguageContext):  The AaC language context containing active definitions.
 
     Return:
         A Definition that defines the structure of the root key, or None if not found.
     """
-    root_definition = get_definition_by_name(DEFINITION_NAME_ROOT, definitions)
-    root_fields = search_definition(root_definition, [ROOT_KEY_SCHEMA, DEFINITION_FIELD_FIELDS])
 
-    root_key_fields = list(filter(lambda field: (field.get(DEFINITION_FIELD_NAME) == root_key), root_fields))
-    root_key_count = len(root_key_fields)
-
-    root_key_field = None
-    if root_key_count < 1:
-        logging.error(f"Failed to find field based on root key.\nField name: {root_key}\nAvailable Fields:{root_fields}")
+    if root_key in context.get_root_keys():
+        root_key_definition, *_ = [definition for definition in context.get_root_definitions() if root_key == definition.get_root()]
+        return root_key_definition
     else:
-        root_key_field = root_key_fields[0]
-
-        if root_key_count > 1:
-            logging.error(
-                f"Found multiple fields when only expected to find one.\nField name: {root_key}\nReturned Fields:{root_key_fields}"
-            )
-
-        return get_definition_by_name(root_key_field.get(DEFINITION_FIELD_TYPE), definitions)
+        logging.error(f"Failed to find root key.\nRoot Key to find: {root_key}\nAvailable Fields:{context.get_root_keys()}")
+        return None

@@ -74,8 +74,8 @@ class TestPublishDiagnosticsProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
             output=[create_field_entry("out", schema_b.name)],
         )
         invalid_model_document_name = "multiple.aac"
-        invalid_model = create_model_definition("InvalidModel", "an invalid model", behavior=[behavior])
-        invalid_model.structure["service"] = invalid_model.structure[ROOT_KEY_MODEL]
+        invalid_model = create_model_definition("InvalidModel", description="an invalid model", behavior=[behavior])
+        invalid_model.structure["not_a_valid_root_key"] = invalid_model.structure[ROOT_KEY_MODEL]
         invalid_model.structure.pop(ROOT_KEY_MODEL)
 
         content = DEFINITION_SEPARATOR.join([schema_a.to_yaml(), schema_b.to_yaml(), invalid_model.to_yaml()])
@@ -85,6 +85,6 @@ class TestPublishDiagnosticsProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         error_diagnostic, *_ = [diagnostic for diagnostic in diagnostics if diagnostic.severity == DiagnosticSeverity.Error]
         self.assertEqual(0, len(_))
         self.assertEqual(DiagnosticSeverity.Error, error_diagnostic.severity)
-        self.assertEqual(Range(start=Position(line=16, character=0), end=Position(line=16, character=7)), error_diagnostic.range)
+        self.assertEqual(Range(start=Position(line=16, character=0), end=Position(line=16, character=len("not_a_valid_root_key"))), error_diagnostic.range)
         self.assertEqual(ROOT_KEYS_VALIDATOR, error_diagnostic.code)
-        self.assertRegexpMatches(error_diagnostic.message.lower(), "undefined.*root.*service")
+        self.assertRegexpMatches(error_diagnostic.message.lower(), "undefined.*root.*not_a_valid_root_key")

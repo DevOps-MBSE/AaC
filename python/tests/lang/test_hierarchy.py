@@ -44,7 +44,7 @@ class TestLangHierarchy(TestCase):
         active_context = get_active_context(reload_context=True)
 
         expected_result = get_definition_by_name(DEFINITION_NAME_SCHEMA, active_context.definitions)
-        actual_result = get_root_definition_by_key(ROOT_KEY_SCHEMA, active_context.definitions)
+        actual_result = get_root_definition_by_key(ROOT_KEY_SCHEMA, active_context)
 
         self.assertEqual(expected_result, actual_result)
 
@@ -52,6 +52,6 @@ class TestLangHierarchy(TestCase):
         active_context = get_active_context(reload_context=True)
 
         expected_result = get_definition_by_name(DEFINITION_NAME_VALIDATION, active_context.definitions)
-        actual_result = get_root_definition_by_key(ROOT_KEY_VALIDATION, active_context.definitions)
+        actual_result = get_root_definition_by_key(ROOT_KEY_VALIDATION, active_context)
 
         self.assertEqual(expected_result, actual_result)

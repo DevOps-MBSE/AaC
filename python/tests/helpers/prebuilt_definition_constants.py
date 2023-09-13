@@ -13,7 +13,7 @@ from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.constants import (
     BEHAVIOR_TYPE_REQUEST_RESPONSE,
     DEFINITION_FIELD_TYPE,
-    DEFINITION_NAME_ROOT,
+    DEFINITION_NAME_SCHEMA,
     PRIMITIVE_TYPE_BOOL,
     PRIMITIVE_TYPE_DATE,
     PRIMITIVE_TYPE_FILE,
@@ -189,7 +189,7 @@ TEST_TYPES_ROOT_KEY = "primitive_tests"
 TEST_TYPES_SCHEMA_EXTENSION_FIELD = create_field_entry(TEST_TYPES_ROOT_KEY, TEST_TYPES_SCHEMA_DEFINITION.name)
 TEST_TYPES_SCHEMA_EXTENSION_DEFINITION = create_schema_ext_definition(
     f"{TEST_TYPES_SCHEMA_DEFINITION.name}Extension",
-    DEFINITION_NAME_ROOT,
+    DEFINITION_NAME_SCHEMA,
     fields=[TEST_TYPES_SCHEMA_EXTENSION_FIELD],
 )
 
@@ -277,7 +277,7 @@ ALL_PRIMITIVES_TEST_DEFINITION_SCHEMA_EXT_FIELD = create_field_entry(
 ALL_PRIMITIVES_TEST_DEFINITION_SCHEMA_EXT_NAME = "ALL_PRIMITIVES_TEST_DEFINITION_SCHEMA_EXT"
 ALL_PRIMITIVES_TEST_DEFINITION_SCHEMA_EXT = create_schema_ext_definition(
     ALL_PRIMITIVES_TEST_DEFINITION_SCHEMA_EXT_NAME,
-    DEFINITION_NAME_ROOT,
+    DEFINITION_NAME_SCHEMA,
     fields=[ALL_PRIMITIVES_TEST_DEFINITION_SCHEMA_EXT_FIELD],
 )
 
@@ -328,7 +328,7 @@ ALL_PRIMITIVES_INSTANCE = create_definition(
     ALL_PRIMITIVES_ROOT_KEY, ALL_PRIMITIVES_INSTANCE_NAME, all_primitives_instance_fields
 )
 TEST_TYPES_SCHEMA_EXTENSION_DEFINITION = create_schema_ext_definition(
-    f"{TEST_TYPES_SCHEMA_DEFINITION.name}Extension", DEFINITION_NAME_ROOT, fields=[TEST_TYPES_SCHEMA_EXTENSION_FIELD]
+    f"{TEST_TYPES_SCHEMA_DEFINITION.name}Extension", DEFINITION_NAME_SCHEMA, fields=[TEST_TYPES_SCHEMA_EXTENSION_FIELD]
 )
 TEST_TYPES_VALID_INSTANCE = create_definition(TEST_TYPES_ROOT_KEY, "validPrimitives", {SCHEMA_FIELD_INT.get("name"): 0})
 TEST_TYPES_INVALID_INSTANCE = create_definition(TEST_TYPES_ROOT_KEY, "invalidPrimitives", {SCHEMA_FIELD_INT.get("name"): 0.5})
@@ -339,7 +339,7 @@ TEST_ROOT_SCHEMA = create_schema_definition(
     "NewRootKeyStructure", fields=[create_field_entry("name", "string"), create_field_entry("test_enum", TEST_ENUM.name)]
 )
 TEST_ROOT_EXTENSION = create_schema_ext_definition(
-    "TestRootExtension", DEFINITION_NAME_ROOT, fields=[create_field_entry("test_root", TEST_ROOT_SCHEMA.name)]
+    "TestRootExtension", DEFINITION_NAME_SCHEMA, fields=[create_field_entry("test_root", TEST_ROOT_SCHEMA.name)]
 )
 TEST_ROOT_INSTANCE = create_definition("test_root", "TestRootInstance", {"test_enum": "one"})
 
