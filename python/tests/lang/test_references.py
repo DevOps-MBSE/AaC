@@ -1,5 +1,5 @@
 from aac.lang.active_context_lifecycle_manager import get_active_context
-from aac.lang.constants import DEFINITION_NAME_MODEL, DEFINITION_NAME_ROOT
+from aac.lang.constants import DEFINITION_NAME_MODEL
 from aac.lang.definitions.references import (
     get_definition_type_references_from_list,
     is_reference_format_valid,
@@ -143,7 +143,7 @@ class TestLangReferences(ActiveContextTestCase):
         self.assertListEqual(_drill_into_nested_dict(search_keys, nested_dict), expected_result)
 
 
-TEST_MODEL_WITH_NON_STRING_VALUE = f"""
+TEST_MODEL_WITH_NON_STRING_VALUE = """
 schema:
   name: Deployment
   root: deployment

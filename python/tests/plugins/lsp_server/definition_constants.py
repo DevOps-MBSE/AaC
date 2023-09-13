@@ -1,5 +1,5 @@
 from aac.io.constants import DEFINITION_SEPARATOR
-from aac.lang.constants import BEHAVIOR_TYPE_REQUEST_RESPONSE, DEFINITION_NAME_ROOT
+from aac.lang.constants import BEHAVIOR_TYPE_REQUEST_RESPONSE
 
 from tests.helpers.parsed_definitions import (
     create_enum_definition,
@@ -8,8 +8,6 @@ from tests.helpers.parsed_definitions import (
     create_model_definition,
     create_behavior_entry,
     create_scenario_entry,
-    create_schema_ext_definition,
-    create_definition,
 )
 
 TEST_ENUM = create_enum_definition("Options", ["one", "two", "three"])

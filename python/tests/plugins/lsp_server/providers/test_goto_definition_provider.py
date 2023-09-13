@@ -127,16 +127,6 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
             Position(line=expected_location.range.end.line, character=expected_location.range.end.character),
         )
 
-    # TODO Based on testing of main branch, this appears to look for the field in Root.  Since Root no longer exits, this should be OBE. Confirm with team.
-    # async def test_handles_goto_definition_for_root_keys(self):
-    #     res: GotoDefinitionResponse = await self.goto_definition(TEST_DOCUMENT_NAME, line=0, character=1)
-    #     schema_definition_location, *_ = self.get_definition_location_at_position(TEST_DOCUMENT_NAME, line=0, character=1)
-
-    #     location = res.get_location()
-    #     self.assertIsNotNone(location)
-    #     self.assertEqual(location.uri, schema_definition_location.uri)
-    #     self.assertEqual(location.range.json(), schema_definition_location.range.json())
-
     async def test_handles_goto_definition_for_enums(self):
         string_location = self.get_definition_location_of_name(TEST_DOCUMENT_CONTENT, PRIMITIVE_TYPE_STRING)
         res: GotoDefinitionResponse = await self.goto_definition(

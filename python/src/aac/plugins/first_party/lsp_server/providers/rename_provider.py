@@ -5,7 +5,6 @@ from typing import List, Optional
 from pygls.server import LanguageServer
 from pygls.lsp.types import Position, RenameParams, WorkspaceEdit, TextEdit, TextDocumentIdentifier
 from pygls.workspace import Document
-from aac.lang.constants import DEFINITION_FIELD_NAME, DEFINITION_FIELD_TYPE
 
 from aac.lang.definitions.definition import Definition
 from aac.lang.language_context import LanguageContext

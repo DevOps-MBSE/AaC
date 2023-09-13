@@ -77,7 +77,7 @@ class GotoDefinitionProvider(LspProvider):
                 locations.extend(self.get_enum_value_lexeme_location(definition_to_find, name))
 
         if SymbolType.ROOT_KEY in symbol_types:
-            log.warn("Legacy Root key no longer exists and has no lexeme.")
+            logging.warn("Legacy Root key no longer exists and has no lexeme.")
 
         return locations
 
@@ -129,29 +129,3 @@ class GotoDefinitionProvider(LspProvider):
                 locations.append(get_location_from_lexeme(lexeme))
 
         return locations
-
-    # TODO removal of ROOT make this OBE.  Confirm with the team.
-    # def get_root_key_definition_lexeme_location(self, definition: Definition, root_key: str) -> list[Location]:
-    #     """
-    #     Returns a list of locations corresponding to the root key string's declaration in the root keys definition's structure.
-
-    #     Args:
-    #         definition (Definition): The definition to pull the enum value lexeme from.
-    #         root_key (str): The string value to target.
-
-
-    #     Returns:
-    #         A list, probably consisting of only one element, of locations corresponding to lexemes of definition names
-    #     """
-    #     def filter_lexeme_by_reference_name(lexeme: Lexeme) -> bool:
-    #         return lexeme.value == root_key
-
-    #     locations = []
-    #     referencing_lexemes = filter(filter_lexeme_by_reference_name, definition.lexemes)
-    #     for lexeme in referencing_lexemes:
-    #         lexeme_index = definition.lexemes.index(lexeme)
-    #         previous_lexeme = definition.lexemes[lexeme_index - 1]
-    #         if "name" in previous_lexeme.value and lexeme_index > 0:
-    #             locations.append(get_location_from_lexeme(lexeme))
-
-    #     return locations

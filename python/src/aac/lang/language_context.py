@@ -17,9 +17,7 @@ from aac.io.parser._parser_error import ParserError
 from aac.io.paths import sanitize_filesystem_path
 from aac.io.writer import write_file, write_definitions_to_file
 from aac.lang.constants import (
-    DEFINITION_FIELD_NAME,
     DEFINITION_NAME_PRIMITIVES,
-    DEFINITION_NAME_ROOT,
     ROOT_KEY_ENUM,
     ROOT_KEY_EXTENSION,
     ROOT_KEY_SCHEMA,
@@ -259,7 +257,6 @@ class LanguageContext:
         """
         return [str(definition.get_root()) for definition in self.definitions if definition.get_root()]
 
-
     def get_root_definitions(self) -> list[Definition]:
         """
         Get the list of root definitions as defined in the LanguageContext.
@@ -272,7 +269,6 @@ class LanguageContext:
 
         """
         return [definition for definition in self.definitions if definition.get_root()]
-
 
     def get_primitives_definition(self) -> Definition:
         """
