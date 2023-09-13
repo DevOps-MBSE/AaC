@@ -13,8 +13,8 @@ from tests.helpers.parsed_definitions import (
 
 class TestUsecaseParticipants(ActiveContextTestCase):
     def test_validate_usecase_with_referenced_participants(self):
-        test_participant_1 = create_field_entry("user1", "SomeModel")
-        test_participant_2 = create_field_entry("user2", "SomeOtherModel")
+        test_participant_1 = create_field_entry("user1", description="SomeModel")
+        test_participant_2 = create_field_entry("user2", description="SomeOtherModel")
         test_step = create_step_entry(
             "step1", test_participant_1.get(DEFINITION_FIELD_NAME), test_participant_2.get(DEFINITION_FIELD_NAME), "action"
         )
