@@ -58,7 +58,7 @@ Each `schema` definition in AaC outlines a set of fields for the definition. The
 
 ### Introducing New Definition Types
 
-AaC permits users to define new instances of custom data structures. In our Alarm Clock example, you might want to model individual instances of `TimerAlert` with varying dates and alarm sounds. To do this, you specify the `root` field on the schema to be the YAML root tag to use when declaring instances of your new type. The following example demonstrates how to set the `root` field to allow `time_alert` to be used as a YAML root for declaring `TimerAlert` instances.
+AaC permits users to define new instances of custom data structures. In our Alarm Clock example, you might want to model individual instances of `TimerAlert` with varying dates and alarm sounds. To do this, you specify the `root` field on the schema to be the YAML root tag to use when declaring instances of your new type. The following example demonstrates how to set the `root` field to allow `timer_alert` to be used as a YAML root for declaring `TimerAlert` instances.
 
 ```{eval-rst}
 .. literalinclude:: ../../../../python/model/alarm_clock/structures.yaml

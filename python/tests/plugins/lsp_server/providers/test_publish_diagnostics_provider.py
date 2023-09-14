@@ -54,7 +54,7 @@ class TestPublishDiagnosticsProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
     async def test_get_diagnostics_for_document_with_invalid_schema(self):
         invalid_schema_document_name = "schema.aac"
         fields = [create_field_entry("name", "invalid")]
-        invalid_schema = create_schema_definition("InvalidSchema", description="a schema with an invalid field", fields=fields)
+        invalid_schema = create_schema_definition(name="InvalidSchema", description="a schema with an invalid field", fields=fields)
         await self.create_document(invalid_schema_document_name, invalid_schema.to_yaml())
 
         diagnostics = await self.publish_diagnostics(invalid_schema_document_name)
@@ -66,15 +66,15 @@ class TestPublishDiagnosticsProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
         self.assertRegexpMatches(error_diagnostics.message.lower(), "undefined.*invalid.*reference")
 
     async def test_get_diagnostics_for_document_with_multiple_definitions(self):
-        schema_a = create_schema_definition("a", description="a schema", fields=[create_field_entry("value", "int")])
-        schema_b = create_schema_definition("b", description="b schema", fields=[create_field_entry("value", "int")])
+        schema_a = create_schema_definition(name="a", description="a schema", fields=[create_field_entry("value", "int")])
+        schema_b = create_schema_definition(name="b", description="b schema", fields=[create_field_entry("value", "int")])
         behavior = create_behavior_entry(
             "TheBehavior",
             input=[create_field_entry("in", schema_a.name)],
             output=[create_field_entry("out", schema_b.name)],
         )
         invalid_model_document_name = "multiple.aac"
-        invalid_model = create_model_definition("InvalidModel", description="an invalid model", behavior=[behavior])
+        invalid_model = create_model_definition(name="InvalidModel", description="an invalid model", behavior=[behavior])
         invalid_model.structure["not_a_valid_root_key"] = invalid_model.structure[ROOT_KEY_MODEL]
         invalid_model.structure.pop(ROOT_KEY_MODEL)
 

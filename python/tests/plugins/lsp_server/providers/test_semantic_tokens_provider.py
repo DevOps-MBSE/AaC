@@ -74,7 +74,7 @@ class TestSemanticTokensProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
             for i, type in enumerate(["string", "int", "file"])
         ]
         validations = [create_validation_entry("sample validation")]
-        schema = create_schema_definition("SchemaName", description="a test schema", fields=fields, validations=validations)
+        schema = create_schema_definition(name="SchemaName", description="a test schema", fields=fields, validations=validations)
 
         document_name = "sample.aac"
         await self.create_document(document_name, schema.content)
@@ -99,8 +99,8 @@ class TestSemanticTokensProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
             create_field_entry(f"Field{i}", type, f"Field{i} of type {type} in schema {x}")
             for i, type in enumerate(["string", "int", "file"])
         ]
-        schema1 = create_schema_definition("SchemaOneName", description="test schema 1", fields=fields(1))
-        schema2 = create_schema_definition("SchemaTwoName", description="test schema 2", fields=fields(2))
+        schema1 = create_schema_definition(name="SchemaOneName", description="test schema 1", fields=fields(1))
+        schema2 = create_schema_definition(name="SchemaTwoName", description="test schema 2", fields=fields(2))
 
         behavior = create_behavior_entry(
             "Some behavior",

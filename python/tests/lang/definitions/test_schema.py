@@ -73,9 +73,9 @@ class TestDefinitionSchemas(TestCase):
         # Assert that the active context has at least the core spec set
         self.assertGreaterEqual(len(context_root_definitions), len(get_root_definitions()))
 
-        for root_field in context_root_definitions:
-            root_name = root_field.get_root()
-            root_type = root_field.name
+        for root_definition in context_root_definitions:
+            root_name = root_definition.get_root()
+            root_type = root_definition.name
 
             if test_context.is_definition_type(root_type):
                 self.assertIn(root_name, actual_results)

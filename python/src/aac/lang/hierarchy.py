@@ -57,7 +57,6 @@ def get_root_definition_by_key(root_key: str, context: LanguageContext) -> Optio
 
     Args:
         root_key (str): The root key to search for
-        definitions (list[Definition]): A list of definitions to search, must include the root Definition.
         context (LanguageContext):  The AaC language context containing active definitions.
 
     Return:

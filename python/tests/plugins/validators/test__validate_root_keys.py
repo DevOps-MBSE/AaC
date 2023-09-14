@@ -62,7 +62,7 @@ class TestRootKeysValidator(ActiveContextTestCase):
 
     def test_validate_root_keys_valid_extended_root_key(self):
         fake_extended_root_key = "extended_root_key"
-        test_definition = create_schema_definition("Test", root=fake_extended_root_key)
+        test_definition = create_schema_definition(name="Test", root=fake_extended_root_key)
         test_definition.structure[fake_extended_root_key] = test_definition.structure[test_definition.get_root_key()]
         del test_definition.structure[test_definition.get_root_key()]
 

@@ -264,7 +264,7 @@ class LanguageContext:
         Returns:
            A list of Definitions, one Definition for each schema which defines a root key.
 
-           These Definitions may differ from those provided by teh core spec since the LanguageContext applied definitions
+           These Definitions may differ from those provided by the core spec since the LanguageContext applied definitions
            from active plugins and user files, which may extend the set of root definitions.
 
         """
