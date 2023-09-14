@@ -264,11 +264,10 @@ def get_root_key_schema(key: str):
     if not matching_definitions:
         _report_error_response(HTTPStatus.NOT_FOUND, f"No root key found called {key}.")
     else:
-        key_definition_name = matching_definitions[0].name
         schema_definition = matching_definitions[0]
 
         if not schema_definition:
-            _report_error_response(HTTPStatus.NOT_FOUND, f"Unable to get the schema definition {key_definition_name}.")
+            _report_error_response(HTTPStatus.NOT_FOUND, f"Unable to get the schema definition {schema_definition.name}.")
         else:
             schema_model = to_definition_model(schema_definition)
             schema_model.json_schema = get_definition_json_schema(schema_definition, active_context)
