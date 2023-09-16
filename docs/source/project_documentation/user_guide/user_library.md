@@ -46,7 +46,7 @@ If we deactivate `gen-protobuf` and run the validation again, we'll see an error
 AaC uses a set of root-level keys to define instances of modeled 'things' that are defined data structures (schemas). An example is the root key `schema`, which defines an instance of a data structure that can be referenced. The core AaC specification has several root keys, but users are capable of defining custom root keys.  Custom root keys allow users to define instances of models or modeled components. For more information on pre-defined Root Keys, see the [Root Keys](#dsl-root-keys) section of the AaC Modeling Language Reference page.
 
 ### Defining, adding, and leveraging a Root Key
-Due to AaC's self-defining design, users must extend the `root` definition because each field is a mapping of a root key to its defined structure. See [Definition Extensions](../advanced_user_topics/language_extensions.md) for more information on extending definitions in AaC.
+Due to AaC's self-defining design, all root keys are defined as AaC `schema` definitions within the Base DSL.
 There is information and examples about how the core spec is utilized and how to extend the DSL for use via an additional plugin within the [Base DSL and Extended DSL](#the-base-dsl-core-spec) sections of the AaC Modeling Language Reference page.
 
 For a plugin to provide custom root keys, it must have a `schemaExt` type extension targeting the `root` definition providing additional fields to the `root` definition. Each new field in the `root` definition defines a root key and corresponding data structure in the AaC language. User Library key roots can be used to define instances of modeled things such as cars, furniture, electronic networks, cloud networks, etc.

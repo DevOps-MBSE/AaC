@@ -31,4 +31,4 @@ While we strive to be clear by avoiding the overuse of jargon, we do reference a
 [AaC Glossary.](./glossary)
 
 ## Big Thanks!
-We want to extend a big thanks to the [CEACIDE team](https://northropgrumman.github.io/jellyfish/) for pioneering most of ideas behind AaC, and for providing us with some great documentation examples.
+We want to extend a big thanks to the [CEACIDE team](https://northropgrumman.github.io/jellyfish/) for pioneering most of ideas behind AaC, and for providing us with some great documentation examples.  AaC is a refactoring of Jellyfish based on lessons learned from real world use.  So why not keep the `jellyfish` name?  Simple, someone had already reserved that name in PyPi so we needed something different.

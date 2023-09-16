@@ -31,23 +31,8 @@ def get_definition_schema(source_definition: Definition, context: LanguageContex
 
 def get_root_schema_definitions(context: LanguageContext) -> dict[str, Definition]:
     """Return a dictionary of root keys to definitions."""
-    root_definitions_entries = context.get_root_fields()
 
-    root_definitions_dict = {}
-    for root in root_definitions_entries:
-        root_name = root.get(DEFINITION_FIELD_NAME)
-        root_type = root.get(DEFINITION_FIELD_TYPE)
-
-        # We only care about definitions, which excludes primitive types
-        if context.is_definition_type(root_type):
-            root_definition = context.get_definition_by_name(root_type)
-
-            if not root_definition:
-                logging.error(f"Failed to find definition named '{root_type}' for root key: {root_name}.")
-            else:
-                root_definitions_dict[root_name] = root_definition
-
-    return root_definitions_dict
+    return {str(definition.get_root()): definition for definition in context.get_root_definitions()}
 
 
 def get_schema_defined_fields(source_definition: Definition, context: LanguageContext) -> dict[str, dict]:

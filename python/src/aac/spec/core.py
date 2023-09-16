@@ -1,7 +1,6 @@
 """Functions to allow interacting with the core AaC spec."""
 import copy
 
-from aac.lang.constants import DEFINITION_FIELD_FIELDS, DEFINITION_NAME_ROOT, ROOT_KEY_SCHEMA
 from aac.lang.definitions.collections import get_definition_by_name
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.search import search_definition
@@ -94,26 +93,23 @@ def get_root_keys(reload: bool = False) -> list[str]:
     global ROOT_NAMES
 
     if len(ROOT_NAMES) == 0 or reload:
-        ROOT_NAMES = [field.get("name") for field in get_root_fields()]
+        ROOT_NAMES = [definition.get_root() for definition in get_aac_spec() if definition.get_root()]
 
     return ROOT_NAMES
 
 
-def get_root_fields(reload: bool = False) -> list[dict]:
-    """Gets the list of the root fields declared in the AaC DSL specification.
+def get_root_definitions(reload: bool = False) -> list[Definition]:
+    """Gets the list of the root definitions declared in the AaC DSL specification.
 
     Args:
         reload: If True the cached root name values will be reloaded.
             Default is False.
 
     Returns:
-        A list of dictionaries representing the root keys and their contextual information.
+        A list of definitions representing the root items of the AaC language definition.
     """
 
-    aac_definitions = get_aac_spec()
-    root_definition = get_definition_by_name(DEFINITION_NAME_ROOT, aac_definitions)
-
-    return search_definition(root_definition, [ROOT_KEY_SCHEMA, DEFINITION_FIELD_FIELDS])
+    return [definition for definition in get_aac_spec() if definition.get_root()]
 
 
 def _get_aac_spec_file_path() -> str:

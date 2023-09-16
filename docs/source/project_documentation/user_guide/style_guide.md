@@ -133,9 +133,7 @@ enum:
 Primitive types in AaC are defined by the enumeration values in the `Primitives` definition. Each enum value represents a uniquely special set of enumeration values that define the core AaC language's primitive types. Users who extend `Primitives` should maintain the same style of `snake_case` and keep primitive type names succinct: in other words, names should be descriptive, but short.
 
 ### Root Keys
-Like the primitive types, the available root keys in AaC are defined in the definition `Root`. Each field entry in the `Root` definition specifies the root key (the field's name) and a corresponding schema definition (the field type). Additional root keys can be defined by users via an extension to the `Root` definition.
-
-Like primitive types, root keys should follow the `snake_case` style, but emphasize succinct, descriptive names. Example root keys are `import`, `schema`, `model`, etc. If a one-word type isn't descriptive enough for your root key, keeping it as succinct as possible (e.g. `spring_boot_service`, `cloud_gateway`) is preferable. Long-named root keys, or roots keys that aren't `snake_case`, will not conform to the standard employed by the Core Specification and first-party plugins and could introduce confusion about what the root key is.
+A schema may define a model structure that you would want to use at the root of your YAML declaration.  Internal examples from AaC include `schema`, `model`, `enum`, and various other definitions.  If you need the ability to define your own custom YAML root key, simply populate the optional `root` entry in your `schema` definition for the new item.  AaC will automatically recognize this as a valid YAML root key for items of the type defined by your new `schema`.
 
 ## Organizing Imports
 Each AaC file has a file-wide import declaration definition. Using an `import` definition allows users to reference definitions provided via other user files and can be used to decompose large, complex models into multiple files.

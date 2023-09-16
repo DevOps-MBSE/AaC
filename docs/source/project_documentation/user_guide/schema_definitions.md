@@ -1,6 +1,6 @@
 # Schema Definitions in AaC
 
-AaC employs a set of specialized definitions, all of which are defined with the root-level key `schema`, to establish data structures within the AaC Domain-Specific Language (DSL). These `schema`-defined data structures encompass various forms, such as internal and external message formats, inputs and outputs for modeled behaviors, custom structures for plugin developers or user libraries, and other essential data constructs needed for your team's modeling activities.
+AaC employs a set of specialized definitions, all of which are defined with the `schema`, to establish data structures within the AaC Domain-Specific Language (DSL). These `schema`-defined data structures encompass various forms, such as internal and external message formats, inputs and outputs for modeled behaviors, custom structures for plugin developers or user libraries, and other essential data constructs needed for your team's modeling activities.
 
 In the AaC DSL, every definition has its structure defined by a `schema` definition, which permits users to tailor the language to their team's requirements and even craft new DSLs or extensions within AaC.
 
@@ -58,20 +58,20 @@ Each `schema` definition in AaC outlines a set of fields for the definition. The
 
 ### Introducing New Definition Types
 
-AaC permits users to define new instances of custom data structures. In our Alarm Clock example, you might want to model individual instances of `TimerAlert` with varying dates and alarm sounds. To do this, you extend the `Root` definition, where root keys in the AaC DSL are defined. The following extension example demonstrates how to expand the Root definition with a new field typed as the `TimerAlert` `schema` definition.
+AaC permits users to define new instances of custom data structures. In our Alarm Clock example, you might want to model individual instances of `TimerAlert` with varying dates and alarm sounds. To do this, you specify the `root` field on the schema to be the YAML root tag to use when declaring instances of your new type. The following example demonstrates how to set the `root` field to allow `timer_alert` to be used as a YAML root for declaring `TimerAlert` instances.
 
 ```{eval-rst}
 .. literalinclude:: ../../../../python/model/alarm_clock/structures.yaml
     :language: yaml
-    :lines: 84-90
-    :emphasize-lines: 6-7
+    :lines: 1-11
+    :emphasize-lines: 3
 ```
 
-With the new root key added, you can define instances of your custom data structure `TimerAlert` as shown below.
+With the root key defined, you can define instances of your custom data structure `TimerAlert` as shown below.
 
 ```{eval-rst}
 .. literalinclude:: ../../../../python/model/alarm_clock/structures.yaml
     :language: yaml
-    :lines: 92-100
+    :lines: 85-93
     :emphasize-lines: 1
 ```

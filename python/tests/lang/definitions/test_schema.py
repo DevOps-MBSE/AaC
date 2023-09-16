@@ -36,7 +36,7 @@ from aac.lang.definitions.schema import (
     get_definition_schema_components,
     get_schema_for_field,
 )
-from aac.spec import get_root_fields
+from aac.spec import get_root_definitions
 
 from tests.helpers.context import get_core_spec_context
 from tests.helpers.parsed_definitions import (
@@ -50,14 +50,14 @@ from tests.helpers.prebuilt_definition_constants import TEST_SERVICE_ONE
 class TestDefinitionSchemas(TestCase):
     def test_get_root_schema_definitions_with_only_core_spec(self):
         test_context = get_core_spec_context()
-        core_root_fields = get_root_fields()
+        core_root_definitions = get_root_definitions()
 
         actual_results = get_root_schema_definitions(test_context)
 
-        self.assertGreater(len(core_root_fields), 0)
-        for root_field in core_root_fields:
-            root_name = root_field.get(DEFINITION_FIELD_NAME)
-            root_type = root_field.get(DEFINITION_FIELD_TYPE)
+        self.assertGreater(len(core_root_definitions), 0)
+        for root_definition in core_root_definitions:
+            root_name = root_definition.get_root()
+            root_type = root_definition.name
 
             if test_context.is_definition_type(root_type):
                 self.assertIn(root_name, actual_results)
@@ -66,16 +66,16 @@ class TestDefinitionSchemas(TestCase):
 
     def test_get_root_schema_definitions_with_active_context(self):
         test_context = get_active_context()
-        context_root_fields = test_context.get_root_fields()
+        context_root_definitions = test_context.get_root_definitions()
 
-        actual_results = get_root_schema_definitions(test_context)
+        actual_results = [name for name in get_root_schema_definitions(test_context)]
 
         # Assert that the active context has at least the core spec set
-        self.assertGreaterEqual(len(context_root_fields), len(get_root_fields()))
+        self.assertGreaterEqual(len(context_root_definitions), len(get_root_definitions()))
 
-        for root_field in context_root_fields:
-            root_name = root_field.get(DEFINITION_FIELD_NAME)
-            root_type = root_field.get(DEFINITION_FIELD_TYPE)
+        for root_definition in context_root_definitions:
+            root_name = root_definition.get_root()
+            root_type = root_definition.name
 
             if test_context.is_definition_type(root_type):
                 self.assertIn(root_name, actual_results)

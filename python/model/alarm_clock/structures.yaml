@@ -1,5 +1,6 @@
 schema:
   name: TimerAlert
+  root: timer_alert
   description: Data structure for timer alerts.
   fields:
     - name: name
@@ -80,14 +81,6 @@ enum:
     - SIREN
     - KLAXON
     - DOG_BARKING
----
-ext:
-  name: AddTimerAlertRootNode
-  type: Root
-  schemaExt:
-    add:
-      - name: timer_alert
-        type: TimerAlert
 ---
 timer_alert:
   name: my_alert
