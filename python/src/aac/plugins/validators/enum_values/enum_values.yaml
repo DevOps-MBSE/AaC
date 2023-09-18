@@ -1,0 +1,41 @@
+plugin:
+  name: Validate type references
+  description: An AaC plugin that enables validating the enum values of fields.
+  definitionValidations:
+    - name: Type references exist
+---
+validation:
+  name: Type references exist
+  description: Verify that enum value in a field is defined by the enum type of the field.
+  behavior:
+    - name: Verify the enum value is defined by the enum type of the field.
+      type: REQUEST_RESPONSE
+      description:
+      input:
+        - name: input
+          type: ValidatorInput
+      output:
+        - name: results
+          type: ValidatorOutput
+      acceptance:
+        - scenario: Successfully validate enum type.
+          given:
+            - The ValidatorInput content consists of valid AaC definitions.
+            - The ValidatorInput contains some AaC definitions that has an enum field.
+            - The ValidatorInput enum field value is defined by the enum definition specified as the type for the field.
+          when:
+            - The validator plugin is executed.
+          then:
+            - The ValidatorOutput does not indicate any errors.
+            - The ValidatorOutput does not indicate any warnings.
+            - The ValidatorOutput indicates the definition under test is valid.
+        - scenario: Fail to validate enum type.
+          given:
+            - The ValidatorInput content consists of otherwise valid AaC definitions.
+            - The ValidatorInput contains some AaC definitions that has an enum field.
+            - The ValidatorInput enum field value is not defined by the enum definition specified as the type for the field.
+          when:
+            - The validator plugin is executed.
+          then:
+            - The ValidatorOutput has errors.
+            - The ValidatorOutput errors indicate that the enum value present is not defined as a value in the field's type-defining enum.
