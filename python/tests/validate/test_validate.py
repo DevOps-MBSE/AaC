@@ -7,7 +7,7 @@ from aac.lang.constants import (
     DEFINITION_FIELD_EXTENSION_ENUM,
     DEFINITION_FIELD_TYPE,
     DEFINITION_NAME_PRIMITIVES,
-    DEFINITION_NAME_ROOT,
+    DEFINITION_NAME_SCHEMA,
     PRIMITIVE_TYPE_STRING,
     ROOT_KEY_EXTENSION,
 )
@@ -201,7 +201,7 @@ class TestValidateExtensions(ActiveContextTestCase):
         invalid_type = "InvalidType"
         invalid_extension_field = create_field_entry("new_root", invalid_type)
         invalid_root_extension = create_schema_ext_definition(
-            "NewRoot", DEFINITION_NAME_ROOT, fields=[invalid_extension_field]
+            "NewRoot", DEFINITION_NAME_SCHEMA, fields=[invalid_extension_field]
         )
 
         with self.assertRaises(ValidationError) as error:
@@ -216,7 +216,7 @@ class TestValidateExtensions(ActiveContextTestCase):
 
     def test_validate_definitions_with_invalid_target_extension(self):
         invalid_extension_field = create_field_entry("new_field", PRIMITIVE_TYPE_STRING)
-        invalid_target = f"{DEFINITION_NAME_ROOT}inTootin"
+        invalid_target = "RootinTootin"
         invalid_target_extension = create_schema_ext_definition("NewTarget", invalid_target, fields=[invalid_extension_field])
 
         with self.assertRaises(ValidationError) as error:

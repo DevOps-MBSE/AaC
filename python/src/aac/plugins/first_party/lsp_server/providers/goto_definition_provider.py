@@ -36,6 +36,7 @@ class GotoDefinitionProvider(LspProvider):
             found at the specified position, an empty list is returned.
         """
         document = documents.get(current_uri)
+
         locations = []
         if document:
             symbol = get_symbol_at_position(document.source, position.line, position.character)
@@ -48,7 +49,6 @@ class GotoDefinitionProvider(LspProvider):
         Return the location(s) where the AaC reference is defined.
 
         Args:
-            documents (dict[str, Document]): The documents in the workspace in which to search for name.
             name (str): The name of the item whose location is being determined.
 
         Returns:
@@ -77,9 +77,7 @@ class GotoDefinitionProvider(LspProvider):
                 locations.extend(self.get_enum_value_lexeme_location(definition_to_find, name))
 
         if SymbolType.ROOT_KEY in symbol_types:
-            definition_to_find = language_context.get_root_keys_definition()
-            if definition_to_find:
-                locations.extend(self.get_root_key_definition_lexeme_location(definition_to_find, name))
+            logging.warn("Legacy Root key no longer exists and has no lexeme.")
 
         return locations
 
@@ -128,31 +126,6 @@ class GotoDefinitionProvider(LspProvider):
 
         for lexeme in referencing_lexemes:
             if values_lexeme_index < definition.lexemes.index(lexeme):
-                locations.append(get_location_from_lexeme(lexeme))
-
-        return locations
-
-    def get_root_key_definition_lexeme_location(self, definition: Definition, root_key: str) -> list[Location]:
-        """
-        Returns a list of locations corresponding to the root key string's declaration in the root keys definition's structure.
-
-        Args:
-            definition (Definition): The definition to pull the enum value lexeme from.
-            root_key (str): The string value to target.
-
-
-        Returns:
-            A list, probably consisting of only one element, of locations corresponding to lexemes of definition names
-        """
-        def filter_lexeme_by_reference_name(lexeme: Lexeme) -> bool:
-            return lexeme.value == root_key
-
-        locations = []
-        referencing_lexemes = filter(filter_lexeme_by_reference_name, definition.lexemes)
-        for lexeme in referencing_lexemes:
-            lexeme_index = definition.lexemes.index(lexeme)
-            previous_lexeme = definition.lexemes[lexeme_index - 1]
-            if "name" in previous_lexeme.value and lexeme_index > 0:
                 locations.append(get_location_from_lexeme(lexeme))
 
         return locations

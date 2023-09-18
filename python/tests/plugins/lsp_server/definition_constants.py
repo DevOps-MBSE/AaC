@@ -1,5 +1,5 @@
 from aac.io.constants import DEFINITION_SEPARATOR
-from aac.lang.constants import BEHAVIOR_TYPE_REQUEST_RESPONSE, DEFINITION_NAME_ROOT
+from aac.lang.constants import BEHAVIOR_TYPE_REQUEST_RESPONSE
 
 from tests.helpers.parsed_definitions import (
     create_enum_definition,
@@ -8,8 +8,6 @@ from tests.helpers.parsed_definitions import (
     create_model_definition,
     create_behavior_entry,
     create_scenario_entry,
-    create_schema_ext_definition,
-    create_definition,
 )
 
 TEST_ENUM = create_enum_definition("Options", ["one", "two", "three"])
@@ -18,13 +16,7 @@ TEST_SCHEMA_A = create_schema_definition(
 )  # Space in the name is specifically to test #390
 TEST_SCHEMA_B = create_schema_definition("DataB", fields=[create_field_entry("msg", "string")])
 TEST_SCHEMA_C = create_schema_definition("DataC", fields=[create_field_entry("msg", "string")])
-TEST_ROOT_SCHEMA = create_schema_definition(
-    "NewRootKeyStructure", fields=[create_field_entry("name", "string"), create_field_entry("test_enum", TEST_ENUM.name)]
-)
-TEST_ROOT_EXTENSION = create_schema_ext_definition(
-    "TestRootExtension", DEFINITION_NAME_ROOT, fields=[create_field_entry("test_root", TEST_ROOT_SCHEMA.name)]
-)
-TEST_ROOT_INSTANCE = create_definition("test_root", "TestRootInstance", {"test_enum": "one"})
+
 
 TEST_PARTIAL_CONTENT_NAME = "Partial"
 TEST_PARTIAL_CONTENT = f"""
@@ -107,10 +99,7 @@ TEST_DOCUMENT_CONTENT = DEFINITION_SEPARATOR.join(
 )
 TEST_DOCUMENT_WITH_ENUM_CONTENT = DEFINITION_SEPARATOR.join(
     [
-        TEST_ROOT_SCHEMA.to_yaml(),
-        TEST_ROOT_EXTENSION.to_yaml(),
         TEST_ENUM.to_yaml(),
-        TEST_ROOT_INSTANCE.to_yaml(),
     ]
 )
 

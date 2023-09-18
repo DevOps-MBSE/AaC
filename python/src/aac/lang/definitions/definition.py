@@ -12,6 +12,7 @@ from uuid import UUID, uuid5, NAMESPACE_DNS
 from aac.io.files.aac_file import AaCFile
 from aac.lang.constants import (
     DEFINITION_FIELD_DESCRIPTION,
+    DEFINITION_FIELD_ROOT,
     DEFINITION_FIELD_EXTENSION_ENUM,
     DEFINITION_FIELD_EXTENSION_SCHEMA,
     DEFINITION_FIELD_FIELDS,
@@ -103,6 +104,12 @@ class Definition:
         fields = self.get_top_level_fields()
         description = fields.get(DEFINITION_FIELD_DESCRIPTION)
         return str(description) if description else None
+
+    def get_root(self) -> Optional[str]:
+        """Return the root for the current definition, or None if it isn't defined."""
+        fields = self.get_top_level_fields()
+        root = fields.get(DEFINITION_FIELD_ROOT)
+        return str(root) if root else None
 
     def get_type(self) -> Optional[str]:
         """Return the string for the extension type field, or None if the field isn't defined."""

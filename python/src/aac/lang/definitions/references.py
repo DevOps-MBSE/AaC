@@ -51,7 +51,7 @@ def get_enum_references_from_context(enum_definition: Definition, language_conte
         A list of Definitions that leverage the target enum definition's values
     """
     enum_reference_schema_definitions = get_definition_type_references_from_list(enum_definition, language_context.definitions)
-    root_definitions_type_to_key_dict = {root.get("type"): root.get("name") for root in language_context.get_root_fields()}
+    root_definitions_type_to_key_dict = {root.name: root.get_root() for root in language_context.get_root_definitions()}
 
     definitions_referencing_enum_value = []
     for enum_reference in enum_reference_schema_definitions:

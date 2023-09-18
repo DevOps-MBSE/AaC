@@ -11,7 +11,6 @@ from aac.io.paths import sanitize_filesystem_path
 from aac.io.parser import parse
 from aac.io.parser._parser_error import ParserError
 from aac.lang.active_context_lifecycle_manager import get_active_context
-from aac.lang.constants import DEFINITION_FIELD_TYPE, DEFINITION_FIELD_NAME
 from aac.lang.definitions.json_schema import get_definition_json_schema
 from aac.lang.language_error import LanguageError
 from aac.plugins.plugin_execution import PluginExecutionStatusCode
@@ -259,17 +258,16 @@ def get_root_key_schema(key: str):
         404 HTTPStatus.NOT_FOUND if the key doesn't exist.
     """
     active_context = get_active_context()
-    key_fields = active_context.get_root_fields()
-    matching_keys = [key_field for key_field in key_fields if key_field.get(DEFINITION_FIELD_NAME) == key]
+    root_definitions = active_context.get_root_definitions()
+    matching_definitions = [definition for definition in root_definitions if definition.name == key]
 
-    if not matching_keys:
+    if not matching_definitions:
         _report_error_response(HTTPStatus.NOT_FOUND, f"No root key found called {key}.")
     else:
-        key_definition_name = matching_keys[0].get(DEFINITION_FIELD_TYPE, "")
-        schema_definition = active_context.get_definition_by_name(key_definition_name)
+        schema_definition = matching_definitions[0]
 
         if not schema_definition:
-            _report_error_response(HTTPStatus.NOT_FOUND, f"Unable to get the schema definition {key_definition_name}.")
+            _report_error_response(HTTPStatus.NOT_FOUND, f"Unable to get the schema definition {schema_definition.name}.")
         else:
             schema_model = to_definition_model(schema_definition)
             schema_model.json_schema = get_definition_json_schema(schema_definition, active_context)

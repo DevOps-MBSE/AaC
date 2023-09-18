@@ -34,6 +34,7 @@ def validate_root_keys(
     root_key = definition_under_test.get_root_key()
 
     if root_key not in language_context_root_keys:
+
         undefined_reference_error_message = f"Undefined root key '{root_key}' in definition '{definition_under_test.name}'. Valid root keys {language_context_root_keys}"
         root_key_lexeme = definition_under_test.get_lexeme_with_value(root_key)
         findings.add_error_finding(definition_under_test, undefined_reference_error_message, PLUGIN_NAME, root_key_lexeme)

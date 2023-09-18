@@ -17,9 +17,7 @@ from aac.io.parser._parser_error import ParserError
 from aac.io.paths import sanitize_filesystem_path
 from aac.io.writer import write_file, write_definitions_to_file
 from aac.lang.constants import (
-    DEFINITION_FIELD_NAME,
     DEFINITION_NAME_PRIMITIVES,
-    DEFINITION_NAME_ROOT,
     ROOT_KEY_ENUM,
     ROOT_KEY_EXTENSION,
     ROOT_KEY_SCHEMA,
@@ -257,46 +255,20 @@ class LanguageContext:
             from active plugins and user files, which may extend the set of root keys.
             See :py:func:`aac.spec.get_root_keys()` for the list of root keys provided by the unaltered core AaC DSL.
         """
-        return [str(field.get(DEFINITION_FIELD_NAME)) for field in self.get_root_fields()]
+        return [str(definition.get_root()) for definition in self.definitions if definition.get_root()]
 
-    def get_root_fields(self) -> list[dict]:
+    def get_root_definitions(self) -> list[Definition]:
         """
-        Get the list of root fields as defined in the LanguageContext.
+        Get the list of root definitions as defined in the LanguageContext.
 
         Returns:
-            A list of dictionaries, one dictionary for each root field including name and type.
+           A list of Definitions, one Definition for each schema which defines a root key.
 
-            These fields may differ from those provided by the core spec since the LanguageContext applies definitions
-            from active plugins and user files, which may extend the set of root fields.
+           These Definitions may differ from those provided by the core spec since the LanguageContext applied definitions
+           from active plugins and user files, which may extend the set of root definitions.
+
         """
-        root_definition = self.get_definition_by_name(DEFINITION_NAME_ROOT)
-
-        if root_definition:
-            return root_definition.get_fields() or []
-        else:
-            raise LanguageError(
-                f"Unable to get the '{DEFINITION_NAME_ROOT}' definition. Check that AaC has the core-spec loaded."
-            )
-
-    def get_root_keys_definition(self) -> Definition:
-        """
-        Return the root keys type definition in the LanguageContext.
-
-        Returns:
-            The definition that defines the root key types.
-
-        Raises:
-            LanguageError - An error indicating the root key definition is not in the context.
-        """
-        root_definition = self.get_definition_by_name(DEFINITION_NAME_ROOT)
-        if root_definition:
-            return root_definition
-        else:
-            missing_root_definition_error_message = (
-                f"The root-key defining definition '{DEFINITION_NAME_ROOT}' is not in the context."
-            )
-            logging.critical(missing_root_definition_error_message)
-            raise LanguageError(missing_root_definition_error_message)
+        return [definition for definition in self.definitions if definition.get_root()]
 
     def get_primitives_definition(self) -> Definition:
         """

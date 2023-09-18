@@ -62,6 +62,9 @@ EXPECTED_SCHEMA_JSON_SCHEMA = """
         "name": {
             "type": "string"
         },
+        "root": {
+            "type": "string"
+        },
         "fields": {
             "type": "array",
             "items":
