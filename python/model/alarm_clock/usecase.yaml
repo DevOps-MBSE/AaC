@@ -35,6 +35,8 @@ usecase:
       type: ClockTimer
     - name: clock
       type: Clock
+    - name: alarm
+      type: ClockAlarm
   steps:
     - step: The clock emits the current time to the timer
       source: clock
