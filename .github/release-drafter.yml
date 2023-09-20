@@ -1,0 +1,47 @@
+name-template: 'v$RESOLVED_VERSION'
+tag-template: 'v$RESOLVED_VERSION'
+template: |
+  ## What Changed
+
+  $CHANGES
+
+  **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION
+
+categorgies:
+  - title: Breaking Changes
+    labels:
+      - breaking
+      - busted
+  - title: New Features
+    labels:
+      - feature
+      - enhancement
+  - title: Bug Fixes
+    labels:
+      - bug
+      - funky
+      - Semver-Patch
+  - title: Documentation Updates
+    labels:
+      - documentation
+  - title: Other Changes
+    labels:
+      - "*"
+  collapse-after: 5
+
+change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
+change-title-escapes: '\<*_&' # You can add # and @ to disable mentions, and add ` to disable code blocks.
+version-resolver:
+  major:
+    labels:
+      - major
+  minor:
+    labels:
+      - minor
+  patch:
+    labels:
+      - patch
+  default: patch
+  
+exclude-labels:
+  - skip-changelog
