@@ -76,4 +76,3 @@ class TestUndefinedFieldsPlugin(ActiveContextTestCase):
             self.assertIsInstance(validation_error, ValidationError)
             self.assertIn(undefined_schema_field_name, str(validation_error))
             self.assertIn(VALIDATION_NAME, str(validation_error))
-
