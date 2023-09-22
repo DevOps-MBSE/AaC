@@ -1,0 +1,39 @@
+plugin:
+  name: Validate undefined fields
+  description: An AaC plugin that enables validating that only fields defined via the schema are present.
+  definitionValidations:
+    - name: Disallow undefined fields
+---
+validation:
+  name: Disallow undefined fields
+  description: Verify every field present is declared by the definition's schema.
+  behavior:
+    - name: Verify that present fields as defined via the definition's schema.
+      type: REQUEST_RESPONSE
+      input:
+        - name: input
+          type: ValidatorInput
+      output:
+        - name: results
+          type: ValidatorOutput
+      acceptance:
+        - scenario: Successfully validate that a definition's present fields are defined.
+          given:
+            - The ValidatorInput content consists of valid AaC definitions.
+            - The ValidatorInput contains AaC definitions that only fields that are defined in the definition's schema.
+          when:
+            - The validator plugin is executed.
+          then:
+            - The ValidatorOutput does not indicate any errors.
+            - The ValidatorOutput does not indicate any warnings.
+            - The ValidatorOutput indicates the validator plugin under test is valid.
+        - scenario: Fail to validate that a definition's present fields are defined.
+          given:
+            - The ValidatorInput content consists of otherwise valid AaC definitions.
+            - The ValidatorInput contains at least one field that is required.
+            - The ValidatorInput at least one AaC definition that has fields that are not defined in the definition's schema.
+          when:
+            - The validator plugin is executed.
+          then:
+            - The ValidatorOutput has errors.
+            - The ValidatorOutput errors indicate that there are undefined fields present.
