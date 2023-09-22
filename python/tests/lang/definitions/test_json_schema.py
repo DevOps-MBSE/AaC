@@ -66,7 +66,7 @@ EXPECTED_SCHEMA_JSON_SCHEMA = """
             "type": "string"
         },
         "description": {
-                        "type": "string"
+            "type": "string"
         },
         "fields": {
             "type": "array",
