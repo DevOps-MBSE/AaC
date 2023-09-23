@@ -16,10 +16,11 @@ from aac.io.constants import DEFAULT_SOURCE_URI, YAML_DOCUMENT_EXTENSION, AAC_DO
 from aac.io.files.aac_file import AaCFile
 from aac.io.parser._cache_manager import get_cache
 from aac.io.paths import sanitize_filesystem_path
-from aac.context.constants import DEFINITION_FIELD_NAME, ROOT_KEY_IMPORT
-from aac.context.definition import Definition
-from aac.context.lexeme import Lexeme
-from aac.context.source_location import SourceLocation
+from aac.lang.constants import DEFINITION_FIELD_NAME, ROOT_KEY_IMPORT
+from aac.lang.definitions.collections import get_definitions_by_root_key
+from aac.lang.definitions.definition import Definition
+from aac.lang.definitions.lexeme import Lexeme
+from aac.lang.definitions.source_location import SourceLocation
 
 
 YAML_CACHE = get_cache()

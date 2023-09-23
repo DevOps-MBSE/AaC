@@ -3,7 +3,7 @@ import sys
 import logging
 from os import path, makedirs
 
-from aac.context.definition import Definition
+from aac.lang.definitions.definition import Definition
 from aac.io.constants import DEFINITION_SEPARATOR
 from aac.io.paths import sanitize_filesystem_path
 

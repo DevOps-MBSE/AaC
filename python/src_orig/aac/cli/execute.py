@@ -4,8 +4,10 @@ import sys
 from click import Argument, Command, Option, ParamType, Parameter, Path, UNPROCESSED, group, secho, types
 
 from aac.cli.aac_command import AacCommand, AacCommandArgument
-from aac.cli.aac_execution_result import ExecutionResult
-from aac.lang.context.language_context import LanguageContext
+from aac.io.parser._parser_error import ParserError
+from aac.lang.active_context_lifecycle_manager import get_active_context
+from aac.persistence import ACTIVE_CONTEXT_STATE_FILE_NAME
+from aac.plugins.plugin_execution import PluginExecutionResult
 
 
 @group(context_settings=dict(help_option_names=["-h", "--help"]))
@@ -15,10 +17,12 @@ def cli():
 
 
 @cli.result_callback()
-def output_result(result: ExecutionResult):
+def output_result(result: PluginExecutionResult):
     """Output the message from the result of executing the CLI command."""
     error_occurred = not result.is_success()
     secho(result.get_messages_as_string(), err=error_occurred, color=True)
+
+    get_active_context().export_to_file(ACTIVE_CONTEXT_STATE_FILE_NAME)
 
     if error_occurred:
         sys.exit(result.status_code.value)
@@ -62,7 +66,11 @@ def to_click_command(command: AacCommand) -> Command:
         no_args_is_help=len([arg for arg in command.arguments if is_required_arg(arg)]) > 0,
     )
 
-active_context = LanguageContext()
+
+try:
+    active_context = get_active_context()
+except ParserError as error:
+    raise ParserError(error.source, error.errors) from None
 
 commands = [to_click_command(cmd) for cmd in active_context.get_plugin_commands()]
 for command in commands:
