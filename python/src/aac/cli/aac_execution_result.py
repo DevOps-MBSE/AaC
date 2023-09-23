@@ -23,7 +23,8 @@ class ExecutionResult:
         messages (list[str]): A list of messages for the user.
     """
 
-    name: str = attrib(validator=validators.instance_of(str))
+    plugin_name: str = attrib(validator=validators.instance_of(str))
+    plugin_command_name: str = attrib(validator=validators.instance_of(str))
     status_code: ExecutionStatus = attrib(validator=validators.instance_of(ExecutionStatus))
     messages: list[str] = attrib(default=Factory(list), validator=validators.instance_of(list))
 
@@ -46,6 +47,13 @@ class ExecutionResult:
 @attrs(slots=True)
 class ExecutionError(Exception):
     """A base class representing a plugin error condition."""
+
+    message: str = attrib(validator=validators.instance_of(str))
+
+
+@attrs(slots=True)
+class LanguageError(Exception):
+    """A base class representing a language error condition."""
 
     message: str = attrib(validator=validators.instance_of(str))
 

@@ -1,31 +1,29 @@
 """The version plugin module."""
 
 from aac.cli.aac_command import AacCommand
-from aac.plugins.version_impl import version
-from aac.plugins import hookimpl
-from aac.plugins.plugin import Plugin
-
-plugin_command = "version"
-
+from aac.plugins.version.version_impl import plugin_name, version
+from aac.cli import hookimpl
+from aac.context.language_context import LanguageContext
+from aac.lang.plugin import Plugin
 
 @hookimpl
-def get_plugin() -> Plugin:
+def register_plugin():
     """
     Returns information about the plugin.
 
     Returns:
         A collection of information about the plugin and what it contributes.
     """
-    *_, plugin_name = __package__.split(".")
     plugin = Plugin(plugin_name)
-    plugin.register_commands(_get_plugin_commands())
-    return plugin
+    plugin.commands(_get_plugin_commands())
+    active_context = LanguageContext()
+    active_context.register_instance(plugin)
 
 
 def _get_plugin_commands():
     plugin_commands = [
         AacCommand(
-            plugin_command,
+            "version",
             "Print the AaC package version.",
             version,
         ),

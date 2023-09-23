@@ -4,7 +4,7 @@ from aac.cli import hookspec
 
 
 @hookspec
-def get_plugin() -> str:
+def register_plugin():
     """
     Returns information about the plugin.
 

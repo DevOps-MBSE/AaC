@@ -2,7 +2,7 @@ from attr import Factory, attrib, attrs, validators
 from uuid import UUID, uuid5, NAMESPACE_DNS
 
 from aac.io.files.aac_file import AaCFile
-from aac.lang.lexeme import Lexeme
+from aac.context.lexeme import Lexeme
 
 @attrs(hash=False, eq=False)
 class Definition:
@@ -23,3 +23,13 @@ class Definition:
     source: AaCFile = attrib(validator=validators.instance_of(AaCFile))
     lexemes: list[Lexeme] = attrib(default=Factory(list), validator=validators.instance_of(list))
     structure: dict = attrib(default=Factory(dict), validator=validators.instance_of(dict))
+
+    def get_root_key(self) -> str:
+        """Get the root key for the definition.
+
+        Returns:
+            The root key for the definition.
+        """
+        return list(self.structure.keys())[0]
+    
+    

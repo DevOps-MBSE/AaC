@@ -3,44 +3,52 @@ from typing import Optional
 from attr import attrib, validators
 import attr
 from aac.cli.aac_execution_result import LanguageError
-from aac.lang.field import Field
 
 @dataclass(frozen=True)
-class Modifier():
-
+class PluginCommandInput():
+    
     name: str = attrib(init=attr.ib(), validator=validators.instance_of(str))
     description: Optional[str] = attrib(init=attr.ib(), validator=validators.optional(validators.instance_of(str)))
-    fields: Optional[list[Field]] = attrib(init=attr.ib(), validator=validators.optional(validators.instance_of(list)))
-    
+    type: str = attrib(init=attr.ib(), validator=validators.instance_of(str))
+    default:  Optional[str] = attrib(init=attr.ib(), validator=validators.optional(validators.instance_of(str)))
+
     # def __init__(self, *args, **kwargs):
     #     if not kwargs or len(kwargs) == 0:
-    #         raise LanguageError("Modifier must be initialized with keyword arguments")
+    #         raise Exception("PluginCommandInput must be initialized with keyword arguments")
         
     #     if "structure" in kwargs:
     #         structure = kwargs["structure"]
-    #         super(args, kwargs)
     #         if "name" not in structure:
-    #             raise LanguageError("Modifier must have a name")
+    #             raise LanguageError("PluginCommandInput must have a name")
     #         else:
     #             self.name = structure["name"]
     #         if "description" in structure:
     #             self.description = structure["description"]
     #         else:
     #             self.description = ""
-    #         if "fields" in structure:
-    #             self.fields = structure["fields"]
+    #         if "type" in structure:
+    #             self.type = structure["type"]
     #         else:
-    #             self.fields = []
+    #             self.type = ""
+    #         if "default" in structure:
+    #             self.default = structure["default"]
+    #         else:
+    #             self.default = ""
     #     else:
     #         if "name" not in kwargs:
-    #             raise LanguageError("Modifier must have a name")
+    #             raise LanguageError("PluginCommandInput must have a name")
     #         else:
     #             self.name = kwargs["name"]
     #         if "description" in kwargs:
     #             self.description = kwargs["description"]
     #         else:
     #             self.description = ""
-    #         if "fields" not in kwargs:
-    #             self.fields = []
+    #         if "type" in kwargs:
+    #             self.type = kwargs["type"]
     #         else:
-    #             self.fields = kwargs["fields"]
+    #             self.type = ""
+    #         if "default" in kwargs:
+    #             self.default = kwargs["default"]
+    #         else:
+    #             self.default = ""
+    

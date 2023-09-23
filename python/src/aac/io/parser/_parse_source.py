@@ -140,7 +140,6 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
                     name=definition_name,
                     content=yaml_text,
                     source=source_file,
-                    meta_structure=None,
                     lexemes=definition_lexemes,
                     structure=root_yaml,
                 )
@@ -184,6 +183,26 @@ def _read_arch_file_content(arch_file: str) -> str:
         )
 
     return content
+
+def get_definitions_by_root_key(root_key: str, definitions: list[Definition]) -> list[Definition]:
+    """Return a subset of definitions with the given root key.
+
+    The aac.io.parser.parse() function returns a dict of all parsed types.  Sometimes it is
+    useful to only work with certain roots (i.e. model or schema).  This utility
+    method allows a setup of parsed definitions to be "filtered" to a specific root key.
+
+    Args:
+        root_key (str): The root key to filter on.
+        definitions (list[Definition]): The list of parsed definitions to search.
+
+    Returns:
+        A list of ParedDefinitions with the given root key AaC model definitions.
+    """
+
+    def does_definition_root_match(definition: Definition) -> bool:
+        return root_key == definition.get_root_key()
+
+    return [definition for definition in definitions if does_definition_root_match(definition)]
 
 
 def _get_files_to_import_from_definitions(source_file_path: str, definitions: list[Definition]) -> list[str]:

@@ -8,6 +8,7 @@
 ---
 schema:
   name: AacType
+  package: aac.lang
   modifier: Abstract
   description: |
     The base type for any data item defined in AaC.
@@ -21,24 +22,10 @@ schema:
       type: string
       dexcription: |
         A brief description of the type.
-    - name: root
-      type: str
-      description: |
-        The root key to use when declaring an instance of the type in yaml/aac files.
-      is_required: true
-    - name: gen_plugin_template_file
-      type: file
-      description: |
-        The file containing the jinja2 template used to generate items of the defined type.
-      is_required: true
-  constraints:
-    - name: Required fields are present
-    - name: Unique field value
-      arguments:
-        - name
 ---
 schema:
   name: Modifier
+  package: aac.lang
   root: modifier
   fields:
     - name: name
@@ -54,17 +41,15 @@ schema:
       type: Field[]
       description: |
         Optional fields to provide supporting information for the modifier.
-  cpmstraomts"
-    - name: Required fields are present
 ---
 modifier:
-  name: Abstract
+  name: abstract
   description: |
     Denotes that the schema is abstract and cannot be referenced unless in the 
     'extends' field of another schema wishing to inherit from this schema.
 ---
 modifier:
-  name: Final
+  name: final
   description: |
     Denotes that the schema is final and cannot be referenced by another
     schema's 'extends' field for inheritance.
@@ -73,25 +58,26 @@ schema:
   name: Enum
   extemds: AacType
   root: enum
+  gen_plugin_template_file: templates/enum.jinja2
   description: |
     A definition that represents an enumerated type of value.
     
     An example of when to use an 'enum' is when you want to provide several
     different options for a single value.
   fields:
+    - name: extends
+      type: reference(enum.name)[]
+      description: |
+        A list of Enum definition names that this definition inherits from.
     - name: values
       type: string[]
       description: |
-        A list of strings that encompass the enumeration's possible values.
-  constraints:
-    - name: Required fields are present
-    - name: Unique field value
-      arguments:
-        - values   
+        A list of strings that encompass the enumeration's possible values.  
 ---
 schema:
   name: Primitive
-  extends: Type
+  package: aac.lang
+  extends: AacType
   root: primitive
   description: |
     A definition that represents a primitive value for use in the model.
@@ -99,38 +85,26 @@ schema:
     - name: python_type
       type: string
       description:  The type value to represend this primitive with while generating python code.
-    - name: constraints
-      type: PrimitiveConstraintAssignment[]
-      description: |
-        A list of constraints that evaluate the primitive value.
 ---
 primitive:
   name: string
   description:  |
     A textual value.
   python_value: str
-  constraints:
-    - name: Check string
 ---
 primitive:
-  name: integer
+  name: int
   python_value: int
-  description:  |
-    An whole number value.
 ---
 primitive:
   name: number
   python_type: float
-  description:  |
-    A floating point number value.
 ---
 primitive:
-  name: boolean
+  name: bool
   python_type: bool
   description:  |
     A boolean value.
-  constraints:
-    - name: Check bool
 ---
 primitive:
   name: date
@@ -161,17 +135,15 @@ primitive:
 schema:
   name: Schema
   extends: AacType
+  package: aac.lang
   root: schema
+  gen_plugin_template_file: templates/schema.jinja2
   description: |
     A definition that defines the schema/structure of data.
     
     A 'schema' definition can alternatively be thought as a defining the
     data structure of a definition.
   fields:
-    - name: root
-      type: string
-      description: |
-        The yaml key used to represent the type when defined at the root of the AaC model file.
     - name: extends
       type: reference(schema.name)[]
       description: |
@@ -180,31 +152,29 @@ schema:
       type: reference(modifier.name)[]
       description:
         A means of further defining the schema and how it can be used within the model.
+    - name: package
+      type: string
+      description: |
+        The 'dot notation' package name for the schema.  All schema names must be unique within an assigned type.
+        The package will also define the directory structure produced by gen-plugin.
+      is_required: true
+    - name: root
+      type: str
+      description: |
+        The root key to use when declaring an instance of the type in yaml/aac files.
+    - name: gen_plugin_template_file
+      type: file
+      description: |
+        The file containing the jinja2 template used to generate items of the defined type.
     - name: fields
       type: Field[]
       description: |
         A list of fields that make up the definition.
-    - name: constraints
-      type: SchemaConstraintAssignment[]
-      description: |
-        References and additional arguments for validations to apply to the definition.
-    - name: requirements
-      type: reference(Requirement.id)[]
-      description: |
-        A list of requirements that define the characteristics to be satisfied by the schema.
-  constraints:
-    - name: Required fields are present
-      arguments:
-        - name
-    - name: Unique field value
-      arguments:
-        - name
-    - name: Cannot extend a final reference
-      arguments:
-        - extends
+      is_required: true
 ---
 schema:
   name: Field
+  package: aac.lang
   fields:
     - name: name
       type: string
@@ -214,7 +184,7 @@ schema:
         Used to refer to the field, in certain cases.
       is_required: true
     - name: type
-      type: reference(Type.name)
+      type: reference(schema.name)
       description: |
         The type of the field.
 
@@ -234,11 +204,10 @@ schema:
       type: any
       description: |
         The default value to use for the field if field is not provided.
-  constraints:
-    - name: Required fields are present
 ---
 schema:
   name: Import
+  package: aac.lang
   root: import
   description: |
     A definition that represents the list of imported files containing
@@ -249,401 +218,12 @@ schema:
       description: |
         The list of AaC files to import for use in the architecture.
       is_required: true
-  constraints:
-    - name: Required fields are present
----
-# Test Specification types
----
-schema:
-  name: Feature
-  description: A test specification for a defined feature as described in the Gherkin syntax.
-  fields:
-    - name: name
-      type: string
-      description:  The name of the feature to be tested
-    - name: background
-      type: Background
-      description: A common set of setup steps for all scenarios
-    - name: scenarios
-      type: Scenario[]
-      description: A set of test cases
-  constraints:
-    - name: Required fields are present
-      arguments:
-        - name
-        - scenarios
----
-schema:
-  name: Background
-  description: |
-    A common set of given steps to be performed for all scenarios defined in a feature as described in the Gherkin syntax.
-  fields:
-    - name: name
-      type: string
-      description: |
-        The name of the background activities.
-    - name: given
-      type: string[]
-      description: |
-        A list of preconditions that must be true in order for the scenario to
-        perform the expected action or provide the expected result.
-  constraints:
-    - name: Required fields are present
-      arguments:
-        - given
----
-schema:
-  name: Scenario
-  description: |
-    An acceptance test definition using the given, when, then pattern described in the Gherkin syntax.
-  fields:
-    - name: name
-      type: string
-      description: |
-        The name of the scenario.
-    - name: tags
-      type: string[]
-      description: |
-        Tags associated with the scenario. These could be used to group similar
-        scenarios into categories like "front-end", "back-end", etc.
-    - name: given
-      type: string[]
-      description: |
-        A list of preconditions that must be true in order for the scenario to
-        perform the expected action or provide the expected result.
-    - name: when
-      type: string[]
-      description: |
-        A list of triggers that indicate some reason for the system to act in a
-        certain way or provide some result.
-    - name: then
-      type: string[]
-      description: |
-        A list of post conditions that will be true once the system has completed
-        its action based on the triggers.
-    - name: examples
-      type: Example
-      description: |
-        An list of data sets for use in the test scenario.  When using examples, include
-        a replaceable item in your given, when, then using angle brackets as described
-        in the Gherkin syntax (ex: <my_text_value).  Each example provided contains the
-        collection of named values that will be substituted in for test execution.
-  constraints:
-    - name: Required fields are present
-      arguments:
-        - name
-        - when
-        - then
----
-schema:
-  name: Example
-  description: |
-    Collection of test values that would constitute a line in a row of examples as described in the Gherkin syntax.
-  fields:
-    - name: name
-      type: string
-      description: |
-        A brief description of the example data entry.
-    - name: values
-      type: ExampleValue[]
-      description: |
-        The values that make up the example row.
-  constraints:
-    - name: Required fields are present
-      arguments:
-        - name
-        - values
----
-schema:
-  name: ExampleValue
-  description: |
-    A test value entry for a scenario.
-  fields:
-    - name: name
-      type: string
-      description: |
-        The name used in the scenario contained within angle brackets as described in the Gherkin syntax.
-    - name: value
-      type: string
-      description: |
-        The desired value to use.
-  constraints:
-    - name: Required fields are present
-      arguments:
-        - name
-        - value
----
-# Core Behavioral Modeling Types
----
-schema:
-  name: Model
-  root: model
-  description: |
-    A definition that represents a system and/or component model.
-    
-    An example of when to use a 'model' is when you want to define the
-    behavior for some component of the system.
-  fields:
-    - name: name
-      type: string
-      description: |
-        The name of the model.
-    - name: description
-      type: string
-      description: |
-        An explanatory description for the model including what the
-        component/system is modeling and any other relevant information.
-    - name: components
-      type: reference(Model.name)
-      description: |
-        A list of models that are components of the system.
-    - name: behavior
-      type: Behavior[]
-      description: |
-        A list of behaviors that the system being modeled will perform.
-    - name: state
-      type: Field[]
-      description: |
-        A list of data items representing internal state of the modeled entity.
-        State is visible within the model but is not visible to other models.
-        State may be visible between multiple instances of the modeled entity to
-        support horizontal scaling.
-    - name: requirements
-      type: reference(Requirement.id)[]
-      description: |
-        A reference to requirements relevant to the modeled item.
-  constraints:
-    - name: Required fields are present
-      arguments:
-        - name
-    - name: Unique field value
-      arguments:
-        - name
----
-schema:
-  name: Behavior
-  fields:
-    - name: name
-      type: string
-      description: |
-        The name of the behavior.
-    - name: description
-      type: string
-      description: |
-        An explanatory description of the behavior, including what the behavior
-        is, why it exists, etc.
-    - name: tags
-      type: string[]
-      description: |
-        Tags associated with the behavior. These could be used to group similar
-        behaviors into categories like "timing", "network", etc.
-    - name: input
-      type: Field[]
-      description: |
-        The list of all the fields that are inputs to the component when the
-        behavior is performed.
-    - name: output
-      type: Field[]
-      description: |
-        The list of all the fields that are outputs to the component when the
-        behavior is performed.
-    - name: acceptance
-      type: Feature[]
-      description: |
-        A list of test specifications that define the acceptance criteria to signify that
-        the system is behaving as expected.
-    - name: requirements
-      type: reference(Requirement.id)[]
-      description: |
-        A list of allocated requirements defining the expected behavior to be provided.
-  constraints:
-    - name: Required fields are present
-      arguments:
-        - name
----
-# Use Case Modeling Types
----
-schema:
-  name: Usecase
-  root: usecase
-  description: |
-    A definition that represents a usecase for the system.
-    
-    An example of when to use a 'usecase' is when you want to define how the
-    system might be used in a particular instance.
-  fields:
-    - name: name
-      type: string
-      description: |
-        The name of the use case.
-    - name: description
-      type: string
-      description: |
-        An explanatory description of the use case to include what purpose the
-        use case serves, design ideas when fulfilling the use case, etc.
-    - name: participants
-      type: Field[]
-      description: |
-        A list of participants in the use case.
-
-        Generally, these would be users, other systems, etc. that are
-        interacting with the system during the course of the use case.
-    - name: steps
-      type: Step[]
-      description: |
-        A list of steps taken in the use case.
-
-        See 'Step'
-  constraints:
-    - name: Required fields are present
-      arguments:
-        - name
-        - participants
-        - steps
-    - name: Usecase sources and targets refer to defined participants
----
-schema:
-  name: Step
-  fields:
-    - name: step
-      type: string
-      description: |
-        The name of the step.
-    - name: source
-      type: string
-      description: |
-        The source for the step. This should be the name of a participant - i.e.
-        a modeled system component.
-    - name: target
-      type: string
-      description: |
-        The target for the step. This should be the name of a participant - i.e.
-        a modeled system component.
-    - name: action
-      type: refrence(Behavior.name)
-      description: |
-        A behavior reference on the target or a subordinate use case definition.
-    - name: if
-      type: Branch
-      description: |
-        Used to create an "alt" in a sequence diagram.
-    - name: else
-      type: Branch
-      description: |
-        Used to create the "lower cell" in an "alt" in a sequence diagram.
-    - name: loop
-      type: Branch
-      description: |
-        Used to create a loop in a sequence diagram.
----
-schema:
-  name: Branch
-  fields:
-    - name: condition
-      type: string
-      description: |
-        A condition to test whether a sequence of steps should be performed.
-    - name: steps
-      type: Step[]
-      description: |
-        A list of steps to perform if the condition for the branch is "true".
-  constraints:
-    - name: Required fields are present
-      arguments:
-        - condition
-        - steps
----
-# Requirement Specifiction Types
----
-schema:
-  name: Specification
-  root: spec
-  description: |
-    A requirement specification definition to capture desired behavior or attributes of the system being modeled.
-    
-    Within many contexts requirements remain the central element of any Model-Based System Engineering solution.
-    AaC supports the definition, derivation, and trace of requirements throughout the model using the spec type and
-    associated reference capabilities.
-  fields:
-    - name: name
-      type: string
-    - name: description
-      type: string
-    - name: sections
-      type: reference(SpecSection.name)[]
-    - name: parent_specs
-      type: reference(Specification.name)[]
-    - name: child_specs
-      type: reference(Specification.name)[]
-    - name: requirements
-      type: Requirement[]
-  constraints:
-    - name: Required fields are present
-      arguments:
-        - name
-    - name: Unique field value
-      arguments:
-        - name
----
-schema:
-  name: SpecSection
-  root: spec_section
-  fields:
-    - name: name
-      type: string
-    - name: description
-      type: string
-    - name: sub_sections
-      type: reference(SpecSection.name)[]
-    - name: requirements
-      type: Requirement[]
-  constraints:
-    - name: Required fields are present
-      arguments:
-        - name
-    - name: Unique field value
-      arguments:
-        - name
----
-schema:
-  name: Requirement
-  fields:
-    - name: id
-      type: string
-    - name: shall
-      type: string
-    - name: parents
-      type: reference(Requirement.id)[]
-    - name: childern
-      type: reference(Requirement.id)[]
-    - name: attributes
-      type: RequirementAttribute[]
-  constraints:
-    - name: Required fields are present
-      arguments:
-        - id
-        - shall
-    - name: Unique field value
-      arguments:
-        - id
----
-schema:
-  name: RequirementAttribute
-  fields:
-    - name: name
-      type: string
-    - name: value
-      type: string
-  constraints:
-    - name: Required fields are present
-      arguments:
-        - name
-        - value
 ---
 # Language Plugin Definition Types
 ---
 schema:
   name: Plugin
+  package: aac.lang
   root: plugin
   description: |
     A reference to a plugin. Plugins can provide any extra functionality
@@ -655,32 +235,15 @@ schema:
     - name: name
       type: string
     - name: description
-      type: string
+      type: description
     - name: commands
       type: PluginCommand[]
     - name: definition_sources
       type: file[]
-    - name: context_constraints
-      type: ContextConstraint[]
-    - name: schema_constraints
-      type: SchemaConstraint[]
-    - name: primitive_constraints
-      type: PrimitiveConstraint[]
-  constraints:
-    - name: Required fields are present
-      arguments:
-        - name
-        - description
-    - name: One or more fields present
-      arguments:
-        - commands
-        - definition_sources
-        - context_constraints
-        - schema_constraints
-        - primitive_constraints
 ---
 schema:
   name: PluginCommand
+  package: aac.lang
   fields:
     - name: name
       type: string
@@ -703,23 +266,10 @@ schema:
       description: |
         The list of all the fields that are inputs to the component when the
         command is executed.
-    - name: acceptance
-      type: Feature[]
-      description: |
-        A list of features that define the acceptance criteria to signify that
-        the command is behaving as expected.
-  constraints:
-    - name: Required fields are present
-      arguments:
-        - name
-        - helpText
-        - acceptance
-    - name: Fields are valid python types
-      arguments:
-        - input
 ---
 schema:
   name: PluginCommandInput
+  package: aac.lang
   description: |
     A plugin command reference that can be used to establish cross-plugin behaviors.
   fields:
@@ -733,7 +283,7 @@ schema:
       description: |
         A brief description of the input. This will be used in CLI help.
     - name: type
-      type: Primitive
+      type: reference(primitive.name)
       description: |
         The command inputs are translaed to python function inputs.  This is the python type to use.
       is_required: true
@@ -741,111 +291,3 @@ schema:
       type:  string
       descripiton: |
         The default value to provide to a plugin, if desired.
-    - constraints:
-      - name: Required fields are present
-      - name: Is a python type
-        arguments:
-          - python_type
----
-schema:
-  name: ContextConstraint
-  description: |
-    The definition of a global context constraint plugin.  Context constraints perform
-    checks against a complete model rather than a specific schema or primitive.
-    Defining a context constraint allows for automted global quality checks
-    by running the 'aac check' command against your model.
-  fields:
-    - name: name
-      type: string
-      description: |
-        The name of the context constraint rule.
-      is_required: true
-    - name: description
-      type: string
-      description: |
-        A high level description of the context constraint rule.
-    - name: acceptance
-      type: Feature[]
-      description: |
-        A list of acceptance test features that describe the expected behavior of the context constraint.
-  constraints:
-    - name: Required fields are present
----
-schema:
-  name: SchemaConstraint
-  description: |
-    The definition of a schema constraint plugin.  Schema constraints perform
-    checks against a defined structure within a model based on it's schema definition.
-    Defining a schema constraint allows for automted structural quality checks
-    by running the 'aac check' command against your model.
-  fields:
-    - name: name
-      type: string
-      description: |
-        The name of the schema constraint rule.
-      is_required: true
-    - name: description
-      type: string
-      description: |
-        A high level description of the schema constraint rule.
-    - name: acceptance
-      type: Feature[]
-      description: |
-        A list of acceptance test features that describe the expected behavior of the schema constraint.
-  constraints:
-    - name: Required fields are present
----
-schema:
-  name: PrimitiveConstraint
-  description: |
-    The definition of a primitive constraint plugin.  Plugin constraints perform
-    checks against individual values within a model based on it's primitive definition.
-    Defining a primitive constraint allows for automted value quality checks
-    by running the 'aac check' command against your model.
-  fields:
-    - name: name
-      type: string
-      description: |
-        The name of the schema constraint rule.
-      is_required: true
-    - name: description
-      type: string
-      description: |
-        A high level description of the schema constraint rule.
-    - name: primitive_type
-      type: reference(Primitive.name)
-      description: |
-        A reference to the relevant primitive type.
-      is_required: true
-    - name: acceptance
-      type: Feature[]
-      description: |
-        A list of acceptance test features that describe the expected behavior of the primitive constraint.
-  constraints:
-    - name: Required fields are present
----
-schema:
-  name: SchemaConstraintAssignment
-  fields:
-    - name: name
-      type: reference(SchemaConstraint.name)
-      description: The name of the schema constraint definition.
-      is_required: true
-    - name: arguments
-      type: string[]
-      description: A list of arguments to pass to the constraint.
-  constraints:
-    - name: Required fields are present
----
-schema:
-  name: PrimitiveConstraintAssignment
-  fields:
-    - name: name
-      type: reference(PrimitiveConstraint.name)
-      description: The name of the schema constraint definition.
-      is_required: true
-    - name: arguments
-      type: string[]
-      description: A list of arguments to pass to the constraint.
-  constraints:
-    - name: Required fields are present 

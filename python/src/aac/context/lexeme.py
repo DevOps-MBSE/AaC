@@ -3,7 +3,7 @@
 from attr import attrib, attrs, validators
 
 from aac.io.paths import is_same_file
-from aac.lang.context.source_location import SourceLocation
+from aac.context.source_location import SourceLocation
 
 
 @attrs(eq=False)
