@@ -5,7 +5,7 @@ from click import Argument, Command, Option, ParamType, Parameter, Path, UNPROCE
 
 from aac.cli.aac_command import AacCommand, AacCommandArgument
 from aac.cli.aac_execution_result import ExecutionResult
-from aac.lang.context.language_context import LanguageContext
+from aac.context.language_context import LanguageContext
 
 
 @group(context_settings=dict(help_option_names=["-h", "--help"]))

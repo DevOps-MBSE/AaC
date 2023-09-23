@@ -7,7 +7,7 @@
 # Fountational language definitions upon with all other language constructs are based
 ---
 schema:
-  name: Type
+  name: AacType
   modifier: Abstract
   description: |
     The base type for any data item defined in AaC.
@@ -16,14 +16,23 @@ schema:
       type: string
       description: |
         The name of the type.
+      is_required: true
     - name: description
       type: string
       dexcription: |
         A brief description of the type.
+    - name: root
+      type: str
+      description: |
+        The root key to use when declaring an instance of the type in yaml/aac files.
+      is_required: true
+    - name: gen_plugin_template_file
+      type: file
+      description: |
+        The file containing the jinja2 template used to generate items of the defined type.
+      is_required: true
   constraints:
     - name: Required fields are present
-      arguments:
-        - name
     - name: Unique field value
       arguments:
         - name
@@ -36,6 +45,7 @@ schema:
       type: string
       description: |
         The name of the modifier.
+      is_required: true
     - name: description
       type: string
       description: |
@@ -46,8 +56,6 @@ schema:
         Optional fields to provide supporting information for the modifier.
   cpmstraomts"
     - name: Required fields are present
-      arguments:
-        - name
 ---
 modifier:
   name: Abstract
@@ -63,7 +71,7 @@ modifier:
 ---
 schema:
   name: Enum
-  extemds: Type
+  extemds: AacType
   root: enum
   description: |
     A definition that represents an enumerated type of value.
@@ -77,9 +85,6 @@ schema:
         A list of strings that encompass the enumeration's possible values.
   constraints:
     - name: Required fields are present
-      arguments:
-        - name
-        - values
     - name: Unique field value
       arguments:
         - values   
@@ -91,6 +96,9 @@ schema:
   description: |
     A definition that represents a primitive value for use in the model.
   fields:
+    - name: python_type
+      type: string
+      description:  The type value to represend this primitive with while generating python code.
     - name: constraints
       type: PrimitiveConstraintAssignment[]
       description: |
@@ -100,21 +108,25 @@ primitive:
   name: string
   description:  |
     A textual value.
+  python_value: str
   constraints:
     - name: Check string
 ---
 primitive:
-  name: int
+  name: integer
+  python_value: int
   description:  |
     An whole number value.
 ---
 primitive:
   name: number
+  python_type: float
   description:  |
     A floating point number value.
 ---
 primitive:
-  name: bool
+  name: boolean
+  python_type: bool
   description:  |
     A boolean value.
   constraints:
@@ -122,21 +134,25 @@ primitive:
 ---
 primitive:
   name: date
+  python_type: str
   description:  |
     A date or date-time value.
 ---
 primitive:
   name: file
+  python_type: str
   description:  |
     A computer file path value.
 ---
 primitive:
   name: directory
+  python_type: str
   description:  |
     A computer directory path value.
 ---
 primitive:
   name: reference
+  python_type: Any
   description:  |
     A reference to another defined item.  References are typed and documented 
     as 'reference(schema_name.field_name)' denoting the definition and field being referenced.
@@ -144,7 +160,7 @@ primitive:
 ---
 schema:
   name: Schema
-  extends: Type
+  extends: AacType
   root: schema
   description: |
     A definition that defines the schema/structure of data.
@@ -157,11 +173,11 @@ schema:
       description: |
         The yaml key used to represent the type when defined at the root of the AaC model file.
     - name: extends
-      type: reference(Schema.name)[]
+      type: reference(schema.name)[]
       description: |
         A list of Schema definition names that this definition inherits from.
     - name: modifiers
-      type: reference(Modifier.name)[]
+      type: reference(modifier.name)[]
       description:
         A means of further defining the schema and how it can be used within the model.
     - name: fields
@@ -196,6 +212,7 @@ schema:
         The name of the field.
 
         Used to refer to the field, in certain cases.
+      is_required: true
     - name: type
       type: reference(Type.name)
       description: |
@@ -203,20 +220,22 @@ schema:
 
         Used to constrain the field's values to make it simpler to reason about. Must
         reference an existing definition by name.
+      is_required: true
     - name: description
       type: string
       description: |
         A description for the field to let users know what it's for and any
         other useful information.
-    - name: default
-      type: string
+    - name: is_required
+      type: bool
       description: |
-        A default value to use for this field if not declared in the defining model.
+        Indicates that the field must be present when used.
+    - name: default
+      type: any
+      description: |
+        The default value to use for the field if field is not provided.
   constraints:
     - name: Required fields are present
-      arguments:
-        - name
-        - type
 ---
 schema:
   name: Import
@@ -227,10 +246,11 @@ schema:
   fields:
     - name: files
       type: file[]
+      description: |
+        The list of AaC files to import for use in the architecture.
+      is_required: true
   constraints:
     - name: Required fields are present
-      arguments:
-        - files        
 ---
 # Test Specification types
 ---
@@ -698,16 +718,6 @@ schema:
       arguments:
         - input
 ---
-enum:
-  name: PythonType
-  description: |
-    Values for python types to be used in plugin code generation.
-  values:
-    - str
-    - int
-    - num
-    - bool
----
 schema:
   name: PluginCommandInput
   description: |
@@ -717,23 +727,22 @@ schema:
       type: string
       description: |
         The name of the plugin input parameter.  Prefix the name with "--" to indicate an optional input.
+      is_required: true
     - name: description
       type: string
       description: |
         A brief description of the input. This will be used in CLI help.
-    - name: python_type
-      type: PythonPrimitive
+    - name: type
+      type: Primitive
       description: |
         The command inputs are translaed to python function inputs.  This is the python type to use.
+      is_required: true
     - name: default
       type:  string
       descripiton: |
         The default value to provide to a plugin, if desired.
     - constraints:
       - name: Required fields are present
-        arguments:
-          - name
-          - python_type
       - name: Is a python type
         arguments:
           - python_type
@@ -750,6 +759,7 @@ schema:
       type: string
       description: |
         The name of the context constraint rule.
+      is_required: true
     - name: description
       type: string
       description: |
@@ -760,9 +770,6 @@ schema:
         A list of acceptance test features that describe the expected behavior of the context constraint.
   constraints:
     - name: Required fields are present
-      arguments:
-        - name
-        - description
 ---
 schema:
   name: SchemaConstraint
@@ -776,6 +783,7 @@ schema:
       type: string
       description: |
         The name of the schema constraint rule.
+      is_required: true
     - name: description
       type: string
       description: |
@@ -786,9 +794,6 @@ schema:
         A list of acceptance test features that describe the expected behavior of the schema constraint.
   constraints:
     - name: Required fields are present
-      arguments:
-        - name
-        - description
 ---
 schema:
   name: PrimitiveConstraint
@@ -802,6 +807,7 @@ schema:
       type: string
       description: |
         The name of the schema constraint rule.
+      is_required: true
     - name: description
       type: string
       description: |
@@ -810,16 +816,13 @@ schema:
       type: reference(Primitive.name)
       description: |
         A reference to the relevant primitive type.
+      is_required: true
     - name: acceptance
       type: Feature[]
       description: |
         A list of acceptance test features that describe the expected behavior of the primitive constraint.
   constraints:
     - name: Required fields are present
-      arguments:
-        - name
-        - description
-        - primitive_type
 ---
 schema:
   name: SchemaConstraintAssignment
@@ -827,13 +830,12 @@ schema:
     - name: name
       type: reference(SchemaConstraint.name)
       description: The name of the schema constraint definition.
+      is_required: true
     - name: arguments
       type: string[]
       description: A list of arguments to pass to the constraint.
   constraints:
     - name: Required fields are present
-      arguments:
-        - name
 ---
 schema:
   name: PrimitiveConstraintAssignment
@@ -841,10 +843,9 @@ schema:
     - name: name
       type: reference(PrimitiveConstraint.name)
       description: The name of the schema constraint definition.
+      is_required: true
     - name: arguments
       type: string[]
       description: A list of arguments to pass to the constraint.
   constraints:
-    - name: Required fields are present
-      arguments:
-        - name      
+    - name: Required fields are present 
