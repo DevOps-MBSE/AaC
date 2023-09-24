@@ -4,7 +4,7 @@ from http import HTTPStatus
 import logging
 import os
 
-from aac.cli.aac_command import AacCommand
+from aac.execute.plugin_runner import AacCommand
 from aac.io.files.aac_file import AaCFile
 from aac.io.files.find import find_aac_files, is_aac_file
 from aac.io.paths import sanitize_filesystem_path

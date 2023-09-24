@@ -1,6 +1,6 @@
 """The plugin-management plugin module."""
 
-from aac.cli.aac_command import AacCommand, AacCommandArgument
+from aac.execute.plugin_runner import AacCommand, AacCommandArgument
 from aac.plugins import hookimpl
 from aac.plugins.plugin import Plugin
 from aac.plugins.first_party.plugin_management.plugin_management_impl import (

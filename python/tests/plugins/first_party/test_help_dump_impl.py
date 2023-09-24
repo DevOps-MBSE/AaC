@@ -1,7 +1,7 @@
 import json
 
 from collections import OrderedDict
-from aac.cli.aac_command import AacCommand, AacCommandArgument
+from aac.execute.plugin_runner import AacCommand, AacCommandArgument
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.plugins.first_party.help_dump.help_dump_impl import help_dump
 from aac.serialization import AacCommandEncoder, AacCommandArgumentEncoder

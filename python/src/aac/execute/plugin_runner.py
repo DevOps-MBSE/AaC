@@ -3,6 +3,7 @@
 from typing import Any, Callable, Union
 
 from attr import Factory, attrib, attrs, validators
+from aac.context.definition import Definition
 
 
 @attrs
@@ -48,3 +49,24 @@ class AacCommand:
     def __hash__(self) -> int:
         """Return the hash of this AacCommand."""
         return hash(self.name)
+
+
+@attrs(hash=False)
+class PluginRunner:
+    """
+    A class used to represent a command in AaC.
+
+    The command name is added to the argument parser with help set to the command description.
+    The callback is invoked if the user specifies the command.
+
+    Attributes:
+        name: A string with the name of the command_description.
+        description: A string with the command description -- will be used to build the help command.
+        callback: A function that's executed when the user runs the AaC command.
+        arguments: A list of AacCommandArgument containing argument information about the command. (default: [])
+    """
+
+    plugin_name: str = attrib(validator=validators.instance_of(str))
+    plugin_definition: Definition = attrib(validator=validators.instance_of(Definition))
+    commands: list[AacCommand] = attrib(default=Factory(list), validator=validators.instance_of(list))
+    # Add constraints here

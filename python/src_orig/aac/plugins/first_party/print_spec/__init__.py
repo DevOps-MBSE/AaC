@@ -1,6 +1,6 @@
 """The print-spec plugin module."""
 
-from aac.cli.aac_command import AacCommand
+from aac.execute.plugin_runner import AacCommand
 from aac.plugins import hookimpl
 from aac.plugins.plugin import Plugin
 from aac.plugins.first_party.print_spec.print_spec_impl import plugin_name, print_spec, print_active_context

@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from aac import __version__
-from aac.cli.builtin_commands.version.version_impl import version
+from aac.execute.builtin_commands.version.version_impl import version
 
 from tests.helpers.assertion import assert_plugin_success
 

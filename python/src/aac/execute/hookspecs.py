@@ -1,6 +1,6 @@
 """Defines the AaC plugin interface via Pluggy Hookspecs."""
 
-from aac.cli import hookspec
+from aac.execute import hookspec
 
 
 @hookspec

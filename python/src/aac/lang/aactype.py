@@ -9,6 +9,13 @@ class AacType(ABC):
     name: str = attrib(init=attr.ib(), validator=validators.instance_of(str))
     description: Optional[str] = attrib(init=attr.ib(), validator=validators.optional(validators.instance_of(str)))
 
+    @classmethod
+    def from_dict(cls, data: dict):
+        description = None
+        if "description" in data:
+            description = data.pop("description")
+        return cls(description=description, **data)
+
     # def __init__(self, *args, **kwargs):
     #     if not kwargs or len(kwargs) == 0:
     #         raise Exception("AacType must be initialized with keyword arguments")

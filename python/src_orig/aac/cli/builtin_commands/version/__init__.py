@@ -1,6 +1,6 @@
 """The version plugin module."""
 
-from aac.cli.aac_command import AacCommand
+from aac.execute.plugin_runner import AacCommand
 from aac.cli.builtin_commands.version.version_impl import version
 from aac.plugins import hookimpl
 from aac.plugins.plugin import Plugin

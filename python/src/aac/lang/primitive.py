@@ -9,6 +9,10 @@ class Primitive(AacType):
 
     python_type: str = attrib(init=attr.ib(), validator=validators.instance_of(str))
 
+    @classmethod
+    def from_dict(cls, data):
+        return cls(**data)
+
     # def __init__(self, *args, **kwargs):
     #     if not kwargs or len(kwargs) == 0:
     #         raise LanguageError("Primitive must be initialized with keyword arguments")

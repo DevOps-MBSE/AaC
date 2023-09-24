@@ -1,35 +1,52 @@
 import types
-from typing import Any
+from typing import Any, Optional
 from importlib import import_module
 from os.path import join, dirname
-from aac.cli.aac_command import AacCommand
-from aac.cli.aac_execution_result import LanguageError
+from aac.execute.plugin_runner import AacCommand
+from aac.execute.aac_execution_result import LanguageError
+from aac.execute.plugin_manager import get_plugin_manager
+from aac.execute.plugin_runner import PluginRunner
 from aac.io.parser._parse_source import parse
 from aac.context.definition import Definition
 
 AAC_LANG_FILE_NAME = "../lang/aac.aac"
 
 class LanguageContext(object):
+  """
+    A singleton class that holds the current state of the AaC language.
+  """
 
   def __new__(cls):
-    if not hasattr(cls, 'instance'):
+    if not hasattr(cls, 'context_instance'):
       cls.context_instance = super(LanguageContext, cls).__new__(cls)
       cls.context_instance.definitions = set()
-      cls.context_instance.instances_by_schema_name = {}
+      cls.context_instance.schema_name_to_module: dict[str, Any] = {}
+      cls.context_instance.plugin_runners = {}
+
+      # load and initialize the AaC language
       aac_lang_path = join(dirname(__file__), AAC_LANG_FILE_NAME)
       cls.context_instance.parse_and_load(aac_lang_path)
+
+      # load plugins
+      get_plugin_manager().hook.register_plugin()
+      
     return cls.context_instance
   
-  def parse_and_load(self, arg: str) -> None:
+  def parse_and_load(self, arg: str) -> list[Definition]:
     parsed_definitions = parse(arg)
-    self.register_definitions(parsed_definitions)
 
     def get_python_module_name(name: str) -> str:
         return name.replace(" ", "_").replace("-", "_").lower()
 
-    schema_name_to_module: dict[str, Any] = {}
-    schema_defs_by_name = {}
+    # schema_name_to_module: dict[str, Any] = {}
+
+    # schema_defs_by_name = {}
     schema_defs_by_root = {}
+    for definition in self.get_definitions():
+      if definition.get_root_key() == "schema":
+        if definition.instance.root:
+          schema_defs_by_root[definition.instance.root] = definition
+
 
     # we need to load all the schemas first so we have access to the defined types
     for definition in parsed_definitions:
@@ -40,16 +57,17 @@ class LanguageContext(object):
           if "package" in schema:
             package = schema["package"]
             python_name = get_python_module_name(name)
-            if name not in schema_name_to_module:
+            if name not in self.context_instance.schema_name_to_module:
               module_name = f"{package}.{python_name}"
               module = import_module(module_name)
               # loaded_packages.add(package)
-              schema_name_to_module[name] = module
-          schema_defs_by_name[name] = definition
+              self.context_instance.schema_name_to_module[name] = module
+          # schema_defs_by_name[name] = definition
           if "root" in schema:
             root = schema["root"]
             schema_defs_by_root[root] = definition
 
+    result: list[Definition] = []
     for definition in parsed_definitions:
       # figure out the python type for the definition
       root_key = definition.get_root_key()
@@ -59,50 +77,49 @@ class LanguageContext(object):
       if not defining_schema:
         raise LanguageError(f"Could not find schema for root: {root_key}")
       defining_schema_name = defining_schema.name
-      if defining_schema_name not in schema_name_to_module:
-        raise LanguageError(f"Could not find module name: {defining_schema_name} in {list(schema_name_to_module.keys())}")
+      if defining_schema_name not in self.context_instance.schema_name_to_module:
+        raise LanguageError(f"Could not find module name: {defining_schema_name} in {list(self.context_instance.schema_name_to_module.keys())}")
       # get the structure below the root key
       structure = definition.structure[root_key]
       name = definition.name
       # create and register the instance
-      print(f"DEBUG: creating instance of {defining_schema_name} for name {name} with {structure['name']}")
-      class_obj = getattr(schema_name_to_module[defining_schema_name], defining_schema_name)
-      print(f"DEBUG: getattr({schema_name_to_module[defining_schema_name]}, {defining_schema_name}) = class_obj: {class_obj}")
-      instance = class_obj(structure)
-      print(f"DEBUG: instance: {instance}")
-      self.register_instance(instance)       
-        
-  
-  def get_plugin_commands(self) -> list[AacCommand]:
-    plugin_commands = []
-    if self.context_instance.instances_by_schema_name:
-      print(f"DEBUG: self.context_instance.instances_by_schema_name keys: {list(self.context_instance.instances_by_schema_name.keys())}")
-      if "Plugin" in self.context_instance.instances_by_schema_name:
-        plugins = self.context_instance.instances_by_schema_name["Plugin"]
-        for plugin in plugins:
-          if hasattr(plugin, "commands"):
-            plugin_commands.extend(plugin.commands)
-    return plugin_commands
-  
-  def register_instance(self, instance):
-    if instance:
-      print(f"DEBUG: registering instance: {instance}")
-      class_name = instance.__class__.__name__
-      if class_name not in self.context_instance.instances_by_schema_name:
-        instance_list = []
-        self.context_instance.instances_by_schema_name[class_name] = instance_list
-      self.context_instance.instances_by_schema_name[class_name].append(instance)
-
-  def register_instances(self, instances: list[Any]):
-    if instances:
-      for instance in instances:
-        self.register_instance(instance)
-
-  def register_definition(self, definition: Definition):
-    if definition:
+      class_obj = getattr(self.context_instance.schema_name_to_module[defining_schema_name], defining_schema_name)
+      instance = None
+      try:
+        instance = class_obj.from_dict(structure)
+      except TypeError as e:
+        raise LanguageError(f"{e}\nCould not create instance of {defining_schema_name} with name {name} from structure: {structure}")
+    
+      definition.instance = instance
+      result.append(definition)
       self.context_instance.definitions.add(definition)
 
-  def register_definitions(self, definitions: list[Definition]):
-    if definitions:
-      for definition in definitions:
-        self.register_definition(definition)
+    return result   
+        
+  def get_definitions(self) -> list[Definition]:
+    return list(self.context_instance.definitions)
+  
+  def get_definition_by_name(self, name: str) -> Optional[Definition]:
+    for definition in self.context_instance.definitions:
+      if definition.name == name:
+        return definition
+    return None
+  
+  def get_definitions_by_root(self, root_key: str) -> list[Definition]:
+    result = []
+    for definition in self.context_instance.definitions:
+      if definition.get_root_key() == root_key:
+        result.append(definition)
+    return result
+  
+
+  def register_plugin_runner(self, runner: PluginRunner) -> None:
+
+    if runner.plugin_name not in self.context_instance.plugin_runners:
+      self.context_instance.plugin_runners[runner.plugin_name] = runner
+    else:
+      print(f"Plugin {runner.plugin_name} already registered.")
+
+  def get_plugin_runners(self) -> list[PluginRunner]:
+    return list(self.context_instance.plugin_runners.values())
+  

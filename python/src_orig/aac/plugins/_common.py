@@ -5,7 +5,7 @@ import logging as log
 from functools import wraps
 from typing import Callable, Dict, List
 
-from aac.cli import AacCommand, AacCommandArgument
+from aac.execute import AacCommand, AacCommandArgument
 from aac.io.parser import ParserError, parse
 from aac.lang.constants import (
     DEFINITION_FIELD_NAME,

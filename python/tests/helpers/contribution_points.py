@@ -1,7 +1,7 @@
 from typing import Any, Callable
 from unittest.case import TestCase
 
-from aac.cli.aac_command import AacCommand, AacCommandArgument
+from aac.execute.plugin_runner import AacCommand, AacCommandArgument
 from aac.lang.definitions.definition import Definition
 from aac.plugins.contributions.contribution_points import InvalidContributionPointError
 from aac.plugins.contributions.contribution_types import DefinitionValidationContribution

@@ -3,7 +3,7 @@
 import sys
 from click import Argument, Command, Option, ParamType, Parameter, Path, UNPROCESSED, group, secho, types
 
-from aac.cli.aac_command import AacCommand, AacCommandArgument
+from aac.execute.plugin_runner import AacCommand, AacCommandArgument
 from aac.io.parser._parser_error import ParserError
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.persistence import ACTIVE_CONTEXT_STATE_FILE_NAME

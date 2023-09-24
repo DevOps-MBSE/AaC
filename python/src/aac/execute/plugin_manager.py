@@ -6,7 +6,7 @@ from types import ModuleType
 from pluggy import PluginManager
 from typing import List
 
-from aac.cli import PLUGIN_PROJECT_NAME, hookspecs
+from aac.execute import PLUGIN_PROJECT_NAME, hookspecs
 
 
 def get_plugin_manager() -> PluginManager:

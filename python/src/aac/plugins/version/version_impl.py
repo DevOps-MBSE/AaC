@@ -1,7 +1,7 @@
 """AaC Plugin implementation module for the Version plugin."""
 
 from aac import __version__
-from aac.cli.aac_execution_result import ExecutionResult, ExecutionStatus
+from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus
 
 plugin_name = "Version"
 

@@ -1,7 +1,7 @@
 """Pydantic Version of the AaC command Class."""
 from pydantic import BaseModel
 
-from aac.cli.aac_command import AacCommand, AacCommandArgument
+from aac.execute.plugin_runner import AacCommand, AacCommandArgument
 
 
 class CommandRequestModel(BaseModel):

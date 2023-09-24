@@ -1,6 +1,6 @@
 """The help-dump plugin module."""
 
-from aac.cli.aac_command import AacCommand
+from aac.execute.plugin_runner import AacCommand
 from aac.plugins import hookimpl
 from aac.plugins.plugin import Plugin
 from aac.plugins.first_party.help_dump.help_dump_impl import help_dump, plugin_name

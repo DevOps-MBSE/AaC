@@ -3,8 +3,8 @@
 import sys
 from click import Argument, Command, Option, ParamType, Parameter, Path, UNPROCESSED, group, secho, types
 
-from aac.cli.aac_command import AacCommand, AacCommandArgument
-from aac.cli.aac_execution_result import ExecutionResult
+from aac.execute.plugin_runner import AacCommand, AacCommandArgument, PluginRunner
+from aac.execute.aac_execution_result import ExecutionResult
 from aac.context.language_context import LanguageContext
 
 
@@ -64,6 +64,8 @@ def to_click_command(command: AacCommand) -> Command:
 
 active_context = LanguageContext()
 
-commands = [to_click_command(cmd) for cmd in active_context.get_plugin_commands()]
-for command in commands:
-    cli.add_command(command)
+runners: list[PluginRunner] = active_context.get_plugin_runners()
+for runner in runners:
+    commands = [to_click_command(cmd) for cmd in runner.commands]
+    for command in commands:
+        cli.add_command(command)

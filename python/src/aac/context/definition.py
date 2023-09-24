@@ -1,4 +1,5 @@
 from attr import Factory, attrib, attrs, validators
+from typing import Any
 from uuid import UUID, uuid5, NAMESPACE_DNS
 
 from aac.io.files.aac_file import AaCFile
@@ -23,6 +24,7 @@ class Definition:
     source: AaCFile = attrib(validator=validators.instance_of(AaCFile))
     lexemes: list[Lexeme] = attrib(default=Factory(list), validator=validators.instance_of(list))
     structure: dict = attrib(default=Factory(dict), validator=validators.instance_of(dict))
+    instance: Any = attrib(default=None)
 
     def get_root_key(self) -> str:
         """Get the root key for the definition.

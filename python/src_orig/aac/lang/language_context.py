@@ -10,7 +10,7 @@ from typing import Optional
 from uuid import UUID
 
 from aac import __version__
-from aac.cli.aac_command import AacCommand
+from aac.execute.plugin_runner import AacCommand
 from aac.io.files.aac_file import AaCFile
 from aac.io.parser import parse
 from aac.io.parser._parser_error import ParserError

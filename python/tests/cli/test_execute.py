@@ -2,8 +2,8 @@ from click.testing import CliRunner
 from unittest.mock import patch, MagicMock
 
 from aac import __version__ as aac_version
-from aac.cli.builtin_commands.version import plugin_command
-from aac.cli.execute import cli
+from aac.execute.builtin_commands.version import plugin_command
+from aac.execute.command_line import cli
 from aac.persistence import ACTIVE_CONTEXT_STATE_FILE_NAME
 
 from tests.active_context_test_case import ActiveContextTestCase

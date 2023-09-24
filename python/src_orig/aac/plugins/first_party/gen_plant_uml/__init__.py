@@ -1,6 +1,6 @@
 """Generated AaC Plugin hookimpls module for the gen-plant-uml plugin."""
 
-from aac.cli.aac_command import AacCommand, AacCommandArgument
+from aac.execute.plugin_runner import AacCommand, AacCommandArgument
 from aac.plugins import hookimpl
 from aac.plugins.first_party.gen_plant_uml.gen_plant_uml_impl import plugin_name, puml_component, puml_sequence, puml_object
 from aac.plugins.plugin import Plugin

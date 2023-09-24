@@ -9,7 +9,8 @@
 schema:
   name: AacType
   package: aac.lang
-  modifier: Abstract
+  modifiers: 
+    - Abstract
   description: |
     The base type for any data item defined in AaC.
   fields:
@@ -20,7 +21,7 @@ schema:
       is_required: true
     - name: description
       type: string
-      dexcription: |
+      description: |
         A brief description of the type.
 ---
 schema:
@@ -56,7 +57,7 @@ modifier:
 ---
 schema:
   name: Enum
-  extemds: AacType
+  extends: AacType
   root: enum
   gen_plugin_template_file: templates/enum.jinja2
   description: |
@@ -90,11 +91,11 @@ primitive:
   name: string
   description:  |
     A textual value.
-  python_value: str
+  python_type: str
 ---
 primitive:
   name: int
-  python_value: int
+  python_type: int
 ---
 primitive:
   name: number
@@ -126,7 +127,7 @@ primitive:
 ---
 primitive:
   name: reference
-  python_type: Any
+  python_type: str
   description:  |
     A reference to another defined item.  References are typed and documented 
     as 'reference(schema_name.field_name)' denoting the definition and field being referenced.
@@ -200,6 +201,7 @@ schema:
       type: bool
       description: |
         Indicates that the field must be present when used.
+      default: false
     - name: default
       type: any
       description: |
@@ -289,5 +291,5 @@ schema:
       is_required: true
     - name: default
       type:  string
-      descripiton: |
+      description: |
         The default value to provide to a plugin, if desired.

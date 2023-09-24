@@ -1,6 +1,6 @@
 """The validate plugin module."""
 
-from aac.cli.aac_command import AacCommand, AacCommandArgument
+from aac.execute.plugin_runner import AacCommand, AacCommandArgument
 from aac.cli.builtin_commands.validate.validate_impl import validate
 from aac.plugins import hookimpl
 from aac.plugins.plugin import Plugin

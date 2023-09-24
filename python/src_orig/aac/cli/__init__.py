@@ -1,6 +1,6 @@
 """Provides command line processing for the aac tool."""
 
-from aac.cli.aac_command import AacCommand, AacCommandArgument
+from aac.execute.plugin_runner import AacCommand, AacCommandArgument
 
 __all__ = (
     "AacCommand",

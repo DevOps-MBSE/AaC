@@ -62,6 +62,26 @@
             "console": "integratedTerminal",
             "justMyCode": false
         }, {
+            "name": "AaC Help",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/aac/__main__.py",
+            "args": [
+                "-h",
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        }, {
+            "name": "AaC Version",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/aac/__main__.py",
+            "args": [
+                "version",
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        }, {
             "name": "Validate Flow",
             "type": "python",
             "request": "launch",

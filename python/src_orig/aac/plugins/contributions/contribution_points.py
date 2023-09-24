@@ -4,7 +4,7 @@ from typing import Any, Callable, Optional, Union
 
 from attr import Factory, attrib, attrs, validators
 
-from aac.cli.aac_command import AacCommand
+from aac.execute.plugin_runner import AacCommand
 from aac.lang.definitions.definition import Definition
 from aac.plugins.contributions.contribution_types import ContributionType, DefinitionValidationContribution, PrimitiveValidationContribution
 from aac.plugins.contributions.plugin_contribution import PluginContribution

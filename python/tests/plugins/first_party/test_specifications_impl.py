@@ -2,7 +2,7 @@ from tempfile import TemporaryDirectory
 
 import os
 
-from aac.cli.builtin_commands.specifications.specifications_impl import spec_csv
+from aac.execute.builtin_commands.specifications.specifications_impl import spec_csv
 
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.assertion import assert_plugin_success

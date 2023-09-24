@@ -100,7 +100,7 @@ setup(
     tests_require=test_dependencies,
     entry_points={
         "console_scripts": [
-            "aac=aac.cli.execute:cli",
+            "aac=aac.execute.command_line:cli",
         ]
     },
     extras_require={

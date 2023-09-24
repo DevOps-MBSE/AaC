@@ -1,6 +1,6 @@
 """The aac-rest-api plugin module."""
 
-from aac.cli.aac_command import AacCommand, AacCommandArgument
+from aac.execute.plugin_runner import AacCommand, AacCommandArgument
 from aac.plugins import hookimpl
 from aac.plugins.plugin import Plugin
 from aac.plugins.first_party.rest_api.aac_rest_api_impl import generate_api_spec, rest_api, plugin_name
