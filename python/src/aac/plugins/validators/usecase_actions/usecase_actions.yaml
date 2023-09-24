@@ -2,10 +2,10 @@ plugin:
   name: Validate usecase actions
   description: An AaC plugin that validates usecase actions are defined behaviors.
   definitionValidations:
-    - name: Usecase actions are defined behaviors
+    - name: Usecase actions refer to defined model behaviors
 ---
 validation:
-  name: Usecase actions are defined behaviors
+  name: Usecase actions refer to defined model behaviors
   description: Verify that the action field of a usecase definition refers to a valid model behavior.
   behavior:
     - name: Verify that the action field of a usecase definition refers to a defined model behavior.

@@ -424,6 +424,7 @@ schema:
         - participants
         - steps
     - name: Usecase sources and targets refer to defined participants
+    - name: Usecase actions refer to defined model behaviors
 ---
 schema:
   name: Step
