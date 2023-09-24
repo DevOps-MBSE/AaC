@@ -24,6 +24,9 @@ jobs:
     name: Python Cross Platform Build & Test
     uses: ./.github/workflows/python-cross-platform-support.yml
  
-  build_and_deploy_documentation:
-    name: Build and Deploy GitHub Pages
-    uses: ./.github/workflows/sphinx.yml
+# Commenting out from main branch workflow till permissions aspect can be resolved for 
+# reconnecting automated page deployment. The below workflow is able to be ran manually
+# allowing for the site to stay up to date. 
+  # build_and_deploy_documentation:
+  #   name: Build and Deploy GitHub Pages
+  #   uses: ./.github/workflows/sphinx.yml
