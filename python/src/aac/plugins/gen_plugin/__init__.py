@@ -1,13 +1,17 @@
 """The version plugin module."""
 
+from os.path import join, dirname
 from aac.execute.plugin_runner import AacCommand, AacCommandArgument
 from aac.plugins.gen_plugin.gen_plugin_impl import plugin_name, gen_plugin
 from aac.execute import hookimpl
 from aac.context.language_context import LanguageContext
-from aac.lang.plugin import Plugin
+# from aac.lang.plugin import Plugin
+from aac.execute.plugin_runner import PluginRunner
+
+GEN_PLUGIN_AAC_FILE_NAME = "gen_plugin.aac"
 
 @hookimpl
-def register_plugin():
+def register_plugin() -> None:
     """
     Returns information about the plugin.
 
@@ -15,29 +19,17 @@ def register_plugin():
         A collection of information about the plugin and what it contributes.
     """
     
-    # active_context = LanguageContext()
-    # plugin = Plugin(name=plugin_name, commands = _get_plugin_commands())
+    active_context = LanguageContext()
+    gen_plugin_aac_file = join(dirname(__file__), GEN_PLUGIN_AAC_FILE_NAME)
+    definitions = active_context.parse_and_load(gen_plugin_aac_file)
     
-    # active_context.register_plugin(plugin)
+    gen_plugin_plugin_definition = [definition for definition in definitions if definition.name == plugin_name][0]
 
-
-def _get_plugin_commands():
-
-    command_arguments = [
-        AacCommandArgument(
-            "architecture-file",
-            "The yaml file containing the AaC DSL of the plugin architecture.",
-            "file",
-        )
-    ]
-
-    plugin_commands = [
-        AacCommand(
-            "gen-plugin",
-            "Generate code and stubs for an AaC plugin.  Overwrites will backup existing files to enable revert-plugin if needed.",
-            gen_plugin,
-            command_arguments,
-        ),
-    ]
-
-    return plugin_commands
+    plugin_instance = gen_plugin_plugin_definition.instance
+    for file_to_load in plugin_instance.definition_sources:
+        active_context.parse_and_load(file_to_load)
+    
+    plugin_runner = PluginRunner(plugin_definition=gen_plugin_plugin_definition)
+    plugin_runner.add_command_callback("gen-plugin", gen_plugin)
+    
+    active_context.register_plugin_runner(plugin_runner)

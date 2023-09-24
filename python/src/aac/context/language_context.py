@@ -115,11 +115,21 @@ class LanguageContext(object):
 
   def register_plugin_runner(self, runner: PluginRunner) -> None:
 
-    if runner.plugin_name not in self.context_instance.plugin_runners:
-      self.context_instance.plugin_runners[runner.plugin_name] = runner
+    if runner.get_plugin_name() not in self.context_instance.plugin_runners:
+      self.context_instance.plugin_runners[runner.get_plugin_name()] = runner
     else:
-      print(f"Plugin {runner.plugin_name} already registered.")
+      print(f"Plugin {runner.get_plugin_name()} already registered.")
 
   def get_plugin_runners(self) -> list[PluginRunner]:
     return list(self.context_instance.plugin_runners.values())
+  
+  def get_primitives(self) -> list[Definition]:
+    return self.get_definitions_by_root("primitive")
+  
+  def get_python_type_from_primitive(self, primitive_name: str) -> str:
+    primitive = self.get_definition_by_name(primitive_name)
+    if primitive:
+      return primitive.instance.python_type
+    else:
+      raise LanguageError(f"Could not find primitive: {primitive_name}")
   

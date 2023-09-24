@@ -37,7 +37,7 @@ def to_click_type(type_name: str) -> ParamType:
 def to_click_parameter(argument: AacCommandArgument) -> Parameter:
     """Convert an AacCommandArgument to a Click Parameter."""
     names = [argument.name] if isinstance(argument.name, str) else argument.name
-    args = dict(type=to_click_type(argument.data_type), nargs=argument.number_of_arguments, default=argument.default)
+    args = dict(type=to_click_type(argument.data_type), nargs=1, default=argument.default)
     return (
         Option(names, help=argument.description, show_default=True, is_flag=argument.data_type == "bool", **args)
         if argument.name[0].startswith("-")
@@ -64,8 +64,30 @@ def to_click_command(command: AacCommand) -> Command:
 
 active_context = LanguageContext()
 
+def get_commands() -> list[AacCommand]:
+    result: list[AacCommand] = []
+
+    context = LanguageContext()
+    for runner in context.get_plugin_runners():
+        definition = runner.plugin_definition
+        for plugin_command in definition.instance.commands:
+            arguments: list[AacCommandArgument] = []
+            for input in plugin_command.input:
+                arguments.append(AacCommandArgument(
+                    input.name, 
+                    input.description, 
+                    context.get_python_type_from_primitive(input.type), 
+                    input.default))
+            result.append(AacCommand(
+                plugin_command.name,
+                plugin_command.helpText,
+                runner.command_to_callback[plugin_command.name],
+                arguments,
+            ))
+    return result
+
 runners: list[PluginRunner] = active_context.get_plugin_runners()
 for runner in runners:
-    commands = [to_click_command(cmd) for cmd in runner.commands]
+    commands = [to_click_command(cmd) for cmd in get_commands()]
     for command in commands:
         cli.add_command(command)

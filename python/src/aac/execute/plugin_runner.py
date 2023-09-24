@@ -22,7 +22,7 @@ class AacCommandArgument:
     name: Union[str, list[str]] = attrib(validator=validators.instance_of((list, str)))
     description: str = attrib(validator=validators.instance_of(str))
     data_type: str = attrib(validator=validators.instance_of(str))
-    number_of_arguments: int = attrib(default=1, validator=validators.instance_of(int))
+    # number_of_arguments: int = attrib(default=1, validator=validators.instance_of(int))
     default: Any = attrib(default=None)
 
 
@@ -66,7 +66,14 @@ class PluginRunner:
         arguments: A list of AacCommandArgument containing argument information about the command. (default: [])
     """
 
-    plugin_name: str = attrib(validator=validators.instance_of(str))
     plugin_definition: Definition = attrib(validator=validators.instance_of(Definition))
-    commands: list[AacCommand] = attrib(default=Factory(list), validator=validators.instance_of(list))
+    command_to_callback: dict[str, Callable] = attrib(default={}, validator=validators.instance_of(dict))
     # Add constraints here
+
+    def add_command_callback(self, command_name: str, command_callback: Callable) -> None:
+        self.command_to_callback[command_name] = command_callback
+
+    def get_plugin_name(self) -> str:
+        return self.plugin_definition.name
+
+    
