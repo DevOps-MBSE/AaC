@@ -1,21 +1,28 @@
+# .github/release.yml
+
 changelog:
-  categorgies:
-    - title: 'Breaking Changes'
+  categories:
+    - title: Added 💭
       labels:
-        - 'breaking'
-        - 'busted'
-    - title: 'New Features'
+        - added
+    - title: Changed 🛠
       labels:
-        - 'feature'
-        - 'enhancement'
-    - title: 'Bug Fixes'
+        - changed
+    - title: Deprecated 💾
       labels:
-        - 'bug'
-        - 'funky'
-        - 'Semver-Patch'
-    - title: 'Documentation Updates'
+        - deprecated
+    - title: Removed ✂️
       labels:
-        - 'documentation'
-    - title: 'Other Changes'
+        - removed
+    - title: Fixed 🐛
+      labels:
+        - fixed
+    - title: Security 🔒
+      labels: 
+        - security
+    - title: Documentation ✏️📘
+      labels:
+        - documentation
+    - title: Other Changes 📈
       labels:
         - "*"
