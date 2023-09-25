@@ -1,0 +1,10 @@
+plugin:
+  name: Hello
+  description:  Just says hello.
+  commands:
+    - name: hello
+      description:  The hello command
+      inputs:
+        - name: --your_name
+          description:  Who should I say hello to?
+          type: string
