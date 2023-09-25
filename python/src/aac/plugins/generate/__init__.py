@@ -2,7 +2,7 @@
 
 from os.path import join, dirname
 from aac.execute.plugin_runner import AacCommand, AacCommandArgument
-from aac.plugins.gen_plugin.gen_plugin_impl import plugin_name, gen_plugin
+from aac.plugins.generate.generate_impl import plugin_name, gen_plugin
 from aac.execute import hookimpl
 from aac.context.language_context import LanguageContext
 # from aac.lang.plugin import Plugin

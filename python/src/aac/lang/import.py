@@ -11,20 +11,3 @@ class Import():
     @classmethod
     def from_dict(cls, data):
         return cls(**data)
-
-    # def __init__(self, *args, **kwargs):
-    #     if not kwargs or len(kwargs) == 0:
-    #         raise LanguageError("Import must be initialized with keyword arguments")
-        
-    #     if "structure" in kwargs:
-    #         structure = kwargs["structure"]
-    #         if "files" in structure:
-    #             self.files = structure["files"]
-    #         else:
-    #             raise LanguageError("Import must have files")
-    #     else:
-    #         if "files" not in kwargs:
-    #             raise LanguageError("Import must have files")
-    #         else:
-    #             self.files = kwargs["files"]
-    

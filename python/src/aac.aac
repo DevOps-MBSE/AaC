@@ -10,7 +10,7 @@ schema:
   name: AacType
   package: aac.lang
   modifiers: 
-    - Abstract
+    - name: abstract
   description: |
     The base type for any data item defined in AaC.
   fields:
@@ -55,11 +55,90 @@ modifier:
     Denotes that the schema is final and cannot be referenced by another
     schema's 'extends' field for inheritance.
 ---
+modifier:
+  name: generator
+  description: |
+    Denotes that the schema is used to generate content based on templates.
+  fields:
+    - name: templates
+      type: GeneratorTemplate[]
+      description: A list of Jinja2 templates
+      is_required: true
+    - name: arguments
+      type: PluginCommandInput[]
+      description: An optional list of inputs needed by the generator.
+---
+schema:
+  name: GeneratorTemplate
+  description: |
+    A Jinja2 template used to generate content.
+  fields:
+    - name: name
+      type: string
+      description: |
+        The name of the template.
+      is_required: true
+    - name: description
+      type: STRING
+      description: |
+        A short description of the generator template.
+    - name: gen_from
+      type: GeneratorDataSource
+      description: |
+        Data sources for use in the template.
+      is_required: true
+    - name: template_file
+      type: string
+      description: |
+        The path to a jinja2 template file.  The template file path provided
+        should be relative to the AaC model referencing the template.  You must 
+        either provide a template_file or template_contents.
+    - name: template_contents
+      type: string
+      description: |
+        The contents of a jinja2 template file.  For simple templates, you may
+        find it easier to just keep it within your AaC model definition. You must 
+        either provide a template_file or template_contents.
+---
+schema:
+  name: GeneratorDataSource
+  description: |
+    Information to be passed into a generator template.  Data is passed to the generator
+    as a python dictionary, so define the key and content to be provided.
+  fields:
+    - name: key
+      type: string
+      description:  The identifier to be set as the key for the data source.
+      is_required: true
+    - name: value
+      type: string
+      description: |
+        The search string for finding content.  A search string consists of a sequence of 
+        dot-separated values that align to an AaC schema definition.
+      is_required: true
+    - name: description
+      type: string
+      description:  A brief description of the generator data source.
+---
 schema:
   name: Enum
   extends: AacType
   root: enum
-  gen_plugin_template_file: templates/enum.jinja2
+  modifiers:
+    - name: generator
+      arguments:
+        - name: code-output
+          type: file
+          description: The CLI argument to provide a path to write python code.
+        - name: test-output
+          type: file
+          description: The CIL argument to provide a path to write python unit tests.
+      templates:
+        - name: PythonEnum
+          gen_from:
+            - key: reference(enum.name)
+              value: enum.*
+          template_file: ./templates/enum.jinja2
   description: |
     A definition that represents an enumerated type of value.
     
@@ -138,7 +217,21 @@ schema:
   extends: AacType
   package: aac.lang
   root: schema
-  gen_plugin_template_file: templates/schema.jinja2
+  modifiers:
+    - name: generator
+      arguments:
+        - name: code-output
+          type: file
+          description: The CLI argument to provide a path to write python code.
+        - name: test-output
+          type: file
+          description: The CIL argument to provide a path to write python unit tests.
+      templates:
+        - name: PythonSchema
+          gen_from:
+            - key: reference(schema.name)
+              value: schema.*
+          template_file: ./templates/schema.jinja2
   description: |
     A definition that defines the schema/structure of data.
     
@@ -163,10 +256,6 @@ schema:
       type: str
       description: |
         The root key to use when declaring an instance of the type in yaml/aac files.
-    - name: gen_plugin_template_file
-      type: file
-      description: |
-        The file containing the jinja2 template used to generate items of the defined type.
     - name: fields
       type: Field[]
       description: |
@@ -224,17 +313,70 @@ schema:
 # Language Plugin Definition Types
 ---
 schema:
+  name: Project
+  package: aac.lang
+  root: project
+  modifiers:
+    - name: generator
+    arguments:
+        - name: project-output
+          type: file
+          description: The CLI argument to provide the project root directory.
+        - name: --src_folder
+          type: file
+          description: The CLI argument to provide a path that contains python code.
+        - name: --test_folder
+          type: file
+          description: The CLI argument to provide a path that contains python unit test code.
+      templates:
+        - name: PythonSetup
+          gen_from:
+            - key: reference(project.name)
+              value: project.*
+          template_file: ./templates/project.jinja2
+        - name: ReadMe
+          gen_from:
+            - key: reference(project.name)
+              value: project.*
+          template_file: ./templates/readme.jinja2
+        - name: ToxIni
+          gen_from:
+            - key: reference(project.name)
+              value: project.*
+          template_file:  ./templates/tox.jinja2
+  description: |
+    A definition for an AaC project. Projects provide an environment to define
+    plugins your team can use to  extend AaC to meet your unique needs.
+  fields:
+    - name: name
+      type: string
+      description: |
+        The name of your project.
+    - name: description
+      type: string
+      description: |
+        A brief descritpion of your project.  This will initialize your project read me file.
+---
+schema:
   name: Plugin
   package: aac.lang
   root: plugin
+  modifiers:
+    - name: generator
+      templates:
+        - name: PythonPlugin
+          gen_from:
+            - key: reference(project.name)
+              value: plugin.*
+          template_file: ./templates/plugin.jinja2
   description: |
-    A reference to a plugin. Plugins can provide any extra functionality
+    A definition for an AaC plugin. Plugins can provide any extra functionality
     desired on top of AaC-modeled systems from document generation to code
     generation and everything in between.
-    
-    Plugins are referenced by name.
   fields:
     - name: name
+      type: string
+    - name: package
       type: string
     - name: description
       type: description
