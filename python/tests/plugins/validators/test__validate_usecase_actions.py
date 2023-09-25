@@ -25,17 +25,14 @@ class TestValidateUsecaseActions(ActiveContextTestCase):
         test_model_1 = create_model_definition("SomeModel", behavior=[test_behavior_1, test_behavior_2])
         test_model_2 = create_model_definition("SomeOtherModel")
 
-        test_step_1 = create_step_entry(
-            "step1", test_model_1.name, test_model_2.name, test_behavior_1.get(DEFINITION_FIELD_NAME)
-        )
-        test_step_2 = create_step_entry(
-            "step2", test_model_1.name, test_model_2.name, test_behavior_2.get(DEFINITION_FIELD_NAME)
-        )
+        test_participants = [create_field_entry("user1", test_model_1.name), create_field_entry("user2", test_model_2.name)]
+        test_participant_names = [participant.get(DEFINITION_FIELD_NAME) for participant in test_participants]
+
+        test_step_1 = create_step_entry("step1", *test_participant_names, test_behavior_1.get(DEFINITION_FIELD_NAME))
+        test_step_2 = create_step_entry("step2", *test_participant_names, test_behavior_2.get(DEFINITION_FIELD_NAME))
 
         test_usecase = create_usecase_definition(
-            "TestUsecase",
-            participants=[create_field_entry(test_model_1.name), create_field_entry(test_model_2.name)],
-            steps=[test_step_1, test_step_2],
+            "TestUsecase", participants=test_participants, steps=[test_step_1, test_step_2]
         )
 
         test_active_context = get_active_context(reload_context=True)
@@ -53,9 +50,17 @@ class TestValidateUsecaseActions(ActiveContextTestCase):
         test_participant_1 = create_field_entry("user1", test_model_1.name)
         test_participant_2 = create_field_entry("user2", test_model_2.name)
         test_step_1 = create_step_entry(
-            "step1", test_model_1.name, test_model_2.name, test_behavior.get(DEFINITION_FIELD_NAME)
+            "step1",
+            test_participant_1.get(DEFINITION_FIELD_NAME),
+            test_participant_2.get(DEFINITION_FIELD_NAME),
+            test_behavior.get(DEFINITION_FIELD_NAME),
         )
-        test_step_2 = create_step_entry("step2", test_model_2.name, test_model_1.name, "another action")
+        test_step_2 = create_step_entry(
+            "step2",
+            test_participant_2.get(DEFINITION_FIELD_NAME),
+            test_participant_1.get(DEFINITION_FIELD_NAME),
+            "another action",
+        )
         test_usecase = create_usecase_definition(
             "TestUsecase", participants=[test_participant_1, test_participant_2], steps=[test_step_1, test_step_2]
         )

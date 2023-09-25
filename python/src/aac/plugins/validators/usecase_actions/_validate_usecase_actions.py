@@ -4,8 +4,10 @@ from aac.lang.constants import (
     DEFINITION_FIELD_ACTION,
     DEFINITION_FIELD_BEHAVIOR,
     DEFINITION_FIELD_NAME,
+    DEFINITION_FIELD_PARTICIPANTS,
     DEFINITION_FIELD_SOURCE,
     DEFINITION_FIELD_STEPS,
+    DEFINITION_FIELD_TYPE,
     ROOT_KEY_USECASE,
 )
 from aac.lang.definitions.definition import Definition
@@ -37,12 +39,18 @@ def validate_usecase_actions(
 
     if definition_under_test.get_root_key() == ROOT_KEY_USECASE:
         fields = definition_under_test.get_top_level_fields()
+        participants = fields.get(DEFINITION_FIELD_PARTICIPANTS, [])
         for step in fields.get(DEFINITION_FIELD_STEPS, []):
             action_name = step.get(DEFINITION_FIELD_ACTION)
             source_name = step.get(DEFINITION_FIELD_SOURCE)
-            source = language_context.get_definition_by_name(source_name)
-            source_behaviors = source.get_top_level_fields().get(DEFINITION_FIELD_BEHAVIOR, [])
-            if action_name not in [field.get(DEFINITION_FIELD_NAME) for field in source_behaviors]:
+            source_type, *_ = [
+                participant.get(DEFINITION_FIELD_TYPE)
+                for participant in participants
+                if participant.get(DEFINITION_FIELD_NAME) == source_name
+            ]
+            source_fields = language_context.get_definition_by_name(source_type).get_top_level_fields()
+            source_behaviors = [field.get(DEFINITION_FIELD_NAME) for field in source_fields.get(DEFINITION_FIELD_BEHAVIOR, [])]
+            if action_name not in source_behaviors:
                 invalid_action_reference_message = f"Action '{action_name}' does not refer to a behavior in '{source_name}'."
                 logging.error(invalid_action_reference_message)
                 findings.add_error_finding(
