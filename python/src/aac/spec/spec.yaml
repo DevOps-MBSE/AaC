@@ -17,7 +17,7 @@ schema:
   root: enum
   description: |
     A definition that represents an enumerated type of value.
-    
+
     An example of when to use an 'enum' is when you want to provide several
     different options for a single value.
   fields:
@@ -40,11 +40,11 @@ schema:
   root: ext
   description: |
     A meta definition used for adding information to another definition.
-    
+
     An example of when to use an 'ext' is when you wish to add extra
     information to a model that isn't included in the core specification or
     the specification of any plugins you may have installed.
-    
+
     You can extend any 'enum' and 'schema' definition.
   fields:
     - name: name
@@ -121,7 +121,7 @@ schema:
     verification and validation for the definition to which they are
     attached and any uses of that definition, depending on the validation
     plugins referenced by it.
-    
+
     Validators are referenced by name.
   fields:
     - name: name
@@ -260,7 +260,7 @@ schema:
   root: schema
   description: |
     A definition that defines the schema/structure of definitions.
-    
+
     A 'schema' definition can alternatively be thought as a defining the
     data structure of a definition.
   fields:
@@ -272,6 +272,10 @@ schema:
       type: string
       description: |
         The yaml key used to represent the type when defined at the root of the AaC model file.
+    - name: description
+      type: string
+      description: |
+        Allows users to add some text to describe their definition.
     - name: inherits
       type: reference[]
       description: |
@@ -290,6 +294,7 @@ schema:
         A list of requirements that define the characteristics to be satisfied by the schema.
   validation:
     - name: Root key is defined
+    - name: Disallow undefined fields
     - name: Required fields are present
       arguments:
         - name
@@ -348,7 +353,7 @@ schema:
   root: model
   description: |
     A definition that represents a system and/or component model.
-    
+
     An example of when to use a 'model' is when you want to define the
     behavior for some component of the system.
   fields:
@@ -391,7 +396,7 @@ schema:
   root: usecase
   description: |
     A definition that represents a usecase for the system.
-    
+
     An example of when to use a 'usecase' is when you want to define how the
     system might be used in a particular instance.
   fields:
@@ -482,7 +487,7 @@ schema:
   description: |
     A reference to a command group under which one, or more, plugins can
     nest related commands.
-    
+
     CommandGroups are referenced by name.
   fields:
     - name: name
@@ -552,7 +557,7 @@ schema:
     A reference to a plugin. Plugins can provide any extra functionality
     desired on top of AaC-modeled systems from document generation to code
     generation and everything in between.
-    
+
     Plugins are referenced by name.
   fields:
     - name: name
@@ -603,7 +608,7 @@ schema:
   root: spec
   description: |
     A requirement specification definition to capture desired behavior or attributes of the system being modeled.
-    
+
     Within many contexts requirements remain the central element of any Model-Based System Engineering solution.
     AaC supports the definition, derivation, and trace of requirements throughout the model using the spec type and
     associated reference capabilities.
@@ -616,8 +621,6 @@ schema:
       type: SpecSection[]
     - name: requirements
       type: Requirement[]
-  required:
-    - name
   validation:
     - name: Required fields are present
       arguments:
@@ -632,8 +635,6 @@ schema:
       type: string
     - name: requirements
       type: Requirement[]
-  required:
-    - name
   validation:
     - name: Required fields are present
       arguments:
@@ -652,9 +653,6 @@ schema:
       type: RequirementReference
     - name: attributes
       type: RequirementAttribute[]
-  required:
-    - id
-    - shall
   validation:
     - name: Required fields are present
       arguments:
@@ -671,9 +669,6 @@ schema:
       type: string
     - name: value
       type: string
-  required:
-    - name
-    - value
   validation:
     - name: Required fields are present
       arguments:
@@ -685,8 +680,6 @@ schema:
   fields:
     - name: ids
       type: string[]
-  required:
-    - ids
   validation:
     - name: Required fields are present
       arguments:
