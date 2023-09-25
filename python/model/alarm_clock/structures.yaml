@@ -72,6 +72,8 @@ enum:
     - "+12:75"
     - "+13:00"
     - "+14:00"
+  validation:
+    - name: Enum value is defined
 ---
 enum:
   name: AlarmNoise
@@ -81,6 +83,8 @@ enum:
     - SIREN
     - KLAXON
     - DOG_BARKING
+  validation:
+    - name: Enum value is defined
 ---
 timer_alert:
   name: my_alert

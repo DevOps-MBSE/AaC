@@ -4,6 +4,8 @@ enum:
     - VALUE_A
     - VALUE_B
     - VALUE_C
+  validation:
+    - name: Enum value is defined
 ---
 ext:
   name: AnotherPrimitive

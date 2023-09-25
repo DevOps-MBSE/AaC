@@ -1,12 +1,12 @@
 plugin:
-  name: Validate type references
+  name: Validate value is defined
   description: An AaC plugin that enables validating the enum values of fields.
   definitionValidations:
     - name: Type references exist
 ---
 validation:
-  name: Type references exist
-  description: Verify that enum value in a field is defined by the enum type of the field.
+  name: Enum value is defined
+  description: Verify that enum value in a field is defined as a value in the enum type of the field.
   behavior:
     - name: Verify the enum value is defined by the enum type of the field.
       type: REQUEST_RESPONSE
