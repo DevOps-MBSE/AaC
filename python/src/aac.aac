@@ -99,6 +99,11 @@ schema:
         The contents of a jinja2 template file.  For simple templates, you may
         find it easier to just keep it within your AaC model definition. You must 
         either provide a template_file or template_contents.
+    - name: overwrite
+      type: bool
+      description: |
+        Instructs the generator to overwrite existing content or not.
+      is_required: true
 ---
 schema:
   name: GeneratorDataSource
@@ -139,6 +144,7 @@ schema:
             - key: reference(enum.name)
               value: enum.*
           template_file: ./templates/enum.jinja2
+          overwrite: true
   description: |
     A definition that represents an enumerated type of value.
     
@@ -232,6 +238,7 @@ schema:
             - key: reference(schema.name)
               value: schema.*
           template_file: ./templates/schema.jinja2
+          overwrite: true
   description: |
     A definition that defines the schema/structure of data.
     
@@ -333,17 +340,20 @@ schema:
           gen_from:
             - key: reference(project.name)
               value: project.*
-          template_file: ./templates/project.jinja2
+          template_file: ./templates/project_setup.jinja2
+          overwrite: true
         - name: ReadMe
           gen_from:
             - key: reference(project.name)
               value: project.*
-          template_file: ./templates/readme.jinja2
+          template_file: ./templates/project_readme.jinja2
+          overwrite: true
         - name: ToxIni
           gen_from:
             - key: reference(project.name)
               value: project.*
-          template_file:  ./templates/tox.jinja2
+          template_file:  ./templates/project_tox.jinja2
+          overwrite: true
   description: |
     A definition for an AaC project. Projects provide an environment to define
     plugins your team can use to  extend AaC to meet your unique needs.
@@ -364,11 +374,19 @@ schema:
   modifiers:
     - name: generator
       templates:
-        - name: PythonPlugin
+        - name: PythonPluginInit
           gen_from:
-            - key: reference(project.name)
+            - key: reference(plugin.name)
               value: plugin.*
-          template_file: ./templates/plugin.jinja2
+          template_file: ./templates/plugin_init.jinja2
+          overwrite: true
+        - name: PythonPluginImpl
+          gen_from:
+            - key: reference(plugin.name)
+              value: plugin.*
+          template_file: ./templates/plugin_impl.jinja2
+          overwrite: false
+
   description: |
     A definition for an AaC plugin. Plugins can provide any extra functionality
     desired on top of AaC-modeled systems from document generation to code
