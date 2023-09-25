@@ -37,3 +37,4 @@ Closes/Fixes/Resolves #XYZ
 - [ ] I updated new and existing unit tests to account for my changes.
 - [ ] I linked the associated item(s) to be closed.
 - [ ] I bumped the version.
+- [ ] I added the labels corresponding to my changes.
