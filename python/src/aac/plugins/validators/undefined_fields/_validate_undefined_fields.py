@@ -41,7 +41,7 @@ def validate_undefined_fields(
         # Iterate through the dict keys as those are the field names
         for field_name in dict_to_validate.keys():
             if field_name not in defined_field_names:
-                undefined_field_message = f"Field '{field_name}' is not one of the fields {defined_field_names} defined in '{definition_schema.name}'."
+                undefined_field_message = f"Field '{field_name}' is not one of the fields defined in '{definition_schema.name}'."
                 logging.error(undefined_field_message)
                 findings.add_error_finding(
                     definition_under_test, undefined_field_message, VALIDATION_NAME, definition_under_test.get_lexeme_with_value(field_name)

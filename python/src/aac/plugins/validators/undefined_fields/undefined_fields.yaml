@@ -31,7 +31,7 @@ validation:
           given:
             - The ValidatorInput content consists of otherwise valid AaC definitions.
             - The ValidatorInput contains at least one field that is required.
-            - The ValidatorInput at least one AaC definition that has fields that are not defined in the definition's schema.
+            - The ValidatorInput contains one or more AaC definitions that has fields that are not defined in the definition's schema.
           when:
             - The validator plugin is executed.
           then:
