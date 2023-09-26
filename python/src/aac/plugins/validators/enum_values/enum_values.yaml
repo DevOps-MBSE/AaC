@@ -1,8 +1,8 @@
 plugin:
-  name: Validate value is defined
+  name: Validate enum value is defined
   description: An AaC plugin that enables validating the enum values of fields.
   definitionValidations:
-    - name: Type references exist
+    - name: Enum value is defined
 ---
 validation:
   name: Enum value is defined
