@@ -233,6 +233,28 @@ schema:
       type: string
       description: |
         A brief descritpion of your project.  This will initialize your project read me file.
+    - name: uses
+      type: ProjectDependency[]
+      descriptioN: |
+        A list of pypi dependencies to include in the project.  This can be particularly
+        useful if you're leveraging other AaC plugins in your project.  You will get the AaC
+        core project by default, so no need to include it here.
+---
+schema:
+  name: ProjectDependency
+  description: |
+    A pypi project dependency.
+  fields:
+    - name: name
+      type: string
+      description: |
+        The name of the pypi project to import.
+      is_required: true
+    - name: version
+      type: string
+      description: |
+        The versio nof the pypi project to import.
+      is_required: true   
 ---
 schema:
   name: Plugin
