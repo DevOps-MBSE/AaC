@@ -1,5 +1,5 @@
 from aac.lang.active_context_lifecycle_manager import get_active_context
-from aac.lang.constants import BEHAVIOR_TYPE_REQUEST_RESPONSE, DEFINITION_NAME_MODEL
+from aac.lang.constants import BEHAVIOR_TYPE_REQUEST_RESPONSE, DEFINITION_NAME_BEHAVIOR_TYPE
 from aac.plugins.validators import ValidatorResult
 from aac.plugins.validators.enum_values._validate_enums import validate_enums
 from aac.validate import validated_definition, ValidationError
@@ -17,9 +17,9 @@ class TestEnumValuesPlugin(ActiveContextTestCase):
         expected_result = ValidatorResult()
 
         test_active_context = get_active_context(reload_context=True)
-        model_schema_definition = test_active_context.get_definition_by_name(DEFINITION_NAME_MODEL)
+        behavior_type_definition = test_active_context.get_definition_by_name(DEFINITION_NAME_BEHAVIOR_TYPE)
 
-        actual_result = validate_enums(test_model, model_schema_definition, test_active_context)
+        actual_result = validate_enums(test_model, behavior_type_definition, test_active_context)
 
         self.assertEqual(expected_result.is_valid(), actual_result.is_valid())
 
@@ -29,9 +29,9 @@ class TestEnumValuesPlugin(ActiveContextTestCase):
         test_model = create_model_definition("TestModel", behavior=[test_behavior])
 
         test_active_context = get_active_context(reload_context=True)
-        model_schema_definition = test_active_context.get_definition_by_name(DEFINITION_NAME_MODEL)
+        behavior_type_definition = test_active_context.get_definition_by_name(DEFINITION_NAME_BEHAVIOR_TYPE)
 
-        actual_result = validate_enums(test_model, model_schema_definition, test_active_context)
+        actual_result = validate_enums(test_model, behavior_type_definition, test_active_context)
 
         self.assertFalse(actual_result.is_valid())
 
