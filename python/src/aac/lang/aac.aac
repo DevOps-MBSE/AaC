@@ -343,14 +343,75 @@ schema:
         either provide a template_file or template_contents.
       is_required: true
     - name: overwrite
-      type: bool
+      type: OverwriteOption
       description: |
-        Instructs the generator to overwrite existing content or not.
+        Instructs the generator how to overwrite existing content or not.
       is_required: true
+    - name: helper_functions
+      type: JinjaHelperFunction[]
+      description: |
+        A list of helper functions to be made available to the template.
+      is_required: false
     - name: output_target
       type: GeneratorOutputTarget
       description: |
         Identifies which generator output path to target.
+    - name: output_path_uses_data_source_package
+      type: bool
+      description: |
+        Instructs the generator to insert the package name after the output path when generating files.
+    - name: output_file_prefix
+      type: string
+      description: |
+        The prefix to use when generating the output file name.
+    - name: output_file_suffix
+      type: string
+      description: |
+        The suffix to use when generating the output file name.
+    - name: output_file_extension
+      type: string
+      description: |
+        The file extension to use when generating the output file name.
+      is_required: true
+---
+enum:
+  name: OverwriteOption
+  values:
+    - OVERWRITE
+    - SKIP
+    - MERGE
+---
+schema:
+  name: JinjaHelperFunction
+  description: |
+    A helper function to be made available to a Jinja2 template.  Helper functions
+    are defined as python functions and are made available to the template as
+    a python module.
+  fields:
+    - name: name
+      type: string
+      description: |
+        The name of the helper function.
+      is_required: true
+    - name: description
+      type: string
+      description: |
+        A short description of the helper function.
+    - name: package
+      type: string
+      description: |
+        The python package to be made available to the template.
+      is_required: true
+    - name: python_file
+      type: string
+      description: |
+        The path to the python file containing the function to be made available to the template.
+      is_required: true
+    - name: function
+      type: string
+      description: |
+        The python function to be made available to the template.
+      is_required: true
 ---
 enum:
   name: GeneratorOutputTarget

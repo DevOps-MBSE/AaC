@@ -11,7 +11,7 @@ from aac.io.writer import write_file
 from aac.io.jinja.error import AacTemplateError
 
 
-def load_templates(package_name: str, template_directory: str = "templates") -> list[Template]:
+def load_templates(package_name: str, template_directory: str = "templates", helper_functions: dict[str, Callable] = {}) -> list[Template]:
     """
     Load templates from a `templates` directory within a package.
 
