@@ -24,7 +24,7 @@ class TestEnumValuesPlugin(ActiveContextTestCase):
         self.assertEqual(expected_result.is_valid(), actual_result.is_valid())
 
     def test_validate_enum_values_invalid(self):
-        # Create a model with a behavior to test that the validation is valid when a valid BehaviorType enum value is used.
+        # Create a model with a behavior to test that the validation is invalid when an invalid BehaviorType enum value is used.
         test_behavior = create_behavior_entry("TestBehavior", "NOT_A_VALID_BEHAVIOR_TYPE")
         test_model = create_model_definition("TestModel", behavior=[test_behavior])
 
@@ -36,7 +36,7 @@ class TestEnumValuesPlugin(ActiveContextTestCase):
         self.assertFalse(actual_result.is_valid())
 
     def test_validated_definition_catches_invalid(self):
-        # Create a model with a behavior to test that the validation is valid when a valid BehaviorType enum value is used.
+        # Create a model with a behavior to test that the validation is caught in definition validation when an invalid BehaviorType enum value is used.
         bad_enum_value = "NOT_A_VALID_BEHAVIOR_TYPE"
         test_behavior = create_behavior_entry("TestBehavior", bad_enum_value)
         test_model = create_model_definition("TestModel", behavior=[test_behavior])
