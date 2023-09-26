@@ -55,7 +55,7 @@ def get_schema_defined_fields(source_definition: Definition, context: LanguageCo
     return schema_defined_fields
 
 
-def get_definition_schema_components(source_definition: Definition, context: LanguageContext) -> list[Definition]:
+def get_definition_schema_components(source_definition: Definition, language_context: LanguageContext) -> list[Definition]:
     """
     Return a list of definitions that compose the defined structure of the source definition.
 
@@ -65,7 +65,7 @@ def get_definition_schema_components(source_definition: Definition, context: Lan
 
     Args:
         source_definition (Definition): The definition to search through
-        context (LanguageContext): The language context, used to navigate the structure and lookup definitions
+        language_context (LanguageContext): The language context, used to navigate the structure and lookup definitions
 
     Returns:
         A list of dictionaries that match instances of the sub-definition type.
@@ -82,8 +82,8 @@ def get_definition_schema_components(source_definition: Definition, context: Lan
                     f"Failed to find the field definition for {field_type} in the defined fields {fields} of '{schema_definition.name}'."
                 )
 
-            if context.is_definition_type(field_type) and field_type not in substructure_definitions:
-                field_definition = context.get_definition_by_name(field_type)
+            if language_context.is_definition_type(field_type) and field_type not in substructure_definitions:
+                field_definition = language_context.get_definition_by_name(field_type)
                 substructure_definitions[field_type] = field_definition
 
                 if not field_definition.is_enum():
@@ -91,7 +91,7 @@ def get_definition_schema_components(source_definition: Definition, context: Lan
                         field_definition, field_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS)
                     )
 
-    top_level_fields = list(get_schema_defined_fields(source_definition, context).values())
+    top_level_fields = list(get_schema_defined_fields(source_definition, language_context).values())
     _get_sub_definitions(source_definition, top_level_fields)
     return list(substructure_definitions.values())
 

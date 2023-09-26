@@ -29,6 +29,10 @@ schema:
       type: string[]
       description: |
         A list of strings that encompass the enumeration's possible values.
+    - name: validation
+      type: ValidationReference[]
+      description: |
+        References and additional arguments for validations to apply to enum.
   validation:
     - name: Required fields are present
       arguments:
@@ -212,6 +216,8 @@ enum:
     - STARTUP
     - TIMER
     - LOGGING
+  validation:
+    - name: Enum value is defined
 ---
 enum:
   name: Primitives
@@ -224,6 +230,8 @@ enum:
     - file
     - directory
     - reference
+  validation:
+    - name: Enum value is defined
 ---
 schema:
   name: Field

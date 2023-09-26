@@ -8,7 +8,7 @@ plugin:
       input:
         - name: architecture-files
           type: file
-          python_type: list[str]
+          python_type: list
           description: File paths to AaC file(s) containing definitions to output as JSON.
         - name: --output-directory
           type: directory

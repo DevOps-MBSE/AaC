@@ -80,3 +80,5 @@ enum:
     - type_1
     - type_2
     - type_3
+  validation:
+    - name: Enum value is defined

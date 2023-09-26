@@ -135,7 +135,7 @@ class TestGotoDefinitionProvider(BaseLspTestCase, IsolatedAsyncioTestCase):
 
         expected_location = Location(
             uri=_get_aac_spec_file_path(),
-            range=Range(start=Position(line=218, character=6), end=Position(line=218, character=12)),
+            range=Range(start=Position(line=224, character=6), end=Position(line=224, character=12)),
         )
         location = res.get_location()
         self.assertIsNotNone(location)

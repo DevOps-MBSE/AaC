@@ -1,5 +1,6 @@
 from unittest import TestCase
 from aac.lang.constants import (
+    BEHAVIOR_TYPE_REQUEST_RESPONSE,
     DEFINITION_FIELD_BEHAVIOR,
     DEFINITION_FIELD_INPUT,
     DEFINITION_FIELD_OUTPUT,
@@ -13,7 +14,7 @@ from aac.lang.constants import (
     ROOT_KEY_MODEL,
 )
 
-from aac.lang.definitions.structure import get_substructures_by_type, strip_undefined_fields_from_definition
+from aac.lang.definitions.structure import get_substructures_by_type, strip_undefined_fields_from_definition, get_fields_by_enum_type
 from aac.lang.definitions.schema import get_definition_schema_components
 
 from tests.helpers.context import get_core_spec_context
@@ -161,3 +162,16 @@ class TestDefinitionStructures(TestCase):
         self.assertNotIn(behavior_input_extra_field_value, actual_result_yaml_dump)
         self.assertNotIn(behavior_output_extra_field_name, actual_result_yaml_dump)
         self.assertNotIn(behavior_output_extra_field_value, actual_result_yaml_dump)
+
+    def test_get_fields_by_enum_type(self):
+        test_context = get_core_spec_context()
+
+        test_behavior_name = "TestBehavior"
+        test_behavior_type = BEHAVIOR_TYPE_REQUEST_RESPONSE
+        test_behavior = create_behavior_entry(test_behavior_name, test_behavior_type)
+        test_model = create_model_definition("TestModel", behavior=[test_behavior])
+
+        behavior_type_definition = test_context.get_definition_by_name(DEFINITION_NAME_BEHAVIOR_TYPE)
+
+        enum_fields = get_fields_by_enum_type(test_model, behavior_type_definition, test_context)
+        self.assertTrue(len(enum_fields))

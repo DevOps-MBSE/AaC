@@ -152,7 +152,7 @@ def _validate_definition(
                         _apply_validator(definition, target_schema_definition, language_context, validator_plugin[0])
                     )
 
-    validator_results.append(_validate_primitive_types(definition, language_context))
+    validator_results.extend(_validate_field_types(definition, language_context))
     return validator_results
 
 
@@ -184,26 +184,25 @@ def _apply_validator(
     return validator_result
 
 
-def _validate_primitive_types(definition: Definition, language_context: LanguageContext) -> ValidatorResult:
-    """Validates the instances of AaC primitive types."""
-    findings = ValidatorFindings()
+def _validate_field_types(definition: Definition, language_context: LanguageContext) -> list[ValidatorResult]:
+    """Validates definition field types such as instances of AaC primitive and enum types."""
+    results = []
     definition_schema = get_definition_schema(definition, language_context)
     if definition_schema:
-        findings.add_findings(
-            _validate_fields(definition, definition_schema, definition.get_top_level_fields(), language_context)
-        )
+        results = _validate_fields(definition, definition_schema, definition.get_top_level_fields(), language_context)
 
-    return ValidatorResult([definition], findings)
+    return results
 
 
 def _validate_fields(
     source_def: Definition, field_schema: Definition, field_dict: dict, language_context: LanguageContext
-) -> list[ValidatorFinding]:
-    findings = []
+) -> list[ValidatorResult]:
+    results = []
 
     primitive_types = language_context.get_primitive_types()
+    enum_types = language_context.get_enum_types()
 
-    schema_fields = field_schema.get_top_level_fields().get(DEFINITION_FIELD_FIELDS, [])
+    schema_fields: list = field_schema.get_top_level_fields().get(DEFINITION_FIELD_FIELDS, [])
     for field in schema_fields:
         field_name = field.get(DEFINITION_FIELD_NAME, "")
         field_type = field.get(DEFINITION_FIELD_TYPE, "")
@@ -216,43 +215,78 @@ def _validate_fields(
                 if field_type in primitive_types:
                     field_finding = _validate_primitive_field(source_def, field_type, field_value, language_context)
                     if field_finding:
-                        findings.append(field_finding)
+                        results.append(field_finding)
+                elif field_type in enum_types:
+                    field_finding = _validate_enum_field(source_def, field_type, field_value, language_context)
+                    if field_finding:
+                        results.append(field_finding)
 
                 elif language_context.is_definition_type(sanitized_field_type):
-                    findings.extend(_validate_schema_field(source_def, sanitized_field_type, field_value, language_context))
+                    results.extend(_validate_schema_field(source_def, sanitized_field_type, field_value, language_context))
 
-    return findings
+    return results
 
 
 def _validate_primitive_field(
     source_def: Definition, field_type: str, field_value: Any, language_context: LanguageContext
-) -> Optional[ValidatorFinding]:
+) -> Optional[ValidatorResult]:
     validators = [
         validator for validator in language_context.get_primitive_validations() if validator.primitive_type == field_type
     ]
 
-    validator_finding = None
+    validator_result = None
 
     if validators:
         validator, *_ = validators
         try:
             validator_finding = validator.validation_function(source_def, field_value, language_context)
+            if validator_finding:
+                validator_result = ValidatorResult([source_def], ValidatorFindings([validator_finding]))
         except Exception as exception:
             exception_message = f"Validator '{validator.name}' failed with an exception: {exception}"
             finding_location = FindingLocation(validator.name, source_def.source, 0, 0, 0, 0)
             validator_finding = ValidatorFinding(source_def, FindingSeverity.ERROR, exception_message, finding_location)
+            validator_findings = ValidatorFindings([validator_finding])
+            validator_result = ValidatorResult([source_def], validator_findings)
     else:
         logging.info(f"No primitive type validation for '{field_type}'")
 
-    return validator_finding
+    return validator_result
+
+
+def _validate_enum_field(
+    definition: Definition, field_type: str, field_value: Any, language_context: LanguageContext
+) -> Optional[ValidatorResult]:
+    validator_result = None
+    enum_type_definition = language_context.get_definition_by_name(field_type)
+
+    if not enum_type_definition:
+        logging.error(f"Unable to find enum definition for type {field_type}. Can't validate field defined as '{field_type}' in '{definition.name}'")
+    else:
+        validations = enum_type_definition.get_validations() or []
+        validation_plugins = language_context.get_definition_validations()
+
+        for validation in validations:
+            validation_name = validation.get(DEFINITION_FIELD_NAME)
+            validator_plugins = [plugin for plugin in validation_plugins if plugin.name == validation_name]
+
+            if len(validator_plugins) > 0:
+                validator_plugin, *_ = validator_plugins
+                validator_result = _apply_validator(definition, enum_type_definition, language_context, validator_plugin)
+            else:
+                logging.error(f"Unable to find plugin for validation {validation_name}")
+        else:
+            logging.info(f"No primitive type validation for '{field_type}'")
+
+    return validator_result
 
 
 def _validate_schema_field(
     source_def: Definition, field_type: str, field_value: Any, language_context: LanguageContext
-) -> list[ValidatorFinding]:
+) -> list[ValidatorResult]:
     new_field_schema = language_context.get_definition_by_name(field_type)
-    findings = []
+    results = []
     if new_field_schema:
-        findings = _validate_fields(source_def, new_field_schema, field_value, language_context)
+        results = _validate_fields(source_def, new_field_schema, field_value, language_context)
 
-    return findings
+    return results

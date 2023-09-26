@@ -45,6 +45,8 @@ enum:
     - bytes
     - bytearray
     - memoryview
+  validation:
+    - name: Enum value is defined
 ---
 ext:
    name: CommandArgumentFields

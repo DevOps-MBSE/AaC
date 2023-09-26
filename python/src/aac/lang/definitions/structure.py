@@ -1,6 +1,7 @@
 """Functions that provide information about the structure of definitions."""
 import logging
 
+from aac.lang.constants import DEFINITION_FIELD_FIELDS, DEFINITION_FIELD_NAME, DEFINITION_FIELD_TYPE
 from aac.lang.definitions.type import is_array_type, remove_list_type_indicator
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.schema import get_definition_schema
@@ -31,12 +32,12 @@ def get_substructures_by_type(
         if schema_definition.name == target_schema_definition.name:
             substructure_instances.append(definition_dict)
 
-        schema_defined_fields = schema_definition.get_top_level_fields().get("fields") or []
-        schema_defined_fields_dict = {field.get("name"): field for field in schema_defined_fields}
+        schema_defined_fields = schema_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS) or []
+        schema_defined_fields_dict = {field.get(DEFINITION_FIELD_NAME): field for field in schema_defined_fields}
         field_names_to_traverse = set(schema_defined_fields_dict.keys()).intersection(set(definition_dict.keys()))
 
         for field_name in sorted(field_names_to_traverse):
-            field_type = schema_defined_fields_dict.get(field_name).get("type")
+            field_type = schema_defined_fields_dict.get(field_name).get(DEFINITION_FIELD_TYPE)
             field_schema_definition = context.get_definition_by_name(field_type)
 
             if field_schema_definition and not field_schema_definition.is_enum():
@@ -72,6 +73,66 @@ def get_substructures_by_type(
     return substructure_instances
 
 
+def get_fields_by_enum_type(source_definition: Definition, target_enum_type: Definition, context: LanguageContext) -> list[dict]:
+    """
+    Return a list of dictionaries that represent instances of fields with the target enum type within the source definition.
+
+    For example, if a definition of type `model` were to be searched for every instance of the `BehaviorType` enum type,
+    then every instance of a field typed as `BehaviorType` within the `model` definition will be returned.
+
+    Args:
+        source_definition (Definition): The definition to search through
+        target_enum_type (Definition): Defines the field enum type to extract from the source definition
+        context (LanguageContext): The language context, used to navigate the structure and lookup definitions
+
+    Returns:
+        A list of dictionaries that match instances of the enum type.
+    """
+    field_dicts = []
+
+    def _get_enum_fields(schema_definition: Definition, definition_dict: dict):
+
+        schema_defined_fields = schema_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS, [])
+        schema_defined_fields_dict = {field.get(DEFINITION_FIELD_NAME): field for field in schema_defined_fields}
+        field_names_to_traverse = set(schema_defined_fields_dict.keys()).intersection(set(definition_dict.keys()))
+
+        for field_name in sorted(field_names_to_traverse):
+            field_type = schema_defined_fields_dict.get(field_name).get(DEFINITION_FIELD_TYPE)
+            field_schema_definition = context.get_definition_by_name(field_type)
+
+            if field_schema_definition and not field_schema_definition.is_enum():
+                field_content = definition_dict.get(field_name, [])
+
+                # If the field type isn't an array type, package it as a one element list.
+                if not is_array_type(field_type):
+                    field_content = [field_content]
+                elif not type(field_content) is list:
+                    logging.error(
+                        f"Value '{field_content}' is not an array type like its defined type '{field_type}'. Bad value in the field '{field_name}' in definition '{source_definition.name}'."
+                    )
+                    continue
+
+                fields_to_traverse = [field for field in field_content if isinstance(field, dict)]
+                for field in fields_to_traverse:
+                    _get_enum_fields(field_schema_definition, field)
+            elif field_schema_definition and field_schema_definition.is_enum():
+                if field_type == target_enum_type.name:
+                    field_dicts.append({field_name: definition_dict.get(field_name)})
+
+    source_definition_root_key = source_definition.get_root_key()
+    source_definition_fields = source_definition.get_top_level_fields()
+
+    # Return the whole definition dictionary if the desired substructure is the root type.
+    source_definition_schema = get_definition_schema(source_definition, context)
+
+    if source_definition_schema:
+        _get_enum_fields(source_definition_schema, source_definition_fields)
+    else:
+        logging.error(f"Failed to find a schema definition for the key {source_definition_root_key}.")
+
+    return field_dicts
+
+
 def strip_undefined_fields_from_definition(definition: Definition, context: LanguageContext) -> Definition:
     """
     Strip any fields that aren't defined in the definition's schema and returns a stripped copy of the definition.
@@ -85,8 +146,8 @@ def strip_undefined_fields_from_definition(definition: Definition, context: Lang
     """
 
     def _strip_fields(definition_dict: dict, dict_schema: Definition):
-        defined_top_level_fields = dict_schema.get_top_level_fields().get("fields", {})
-        defined_top_level_fields_dict = {field.get("name"): field for field in defined_top_level_fields}
+        defined_top_level_fields = dict_schema.get_top_level_fields().get(DEFINITION_FIELD_FIELDS, {})
+        defined_top_level_fields_dict = {field.get(DEFINITION_FIELD_NAME): field for field in defined_top_level_fields}
         definition_dict_field_names = list(definition_dict.keys())
 
         for field_name in definition_dict_field_names:
@@ -94,7 +155,7 @@ def strip_undefined_fields_from_definition(definition: Definition, context: Lang
                 logging.info(f"Removing undefined field {field_name} from definition: {definition.name}")
                 del definition_dict[field_name]
             else:
-                field_schema_type = defined_top_level_fields_dict.get(field_name).get("type")
+                field_schema_type = defined_top_level_fields_dict.get(field_name).get(DEFINITION_FIELD_TYPE)
                 is_array_field = is_array_type(field_schema_type)
 
                 field_schema = context.get_definition_by_name(remove_list_type_indicator(field_schema_type))
