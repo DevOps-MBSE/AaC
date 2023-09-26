@@ -1,23 +1,27 @@
 plugin:
   name: Generate Plugin
-  description: An AaC plugin that generates opinionated plugin stubs for easier and quicker plugin development.
+  description: An AaC plugin that generates content from an AaC file based on provided
+  generator templates.
   commands:
     - name: generate
-      helpText: Generate code and stubs for an AaC plugin.  Overwrites will backup existing files to enable revert-plugin if needed.
-      run_before:
-        - check
-      run_after:
-        - check
+      helpText: Performs content generation based on user defined templates.
       input:
-        - name: aac-plugin-file
+        - name: aac-file
           type: file
-          description: The path to the architecture file with the plugin definition.
-        - name: --output
+          description: The path to the architecture file with the model content.
+        - name: generator-file
+          type: file
+          description: The path to the architecture file with the generator definition.
+        - name: --code-output
           type: directory
-          description: The location to output generated plugin code.
+          description: The location to output generated code.
         - name: --test-output
           type: directory
-          description: The location to output generated plugin test code.
+          description: The location to output generated test code.
+        - name: --doc-output
+          type: directory
+          description: The location to output generated documentation.
         - name: --no-prompt
           type: bool
-          description: Informs gen-plugin to execute without asking the user to confirm output paths.  
+          description: Informs generator to execute without asking the user to confirm output paths.  
+      
