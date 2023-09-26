@@ -268,7 +268,6 @@ def _validate_enum_field(
 
         for validation in validations:
             validation_name = validation.get(DEFINITION_FIELD_NAME)
-            # This line will throw an exception if there is a mismatch between the plugin name and validation name. We need to better handle this.
             validator_plugins = [plugin for plugin in validation_plugins if plugin.name == validation_name]
 
             if len(validator_plugins) > 0:
