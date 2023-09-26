@@ -3,12 +3,12 @@ import logging
 from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.lexeme import Lexeme
 from aac.lang.definitions.source_location import SourceLocation
-from aac.lang.definitions.structure import get_substructures_by_type
+from aac.lang.definitions.structure import get_fields_by_enum_type
 from aac.lang.language_context import LanguageContext
 from aac.plugins.validators import ValidatorFindings, ValidatorResult
 
 
-PLUGIN_NAME = "Validate enum values"
+PLUGIN_NAME = "Validate enum value is defined"
 VALIDATION_NAME = "Enum value is defined"
 
 
@@ -32,38 +32,24 @@ def validate_enums(
     findings = ValidatorFindings()
 
     def validate_dict(dict_to_validate: dict) -> None:
-        for reference_to_validate in validation_args:
-            field_reference = dict_to_validate.get(reference_to_validate)
-            if field_reference:
-                if language_context.is_primitive_type(field_reference) or language_context.is_definition_type(field_reference):
-                    logging.debug(f"Valid type reference. Type '{field_reference}' in content: {dict_to_validate}")
-                else:
-                    undefined_reference_error_message = f"Undefined type '{field_reference}' referenced: {dict_to_validate}"
-                    reference_lexeme = definition_under_test.get_lexeme_with_value(field_reference)
-                    logging.debug(undefined_reference_error_message)
+        # dict_to_validate is expected to be the enum field including the field name and value
 
-                    if reference_lexeme:
-                        findings.add_error_finding(
-                            definition_under_test, undefined_reference_error_message, PLUGIN_NAME, reference_lexeme
-                        )
-                    else:
-                        logging.debug(f"Value '{field_reference}' doesn't exist in definition. Likely an extension value.")
+        enum_value, *_ = dict_to_validate.values()
+        defined_values = target_schema_definition.get_values()
 
+        if enum_value not in defined_values:
+            undefined_enum_value = f"Undefined enum value '{enum_value}' referenced in: {definition_under_test.name}"
+            reference_lexeme = definition_under_test.get_lexeme_with_value(enum_value)
+            logging.debug(undefined_enum_value)
+
+            if reference_lexeme:
+                findings.add_error_finding(
+                    definition_under_test, undefined_enum_value, PLUGIN_NAME, reference_lexeme
+                )
             else:
-                missing_field_in_dictionary = f"Missing field 'type' in validation content dictionary: {dict_to_validate}"
-                logging.debug(missing_field_in_dictionary)
-                name_lexeme = definition_under_test.get_lexeme_with_value(definition_under_test.name)
+                logging.debug(f"Value '{enum_value}' doesn't exist in definition.")
 
-                if not name_lexeme:
-                    name_lexeme, *_ = definition_under_test.lexemes
-                    name_lexeme = name_lexeme or Lexeme(
-                        SourceLocation(0, 0, 0, 0), definition_under_test.source.uri, definition_under_test.name
-                    )
-                    logging.error(f"Definition '{definition_under_test.name}' is missing its name lexeme.")
-
-                findings.add_error_finding(definition_under_test, missing_field_in_dictionary, PLUGIN_NAME, name_lexeme)
-
-    dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)
+    dicts_to_test = get_fields_by_enum_type(definition_under_test, target_schema_definition, language_context)
     list(map(validate_dict, dicts_to_test))
 
     return ValidatorResult([definition_under_test], findings)
