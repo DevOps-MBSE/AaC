@@ -100,7 +100,9 @@ class TestGenPlantUml(ActiveContextTestCase):
             assert_plugin_success(result)
 
             filename = _convert_aac_filepath_to_filename(plugin_yaml.name)
-            expected_puml_file_path = _get_generated_file_name(filename, OBJECT_STRING, TEST_PUML_SERVICE_TWO_TYPE, temp_directory)
+            expected_puml_file_path = _get_generated_file_name(
+                filename, OBJECT_STRING, TEST_PUML_SERVICE_TWO_TYPE, temp_directory
+            )
 
             temp_directory_files = os.listdir(full_output_dir)
 
@@ -280,6 +282,9 @@ TEST_PUML_DATA_B_TYPE = "DataB"
 TEST_PUML_DATA_C_TYPE = "DataC"
 TEST_PUML_USE_CASE_ONE_TITLE = "Nominal flow within the system usecase one."
 TEST_PUML_USE_CASE_TWO_TITLE = "Request/response flow usecase two."
+TEST_PUML_BEHAVIOR_ONE_NAME = f"Process {TEST_PUML_DATA_A_TYPE} Request to {TEST_PUML_DATA_C_TYPE} Response"
+TEST_PUML_BEHAVIOR_TWO_NAME = f"Process {TEST_PUML_DATA_A_TYPE} Request"
+TEST_PUML_BEHAVIOR_THREE_NAME = f"Process {TEST_PUML_DATA_B_TYPE} Request"
 
 TEST_PUML_ARCH_YAML = f"""
 model:
@@ -291,7 +296,7 @@ model:
     - name: {TEST_PUML_SERVICE_TWO_NAME}
       type: {TEST_PUML_SERVICE_TWO_TYPE}
   behavior:
-    - name: Process {TEST_PUML_DATA_A_TYPE} Request to {TEST_PUML_DATA_C_TYPE} Response
+    - name: {TEST_PUML_BEHAVIOR_ONE_NAME}
       type: {BEHAVIOR_TYPE_REQUEST_RESPONSE}
       description: process {TEST_PUML_DATA_A_TYPE} and respond with {TEST_PUML_DATA_C_TYPE}
       input:
@@ -316,7 +321,7 @@ model:
 model:
   name: {TEST_PUML_SERVICE_ONE_TYPE}
   behavior:
-    - name: Process {TEST_PUML_DATA_A_TYPE} Request
+    - name: {TEST_PUML_BEHAVIOR_TWO_NAME}
       type: {BEHAVIOR_TYPE_REQUEST_RESPONSE}
       description: Process a {TEST_PUML_DATA_A_TYPE} request and return a {TEST_PUML_DATA_B_TYPE} response
       input:
@@ -345,7 +350,7 @@ model:
 model:
   name: {TEST_PUML_SERVICE_TWO_TYPE}
   behavior:
-    - name: Process {TEST_PUML_DATA_B_TYPE} Request
+    - name: {TEST_PUML_BEHAVIOR_THREE_NAME}
       type: {BEHAVIOR_TYPE_REQUEST_RESPONSE}
       description: Process a {TEST_PUML_DATA_B_TYPE} request and return a {TEST_PUML_DATA_C_TYPE} response
       input:
@@ -396,15 +401,15 @@ usecase:
     - step: The system has been invoked to doFlow which triggers {TEST_PUML_SERVICE_ONE_NAME}
       source: {TEST_PUML_SYSTEM_NAME}
       target: {TEST_PUML_SERVICE_ONE_NAME}
-      action: ProcessDataA
+      action: {TEST_PUML_BEHAVIOR_ONE_NAME}
     - step: {TEST_PUML_SERVICE_ONE_NAME} completes and calls {TEST_PUML_SERVICE_TWO_NAME} to continue the flow
       source: {TEST_PUML_SERVICE_ONE_NAME}
       target: {TEST_PUML_SERVICE_TWO_NAME}
-      action: ProcessDataB
+      action: {TEST_PUML_BEHAVIOR_TWO_NAME}
     - step: svc3 completes and provides the result back to {TEST_PUML_SYSTEM_NAME}
       source: {TEST_PUML_SERVICE_TWO_NAME}
       target: {TEST_PUML_SYSTEM_NAME}
-      action: doFlow
+      action: {TEST_PUML_BEHAVIOR_THREE_NAME}
 ---
 usecase:
   name: {TEST_PUML_USE_CASE_TWO_TITLE}
@@ -418,9 +423,9 @@ usecase:
     - step: {TEST_PUML_SERVICE_ONE_NAME} makes a request for data from {TEST_PUML_SERVICE_TWO_NAME}
       source: {TEST_PUML_SERVICE_ONE_NAME}
       target: {TEST_PUML_SERVICE_TWO_NAME}
-      action: sendRequestToServiceTwo
+      action: {TEST_PUML_BEHAVIOR_TWO_NAME}
     - step: {TEST_PUML_SERVICE_TWO_NAME} completes and provides the result back to {TEST_PUML_SERVICE_ONE_NAME}
       source: {TEST_PUML_SERVICE_TWO_NAME}
       target: {TEST_PUML_SERVICE_ONE_NAME}
-      action: respondToServiceOne
+      action: {TEST_PUML_BEHAVIOR_THREE_NAME}
 """

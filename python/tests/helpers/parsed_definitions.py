@@ -156,7 +156,12 @@ def create_enum_definition(name: str, values: list[str]):
 
 
 def create_schema_definition(
-    name: str, root: str = "", description: str = "", fields: list[dict] = [], validations: list[dict] = [], inherits: list[str] = []
+    name: str,
+    root: str = "",
+    description: str = "",
+    fields: list[dict] = [],
+    validations: list[dict] = [],
+    inherits: list[str] = [],
 ):
     """Return a simulated schema definition."""
     definition_dict = {DEFINITION_FIELD_NAME: name}
@@ -179,7 +184,7 @@ def create_schema_definition(
     return create_definition(ROOT_KEY_SCHEMA, name, definition_dict)
 
 
-def create_usecase_definition(name: str, description: str, participants: list[dict] = [], steps: list[dict] = []):
+def create_usecase_definition(name: str, description: str = "", participants: list[dict] = [], steps: list[dict] = []):
     """Return a simulated usecase definition."""
     definition_dict = {
         DEFINITION_FIELD_NAME: name,
