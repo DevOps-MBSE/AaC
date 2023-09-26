@@ -339,8 +339,7 @@ class LanguageContext:
         Returns:
             A boolean indicating if the string matches an enum type defined in the context.
         """
-        definition = self.get_definition_by_name(type)
-        return definition.is_enum() if definition else False
+        return type in self.get_enum_types()
 
     def is_primitive_type(self, type: str) -> bool:
         """
