@@ -92,7 +92,7 @@ def get_fields_by_enum_type(source_definition: Definition, target_enum_type: Def
 
     def _get_enum_fields(schema_definition: Definition, definition_dict: dict):
 
-        schema_defined_fields = schema_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS) or []
+        schema_defined_fields = schema_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS, [])
         schema_defined_fields_dict = {field.get(DEFINITION_FIELD_NAME): field for field in schema_defined_fields}
         field_names_to_traverse = set(schema_defined_fields_dict.keys()).intersection(set(definition_dict.keys()))
 
@@ -101,7 +101,7 @@ def get_fields_by_enum_type(source_definition: Definition, target_enum_type: Def
             field_schema_definition = context.get_definition_by_name(field_type)
 
             if field_schema_definition and not field_schema_definition.is_enum():
-                field_content = definition_dict.get(field_name) or []
+                field_content = definition_dict.get(field_name, [])
 
                 # If the field type isn't an array type, package it as a one element list.
                 if not is_array_type(field_type):

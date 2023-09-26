@@ -41,9 +41,7 @@ def validate_enums(
             logging.debug(undefined_enum_value)
 
             if reference_lexeme:
-                findings.add_error_finding(
-                    definition_under_test, undefined_enum_value, PLUGIN_NAME, reference_lexeme
-                )
+                findings.add_error_finding(definition_under_test, undefined_enum_value, PLUGIN_NAME, reference_lexeme)
             else:
                 logging.debug(f"Value '{enum_value}' doesn't exist in definition.")
 
