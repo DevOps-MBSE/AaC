@@ -5,9 +5,7 @@ from aac.plugins.validators.enum_values._validate_enums import validate_enums
 from aac.validate import validated_definition, ValidationError
 
 from tests.active_context_test_case import ActiveContextTestCase
-from tests.helpers.assertion import assert_definitions_equal
-from tests.helpers.context import get_core_spec_context
-from tests.helpers.parsed_definitions import create_behavior_entry, create_field_entry, create_model_definition, create_schema_definition
+from tests.helpers.parsed_definitions import create_behavior_entry, create_model_definition
 
 
 class TestEnumValuesPlugin(ActiveContextTestCase):
@@ -49,7 +47,7 @@ class TestEnumValuesPlugin(ActiveContextTestCase):
                 pass
         except Exception as validation_result:
             self.assertIsNotNone(validation_result)
-            self.assertTrue(isinstance(validation_result, ValidationError))
+            self.assertIsInstance(validation_result, ValidationError)
             validation_message = str(validation_result)
 
         # Setting up an assert outside the exception catch to demonstrate successful exception catching because assertRaise is inadequate.

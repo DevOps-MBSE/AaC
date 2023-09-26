@@ -10,10 +10,9 @@ from aac.lang.constants import (
     DEFINITION_FIELD_ARGUMENTS,
     DEFINITION_FIELD_FIELDS,
     DEFINITION_FIELD_TYPE,
-    DEFINITION_NAME_ENUM,
 )
 from aac.lang.definitions.definition import Definition
-from aac.lang.definitions.schema import get_definition_schema_components, get_definition_schema, get_schema_defined_fields
+from aac.lang.definitions.schema import get_definition_schema_components, get_definition_schema
 from aac.lang.definitions.type import remove_list_type_indicator, is_array_type
 from aac.lang.hierarchy import get_definition_ancestry
 from aac.lang.language_context import LanguageContext

@@ -5,6 +5,7 @@ from nose2.tools import params
 
 from aac.io import parser
 from aac.lang.constants import (
+    BEHAVIOR_TYPE_REQUEST_RESPONSE,
     DEFINITION_FIELD_COMMANDS,
     DEFINITION_FIELD_HELP_TEXT,
     DEFINITION_FIELD_INPUT,
@@ -87,7 +88,7 @@ model:
     description: test model
     behavior:
         - name: {behavior_name_1}
-          type: command
+          type: {BEHAVIOR_TYPE_REQUEST_RESPONSE}
           description: {behavior_description_1}
           acceptance:
             - scenario: {behavior_scenario_1}
@@ -157,7 +158,7 @@ model:
     description: test model
     behavior:
         - name: {behavior_name_1}
-          type: command
+          type: {BEHAVIOR_TYPE_REQUEST_RESPONSE}
           description: {behavior_description_1}
           acceptance:
             - scenario: {behavior_scenario_1}

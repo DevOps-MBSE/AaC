@@ -1,8 +1,6 @@
 import logging
 
 from aac.lang.definitions.definition import Definition
-from aac.lang.definitions.lexeme import Lexeme
-from aac.lang.definitions.source_location import SourceLocation
 from aac.lang.definitions.structure import get_fields_by_enum_type
 from aac.lang.language_context import LanguageContext
 from aac.plugins.validators import ValidatorFindings, ValidatorResult

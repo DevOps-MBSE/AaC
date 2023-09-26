@@ -1,5 +1,6 @@
 import os
 
+from aac.lang.constants import BEHAVIOR_TYPE_REQUEST_RESPONSE
 from aac.plugins.first_party.gen_json import (
     get_plugin,
     _get_plugin_definitions,
@@ -55,13 +56,13 @@ class TestGenJson(ActiveContextTestCase):
         [assert_definitions_equal(d1, d2) for d1, d2 in zip(plugin.contributions.get_definitions(), _get_plugin_definitions())]
 
 
-TEST_ARCH_YAML_STRING = """
+TEST_ARCH_YAML_STRING = f"""
 model:
   name: Test_model
   description: A Test Yaml file.
   behavior:
     - name: Test
-      type: command
+      type: {BEHAVIOR_TYPE_REQUEST_RESPONSE}
       description: Tests Yaml
       input:
         - name: architecture_file
