@@ -280,6 +280,10 @@ schema:
       type: string
       description: |
         The yaml key used to represent the type when defined at the root of the AaC model file.
+    - name: description
+      type: string
+      description: |
+        Allows users to add some text to describe their definition.
     - name: inherits
       type: reference[]
       description: |
@@ -298,6 +302,7 @@ schema:
         A list of requirements that define the characteristics to be satisfied by the schema.
   validation:
     - name: Root key is defined
+    - name: Disallow undefined fields
     - name: Required fields are present
       arguments:
         - name
@@ -432,6 +437,7 @@ schema:
         - participants
         - steps
     - name: Usecase sources and targets refer to defined participants
+    - name: Usecase actions refer to defined model behaviors
 ---
 schema:
   name: Step
@@ -624,8 +630,6 @@ schema:
       type: SpecSection[]
     - name: requirements
       type: Requirement[]
-  required:
-    - name
   validation:
     - name: Required fields are present
       arguments:
@@ -640,8 +644,6 @@ schema:
       type: string
     - name: requirements
       type: Requirement[]
-  required:
-    - name
   validation:
     - name: Required fields are present
       arguments:
@@ -660,9 +662,6 @@ schema:
       type: RequirementReference
     - name: attributes
       type: RequirementAttribute[]
-  required:
-    - id
-    - shall
   validation:
     - name: Required fields are present
       arguments:
@@ -679,9 +678,6 @@ schema:
       type: string
     - name: value
       type: string
-  required:
-    - name
-    - value
   validation:
     - name: Required fields are present
       arguments:
@@ -693,8 +689,6 @@ schema:
   fields:
     - name: ids
       type: string[]
-  required:
-    - ids
   validation:
     - name: Required fields are present
       arguments:

@@ -77,6 +77,7 @@ class TestGenerateDesignDocumentPlugin(ActiveContextTestCase):
         [self.assertIn(pattern, markdown) for pattern in patterns]
 
 
+TEST_BEHAVIOR_NAME = "do something great"
 TEST_MODEL = f"""
 schema:
   name: Vector
@@ -114,7 +115,7 @@ model:
   name: test model
   description: a system to do things
   behavior:
-    - name: do something great
+    - name: {TEST_BEHAVIOR_NAME}
       description: have the system do something great
       type: {BEHAVIOR_TYPE_PUBLISH_SUBSCRIBE}
       input:
@@ -163,11 +164,7 @@ usecase:
     - step: move an object from one place to another
       source: model1
       target: model2
-      action: move from point alpha to point beta
-    - step: move an object back to it's original location
-      source: model2
-      target: model1
-      action: move from point beta back to point alpha
+      action: {TEST_BEHAVIOR_NAME}
 """
 
 TEST_MODEL_2 = """

@@ -23,7 +23,7 @@ jobs:
   python_cross_platform:
     name: Python Cross Platform Build & Test
     uses: ./.github/workflows/python-cross-platform-support.yml
-
+ 
 # Commenting out from main branch workflow till permissions aspect can be resolved for 
 # reconnecting automated page deployment. The below workflow is able to be ran manually
 # allowing for the site to stay up to date. 
