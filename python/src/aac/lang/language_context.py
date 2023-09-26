@@ -314,7 +314,7 @@ class LanguageContext:
             from active plugins and user files.
         """
         enum_definitions = self.get_definitions_by_root_key(ROOT_KEY_ENUM)
-        return [enum.get_name() for enum in enum_definitions]
+        return [enum.name for enum in enum_definitions]
 
     def get_defined_types(self) -> list[str]:
         """
