@@ -298,10 +298,23 @@ class LanguageContext:
             A list of strings, one entry for each primitive type defined in the LanguageContext.
 
             These types may differ from those provided by the core spec since the LanguageContext applies definitions
-            from active plugins and user files, which may extend the set of root keys.
+            from active plugins and user files.
             See :py:func:`aac.spec.get_primitives()` for the list of root keys provided by the unaltered core AaC DSL.
         """
         return deepcopy(self.get_primitives_definition().get_values()) or []
+
+    def get_enum_types(self) -> list[str]:
+        """
+        Get the list of enum types as defined in the LanguageContext.
+
+        Returns:
+            A list of enum type names, one entry for each enum type defined in the LanguageContext.
+
+            These types may differ from those provided by the core spec since the LanguageContext applies definitions
+            from active plugins and user files.
+        """
+        enum_definitions = self.get_definitions_by_root_key(ROOT_KEY_ENUM)
+        return [enum.get_name() for enum in enum_definitions]
 
     def get_defined_types(self) -> list[str]:
         """
