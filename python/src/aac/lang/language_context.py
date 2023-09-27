@@ -623,12 +623,7 @@ class LanguageContext:
                 return object.get("aac_version"), object.get("plugins")
 
         if lexists(file_uri):
-            version, plugins = decode_state_file()
-
-            if version != __version__:
-                raise StateFileError(
-                    f"Version mismatch: State file written using version {version}; current AaC version {__version__}"
-                )
+            _, plugins = decode_state_file()
 
             # Make sure to clear the state of the context before importing a state file.
             self.clear()
