@@ -65,7 +65,7 @@ def generate(aac_file: str, generator_file: str, code_output: str, test_output: 
                 for source_data_instance, source_data_structure in source_data.items():
                     output = jinja_template.render(source_data_structure)
                     
-                    # TODO: write output to files to the traget in the template, respecting the overwrite indicator
+                    # write output to files to the traget in the template, respecting the overwrite indicator
                     root_out_dir = code_out_dir
                     if generator.output_target == GeneratorOutputTarget.TEST:
                         root_out_dir = test_out_dir

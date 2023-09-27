@@ -1,0 +1,22 @@
+---
+generator:
+  name: Gen-Plugin Generator
+  description: A collection of code and test generation actions for AaC plugins
+  sources:
+    - name: AaC Project Generation
+      data_source: enum
+      templates:
+        - name: PythonEnum
+          description: Generates a Python Enum class
+          template_file: ./templates/enum.jinja2
+          overwrite: OVERWRITE
+          helper_functions:
+            - name: asd
+              description: asd
+              package: asdf
+              python_file: asfd
+              function: asdf
+          output_target: CODE
+          output_path_uses_data_source_package: true
+          output_file_extension: py
+        

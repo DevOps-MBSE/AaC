@@ -1,11 +1,12 @@
 """The entry-point for the command line interface for the aac tool."""
 
-import sys
+import sys, yaml
 from click import Argument, Command, Option, ParamType, Parameter, Path, UNPROCESSED, group, secho, types
 
 from aac.execute.plugin_runner import AacCommand, AacCommandArgument, PluginRunner
 from aac.execute.aac_execution_result import ExecutionResult
 from aac.context.language_context import LanguageContext
+from aac.io.parser._parser_error import ParserError
 
 
 @group(context_settings=dict(help_option_names=["-h", "--help"]))
@@ -86,8 +87,22 @@ def get_commands() -> list[AacCommand]:
             ))
     return result
 
-runners: list[PluginRunner] = active_context.get_plugin_runners()
-for runner in runners:
-    commands = [to_click_command(cmd) for cmd in get_commands()]
-    for command in commands:
-        cli.add_command(command)
+try:
+    runners: list[PluginRunner] = active_context.get_plugin_runners()
+    for runner in runners:
+        commands = [to_click_command(cmd) for cmd in get_commands()]
+        for command in commands:
+            cli.add_command(command)
+except ParserError as error:
+    exc = error.yaml_error
+    print (f"Error while parsing YAML file: {error.source}")
+    if hasattr(exc, 'problem_mark'):
+        if exc.context != None:
+            print ('  parser says\n' + str(exc.problem_mark) + '\n  ' +
+                str(exc.problem) + ' ' + str(exc.context) +
+                '\nPlease correct data and retry.')
+        else:
+            print ('  parser says\n' + str(exc.problem_mark) + '\n  ' +
+                str(exc.problem) + '\nPlease correct data and retry.')
+    else:
+        print (f"Something went wrong while parsing yaml file: {error.source}")

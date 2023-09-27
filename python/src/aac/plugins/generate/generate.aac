@@ -1,7 +1,7 @@
 plugin:
   name: Generate Plugin
-  description: An AaC plugin that generates content from an AaC file based on provided
-  generator templates.
+  description: |
+    An AaC plugin that generates content from an AaC file based on provided generator templates.
   commands:
     - name: generate
       helpText: Performs content generation based on user defined templates.

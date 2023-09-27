@@ -7,8 +7,21 @@ from aac.execute import hookimpl
 from aac.context.language_context import LanguageContext
 # from aac.lang.plugin import Plugin
 from aac.execute.plugin_runner import PluginRunner
+from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus
 
 GEN_PLUGIN_AAC_FILE_NAME = "generate.aac"
+
+def run_generate(aac_plugin_file: str, generator_file: str, code_output: str, test_output: str, doc_output: str, no_prompt: bool) -> ExecutionResult:
+    """Run the AaC Gen-Plugin command."""
+
+    result = ExecutionResult(plugin_name, "generate", ExecutionStatus.SUCCESS, [])
+    generate_result = generate(aac_plugin_file, generator_file, code_output, test_output, doc_output, no_prompt)
+    if not generate_result.is_success():
+        return generate_result
+    else:
+        result.add_messages(generate_result.messages)
+
+    return result
 
 @hookimpl
 def register_plugin() -> None:
@@ -30,6 +43,6 @@ def register_plugin() -> None:
         active_context.parse_and_load(file_to_load)
     
     plugin_runner = PluginRunner(plugin_definition=generate_plugin_definition)
-    plugin_runner.add_command_callback("generate", generate)
+    plugin_runner.add_command_callback("generate", run_generate)
     
     active_context.register_plugin_runner(plugin_runner)

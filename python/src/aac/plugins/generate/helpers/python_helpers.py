@@ -1,4 +1,5 @@
 from aac.context.language_context import LanguageContext
+from aac import __version__
 
 # build out jinja2 utility functions
 def get_python_name(name: str) -> str:
@@ -14,3 +15,6 @@ def get_python_primitive(aac_primitive_name: str) -> str:
 
 def get_path_from_package(package: str) -> str:
     return package.replace(".", "/")
+
+def aac_version() -> str:
+    return __version__

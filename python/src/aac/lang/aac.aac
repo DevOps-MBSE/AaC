@@ -57,6 +57,7 @@ modifier:
 ---
 schema:
   name: Enum
+  package: aac.lang
   extends: AacType
   root: enum
   description: |
@@ -235,7 +236,7 @@ schema:
         A brief descritpion of your project.  This will initialize your project read me file.
     - name: uses
       type: ProjectDependency[]
-      descriptioN: |
+      description: |
         A list of pypi dependencies to include in the project.  This can be particularly
         useful if you're leveraging other AaC plugins in your project.  You will get the AaC
         core project by default, so no need to include it here.
@@ -329,13 +330,13 @@ schema:
   package: aac.lang
   description: |
     The association of an AaC type to a generator template.
-  fieds:
+  fields:
     - name: name
-      string: string
+      type: string
       description: Name of the allocation.
       is_required: true
     - name: data_source
-      string: reference(schema.root)
+      type: reference(schema.root)
       description: The root key of data items to be provided to the templates.
       is_required: true
     - name: templates

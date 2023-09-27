@@ -13,7 +13,7 @@ class GeneratorTemplate():
     description: Optional[str] = attrib(init=attr.ib(), validator=validators.optional(validators.instance_of(str)))
     template_file: str = attrib(init=attr.ib(), validator=validators.instance_of(str))
     overwrite: OverwriteOption = attrib(init=attr.ib(), validator=validators.instance_of(OverwriteOption))
-    helper_functiosn: list[JinjaHelperFunction] = attrib(init=attr.ib(), validator=validators.instance_of(list[JinjaHelperFunction]))
+    helper_functions: list[JinjaHelperFunction] = attrib(init=attr.ib(), validator=validators.instance_of(list[JinjaHelperFunction]))
     output_target: GeneratorOutputTarget = attrib(init=attr.ib(), validator=validators.instance_of(GeneratorOutputTarget))
     output_path_uses_data_source_package: bool = attrib(init=attr.ib(), validator=validators.instance_of(bool))
     output_file_prefix: Optional[str] = attrib(init=attr.ib(), validator=validators.optional(validators.instance_of(str)))

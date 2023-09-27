@@ -59,10 +59,10 @@ def parse_yaml(source: str, content: str) -> list[dict]:
         models = [model for model in load_all(content, Loader=SafeLoader) if model]
         _error_if_not_yaml(source, content, models)
         _error_if_not_complete(source, content, models)
-    except YAMLParserError as error:
-        error_messages = _yaml_error_messages("parser", error, content)
+    except YAMLParserError as exc:
+        error_messages = _yaml_error_messages("parser", exc, content)
         _log_yaml_error(source, error_messages)
-        raise ParserError(source, error_messages)
+        raise ParserError(source, error_messages, exc)
     except YAMLScannerError as error:
         error_messages = _yaml_error_messages("scanner", error, content)
         _log_yaml_error(source, error_messages)
@@ -84,7 +84,7 @@ def _error_if_not_yaml(source, content, models):
 
     # Iterate over each model and test if it is considered a valid model.
     if not all(map(is_model, models)):
-        raise ParserError(source, ["Provided content was not YAML", content])
+        raise ParserError(source, ["Provided content was not YAML.  Ensure file exists. ", content])
 
 
 def _error_if_not_complete(source, content, models):
