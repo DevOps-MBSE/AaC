@@ -4,7 +4,6 @@ Feature: {{feature.description}}
     {% for scenario in scenarios %}
 
     Scenario: {{scenario.description}}
-
     {% set given_joiner = joiner("And") %}
     {% for given in scenario.givens %}
     {{given_joiner() or "Given"}} {{given}}
