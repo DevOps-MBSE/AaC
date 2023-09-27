@@ -27,7 +27,6 @@ from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.extensions import apply_extension_to_definition, remove_extension_from_definition
 from aac.lang.definitions.type import remove_list_type_indicator
 from aac.lang.language_error import LanguageError
-from aac.persistence.state_file_error import StateFileError
 from aac.plugins.contributions.contribution_points import DefinitionValidationContribution, PrimitiveValidationContribution
 from aac.plugins.plugin import Plugin
 from aac.plugins.plugin_manager import get_plugins
@@ -623,12 +622,7 @@ class LanguageContext:
                 return object.get("aac_version"), object.get("plugins")
 
         if lexists(file_uri):
-            version, plugins = decode_state_file()
-
-            if version != __version__:
-                raise StateFileError(
-                    f"Version mismatch: State file written using version {version}; current AaC version {__version__}"
-                )
+            _, plugins = decode_state_file()
 
             # Make sure to clear the state of the context before importing a state file.
             self.clear()
