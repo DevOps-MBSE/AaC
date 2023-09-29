@@ -10,13 +10,41 @@ generator:
           description: Generates a Python Enum class
           template_file: ./templates/enum.jinja2
           overwrite: OVERWRITE
-          helper_functions:
-            - name: asd
-              description: asd
-              package: asdf
-              python_file: asfd
-              function: asdf
           output_target: CODE
           output_path_uses_data_source_package: true
+          output_file_extension: py
+    - name: AaC Plugin Init Generation
+      data_source: plugin
+      templates:
+        - name: PluginInit
+          description: Generates a Python init file for a plugin
+          template_file: ./templates/__init__.jinja2
+          overwrite: OVERWRITE
+          helper_functions:
+            - name: Get python string
+              description: Converts a string to a python suitable value
+              package: aac.plugins.generate.helpers
+              module: python_helpers
+              function: get_python_name
+          output_target: CODE
+          output_path_uses_data_source_package: true
+          output_file_name: __init__
+          output_file_extension: py
+    - name: AaC Plugin Impl Generation
+      data_source: plugin
+      templates:
+        - name: PluginImpl
+          description: Generates a Python implementation file for a plugin
+          template_file: ./templates/plugin_impl.jinja2
+          overwrite: SKIP
+          helper_functions:
+            - name: Get python string
+              description: Converts a string to a python suitable value
+              package: aac.plugins.generate.helpers
+              module: python_helpers
+              function: get_python_name
+          output_target: CODE
+          output_path_uses_data_source_package: true
+          output_file_suffix: _impl
           output_file_extension: py
         

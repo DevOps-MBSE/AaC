@@ -1,6 +1,7 @@
 """AaC Plugin implementation module for the Version plugin."""
 
 from os import path
+import ast
 import importlib
 from typing import Callable, Any
 import filecmp
@@ -9,13 +10,14 @@ import shutil
 from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus, OperationCancelled, ExecutionError
 from jinja2 import Environment, FileSystemLoader, Template
 from aac.context.language_context import LanguageContext
+from aac.context.definition import Definition
 from aac.lang.generatorsource import GeneratorSource
 from aac.lang.generatortemplate import GeneratorTemplate
 from aac.lang.generatoroutputtarget import GeneratorOutputTarget
 from aac.lang.overwriteoption import OverwriteOption
-from aac.plugins.generate.helpers.python_helpers import get_path_from_package
+from aac.plugins.generate.helpers.python_helpers import get_path_from_package, get_python_name
 
-plugin_name = "Generate Plugin"
+plugin_name = "Generate"
 
 
 def generate(aac_file: str, generator_file: str, code_output: str, test_output: str, doc_output: str, no_prompt: bool) -> ExecutionResult:
@@ -39,15 +41,16 @@ def generate(aac_file: str, generator_file: str, code_output: str, test_output: 
         generator = definition.instance
 
         # go through each generator source and get data from parsed_definitions based on from_source
+         
         for source in generator.sources:
-            source_data = {}
+            source_data_definitions: list[Definition] = []
             for parsed_definition in parsed_definitions:
-                if parsed_definition.get_root_key() == source.from_source:
-                    parsed_instance = parsed_definition.instance
-                    source_data[parsed_instance] = (parsed_definition.structure)
+                if parsed_definition.get_root_key() == source.data_source:
+                    source_data_definitions.append(parsed_definition)
 
-            if not source_data or len(source_data) == 0:
-                return ExecutionResult(plugin_name, "generate", ExecutionStatus.GENERAL_FAILURE, [f"Could not find source data for generator source {source.from_source}"])
+            if not source_data_definitions or len(source_data_definitions) == 0:
+                # no data for this particular generator
+                continue
             
 
             # go through each generator template
@@ -56,60 +59,62 @@ def generate(aac_file: str, generator_file: str, code_output: str, test_output: 
                 # figure out how to load func_dict into the jinja2 environment
                 helper_functions: dict[str, Callable] = {}
                 for helper in template.helper_functions:
-                    helper_functions[helper.name] = get_callable(helper.package, helper.file, helper.function)
+                    helper_functions[helper.function] = get_callable(helper.package, helper.module, helper.function)
 
                 # generate code using the template and source
-                template_abs_path = path.abspath(path.join(generator_file, template.template_file))
+                template_abs_path = path.abspath(path.join(path.dirname(generator_file), template.template_file))
 
+                print(f"DEBUG:  Creating jinja template {template_abs_path} with helpers {helper_functions}")
                 jinja_template = load_template(template_abs_path, helper_functions)
-                for source_data_instance, source_data_structure in source_data.items():
+                for source_data_def in source_data_definitions:
+                    source_data_structure = source_data_def.structure
+                    source_data_instance = source_data_def.instance
+                    print(f"DEBUG:  generating jinja with structure: \n{source_data_structure}")
                     output = jinja_template.render(source_data_structure)
+
+                    # print(f"DEBUG:  jinja generated output = {output}")
                     
                     # write output to files to the traget in the template, respecting the overwrite indicator
                     root_out_dir = code_out_dir
-                    if generator.output_target == GeneratorOutputTarget.TEST:
+                    if template.output_target == GeneratorOutputTarget.TEST:
                         root_out_dir = test_out_dir
-                    elif generator.output_target == GeneratorOutputTarget.DOC:
+                    elif template.output_target == GeneratorOutputTarget.DOC:
                         root_out_dir = doc_out_dir
-                    output_file_path = get_output_file_path(root_out_dir, generator, source_data_instance)
+                    output_file_path = get_output_file_path(root_out_dir, template, source_data_instance)
+
 
                     # render the template and write contents to output_file_path
-                    with open(output_file_path, "w") as output_file:
-                        if generator.overwrite == OverwriteOption.OVERWRITE:
-                            if path.exists(output_file_path):
-                                # make a backup first
-                                backup_file_path = f"{output_file_path}.generate_backup"
-                                with open(backup_file_path, "w") as backup_file:
-                                    backup_file.write(output_file.read())
+                    print(f"DEBUG:  rendering in mode {template.overwrite}")
+                    if template.overwrite in [OverwriteOption.OVERWRITE]:
+                        print(f"DEBUG:  writing {output_file_path} from the overwrite logic section")
+                        with open(output_file_path, "w") as output_file:
                             output_file.write(output)
-                        elif generator.overwrite == OverwriteOption.MERGE:
-                            if path.exists(output_file_path):
-                                merge_files(output, output_file_path, output_file_path)
-                            else:
+                            output_file.close()
+                    if template.overwrite in [OverwriteOption.SKIP]:
+                        # this is for the skip option, so only write if file doesn't exist
+                        if not path.exists(output_file_path):
+                            print(f"DEBUG:  writing {output_file_path} from the skip logic section")
+                            with open(output_file_path, "w") as output_file:
                                 output_file.write(output)
-                        else:
-                            if not path.exists(output_file_path):
-                                output_file.write(output)
-                        
-                        output_file.close()
+                                output_file.close()
     
     return ExecutionResult(plugin_name, "generate", ExecutionStatus.SUCCESS, [])
 
 def get_output_directories(aac_plugin_file: str, code_output: str, test_output: str, doc_output: str, no_prompt: bool) -> tuple[str, str, str]:
 
-    code_out: str = "."
-    test_out: str = "."
-    doc_out: str = "."
+    code_out: str = code_output
+    test_out: str = test_output
+    doc_out: str = doc_output
     
     if not code_output or len(code_output) == 0:
         aac_plugin_path = path.abspath(aac_plugin_file)
         if not path.exists(aac_plugin_file):
             raise ExecutionError(f"The provided AaC Plugin file does not exist: {aac_plugin_file}")
         code_out = path.dirname(aac_plugin_path)
-    if not test_output or len(test_output) == 0:
+    if not test_out or len(test_out) == 0:
         test_out = code_out.replace("src", "tests")
-    if not doc_output or len(doc_output) == 0:
-        doc_out_out = code_out.replace("src", "docs")
+    if not doc_out or len(doc_out) == 0:
+        doc_out = code_out.replace("src", "docs")
 
     if not no_prompt:
         print("AaC Gen-Plugin will generate code and tests in the following directories:")
@@ -126,18 +131,20 @@ def get_output_directories(aac_plugin_file: str, code_output: str, test_output: 
 
     return (code_out, test_out, doc_out)
 
-def get_output_file_path(root_output_directory: str, generator: GeneratorTemplate, source_instance: Any) -> str:
+def get_output_file_path(root_output_directory: str, generator_template: GeneratorTemplate, source_instance: Any) -> str:
     result = root_output_directory
-    if generator.output_path_uses_data_source_package and source_instance.package:
+    if generator_template.output_path_uses_data_source_package and source_instance.package:
         result = path.join(result, get_path_from_package(source_instance.package))
     file_name = ""
-    if generator.output_file_prefix:
-        file_name = generator.output_file_prefix
-    if source_instance.name:
-        file_name = f"{file_name}{source_instance.name}"
-    if generator.output_file_suffix:
-        file_name = f"{file_name}{generator.output_file_suffix}"
-    file_name = f"{file_name}.{generator.output_file_extension}"
+    if generator_template.output_file_prefix:
+        file_name = generator_template.output_file_prefix
+    if generator_template.output_file_name:
+        file_name = f"{file_name}{generator_template.output_file_name}"
+    elif source_instance.name:
+        file_name = f"{file_name}{get_python_name(source_instance.name)}"
+    if generator_template.output_file_suffix:
+        file_name = f"{file_name}{generator_template.output_file_suffix}"
+    file_name = f"{file_name}.{generator_template.output_file_extension}"
     result = path.join(result, file_name)
     return path.abspath(result)
 
@@ -152,21 +159,9 @@ def load_template(template_abs_path: str, helper_functions: dict[str, Callable] 
     template = env.get_template(template_abs_path)
     return template
 
-def backup_file(file_path: str):
+def backup_file(file_path: str) -> str:
     backup_file_path = f"{file_path}.generate_backup"
-    with open(file_path, "w") as input_file:
+    with open(file_path, "r") as input_file:
         with open(backup_file_path, "w") as backup_file:
             backup_file.write(input_file.read())
-
-def merge_files(template_output: str, existing_file_path: str, output_file_path: str):
-    backup_file(existing_file_path)
-    if filecmp.cmp(template_output, existing_file_path):
-        # The template output is identical to the existing file, so just copy the existing file to the output file
-        shutil.copy(existing_file_path, output_file_path)
-    else:
-        # The template output is different from the existing file, so merge the changes
-        with open(template_output, 'r') as template_file, open(existing_file_path, 'r') as existing_file, open(output_file_path, 'w') as output_file:
-            template_lines = template_file.readlines()
-            existing_lines = existing_file.readlines()
-            diff = difflib.unified_diff(existing_lines, template_lines, fromfile=existing_file_path, tofile=output_file_path)
-            output_file.writelines(diff)
+    return backup_file_path

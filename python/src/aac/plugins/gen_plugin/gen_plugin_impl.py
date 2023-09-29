@@ -17,5 +17,5 @@ def gen_plugin(aac_plugin_file: str, code_output: str, test_output: str, doc_out
 
 
 def after_gen_plugin_generate(aac_plugin_file: str, code_output: str, test_output: str, doc_output: str, no_prompt: bool, generate: Callable) -> ExecutionResult:
-    gen_plugin_generator_file = path.abspath(path.join(__file__, "./gen_plugin_generator.aac"))
+    gen_plugin_generator_file = path.abspath(path.join(path.dirname(__file__), "./gen_plugin_generator.aac"))
     return generate(aac_plugin_file, gen_plugin_generator_file, code_output, test_output, doc_output, no_prompt)

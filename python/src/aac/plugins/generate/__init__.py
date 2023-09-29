@@ -33,16 +33,16 @@ def register_plugin() -> None:
     """
     
     active_context = LanguageContext()
-    generate_plugin_aac_file = join(dirname(__file__), GEN_PLUGIN_AAC_FILE_NAME)
-    definitions = active_context.parse_and_load(generate_plugin_aac_file)
+    generate_aac_file = join(dirname(__file__), GEN_PLUGIN_AAC_FILE_NAME)
+    definitions = active_context.parse_and_load(generate_aac_file)
     
-    generate_plugin_definition = [definition for definition in definitions if definition.name == plugin_name][0]
+    generate_definition = [definition for definition in definitions if definition.name == plugin_name][0]
 
-    plugin_instance = generate_plugin_definition.instance
+    plugin_instance = generate_definition.instance
     for file_to_load in plugin_instance.definition_sources:
         active_context.parse_and_load(file_to_load)
     
-    plugin_runner = PluginRunner(plugin_definition=generate_plugin_definition)
+    plugin_runner = PluginRunner(plugin_definition=generate_definition)
     plugin_runner.add_command_callback("generate", run_generate)
     
     active_context.register_plugin_runner(plugin_runner)

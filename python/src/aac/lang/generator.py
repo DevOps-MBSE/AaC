@@ -16,6 +16,6 @@ class Generator():
         description = None
         if "description" in data:
             description = data.pop("description")
-        sources_data = data.pop("commands", [])
+        sources_data = data.pop("sources", [])
         sources = [GeneratorSource.from_dict(source_data) for source_data in sources_data]
         return cls(description=description, sources=sources, **data)

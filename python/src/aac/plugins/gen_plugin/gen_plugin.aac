@@ -5,11 +5,12 @@ plugin:
     and quicker plugin development.
   commands:
     - name: gen-plugin
-      helpText: |
+      help_text: |
         Generate code and stubs for an AaC plugin.  Overwrites will backup 
         existing files to enable revert-plugin if needed.
       run_after:
-        - generate
+        - plugin: Generate
+          command: generate
       input:
         - name: aac-plugin-file
           type: file

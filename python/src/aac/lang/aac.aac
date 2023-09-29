@@ -268,8 +268,10 @@ schema:
   fields:
     - name: name
       type: string
+      is_required: true
     - name: package
       type: string
+      is_required: true
     - name: description
       type: description
     - name: commands
@@ -284,17 +286,17 @@ schema:
     - name: name
       type: string
       description: The name of the command.  This will be used by the CLI to invke the command.
-    - name: helpText
+    - name: help_text
       type: string
       description: |
         A description that will be displayed as help text when displaying
         command usage.
     - name: run_before
-      type: string[]
+      type: PluginCommandReference[]
       description: |
         A listing of plugin commands to run before this command.
     - name: run_after
-      type: string[]
+      type: PluginCommandReference[]
       description: |
         A listing of plugin commands to run before this command.
     - name: input
@@ -302,6 +304,23 @@ schema:
       description: |
         The list of all the fields that are inputs to the component when the
         command is executed.
+---
+schema:
+  name: PluginCommandReference
+  package: aac.lang
+  description: |
+    A plugin command reference that can be used to establish cross-plugin behaviors.
+  fields:
+    - name: plugin
+      type: string
+      description: |
+        The name of the plugin to reference.
+      is_required: true
+    - name: command
+      type: string
+      description: |
+        The name of the command to reference.
+      is_required: true
 ---
 schema:
   name: Generator
@@ -387,6 +406,10 @@ schema:
       type: string
       description: |
         The prefix to use when generating the output file name.
+    - name: output_file_name
+      type: string
+      description: |
+        Specify a file name to output.  If no name given, the default will be the plugin name.
     - name: output_file_suffix
       type: string
       description: |
@@ -402,7 +425,6 @@ enum:
   values:
     - OVERWRITE
     - SKIP
-    - MERGE
 ---
 schema:
   name: JinjaHelperFunction
@@ -425,10 +447,10 @@ schema:
       description: |
         The python package to be made available to the template.
       is_required: true
-    - name: python_file
+    - name: module
       type: string
       description: |
-        The path to the python file containing the function to be made available to the template.
+        The python module name containing the function to be made available to the template.
       is_required: true
     - name: function
       type: string

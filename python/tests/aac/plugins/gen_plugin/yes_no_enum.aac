@@ -1,0 +1,6 @@
+enum:
+  name:  YesNo
+  description: Just a simple yes/no enum
+  values:
+    - Yes
+    - NO

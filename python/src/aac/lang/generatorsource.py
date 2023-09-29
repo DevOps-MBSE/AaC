@@ -13,6 +13,6 @@ class GeneratorSource():
 
     @classmethod
     def from_dict(cls, data):
-        templates_data = data.pop("commands", [])
+        templates_data = data.pop("templates", [])
         templates = [GeneratorTemplate.from_dict(template_data) for template_data in templates_data]
         return cls(templates=templates, **data)

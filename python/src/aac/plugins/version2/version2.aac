@@ -1,0 +1,8 @@
+plugin:
+  name: Version2
+  package: aac.plugins.version2
+  description:  Just another version plugin.
+  commands:
+    - name: version2
+      help_text:  Just a dupe of version for testing purposes
+      

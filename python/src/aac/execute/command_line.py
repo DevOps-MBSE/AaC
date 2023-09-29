@@ -81,7 +81,7 @@ def get_commands() -> list[AacCommand]:
                     input.default))
             result.append(AacCommand(
                 plugin_command.name,
-                plugin_command.helpText,
+                plugin_command.help_text,
                 runner.command_to_callback[plugin_command.name],
                 arguments,
             ))

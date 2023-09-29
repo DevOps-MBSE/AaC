@@ -1,6 +1,7 @@
 import types
 from typing import Any, Optional
 from importlib import import_module
+from copy import deepcopy
 from os.path import join, dirname
 from aac.execute.plugin_runner import AacCommand
 from aac.execute.aac_execution_result import LanguageError
@@ -38,7 +39,7 @@ class LanguageContext(object):
     def get_python_module_name(name: str) -> str:
         return name.replace(" ", "_").replace("-", "_").lower()
 
-    # schema_name_to_module: dict[str, Any] = {}
+    # TODO: handle the type error that occurs when bad data is found
 
     # schema_defs_by_name = {}
     schema_defs_by_root = {}
@@ -86,7 +87,7 @@ class LanguageContext(object):
       class_obj = getattr(self.context_instance.schema_name_to_module[defining_schema_name], defining_schema_name)
       instance = None
       try:
-        instance = class_obj.from_dict(structure)
+        instance = class_obj.from_dict(deepcopy(structure))
       except TypeError as e:
         raise LanguageError(f"{e}\nCould not create instance of {defining_schema_name} with name {name} from structure: {structure}")
     

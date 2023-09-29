@@ -9,7 +9,7 @@ class JinjaHelperFunction():
     name: str = attrib(init=attr.ib(), validator=validators.instance_of(str))
     description: Optional[str] = attrib(init=attr.ib(), validator=validators.optional(validators.instance_of(str)))
     package: str = attrib(init=attr.ib(), validator=validators.instance_of(str))
-    python_file: str = attrib(init=attr.ib(), validator=validators.instance_of(str))
+    module: str = attrib(init=attr.ib(), validator=validators.instance_of(str))
     function: str = attrib(init=attr.ib(), validator=validators.instance_of(str))
 
     @classmethod
