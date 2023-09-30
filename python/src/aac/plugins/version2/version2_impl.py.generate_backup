@@ -18,4 +18,5 @@ def version2() -> ExecutionResult:
 
 def get_version() -> str:
     """Return the AaC package version."""
+    # One more change
     return __version__

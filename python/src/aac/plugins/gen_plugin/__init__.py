@@ -11,16 +11,16 @@ from aac.plugins.generate import run_generate
 
 GEN_PLUGIN_AAC_FILE_NAME = "gen_plugin.aac"
 
-def run_gen_plugin(aac_plugin_file: str, code_output: str, test_output: str, doc_output: str, no_prompt: bool) -> ExecutionResult:
+def run_gen_plugin(aac_plugin_file: str, code_output: str, test_output: str, doc_output: str, no_prompt: bool, force_overwrite: bool) -> ExecutionResult:
     """Run the AaC Gen-Plugin command."""
     result = ExecutionResult(plugin_name, "generate", ExecutionStatus.SUCCESS, [])
-    gen_plugin_result = gen_plugin(aac_plugin_file, code_output, test_output, doc_output, no_prompt)
+    gen_plugin_result = gen_plugin(aac_plugin_file, code_output, test_output, doc_output, no_prompt, force_overwrite)
     if not gen_plugin_result.is_success():
         return gen_plugin_result
     else:
         result.add_messages(gen_plugin_result.messages)
 
-    generate_result = after_gen_plugin_generate(aac_plugin_file, code_output, test_output, doc_output, no_prompt, run_generate)
+    generate_result = after_gen_plugin_generate(aac_plugin_file, code_output, test_output, doc_output, no_prompt, force_overwrite, run_generate)
     if not generate_result.is_success():
         return generate_result
     else:

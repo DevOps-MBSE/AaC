@@ -7,14 +7,11 @@ from aac.execute.plugin_runner import AacCommand
 
 
 from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus
-from aac.plugins.version2.version2_impl import plugin_name, version2, before_version2_version, after_version2_version
+from aac.plugins.version2.version2_impl import plugin_name, version2
 
 from aac.execute import hookimpl
 from aac.context.language_context import LanguageContext
 from aac.execute.plugin_runner import PluginRunner
-
-from aac.plugins.version import run_version
-from aac.plugins.version import run_version
 
 version2_aac_file_name = "version2.aac"
 
@@ -23,12 +20,6 @@ def run_version2() -> ExecutionResult:
     """Just a dupe of version for testing purposes"""
 
     result = ExecutionResult(plugin_name, "version2", ExecutionStatus.SUCCESS, [])
-
-    version2_version_result = before_version2_version(run_version)
-    if not version2_version_result.is_success():
-        return version2_version_result
-    else:
-        result.add_messages(version2_version_result.messages)
     
     version2_result = version2()
     if not version2_result.is_success():
@@ -36,12 +27,6 @@ def run_version2() -> ExecutionResult:
     else:
         result.add_messages(version2_result.messages)
 
-    version2_version_result = after_version2_version(run_version)
-    if not version2_version_result.is_success():
-        return version2_version_result
-    else:
-        result.add_messages(version2_version_result.messages)
-    
     return result
 
 
@@ -65,6 +50,8 @@ def register_plugin() -> None:
         active_context.parse_and_load(file_to_load)
     
     plugin_runner = PluginRunner(plugin_definition=version2_plugin_definition)
+    
     plugin_runner.add_command_callback("version2", version2)
+    
     
     active_context.register_plugin_runner(plugin_runner)

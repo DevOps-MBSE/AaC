@@ -323,6 +323,31 @@ schema:
       is_required: true
 ---
 schema:
+  name: PluginCommandInput
+  package: aac.lang
+  description: |
+    A plugin command reference that can be used to establish cross-plugin behaviors.
+  fields:
+    - name: name
+      type: string
+      description: |
+        The name of the plugin input parameter.  Prefix the name with "--" to indicate an optional input.
+      is_required: true
+    - name: description
+      type: string
+      description: |
+        A brief description of the input. This will be used in CLI help.
+    - name: type
+      type: reference(primitive.name)
+      description: |
+        The command inputs are translaed to python function inputs.  This is the python type to use.
+      is_required: true
+    - name: default
+      type:  string
+      description: |
+        The default value to provide to a plugin, if desired.
+---
+schema:
   name: Generator
   package: aac.lang
   root: generator
@@ -464,28 +489,3 @@ enum:
     - code
     - test
     - doc
----
-schema:
-  name: PluginCommandInput
-  package: aac.lang
-  description: |
-    A plugin command reference that can be used to establish cross-plugin behaviors.
-  fields:
-    - name: name
-      type: string
-      description: |
-        The name of the plugin input parameter.  Prefix the name with "--" to indicate an optional input.
-      is_required: true
-    - name: description
-      type: string
-      description: |
-        A brief description of the input. This will be used in CLI help.
-    - name: type
-      type: reference(primitive.name)
-      description: |
-        The command inputs are translaed to python function inputs.  This is the python type to use.
-      is_required: true
-    - name: default
-      type:  string
-      description: |
-        The default value to provide to a plugin, if desired.

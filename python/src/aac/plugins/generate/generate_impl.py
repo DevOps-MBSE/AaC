@@ -20,7 +20,7 @@ from aac.plugins.generate.helpers.python_helpers import get_path_from_package, g
 plugin_name = "Generate"
 
 
-def generate(aac_file: str, generator_file: str, code_output: str, test_output: str, doc_output: str, no_prompt: bool) -> ExecutionResult:
+def generate(aac_file: str, generator_file: str, code_output: str, test_output: str, doc_output: str, no_prompt: bool, force_overwrite: bool) -> ExecutionResult:
     """Generate content from your AaC architecture."""
 
     print(f"DEBUG: Running the AaC Genenerate with:\n   aac_plugin_file: {aac_file}\n   generator_file: {generator_file}\n   code_output: {code_output}\n   test_output: {test_output}\n   doc_output: {doc_output}\n   no_prompt: {no_prompt}")
@@ -85,15 +85,19 @@ def generate(aac_file: str, generator_file: str, code_output: str, test_output: 
 
                     # render the template and write contents to output_file_path
                     print(f"DEBUG:  rendering in mode {template.overwrite}")
-                    if template.overwrite in [OverwriteOption.OVERWRITE]:
+                    if force_overwrite or template.overwrite in [OverwriteOption.OVERWRITE]:
                         print(f"DEBUG:  writing {output_file_path} from the overwrite logic section")
+                        if path.exists(output_file_path):
+                            backup_file(output_file_path)
                         with open(output_file_path, "w") as output_file:
                             output_file.write(output)
                             output_file.close()
-                    if template.overwrite in [OverwriteOption.SKIP]:
+                    elif template.overwrite in [OverwriteOption.SKIP]:
                         # this is for the skip option, so only write if file doesn't exist
                         if not path.exists(output_file_path):
                             print(f"DEBUG:  writing {output_file_path} from the skip logic section")
+                            if path.exists(output_file_path):
+                                backup_file(output_file_path)
                             with open(output_file_path, "w") as output_file:
                                 output_file.write(output)
                                 output_file.close()

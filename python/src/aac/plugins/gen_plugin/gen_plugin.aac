@@ -27,4 +27,7 @@ plugin:
         - name: --no-prompt
           type: bool
           description: Informs gen-plugin to execute without asking the user to confirm output paths.
+        - name: --force-overwrite
+          type: bool
+          description: Informs generator to backup and overwrite all existing files regardless of template definition.
           

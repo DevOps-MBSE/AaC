@@ -5,4 +5,10 @@ plugin:
   commands:
     - name: version2
       help_text:  Just a dupe of version for testing purposes
+      run_before:
+        - plugin: Version
+          command: version
+      run_after:
+        - plugin: Version
+          command: version
       

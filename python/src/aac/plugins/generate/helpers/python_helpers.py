@@ -13,6 +13,14 @@ def get_python_primitive(aac_primitive_name: str) -> str:
             return aac_primitive.instance.python_type
     return "None"
 
+def get_package_from_plugin(plugin_name: str) -> str:
+    context = LanguageContext()
+    plugin_runners = context.get_plugin_runners()
+    for runner in plugin_runners:
+        if plugin_name == runner.plugin_definition.name:
+            return runner.plugin_definition.instance.package
+    return f"aac.plugins.{get_python_name(plugin_name)}"
+
 def get_path_from_package(package: str) -> str:
     return package.replace(".", "/")
 
