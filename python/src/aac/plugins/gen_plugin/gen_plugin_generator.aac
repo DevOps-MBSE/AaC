@@ -24,6 +24,23 @@ generator:
           output_target: CODE
           output_path_uses_data_source_package: true
           output_file_extension: py
+    - name: AaC Enum Generation
+      data_source: aacenum
+      templates:
+        - name: PythonEnumTest
+          description: Generates a Python unit test for Enum class
+          template_file: ./templates/test_aacenum.jinja2
+          overwrite: OVERWRITE
+          helper_functions:
+            - name: Get python string
+              description: Converts a string to a python suitable value
+              package: aac.plugins.generate.helpers
+              module: python_helpers
+              function: get_python_name
+          output_target: TEST
+          output_path_uses_data_source_package: true
+          output_file_suffix: _test
+          output_file_extension: py
     - name: AaC Schema Generation
       data_source: schema
       templates:
@@ -55,6 +72,30 @@ generator:
           output_target: CODE
           output_path_uses_data_source_package: true
           output_file_extension: py
+
+    - name: AaC Schema Test Generation
+      data_source: schema
+      templates:
+        - name: PythonSchemaTest
+          description: Generates a Python unit test for a Schema class
+          template_file: ./templates/test_schema.jinja2
+          overwrite: SKIP
+          helper_functions:
+            - name: Get python package from definition
+              description: Searches aac definitions by root and name to find a package name
+              package: aac.plugins.generate.helpers
+              module: python_helpers
+              function: get_package_from_aac_definition
+            - name: Get python string
+              description: Converts a string to a python suitable value
+              package: aac.plugins.generate.helpers
+              module: python_helpers
+              function: get_python_name
+          output_target: TEST
+          output_path_uses_data_source_package: true
+          output_file_suffix: _test
+          output_file_extension: py
+
     - name: AaC Project Setup Generation
       data_source: project
       templates:

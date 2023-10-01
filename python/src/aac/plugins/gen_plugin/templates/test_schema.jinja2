@@ -1,0 +1,17 @@
+import unittest
+from {{schema.package}}.{{get_python_name(schema.name)}} import {{schema.name}}
+{% for field in schema.fields%}{% if get_python_primitive(field.type) == "None"%}{% if field.type.endswith('[]')%}
+from {{get_package_from_aac_definition('schema', field.type[:-2])}}.{{get_python_name(field.type[:-2])}} import {{field.type[:-2]}}{% else %}
+from {{get_package_from_aac_definition('schema', field.type)}}.{{get_python_name(field.type)}} import {{field.type}}{% endif %}{% endif %}{% endfor %}
+
+class Test{{schema.name}}(unittest.TestCase):
+    def test_{{get_python_name(schema.name)}}(self):
+        # TODO: implement unit test logic
+        self.fail("Test not yet implemented")
+
+    def test_{{get_python_name(schema.name)}}_from_dict(self):
+        # TODO: implement unit test logic
+        self.fail("Test not yet implemented")
+
+if __name__ == '__main__':
+    unittest.main()

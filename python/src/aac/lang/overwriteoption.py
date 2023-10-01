@@ -1,9 +1,8 @@
-from enum import Enum
+from enum import Enum, auto
 
 class OverwriteOption(Enum):
-    OVERWRITE = 1
-    SKIP = 2
-    # MERGE = 3
+    OVERWRITE = auto()
+    SKIP = auto()
 
     @classmethod
     def from_dict(cls, d: str):
@@ -11,7 +10,5 @@ class OverwriteOption(Enum):
             return cls.OVERWRITE
         elif 'SKIP' == d:
             return cls.SKIP
-        # elif 'MERGE' == d:
-        #     return cls.MERGE
         else:
             raise ValueError('Invalid dictionary for OverwriteOption')
