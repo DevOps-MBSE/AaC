@@ -3,22 +3,108 @@ generator:
   name: Gen-Plugin Generator
   description: A collection of code and test generation actions for AaC plugins
   sources:
-    - name: AaC Project Generation
-      data_source: enum
+    - name: AaC Enum Generation
+      data_source: aacenum
       templates:
         - name: PythonEnum
           description: Generates a Python Enum class
-          template_file: ./templates/enum.jinja2
+          template_file: ./templates/aacenum.jinja2
           overwrite: OVERWRITE
+          helper_functions:
+            - name: Get python package from definition
+              description: Searches aac definitions by root and name to find a package name
+              package: aac.plugins.generate.helpers
+              module: python_helpers
+              function: get_package_from_aac_definition
+            - name: Get python string
+              description: Converts a string to a python suitable value
+              package: aac.plugins.generate.helpers
+              module: python_helpers
+              function: get_python_name
           output_target: CODE
           output_path_uses_data_source_package: true
           output_file_extension: py
+    - name: AaC Schema Generation
+      data_source: schema
+      templates:
+        - name: PythonSchema
+          description: Generates a Python Schema class
+          template_file: ./templates/schema.jinja2
+          overwrite: OVERWRITE
+          helper_functions:
+            - name: Get python package from definition
+              description: Searches aac definitions by root and name to find a package name
+              package: aac.plugins.generate.helpers
+              module: python_helpers
+              function: get_package_from_aac_definition
+            - name: Get python string
+              description: Converts a string to a python suitable value
+              package: aac.plugins.generate.helpers
+              module: python_helpers
+              function: get_python_name
+            - name: Get python type
+              description: Converts an AaC type to a python type
+              package: aac.plugins.generate.helpers
+              module: python_helpers
+              function: get_python_type
+            - name: Get python primitive
+              description: Converts an AaC primitive to a python type
+              package: aac.plugins.generate.helpers
+              module: python_helpers
+              function: get_python_primitive
+          output_target: CODE
+          output_path_uses_data_source_package: true
+          output_file_extension: py
+    - name: AaC Project Setup Generation
+      data_source: project
+      templates:
+        - name: ProjectSetup
+          description: Generates a Python project setup file
+          template_file: ./templates/project_setup.jinja2
+          overwrite: SKIP
+          helper_functions:
+            - name: Get python string
+              description: Converts a string to a python suitable value
+              package: aac.plugins.generate.helpers
+              module: python_helpers
+              function: get_python_name
+            - name: Get aac version
+              description: Returns the version of AaC
+              package: aac.plugins.generate.helpers
+              module: python_helpers
+              function: aac_version
+          output_target: CODE
+          output_path_uses_data_source_package: false
+          output_file_name: setup
+          output_file_extension: py
+    - name: AaC Project tox.ini Generation
+      data_source: project
+      templates:
+        - name: ProjectToxIni
+          description: Generates a Python project tox.ini file
+          template_file: ./templates/project_tox.jinja2
+          overwrite: SKIP
+          output_target: CODE
+          output_path_uses_data_source_package: false
+          output_file_name: tox
+          output_file_extension: ini
+    - name: AaC Project Readme Generation
+      data_source: project
+      templates:
+        - name: ProjectReadme
+          description: Generates a Python project Readme.md file
+          template_file: ./templates/project_readme.jinja2
+          overwrite: SKIP
+          output_target: CODE
+          output_path_uses_data_source_package: false
+          output_file_name: README
+          output_file_extension: md
     - name: AaC Plugin Init Generation
       data_source: plugin
       templates:
         - name: PluginInit
           description: Generates a Python init file for a plugin
-          template_file: ./templates/__init__.jinja2
+          template_file: ./templates/plugin_init.jinja2
           overwrite: OVERWRITE
           helper_functions:
             - name: Get python string

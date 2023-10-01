@@ -135,9 +135,11 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
                 root_yaml = yaml_dicts.pop(0)
                 root_type, *_ = root_yaml.keys()
                 definition_name = root_yaml.get(root_type, {}).get(DEFINITION_FIELD_NAME, "")
+                definition_package = root_yaml.get(root_type, {}).get("package", "")
 
                 new_definition = Definition(
                     name=definition_name,
+                    package=definition_package,
                     content=yaml_text,
                     source=source_file,
                     lexemes=definition_lexemes,

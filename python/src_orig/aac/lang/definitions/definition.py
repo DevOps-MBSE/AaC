@@ -38,6 +38,7 @@ class Definition:
     Attributes:
         uid (UUID): A unique identifier for selecting the specific definition.
         name (str): The name of the definition
+        name (str): The package of the definition
         content (str): The original source textual representation of the definition.
         source (AaCFile): The source document containing the definition.
         lexemes (list[Lexeme]): A list of lexemes for each item in the parsed definition.
@@ -47,6 +48,7 @@ class Definition:
 
     uid: UUID = attrib(init=False, validator=validators.instance_of(UUID))
     name: str = attrib(validator=validators.instance_of(str))
+    package: str = attrib(validator=validators.instance_of(str))
     content: str = attrib(validator=validators.instance_of(str))
     source: AaCFile = attrib(validator=validators.instance_of(AaCFile))
     lexemes: list[Lexeme] = attrib(default=Factory(list), validator=validators.instance_of(list))

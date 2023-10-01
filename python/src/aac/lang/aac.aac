@@ -19,6 +19,12 @@ schema:
       description: |
         The name of the type.
       is_required: true
+    - name: package
+      type: string
+      description: |
+        The 'dot notation' package name for the type.  All type names must be unique within an assigned type.
+        The package will also define the directory structure produced by gen-plugin.
+      is_required: true
     - name: description
       type: string
       description: |
@@ -55,25 +61,28 @@ modifier:
     Denotes that the schema is final and cannot be referenced by another
     schema's 'extends' field for inheritance.
 ---
+# We have to be careful not to use any python reserved words as schema or field names.
+# It's a little clunky, but we use the AacEnum name instead of the enum keyword.
+# And we use enumerated_values instead of values.
+# Also, when trying to generate python code for an aacenum enum extension, I discovered
+# that python doesn't seem to like extensions of an enum.  So I've made it such that only
+# schemas can be extended.  If you need a enum with the same enumerated_values as another
+# enum, just create a new one with the values you need.
 schema:
-  name: Enum
+  name: AacEnum
   package: aac.lang
   extends: AacType
-  root: enum
+  root: aacenum
   description: |
     A definition that represents an enumerated type of value.
     
     An example of when to use an 'enum' is when you want to provide several
     different options for a single value.
   fields:
-    - name: extends
-      type: reference(enum.name)[]
-      description: |
-        A list of Enum definition names that this definition inherits from.
-    - name: values
+    - name: enumerated_values
       type: string[]
       description: |
-        A list of strings that encompass the enumeration's possible values.  
+        A list of strings that encompass the enumeration's possible values.
 ---
 schema:
   name: Primitive
@@ -89,49 +98,56 @@ schema:
 ---
 primitive:
   name: string
+  package: aac.lang
   description:  |
     A textual value.
   python_type: str
 ---
 primitive:
   name: int
+  package: aac.lang
   python_type: int
 ---
 primitive:
   name: number
+  package: aac.lang
   python_type: float
 ---
 primitive:
   name: bool
+  package: aac.lang
   python_type: bool
   description:  |
     A boolean value.
 ---
 primitive:
   name: date
+  package: aac.lang
   python_type: str
   description:  |
     A date or date-time value.
 ---
 primitive:
   name: file
+  package: aac.lang
   python_type: str
   description:  |
     A computer file path value.
 ---
 primitive:
   name: directory
+  package: aac.lang
   python_type: str
   description:  |
     A computer directory path value.
 ---
 primitive:
   name: reference
+  package: aac.lang
   python_type: str
   description:  |
     A reference to another defined item.  References are typed and documented 
-    as 'reference(schema_name.field_name)' denoting the definition and field being referenced.
-    The schema_name may be 'this' if referring to a field within the same definition.
+    as 'reference(schema_root.field_name)' denoting the definition and field being referenced.
 ---
 schema:
   name: Schema
@@ -152,12 +168,6 @@ schema:
       type: reference(modifier.name)[]
       description:
         A means of further defining the schema and how it can be used within the model.
-    - name: package
-      type: string
-      description: |
-        The 'dot notation' package name for the schema.  All schema names must be unique within an assigned type.
-        The package will also define the directory structure produced by gen-plugin.
-      is_required: true
     - name: root
       type: str
       description: |
@@ -254,7 +264,7 @@ schema:
     - name: version
       type: string
       description: |
-        The versio nof the pypi project to import.
+        The version nof the pypi project to import.
       is_required: true   
 ---
 schema:
@@ -445,9 +455,10 @@ schema:
         The file extension to use when generating the output file name.
       is_required: true
 ---
-enum:
+aacenum:
   name: OverwriteOption
-  values:
+  package: aac.lang
+  enumerated_values:
     - OVERWRITE
     - SKIP
 ---
@@ -483,9 +494,10 @@ schema:
         The python function to be made available to the template.
       is_required: true
 ---
-enum:
+aacenum:
   name: GeneratorOutputTarget
-  values:
-    - code
-    - test
-    - doc
+  package: aac.lang
+  enumerated_values:
+    - CODE
+    - TEST
+    - DOC

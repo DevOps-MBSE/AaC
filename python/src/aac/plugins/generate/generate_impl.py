@@ -1,16 +1,13 @@
 """AaC Plugin implementation module for the Version plugin."""
 
 from os import path
-import ast
 import importlib
 from typing import Callable, Any
-import filecmp
-import difflib
-import shutil
 from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus, OperationCancelled, ExecutionError
 from jinja2 import Environment, FileSystemLoader, Template
 from aac.context.language_context import LanguageContext
 from aac.context.definition import Definition
+from aac.io.parser._parse_source import parse
 from aac.lang.generatorsource import GeneratorSource
 from aac.lang.generatortemplate import GeneratorTemplate
 from aac.lang.generatoroutputtarget import GeneratorOutputTarget
@@ -33,11 +30,13 @@ def generate(aac_file: str, generator_file: str, code_output: str, test_output: 
     # build out properties
     # the templates need data from the plugin model to generate code
     context = LanguageContext()
-    parsed_definitions = context.parse_and_load(aac_file)
+    parsed_definitions = parse(aac_file)  # we only want to parse, not load, to avoid chicken and egg issues
     generator_definitions = context.parse_and_load(generator_file)
 
     # go through each generator in the parsed_definitions
     for definition in generator_definitions:
+        if definition.get_root_key() != "generator":
+            continue
         generator = definition.instance
 
         # go through each generator source and get data from parsed_definitions based on from_source
@@ -58,17 +57,25 @@ def generate(aac_file: str, generator_file: str, code_output: str, test_output: 
 
                 # figure out how to load func_dict into the jinja2 environment
                 helper_functions: dict[str, Callable] = {}
+                print(f"DEBUG:  Loading helper functions for template {template.template_file}: {template.helper_functions}")
                 for helper in template.helper_functions:
+                    print(f"DEBUG:  Loading helper function {helper.function} from {helper.package}.{helper.module}")
                     helper_functions[helper.function] = get_callable(helper.package, helper.module, helper.function)
 
                 # generate code using the template and source
                 template_abs_path = path.abspath(path.join(path.dirname(generator_file), template.template_file))
 
                 print(f"DEBUG:  Creating jinja template {template_abs_path} with helpers {helper_functions}")
-                jinja_template = load_template(template_abs_path, helper_functions)
+                jinja_template = None
+                if len(helper_functions) > 0:
+                    jinja_template = load_template(template_abs_path, helper_functions)
+                    print(f"DEBUG: loaded jinja template {template_abs_path} with helpers {helper_functions}")
+                else:
+                    jinja_template = load_template(template_abs_path)
+                    print(f"DEBUG: loaded jinja template {template_abs_path} with no helpers")
+
                 for source_data_def in source_data_definitions:
                     source_data_structure = source_data_def.structure
-                    source_data_instance = source_data_def.instance
                     print(f"DEBUG:  generating jinja with structure: \n{source_data_structure}")
                     output = jinja_template.render(source_data_structure)
 
@@ -80,7 +87,7 @@ def generate(aac_file: str, generator_file: str, code_output: str, test_output: 
                         root_out_dir = test_out_dir
                     elif template.output_target == GeneratorOutputTarget.DOC:
                         root_out_dir = doc_out_dir
-                    output_file_path = get_output_file_path(root_out_dir, template, source_data_instance)
+                    output_file_path = get_output_file_path(root_out_dir, template, source_data_def.package, source_data_def.name)
 
 
                     # render the template and write contents to output_file_path
@@ -135,17 +142,17 @@ def get_output_directories(aac_plugin_file: str, code_output: str, test_output: 
 
     return (code_out, test_out, doc_out)
 
-def get_output_file_path(root_output_directory: str, generator_template: GeneratorTemplate, source_instance: Any) -> str:
+def get_output_file_path(root_output_directory: str, generator_template: GeneratorTemplate, source_package: str, source_name: str) -> str:
     result = root_output_directory
-    if generator_template.output_path_uses_data_source_package and source_instance.package:
-        result = path.join(result, get_path_from_package(source_instance.package))
+    if generator_template.output_path_uses_data_source_package and source_package:
+        result = path.join(result, get_path_from_package(source_package))
     file_name = ""
     if generator_template.output_file_prefix:
         file_name = generator_template.output_file_prefix
     if generator_template.output_file_name:
         file_name = f"{file_name}{generator_template.output_file_name}"
-    elif source_instance.name:
-        file_name = f"{file_name}{get_python_name(source_instance.name)}"
+    elif source_name:
+        file_name = f"{file_name}{get_python_name(source_name)}"
     if generator_template.output_file_suffix:
         file_name = f"{file_name}{generator_template.output_file_suffix}"
     file_name = f"{file_name}.{generator_template.output_file_extension}"
@@ -161,6 +168,7 @@ def load_template(template_abs_path: str, helper_functions: dict[str, Callable] 
     env = Environment(loader=FileSystemLoader('/'))
     env.globals.update(helper_functions)
     template = env.get_template(template_abs_path)
+    print(f"DEBUG: loaded jinja template {template_abs_path} with helpers {helper_functions}")
     return template
 
 def backup_file(file_path: str) -> str:

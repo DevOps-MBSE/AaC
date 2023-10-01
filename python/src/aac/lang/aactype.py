@@ -7,6 +7,7 @@ from attr import attrib, validators
 @dataclass(frozen=True)
 class AacType(ABC):
     name: str = attrib(init=attr.ib(), validator=validators.instance_of(str))
+    package: str = attrib(init=attr.ib(), validator=validators.instance_of(str))
     description: Optional[str] = attrib(init=attr.ib(), validator=validators.optional(validators.instance_of(str)))
 
     @classmethod
@@ -15,9 +16,4 @@ class AacType(ABC):
         if "description" in data:
             description = data.pop("description")
         return cls(description=description, **data)
-
-
-    @staticmethod
-    def get_gen_plugin_template() -> str:
-        return ""
         

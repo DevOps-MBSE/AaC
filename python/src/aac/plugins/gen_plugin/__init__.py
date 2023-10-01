@@ -6,7 +6,7 @@ from aac.context.language_context import LanguageContext
 from aac.execute.plugin_runner import PluginRunner
 from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus
 
-from aac.plugins.gen_plugin.gen_plugin_impl import plugin_name, gen_plugin, after_gen_plugin_generate
+from aac.plugins.gen_plugin.gen_plugin_impl import plugin_name, gen_plugin, after_gen_plugin_generate, gen_project, after_gen_project_generate
 from aac.plugins.generate import run_generate
 
 GEN_PLUGIN_AAC_FILE_NAME = "gen_plugin.aac"
@@ -25,6 +25,23 @@ def run_gen_plugin(aac_plugin_file: str, code_output: str, test_output: str, doc
         return generate_result
     else:
         result.add_messages(generate_result.messages)
+
+    return result
+
+def run_gen_project(aac_project_file: str, output: str, no_prompt: bool, force_overwrite: bool) -> ExecutionResult:
+    """Run the AaC Gen-Plugin command."""
+    result = ExecutionResult(plugin_name, "generate", ExecutionStatus.SUCCESS, [])
+    gen_project_result = gen_project(aac_project_file, output, no_prompt, force_overwrite)
+    if not gen_project_result.is_success():
+        return gen_project_result
+    else:
+        result.add_messages(gen_project_result.messages)
+
+    gen_project_generate_result = after_gen_project_generate(aac_project_file, output, no_prompt, force_overwrite, run_generate)
+    if not gen_project_generate_result.is_success():
+        return gen_project_generate_result
+    else:
+        result.add_messages(gen_project_generate_result.messages)
 
     return result
     
@@ -50,5 +67,6 @@ def register_plugin() -> None:
     
     plugin_runner = PluginRunner(plugin_definition=gen_plugin_plugin_definition)
     plugin_runner.add_command_callback("gen-plugin", run_gen_plugin)
+    plugin_runner.add_command_callback("gen-project", run_gen_project)
     
     active_context.register_plugin_runner(plugin_runner)

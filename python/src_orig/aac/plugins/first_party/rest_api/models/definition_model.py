@@ -11,6 +11,7 @@ class DefinitionModel(BaseModel):
     """REST API Model for the Definition class."""
     uid: Optional[UUID]
     name: str
+    package: str
     is_user_editable: Optional[bool]
     content: Optional[str]
     source_uri: str
@@ -23,6 +24,7 @@ def to_definition_model(definition: Definition) -> DefinitionModel:
     return DefinitionModel(
         uid=definition.uid,
         name=definition.name,
+        package=definition.package,
         is_user_editable=definition.source.is_user_editable,
         content=definition.content,
         source_uri=definition.source.uri,
@@ -33,7 +35,7 @@ def to_definition_model(definition: Definition) -> DefinitionModel:
 def to_definition_class(definition_model: DefinitionModel) -> Definition:
     """Return a Definition object from a DefinitionModel object."""
     source = AaCFile(definition_model.source_uri, True, False)
-    definition = Definition(name=definition_model.name, content="", source=source, structure=definition_model.structure)
+    definition = Definition(name=definition_model.name, package=definition_model.package, content="", source=source, structure=definition_model.structure)
     definition.uid = definition_model.uid
     definition.content = definition.to_yaml()
     return definition
