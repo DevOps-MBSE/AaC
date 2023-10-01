@@ -20,12 +20,8 @@ plugin_name = "Generate"
 def generate(aac_file: str, generator_file: str, code_output: str, test_output: str, doc_output: str, no_prompt: bool, force_overwrite: bool) -> ExecutionResult:
     """Generate content from your AaC architecture."""
 
-    print(f"DEBUG: Running the AaC Genenerate with:\n   aac_plugin_file: {aac_file}\n   generator_file: {generator_file}\n   code_output: {code_output}\n   test_output: {test_output}\n   doc_output: {doc_output}\n   no_prompt: {no_prompt}")
-
     # setup directories
     code_out_dir, test_out_dir, doc_out_dir = get_output_directories(aac_file, code_output, test_output, doc_output, no_prompt)
-
-    print(f"DEBUG: code_out_dir: {code_out_dir} test_out_dir: {test_out_dir}")
 
     # build out properties
     # the templates need data from the plugin model to generate code
@@ -57,29 +53,20 @@ def generate(aac_file: str, generator_file: str, code_output: str, test_output: 
 
                 # figure out how to load func_dict into the jinja2 environment
                 helper_functions: dict[str, Callable] = {}
-                print(f"DEBUG:  Loading helper functions for template {template.template_file}: {template.helper_functions}")
                 for helper in template.helper_functions:
-                    print(f"DEBUG:  Loading helper function {helper.function} from {helper.package}.{helper.module}")
                     helper_functions[helper.function] = get_callable(helper.package, helper.module, helper.function)
 
                 # generate code using the template and source
                 template_abs_path = path.abspath(path.join(path.dirname(generator_file), template.template_file))
-
-                print(f"DEBUG:  Creating jinja template {template_abs_path} with helpers {helper_functions}")
                 jinja_template = None
                 if len(helper_functions) > 0:
                     jinja_template = load_template(template_abs_path, helper_functions)
-                    print(f"DEBUG: loaded jinja template {template_abs_path} with helpers {helper_functions}")
                 else:
                     jinja_template = load_template(template_abs_path)
-                    print(f"DEBUG: loaded jinja template {template_abs_path} with no helpers")
 
                 for source_data_def in source_data_definitions:
                     source_data_structure = source_data_def.structure
-                    print(f"DEBUG:  generating jinja with structure: \n{source_data_structure}")
                     output = jinja_template.render(source_data_structure)
-
-                    # print(f"DEBUG:  jinja generated output = {output}")
                     
                     # write output to files to the traget in the template, respecting the overwrite indicator
                     root_out_dir = code_out_dir
@@ -91,9 +78,7 @@ def generate(aac_file: str, generator_file: str, code_output: str, test_output: 
 
 
                     # render the template and write contents to output_file_path
-                    print(f"DEBUG:  rendering in mode {template.overwrite}")
                     if force_overwrite or template.overwrite in [OverwriteOption.OVERWRITE]:
-                        print(f"DEBUG:  writing {output_file_path} from the overwrite logic section")
                         if path.exists(output_file_path):
                             backup_file(output_file_path)
                         with open(output_file_path, "w") as output_file:
@@ -102,7 +87,6 @@ def generate(aac_file: str, generator_file: str, code_output: str, test_output: 
                     elif template.overwrite in [OverwriteOption.SKIP]:
                         # this is for the skip option, so only write if file doesn't exist
                         if not path.exists(output_file_path):
-                            print(f"DEBUG:  writing {output_file_path} from the skip logic section")
                             if path.exists(output_file_path):
                                 backup_file(output_file_path)
                             with open(output_file_path, "w") as output_file:
@@ -168,7 +152,6 @@ def load_template(template_abs_path: str, helper_functions: dict[str, Callable] 
     env = Environment(loader=FileSystemLoader('/'))
     env.globals.update(helper_functions)
     template = env.get_template(template_abs_path)
-    print(f"DEBUG: loaded jinja template {template_abs_path} with helpers {helper_functions}")
     return template
 
 def backup_file(file_path: str) -> str:

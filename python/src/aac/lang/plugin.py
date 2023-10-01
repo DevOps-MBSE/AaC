@@ -22,9 +22,7 @@ class Plugin():
         if "description" in data:
             description = data.pop("description")
         commands_data = data.pop("commands", [])
-        print(f"DEBUG:  Plugin constructure found commands_data = \n{commands_data}")
         commands_list = [PluginCommand.from_dict(command_data) for command_data in commands_data]
-        print(f"DEBUG:  Plugin constructure - commands_list = \n{commands_list}")
         definition_sources = data.pop("definition_sources", [])
         return cls(description=description, commands=commands_list, definition_sources=definition_sources, **data)
     

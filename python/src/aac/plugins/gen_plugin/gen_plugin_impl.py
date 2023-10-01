@@ -11,8 +11,6 @@ plugin_name = "Generate Plugin"
 def gen_plugin(aac_plugin_file: str, code_output: str, test_output: str, doc_output: str, no_prompt: bool, force_overwrite: bool) -> ExecutionResult:
     """Print the AaC package version."""
 
-    print(f"DEBUG: Running the AaC Gen-Plugin with:\n   aac_plugin_file: {aac_plugin_file}\n   code_output: {code_output}\n   test_output: {test_output}\n   doc_output: {doc_output}\n   no_prompt: {no_prompt}\n  force_overwrite: {force_overwrite}")
-
     return ExecutionResult(plugin_name, "gen-plugin", ExecutionStatus.SUCCESS, [])
 
 
@@ -22,8 +20,6 @@ def after_gen_plugin_generate(aac_plugin_file: str, code_output: str, test_outpu
 
 def gen_project(aac_project_file: str, output: str, no_prompt: bool, force_overwrite: bool) -> ExecutionResult:
     """Print the AaC package version."""
-
-    print(f"DEBUG: Running the AaC Gen-Plugin with:\n   aac_project_file: {aac_project_file}\n   output: {output}\n  no_prompt: {no_prompt}\n  force_overwrite: {force_overwrite}")
 
     return ExecutionResult(plugin_name, "gen-plugin", ExecutionStatus.SUCCESS, [])
 

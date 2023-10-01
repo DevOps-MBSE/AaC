@@ -23,7 +23,6 @@ class GeneratorTemplate():
 
     @classmethod
     def from_dict(cls, data):
-        print(f"DEBUG: GeneratorTemplate.from_dict: data: {data}")
         description = None
         if "description" in data:
             description = data.pop("description")
