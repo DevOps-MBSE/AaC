@@ -8,7 +8,12 @@ For AaC users who find that existing definitions are insufficient or that they w
 
 Let's take a look at an example. The first-party plugin `Gen-Protobuf` which adds an additional field `protobuf_message_options` to `schema` definitions. This additional field is used to allow users to specify [Protobuf5 Message Options](https://developers.google.com/protocol-buffers/docs/proto#options) in their modeled data structures (`schema` definitions) that are passed from the modeled message to the generated Protobuf5 message.
 
-[Example gen_protobuf.yaml L45-L51](https://github.com/DevOps-MBSE/AaC/blob/3dfc11baf0ec8d7250608bd16caebdae837fc8af/python/src/aac/plugins/first_party/gen_protobuf/gen_protobuf.yaml#L45-L51)
+```{eval-rst}
+.. literalinclude:: ../../../../python/src/aac/plugins/first_party/gen_protobuf/gen_protobuf.yaml
+    :language: yaml
+    :lines: 85-91
+```
+
 ```yaml
 ext:
    name: SchemaMessageOptions
@@ -20,6 +25,14 @@ ext:
 ```
 
 You can see that this extension `SchemaMessageOptions` is extending `schema` with an additional field `protobuf_message_options`. So, the AaC DSL now supports defining schema definitions with the additional field like so:
+
+```{eval-rst}
+.. literalinclude:: ../../../../python/model/protobuf_flow/Data.aac
+    :language: yaml
+    :lines: 5-13
+    :emphasize-lines: 5
+```
+
 ```yaml
 schema:
     name: MyMessage
@@ -36,6 +49,13 @@ The AaC DSL also supports extending enum values. These extensions can be used to
 
 
 [Example gen_protobuf.yaml new primitive types extension](https://github.com/DevOps-MBSE/AaC/blob/main/python/src/aac/plugins/first_party/gen_protobuf/gen_protobuf.yaml#L26-L43)
+
+```{eval-rst}
+.. literalinclude:: ../../../../python/src/aac/plugins/first_party/gen_protobuf/gen_protobuf.yaml
+    :language: yaml
+    :lines: 26-43
+```
+
 ```yaml
 ext:
   name: ProtobufPrimitiveTypesExtension
@@ -58,6 +78,13 @@ ext:
 ```
 
 With these new primitive types, users of the `Gen-Protobuf` plugin can model protobuf-specific data structure fields. For instance, users can model inter-service messages like so:
+
+```{eval-rst}
+.. literalinclude:: ../../../../python/model/protobuf_flow/Data.aac
+    :language: yaml
+    :lines: 41-47, 65-69
+    :emphasize-lines: 6-7, 4-5
+```
 
 ```yaml
 schema:
