@@ -1,6 +1,6 @@
 """AaC Plugin implementation module for the Version plugin."""
 
-from os import path
+from os import path, makedirs
 import importlib
 from typing import Callable, Any
 from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus, OperationCancelled, ExecutionError
@@ -76,11 +76,15 @@ def generate(aac_file: str, generator_file: str, code_output: str, test_output: 
                         root_out_dir = doc_out_dir
                     output_file_path = get_output_file_path(root_out_dir, template, source_data_def.package, source_data_def.name)
 
+                    # make sure the directory exists
+                    output_dir = path.dirname(output_file_path)
+                    if not path.exists(output_dir):
+                        makedirs(output_dir)
 
                     # render the template and write contents to output_file_path
                     if force_overwrite or template.overwrite in [OverwriteOption.OVERWRITE]:
                         if path.exists(output_file_path):
-                            backup_file(output_file_path)
+                            backup_file(output_file_path)                            
                         with open(output_file_path, "w") as output_file:
                             output_file.write(output)
                             output_file.close()

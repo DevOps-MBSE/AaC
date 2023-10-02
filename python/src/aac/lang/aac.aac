@@ -66,12 +66,14 @@ modifier:
 # And we use enumerated_values instead of values.
 # Also, when trying to generate python code for an aacenum enum extension, I discovered
 # that python doesn't seem to like extensions of an enum.  So I've made it such that only
-# schemas can be extended.  If you need a enum with the same enumerated_values as another
+# schemas can be extended.  If you need an enum with the same enumerated_values as another
 # enum, just create a new one with the values you need.
 schema:
   name: AacEnum
   package: aac.lang
-  extends: AacType
+  extends: 
+    - package: aac.lang
+      name: AacType
   root: aacenum
   description: |
     A definition that represents an enumerated type of value.
@@ -87,7 +89,9 @@ schema:
 schema:
   name: Primitive
   package: aac.lang
-  extends: AacType
+  extends: 
+    - package: aac.lang
+      name: AacType
   root: primitive
   description: |
     A definition that represents a primitive value for use in the model.
@@ -151,17 +155,16 @@ primitive:
 ---
 schema:
   name: Schema
-  extends: AacType
+  extends: 
+    - package: aac.lang
+      name: AacType
   package: aac.lang
   root: schema
   description: |
     A definition that defines the schema/structure of data.
-    
-    A 'schema' definition can alternatively be thought as a defining the
-    data structure of a definition.
   fields:
     - name: extends
-      type: reference(schema.name)[]
+      type: SchemaExtension[]
       description: |
         A list of Schema definition names that this definition inherits from.
     - name: modifiers
@@ -169,13 +172,30 @@ schema:
       description:
         A means of further defining the schema and how it can be used within the model.
     - name: root
-      type: str
+      type: string
       description: |
         The root key to use when declaring an instance of the type in yaml/aac files.
     - name: fields
       type: Field[]
       description: |
         A list of fields that make up the definition.
+      is_required: true
+---
+schema:
+  name: SchemaExtension
+  package: aac.lang
+  description: |
+    References the inheritance parent schema.
+  fields:
+    - name: package
+      type: reference(schema.package)
+      description: |
+        The package name of the inheritance parent schema.
+      is_required: true
+    - name: name
+      type: reference(schema.name)
+      description: |
+        The name of the inheritance parent schema.
       is_required: true
 ---
 schema:
@@ -208,7 +228,7 @@ schema:
         Indicates that the field must be present when used.
       default: false
     - name: default
-      type: any
+      type: string
       description: |
         The default value to use for the field if field is not provided.
 ---
@@ -253,6 +273,7 @@ schema:
 ---
 schema:
   name: ProjectDependency
+  package: aac.lang
   description: |
     A pypi project dependency.
   fields:
@@ -283,7 +304,7 @@ schema:
       type: string
       is_required: true
     - name: description
-      type: description
+      type: string
     - name: commands
       type: PluginCommand[]
     - name: definition_sources
@@ -296,6 +317,7 @@ schema:
     - name: name
       type: string
       description: The name of the command.  This will be used by the CLI to invke the command.
+      is_required: true
     - name: help_text
       type: string
       description: |
@@ -314,6 +336,7 @@ schema:
       description: |
         The list of all the fields that are inputs to the component when the
         command is executed.
+      is_required: true
 ---
 schema:
   name: PluginCommandReference
@@ -374,7 +397,7 @@ schema:
       description: |
         A description of the generator.
     - name: sources
-      type: GeneratorAllocation[]
+      type: GeneratorSource[]
       description: |
         The list of templates to use when generating content.
       is_required: true
@@ -400,6 +423,7 @@ schema:
 ---
 schema:
   name: GeneratorTemplate
+  package: aac.lang
   description: |
     A Jinja2 template used to generate content.
   fields:
@@ -409,7 +433,7 @@ schema:
         The name of the template.
       is_required: true
     - name: description
-      type: STRING
+      type: string
       description: |
         A short description of the generator template.
     - name: template_file
@@ -428,11 +452,11 @@ schema:
       type: JinjaHelperFunction[]
       description: |
         A list of helper functions to be made available to the template.
-      is_required: false
     - name: output_target
       type: GeneratorOutputTarget
       description: |
         Identifies which generator output path to target.
+      is_required: true
     - name: output_path_uses_data_source_package
       type: bool
       description: |
@@ -464,6 +488,7 @@ aacenum:
 ---
 schema:
   name: JinjaHelperFunction
+  package: aac.lang
   description: |
     A helper function to be made available to a Jinja2 template.  Helper functions
     are defined as python functions and are made available to the template as

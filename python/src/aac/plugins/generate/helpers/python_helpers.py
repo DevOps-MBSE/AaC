@@ -11,9 +11,13 @@ def get_python_primitive(aac_primitive_name: str) -> str:
     primitive_name = aac_primitive_name
     if aac_primitive_name.endswith("[]"):
         primitive_name = aac_primitive_name[:-2]
+    if aac_primitive_name.startswith("reference("):
+        primitive_name = "reference"
     for aac_primitive in aac_primitives:
         if primitive_name == aac_primitive.name:
+            print(f"DEBUG: get_python_primitive({aac_primitive_name}) = {aac_primitive.instance.python_type}")
             return aac_primitive.instance.python_type
+    print(f"DEBUG: get_python_primitive({aac_primitive_name}) = 'None'")
     return "None"
 
 def get_python_type(aac_type_name: str) -> str:
@@ -34,13 +38,12 @@ def get_package_from_plugin(plugin_name: str) -> str:
             return runner.plugin_definition.instance.package
     return f"aac.plugins.{get_python_name(plugin_name)}"
 
-def get_package_from_aac_definition(root_name: str, item_name: str) -> str:
+def get_package_from_aac_definition(item_name: str) -> str:
     context = LanguageContext()
     definitions = context.get_definitions()
     for definition in definitions:
-        if definition.get_root_key() == root_name:
-            if definition.name == item_name:
-                return definition.instance.package
+        if definition.name == item_name:
+            return definition.instance.package
     return ""
 
 def get_path_from_package(package: str) -> str:
