@@ -14,16 +14,6 @@ Let's take a look at an example. The first-party plugin `Gen-Protobuf` which add
     :lines: 85-91
 ```
 
-```yaml
-ext:
-   name: SchemaMessageOptions
-   type: schema
-   schemaExt:
-      add:
-        - name: protobuf_message_options
-          type: KeyValuePair[]
-```
-
 You can see that this extension `SchemaMessageOptions` is extending `schema` with an additional field `protobuf_message_options`. So, the AaC DSL now supports defining schema definitions with the additional field like so:
 
 ```{eval-rst}
@@ -33,27 +23,13 @@ You can see that this extension `SchemaMessageOptions` is extending `schema` wit
     :emphasize-lines: 5
 ```
 
-```yaml
-schema:
-    name: MyMessage
-    protobuf_message_options:
-        - key: java_package
-          value: com.example.foo
-    fields:
-        - name: exampleContent
-          type: string
-```
-
 ## Extending an Enum
 The AaC DSL also supports extending enum values. These extensions can be used to add additional enumeration values. The first-party plugin `Gen-Protobuf` leverages an enum extension to add new primitive types that are supproted in Protobuf5, but aren't present in the [core spec](https://github.com/DevOps-MBSE/AaC/blob/main/python/src/aac/spec/spec.yaml).
-
-
-[Example gen_protobuf.yaml new primitive types extension](https://github.com/DevOps-MBSE/AaC/blob/main/python/src/aac/plugins/first_party/gen_protobuf/gen_protobuf.yaml#L26-L43)
 
 ```{eval-rst}
 .. literalinclude:: ../../../../python/src/aac/plugins/first_party/gen_protobuf/gen_protobuf.yaml
     :language: yaml
-    :lines: 26-43
+    :lines: 30-47
 ```
 
 ```yaml
@@ -83,7 +59,7 @@ With these new primitive types, users of the `Gen-Protobuf` plugin can model pro
 .. literalinclude:: ../../../../python/model/protobuf_flow/Data.aac
     :language: yaml
     :lines: 41-47, 65-69
-    :emphasize-lines: 6-7, 4-5
+    :emphasize-lines: 6-7, 18-19
 ```
 
 ```yaml
