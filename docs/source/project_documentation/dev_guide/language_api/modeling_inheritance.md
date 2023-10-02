@@ -46,19 +46,6 @@ schema:
         - fields
     - name: Unique definition names
 ```
-
-New Definition Reference Structure to link to other definitions:
-```yaml
-schema:
-  name: DefinitionReference
-  fields:
-    - name: name
-      type: string
-  validation:
-    - name: Type references exist
-      arguments:
-        - name
-```
 Example data structure with inheritance from `python/model/flow/DataA.yaml`:
 
 ```{eval-rst}
@@ -122,19 +109,6 @@ While inheritance is not explicitly supported in version `0.1.3`, motivated user
 
 ## Recreate the Schema Changes
 The first step will be alter the `schema` definition to support inheritance as mentioned in the [supporting changes](#modeling-inheritance-in-013-or-earlier-versions) section above.
-
-Create the new `DefinitionReference` definition:
-```yaml
-schema:
-  name: DefinitionReference
-  fields:
-    - name: name
-      type: string
-  validation:
-    - name: Type references exist
-      arguments:
-        - name
-```
 
 Extend the schema structure to include the new `inherits` field:
 ```yaml

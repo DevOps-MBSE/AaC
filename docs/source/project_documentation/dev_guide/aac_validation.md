@@ -119,6 +119,14 @@ schema:
 
 ## Validator Plugins
 Each validator plugin provides its validation function to the core package via pluggy hooks. Each validator plugin should provide one validation function with the following signature:
+
+```{eval-rst}
+.. literalinclude:: ../../../../python/src/aac/plugins/validators/exclusive_fields/_validate_exclusive_fields.py
+    :language: python
+    :pyobject: validate_exclusive_fields
+    :lines: 1-18
+```
+
 ```python
 def validate_example(definition_under_test: Definition, target_schema_definition: Definition, language_context: LanguageContext, *validation_args) -> ValidatorResult:
     """
