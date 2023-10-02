@@ -19,34 +19,7 @@ The first change was to add an additional field to the `schema` definition named
     :lines: 266-311
     :emphasize-lines: 22-25
 ```
-```yaml
-schema:
-  name: schema
-  fields:
-    - name: name
-      type: string
-      description: |
-        The name of the schema definition.
-    - name: inherits              # <-- New Inherits Field
-      type: DefinitionReference[] # <-- New DefinitionReference Structure
-      description: |
-        A list of Schema definition names that this definition inherits from.
-    - name: fields
-      type: Field[]
-      description: |
-        A list of fields that make up the definition.
-    - name: validation
-      type: ValidationReference[]
-      description: |
-        References and additional arguments for validations to apply to the definition.
-  validation:
-    - name: Root key is defined
-    - name: Required fields are present
-      arguments:
-        - name
-        - fields
-    - name: Unique definition names
-```
+
 Example data structure with inheritance from `python/model/flow/DataA.yaml`:
 
 ```{eval-rst}
@@ -54,21 +27,6 @@ Example data structure with inheritance from `python/model/flow/DataA.yaml`:
     :language: yaml
     :emphasize-lines: 6-7
 ```
-
-```yaml
-import:
-  files:
-    - ./DataMessage.yaml
----
-schema:
-  inherits:
-    - DataMessage
-  name: DataA
-  fields:
-  - name: request
-    type: string
-```
-
 ## Accessing Inherited Attributes
 Inherited attributes are automatically applied to the child definition (sub-class definition), and can be accessed simply by accessing the child definitions' fields. In the above example where we reference `DataA` in `python/model/flow/DataA.yaml`, we can see that we'll inherit three fields (`source`, `destination`, and `content-length`) and no validations. So, despite `DataA` only declaring a single field, `request`, we'll find that the definition of `DataA` in the active context has inherited the three previously-mentioned fields:
 ```
@@ -119,7 +77,7 @@ ext:
    schemaExt:
       add:
         - name: inherits
-          type: DefinitionReference[]
+          type: reference[]
 ```
 
 ## Accessing the Inherited Fields
