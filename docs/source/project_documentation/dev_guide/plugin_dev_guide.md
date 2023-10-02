@@ -84,12 +84,6 @@ The following example shows how a plugin would register a command.
     :lines: 1-10
 ```
 
-```python
-@register_plugin_command(plugin_name, command_name)
-def get_command_name_command():
-    return AacCommand(command_name, "A command description. ", command_fn)
-```
-
 The above associates the command `command_name` with plugin `plugin_name`.
 
 ### Testing the Plugin
