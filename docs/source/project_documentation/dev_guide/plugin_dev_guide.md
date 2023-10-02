@@ -78,7 +78,7 @@ Plugins that contribute commands to AaC must register those commands so they can
 The following example shows how a plugin would register a command.
 
 ```{eval-rst}
-.. literalinclude:: ../../../../python/src/aac/plugins/first_part/gen_design_doc/gen_design_doc_impl.py
+.. literalinclude:: ../../../../python/src/aac/plugins/first_party/gen_design_doc/gen_design_doc_impl.py
     :language: python
     :pyobject: gen_design_doc
     :lines: 1-10
