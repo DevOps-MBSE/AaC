@@ -31,6 +31,11 @@ Plugins can be created with the first-party plugin `gen-plugin`. This can be exe
 The above command will output the help documentation for the `gen-plugin` command with example input.
 
 The `gen-plugin` command takes input from an architecture file and will produce a templated plugin project that can be installed as a first/third party plugin. An example plugin file is below:
+
+```{eval-rst}
+.. literalinclude:: ../../../../python/model/plugin/plugin.yaml
+    :language: yaml
+```
 > *The below example can be found under this path -> `/python/model/plugin/plugin.yaml`*
 
 ```yaml
@@ -113,6 +118,13 @@ Once the plugin is installed in the python environment, when you run the `aac -h
 Plugins that contribute commands to AaC must register those commands so they can be executed. To register a plugin command, we use the `register_plugin_command`decorator applied to the function that returns the `AacCommand`object defining the contributed command.
 
 The following example shows how a plugin would register a command.
+
+```{eval-rst}
+.. literalinclude:: ../../../python/src/aac/plugins/first_part/gen_design_doc/gen_design_doc_impl.py
+    :language: python
+    :pyobject: gen_design_doc
+    :lines: 1-10
+```
 
 ```python
 @register_plugin_command(plugin_name, command_name)
