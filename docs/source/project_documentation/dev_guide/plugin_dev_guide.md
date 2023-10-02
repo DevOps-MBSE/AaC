@@ -32,54 +32,12 @@ The above command will output the help documentation for the `gen-plugin` comman
 
 The `gen-plugin` command takes input from an architecture file and will produce a templated plugin project that can be installed as a first/third party plugin. An example plugin file is below:
 
+> *The below example can be found under this path -> `/python/model/plugin/plugin.yaml`*
+
 ```{eval-rst}
 .. literalinclude:: ../../../../python/model/plugin/plugin.yaml
     :language: yaml
 ```
-> *The below example can be found under this path -> `/python/model/plugin/plugin.yaml`*
-
-```yaml
-plugin:
-  name: Test Plugin
-  description: |
-    A test plugin with a contributed definition, a command, a definition
-    validation, and a primitive validation.
-  definitionSources:
-    - ./definitions.yaml
-  definitionValidations:
-    - name: Test definition validation
-  primitiveValidations:
-    - name: Test primitive validation
-  commands:
-    - name: test-plugin-command
-      helpText: Test plugin generation
-      input:
-        - name: architecture_file
-          type: file
-          python_type: str
-          description: An architecture-as-code file.
-      acceptance:
-        - scenario: Test some stuff
-          given:
-            - The definitions in {{test-plugin-command.input.architecture_file}} represent a valid system architecture.
-          when:
-            - The command is run with the expected arguments.
-          then:
-            - Then stuff happens
----
-schema:
-  name: TestPluginData
-  fields:
-    - name: value1
-      type: string
-    - name: value2
-      type: string
-  validation:
-    - name: Required fields are present
-      arguments:
-        - value1
-```
-
 #### Output of Gen-Plugin
 
 The output of the Gen-Plugin command will be some corresponding plugin files that are templated from the `yaml` file that was passed in to `gen-plugin`
@@ -120,7 +78,7 @@ Plugins that contribute commands to AaC must register those commands so they can
 The following example shows how a plugin would register a command.
 
 ```{eval-rst}
-.. literalinclude:: ../../../python/src/aac/plugins/first_part/gen_design_doc/gen_design_doc_impl.py
+.. literalinclude:: ../../../../python/src/aac/plugins/first_part/gen_design_doc/gen_design_doc_impl.py
     :language: python
     :pyobject: gen_design_doc
     :lines: 1-10
