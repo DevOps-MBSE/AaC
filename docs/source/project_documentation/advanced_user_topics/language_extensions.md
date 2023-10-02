@@ -32,42 +32,18 @@ The AaC DSL also supports extending enum values. These extensions can be used to
     :lines: 30-47
 ```
 
-```yaml
-ext:
-  name: ProtobufPrimitiveTypesExtension
-  type: Primitives
-  enumExt:
-    add:
-      - double
-      - float
-      - int32
-      - int64
-      - uint32
-      - uint64
-      - sint32
-      - sint64
-      - fixed32
-      - fixed64
-      - bool
-      - string
-      - bytes
-```
-
 With these new primitive types, users of the `Gen-Protobuf` plugin can model protobuf-specific data structure fields. For instance, users can model inter-service messages like so:
 
 ```{eval-rst}
 .. literalinclude:: ../../../../python/model/protobuf_flow/Data.aac
     :language: yaml
-    :lines: 41-47, 65-69
-    :emphasize-lines: 6-7, 18-19
+    :lines: 41-47
+    :emphasize-lines: 6-7
 ```
 
-```yaml
-schema:
-    name: MyMessage
-    fields:
-        - name: exampleContent
-          type: string
-        - name: dataValue
-          type: fixed64
+```{eval-rst}
+.. literalinclude:: ../../../../python/model/protobuf_flow/Data.aac
+    :language: yaml
+    :lines: 65-69
+    :emphasize-lines: 4-5
 ```
