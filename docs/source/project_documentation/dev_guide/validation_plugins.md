@@ -28,6 +28,12 @@ It is also worthy to note that the way that the AaC DSL validates itself is thro
 
 The following snippet shows how the `_validate.py` validates a `definition` that is being passed through:
 
+```{eval-rst}
+.. literalinclude:: ../../../../python/src/aac/validate/_validate.py
+    :language: python
+    :pyobject: _validate_definition
+```
+
 ```python
  def _validate_definition(
      definition: Definition, validator_plugins: list[DefinitionValidationContribution], language_context: LanguageContext
@@ -66,6 +72,12 @@ This approach is also used for in the [Primitive Validations](#primitive-validat
 
 Primitive Validations are handled by the below function:
 
+```{eval-rst}
+.. literalinclude:: ../../../../python/src/aac/validate/_validate.py
+    :language: python
+    :pyobject: _validate_field_types
+```
+
 ```python
 def _validate_primitive_types(definition: Definition, language_context: LanguageContext) -> ValidatorResult:
      """Validates the instances of AaC primitive types."""
@@ -78,13 +90,19 @@ def _validate_primitive_types(definition: Definition, language_context: Language
 
 ```
 
-The above method, like the `_validate_definition` function outlined in the previous example, takes in a `Definition` and takes in the `LanguageContext` of the definition that is being validated. However, The primary goal of this snippet is to validate the *Primitive Types* of a definition schema and pass these results to the `ValidatorResult` object for further processing and eventual output to the user. This function is an example of a *Primitive Constraint* with how validations are made/applied.
+The above method, like the `_validate_definition` function outlined in the previous example, takes in a `Definition` and takes in the `LanguageContext` of the definition that is being validated. However, The primary goal of this snippet is to validate the *Primitive and Enum Types* of a definition schema and pass these results to the `ValidatorResult` object for further processing and eventual output to the user. This function is an example of a *Primitive Constraint* with how validations are made/applied.
 
 The results of this validation are consolidated with the results from the `_validate_definition` function above in the `ValidatorResult` object for further analysis and output for the user to discern.
 
 ## Purpose of the Validation Definition
 
 Outlined in the code sample below is the schema of the `Validation Definition`.
+
+```{eval-rst}
+.. literalinclude:: ../../../../python/src/aac/spec/spec.yaml
+    :language: yaml
+    :lines: 120-149
+```
 
 ```yaml
 schema:
@@ -113,9 +131,9 @@ schema:
 
 The arguments that are passed through this `Validation` Definition are three variables:
 
-1. The name of the `definition` being validated.
-2. The description of the `definition` being validated.
-3. The behavior of the `definition` that is being validated.
+1. The `name` of the `definition` being validated.
+2. The `description` of the `definition` being validated.
+3. The `behavior` of the `definition` that is being validated.
 
 So the validation is taking the `definition` and is checking to make sure that the proper fields, and the arguments that are being passed are there in the declaration of the `definition` being validated.
 
@@ -136,7 +154,7 @@ However, the severity and cases for those severities can be outlined as such:
 ### Creating a Validation Plugin for Definitions
 
 Examples of a validator plugin can be found in the below directory:
-`AaC/python/src/aac/plugins/validators/`
+[AaC/python/src/aac/plugins/validators/](https://github.com/DevOps-MBSE/AaC/tree/main/python/src/aac/plugins/validators)
 
 Taking a look at the `required_fields` validator, we will use this as an example of what is required for a validator plugin.
 
@@ -152,6 +170,12 @@ Looking inside this directory the structure of this validator looks like this:
 So seeing the structure of this validator, there is an `init`, `implementation_file` and the `yaml` file used to create the initial plugin configuration.
 
 Taking a look at the `implementation_file` (`_validate_required_fields.py`) and `required_fields.yaml`:
+
+```{eval-rst}
+.. literalinclude:: ../../../../python/src/aac/plugins/validators/required_fields/_validate_required_fields.py
+    :language: python
+    :pyobject: validate_required_fields
+```
 
 ```python
 """   _validate_required_fields.py   """
@@ -209,6 +233,10 @@ def _is_field_populated(field_type: str, field_value: Any) -> bool:
 
     return is_field_populated
 ```
+```{eval-rst}
+.. literalinclude:: ../../../../python/src/aac/plugins/validators/required_fields/required_fields.yaml
+    :language: yaml
+```
 
 ```yaml
 # required_fields.yaml
@@ -260,6 +288,18 @@ As long as the arguments that are passed through the validator plugins and the r
 
 An example of one of the validator plugins is the `bool_validator.py` plugin that can be found in the `AaC/python/src/aac/plugins/first_party/primitive_type_check/validators/`
 
+```{eval-rst}
+.. literalinclude:: ../../../../python/src/aac/plugins/first_party/primitive_type_check/validators/bool_validator.py
+    :language: python
+    :pyobject: get_validator
+```
+
+```{eval-rst}
+.. literalinclude:: ../../../../python/src/aac/plugins/first_party/primitive_type_check/validators/bool_validator.py
+    :language: python
+    :pyobject: validate_bool
+```
+
 ```python
 def get_validator() -> PrimitiveValidationContribution:
     """Return the Primitive Validator for 'boolean'."""
@@ -285,7 +325,14 @@ def validate_bool(definition: Definition, value_to_validate: Any) -> Optional[Va
 
 The return of this validator plugin is the `finding` from the `validate_bool` function. The arguments that are passed through are, the `Definition` and the type of the `value_to_validate` which is checking if the boolean that is being passed is valid.
 
-Another validator is the `_validate_root_keys.py` plugin which checks and validates the root keys of the definition or schema. An example snippet of the arguments passed are as follows:
+Another validator is the `_validate_exclusive_fields.py` plugin which checks and validates the fields of the definition or schema. An example snippet of the arguments passed are as follows:
+
+```{eval-rst}
+.. literalinclude:: ../../../../python/src/aac/plugins/validators/exclusive_fields/_validate_exclusive_fields.py
+    :language: python
+    :pyobject: validate_exclusive_fields
+    :lines: 1-18
+```
 
 ```python
 def validate_root_keys(definition_under_test: Definition, target_schema_definition: Definition, language_context: LanguageContext, *validation_args) -> ValidatorResult:
