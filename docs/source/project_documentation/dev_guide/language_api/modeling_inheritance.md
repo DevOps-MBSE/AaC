@@ -12,6 +12,12 @@ Version `0.1.4` of AaC introduced changes to support inheritance for `schema` de
 
 ## Supporting Structure Changes
 The first change was to add an additional field to the `schema` definition named `inherits` that references other definition names:
+```{eval-rst}
+.. literalinclude:: ../../../../python/src/aac/spec/spec.yaml
+    :language: yaml
+    :lines: 266-311
+    :emphasize-lines: 22-25
+```
 ```yaml
 schema:
   name: schema
@@ -54,6 +60,13 @@ schema:
         - name
 ```
 Example data structure with inheritance from `python/model/flow/DataA.yaml`:
+
+```{eval-rst}
+.. literalinclude:: ../../../../python/model/flow/DataA.yaml
+    :language: yaml
+    :emphasize-lines: 6-7
+```
+
 ```yaml
 import:
   files:

@@ -30,6 +30,10 @@ In order for users to document the self-validating constraints in the AaC DSL, t
 
 Here is an example `validation` definition:
 
+```{eval-rst}
+.. literalinclude:: ../../../../python/src/aac/plugins/validators/exclusive_fields/exclusive_fields.yaml
+    :language: yaml
+```
 exclusive_fields.yaml
 ```yaml
 validation:
@@ -80,6 +84,13 @@ validation:
 ```
 
 Each `validation` definition is required to have a corresponding a Python implementation, which can be seen as a valdiation rule in the `Validation` schema definition:
+
+```{eval-rst}
+.. literalinclude:: ../../../../python/src/aac/spec/spec.yaml
+    :language: yaml
+    :lines: 120-149
+    :emphasize-lines: 24-25
+```
 
 ```yaml
 schema:
