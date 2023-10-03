@@ -8,7 +8,9 @@ from aac.lang.constants import (
     DEFINITION_FIELD_ACTION,
     DEFINITION_FIELD_ADD,
     DEFINITION_FIELD_ARGUMENTS,
+    DEFINITION_FIELD_ATTRIBUTES,
     DEFINITION_FIELD_BEHAVIOR,
+    DEFINITION_FIELD_CHILD,
     DEFINITION_FIELD_COMMANDS,
     DEFINITION_FIELD_COMPONENTS,
     DEFINITION_FIELD_DEFINITION_SOURCES,
@@ -19,17 +21,21 @@ from aac.lang.constants import (
     DEFINITION_FIELD_FIELDS,
     DEFINITION_FIELD_FILES,
     DEFINITION_FIELD_GIVEN,
+    DEFINITION_FIELD_ID,
     DEFINITION_FIELD_IDS,
     DEFINITION_FIELD_INHERITS,
     DEFINITION_FIELD_INPUT,
     DEFINITION_FIELD_NAME,
     DEFINITION_FIELD_OUTPUT,
+    DEFINITION_FIELD_PARENT,
     DEFINITION_FIELD_PARTICIPANTS,
     DEFINITION_FIELD_PRIMITIVE_VALIDATIONS,
     DEFINITION_FIELD_REQUIRED,
     DEFINITION_FIELD_REQUIREMENTS,
     DEFINITION_FIELD_ROOT,
     DEFINITION_FIELD_SCENARIO,
+    DEFINITION_FIELD_SECTIONS,
+    DEFINITION_FIELD_SHALL,
     DEFINITION_FIELD_SOURCE,
     DEFINITION_FIELD_STATE,
     DEFINITION_FIELD_STEP,
@@ -39,6 +45,7 @@ from aac.lang.constants import (
     DEFINITION_FIELD_THEN,
     DEFINITION_FIELD_TYPE,
     DEFINITION_FIELD_VALIDATION,
+    DEFINITION_FIELD_VALUE,
     DEFINITION_FIELD_VALUES,
     DEFINITION_FIELD_WHEN,
     DEFINITION_NAME_REQUIREMENT,
@@ -49,6 +56,7 @@ from aac.lang.constants import (
     ROOT_KEY_MODEL,
     ROOT_KEY_PLUGIN,
     ROOT_KEY_SCHEMA,
+    ROOT_KEY_SPECIFICATION,
     ROOT_KEY_USECASE,
     ROOT_KEY_VALIDATION,
 )
@@ -279,6 +287,42 @@ def create_plugin_definition(
 def create_import_definition(imports: list[str]) -> Definition:
     definition_dict = {DEFINITION_FIELD_FILES: imports}
     return create_definition(ROOT_KEY_IMPORT, "", definition_dict)
+
+
+def create_spec_definition(
+    name: str, description: str = "", requirements: list[dict] = [], sections: list[dict] = []
+) -> Definition:
+    definition_dict = {
+        DEFINITION_FIELD_NAME: name,
+        DEFINITION_FIELD_DESCRIPTION: description,
+        DEFINITION_FIELD_REQUIREMENTS: requirements,
+        DEFINITION_FIELD_SECTIONS: sections,
+    }
+    return create_definition(ROOT_KEY_SPECIFICATION, name, definition_dict)
+
+
+def create_spec_section_entry(name: str, description: str = "", requirements: list[dict] = []) -> dict:
+    return {
+        DEFINITION_FIELD_NAME: name,
+        DEFINITION_FIELD_DESCRIPTION: description,
+        DEFINITION_FIELD_REQUIREMENTS: requirements,
+    }
+
+
+def create_requirement_entry(
+    id: str, shall: str, parent: list[str] = [], child: list[str] = [], attributes: list[dict] = []
+) -> dict:
+    return {
+        DEFINITION_FIELD_ID: id,
+        DEFINITION_FIELD_SHALL: shall,
+        DEFINITION_FIELD_PARENT: parent,
+        DEFINITION_FIELD_CHILD: child,
+        DEFINITION_FIELD_ATTRIBUTES: attributes,
+    }
+
+
+def create_requirement_attribute_entry(name: str, value: str) -> dict:
+    return {DEFINITION_FIELD_NAME: name, DEFINITION_FIELD_VALUE: value}
 
 
 def create_definition(root_key: str, name: str, other_fields: dict = {}) -> Definition:
