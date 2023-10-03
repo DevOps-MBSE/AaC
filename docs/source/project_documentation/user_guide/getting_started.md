@@ -76,8 +76,13 @@ For example:
 
 ## Defining Your First Model
 Because AaC is an MBSE tool, `model` is a pretty central item to define. Let's start with an example of modeling an alarm clock. We can create a model for our overall alarm clock system/model by creating a new file in an AaC environment with the following content:
-
 _alarm_clock.yaml_
+```{eval-rst}
+.. literalinclude:: ../../../../python/model/alarm_clock/alarm_clock.yaml
+    :language: yaml
+    :lines: 6-8
+```
+
 ```yaml
 model:
   name: AlarmClock
@@ -90,6 +95,12 @@ Now, if you run the validation command:
 That's fairly simplistic, let's decompose our alarm clock system into components -- what parts make up our alarm clock? Let's say that there are three parts to our alarm clock, the internal clock, the timer for the alarm, and the alarm itself. We can define those three components as models that are components of our `AlarmClock` model like so:
 
 _alarm_clock.yaml_
+```{eval-rst}
+.. literalinclude:: ../../../../python/model/alarm_clock/alarm_clock.yaml
+    :language: yaml
+    :lines: 6-15, 38-41, 49-52, 73-76
+```
+
 ```yaml
 model:
   name: AlarmClock
@@ -137,7 +148,12 @@ More interestingly, this PlantUML diagram produces the following graphic when re
 ## Defining a Data Structure
 Now that we have a basic alarm clock and some components, we can start defining the data structures that will be used in our example model. What better data for an alarm clock than a timestamp? We can define our timestamp data structure with the `schema` tag like so:
 
-_data_structures.yaml_
+_structures.yaml_
+```{eval-rst}
+.. literalinclude:: ../../../../python/model/alarm_clock/structures.yaml
+    :language: yaml
+    :lines: 13-29
+```
 ```yaml
 schema:
   name: Timestamp
@@ -161,6 +177,13 @@ Defining a data structure by itself isn't particularly useful, but we can refere
 If we return to our alarm clock model, we can define that the timer component is stateful -- the function of the timer is influenced by the time provided by the user. This is easily defined by giving the `ClockTimer` model some state that includes the timestamp we just defined.
 
 _alarm_clock.yaml_
+_alarm_clock.yaml_
+```{eval-rst}
+.. literalinclude:: ../../../../python/model/alarm_clock/alarm_clock.yaml
+    :language: yaml
+    :lines: 50-56
+    :emphasize-lines: 5-6
+```
 ```yaml
 model:
   name: ClockTimer
@@ -177,6 +200,11 @@ Data structures are also used when defining interfaces between models/components
 If we return to our alarm clock example, then we can define the interface to our alarm system. In this example we'll re-use the timestamp data structure for simplicity since it fairly represents the data that we'd expect a user to provide to an alarm clock:
 
 _alarm_clock.yaml_
+```{eval-rst}
+.. literalinclude:: ../../../../python/model/alarm_clock/alarm_clock.yaml
+    :language: yaml
+    :lines: 6-22
+```
 ```yaml
 model:
   name: AlarmClock
@@ -210,6 +238,12 @@ For example, if we were to model the usecase of a user setting the alarm on our 
 Note the use of `import` to make definitions in separate files accessible to the current definitions.
 
 _usecase.yaml_
+```{eval-rst}
+.. literalinclude:: ../../../../python/model/alarm_clock/usecase.yaml
+    :language: yaml
+    :lines: 1-24
+    :emphasize-lines: 1-4, 6, 9, 16
+```
 ```yaml
 import:
   files:
@@ -240,6 +274,10 @@ usecase:
 The file `external.yaml` has a simple model definition for our external user, who is an actor external to our system but one that we are referencing. Since we aren't focusing on modeling things external to our alarm clock, we can keep our `Person` model very simple.
 
 _external.yaml_
+```{eval-rst}
+.. literalinclude:: ../../../../python/model/alarm_clock/external.yaml
+    :language: yaml
+```
 ```yaml
 model:
   name: Person
