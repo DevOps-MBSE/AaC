@@ -233,7 +233,7 @@ schema:
         The default value to use for the field if field is not provided.
 ---
 schema:
-  name: Import
+  name: AacImport
   package: aac.lang
   root: import
   description: |

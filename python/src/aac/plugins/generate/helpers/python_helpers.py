@@ -15,9 +15,7 @@ def get_python_primitive(aac_primitive_name: str) -> str:
         primitive_name = "reference"
     for aac_primitive in aac_primitives:
         if primitive_name == aac_primitive.name:
-            print(f"DEBUG: get_python_primitive({aac_primitive_name}) = {aac_primitive.instance.python_type}")
             return aac_primitive.instance.python_type
-    print(f"DEBUG: get_python_primitive({aac_primitive_name}) = 'None'")
     return "None"
 
 def get_python_type(aac_type_name: str) -> str:

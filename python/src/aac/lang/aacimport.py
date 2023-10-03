@@ -4,7 +4,7 @@ import attr
 from aac.execute.aac_execution_result import LanguageError
 
 @dataclass(frozen=True)
-class Import():
+class AacImport():
 
     files: list[str] = attrib(init=attr.ib(), validator=validators.optional(validators.instance_of(list)))
 

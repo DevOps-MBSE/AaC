@@ -5,6 +5,7 @@ import importlib
 from typing import Callable, Any
 from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus, OperationCancelled, ExecutionError
 from jinja2 import Environment, FileSystemLoader, Template
+import black
 from aac.context.language_context import LanguageContext
 from aac.context.definition import Definition
 from aac.io.parser._parse_source import parse
@@ -66,7 +67,8 @@ def generate(aac_file: str, generator_file: str, code_output: str, test_output: 
 
                 for source_data_def in source_data_definitions:
                     source_data_structure = source_data_def.structure
-                    output = jinja_template.render(source_data_structure)
+                    jinja_output = jinja_template.render(source_data_structure)
+                    output = black.format_str(jinja_output, mode=black.Mode())
                     
                     # write output to files to the traget in the template, respecting the overwrite indicator
                     root_out_dir = code_out_dir
@@ -117,7 +119,6 @@ def clean(aac_file: str, code_output: str, test_output: str, doc_output: str, no
     for dir in [code_out_dir, test_out_dir, doc_out_dir]:
         if path.exists(dir):
             for root, dirs, files in walk(dir):
-                print(f"DEBUG: walk returned files {files}")
                 for file in files:
                     if file.endswith(".aac_backup") or file.endswith(".aac_evaluate"):
                         remove(path.join(root, file))
