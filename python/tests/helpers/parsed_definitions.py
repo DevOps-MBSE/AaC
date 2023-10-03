@@ -19,6 +19,7 @@ from aac.lang.constants import (
     DEFINITION_FIELD_FIELDS,
     DEFINITION_FIELD_FILES,
     DEFINITION_FIELD_GIVEN,
+    DEFINITION_FIELD_IDS,
     DEFINITION_FIELD_INHERITS,
     DEFINITION_FIELD_INPUT,
     DEFINITION_FIELD_NAME,
@@ -26,6 +27,7 @@ from aac.lang.constants import (
     DEFINITION_FIELD_PARTICIPANTS,
     DEFINITION_FIELD_PRIMITIVE_VALIDATIONS,
     DEFINITION_FIELD_REQUIRED,
+    DEFINITION_FIELD_REQUIREMENTS,
     DEFINITION_FIELD_ROOT,
     DEFINITION_FIELD_SCENARIO,
     DEFINITION_FIELD_SOURCE,
@@ -39,6 +41,8 @@ from aac.lang.constants import (
     DEFINITION_FIELD_VALIDATION,
     DEFINITION_FIELD_VALUES,
     DEFINITION_FIELD_WHEN,
+    DEFINITION_NAME_REQUIREMENT,
+    DEFINITION_NAME_REQUIREMENT_REFERENCE,
     ROOT_KEY_IMPORT,
     ROOT_KEY_ENUM,
     ROOT_KEY_EXTENSION,
@@ -107,6 +111,7 @@ def create_behavior_entry(
     input: list[dict] = [],
     output: list[dict] = [],
     acceptance: list[dict] = [],
+    requirements: list[str] = [],
 ) -> dict:
     """
     Creates a single behavior entry for definitions.
@@ -124,6 +129,7 @@ def create_behavior_entry(
         DEFINITION_FIELD_INPUT: input,
         DEFINITION_FIELD_OUTPUT: output,
         DEFINITION_FIELD_ACCEPTANCE: acceptance,
+        DEFINITION_FIELD_REQUIREMENTS: {DEFINITION_FIELD_IDS: requirements},
     }
 
 
