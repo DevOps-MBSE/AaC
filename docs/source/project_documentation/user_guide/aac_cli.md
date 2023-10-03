@@ -55,7 +55,7 @@ optional arguments:
  Each plugin command that is listed can be further interrogated by using the help flag after the command name `aac <command> -h`, which will return all of the arguments for that particular command.
 
 For example, if I wanted to see what the options and arguments for the `puml-sequence` command it would look something like:
-```
+```shell
 $ aac puml-sequence -h
 usage: aac puml-sequence [-h] architecture_file output_directory
 
@@ -76,18 +76,18 @@ While AaC primarily sources CLI commands from plugins, AaC has a couple foundati
 The version command provides an easy-to-access semantic version of the AaC python tool.
 
 Usage:
-```
+```shell
 $ aac version
 version: success
 
-0.2.1
+0.3.10
 ```
 
 ### Validate
 The validate command provides the ability to validate an AaC file or a definition therein.
 
 To validate an AaC file, and any files it may import, run the validate command with a single argument which is the path to the file you want to validate.
-```
+```shell
 $ aac validate model/alarm_clock/alarm_clock.yaml
 validate: success
 
@@ -95,7 +95,7 @@ model/alarm_clock/alarm_clock.yaml is valid.
 ```
 
 Alternatively, if you only wanted to validate a single definition in a file, you can use a optional argument `--definition_name insert_name_here` to signal to the validation plugin that it should only validate the definition with the corresponding name in the file.
-```
+```shell
 $ aac validate model/alarm_clock/alarm_clock.yaml --definition_name AlarmClock
 validate: success
 
@@ -103,7 +103,7 @@ validate: success
 ```
 
 If you attempt to selectively validate a single definition, but fail to choose the name of a definition in the file, the plugin will return some suggestions such as names of definitions in your target file or the actual file containing the definition you selected:
-```
+```shell
 $ aac validate model/alarm_clock/alarm_clock.yaml --definition_name Primitives
 validate: plugin_failure
 
