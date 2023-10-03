@@ -8,25 +8,25 @@ from aac.context.language_context import LanguageContext
 plugin_name = "Generate Plugin"
 
 
-def gen_plugin(aac_plugin_file: str, code_output: str, test_output: str, doc_output: str, no_prompt: bool, force_overwrite: bool) -> ExecutionResult:
+def gen_plugin(aac_plugin_file: str, code_output: str, test_output: str, doc_output: str, no_prompt: bool, force_overwrite: bool, evaluate: bool) -> ExecutionResult:
     """Print the AaC package version."""
 
     return ExecutionResult(plugin_name, "gen-plugin", ExecutionStatus.SUCCESS, [])
 
 
-def after_gen_plugin_generate(aac_plugin_file: str, code_output: str, test_output: str, doc_output: str, no_prompt: bool, force_overwrite: bool, generate: Callable) -> ExecutionResult:
+def after_gen_plugin_generate(aac_plugin_file: str, code_output: str, test_output: str, doc_output: str, no_prompt: bool, force_overwrite: bool, evaluate: bool, generate: Callable) -> ExecutionResult:
     gen_plugin_generator_file = path.abspath(path.join(path.dirname(__file__), "./gen_plugin_generator.aac"))
-    return generate(aac_plugin_file, gen_plugin_generator_file, code_output, test_output, doc_output, no_prompt, force_overwrite)
+    return generate(aac_plugin_file, gen_plugin_generator_file, code_output, test_output, doc_output, no_prompt, force_overwrite, evaluate)
 
-def gen_project(aac_project_file: str, output: str, no_prompt: bool, force_overwrite: bool) -> ExecutionResult:
+def gen_project(aac_project_file: str, output: str, no_prompt: bool, force_overwrite: bool, evaluate: bool) -> ExecutionResult:
     """Print the AaC package version."""
 
     return ExecutionResult(plugin_name, "gen-plugin", ExecutionStatus.SUCCESS, [])
 
 
-def after_gen_project_generate(aac_project_file: str, output: str, no_prompt: bool, force_overwrite: bool, generate: Callable) -> ExecutionResult:
+def after_gen_project_generate(aac_project_file: str, output: str, no_prompt: bool, force_overwrite: bool, evaluate: bool, generate: Callable) -> ExecutionResult:
     gen_plugin_generator_file = path.abspath(path.join(path.dirname(__file__), "./gen_plugin_generator.aac"))
-    result =  generate(aac_project_file, gen_plugin_generator_file, output, output, output, no_prompt, force_overwrite)
+    result =  generate(aac_project_file, gen_plugin_generator_file, output, output, output, no_prompt, force_overwrite, evaluate)
     if result.is_success():
         src_path = path.join(output, "src")
         tests_path = path.join(output, "tests")

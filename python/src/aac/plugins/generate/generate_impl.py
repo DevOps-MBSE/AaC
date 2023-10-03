@@ -1,6 +1,6 @@
 """AaC Plugin implementation module for the Version plugin."""
 
-from os import path, makedirs
+from os import path, makedirs, walk, remove
 import importlib
 from typing import Callable, Any
 from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus, OperationCancelled, ExecutionError
@@ -17,11 +17,11 @@ from aac.plugins.generate.helpers.python_helpers import get_path_from_package, g
 plugin_name = "Generate"
 
 
-def generate(aac_file: str, generator_file: str, code_output: str, test_output: str, doc_output: str, no_prompt: bool, force_overwrite: bool) -> ExecutionResult:
+def generate(aac_file: str, generator_file: str, code_output: str, test_output: str, doc_output: str, no_prompt: bool, force_overwrite: bool, evaluate: bool) -> ExecutionResult:
     """Generate content from your AaC architecture."""
 
     # setup directories
-    code_out_dir, test_out_dir, doc_out_dir = get_output_directories(aac_file, code_output, test_output, doc_output, no_prompt)
+    code_out_dir, test_out_dir, doc_out_dir = get_output_directories("AaC Gen-Plugin will generate code and tests in the following directories:", aac_file, code_output, test_output, doc_output, no_prompt)
 
     # build out properties
     # the templates need data from the plugin model to generate code
@@ -81,25 +81,50 @@ def generate(aac_file: str, generator_file: str, code_output: str, test_output: 
                     if not path.exists(output_dir):
                         makedirs(output_dir)
 
-                    # render the template and write contents to output_file_path
-                    if force_overwrite or template.overwrite in [OverwriteOption.OVERWRITE]:
-                        if path.exists(output_file_path):
-                            backup_file(output_file_path)                            
-                        with open(output_file_path, "w") as output_file:
+                    if evaluate:
+                        # write contents to an aac_evaluate file for user review
+                        evaluate_file_path = f"{output_file_path}.aac_evaluate"
+                        with open(evaluate_file_path, "w") as output_file:
                             output_file.write(output)
                             output_file.close()
-                    elif template.overwrite in [OverwriteOption.SKIP]:
-                        # this is for the skip option, so only write if file doesn't exist
-                        if not path.exists(output_file_path):
+                    else:
+                        # write contents to output_file_path
+                        if force_overwrite or template.overwrite in [OverwriteOption.OVERWRITE]:
                             if path.exists(output_file_path):
-                                backup_file(output_file_path)
+                                backup_file(output_file_path)                            
                             with open(output_file_path, "w") as output_file:
                                 output_file.write(output)
                                 output_file.close()
+                        elif template.overwrite in [OverwriteOption.SKIP]:
+                            # this is for the skip option, so only write if file doesn't exist
+                            if not path.exists(output_file_path):
+                                with open(output_file_path, "w") as output_file:
+                                    output_file.write(output)
+                                    output_file.close()
+                            else:
+                                evaluate_file_path = f"{output_file_path}.aac_evaluate"
+                                with open(evaluate_file_path, "w") as output_file:
+                                    output_file.write(output)
+                                    output_file.close()
     
     return ExecutionResult(plugin_name, "generate", ExecutionStatus.SUCCESS, [])
 
-def get_output_directories(aac_plugin_file: str, code_output: str, test_output: str, doc_output: str, no_prompt: bool) -> tuple[str, str, str]:
+def clean(aac_file: str, code_output: str, test_output: str, doc_output: str, no_prompt: bool) -> ExecutionResult:
+
+    # setup directories
+    code_out_dir, test_out_dir, doc_out_dir = get_output_directories("AaC will delete backup and eval files in the following directories:", aac_file, code_output, test_output, doc_output, no_prompt)
+
+    for dir in [code_out_dir, test_out_dir, doc_out_dir]:
+        if path.exists(dir):
+            for root, dirs, files in walk(dir):
+                print(f"DEBUG: walk returned files {files}")
+                for file in files:
+                    if file.endswith(".aac_backup") or file.endswith(".aac_evaluate"):
+                        remove(path.join(root, file))
+
+    return ExecutionResult(plugin_name, "generate", ExecutionStatus.SUCCESS, [])
+
+def get_output_directories(message: str, aac_plugin_file: str, code_output: str, test_output: str, doc_output: str, no_prompt: bool) -> tuple[str, str, str]:
 
     code_out: str = code_output
     test_out: str = test_output
@@ -116,7 +141,7 @@ def get_output_directories(aac_plugin_file: str, code_output: str, test_output: 
         doc_out = code_out.replace("src", "docs")
 
     if not no_prompt:
-        print("AaC Gen-Plugin will generate code and tests in the following directories:")
+        print(message)
         print(f"   code: {code_out}")
         print(f"   tests: {test_out}")
         print(f"   docs: {doc_out}")
@@ -126,7 +151,7 @@ def get_output_directories(aac_plugin_file: str, code_output: str, test_output: 
         if approval in ["y", "Y", "yes", "Yes", "YES"]:
             return (code_out, test_out, doc_out)
         else:
-            raise OperationCancelled("User cancelled generate operation.")
+            raise OperationCancelled("User cancelled operation.")
 
     return (code_out, test_out, doc_out)
 
@@ -159,7 +184,7 @@ def load_template(template_abs_path: str, helper_functions: dict[str, Callable] 
     return template
 
 def backup_file(file_path: str) -> str:
-    backup_file_path = f"{file_path}.generate_backup"
+    backup_file_path = f"{file_path}.aac_backup"
     with open(file_path, "r") as input_file:
         with open(backup_file_path, "w") as backup_file:
             backup_file.write(input_file.read())

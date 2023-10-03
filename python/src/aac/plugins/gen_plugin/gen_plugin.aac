@@ -29,6 +29,9 @@ plugin:
         - name: --force-overwrite
           type: bool
           description: Informs generator to backup and overwrite all existing files regardless of template definition.
+        - name: --evaluate
+          type: bool
+          description: Informs generator to only write evaluation files with no impact to existing files.
     - name: gen-project
       help_text: |
         Generate code and stubs for an AaC project.  Overwrites will backup existing files.
@@ -48,4 +51,7 @@ plugin:
         - name: --force-overwrite
           type: bool
           description: Informs generator to backup and overwrite all existing files regardless of template definition.
+        - name: --evaluate
+          type: bool
+          description: Informs generator to only write evaluation files with no impact to existing files.
           
