@@ -117,6 +117,11 @@ message SomeDataMessage {
 Protobuf [enums](https://developers.google.com/protocol-buffers/docs/proto3#enum) can easily be defined by defining AaC enums.
 
 An example AaC enum definition would look like:
+```{eval-rst}
+.. literalinclude:: ../../../../python/model/protobuf_flow/Data.aac
+    :language: yaml
+    :lines: 75-82
+```
 ```yaml
 enum:
   name: MessageType
@@ -163,6 +168,13 @@ Protobuf allows for special [options](https://developers.google.com/protocol-buf
 definitions.
 
 An example use of options would look like:
+```{eval-rst}
+.. literalinclude:: ../../../../python/model/protobuf_flow/Data.aac
+    :language: yaml
+    :lines: 5-27
+    :emphasize-lines: 5-9
+```
+
 ```yaml
 schema:
   name: SomeDataMessage
