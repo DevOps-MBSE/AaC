@@ -39,22 +39,25 @@ class PluginCommand:
 
     @classmethod
     def from_dict(cls, data):
+        args = {}
+
         help_text = data.pop("help_text", None)
+        args["help_text"] = help_text
+
         run_before_data = data.pop("run_before", [])
         run_before = [
             PluginCommandReference.from_dict(entry) for entry in run_before_data
         ]
+        args["run_before"] = run_before
+
         run_after_data = data.pop("run_after", [])
         run_after = [
             PluginCommandReference.from_dict(entry) for entry in run_after_data
         ]
+        args["run_after"] = run_after
+
         input_data = data.pop("input", [])
         input = [PluginCommandInput.from_dict(entry) for entry in input_data]
+        args["input"] = input
 
-        return cls(
-            help_text=help_text,
-            run_before=run_before,
-            run_after=run_after,
-            input=input,
-            **data
-        )
+        return cls(**args, **data)

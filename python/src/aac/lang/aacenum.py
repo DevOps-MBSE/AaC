@@ -23,6 +23,9 @@ class AacEnum(AacType):
 
     @classmethod
     def from_dict(cls, data):
-        enumerated_values = data.pop("enumerated_values", [])
+        args = {}
 
-        return cls(enumerated_values=enumerated_values, **data)
+        enumerated_values = data.pop("enumerated_values", [])
+        args["enumerated_values"] = enumerated_values
+
+        return cls(**args, **data)

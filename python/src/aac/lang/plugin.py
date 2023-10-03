@@ -35,14 +35,16 @@ class Plugin:
 
     @classmethod
     def from_dict(cls, data):
+        args = {}
+
         description = data.pop("description", None)
+        args["description"] = description
+
         commands_data = data.pop("commands", [])
         commands = [PluginCommand.from_dict(entry) for entry in commands_data]
-        definition_sources = data.pop("definition_sources", [])
+        args["commands"] = commands
 
-        return cls(
-            description=description,
-            commands=commands,
-            definition_sources=definition_sources,
-            **data
-        )
+        definition_sources = data.pop("definition_sources", [])
+        args["definition_sources"] = definition_sources
+
+        return cls(**args, **data)

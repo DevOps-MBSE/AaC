@@ -79,7 +79,7 @@ generator:
         - name: PythonSchemaTest
           description: Generates a Python unit test for a Schema class
           template_file: ./templates/test_schema.jinja2
-          overwrite: SKIP
+          overwrite: OVERWRITE
           helper_functions:
             - name: Get python package from definition
               description: Searches aac definitions by root and name to find a package name

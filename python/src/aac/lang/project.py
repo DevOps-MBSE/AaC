@@ -31,9 +31,16 @@ class Project:
 
     @classmethod
     def from_dict(cls, data):
+        args = {}
+
         name = data.pop("name", None)
+        args["name"] = name
+
         description = data.pop("description", None)
+        args["description"] = description
+
         uses_data = data.pop("uses", [])
         uses = [ProjectDependency.from_dict(entry) for entry in uses_data]
+        args["uses"] = uses
 
-        return cls(name=name, description=description, uses=uses, **data)
+        return cls(**args, **data)

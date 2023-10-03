@@ -27,7 +27,10 @@ class GeneratorSource:
 
     @classmethod
     def from_dict(cls, data):
+        args = {}
+
         templates_data = data.pop("templates", [])
         templates = [GeneratorTemplate.from_dict(entry) for entry in templates_data]
+        args["templates"] = templates
 
-        return cls(templates=templates, **data)
+        return cls(**args, **data)

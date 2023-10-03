@@ -30,8 +30,12 @@ class PluginCommandInput:
 
     @classmethod
     def from_dict(cls, data):
+        args = {}
+
         description = data.pop("description", None)
+        args["description"] = description
 
         default = data.pop("default", None)
+        args["default"] = default
 
-        return cls(description=description, default=default, **data)
+        return cls(**args, **data)

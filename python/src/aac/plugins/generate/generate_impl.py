@@ -21,6 +21,8 @@ plugin_name = "Generate"
 def generate(aac_file: str, generator_file: str, code_output: str, test_output: str, doc_output: str, no_prompt: bool, force_overwrite: bool, evaluate: bool) -> ExecutionResult:
     """Generate content from your AaC architecture."""
 
+    result = ExecutionResult(plugin_name, "generate", ExecutionStatus.SUCCESS, [])
+
     # setup directories
     code_out_dir, test_out_dir, doc_out_dir = get_output_directories("AaC Gen-Plugin will generate code and tests in the following directories:", aac_file, code_output, test_output, doc_output, no_prompt)
 
@@ -47,7 +49,6 @@ def generate(aac_file: str, generator_file: str, code_output: str, test_output: 
             if not source_data_definitions or len(source_data_definitions) == 0:
                 # no data for this particular generator
                 continue
-            
 
             # go through each generator template
             for template in source.templates:
@@ -77,7 +78,6 @@ def generate(aac_file: str, generator_file: str, code_output: str, test_output: 
                     elif template.output_target == GeneratorOutputTarget.DOC:
                         root_out_dir = doc_out_dir
                     output_file_path = get_output_file_path(root_out_dir, template, source_data_def.package, source_data_def.name)
-
                     # make sure the directory exists
                     output_dir = path.dirname(output_file_path)
                     if not path.exists(output_dir):
@@ -93,7 +93,7 @@ def generate(aac_file: str, generator_file: str, code_output: str, test_output: 
                         # write contents to output_file_path
                         if force_overwrite or template.overwrite in [OverwriteOption.OVERWRITE]:
                             if path.exists(output_file_path):
-                                backup_file(output_file_path)                            
+                                backup_file(output_file_path)
                             with open(output_file_path, "w") as output_file:
                                 output_file.write(output)
                                 output_file.close()
@@ -109,7 +109,7 @@ def generate(aac_file: str, generator_file: str, code_output: str, test_output: 
                                     output_file.write(output)
                                     output_file.close()
     
-    return ExecutionResult(plugin_name, "generate", ExecutionStatus.SUCCESS, [])
+    return result
 
 def clean(aac_file: str, code_output: str, test_output: str, doc_output: str, no_prompt: bool) -> ExecutionResult:
 

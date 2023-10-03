@@ -180,6 +180,10 @@ schema:
       description: |
         A list of fields that make up the definition.
       is_required: true
+    - name: requirements
+      type: reference(req.id)[]
+      description: |
+        A list of requirements associated with this schema.
 ---
 schema:
   name: SchemaExtension
@@ -526,3 +530,125 @@ aacenum:
     - CODE
     - TEST
     - DOC
+---
+# Requirement Specifiction Types
+---
+schema:
+  name: RequirementSpecification
+  package: aac.lang
+  root: req_spec
+  description: |
+    A requirement specification definition to capture desired behavior or attributes of the system being modeled.
+    
+    Within many contexts requirements remain the central element of any Model-Based System Engineering solution.
+    AaC supports the definition, derivation, and trace of requirements throughout the model using the spec type and
+    associated reference capabilities.
+  fields:
+    - name: name
+      type: string
+      description: |
+        The name of the requirement specification.
+      is_required: true
+    - name: description
+      type: string
+      description: |
+        A brief description of the requirement specification.
+    - name: sections
+      type: reference(req_spec.name)[]
+      description: |
+        A list of requirement sections that make up the specification.
+    - name: parent_specs
+      type: reference(req_spec.name)[]
+      description: |
+        A list of requirement specifications that this specification inherits from.
+    - name: child_specs
+      type: reference(req_spec.name)[]
+      description: |
+        A list of requirement specifications that inherit from this specification.
+    - name: requirements
+      type: reference(req.id)[]
+      description: |
+        A list of requirements that make up the specification.
+---
+schema:
+  name: Requirement
+  package: aac.lang
+  root: req
+  fields:
+    - name: id
+      type: string
+      description: |
+        The unique identifier for the requirement.
+      is_required: true
+    - name: shall
+      type: string
+      description: |
+        The requirement statement.  If needed, you may reference a requirement parameter
+        by name using the following syntax: {param_name}.
+      is_required: true
+    - name: parents
+      type: reference(req.id)[]
+      description: |
+        A list of requirements that this requirement is decomposed from.
+    - name: childern
+      type: reference(req.id)[]
+      description: |
+        A list of requirements that are decomposed from this requirement.
+    - name: parameters
+      type: reference(req_param.name)[]
+      description: |
+        A list of parameters that provide additional information about the requirement.
+    - name: verification_method
+      type: RequirementVerificationMethod
+      description: |
+        The method used to verify the requirement.
+    - name: attributes
+      type: RequirementAttribute[]
+      description: |
+        A list of attributes that provide additional information about the requirement.
+---
+schema:
+  name: RequirementParameter
+  package: aac.lang
+  root: req_param
+  fields:
+    - name: name
+      type: string
+      description: |
+        The name of the parameter.
+      is_required: true
+    - name: value
+      type: string
+      description: |
+        The value of the parameter.
+      is_required: true
+---
+aacenum:
+  name: RequirementVerificationMethod
+  package: aac.lang
+  description: |
+    The method used to verify the requirement.
+  enumerated_values:
+    - ANALYSIS
+    - DEMONSTRATION
+    - INSPECTION
+    - TEST
+---
+schema:
+  name: RequirementAttribute
+  package: aac.lang
+  description: |
+    User definable attributes that can be associataed with a requirement.
+    A common example may be explanation or interpretation to provice additional
+    context to help reduce ambiguity.
+  fields:
+    - name: name
+      type: string
+      description: |
+        The name of the attribute.
+      is_required: true
+    - name: value
+      type: string
+      description: |
+        The value of the attribute.
+      is_required: true

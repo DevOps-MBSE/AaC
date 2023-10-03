@@ -29,8 +29,13 @@ class Modifier:
 
     @classmethod
     def from_dict(cls, data):
+        args = {}
+
         description = data.pop("description", None)
+        args["description"] = description
+
         fields_data = data.pop("fields", [])
         fields = [Field.from_dict(entry) for entry in fields_data]
+        args["fields"] = fields
 
-        return cls(description=description, fields=fields, **data)
+        return cls(**args, **data)

@@ -23,6 +23,9 @@ class Primitive(AacType):
 
     @classmethod
     def from_dict(cls, data):
-        python_type = data.pop("python_type", None)
+        args = {}
 
-        return cls(python_type=python_type, **data)
+        python_type = data.pop("python_type", None)
+        args["python_type"] = python_type
+
+        return cls(**args, **data)

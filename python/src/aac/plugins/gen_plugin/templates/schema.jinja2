@@ -20,9 +20,27 @@ class {{ schema.name }}({% if schema.extends | length > 0 %}{% for extension in 
 
     @classmethod
     def from_dict(cls, data):
-        {% for field in schema.fields %}{% if get_python_primitive(field.type) != "None"%}{% if field.type.endswith('[]') %}{{get_python_name(field.name)}} = data.pop("{{field.name}}", []){% elif not field.is_required %}{{get_python_name(field.name)}} = data.pop("{{field.name}}", None){% endif %}{% else %}{% if field.type.endswith('[]') %}{{get_python_name(field.name)}}_data = data.pop("{{field.name}}", [])
-        {{get_python_name(field.name)}} = [{{field.type[:-2]}}.from_dict(entry) for entry in {{get_python_name(field.name)}}_data]{% else %}{{get_python_name(field.name)}}_data = data.pop("{{field.name}}", None)
-        {{get_python_name(field.name)}} = {{field.type}}.from_dict({{get_python_name(field.name)}}_data) if {{get_python_name(field.name)}}_data else None{% endif %}{% endif %}
+        args = {}
+        {% for field in schema.fields %}
+        {% if get_python_primitive(field.type) != "None"%}
+        {% if field.type.endswith('[]') %}
+        {{get_python_name(field.name)}} = data.pop("{{field.name}}", [])
+        args["{{get_python_name(field.name)}}"] = {{get_python_name(field.name)}}
+        {% elif not field.is_required %}
+        {{get_python_name(field.name)}} = data.pop("{{field.name}}", None)
+        args["{{get_python_name(field.name)}}"] = {{get_python_name(field.name)}}
+        {% endif %}
+        {% else %}
+        {% if field.type.endswith('[]') %}
+        {{get_python_name(field.name)}}_data = data.pop("{{field.name}}", [])
+        {{get_python_name(field.name)}} = [{{field.type[:-2]}}.from_dict(entry) for entry in {{get_python_name(field.name)}}_data]
+        args["{{get_python_name(field.name)}}"] = {{get_python_name(field.name)}}
+        {% else %}
+        {{get_python_name(field.name)}}_data = data.pop("{{field.name}}", None)
+        {{get_python_name(field.name)}} = {{field.type}}.from_dict({{get_python_name(field.name)}}_data) if {{get_python_name(field.name)}}_data else None
+        args["{{get_python_name(field.name)}}"] = {{get_python_name(field.name)}}
+        {% endif %}
+        {% endif %}
         {% endfor %}
 
-        return cls({% for field in schema.fields %}{% if field.type.endswith('[]')%}{{get_python_name(field.name)}}={{get_python_name(field.name)}}, {% elif not field.is_required %}{{get_python_name(field.name)}}={{get_python_name(field.name)}}, {% endif %}{% endfor %}**data)
+        return cls(**args, **data)

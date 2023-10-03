@@ -18,6 +18,7 @@ class SchemaTestHelper:
             "modifiers": ["test"],
             "root": "test",
             "fields": [FieldTestHelper.generate_data()],
+            "requirements": ["test"],
         }
 
     @staticmethod
@@ -35,6 +36,7 @@ class TestSchema(unittest.TestCase):
         self.assertEqual(instance.modifiers, schema_dict["modifiers"])
         self.assertEqual(instance.root, schema_dict["root"])
         self.assertIsNotNone(instance.fields)
+        self.assertEqual(instance.requirements, schema_dict["requirements"])
 
         schema_dict = SchemaTestHelper.generate_data_required_only()
         instance = Schema.from_dict(deepcopy(schema_dict))

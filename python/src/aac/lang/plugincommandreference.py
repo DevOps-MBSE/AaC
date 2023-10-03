@@ -22,4 +22,6 @@ class PluginCommandReference:
 
     @classmethod
     def from_dict(cls, data):
-        return cls(**data)
+        args = {}
+
+        return cls(**args, **data)

@@ -1,4 +1,5 @@
 from aac.context.language_context import LanguageContext
+from aac.lang.aacenum import AacEnum
 from aac import __version__
 
 # build out jinja2 utility functions

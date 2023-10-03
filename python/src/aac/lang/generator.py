@@ -29,8 +29,13 @@ class Generator:
 
     @classmethod
     def from_dict(cls, data):
+        args = {}
+
         description = data.pop("description", None)
+        args["description"] = description
+
         sources_data = data.pop("sources", [])
         sources = [GeneratorSource.from_dict(entry) for entry in sources_data]
+        args["sources"] = sources
 
-        return cls(description=description, sources=sources, **data)
+        return cls(**args, **data)

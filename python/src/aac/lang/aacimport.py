@@ -22,6 +22,9 @@ class AacImport:
 
     @classmethod
     def from_dict(cls, data):
-        files = data.pop("files", [])
+        args = {}
 
-        return cls(files=files, **data)
+        files = data.pop("files", [])
+        args["files"] = files
+
+        return cls(**args, **data)

@@ -34,10 +34,15 @@ class Field:
 
     @classmethod
     def from_dict(cls, data):
-        description = data.pop("description", None)
-        is_required = data.pop("is_required", None)
-        default = data.pop("default", None)
+        args = {}
 
-        return cls(
-            description=description, is_required=is_required, default=default, **data
-        )
+        description = data.pop("description", None)
+        args["description"] = description
+
+        is_required = data.pop("is_required", None)
+        args["is_required"] = is_required
+
+        default = data.pop("default", None)
+        args["default"] = default
+
+        return cls(**args, **data)

@@ -61,35 +61,45 @@ class GeneratorTemplate:
 
     @classmethod
     def from_dict(cls, data):
+        args = {}
+
         description = data.pop("description", None)
+        args["description"] = description
 
         overwrite_data = data.pop("overwrite", None)
         overwrite = (
             OverwriteOption.from_dict(overwrite_data) if overwrite_data else None
         )
+        args["overwrite"] = overwrite
+
         helper_functions_data = data.pop("helper_functions", [])
         helper_functions = [
             JinjaHelperFunction.from_dict(entry) for entry in helper_functions_data
         ]
+        args["helper_functions"] = helper_functions
+
         output_target_data = data.pop("output_target", None)
         output_target = (
             GeneratorOutputTarget.from_dict(output_target_data)
             if output_target_data
             else None
         )
+        args["output_target"] = output_target
+
         output_path_uses_data_source_package = data.pop(
             "output_path_uses_data_source_package", None
         )
-        output_file_prefix = data.pop("output_file_prefix", None)
-        output_file_name = data.pop("output_file_name", None)
-        output_file_suffix = data.pop("output_file_suffix", None)
+        args[
+            "output_path_uses_data_source_package"
+        ] = output_path_uses_data_source_package
 
-        return cls(
-            description=description,
-            helper_functions=helper_functions,
-            output_path_uses_data_source_package=output_path_uses_data_source_package,
-            output_file_prefix=output_file_prefix,
-            output_file_name=output_file_name,
-            output_file_suffix=output_file_suffix,
-            **data
-        )
+        output_file_prefix = data.pop("output_file_prefix", None)
+        args["output_file_prefix"] = output_file_prefix
+
+        output_file_name = data.pop("output_file_name", None)
+        args["output_file_name"] = output_file_name
+
+        output_file_suffix = data.pop("output_file_suffix", None)
+        args["output_file_suffix"] = output_file_suffix
+
+        return cls(**args, **data)

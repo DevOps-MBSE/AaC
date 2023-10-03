@@ -30,6 +30,9 @@ class JinjaHelperFunction:
 
     @classmethod
     def from_dict(cls, data):
-        description = data.pop("description", None)
+        args = {}
 
-        return cls(description=description, **data)
+        description = data.pop("description", None)
+        args["description"] = description
+
+        return cls(**args, **data)
