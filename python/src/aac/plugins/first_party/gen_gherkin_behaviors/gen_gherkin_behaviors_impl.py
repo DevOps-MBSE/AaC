@@ -1,6 +1,17 @@
 """AaC Plugin implementation module for the Generate Gherkin Feature Files plugin."""
 
-from aac.lang.definitions.collections import get_models_by_type, convert_parsed_definitions_to_dict_definition
+from aac.lang.constants import (
+    DEFINITION_FIELD_ACCEPTANCE,
+    DEFINITION_FIELD_BEHAVIOR,
+    DEFINITION_FIELD_DESCRIPTION,
+    DEFINITION_FIELD_GIVEN,
+    DEFINITION_FIELD_NAME,
+    DEFINITION_FIELD_SCENARIO,
+    DEFINITION_FIELD_THEN,
+    DEFINITION_FIELD_WHEN,
+    DEFINITION_NAME_MODEL,
+)
+from aac.lang.definitions.collections import convert_parsed_definitions_to_dict_definition, get_models_by_type
 from aac.plugins import PluginError
 from aac.plugins.plugin_execution import PluginExecutionResult, plugin_result
 from aac.templates.engine import TemplateOutputFile, generate_template, load_templates, write_generated_templates_to_file
@@ -49,25 +60,27 @@ def _get_template_properties(parsed_models: dict) -> dict[str, dict]:
 
     def collect_models(parsed_models: dict) -> dict:
         """Return a structured dict like parsed_models, but only consisting of model definitions."""
-        return get_models_by_type(parsed_models, "model")
+        return get_models_by_type(parsed_models, DEFINITION_NAME_MODEL)
 
     def collect_model_behavior_properties(model: dict) -> list[dict]:
         """Produce a template property dictionary for each behavior entry in a model."""
-        behaviors = model.get("model", {}).get("behavior", [])
+        behaviors = model.get(DEFINITION_NAME_MODEL, {}).get(DEFINITION_FIELD_BEHAVIOR, [])
 
         behavior_lists = map(collect_behavior_entry_properties, behaviors)
         return [behavior for behavior_list in behavior_lists for behavior in behavior_list]
 
     def collect_behavior_entry_properties(behavior_entry: dict) -> list[dict]:
         """Produce a list of template property dictionaries from a behavior entry."""
-        feature_name = behavior_entry.get("name")
-        feature_description = behavior_entry.get("description", "TODO: Fill out this feature description.")  # noqa: T101
-        behavior_scenarios = behavior_entry.get("acceptance", [])
+        feature_name = behavior_entry.get(DEFINITION_FIELD_NAME)
+        feature_description = behavior_entry.get(
+            DEFINITION_FIELD_DESCRIPTION, "TODO: Fill out this feature description."  # noqa: T101
+        )
+        behavior_scenarios = behavior_entry.get(DEFINITION_FIELD_ACCEPTANCE, [])
         scenario_lists = map(collect_and_sanitize_scenario_steps, behavior_scenarios)
 
         return [
             {
-                "feature": {"name": feature_name, "description": feature_description},
+                "feature": {DEFINITION_FIELD_NAME: feature_name, DEFINITION_FIELD_DESCRIPTION: feature_description},
                 "scenarios": [scenario for scenario_list in scenario_lists for scenario in scenario_list],
             }
         ]
@@ -76,10 +89,12 @@ def _get_template_properties(parsed_models: dict) -> dict[str, dict]:
         """Collect and sanitize scenario steps then return template properties for a 'scenarios' entry."""
         return [
             {
-                "description": scenario.get("scenario", "TODO: Write a description."),  # noqa: T101
-                "givens": [sanitize_scenario_step_entry(given) for given in scenario.get("given", [])],
-                "whens": [sanitize_scenario_step_entry(when) for when in scenario.get("when", [])],
-                "thens": [sanitize_scenario_step_entry(then) for then in scenario.get("then", [])],
+                DEFINITION_FIELD_DESCRIPTION: scenario.get(
+                    DEFINITION_FIELD_SCENARIO, "TODO: Write a description."  # noqa: T101
+                ),
+                "givens": [sanitize_scenario_step_entry(given) for given in scenario.get(DEFINITION_FIELD_GIVEN, [])],
+                "whens": [sanitize_scenario_step_entry(when) for when in scenario.get(DEFINITION_FIELD_WHEN, [])],
+                "thens": [sanitize_scenario_step_entry(then) for then in scenario.get(DEFINITION_FIELD_THEN, [])],
             }
         ]
 
@@ -134,7 +149,7 @@ def _generate_gherkin_feature_files(
     """
 
     def generate_file(properties: dict) -> TemplateOutputFile:
-        feature_name = properties.get("feature").get("name")
+        feature_name = properties.get("feature").get(DEFINITION_FIELD_NAME)
 
         generated_file = generate_template(gherkin_template, output_directory, properties)
         generated_file.file_name = _create_gherkin_feature_file_name(feature_name)
@@ -146,8 +161,8 @@ def _generate_gherkin_feature_files(
     gherkin_template = None
     if len(gherkin_templates) != 1:
         raise GenerateGherkinException(
-            f"Unexpected number of templates loaded {len(gherkin_templates)}, \
-                    expecting only gherkin feature file template. Loaded templates: {gherkin_templates}"
+            f"Unexpected number of templates loaded {len(gherkin_templates)}, "
+            f"expecting only gherkin feature file template. Loaded templates: {gherkin_templates}"
         )
     else:
         gherkin_template = gherkin_templates[0]
