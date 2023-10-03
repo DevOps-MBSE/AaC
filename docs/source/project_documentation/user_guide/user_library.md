@@ -29,16 +29,8 @@ To demonstrate this behavior, take this example aac file:
 ```{eval-rst}
 .. literalinclude:: ../../../../python/model/protobuf_flow/Data.aac
     :language: yaml
-    :lines: 41-47
-    :emphasize-lines: 7
-```
-```yaml
-schema:
-    name: ProtobufTypeExample
-    fields:
-        - name: int64Field
-          type: int64
-          description: This field references a primitive type provided by Gen-Protobuf
+    :lines: 65-69
+    :emphasize-lines: 5
 ```
 
 It references a type `int64` provided by the plugin `gen-protobuf`. If we validate this file with the plugin active, it'll successfully validate.
