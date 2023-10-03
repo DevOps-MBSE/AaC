@@ -83,12 +83,6 @@ _alarm_clock.yaml_
     :lines: 6-8
 ```
 
-```yaml
-model:
-  name: AlarmClock
-  description: A simple alarm clock model
-```
-
 Now, if you run the validation command:
 `aac validate alarm_clock.yaml` you'll see a message indicating that your model is valid.
 
@@ -99,31 +93,6 @@ _alarm_clock.yaml_
 .. literalinclude:: ../../../../python/model/alarm_clock/alarm_clock.yaml
     :language: yaml
     :lines: 6-15, 38-41, 49-52, 73-76
-```
-
-```yaml
-model:
-  name: AlarmClock
-  description: A simple alarm clock model
-  components:
-    - name: clock
-      type: Clock
-    - name: timer
-      type: ClockTimer
-    - name: alarm
-      type: ClockAlarm
----
-model:
-  name: Clock
-  description: A simple clock that keeps track of the current time.
----
-model:
-  name: ClockTimer
-  description: A simple timer that can be set to a target time.
----
-model:
-  name: ClockAlarm
-  description: A simple alarm that produces noise.
 ```
 
 Once again, we can check to confirm that this model is valid. Even better, we can use something this simple to start driving value. We can generate a simple object diagram by using the first-party plugin GenPlantUML with the command `aac puml-object alarm_clock.yaml diagrams` which will generate a file with the following PlantUML content:
@@ -154,44 +123,17 @@ _structures.yaml_
     :language: yaml
     :lines: 13-29
 ```
-```yaml
-schema:
-  name: Timestamp
-  fields:
-    - name: hour
-      type: int
-    - name: minute
-      type: int
-    - name: second
-      type: int
-    - name: year
-      type: int
-    - name: month
-      type: int
-    - name: day
-      type: int
-```
 
 Defining a data structure by itself isn't particularly useful, but we can reference this data structure in our models to define state or interfaces.
 
 If we return to our alarm clock model, we can define that the timer component is stateful -- the function of the timer is influenced by the time provided by the user. This is easily defined by giving the `ClockTimer` model some state that includes the timestamp we just defined.
 
 _alarm_clock.yaml_
-_alarm_clock.yaml_
 ```{eval-rst}
 .. literalinclude:: ../../../../python/model/alarm_clock/alarm_clock.yaml
     :language: yaml
     :lines: 50-56
     :emphasize-lines: 5-6
-```
-```yaml
-model:
-  name: ClockTimer
-  description: A simple timer that can be set to a target time.
-  state:
-    - name: targetTime
-      type: Timestamp
-      description: The target timestamp indicating when to fire an alert to the alarm component.
 ```
 
 ## Defining Model Interfaces
@@ -204,25 +146,6 @@ _alarm_clock.yaml_
 .. literalinclude:: ../../../../python/model/alarm_clock/alarm_clock.yaml
     :language: yaml
     :lines: 6-22
-```
-```yaml
-model:
-  name: AlarmClock
-  description: A simple alarm clock model
-  components:
-    - name: clock
-      type: Clock
-    - name: timer
-      type: ClockTimer
-    - name: alarm
-      type: ClockAlarm
-  behavior:
-    - name: setAlarm
-      type: request-response
-      description: Set the alarm timer
-      input:
-        - name: targetTime
-          type: TimestampDataStructure
 ```
 
 If we were to generate a component diagram from our model at this point, we'll be able to visualize the components and interfaces of our alarm clock model.
@@ -244,32 +167,6 @@ _usecase.yaml_
     :lines: 1-24
     :emphasize-lines: 1-4, 6, 9, 16
 ```
-```yaml
-import:
-  files:
-    - ./alarm_clock.yaml
-    - ./external.yaml
----
-usecase:
-  name: Set Alarm Time
-  description: The user sets the time for the alarm clock.
-  participants:
-    - name: user
-      type: Person
-    - name: alarm
-      type: AlarmClock
-    - name: timer
-      type: ClockTimer
-  steps:
-    - step: The user sets the time on system.
-      source: user
-      target: alarm
-      action: setAlarm
-    - step: The alarm clock stores the time in the timer
-      source: alarm
-      target: timer
-      action: setTime
-```
 
 The file `external.yaml` has a simple model definition for our external user, who is an actor external to our system but one that we are referencing. Since we aren't focusing on modeling things external to our alarm clock, we can keep our `Person` model very simple.
 
@@ -277,11 +174,6 @@ _external.yaml_
 ```{eval-rst}
 .. literalinclude:: ../../../../python/model/alarm_clock/external.yaml
     :language: yaml
-```
-```yaml
-model:
-  name: Person
-  description: A representation of users/people external to the alarm clock system.
 ```
 
 With that usecase defined, we can generate a PlantUML sequence diagram `aac puml-sequence usecase.yaml diagrams`, which renders to:
