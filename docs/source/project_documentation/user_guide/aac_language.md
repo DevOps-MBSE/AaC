@@ -12,20 +12,7 @@ In the following example model, the first key `model` indicates that this yaml e
 .. literalinclude:: ../../../../python/model/alarm_clock/alarm_clock.yaml
     :language: yaml
     :lines: 6-37
-    :emphasize-lines: 4, 11
-```
-
-```yaml
-model:
-  name: ExampleModel
-  description: A example model
-  components:
-    - name: component1
-      type: ExampleComponent
-    - name: component2
-      type: ExampleComponent
-  behavior:
-    - name: Example Behavior
+    :emphasize-lines: 1, 4, 11
 ```
 
 Unlike the `model` definition above which defines models and components of systems, the following `schema` definition is used to define a data structure.
@@ -33,17 +20,7 @@ Unlike the `model` definition above which defines models and components of syste
 .. literalinclude:: ../../../../python/model/alarm_clock/structures.yaml
     :language: yaml
     :lines: 13-29
-```
-```yaml
-schema:
-  name: TimeDataStructure
-  fields:
-    - name: Hours
-      type: int
-    - name: Minutes
-      type: int
-    - name: Seconds
-      type: int
+    :emphasize-lines: 1
 ```
 
 The two example aboves demonstrate the basic structure of the AaC language: each YAML entry/AaC definition starts with a defined root key which correlates to a registered schema that governs the YAML structure.
@@ -51,7 +28,7 @@ The two example aboves demonstrate the basic structure of the AaC language: each
 ### DSL Root Keys
 Because the AaC DSL is leveraging YAML, which is just a key-value mapping with loose schema, the AaC DSL must define the schema for each definition type via root keys. The AaC DSL comes with several pre-defined root keys that you can use to define various aspects of your system.
 
-The basic root keys can be located in the [base AaC DSL specification.](https://github.com/DevOps-MBSE/AaC/blob/bbe61782720d5958e2794308d7fe397fc6398bd3/python/src/aac/spec/spec.yaml#L2-L67) Some of the root key provided by the base DSL are:
+The basic root keys can be located in the [base AaC DSL specification.]https://github.com/DevOps-MBSE/AaC/blob/a4a9b9734983fdfb5f5d3d855dc50b0f26e4ff42/python/src/aac/spec/spec.yaml#L1) Some of the root keys provided by the base DSL are:
 
 | Root Key | Description |
 |----------|-------------|
