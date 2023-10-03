@@ -23,9 +23,15 @@ Verify the plugin has been activated by running the following command: `aac --ac
 
 ![List Active](../../images/user_library/list_active.png)
 
-Once you have verified that your plugin has been activated, you are able begin referencing the definitions in your plugin.
+Once you have verified that your plugin has been activated, you are able to begin referencing the definitions in your plugin.
 
 To demonstrate this behavior, take this example aac file:
+```{eval-rst}
+.. literalinclude:: ../../../../python/model/protobuf_flow/Data.aac
+    :language: yaml
+    :lines: 41-47
+    :emphasize-lines: 7
+```
 ```yaml
 schema:
     name: ProtobufTypeExample
