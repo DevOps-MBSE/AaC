@@ -10,7 +10,7 @@ from aac.execute.plugin_runner import PluginRunner
 from aac.io.parser._parse_source import parse
 from aac.context.definition import Definition
 
-AAC_LANG_FILE_NAME = "../lang/aac.aac"
+AAC_LANG_FILE_NAME = "../../aac.aac"
 
 class LanguageContext(object):
   """
