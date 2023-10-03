@@ -122,16 +122,6 @@ An example AaC enum definition would look like:
     :language: yaml
     :lines: 75-82
 ```
-```yaml
-enum:
-  name: MessageType
-  description: |
-    Enums for the various supported message types.
-  values:
-    - type_1
-    - type_2
-    - type_3
-```
 
 The corresponding output will look like:
 ```protobuf
@@ -173,23 +163,6 @@ An example use of options would look like:
     :language: yaml
     :lines: 5-27
     :emphasize-lines: 5-9
-```
-
-```yaml
-schema:
-  name: SomeDataMessage
-  protobuf_message_options:
-    - key: java_package
-      value: "com.example.foo"
-  fields:
-    - name: some_data
-      type: string
-    - name: some_numbers
-      type: fixed64[]
-  validation:
-    - name: Required fields are present
-      arguments:
-        - some_data
 ```
 
 The corresponding output will look like:
