@@ -4,6 +4,8 @@
 import unittest
 from copy import deepcopy
 from aac.lang.primitive import Primitive
+from aac.lang.primitiveconstraintassignment import PrimitiveConstraintAssignment
+from primitiveconstraintassignment_test import PrimitiveConstraintAssignmentTestHelper
 
 
 class PrimitiveTestHelper:
@@ -11,6 +13,7 @@ class PrimitiveTestHelper:
     def generate_data() -> dict:
         return {
             "python_type": "test",
+            "constraints": [PrimitiveConstraintAssignmentTestHelper.generate_data()],
         }
 
     @staticmethod
@@ -23,6 +26,7 @@ class TestPrimitive(unittest.TestCase):
         primitive_dict = PrimitiveTestHelper.generate_data()
         instance = Primitive.from_dict(deepcopy(primitive_dict))
         self.assertEqual(instance.python_type, primitive_dict["python_type"])
+        self.assertIsNotNone(instance.constraints)
 
         primitive_dict = PrimitiveTestHelper.generate_data_required_only()
         instance = Primitive.from_dict(deepcopy(primitive_dict))

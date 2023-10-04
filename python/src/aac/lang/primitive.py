@@ -7,6 +7,7 @@ import attr
 from typing import Optional
 from attr import attrib, validators
 from aac.lang.aactype import AacType
+from aac.lang.primitiveconstraintassignment import PrimitiveConstraintAssignment
 
 
 @dataclass(frozen=True)
@@ -15,10 +16,15 @@ class Primitive(AacType):
     A definition that represents a primitive value for use in the model.
 
     python_type: Optional[str] - The type value to represend this primitive with while generating python code.
+    constraints: list[PrimitiveConstraintAssignment]] - A list of constraints to apply to the primitive.
     """
 
     python_type: Optional[str] = attrib(
         init=attr.ib(), validator=validators.optional(validators.instance_of(str))
+    )
+    constraints: list[PrimitiveConstraintAssignment] = attrib(
+        init=attr.ib(),
+        validator=validators.instance_of(list[PrimitiveConstraintAssignment]),
     )
 
     @classmethod
@@ -27,5 +33,11 @@ class Primitive(AacType):
 
         python_type = data.pop("python_type", None)
         args["python_type"] = python_type
+
+        constraints_data = data.pop("constraints", [])
+        constraints = [
+            PrimitiveConstraintAssignment.from_dict(entry) for entry in constraints_data
+        ]
+        args["constraints"] = constraints
 
         return cls(**args, **data)

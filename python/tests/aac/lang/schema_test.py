@@ -6,8 +6,10 @@ from copy import deepcopy
 from aac.lang.schema import Schema
 from aac.lang.schemaextension import SchemaExtension
 from aac.lang.field import Field
+from aac.lang.schemaconstraintassignment import SchemaConstraintAssignment
 from schemaextension_test import SchemaExtensionTestHelper
 from field_test import FieldTestHelper
+from schemaconstraintassignment_test import SchemaConstraintAssignmentTestHelper
 
 
 class SchemaTestHelper:
@@ -19,6 +21,7 @@ class SchemaTestHelper:
             "root": "test",
             "fields": [FieldTestHelper.generate_data()],
             "requirements": ["test"],
+            "constraints": [SchemaConstraintAssignmentTestHelper.generate_data()],
         }
 
     @staticmethod
@@ -37,6 +40,7 @@ class TestSchema(unittest.TestCase):
         self.assertEqual(instance.root, schema_dict["root"])
         self.assertIsNotNone(instance.fields)
         self.assertEqual(instance.requirements, schema_dict["requirements"])
+        self.assertIsNotNone(instance.constraints)
 
         schema_dict = SchemaTestHelper.generate_data_required_only()
         instance = Schema.from_dict(deepcopy(schema_dict))

@@ -9,6 +9,7 @@ from attr import attrib, validators
 from aac.lang.aactype import AacType
 from aac.lang.schemaextension import SchemaExtension
 from aac.lang.field import Field
+from aac.lang.schemaconstraintassignment import SchemaConstraintAssignment
 
 
 @dataclass(frozen=True)
@@ -21,6 +22,7 @@ class Schema(AacType):
     root: Optional[str] - The root key to use when declaring an instance of the type in yaml/aac files.
     fields: list[Field]] - A list of fields that make up the definition.
     requirements: list[str] - A list of requirements associated with this schema.
+    constraints: list[SchemaConstraintAssignment]] -
     """
 
     extends: list[SchemaExtension] = attrib(
@@ -37,6 +39,10 @@ class Schema(AacType):
     )
     requirements: list[str] = attrib(
         init=attr.ib(), validator=validators.instance_of(list[str])
+    )
+    constraints: list[SchemaConstraintAssignment] = attrib(
+        init=attr.ib(),
+        validator=validators.instance_of(list[SchemaConstraintAssignment]),
     )
 
     @classmethod
@@ -59,5 +65,11 @@ class Schema(AacType):
 
         requirements = data.pop("requirements", [])
         args["requirements"] = requirements
+
+        constraints_data = data.pop("constraints", [])
+        constraints = [
+            SchemaConstraintAssignment.from_dict(entry) for entry in constraints_data
+        ]
+        args["constraints"] = constraints
 
         return cls(**args, **data)

@@ -99,6 +99,10 @@ schema:
     - name: python_type
       type: string
       description:  The type value to represend this primitive with while generating python code.
+    - name: constraints
+      type: PrimitiveConstraintAssignment[]
+      description: |
+        A list of constraints to apply to the primitive.
 ---
 primitive:
   name: string
@@ -184,6 +188,8 @@ schema:
       type: reference(req.id)[]
       description: |
         A list of requirements associated with this schema.
+    - name: constraints
+      type: SchemaConstraintAssignment[]
 ---
 schema:
   name: SchemaExtension
@@ -652,3 +658,299 @@ schema:
       description: |
         The value of the attribute.
       is_required: true
+---
+# Core Behavioral Modeling Types
+---
+schema:
+  name: Model
+  package: aac.lang
+  root: model
+  description: |
+    A definition that represents a system and/or component model.
+    
+    An example of when to use a 'model' is when you want to define the
+    behavior for some component of the system.
+  fields:
+    - name: name
+      type: string
+      description: |
+        The name of the model.
+      is_required: true
+    - name: description
+      type: string
+      description: |
+        An explanatory description for the model including what the
+        component/system is modeling and any other relevant information.
+    - name: components
+      type: reference(Model.name)
+      description: |
+        A list of models that are components of the system.
+    - name: behavior
+      type: Behavior[]
+      description: |
+        A list of behaviors that the system being modeled will perform.
+    - name: state
+      type: Field[]
+      description: |
+        A list of data items representing internal state of the modeled entity.
+        State is visible within the model but is not visible to other models.
+        State may be visible between multiple instances of the modeled entity to
+        support horizontal scaling.
+    - name: requirements
+      type: reference(req.id)[]
+      description: |
+        A reference to requirements relevant to the modeled item.
+---
+schema:
+  name: Behavior
+  package: aac.lang
+  fields:
+    - name: name
+      type: string
+      description: |
+        The name of the behavior.
+      is_required: true
+    - name: description
+      type: string
+      description: |
+        An explanatory description of the behavior, including what the behavior
+        is, why it exists, etc.
+    - name: tags
+      type: string[]
+      description: |
+        Tags associated with the behavior. These could be used to group similar
+        behaviors into categories like "timing", "network", etc.
+    - name: input
+      type: Field[]
+      description: |
+        The list of all the fields that are inputs to the component when the
+        behavior is performed.
+    - name: output
+      type: Field[]
+      description: |
+        The list of all the fields that are outputs to the component when the
+        behavior is performed.
+    - name: acceptance
+      type: Feature[]
+      description: |
+        A list of test specifications that define the acceptance criteria to signify that
+        the system is behaving as expected.
+    - name: requirements
+      type: reference(req.id)[]
+      description: |
+        A list of allocated requirements defining the expected behavior to be provided.
+---
+# Test Specification types
+---
+schema:
+  name: Feature
+  package: aac.lang
+  description: A test specification for a defined feature as described in the Gherkin syntax.
+  fields:
+    - name: name
+      type: string
+      description:  The name of the feature to be tested
+      is_required: true
+    - name: background
+      type: Background
+      description: A common set of setup steps for all scenarios
+    - name: scenarios
+      type: Scenario[]
+      description: A set of test cases
+      is_required: true
+---
+schema:
+  name: Background
+  package: aac.lang
+  description: |
+    A common set of given steps to be performed for all scenarios defined in a feature as described in the Gherkin syntax.
+  fields:
+    - name: name
+      type: string
+      description: |
+        The name of the background activities.
+    - name: given
+      type: string[]
+      description: |
+        A list of preconditions that must be true in order for the scenario to
+        perform the expected action or provide the expected result.
+      is_required: true
+---
+schema:
+  name: Scenario
+  package: aac.lang
+  description: |
+    An acceptance test definition using the given, when, then pattern described in the Gherkin syntax.
+  fields:
+    - name: name
+      type: string
+      description: |
+        The name of the scenario.
+      is_required: true
+    - name: tags
+      type: string[]
+      description: |
+        Tags associated with the scenario. These could be used to group similar
+        scenarios into categories like "front-end", "back-end", etc.
+    - name: given
+      type: string[]
+      description: |
+        A list of preconditions that must be true in order for the scenario to
+        perform the expected action or provide the expected result.
+    - name: when
+      type: string[]
+      description: |
+        A list of triggers that indicate some reason for the system to act in a
+        certain way or provide some result.
+      is_required: true
+    - name: then
+      type: string[]
+      description: |
+        A list of post conditions that will be true once the system has completed
+        its action based on the triggers.
+      is_required: true
+    - name: examples
+      type: Example
+      description: |
+        An list of data sets for use in the test scenario.  When using examples, include
+        a replaceable item in your given, when, then using angle brackets as described
+        in the Gherkin syntax (ex: <my_text_value).  Each example provided contains the
+        collection of named values that will be substituted in for test execution.
+---
+schema:
+  name: Example
+  package: aac.lang
+  description: |
+    Collection of test values that would constitute a line in a row of examples as described in the Gherkin syntax.
+  fields:
+    - name: name
+      type: string
+      description: |
+        A brief description of the example data entry.
+      is_required: true
+    - name: values
+      type: ExampleValue[]
+      description: |
+        The values that make up the example row.
+      is_required: true
+---
+schema:
+  name: ExampleValue
+  package: aac.lang
+  description: |
+    A test value entry for a scenario.
+  fields:
+    - name: name
+      type: string
+      description: |
+        The name used in the scenario contained within angle brackets as described in the Gherkin syntax.
+      is_required: true
+    - name: value
+      type: string
+      description: |
+        The desired value to use.
+      is_required: true
+---
+# Model Constraints
+---
+
+schema:
+  name: ContextConstraint
+  package: aac.lang
+  root: context_constraint
+  description: |
+    The definition of a global context constraint plugin.  Context constraints perform
+    checks against a complete model rather than a specific schema or primitive.
+    Defining a context constraint allows for automted global quality checks
+    by running the 'aac check' command against your model.
+  fields:
+    - name: name
+      type: string
+      description: |
+        The name of the context constraint rule.
+      is_required: true
+    - name: description
+      type: string
+      description: |
+        A high level description of the context constraint rule.
+    - name: acceptance
+      type: Feature[]
+      description: |
+        A list of acceptance test features that describe the expected behavior of the context constraint.
+---
+schema:
+  name: SchemaConstraint
+  package: aac.lang
+  root: schema_constraint
+  description: |
+    The definition of a schema constraint plugin.  Schema constraints perform
+    checks against a defined structure within a model based on it's schema definition.
+    Defining a schema constraint allows for automted structural quality checks
+    by running the 'aac check' command against your model.
+  fields:
+    - name: name
+      type: string
+      description: |
+        The name of the schema constraint rule.
+      is_required: true
+    - name: description
+      type: string
+      description: |
+        A high level description of the schema constraint rule.
+    - name: acceptance
+      type: Feature[]
+      description: |
+        A list of acceptance test features that describe the expected behavior of the schema constraint.
+---
+schema:
+  name: PrimitiveConstraint
+  package: aac.lang
+  root: primitive_constraint
+  description: |
+    The definition of a primitive constraint plugin.  Plugin constraints perform
+    checks against individual values within a model based on it's primitive definition.
+    Defining a primitive constraint allows for automted value quality checks
+    by running the 'aac check' command against your model.
+  fields:
+    - name: name
+      type: string
+      description: |
+        The name of the schema constraint rule.
+      is_required: true
+    - name: description
+      type: string
+      description: |
+        A high level description of the schema constraint rule.
+    - name: primitive_type
+      type: reference(Primitive.name)
+      description: |
+        A reference to the relevant primitive type.
+      is_required: true
+    - name: acceptance
+      type: Feature[]
+      description: |
+        A list of acceptance test features that describe the expected behavior of the primitive constraint.
+---
+schema:
+  name: SchemaConstraintAssignment
+  package: aac.lang
+  fields:
+    - name: name
+      type: reference(schema_constraint.name)
+      description: The name of the schema constraint definition.
+      is_required: true
+    - name: arguments
+      type: string[]
+      description: A list of arguments to pass to the constraint.
+---
+schema:
+  name: PrimitiveConstraintAssignment
+  package: aac.lang
+  fields:
+    - name: name
+      type: reference(primitive_constraint.name)
+      description: The name of the schema constraint definition.
+      is_required: true
+    - name: arguments
+      type: string[]
+      description: A list of arguments to pass to the constraint.
