@@ -7,7 +7,7 @@ from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus
 plugin_name = "{{plugin.name}}"
 
 {% for command in plugin.commands %}{% if command.run_before | length > 0 %}{% for run_before in command.run_before %}
-def before_{{get_python_name(command.name)}}_{{get_python_name(run_before.command)}}({% for input in command.input%}{{comma_joiner}}{{get_python_name(input.name)}}{% endfor %}run_{{get_python_name(run_before.command)}}) -> ExecutionResult:
+def before_{{get_python_name(command.name)}}_{{get_python_name(run_before.command)}}({% for entry in command.input %}{{ get_python_name(entry.name) }}: {{ get_python_type(entry.type) }}{% if not loop.last %}, {% endif %}{% endfor %}, run_{{get_python_name(run_before.command)}}) -> ExecutionResult:
     """Run the {{run_before.plugin}} {{run_before.name}} command before the {{command.name}} command."""
 
     # TODO: configure and call the {{run_before.command}} before command using {{command.name}} command inputs
@@ -16,7 +16,7 @@ def before_{{get_python_name(command.name)}}_{{get_python_name(run_before.comman
     return ExecutionResult(plugin_name, "{{command.name}}", ExecutionStatus.GENERAL_FAILURE, [message])
 {% endfor %}{% endif %}
 
-def {{get_python_name(command.name)}}() -> ExecutionResult:
+def {{get_python_name(command.name)}}({% for entry in command.input %}{{ get_python_name(entry.name) }}: {{ get_python_type(entry.type) }}{% if not loop.last %}, {% endif %}{% endfor %}) -> ExecutionResult:
     """Print the AaC package version."""
     
     # TODO: implement plugin logic here
@@ -25,7 +25,7 @@ def {{get_python_name(command.name)}}() -> ExecutionResult:
     return ExecutionResult(plugin_name, "{{command.name}}", ExecutionStatus.GENERAL_FAILURE, [message])
 
 {% if command.run_after | length > 0 %}{% for run_after in command.run_after %}
-def after_{{get_python_name(command.name)}}_{{get_python_name(run_after.command)}}({% for input in command.input%}{{comma_joiner}}{{get_python_name(input.name)}}{% endfor %}run_{{get_python_name(run_after.command)}}) -> ExecutionResult:
+def after_{{get_python_name(command.name)}}_{{get_python_name(run_after.command)}}({% for entry in command.input %}{{ get_python_name(entry.name) }}: {{ get_python_type(entry.type) }}{% if not loop.last %}, {% endif %}{% endfor %}, run_{{get_python_name(run_after.command)}}) -> ExecutionResult:
     """Run the {{run_after.plugin}} {{run_after.command}} command after the {{command.name}} command."""
 
     # TODO: configure and call the {{run_after.command}} after command using {{command.name}} command inputs

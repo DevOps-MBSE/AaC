@@ -1,5 +1,6 @@
 plugin:
   name: Generate Plugin
+  package: aac.plugins.gen_plugin
   description: |
     An AaC plugin that generates opinionated plugin stubs for easier 
     and quicker plugin development.

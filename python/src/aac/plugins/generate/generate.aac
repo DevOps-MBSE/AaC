@@ -1,5 +1,6 @@
 plugin:
   name: Generate
+  package: aac.plugins.generate
   description: |
     An AaC plugin that generates content from an AaC file based on provided generator templates.
   commands:

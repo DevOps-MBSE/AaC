@@ -4,6 +4,8 @@ from aac import __version__
 
 # build out jinja2 utility functions
 def get_python_name(name: str) -> str:
+    if name.startswith("--"):
+        name = name[2:]
     return name.replace(" ", "_").replace("-", "_").lower()
 
 def get_python_primitive(aac_primitive_name: str) -> str:
