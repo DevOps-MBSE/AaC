@@ -39,7 +39,7 @@ jobs:
       - name: Build Documentation
         uses: ammaraskar/sphinx-action@0.4
         with:
-          pre-build-command: "pip install aac"
+          pre-build-command: "pip install aac >- 0.3.0"
           docs-folder: "docs/"
 
       - name: Upload Documentation
