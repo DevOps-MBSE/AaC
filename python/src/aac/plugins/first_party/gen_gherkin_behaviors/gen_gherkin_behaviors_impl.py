@@ -157,7 +157,6 @@ def _generate_gherkin_feature_files(
 
         return generated_file
 
-    # This plugin produces only gherkin feature file and so it only needs one template
     gherkin_template = None
     if len(gherkin_templates) != 1:
         raise GenerateGherkinException(
