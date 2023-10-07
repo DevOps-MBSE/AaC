@@ -154,23 +154,23 @@ model:
         VALID_MODEL_WITH_SEVERAL_BEHAVIORS = f"""
 ---
 model:
-    name: test-model
-    description: test model
-    behavior:
-        - name: {behavior_name_1}
-          type: {BEHAVIOR_TYPE_REQUEST_RESPONSE}
-          description: {behavior_description_1}
-          acceptance:
-            - scenario: {behavior_scenario_1}
-              given:
-                - {behavior_scenario_1_given_1}
-                - {behavior_scenario_1_given_2}
-              when:
-                - {behavior_scenario_1_when_1}
-                - {behavior_scenario_1_when_2}
-              then:
-                - {behavior_scenario_1_then_1}
-                - {behavior_scenario_1_then_2}
+  name: test-model
+  description: test model
+  behavior:
+    - name: {behavior_name_1}
+      type: {BEHAVIOR_TYPE_REQUEST_RESPONSE}
+      description: {behavior_description_1}
+      acceptance:
+        - scenario: {behavior_scenario_1}
+          given:
+            - {behavior_scenario_1_given_1}
+            - {behavior_scenario_1_given_2}
+          when:
+            - {behavior_scenario_1_when_1}
+            - {behavior_scenario_1_when_2}
+          then:
+            - {behavior_scenario_1_then_1}
+            - {behavior_scenario_1_then_2}
 """
 
         with TemporaryDirectory() as temp_output_dir, TemporaryAaCTestFile(
