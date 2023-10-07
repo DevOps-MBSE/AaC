@@ -9,7 +9,7 @@ from aac.lang.constants import (
     DEFINITION_FIELD_SCENARIO,
     DEFINITION_FIELD_THEN,
     DEFINITION_FIELD_WHEN,
-    DEFINITION_NAME_MODEL,
+    ROOT_KEY_MODEL,
 )
 from aac.lang.definitions.collections import convert_parsed_definitions_to_dict_definition, get_models_by_type
 from aac.plugins import PluginError
@@ -60,11 +60,11 @@ def _get_template_properties(parsed_models: dict) -> dict[str, dict]:
 
     def collect_models(parsed_models: dict) -> dict:
         """Return a structured dict like parsed_models, but only consisting of model definitions."""
-        return get_models_by_type(parsed_models, DEFINITION_NAME_MODEL)
+        return get_models_by_type(parsed_models, ROOT_KEY_MODEL)
 
     def collect_model_behavior_properties(model: dict) -> list[dict]:
         """Produce a template property dictionary for each behavior entry in a model."""
-        behaviors = model.get(DEFINITION_NAME_MODEL, {}).get(DEFINITION_FIELD_BEHAVIOR, [])
+        behaviors = model.get(ROOT_KEY_MODEL, {}).get(DEFINITION_FIELD_BEHAVIOR, [])
 
         behavior_lists = map(collect_behavior_entry_properties, behaviors)
         return [behavior for behavior_list in behavior_lists for behavior in behavior_list]
