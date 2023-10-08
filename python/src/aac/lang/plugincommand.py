@@ -8,7 +8,7 @@ from typing import Optional
 from attr import attrib, validators
 from aac.lang.plugincommandreference import PluginCommandReference
 from aac.lang.plugincommandreference import PluginCommandReference
-from aac.lang.plugincommandinput import PluginCommandInput
+from aac.lang.plugininput import PluginInput
 
 
 @dataclass(frozen=True)
@@ -20,7 +20,7 @@ class PluginCommand:
     help_text: Optional[str] - A description that will be displayed as help text when displaying command usage.
     run_before: list[PluginCommandReference]] - A listing of plugin commands to run before this command.
     run_after: list[PluginCommandReference]] - A listing of plugin commands to run before this command.
-    input: list[PluginCommandInput]] - The list of all the fields that are inputs to the component when the command is executed.
+    input: list[PluginInput]] - The list of all the fields that are inputs to the component when the command is executed.
     """
 
     name: str = attrib(init=attr.ib(), validator=validators.instance_of(str))
@@ -33,8 +33,8 @@ class PluginCommand:
     run_after: list[PluginCommandReference] = attrib(
         init=attr.ib(), validator=validators.instance_of(list[PluginCommandReference])
     )
-    input: list[PluginCommandInput] = attrib(
-        init=attr.ib(), validator=validators.instance_of(list[PluginCommandInput])
+    input: list[PluginInput] = attrib(
+        init=attr.ib(), validator=validators.instance_of(list[PluginInput])
     )
 
     @classmethod
@@ -57,7 +57,7 @@ class PluginCommand:
         args["run_after"] = run_after
 
         input_data = data.pop("input", [])
-        input = [PluginCommandInput.from_dict(entry) for entry in input_data]
+        input = [PluginInput.from_dict(entry) for entry in input_data]
         args["input"] = input
 
         return cls(**args, **data)

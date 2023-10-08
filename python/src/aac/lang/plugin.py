@@ -7,6 +7,9 @@ import attr
 from typing import Optional
 from attr import attrib, validators
 from aac.lang.plugincommand import PluginCommand
+from aac.lang.contextconstraint import ContextConstraint
+from aac.lang.schemaconstraint import SchemaConstraint
+from aac.lang.primitiveconstraint import PrimitiveConstraint
 
 
 @dataclass(frozen=True)
@@ -19,6 +22,9 @@ class Plugin:
     description: Optional[str] -
     commands: list[PluginCommand]] -
     definition_sources: list[str] -
+    context_constraints: list[ContextConstraint]] -
+    schema_constraints: list[SchemaConstraint]] -
+    primitive_constraints: list[PrimitiveConstraint]] -
     """
 
     name: str = attrib(init=attr.ib(), validator=validators.instance_of(str))
@@ -31,6 +37,15 @@ class Plugin:
     )
     definition_sources: list[str] = attrib(
         init=attr.ib(), validator=validators.instance_of(list[str])
+    )
+    context_constraints: list[ContextConstraint] = attrib(
+        init=attr.ib(), validator=validators.instance_of(list[ContextConstraint])
+    )
+    schema_constraints: list[SchemaConstraint] = attrib(
+        init=attr.ib(), validator=validators.instance_of(list[SchemaConstraint])
+    )
+    primitive_constraints: list[PrimitiveConstraint] = attrib(
+        init=attr.ib(), validator=validators.instance_of(list[PrimitiveConstraint])
     )
 
     @classmethod
@@ -46,5 +61,23 @@ class Plugin:
 
         definition_sources = data.pop("definition_sources", [])
         args["definition_sources"] = definition_sources
+
+        context_constraints_data = data.pop("context_constraints", [])
+        context_constraints = [
+            ContextConstraint.from_dict(entry) for entry in context_constraints_data
+        ]
+        args["context_constraints"] = context_constraints
+
+        schema_constraints_data = data.pop("schema_constraints", [])
+        schema_constraints = [
+            SchemaConstraint.from_dict(entry) for entry in schema_constraints_data
+        ]
+        args["schema_constraints"] = schema_constraints
+
+        primitive_constraints_data = data.pop("primitive_constraints", [])
+        primitive_constraints = [
+            PrimitiveConstraint.from_dict(entry) for entry in primitive_constraints_data
+        ]
+        args["primitive_constraints"] = primitive_constraints
 
         return cls(**args, **data)

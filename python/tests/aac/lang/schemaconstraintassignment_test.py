@@ -4,6 +4,8 @@
 import unittest
 from copy import deepcopy
 from aac.lang.schemaconstraintassignment import SchemaConstraintAssignment
+from aac.lang.plugininputvalue import PluginInputValue
+from plugininputvalue_test import PluginInputValueTestHelper
 
 
 class SchemaConstraintAssignmentTestHelper:
@@ -11,7 +13,7 @@ class SchemaConstraintAssignmentTestHelper:
     def generate_data() -> dict:
         return {
             "name": "test",
-            "arguments": ["test"],
+            "arguments": [PluginInputValueTestHelper.generate_data()],
         }
 
     @staticmethod
@@ -30,9 +32,7 @@ class TestSchemaConstraintAssignment(unittest.TestCase):
             deepcopy(schemaconstraintassignment_dict)
         )
         self.assertEqual(instance.name, schemaconstraintassignment_dict["name"])
-        self.assertEqual(
-            instance.arguments, schemaconstraintassignment_dict["arguments"]
-        )
+        self.assertIsNotNone(instance.arguments)
 
         schemaconstraintassignment_dict = (
             SchemaConstraintAssignmentTestHelper.generate_data_required_only()

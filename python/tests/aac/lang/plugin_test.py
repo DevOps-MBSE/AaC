@@ -5,7 +5,13 @@ import unittest
 from copy import deepcopy
 from aac.lang.plugin import Plugin
 from aac.lang.plugincommand import PluginCommand
+from aac.lang.contextconstraint import ContextConstraint
+from aac.lang.schemaconstraint import SchemaConstraint
+from aac.lang.primitiveconstraint import PrimitiveConstraint
 from plugincommand_test import PluginCommandTestHelper
+from contextconstraint_test import ContextConstraintTestHelper
+from schemaconstraint_test import SchemaConstraintTestHelper
+from primitiveconstraint_test import PrimitiveConstraintTestHelper
 
 
 class PluginTestHelper:
@@ -17,6 +23,9 @@ class PluginTestHelper:
             "description": "test",
             "commands": [PluginCommandTestHelper.generate_data()],
             "definition_sources": ["test"],
+            "context_constraints": [ContextConstraintTestHelper.generate_data()],
+            "schema_constraints": [SchemaConstraintTestHelper.generate_data()],
+            "primitive_constraints": [PrimitiveConstraintTestHelper.generate_data()],
         }
 
     @staticmethod
@@ -36,6 +45,9 @@ class TestPlugin(unittest.TestCase):
         self.assertEqual(instance.description, plugin_dict["description"])
         self.assertIsNotNone(instance.commands)
         self.assertEqual(instance.definition_sources, plugin_dict["definition_sources"])
+        self.assertIsNotNone(instance.context_constraints)
+        self.assertIsNotNone(instance.schema_constraints)
+        self.assertIsNotNone(instance.primitive_constraints)
 
         plugin_dict = PluginTestHelper.generate_data_required_only()
         instance = Plugin.from_dict(deepcopy(plugin_dict))

@@ -319,6 +319,12 @@ schema:
       type: PluginCommand[]
     - name: definition_sources
       type: file[]
+    - name: context_constraints
+      type: ContextConstraint[]
+    - name: schema_constraints
+      type: SchemaConstraint[]
+    - name: primitive_constraints
+      type: PrimitiveConstraint[]
 ---
 schema:
   name: PluginCommand
@@ -342,7 +348,7 @@ schema:
       description: |
         A listing of plugin commands to run before this command.
     - name: input
-      type: PluginCommandInput[]
+      type: PluginInput[]
       description: |
         The list of all the fields that are inputs to the component when the
         command is executed.
@@ -366,7 +372,7 @@ schema:
       is_required: true
 ---
 schema:
-  name: PluginCommandInput
+  name: PluginInput
   package: aac.lang
   description: |
     A plugin command reference that can be used to establish cross-plugin behaviors.
@@ -389,6 +395,23 @@ schema:
       type:  string
       description: |
         The default value to provide to a plugin, if desired.
+---
+schema: 
+  name: PluginInputValue
+  package: aac.lang
+  description: |
+    A value provided for a plugin input.
+  fields:
+    - name: name
+      type: string
+      description: |
+        The name of the plugin input being provided.
+      is_required: true
+    - name: value
+      type: string
+      description: |
+        The value of the plugin input being provided.
+
 ---
 schema:
   name: Generator
@@ -857,7 +880,6 @@ schema:
 schema:
   name: ContextConstraint
   package: aac.lang
-  root: context_constraint
   description: |
     The definition of a global context constraint plugin.  Context constraints perform
     checks against a complete model rather than a specific schema or primitive.
@@ -881,7 +903,6 @@ schema:
 schema:
   name: SchemaConstraint
   package: aac.lang
-  root: schema_constraint
   description: |
     The definition of a schema constraint plugin.  Schema constraints perform
     checks against a defined structure within a model based on it's schema definition.
@@ -897,6 +918,10 @@ schema:
       type: string
       description: |
         A high level description of the schema constraint rule.
+    - name: arguments
+      type: PluginInput[]
+      description: |
+        List of arguments for the constraint.
     - name: acceptance
       type: Feature[]
       description: |
@@ -905,7 +930,6 @@ schema:
 schema:
   name: PrimitiveConstraint
   package: aac.lang
-  root: primitive_constraint
   description: |
     The definition of a primitive constraint plugin.  Plugin constraints perform
     checks against individual values within a model based on it's primitive definition.
@@ -921,11 +945,10 @@ schema:
       type: string
       description: |
         A high level description of the schema constraint rule.
-    - name: primitive_type
-      type: reference(Primitive.name)
+    - name: arguments
+      type: PluginInput[]
       description: |
-        A reference to the relevant primitive type.
-      is_required: true
+        A list of arguments for the constraint.
     - name: acceptance
       type: Feature[]
       description: |
@@ -937,11 +960,13 @@ schema:
   fields:
     - name: name
       type: reference(schema_constraint.name)
-      description: The name of the schema constraint definition.
+      description: |
+        The name of the schema constraint definition.
       is_required: true
     - name: arguments
-      type: string[]
-      description: A list of arguments to pass to the constraint.
+      type: PluginInputValue[]
+      description: |
+        Arguments for the schema constraint if applicable.
 ---
 schema:
   name: PrimitiveConstraintAssignment
@@ -949,8 +974,10 @@ schema:
   fields:
     - name: name
       type: reference(primitive_constraint.name)
-      description: The name of the schema constraint definition.
+      description: |
+        The name of the schema constraint definition.
       is_required: true
     - name: arguments
-      type: string[]
-      description: A list of arguments to pass to the constraint.
+      type: PluginInputValue[]
+      description: |
+        Arguments for the primitive constraint if applicable.

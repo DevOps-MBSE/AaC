@@ -6,10 +6,10 @@ from copy import deepcopy
 from aac.lang.plugincommand import PluginCommand
 from aac.lang.plugincommandreference import PluginCommandReference
 from aac.lang.plugincommandreference import PluginCommandReference
-from aac.lang.plugincommandinput import PluginCommandInput
+from aac.lang.plugininput import PluginInput
 from plugincommandreference_test import PluginCommandReferenceTestHelper
 from plugincommandreference_test import PluginCommandReferenceTestHelper
-from plugincommandinput_test import PluginCommandInputTestHelper
+from plugininput_test import PluginInputTestHelper
 
 
 class PluginCommandTestHelper:
@@ -20,14 +20,14 @@ class PluginCommandTestHelper:
             "help_text": "test",
             "run_before": [PluginCommandReferenceTestHelper.generate_data()],
             "run_after": [PluginCommandReferenceTestHelper.generate_data()],
-            "input": [PluginCommandInputTestHelper.generate_data()],
+            "input": [PluginInputTestHelper.generate_data()],
         }
 
     @staticmethod
     def generate_data_required_only() -> dict:
         return {
             "name": "test",
-            "input": [PluginCommandInputTestHelper.generate_data_required_only()],
+            "input": [PluginInputTestHelper.generate_data_required_only()],
         }
 
 

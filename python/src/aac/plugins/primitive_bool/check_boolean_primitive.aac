@@ -1,0 +1,9 @@
+plugin:
+  name: Check boolean primitive
+  package: aac.plugins.primitive_bool
+  description: |
+    An AaC plugin that ensure boolean primitive values are correct.
+  primitive_constraints:
+    - name: Check bool
+      description: Verify that a boolen value is True or False.
+      

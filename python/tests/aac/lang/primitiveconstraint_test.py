@@ -4,7 +4,9 @@
 import unittest
 from copy import deepcopy
 from aac.lang.primitiveconstraint import PrimitiveConstraint
+from aac.lang.plugininput import PluginInput
 from aac.lang.feature import Feature
+from plugininput_test import PluginInputTestHelper
 from feature_test import FeatureTestHelper
 
 
@@ -14,7 +16,7 @@ class PrimitiveConstraintTestHelper:
         return {
             "name": "test",
             "description": "test",
-            "primitive_type": "test",
+            "arguments": [PluginInputTestHelper.generate_data()],
             "acceptance": [FeatureTestHelper.generate_data()],
         }
 
@@ -22,7 +24,6 @@ class PrimitiveConstraintTestHelper:
     def generate_data_required_only() -> dict:
         return {
             "name": "test",
-            "primitive_type": "test",
         }
 
 
@@ -32,9 +33,7 @@ class TestPrimitiveConstraint(unittest.TestCase):
         instance = PrimitiveConstraint.from_dict(deepcopy(primitiveconstraint_dict))
         self.assertEqual(instance.name, primitiveconstraint_dict["name"])
         self.assertEqual(instance.description, primitiveconstraint_dict["description"])
-        self.assertEqual(
-            instance.primitive_type, primitiveconstraint_dict["primitive_type"]
-        )
+        self.assertIsNotNone(instance.arguments)
         self.assertIsNotNone(instance.acceptance)
 
         primitiveconstraint_dict = (
@@ -42,9 +41,6 @@ class TestPrimitiveConstraint(unittest.TestCase):
         )
         instance = PrimitiveConstraint.from_dict(deepcopy(primitiveconstraint_dict))
         self.assertEqual(instance.name, primitiveconstraint_dict["name"])
-        self.assertEqual(
-            instance.primitive_type, primitiveconstraint_dict["primitive_type"]
-        )
 
 
 if __name__ == "__main__":

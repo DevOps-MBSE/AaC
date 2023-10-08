@@ -68,10 +68,19 @@ class PluginRunner:
 
     plugin_definition: Definition = attrib(validator=validators.instance_of(Definition))
     command_to_callback: dict[str, Callable] = attrib(default={}, validator=validators.instance_of(dict))
+    constraint_to_callback: dict[str, Callable] = attrib(default={}, validator=validators.instance_of(dict))
+    
+
     # Add constraints here
 
     def add_command_callback(self, command_name: str, command_callback: Callable) -> None:
         self.command_to_callback[command_name] = command_callback
+
+    def add_constraint_callback(self, constraint_name: str, constraint_callback: Callable) -> None:
+        self.constraint_to_callback[constraint_name] = constraint_callback
+
+    def get_constraint_callback(self, constraint_name: str) -> Callable:
+        return self.constraint_to_callback[constraint_name]
 
     def get_plugin_name(self) -> str:
         return self.plugin_definition.name

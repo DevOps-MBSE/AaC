@@ -7,7 +7,8 @@ class ExecutionStatus(Enum):
     """An enumeration that represents status codes for aac commands to return."""
 
     SUCCESS = 0
-    VALIDATION_FAILURE = auto()
+    CONSTRAINT_FAILURE = auto()
+    CONSTRAINT_WARNING = auto()
     PARSER_FAILURE = auto()
     PLUGIN_FAILURE = auto()
     OPERATION_CANCELLED = auto()
@@ -43,6 +44,7 @@ class ExecutionResult:
     def get_messages_as_string(self) -> str:
         """Return the output messages as a combined string."""
         return linesep.join(self.messages)
+    
     
 @attrs(slots=True)
 class ExecutionError(Exception):

@@ -113,6 +113,12 @@ class LanguageContext(object):
         result.append(definition)
     return result
   
+  def get_definition_for_root_key(self, root_key: str) -> Definition:
+    for definition in self.context_instance.definitions:
+      if definition.get_root_key() == root_key:
+        return definition
+    raise LanguageError(f"Could not find definition for root key: {root_key}")
+  
 
   def register_plugin_runner(self, runner: PluginRunner) -> None:
 

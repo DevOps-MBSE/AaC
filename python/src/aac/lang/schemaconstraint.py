@@ -6,6 +6,7 @@ from dataclasses import dataclass
 import attr
 from typing import Optional
 from attr import attrib, validators
+from aac.lang.plugininput import PluginInput
 from aac.lang.feature import Feature
 
 
@@ -16,12 +17,16 @@ class SchemaConstraint:
 
     name: str - The name of the schema constraint rule.
     description: Optional[str] - A high level description of the schema constraint rule.
+    arguments: list[PluginInput]] - List of arguments for the constraint.
     acceptance: list[Feature]] - A list of acceptance test features that describe the expected behavior of the schema constraint.
     """
 
     name: str = attrib(init=attr.ib(), validator=validators.instance_of(str))
     description: Optional[str] = attrib(
         init=attr.ib(), validator=validators.optional(validators.instance_of(str))
+    )
+    arguments: list[PluginInput] = attrib(
+        init=attr.ib(), validator=validators.instance_of(list[PluginInput])
     )
     acceptance: list[Feature] = attrib(
         init=attr.ib(), validator=validators.instance_of(list[Feature])
@@ -33,6 +38,10 @@ class SchemaConstraint:
 
         description = data.pop("description", None)
         args["description"] = description
+
+        arguments_data = data.pop("arguments", [])
+        arguments = [PluginInput.from_dict(entry) for entry in arguments_data]
+        args["arguments"] = arguments
 
         acceptance_data = data.pop("acceptance", [])
         acceptance = [Feature.from_dict(entry) for entry in acceptance_data]

@@ -24,7 +24,15 @@ def generate(aac_file: str, generator_file: str, code_output: str, test_output: 
     result = ExecutionResult(plugin_name, "generate", ExecutionStatus.SUCCESS, [])
 
     # setup directories
-    code_out_dir, test_out_dir, doc_out_dir = get_output_directories("AaC Gen-Plugin will generate code and tests in the following directories:", aac_file, code_output, test_output, doc_output, no_prompt)
+    code_out_dir = ""
+    test_out_dir = ""
+    doc_out_dir = ""
+    try:
+        code_out_dir, test_out_dir, doc_out_dir = get_output_directories("AaC Gen-Plugin will generate code and tests in the following directories:", aac_file, code_output, test_output, doc_output, no_prompt)
+    except OperationCancelled as e:
+        result.status_code = ExecutionStatus.OPERATION_CANCELLED
+        result.add_message(e.message)
+        return result
 
     # build out properties
     # the templates need data from the plugin model to generate code

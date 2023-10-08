@@ -11,8 +11,18 @@ from {{plugin.package}}.{{get_python_name(plugin.name)}}_impl import plugin_name
 {% else %}
 from {{plugin.package}}.{{get_python_name(plugin.name)}}_impl import plugin_name
 {% endif %}
+{% if plugin.context_constraints or plugin.schema_constraints or plugin.primitive_constraints %}from aac.lang.plugininputvalue import PluginInputValue
+from aac.execute.aac_execution_result import ExecutionResult
+{% endif %}
+{% if plugin.context_constraints | length > 0 %}{% for ctx_constraint in plugin.context_constraints %}from {{plugin.package}}.{{get_python_name(plugin.name)}}_impl import {{get_python_name(ctx_constraint.name)}}
+{% endfor %}{% endif %}
+{% if plugin.schema_constraints | length > 0 %}{% for schema_constraint in plugin.schema_constraints %}from {{plugin.package}}.{{get_python_name(plugin.name)}}_impl import {{get_python_name(schema_constraint.name)}}
+{% endfor %}{% endif %}
+{% if plugin.primitive_constraints | length > 0 %}{% for primitive_constraint in plugin.primitive_constraints %}from {{plugin.package}}.{{get_python_name(plugin.name)}}_impl import {{get_python_name(primitive_constraint.name)}}
+{% endfor %}{% endif %}
 from aac.execute import hookimpl
 from aac.context.language_context import LanguageContext
+from aac.context.definition import Definition
 from aac.execute.plugin_runner import PluginRunner
 {% for command in plugin.commands%}
 {% if command.run_before | length > 0 %}{% for run_before in command.run_before %}from {{get_package_from_plugin(run_before.plugin)}} import run_{{get_python_name(run_before.command)}}{% endfor %}{% endif %}
@@ -45,8 +55,29 @@ def run_{{get_python_name(command.name)}}({% for entry in command.input %}{{ get
         result.add_messages({{get_python_name(command.name)}}_{{get_python_name(run_after.command)}}_result.messages)
     {% endfor %}{% endif %}
     return result
-
 {% endfor %}
+
+{% for ctx_constraint in plugin.context_constraints %}
+def run_{{get_python_name(ctx_constraint.name)}}(context: LanguageContext) -> ExecutionResult:
+    """{{ctx_constraint.description}}"""
+
+    return {{get_python_name(ctx_constraint.name)}}(context)
+{% endfor %}
+
+{% for schema_constraint in plugin.schema_constraints %}
+def run_{{get_python_name(schema_constraint.name)}}(definition: Definition, arguments: list[PluginInputValue]) -> ExecutionResult:
+    """{{schema_constraint.description}}"""
+    
+    return {{get_python_name(schema_constraint.name)}}(definition, arguments)
+{% endfor %}
+
+{% for primitive_constraint in plugin.primitive_constraints %}
+def run_{{get_python_name(primitive_constraint.name)}}(value: str, arguments: list[PluginInputValue]) -> ExecutionResult:
+    """{{primitive_constraint.description}}"""
+    
+    return {{get_python_name(primitive_constraint.name)}}(value, arguments)
+{% endfor %}
+
 @hookimpl
 def register_plugin() -> None:
     """
@@ -68,5 +99,8 @@ def register_plugin() -> None:
     
     plugin_runner = PluginRunner(plugin_definition={{get_python_name(plugin.name)}}_plugin_definition)
     {% for command in plugin.commands %}plugin_runner.add_command_callback("{{command.name}}", run_{{get_python_name(command.name)}}){% endfor %}
+    {% for ctx_constraint in plugin.context_constraints %}plugin_runner.add_constraint_callback("{{ctx_constraint.name}}", run_{{get_python_name(ctx_constraint.name)}}){% endfor %}
+    {% for schema_constraint in plugin.schema_constraints %}plugin_runner.add_constraint_callback("{{schema_constraint.name}}", run_{{get_python_name(schema_constraint.name)}}){% endfor %}
+    {% for primitive_constraint in plugin.primitive_constraints %}plugin_runner.add_constraint_callback("{{primitive_constraint.name}}", run_{{get_python_name(primitive_constraint.name)}}){% endfor %}
     
     active_context.register_plugin_runner(plugin_runner)
