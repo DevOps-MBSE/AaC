@@ -209,7 +209,12 @@ def create_usecase_definition(name: str, description: str = "", participants: li
 
 
 def create_model_definition(
-    name: str, description: str = "", components: list[dict] = [], behavior: list[dict] = [], state: list[str] = []
+    name: str,
+    description: str = "",
+    components: list[dict] = [],
+    behavior: list[dict] = [],
+    state: list[str] = [],
+    requirements: list[str] = [],
 ):
     """Return a simulated model definition."""
     definition_dict = {
@@ -219,6 +224,9 @@ def create_model_definition(
         DEFINITION_FIELD_BEHAVIOR: behavior,
         DEFINITION_FIELD_STATE: state,
     }
+
+    if requirements:
+        definition_dict = definition_dict | {DEFINITION_FIELD_REQUIREMENTS: {DEFINITION_FIELD_IDS: requirements}}
 
     return create_definition(ROOT_KEY_MODEL, name, definition_dict)
 
