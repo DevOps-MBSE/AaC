@@ -5,7 +5,9 @@ from aac.lang.constants import (
     DEFINITION_FIELD_BEHAVIOR,
     DEFINITION_FIELD_DESCRIPTION,
     DEFINITION_FIELD_GIVEN,
+    DEFINITION_FIELD_IDS,
     DEFINITION_FIELD_NAME,
+    DEFINITION_FIELD_REQUIREMENTS,
     DEFINITION_FIELD_SCENARIO,
     DEFINITION_FIELD_THEN,
     DEFINITION_FIELD_WHEN,
@@ -34,12 +36,15 @@ def gen_gherkin_behaviors(architecture_file: str, output_directory: str) -> Plug
             loaded_templates = load_templates(__package__, ".")
             definitions_dictionary = convert_parsed_definitions_to_dict_definition(validation_result.definitions)
 
-            message_template_properties = _get_template_properties(definitions_dictionary)
-            generated_template_messages = _generate_gherkin_feature_files(
-                loaded_templates, output_directory, message_template_properties
-            )
+            for message_template_properties in _get_template_properties(definitions_dictionary):
+                generated_template_messages = _generate_gherkin_feature_files(
+                    loaded_templates,
+                    output_directory,
+                    message_template_properties.get("behaviors", {}),
+                    message_template_properties.get("model_requirements", []),
+                )
 
-            write_generated_templates_to_file(generated_template_messages)
+                write_generated_templates_to_file(generated_template_messages)
 
             return f"Successfully generated templates to directory: {output_directory}"
 
@@ -47,7 +52,7 @@ def gen_gherkin_behaviors(architecture_file: str, output_directory: str) -> Plug
         return result
 
 
-def _get_template_properties(parsed_models: dict) -> dict[str, dict]:
+def _get_template_properties(parsed_models: dict) -> list[dict]:
     """
     Generate a list of template property dictionaries for each gherkin feature file to generate.
 
@@ -62,12 +67,16 @@ def _get_template_properties(parsed_models: dict) -> dict[str, dict]:
         """Return a structured dict like parsed_models, but only consisting of model definitions."""
         return get_models_by_type(parsed_models, ROOT_KEY_MODEL)
 
-    def collect_model_behavior_properties(model: dict) -> list[dict]:
+    def collect_model_behavior_properties(model: dict) -> dict:
         """Produce a template property dictionary for each behavior entry in a model."""
         behaviors = model.get(ROOT_KEY_MODEL, {}).get(DEFINITION_FIELD_BEHAVIOR, [])
-
+        requirements = model.get(ROOT_KEY_MODEL, {}).get(DEFINITION_FIELD_REQUIREMENTS, {}).get(DEFINITION_FIELD_IDS, [])
         behavior_lists = map(collect_behavior_entry_properties, behaviors)
-        return [behavior for behavior_list in behavior_lists for behavior in behavior_list]
+
+        return {
+            "behaviors": [behavior for behavior_list in behavior_lists for behavior in behavior_list],
+            "model_requirements": requirements,
+        }
 
     def collect_behavior_entry_properties(behavior_entry: dict) -> list[dict]:
         """Produce a list of template property dictionaries from a behavior entry."""
@@ -82,6 +91,7 @@ def _get_template_properties(parsed_models: dict) -> dict[str, dict]:
             {
                 "feature": {DEFINITION_FIELD_NAME: feature_name, DEFINITION_FIELD_DESCRIPTION: feature_description},
                 "scenarios": [scenario for scenario_list in scenario_lists for scenario in scenario_list],
+                "behavior_requirements": behavior_entry.get(DEFINITION_FIELD_REQUIREMENTS, {}).get(DEFINITION_FIELD_IDS, []),
             }
         ]
 
@@ -129,12 +139,11 @@ def _get_template_properties(parsed_models: dict) -> dict[str, dict]:
 
         return step.startswith(tuple(gherkin_keywords))
 
-    model_behavior_lists = map(collect_model_behavior_properties, collect_models(parsed_models).values())
-    return [behavior for behavior_list in model_behavior_lists for behavior in behavior_list]
+    return [collect_model_behavior_properties(model) for model in collect_models(parsed_models).values()]
 
 
 def _generate_gherkin_feature_files(
-    gherkin_templates: list, output_directory: str, properties_list: list[dict]
+    gherkin_templates: list, output_directory: str, properties_list: list[dict], model_requirements: list[str] = []
 ) -> list[TemplateOutputFile]:
     """
     Compile templates with variable properties information.
@@ -143,14 +152,16 @@ def _generate_gherkin_feature_files(
         gherkin_templates (list): Templates to generate against. (Should only be one template).
         output_directory (str): The directory in which to generate the gherkin file.
         properties_list (list[dict]): A list of template property dictionaries.
+        model_requirements (list[str]): A list of the requirements associated with the specific model.
 
     Returns:
         List of template information dictionaries
     """
 
     def generate_file(properties: dict) -> TemplateOutputFile:
-        feature_name = properties.get("feature").get(DEFINITION_FIELD_NAME)
+        feature_name = properties.get("feature", {}).get(DEFINITION_FIELD_NAME)
 
+        properties = properties | {"model_requirements": model_requirements}
         generated_file = generate_template(gherkin_template, output_directory, properties)
         generated_file.file_name = _create_gherkin_feature_file_name(feature_name)
         generated_file.overwrite = False
@@ -166,7 +177,7 @@ def _generate_gherkin_feature_files(
     else:
         gherkin_template = gherkin_templates[0]
 
-    return list(map(generate_file, properties_list))
+    return [generate_file(properties) for properties in properties_list]
 
 
 def _create_gherkin_feature_file_name(behavior_name: str) -> str:

@@ -4,6 +4,8 @@ from tempfile import TemporaryDirectory
 from nose2.tools import params
 
 from aac.io import parser
+from aac.io.constants import YAML_DOCUMENT_SEPARATOR
+from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.constants import (
     BEHAVIOR_TYPE_REQUEST_RESPONSE,
     DEFINITION_FIELD_COMMANDS,
@@ -23,9 +25,18 @@ from aac.plugins.first_party.gen_gherkin_behaviors.gen_gherkin_behaviors_impl im
     _create_gherkin_feature_file_name,
     gen_gherkin_behaviors,
 )
+
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.assertion import assert_plugin_success
 from tests.helpers.io import TemporaryAaCTestFile
+from tests.helpers.parsed_definitions import (
+    create_behavior_entry,
+    create_requirement_entry,
+    create_scenario_entry,
+    create_spec_definition,
+    create_spec_section_entry,
+    create_model_definition,
+)
 
 
 class TestGenerateGherkinBehaviorsPlugin(ActiveContextTestCase):
@@ -225,6 +236,42 @@ model:
     )
     def test__generate_gherkin_feature_file_name(self, input_name, expected_filename):
         self.assertEqual(expected_filename, _create_gherkin_feature_file_name(input_name))
+
+    def test_generate_gherkin_scenario_with_requirements(self):
+        requirement_1_id, requirement_2_id, requirement_3_id = [f"T{i}" for i in range(1, 4)]
+        requirement_1 = create_requirement_entry(requirement_1_id, "Shall do X")
+        requirement_2 = create_requirement_entry(requirement_2_id, "Shall do Y")
+        requirement_3 = create_requirement_entry(requirement_3_id, "Shall do Z")
+        section = create_spec_section_entry("A test section", requirements=[requirement_1, requirement_2])
+        spec = create_spec_definition("Test specification", requirements=[requirement_3], sections=[section])
+
+        scenario = create_scenario_entry("Do X", when=["Something happens"], then=["X has occurred"])
+        behavior = create_behavior_entry(
+            "Behavior",
+            description="A behavior",
+            acceptance=[scenario],
+            requirements=[requirement_1_id],
+        )
+        model = create_model_definition("A model", behavior=[behavior], requirements=[requirement_2_id])
+
+        test_active_context = get_active_context(reload_context=True)
+        test_active_context.add_definitions_to_context([spec, model])
+
+        expected_filename = f"{behavior.get(DEFINITION_FIELD_NAME)}.feature"
+        content = f"{spec.to_yaml()}{YAML_DOCUMENT_SEPARATOR}\n{model.to_yaml()}"
+
+        with TemporaryAaCTestFile(content, "filename.aac", mode="w+") as test_file:
+            output_dir = os.path.dirname(test_file.name)
+            result = gen_gherkin_behaviors(test_file.name, output_dir)
+            assert_plugin_success(result)
+
+            self.assertIn(expected_filename, os.listdir(output_dir))
+            with open(os.path.join(output_dir, expected_filename)) as out_file:
+                content = out_file.read()
+
+                self.assertIn(f"@{requirement_1_id}", content)
+                self.assertIn(f"@{requirement_2_id}", content)
+                self.assertNotIn(f"@{requirement_3_id}", content)
 
 
 def _remove_first_word_in_string(string: str) -> str:
