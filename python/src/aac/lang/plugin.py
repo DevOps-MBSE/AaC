@@ -6,6 +6,7 @@ from dataclasses import dataclass
 import attr
 from typing import Optional
 from attr import attrib, validators
+
 from aac.lang.plugincommand import PluginCommand
 from aac.lang.contextconstraint import ContextConstraint
 from aac.lang.schemaconstraint import SchemaConstraint
@@ -17,14 +18,14 @@ class Plugin:
     """
     A definition for an AaC plugin. Plugins can provide any extra functionality desired on top of AaC-modeled systems from document generation to code generation and everything in between.
 
-    name: str -
-    package: str -
-    description: Optional[str] -
-    commands: list[PluginCommand]] -
-    definition_sources: list[str] -
-    context_constraints: list[ContextConstraint]] -
-    schema_constraints: list[SchemaConstraint]] -
-    primitive_constraints: list[PrimitiveConstraint]] -
+    name: str - The name of the plugin.
+    package: str - The 'dot notation' package name for the plugin.  All plugin names must be unique within an assigned type. The package will also define the directory structure produced by gen-plugin.
+    description: Optional[str] - A brief description of the plugin.
+    commands: list[PluginCommand]] - A list of commands that the plugin provides.
+    definition_sources: list[str] - A list of AaC definition files to import for use in the plugin.
+    context_constraints: list[ContextConstraint]] - A list of context constraints provided by the plugin. Context constraints evaluate all definitions in the language context.
+    schema_constraints: list[SchemaConstraint]] - A list of schema constraints provided by the plugin. Schema constraints evaluate individual schema content.
+    primitive_constraints: list[PrimitiveConstraint]] - A list of primitive constraints provided by the plugin. Primitive constraints evaluate individual primitive content.
     """
 
     name: str = attrib(init=attr.ib(), validator=validators.instance_of(str))

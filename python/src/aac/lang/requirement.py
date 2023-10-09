@@ -6,6 +6,7 @@ from dataclasses import dataclass
 import attr
 from typing import Optional
 from attr import attrib, validators
+
 from aac.lang.requirementverificationmethod import RequirementVerificationMethod
 from aac.lang.requirementattribute import RequirementAttribute
 

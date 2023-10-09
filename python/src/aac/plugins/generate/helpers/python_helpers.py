@@ -11,13 +11,13 @@ def get_python_name(name: str) -> str:
 def get_python_primitive(aac_primitive_name: str) -> str:
     context = LanguageContext()
     aac_primitives = context.get_primitives()
-    primitive_name = aac_primitive_name
-    if aac_primitive_name.endswith("[]"):
-        primitive_name = aac_primitive_name[:-2]
-    if aac_primitive_name.startswith("reference("):
-        primitive_name = "reference"
+    clean_name = aac_primitive_name
+    if clean_name.endswith("[]"):
+        clean_name = clean_name[:-2]
+    if clean_name.find("(") > -1:
+        clean_name = clean_name[:clean_name.find("(")]
     for aac_primitive in aac_primitives:
-        if primitive_name == aac_primitive.name:
+        if clean_name == aac_primitive.name:
             return aac_primitive.instance.python_type
     return "None"
 

@@ -19,7 +19,9 @@ class ProjectTestHelper:
 
     @staticmethod
     def generate_data_required_only() -> dict:
-        return {}
+        return {
+            "name": "test",
+        }
 
 
 class TestProject(unittest.TestCase):
@@ -32,6 +34,7 @@ class TestProject(unittest.TestCase):
 
         project_dict = ProjectTestHelper.generate_data_required_only()
         instance = Project.from_dict(deepcopy(project_dict))
+        self.assertEqual(instance.name, project_dict["name"])
 
 
 if __name__ == "__main__":

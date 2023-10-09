@@ -6,7 +6,10 @@ from dataclasses import dataclass
 import attr
 from typing import Optional
 from attr import attrib, validators
+
 from aac.lang.aactype import AacType
+
+
 from aac.lang.schemaextension import SchemaExtension
 from aac.lang.field import Field
 from aac.lang.schemaconstraintassignment import SchemaConstraintAssignment

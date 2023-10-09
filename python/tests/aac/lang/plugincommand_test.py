@@ -27,7 +27,6 @@ class PluginCommandTestHelper:
     def generate_data_required_only() -> dict:
         return {
             "name": "test",
-            "input": [PluginInputTestHelper.generate_data_required_only()],
         }
 
 
@@ -44,7 +43,6 @@ class TestPluginCommand(unittest.TestCase):
         plugincommand_dict = PluginCommandTestHelper.generate_data_required_only()
         instance = PluginCommand.from_dict(deepcopy(plugincommand_dict))
         self.assertEqual(instance.name, plugincommand_dict["name"])
-        self.assertIsNotNone(instance.input)
 
 
 if __name__ == "__main__":

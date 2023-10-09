@@ -1,6 +1,10 @@
 from enum import Enum, auto, unique
 from attr import attrib, attrs, validators, Factory
 from os import linesep
+from typing import Any, Optional
+
+from aac.io.files.aac_file import AaCFile
+from aac.context.source_location import SourceLocation
 
 @unique
 class ExecutionStatus(Enum):
@@ -15,6 +19,13 @@ class ExecutionStatus(Enum):
     GENERAL_FAILURE = auto()
 
 @attrs(slots=True, auto_attribs=True)
+class ExecutionMessage:
+    """Provides a message for the user."""
+    message: str = attrib(validator=validators.instance_of(str))
+    source: Optional[AaCFile] = attrib(validator=validators.optional(validators.instance_of(AaCFile)))
+    location: Optional[SourceLocation] = attrib(validator=validators.optional(validators.instance_of(SourceLocation)))
+
+@attrs(slots=True, auto_attribs=True)
 class ExecutionResult:
     """Provides information regarding the results of the execution of a plugin.
 
@@ -27,13 +38,13 @@ class ExecutionResult:
     plugin_name: str = attrib(validator=validators.instance_of(str))
     plugin_command_name: str = attrib(validator=validators.instance_of(str))
     status_code: ExecutionStatus = attrib(validator=validators.instance_of(ExecutionStatus))
-    messages: list[str] = attrib(default=Factory(list), validator=validators.instance_of(list))
+    messages: list[ExecutionMessage] = attrib(default=Factory(list), validator=validators.instance_of(list))
 
-    def add_message(self, message: str) -> None:
+    def add_message(self, message: ExecutionMessage) -> None:
         """Add a message to the list of messages."""
         self.messages.append(message)
 
-    def add_messages(self, messages: list[str]) -> None:
+    def add_messages(self, messages: list[ExecutionMessage]) -> None:
         """Add messages to the list of messages."""
         self.messages.extend(messages)
 
@@ -43,7 +54,15 @@ class ExecutionResult:
 
     def get_messages_as_string(self) -> str:
         """Return the output messages as a combined string."""
-        return linesep.join(self.messages)
+        result = ""
+        for message in self.messages:
+            result += message.message + linesep
+            if message.source is not None:
+                result += f"  Source: {message.source.uri}"
+                if message.location is not None:
+                    result += f" ({message.location.line}:{message.location.column}:{message.location.position}:{message.location.span})"
+                result += linesep
+        return result
     
     
 @attrs(slots=True)

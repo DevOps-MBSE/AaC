@@ -5,7 +5,7 @@
 from typing import Callable, Any
 from aac.context.language_context import LanguageContext
 from aac.context.definition import Definition
-from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus, LanguageError
+from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus, LanguageError, ExecutionMessage
 from aac.lang.primitive import Primitive
 from aac.io.parser import parse
 
@@ -27,7 +27,7 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult:
 
     # we'll need to resurse our way through the schema to check all the constraints
     # so we'll create a couple functions to help us navigate the way
-    def check_primitiveConstraint(value_to_check: Any, defining_primitive: Definition):
+    def check_primitiveConstraint(source_definition: Definition, value_to_check: Any, primitive_declaration: str, defining_primitive: Definition):
         """Runs all the constraints for a given primitive."""
 
         # Check the value_to_check against the defining_primitive
@@ -36,54 +36,78 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult:
             constraint_name = constraint_assignment.name
             constraint_args = constraint_assignment.arguments
             callback = all_constraints_by_name[constraint_name]
-            result: ExecutionResult = callback(value_to_check, constraint_args)
+            # TODO: fix this location hack!
+            result: ExecutionResult = callback(value_to_check, primitive_declaration, constraint_args, source_definition.source, None)
             constraint_results[constraint_name] = result
 
-    def check_schema_constraint(instance_to_check: Any, defining_schema: Definition):
+    def check_schema_constraint(source_definition: Definition, instance_to_check: Any, defining_schema: Definition):
         """Runs all the constraints for a given schema."""
 
-        # Check the instance_to_check against the defining_schema
-        for constraint_assignment in instance_to_check.constraints:
-            constraint_name = constraint_assignment.name
-            constraint_args = constraint_assignment.arguments
-            callback = all_constraints_by_name[constraint_name]
-            result: ExecutionResult = callback(instance_to_check, constraint_args)
-            constraint_results[constraint_name] = result
+        # Check the instance_to_check against constraints in the defining_schema
+        # print(f"DEBUG: running schema constraints for {source_definition.name} with definition {defining_schema.name} containing constraints {[constraint.name for constraint in defining_schema.instance.constraints]}")
+        if defining_schema.instance.constraints:
+            for constraint_assignment in defining_schema.instance.constraints:
+                constraint_name = constraint_assignment.name
+                constraint_args = constraint_assignment.arguments
+                callback = all_constraints_by_name[constraint_name]
+                result: ExecutionResult = callback(instance_to_check, source_definition, defining_schema, constraint_args)
+                constraint_results[constraint_name] = result
 
         # loop through the fields on the defining_schema
         for field in defining_schema.instance.fields:
-            field_definining_schema = context.get_definition_by_name(field.type)
+            # only check the field if it is present
+            if not hasattr(instance_to_check, field.name):
+                continue
+
+            # get the name of the schema that defines the field, special handling for arrays and references
+            type_name = field.type
+            is_list = False
+            # if type name ends with "[]", remove the brackets and set is_list to True
+            if field.type.endswith("[]"):
+                type_name = field.type[:-2]
+                is_list = True
+            # if type name has parameters in perens, remove them
+            if type_name.find("(") > -1:
+                type_name = type_name[:type_name.find("(")]
+            field_definining_schema = context.get_definition_by_name(type_name)
             if not field_definining_schema:
                 raise LanguageError(f"Could not find schema for field: {field.name} of type: {field.type}")
             if field_definining_schema.get_root_key() == "primitive":
                 # if the field is a primitive, run the primitive constraints
-                check_primitiveConstraint(getattr(instance_to_check, field.name), field_definining_schema)
+                if is_list:
+                    # if the field is a list, check each item in the list
+                    for item in getattr(instance_to_check, field.name):
+                        value_to_check = item
+                        if value_to_check is not None:
+                            check_primitiveConstraint(source_definition, item, field.type[:-2],field_definining_schema)
+                else:
+                    value_to_check = getattr(instance_to_check, field.name)
+                    if value_to_check is not None:
+                        check_primitiveConstraint(source_definition, getattr(instance_to_check, field.name), field.type, field_definining_schema)
             else:
                 # if the field is a schema, run the schema constraints
-                check_schema_constraint(getattr(instance_to_check, field.name), field_definining_schema)
+                if is_list:
+                    # if the field is a list, check each item in the list
+                    for item in getattr(instance_to_check, field.name):
+                        check_schema_constraint(source_definition, item, field_definining_schema)
+                else:
+                    check_schema_constraint(source_definition, getattr(instance_to_check, field.name), field_definining_schema)
     
     # now that the helper functions are in place, let's run the constraints on the aac_file
-    
-    # TODO: Figure out if we have a chicken-and-egg problem here.  There is a possibility that the aac_file contains
-    # definitions that have not been processed through gen-plugin, so there may be no instance field populated.
-    # While this is theoretically possible, it should be unlikely.  Logically, the contents of the aac_file should be
-    # items we handled manually in the early development of the POP API such as schema, plugin, primitive, etc.
-    # As long as a user incrementally defines AaC extensions by first defining schemas, then generating code for the schemas,
-    # before using their new schemas in other extension work, this should not be a problem.  We'll want some good documentation
-    # on this use case for the AaC developer guide.
     definitions_to_check = context.parse_and_load(aac_file)
 
     # First run all context constraint checks
     # Context constraints are "language constraints" and are not tied to a specific schema
     # You can think of these as "invariants", so they must always be satisfied
-    for definition in context.get_definitions_by_root("context_constraint"):
-        callback = all_constraints_by_name[definition.name]
-        result: ExecutionResult = callback()
-        constraint_results[definition.name] = result
+    for plugin in context.get_definitions_by_root("plugin"):
+        for context_constraint in plugin.instance.context_constraints:
+            callback = all_constraints_by_name[context_constraint.name]
+            result: ExecutionResult = callback(context)
+            constraint_results[context_constraint.name] = result
 
     for check_me in definitions_to_check:
-        defining_schema = context.get_definitions_by_root(check_me.get_root_key())[0]
-        constraint_results.update(check_schema_constraint(check_me, defining_schema))
+        defining_schema = context.get_defining_schema_for_root(check_me.get_root_key())
+        check_schema_constraint(check_me, check_me.instance, defining_schema)
 
     # loop through all the constraint results and see if any of them failed
     messages = []
@@ -103,6 +127,11 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult:
             # Any failure (including a constraint failure) is handled the same way
             status = result.status_code
             messages.extend(result.messages)
+
+    # after goign through all the constraint results, if we're still success add a success message
+    if status == ExecutionStatus.SUCCESS:
+        happy_msg = ExecutionMessage(message="All AaC constraint checks were successful.", source=None, location=None)
+        messages.append(happy_msg)
 
     return ExecutionResult(
         plugin_name, "check", status, messages

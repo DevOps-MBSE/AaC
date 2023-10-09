@@ -6,6 +6,7 @@ from dataclasses import dataclass
 import attr
 from typing import Optional
 from attr import attrib, validators
+
 from aac.lang.behavior import Behavior
 from aac.lang.field import Field
 

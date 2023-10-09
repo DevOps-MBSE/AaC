@@ -10,7 +10,7 @@ schema:
   name: AacType
   package: aac.lang
   modifiers: 
-    - name: abstract
+    - abstract
   description: |
     The base type for any data item defined in AaC.
   fields:
@@ -29,6 +29,9 @@ schema:
       type: string
       description: |
         A brief description of the type.
+      is_required: false
+  constraints:
+    - name: Required fields are present
 ---
 schema:
   name: Modifier
@@ -48,6 +51,9 @@ schema:
       type: Field[]
       description: |
         Optional fields to provide supporting information for the modifier.
+  constraints:
+    - name: Required fields are present
+    - name: No extra fields
 ---
 modifier:
   name: abstract
@@ -85,6 +91,10 @@ schema:
       type: string[]
       description: |
         A list of strings that encompass the enumeration's possible values.
+      is_required: true
+  constraints:
+    - name: Required fields are present
+    - name: No extra fields
 ---
 schema:
   name: Primitive
@@ -99,10 +109,14 @@ schema:
     - name: python_type
       type: string
       description:  The type value to represend this primitive with while generating python code.
+      is_required: true
     - name: constraints
       type: PrimitiveConstraintAssignment[]
       description: |
         A list of constraints to apply to the primitive.
+  constraints:
+    - name: Required fields are present
+    - name: No extra fields
 ---
 primitive:
   name: string
@@ -110,16 +124,22 @@ primitive:
   description:  |
     A textual value.
   python_type: str
+  constraints:
+    - name: Check string
 ---
 primitive:
   name: int
   package: aac.lang
   python_type: int
+  constraints:
+    - name: Check int
 ---
 primitive:
   name: number
   package: aac.lang
   python_type: float
+  constraints:
+    - name: Check number
 ---
 primitive:
   name: bool
@@ -127,6 +147,8 @@ primitive:
   python_type: bool
   description:  |
     A boolean value.
+  constraints:
+    - name: Check bool
 ---
 primitive:
   name: date
@@ -134,6 +156,8 @@ primitive:
   python_type: str
   description:  |
     A date or date-time value.
+  constraints:
+    - name: Check date
 ---
 primitive:
   name: file
@@ -141,6 +165,8 @@ primitive:
   python_type: str
   description:  |
     A computer file path value.
+  constraints:
+    - name: Check file
 ---
 primitive:
   name: directory
@@ -148,14 +174,35 @@ primitive:
   python_type: str
   description:  |
     A computer directory path value.
+  constraints:
+    - name: Check directory
 ---
 primitive:
-  name: reference
+  name: dataref
   package: aac.lang
   python_type: str
   description:  |
-    A reference to another defined item.  References are typed and documented 
+    A reference to another defined data item.  References are qualified and documented 
     as 'reference(schema_root.field_name)' denoting the definition and field being referenced.
+    Do not confuse data references with type references.  A data reference can be thought of as
+    a pointer to a specific data item, while a type reference is a pointer to a definition.  Data
+    references do not comprehend type inheritance or polymorphism.
+  constraints:
+    - name: Check dataref
+---
+primitive:
+  name: typeref
+  package: aac.lang
+  python_type: str
+  description:  |
+    A reference to another defined type.  Referenced type are typed and documented 
+    as 'typeref(package_name.type_name)' denoting the package and type being referenced.
+    A typeref respects inheritance and will respect references using polymorphism.  For example,
+    you can reference primitive type, enums, and schemas by using the typeref 'typeref(aac.lang.AacType)'.
+    Because Primitive, AacEnum, and Schema all extend from AacType, any value provided for any of these
+    types will be accepted by the typeref.
+  constraints:
+    - name: Check typeref
 ---
 schema:
   name: Schema
@@ -172,7 +219,7 @@ schema:
       description: |
         A list of Schema definition names that this definition inherits from.
     - name: modifiers
-      type: reference(modifier.name)[]
+      type: dataref(modifier.name)[]
       description:
         A means of further defining the schema and how it can be used within the model.
     - name: root
@@ -185,11 +232,14 @@ schema:
         A list of fields that make up the definition.
       is_required: true
     - name: requirements
-      type: reference(req.id)[]
+      type: dataref(req.id)[]
       description: |
         A list of requirements associated with this schema.
     - name: constraints
       type: SchemaConstraintAssignment[]
+  constraints:
+    - name: Required fields are present
+    - name: No extra fields
 ---
 schema:
   name: SchemaExtension
@@ -198,15 +248,18 @@ schema:
     References the inheritance parent schema.
   fields:
     - name: package
-      type: reference(schema.package)
+      type: dataref(schema.package)
       description: |
         The package name of the inheritance parent schema.
       is_required: true
     - name: name
-      type: reference(schema.name)
+      type: dataref(schema.name)
       description: |
         The name of the inheritance parent schema.
       is_required: true
+  constraints:
+    - name: Required fields are present
+    - name: No extra fields
 ---
 schema:
   name: Field
@@ -220,12 +273,12 @@ schema:
         Used to refer to the field, in certain cases.
       is_required: true
     - name: type
-      type: reference(schema.name)
+      type: typeref(aac.lang.AacType)
       description: |
         The type of the field.
 
         Used to constrain the field's values to make it simpler to reason about. Must
-        reference an existing definition by name.
+        reference an existing type name as declared in a schema.
       is_required: true
     - name: description
       type: string
@@ -241,6 +294,9 @@ schema:
       type: string
       description: |
         The default value to use for the field if field is not provided.
+  constraints:
+    - name: Required fields are present
+    - name: No extra fields
 ---
 schema:
   name: AacImport
@@ -255,6 +311,9 @@ schema:
       description: |
         The list of AaC files to import for use in the architecture.
       is_required: true
+  constraints:
+    - name: Required fields are present\
+    - name: No extra fields
 ---
 # Language Plugin Definition Types
 ---
@@ -270,6 +329,7 @@ schema:
       type: string
       description: |
         The name of your project.
+      is_required: true
     - name: description
       type: string
       description: |
@@ -280,6 +340,9 @@ schema:
         A list of pypi dependencies to include in the project.  This can be particularly
         useful if you're leveraging other AaC plugins in your project.  You will get the AaC
         core project by default, so no need to include it here.
+  constraints:
+    - name: Required fields are present
+    - name: No extra fields
 ---
 schema:
   name: ProjectDependency
@@ -296,7 +359,10 @@ schema:
       type: string
       description: |
         The version nof the pypi project to import.
-      is_required: true   
+      is_required: true
+  constraints:
+    - name: Required fields are present
+    - name: No extra fields
 ---
 schema:
   name: Plugin
@@ -308,23 +374,43 @@ schema:
     generation and everything in between.
   fields:
     - name: name
+      description: |
+        The name of the plugin.
       type: string
       is_required: true
     - name: package
+      description: |
+        The 'dot notation' package name for the plugin.  All plugin names must be unique within an assigned type.
+        The package will also define the directory structure produced by gen-plugin.
       type: string
       is_required: true
     - name: description
+      description: |
+        A brief description of the plugin.
       type: string
     - name: commands
+      description: |
+        A list of commands that the plugin provides.
       type: PluginCommand[]
     - name: definition_sources
+      description: |
+        A list of AaC definition files to import for use in the plugin.
       type: file[]
     - name: context_constraints
+      description: |
+        A list of context constraints provided by the plugin. Context constraints evaluate all definitions in the language context.
       type: ContextConstraint[]
     - name: schema_constraints
+      description: |
+        A list of schema constraints provided by the plugin. Schema constraints evaluate individual schema content.
       type: SchemaConstraint[]
     - name: primitive_constraints
+      description: |
+        A list of primitive constraints provided by the plugin. Primitive constraints evaluate individual primitive content.
       type: PrimitiveConstraint[]
+  constraints:
+    - name: Required fields are present
+    - name: No extra fields
 ---
 schema:
   name: PluginCommand
@@ -352,7 +438,9 @@ schema:
       description: |
         The list of all the fields that are inputs to the component when the
         command is executed.
-      is_required: true
+  constraints:
+    - name: Required fields are present
+    - name: No extra fields
 ---
 schema:
   name: PluginCommandReference
@@ -361,40 +449,46 @@ schema:
     A plugin command reference that can be used to establish cross-plugin behaviors.
   fields:
     - name: plugin
-      type: string
+      type: dataref(plugin.name)
       description: |
         The name of the plugin to reference.
       is_required: true
     - name: command
-      type: string
+      type: dataref(plugin.command.name)
       description: |
         The name of the command to reference.
       is_required: true
+  constraints:
+    - name: Required fields are present
+    - name: No extra fields
 ---
 schema:
   name: PluginInput
   package: aac.lang
   description: |
-    A plugin command reference that can be used to establish cross-plugin behaviors.
+    Input for plugin execution control.  May be used for CLI inpurt of for constraint definition.
   fields:
     - name: name
       type: string
       description: |
-        The name of the plugin input parameter.  Prefix the name with "--" to indicate an optional input.
+        The name of the plugin input parameter.  Prefix the name with "--" to indicate an optional CLI input.
       is_required: true
     - name: description
       type: string
       description: |
         A brief description of the input. This will be used in CLI help.
     - name: type
-      type: reference(primitive.name)
+      type: typeref(aac.lang.Primitive)
       description: |
-        The command inputs are translaed to python function inputs.  This is the python type to use.
+        The command inputs are translaed to python function inputs.  Use AaC primitives to enable translation to python types for plugin generation.
       is_required: true
     - name: default
       type:  string
       description: |
         The default value to provide to a plugin, if desired.
+  constraints:
+    - name: Required fields are present
+    - name: No extra fields
 ---
 schema: 
   name: PluginInputValue
@@ -411,7 +505,10 @@ schema:
       type: string
       description: |
         The value of the plugin input being provided.
-
+      is_required: true
+  constraints:
+    - name: Required fields are present
+    - name: No extra fields
 ---
 schema:
   name: Generator
@@ -434,6 +531,9 @@ schema:
       description: |
         The list of templates to use when generating content.
       is_required: true
+  constraints:
+    - name: Required fields are present
+    - name: No extra fields
 ---
 schema:
   name: GeneratorSource
@@ -446,13 +546,16 @@ schema:
       description: Name of the allocation.
       is_required: true
     - name: data_source
-      type: reference(schema.root)
+      type: dataref(schema.root)
       description: The root key of data items to be provided to the templates.
       is_required: true
     - name: templates
       type: GeneratorTemplate[]
       description: The templates to be applied to the specified model data.
       is_required: true
+  constraints:
+    - name: Required fields are present
+    - name: No extra fields
 ---
 schema:
   name: GeneratorTemplate
@@ -511,6 +614,9 @@ schema:
       description: |
         The file extension to use when generating the output file name.
       is_required: true
+  constraints:
+    - name: Required fields are present
+    - name: No extra fields
 ---
 aacenum:
   name: OverwriteOption
@@ -551,6 +657,9 @@ schema:
       description: |
         The python function to be made available to the template.
       is_required: true
+  constraints:
+    - name: Required fields are present
+    - name: No extra fields
 ---
 aacenum:
   name: GeneratorOutputTarget
@@ -583,21 +692,24 @@ schema:
       description: |
         A brief description of the requirement specification.
     - name: sections
-      type: reference(req_spec.name)[]
+      type: dataref(req_spec.name)[]
       description: |
         A list of requirement sections that make up the specification.
     - name: parent_specs
-      type: reference(req_spec.name)[]
+      type: dataref(req_spec.name)[]
       description: |
         A list of requirement specifications that this specification inherits from.
     - name: child_specs
-      type: reference(req_spec.name)[]
+      type: dataref(req_spec.name)[]
       description: |
         A list of requirement specifications that inherit from this specification.
     - name: requirements
-      type: reference(req.id)[]
+      type: dataref(req.id)[]
       description: |
         A list of requirements that make up the specification.
+  constraints:
+    - name: Required fields are present
+    - name: No extra fields
 ---
 schema:
   name: Requirement
@@ -616,15 +728,15 @@ schema:
         by name using the following syntax: {param_name}.
       is_required: true
     - name: parents
-      type: reference(req.id)[]
+      type: dataref(req.id)[]
       description: |
         A list of requirements that this requirement is decomposed from.
     - name: childern
-      type: reference(req.id)[]
+      type: dataref(req.id)[]
       description: |
         A list of requirements that are decomposed from this requirement.
     - name: parameters
-      type: reference(req_param.name)[]
+      type: dataref(req_param.name)[]
       description: |
         A list of parameters that provide additional information about the requirement.
     - name: verification_method
@@ -635,6 +747,9 @@ schema:
       type: RequirementAttribute[]
       description: |
         A list of attributes that provide additional information about the requirement.
+  constraints:
+    - name: Required fields are present
+    - name: No extra fields
 ---
 schema:
   name: RequirementParameter
@@ -651,6 +766,9 @@ schema:
       description: |
         The value of the parameter.
       is_required: true
+  constraints:
+    - name: Required fields are present
+    - name: No extra fields
 ---
 aacenum:
   name: RequirementVerificationMethod
@@ -681,6 +799,9 @@ schema:
       description: |
         The value of the attribute.
       is_required: true
+  constraints:
+    - name: Required fields are present
+    - name: No extra fields
 ---
 # Core Behavioral Modeling Types
 ---
@@ -705,7 +826,7 @@ schema:
         An explanatory description for the model including what the
         component/system is modeling and any other relevant information.
     - name: components
-      type: reference(Model.name)
+      type: typeref(aac.lang.Model)
       description: |
         A list of models that are components of the system.
     - name: behavior
@@ -720,9 +841,12 @@ schema:
         State may be visible between multiple instances of the modeled entity to
         support horizontal scaling.
     - name: requirements
-      type: reference(req.id)[]
+      type: dataref(req.id)[]
       description: |
         A reference to requirements relevant to the modeled item.
+  constraints:
+    - name: Required fields are present
+    - name: No extra fields
 ---
 schema:
   name: Behavior
@@ -759,9 +883,12 @@ schema:
         A list of test specifications that define the acceptance criteria to signify that
         the system is behaving as expected.
     - name: requirements
-      type: reference(req.id)[]
+      type: dataref(req.id)[]
       description: |
         A list of allocated requirements defining the expected behavior to be provided.
+  constraints:
+    - name: Required fields are present
+    - name: No extra fields
 ---
 # Test Specification types
 ---
@@ -781,6 +908,9 @@ schema:
       type: Scenario[]
       description: A set of test cases
       is_required: true
+  constraints:
+    - name: Required fields are present
+    - name: No extra fields
 ---
 schema:
   name: Background
@@ -798,6 +928,9 @@ schema:
         A list of preconditions that must be true in order for the scenario to
         perform the expected action or provide the expected result.
       is_required: true
+  constraints:
+    - name: Required fields are present
+    - name: No extra fields
 ---
 schema:
   name: Scenario
@@ -839,6 +972,9 @@ schema:
         a replaceable item in your given, when, then using angle brackets as described
         in the Gherkin syntax (ex: <my_text_value).  Each example provided contains the
         collection of named values that will be substituted in for test execution.
+  constraints:
+    - name: Required fields are present
+    - name: No extra fields
 ---
 schema:
   name: Example
@@ -856,6 +992,9 @@ schema:
       description: |
         The values that make up the example row.
       is_required: true
+  constraints:
+    - name: Required fields are present
+    - name: No extra fields
 ---
 schema:
   name: ExampleValue
@@ -873,6 +1012,9 @@ schema:
       description: |
         The desired value to use.
       is_required: true
+  constraints:
+    - name: Required fields are present
+    - name: No extra fields
 ---
 # Model Constraints
 ---
@@ -899,6 +1041,9 @@ schema:
       type: Feature[]
       description: |
         A list of acceptance test features that describe the expected behavior of the context constraint.
+  constraints:
+    - name: Required fields are present
+    - name: No extra fields
 ---
 schema:
   name: SchemaConstraint
@@ -926,6 +1071,9 @@ schema:
       type: Feature[]
       description: |
         A list of acceptance test features that describe the expected behavior of the schema constraint.
+  constraints:
+    - name: Required fields are present
+    - name: No extra fields
 ---
 schema:
   name: PrimitiveConstraint
@@ -953,13 +1101,18 @@ schema:
       type: Feature[]
       description: |
         A list of acceptance test features that describe the expected behavior of the primitive constraint.
+  constraints:
+    - name: Required fields are present
+    - name: No extra fields
 ---
 schema:
   name: SchemaConstraintAssignment
   package: aac.lang
+  description: |
+    Assigns a schema constraint to a schema definition.
   fields:
     - name: name
-      type: reference(schema_constraint.name)
+      type: dataref(plugin.schema_constraints.name)
       description: |
         The name of the schema constraint definition.
       is_required: true
@@ -967,13 +1120,18 @@ schema:
       type: PluginInputValue[]
       description: |
         Arguments for the schema constraint if applicable.
+  constraints:
+    - name: Required fields are present
+    - name: No extra fields
 ---
 schema:
   name: PrimitiveConstraintAssignment
   package: aac.lang
+  description: |
+    Assigns a primitive constraint to a primitive definition.
   fields:
     - name: name
-      type: reference(primitive_constraint.name)
+      type: dataref(plugin.primitive_constraints.name)
       description: |
         The name of the schema constraint definition.
       is_required: true
@@ -981,3 +1139,6 @@ schema:
       type: PluginInputValue[]
       description: |
         Arguments for the primitive constraint if applicable.
+  constraints:
+    - name: Required fields are present
+    - name: No extra fields

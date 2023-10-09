@@ -11,11 +11,11 @@ from attr import attrib, validators
 @dataclass(frozen=True)
 class PluginInput:
     """
-    A plugin command reference that can be used to establish cross-plugin behaviors.
+    Input for plugin execution control.  May be used for CLI inpurt of for constraint definition.
 
-    name: str - The name of the plugin input parameter.  Prefix the name with "--" to indicate an optional input.
+    name: str - The name of the plugin input parameter.  Prefix the name with "--" to indicate an optional CLI input.
     description: Optional[str] - A brief description of the input. This will be used in CLI help.
-    type: str - The command inputs are translaed to python function inputs.  This is the python type to use.
+    type: str - The command inputs are translaed to python function inputs.  Use AaC primitives to enable translation to python types for plugin generation.
     default: Optional[str] - The default value to provide to a plugin, if desired.
     """
 

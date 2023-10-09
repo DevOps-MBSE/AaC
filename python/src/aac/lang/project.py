@@ -6,6 +6,7 @@ from dataclasses import dataclass
 import attr
 from typing import Optional
 from attr import attrib, validators
+
 from aac.lang.projectdependency import ProjectDependency
 
 
@@ -14,14 +15,12 @@ class Project:
     """
     A definition for an AaC project. Projects provide an environment to define plugins your team can use to  extend AaC to meet your unique needs.
 
-    name: Optional[str] - The name of your project.
+    name: str - The name of your project.
     description: Optional[str] - A brief descritpion of your project.  This will initialize your project read me file.
     uses: list[ProjectDependency]] - A list of pypi dependencies to include in the project.  This can be particularly useful if you're leveraging other AaC plugins in your project.  You will get the AaC core project by default, so no need to include it here.
     """
 
-    name: Optional[str] = attrib(
-        init=attr.ib(), validator=validators.optional(validators.instance_of(str))
-    )
+    name: str = attrib(init=attr.ib(), validator=validators.instance_of(str))
     description: Optional[str] = attrib(
         init=attr.ib(), validator=validators.optional(validators.instance_of(str))
     )
@@ -32,9 +31,6 @@ class Project:
     @classmethod
     def from_dict(cls, data):
         args = {}
-
-        name = data.pop("name", None)
-        args["name"] = name
 
         description = data.pop("description", None)
         args["description"] = description

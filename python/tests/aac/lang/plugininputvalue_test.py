@@ -18,6 +18,7 @@ class PluginInputValueTestHelper:
     def generate_data_required_only() -> dict:
         return {
             "name": "test",
+            "value": "test",
         }
 
 
@@ -31,6 +32,7 @@ class TestPluginInputValue(unittest.TestCase):
         plugininputvalue_dict = PluginInputValueTestHelper.generate_data_required_only()
         instance = PluginInputValue.from_dict(deepcopy(plugininputvalue_dict))
         self.assertEqual(instance.name, plugininputvalue_dict["name"])
+        self.assertEqual(instance.value, plugininputvalue_dict["value"])
 
 
 if __name__ == "__main__":

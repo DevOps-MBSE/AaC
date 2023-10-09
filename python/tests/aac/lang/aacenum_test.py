@@ -15,7 +15,9 @@ class AacEnumTestHelper:
 
     @staticmethod
     def generate_data_required_only() -> dict:
-        return {}
+        return {
+            "enumerated_values": ["test"],
+        }
 
 
 class TestAacEnum(unittest.TestCase):
@@ -26,6 +28,7 @@ class TestAacEnum(unittest.TestCase):
 
         aacenum_dict = AacEnumTestHelper.generate_data_required_only()
         instance = AacEnum.from_dict(deepcopy(aacenum_dict))
+        self.assertEqual(instance.enumerated_values, aacenum_dict["enumerated_values"])
 
 
 if __name__ == "__main__":

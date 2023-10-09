@@ -14,19 +14,14 @@ class PluginInputValue:
     A value provided for a plugin input.
 
     name: str - The name of the plugin input being provided.
-    value: Optional[str] - The value of the plugin input being provided.
+    value: str - The value of the plugin input being provided.
     """
 
     name: str = attrib(init=attr.ib(), validator=validators.instance_of(str))
-    value: Optional[str] = attrib(
-        init=attr.ib(), validator=validators.optional(validators.instance_of(str))
-    )
+    value: str = attrib(init=attr.ib(), validator=validators.instance_of(str))
 
     @classmethod
     def from_dict(cls, data):
         args = {}
-
-        value = data.pop("value", None)
-        args["value"] = value
 
         return cls(**args, **data)

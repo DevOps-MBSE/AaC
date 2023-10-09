@@ -19,16 +19,17 @@ from aac.execute import hookimpl
 from aac.context.language_context import LanguageContext
 from aac.context.definition import Definition
 from aac.execute.plugin_runner import PluginRunner
+from typing import Any
 
 required_fields_aac_file_name = "required_fields.aac"
 
 
 def run_required_fields_are_present(
-    definition: Definition, arguments: list[PluginInputValue]
+    instance: Any, source_definition: Definition, defining_schema: Definition, arguments: list[PluginInputValue]
 ) -> ExecutionResult:
     """Check every field declared as required is present and populated."""
 
-    return required_fields_are_present(definition, arguments)
+    return required_fields_are_present(instance, source_definition, defining_schema, arguments)
 
 
 @hookimpl

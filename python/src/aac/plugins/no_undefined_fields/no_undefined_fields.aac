@@ -1,0 +1,8 @@
+plugin:
+  name: No Undefined Fields
+  package: aac.plugins.no_undefined_fields
+  description: An AaC plugin that ensures no extraneous fields are present.
+  schema_constraints:
+    - name: No extra fields
+      description: Check every field to ensure it is a defined part of the schema.
+      

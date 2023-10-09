@@ -36,4 +36,3 @@ class Definition:
         """
         return list(self.structure.keys())[0]
     
-    

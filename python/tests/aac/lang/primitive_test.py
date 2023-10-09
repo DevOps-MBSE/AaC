@@ -18,7 +18,9 @@ class PrimitiveTestHelper:
 
     @staticmethod
     def generate_data_required_only() -> dict:
-        return {}
+        return {
+            "python_type": "test",
+        }
 
 
 class TestPrimitive(unittest.TestCase):
@@ -30,6 +32,7 @@ class TestPrimitive(unittest.TestCase):
 
         primitive_dict = PrimitiveTestHelper.generate_data_required_only()
         instance = Primitive.from_dict(deepcopy(primitive_dict))
+        self.assertEqual(instance.python_type, primitive_dict["python_type"])
 
 
 if __name__ == "__main__":
