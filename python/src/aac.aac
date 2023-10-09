@@ -438,6 +438,11 @@ schema:
       description: |
         The list of all the fields that are inputs to the component when the
         command is executed.
+    - name: acceptance
+      type: Feature[]
+      description: |
+        A list of test specifications that define the acceptance criteria to signify that
+        the plugin command is behaving as expected.
   constraints:
     - name: Required fields are present
     - name: No extra fields
@@ -549,6 +554,14 @@ schema:
       type: dataref(schema.root)
       description: The root key of data items to be provided to the templates.
       is_required: true
+    - name: data_content
+      type: string
+      description: |
+        The content of the data source to be provided to the templates.  This content will be
+        parsed as yaml and provided to the templates. Provide a 'dot-notation' representation
+        for the content you wish to provide to the templates.  For example, if you want to provide
+        the commands of a plugin you can provide the following content: 'plugin.commands'. If no
+        data_content is provided, the full data_source will be provided to the template.
     - name: templates
       type: GeneratorTemplate[]
       description: The templates to be applied to the specified model data.

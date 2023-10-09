@@ -17,11 +17,15 @@ class GeneratorSource:
 
     name: str - Name of the allocation.
     data_source: str - The root key of data items to be provided to the templates.
+    data_content: Optional[str] - The content of the data source to be provided to the templates.  This content will be parsed as yaml and provided to the templates. Provide a 'dot-notation' representation for the content you wish to provide to the templates.  For example, if you want to provide the commands of a plugin you can provide the following content: 'plugin.commands'. If no data_content is provided, the full data_source will be provided to the template.
     templates: list[GeneratorTemplate]] - The templates to be applied to the specified model data.
     """
 
     name: str = attrib(init=attr.ib(), validator=validators.instance_of(str))
     data_source: str = attrib(init=attr.ib(), validator=validators.instance_of(str))
+    data_content: Optional[str] = attrib(
+        init=attr.ib(), validator=validators.optional(validators.instance_of(str))
+    )
     templates: list[GeneratorTemplate] = attrib(
         init=attr.ib(), validator=validators.instance_of(list[GeneratorTemplate])
     )
@@ -29,6 +33,9 @@ class GeneratorSource:
     @classmethod
     def from_dict(cls, data):
         args = {}
+
+        data_content = data.pop("data_content", None)
+        args["data_content"] = data_content
 
         templates_data = data.pop("templates", [])
         templates = [GeneratorTemplate.from_dict(entry) for entry in templates_data]

@@ -74,48 +74,85 @@ def generate(aac_file: str, generator_file: str, code_output: str, test_output: 
                 else:
                     jinja_template = load_template(template_abs_path)
 
+                # loop over the parsed definitions and generate content for each
                 for source_data_def in source_data_definitions:
-                    source_data_structure = source_data_def.structure
-                    jinja_output = jinja_template.render(source_data_structure)
-                    output = black.format_str(jinja_output, mode=black.Mode())
-                    
-                    # write output to files to the traget in the template, respecting the overwrite indicator
-                    root_out_dir = code_out_dir
-                    if template.output_target == GeneratorOutputTarget.TEST:
-                        root_out_dir = test_out_dir
-                    elif template.output_target == GeneratorOutputTarget.DOC:
-                        root_out_dir = doc_out_dir
-                    output_file_path = get_output_file_path(root_out_dir, template, source_data_def.package, source_data_def.name)
-                    # make sure the directory exists
-                    output_dir = path.dirname(output_file_path)
-                    if not path.exists(output_dir):
-                        makedirs(output_dir)
-
-                    if evaluate:
-                        # write contents to an aac_evaluate file for user review
-                        evaluate_file_path = f"{output_file_path}.aac_evaluate"
-                        with open(evaluate_file_path, "w") as output_file:
-                            output_file.write(output)
-                            output_file.close()
+                    source_data_structures = []
+                    source_data_package = source_data_def.package
+                    if not source.data_content:
+                        # we'll just use the root structure
+                        source_data_structures = [source_data_def.structure]
                     else:
-                        # write contents to output_file_path
-                        if force_overwrite or template.overwrite in [OverwriteOption.OVERWRITE]:
-                            if path.exists(output_file_path):
-                                backup_file(output_file_path)
-                            with open(output_file_path, "w") as output_file:
+                        # we've got to navigate the structure to get the right data
+                        content_split = source.data_content.split(".")
+                        if content_split[0] != source_data_def.get_root_key():
+                            raise ExecutionError(f"Invalid data_content for generator source {source.name}. The data_content must be the root key of the data source.")
+                        else:
+                            source_data_structures = [source_data_def.structure]
+                            for field_name in content_split:
+                                new_source_data_structures = []
+                                for structure in source_data_structures:
+                                    if field_name not in structure:
+                                        print(f"DEBUG:  Invalid data_content {source.data_content} for generator source {source.name}. The data_content must be a field chain in the data source.")
+                                        # it is possible that fields are optional and may not be present, so continue if not present
+                                        continue
+                                    field_value = structure[field_name]
+                                    if isinstance(field_value, list):
+                                        new_source_data_structures.extend(field_value)
+                                    elif isinstance(field_value, dict):
+                                        new_source_data_structures.append(field_value)
+                                    else:
+                                        raise ExecutionError(f"Invalid data_content {source.data_content} for generator source {source.name}. The data_content must be a field chain in the data source that represents a structure of data, not a primitive.")
+                                source_data_structures = new_source_data_structures
+                    for source_data_structure in source_data_structures:
+                        print("DEBUG:  Start info")
+                        print(f"DEBUG: jinja_template.render for template: {template_abs_path}\n Using source_data_package:\n{source_data_structure}")
+                        print("DEBUG: end info")
+                        jinja_output = jinja_template.render(source_data_structure)
+                        output = jinja_output
+                        if template.output_file_extension == "py":
+                            output = black.format_str(jinja_output, mode=black.Mode())
+                        
+                        # write output to files to the traget in the template, respecting the overwrite indicator
+                        root_out_dir = code_out_dir
+                        if template.output_target == GeneratorOutputTarget.TEST:
+                            root_out_dir = test_out_dir
+                        elif template.output_target == GeneratorOutputTarget.DOC:
+                            root_out_dir = doc_out_dir
+                        file_name = source_data_def.name
+                        if source.data_content:
+                            name_extension = f"{source_data_structure['name'].replace(' ', '_').replace('-', '_')}"
+                            file_name = f"{file_name}_{name_extension}"
+                        output_file_path = get_output_file_path(root_out_dir, template, source_data_package, file_name)
+                        # make sure the directory exists
+                        output_dir = path.dirname(output_file_path)
+                        if not path.exists(output_dir):
+                            makedirs(output_dir)
+
+                        if evaluate:
+                            # write contents to an aac_evaluate file for user review
+                            evaluate_file_path = f"{output_file_path}.aac_evaluate"
+                            with open(evaluate_file_path, "w") as output_file:
                                 output_file.write(output)
                                 output_file.close()
-                        elif template.overwrite in [OverwriteOption.SKIP]:
-                            # this is for the skip option, so only write if file doesn't exist
-                            if not path.exists(output_file_path):
+                        else:
+                            # write contents to output_file_path
+                            if force_overwrite or template.overwrite in [OverwriteOption.OVERWRITE]:
+                                if path.exists(output_file_path):
+                                    backup_file(output_file_path)
                                 with open(output_file_path, "w") as output_file:
                                     output_file.write(output)
                                     output_file.close()
-                            else:
-                                evaluate_file_path = f"{output_file_path}.aac_evaluate"
-                                with open(evaluate_file_path, "w") as output_file:
-                                    output_file.write(output)
-                                    output_file.close()
+                            elif template.overwrite in [OverwriteOption.SKIP]:
+                                # this is for the skip option, so only write if file doesn't exist
+                                if not path.exists(output_file_path):
+                                    with open(output_file_path, "w") as output_file:
+                                        output_file.write(output)
+                                        output_file.close()
+                                else:
+                                    evaluate_file_path = f"{output_file_path}.aac_evaluate"
+                                    with open(evaluate_file_path, "w") as output_file:
+                                        output_file.write(output)
+                                        output_file.close()
     
     return result
 

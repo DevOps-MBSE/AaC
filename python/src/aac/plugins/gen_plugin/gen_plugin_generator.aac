@@ -194,4 +194,48 @@ generator:
           output_path_uses_data_source_package: true
           output_file_suffix: _impl
           output_file_extension: py
+    - name: AaC Plugin Command Feature File Generation
+      data_source: plugin
+      data_content: plugin.commands.acceptance
+      templates:
+        - name: FeatureFile
+          description: Generates a Feature file for a plugin command
+          template_file: ./templates/feature_file.jinja2
+          overwrite: OVERWRITE
+          output_target: TEST
+          output_path_uses_data_source_package: true
+          output_file_extension: feature
+    - name: AaC Plugin Context Constraint Feature File Generation
+      data_source: plugin
+      data_content: plugin.context_constraints.acceptance
+      templates:
+        - name: FeatureFile
+          description: Generates a Feature file for a plugin context constraint
+          template_file: ./templates/feature_file.jinja2
+          overwrite: OVERWRITE
+          output_target: TEST
+          output_path_uses_data_source_package: true
+          output_file_extension: feature
+    - name: AaC Plugin Schema Constraint Feature File Generation
+      data_source: plugin
+      data_content: plugin.schema_constraints.acceptance
+      templates:
+        - name: FeatureFile
+          description: Generates a Feature file for a plugin schema constraint
+          template_file: ./templates/feature_file.jinja2
+          overwrite: OVERWRITE
+          output_target: TEST
+          output_path_uses_data_source_package: true
+          output_file_extension: feature
+    - name: AaC Plugin Primitive Constraint Feature File Generation
+      data_source: plugin
+      data_content: plugin.primitive_constraints.acceptance
+      templates:
+        - name: FeatureFile
+          description: Generates a Feature file for a plugin primitive constraint
+          template_file: ./templates/feature_file.jinja2
+          overwrite: OVERWRITE
+          output_target: TEST
+          output_path_uses_data_source_package: true
+          output_file_extension: feature
         

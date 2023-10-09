@@ -10,6 +10,7 @@ from attr import attrib, validators
 from aac.lang.plugincommandreference import PluginCommandReference
 from aac.lang.plugincommandreference import PluginCommandReference
 from aac.lang.plugininput import PluginInput
+from aac.lang.feature import Feature
 
 
 @dataclass(frozen=True)
@@ -22,6 +23,7 @@ class PluginCommand:
     run_before: list[PluginCommandReference]] - A listing of plugin commands to run before this command.
     run_after: list[PluginCommandReference]] - A listing of plugin commands to run before this command.
     input: list[PluginInput]] - The list of all the fields that are inputs to the component when the command is executed.
+    acceptance: list[Feature]] - A list of test specifications that define the acceptance criteria to signify that the plugin command is behaving as expected.
     """
 
     name: str = attrib(init=attr.ib(), validator=validators.instance_of(str))
@@ -36,6 +38,9 @@ class PluginCommand:
     )
     input: list[PluginInput] = attrib(
         init=attr.ib(), validator=validators.instance_of(list[PluginInput])
+    )
+    acceptance: list[Feature] = attrib(
+        init=attr.ib(), validator=validators.instance_of(list[Feature])
     )
 
     @classmethod
@@ -60,5 +65,9 @@ class PluginCommand:
         input_data = data.pop("input", [])
         input = [PluginInput.from_dict(entry) for entry in input_data]
         args["input"] = input
+
+        acceptance_data = data.pop("acceptance", [])
+        acceptance = [Feature.from_dict(entry) for entry in acceptance_data]
+        args["acceptance"] = acceptance
 
         return cls(**args, **data)

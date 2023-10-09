@@ -7,9 +7,11 @@ from aac.lang.plugincommand import PluginCommand
 from aac.lang.plugincommandreference import PluginCommandReference
 from aac.lang.plugincommandreference import PluginCommandReference
 from aac.lang.plugininput import PluginInput
+from aac.lang.feature import Feature
 from plugincommandreference_test import PluginCommandReferenceTestHelper
 from plugincommandreference_test import PluginCommandReferenceTestHelper
 from plugininput_test import PluginInputTestHelper
+from feature_test import FeatureTestHelper
 
 
 class PluginCommandTestHelper:
@@ -21,6 +23,7 @@ class PluginCommandTestHelper:
             "run_before": [PluginCommandReferenceTestHelper.generate_data()],
             "run_after": [PluginCommandReferenceTestHelper.generate_data()],
             "input": [PluginInputTestHelper.generate_data()],
+            "acceptance": [FeatureTestHelper.generate_data()],
         }
 
     @staticmethod
@@ -39,6 +42,7 @@ class TestPluginCommand(unittest.TestCase):
         self.assertIsNotNone(instance.run_before)
         self.assertIsNotNone(instance.run_after)
         self.assertIsNotNone(instance.input)
+        self.assertIsNotNone(instance.acceptance)
 
         plugincommand_dict = PluginCommandTestHelper.generate_data_required_only()
         instance = PluginCommand.from_dict(deepcopy(plugincommand_dict))

@@ -14,6 +14,7 @@ class GeneratorSourceTestHelper:
         return {
             "name": "test",
             "data_source": "test",
+            "data_content": "test",
             "templates": [GeneratorTemplateTestHelper.generate_data()],
         }
 
@@ -32,6 +33,7 @@ class TestGeneratorSource(unittest.TestCase):
         instance = GeneratorSource.from_dict(deepcopy(generatorsource_dict))
         self.assertEqual(instance.name, generatorsource_dict["name"])
         self.assertEqual(instance.data_source, generatorsource_dict["data_source"])
+        self.assertEqual(instance.data_content, generatorsource_dict["data_content"])
         self.assertIsNotNone(instance.templates)
 
         generatorsource_dict = GeneratorSourceTestHelper.generate_data_required_only()
