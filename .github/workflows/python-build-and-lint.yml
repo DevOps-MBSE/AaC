@@ -45,8 +45,10 @@ jobs:
       - name: Build Documentation
         run: sphinx-build ../docs/source gen_docs
 
-      - name: Upload Documentation
+      - name: Get current directory for fixing path
         run: echo pwd
+        
+      - name: Upload Documentation
         uses: actions/upload-artifact@v3
         with:
           name: aac-documentation
