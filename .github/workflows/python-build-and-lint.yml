@@ -46,10 +46,11 @@ jobs:
         run: sphinx-build ../docs/source gen_docs
 
       - name: Upload Documentation
+        run: echo pwd
         uses: actions/upload-artifact@v3
         with:
           name: aac-documentation
-          path: ./AaC/docs/gen_docs
+          path: ./docs/gen_docs
 
       - name: Generate RESTful API Documentation
         run: |
