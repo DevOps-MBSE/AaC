@@ -43,7 +43,7 @@ jobs:
       #     path: python/dist/
 
       - name: Build Documentation
-        run: sphinx-build ../docs/source gen_docs
+        run: sphinx-build ../docs/source doc_artifacts
 
       - name: Move to documentation folder
         run: |
@@ -55,7 +55,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: aac-documentation
-          path: ./docs/gen_docs
+          path: ./docs/source/doc_artifacts
 
       - name: Generate RESTful API Documentation
         run: |
