@@ -18,8 +18,14 @@ jobs:
         with:
           python-version: 3.9
 
+      - name: Create virtual environment
+        run: python3 -m venv venv
+      
+      - name: Activate virtual environment
+        run: source venv/bin/activate
+
       - name: Install the AaC Package
-        run: pip install -e .[all]
+        run: pip install aac -e .[all]
 
       - name: Lint with flake8
         run: flake8 .
@@ -37,16 +43,17 @@ jobs:
           path: python/dist/
 
       - name: Build Documentation
-        uses: ammaraskar/sphinx-action@0.4
-        with:
-          pre-build-command: "pip install aac -e .[all]"
-          docs-folder: "docs/"
+        # uses: ammaraskar/sphinx-action@0.4
+        # with:
+        #   pre-build-command: "pip install aac -e .[all]"
+        #   docs-folder: "docs/"
+        run: sphinx-autobuild source gen_docs
 
       - name: Upload Documentation
         uses: actions/upload-artifact@v3
         with:
           name: aac-documentation
-          path: ./docs/docs/html
+          path: ./docs/gen_docs
 
       - name: Generate RESTful API Documentation
         run: |
