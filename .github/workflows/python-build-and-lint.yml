@@ -18,12 +18,6 @@ jobs:
         with:
           python-version: 3.9
 
-      - name: Create virtual environment
-        run: python3 -m venv venv
-      
-      - name: Activate virtual environment
-        run: source venv/bin/activate
-
       - name: Install the AaC Package
         run: pip install aac -e .[all]
 
@@ -47,16 +41,14 @@ jobs:
           cd ../docs
           sphinx-build source doc_artifacts
 
-      - name: Move to documentation folder
-        run: |
-          pwd
-          ls
 
       - name: Upload Documentation
         uses: actions/upload-artifact@v3
         with:
           name: aac-documentation
-          path: python/docs/doc_artifacts
+          path: |
+            python/docs/doc_artifacts/api
+            python/docs/doc_artifacts/project_documentation
 
       - name: Generate RESTful API Documentation
         run: |
