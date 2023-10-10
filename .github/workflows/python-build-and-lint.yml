@@ -18,9 +18,13 @@ jobs:
         with:
           python-version: 3.9
 
-      - name: Install the AaC Package
+      - name: Create virtual environment
         run: python3 -m venv venv
+      
+      - name: Activate virtual environment
         run: source venv/bin/activate
+
+      - name: Install the AaC Package
         run: pip install -e .[all]
 
       - name: Lint with flake8
