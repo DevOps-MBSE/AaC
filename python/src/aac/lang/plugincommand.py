@@ -20,6 +20,7 @@ class PluginCommand:
 
     name: str - The name of the command.  This will be used by the CLI to invke the command.
     help_text: Optional[str] - A description that will be displayed as help text when displaying command usage.
+    enable_cache: Optional[bool] - Indicates that the command should be cached for future use.  This is useful for commands that take may be used by other commands in the run_before or  run_after fields creating a command chain but only need to be executed once.
     run_before: list[PluginCommandReference]] - A listing of plugin commands to run before this command.
     run_after: list[PluginCommandReference]] - A listing of plugin commands to run before this command.
     input: list[PluginInput]] - The list of all the fields that are inputs to the component when the command is executed.
@@ -29,6 +30,9 @@ class PluginCommand:
     name: str = attrib(init=attr.ib(), validator=validators.instance_of(str))
     help_text: Optional[str] = attrib(
         init=attr.ib(), validator=validators.optional(validators.instance_of(str))
+    )
+    enable_cache: Optional[bool] = attrib(
+        init=attr.ib(), validator=validators.optional(validators.instance_of(bool))
     )
     run_before: list[PluginCommandReference] = attrib(
         init=attr.ib(), validator=validators.instance_of(list[PluginCommandReference])
@@ -49,6 +53,9 @@ class PluginCommand:
 
         help_text = data.pop("help_text", None)
         args["help_text"] = help_text
+
+        enable_cache = data.pop("enable_cache", None)
+        args["enable_cache"] = enable_cache
 
         run_before_data = data.pop("run_before", [])
         run_before = [

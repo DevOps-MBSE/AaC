@@ -37,8 +37,19 @@ from {{plugin.package}}.{{get_python_name(plugin.name)}}_impl import plugin_name
 {{get_python_name(plugin.name)}}_aac_file_name = "{{get_python_name(plugin.name)}}.aac"
 
 {% for command in plugin.commands %}
+{% if command.enable_cache %}{{get_python_name(command.name)}}_cache: dict[tuple, ExecutionResult] = {}
+{% endfor %}
+
+{% for command in plugin.commands %}
+{% if command.enable_cache %}
 def run_{{get_python_name(command.name)}}({% for entry in command.input %}{{ get_python_name(entry.name) }}: {{ get_python_type(entry.type) }}{% if not loop.last %}, {% endif %}{% endfor %}) -> ExecutionResult:
     """{{command.help_text}}"""
+
+    {% if command.enable_cache %}
+    cache_key = ({% for entry in command.input %}{{ get_python_name(entry.name) }}{% if not loop.last %}, {% endif %}{% endfor %})
+    if cache_key in {{get_python_name(command.name)}}_cache:
+        return {{get_python_name(command.name)}}_cache[cache_key]
+    {% endif %}
 
     result = ExecutionResult(plugin_name, "{{command.name}}", ExecutionStatus.SUCCESS, [])
 
@@ -60,6 +71,11 @@ def run_{{get_python_name(command.name)}}({% for entry in command.input %}{{ get
     else:
         result.add_messages({{get_python_name(command.name)}}_{{get_python_name(run_after.command)}}_result.messages)
     {% endfor %}{% endif %}
+
+    {% if command.enable_cache %}
+    {{get_python_name(command.name)}}_cache[cache_key] = result
+    {% endif %}
+
     return result
 {% endfor %}
 

@@ -425,6 +425,12 @@ schema:
       description: |
         A description that will be displayed as help text when displaying
         command usage.
+    - name: enable_cache
+      type: bool
+      description: |
+        Indicates that the command should be cached for future use.  This is useful
+        for commands that take may be used by other commands in the run_before or 
+        run_after fields creating a command chain but only need to be executed once.
     - name: run_before
       type: PluginCommandReference[]
       description: |

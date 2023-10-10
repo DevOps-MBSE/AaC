@@ -17,9 +17,14 @@ from aac.execute.plugin_runner import PluginRunner
 
 checkaac_aac_file_name = "checkaac.aac"
 
+check_cache: dict[tuple, ExecutionResult] = {}
 
 def run_check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult:
     """Perform AaC file quality checks using defined constraints in the AaC models."""
+
+    cache_key = (aac_file, fail_on_warn, verbose)
+    if cache_key in check_cache:
+        return check_cache[cache_key]
 
     result = ExecutionResult(plugin_name, "check", ExecutionStatus.SUCCESS, [])
 
@@ -28,6 +33,8 @@ def run_check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResu
         return check_result
     else:
         result.add_messages(check_result.messages)
+
+    check_cache[cache_key] = result
 
     return result
 

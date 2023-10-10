@@ -104,9 +104,6 @@ def generate(aac_file: str, generator_file: str, code_output: str, test_output: 
                                         raise ExecutionError(f"Invalid data_content {source.data_content} for generator source {source.name}. The data_content must be a field chain in the data source that represents a structure of data, not a primitive.")
                                 source_data_structures = new_source_data_structures
                     for source_data_structure in source_data_structures:
-                        print("DEBUG:  Start info")
-                        print(f"DEBUG: jinja_template.render for template: {template_abs_path}\n Using source_data_package:\n{source_data_structure}")
-                        print("DEBUG: end info")
                         jinja_output = jinja_template.render(source_data_structure)
                         output = jinja_output
                         if template.output_file_extension == "py":

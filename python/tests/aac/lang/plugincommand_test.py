@@ -20,6 +20,7 @@ class PluginCommandTestHelper:
         return {
             "name": "test",
             "help_text": "test",
+            "enable_cache": True,
             "run_before": [PluginCommandReferenceTestHelper.generate_data()],
             "run_after": [PluginCommandReferenceTestHelper.generate_data()],
             "input": [PluginInputTestHelper.generate_data()],
@@ -39,6 +40,7 @@ class TestPluginCommand(unittest.TestCase):
         instance = PluginCommand.from_dict(deepcopy(plugincommand_dict))
         self.assertEqual(instance.name, plugincommand_dict["name"])
         self.assertEqual(instance.help_text, plugincommand_dict["help_text"])
+        self.assertEqual(instance.enable_cache, plugincommand_dict["enable_cache"])
         self.assertIsNotNone(instance.run_before)
         self.assertIsNotNone(instance.run_after)
         self.assertIsNotNone(instance.input)
