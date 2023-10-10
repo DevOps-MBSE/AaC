@@ -49,7 +49,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: aac-documentation
-          path: ../docs/gen_docs
+          path: ./AaC/docs/gen_docs
 
       - name: Generate RESTful API Documentation
         run: |
