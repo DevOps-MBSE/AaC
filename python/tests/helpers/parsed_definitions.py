@@ -127,7 +127,7 @@ def create_behavior_entry(
     Returns:
         A dictionary representing an AaC behavior definition.
     """
-    return {
+    entry_dict = {
         DEFINITION_FIELD_NAME: name,
         DEFINITION_FIELD_TYPE: behavior_type,
         DEFINITION_FIELD_DESCRIPTION: description,
@@ -135,8 +135,12 @@ def create_behavior_entry(
         DEFINITION_FIELD_INPUT: input,
         DEFINITION_FIELD_OUTPUT: output,
         DEFINITION_FIELD_ACCEPTANCE: acceptance,
-        DEFINITION_FIELD_REQUIREMENTS: {DEFINITION_FIELD_IDS: requirements},
     }
+
+    if requirements:
+        entry_dict = entry_dict | {DEFINITION_FIELD_REQUIREMENTS: {DEFINITION_FIELD_IDS: requirements}}
+
+    return entry_dict
 
 
 def create_scenario_entry(
@@ -336,8 +340,8 @@ def create_definition(root_key: str, name: str, other_fields: dict = {}) -> Defi
     name_field = {DEFINITION_FIELD_NAME: name}
     definition_dict = {root_key: name_field | other_fields}
     try:
-        parsed_definitions = parse(yaml.dump(definition_dict, sort_keys=False), "<test>")[0]
+        parsed_definition, *_ = parse(yaml.dump(definition_dict, sort_keys=False), "<test>")
     except ParserError as error:
         raise ParserError(error.source, error.errors) from None
     else:
-        return parsed_definitions
+        return parsed_definition
