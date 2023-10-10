@@ -19,6 +19,8 @@ jobs:
           python-version: 3.9
 
       - name: Install the AaC Package
+        run: python3 -m venv venv
+        run: source venv/bin/activate
         run: pip install -e .[all]
 
       - name: Lint with flake8

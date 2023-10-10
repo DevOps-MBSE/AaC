@@ -35,7 +35,9 @@ jobs:
       - name: Build Documentation
         uses: ammaraskar/sphinx-action@0.4
         with:
-          pre-build-command: "pip install aac==0.3.*"
+          pre-build-command: "python3 -m venv venv"
+          pre-build-command: "source venv/bin/activate"
+          pre-build-command: "pip install -e .[all]"
           docs-folder: "docs/"
 
       - name: Upload Artifact
