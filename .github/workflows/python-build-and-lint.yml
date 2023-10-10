@@ -21,20 +21,20 @@ jobs:
       - name: Install the AaC Package
         run: pip install aac -e .[all]
 
-      # - name: Lint with flake8
-      #   run: flake8 .
+      - name: Lint with flake8
+        run: flake8 .
 
-      # - name: List Transitive Dependencies
-      #   run: pipdeptree
+      - name: List Transitive Dependencies
+        run: pipdeptree
 
-      # - name: Build distribution package
-      #   run: python setup.py bdist_wheel
+      - name: Build distribution package
+        run: python setup.py bdist_wheel
 
-      # - name: Upload Python Wheel
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: aac_wheel
-      #     path: python/dist/
+      - name: Upload Python Wheel
+        uses: actions/upload-artifact@v3
+        with:
+          name: aac_wheel
+          path: python/dist/
 
       - name: Build Documentation
         run: |
