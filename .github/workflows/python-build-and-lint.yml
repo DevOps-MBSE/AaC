@@ -39,7 +39,7 @@ jobs:
       - name: Build Documentation
         uses: ammaraskar/sphinx-action@0.4
         with:
-          pre-build-command: "python3 -m venv venv && source venv/bin/activate && pip install aac -e .[all]"
+          pre-build-command: "pip install aac -e .[all]"
           docs-folder: "docs/"
 
       - name: Upload Documentation
