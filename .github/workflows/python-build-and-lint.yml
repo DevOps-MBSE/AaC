@@ -41,6 +41,15 @@ jobs:
           cd ../docs
           sphinx-build source doc_artifacts
 
+      - name: Find doc_artifacts
+        run: |
+          pwd
+          ls
+          cd ..
+          pwd
+          ls
+          cd /python/docs
+          ls
 
       - name: Upload Documentation
         uses: actions/upload-artifact@v3
