@@ -47,7 +47,7 @@ jobs:
         # with:
         #   pre-build-command: "pip install aac -e .[all]"
         #   docs-folder: "docs/"
-        run: sphinx-build ./docs/source gen_docs
+        run: sphinx-build ../docs/source gen_docs
 
       - name: Upload Documentation
         uses: actions/upload-artifact@v3
