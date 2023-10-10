@@ -1,9 +1,3 @@
----
-layout: default
-title: Protobuf 3 Plugin
-parent: AaC Plugins
-nav_order: 2
----
 # Generate Protobuf 3 Plugin
 This plugin generates protobuf 3 messages from interface messages between Architecture-as-Code models.
 

@@ -1,11 +1,3 @@
----
-layout: default
-parent: Developer's Guide to AaC
-title: AaC Language Validation
-nav_order: 3
-has_children: false
----
-
 # What is Validation in the AaC Language?
 Because the AaC DSL is leveraging plain-text YAML as the underpinning of the DSL, there is little to no functionality to guide users in the correctness of their YAML AaC structures. AaC has implemented a self-validating language feature so that users can reference which rules are applied to which AaC DSL components, and so that users can define validation for their own user-defined structures. To this end, AaC employs a plugin-based validator system where plugins provide Python-based validator implementations that can be referenced and applied to definitions in the AaC DSL.
 

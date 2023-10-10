@@ -1,11 +1,3 @@
----
-layout: default
-parent: Developer's Guide to AaC
-title: Validation Plugins for Developers
-nav_order: 7
-has_children: false
----
-
 # Validation Plugins for Developers
 
 ## General Information surrounding Validation

@@ -1,10 +1,3 @@
----
-layout: default
-title: Plugin Developer Guide
-parent: Developer's Guide to AaC
-nav_order: 5
----
-
 # Plugin Developer Guide
 
 ## Configuration of the Environment

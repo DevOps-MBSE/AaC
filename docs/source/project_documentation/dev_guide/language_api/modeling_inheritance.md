@@ -1,9 +1,3 @@
----
-layout: default
-title: Modeling Data Structure Inheritance
-parent: Developer's Guide to AaC
----
-
 # Modeling Data Structure Inheritance
 Architecture-as-Code allows users to model data structure inheritance in `schema` definitions, the definition type used to model data structures in AaC. Inheritance modeling is officially supported in AaC [version 0.1.4](https://github.com/DevOps-MBSE/AaC/releases/tag/v0.1.4) and above; users wanting to model data structure inheritance in earlier versions are able to do so with some extra work, see [Modeling Inheritance in 0.1.3 or Earlier Versions](#modeling-inheritance-in-013-or-earlier-versions).
 

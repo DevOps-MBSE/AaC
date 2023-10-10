@@ -1,10 +1,3 @@
----
-layout: default
-title: Modeling Data Structure Inheritance
-parent: Advanced User Topics
-permalink: project_documentation/advanced_user_topics/schema_inheritance
----
-
 # Inheritance in AaC
 Architecture-as-Code provides users with the ability to model inheritance in their data structures in a limited capacity. Inheritance can only be leveraged with `schema` definitions -- the definition used to define data structures.
 
