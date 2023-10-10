@@ -43,17 +43,13 @@ jobs:
           path: python/dist/
 
       - name: Build Documentation
-        # uses: ammaraskar/sphinx-action@0.4
-        # with:
-        #   pre-build-command: "pip install aac -e .[all]"
-        #   docs-folder: "docs/"
         run: sphinx-build ../docs/source gen_docs
 
       - name: Upload Documentation
         uses: actions/upload-artifact@v3
         with:
           name: aac-documentation
-          path: ./docs/gen_docs
+          path: ../docs/gen_docs
 
       - name: Generate RESTful API Documentation
         run: |
