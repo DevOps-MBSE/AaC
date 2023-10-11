@@ -16,6 +16,7 @@ class SchemaConstraintTestHelper:
         return {
             "name": "test",
             "description": "test",
+            "universal": True,
             "arguments": [PluginInputTestHelper.generate_data()],
             "acceptance": [FeatureTestHelper.generate_data()],
         }
@@ -33,6 +34,7 @@ class TestSchemaConstraint(unittest.TestCase):
         instance = SchemaConstraint.from_dict(deepcopy(schemaconstraint_dict))
         self.assertEqual(instance.name, schemaconstraint_dict["name"])
         self.assertEqual(instance.description, schemaconstraint_dict["description"])
+        self.assertEqual(instance.universal, schemaconstraint_dict["universal"])
         self.assertIsNotNone(instance.arguments)
         self.assertIsNotNone(instance.acceptance)
 

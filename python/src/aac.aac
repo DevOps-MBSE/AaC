@@ -30,8 +30,6 @@ schema:
       description: |
         A brief description of the type.
       is_required: false
-  constraints:
-    - name: Required fields are present
 ---
 schema:
   name: Modifier
@@ -51,9 +49,6 @@ schema:
       type: Field[]
       description: |
         Optional fields to provide supporting information for the modifier.
-  constraints:
-    - name: Required fields are present
-    - name: No extra fields
 ---
 modifier:
   name: abstract
@@ -92,9 +87,6 @@ schema:
       description: |
         A list of strings that encompass the enumeration's possible values.
       is_required: true
-  constraints:
-    - name: Required fields are present
-    - name: No extra fields
 ---
 schema:
   name: Primitive
@@ -114,9 +106,6 @@ schema:
       type: PrimitiveConstraintAssignment[]
       description: |
         A list of constraints to apply to the primitive.
-  constraints:
-    - name: Required fields are present
-    - name: No extra fields
 ---
 primitive:
   name: string
@@ -237,9 +226,6 @@ schema:
         A list of requirements associated with this schema.
     - name: constraints
       type: SchemaConstraintAssignment[]
-  constraints:
-    - name: Required fields are present
-    - name: No extra fields
 ---
 schema:
   name: SchemaExtension
@@ -257,9 +243,6 @@ schema:
       description: |
         The name of the inheritance parent schema.
       is_required: true
-  constraints:
-    - name: Required fields are present
-    - name: No extra fields
 ---
 schema:
   name: Field
@@ -294,9 +277,6 @@ schema:
       type: string
       description: |
         The default value to use for the field if field is not provided.
-  constraints:
-    - name: Required fields are present
-    - name: No extra fields
 ---
 schema:
   name: AacImport
@@ -311,9 +291,6 @@ schema:
       description: |
         The list of AaC files to import for use in the architecture.
       is_required: true
-  constraints:
-    - name: Required fields are present\
-    - name: No extra fields
 ---
 # Language Plugin Definition Types
 ---
@@ -340,9 +317,6 @@ schema:
         A list of pypi dependencies to include in the project.  This can be particularly
         useful if you're leveraging other AaC plugins in your project.  You will get the AaC
         core project by default, so no need to include it here.
-  constraints:
-    - name: Required fields are present
-    - name: No extra fields
 ---
 schema:
   name: ProjectDependency
@@ -360,9 +334,6 @@ schema:
       description: |
         The version nof the pypi project to import.
       is_required: true
-  constraints:
-    - name: Required fields are present
-    - name: No extra fields
 ---
 schema:
   name: Plugin
@@ -408,9 +379,6 @@ schema:
       description: |
         A list of primitive constraints provided by the plugin. Primitive constraints evaluate individual primitive content.
       type: PrimitiveConstraint[]
-  constraints:
-    - name: Required fields are present
-    - name: No extra fields
 ---
 schema:
   name: PluginCommand
@@ -449,9 +417,6 @@ schema:
       description: |
         A list of test specifications that define the acceptance criteria to signify that
         the plugin command is behaving as expected.
-  constraints:
-    - name: Required fields are present
-    - name: No extra fields
 ---
 schema:
   name: PluginCommandReference
@@ -469,9 +434,6 @@ schema:
       description: |
         The name of the command to reference.
       is_required: true
-  constraints:
-    - name: Required fields are present
-    - name: No extra fields
 ---
 schema:
   name: PluginInput
@@ -497,9 +459,6 @@ schema:
       type:  string
       description: |
         The default value to provide to a plugin, if desired.
-  constraints:
-    - name: Required fields are present
-    - name: No extra fields
 ---
 schema: 
   name: PluginInputValue
@@ -517,9 +476,6 @@ schema:
       description: |
         The value of the plugin input being provided.
       is_required: true
-  constraints:
-    - name: Required fields are present
-    - name: No extra fields
 ---
 schema:
   name: Generator
@@ -543,7 +499,6 @@ schema:
         The list of templates to use when generating content.
       is_required: true
   constraints:
-    - name: Required fields are present
     - name: No extra fields
 ---
 schema:
@@ -572,9 +527,6 @@ schema:
       type: GeneratorTemplate[]
       description: The templates to be applied to the specified model data.
       is_required: true
-  constraints:
-    - name: Required fields are present
-    - name: No extra fields
 ---
 schema:
   name: GeneratorTemplate
@@ -633,9 +585,6 @@ schema:
       description: |
         The file extension to use when generating the output file name.
       is_required: true
-  constraints:
-    - name: Required fields are present
-    - name: No extra fields
 ---
 aacenum:
   name: OverwriteOption
@@ -676,9 +625,6 @@ schema:
       description: |
         The python function to be made available to the template.
       is_required: true
-  constraints:
-    - name: Required fields are present
-    - name: No extra fields
 ---
 aacenum:
   name: GeneratorOutputTarget
@@ -726,9 +672,6 @@ schema:
       type: dataref(req.id)[]
       description: |
         A list of requirements that make up the specification.
-  constraints:
-    - name: Required fields are present
-    - name: No extra fields
 ---
 schema:
   name: Requirement
@@ -766,9 +709,6 @@ schema:
       type: RequirementAttribute[]
       description: |
         A list of attributes that provide additional information about the requirement.
-  constraints:
-    - name: Required fields are present
-    - name: No extra fields
 ---
 schema:
   name: RequirementParameter
@@ -785,9 +725,6 @@ schema:
       description: |
         The value of the parameter.
       is_required: true
-  constraints:
-    - name: Required fields are present
-    - name: No extra fields
 ---
 aacenum:
   name: RequirementVerificationMethod
@@ -818,9 +755,6 @@ schema:
       description: |
         The value of the attribute.
       is_required: true
-  constraints:
-    - name: Required fields are present
-    - name: No extra fields
 ---
 # Core Behavioral Modeling Types
 ---
@@ -863,9 +797,6 @@ schema:
       type: dataref(req.id)[]
       description: |
         A reference to requirements relevant to the modeled item.
-  constraints:
-    - name: Required fields are present
-    - name: No extra fields
 ---
 schema:
   name: Behavior
@@ -905,9 +836,6 @@ schema:
       type: dataref(req.id)[]
       description: |
         A list of allocated requirements defining the expected behavior to be provided.
-  constraints:
-    - name: Required fields are present
-    - name: No extra fields
 ---
 # Test Specification types
 ---
@@ -927,9 +855,6 @@ schema:
       type: Scenario[]
       description: A set of test cases
       is_required: true
-  constraints:
-    - name: Required fields are present
-    - name: No extra fields
 ---
 schema:
   name: Background
@@ -947,9 +872,6 @@ schema:
         A list of preconditions that must be true in order for the scenario to
         perform the expected action or provide the expected result.
       is_required: true
-  constraints:
-    - name: Required fields are present
-    - name: No extra fields
 ---
 schema:
   name: Scenario
@@ -991,9 +913,6 @@ schema:
         a replaceable item in your given, when, then using angle brackets as described
         in the Gherkin syntax (ex: <my_text_value).  Each example provided contains the
         collection of named values that will be substituted in for test execution.
-  constraints:
-    - name: Required fields are present
-    - name: No extra fields
 ---
 schema:
   name: Example
@@ -1011,9 +930,6 @@ schema:
       description: |
         The values that make up the example row.
       is_required: true
-  constraints:
-    - name: Required fields are present
-    - name: No extra fields
 ---
 schema:
   name: ExampleValue
@@ -1031,9 +947,6 @@ schema:
       description: |
         The desired value to use.
       is_required: true
-  constraints:
-    - name: Required fields are present
-    - name: No extra fields
 ---
 # Model Constraints
 ---
@@ -1060,9 +973,6 @@ schema:
       type: Feature[]
       description: |
         A list of acceptance test features that describe the expected behavior of the context constraint.
-  constraints:
-    - name: Required fields are present
-    - name: No extra fields
 ---
 schema:
   name: SchemaConstraint
@@ -1082,6 +992,13 @@ schema:
       type: string
       description: |
         A high level description of the schema constraint rule.
+    - name: universal
+      type: bool
+      description: |
+        Indicates that the constraint should be applied to all schemas without explicit assignment.
+        This is a convenience so that you don't have to directly assign the constraint to every schema.
+        If not included or false, the constraint must be explicitly assigned to a schema.  But be aware
+        that universal schema constraints cannot have input arguments.
     - name: arguments
       type: PluginInput[]
       description: |
@@ -1090,9 +1007,6 @@ schema:
       type: Feature[]
       description: |
         A list of acceptance test features that describe the expected behavior of the schema constraint.
-  constraints:
-    - name: Required fields are present
-    - name: No extra fields
 ---
 schema:
   name: PrimitiveConstraint
@@ -1120,9 +1034,6 @@ schema:
       type: Feature[]
       description: |
         A list of acceptance test features that describe the expected behavior of the primitive constraint.
-  constraints:
-    - name: Required fields are present
-    - name: No extra fields
 ---
 schema:
   name: SchemaConstraintAssignment
@@ -1139,9 +1050,6 @@ schema:
       type: PluginInputValue[]
       description: |
         Arguments for the schema constraint if applicable.
-  constraints:
-    - name: Required fields are present
-    - name: No extra fields
 ---
 schema:
   name: PrimitiveConstraintAssignment
@@ -1158,6 +1066,3 @@ schema:
       type: PluginInputValue[]
       description: |
         Arguments for the primitive constraint if applicable.
-  constraints:
-    - name: Required fields are present
-    - name: No extra fields

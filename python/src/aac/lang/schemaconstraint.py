@@ -18,6 +18,7 @@ class SchemaConstraint:
 
     name: str - The name of the schema constraint rule.
     description: Optional[str] - A high level description of the schema constraint rule.
+    universal: Optional[bool] - Indicates that the constraint should be applied to all schemas without explicit assignment. This is a convenience so that you don't have to directly assign the constraint to every schema. If not included or false, the constraint must be explicitly assigned to a schema.
     arguments: list[PluginInput]] - List of arguments for the constraint.
     acceptance: list[Feature]] - A list of acceptance test features that describe the expected behavior of the schema constraint.
     """
@@ -25,6 +26,9 @@ class SchemaConstraint:
     name: str = attrib(init=attr.ib(), validator=validators.instance_of(str))
     description: Optional[str] = attrib(
         init=attr.ib(), validator=validators.optional(validators.instance_of(str))
+    )
+    universal: Optional[bool] = attrib(
+        init=attr.ib(), validator=validators.optional(validators.instance_of(bool))
     )
     arguments: list[PluginInput] = attrib(
         init=attr.ib(), validator=validators.instance_of(list[PluginInput])
@@ -39,6 +43,9 @@ class SchemaConstraint:
 
         description = data.pop("description", None)
         args["description"] = description
+
+        universal = data.pop("universal", None)
+        args["universal"] = universal
 
         arguments_data = data.pop("arguments", [])
         arguments = [PluginInput.from_dict(entry) for entry in arguments_data]

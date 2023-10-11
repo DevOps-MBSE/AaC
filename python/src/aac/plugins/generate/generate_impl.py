@@ -92,7 +92,7 @@ def generate(aac_file: str, generator_file: str, code_output: str, test_output: 
                                 new_source_data_structures = []
                                 for structure in source_data_structures:
                                     if field_name not in structure:
-                                        print(f"DEBUG:  Invalid data_content {source.data_content} for generator source {source.name}. The data_content must be a field chain in the data source.")
+                                        # print(f"DEBUG:  Invalid data_content {source.data_content} for generator source {source.name}. The data_content must be a field chain in the data source.")
                                         # it is possible that fields are optional and may not be present, so continue if not present
                                         continue
                                     field_value = structure[field_name]

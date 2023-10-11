@@ -5,6 +5,7 @@ plugin:
   schema_constraints:
     - name: No extra fields
       description: Check every field to ensure it is a defined part of the schema.
+      universal: true
       acceptance:
         - name: Success path testing
           scenarios:

@@ -37,11 +37,10 @@ from {{plugin.package}}.{{get_python_name(plugin.name)}}_impl import plugin_name
 {{get_python_name(plugin.name)}}_aac_file_name = "{{get_python_name(plugin.name)}}.aac"
 
 {% for command in plugin.commands %}
-{% if command.enable_cache %}{{get_python_name(command.name)}}_cache: dict[tuple, ExecutionResult] = {}
+{% if command.enable_cache %}{{get_python_name(command.name)}}_cache: dict[tuple, ExecutionResult] = {}{% endif %}
 {% endfor %}
 
 {% for command in plugin.commands %}
-{% if command.enable_cache %}
 def run_{{get_python_name(command.name)}}({% for entry in command.input %}{{ get_python_name(entry.name) }}: {{ get_python_type(entry.type) }}{% if not loop.last %}, {% endif %}{% endfor %}) -> ExecutionResult:
     """{{command.help_text}}"""
 

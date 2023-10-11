@@ -8,6 +8,9 @@ plugin:
     - name: gen-plugin
       help_text: |
         Generate code and stubs for an AaC plugin.  Overwrites will backup existing files.
+      run_before:
+        - plugin: CheckAaC
+          command: check
       run_after:
         - plugin: Generate
           command: generate

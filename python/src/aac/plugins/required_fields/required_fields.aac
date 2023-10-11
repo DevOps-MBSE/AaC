@@ -5,4 +5,5 @@ plugin:
   schema_constraints:
     - name: Required fields are present
       description: Check every field declared as required is present and populated.
+      universal: true
       

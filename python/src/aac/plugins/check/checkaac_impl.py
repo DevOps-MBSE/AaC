@@ -7,6 +7,7 @@ from aac.context.language_context import LanguageContext
 from aac.context.definition import Definition
 from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus, LanguageError, ExecutionMessage
 from aac.lang.primitive import Primitive
+from aac.lang.schemaconstraintassignment import SchemaConstraintAssignment
 from aac.io.parser import parse
 
 plugin_name = "CheckAaC"
@@ -42,16 +43,24 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult:
 
     def check_schema_constraint(source_definition: Definition, instance_to_check: Any, defining_schema: Definition):
         """Runs all the constraints for a given schema."""
-
-        # Check the instance_to_check against constraints in the defining_schema
-        # print(f"DEBUG: running schema constraints for {source_definition.name} with definition {defining_schema.name} containing constraints {[constraint.name for constraint in defining_schema.instance.constraints]}")
+        # collact applicable constraints
+        schema_constraints: list[SchemaConstraintAssignment] = []
         if defining_schema.instance.constraints:
             for constraint_assignment in defining_schema.instance.constraints:
-                constraint_name = constraint_assignment.name
-                constraint_args = constraint_assignment.arguments
-                callback = all_constraints_by_name[constraint_name]
-                result: ExecutionResult = callback(instance_to_check, source_definition, defining_schema, constraint_args)
-                constraint_results[constraint_name] = result
+                schema_constraints.append(constraint_assignment)
+        for runner in context.get_plugin_runners():
+            plugin = runner.plugin_definition.instance
+            for constraint in plugin.schema_constraints:
+                if constraint.universal:
+                    schema_constraints.append(SchemaConstraintAssignment(name=constraint.name, arguments=[]))
+
+        # Check the instance_to_check against constraints in the defining_schema
+        for constraint_assignment in schema_constraints:
+            constraint_name = constraint_assignment.name
+            constraint_args = constraint_assignment.arguments
+            callback = all_constraints_by_name[constraint_name]
+            result: ExecutionResult = callback(instance_to_check, source_definition, defining_schema, constraint_args)
+            constraint_results[constraint_name] = result
 
         # loop through the fields on the defining_schema
         for field in defining_schema.instance.fields:
