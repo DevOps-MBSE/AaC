@@ -9,6 +9,39 @@ src/service_one/service_one_misc_definitions.yaml
 src/service_two/service_two.yaml
 ...
 ```
+src
+├── system
+│   └── system.yaml
+├── external
+|   ├── external_actors.yaml
+│   └── external_interface_messages.yaml
+├── service_one
+|   ├── service_one.yaml
+│   └── service_one_misc.yaml
+└── service_two
+    └── service_two.yaml
+
+Because AaC does not require your models to be located within the same directory or even within the same directory as your AaC package install, you can house your model files however is necessary and logical for your project needs. An example of this might look like:
+```
+system/system.yaml
+external/external_interface_messages.yaml
+external/external_actors.yaml
+service_one/service_one.yaml
+service_one/service_one_misc_definitions.yaml
+service_two/service_two.yaml
+...
+```
+
+system
+  └── system.yaml
+external
+  ├── external_actors.yaml
+  └── external_interface_messages.yaml
+service_one
+  ├── service_one.yaml
+  └── service_one_misc.yaml
+service_two
+  └── service_two.yaml
 
 ## Anatomy of an AaC file
 Since AaC leverages YAML for its DSL, there are very few restrictions on how to store and organize AaC files and AaC definitions. The main consideration is that every AaC definition must be defined in its own YAML document _or_ YAML file.
