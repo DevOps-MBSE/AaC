@@ -1,10 +1,3 @@
----
-layout: default
-title: Developing Docs
-parent: Developer's Guide to AaC
-nav_order: 2
----
-
 # AaC Documentation
 AaC documentation consists of two groups of generated documents: Sphinx project documentation and Sphinx API documentation for the Python API.
 
