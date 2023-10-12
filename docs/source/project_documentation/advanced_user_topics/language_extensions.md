@@ -1,5 +1,5 @@
-# Prior Extensibility Implementation
-In AaC versions prior to v0.3.0, the extension of `schema` and `enum` models was handled differently and is outlined below by explaining how to utilize legacy `root key`s. AaC moved away from this concept when `root` became a field of the various model definitions. For more information on the new implementation of `root` in versions v0.3.0 and beyond, please view [Introducing New Definition Types](../user_guide/schema_definitions.md/#introducing-new-definition-types)
+# Legacy Implementation
+In AaC versions prior to v0.3.0, the extension of `schema` and `enum` definitions was handled differently and is outlined below by explaining how to utilize legacy root keys. AaC moved away from this concept when `root` became a field of the various definitions. For more information on the new implementation of `root` in versions v0.3.0 and beyond, please view [Introducing New Definition Types](../user_guide/schema_definitions.md/#introducing-new-definition-types).
 
 ## Extensibility of AaC
 One of our primary goals for AaC is that its extensible enough to meet the needs of AaC's diverse use base. To this goal, we have given the AaC DSL a mechanism to add additional information to Schema and Enum definitions. Allowing users to extend these two types of definitions allows users to extend the existing AaC DSL data structures, data types, and enumeration values.
