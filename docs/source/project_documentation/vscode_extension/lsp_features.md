@@ -1,10 +1,3 @@
----
-layout: default
-title: AaC LSP Features
-nav_order: 3
-parent: AaC VSCode Extension
----
-
 # AaC LSP Features
 
 The AaC Language LSP server implementation is still a work-in-progress but that

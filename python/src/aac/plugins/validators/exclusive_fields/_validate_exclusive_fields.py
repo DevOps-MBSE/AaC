@@ -21,8 +21,8 @@ def validate_exclusive_fields(
 
     Args:
         definition_under_test (Definition): The definition that's being validated.
-        target_schema_definition (Definition): A definition with applicable validation.
-        language_context (LanguageContext): The language context.
+        target_schema_definition (Definition): The schema definition with the validation rules that trigger the validation.
+        language_context (LanguageContext): A management and utility class for the contextual AaC domain-specific language.
         *validation_args (list[str]): The list of exclusive fields.
 
     Returns:

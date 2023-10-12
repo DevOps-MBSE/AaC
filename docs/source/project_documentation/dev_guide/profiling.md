@@ -1,10 +1,3 @@
----
-layout: default
-title: Profiling AaC and Plugins
-parent: Developer's Guide to AaC
-nav_order: 2
----
-
 # cProfile and Profile Setup and Justification
 
 ## cProfile Description

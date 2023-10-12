@@ -1,10 +1,3 @@
----
-layout: default
-title: Plugin Developer Guide
-parent: Developer's Guide to AaC
-nav_order: 5
----
-
 # Plugin Developer Guide
 
 ## Configuration of the Environment
@@ -31,50 +24,13 @@ Plugins can be created with the first-party plugin `gen-plugin`. This can be exe
 The above command will output the help documentation for the `gen-plugin` command with example input.
 
 The `gen-plugin` command takes input from an architecture file and will produce a templated plugin project that can be installed as a first/third party plugin. An example plugin file is below:
+
 > *The below example can be found under this path -> `/python/model/plugin/plugin.yaml`*
 
-```yaml
-plugin:
-  name: Test Plugin
-  description: |
-    A test plugin with a contributed definition, a command, a definition
-    validation, and a primitive validation.
-  definitionSources:
-    - ./definitions.yaml
-  definitionValidations:
-    - name: Test definition validation
-  primitiveValidations:
-    - name: Test primitive validation
-  commands:
-    - name: test-plugin-command
-      helpText: Test plugin generation
-      input:
-        - name: architecture_file
-          type: file
-          python_type: str
-          description: An architecture-as-code file.
-      acceptance:
-        - scenario: Test some stuff
-          given:
-            - The definitions in {{test-plugin-command.input.architecture_file}} represent a valid system architecture.
-          when:
-            - The command is run with the expected arguments.
-          then:
-            - Then stuff happens
----
-schema:
-  name: TestPluginData
-  fields:
-    - name: value1
-      type: string
-    - name: value2
-      type: string
-  validation:
-    - name: Required fields are present
-      arguments:
-        - value1
+```{eval-rst}
+.. literalinclude:: ../../../../python/model/plugin/plugin.yaml
+    :language: yaml
 ```
-
 #### Output of Gen-Plugin
 
 The output of the Gen-Plugin command will be some corresponding plugin files that are templated from the `yaml` file that was passed in to `gen-plugin`
@@ -114,10 +70,11 @@ Plugins that contribute commands to AaC must register those commands so they can
 
 The following example shows how a plugin would register a command.
 
-```python
-@register_plugin_command(plugin_name, command_name)
-def get_command_name_command():
-    return AacCommand(command_name, "A command description. ", command_fn)
+```{eval-rst}
+.. literalinclude:: ../../../../python/src/aac/plugins/first_party/gen_design_doc/gen_design_doc_impl.py
+    :language: python
+    :pyobject: gen_design_doc
+    :lines: 1-10
 ```
 
 The above associates the command `command_name` with plugin `plugin_name`.

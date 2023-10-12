@@ -1,11 +1,3 @@
----
-layout: default
-parent: Developer's Guide to AaC
-title: Validation Plugins for Developers
-nav_order: 7
-has_children: false
----
-
 # Validation Plugins for Developers
 
 ## General Information surrounding Validation
@@ -28,34 +20,10 @@ It is also worthy to note that the way that the AaC DSL validates itself is thro
 
 The following snippet shows how the `_validate.py` validates a `definition` that is being passed through:
 
-```python
- def _validate_definition(
-     definition: Definition, validator_plugins: list[DefinitionValidationContribution], language_context: LanguageContext
- ) -> list[ValidatorResult]:
-     """Traverse the definition and validate it according to the validator plugins."""
-
-     validator_results = []
-
-     applicable_validator_plugins = get_applicable_validators_for_definition(definition, validator_plugins, language_context)
-     ancestor_definitions = get_definition_ancestry(definition, language_context)
-     sub_structure_definitions = get_definition_schema_components(definition, language_context)
-     all_applicable_definitions = ancestor_definitions + sub_structure_definitions
-
-     for target_schema_definition in all_applicable_definitions:
-         sub_definition_validations = target_schema_definition.get_validations()
-
-         if sub_definition_validations:
-             for validation in sub_definition_validations:
-                 validation_name = validation.get(DEFINITION_FIELD_NAME)
-                 validator_plugin = list(filter(lambda plugin: plugin.name == validation_name, applicable_validator_plugins))
-
-                 if validator_plugin:
-                     validator_results.append(
-                         _apply_validator(definition, target_schema_definition, language_context, validator_plugin[0])
-                     )
-
-     validator_results.append(_validate_primitive_types(definition, language_context))
-     return validator_results
+```{eval-rst}
+.. literalinclude:: ../../../../python/src/aac/validate/_validate.py
+    :language: python
+    :pyobject: _validate_definition
 ```
 
 The above snippet this shows an example of how the validator takes in a `Definition`, a list of validator plugins, as well as the `LanguageContext` that provides the context to validate the definition within. The `Definition` validations can be alternative described as *Structural Constraints* for data structures (schema definitions). With this in mind the `Definition` validation will take a target `Definition` and decompose it into its `sub-definition`s, other definitions that are components of schema definitions (e.g. `Field` in `schema`). These `sub-structure`s are then validated by passing each sub-structure and corresponding values to the appropriate validator, defined by the validations of each sub-structure, which may produce finding(s) that are returned to the user via the `ValidatorResult` object.
@@ -66,19 +34,13 @@ This approach is also used for in the [Primitive Validations](#primitive-validat
 
 Primitive Validations are handled by the below function:
 
-```python
-def _validate_primitive_types(definition: Definition, language_context: LanguageContext) -> ValidatorResult:
-     """Validates the instances of AaC primitive types."""
-     findings = ValidatorFindings()
-     definition_schema = get_definition_schema(definition, language_context)
-     if definition_schema:
-         findings.add_findings(_validate_fields(definition, definition_schema, definition.get_top_level_fields(), language_context))
-
-     return ValidatorResult([definition], findings)
-
+```{eval-rst}
+.. literalinclude:: ../../../../python/src/aac/validate/_validate.py
+    :language: python
+    :pyobject: _validate_field_types
 ```
 
-The above method, like the `_validate_definition` function outlined in the previous example, takes in a `Definition` and takes in the `LanguageContext` of the definition that is being validated. However, The primary goal of this snippet is to validate the *Primitive Types* of a definition schema and pass these results to the `ValidatorResult` object for further processing and eventual output to the user. This function is an example of a *Primitive Constraint* with how validations are made/applied.
+The above method, like the `_validate_definition` function outlined in the previous example, takes in a `Definition` and takes in the `LanguageContext` of the definition that is being validated. However, The primary goal of this snippet is to validate the *Primitive and Enum Types* of a definition schema and pass these results to the `ValidatorResult` object for further processing and eventual output to the user. This function is an example of a *Primitive Constraint* with how validations are made/applied.
 
 The results of this validation are consolidated with the results from the `_validate_definition` function above in the `ValidatorResult` object for further analysis and output for the user to discern.
 
@@ -86,36 +48,17 @@ The results of this validation are consolidated with the results from the `_vali
 
 Outlined in the code sample below is the schema of the `Validation Definition`.
 
-```yaml
-schema:
-  name: Validation
-  fields:
-    - name: name
-      type: string
-      description: |
-        The name of the validation rule and plugin.
-    - name: description
-      type: string
-      description: |
-        A high-level description of the validation plugin.
-    - name: behavior
-      type: Behavior[]
-      description: |
-        A list of behaviors that the validation plugin will perform.
-  validation:
-    - name: Validation definition has an implementation
-    - name: Required fields are present
-      arguments:
-        - name
-        - description
-        - behavior
+```{eval-rst}
+.. literalinclude:: ../../../../python/src/aac/spec/spec.yaml
+    :language: yaml
+    :lines: 120-149
 ```
 
 The arguments that are passed through this `Validation` Definition are three variables:
 
-1. The name of the `definition` being validated.
-2. The description of the `definition` being validated.
-3. The behavior of the `definition` that is being validated.
+1. The `name` of the `definition` being validated.
+2. The `description` of the `definition` being validated.
+3. The `behavior` of the `definition` that is being validated.
 
 So the validation is taking the `definition` and is checking to make sure that the proper fields, and the arguments that are being passed are there in the declaration of the `definition` being validated.
 
@@ -136,7 +79,7 @@ However, the severity and cases for those severities can be outlined as such:
 ### Creating a Validation Plugin for Definitions
 
 Examples of a validator plugin can be found in the below directory:
-`AaC/python/src/aac/plugins/validators/`
+[AaC/python/src/aac/plugins/validators/](https://github.com/DevOps-MBSE/AaC/tree/main/python/src/aac/plugins/validators)
 
 Taking a look at the `required_fields` validator, we will use this as an example of what is required for a validator plugin.
 
@@ -153,98 +96,15 @@ So seeing the structure of this validator, there is an `init`, `implementation_f
 
 Taking a look at the `implementation_file` (`_validate_required_fields.py`) and `required_fields.yaml`:
 
-```python
-"""   _validate_required_fields.py   """
-def validate_required_fields(definition_under_test: Definition, target_schema_definition: Definition, language_context: LanguageContext, *validation_args) -> ValidatorResult:
-    """
-    Validates that the definition has all required fields populated.
-
-    Args:
-        definition_under_test (Definition): The definition that's being validated.
-        target_schema_definition (Definition): A definition with applicable validation.
-        language_context (LanguageContext): The language context.
-        *validation_args: The names of the required fields.
-
-    Returns:
-        A ValidatorResult containing any applicable error messages.
-    """
-    findings = ValidatorFindings()
-
-    required_field_names = validation_args
-    schema_defined_fields_as_list = target_schema_definition.get_top_level_fields().get("fields") or []
-    schema_defined_fields_as_dict = {field.get("name"): field for field in schema_defined_fields_as_list}
-
-    def validate_dict(dict_to_validate: dict) -> None:
-        for required_field_name in required_field_names:
-            field_value = dict_to_validate.get(required_field_name)
-            field_type = schema_defined_fields_as_dict.get(required_field_name, {}).get("type")
-
-            if field_value is None:
-                missing_required_field = f"Required field '{required_field_name}' missing from: {dict_to_validate}"
-                findings.add_error_finding(definition_under_test, missing_required_field, PLUGIN_NAME, 0, 0, 0, 0)
-                logging.debug(missing_required_field)
-
-            elif not _is_field_populated(field_type, field_value):
-                unpopulated_required_field = f"Required field '{required_field_name}' is not populated in: {dict_to_validate}"
-                findings.add_error_finding(definition_under_test, unpopulated_required_field, PLUGIN_NAME, 0, 0, 0, 0)
-                logging.debug(unpopulated_required_field)
-
-    dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)
-    list(map(validate_dict, dicts_to_test))
-
-    return ValidatorResult([definition_under_test], findings)
-
-
-def _is_field_populated(field_type: str, field_value: Any) -> bool:
-    """Return a boolean indicating is the field is considered 'populated'."""
-    is_field_array_type = is_array_type(field_type)
-    is_field_populated = False
-
-    if is_field_array_type:
-        is_field_populated = len(field_value) > 0
-    elif type(field_value) is bool:
-        is_field_populated = field_value is not None
-    elif field_value:
-        is_field_populated = True
-
-    return is_field_populated
+```{eval-rst}
+.. literalinclude:: ../../../../python/src/aac/plugins/validators/required_fields/_validate_required_fields.py
+    :language: python
+    :pyobject: validate_required_fields
 ```
 
-```yaml
-# required_fields.yaml
-validation:
-  name: Required fields are present
-  description: Verifies every field declared as required is present and populated
-  behavior:
-    - name: Verify that definition fields marked as required are populated.
-      type: request-response
-      input:
-        - name: input
-          type: ValidatorInput
-      output:
-        - name: results
-          type: ValidatorOutput
-      acceptance:
-        - scenario: Successfully Validate a definition's required fields
-          given:
-            - The ValidatorInput content consists of valid AaC definitions.
-            - The ValidatorInput contains some AaC definitions that reference other definitions.
-          when:
-            - The validator plugin is executed.
-          then:
-            - The ValidatorOutput does not indicate any errors
-            - The ValidatorOutput does not indicate any warnings
-            - The ValidatorOutput indicates the validator plugin under test is valid
-        - scenario: Fail to validate a definition's required fields
-          given:
-            - The ValidatorInput content consists of otherwise valid AaC definitions.
-            - The ValidatorInput contains at least one field that is required.
-            - The ValidatorInput contains at least one required field that is missing.
-          when:
-            - The ValidatorInput is validated
-          then:
-            - The ValidatorOutput has errors
-            - The ValidatorOutput errors indicate that there are missing required fields
+```{eval-rst}
+.. literalinclude:: ../../../../python/src/aac/plugins/validators/required_fields/required_fields.yaml
+    :language: yaml
 ```
 
 ***NOTE***: Without the `implementation_file` the initial validator plugin will spit out an error saying that an implementation file is missing. This is needed for the validator plugin to function properly.
@@ -260,46 +120,27 @@ As long as the arguments that are passed through the validator plugins and the r
 
 An example of one of the validator plugins is the `bool_validator.py` plugin that can be found in the `AaC/python/src/aac/plugins/first_party/primitive_type_check/validators/`
 
-```python
-def get_validator() -> PrimitiveValidationContribution:
-    """Return the Primitive Validator for 'boolean'."""
-    return PrimitiveValidationContribution(BOOL_VALIDATION_NAME, PRIMITIVE_TYPE_BOOL, validate_bool)
+```{eval-rst}
+.. literalinclude:: ../../../../python/src/aac/plugins/first_party/primitive_type_check/validators/bool_validator.py
+    :language: python
+    :pyobject: get_validator
+```
 
-
-def validate_bool(definition: Definition, value_to_validate: Any) -> Optional[ValidatorFinding]:
-    """
-    Returns a Validation finding if the type isn't valid, otherwise None.
-
-    This function is intended to be used in the Validation apparatus, and for this result
-    to be collated with other finding into a larger ValidatorResult.
-
-    Args:
-        definition (Definition): The definition that the value belongs to.
-        value_to_validate (Any): The value to be tested.
-
-    Returns:
-        A ValidatorFinding if the value is not a boolean or None.
-    """
-
+```{eval-rst}
+.. literalinclude:: ../../../../python/src/aac/plugins/first_party/primitive_type_check/validators/bool_validator.py
+    :language: python
+    :pyobject: validate_bool
 ```
 
 The return of this validator plugin is the `finding` from the `validate_bool` function. The arguments that are passed through are, the `Definition` and the type of the `value_to_validate` which is checking if the boolean that is being passed is valid.
 
-Another validator is the `_validate_root_keys.py` plugin which checks and validates the root keys of the definition or schema. An example snippet of the arguments passed are as follows:
+Another validator is the `_validate_exclusive_fields.py` plugin which checks and validates the fields of the definition or schema. An example snippet of the arguments passed are as follows:
 
-```python
-def validate_root_keys(definition_under_test: Definition, target_schema_definition: Definition, language_context: LanguageContext, *validation_args) -> ValidatorResult:
-    """
-    Validates that the definition root key is defined by the root definition.
-
-    Args:
-        definition_under_test (Definition): The definition that's being validated.
-        target_schema_definition (Definition): A definition with applicable validation.
-        language_context (LanguageContext): The language context.
-
-    Returns:
-        A ValidatorResult containing any applicable error messages.
-    """
+```{eval-rst}
+.. literalinclude:: ../../../../python/src/aac/plugins/validators/exclusive_fields/_validate_exclusive_fields.py
+    :language: python
+    :pyobject: validate_exclusive_fields
+    :lines: 1-18
 ```
 
 Since this plugin is a part of the validator as a whole, it differs slightly from the `bool_validator.py` plugin that is a part of the `primitive_type_check` plugin.

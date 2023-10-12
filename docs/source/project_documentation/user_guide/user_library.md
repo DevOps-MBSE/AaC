@@ -23,16 +23,14 @@ Verify the plugin has been activated by running the following command: `aac --ac
 
 ![List Active](../../images/user_library/list_active.png)
 
-Once you have verified that your plugin has been activated, you are able begin referencing the definitions in your plugin.
+Once you have verified that your plugin has been activated, you are able to begin referencing the definitions in your plugin.
 
 To demonstrate this behavior, take this example aac file:
-```yaml
-schema:
-    name: ProtobufTypeExample
-    fields:
-        - name: int64Field
-          type: int64
-          description: This field references a primitive type provided by Gen-Protobuf
+```{eval-rst}
+.. literalinclude:: ../../../../python/model/protobuf_flow/Data.aac
+    :language: yaml
+    :lines: 65-69
+    :emphasize-lines: 5
 ```
 
 It references a type `int64` provided by the plugin `gen-protobuf`. If we validate this file with the plugin active, it'll successfully validate.
