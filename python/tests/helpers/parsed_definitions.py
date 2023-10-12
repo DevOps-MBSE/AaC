@@ -8,7 +8,9 @@ from aac.lang.constants import (
     DEFINITION_FIELD_ACTION,
     DEFINITION_FIELD_ADD,
     DEFINITION_FIELD_ARGUMENTS,
+    DEFINITION_FIELD_ATTRIBUTES,
     DEFINITION_FIELD_BEHAVIOR,
+    DEFINITION_FIELD_CHILD,
     DEFINITION_FIELD_COMMANDS,
     DEFINITION_FIELD_COMPONENTS,
     DEFINITION_FIELD_DEFINITION_SOURCES,
@@ -19,15 +21,21 @@ from aac.lang.constants import (
     DEFINITION_FIELD_FIELDS,
     DEFINITION_FIELD_FILES,
     DEFINITION_FIELD_GIVEN,
+    DEFINITION_FIELD_ID,
+    DEFINITION_FIELD_IDS,
     DEFINITION_FIELD_INHERITS,
     DEFINITION_FIELD_INPUT,
     DEFINITION_FIELD_NAME,
     DEFINITION_FIELD_OUTPUT,
+    DEFINITION_FIELD_PARENT,
     DEFINITION_FIELD_PARTICIPANTS,
     DEFINITION_FIELD_PRIMITIVE_VALIDATIONS,
     DEFINITION_FIELD_REQUIRED,
+    DEFINITION_FIELD_REQUIREMENTS,
     DEFINITION_FIELD_ROOT,
     DEFINITION_FIELD_SCENARIO,
+    DEFINITION_FIELD_SECTIONS,
+    DEFINITION_FIELD_SHALL,
     DEFINITION_FIELD_SOURCE,
     DEFINITION_FIELD_STATE,
     DEFINITION_FIELD_STEP,
@@ -37,6 +45,7 @@ from aac.lang.constants import (
     DEFINITION_FIELD_THEN,
     DEFINITION_FIELD_TYPE,
     DEFINITION_FIELD_VALIDATION,
+    DEFINITION_FIELD_VALUE,
     DEFINITION_FIELD_VALUES,
     DEFINITION_FIELD_WHEN,
     ROOT_KEY_IMPORT,
@@ -45,6 +54,7 @@ from aac.lang.constants import (
     ROOT_KEY_MODEL,
     ROOT_KEY_PLUGIN,
     ROOT_KEY_SCHEMA,
+    ROOT_KEY_SPECIFICATION,
     ROOT_KEY_USECASE,
     ROOT_KEY_VALIDATION,
 )
@@ -107,6 +117,7 @@ def create_behavior_entry(
     input: list[dict] = [],
     output: list[dict] = [],
     acceptance: list[dict] = [],
+    requirements: list[str] = [],
 ) -> dict:
     """
     Creates a single behavior entry for definitions.
@@ -116,7 +127,7 @@ def create_behavior_entry(
     Returns:
         A dictionary representing an AaC behavior definition.
     """
-    return {
+    entry_dict = {
         DEFINITION_FIELD_NAME: name,
         DEFINITION_FIELD_TYPE: behavior_type,
         DEFINITION_FIELD_DESCRIPTION: description,
@@ -125,6 +136,11 @@ def create_behavior_entry(
         DEFINITION_FIELD_OUTPUT: output,
         DEFINITION_FIELD_ACCEPTANCE: acceptance,
     }
+
+    if requirements:
+        entry_dict = entry_dict | {DEFINITION_FIELD_REQUIREMENTS: {DEFINITION_FIELD_IDS: requirements}}
+
+    return entry_dict
 
 
 def create_scenario_entry(
@@ -197,7 +213,12 @@ def create_usecase_definition(name: str, description: str = "", participants: li
 
 
 def create_model_definition(
-    name: str, description: str = "", components: list[dict] = [], behavior: list[dict] = [], state: list[str] = []
+    name: str,
+    description: str = "",
+    components: list[dict] = [],
+    behavior: list[dict] = [],
+    state: list[str] = [],
+    requirements: list[str] = [],
 ):
     """Return a simulated model definition."""
     definition_dict = {
@@ -207,6 +228,9 @@ def create_model_definition(
         DEFINITION_FIELD_BEHAVIOR: behavior,
         DEFINITION_FIELD_STATE: state,
     }
+
+    if requirements:
+        definition_dict = definition_dict | {DEFINITION_FIELD_REQUIREMENTS: {DEFINITION_FIELD_IDS: requirements}}
 
     return create_definition(ROOT_KEY_MODEL, name, definition_dict)
 
@@ -275,13 +299,49 @@ def create_import_definition(imports: list[str]) -> Definition:
     return create_definition(ROOT_KEY_IMPORT, "", definition_dict)
 
 
+def create_spec_definition(
+    name: str, description: str = "", requirements: list[dict] = [], sections: list[dict] = []
+) -> Definition:
+    definition_dict = {
+        DEFINITION_FIELD_NAME: name,
+        DEFINITION_FIELD_DESCRIPTION: description,
+        DEFINITION_FIELD_REQUIREMENTS: requirements,
+        DEFINITION_FIELD_SECTIONS: sections,
+    }
+    return create_definition(ROOT_KEY_SPECIFICATION, name, definition_dict)
+
+
+def create_spec_section_entry(name: str, description: str = "", requirements: list[dict] = []) -> dict:
+    return {
+        DEFINITION_FIELD_NAME: name,
+        DEFINITION_FIELD_DESCRIPTION: description,
+        DEFINITION_FIELD_REQUIREMENTS: requirements,
+    }
+
+
+def create_requirement_entry(
+    id: str, shall: str, parent: list[str] = [], child: list[str] = [], attributes: list[dict] = []
+) -> dict:
+    return {
+        DEFINITION_FIELD_ID: id,
+        DEFINITION_FIELD_SHALL: shall,
+        DEFINITION_FIELD_PARENT: parent,
+        DEFINITION_FIELD_CHILD: child,
+        DEFINITION_FIELD_ATTRIBUTES: attributes,
+    }
+
+
+def create_requirement_attribute_entry(name: str, value: str) -> dict:
+    return {DEFINITION_FIELD_NAME: name, DEFINITION_FIELD_VALUE: value}
+
+
 def create_definition(root_key: str, name: str, other_fields: dict = {}) -> Definition:
     """The base Parsed Definition creation function."""
     name_field = {DEFINITION_FIELD_NAME: name}
     definition_dict = {root_key: name_field | other_fields}
     try:
-        parsed_definitions = parse(yaml.dump(definition_dict, sort_keys=False), "<test>")[0]
+        parsed_definition, *_ = parse(yaml.dump(definition_dict, sort_keys=False), "<test>")
     except ParserError as error:
         raise ParserError(error.source, error.errors) from None
     else:
-        return parsed_definitions
+        return parsed_definition
