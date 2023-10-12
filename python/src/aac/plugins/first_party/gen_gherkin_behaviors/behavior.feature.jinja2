@@ -1,8 +1,14 @@
 # ATTENTION - This generated file is safe to modify. It will not be overwritten.
 
+{% for requirement_id in model_requirements %}
+@{{requirement_id}}
+{% endfor %}
 Feature: {{feature.description}}
     {% for scenario in scenarios %}
 
+    {% for requirement_id in behavior_requirements %}
+    @{{requirement_id}}
+    {% endfor %}
     Scenario: {{scenario.description}}
     {% set given_joiner = joiner("And") %}
     {% for given in scenario.givens %}
