@@ -23,7 +23,7 @@ def validate_used_definitions(
         definition_under_test (Definition): The definition that's being validated.
         target_schema_definition (Definition): The schema definition with the validation rules that trigger the validation.
         language_context (LanguageContext): A management and utility class for the contextual AaC domain-specific language.
-        *validation_args (list[str]): The list of exclusive fields.
+        *validation_args (list[str]): IGNORED
 
     Returns:
         A ValidatorResult containing any applicable error messages.
@@ -40,8 +40,6 @@ def validate_used_definitions(
         no_references_found_message = f"No references to '{definition_under_test.name}' in the language context."
         logging.info(no_references_found_message)
         if reference_lexeme:
-            findings.add_info_finding(
-                definition_under_test, no_references_found_message, PLUGIN_NAME, reference_lexeme
-            )
+            findings.add_info_finding(definition_under_test, no_references_found_message, PLUGIN_NAME, reference_lexeme)
 
     return ValidatorResult([definition_under_test], findings)
