@@ -4,6 +4,7 @@
 
 # There may be some unused imports depending on the definition of the plugin...but that's ok
 from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus, ExecutionMessage
+from aac.lang.schema import Schema
 from aac.lang.plugininputvalue import PluginInputValue
 from aac.context.language_context import LanguageContext
 from aac.context.definition import Definition
@@ -60,7 +61,7 @@ def {{get_python_name(ctx_constraint.name)}}(context: LanguageContext) -> Execut
     {% endfor%}{% endif %}
 
 {% if plugin.schema_constraints | length > 0 %}{% for schema_constraint in plugin.schema_constraints%}
-def {{get_python_name(schema_constraint.name)}}(instance: Any, definition: Definition, defining_schema: Definition, arguments: list[PluginInputValue]) -> ExecutionResult:
+def {{get_python_name(schema_constraint.name)}}(instance: Any, definition: Definition, defining_schema: Schema, arguments: list[PluginInputValue]) -> ExecutionResult:
     """ Business logic for the {{schema_constraint.name}} constraint. """
 
     # TODO: rewrite the code below to implement your constraint logic

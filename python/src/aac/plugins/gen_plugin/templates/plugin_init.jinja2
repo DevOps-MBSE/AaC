@@ -6,6 +6,7 @@ from os.path import join, dirname
 from typing import Any
 from aac.execute.plugin_runner import AacCommand
 from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus, ExecutionMessage
+from aac.lang.schema import Schema
 from aac.lang.plugininputvalue import PluginInputValue
 from aac.execute import hookimpl
 from aac.context.language_context import LanguageContext
@@ -86,7 +87,7 @@ def run_{{get_python_name(ctx_constraint.name)}}(context: LanguageContext) -> Ex
 {% endfor %}
 
 {% for schema_constraint in plugin.schema_constraints %}
-def run_{{get_python_name(schema_constraint.name)}}(instance: Any, definition: Definition, defining_schema: Definition, arguments: list[PluginInputValue]) -> ExecutionResult:
+def run_{{get_python_name(schema_constraint.name)}}(instance: Any, definition: Definition, defining_schema: Schema, arguments: list[PluginInputValue]) -> ExecutionResult:
     """{{schema_constraint.description}}"""
     
     return {{get_python_name(schema_constraint.name)}}(instance, definition, defining_schema, arguments)

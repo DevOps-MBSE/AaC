@@ -498,8 +498,6 @@ schema:
       description: |
         The list of templates to use when generating content.
       is_required: true
-  constraints:
-    - name: No extra fields
 ---
 schema:
   name: GeneratorSource
@@ -1007,6 +1005,13 @@ schema:
       type: Feature[]
       description: |
         A list of acceptance test features that describe the expected behavior of the schema constraint.
+  constraints:
+    - name: If true then empty
+      arguments:
+        - name: bool_field_name
+          value: universal
+        - name: empty_field_name
+          value: arguments
 ---
 schema:
   name: PrimitiveConstraint

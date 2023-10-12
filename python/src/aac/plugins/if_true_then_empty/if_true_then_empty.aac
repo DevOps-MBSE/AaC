@@ -1,0 +1,14 @@
+plugin:
+  name: If true then empty
+  package: aac.plugins.if_true_then_empty
+  description: An AaC plugin that checks a field and if true, ensures another field is empty.
+  schema_constraints:
+    - name: If true then empty
+      description: Check to ensure the empty_field_name is empty if bool_field_name is true.
+      arguments:
+        - name: bool_field_name
+          type: string
+          description: The field name to check if true.
+        - name: empty_field_name
+          type: string
+          description: The field name to ensure is empty.
