@@ -43,13 +43,30 @@ If we deactivate `gen-protobuf` and run the validation again, we'll see an error
 ## Contributing Root Keys to a User Library
 AaC uses a set of root-level keys to define instances of modeled 'things' that are defined data structures (schemas). An example is the root key `schema`, which defines an instance of a data structure that can be referenced. The core AaC specification has several root keys, but users are capable of defining custom root keys.  Custom root keys allow users to define instances of models or modeled components. For more information on pre-defined Root Keys, see the [Root Keys](#dsl-root-keys) section of the AaC Modeling Language Reference page.
 
-### Defining, adding, and leveraging a Root Key
+### Defining, Adding, and Leveraging a Root Key in AaC Prior to v0.0.3
 Due to AaC's self-defining design, all root keys are defined as AaC `schema` definitions within the Base DSL.
 There is information and examples about how the core spec is utilized and how to extend the DSL for use via an additional plugin within the [Base DSL and Extended DSL](#the-base-dsl-core-spec) sections of the AaC Modeling Language Reference page.
 
 For a plugin to provide custom root keys, it must have a `schemaExt` type extension targeting the `root` definition providing additional fields to the `root` definition. Each new field in the `root` definition defines a root key and corresponding data structure in the AaC language. User Library key roots can be used to define instances of modeled things such as cars, furniture, electronic networks, cloud networks, etc.
 
 *Be aware, plugins not intentionally built to process the data modeled in a User Library will likely be incompatible with any new root keys and data structures. Such incompatibilities can lead to generating incomplete artifacts.*
+
+### Defining, Adding, and Leveraging the Root Field in AaC v0.3.0 and Later
+Due to AaC's self-defining design, definitions in AaC v0.3.0 and later include a `root` field to allow for instances of models to be defined such as seen below.
+```{eval-rst}
+.. literalinclude:: ../../../../python/model/alarm_clock/structures.yaml
+    :language: yaml
+    :lines: 1-11
+    :emphasize-lines: 3
+```
+
+```{eval-rst}
+.. literalinclude:: ../../../../python/model/alarm_clock/structures.yaml
+    :language: yaml
+    :lines: 89-97
+    :emphasize-lines: 1
+```
+For more information on creating new definitions with a `root` field, see [Introducing New Definition Types](schema_definitions.md#introducing-new-definition-types)
 
 ## Note to Plugin Developers
 Currently AaC does not have a plugin system capable of defining dependencies across plugins. If a plugin implements a User Library (another plugin), the onus of managing dependencies and versions rests entirely on the users and developers. There is future functionality to address these shortcomings. For now, clear communication, documentation, and dependency files (e.g. requirements.txt, poetry.lock, setup.py, etc) are the best way to mitigate dependency issues.
