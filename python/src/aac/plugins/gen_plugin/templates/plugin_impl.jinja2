@@ -21,7 +21,9 @@ def before_{{get_python_name(command.name)}}_{{get_python_name(run_before.comman
 
     # TODO: configure and call the {{run_before.command}} before command using {{command.name}} command inputs
     status = ExecutionStatus.GENERAL_FAILURE
-    messages: list[str] = ["The {{run_before.plugin}} {{run_before.command}} before handling for the {{command.name}} command has not been implemented yet."]
+    messages: list[ExecutionMessage] = []
+    error_msg = ExecutionMessage("The {{run_before.plugin}} {{run_before.command}} before handling for the {{command.name}} command has not been implemented yet.", None, None)
+    messages.append(error_msg)
 
     return ExecutionResult(plugin_name, "{{command.name}}", status, messages)
 {% endfor %}{% endif %}
@@ -31,7 +33,9 @@ def {{get_python_name(command.name)}}({% for entry in command.input %}{{ get_pyt
     
     # TODO: implement plugin logic here
     status = ExecutionStatus.GENERAL_FAILURE
-    messages: list[str] = []"The {{command.name}} command for the {{plugin.name}} plugin has not been implemented yet."]
+    messages: list[ExecutionMessage] = []
+    error_msg = ExecutionMessage("The {{command.name}} command for the {{plugin.name}} plugin has not been implemented yet.", None, None)
+    messages.append(error_msg)
 
     return ExecutionResult(plugin_name, "{{command.name}}", status, messages)
 
@@ -41,7 +45,9 @@ def after_{{get_python_name(command.name)}}_{{get_python_name(run_after.command)
 
     # TODO: configure and call the {{run_after.command}} after command using {{command.name}} command inputs
     status = ExecutionStatus.GENERAL_FAILURE
-    messages: list[str] = ["The {{run_after.plugin}} {{run_after.command}} after handling for the {{command.name}} command has not been implemented yet."]
+    messages: list[ExecutionMessage] = []
+    error_msg = ExecutionMessage("The {{run_after.plugin}} {{run_after.command}} after handling for the {{command.name}} command has not been implemented yet.", None, None)
+    messages.append(error_msg)
 
     return ExecutionResult(plugin_name, "{{command.name}}", status, messages)
     {% endfor %}{% endif %}{% endfor %}
