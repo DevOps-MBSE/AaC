@@ -4,7 +4,7 @@
 
 from dataclasses import dataclass
 import attr
-from typing import Optional
+from typing import Optional, Any
 from attr import attrib, validators
 
 from aac.lang.plugincommand import PluginCommand

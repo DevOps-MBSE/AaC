@@ -4,9 +4,9 @@
 import unittest
 from copy import deepcopy
 from aac.lang.primitiveconstraint import PrimitiveConstraint
-from aac.lang.plugininput import PluginInput
+from aac.lang.field import Field
 from aac.lang.feature import Feature
-from plugininput_test import PluginInputTestHelper
+from field_test import FieldTestHelper
 from feature_test import FeatureTestHelper
 
 
@@ -16,7 +16,7 @@ class PrimitiveConstraintTestHelper:
         return {
             "name": "test",
             "description": "test",
-            "arguments": [PluginInputTestHelper.generate_data()],
+            "arguments": [FieldTestHelper.generate_data()],
             "acceptance": [FeatureTestHelper.generate_data()],
         }
 

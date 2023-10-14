@@ -4,10 +4,8 @@
 
 from dataclasses import dataclass
 import attr
-from typing import Optional
+from typing import Optional, Any
 from attr import attrib, validators
-
-from aac.lang.plugininputvalue import PluginInputValue
 
 
 @dataclass(frozen=True)
@@ -16,20 +14,17 @@ class PrimitiveConstraintAssignment:
     Assigns a primitive constraint to a primitive definition.
 
     name: str - The name of the schema constraint definition.
-    arguments: list[PluginInputValue]] - Arguments for the primitive constraint if applicable.
+    arguments: Optional[Any] - Arguments for the primitive constraint if applicable.  Using the any type because the arguments are defined by the constraint definition.  The  constraint_assignment_arguments constraint will cross reference arguments provided here against the constraint definition.
     """
 
     name: str = attrib(init=attr.ib(), validator=validators.instance_of(str))
-    arguments: list[PluginInputValue] = attrib(
-        init=attr.ib(), validator=validators.instance_of(list[PluginInputValue])
-    )
+    arguments: Optional[Any] = attrib(init=attr.ib())
 
     @classmethod
     def from_dict(cls, data):
         args = {}
 
-        arguments_data = data.pop("arguments", [])
-        arguments = [PluginInputValue.from_dict(entry) for entry in arguments_data]
+        arguments = data.pop("arguments", None)
         args["arguments"] = arguments
 
         return cls(**args, **data)

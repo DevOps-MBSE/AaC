@@ -14,7 +14,7 @@ plugin_name = "Required Fields"
 
 
 def required_fields_are_present(
-    instance: Any, source_definition: Definition, defining_schema: Schema, arguments: list[PluginInputValue]
+    instance: Any, definition: Definition, defining_schema: Schema
 ) -> ExecutionResult:
     """Business logic for the Required fields are present constraint."""
 
@@ -23,23 +23,7 @@ def required_fields_are_present(
 
     context = LanguageContext()
 
-    # we'll need to resurse our way through the schema to check all the fields and sub-fields
-    def check_schema_fields(instance_to_check: Any, source_definition: Definition, defining_schema: Definition):
-        """Check that all required fields are present in the instance_to_check based on the defining_schema."""
-
-        # Loop through all fields in the definiing schema
-        for field in defining_schema.instance.fields:
-            # If the field is required, check that it is present
-            if field.is_required:
-                # Check that the field is present
-                if field.name not in list(vars(instance_to_check).keys()):
-                    status = ExecutionStatus.CONSTRAINT_FAILURE
-                    # TODO:  clean up this location hack!
-                    error_msg = ExecutionMessage(message=f"Field '{field.name}' is required but not present.", source=source_definition.source, location=None)
-                    messages.append(error_msg)
-
-    # check against the defining schema
-    # check_schema_fields(instance, defining_schema)
+    # Note:  We only need to check the provided instance.  The check command handles field recursion for us.
     # Loop through all fields in the definiing schema
     for field in defining_schema.fields:
         # If the field is required, check that it is present
@@ -48,7 +32,7 @@ def required_fields_are_present(
             if field.name not in list(vars(instance).keys()):
                 status = ExecutionStatus.CONSTRAINT_FAILURE
                 # TODO:  clean up this location hack!
-                error_msg = ExecutionMessage(message=f"Field '{field.name}' is required but not present.", source=source_definition.source, location=None)
+                error_msg = ExecutionMessage(message=f"Field '{field.name}' is required but not present.", source=definition.source, location=None)
                 messages.append(error_msg)
 
     return ExecutionResult(plugin_name, "Required fields are present", status, messages)

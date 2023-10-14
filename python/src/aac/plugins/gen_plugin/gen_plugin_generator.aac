@@ -168,6 +168,11 @@ generator:
               package: aac.plugins.generate.helpers
               module: python_helpers
               function: get_package_from_plugin
+            - name: Get python primitive
+              description: Converts an AaC primitive to a python type
+              package: aac.plugins.generate.helpers
+              module: python_helpers
+              function: get_python_primitive
           output_target: CODE
           output_path_uses_data_source_package: true
           output_file_name: __init__

@@ -17,7 +17,7 @@ plugin_name = "AaC primitive constraints"
 
 
 def check_bool(
-    value: str, type_declaration: str, arguments: list[PluginInputValue], source: AaCFile, location: SourceLocation
+    value: str, type_declaration: str, source: AaCFile, location: SourceLocation
 ) -> ExecutionResult:
     """Business logic for the Check bool constraint."""
 
@@ -33,7 +33,7 @@ def check_bool(
 
 
 def check_date(
-    value: str, type_declaration: str, arguments: list[PluginInputValue], source: AaCFile, location: SourceLocation
+    value: str, type_declaration: str, source: AaCFile, location: SourceLocation
 ) -> ExecutionResult:
     """Business logic for the Check date constraint."""
 
@@ -51,7 +51,7 @@ def check_date(
 
 
 def check_directory(
-    value: str, type_declaration: str, arguments: list[PluginInputValue], source: AaCFile, location: SourceLocation
+    value: str, type_declaration: str, source: AaCFile, location: SourceLocation
 ) -> ExecutionResult:
     """Business logic for the Check directory constraint."""
 
@@ -70,7 +70,7 @@ def check_directory(
 
 
 def check_file(
-    value: str, type_declaration: str, arguments: list[PluginInputValue], source: AaCFile, location: SourceLocation
+    value: str, type_declaration: str, source: AaCFile, location: SourceLocation
 ) -> ExecutionResult:
     """Business logic for the Check file constraint."""
 
@@ -89,7 +89,7 @@ def check_file(
 
 
 def check_string(
-    value: str, type_declaration: str, arguments: list[PluginInputValue], source: AaCFile, location: SourceLocation
+    value: str, type_declaration: str, source: AaCFile, location: SourceLocation
 ) -> ExecutionResult:
     """Business logic for the Check string constraint."""
 
@@ -105,7 +105,7 @@ def check_string(
 
 
 def check_int(
-    value: str, type_declaration: str, arguments: list[PluginInputValue], source: AaCFile, location: SourceLocation
+    value: str, type_declaration: str, source: AaCFile, location: SourceLocation
 ) -> ExecutionResult:
     """Business logic for the Check int constraint."""
 
@@ -132,7 +132,7 @@ def check_int(
 
 
 def check_number(
-    value: str, type_declaration: str, arguments: list[PluginInputValue], source: AaCFile, location: SourceLocation
+    value: str, type_declaration: str, source: AaCFile, location: SourceLocation
 ) -> ExecutionResult:
     """Business logic for the Check number constraint."""
 
@@ -147,7 +147,7 @@ def check_number(
     return ExecutionResult(plugin_name, "Check number", status, messages)
 
 def check_dataref(
-    value: str, type_declaration: str, arguments: list[PluginInputValue], source: AaCFile, location: SourceLocation
+    value: str, type_declaration: str, source: AaCFile, location: SourceLocation
 ) -> ExecutionResult:
     """Business logic for the Check dataref constraint."""
 
@@ -176,7 +176,7 @@ def check_dataref(
 
 
 def check_typeref(
-    value: str, type_declaration: str, arguments: list[PluginInputValue], source: AaCFile, location: SourceLocation
+    value: str, type_declaration: str, source: AaCFile, location: SourceLocation
 ) -> ExecutionResult:
     """Business logic for the Check typeref constraint."""
 

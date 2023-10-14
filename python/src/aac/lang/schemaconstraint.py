@@ -4,10 +4,10 @@
 
 from dataclasses import dataclass
 import attr
-from typing import Optional
+from typing import Optional, Any
 from attr import attrib, validators
 
-from aac.lang.plugininput import PluginInput
+from aac.lang.field import Field
 from aac.lang.feature import Feature
 
 
@@ -18,8 +18,8 @@ class SchemaConstraint:
 
     name: str - The name of the schema constraint rule.
     description: Optional[str] - A high level description of the schema constraint rule.
-    universal: Optional[bool] - Indicates that the constraint should be applied to all schemas without explicit assignment. This is a convenience so that you don't have to directly assign the constraint to every schema. If not included or false, the constraint must be explicitly assigned to a schema.
-    arguments: list[PluginInput]] - List of arguments for the constraint.
+    universal: Optional[bool] - Indicates that the constraint should be applied to all schemas without explicit assignment. This is a convenience so that you don't have to directly assign the constraint to every schema. If not included or false, the constraint must be explicitly assigned to a schema.  But be aware that universal schema constraints cannot have input arguments.
+    arguments: list[Field]] - List of arguments for the constraint.
     acceptance: list[Feature]] - A list of acceptance test features that describe the expected behavior of the schema constraint.
     """
 
@@ -30,8 +30,8 @@ class SchemaConstraint:
     universal: Optional[bool] = attrib(
         init=attr.ib(), validator=validators.optional(validators.instance_of(bool))
     )
-    arguments: list[PluginInput] = attrib(
-        init=attr.ib(), validator=validators.instance_of(list[PluginInput])
+    arguments: list[Field] = attrib(
+        init=attr.ib(), validator=validators.instance_of(list[Field])
     )
     acceptance: list[Feature] = attrib(
         init=attr.ib(), validator=validators.instance_of(list[Feature])
@@ -48,7 +48,7 @@ class SchemaConstraint:
         args["universal"] = universal
 
         arguments_data = data.pop("arguments", [])
-        arguments = [PluginInput.from_dict(entry) for entry in arguments_data]
+        arguments = [Field.from_dict(entry) for entry in arguments_data]
         args["arguments"] = arguments
 
         acceptance_data = data.pop("acceptance", [])

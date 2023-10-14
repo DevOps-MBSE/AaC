@@ -167,6 +167,16 @@ primitive:
     - name: Check directory
 ---
 primitive:
+  name: any
+  package: aac.lang
+  python_type: Any
+  description:  |
+    A catch-all primitive type that will accept any value.  It is recommended to avoid the use
+    of any as it can make it difficult to reason about your model.  Due to the broad applicability of the 
+    any primitive, it is not possible to provide a general purpose constraint checker. If you find a need to use
+    the any primitive, we recommend defining a custom constraint to check the value for your usage.
+---
+primitive:
   name: dataref
   package: aac.lang
   python_type: str
@@ -998,7 +1008,7 @@ schema:
         If not included or false, the constraint must be explicitly assigned to a schema.  But be aware
         that universal schema constraints cannot have input arguments.
     - name: arguments
-      type: PluginInput[]
+      type: Field[]
       description: |
         List of arguments for the constraint.
     - name: acceptance
@@ -1032,7 +1042,7 @@ schema:
       description: |
         A high level description of the schema constraint rule.
     - name: arguments
-      type: PluginInput[]
+      type: Field[]
       description: |
         A list of arguments for the constraint.
     - name: acceptance
@@ -1052,9 +1062,14 @@ schema:
         The name of the schema constraint definition.
       is_required: true
     - name: arguments
-      type: PluginInputValue[]
+      type: any
       description: |
-        Arguments for the schema constraint if applicable.
+        Arguments for the primitive constraint if applicable.  Using the any type
+        because the arguments are defined by the constraint definition.  The 
+        constraint_assignment_arguments constraint will cross reference arguments
+        provided here against the constraint definition.
+  constraints:
+    - name: Check arguments against constraint definition
 ---
 schema:
   name: PrimitiveConstraintAssignment
@@ -1068,6 +1083,11 @@ schema:
         The name of the schema constraint definition.
       is_required: true
     - name: arguments
-      type: PluginInputValue[]
+      type: any
       description: |
-        Arguments for the primitive constraint if applicable.
+        Arguments for the primitive constraint if applicable.  Using the any type
+        because the arguments are defined by the constraint definition.  The 
+        constraint_assignment_arguments constraint will cross reference arguments
+        provided here against the constraint definition.
+  constraints:
+    - name: Check arguments against constraint definition

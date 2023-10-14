@@ -23,29 +23,21 @@ def if_true_then_empty(
     instance: Any,
     definition: Definition,
     defining_schema: Schema,
-    arguments: list[PluginInputValue],
+    bool_field_name: str,
+    empty_field_name: str,
 ) -> ExecutionResult:
     """Business logic for the If true then empty constraint."""
 
-    # get the boolean field and empty field from instance
-    bool_field_name = None
-    empty_field_name = None
-    
-    for argument in arguments:
-        if argument.name == "bool_field_name":
-            bool_field_name = argument.value
-        elif argument.name == "empty_field_name":
-            empty_field_name = argument.value
-
-    # get the boolean field and empty field from instance
-    if not bool_field_name or not empty_field_name:
+    bool_field_value = getattr(instance, bool_field_name, None)
+    if not isinstance(bool_field_value, bool):
+        # the constraint failed
         error_msg = ExecutionMessage(
-            f"The If true then empty constraint for {instance.name} requires a bool_field_name and empty_field_name argument.",
+            f"The If true then empty constraint for {instance.name} failed because {bool_field_name} is not a boolean.",
             definition.source,
             None,
         )
         return ExecutionResult(plugin_name, "If true then empty", ExecutionStatus.GENERAL_FAILURE, [error_msg])
-    bool_field_value = getattr(instance, bool_field_name, None)
+
     empty_field_value = getattr(instance, empty_field_name, None)
 
     is_empty_field_empty =  (empty_field_value is None or empty_field_value == "" or empty_field_value == [] or empty_field_value == {})

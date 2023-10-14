@@ -4,10 +4,10 @@
 
 from dataclasses import dataclass
 import attr
-from typing import Optional
+from typing import Optional, Any
 from attr import attrib, validators
 
-from aac.lang.plugininput import PluginInput
+from aac.lang.field import Field
 from aac.lang.feature import Feature
 
 
@@ -18,7 +18,7 @@ class PrimitiveConstraint:
 
     name: str - The name of the schema constraint rule.
     description: Optional[str] - A high level description of the schema constraint rule.
-    arguments: list[PluginInput]] - A list of arguments for the constraint.
+    arguments: list[Field]] - A list of arguments for the constraint.
     acceptance: list[Feature]] - A list of acceptance test features that describe the expected behavior of the primitive constraint.
     """
 
@@ -26,8 +26,8 @@ class PrimitiveConstraint:
     description: Optional[str] = attrib(
         init=attr.ib(), validator=validators.optional(validators.instance_of(str))
     )
-    arguments: list[PluginInput] = attrib(
-        init=attr.ib(), validator=validators.instance_of(list[PluginInput])
+    arguments: list[Field] = attrib(
+        init=attr.ib(), validator=validators.instance_of(list[Field])
     )
     acceptance: list[Feature] = attrib(
         init=attr.ib(), validator=validators.instance_of(list[Feature])
@@ -41,7 +41,7 @@ class PrimitiveConstraint:
         args["description"] = description
 
         arguments_data = data.pop("arguments", [])
-        arguments = [PluginInput.from_dict(entry) for entry in arguments_data]
+        arguments = [Field.from_dict(entry) for entry in arguments_data]
         args["arguments"] = arguments
 
         acceptance_data = data.pop("acceptance", [])

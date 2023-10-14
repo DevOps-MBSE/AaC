@@ -4,8 +4,6 @@
 import unittest
 from copy import deepcopy
 from aac.lang.primitiveconstraintassignment import PrimitiveConstraintAssignment
-from aac.lang.plugininputvalue import PluginInputValue
-from plugininputvalue_test import PluginInputValueTestHelper
 
 
 class PrimitiveConstraintAssignmentTestHelper:
@@ -13,7 +11,6 @@ class PrimitiveConstraintAssignmentTestHelper:
     def generate_data() -> dict:
         return {
             "name": "test",
-            "arguments": [PluginInputValueTestHelper.generate_data()],
         }
 
     @staticmethod
@@ -32,7 +29,9 @@ class TestPrimitiveConstraintAssignment(unittest.TestCase):
             deepcopy(primitiveconstraintassignment_dict)
         )
         self.assertEqual(instance.name, primitiveconstraintassignment_dict["name"])
-        self.assertIsNotNone(instance.arguments)
+        self.assertEqual(
+            instance.arguments, primitiveconstraintassignment_dict["arguments"]
+        )
 
         primitiveconstraintassignment_dict = (
             PrimitiveConstraintAssignmentTestHelper.generate_data_required_only()

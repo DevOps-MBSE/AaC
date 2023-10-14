@@ -21,10 +21,7 @@ plugin_name = "No Undefined Fields"
 
 
 def no_extra_fields(
-    instance: Any,
-    definition: Definition,
-    defining_schema: Schema,
-    arguments: list[PluginInputValue],
+    instance: Any, definition: Definition, defining_schema: Schema
 ) -> ExecutionResult:
     """Business logic for the No extra fields constraint."""
 
