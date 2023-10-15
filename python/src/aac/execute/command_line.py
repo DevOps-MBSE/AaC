@@ -63,46 +63,50 @@ def to_click_command(command: AacCommand) -> Command:
         no_args_is_help=len([arg for arg in command.arguments if is_required_arg(arg)]) > 0,
     )
 
-active_context = LanguageContext()
+def initialize_cli():
+    active_context = LanguageContext()
 
-def get_commands() -> list[AacCommand]:
-    result: list[AacCommand] = []
+    def get_commands() -> list[AacCommand]:
+        result: list[AacCommand] = []
 
-    context = LanguageContext()
-    for runner in context.get_plugin_runners():
-        definition = runner.plugin_definition
-        for plugin_command in definition.instance.commands:
-            arguments: list[AacCommandArgument] = []
-            for input in plugin_command.input:
-                arguments.append(AacCommandArgument(
-                    input.name, 
-                    input.description, 
-                    context.get_python_type_from_primitive(input.type), 
-                    input.default))
-            result.append(AacCommand(
-                plugin_command.name,
-                plugin_command.help_text,
-                runner.command_to_callback[plugin_command.name],
-                arguments,
-            ))
-    return result
+        context = LanguageContext()
+        for runner in context.get_plugin_runners():
+            definition = runner.plugin_definition
+            for plugin_command in definition.instance.commands:
+                arguments: list[AacCommandArgument] = []
+                for input in plugin_command.input:
+                    arguments.append(AacCommandArgument(
+                        input.name, 
+                        input.description, 
+                        context.get_python_type_from_primitive(input.type), 
+                        input.default))
+                result.append(AacCommand(
+                    plugin_command.name,
+                    plugin_command.help_text,
+                    runner.command_to_callback[plugin_command.name],
+                    arguments,
+                ))
+        return result
 
-try:
-    runners: list[PluginRunner] = active_context.get_plugin_runners()
-    for runner in runners:
-        commands = [to_click_command(cmd) for cmd in get_commands()]
-        for command in commands:
-            cli.add_command(command)
-except ParserError as error:
-    exc = error.yaml_error
-    print (f"Error while parsing YAML file: {error.source}")
-    if hasattr(exc, 'problem_mark'):
-        if exc.context != None:
-            print ('  parser says\n' + str(exc.problem_mark) + '\n  ' +
-                str(exc.problem) + ' ' + str(exc.context) +
-                '\nPlease correct data and retry.')
+    try:
+        runners: list[PluginRunner] = active_context.get_plugin_runners()
+        for runner in runners:
+            commands = [to_click_command(cmd) for cmd in get_commands()]
+            for command in commands:
+                cli.add_command(command)
+    except ParserError as error:
+        exc = error.yaml_error
+        print (f"Error while parsing YAML file: {error.source}")
+        if hasattr(exc, 'problem_mark'):
+            if exc.context != None:
+                print ('  parser says\n' + str(exc.problem_mark) + '\n  ' +
+                    str(exc.problem) + ' ' + str(exc.context) +
+                    '\nPlease correct data and retry.')
+            else:
+                print ('  parser says\n' + str(exc.problem_mark) + '\n  ' +
+                    str(exc.problem) + '\nPlease correct data and retry.')
         else:
-            print ('  parser says\n' + str(exc.problem_mark) + '\n  ' +
-                str(exc.problem) + '\nPlease correct data and retry.')
-    else:
-        print (f"Something went wrong while parsing yaml file: {error.source}")
+            print (f"Something went wrong while parsing yaml file: {error.source}")
+
+# This is the entry point for the CLI
+initialize_cli()

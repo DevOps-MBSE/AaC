@@ -60,13 +60,18 @@ def check_directory(
 
     # Regular expression to match a directory path (AI generated regex)
     directory_path_regex = r'^([a-zA-Z]:)?([\\/][^/\0<>:"|?*]*)+[/\\]?$'
+    try:
+        if not re.match(directory_path_regex, value):
+            status = ExecutionStatus.CONSTRAINT_FAILURE
+            error_msg = ExecutionMessage(message=f"The value {value} is not a valid directory path.", source=source, location=location)
+            messages.append(error_msg)
 
-    if not re.match(directory_path_regex, value):
+        return ExecutionResult(plugin_name, "Check directory", status, messages)
+    except TypeError as error:
         status = ExecutionStatus.CONSTRAINT_FAILURE
         error_msg = ExecutionMessage(message=f"The value {value} is not a valid directory path.", source=source, location=location)
         messages.append(error_msg)
-
-    return ExecutionResult(plugin_name, "Check directory", status, messages)
+        return ExecutionResult(plugin_name, "Check directory", status, messages)
 
 
 def check_file(
@@ -80,12 +85,18 @@ def check_file(
     # Regular expression to match a file path (AI generated regex)
     file_path_regex = r'^([a-zA-Z]:)?([\\/][^/\0<>:"|?*]*)*[/\\]?$'
 
-    if not re.match(file_path_regex, value):
+    try:
+        if not re.match(file_path_regex, value):
+            status = ExecutionStatus.CONSTRAINT_FAILURE
+            error_msg = ExecutionMessage(message=f"The value {value} is not a valid file path.", source=source, location=location)
+            messages.append(error_msg)
+
+        return ExecutionResult(plugin_name, "Check file", status, messages)
+    except TypeError as error:
         status = ExecutionStatus.CONSTRAINT_FAILURE
         error_msg = ExecutionMessage(message=f"The value {value} is not a valid file path.", source=source, location=location)
         messages.append(error_msg)
-
-    return ExecutionResult(plugin_name, "Check file", status, messages)
+        return ExecutionResult(plugin_name, "Check file", status, messages)
 
 
 def check_string(
@@ -139,9 +150,24 @@ def check_number(
     status = ExecutionStatus.SUCCESS
     messages: list[ExecutionMessage] = []
 
-    if not isinstance(value, (int, float)):
+    is_invalid = False
+    try:
+        if isinstance(value, int):
+            return ExecutionResult(plugin_name, "Check number", status, messages)
+        if isinstance(value, float):
+            return ExecutionResult(plugin_name, "Check number", status, messages)
+        type_casted_float = float(value)
+        # assert that the conversion didn't alter the contents, other than adding a '.0' for a whole number value.
+        is_invalid = str(type_casted_float) != str(value) and str(type_casted_float) != str(value+".0")
+    except Exception as error:
+        is_invalid = True
         status = ExecutionStatus.CONSTRAINT_FAILURE
-        error_msg = ExecutionMessage(message=f"{value} is not a valid value for the number type number.", source=source, location=location)
+        error_msg = ExecutionMessage(message=f"AaC int primitive constraint failed for value {value} with error:\n{error}", source=source, location=location)
+        messages.append(error_msg)
+
+    if is_invalid:
+        status = ExecutionStatus.CONSTRAINT_FAILURE
+        error_msg = ExecutionMessage(message=f"{value} is not a valid value for the primitive type int", source=source, location=location)
         messages.append(error_msg)
 
     return ExecutionResult(plugin_name, "Check number", status, messages)
@@ -154,8 +180,8 @@ def check_dataref(
     status = ExecutionStatus.SUCCESS
     messages: list[ExecutionMessage] = []
 
-    clean_value = value.strip()
-    if value.endswith("[]"):
+    clean_value = str(value).strip()
+    if clean_value.endswith("[]"):
         clean_value = value[:-2].strip()
 
     # get the dataref target from the parenthesis in the type_declaration
@@ -183,8 +209,8 @@ def check_typeref(
     status = ExecutionStatus.SUCCESS
     messages: list[ExecutionMessage] = []
 
-    clean_value = value.strip()
-    if value.endswith("[]"):
+    clean_value = str(value).strip()
+    if clean_value.endswith("[]"):
         clean_value = value[:-2].strip()
 
     context: LanguageContext = LanguageContext()
