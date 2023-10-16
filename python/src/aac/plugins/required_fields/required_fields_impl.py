@@ -21,18 +21,20 @@ def required_fields_are_present(
     status = ExecutionStatus.SUCCESS
     messages: list[ExecutionMessage] = []
 
-    context = LanguageContext()
+    # check will send in every possible thing, even None, so we need to check that we have an instance
+    if instance:
+        context = LanguageContext()
 
-    # Note:  We only need to check the provided instance.  The check command handles field recursion for us.
-    # Loop through all fields in the definiing schema
-    for field in defining_schema.fields:
-        # If the field is required, check that it is present
-        if field.is_required:
-            # Check that the field is present
-            if field.name not in list(vars(instance).keys()):
-                status = ExecutionStatus.CONSTRAINT_FAILURE
-                # TODO:  clean up this location hack!
-                error_msg = ExecutionMessage(message=f"Field '{field.name}' is required but not present.", source=definition.source, location=None)
-                messages.append(error_msg)
+        # Note:  We only need to check the provided instance.  The check command handles field recursion for us.
+        # Loop through all fields in the definiing schema
+        for field in defining_schema.fields:
+            # If the field is required, check that it is present
+            if field.is_required:
+                # Check that the field is present
+                if not hasattr(instance, field.name):
+                    status = ExecutionStatus.CONSTRAINT_FAILURE
+                    # TODO:  clean up this location hack!
+                    error_msg = ExecutionMessage(message=f"Field '{field.name}' is required but not present.", source=definition.source, location=None)
+                    messages.append(error_msg)
 
     return ExecutionResult(plugin_name, "Required fields are present", status, messages)

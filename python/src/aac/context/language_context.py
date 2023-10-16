@@ -184,34 +184,26 @@ class LanguageContext(object):
   
   def _traverse_field_chain(self, structure_list: list, field_chain: list[str]) -> list:
     current_structures = structure_list
-    # print(f"DEBUG: !!!!!_traverse_field_chain!!!!! current_structures: searching for field_chain {field_chain}")
     search_depth = len(field_chain)
     current_depth = 0
     values_found = []
     for field_name in field_chain:
       next_structures = []
-      # print(f"DEBUG: looking for field_name {field_name}")
       for structure in current_structures:
-        # print(f"DEBUG: current_structure: {structure}")
         if field_name in structure:
           if isinstance(structure[field_name], list):
-            # print(f"DEBUG: found field_name: {field_name} with list value {structure[field_name]}")
             if current_depth == search_depth - 1:
               values_found.extend(structure[field_name])
             else:
               next_structures.extend(structure[field_name])
           else:
-            # print(f"DEBUG: found field_name: {field_name} with value {structure[field_name]}")
             if current_depth == search_depth - 1: # This just means we're at the end of the field chain and should pull the value
-              # print(f"DEBUG: found field_name: {field_name} at search depth: {search_depth}")
               values_found.append(structure[field_name])
             else:
-              # print(f"DEBUG: found field_name: {field_name} at search depth: {search_depth} but not at search depth.\nExtending search with {structure.get(field_name, [])}")
               next_structures.append(structure.get(field_name, []))
       current_structures = next_structures
       current_depth += 1
-    # print(f"DEBUG: found values {values_found}")
-    # raise LanguageError("DEBUG: stopping")
+      
     return values_found
 
   def get_values_by_field_chain(self, search_term: str) -> list:

@@ -440,7 +440,7 @@ schema:
         The name of the plugin to reference.
       is_required: true
     - name: command
-      type: dataref(plugin.command.name)
+      type: dataref(plugin.commands.name)
       description: |
         The name of the command to reference.
       is_required: true

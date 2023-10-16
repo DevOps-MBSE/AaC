@@ -114,7 +114,10 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult:
     # Context constraints are "language constraints" and are not tied to a specific schema
     # You can think of these as "invariants", so they must always be satisfied
     for plugin in context.get_definitions_by_root("plugin"):
+        # we want to check contest constraints, but not the ones that are defined in the aac_file we're checking to avoid gen-plugin circular logic
         for context_constraint in plugin.instance.context_constraints:
+            if context_constraint.name not in [definition.name for definition in definitions_to_check]:
+                continue
             callback = all_constraints_by_name[context_constraint.name]
             result: ExecutionResult = callback(context)
             constraint_results[context_constraint.name] = result

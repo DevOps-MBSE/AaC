@@ -17,7 +17,6 @@ def cli():
 
 @cli.result_callback()
 def output_result(result: ExecutionResult):
-    """Output the message from the result of executing the CLI command."""
     error_occurred = not result.is_success()
     secho(result.get_messages_as_string(), err=error_occurred, color=True)
 

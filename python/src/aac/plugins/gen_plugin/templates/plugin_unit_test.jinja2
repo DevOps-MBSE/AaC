@@ -29,13 +29,14 @@ class Test{{plugin.name | replace(' ', '')}}(TestCase):
         # TODO: Write unit tests for {{get_python_name(command.name)}}
         self.fail("Test not yet implemented.")
 
-    def run_{{command.name}}_cli_command_with_args(self, args: list[str]) -> Tuple[int, str]:
+    def run_{{get_python_name(command.name)}}_cli_command_with_args(self, args: list[str]) -> Tuple[int, str]:
         """Utility function to invoke the CLI command with the given arguments."""
         initialize_cli()
         runner = CliRunner()
         result = runner.invoke(cli, ["{{command.name}}"] + args)
         exit_code = result.exit_code
-        output_message = result.output.strip().replace("\x1b[0m", "")
+        std_out = str(result.stdout)
+        output_message = std_out.strip().replace("\x1b[0m", "")
         return exit_code, output_message
 
     def test_cli_{{get_python_name(command.name)}}(self):
@@ -43,7 +44,7 @@ class Test{{plugin.name | replace(' ', '')}}(TestCase):
         
         # TODO: populate args list, or pass empty list for no args
 
-        exit_code, output_message = self.run_{{command.name}}_cli_command_with_args(args)
+        exit_code, output_message = self.run_{{get_python_name(command.name)}}_cli_command_with_args(args)
 
         # TODO:  perform assertions against the output message
         self.assertEqual(0, exit_code)  # asserts the command ran successfully

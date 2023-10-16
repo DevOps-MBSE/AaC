@@ -3,7 +3,7 @@
 from os import path, makedirs, walk, remove
 import importlib
 from typing import Callable, Any
-from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus, OperationCancelled, ExecutionError
+from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus, OperationCancelled, ExecutionError, ExecutionMessage
 from jinja2 import Environment, FileSystemLoader, Template
 import black
 from aac.context.language_context import LanguageContext
@@ -31,7 +31,7 @@ def generate(aac_file: str, generator_file: str, code_output: str, test_output: 
         code_out_dir, test_out_dir, doc_out_dir = get_output_directories("AaC Gen-Plugin will generate code and tests in the following directories:", aac_file, code_output, test_output, doc_output, no_prompt)
     except OperationCancelled as e:
         result.status_code = ExecutionStatus.OPERATION_CANCELLED
-        result.add_message(e.message)
+        result.add_message(ExecutionMessage(e.message, None, None))
         return result
 
     # build out properties
@@ -92,7 +92,6 @@ def generate(aac_file: str, generator_file: str, code_output: str, test_output: 
                                 new_source_data_structures = []
                                 for structure in source_data_structures:
                                     if field_name not in structure:
-                                        # print(f"DEBUG:  Invalid data_content {source.data_content} for generator source {source.name}. The data_content must be a field chain in the data source.")
                                         # it is possible that fields are optional and may not be present, so continue if not present
                                         continue
                                     field_value = structure[field_name]

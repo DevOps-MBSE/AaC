@@ -45,7 +45,7 @@ def no_extra_fields(
     if defining_schema.extends:
         for parent in defining_schema.extends:
             defined_fields.extend(parent_class_defined_fields(parent.package, parent.name))
-    for instance_field_name in list(vars(instance).keys()):
+    for instance_field_name in [var for var in dir(instance) if not callable(getattr(instance, var)) and not var.startswith("__")]: # list(vars(instance).keys()):
         if instance_field_name not in defined_fields:
             status = ExecutionStatus.CONSTRAINT_FAILURE
             error_msg = ExecutionMessage(
