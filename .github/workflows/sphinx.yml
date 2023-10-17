@@ -33,15 +33,12 @@ jobs:
         uses: actions/configure-pages@v3
 
       - name: Build Documentation
-        uses: ammaraskar/sphinx-action@0.4
-        with:
-          pre-build-command: "pip install aac"
-          docs-folder: "docs/"
+        run: sphinx-build ../docs/source gen_docs
 
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v2
         with:
-          path: ./docs/docs/html
+          path: ../docs/gen_docs
 
       - name: Deploy to GitHub Pages
         id: deploy

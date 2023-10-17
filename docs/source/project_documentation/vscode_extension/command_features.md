@@ -1,10 +1,3 @@
----
-layout: default
-title: Execute AaC Commands
-nav_order: 3
-parent: AaC VSCode Extension
----
-
 # Running AaC Commands
 
 Running AaC commands from the VSCode extension is straightforward. To do so,

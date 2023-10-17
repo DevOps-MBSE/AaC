@@ -1,11 +1,3 @@
----
-layout: default
-title: AaC Plugins
-nav_order: 4
-has_children: true
-permalink: project_documentation/plugins
----
-
 # AaC Plugins
 
 ## Built-In Plugins for Core Commands

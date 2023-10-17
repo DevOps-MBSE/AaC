@@ -19,7 +19,7 @@ jobs:
           python-version: 3.9
 
       - name: Install the AaC Package
-        run: pip install -e .[all]
+        run: pip install aac -e .[all]
 
       - name: Lint with flake8
         run: flake8 .
@@ -37,16 +37,18 @@ jobs:
           path: python/dist/
 
       - name: Build Documentation
-        uses: ammaraskar/sphinx-action@0.4
-        with:
-          pre-build-command: "pip install aac"
-          docs-folder: "docs/"
+        run: |
+          cp -R ../docs/ ./docs
+          cd ./docs
+          sphinx-build source doc_artifacts
 
       - name: Upload Documentation
         uses: actions/upload-artifact@v3
         with:
           name: aac-documentation
-          path: ./docs/docs/html
+          path: |
+            python/docs/doc_artifacts/api
+            python/docs/doc_artifacts/project_documentation
 
       - name: Generate RESTful API Documentation
         run: |

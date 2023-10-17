@@ -1,11 +1,3 @@
----
-layout: default
-title: AaC VSCode Extension
-nav_order: 2
-has_children: true
-permalink: project_documentation/vscode_extension
----
-
 # AaC VSCode Extension
 
 The following describes how to install, configure, and use the VSCode Extension.

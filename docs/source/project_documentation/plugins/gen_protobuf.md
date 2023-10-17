@@ -1,9 +1,3 @@
----
-layout: default
-title: Protobuf 3 Plugin
-parent: AaC Plugins
-nav_order: 2
----
 # Generate Protobuf 3 Plugin
 This plugin generates protobuf 3 messages from interface messages between Architecture-as-Code models.
 
@@ -117,15 +111,10 @@ message SomeDataMessage {
 Protobuf [enums](https://developers.google.com/protocol-buffers/docs/proto3#enum) can easily be defined by defining AaC enums.
 
 An example AaC enum definition would look like:
-```yaml
-enum:
-  name: MessageType
-  description: |
-    Enums for the various supported message types.
-  values:
-    - type_1
-    - type_2
-    - type_3
+```{eval-rst}
+.. literalinclude:: ../../../../python/model/protobuf_flow/Data.aac
+    :language: yaml
+    :lines: 75-82
 ```
 
 The corresponding output will look like:
@@ -163,21 +152,11 @@ Protobuf allows for special [options](https://developers.google.com/protocol-buf
 definitions.
 
 An example use of options would look like:
-```yaml
-schema:
-  name: SomeDataMessage
-  protobuf_message_options:
-    - key: java_package
-      value: "com.example.foo"
-  fields:
-    - name: some_data
-      type: string
-    - name: some_numbers
-      type: fixed64[]
-  validation:
-    - name: Required fields are present
-      arguments:
-        - some_data
+```{eval-rst}
+.. literalinclude:: ../../../../python/model/protobuf_flow/Data.aac
+    :language: yaml
+    :lines: 5-27
+    :emphasize-lines: 5-9
 ```
 
 The corresponding output will look like:
