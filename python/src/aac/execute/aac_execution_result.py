@@ -3,7 +3,7 @@ from attr import attrib, attrs, validators, Factory
 from os import linesep
 from typing import Any, Optional
 
-from aac.io.files.aac_file import AaCFile
+from aac.in_out.files.aac_file import AaCFile
 from aac.context.source_location import SourceLocation
 
 @unique

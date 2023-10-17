@@ -9,7 +9,7 @@ from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus, L
 from aac.lang.primitive import Primitive
 from aac.lang.schema import Schema
 from aac.lang.schemaconstraintassignment import SchemaConstraintAssignment
-from aac.io.parser import parse
+from aac.in_out.parser import parse
 
 plugin_name = "CheckAaC"
 

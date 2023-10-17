@@ -5,7 +5,7 @@ import unittest
 from copy import deepcopy
 from {{schema.package}}.{{get_python_name(schema.name)}} import {{schema.name}}
 {% for field in schema.fields if get_python_primitive(field.type) == "None"%}{% if field.type.endswith('[]')%}from {{get_package_from_aac_definition(field.type[:-2])}}.{{get_python_name(field.type[:-2])}} import {{field.type[:-2]}}{% else %}from {{get_package_from_aac_definition(field.type)}}.{{get_python_name(field.type)}} import {{field.type}}{% endif %}
-{% endfor %}{% for field in schema.fields if get_python_primitive(field.type) == "None"%}{% if field.type.endswith('[]')%}from {{get_python_name(field.type[:-2])}}_test import {{field.type[:-2]}}TestHelper{{"\n"}}{% else %}from {{get_python_name(field.type)}}_test import {{field.type}}TestHelper{{"\n"}}{% endif %}{% endfor %}
+{% endfor %}{% for field in schema.fields if get_python_primitive(field.type) == "None"%}{% if field.type.endswith('[]')%}from test_{{get_package_from_aac_definition(field.type[:-2])}}.test_{{get_python_name(field.type[:-2])}} import {{field.type[:-2]}}TestHelper{{"\n"}}{% else %}from test_{{get_package_from_aac_definition(field.type)}}.test_{{get_python_name(field.type)}} import {{field.type}}TestHelper{{"\n"}}{% endif %}{% endfor %}
 class {{schema.name}}TestHelper():
 
     @staticmethod

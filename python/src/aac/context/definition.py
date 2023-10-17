@@ -1,8 +1,9 @@
 from attr import Factory, attrib, attrs, validators
 from typing import Any
 from uuid import UUID, uuid5, NAMESPACE_DNS
+import yaml
 
-from aac.io.files.aac_file import AaCFile
+from aac.in_out.files.aac_file import AaCFile
 from aac.context.lexeme import Lexeme
 
 @attrs(hash=False, eq=False)
@@ -35,4 +36,8 @@ class Definition:
             The root key for the definition.
         """
         return list(self.structure.keys())[0]
+    
+    def to_yaml(self) -> str:
+        """Return a yaml string based on the current state of the definition including extensions."""
+        return yaml.dump(self.structure, sort_keys=False)
     

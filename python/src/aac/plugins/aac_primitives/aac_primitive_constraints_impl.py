@@ -5,7 +5,7 @@
 from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus
 from aac.lang.plugininputvalue import PluginInputValue
 from aac.execute.aac_execution_result import ExecutionResult, ExecutionMessage
-from aac.io.files.aac_file import AaCFile
+from aac.in_out.files.aac_file import AaCFile
 from aac.context.source_location import SourceLocation
 from aac.context.language_context import LanguageContext
 

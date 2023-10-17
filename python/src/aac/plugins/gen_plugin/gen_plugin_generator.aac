@@ -39,7 +39,7 @@ generator:
               function: get_python_name
           output_target: TEST
           output_path_uses_data_source_package: true
-          output_file_suffix: _test
+          output_file_prefix: test_
           output_file_extension: py
     - name: AaC Schema Generation
       data_source: schema
@@ -98,7 +98,7 @@ generator:
               function: get_python_primitive
           output_target: TEST
           output_path_uses_data_source_package: true
-          output_file_suffix: _test
+          output_file_prefix: test_
           output_file_extension: py
 
     - name: AaC Project Setup Generation
@@ -214,7 +214,7 @@ generator:
               function: get_python_name
           output_target: TEST
           output_path_uses_data_source_package: true
-          output_file_suffix: _test
+          output_file_prefix: test_
           output_file_extension: py
     - name: AaC Plugin Command Feature File Generation
       data_source: plugin

@@ -6,7 +6,7 @@ from click import Argument, Command, Option, ParamType, Parameter, Path, UNPROCE
 from aac.execute.plugin_runner import AacCommand, AacCommandArgument, PluginRunner
 from aac.execute.aac_execution_result import ExecutionResult
 from aac.context.language_context import LanguageContext
-from aac.io.parser._parser_error import ParserError
+from aac.in_out.parser._parser_error import ParserError
 
 
 @group(context_settings=dict(help_option_names=["-h", "--help"]))

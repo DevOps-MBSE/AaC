@@ -7,10 +7,11 @@ from aac.execute.plugin_runner import AacCommand
 from aac.execute.aac_execution_result import LanguageError
 from aac.execute.plugin_manager import get_plugin_manager
 from aac.execute.plugin_runner import PluginRunner
-from aac.io.parser._parse_source import parse
+from aac.in_out.parser._parse_source import parse
 from aac.context.definition import Definition
 
 AAC_LANG_FILE_NAME = "../../aac.aac"
+AAC_LANG_FILE_PATH = join(dirname(__file__), AAC_LANG_FILE_NAME)
 
 class LanguageContext(object):
   """
@@ -26,13 +27,22 @@ class LanguageContext(object):
       cls.context_instance.plugin_runners = {}
 
       # load and initialize the AaC language
-      aac_lang_path = join(dirname(__file__), AAC_LANG_FILE_NAME)
-      cls.context_instance.parse_and_load(aac_lang_path)
+      cls.context_instance.parse_and_load(AAC_LANG_FILE_PATH)
 
       # load plugins
       get_plugin_manager().hook.register_plugin()
       
     return cls.context_instance
+  
+  def get_aac_core_file_path(self) -> str:
+    return AAC_LANG_FILE_PATH
+  
+  def get_aac_core_as_yaml(self) -> str:
+    with open(AAC_LANG_FILE_PATH) as aac_file:
+        return aac_file.read()
+  
+  def get_aac_core_definitions(self) -> list[Definition]:
+    return self.parse_and_load(AAC_LANG_FILE_PATH)
   
   def parse_and_load(self, arg: str) -> list[Definition]:
     parsed_definitions = parse(arg)
@@ -118,12 +128,6 @@ class LanguageContext(object):
         result.append(definition)
     return result
   
-  def get_definition_for_root_key(self, root_key: str) -> Definition:
-    for definition in self.get_definitions():
-      if definition.get_root_key() == root_key:
-        return definition
-    raise LanguageError(f"Could not find definition for root key: {root_key}")
-  
   def get_defining_schema_for_root(self, root_key: str) -> Definition:
     for definition in self.get_definitions():
       if definition.get_root_key() == "schema":
@@ -153,8 +157,8 @@ class LanguageContext(object):
       raise LanguageError(f"Could not find primitive: {primitive_name}")
     
   def is_extension_of(self, check_me: Definition, package: str, name: str) -> bool:
-    # TODO: figure out if I need this or not
-    return False
+    definitions_of_type = self.get_definitions_of_type(package, name)
+    return check_me in definitions_of_type
 
   def _recurse_type_inheritance(self, check_me: Definition) -> list[Definition]:
     result = []

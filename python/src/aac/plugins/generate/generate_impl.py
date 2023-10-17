@@ -8,7 +8,7 @@ from jinja2 import Environment, FileSystemLoader, Template
 import black
 from aac.context.language_context import LanguageContext
 from aac.context.definition import Definition
-from aac.io.parser._parse_source import parse
+from aac.in_out.parser._parse_source import parse
 from aac.lang.generatorsource import GeneratorSource
 from aac.lang.generatortemplate import GeneratorTemplate
 from aac.lang.generatoroutputtarget import GeneratorOutputTarget
@@ -200,7 +200,12 @@ def get_output_directories(message: str, aac_plugin_file: str, code_output: str,
 def get_output_file_path(root_output_directory: str, generator_template: GeneratorTemplate, source_package: str, source_name: str) -> str:
     result = root_output_directory
     if generator_template.output_path_uses_data_source_package and source_package:
-        result = path.join(result, get_path_from_package(source_package))
+        if generator_template.output_target == GeneratorOutputTarget.TEST:
+            # this is a bit quirky, but turns out our test file path can't use the same structure as our source package or imports won't work properly
+            # so for tests, we'll just add a tests_ prefix to the package name
+            result = path.join(result, f"test_{get_path_from_package(source_package)}")
+        else:
+            result = path.join(result, get_path_from_package(source_package))
     file_name = ""
     if generator_template.output_file_prefix:
         file_name = generator_template.output_file_prefix

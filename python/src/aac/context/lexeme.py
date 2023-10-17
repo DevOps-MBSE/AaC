@@ -2,7 +2,7 @@
 
 from attr import attrib, attrs, validators
 
-from aac.io.paths import is_same_file
+from aac.in_out.paths import is_same_file
 from aac.context.source_location import SourceLocation
 
 

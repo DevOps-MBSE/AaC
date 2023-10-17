@@ -5,7 +5,7 @@
 from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus
 from aac.context.language_context import LanguageContext, AAC_LANG_FILE_NAME
 from aac.context.definition import Definition
-from aac.io.parser._parse_source import parse
+from aac.in_out.parser._parse_source import parse
 import yaml
 from os.path import join, dirname
 import inspect
