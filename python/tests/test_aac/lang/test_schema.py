@@ -4,38 +4,45 @@
 import unittest
 from copy import deepcopy
 from aac.lang.schema import Schema
-from aac.lang.schemaextension import SchemaExtension
-from aac.lang.field import Field
-from aac.lang.schemaconstraintassignment import SchemaConstraintAssignment
-from .test_schemaextension import SchemaExtensionTestHelper
-from .test_field import FieldTestHelper
-from .test_schemaconstraintassignment import (
-    SchemaConstraintAssignmentTestHelper,
-)
 
+TEST_DATA_ALL = {
+    "extends": [
+        {"package": "test", "name": "test"},
+        {"package": "test", "name": "test"},
+    ],
+    "modifiers": ["test", "test"],
+    "root": "test",
+    "fields": [
+        {
+            "name": "test",
+            "type": "test",
+            "description": "test",
+            "is_required": True,
+            "default": "test",
+        },
+        {
+            "name": "test",
+            "type": "test",
+            "description": "test",
+            "is_required": True,
+            "default": "test",
+        },
+    ],
+    "requirements": ["test", "test"],
+    "constraints": [
+        {"name": "test", "arguments": "{}"},
+        {"name": "test", "arguments": "{}"},
+    ],
+}
 
-class SchemaTestHelper:
-    @staticmethod
-    def generate_data() -> dict:
-        return {
-            "extends": [SchemaExtensionTestHelper.generate_data()],
-            "modifiers": ["test"],
-            "root": "test",
-            "fields": [FieldTestHelper.generate_data()],
-            "requirements": ["test"],
-            "constraints": [SchemaConstraintAssignmentTestHelper.generate_data()],
-        }
-
-    @staticmethod
-    def generate_data_required_only() -> dict:
-        return {
-            "fields": [FieldTestHelper.generate_data_required_only()],
-        }
+TEST_DATA_REQUIRED = {
+    "fields": [{"name": "test", "type": "test"}, {"name": "test", "type": "test"}]
+}
 
 
 class TestSchema(unittest.TestCase):
     def test_schema_from_dict_all_fields(self):
-        schema_dict = SchemaTestHelper.generate_data()
+        schema_dict = TEST_DATA_ALL
         instance = Schema.from_dict(deepcopy(schema_dict))
         self.assertIsNotNone(instance.extends)
         self.assertEqual(instance.modifiers, schema_dict["modifiers"])
@@ -44,7 +51,7 @@ class TestSchema(unittest.TestCase):
         self.assertEqual(instance.requirements, schema_dict["requirements"])
         self.assertIsNotNone(instance.constraints)
 
-        schema_dict = SchemaTestHelper.generate_data_required_only()
+        schema_dict = TEST_DATA_REQUIRED
         instance = Schema.from_dict(deepcopy(schema_dict))
         self.assertIsNotNone(instance.fields)
 

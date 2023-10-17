@@ -5,33 +5,20 @@ import unittest
 from copy import deepcopy
 from aac.lang.aactype import AacType
 
+TEST_DATA_ALL = {"name": "test", "package": "test", "description": "test"}
 
-class AacTypeTestHelper:
-    @staticmethod
-    def generate_data() -> dict:
-        return {
-            "name": "test",
-            "package": "test",
-            "description": "test",
-        }
-
-    @staticmethod
-    def generate_data_required_only() -> dict:
-        return {
-            "name": "test",
-            "package": "test",
-        }
+TEST_DATA_REQUIRED = {"name": "test", "package": "test"}
 
 
 class TestAacType(unittest.TestCase):
     def test_aactype_from_dict_all_fields(self):
-        aactype_dict = AacTypeTestHelper.generate_data()
+        aactype_dict = TEST_DATA_ALL
         instance = AacType.from_dict(deepcopy(aactype_dict))
         self.assertEqual(instance.name, aactype_dict["name"])
         self.assertEqual(instance.package, aactype_dict["package"])
         self.assertEqual(instance.description, aactype_dict["description"])
 
-        aactype_dict = AacTypeTestHelper.generate_data_required_only()
+        aactype_dict = TEST_DATA_REQUIRED
         instance = AacType.from_dict(deepcopy(aactype_dict))
         self.assertEqual(instance.name, aactype_dict["name"])
         self.assertEqual(instance.package, aactype_dict["package"])

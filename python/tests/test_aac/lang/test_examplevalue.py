@@ -5,31 +5,19 @@ import unittest
 from copy import deepcopy
 from aac.lang.examplevalue import ExampleValue
 
+TEST_DATA_ALL = {"name": "test", "value": "test"}
 
-class ExampleValueTestHelper:
-    @staticmethod
-    def generate_data() -> dict:
-        return {
-            "name": "test",
-            "value": "test",
-        }
-
-    @staticmethod
-    def generate_data_required_only() -> dict:
-        return {
-            "name": "test",
-            "value": "test",
-        }
+TEST_DATA_REQUIRED = {"name": "test", "value": "test"}
 
 
 class TestExampleValue(unittest.TestCase):
     def test_examplevalue_from_dict_all_fields(self):
-        examplevalue_dict = ExampleValueTestHelper.generate_data()
+        examplevalue_dict = TEST_DATA_ALL
         instance = ExampleValue.from_dict(deepcopy(examplevalue_dict))
         self.assertEqual(instance.name, examplevalue_dict["name"])
         self.assertEqual(instance.value, examplevalue_dict["value"])
 
-        examplevalue_dict = ExampleValueTestHelper.generate_data_required_only()
+        examplevalue_dict = TEST_DATA_REQUIRED
         instance = ExampleValue.from_dict(deepcopy(examplevalue_dict))
         self.assertEqual(instance.name, examplevalue_dict["name"])
         self.assertEqual(instance.value, examplevalue_dict["value"])

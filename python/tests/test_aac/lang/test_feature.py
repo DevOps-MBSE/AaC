@@ -4,38 +4,60 @@
 import unittest
 from copy import deepcopy
 from aac.lang.feature import Feature
-from aac.lang.background import Background
-from aac.lang.scenario import Scenario
-from .test_background import BackgroundTestHelper
-from .test_scenario import ScenarioTestHelper
 
-
-class FeatureTestHelper:
-    @staticmethod
-    def generate_data() -> dict:
-        return {
+TEST_DATA_ALL = {
+    "name": "test",
+    "background": {"name": "test", "given": ["test", "test"]},
+    "scenarios": [
+        {
             "name": "test",
-            "background": BackgroundTestHelper.generate_data(),
-            "scenarios": [ScenarioTestHelper.generate_data()],
-        }
-
-    @staticmethod
-    def generate_data_required_only() -> dict:
-        return {
+            "tags": ["test", "test"],
+            "given": ["test", "test"],
+            "when": ["test", "test"],
+            "then": ["test", "test"],
+            "examples": {
+                "name": "test",
+                "values": [
+                    {"name": "test", "value": "test"},
+                    {"name": "test", "value": "test"},
+                ],
+            },
+        },
+        {
             "name": "test",
-            "scenarios": [ScenarioTestHelper.generate_data_required_only()],
-        }
+            "tags": ["test", "test"],
+            "given": ["test", "test"],
+            "when": ["test", "test"],
+            "then": ["test", "test"],
+            "examples": {
+                "name": "test",
+                "values": [
+                    {"name": "test", "value": "test"},
+                    {"name": "test", "value": "test"},
+                ],
+            },
+        },
+    ],
+}
+
+TEST_DATA_REQUIRED = {
+    "name": "test",
+    "scenarios": [
+        {"name": "test", "when": ["test", "test"], "then": ["test", "test"]},
+        {"name": "test", "when": ["test", "test"], "then": ["test", "test"]},
+    ],
+}
 
 
 class TestFeature(unittest.TestCase):
     def test_feature_from_dict_all_fields(self):
-        feature_dict = FeatureTestHelper.generate_data()
+        feature_dict = TEST_DATA_ALL
         instance = Feature.from_dict(deepcopy(feature_dict))
         self.assertEqual(instance.name, feature_dict["name"])
         self.assertIsNotNone(instance.background)
         self.assertIsNotNone(instance.scenarios)
 
-        feature_dict = FeatureTestHelper.generate_data_required_only()
+        feature_dict = TEST_DATA_REQUIRED
         instance = Feature.from_dict(deepcopy(feature_dict))
         self.assertEqual(instance.name, feature_dict["name"])
         self.assertIsNotNone(instance.scenarios)

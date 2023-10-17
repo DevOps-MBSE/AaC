@@ -4,35 +4,25 @@
 import unittest
 from copy import deepcopy
 from aac.lang.project import Project
-from aac.lang.projectdependency import ProjectDependency
-from .test_projectdependency import ProjectDependencyTestHelper
 
+TEST_DATA_ALL = {
+    "name": "test",
+    "description": "test",
+    "uses": [{"name": "test", "version": "test"}, {"name": "test", "version": "test"}],
+}
 
-class ProjectTestHelper:
-    @staticmethod
-    def generate_data() -> dict:
-        return {
-            "name": "test",
-            "description": "test",
-            "uses": [ProjectDependencyTestHelper.generate_data()],
-        }
-
-    @staticmethod
-    def generate_data_required_only() -> dict:
-        return {
-            "name": "test",
-        }
+TEST_DATA_REQUIRED = {"name": "test"}
 
 
 class TestProject(unittest.TestCase):
     def test_project_from_dict_all_fields(self):
-        project_dict = ProjectTestHelper.generate_data()
+        project_dict = TEST_DATA_ALL
         instance = Project.from_dict(deepcopy(project_dict))
         self.assertEqual(instance.name, project_dict["name"])
         self.assertEqual(instance.description, project_dict["description"])
         self.assertIsNotNone(instance.uses)
 
-        project_dict = ProjectTestHelper.generate_data_required_only()
+        project_dict = TEST_DATA_REQUIRED
         instance = Project.from_dict(deepcopy(project_dict))
         self.assertEqual(instance.name, project_dict["name"])
 

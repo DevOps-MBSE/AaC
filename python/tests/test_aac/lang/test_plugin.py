@@ -4,41 +4,732 @@
 import unittest
 from copy import deepcopy
 from aac.lang.plugin import Plugin
-from aac.lang.plugincommand import PluginCommand
-from aac.lang.contextconstraint import ContextConstraint
-from aac.lang.schemaconstraint import SchemaConstraint
-from aac.lang.primitiveconstraint import PrimitiveConstraint
-from .test_plugincommand import PluginCommandTestHelper
-from .test_contextconstraint import ContextConstraintTestHelper
-from .test_schemaconstraint import SchemaConstraintTestHelper
-from .test_primitiveconstraint import PrimitiveConstraintTestHelper
 
-
-class PluginTestHelper:
-    @staticmethod
-    def generate_data() -> dict:
-        return {
+TEST_DATA_ALL = {
+    "name": "test",
+    "package": "test",
+    "description": "test",
+    "commands": [
+        {
             "name": "test",
-            "package": "test",
+            "help_text": "test",
+            "enable_cache": True,
+            "run_before": [
+                {"plugin": "test", "command": "test"},
+                {"plugin": "test", "command": "test"},
+            ],
+            "run_after": [
+                {"plugin": "test", "command": "test"},
+                {"plugin": "test", "command": "test"},
+            ],
+            "input": [
+                {
+                    "name": "test",
+                    "description": "test",
+                    "type": "test",
+                    "default": "test",
+                },
+                {
+                    "name": "test",
+                    "description": "test",
+                    "type": "test",
+                    "default": "test",
+                },
+            ],
+            "acceptance": [
+                {
+                    "name": "test",
+                    "background": {"name": "test", "given": ["test", "test"]},
+                    "scenarios": [
+                        {
+                            "name": "test",
+                            "tags": ["test", "test"],
+                            "given": ["test", "test"],
+                            "when": ["test", "test"],
+                            "then": ["test", "test"],
+                            "examples": {
+                                "name": "test",
+                                "values": [
+                                    {"name": "test", "value": "test"},
+                                    {"name": "test", "value": "test"},
+                                ],
+                            },
+                        },
+                        {
+                            "name": "test",
+                            "tags": ["test", "test"],
+                            "given": ["test", "test"],
+                            "when": ["test", "test"],
+                            "then": ["test", "test"],
+                            "examples": {
+                                "name": "test",
+                                "values": [
+                                    {"name": "test", "value": "test"},
+                                    {"name": "test", "value": "test"},
+                                ],
+                            },
+                        },
+                    ],
+                },
+                {
+                    "name": "test",
+                    "background": {"name": "test", "given": ["test", "test"]},
+                    "scenarios": [
+                        {
+                            "name": "test",
+                            "tags": ["test", "test"],
+                            "given": ["test", "test"],
+                            "when": ["test", "test"],
+                            "then": ["test", "test"],
+                            "examples": {
+                                "name": "test",
+                                "values": [
+                                    {"name": "test", "value": "test"},
+                                    {"name": "test", "value": "test"},
+                                ],
+                            },
+                        },
+                        {
+                            "name": "test",
+                            "tags": ["test", "test"],
+                            "given": ["test", "test"],
+                            "when": ["test", "test"],
+                            "then": ["test", "test"],
+                            "examples": {
+                                "name": "test",
+                                "values": [
+                                    {"name": "test", "value": "test"},
+                                    {"name": "test", "value": "test"},
+                                ],
+                            },
+                        },
+                    ],
+                },
+            ],
+        },
+        {
+            "name": "test",
+            "help_text": "test",
+            "enable_cache": True,
+            "run_before": [
+                {"plugin": "test", "command": "test"},
+                {"plugin": "test", "command": "test"},
+            ],
+            "run_after": [
+                {"plugin": "test", "command": "test"},
+                {"plugin": "test", "command": "test"},
+            ],
+            "input": [
+                {
+                    "name": "test",
+                    "description": "test",
+                    "type": "test",
+                    "default": "test",
+                },
+                {
+                    "name": "test",
+                    "description": "test",
+                    "type": "test",
+                    "default": "test",
+                },
+            ],
+            "acceptance": [
+                {
+                    "name": "test",
+                    "background": {"name": "test", "given": ["test", "test"]},
+                    "scenarios": [
+                        {
+                            "name": "test",
+                            "tags": ["test", "test"],
+                            "given": ["test", "test"],
+                            "when": ["test", "test"],
+                            "then": ["test", "test"],
+                            "examples": {
+                                "name": "test",
+                                "values": [
+                                    {"name": "test", "value": "test"},
+                                    {"name": "test", "value": "test"},
+                                ],
+                            },
+                        },
+                        {
+                            "name": "test",
+                            "tags": ["test", "test"],
+                            "given": ["test", "test"],
+                            "when": ["test", "test"],
+                            "then": ["test", "test"],
+                            "examples": {
+                                "name": "test",
+                                "values": [
+                                    {"name": "test", "value": "test"},
+                                    {"name": "test", "value": "test"},
+                                ],
+                            },
+                        },
+                    ],
+                },
+                {
+                    "name": "test",
+                    "background": {"name": "test", "given": ["test", "test"]},
+                    "scenarios": [
+                        {
+                            "name": "test",
+                            "tags": ["test", "test"],
+                            "given": ["test", "test"],
+                            "when": ["test", "test"],
+                            "then": ["test", "test"],
+                            "examples": {
+                                "name": "test",
+                                "values": [
+                                    {"name": "test", "value": "test"},
+                                    {"name": "test", "value": "test"},
+                                ],
+                            },
+                        },
+                        {
+                            "name": "test",
+                            "tags": ["test", "test"],
+                            "given": ["test", "test"],
+                            "when": ["test", "test"],
+                            "then": ["test", "test"],
+                            "examples": {
+                                "name": "test",
+                                "values": [
+                                    {"name": "test", "value": "test"},
+                                    {"name": "test", "value": "test"},
+                                ],
+                            },
+                        },
+                    ],
+                },
+            ],
+        },
+    ],
+    "definition_sources": ["test", "test"],
+    "context_constraints": [
+        {
+            "name": "test",
             "description": "test",
-            "commands": [PluginCommandTestHelper.generate_data()],
-            "definition_sources": ["test"],
-            "context_constraints": [ContextConstraintTestHelper.generate_data()],
-            "schema_constraints": [SchemaConstraintTestHelper.generate_data()],
-            "primitive_constraints": [PrimitiveConstraintTestHelper.generate_data()],
-        }
-
-    @staticmethod
-    def generate_data_required_only() -> dict:
-        return {
+            "acceptance": [
+                {
+                    "name": "test",
+                    "background": {"name": "test", "given": ["test", "test"]},
+                    "scenarios": [
+                        {
+                            "name": "test",
+                            "tags": ["test", "test"],
+                            "given": ["test", "test"],
+                            "when": ["test", "test"],
+                            "then": ["test", "test"],
+                            "examples": {
+                                "name": "test",
+                                "values": [
+                                    {"name": "test", "value": "test"},
+                                    {"name": "test", "value": "test"},
+                                ],
+                            },
+                        },
+                        {
+                            "name": "test",
+                            "tags": ["test", "test"],
+                            "given": ["test", "test"],
+                            "when": ["test", "test"],
+                            "then": ["test", "test"],
+                            "examples": {
+                                "name": "test",
+                                "values": [
+                                    {"name": "test", "value": "test"},
+                                    {"name": "test", "value": "test"},
+                                ],
+                            },
+                        },
+                    ],
+                },
+                {
+                    "name": "test",
+                    "background": {"name": "test", "given": ["test", "test"]},
+                    "scenarios": [
+                        {
+                            "name": "test",
+                            "tags": ["test", "test"],
+                            "given": ["test", "test"],
+                            "when": ["test", "test"],
+                            "then": ["test", "test"],
+                            "examples": {
+                                "name": "test",
+                                "values": [
+                                    {"name": "test", "value": "test"},
+                                    {"name": "test", "value": "test"},
+                                ],
+                            },
+                        },
+                        {
+                            "name": "test",
+                            "tags": ["test", "test"],
+                            "given": ["test", "test"],
+                            "when": ["test", "test"],
+                            "then": ["test", "test"],
+                            "examples": {
+                                "name": "test",
+                                "values": [
+                                    {"name": "test", "value": "test"},
+                                    {"name": "test", "value": "test"},
+                                ],
+                            },
+                        },
+                    ],
+                },
+            ],
+        },
+        {
             "name": "test",
-            "package": "test",
-        }
+            "description": "test",
+            "acceptance": [
+                {
+                    "name": "test",
+                    "background": {"name": "test", "given": ["test", "test"]},
+                    "scenarios": [
+                        {
+                            "name": "test",
+                            "tags": ["test", "test"],
+                            "given": ["test", "test"],
+                            "when": ["test", "test"],
+                            "then": ["test", "test"],
+                            "examples": {
+                                "name": "test",
+                                "values": [
+                                    {"name": "test", "value": "test"},
+                                    {"name": "test", "value": "test"},
+                                ],
+                            },
+                        },
+                        {
+                            "name": "test",
+                            "tags": ["test", "test"],
+                            "given": ["test", "test"],
+                            "when": ["test", "test"],
+                            "then": ["test", "test"],
+                            "examples": {
+                                "name": "test",
+                                "values": [
+                                    {"name": "test", "value": "test"},
+                                    {"name": "test", "value": "test"},
+                                ],
+                            },
+                        },
+                    ],
+                },
+                {
+                    "name": "test",
+                    "background": {"name": "test", "given": ["test", "test"]},
+                    "scenarios": [
+                        {
+                            "name": "test",
+                            "tags": ["test", "test"],
+                            "given": ["test", "test"],
+                            "when": ["test", "test"],
+                            "then": ["test", "test"],
+                            "examples": {
+                                "name": "test",
+                                "values": [
+                                    {"name": "test", "value": "test"},
+                                    {"name": "test", "value": "test"},
+                                ],
+                            },
+                        },
+                        {
+                            "name": "test",
+                            "tags": ["test", "test"],
+                            "given": ["test", "test"],
+                            "when": ["test", "test"],
+                            "then": ["test", "test"],
+                            "examples": {
+                                "name": "test",
+                                "values": [
+                                    {"name": "test", "value": "test"},
+                                    {"name": "test", "value": "test"},
+                                ],
+                            },
+                        },
+                    ],
+                },
+            ],
+        },
+    ],
+    "schema_constraints": [
+        {
+            "name": "test",
+            "description": "test",
+            "universal": True,
+            "arguments": [
+                {
+                    "name": "test",
+                    "type": "test",
+                    "description": "test",
+                    "is_required": True,
+                    "default": "test",
+                },
+                {
+                    "name": "test",
+                    "type": "test",
+                    "description": "test",
+                    "is_required": True,
+                    "default": "test",
+                },
+            ],
+            "acceptance": [
+                {
+                    "name": "test",
+                    "background": {"name": "test", "given": ["test", "test"]},
+                    "scenarios": [
+                        {
+                            "name": "test",
+                            "tags": ["test", "test"],
+                            "given": ["test", "test"],
+                            "when": ["test", "test"],
+                            "then": ["test", "test"],
+                            "examples": {
+                                "name": "test",
+                                "values": [
+                                    {"name": "test", "value": "test"},
+                                    {"name": "test", "value": "test"},
+                                ],
+                            },
+                        },
+                        {
+                            "name": "test",
+                            "tags": ["test", "test"],
+                            "given": ["test", "test"],
+                            "when": ["test", "test"],
+                            "then": ["test", "test"],
+                            "examples": {
+                                "name": "test",
+                                "values": [
+                                    {"name": "test", "value": "test"},
+                                    {"name": "test", "value": "test"},
+                                ],
+                            },
+                        },
+                    ],
+                },
+                {
+                    "name": "test",
+                    "background": {"name": "test", "given": ["test", "test"]},
+                    "scenarios": [
+                        {
+                            "name": "test",
+                            "tags": ["test", "test"],
+                            "given": ["test", "test"],
+                            "when": ["test", "test"],
+                            "then": ["test", "test"],
+                            "examples": {
+                                "name": "test",
+                                "values": [
+                                    {"name": "test", "value": "test"},
+                                    {"name": "test", "value": "test"},
+                                ],
+                            },
+                        },
+                        {
+                            "name": "test",
+                            "tags": ["test", "test"],
+                            "given": ["test", "test"],
+                            "when": ["test", "test"],
+                            "then": ["test", "test"],
+                            "examples": {
+                                "name": "test",
+                                "values": [
+                                    {"name": "test", "value": "test"},
+                                    {"name": "test", "value": "test"},
+                                ],
+                            },
+                        },
+                    ],
+                },
+            ],
+        },
+        {
+            "name": "test",
+            "description": "test",
+            "universal": True,
+            "arguments": [
+                {
+                    "name": "test",
+                    "type": "test",
+                    "description": "test",
+                    "is_required": True,
+                    "default": "test",
+                },
+                {
+                    "name": "test",
+                    "type": "test",
+                    "description": "test",
+                    "is_required": True,
+                    "default": "test",
+                },
+            ],
+            "acceptance": [
+                {
+                    "name": "test",
+                    "background": {"name": "test", "given": ["test", "test"]},
+                    "scenarios": [
+                        {
+                            "name": "test",
+                            "tags": ["test", "test"],
+                            "given": ["test", "test"],
+                            "when": ["test", "test"],
+                            "then": ["test", "test"],
+                            "examples": {
+                                "name": "test",
+                                "values": [
+                                    {"name": "test", "value": "test"},
+                                    {"name": "test", "value": "test"},
+                                ],
+                            },
+                        },
+                        {
+                            "name": "test",
+                            "tags": ["test", "test"],
+                            "given": ["test", "test"],
+                            "when": ["test", "test"],
+                            "then": ["test", "test"],
+                            "examples": {
+                                "name": "test",
+                                "values": [
+                                    {"name": "test", "value": "test"},
+                                    {"name": "test", "value": "test"},
+                                ],
+                            },
+                        },
+                    ],
+                },
+                {
+                    "name": "test",
+                    "background": {"name": "test", "given": ["test", "test"]},
+                    "scenarios": [
+                        {
+                            "name": "test",
+                            "tags": ["test", "test"],
+                            "given": ["test", "test"],
+                            "when": ["test", "test"],
+                            "then": ["test", "test"],
+                            "examples": {
+                                "name": "test",
+                                "values": [
+                                    {"name": "test", "value": "test"},
+                                    {"name": "test", "value": "test"},
+                                ],
+                            },
+                        },
+                        {
+                            "name": "test",
+                            "tags": ["test", "test"],
+                            "given": ["test", "test"],
+                            "when": ["test", "test"],
+                            "then": ["test", "test"],
+                            "examples": {
+                                "name": "test",
+                                "values": [
+                                    {"name": "test", "value": "test"},
+                                    {"name": "test", "value": "test"},
+                                ],
+                            },
+                        },
+                    ],
+                },
+            ],
+        },
+    ],
+    "primitive_constraints": [
+        {
+            "name": "test",
+            "description": "test",
+            "arguments": [
+                {
+                    "name": "test",
+                    "type": "test",
+                    "description": "test",
+                    "is_required": True,
+                    "default": "test",
+                },
+                {
+                    "name": "test",
+                    "type": "test",
+                    "description": "test",
+                    "is_required": True,
+                    "default": "test",
+                },
+            ],
+            "acceptance": [
+                {
+                    "name": "test",
+                    "background": {"name": "test", "given": ["test", "test"]},
+                    "scenarios": [
+                        {
+                            "name": "test",
+                            "tags": ["test", "test"],
+                            "given": ["test", "test"],
+                            "when": ["test", "test"],
+                            "then": ["test", "test"],
+                            "examples": {
+                                "name": "test",
+                                "values": [
+                                    {"name": "test", "value": "test"},
+                                    {"name": "test", "value": "test"},
+                                ],
+                            },
+                        },
+                        {
+                            "name": "test",
+                            "tags": ["test", "test"],
+                            "given": ["test", "test"],
+                            "when": ["test", "test"],
+                            "then": ["test", "test"],
+                            "examples": {
+                                "name": "test",
+                                "values": [
+                                    {"name": "test", "value": "test"},
+                                    {"name": "test", "value": "test"},
+                                ],
+                            },
+                        },
+                    ],
+                },
+                {
+                    "name": "test",
+                    "background": {"name": "test", "given": ["test", "test"]},
+                    "scenarios": [
+                        {
+                            "name": "test",
+                            "tags": ["test", "test"],
+                            "given": ["test", "test"],
+                            "when": ["test", "test"],
+                            "then": ["test", "test"],
+                            "examples": {
+                                "name": "test",
+                                "values": [
+                                    {"name": "test", "value": "test"},
+                                    {"name": "test", "value": "test"},
+                                ],
+                            },
+                        },
+                        {
+                            "name": "test",
+                            "tags": ["test", "test"],
+                            "given": ["test", "test"],
+                            "when": ["test", "test"],
+                            "then": ["test", "test"],
+                            "examples": {
+                                "name": "test",
+                                "values": [
+                                    {"name": "test", "value": "test"},
+                                    {"name": "test", "value": "test"},
+                                ],
+                            },
+                        },
+                    ],
+                },
+            ],
+        },
+        {
+            "name": "test",
+            "description": "test",
+            "arguments": [
+                {
+                    "name": "test",
+                    "type": "test",
+                    "description": "test",
+                    "is_required": True,
+                    "default": "test",
+                },
+                {
+                    "name": "test",
+                    "type": "test",
+                    "description": "test",
+                    "is_required": True,
+                    "default": "test",
+                },
+            ],
+            "acceptance": [
+                {
+                    "name": "test",
+                    "background": {"name": "test", "given": ["test", "test"]},
+                    "scenarios": [
+                        {
+                            "name": "test",
+                            "tags": ["test", "test"],
+                            "given": ["test", "test"],
+                            "when": ["test", "test"],
+                            "then": ["test", "test"],
+                            "examples": {
+                                "name": "test",
+                                "values": [
+                                    {"name": "test", "value": "test"},
+                                    {"name": "test", "value": "test"},
+                                ],
+                            },
+                        },
+                        {
+                            "name": "test",
+                            "tags": ["test", "test"],
+                            "given": ["test", "test"],
+                            "when": ["test", "test"],
+                            "then": ["test", "test"],
+                            "examples": {
+                                "name": "test",
+                                "values": [
+                                    {"name": "test", "value": "test"},
+                                    {"name": "test", "value": "test"},
+                                ],
+                            },
+                        },
+                    ],
+                },
+                {
+                    "name": "test",
+                    "background": {"name": "test", "given": ["test", "test"]},
+                    "scenarios": [
+                        {
+                            "name": "test",
+                            "tags": ["test", "test"],
+                            "given": ["test", "test"],
+                            "when": ["test", "test"],
+                            "then": ["test", "test"],
+                            "examples": {
+                                "name": "test",
+                                "values": [
+                                    {"name": "test", "value": "test"},
+                                    {"name": "test", "value": "test"},
+                                ],
+                            },
+                        },
+                        {
+                            "name": "test",
+                            "tags": ["test", "test"],
+                            "given": ["test", "test"],
+                            "when": ["test", "test"],
+                            "then": ["test", "test"],
+                            "examples": {
+                                "name": "test",
+                                "values": [
+                                    {"name": "test", "value": "test"},
+                                    {"name": "test", "value": "test"},
+                                ],
+                            },
+                        },
+                    ],
+                },
+            ],
+        },
+    ],
+}
+
+TEST_DATA_REQUIRED = {"name": "test", "package": "test"}
 
 
 class TestPlugin(unittest.TestCase):
     def test_plugin_from_dict_all_fields(self):
-        plugin_dict = PluginTestHelper.generate_data()
+        plugin_dict = TEST_DATA_ALL
         instance = Plugin.from_dict(deepcopy(plugin_dict))
         self.assertEqual(instance.name, plugin_dict["name"])
         self.assertEqual(instance.package, plugin_dict["package"])
@@ -49,7 +740,7 @@ class TestPlugin(unittest.TestCase):
         self.assertIsNotNone(instance.schema_constraints)
         self.assertIsNotNone(instance.primitive_constraints)
 
-        plugin_dict = PluginTestHelper.generate_data_required_only()
+        plugin_dict = TEST_DATA_REQUIRED
         instance = Plugin.from_dict(deepcopy(plugin_dict))
         self.assertEqual(instance.name, plugin_dict["name"])
         self.assertEqual(instance.package, plugin_dict["package"])

@@ -5,31 +5,25 @@ import unittest
 from copy import deepcopy
 from aac.lang.jinjahelperfunction import JinjaHelperFunction
 
+TEST_DATA_ALL = {
+    "name": "test",
+    "description": "test",
+    "package": "test",
+    "module": "test",
+    "function": "test",
+}
 
-class JinjaHelperFunctionTestHelper:
-    @staticmethod
-    def generate_data() -> dict:
-        return {
-            "name": "test",
-            "description": "test",
-            "package": "test",
-            "module": "test",
-            "function": "test",
-        }
-
-    @staticmethod
-    def generate_data_required_only() -> dict:
-        return {
-            "name": "test",
-            "package": "test",
-            "module": "test",
-            "function": "test",
-        }
+TEST_DATA_REQUIRED = {
+    "name": "test",
+    "package": "test",
+    "module": "test",
+    "function": "test",
+}
 
 
 class TestJinjaHelperFunction(unittest.TestCase):
     def test_jinjahelperfunction_from_dict_all_fields(self):
-        jinjahelperfunction_dict = JinjaHelperFunctionTestHelper.generate_data()
+        jinjahelperfunction_dict = TEST_DATA_ALL
         instance = JinjaHelperFunction.from_dict(deepcopy(jinjahelperfunction_dict))
         self.assertEqual(instance.name, jinjahelperfunction_dict["name"])
         self.assertEqual(instance.description, jinjahelperfunction_dict["description"])
@@ -37,9 +31,7 @@ class TestJinjaHelperFunction(unittest.TestCase):
         self.assertEqual(instance.module, jinjahelperfunction_dict["module"])
         self.assertEqual(instance.function, jinjahelperfunction_dict["function"])
 
-        jinjahelperfunction_dict = (
-            JinjaHelperFunctionTestHelper.generate_data_required_only()
-        )
+        jinjahelperfunction_dict = TEST_DATA_REQUIRED
         instance = JinjaHelperFunction.from_dict(deepcopy(jinjahelperfunction_dict))
         self.assertEqual(instance.name, jinjahelperfunction_dict["name"])
         self.assertEqual(instance.package, jinjahelperfunction_dict["package"])

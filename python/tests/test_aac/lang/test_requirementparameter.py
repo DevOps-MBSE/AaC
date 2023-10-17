@@ -5,33 +5,19 @@ import unittest
 from copy import deepcopy
 from aac.lang.requirementparameter import RequirementParameter
 
+TEST_DATA_ALL = {"name": "test", "value": "test"}
 
-class RequirementParameterTestHelper:
-    @staticmethod
-    def generate_data() -> dict:
-        return {
-            "name": "test",
-            "value": "test",
-        }
-
-    @staticmethod
-    def generate_data_required_only() -> dict:
-        return {
-            "name": "test",
-            "value": "test",
-        }
+TEST_DATA_REQUIRED = {"name": "test", "value": "test"}
 
 
 class TestRequirementParameter(unittest.TestCase):
     def test_requirementparameter_from_dict_all_fields(self):
-        requirementparameter_dict = RequirementParameterTestHelper.generate_data()
+        requirementparameter_dict = TEST_DATA_ALL
         instance = RequirementParameter.from_dict(deepcopy(requirementparameter_dict))
         self.assertEqual(instance.name, requirementparameter_dict["name"])
         self.assertEqual(instance.value, requirementparameter_dict["value"])
 
-        requirementparameter_dict = (
-            RequirementParameterTestHelper.generate_data_required_only()
-        )
+        requirementparameter_dict = TEST_DATA_REQUIRED
         instance = RequirementParameter.from_dict(deepcopy(requirementparameter_dict))
         self.assertEqual(instance.name, requirementparameter_dict["name"])
         self.assertEqual(instance.value, requirementparameter_dict["value"])

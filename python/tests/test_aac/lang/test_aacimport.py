@@ -5,28 +5,18 @@ import unittest
 from copy import deepcopy
 from aac.lang.aacimport import AacImport
 
+TEST_DATA_ALL = {"files": ["test", "test"]}
 
-class AacImportTestHelper:
-    @staticmethod
-    def generate_data() -> dict:
-        return {
-            "files": ["test"],
-        }
-
-    @staticmethod
-    def generate_data_required_only() -> dict:
-        return {
-            "files": ["test"],
-        }
+TEST_DATA_REQUIRED = {"files": ["test", "test"]}
 
 
 class TestAacImport(unittest.TestCase):
     def test_aacimport_from_dict_all_fields(self):
-        aacimport_dict = AacImportTestHelper.generate_data()
+        aacimport_dict = TEST_DATA_ALL
         instance = AacImport.from_dict(deepcopy(aacimport_dict))
         self.assertEqual(instance.files, aacimport_dict["files"])
 
-        aacimport_dict = AacImportTestHelper.generate_data_required_only()
+        aacimport_dict = TEST_DATA_REQUIRED
         instance = AacImport.from_dict(deepcopy(aacimport_dict))
         self.assertEqual(instance.files, aacimport_dict["files"])
 

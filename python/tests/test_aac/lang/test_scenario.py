@@ -4,34 +4,32 @@
 import unittest
 from copy import deepcopy
 from aac.lang.scenario import Scenario
-from aac.lang.example import Example
-from .test_example import ExampleTestHelper
 
+TEST_DATA_ALL = {
+    "name": "test",
+    "tags": ["test", "test"],
+    "given": ["test", "test"],
+    "when": ["test", "test"],
+    "then": ["test", "test"],
+    "examples": {
+        "name": "test",
+        "values": [
+            {"name": "test", "value": "test"},
+            {"name": "test", "value": "test"},
+        ],
+    },
+}
 
-class ScenarioTestHelper:
-    @staticmethod
-    def generate_data() -> dict:
-        return {
-            "name": "test",
-            "tags": ["test"],
-            "given": ["test"],
-            "when": ["test"],
-            "then": ["test"],
-            "examples": ExampleTestHelper.generate_data(),
-        }
-
-    @staticmethod
-    def generate_data_required_only() -> dict:
-        return {
-            "name": "test",
-            "when": ["test"],
-            "then": ["test"],
-        }
+TEST_DATA_REQUIRED = {
+    "name": "test",
+    "when": ["test", "test"],
+    "then": ["test", "test"],
+}
 
 
 class TestScenario(unittest.TestCase):
     def test_scenario_from_dict_all_fields(self):
-        scenario_dict = ScenarioTestHelper.generate_data()
+        scenario_dict = TEST_DATA_ALL
         instance = Scenario.from_dict(deepcopy(scenario_dict))
         self.assertEqual(instance.name, scenario_dict["name"])
         self.assertEqual(instance.tags, scenario_dict["tags"])
@@ -40,7 +38,7 @@ class TestScenario(unittest.TestCase):
         self.assertEqual(instance.then, scenario_dict["then"])
         self.assertIsNotNone(instance.examples)
 
-        scenario_dict = ScenarioTestHelper.generate_data_required_only()
+        scenario_dict = TEST_DATA_REQUIRED
         instance = Scenario.from_dict(deepcopy(scenario_dict))
         self.assertEqual(instance.name, scenario_dict["name"])
         self.assertEqual(instance.when, scenario_dict["when"])

@@ -4,37 +4,122 @@
 import unittest
 from copy import deepcopy
 from aac.lang.behavior import Behavior
-from aac.lang.field import Field
-from aac.lang.field import Field
-from aac.lang.feature import Feature
-from .test_field import FieldTestHelper
-from .test_field import FieldTestHelper
-from .test_feature import FeatureTestHelper
 
-
-class BehaviorTestHelper:
-    @staticmethod
-    def generate_data() -> dict:
-        return {
+TEST_DATA_ALL = {
+    "name": "test",
+    "description": "test",
+    "tags": ["test", "test"],
+    "input": [
+        {
             "name": "test",
+            "type": "test",
             "description": "test",
-            "tags": ["test"],
-            "input": [FieldTestHelper.generate_data()],
-            "output": [FieldTestHelper.generate_data()],
-            "acceptance": [FeatureTestHelper.generate_data()],
-            "requirements": ["test"],
-        }
-
-    @staticmethod
-    def generate_data_required_only() -> dict:
-        return {
+            "is_required": True,
+            "default": "test",
+        },
+        {
             "name": "test",
-        }
+            "type": "test",
+            "description": "test",
+            "is_required": True,
+            "default": "test",
+        },
+    ],
+    "output": [
+        {
+            "name": "test",
+            "type": "test",
+            "description": "test",
+            "is_required": True,
+            "default": "test",
+        },
+        {
+            "name": "test",
+            "type": "test",
+            "description": "test",
+            "is_required": True,
+            "default": "test",
+        },
+    ],
+    "acceptance": [
+        {
+            "name": "test",
+            "background": {"name": "test", "given": ["test", "test"]},
+            "scenarios": [
+                {
+                    "name": "test",
+                    "tags": ["test", "test"],
+                    "given": ["test", "test"],
+                    "when": ["test", "test"],
+                    "then": ["test", "test"],
+                    "examples": {
+                        "name": "test",
+                        "values": [
+                            {"name": "test", "value": "test"},
+                            {"name": "test", "value": "test"},
+                        ],
+                    },
+                },
+                {
+                    "name": "test",
+                    "tags": ["test", "test"],
+                    "given": ["test", "test"],
+                    "when": ["test", "test"],
+                    "then": ["test", "test"],
+                    "examples": {
+                        "name": "test",
+                        "values": [
+                            {"name": "test", "value": "test"},
+                            {"name": "test", "value": "test"},
+                        ],
+                    },
+                },
+            ],
+        },
+        {
+            "name": "test",
+            "background": {"name": "test", "given": ["test", "test"]},
+            "scenarios": [
+                {
+                    "name": "test",
+                    "tags": ["test", "test"],
+                    "given": ["test", "test"],
+                    "when": ["test", "test"],
+                    "then": ["test", "test"],
+                    "examples": {
+                        "name": "test",
+                        "values": [
+                            {"name": "test", "value": "test"},
+                            {"name": "test", "value": "test"},
+                        ],
+                    },
+                },
+                {
+                    "name": "test",
+                    "tags": ["test", "test"],
+                    "given": ["test", "test"],
+                    "when": ["test", "test"],
+                    "then": ["test", "test"],
+                    "examples": {
+                        "name": "test",
+                        "values": [
+                            {"name": "test", "value": "test"},
+                            {"name": "test", "value": "test"},
+                        ],
+                    },
+                },
+            ],
+        },
+    ],
+    "requirements": ["test", "test"],
+}
+
+TEST_DATA_REQUIRED = {"name": "test"}
 
 
 class TestBehavior(unittest.TestCase):
     def test_behavior_from_dict_all_fields(self):
-        behavior_dict = BehaviorTestHelper.generate_data()
+        behavior_dict = TEST_DATA_ALL
         instance = Behavior.from_dict(deepcopy(behavior_dict))
         self.assertEqual(instance.name, behavior_dict["name"])
         self.assertEqual(instance.description, behavior_dict["description"])
@@ -44,7 +129,7 @@ class TestBehavior(unittest.TestCase):
         self.assertIsNotNone(instance.acceptance)
         self.assertEqual(instance.requirements, behavior_dict["requirements"])
 
-        behavior_dict = BehaviorTestHelper.generate_data_required_only()
+        behavior_dict = TEST_DATA_REQUIRED
         instance = Behavior.from_dict(deepcopy(behavior_dict))
         self.assertEqual(instance.name, behavior_dict["name"])
 

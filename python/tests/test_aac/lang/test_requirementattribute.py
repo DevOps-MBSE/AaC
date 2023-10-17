@@ -5,33 +5,19 @@ import unittest
 from copy import deepcopy
 from aac.lang.requirementattribute import RequirementAttribute
 
+TEST_DATA_ALL = {"name": "test", "value": "test"}
 
-class RequirementAttributeTestHelper:
-    @staticmethod
-    def generate_data() -> dict:
-        return {
-            "name": "test",
-            "value": "test",
-        }
-
-    @staticmethod
-    def generate_data_required_only() -> dict:
-        return {
-            "name": "test",
-            "value": "test",
-        }
+TEST_DATA_REQUIRED = {"name": "test", "value": "test"}
 
 
 class TestRequirementAttribute(unittest.TestCase):
     def test_requirementattribute_from_dict_all_fields(self):
-        requirementattribute_dict = RequirementAttributeTestHelper.generate_data()
+        requirementattribute_dict = TEST_DATA_ALL
         instance = RequirementAttribute.from_dict(deepcopy(requirementattribute_dict))
         self.assertEqual(instance.name, requirementattribute_dict["name"])
         self.assertEqual(instance.value, requirementattribute_dict["value"])
 
-        requirementattribute_dict = (
-            RequirementAttributeTestHelper.generate_data_required_only()
-        )
+        requirementattribute_dict = TEST_DATA_REQUIRED
         instance = RequirementAttribute.from_dict(deepcopy(requirementattribute_dict))
         self.assertEqual(instance.name, requirementattribute_dict["name"])
         self.assertEqual(instance.value, requirementattribute_dict["value"])

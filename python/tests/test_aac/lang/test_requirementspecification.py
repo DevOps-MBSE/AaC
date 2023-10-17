@@ -5,31 +5,21 @@ import unittest
 from copy import deepcopy
 from aac.lang.requirementspecification import RequirementSpecification
 
+TEST_DATA_ALL = {
+    "name": "test",
+    "description": "test",
+    "sections": ["test", "test"],
+    "parent_specs": ["test", "test"],
+    "child_specs": ["test", "test"],
+    "requirements": ["test", "test"],
+}
 
-class RequirementSpecificationTestHelper:
-    @staticmethod
-    def generate_data() -> dict:
-        return {
-            "name": "test",
-            "description": "test",
-            "sections": ["test"],
-            "parent_specs": ["test"],
-            "child_specs": ["test"],
-            "requirements": ["test"],
-        }
-
-    @staticmethod
-    def generate_data_required_only() -> dict:
-        return {
-            "name": "test",
-        }
+TEST_DATA_REQUIRED = {"name": "test"}
 
 
 class TestRequirementSpecification(unittest.TestCase):
     def test_requirementspecification_from_dict_all_fields(self):
-        requirementspecification_dict = (
-            RequirementSpecificationTestHelper.generate_data()
-        )
+        requirementspecification_dict = TEST_DATA_ALL
         instance = RequirementSpecification.from_dict(
             deepcopy(requirementspecification_dict)
         )
@@ -48,9 +38,7 @@ class TestRequirementSpecification(unittest.TestCase):
             instance.requirements, requirementspecification_dict["requirements"]
         )
 
-        requirementspecification_dict = (
-            RequirementSpecificationTestHelper.generate_data_required_only()
-        )
+        requirementspecification_dict = TEST_DATA_REQUIRED
         instance = RequirementSpecification.from_dict(
             deepcopy(requirementspecification_dict)
         )

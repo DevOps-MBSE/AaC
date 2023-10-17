@@ -5,31 +5,19 @@ import unittest
 from copy import deepcopy
 from aac.lang.schemaextension import SchemaExtension
 
+TEST_DATA_ALL = {"package": "test", "name": "test"}
 
-class SchemaExtensionTestHelper:
-    @staticmethod
-    def generate_data() -> dict:
-        return {
-            "package": "test",
-            "name": "test",
-        }
-
-    @staticmethod
-    def generate_data_required_only() -> dict:
-        return {
-            "package": "test",
-            "name": "test",
-        }
+TEST_DATA_REQUIRED = {"package": "test", "name": "test"}
 
 
 class TestSchemaExtension(unittest.TestCase):
     def test_schemaextension_from_dict_all_fields(self):
-        schemaextension_dict = SchemaExtensionTestHelper.generate_data()
+        schemaextension_dict = TEST_DATA_ALL
         instance = SchemaExtension.from_dict(deepcopy(schemaextension_dict))
         self.assertEqual(instance.package, schemaextension_dict["package"])
         self.assertEqual(instance.name, schemaextension_dict["name"])
 
-        schemaextension_dict = SchemaExtensionTestHelper.generate_data_required_only()
+        schemaextension_dict = TEST_DATA_REQUIRED
         instance = SchemaExtension.from_dict(deepcopy(schemaextension_dict))
         self.assertEqual(instance.package, schemaextension_dict["package"])
         self.assertEqual(instance.name, schemaextension_dict["name"])

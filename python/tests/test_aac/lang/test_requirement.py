@@ -4,38 +4,26 @@
 import unittest
 from copy import deepcopy
 from aac.lang.requirement import Requirement
-from aac.lang.requirementverificationmethod import RequirementVerificationMethod
-from aac.lang.requirementattribute import RequirementAttribute
-from .test_requirementverificationmethod import (
-    RequirementVerificationMethodTestHelper,
-)
-from .test_requirementattribute import RequirementAttributeTestHelper
 
+TEST_DATA_ALL = {
+    "id": "test",
+    "shall": "test",
+    "parents": ["test", "test"],
+    "childern": ["test", "test"],
+    "parameters": ["test", "test"],
+    "verification_method": "ANALYSIS",
+    "attributes": [
+        {"name": "test", "value": "test"},
+        {"name": "test", "value": "test"},
+    ],
+}
 
-class RequirementTestHelper:
-    @staticmethod
-    def generate_data() -> dict:
-        return {
-            "id": "test",
-            "shall": "test",
-            "parents": ["test"],
-            "childern": ["test"],
-            "parameters": ["test"],
-            "verification_method": RequirementVerificationMethodTestHelper.generate_data(),
-            "attributes": [RequirementAttributeTestHelper.generate_data()],
-        }
-
-    @staticmethod
-    def generate_data_required_only() -> dict:
-        return {
-            "id": "test",
-            "shall": "test",
-        }
+TEST_DATA_REQUIRED = {"id": "test", "shall": "test"}
 
 
 class TestRequirement(unittest.TestCase):
     def test_requirement_from_dict_all_fields(self):
-        requirement_dict = RequirementTestHelper.generate_data()
+        requirement_dict = TEST_DATA_ALL
         instance = Requirement.from_dict(deepcopy(requirement_dict))
         self.assertEqual(instance.id, requirement_dict["id"])
         self.assertEqual(instance.shall, requirement_dict["shall"])
@@ -45,7 +33,7 @@ class TestRequirement(unittest.TestCase):
         self.assertIsNotNone(instance.verification_method)
         self.assertIsNotNone(instance.attributes)
 
-        requirement_dict = RequirementTestHelper.generate_data_required_only()
+        requirement_dict = TEST_DATA_REQUIRED
         instance = Requirement.from_dict(deepcopy(requirement_dict))
         self.assertEqual(instance.id, requirement_dict["id"])
         self.assertEqual(instance.shall, requirement_dict["shall"])

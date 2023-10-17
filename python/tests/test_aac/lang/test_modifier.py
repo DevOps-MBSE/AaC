@@ -4,35 +4,40 @@
 import unittest
 from copy import deepcopy
 from aac.lang.modifier import Modifier
-from aac.lang.field import Field
-from .test_field import FieldTestHelper
 
-
-class ModifierTestHelper:
-    @staticmethod
-    def generate_data() -> dict:
-        return {
+TEST_DATA_ALL = {
+    "name": "test",
+    "description": "test",
+    "fields": [
+        {
             "name": "test",
+            "type": "test",
             "description": "test",
-            "fields": [FieldTestHelper.generate_data()],
-        }
-
-    @staticmethod
-    def generate_data_required_only() -> dict:
-        return {
+            "is_required": True,
+            "default": "test",
+        },
+        {
             "name": "test",
-        }
+            "type": "test",
+            "description": "test",
+            "is_required": True,
+            "default": "test",
+        },
+    ],
+}
+
+TEST_DATA_REQUIRED = {"name": "test"}
 
 
 class TestModifier(unittest.TestCase):
     def test_modifier_from_dict_all_fields(self):
-        modifier_dict = ModifierTestHelper.generate_data()
+        modifier_dict = TEST_DATA_ALL
         instance = Modifier.from_dict(deepcopy(modifier_dict))
         self.assertEqual(instance.name, modifier_dict["name"])
         self.assertEqual(instance.description, modifier_dict["description"])
         self.assertIsNotNone(instance.fields)
 
-        modifier_dict = ModifierTestHelper.generate_data_required_only()
+        modifier_dict = TEST_DATA_REQUIRED
         instance = Modifier.from_dict(deepcopy(modifier_dict))
         self.assertEqual(instance.name, modifier_dict["name"])
 

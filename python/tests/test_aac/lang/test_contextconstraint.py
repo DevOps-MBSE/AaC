@@ -4,37 +4,94 @@
 import unittest
 from copy import deepcopy
 from aac.lang.contextconstraint import ContextConstraint
-from aac.lang.feature import Feature
-from .test_feature import FeatureTestHelper
 
-
-class ContextConstraintTestHelper:
-    @staticmethod
-    def generate_data() -> dict:
-        return {
+TEST_DATA_ALL = {
+    "name": "test",
+    "description": "test",
+    "acceptance": [
+        {
             "name": "test",
-            "description": "test",
-            "acceptance": [FeatureTestHelper.generate_data()],
-        }
-
-    @staticmethod
-    def generate_data_required_only() -> dict:
-        return {
+            "background": {"name": "test", "given": ["test", "test"]},
+            "scenarios": [
+                {
+                    "name": "test",
+                    "tags": ["test", "test"],
+                    "given": ["test", "test"],
+                    "when": ["test", "test"],
+                    "then": ["test", "test"],
+                    "examples": {
+                        "name": "test",
+                        "values": [
+                            {"name": "test", "value": "test"},
+                            {"name": "test", "value": "test"},
+                        ],
+                    },
+                },
+                {
+                    "name": "test",
+                    "tags": ["test", "test"],
+                    "given": ["test", "test"],
+                    "when": ["test", "test"],
+                    "then": ["test", "test"],
+                    "examples": {
+                        "name": "test",
+                        "values": [
+                            {"name": "test", "value": "test"},
+                            {"name": "test", "value": "test"},
+                        ],
+                    },
+                },
+            ],
+        },
+        {
             "name": "test",
-        }
+            "background": {"name": "test", "given": ["test", "test"]},
+            "scenarios": [
+                {
+                    "name": "test",
+                    "tags": ["test", "test"],
+                    "given": ["test", "test"],
+                    "when": ["test", "test"],
+                    "then": ["test", "test"],
+                    "examples": {
+                        "name": "test",
+                        "values": [
+                            {"name": "test", "value": "test"},
+                            {"name": "test", "value": "test"},
+                        ],
+                    },
+                },
+                {
+                    "name": "test",
+                    "tags": ["test", "test"],
+                    "given": ["test", "test"],
+                    "when": ["test", "test"],
+                    "then": ["test", "test"],
+                    "examples": {
+                        "name": "test",
+                        "values": [
+                            {"name": "test", "value": "test"},
+                            {"name": "test", "value": "test"},
+                        ],
+                    },
+                },
+            ],
+        },
+    ],
+}
+
+TEST_DATA_REQUIRED = {"name": "test"}
 
 
 class TestContextConstraint(unittest.TestCase):
     def test_contextconstraint_from_dict_all_fields(self):
-        contextconstraint_dict = ContextConstraintTestHelper.generate_data()
+        contextconstraint_dict = TEST_DATA_ALL
         instance = ContextConstraint.from_dict(deepcopy(contextconstraint_dict))
         self.assertEqual(instance.name, contextconstraint_dict["name"])
         self.assertEqual(instance.description, contextconstraint_dict["description"])
         self.assertIsNotNone(instance.acceptance)
 
-        contextconstraint_dict = (
-            ContextConstraintTestHelper.generate_data_required_only()
-        )
+        contextconstraint_dict = TEST_DATA_REQUIRED
         instance = ContextConstraint.from_dict(deepcopy(contextconstraint_dict))
         self.assertEqual(instance.name, contextconstraint_dict["name"])
 

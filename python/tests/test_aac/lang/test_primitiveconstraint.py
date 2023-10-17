@@ -4,41 +4,111 @@
 import unittest
 from copy import deepcopy
 from aac.lang.primitiveconstraint import PrimitiveConstraint
-from aac.lang.field import Field
-from aac.lang.feature import Feature
-from .test_field import FieldTestHelper
-from .test_feature import FeatureTestHelper
 
-
-class PrimitiveConstraintTestHelper:
-    @staticmethod
-    def generate_data() -> dict:
-        return {
+TEST_DATA_ALL = {
+    "name": "test",
+    "description": "test",
+    "arguments": [
+        {
             "name": "test",
+            "type": "test",
             "description": "test",
-            "arguments": [FieldTestHelper.generate_data()],
-            "acceptance": [FeatureTestHelper.generate_data()],
-        }
-
-    @staticmethod
-    def generate_data_required_only() -> dict:
-        return {
+            "is_required": True,
+            "default": "test",
+        },
+        {
             "name": "test",
-        }
+            "type": "test",
+            "description": "test",
+            "is_required": True,
+            "default": "test",
+        },
+    ],
+    "acceptance": [
+        {
+            "name": "test",
+            "background": {"name": "test", "given": ["test", "test"]},
+            "scenarios": [
+                {
+                    "name": "test",
+                    "tags": ["test", "test"],
+                    "given": ["test", "test"],
+                    "when": ["test", "test"],
+                    "then": ["test", "test"],
+                    "examples": {
+                        "name": "test",
+                        "values": [
+                            {"name": "test", "value": "test"},
+                            {"name": "test", "value": "test"},
+                        ],
+                    },
+                },
+                {
+                    "name": "test",
+                    "tags": ["test", "test"],
+                    "given": ["test", "test"],
+                    "when": ["test", "test"],
+                    "then": ["test", "test"],
+                    "examples": {
+                        "name": "test",
+                        "values": [
+                            {"name": "test", "value": "test"},
+                            {"name": "test", "value": "test"},
+                        ],
+                    },
+                },
+            ],
+        },
+        {
+            "name": "test",
+            "background": {"name": "test", "given": ["test", "test"]},
+            "scenarios": [
+                {
+                    "name": "test",
+                    "tags": ["test", "test"],
+                    "given": ["test", "test"],
+                    "when": ["test", "test"],
+                    "then": ["test", "test"],
+                    "examples": {
+                        "name": "test",
+                        "values": [
+                            {"name": "test", "value": "test"},
+                            {"name": "test", "value": "test"},
+                        ],
+                    },
+                },
+                {
+                    "name": "test",
+                    "tags": ["test", "test"],
+                    "given": ["test", "test"],
+                    "when": ["test", "test"],
+                    "then": ["test", "test"],
+                    "examples": {
+                        "name": "test",
+                        "values": [
+                            {"name": "test", "value": "test"},
+                            {"name": "test", "value": "test"},
+                        ],
+                    },
+                },
+            ],
+        },
+    ],
+}
+
+TEST_DATA_REQUIRED = {"name": "test"}
 
 
 class TestPrimitiveConstraint(unittest.TestCase):
     def test_primitiveconstraint_from_dict_all_fields(self):
-        primitiveconstraint_dict = PrimitiveConstraintTestHelper.generate_data()
+        primitiveconstraint_dict = TEST_DATA_ALL
         instance = PrimitiveConstraint.from_dict(deepcopy(primitiveconstraint_dict))
         self.assertEqual(instance.name, primitiveconstraint_dict["name"])
         self.assertEqual(instance.description, primitiveconstraint_dict["description"])
         self.assertIsNotNone(instance.arguments)
         self.assertIsNotNone(instance.acceptance)
 
-        primitiveconstraint_dict = (
-            PrimitiveConstraintTestHelper.generate_data_required_only()
-        )
+        primitiveconstraint_dict = TEST_DATA_REQUIRED
         instance = PrimitiveConstraint.from_dict(deepcopy(primitiveconstraint_dict))
         self.assertEqual(instance.name, primitiveconstraint_dict["name"])
 

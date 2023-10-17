@@ -4,33 +4,20 @@
 import unittest
 from copy import deepcopy
 from {{schema.package}}.{{get_python_name(schema.name)}} import {{schema.name}}
-{% for field in schema.fields if get_python_primitive(field.type) == "None"%}{% if field.type.endswith('[]')%}from {{get_package_from_aac_definition(field.type[:-2])}}.{{get_python_name(field.type[:-2])}} import {{field.type[:-2]}}{% else %}from {{get_package_from_aac_definition(field.type)}}.{{get_python_name(field.type)}} import {{field.type}}{% endif %}
-{% endfor %}{% for field in schema.fields if get_python_primitive(field.type) == "None"%}{% if field.type.endswith('[]')%}from test_{{get_package_from_aac_definition(field.type[:-2])}}.test_{{get_python_name(field.type[:-2])}} import {{field.type[:-2]}}TestHelper{{"\n"}}{% else %}from test_{{get_package_from_aac_definition(field.type)}}.test_{{get_python_name(field.type)}} import {{field.type}}TestHelper{{"\n"}}{% endif %}{% endfor %}
-class {{schema.name}}TestHelper():
 
-    @staticmethod
-    def generate_data() -> dict:
-        return {
-            {% for field in schema.fields %}{% if get_python_primitive(field.type) == 'str' %}{% if field.type.endswith('[]') %}"{{field.name}}": ["test"],{% else %}"{{field.name}}": "test",{% endif %}{% elif get_python_primitive(field.type) == 'int'%}{% if field.type.endswith('[]') %}"{{field.name}}": [1],{% else %}"{{field.name}}": 1,{% endif %}{% elif get_python_primitive(field.type) == 'float'%}{% if field.type.endswith('[]') %}"{{field.name}}": [1.1],{% else %}"{{field.name}}": 1.1,{% endif %}{% elif get_python_primitive(field.type) == 'bool'%}{% if field.type.endswith('[]') %}"{{field.name}}": [True],{% else %}"{{field.name}}": True,{% endif %}{% elif get_python_primitive(field.type) == 'None'%}{% if field.type.endswith('[]') %}"{{field.name}}": [{{field.type[:-2]}}TestHelper.generate_data()],{% else %}"{{field.name}}": {{field.type}}TestHelper.generate_data(),{% endif %}{% endif %}
-            {% endfor %}
-        }
+TEST_DATA_ALL = {{schema_to_test_dict(schema.name)}}
     
-    @staticmethod
-    def generate_data_required_only() -> dict:
-        return {
-            {% for field in schema.fields if field.is_required %}{% if get_python_primitive(field.type) == 'str' %}{% if field.type.endswith('[]') %}"{{field.name}}": ["test"],  {% else %}"{{field.name}}": "test",{% endif %}{% elif get_python_primitive(field.type) == 'int'%}{% if field.type.endswith('[]') %}"{{field.name}}": [1],{% else %}"{{field.name}}": 1,{% endif %}{% elif get_python_primitive(field.type) == 'float'%}{% if field.type.endswith('[]') %}"{{field.name}}": [1.1],{% else %}"{{field.name}}": 1.1,{% endif %}{% elif get_python_primitive(field.type) == 'bool'%}{% if field.type.endswith('[]') %}"{{field.name}}": [True],{% else %}"{{field.name}}": True,{% endif %}{% elif get_python_primitive(field.type) == 'None'%}{% if field.type.endswith('[]') %}"{{field.name}}": [{{field.type[:-2]}}TestHelper.generate_data_required_only()],{% else %}"{{field.name}}": {{field.type}}TestHelper.generate_data_required_only(),{% endif %}{% endif %}
-            {% endfor %}
-        }
+TEST_DATA_REQUIRED = {{schema_to_test_dict(schema.name, True)}}
 
 class Test{{schema.name}}(unittest.TestCase):
 
     def test_{{get_python_name(schema.name)}}_from_dict_all_fields(self):
-        {{get_python_name(schema.name)}}_dict = {{schema.name}}TestHelper.generate_data()
+        {{get_python_name(schema.name)}}_dict = TEST_DATA_ALL
         instance = {{schema.name}}.from_dict(deepcopy({{get_python_name(schema.name)}}_dict))
         {% for field in schema.fields %}{% if get_python_primitive(field.type) != 'None' %}self.assertEqual(instance.{{get_python_name(field.name)}}, {{get_python_name(schema.name)}}_dict["{{get_python_name(field.name)}}"]){% else %}self.assertIsNotNone(instance.{{get_python_name(field.name)}}){% endif %}
         {% endfor %}
 
-        {{get_python_name(schema.name)}}_dict = {{schema.name}}TestHelper.generate_data_required_only()
+        {{get_python_name(schema.name)}}_dict = TEST_DATA_REQUIRED
         instance = {{schema.name}}.from_dict(deepcopy({{get_python_name(schema.name)}}_dict))
         {% for field in schema.fields if field.is_required%}{% if get_python_primitive(field.type) != 'None' %}self.assertEqual(instance.{{get_python_name(field.name)}}, {{get_python_name(schema.name)}}_dict["{{get_python_name(field.name)}}"]){% else %}self.assertIsNotNone(instance.{{get_python_name(field.name)}}){% endif %}
         {% endfor %}

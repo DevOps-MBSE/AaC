@@ -4,34 +4,26 @@
 import unittest
 from copy import deepcopy
 from aac.lang.example import Example
-from aac.lang.examplevalue import ExampleValue
-from test_aac.lang.test_examplevalue import ExampleValueTestHelper
 
+TEST_DATA_ALL = {
+    "name": "test",
+    "values": [{"name": "test", "value": "test"}, {"name": "test", "value": "test"}],
+}
 
-class ExampleTestHelper:
-    @staticmethod
-    def generate_data() -> dict:
-        return {
-            "name": "test",
-            "values": [ExampleValueTestHelper.generate_data()],
-        }
-
-    @staticmethod
-    def generate_data_required_only() -> dict:
-        return {
-            "name": "test",
-            "values": [ExampleValueTestHelper.generate_data_required_only()],
-        }
+TEST_DATA_REQUIRED = {
+    "name": "test",
+    "values": [{"name": "test", "value": "test"}, {"name": "test", "value": "test"}],
+}
 
 
 class TestExample(unittest.TestCase):
     def test_example_from_dict_all_fields(self):
-        example_dict = ExampleTestHelper.generate_data()
+        example_dict = TEST_DATA_ALL
         instance = Example.from_dict(deepcopy(example_dict))
         self.assertEqual(instance.name, example_dict["name"])
         self.assertIsNotNone(instance.values)
 
-        example_dict = ExampleTestHelper.generate_data_required_only()
+        example_dict = TEST_DATA_REQUIRED
         instance = Example.from_dict(deepcopy(example_dict))
         self.assertEqual(instance.name, example_dict["name"])
         self.assertIsNotNone(instance.values)

@@ -5,30 +5,19 @@ import unittest
 from copy import deepcopy
 from aac.lang.background import Background
 
+TEST_DATA_ALL = {"name": "test", "given": ["test", "test"]}
 
-class BackgroundTestHelper:
-    @staticmethod
-    def generate_data() -> dict:
-        return {
-            "name": "test",
-            "given": ["test"],
-        }
-
-    @staticmethod
-    def generate_data_required_only() -> dict:
-        return {
-            "given": ["test"],
-        }
+TEST_DATA_REQUIRED = {"given": ["test", "test"]}
 
 
 class TestBackground(unittest.TestCase):
     def test_background_from_dict_all_fields(self):
-        background_dict = BackgroundTestHelper.generate_data()
+        background_dict = TEST_DATA_ALL
         instance = Background.from_dict(deepcopy(background_dict))
         self.assertEqual(instance.name, background_dict["name"])
         self.assertEqual(instance.given, background_dict["given"])
 
-        background_dict = BackgroundTestHelper.generate_data_required_only()
+        background_dict = TEST_DATA_REQUIRED
         instance = Background.from_dict(deepcopy(background_dict))
         self.assertEqual(instance.given, background_dict["given"])
 

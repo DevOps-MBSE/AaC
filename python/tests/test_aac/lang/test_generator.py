@@ -4,36 +4,196 @@
 import unittest
 from copy import deepcopy
 from aac.lang.generator import Generator
-from aac.lang.generatorsource import GeneratorSource
-from .test_generatorsource import GeneratorSourceTestHelper
 
-
-class GeneratorTestHelper:
-    @staticmethod
-    def generate_data() -> dict:
-        return {
+TEST_DATA_ALL = {
+    "name": "test",
+    "description": "test",
+    "sources": [
+        {
             "name": "test",
-            "description": "test",
-            "sources": [GeneratorSourceTestHelper.generate_data()],
-        }
-
-    @staticmethod
-    def generate_data_required_only() -> dict:
-        return {
+            "data_source": "test",
+            "data_content": "test",
+            "templates": [
+                {
+                    "name": "test",
+                    "description": "test",
+                    "template_file": "test",
+                    "overwrite": "OVERWRITE",
+                    "helper_functions": [
+                        {
+                            "name": "test",
+                            "description": "test",
+                            "package": "test",
+                            "module": "test",
+                            "function": "test",
+                        },
+                        {
+                            "name": "test",
+                            "description": "test",
+                            "package": "test",
+                            "module": "test",
+                            "function": "test",
+                        },
+                    ],
+                    "output_target": "CODE",
+                    "output_path_uses_data_source_package": True,
+                    "output_file_prefix": "test",
+                    "output_file_name": "test",
+                    "output_file_suffix": "test",
+                    "output_file_extension": "test",
+                },
+                {
+                    "name": "test",
+                    "description": "test",
+                    "template_file": "test",
+                    "overwrite": "OVERWRITE",
+                    "helper_functions": [
+                        {
+                            "name": "test",
+                            "description": "test",
+                            "package": "test",
+                            "module": "test",
+                            "function": "test",
+                        },
+                        {
+                            "name": "test",
+                            "description": "test",
+                            "package": "test",
+                            "module": "test",
+                            "function": "test",
+                        },
+                    ],
+                    "output_target": "CODE",
+                    "output_path_uses_data_source_package": True,
+                    "output_file_prefix": "test",
+                    "output_file_name": "test",
+                    "output_file_suffix": "test",
+                    "output_file_extension": "test",
+                },
+            ],
+        },
+        {
             "name": "test",
-            "sources": [GeneratorSourceTestHelper.generate_data_required_only()],
-        }
+            "data_source": "test",
+            "data_content": "test",
+            "templates": [
+                {
+                    "name": "test",
+                    "description": "test",
+                    "template_file": "test",
+                    "overwrite": "OVERWRITE",
+                    "helper_functions": [
+                        {
+                            "name": "test",
+                            "description": "test",
+                            "package": "test",
+                            "module": "test",
+                            "function": "test",
+                        },
+                        {
+                            "name": "test",
+                            "description": "test",
+                            "package": "test",
+                            "module": "test",
+                            "function": "test",
+                        },
+                    ],
+                    "output_target": "CODE",
+                    "output_path_uses_data_source_package": True,
+                    "output_file_prefix": "test",
+                    "output_file_name": "test",
+                    "output_file_suffix": "test",
+                    "output_file_extension": "test",
+                },
+                {
+                    "name": "test",
+                    "description": "test",
+                    "template_file": "test",
+                    "overwrite": "OVERWRITE",
+                    "helper_functions": [
+                        {
+                            "name": "test",
+                            "description": "test",
+                            "package": "test",
+                            "module": "test",
+                            "function": "test",
+                        },
+                        {
+                            "name": "test",
+                            "description": "test",
+                            "package": "test",
+                            "module": "test",
+                            "function": "test",
+                        },
+                    ],
+                    "output_target": "CODE",
+                    "output_path_uses_data_source_package": True,
+                    "output_file_prefix": "test",
+                    "output_file_name": "test",
+                    "output_file_suffix": "test",
+                    "output_file_extension": "test",
+                },
+            ],
+        },
+    ],
+}
+
+TEST_DATA_REQUIRED = {
+    "name": "test",
+    "sources": [
+        {
+            "name": "test",
+            "data_source": "test",
+            "templates": [
+                {
+                    "name": "test",
+                    "template_file": "test",
+                    "overwrite": "OVERWRITE",
+                    "output_target": "CODE",
+                    "output_file_extension": "test",
+                },
+                {
+                    "name": "test",
+                    "template_file": "test",
+                    "overwrite": "OVERWRITE",
+                    "output_target": "CODE",
+                    "output_file_extension": "test",
+                },
+            ],
+        },
+        {
+            "name": "test",
+            "data_source": "test",
+            "templates": [
+                {
+                    "name": "test",
+                    "template_file": "test",
+                    "overwrite": "OVERWRITE",
+                    "output_target": "CODE",
+                    "output_file_extension": "test",
+                },
+                {
+                    "name": "test",
+                    "template_file": "test",
+                    "overwrite": "OVERWRITE",
+                    "output_target": "CODE",
+                    "output_file_extension": "test",
+                },
+            ],
+        },
+    ],
+}
 
 
 class TestGenerator(unittest.TestCase):
     def test_generator_from_dict_all_fields(self):
-        generator_dict = GeneratorTestHelper.generate_data()
+        generator_dict = TEST_DATA_ALL
         instance = Generator.from_dict(deepcopy(generator_dict))
         self.assertEqual(instance.name, generator_dict["name"])
         self.assertEqual(instance.description, generator_dict["description"])
         self.assertIsNotNone(instance.sources)
 
-        generator_dict = GeneratorTestHelper.generate_data_required_only()
+        generator_dict = TEST_DATA_REQUIRED
         instance = Generator.from_dict(deepcopy(generator_dict))
         self.assertEqual(instance.name, generator_dict["name"])
         self.assertIsNotNone(instance.sources)

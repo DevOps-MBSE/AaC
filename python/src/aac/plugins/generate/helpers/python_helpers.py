@@ -1,6 +1,7 @@
 from aac.context.language_context import LanguageContext
 from aac.lang.aacenum import AacEnum
 from aac import __version__
+from typing import Any
 
 # build out jinja2 utility functions
 def get_python_name(name: str) -> str:
@@ -52,3 +53,56 @@ def get_path_from_package(package: str) -> str:
 
 def aac_version() -> str:
     return __version__
+
+def _generate_test_data_for_primitive(primitive_type: str) -> Any:
+    if primitive_type == "str":
+        return "test"
+    elif primitive_type == "int":
+        return 1
+    elif primitive_type == "float":
+        return 1.1
+    elif primitive_type == "bool":
+        return True
+    elif primitive_type == "Any":
+        return "{}"
+    else:
+        raise Exception(f"Unknown primitive type: {primitive_type}")
+
+def schema_to_test_dict(name: str, omit_optional_fields: bool = False) -> dict:
+    """
+    Generate test data for a schema to a dictionary based on its fields.
+    """
+    context: LanguageContext = LanguageContext()
+    schema_definition = context.get_definition_by_name(name)
+    if not schema_definition:
+        raise Exception(f"Could not find schema definition: {name}")
+
+    result: dict = {}
+
+    # we need to avoid the case where a schema is defining an AaC type other than Schema
+    if schema_definition.get_root_key() == "aacenum":
+        # need to return a valid enum value
+        for value in schema_definition.instance.enumerated_values:
+            return value
+    
+    for field in schema_definition.instance.fields:
+        if omit_optional_fields and not field.is_required:
+            continue
+
+        clean_field_type = get_python_primitive(field.type)
+        if clean_field_type == "None":
+            # this is a schema type
+            if field.type.endswith("[]"):
+                # this is an array of schema types
+                result[field.name] = [schema_to_test_dict(field.type[:-2], omit_optional_fields), schema_to_test_dict(field.type[:-2], omit_optional_fields)]
+            else:
+                result[field.name] = schema_to_test_dict(field.type, omit_optional_fields)
+        else:
+            # this is a primitive type
+            if field.type.endswith("[]"):
+                # this is an array of primitive types
+                result[field.name] = [_generate_test_data_for_primitive(clean_field_type), _generate_test_data_for_primitive(clean_field_type)]
+            else:
+                result[field.name] = _generate_test_data_for_primitive(clean_field_type)
+            
+    return result

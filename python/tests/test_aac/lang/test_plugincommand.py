@@ -4,39 +4,101 @@
 import unittest
 from copy import deepcopy
 from aac.lang.plugincommand import PluginCommand
-from aac.lang.plugincommandreference import PluginCommandReference
-from aac.lang.plugincommandreference import PluginCommandReference
-from aac.lang.plugininput import PluginInput
-from aac.lang.feature import Feature
-from .test_plugincommandreference import PluginCommandReferenceTestHelper
-from .test_plugincommandreference import PluginCommandReferenceTestHelper
-from .test_plugininput import PluginInputTestHelper
-from .test_feature import FeatureTestHelper
 
-
-class PluginCommandTestHelper:
-    @staticmethod
-    def generate_data() -> dict:
-        return {
+TEST_DATA_ALL = {
+    "name": "test",
+    "help_text": "test",
+    "enable_cache": True,
+    "run_before": [
+        {"plugin": "test", "command": "test"},
+        {"plugin": "test", "command": "test"},
+    ],
+    "run_after": [
+        {"plugin": "test", "command": "test"},
+        {"plugin": "test", "command": "test"},
+    ],
+    "input": [
+        {"name": "test", "description": "test", "type": "test", "default": "test"},
+        {"name": "test", "description": "test", "type": "test", "default": "test"},
+    ],
+    "acceptance": [
+        {
             "name": "test",
-            "help_text": "test",
-            "enable_cache": True,
-            "run_before": [PluginCommandReferenceTestHelper.generate_data()],
-            "run_after": [PluginCommandReferenceTestHelper.generate_data()],
-            "input": [PluginInputTestHelper.generate_data()],
-            "acceptance": [FeatureTestHelper.generate_data()],
-        }
-
-    @staticmethod
-    def generate_data_required_only() -> dict:
-        return {
+            "background": {"name": "test", "given": ["test", "test"]},
+            "scenarios": [
+                {
+                    "name": "test",
+                    "tags": ["test", "test"],
+                    "given": ["test", "test"],
+                    "when": ["test", "test"],
+                    "then": ["test", "test"],
+                    "examples": {
+                        "name": "test",
+                        "values": [
+                            {"name": "test", "value": "test"},
+                            {"name": "test", "value": "test"},
+                        ],
+                    },
+                },
+                {
+                    "name": "test",
+                    "tags": ["test", "test"],
+                    "given": ["test", "test"],
+                    "when": ["test", "test"],
+                    "then": ["test", "test"],
+                    "examples": {
+                        "name": "test",
+                        "values": [
+                            {"name": "test", "value": "test"},
+                            {"name": "test", "value": "test"},
+                        ],
+                    },
+                },
+            ],
+        },
+        {
             "name": "test",
-        }
+            "background": {"name": "test", "given": ["test", "test"]},
+            "scenarios": [
+                {
+                    "name": "test",
+                    "tags": ["test", "test"],
+                    "given": ["test", "test"],
+                    "when": ["test", "test"],
+                    "then": ["test", "test"],
+                    "examples": {
+                        "name": "test",
+                        "values": [
+                            {"name": "test", "value": "test"},
+                            {"name": "test", "value": "test"},
+                        ],
+                    },
+                },
+                {
+                    "name": "test",
+                    "tags": ["test", "test"],
+                    "given": ["test", "test"],
+                    "when": ["test", "test"],
+                    "then": ["test", "test"],
+                    "examples": {
+                        "name": "test",
+                        "values": [
+                            {"name": "test", "value": "test"},
+                            {"name": "test", "value": "test"},
+                        ],
+                    },
+                },
+            ],
+        },
+    ],
+}
+
+TEST_DATA_REQUIRED = {"name": "test"}
 
 
 class TestPluginCommand(unittest.TestCase):
     def test_plugincommand_from_dict_all_fields(self):
-        plugincommand_dict = PluginCommandTestHelper.generate_data()
+        plugincommand_dict = TEST_DATA_ALL
         instance = PluginCommand.from_dict(deepcopy(plugincommand_dict))
         self.assertEqual(instance.name, plugincommand_dict["name"])
         self.assertEqual(instance.help_text, plugincommand_dict["help_text"])
@@ -46,7 +108,7 @@ class TestPluginCommand(unittest.TestCase):
         self.assertIsNotNone(instance.input)
         self.assertIsNotNone(instance.acceptance)
 
-        plugincommand_dict = PluginCommandTestHelper.generate_data_required_only()
+        plugincommand_dict = TEST_DATA_REQUIRED
         instance = PluginCommand.from_dict(deepcopy(plugincommand_dict))
         self.assertEqual(instance.name, plugincommand_dict["name"])
 

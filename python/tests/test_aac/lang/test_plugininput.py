@@ -5,35 +5,26 @@ import unittest
 from copy import deepcopy
 from aac.lang.plugininput import PluginInput
 
+TEST_DATA_ALL = {
+    "name": "test",
+    "description": "test",
+    "type": "test",
+    "default": "test",
+}
 
-class PluginInputTestHelper:
-    @staticmethod
-    def generate_data() -> dict:
-        return {
-            "name": "test",
-            "description": "test",
-            "type": "test",
-            "default": "test",
-        }
-
-    @staticmethod
-    def generate_data_required_only() -> dict:
-        return {
-            "name": "test",
-            "type": "test",
-        }
+TEST_DATA_REQUIRED = {"name": "test", "type": "test"}
 
 
 class TestPluginInput(unittest.TestCase):
     def test_plugininput_from_dict_all_fields(self):
-        plugininput_dict = PluginInputTestHelper.generate_data()
+        plugininput_dict = TEST_DATA_ALL
         instance = PluginInput.from_dict(deepcopy(plugininput_dict))
         self.assertEqual(instance.name, plugininput_dict["name"])
         self.assertEqual(instance.description, plugininput_dict["description"])
         self.assertEqual(instance.type, plugininput_dict["type"])
         self.assertEqual(instance.default, plugininput_dict["default"])
 
-        plugininput_dict = PluginInputTestHelper.generate_data_required_only()
+        plugininput_dict = TEST_DATA_REQUIRED
         instance = PluginInput.from_dict(deepcopy(plugininput_dict))
         self.assertEqual(instance.name, plugininput_dict["name"])
         self.assertEqual(instance.type, plugininput_dict["type"])

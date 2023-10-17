@@ -4,45 +4,48 @@
 import unittest
 from copy import deepcopy
 from aac.lang.generatortemplate import GeneratorTemplate
-from aac.lang.overwriteoption import OverwriteOption
-from aac.lang.jinjahelperfunction import JinjaHelperFunction
-from aac.lang.generatoroutputtarget import GeneratorOutputTarget
-from .test_overwriteoption import OverwriteOptionTestHelper
-from .test_jinjahelperfunction import JinjaHelperFunctionTestHelper
-from .test_generatoroutputtarget import GeneratorOutputTargetTestHelper
 
-
-class GeneratorTemplateTestHelper:
-    @staticmethod
-    def generate_data() -> dict:
-        return {
+TEST_DATA_ALL = {
+    "name": "test",
+    "description": "test",
+    "template_file": "test",
+    "overwrite": "OVERWRITE",
+    "helper_functions": [
+        {
             "name": "test",
             "description": "test",
-            "template_file": "test",
-            "overwrite": OverwriteOptionTestHelper.generate_data(),
-            "helper_functions": [JinjaHelperFunctionTestHelper.generate_data()],
-            "output_target": GeneratorOutputTargetTestHelper.generate_data(),
-            "output_path_uses_data_source_package": True,
-            "output_file_prefix": "test",
-            "output_file_name": "test",
-            "output_file_suffix": "test",
-            "output_file_extension": "test",
-        }
-
-    @staticmethod
-    def generate_data_required_only() -> dict:
-        return {
+            "package": "test",
+            "module": "test",
+            "function": "test",
+        },
+        {
             "name": "test",
-            "template_file": "test",
-            "overwrite": OverwriteOptionTestHelper.generate_data_required_only(),
-            "output_target": GeneratorOutputTargetTestHelper.generate_data_required_only(),
-            "output_file_extension": "test",
-        }
+            "description": "test",
+            "package": "test",
+            "module": "test",
+            "function": "test",
+        },
+    ],
+    "output_target": "CODE",
+    "output_path_uses_data_source_package": True,
+    "output_file_prefix": "test",
+    "output_file_name": "test",
+    "output_file_suffix": "test",
+    "output_file_extension": "test",
+}
+
+TEST_DATA_REQUIRED = {
+    "name": "test",
+    "template_file": "test",
+    "overwrite": "OVERWRITE",
+    "output_target": "CODE",
+    "output_file_extension": "test",
+}
 
 
 class TestGeneratorTemplate(unittest.TestCase):
     def test_generatortemplate_from_dict_all_fields(self):
-        generatortemplate_dict = GeneratorTemplateTestHelper.generate_data()
+        generatortemplate_dict = TEST_DATA_ALL
         instance = GeneratorTemplate.from_dict(deepcopy(generatortemplate_dict))
         self.assertEqual(instance.name, generatortemplate_dict["name"])
         self.assertEqual(instance.description, generatortemplate_dict["description"])
@@ -70,9 +73,7 @@ class TestGeneratorTemplate(unittest.TestCase):
             generatortemplate_dict["output_file_extension"],
         )
 
-        generatortemplate_dict = (
-            GeneratorTemplateTestHelper.generate_data_required_only()
-        )
+        generatortemplate_dict = TEST_DATA_REQUIRED
         instance = GeneratorTemplate.from_dict(deepcopy(generatortemplate_dict))
         self.assertEqual(instance.name, generatortemplate_dict["name"])
         self.assertEqual(

@@ -5,37 +5,23 @@ import unittest
 from copy import deepcopy
 from aac.lang.primitiveconstraintassignment import PrimitiveConstraintAssignment
 
+TEST_DATA_ALL = {"name": "test", "arguments": "{}"}
 
-class PrimitiveConstraintAssignmentTestHelper:
-    @staticmethod
-    def generate_data() -> dict:
-        return {
-            "name": "test",
-        }
-
-    @staticmethod
-    def generate_data_required_only() -> dict:
-        return {
-            "name": "test",
-        }
+TEST_DATA_REQUIRED = {"name": "test"}
 
 
 class TestPrimitiveConstraintAssignment(unittest.TestCase):
     def test_primitiveconstraintassignment_from_dict_all_fields(self):
-        primitiveconstraintassignment_dict = (
-            PrimitiveConstraintAssignmentTestHelper.generate_data()
-        )
+        primitiveconstraintassignment_dict = TEST_DATA_ALL
         instance = PrimitiveConstraintAssignment.from_dict(
             deepcopy(primitiveconstraintassignment_dict)
         )
         self.assertEqual(instance.name, primitiveconstraintassignment_dict["name"])
-        # self.assertEqual(
-        #     instance.arguments, primitiveconstraintassignment_dict["arguments"]
-        # )
-
-        primitiveconstraintassignment_dict = (
-            PrimitiveConstraintAssignmentTestHelper.generate_data_required_only()
+        self.assertEqual(
+            instance.arguments, primitiveconstraintassignment_dict["arguments"]
         )
+
+        primitiveconstraintassignment_dict = TEST_DATA_REQUIRED
         instance = PrimitiveConstraintAssignment.from_dict(
             deepcopy(primitiveconstraintassignment_dict)
         )

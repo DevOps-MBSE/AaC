@@ -5,37 +5,23 @@ import unittest
 from copy import deepcopy
 from aac.lang.schemaconstraintassignment import SchemaConstraintAssignment
 
+TEST_DATA_ALL = {"name": "test", "arguments": "{}"}
 
-class SchemaConstraintAssignmentTestHelper:
-    @staticmethod
-    def generate_data() -> dict:
-        return {
-            "name": "test",
-        }
-
-    @staticmethod
-    def generate_data_required_only() -> dict:
-        return {
-            "name": "test",
-        }
+TEST_DATA_REQUIRED = {"name": "test"}
 
 
 class TestSchemaConstraintAssignment(unittest.TestCase):
     def test_schemaconstraintassignment_from_dict_all_fields(self):
-        schemaconstraintassignment_dict = (
-            SchemaConstraintAssignmentTestHelper.generate_data()
-        )
+        schemaconstraintassignment_dict = TEST_DATA_ALL
         instance = SchemaConstraintAssignment.from_dict(
             deepcopy(schemaconstraintassignment_dict)
         )
         self.assertEqual(instance.name, schemaconstraintassignment_dict["name"])
-        # self.assertEqual(
-        #     instance.arguments, schemaconstraintassignment_dict["arguments"]
-        # )
-
-        schemaconstraintassignment_dict = (
-            SchemaConstraintAssignmentTestHelper.generate_data_required_only()
+        self.assertEqual(
+            instance.arguments, schemaconstraintassignment_dict["arguments"]
         )
+
+        schemaconstraintassignment_dict = TEST_DATA_REQUIRED
         instance = SchemaConstraintAssignment.from_dict(
             deepcopy(schemaconstraintassignment_dict)
         )

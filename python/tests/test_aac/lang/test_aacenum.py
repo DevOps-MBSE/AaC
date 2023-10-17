@@ -5,28 +5,18 @@ import unittest
 from copy import deepcopy
 from aac.lang.aacenum import AacEnum
 
+TEST_DATA_ALL = {"enumerated_values": ["test", "test"]}
 
-class AacEnumTestHelper:
-    @staticmethod
-    def generate_data() -> dict:
-        return {
-            "enumerated_values": ["test"],
-        }
-
-    @staticmethod
-    def generate_data_required_only() -> dict:
-        return {
-            "enumerated_values": ["test"],
-        }
+TEST_DATA_REQUIRED = {"enumerated_values": ["test", "test"]}
 
 
 class TestAacEnum(unittest.TestCase):
     def test_aacenum_from_dict_all_fields(self):
-        aacenum_dict = AacEnumTestHelper.generate_data()
+        aacenum_dict = TEST_DATA_ALL
         instance = AacEnum.from_dict(deepcopy(aacenum_dict))
         self.assertEqual(instance.enumerated_values, aacenum_dict["enumerated_values"])
 
-        aacenum_dict = AacEnumTestHelper.generate_data_required_only()
+        aacenum_dict = TEST_DATA_REQUIRED
         instance = AacEnum.from_dict(deepcopy(aacenum_dict))
         self.assertEqual(instance.enumerated_values, aacenum_dict["enumerated_values"])
 
