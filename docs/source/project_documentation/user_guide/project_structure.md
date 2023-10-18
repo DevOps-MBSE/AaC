@@ -75,11 +75,36 @@ For this example, `schemaA` references `schemaB`, and both definitions are in se
 
 Additionally, while it's possible to have multiple `import` definitions in a file, good style would suggest using a single `import` list per file.
 
+An example of a relative path import is:
 _schemaA.yaml_
 ```yaml
 import:
   files:
     - ./schemaB.yaml
+---
+schema:
+  name: schemaA
+  fields:
+    - name: sub-datastructure
+      type: schemaB
+    - name: integer
+      type: int
+```
+_schemaB.yaml_
+```yaml
+schema:
+  name: schemaB
+  fields:
+    - name: string
+      type: string
+```
+
+An example of a an absolute path import is:
+_schemaA.yaml_
+```yaml
+import:
+  files:
+    - C:/src/external/external_actors/schemaB.yaml
 ---
 schema:
   name: schemaA
