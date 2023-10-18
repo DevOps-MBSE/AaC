@@ -68,7 +68,7 @@ schema:
           type: string
 ```
 
-## Referencing AaC structures across files
+## Referencing AaC Structures Across Files
 Another consideration when deciding how to organize AaC definitions is which definitions reference each other. If `definition A` references `definition B`, then both definitions will need to be either declared in the same AaC file or `definition A` will need to define an `import` including the absolute or relative path to the file containing `definition B`.
 
 For this example, `schemaA` references `schemaB`, and both definitions are in separate files, as a result `schemaA` is importing the file containing `schemaB`.
