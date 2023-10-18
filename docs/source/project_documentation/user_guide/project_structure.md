@@ -21,7 +21,7 @@ src
 └── service_two
     └── service_two.yaml
 
-Because AaC does not require your models to be located within the same directory or even within the same directory as your AaC package install, you can house your model files however is necessary and logical for your project needs. An example of this might look like:
+Because AaC does not require your models to be located within the same directory, you can house your model files however is necessary and logical for your project needs. An example of this might look like:
 ```
 system/system.yaml
 external/external_interface_messages.yaml
