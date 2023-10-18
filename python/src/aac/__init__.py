@@ -12,7 +12,12 @@ if sys.version_info < (3, 9):
 import logging
 import os
 
+<<<<<<< HEAD
 __version__ = "0.3.14"
+=======
+
+__version__ = "0.3.13"
+>>>>>>> main
 __log_file_name__ = os.path.join(os.path.dirname(__file__), "aac.log")
 
 logging.basicConfig(
