@@ -66,14 +66,22 @@ class LanguageContext(object):
         schema = definition.structure["schema"]
         if "name" in schema:
           name = schema["name"]
+          found_module = True
           if "package" in schema:
             package = schema["package"]
             python_name = get_python_module_name(name)
             if name not in self.context_instance.schema_name_to_module:
               module_name = f"{package}.{python_name}"
-              module = import_module(module_name)
-              # loaded_packages.add(package)
-              self.context_instance.schema_name_to_module[name] = module
+              try:
+                module = import_module(module_name)
+              except ModuleNotFoundError as e:
+                # TODO:  This can happen if the parsed schema hasn't been created via gen-plugin yet
+                found_module = False
+                pass
+                # raise LanguageError(f"{e}\nCould not find module: {module_name}")
+              if found_module:
+                # if the module was found, add it to the context
+                self.context_instance.schema_name_to_module[name] = module
           # schema_defs_by_name[name] = definition
           if "root" in schema:
             root = schema["root"]
@@ -100,6 +108,34 @@ class LanguageContext(object):
       try:
         instance = class_obj.from_dict(deepcopy(structure))
       except TypeError as e:
+        error_message = e.args[0]
+        if "unexpected keyword argument" in error_message:
+          # this means the input structure has a field that the class doesn't expect
+          type_error = error_message[:error_message.find(".")]
+          field_error = error_message.split("\'")[1]
+          relevant_lexeme = None
+          for lexeme in definition.lexemes:
+            if field_error in lexeme.value:
+              relevant_lexeme = lexeme
+              break
+          if relevant_lexeme:
+            usr_message = f"Unexpected field for {type_error} definition: {field_error}\n   - {relevant_lexeme.source}, line {relevant_lexeme.location.line + 1}"
+            # look up the defining type causing the error
+            defining_type = self.get_definition_by_name(type_error)
+            if defining_type:
+              usr_message = f"{usr_message}\nThe schema '{type_error}' may contain the following fields:"
+              for field in defining_type.instance.fields:
+                usr_message += f"\n   - {field.name}"
+                if field.is_required:
+                  usr_message += " (required)"
+                if field.description:
+                  usr_message += f": {field.description}"
+            else:
+              usr_message += f"\n   - {defining_type.lexemes[0].source}, line {defining_type.lexemes[0].location.line + 1}"
+            raise(LanguageError(usr_message))
+          else:
+            usr_message = f"Unexpected field for {type_error} definition: {field_error}"
+            raise(LanguageError(usr_message))
         raise LanguageError(f"{e}\nCould not create instance of {defining_schema_name} with name {name} from structure: {structure}")
     
       definition.instance = instance

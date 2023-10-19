@@ -6,7 +6,8 @@ from os.path import join, dirname
 from aac.execute.plugin_runner import AacCommand
 
 
-from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus
+from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus, LanguageError, ExecutionMessage, OperationCancelled
+from aac.in_out.parser import ParserError
 from aac.plugins.check.checkaac_impl import plugin_name, check
 
 
@@ -22,21 +23,35 @@ check_cache: dict[tuple, ExecutionResult] = {}
 def run_check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult:
     """Perform AaC file quality checks using defined constraints in the AaC models."""
 
-    cache_key = (aac_file, fail_on_warn, verbose)
-    if cache_key in check_cache:
-        return check_cache[cache_key]
+    try:
+        cache_key = (aac_file, fail_on_warn, verbose)
+        if cache_key in check_cache:
+            return check_cache[cache_key]
 
-    result = ExecutionResult(plugin_name, "check", ExecutionStatus.SUCCESS, [])
+        result = ExecutionResult(plugin_name, "check", ExecutionStatus.SUCCESS, [])
 
-    check_result = check(aac_file, fail_on_warn, verbose)
-    if not check_result.is_success():
-        return check_result
-    else:
-        result.add_messages(check_result.messages)
+        check_result = check(aac_file, fail_on_warn, verbose)
+        if not check_result.is_success():
+            return check_result
+        else:
+            result.add_messages(check_result.messages)
 
-    check_cache[cache_key] = result
+        check_cache[cache_key] = result
 
-    return result
+        return result
+    except LanguageError as e:
+        return ExecutionResult(plugin_name, "check", ExecutionStatus.GENERAL_FAILURE, [ExecutionMessage(str(e), None, None)])
+    except OperationCancelled as e:
+        return ExecutionResult(plugin_name, "check", ExecutionStatus.OPERATION_CANCELLED, [ExecutionMessage(str(e), None, None)])
+    except ParserError as e:
+        usr_msg = f"The AaC file '{e.source}' could not be parsed.\n"
+        if e.errors:
+            usr_msg = f"{usr_msg}The following errors were encountered:\n"
+            for err in e.errors:
+                usr_msg += f"  - {err}\n"
+        if e.yaml_error:
+            usr_msg += f"The following YAML errors were encountered:\n  - {e.yaml_error}"
+        return ExecutionResult(plugin_name, "check", ExecutionStatus.PARSER_FAILURE, [ExecutionMessage(usr_msg, None, None)])
 
 
 @hookimpl

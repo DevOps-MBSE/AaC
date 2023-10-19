@@ -1,5 +1,6 @@
 schema:
   name: Message
+  package: echo
   fields:
   - name: body
     type: string

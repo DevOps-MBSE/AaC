@@ -7,19 +7,20 @@ model:
   description: This is a message mirror.
   behavior:
     - name: echo
-      type: REQUEST_RESPONSE
       description: This is the one thing it does.
       input:
-        - name: inbound
+        - name: request
           type: Message
       output:
-        - name: outbound
+        - name: response
           type: Message
       acceptance:
-        - scenario: onReceive
-          given:
-           - The EchoService is running.
-          when:
-            - The user sends a message to EchoService.
-          then:
-            - The user receives the same message from EchoService.
+        - name: Normal operations
+          scenarios: 
+            - name: onReceive
+              given:
+                - The EchoService is running.
+              when:
+                - The user sends a message to EchoService.
+              then:
+                - The user receives the same message from EchoService.

@@ -189,7 +189,7 @@ def _read_arch_file_content(arch_file: str) -> str:
 def get_definitions_by_root_key(root_key: str, definitions: list[Definition]) -> list[Definition]:
     """Return a subset of definitions with the given root key.
 
-    The aac.io.parser.parse() function returns a dict of all parsed types.  Sometimes it is
+    The aac.in_out.parser.parse() function returns a dict of all parsed types.  Sometimes it is
     useful to only work with certain roots (i.e. model or schema).  This utility
     method allows a setup of parsed definitions to be "filtered" to a specific root key.
 

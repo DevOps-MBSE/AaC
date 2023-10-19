@@ -59,7 +59,7 @@ def check_directory(
     messages: list[ExecutionMessage] = []
 
     # Regular expression to match a directory path (AI generated regex)
-    directory_path_regex = r'^([a-zA-Z]:)?([\\/][^/\0<>:"|?*]*)+[/\\]?$'
+    directory_path_regex = r'^([a-zA-Z]:)?([\\/][^/\0<>:"|?*]*)*[\\/]?(\.{1,2}[\\/])?$'
     try:
         if not re.match(directory_path_regex, value):
             status = ExecutionStatus.CONSTRAINT_FAILURE
@@ -83,18 +83,18 @@ def check_file(
     messages: list[ExecutionMessage] = []
 
     # Regular expression to match a file path (AI generated regex)
-    file_path_regex = r'^([a-zA-Z]:)?([\\/][^/\0<>:"|?*]*)*[/\\]?$'
+    file_path_regex = r'^([a-zA-Z]:)?([\\/][^/\0<>:"|?*]*)*([\\/]?(\.{1,2}[\\/])?[\w\-\.]+)?$'
 
     try:
         if not re.match(file_path_regex, value):
             status = ExecutionStatus.CONSTRAINT_FAILURE
-            error_msg = ExecutionMessage(message=f"The value {value} is not a valid file path.", source=source, location=location)
+            error_msg = ExecutionMessage(message=f"The value {value} is not a valid file path. Regex error.", source=source, location=location)
             messages.append(error_msg)
 
         return ExecutionResult(plugin_name, "Check file", status, messages)
     except TypeError as error:
         status = ExecutionStatus.CONSTRAINT_FAILURE
-        error_msg = ExecutionMessage(message=f"The value {value} is not a valid file path.", source=source, location=location)
+        error_msg = ExecutionMessage(message=f"The value {value} is not a valid file path. TypeError.", source=source, location=location)
         messages.append(error_msg)
         return ExecutionResult(plugin_name, "Check file", status, messages)
 
