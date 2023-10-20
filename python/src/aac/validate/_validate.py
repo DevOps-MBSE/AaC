@@ -78,6 +78,9 @@ def _with_validation(
         result = _validate_definitions(user_definitions, language_context, validate_context)
 
         if result.is_valid():
+            print("The following file(s) have been validated:")
+            for definition in user_definitions:
+                print(definition.source.uri)
             return result
         else:
             raise ValidationError(result.get_messages_as_string())
