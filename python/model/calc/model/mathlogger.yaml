@@ -3,15 +3,16 @@ model:
   description:  A log management service for calculator.
   behavior:
     - name: api
-      type: LOGGING
       input:
         - name: log-message
           type: string
       acceptance:
-        - scenario: on-request
-          given:
-            - The MathMessageHandler is running
-          when:
-            - A log message is executed
-          then:
-            - The log message is written to the filesystem
+        - name: Test receive behavior
+          scenarios:
+            - name: onReceive
+              given:
+                - The MathLogger is running.
+              when:
+                - A log message is received.
+              then:
+                - The log message is written to the filesystem.

@@ -2,6 +2,7 @@ import types
 from typing import Any, Optional
 from importlib import import_module
 from copy import deepcopy
+from os import linesep
 from os.path import join, dirname
 from aac.execute.plugin_runner import AacCommand
 from aac.execute.aac_execution_result import LanguageError
@@ -46,6 +47,10 @@ class LanguageContext(object):
   
   def parse_and_load(self, arg: str) -> list[Definition]:
     parsed_definitions = parse(arg)
+
+    return self.load_definitions(parsed_definitions)
+  
+  def load_definitions(self, parsed_definitions: list[Definition]) -> list[Definition]:
 
     def get_python_module_name(name: str) -> str:
         return name.replace(" ", "_").replace("-", "_").lower()
@@ -92,7 +97,7 @@ class LanguageContext(object):
       # figure out the python type for the definition
       root_key = definition.get_root_key()
       if root_key not in schema_defs_by_root:
-        raise LanguageError(f"Could not find schema that defines root: {root_key}")
+        raise LanguageError(f"Could not find schema that defines root '{root_key}' in {definition.source.uri}")
       defining_schema = schema_defs_by_root[root_key]
       if not defining_schema:
         raise LanguageError(f"Could not find schema for root: {root_key}")
@@ -129,7 +134,7 @@ class LanguageContext(object):
                 if field.is_required:
                   usr_message += " (required)"
                 if field.description:
-                  usr_message += f": {field.description}"
+                  usr_message += f": {field.description.replace(linesep, ' ').strip()}"
             else:
               usr_message += f"\n   - {defining_type.lexemes[0].source}, line {defining_type.lexemes[0].location.line + 1}"
             raise(LanguageError(usr_message))
@@ -143,7 +148,12 @@ class LanguageContext(object):
       self.context_instance.definitions.add(definition)
       self.context_instance.fully_qualified_name_to_definition[f"{definition.package}.{definition.name}"] = definition
 
-    return result   
+    return result
+
+  def remove_definitions(self, definitions: list[Definition]) -> None:
+    for definition in definitions:
+      self.context_instance.definitions.remove(definition)
+      del self.context_instance.fully_qualified_name_to_definition[f"{definition.package}.{definition.name}"]  
         
   def get_definitions(self) -> list[Definition]:
     return list(self.context_instance.fully_qualified_name_to_definition.values())

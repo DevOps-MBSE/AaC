@@ -4,9 +4,11 @@ import sys, yaml
 from click import Argument, Command, Option, ParamType, Parameter, Path, UNPROCESSED, group, secho, types
 
 from aac.execute.plugin_runner import AacCommand, AacCommandArgument, PluginRunner
-from aac.execute.aac_execution_result import ExecutionResult
+from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus, ExecutionMessage, OperationCancelled, LanguageError
 from aac.context.language_context import LanguageContext
 from aac.in_out.parser._parser_error import ParserError
+
+from typing import Callable
 
 
 @group(context_settings=dict(help_option_names=["-h", "--help"]))
@@ -44,8 +46,30 @@ def to_click_parameter(argument: AacCommandArgument) -> Parameter:
         else Argument(names, **args)
     )
 
+def handle_exceptions(plugin_name: str, func: Callable) -> Callable:
+    """Decorator to catch and handle exceptions in a function."""
 
-def to_click_command(command: AacCommand) -> Command:
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except LanguageError as e:
+            return ExecutionResult(plugin_name, "check", ExecutionStatus.GENERAL_FAILURE, [ExecutionMessage(str(e), None, None)])
+        except OperationCancelled as e:
+            return ExecutionResult(plugin_name, "check", ExecutionStatus.OPERATION_CANCELLED, [ExecutionMessage(str(e), None, None)])
+        except ParserError as e:
+            usr_msg = f"The AaC file '{e.source}' could not be parsed.\n"
+            if e.errors:
+                usr_msg = f"{usr_msg}The following errors were encountered:\n"
+                for err in e.errors:
+                    usr_msg += f"  - {err}\n"
+            if e.yaml_error:
+                usr_msg += f"The following YAML errors were encountered:\n  - {e.yaml_error}"
+            return ExecutionResult(plugin_name, "check", ExecutionStatus.PARSER_FAILURE, [ExecutionMessage(usr_msg, None, None)])
+
+    return wrapper
+
+
+def to_click_command(plugin_name: str, command: AacCommand) -> Command:
     """Convert an AacCommand to a Click Command."""
 
     def is_required_arg(arg):
@@ -56,7 +80,7 @@ def to_click_command(command: AacCommand) -> Command:
 
     return Command(
         name=command.name,
-        callback=command.callback,
+        callback=handle_exceptions(plugin_name, command.callback),
         params=[to_click_parameter(arg) for arg in command.arguments],
         short_help=command.description,
         no_args_is_help=len([arg for arg in command.arguments if is_required_arg(arg)]) > 0,
@@ -90,7 +114,7 @@ def initialize_cli():
     try:
         runners: list[PluginRunner] = active_context.get_plugin_runners()
         for runner in runners:
-            commands = [to_click_command(cmd) for cmd in get_commands()]
+            commands = [to_click_command(runner.get_plugin_name(), cmd) for cmd in get_commands()]
             for command in commands:
                 cli.add_command(command)
     except ParserError as error:

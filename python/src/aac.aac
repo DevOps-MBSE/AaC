@@ -686,6 +686,11 @@ schema:
   package: aac.lang
   root: req
   fields:
+    - name: name
+      type: string
+      description: |
+        The name or title of the requirement.
+      is_required: true
     - name: id
       type: string
       description: |
@@ -701,7 +706,7 @@ schema:
       type: dataref(req.id)[]
       description: |
         A list of requirements that this requirement is decomposed from.
-    - name: childern
+    - name: children
       type: dataref(req.id)[]
       description: |
         A list of requirements that are decomposed from this requirement.

@@ -44,6 +44,10 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult:
 
     def check_schema_constraint(source_definition: Definition, check_me: Any, check_against: Schema):
         """Runs all the constraints for a given schema."""
+        # make sure we've got a schema
+        if not isinstance(check_against, Schema):
+            return
+        
         # collact applicable constraints
         schema_constraints: list[SchemaConstraintAssignment] = []
         for runner in context.get_plugin_runners():

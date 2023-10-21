@@ -6,10 +6,11 @@ from copy import deepcopy
 from aac.lang.requirement import Requirement
 
 TEST_DATA_ALL = {
+    "name": "test",
     "id": "test",
     "shall": "test",
     "parents": ["test", "test"],
-    "childern": ["test", "test"],
+    "children": ["test", "test"],
     "parameters": ["test", "test"],
     "verification_method": "ANALYSIS",
     "attributes": [
@@ -18,23 +19,25 @@ TEST_DATA_ALL = {
     ],
 }
 
-TEST_DATA_REQUIRED = {"id": "test", "shall": "test"}
+TEST_DATA_REQUIRED = {"name": "test", "id": "test", "shall": "test"}
 
 
 class TestRequirement(unittest.TestCase):
     def test_requirement_from_dict_all_fields(self):
         requirement_dict = TEST_DATA_ALL
         instance = Requirement.from_dict(deepcopy(requirement_dict))
+        self.assertEqual(instance.name, requirement_dict["name"])
         self.assertEqual(instance.id, requirement_dict["id"])
         self.assertEqual(instance.shall, requirement_dict["shall"])
         self.assertEqual(instance.parents, requirement_dict["parents"])
-        self.assertEqual(instance.childern, requirement_dict["childern"])
+        self.assertEqual(instance.children, requirement_dict["children"])
         self.assertEqual(instance.parameters, requirement_dict["parameters"])
         self.assertIsNotNone(instance.verification_method)
         self.assertIsNotNone(instance.attributes)
 
         requirement_dict = TEST_DATA_REQUIRED
         instance = Requirement.from_dict(deepcopy(requirement_dict))
+        self.assertEqual(instance.name, requirement_dict["name"])
         self.assertEqual(instance.id, requirement_dict["id"])
         self.assertEqual(instance.shall, requirement_dict["shall"])
 

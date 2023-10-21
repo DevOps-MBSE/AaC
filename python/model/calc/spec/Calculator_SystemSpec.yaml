@@ -4,35 +4,51 @@ import:
     - IntermediateMath_PIDS.yaml
     - ComplexMath_PIDS.yaml
 ---
-spec:
+req_spec:
   name: Calculator System Spec
   description: This is a specification structure to test the spec plugin.
   requirements:
-    - id: "CALC-1"
-      shall:  The test system shall log all messages it receives.
-      attributes:
-        - name: TADI
-          value: Test
-    - id: "CALC-2"
-      shall:  The test system shall log all messages it sends.
-      attributes:
-        - name: TADI
-          value: Test
+    - "CALC-1"
+    - "CALC-2"
 
   sections:
     - name: Functional Requirements
       description:  The calculator system performs simple math functions.
       requirements:
-        - id: "CALC-3"
-          shall: When receiving a math function message, the calculator shall respond with the result of the function.
-          attributes:
-            - name: TADI
-              value: Test
+        - "CALC-3"
     - name: Performance Requirements
       description:  The calculator system must be responsive.
       requirements:
-        - id: "CALC-4"
-          shall: When the calculator receives a message, the calculator shall respond within 500 ms.
-          attributes:
-            - name: TADI
-              value:  Test
+        - "CALC-4"
+---
+req:
+  name: Calculator Receive Logging
+  id: "CALC-1"
+  shall:  The test system shall log all messages it receives.
+  attributes:
+    - name: TADI
+      value: Test
+---
+req:
+  name: Calculator Send Logging
+  id: "CALC-2"
+  shall:  The test system shall log all messages it sends.
+  attributes:
+    - name: TADI
+      value: Test
+---
+req:
+  name: Calculator Function
+  id: "CALC-3"
+  shall: When receiving a math function message, the calculator shall respond with the result of the function.
+  attributes:
+    - name: TADI
+      value: Test
+---
+req:
+  name: Calculator Response Time
+  id: "CALC-4"
+  shall: When the calculator receives a message, the calculator shall respond within 500 ms.
+  attributes:
+    - name: TADI
+      value:  Test

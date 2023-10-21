@@ -2,17 +2,20 @@ import:
   files:
     - SimpleMath_PIDS.yaml
 ---
-spec:
+req_spec:
   name: Module Add SRS
   description:  This is a representative Software Requirements Specification for a module called Add.
   sections:
     - name: Section about adding numbers.
       requirements:
-        - id: "ADD-1"
-          shall:  When receiving an add message, the calculator shall respond with the sum of the provided values.
-          parent:
-            ids:
-              - "SM-1"
-          attributes:
-            - name: TADI
-              value: Test
+        - "ADD-1"
+---
+req:
+  name: Add
+  id: "ADD-1"
+  shall:  When receiving an add message, the calculator shall respond with the sum of the provided values.
+  parents:
+    - "SM-1"
+  attributes:
+    - name: TADI
+      value: Test

@@ -6,9 +6,8 @@ import:
 schema:
   name: MathRequest
   requirements:
-    ids:
-      - "CALC_IRS-1"
-      - "CALC_IRS-2"
+    - "CALC_IRS-1"
+    - "CALC_IRS-2"
   fields:
     - name: function
       type: MathFunction
