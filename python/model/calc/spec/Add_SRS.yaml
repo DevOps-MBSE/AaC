@@ -5,10 +5,8 @@ import:
 req_spec:
   name: Module Add SRS
   description:  This is a representative Software Requirements Specification for a module called Add.
-  sections:
-    - name: Section about adding numbers.
-      requirements:
-        - "ADD-1"
+  requirements:
+    - "ADD-1"
 ---
 req:
   name: Add

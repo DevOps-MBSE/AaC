@@ -9,9 +9,9 @@ model:
   description:  A simple calculator.
   components:
     - name: api
-      type: MathMessageHandler
+      model: MathMessageHandler
     - name: log
-      type: MathLogger
+      model: MathLogger
   behavior:
     - name: Perform simple math function (add or subtract)
       description: Add or subtract numbers

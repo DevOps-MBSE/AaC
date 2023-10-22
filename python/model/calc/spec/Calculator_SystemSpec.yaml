@@ -12,14 +12,20 @@ req_spec:
     - "CALC-2"
 
   sections:
-    - name: Functional Requirements
-      description:  The calculator system performs simple math functions.
-      requirements:
-        - "CALC-3"
-    - name: Performance Requirements
-      description:  The calculator system must be responsive.
-      requirements:
-        - "CALC-4"
+    - Functional Requirements
+    - Performance Requirements
+---
+req_spec:
+  name: Functional Requirements
+  description:  The calculator system performs simple math functions.
+  requirements:
+    - "CALC-3"
+---
+req_spec:
+  name: Performance Requirements
+  description:  The calculator system must be responsive.
+  requirements:
+    - "CALC-4"
 ---
 req:
   name: Calculator Receive Logging
