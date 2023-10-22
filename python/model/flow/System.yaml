@@ -11,14 +11,14 @@ model:
   description: A simple distributed system model
   components:
     - name: svc1
-      type: ServiceOne
+      model: ServiceOne
+      cardinallity: ONE
     - name: sub
-      type: Subsystem
+      model: Subsystem
     - name: svc3
-      type: ServiceThree
+      model: ServiceThree
   behavior:
     - name: Process DataA Request to DataD Response
-      type: REQUEST_RESPONSE
       description: process DataA and respond with DataD
       input:
         - name: in
@@ -27,14 +27,16 @@ model:
         - name: out
           type: DataD
       acceptance:
-        - scenario: Receive DataA request and return DataD response
-          given:
-            - System is running
-            - ServiceOne is running
-            - Subsystem is running
-            - ServiceThree is running
-          when:
-            - System receives a DataA request
-          then:
-            - System processes the request into a DataD response
-            - System returns the DataD response
+        - name: Receive DataA request and return DataD response
+          scenarios:
+            - name: Nominal
+              given:
+                - System is running
+                - ServiceOne is running
+                - Subsystem is running
+                - ServiceThree is running
+              when:
+                - System receives a DataA request
+              then:
+                - System processes the request into a DataD response
+                - System returns the DataD response

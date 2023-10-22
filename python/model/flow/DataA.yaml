@@ -3,9 +3,11 @@ import:
     - ./DataMessage.yaml
 ---
 schema:
-  inherits:
-    - DataMessage
+  extends:
+    - package: flow
+      name: DataMessage
   name: DataA
+  package: flow
   fields:
     - name: request
       type: string

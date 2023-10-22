@@ -1,6 +1,9 @@
 schema:
   name: DataMessage
+  package: flow
   description: Provides metadata for flow system messages.
+  modifiers:
+    - abstract
   fields:
     - name: source
       type: string

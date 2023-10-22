@@ -7,7 +7,6 @@ model:
   name: ServiceOne
   behavior:
     - name: Process DataA Request
-      type: REQUEST_RESPONSE
       description: Process a DataA request and return a DataB response
       input:
         - name: in
@@ -16,18 +15,20 @@ model:
         - name: out
           type: DataB
       acceptance:
-        - scenario: Receive DataA request and return DataB response
-          given:
-            - ServiceOne is running
-          when:
-            - ServiceOne receives a DataA request
-          then:
-            - ServiceOne processes the request into a DataB response
-            - ServiceOne returns the DataB response
-        - scenario: Receive invalid request
-          given:
-            - ServiceOne is running
-          when:
-            - ServiceOne receives request that isn't a DataA request
-          then:
-            - ServiceOne returns an error response code
+        - name: Test Case
+          scenarios: 
+            - name: Receive DataA request and return DataB response
+              given:
+                - ServiceOne is running
+              when:
+                - ServiceOne receives a DataA request
+              then:
+                - ServiceOne processes the request into a DataB response
+                - ServiceOne returns the DataB response
+            - name: Receive invalid request
+              given:
+                - ServiceOne is running
+              when:
+                - ServiceOne receives request that isn't a DataA request
+              then:
+                - ServiceOne returns an error response code

@@ -51,8 +51,6 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult:
                 source_definition.source, 
                 location
                 )
-            if not result.is_success():
-                print(f"DEBUG: check_primitive_constraint: constraint {constraint_name} failed for source: {source_definition.name}  field: {field}  value: {value_to_check} with message: {result.messages}")
             if constraint_name not in constraint_results:
                 constraint_results[constraint_name] = []
             constraint_results[constraint_name].append(result)

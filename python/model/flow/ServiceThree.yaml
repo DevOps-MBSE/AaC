@@ -7,7 +7,6 @@ model:
   name: ServiceThree
   behavior:
     - name: Process DataC Request
-      type: REQUEST_RESPONSE
       input:
         - name: in
           type: DataC
@@ -15,11 +14,13 @@ model:
         - name: out
           type: DataD
       acceptance:
-        - scenario: Receive DataC request and return DataD response
-          given:
-            - ServiceThree is running
-          when:
-            - ServiceThree receives a DataC request
-          then:
-            - ServiceThree processes the request into a DataD response
-            - ServiceThree returns the DataD response
+        - name: Test Case
+          scenarios: 
+          - name: Receive DataC request and return DataD response
+            given:
+              - ServiceThree is running
+            when:
+              - ServiceThree receives a DataC request
+            then:
+              - ServiceThree processes the request into a DataD response
+              - ServiceThree returns the DataD response

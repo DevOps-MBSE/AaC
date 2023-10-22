@@ -8,10 +8,9 @@ model:
   name: Subsystem
   components:
     - name: svc2
-      type: ServiceTwo
+      model: ServiceTwo
   behavior:
     - name: Delegate Processing DataB Request
-      type: REQUEST_RESPONSE
       input:
         - name: in
           type: DataB
@@ -19,12 +18,14 @@ model:
         - name: out
           type: DataC
       acceptance:
-        - scenario: Receive DataB request and return DataC response
-          given:
-            - Subsystem is running
-            - ServiceTwo is running
-          when:
-            - Subsystem receives a DataB request
-          then:
-            - Subsystem delegates the request processing to ServiceTwo which returns a DataC response
-            - Subsystem returns the DataC response
+        - name: Test Case
+          scenarios:
+          - name: Receive DataB request and return DataC response
+            given:
+              - Subsystem is running
+              - ServiceTwo is running
+            when:
+              - Subsystem receives a DataB request
+            then:
+              - Subsystem delegates the request processing to ServiceTwo which returns a DataC response
+              - Subsystem returns the DataC response

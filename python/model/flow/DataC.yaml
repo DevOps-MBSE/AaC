@@ -4,8 +4,10 @@ import:
 ---
 schema:
   name: DataC
-  inherits:
-    - DataMessage
+  package: flow
+  extends:
+    - package: flow
+      name: DataMessage
   fields:
     - name: internal_state_change
       type: string

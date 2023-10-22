@@ -7,7 +7,6 @@ model:
   name: ServiceTwo
   behavior:
     - name: Process DataB Request
-      type: REQUEST_RESPONSE
       description: Process a DataB request and return a DataC response
       input:
         - name: in
@@ -16,11 +15,13 @@ model:
         - name: out
           type: DataC
       acceptance:
-        - scenario: Receive DataB request and return DataC response
-          given:
-            - ServiceTwo is running
-          when:
-            - ServiceTwo receives a DataB request
-          then:
-            - ServiceTwo processes the request into a DataC response
-            - ServiceTwo returns the DataC response
+        - name: Test Case
+          scenarios:
+          - name: Receive DataB request and return DataC response
+            given:
+              - ServiceTwo is running
+            when:
+              - ServiceTwo receives a DataB request
+            then:
+              - ServiceTwo processes the request into a DataC response
+              - ServiceTwo returns the DataC response

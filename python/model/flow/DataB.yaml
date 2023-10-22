@@ -4,8 +4,10 @@ import:
 ---
 schema:
   name: DataB
-  inherits:
-    - DataMessage
+  package: flow
+  extends:
+    - package: flow
+      name: DataMessage
   fields:
     - name: transformed_request
       type: string
