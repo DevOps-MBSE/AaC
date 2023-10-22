@@ -61,16 +61,36 @@ class TestAaCprimitiveconstraints(TestCase):
         self.assertEqual(result.status_code, ExecutionStatus.CONSTRAINT_FAILURE, f"{plugin_name}: Check directory should return a constraint failure for an invalid directory type of '123'")
 
     def test_check_file(self):
-        # Test valid directory and file name
-        result = check_directory("/path/to/directory/my_file.txt", "", None, None)
+        # Test valid linux directory and file name
+        result = check_file("/path/to/directory/my_file.txt", "", None, None)
         self.assertEqual(result.status_code, ExecutionStatus.SUCCESS, f"{plugin_name}: Check file should return success for a valid directory path and file name of '/path/to/directory/my_file.txt'")
 
+        # Test valid windows directory and file name
+        result = check_file("c:\\path\\to\\directory\\my_file.txt", "", None, None)
+        self.assertEqual(result.status_code, ExecutionStatus.SUCCESS, f"{plugin_name}: Check file should return success for a valid directory path and file name of 'c:\path\\to\directory\my_file.txt'")
+
+        # Test valid relative path and file name
+        result = check_file("./path/to/directory/my_file.txt", "", None, None)
+        self.assertEqual(result.status_code, ExecutionStatus.SUCCESS, f"{plugin_name}: Check file should return success for a valid directory path and file name of './path/to/directory/my_file.txt'")
+
+        # Test valid relative path and file name
+        result = check_file("../path/to/directory/my_file.txt", "", None, None)
+        self.assertEqual(result.status_code, ExecutionStatus.SUCCESS, f"{plugin_name}: Check file should return success for a valid directory path and file name of '../path/to/directory/my_file.txt'")
+
+        # Test weird but valid relative path and file name
+        result = check_file("../path/to/../directory/my_file.txt", "", None, None)
+        self.assertEqual(result.status_code, ExecutionStatus.SUCCESS, f"{plugin_name}: Check file should return success for a valid directory path and file name of '../path/to/../directory/my_file.txt'")
+
+        # Test weird but valid relative path and file name
+        result = check_file("my_file.txt", "", None, None)
+        self.assertEqual(result.status_code, ExecutionStatus.SUCCESS, f"{plugin_name}: Check file should return success for a valid file only of 'my_file.txt'")
+
         # Test invalid directory path
-        result = check_directory("/path/with+/bad\characters|in/directory/my_file.txt", "", None, None)
+        result = check_file("/path/with+/bad\characters|in/directory/my_file.txt", "", None, None)
         self.assertEqual(result.status_code, ExecutionStatus.CONSTRAINT_FAILURE, f"{plugin_name}: Check file should return a constraint failure for a nonexistent directory path of '/path/with+/bad\characters|in/directory/my_file.txt'")
 
         # Test invalid directory path
-        result = check_directory("/path/with/bad/characters/in/file/name/m+y|f*ile.txt", "", None, None)
+        result = check_file("/path/with/bad/characters/in/file/name/m+y|f*ile.txt", "", None, None)
         self.assertEqual(result.status_code, ExecutionStatus.CONSTRAINT_FAILURE, f"{plugin_name}: Check file should return a constraint failure for a nonexistent directory path of '/path/with/bad/characters/in/file/name/m+y|f*ile.txt'")
 
         # Test invalid directory type

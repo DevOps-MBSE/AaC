@@ -40,15 +40,24 @@ def check_arguments_against_constraint_definition(
     constraint_args: dict = {}
     if instance.arguments is None:
         constraint_args = {}
-    elif not isinstance(instance.arguments, dict):
+    elif not isinstance(instance.arguments, list):
         error_msg = ExecutionMessage(
-            f"The Check arguments against constraint definition constraint for {instance.name} failed because the assigned arguments were not parsed as a dict and cannot be evaluated.  Receoved {instance.arguments}",
+            f"The Check arguments against constraint definition constraint for {instance.name} failed because the assigned arguments were not parsed as a list of entries and cannot be evaluated.  Received {instance.arguments}",
             definition.source,
             None,
         )
         return ExecutionResult(plugin_name, "Check arguments against constraint definition", ExecutionStatus.GENERAL_FAILURE, [error_msg])
     else:
-        constraint_args = instance.arguments
+        for arg in instance.arguments:
+            if not isinstance(arg, dict):
+                error_msg = ExecutionMessage(
+                    f"The Check arguments against constraint definition constraint for {instance.name} failed because the assigned arguments were not parsed as a list of PluginInputValue entries and cannot be evaluated.  Received {instance.arguments}",
+                    definition.source,
+                    None,
+                )
+                return ExecutionResult(plugin_name, "Check arguments against constraint definition", ExecutionStatus.GENERAL_FAILURE, [error_msg])
+            constraint_args[arg["name"]] = arg["value"]
+        
     constraint_definition = None
     for plugin in context.get_definitions_by_root("plugin"):
         for schema_constraint in plugin.instance.schema_constraints:

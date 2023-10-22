@@ -8,7 +8,10 @@ from aac.lang.model import Model
 TEST_DATA_ALL = {
     "name": "test",
     "description": "test",
-    "components": "test",
+    "components": [
+        {"name": "test", "description": "test", "cardinallity": "ONE", "model": "test"},
+        {"name": "test", "description": "test", "cardinallity": "ONE", "model": "test"},
+    ],
     "behavior": [
         {
             "name": "test",
@@ -255,7 +258,7 @@ class TestModel(unittest.TestCase):
         instance = Model.from_dict(deepcopy(model_dict))
         self.assertEqual(instance.name, model_dict["name"])
         self.assertEqual(instance.description, model_dict["description"])
-        self.assertEqual(instance.components, model_dict["components"])
+        self.assertIsNotNone(instance.components)
         self.assertIsNotNone(instance.behavior)
         self.assertIsNotNone(instance.state)
         self.assertEqual(instance.requirements, model_dict["requirements"])

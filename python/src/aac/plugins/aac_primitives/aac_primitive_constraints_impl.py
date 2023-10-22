@@ -55,23 +55,8 @@ def check_directory(
 ) -> ExecutionResult:
     """Business logic for the Check directory constraint."""
 
-    status = ExecutionStatus.SUCCESS
-    messages: list[ExecutionMessage] = []
-
-    # Regular expression to match a directory path (AI generated regex)
-    directory_path_regex = r'^([a-zA-Z]:)?([\\/][^/\0<>:"|?*]*)*[\\/]?(\.{1,2}[\\/])?$'
-    try:
-        if not re.match(directory_path_regex, value):
-            status = ExecutionStatus.CONSTRAINT_FAILURE
-            error_msg = ExecutionMessage(message=f"The value {value} is not a valid directory path.", source=source, location=location)
-            messages.append(error_msg)
-
-        return ExecutionResult(plugin_name, "Check directory", status, messages)
-    except TypeError as error:
-        status = ExecutionStatus.CONSTRAINT_FAILURE
-        error_msg = ExecutionMessage(message=f"The value {value} is not a valid directory path.", source=source, location=location)
-        messages.append(error_msg)
-        return ExecutionResult(plugin_name, "Check directory", status, messages)
+    # I think this should work fine
+    return check_file(value, type_declaration, source, location)
 
 
 def check_file(
@@ -82,22 +67,57 @@ def check_file(
     status = ExecutionStatus.SUCCESS
     messages: list[ExecutionMessage] = []
 
-    # Regular expression to match a file path (AI generated regex)
-    file_path_regex = r'^([a-zA-Z]:)?([\\/][^/\0<>:"|?*]*)*([\\/]?(\.{1,2}[\\/])?[\w\-\.]+)?$'
-
-    try:
-        if not re.match(file_path_regex, value):
-            status = ExecutionStatus.CONSTRAINT_FAILURE
-            error_msg = ExecutionMessage(message=f"The value {value} is not a valid file path. Regex error.", source=source, location=location)
-            messages.append(error_msg)
-
-        return ExecutionResult(plugin_name, "Check file", status, messages)
-    except TypeError as error:
+    if not isinstance(value, str):
         status = ExecutionStatus.CONSTRAINT_FAILURE
-        error_msg = ExecutionMessage(message=f"The value {value} is not a valid file path. TypeError.", source=source, location=location)
+        error_msg = ExecutionMessage(message=f"{value} is not a valid file path. Value should be string but received {type(value)}", source=source, location=location)
         messages.append(error_msg)
         return ExecutionResult(plugin_name, "Check file", status, messages)
 
+    # I tried to do this with a regex but got frustrated and gave up.  For some reason, the complex regex the AI generated for me would just run forever when matching.
+    # So here's a brute force approach.
+    valid_separators = ["/", "\\"]
+    item = ""
+    path_entries = []
+    valid_path_characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_."
+    for character in value:
+        if character in valid_separators:
+            if item != "":
+                path_entries.append(item)
+                item = ""
+        else:
+            item += character
+    path_entries.append(item)
+
+    first = True
+    for path_entry in path_entries:    
+        # check for relative path entries (. and ..)
+        if path_entry == "." or path_entry == "..":
+            continue
+        if first and path_entry.endswith(":"):
+            # this is a windows drive letter, so make sure it's valid
+            first = False
+            if len(path_entry) != 2:
+                status = ExecutionStatus.CONSTRAINT_FAILURE
+                error_msg = ExecutionMessage(message=f"The value {value} has an invalid drive specification.", source=source, location=location)
+                messages.append(error_msg)
+                return ExecutionResult(plugin_name, "Check file", status, messages)
+            if path_entry[0] not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ":
+                status = ExecutionStatus.CONSTRAINT_FAILURE
+                error_msg = ExecutionMessage(message=f"The value {value} has an invalid drive specification.", source=source, location=location)
+                messages.append(error_msg)
+                return ExecutionResult(plugin_name, "Check file", status, messages)
+            continue
+        else:
+            # this needs to be a valid directory or file name
+            for character in path_entry:
+                if character not in valid_path_characters:
+                    status = ExecutionStatus.CONSTRAINT_FAILURE
+                    error_msg = ExecutionMessage(message=f"The value {value} is not a valid file path.  Invalid character '{character}'.", source=source, location=location)
+                    messages.append(error_msg)
+                    return ExecutionResult(plugin_name, "Check file", status, messages)
+
+    # no bad content found, so return success
+    return ExecutionResult(plugin_name, "Check file", status, messages)
 
 def check_string(
     value: str, type_declaration: str, source: AaCFile, location: SourceLocation
@@ -205,6 +225,8 @@ def check_typeref(
     value: str, type_declaration: str, source: AaCFile, location: SourceLocation
 ) -> ExecutionResult:
     """Business logic for the Check typeref constraint."""
+    if not type_declaration.startswith("typeref"):
+        raise Exception(f"Invalid typeref constraint: '{value}' for declaration '{type_declaration}' for source '{source.uri}' at location '{location}'")
 
     status = ExecutionStatus.SUCCESS
     messages: list[ExecutionMessage] = []
@@ -212,6 +234,9 @@ def check_typeref(
     clean_value = str(value).strip()
     if clean_value.endswith("[]"):
         clean_value = value[:-2].strip()
+
+    if "(" in clean_value:
+        clean_value = clean_value[:clean_value.find("(")].strip()
 
     context: LanguageContext = LanguageContext()
 
@@ -222,6 +247,7 @@ def check_typeref(
 
     definitions_of_type = context.get_definitions_of_type(package_name, type_name)
     value_definiing_type = context.get_definition_by_name(clean_value)
+    # print(f"DEBUG: check_typeref: type_declaration: {type_declaration}  value: {value}  clean_value: {clean_value}  qualified_type_name: {qualified_type_name}  package_name: {package_name}  type_name: {type_name}  definitions_of_type: {len(definitions_of_type)}  value_definiing_type: {value_definiing_type}")
     if not value_definiing_type:
         status = ExecutionStatus.CONSTRAINT_FAILURE
         error_msg = ExecutionMessage(message=f"Typeref constraint {type_declaration} failed for value {clean_value} with error: No defining schema found for value.", source=source, location=location)

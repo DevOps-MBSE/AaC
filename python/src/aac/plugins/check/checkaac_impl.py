@@ -9,7 +9,7 @@ from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus, L
 from aac.lang.primitive import Primitive
 from aac.lang.schema import Schema
 from aac.lang.schemaconstraintassignment import SchemaConstraintAssignment
-from aac.in_out.parser import parse
+from aac.lang.field import Field
 
 plugin_name = "CheckAaC"
 
@@ -17,7 +17,7 @@ plugin_name = "CheckAaC"
 def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult:
     """Business logic for the check command."""
 
-    constraint_results: dict[str, ExecutionResult] = {}
+    constraint_results: dict[str, list[ExecutionResult]] = {}
 
     context: LanguageContext = LanguageContext()
 
@@ -29,7 +29,7 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult:
 
     # we'll need to resurse our way through the schema to check all the constraints
     # so we'll create a couple functions to help us navigate the way
-    def check_primitiveConstraint(source_definition: Definition, value_to_check: Any, primitive_declaration: str, defining_primitive: Primitive):
+    def check_primitive_constraint(field: Field, source_definition: Definition, value_to_check: Any, primitive_declaration: str, defining_primitive: Primitive):
         """Runs all the constraints for a given primitive."""
 
         # Check the value_to_check against the defining_primitive
@@ -39,8 +39,23 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult:
             constraint_args = constraint_assignment.arguments
             callback = all_constraints_by_name[constraint_name]
             # TODO: fix this location hack!
-            result: ExecutionResult = callback(value_to_check, primitive_declaration, constraint_args, source_definition.source, None)
-            constraint_results[constraint_name] = result
+            locations = [lexeme.location for lexeme in source_definition.lexemes if lexeme.value == value_to_check]
+            location = None
+            if len(locations) > 0:
+                location = locations[0]
+            # print(f"DEBUG: check_primitiveConstraint: checking source_definition: {source_definition.name}")
+            result: ExecutionResult = callback(
+                value_to_check, 
+                primitive_declaration, 
+                constraint_args, 
+                source_definition.source, 
+                location
+                )
+            if not result.is_success():
+                print(f"DEBUG: check_primitive_constraint: constraint {constraint_name} failed for source: {source_definition.name}  field: {field}  value: {value_to_check} with message: {result.messages}")
+            if constraint_name not in constraint_results:
+                constraint_results[constraint_name] = []
+            constraint_results[constraint_name].append(result)
 
     def check_schema_constraint(source_definition: Definition, check_me: Any, check_against: Schema):
         """Runs all the constraints for a given schema."""
@@ -65,8 +80,12 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult:
             constraint_name = constraint_assignment.name
             constraint_args = constraint_assignment.arguments
             callback = all_constraints_by_name[constraint_name]
+            # print(f"DEBUG: check_schema_constraint: checking constraing '{constraint_name}' against schema '{check_against.name}'")
             result: ExecutionResult = callback(check_me, source_definition, check_against, constraint_args)
-            constraint_results[constraint_name] = result
+            # TODO this would be a good place to add some verbose logging
+            if constraint_name not in constraint_results:
+                constraint_results[constraint_name] = []
+            constraint_results[constraint_name].append(result)
 
         # loop through the fields on the check_against schema
         for field in check_against.fields:
@@ -89,6 +108,7 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult:
             field_definining_schema = context.get_definition_by_name(type_name)
 
             if not field_definining_schema:
+                # TODO: convert this to a Constraint Failure
                 raise LanguageError(f"Could not find schema for field: {field.name} of type: {field.type}")
             if field_definining_schema.get_root_key() == "primitive":
                 # if the field is a primitive, run the primitive constraints
@@ -97,11 +117,12 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult:
                     for item in getattr(check_me, field.name):
                         value_to_check = item
                         if value_to_check is not None:
-                            check_primitiveConstraint(source_definition, item, field.type[:-2],field_definining_schema.instance)
+                            check_primitive_constraint(field, source_definition, item, field.type[:-2],field_definining_schema.instance)
                 else:
                     value_to_check = getattr(check_me, field.name)
                     if value_to_check is not None:
-                        check_primitiveConstraint(source_definition, getattr(check_me, field.name), field.type, field_definining_schema.instance)
+                        # print(f"DEBUG: check {check_against.name} field: {field.name} of type: {field.type} for value: {value_to_check}")
+                        check_primitive_constraint(field, source_definition, value_to_check, field.type, field_definining_schema.instance)
             else:
                 # if the field is a schema, run the schema constraints
                 if is_list:
@@ -124,7 +145,9 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult:
                 continue
             callback = all_constraints_by_name[context_constraint.name]
             result: ExecutionResult = callback(context)
-            constraint_results[context_constraint.name] = result
+            if context_constraint.name not in constraint_results:
+                constraint_results[context_constraint.name] = []
+            constraint_results[context_constraint.name].append(result)
 
     for check_me in definitions_to_check:
         defining_schema = context.get_defining_schema_for_root(check_me.get_root_key())
@@ -133,21 +156,24 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult:
     # loop through all the constraint results and see if any of them failed
     messages = []
     status = ExecutionStatus.SUCCESS
-    for name, result in constraint_results.items():
-        if result.is_success():
-            # if the result is a success, add the messages to the list if we're in verbose mode
-            # because these should only be info messages
-            if verbose:
+    for name, results in constraint_results.items():
+        for result in results:
+            if result.is_success():
+                # if the result is a success, add the messages to the list if we're in verbose mode
+                # because these should only be info messages
+                if verbose:
+                    messages.extend(result.messages)
+            elif result.status_code == ExecutionStatus.CONSTRAINT_WARNING:
+                # if the result is a warning, add the messages to the list and fail the check if fail_on_warn is true
+                if fail_on_warn:
+                    status = ExecutionStatus.CONSTRAINT_FAILURE
                 messages.extend(result.messages)
-        elif result.status_code == ExecutionStatus.CONSTRAINT_WARNING:
-            # if the result is a warning, add the messages to the list and fail the check if fail_on_warn is true
-            if fail_on_warn:
-                status = result.status_code
-            messages.extend(result.messages)
-        else:
-            # Any failure (including a constraint failure) is handled the same way
-            status = result.status_code
-            messages.extend(result.messages)
+            else:
+                # Any failure (including a constraint failure) is handled the same way
+                messages.extend(result.messages)
+                # don't change the status if already a failure
+                if status != ExecutionStatus.CONSTRAINT_FAILURE:
+                    status = result.status_code
 
     # after goign through all the constraint results, if we're still success add a success message
     if status == ExecutionStatus.SUCCESS:

@@ -18,7 +18,19 @@ from typing import Any
 
 plugin_name = "Root schema must have name"
 
-
+def _get_fields(schema: Schema) -> list[str]:
+    """Returns a list of the fields in the parent schema."""
+    context: LanguageContext = LanguageContext()
+    fields: list[str] = []
+    for field in schema.fields:
+        fields.append(field.name)
+    if schema.extends:
+        for ext in schema.extends:
+            parent_schema = context.get_definition_by_name(ext.name)
+            if parent_schema:
+                fields.extend(_get_fields(parent_schema.instance))
+    return fields
+    
 def root_schema_has_name(
     instance: Any, definition: Definition, defining_schema: Schema
 ) -> ExecutionResult:
@@ -30,7 +42,13 @@ def root_schema_has_name(
     
     if isinstance(instance, Schema):
         if instance.root:
-            if len([field.name for field in instance.fields if field.name == "name"]) == 0:
+            # we have one special case for 'import' which is a root without a name, so allow that
+            if instance.root == "import":
+                return ExecutionResult(plugin_name, "Root schema has name", status, messages)
+            
+            # get the list of fields in the instance as well as the fields in the parent schema
+            fields = _get_fields(instance)
+            if "name" not in fields:
                 status = ExecutionStatus.GENERAL_FAILURE
                 error_msg = ExecutionMessage(
                 message=f"Root schema {instance.name} must have a field named 'name'",

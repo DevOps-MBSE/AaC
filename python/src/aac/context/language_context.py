@@ -212,9 +212,9 @@ class LanguageContext(object):
       for extension in check_me.instance.extends:
         ext_package = extension.package
         ext_name = extension.name
-        child_definition = self.context_instance.fully_qualified_name_to_definition[f"{ext_package}.{ext_name}"]
-        result.append(child_definition)
-        result.extend(self._recurse_type_inheritance(child_definition))
+        parent_definition = self.context_instance.fully_qualified_name_to_definition[f"{ext_package}.{ext_name}"]
+        result.append(parent_definition)
+        result.extend(self._recurse_type_inheritance(parent_definition))
     return result
 
   def get_definitions_of_type(self, package: str, name: str) -> list[Definition]:
@@ -225,7 +225,7 @@ class LanguageContext(object):
     # now get all the definitions that extend from the definition
     definition = self.context_instance.fully_qualified_name_to_definition[f"{package}.{name}"]
     result.append(definition)
-    # loop through all definitions and see fi the type we care about is in it's inheritance tree
+    # loop through all definitions and see if the type we care about is in it's inheritance tree
     for item in self.get_definitions():
       inheritance_types = self._recurse_type_inheritance(item)
       if f"{package}.{name}" in [f"{definition.package}.{definition.name}" for definition in inheritance_types]:

@@ -282,7 +282,7 @@ schema:
       type: bool
       description: |
         Indicates that the field must be present when used.
-      default: false
+      default: "false"
     - name: default
       type: string
       description: |
@@ -792,7 +792,7 @@ schema:
         An explanatory description for the model including what the
         component/system is modeling and any other relevant information.
     - name: components
-      type: typeref(aac.lang.Model)
+      type: ModelComponent[]
       description: |
         A list of models that are components of the system.
     - name: behavior
@@ -810,6 +810,44 @@ schema:
       type: dataref(req.id)[]
       description: |
         A reference to requirements relevant to the modeled item.
+---
+schema:
+  name: ModelComponent
+  package: aac.lang
+  description: |
+    A component of a model, which may be reasonably described as a sub-model.
+  fields:
+    - name: name
+      type: string
+      description: |
+        The name of the component.
+      is_required: true
+    - name: description
+      type: string
+      description: |
+        An explanatory description for the component including what the
+        component is modeling and any other relevant information.
+    - name: cardinallity
+      type: Cardinallity
+      description: |
+        The cardinality of the component within the model.
+    - name: model
+      type: typeref(aac.lang.Model)
+      description: |
+        The name of the model declaration for the component.
+      is_required: true
+---
+aacenum:
+  name: Cardinallity
+  package: aac.lang
+  description: |
+    The cardinality of a relationship in a architecture model.
+  enumerated_values:
+    - ONE
+    - ZERO_OR_ONE
+    - ONE_OR_MORE
+    - ZERO_OR_MORE
+    - MANY
 ---
 schema:
   name: Behavior
@@ -1096,3 +1134,134 @@ schema:
         provided here against the constraint definition.
   constraints:
     - name: Check arguments against constraint definition
+---
+# Use Case Definitions
+---
+schema:
+  name: UsecaseActor
+  package: aac.lang
+  description: |
+    Actors represent roles played by external human uisers, hardware, and other subjects.
+    Actors may be linked to a model by populating the optional model field.  If not associated
+    with a model, the actor is considered external to the system.
+  root: actor
+  fields:
+    - name: name
+      type: string
+      description: |
+        The name of the actor.
+      is_required: true
+    - name: description
+      type: string
+      description: |
+        An explanatory description of the actor, including what the actor is, why it exists, etc.
+    - name: tags
+      type: string[]
+      description: |
+        Tags associated with the actor. These could be used to group similar
+        actors into categories like "front-end", "back-end", etc.
+    - name: model
+      type: dataref(model.name)
+      description: |
+        A model that participates in the use case.
+    - name: requirements
+      type: dataref(req.id)[]
+      description: |
+        A list of allocated requirements defining the expected behavior to be provided.
+---
+schema:
+  name: Usecase
+  package: aac.lang
+  root: usecase
+  description: |
+    A definition that represents a usecase for the system.
+    
+    An example of when to use a 'usecase' is when you want to define how the
+    system might be used in a particular instance.
+  fields:
+    - name: name
+      type: string
+      description: |
+        The name of the use case.
+      is_required: true
+    - name: package
+      type: string
+      description: |
+        The package with which to associate the use case.
+    - name: description
+      type: string
+      description: |
+        An explanatory description of the use case to include what purpose the
+        use case serves, design ideas when fulfilling the use case, etc.
+    - name: includes
+      type: dataref(usecase.name)[]
+      description: |
+        A list of usecases that this usecase uses.  The include (uses) relationship 
+        from usecase A to use case B indicates that an instance of the use case A 
+        will also contain the behavior as specified by B.
+    - name: extends
+      type: dataref(usecase.name)[]
+      description: |
+        A list of use cases that this use case extends.  A relationship from an 
+        extending use case to an extended use case that specifies when the behavior 
+        defined in the extending use case can be inserted into the behavior defined 
+        in the extended use case.
+    - name: participants
+      type: dataref(actor.name)[]
+      description: |
+        A list of participants in the use case.
+
+        Generally, these would be users, other systems, etc. that are
+        interacting with the system during the course of the use case.
+    - name: steps
+      type: dataref(usecase_step.name)[]
+      description: |
+        A list of steps taken in the use case. See 'Step'.
+---
+schema:
+  name: UsecaseStep
+  package: aac.lang
+  root: usecase_step
+  fields:
+    - name: name
+      type: string
+      description: |
+        The name of the step.
+      is_required: true
+    - name: source
+      type: dataref(actor.name)
+      description: |
+        The source for the step. This should be the name of a participant - i.e.
+        a modeled system component.
+    - name: target
+      type: dataref(actor.name)
+      description: |
+        The target for the step. This should be the name of a participant - i.e.
+        a modeled system component.
+    - name: action
+      type: dataref(model.behavior.name)
+      description: |
+        A behavior reference on the target or a subordinate use case definition.
+    - name: condition
+      type: UsecaseBranch[]
+      description: |
+        Used to create an "alt" in a sequence diagram.
+    - name: loop
+      type: UsecaseBranch
+      description: |
+        Used to create a loop in a sequence diagram.
+---
+schema:
+  name: UsecaseBranch
+  package: aac.lang
+  fields:
+    - name: condition
+      type: string
+      description: |
+        A condition to test whether a sequence of steps should be performed.
+      is_required: true
+    - name: steps
+      type: dataref(usecase_step.name)[]
+      description: |
+        A list of steps to perform if the condition for the branch is "true".
+      is_required: true

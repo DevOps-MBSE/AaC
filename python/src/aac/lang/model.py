@@ -7,6 +7,7 @@ import attr
 from typing import Optional, Any
 from attr import attrib, validators
 
+from aac.lang.modelcomponent import ModelComponent
 from aac.lang.behavior import Behavior
 from aac.lang.field import Field
 
@@ -18,7 +19,7 @@ class Model:
 
     name: str - The name of the model.
     description: Optional[str] - An explanatory description for the model including what the component/system is modeling and any other relevant information.
-    components: Optional[str] - A list of models that are components of the system.
+    components: list[ModelComponent]] - A list of models that are components of the system.
     behavior: list[Behavior]] - A list of behaviors that the system being modeled will perform.
     state: list[Field]] - A list of data items representing internal state of the modeled entity. State is visible within the model but is not visible to other models. State may be visible between multiple instances of the modeled entity to support horizontal scaling.
     requirements: list[str] - A reference to requirements relevant to the modeled item.
@@ -28,8 +29,8 @@ class Model:
     description: Optional[str] = attrib(
         init=attr.ib(), validator=validators.optional(validators.instance_of(str))
     )
-    components: Optional[str] = attrib(
-        init=attr.ib(), validator=validators.optional(validators.instance_of(str))
+    components: list[ModelComponent] = attrib(
+        init=attr.ib(), validator=validators.instance_of(list[ModelComponent])
     )
     behavior: list[Behavior] = attrib(
         init=attr.ib(), validator=validators.instance_of(list[Behavior])
@@ -48,7 +49,8 @@ class Model:
         description = data.pop("description", None)
         args["description"] = description
 
-        components = data.pop("components", None)
+        components_data = data.pop("components", [])
+        components = [ModelComponent.from_dict(entry) for entry in components_data]
         args["components"] = components
 
         behavior_data = data.pop("behavior", [])
