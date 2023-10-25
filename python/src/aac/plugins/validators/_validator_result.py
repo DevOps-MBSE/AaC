@@ -43,7 +43,7 @@ class ValidatorResult:
                 if definition.source.uri not in definition_sources:
                     definition_sources.append(definition.source.uri)
 
-            return "\n".join(f"The definitions in {definition.source.uri}" for definition in definition_sources)
+            return "\n".join(f"The definitions in {definition_file}" for definition_file in definition_sources)
 
         else:
             return "\n".join([format_message(finding) for finding in self.findings.get_all_findings()])
