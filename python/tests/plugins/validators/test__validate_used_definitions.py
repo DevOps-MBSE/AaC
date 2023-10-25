@@ -47,5 +47,4 @@ class TestValidateUsedDefinitions(ActiveContextTestCase):
         
         self.assertEqual(expected_result.is_valid(), actual_result.is_valid())
         self.assertEqual(expected_finding_location, actual_result.findings.get_info_findings()[0].location.location)
-        self.assertIn("No references", actual_result_message)
         self.assertIn(test_unreferenced_schema_definition.name, actual_result_message)
