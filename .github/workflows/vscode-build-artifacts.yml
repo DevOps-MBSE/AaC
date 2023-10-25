@@ -36,7 +36,7 @@ jobs:
         run: pip install ../python/dist/*.whl
 
       - name: Download Python REST API OpenAPI Spec
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: rest-api-documentation
           path: vscode_extension/
