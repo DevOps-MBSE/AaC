@@ -36,9 +36,14 @@ class ValidatorResult:
                 f"\nValidation {finding.severity.name} from '{loc.validation_name}' in {loc.source.uri} "
                 f"at {loc.location.line + 1}:{loc.location.column} {finding.message}"
             )
-        
-        if len(self.findings.get_error_findings()) == 0:
-            validated_defintions = self.definitions
-            return "\n".join(f"The definitions in {definition.source.uri}" for definition in validated_defintions)
 
-        return "\n".join([format_message(finding) for finding in self.findings.get_all_findings()])
+        if len(self.findings.get_error_findings()) == 0:
+            definition_sources = []
+            for definition in self.definitions:
+                if definition.source.uri not in definition_sources:
+                    definition_sources.append(definition.source.uri)
+
+            return "\n".join(f"The definitions in {definition_file} meet all validation constraints." for definition_file in definition_sources)
+
+        else:
+            return "\n".join([format_message(finding) for finding in self.findings.get_all_findings()])
