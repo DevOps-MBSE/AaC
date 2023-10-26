@@ -37,13 +37,14 @@ class ValidatorResult:
                 f"at {loc.location.line + 1}:{loc.location.column} {finding.message}"
             )
 
-        if len(self.findings.get_error_findings()) == 0:
+        valid_files_output = ""
+
+        if self.is_valid():
             definition_sources = []
             for definition in self.definitions:
                 if definition.source.uri not in definition_sources:
                     definition_sources.append(definition.source.uri)
 
-            return "\n".join(f"The definitions in {definition_file}" for definition_file in definition_sources)
+            valid_files_output = "\n".join(f"The definitions in {definition_file}" for definition_file in definition_sources)
 
-        else:
-            return "\n".join([format_message(finding) for finding in self.findings.get_all_findings()])
+        return valid_files_output + "\n".join([format_message(finding) for finding in self.findings.get_all_findings()])

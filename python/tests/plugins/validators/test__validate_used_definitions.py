@@ -30,7 +30,7 @@ class TestValidateUsedDefinitions(ActiveContextTestCase):
             "UnreferencedSchema", fields=[]
         )
         invalid_reference_error_message = ""
-        
+
         test_findings = ValidatorFindings()
         expected_finding_location = SourceLocation(1, 8, 16, 18)
         lexeme = Lexeme(expected_finding_location, "", "")
@@ -38,13 +38,14 @@ class TestValidateUsedDefinitions(ActiveContextTestCase):
             test_unreferenced_schema_definition, invalid_reference_error_message, "validate thing", lexeme
         )
         expected_result = ValidatorResult([test_unreferenced_schema_definition], test_findings)
-        
+
         test_active_context = get_core_spec_context([test_unreferenced_schema_definition])
         field_definition = test_active_context.get_definition_by_name("Field")
-        
+
         actual_result = validate_used_definitions(test_unreferenced_schema_definition, field_definition, test_active_context, "type")
         actual_result_message = actual_result.get_messages_as_string()
-        
+
         self.assertEqual(expected_result.is_valid(), actual_result.is_valid())
         self.assertEqual(expected_finding_location, actual_result.findings.get_info_findings()[0].location.location)
+        self.assertIn("No references", actual_result_message)
         self.assertIn(test_unreferenced_schema_definition.name, actual_result_message)
