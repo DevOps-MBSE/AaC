@@ -6,6 +6,11 @@ on:
   # Manual runs
   workflow_dispatch:
 
+# Configuring starting working directory
+defaults:
+  run:
+    working-directory: ./python
+
 # Set token permissions
 permissions:
   contents: read
