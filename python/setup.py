@@ -1,6 +1,7 @@
 import logging
 from setuptools import find_packages, setup
 from src.aac import __version__
+from os import linesep
 
 README_FILE_PATH = "../README.md"
 
@@ -8,7 +9,7 @@ try:
     with open(README_FILE_PATH, "r") as file_handler:
         readme_description = file_handler.read()
 except Exception as exception:
-    logging.error(f"Failed to open readme file {README_FILE_PATH} with error:\n {exception}")
+    logging.error(f"Failed to open readme file {README_FILE_PATH} with error:{linesep}  {exception}")
     readme_description = ""
 
 runtime_dependencies = [

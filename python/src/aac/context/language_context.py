@@ -2,7 +2,7 @@ import types
 from typing import Any, Optional, Type
 from enum import Enum, auto
 from os import linesep
-from os.path import join, dirname
+from os.path import join, dirname, sep
 from aac.execute.plugin_runner import AacCommand
 from aac.context.language_error import LanguageError
 from aac.execute.plugin_manager import get_plugin_manager
@@ -220,9 +220,9 @@ class LanguageContext(object):
               line = lexeme.location.line
               break
           if len(potential_definitions) == 0:
-            raise LanguageError(f"Could not find AaC definition for type {clean_field_type} while loading {schema_definition.name}\n  File: {schema_definition.source.uri}  Line: {line}")
+            raise LanguageError(sep.join([f"Could not find AaC definition for type {clean_field_type} while loading {schema_definition.name}", f"  File: {schema_definition.source.uri}  Line: {line}"]))
           else:
-            raise LanguageError(f"Discovered multipe AaC definitions for type {clean_field_type} while loading {schema_definition.name}.  You may need to add a package name to differentiate.\n  File: {schema_definition.source.uri}  Line: {line}\n  Found candidate definitions: {[definition.get_fully_qualified_name() for definition in potential_definitions]}")
+            raise LanguageError(sep.join([f"Discovered multipe AaC definitions for type {clean_field_type} while loading {schema_definition.name}.  You may need to add a package name to differentiate.", f"  File: {schema_definition.source.uri}  Line: {line}", f"  Found candidate definitions: {[definition.get_fully_qualified_name() for definition in potential_definitions]}"]))
         
         parsed_definition = potential_definitions[0] 
         

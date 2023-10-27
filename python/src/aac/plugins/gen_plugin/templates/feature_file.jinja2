@@ -7,7 +7,7 @@ Feature: {{ name }}
 {% for given in background.given %}{% if loop.index == 1 %}Given {{ background.given }}{% else %}And {{ background.given }}{% endif %}
 {% endfor %}
 {% endif %}
-  {% for scenario in scenarios %}{% if scenario.tags | length > 0 %}{% for tag in scenario.tags %}@{{tag}} {% endfor %}{{"\n"}}{% endif %}{% if scenario.examples %}Scenario Outline: {{ scenario.name }}{% else %}Scenario: {{ scenario.name }}
+  {% for scenario in scenarios %}{% if scenario.tags | length > 0 %}{% for tag in scenario.tags %}@{{tag}} {% endfor %}{% endif %}{% if scenario.examples %}Scenario Outline: {{ scenario.name }}{% else %}Scenario: {{ scenario.name }}
   {% endif %}
       {% for given in scenario.given %}{% if loop.index == 1 %}Given {{ given }}{% else %}And {{ given }}{% endif %}
       {% endfor %}{% for when in scenario.when %}{% if loop.index == 1 %}When {{ when }}{% else %}And {{ when }}{% endif %}

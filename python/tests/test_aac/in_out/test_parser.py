@@ -1,4 +1,5 @@
 from os.path import basename, sep, isfile, abspath
+from os import linesep
 from tempfile import TemporaryDirectory
 from typing import Optional
 from unittest import TestCase
@@ -33,7 +34,7 @@ class TestParser(TestCase):
             parse(filespec)
 
         # Assert that each error message is contained in the returned error message string.
-        errors = "\n".join(cm.exception.errors)
+        errors = sep.join(cm.exception.errors)
         list(map(lambda e: self.assertIn(e, errors), error_messages))
         self.assertEqual(cm.exception.source, filespec)
 
@@ -144,7 +145,7 @@ class TestParser(TestCase):
 
     def test_no_errors_for_empty_definitions(self):
         definitions = parse(
-            f"{TEST_MESSAGE_CONTENTS}{YAML_DOCUMENT_SEPARATOR}\n{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_CONTENTS}"
+            f"{TEST_MESSAGE_CONTENTS}{YAML_DOCUMENT_SEPARATOR}{linesep}{YAML_DOCUMENT_SEPARATOR}{TEST_STATUS_CONTENTS}"
         )
         self.assertEqual(len(definitions), 2)
 

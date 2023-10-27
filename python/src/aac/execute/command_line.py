@@ -1,6 +1,7 @@
 """The entry-point for the command line interface for the aac tool."""
 
 import sys, yaml
+from os import linesep
 from click import Argument, Command, Option, ParamType, Parameter, Path, UNPROCESSED, group, secho, types
 
 from aac.execute.plugin_runner import AacCommand, AacCommandArgument, PluginRunner
@@ -58,13 +59,13 @@ def handle_exceptions(plugin_name: str, func: Callable) -> Callable:
         except OperationCancelled as e:
             return ExecutionResult(plugin_name, "check", ExecutionStatus.OPERATION_CANCELLED, [ExecutionMessage(str(e), None, None)])
         except ParserError as e:
-            usr_msg = f"The AaC file '{e.source}' could not be parsed.\n"
+            usr_msg = f"The AaC file '{e.source}' could not be parsed.{linesep}"
             if e.errors:
-                usr_msg = f"{usr_msg}The following errors were encountered:\n"
+                usr_msg = f"{usr_msg}The following errors were encountered:{linesep}"
                 for err in e.errors:
-                    usr_msg += f"  - {err}\n"
+                    usr_msg += f"  - {err}{linesep}"
             if e.yaml_error:
-                usr_msg += f"The following YAML errors were encountered:\n  - {e.yaml_error}"
+                usr_msg += f"The following YAML errors were encountered:{linesep}  - {e.yaml_error}"
             return ExecutionResult(plugin_name, "check", ExecutionStatus.PARSER_FAILURE, [ExecutionMessage(usr_msg, None, None)])
 
     return wrapper
@@ -123,12 +124,9 @@ def initialize_cli():
         print (f"Error while parsing YAML file: {error.source}")
         if hasattr(exc, 'problem_mark'):
             if exc.context != None:
-                print ('  parser says\n' + str(exc.problem_mark) + '\n  ' +
-                    str(exc.problem) + ' ' + str(exc.context) +
-                    '\nPlease correct data and retry.')
+                print (f'  parser says{linesep} {str(exc.problem_mark)} {linesep}{str(exc.problem)} {str(exc.context)}{linesep}Please correct data and retry.')
             else:
-                print ('  parser says\n' + str(exc.problem_mark) + '\n  ' +
-                    str(exc.problem) + '\nPlease correct data and retry.')
+                print (f'  parser says{linesep}{str(exc.problem_mark)}{linesep}{str(exc.problem)}{linesep}Please correct data and retry.')
         else:
             print (f"Something went wrong while parsing yaml file: {error.source}")
 

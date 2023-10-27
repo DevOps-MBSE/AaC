@@ -9,8 +9,8 @@ from aac.in_out.files.aac_file import AaCFile
 from aac.context.source_location import SourceLocation
 from aac.context.language_context import LanguageContext
 
+from os import linesep
 from datetime import datetime
-import re
 
 
 plugin_name = "AaC primitive constraints"
@@ -151,7 +151,7 @@ def check_int(
     except Exception as error:
         is_invalid = True
         status = ExecutionStatus.CONSTRAINT_FAILURE
-        error_msg = ExecutionMessage(message=f"AaC int primitive constraint failed for value {value} with error:\n{error}", source=source, location=location)
+        error_msg = ExecutionMessage(message=f"AaC int primitive constraint failed for value {value} with error:{linesep}{error}", source=source, location=location)
         messages.append(error_msg)
 
     if is_invalid:
@@ -182,7 +182,7 @@ def check_number(
     except Exception as error:
         is_invalid = True
         status = ExecutionStatus.CONSTRAINT_FAILURE
-        error_msg = ExecutionMessage(message=f"AaC int primitive constraint failed for value {value} with error:\n{error}", source=source, location=location)
+        error_msg = ExecutionMessage(message=f"AaC int primitive constraint failed for value {value} with error:{linesep}{error}", source=source, location=location)
         messages.append(error_msg)
 
     if is_invalid:
