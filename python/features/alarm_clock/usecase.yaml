@@ -23,17 +23,17 @@ actor:
 ---
 usecase:
   name: Set Alarm Time
-  description: The user sets the time for the alarm clock.
+  description: The user sets the time for the alarm clock
   participants:
     - user
     - alarm_clock
     - timer
   steps:
-    - The user sets the time on system.
+    - The user sets the time on system
     - The alarm clock stores the time in the timer
 ---
 usecase_step:
-  name: The user sets the time on system.
+  name: The user sets the time on system
   source: user
   target: alarm
   action: setAlarm
@@ -56,28 +56,16 @@ usecase:
   steps:
     - The clock emits the current time to the timer
     - The timer emits an alarm notification to the alarm
-    - The alarm is activated to emit a noise from the AlarmClock speaker
-    - The alarm speaker emits the alarm noise to the user
 ---
 usecase_step:
   name: The clock emits the current time to the timer
   source: clock
   target: timer
-  action: emitCurrentTime
+  action: setTime
 ---
 usecase_step:
   name: The timer emits an alarm notification to the alarm
   source: timer
   target: alarm
-  action: emitAlarmTrigger
----
-usecase_step:
-  name: The alarm is activated to emit a noise from the AlarmClock speaker
-  source: alarm
-  target: alarmClock
-  action: triggerSpeaker
----
-usecase_step:
-  name: The alarm speaker emits the alarm noise to the user
-  source: alarmClock
-  target: user
+  action: triggerAlarm
+

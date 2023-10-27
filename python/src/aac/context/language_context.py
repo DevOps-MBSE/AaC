@@ -303,8 +303,11 @@ class LanguageContext(object):
               raise LanguageError(f"{item} is not a valid value for enum {defining_definition.name}")
           return result
         else:
+          if not field_value:
+            return None
           try:
-            return getattr(enum_class, field_value)
+            return self.create_aac_enum(defining_definition.get_fully_qualified_name(), field_value)
+            # return getattr(enum_class, field_value)
           except ValueError:
             raise LanguageError(f"{field_value} is not a valid value for enum {defining_definition.name}")
       else:

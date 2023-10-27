@@ -25,16 +25,13 @@ def no_extension_for_final(
 
     status = ExecutionStatus.SUCCESS
     messages: list[ExecutionMessage] = []
-    print(f"DEBUG: no_extension_for_final called with instance: {instance}")
     context = LanguageContext()
     if context.is_aac_instance(instance, "aac.lang.Schema"):
         if instance.extends:
-            print(f"DEBUG: instance.extends exists: {instance.extends}")
             for ext in instance.extends:
                 ext_definition = context.get_definitions_by_name(ext.name)
                 if len(ext_definition) != 1:
                     status = ExecutionStatus.GENERAL_FAILURE
-                    print(f"DEBUG: unresolved ext_definition for {ext.name} - {[ext.name for ext in ext_definition]}")
                     messages.append(
                         ExecutionMessage(
                             f"Cannot resolve unique tyep for extension {ext.name}.  Found {ext_definition}",
@@ -46,7 +43,6 @@ def no_extension_for_final(
                     ext_definition = ext_definition[0]
                     if ext_definition.instance.modifiers and "final" in ext_definition.instance.modifiers:
                         status = ExecutionStatus.CONSTRAINT_FAILURE
-                        print(f"DEBUG: found extension of final for {instance.name} amd ext pf {ext.name}")
                         messages.append(
                             ExecutionMessage(
                                 f"{definition.name} cannot extend {ext.name} because it is final.",

@@ -45,7 +45,7 @@ def before_gen_project_check(
     run_check,
 ) -> ExecutionResult:
     """Run the CheckAaC  command before the gen-project command."""
-    print(f"DEBUG: running check on {aac_project_file}")
+
     return run_check(aac_project_file, False, False)
 
 def gen_project(aac_project_file: str, output: str, no_prompt: bool, force_overwrite: bool, evaluate: bool) -> ExecutionResult:
@@ -57,7 +57,6 @@ def gen_project(aac_project_file: str, output: str, no_prompt: bool, force_overw
 
 def after_gen_project_generate(aac_project_file: str, output: str, no_prompt: bool, force_overwrite: bool, evaluate: bool, generate: Callable) -> ExecutionResult:
     gen_plugin_generator_file = path.abspath(path.join(path.dirname(__file__), "./gen_plugin_generator.aac"))
-    print(f"DEBUG: running generate on file {aac_project_file}")
     result =  generate(aac_project_file, gen_plugin_generator_file, output, output, output, no_prompt, force_overwrite, evaluate)
     if result.is_success():
         src_path = path.join(output, "src")

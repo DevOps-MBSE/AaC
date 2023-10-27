@@ -6,16 +6,6 @@ import:
     - ./ServiceThree.yaml
     - ./External.yaml
 ---
-usecase:
-  name: Nominal flow of data through the system.
-  description: Something happens.
-  participants:
-    - user
-    - system
-  steps:
-    - The user invokes doFlow on system.
-    - The system performs flow and responds to the user.
----
 actor:
   name: user
   description: |
@@ -26,31 +16,6 @@ actor:
   description: |
     The system that is being interacted with
   model: System
----
-usecase_step:
-  name: The user invokes doFlow on system.
-  source: user
-  target: system
-  action: Process DataA Request to DataD Response
----
-usecase_step:
-  name: The system performs flow and responds to the user.
-  source: system
-  target: user
----
-usecase:
-  name: Nominal flow within the system.
-  description:
-  participants:
-    - system
-    - svc1
-    - subsystem
-    - svc3
-  steps:
-    - The system has been invoked to doFlow which triggers scv1
-    - svc1 completes and calls subsystem to continue the flow
-    - subsystem completes and calls svc3 to continue the flow
-    - svc3 completes and provides the result back to system
 ---
 actor:
   name: svc1
@@ -69,6 +34,41 @@ actor:
   description: |
     The third service in the system
   model: ServiceThree
+---
+usecase:
+  name: Nominal flow of data through the system
+  description: Something happens.
+  participants:
+    - user
+    - system
+  steps:
+    - The user invokes doFlow on system
+    - The system performs flow and responds to the user
+---
+usecase_step:
+  name: The user invokes doFlow on system
+  source: user
+  target: system
+  action: Process DataA Request to DataD Response
+---
+usecase_step:
+  name: The system performs flow and responds to the user
+  source: system
+  target: user
+---
+usecase:
+  name: Nominal flow within the system
+  description:
+  participants:
+    - system
+    - svc1
+    - subsystem
+    - svc3
+  steps:
+    - The system has been invoked to doFlow which triggers scv1
+    - svc1 completes and calls subsystem to continue the flow
+    - subsystem completes and calls svc3 to continue the flow
+    - svc3 completes and provides the result back to system
 ---
 usecase_step:
   name: The system has been invoked to doFlow which triggers scv1

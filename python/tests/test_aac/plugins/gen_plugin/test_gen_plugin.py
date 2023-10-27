@@ -85,9 +85,7 @@ class TestGenPlugin(TestCase):
         """Utility function to invoke the CLI command with the given arguments."""
         initialize_cli()
         runner = CliRunner()
-        print(f"DEBUG: invoking cli for command gen-project with args {args}")
         result = runner.invoke(cli, ["gen-project"] + args)
-        print(f"DEBUG: completed cli gen-project with result {result}")
         if result.exception:
             exc_type, exc_value, exc_traceback = result.exc_info
             traceback.print_exception(exc_type, exc_value, exc_traceback)
@@ -104,7 +102,6 @@ class TestGenPlugin(TestCase):
 
             args = [temp_aac_file_path, "--output", temp_dir, "--no-prompt"]
 
-            print(f"DEBUG: running gen-project with args: {args}")
             exit_code, output_message = self.run_gen_project_cli_command_with_args(args)
 
             self.assertEqual(0, exit_code, f"Expected success but failed with message: {output_message}")  # asserts the command ran successfully
