@@ -8,8 +8,8 @@ from aac.execute.aac_execution_result import (
     ExecutionStatus,
     ExecutionMessage,
 )
-from aac.lang.schema import Schema
-from aac.lang.plugininputvalue import PluginInputValue
+# from aac.lang.schema import Schema
+# from aac.lang.plugininputvalue import PluginInputValue
 from aac.context.language_context import LanguageContext
 from aac.context.definition import Definition
 from aac.in_out.files.aac_file import AaCFile
@@ -21,7 +21,7 @@ plugin_name = "Exclusive fields"
 
 
 def mutually_exclusive_fields(
-    instance: Any, definition: Definition, defining_schema: Schema, fields: list[str]
+    instance: Any, definition: Definition, defining_schema, fields: list[str]
 ) -> ExecutionResult:
     """Business logic for the Mutually exclusive fields constraint."""
 

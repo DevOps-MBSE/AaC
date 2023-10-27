@@ -11,8 +11,8 @@ from aac.execute.aac_execution_result import (
     ExecutionStatus,
     ExecutionMessage,
 )
-from aac.lang.schema import Schema
-from aac.lang.plugininputvalue import PluginInputValue
+# from aac.lang.schema import Schema
+# from aac.lang.plugininputvalue import PluginInputValue
 from aac.execute import hookimpl
 from aac.context.language_context import LanguageContext
 from aac.context.definition import Definition
@@ -34,7 +34,7 @@ root_schema_must_have_name_aac_file_name = "root_schema_must_have_name.aac"
 
 
 def run_root_schema_has_name(
-    instance: Any, definition: Definition, defining_schema: Schema, arguments: Any
+    instance: Any, definition: Definition, defining_schema, arguments: Any
 ) -> ExecutionResult:
     """Check every schema with a root key and ensure there is a field called name."""
 

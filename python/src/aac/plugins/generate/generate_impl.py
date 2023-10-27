@@ -9,10 +9,10 @@ import black
 from aac.context.language_context import LanguageContext
 from aac.context.definition import Definition
 from aac.in_out.parser._parse_source import parse
-from aac.lang.generatorsource import GeneratorSource
-from aac.lang.generatortemplate import GeneratorTemplate
-from aac.lang.generatoroutputtarget import GeneratorOutputTarget
-from aac.lang.overwriteoption import OverwriteOption
+# from aac.lang.generatorsource import GeneratorSource
+# from aac.lang.generatortemplate import GeneratorTemplate
+# from aac.lang.generatoroutputtarget import GeneratorOutputTarget
+# from aac.lang.overwriteoption import OverwriteOption
 from aac.plugins.generate.helpers.python_helpers import get_path_from_package, get_python_name
 
 plugin_name = "Generate"
@@ -110,9 +110,9 @@ def generate(aac_file: str, generator_file: str, code_output: str, test_output: 
                         
                         # write output to files to the traget in the template, respecting the overwrite indicator
                         root_out_dir = code_out_dir
-                        if template.output_target == GeneratorOutputTarget.TEST:
+                        if template.output_target == context.create_aac_enum("aac.lang.GeneratorOutputTarget", "TEST"):
                             root_out_dir = test_out_dir
-                        elif template.output_target == GeneratorOutputTarget.DOC:
+                        elif template.output_target == context.create_aac_enum("aac.lang.GeneratorOutputTarget", "DOC"):
                             root_out_dir = doc_out_dir
                         file_name = source_data_def.name
                         if source.data_content:
@@ -132,13 +132,13 @@ def generate(aac_file: str, generator_file: str, code_output: str, test_output: 
                                 output_file.close()
                         else:
                             # write contents to output_file_path
-                            if force_overwrite or template.overwrite in [OverwriteOption.OVERWRITE]:
+                            if force_overwrite or template.overwrite in [context.create_aac_enum("aac.lang.OverwriteOption", "OVERWRITE")]:
                                 if path.exists(output_file_path):
                                     backup_file(output_file_path)
                                 with open(output_file_path, "w") as output_file:
                                     output_file.write(output)
                                     output_file.close()
-                            elif template.overwrite in [OverwriteOption.SKIP]:
+                            elif template.overwrite in [context.create_aac_enum("aac.lang.OverwriteOption", "SKIP")]:
                                 # this is for the skip option, so only write if file doesn't exist
                                 if not path.exists(output_file_path):
                                     with open(output_file_path, "w") as output_file:
@@ -197,10 +197,11 @@ def get_output_directories(message: str, aac_plugin_file: str, code_output: str,
 
     return (code_out, test_out, doc_out)
 
-def get_output_file_path(root_output_directory: str, generator_template: GeneratorTemplate, source_package: str, source_name: str) -> str:
+def get_output_file_path(root_output_directory: str, generator_template, source_package: str, source_name: str) -> str:
     result = root_output_directory
     if generator_template.output_path_uses_data_source_package and source_package:
-        if generator_template.output_target == GeneratorOutputTarget.TEST:
+        context = LanguageContext()
+        if generator_template.output_target == context.create_aac_enum("aac.lang.GeneratorOutputTarget", "TEST"):
             # this is a bit quirky, but turns out our test file path can't use the same structure as our source package or imports won't work properly
             # so for tests, we'll just add a tests_ prefix to the package name
             result = path.join(result, f"test_{get_path_from_package(source_package)}")
@@ -220,6 +221,7 @@ def get_output_file_path(root_output_directory: str, generator_template: Generat
     return path.abspath(result)
 
 def get_callable(package_name: str, file_name: str, function_name: str) -> Callable:
+    
     module = importlib.import_module(f"{package_name}.{file_name}")
     return getattr(module, function_name)
 

@@ -8,8 +8,8 @@ from aac.execute.aac_execution_result import (
     ExecutionStatus,
     ExecutionMessage,
 )
-from aac.lang.schema import Schema
-from aac.lang.plugininputvalue import PluginInputValue
+# from aac.lang.schema import Schema
+# from aac.lang.plugininputvalue import PluginInputValue
 from aac.context.language_context import LanguageContext
 from aac.context.definition import Definition
 from aac.context.source_location import SourceLocation
@@ -20,7 +20,7 @@ plugin_name = "No Undefined Fields"
 
 
 def no_extra_fields(
-    instance: Any, definition: Definition, defining_schema: Schema
+    instance: Any, definition: Definition, defining_schema
 ) -> ExecutionResult:
     """Business logic for the No extra fields constraint."""
 
@@ -31,9 +31,10 @@ def no_extra_fields(
     def parent_class_defined_fields(parent_package: str, parent_name: str) -> list[str]:
         """Returns a list of defined fields for the parent class."""
         context: LanguageContext = LanguageContext()
-        parent_schema = context.get_definition_by_name(parent_name)
-        if not parent_schema:
-            raise Exception(f"Could not find parent schema {parent_name} for {definition.name}")
+        parent_schemas = context.get_definitions_by_name(parent_name)
+        if len(parent_schemas) != 1:
+            raise Exception(f"Could not find unique parent schema {parent_name} for {definition.name}")
+        parent_schema = parent_schemas[0]
         result = [field.name for field in parent_schema.instance.fields]
         if parent_schema.instance.extends:
             for parent in parent_schema.instance.extends:

@@ -21,12 +21,12 @@ class TestRootschemamusthavename(TestCase):
     def test_root_schema_has_name(self):
        context = LanguageContext()
        definitions = context.parse_and_load(root_schema_with_name)
-       result = root_schema_has_name(definitions[0].instance, definitions[0], context.get_definition_by_name("Schema").instance)
+       result = root_schema_has_name(definitions[0].instance, definitions[0], context.get_definitions_by_name("Schema")[0].instance)
        self.assertTrue(result.is_success())
        context.remove_definitions(definitions)
 
        definitions = context.parse_and_load(root_schema_without_name)
-       result = root_schema_has_name(definitions[0].instance, definitions[0], context.get_definition_by_name("Schema").instance)
+       result = root_schema_has_name(definitions[0].instance, definitions[0], context.get_definitions_by_name("Schema")[0].instance)
        self.assertFalse(result.is_success())
        context.remove_definitions(definitions)
 

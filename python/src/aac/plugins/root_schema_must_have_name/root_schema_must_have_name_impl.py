@@ -8,8 +8,7 @@ from aac.execute.aac_execution_result import (
     ExecutionStatus,
     ExecutionMessage,
 )
-from aac.lang.schema import Schema
-from aac.lang.plugininputvalue import PluginInputValue
+from aac.context.language_error import LanguageError
 from aac.context.language_context import LanguageContext
 from aac.context.definition import Definition
 from aac.context.source_location import SourceLocation
@@ -18,7 +17,7 @@ from typing import Any
 
 plugin_name = "Root schema must have name"
 
-def _get_fields(schema: Schema) -> list[str]:
+def _get_fields(schema) -> list[str]:
     """Returns a list of the fields in the parent schema."""
     context: LanguageContext = LanguageContext()
     fields: list[str] = []
@@ -26,13 +25,15 @@ def _get_fields(schema: Schema) -> list[str]:
         fields.append(field.name)
     if schema.extends:
         for ext in schema.extends:
-            parent_schema = context.get_definition_by_name(ext.name)
-            if parent_schema:
-                fields.extend(_get_fields(parent_schema.instance))
+            parent_schema = context.get_definitions_by_name(ext.name)
+            if len(parent_schema) == 1:
+                fields.extend(_get_fields(parent_schema[0].instance))
+            elif len(parent_schema) > 1:
+                raise LanguageError(f"Unable to identify unique definition for {ext.name}:  found {parent_schema} ")
     return fields
     
 def root_schema_has_name(
-    instance: Any, definition: Definition, defining_schema: Schema
+    instance: Any, definition: Definition, defining_schema
 ) -> ExecutionResult:
     """Business logic for the Root schema has name constraint."""
 
@@ -40,7 +41,8 @@ def root_schema_has_name(
     status = ExecutionStatus.SUCCESS
     messages: list[ExecutionMessage] = []
     
-    if isinstance(instance, Schema):
+    context = LanguageContext()
+    if context.is_aac_instance(instance, "aac.lang.Schema"):
         if instance.root:
             # we have one special case for 'import' which is a root without a name, so allow that
             if instance.root == "import":

@@ -182,12 +182,12 @@ class TestParserImports(TestCase):
             self.assertIn(basename(import1), import_basenames)
             self.assertIn(basename(import2), import_basenames)
 
-            schema_message_definition = context.get_definition_by_name(TEST_MESSAGE_NAME)
-            enum_status_definition = context.get_definition_by_name(TEST_STATUS_NAME)
-            model_echosvc_definition = context.get_definition_by_name(TEST_MODEL_NAME)
+            schema_message_definition = context.get_definitions_by_name(TEST_MESSAGE_NAME)[0]
+            enum_status_definition = context.get_definitions_by_name(TEST_STATUS_NAME)[0]
+            model_echosvc_definition = context.get_definitions_by_name(TEST_MODEL_NAME)[0]
 
             self.check_definition(schema_message_definition, TEST_MESSAGE_NAME, "schema")
-            self.check_definition(enum_status_definition, TEST_STATUS_NAME, "aacenum")
+            self.check_definition(enum_status_definition, TEST_STATUS_NAME, "enum")
             self.check_definition(model_echosvc_definition, TEST_MODEL_NAME, "model")
 
             self.assertEqual(schema_message_definition.source.uri, import1)
@@ -206,9 +206,9 @@ class TestParserImports(TestCase):
 
     def test_handles_multiple_import_sections_per_file(self):
         another_definition = """
-aacenum:
+enum:
     name: TestEnum
-    enumerated_values:
+    values:
     - a
     - b
     - c
@@ -304,6 +304,7 @@ TEST_STATUS_FILE_NAME = f"{TEST_STATUS_NAME}{AAC_DOCUMENT_EXTENSION}"
 TEST_MESSAGE_CONTENTS = f"""
 schema:
   name: {TEST_MESSAGE_NAME}
+  package: test_aac.in_out
   fields:
   - name: body
     type: string
@@ -311,9 +312,10 @@ schema:
     type: string
 """
 TEST_STATUS_CONTENTS = f"""
-aacenum:
+enum:
   name: {TEST_STATUS_NAME}
-  enumerated_values:
+  package: test_aac.in_out
+  values:
     - sent
     - 'failed to send'
 """
@@ -336,7 +338,8 @@ model:
         - name: outbound
           type: Message
       acceptance:
-        - scenarios: 
+        - name: this is a test
+          scenarios: 
           - name: onReceive
             given:
             - The EchoService is running.

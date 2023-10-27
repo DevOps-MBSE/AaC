@@ -7,8 +7,6 @@ from copy import deepcopy
 from typing import Any
 from aac.execute.plugin_runner import AacCommand
 from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus, ExecutionMessage
-from aac.lang.schema import Schema
-from aac.lang.plugininputvalue import PluginInputValue
 from aac.execute import hookimpl
 from aac.context.language_context import LanguageContext
 from aac.context.definition import Definition
@@ -42,7 +40,7 @@ from {{plugin.package}}.{{get_python_name(plugin.name)}}_impl import plugin_name
 {% endfor %}
 
 {% for command in plugin.commands %}
-def run_{{get_python_name(command.name)}}({% for entry in command.input %}{{ get_python_name(entry.name) }}: {{ get_python_type(entry.type) }}{% if not loop.last %}, {% endif %}{% endfor %}) -> ExecutionResult:
+def run_{{get_python_name(command.name)}}({% for entry in command.input %}{{ get_python_name(entry.name) }}{% if not loop.last %}, {% endif %}{% endfor %}) -> ExecutionResult:
     """{{command.help_text}}"""
 
     {% if command.enable_cache %}
@@ -87,7 +85,7 @@ def run_{{get_python_name(ctx_constraint.name)}}(context: LanguageContext) -> Ex
 {% endfor %}
 
 {% for schema_constraint in plugin.schema_constraints %}
-def run_{{get_python_name(schema_constraint.name)}}(instance: Any, definition: Definition, defining_schema: Schema, arguments: Any) -> ExecutionResult:
+def run_{{get_python_name(schema_constraint.name)}}(instance: Any, definition: Definition, defining_schema, arguments: Any) -> ExecutionResult:
     """{{schema_constraint.description}}"""
     {% if schema_constraint.arguments | length > 0 %}
     argument_copy = deepcopy(arguments)

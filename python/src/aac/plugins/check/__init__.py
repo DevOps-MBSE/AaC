@@ -6,7 +6,8 @@ from os.path import join, dirname
 from aac.execute.plugin_runner import AacCommand
 
 
-from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus, LanguageError, ExecutionMessage, OperationCancelled
+from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus, ExecutionMessage, OperationCancelled
+from aac.context.language_error import LanguageError
 from aac.in_out.parser import ParserError
 from aac.plugins.check.checkaac_impl import plugin_name, check
 

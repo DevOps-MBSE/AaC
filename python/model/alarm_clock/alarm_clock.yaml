@@ -8,40 +8,40 @@ model:
   description: A simple alarm clock
   components:
     - name: clock
-      type: Clock
+      model: Clock
     - name: timer
-      type: ClockTimer
+      model: ClockTimer
     - name: alarm
-      type: ClockAlarm
+      model: ClockAlarm
   behavior:
     - name: setAlarm
-      type: REQUEST_RESPONSE
       description: Set the alarm timer
       input:
         - name: targetTime
           type: Timestamp
       acceptance:
-        - scenario: Set timer
-          given:
-            - The alarm timer is not set
-          when:
-            - The user sets the alarm timer
-          then:
-            - The alarm is triggered when the clock reaches the specified time
-        - scenario: Update timer
-          given:
-            - The alarm timer is set
-          when:
-            - The user sets the alarm timer
-          then:
-            - The alarm is triggered when the clock reaches the specified time
+        - name: Test Cases
+          scenarios:
+            - name: Set timer
+              given:
+                - The alarm timer is not set
+              when:
+                - The user sets the alarm timer
+              then:
+                - The alarm is triggered when the clock reaches the specified time
+            - name: Update timer
+              given:
+                - The alarm timer is set
+              when:
+                - The user sets the alarm timer
+              then:
+                - The alarm is triggered when the clock reaches the specified time
 ---
 model:
   name: Clock
   description: A simple clock that keeps track of the current time
   behavior:
     - name: getTime
-      type: TIMER
       description: Get the current time
       output:
         - name: currentTime
@@ -56,13 +56,11 @@ model:
       description: The target timestamp indicating when to fire the alarm alert.
   behavior:
     - name: setTime
-      type: REQUEST_RESPONSE
       description: Set the target time for the timer
       input:
         - name: targetTime
           type: Timestamp
     - name: triggerTimer
-      type: TIMER
       description: Dispatch the TimerAlert when the current time matches the target time
       input:
         - name: currentTime
@@ -76,7 +74,6 @@ model:
   description: A simple alarm that produces noise.
   behavior:
     - name: triggerAlarm
-      type: REQUEST_RESPONSE
       description: Trigger the alarm noise when a TimerAlert is received.
       input:
         - name: timerAlert

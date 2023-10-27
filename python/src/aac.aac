@@ -62,27 +62,20 @@ modifier:
     Denotes that the schema is final and cannot be referenced by another
     schema's 'extends' field for inheritance.
 ---
-# We have to be careful not to use any python reserved words as schema or field names.
-# It's a little clunky, but we use the AacEnum name instead of the enum keyword.
-# And we use enumerated_values instead of values.
-# Also, when trying to generate python code for an aacenum enum extension, I discovered
-# that python doesn't seem to like extensions of an enum.  So I've made it such that only
-# schemas can be extended.  If you need an enum with the same enumerated_values as another
-# enum, just create a new one with the values you need.
 schema:
-  name: AacEnum
+  name: Enum
   package: aac.lang
   extends: 
     - package: aac.lang
       name: AacType
-  root: aacenum
+  root: enum
   description: |
     A definition that represents an enumerated type of value.
     
     An example of when to use an 'enum' is when you want to provide several
     different options for a single value.
   fields:
-    - name: enumerated_values
+    - name: values
       type: string[]
       description: |
         A list of strings that encompass the enumeration's possible values.
@@ -198,7 +191,7 @@ primitive:
     as 'typeref(package_name.type_name)' denoting the package and type being referenced.
     A typeref respects inheritance and will respect references using polymorphism.  For example,
     you can reference primitive type, enums, and schemas by using the typeref 'typeref(aac.lang.AacType)'.
-    Because Primitive, AacEnum, and Schema all extend from AacType, any value provided for any of these
+    Because Primitive, enum, and Schema all extend from AacType, any value provided for any of these
     types will be accepted by the typeref.
   constraints:
     - name: Check typeref
@@ -289,7 +282,7 @@ schema:
         The default value to use for the field if field is not provided.
 ---
 schema:
-  name: AacImport
+  name: Import
   package: aac.lang
   root: import
   description: |
@@ -594,10 +587,10 @@ schema:
         The file extension to use when generating the output file name.
       is_required: true
 ---
-aacenum:
+enum:
   name: OverwriteOption
   package: aac.lang
-  enumerated_values:
+  values:
     - OVERWRITE
     - SKIP
 ---
@@ -634,10 +627,10 @@ schema:
         The python function to be made available to the template.
       is_required: true
 ---
-aacenum:
+enum:
   name: GeneratorOutputTarget
   package: aac.lang
-  enumerated_values:
+  values:
     - CODE
     - TEST
     - DOC
@@ -739,12 +732,12 @@ schema:
         The value of the parameter.
       is_required: true
 ---
-aacenum:
+enum:
   name: RequirementVerificationMethod
   package: aac.lang
   description: |
     The method used to verify the requirement.
-  enumerated_values:
+  values:
     - ANALYSIS
     - DEMONSTRATION
     - INSPECTION
@@ -786,6 +779,10 @@ schema:
       description: |
         The name of the model.
       is_required: true
+    - name: package
+      type: string
+      description: |
+        The package of the model.
     - name: description
       type: string
       description: |
@@ -837,12 +834,12 @@ schema:
         The name of the model declaration for the component.
       is_required: true
 ---
-aacenum:
+enum:
   name: Cardinallity
   package: aac.lang
   description: |
     The cardinality of a relationship in a architecture model.
-  enumerated_values:
+  values:
     - ONE
     - ZERO_OR_ONE
     - ONE_OR_MORE

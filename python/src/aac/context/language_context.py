@@ -1,15 +1,15 @@
 import types
-from typing import Any, Optional
-from importlib import import_module
-from copy import deepcopy
+from typing import Any, Optional, Type
+from enum import Enum, auto
 from os import linesep
 from os.path import join, dirname
 from aac.execute.plugin_runner import AacCommand
-from aac.execute.aac_execution_result import LanguageError
+from aac.context.language_error import LanguageError
 from aac.execute.plugin_manager import get_plugin_manager
 from aac.execute.plugin_runner import PluginRunner
 from aac.in_out.parser._parse_source import parse
 from aac.context.definition import Definition
+from aac.context.util import get_python_module_name, get_python_class_name
 
 AAC_LANG_FILE_NAME = "../../aac.aac"
 AAC_LANG_FILE_PATH = join(dirname(__file__), AAC_LANG_FILE_NAME)
@@ -24,7 +24,7 @@ class LanguageContext(object):
       cls.context_instance = super(LanguageContext, cls).__new__(cls)
       cls.context_instance.definitions = set()
       cls.context_instance.fully_qualified_name_to_definition: dict[str, Definition] = {}
-      cls.context_instance.schema_name_to_module: dict[str, Any] = {}
+      cls.context_instance.fully_qualified_name_to_class: dict[str, Any] = {}
       cls.context_instance.plugin_runners = {}
 
       # load and initialize the AaC language
@@ -45,105 +45,383 @@ class LanguageContext(object):
   def get_aac_core_definitions(self) -> list[Definition]:
     return self.parse_and_load(AAC_LANG_FILE_PATH)
   
+  def _get_aac_generated_class(self, name: str) -> Type:
+    definitions = self.get_definitions_by_name(name)
+    if len(definitions) != 1:
+      raise LanguageError(f"_get_aac_generated_class unable to identify unique definition for name '{name}'.  Found: {[definition.name for definition in definitions]}")
+    
+    aac_class = self.context_instance.fully_qualified_name_to_class[definitions[0].get_fully_qualified_name()]
+    if not aac_class:
+      raise LanguageError(f"_get_aac_generated_class unable to identify generated class for name '{name}' with fully_qualified_name '{definitions[0].get_fully_qualified_name()}'")
+    
+    return aac_class
+  
+  def is_aac_instance(self, obj: Any, name: str):
+    
+    return isinstance(obj, self._get_aac_generated_class(name))
+  
+  def create_aac_object(self, aac_type_name: str, attributes: dict) -> Any:
+    definitions = self.get_definitions_by_name(aac_type_name)
+    if len(definitions) != 1:
+      raise LanguageError(f"Unable to identify unique definition for '{aac_type_name}'.  Found {[definition.name for definition in definitions]}")
+    aac_class = self._get_aac_generated_class(aac_type_name)
+    result = aac_class()
+    field_names = [field.name for field in definitions[0].instance.fields]
+    for attribute_name, attribute_value in attributes.items():
+      if attribute_name not in field_names:
+        raise LanguageError(f"Found undefined field name '{attribute_name}'")
+      setattr(result, attribute_name, attribute_value)
+    return result
+  
+  def create_aac_enum(self, aac_enum_name: str, value: str) -> Any:
+    definitions = self.get_definitions_by_name(aac_enum_name)
+    if len(definitions) != 1:
+      raise LanguageError(f"Unable to identify unique definition for '{aac_enum_name}'.  Found {[definition.name for definition in definitions]}")
+    aac_class = self._get_aac_generated_class(aac_enum_name)
+    try:
+      return getattr(aac_class, value)
+    except ValueError:
+      raise LanguageError(f"{value} is not a valid value for enum {aac_enum_name}")
+  
   def parse_and_load(self, arg: str) -> list[Definition]:
     parsed_definitions = parse(arg)
 
     return self.load_definitions(parsed_definitions)
   
   def load_definitions(self, parsed_definitions: list[Definition]) -> list[Definition]:
+    """
+    Loads the given definitions into the context and populates the instance with a python object.
+    """
 
-    def get_python_module_name(name: str) -> str:
-        return name.replace(" ", "_").replace("-", "_").lower()
+    # Maintainer note:  Yes, this function is a bit of a monster...sorry about that.
+    # I wanted to keep all this stuff together because if it all works out this should be the 
+    # only place where we have to deal with navigating the structure of the definitions and
+    # not using the python objects.  In order for this to work, any changes in here should
+    # avoid the use of he definition instance...other than actually creating it.
 
-    # TODO: handle the type error that occurs when bad data is found
+    primitive_name_to_py_type = {definition.name : definition.structure["primitive"]["python_type"] for definition in parsed_definitions + self.get_definitions() if definition.get_root_key() == "primitive"}
+    fully_qualified_name_to_definition = {}
 
-    # schema_defs_by_name = {}
+    def find_definitions_by_name(name: str) -> list[Definition]:
+      result = []
+      for definition in self.get_definitions():
+        if definition.name == name:
+          result.append(definition)
+      # if we didn't find any definitions in the context, check the parsed definitions
+      if len(result) == 0:
+        for definition in parsed_definitions:
+          if definition.name == name:
+            result.append(definition)
+      return result
+    
+    def get_inheritance_parents(definition: Definition) -> list[Type]:
+      """
+      Looks up the inheritance parent classes for the given definition and returns them as a list of python classes.
+      """
+      inheritance_parents = []
+
+      if "extends" in definition.structure[definition.get_root_key()]:
+        for parent in definition.structure[definition.get_root_key()]["extends"]:
+          # I need to find the definition referenced by the extends
+          parent_package = parent["package"]
+          parent_name = parent["name"]
+          parent_fully_qualified_name = parent_fully_qualified_name = f"{get_python_module_name(parent_package)}.{get_python_class_name(parent_name)}"
+          if parent_fully_qualified_name in self.context_instance.fully_qualified_name_to_class:
+            inheritance_parents.append(self.context_instance.fully_qualified_name_to_class[parent_fully_qualified_name])
+          else:
+            # there is a chance that processing order just means we haven't gotten to the parent yet
+            parent_definition = None
+            if parent_fully_qualified_name in fully_qualified_name_to_definition:
+              parent_definition = fully_qualified_name_to_definition[parent_fully_qualified_name]
+
+            if not parent_definition:
+              raise LanguageError(f"Cannot find parent definition {parent_fully_qualified_name} for {definition.name}")
+            
+            if parent_definition.get_root_key() == "schema":
+              create_schema_class(parent_definition)
+              inheritance_parents.append(self.context_instance.fully_qualified_name_to_class[parent_fully_qualified_name])
+            elif parent_definition.get_root_key() == "enum":
+              create_enum_class(parent_definition)
+              inheritance_parents.append(self.context_instance.fully_qualified_name_to_class[parent_fully_qualified_name])
+            else:
+              # TODO:  does this really need to be an error?  I can't think of an alternative right now, and it's generally consistent with coding language conventions.
+              # Would it even be possible for an AaC developer to create some new thing that doesn't use "schema" or "enum" to define base non-primitive types?
+              raise LanguageError(f"AaC extension is only supported for Schema and Enum.  Unable to create parent class with AaC root: {parent_definition.get_root_key()}")
+            
+      return inheritance_parents
+    
+    def create_enum_class(enum_definition: Definition) -> Type:
+
+      # TODO:  since we're not generaing code any more, can we go back to 'enum' instead of 'enum'?
+      if not enum_definition.get_root_key() == "enum":
+        raise LanguageError(f"Definition {enum_definition.name} is not an enum")
+      
+      fully_qualified_name = enum_definition.get_fully_qualified_name()
+      if fully_qualified_name in self.context_instance.fully_qualified_name_to_class:
+        # we've already created the class, so nothing to do here
+        return self.context_instance.fully_qualified_name_to_class[fully_qualified_name]
+
+      # Note:  trying to allow extension with Enums fails, so I just removed it
+      #        but we can revisit and try to find a solution in the future if needed
+      
+      values = {}
+      if "values" in enum_definition.structure["enum"]:
+        for value in enum_definition.structure["enum"]["values"]:
+          values[value] = auto()
+      # create the enum class
+      instance_class = Enum(enum_definition.get_python_class_name(), values, module=enum_definition.get_python_module_name())
+      self.context_instance.fully_qualified_name_to_class[fully_qualified_name] = instance_class
+      return instance_class
+
+    def create_schema_class(schema_definition: Definition) -> Type:
+      instance_class = None
+
+      fully_qualified_name = schema_definition.get_fully_qualified_name()
+      if schema_definition.get_root_key() == "primitive":
+        # this is a primitive, so there's no structure to create...just return the python type
+        return eval(primitive_name_to_py_type[schema_definition.name])
+      elif schema_definition.get_root_key() == "enum":
+        # this is an enum, so create the enum class
+        return create_enum_class(schema_definition)
+      elif schema_definition.get_root_key() != "schema":
+        raise LanguageError(f"Definition {schema_definition.name} is not a schema")
+      
+      if fully_qualified_name in self.context_instance.fully_qualified_name_to_class:
+        # we've already created the class, so nothing to do here
+        return self.context_instance.fully_qualified_name_to_class[fully_qualified_name]
+      
+      instance_class = None
+      inheritance_parents = get_inheritance_parents(schema_definition)
+      if len(inheritance_parents) == 0:
+        instance_class = type(schema_definition.get_python_class_name(), tuple([object]), {"__module__": schema_definition.get_python_module_name()})
+      else:
+        parent_classes = inheritance_parents  # the following causes a method resolution order (MRO) error when creating the type: [object] + inheritance_parents
+        instance_class = type(definition.get_python_class_name(), tuple(parent_classes), {"__module__": schema_definition.get_python_module_name()})
+
+      # now add the fields to the class
+      for field in schema_definition.structure["schema"]["fields"]:
+        field_name = field["name"]
+        field_type = field["type"]
+        is_list = False
+
+        clean_field_type = field_type
+        if field_type.endswith("[]"):
+          is_list = True
+          clean_field_type = field_type[:-2]
+        if "(" in clean_field_type:
+          clean_field_type = clean_field_type[:clean_field_type.find("(")]
+
+        # let's make sure the type of the field is known, or create it if it's not
+        potential_definitions = find_definitions_by_name(clean_field_type)
+        if len(potential_definitions) != 1:
+          line = 0
+          for lexeme in definition.lexemes:
+            if lexeme.value == field_type:
+              line = lexeme.location.line
+              break
+          if len(potential_definitions) == 0:
+            raise LanguageError(f"Could not find AaC definition for type {clean_field_type} while loading {schema_definition.name}\n  File: {schema_definition.source.uri}  Line: {line}")
+          else:
+            raise LanguageError(f"Discovered multipe AaC definitions for type {clean_field_type} while loading {schema_definition.name}.  You may need to add a package name to differentiate.\n  File: {schema_definition.source.uri}  Line: {line}\n  Found candidate definitions: {[definition.get_fully_qualified_name() for definition in potential_definitions]}")
+        
+        parsed_definition = potential_definitions[0] 
+        
+        create_schema_class(parsed_definition)
+
+        # since python is dynamically typed, we really don't have to worry about setting a type when we create the field
+        # we just need to make sure a reasonable default value is used, so for us that means an empty list or None
+        # TODO:  see if there's ever a case where we may need a dict value       
+        if is_list:
+          setattr(instance_class, field_name, [])
+        else:
+          setattr(instance_class, field_name, None)
+ 
+      # finally store the class in the context
+      self.context_instance.fully_qualified_name_to_class[fully_qualified_name] = instance_class
+      return instance_class
+    
+    def create_object_instance(type_class: Type, fields: dict) -> Any:
+      result = type_class()
+      for field_name, field_value in fields.items():
+        setattr(result, field_name, field_value)
+      return result
+    
+    def create_field_instance(field_name: str, field_type: str, is_required: bool, field_value: Any) -> Any:
+      """
+      Creates a instance of the given type and value.
+      """
+      is_list = False
+      clean_field_type = field_type
+      if field_type.endswith("[]"):
+        is_list = True
+        clean_field_type = field_type[:-2]
+      if "(" in clean_field_type:
+        clean_field_type = clean_field_type[:clean_field_type.find("(")]
+        
+      # now get the defining definition from the clean_field_type
+      defining_definitions = find_definitions_by_name(clean_field_type)
+      if not defining_definitions or len(defining_definitions) == 0:
+        raise LanguageError(f"Could not find definition for '{clean_field_type}'.")
+      elif len(defining_definitions) > 1:
+        raise LanguageError(f"Found multiple definitions for '{clean_field_type}'.")
+      defining_definition = defining_definitions[0]
+      
+      if defining_definition.get_root_key() == "primitive":
+        # this is a primitive, so ensure the parsed value aligns with the type and return it
+        python_type = defining_definition.structure["primitive"]["python_type"]
+        if is_list:
+          if not field_value:
+            if is_required:
+              raise LanguageError(f"Missing required field {field_name}.")
+            field_value = []
+          else:
+            for item in field_value:
+              if not isinstance(item, eval(python_type)):
+                raise LanguageError(f"Invalid value for field '{field_name}'.  Expected type '{python_type}', but found '{type(item)}'")
+        else:
+          if not field_value:
+            if is_required:
+              raise LanguageError(f"Missing required field {field_name}.")
+          else:
+            if "Any" != python_type:
+              if not isinstance(field_value, eval(python_type)):
+                raise LanguageError(f"Invalid value for field '{field_name}'.  Expected type '{python_type}', but found '{type(field_value)}'")
+        return field_value
+      elif defining_definition.get_root_key() == "enum":
+        # this is an enum, so ensure the parsed value aligns with the type and return it
+        enum_class = self.context_instance.fully_qualified_name_to_class[defining_definition.get_fully_qualified_name()]
+        if not enum_class:
+          enum_class = create_enum_class(defining_definition)
+        if is_list:
+          result = []
+          for item in field_value:
+            if not isinstance(item, str):
+              raise LanguageError(f"Invalid value for field '{field_name}'.  Expected type 'str', but found '{type(item)}'")
+            try:
+              result.append(getattr(enum_class, item))
+            except ValueError:
+              raise LanguageError(f"{item} is not a valid value for enum {defining_definition.name}")
+          return result
+        else:
+          try:
+            return getattr(enum_class, field_value)
+          except ValueError:
+            raise LanguageError(f"{field_value} is not a valid value for enum {defining_definition.name}")
+      else:
+        field_fully_qualified_name = defining_definition.get_fully_qualified_name()
+        
+        instance_class = self.context_instance.fully_qualified_name_to_class[field_fully_qualified_name]
+        if not instance_class:
+          if defining_definition.get_root_key() == "schema":
+            instance_class = create_schema_class(defining_definition)
+          else:
+            raise LanguageError("figure out what to do here")
+        instance = None
+        if is_list:
+          instance = []
+          if not field_value:
+            if is_required:
+              raise LanguageError(f"Missing required field {field_name}")
+          else:
+            if not isinstance(field_value, list):
+              if is_required:
+                raise LanguageError(f"Invalid parsed value for field '{field_name}'.  Expected type 'list', but found '{type(field_value)}'.  Value = {field_value}")
+              else:
+                return instance
+            for item in field_value:
+              if not isinstance(item, dict):
+                raise LanguageError(f"Invalid parsed value for field '{field_name}'.  Expected type 'dict', but found '{type(item)}'. Value = {item}")
+              # go through the fields and create instances for each
+              subfields = {}
+              if "fields" not in defining_definition.structure["schema"]:
+                raise LanguageError(f"Schema '{defining_definition.name}' does not contain any fields.")
+              for subfield in defining_definition.structure["schema"]["fields"]:
+                subfield_name = subfield["name"]
+                subfield_type = subfield["type"]
+                subfield_is_required = False
+                if "is_required" in subfield:
+                  subfield_is_required = subfield["is_required"]
+                subfield_value = None
+                if subfield_name in item:
+                  subfield_value = item[subfield_name]
+                else:
+                  if "default_value" in subfield:
+                    subfield_value = subfield["default_value"]
+                subfields[subfield_name] = create_field_instance(subfield_name, subfield_type, subfield_is_required, subfield_value)
+              instance.append(create_object_instance(instance_class, subfields))
+        else:
+          instance = None
+          if not field_value:
+            if is_required:
+              raise LanguageError(f"Missing required field {field_name}")
+            else:
+              return instance
+          if not isinstance(field_value, dict):
+            # this is a complex type defined by a schema, with a field value so it should be a dict
+            raise LanguageError(f"Invalid parsed value for field '{field_name}'.  Expected type 'dict', but found '{type(field_value)}'.  Value = {field_value}")
+          
+          subfields = {}
+          if "fields" not in defining_definition.structure["schema"]:
+            raise LanguageError(f"Schema '{defining_definition.name}' does not contain any fields.")
+          for subfield in defining_definition.structure["schema"]["fields"]:
+            subfield_name = subfield["name"]
+            subfield_type = subfield["type"]
+            subfield_is_required = False
+            if "is_required" in subfield:
+              subfield_is_required = subfield["is_required"]
+            subfield_value = None
+            if subfield_name in field_value:
+              subfield_value = field_value[subfield_name]
+            else:
+              if "default_value" in subfield:
+                subfield_value = subfield.default_value
+            subfields[subfield_name] = create_field_instance(subfield_name, subfield_type, subfield_is_required, subfield_value)
+          
+          instance = create_object_instance(instance_class, subfields)
+
+        return instance
+    
+    def create_definition_instance(definition: Definition) -> Any:
+      """
+      Populates the instance field of a given definition.
+      """
+      instance = None
+      
+      defining_definition = None
+      for item in self.get_definitions() + parsed_definitions:
+        if item.get_root_key() == "schema":
+          if "root" in item.structure["schema"]:
+            if definition.get_root_key() == item.structure["schema"]["root"]:
+              defining_definition = item
+
+      if not defining_definition:
+        raise LanguageError(f"Could not find definition for {definition.name} with root {definition.get_root_key()}")
+      
+      if defining_definition.get_root_key() == "schema":
+        # since schemas are how we define "all the things" the root key of the defining definition should be 'schema'
+        create_schema_class(defining_definition)
+      else:
+        raise LanguageError(f"Definition for root key '{defining_definition.get_root_key()}' is not a Schema.")
+
+      instance = create_field_instance("root", defining_definition.name, True, definition.structure[definition.get_root_key()])
+
+      definition.instance = instance
+      return instance
+
+    # Start the load_definition function code here
+
+    fully_qualified_name_to_definition = {definition.get_fully_qualified_name() : definition for definition in parsed_definitions + self.get_definitions() if "package" in definition.structure[definition.get_root_key()]}
+
     schema_defs_by_root = {}
     for definition in self.get_definitions():
       if definition.get_root_key() == "schema":
         if definition.instance.root:
           schema_defs_by_root[definition.instance.root] = definition
 
-
-    # we need to load all the schemas first so we have access to the defined types
-    for definition in parsed_definitions:
-      if "schema" in definition.structure:
-        schema = definition.structure["schema"]
-        if "name" in schema:
-          name = schema["name"]
-          found_module = True
-          if "package" in schema:
-            package = schema["package"]
-            python_name = get_python_module_name(name)
-            if name not in self.context_instance.schema_name_to_module:
-              module_name = f"{package}.{python_name}"
-              try:
-                module = import_module(module_name)
-              except ModuleNotFoundError as e:
-                # TODO:  This can happen if the parsed schema hasn't been created via gen-plugin yet
-                found_module = False
-                pass
-                # raise LanguageError(f"{e}\nCould not find module: {module_name}")
-              if found_module:
-                # if the module was found, add it to the context
-                self.context_instance.schema_name_to_module[name] = module
-          # schema_defs_by_name[name] = definition
-          if "root" in schema:
-            root = schema["root"]
-            schema_defs_by_root[root] = definition
-
     result: list[Definition] = []
     for definition in parsed_definitions:
-      # figure out the python type for the definition
-      root_key = definition.get_root_key()
-      if root_key not in schema_defs_by_root:
-        raise LanguageError(f"Could not find schema that defines root '{root_key}' in {definition.source.uri}")
-      defining_schema = schema_defs_by_root[root_key]
-      if not defining_schema:
-        raise LanguageError(f"Could not find schema for root: {root_key}")
-      defining_schema_name = defining_schema.name
-      if defining_schema_name not in self.context_instance.schema_name_to_module:
-        raise LanguageError(f"Could not find module name: {defining_schema_name} in {list(self.context_instance.schema_name_to_module.keys())}")
-      # get the structure below the root key
-      structure = definition.structure[root_key]
-      name = definition.name
       # create and register the instance
-      class_obj = getattr(self.context_instance.schema_name_to_module[defining_schema_name], defining_schema_name)
-      instance = None
-      try:
-        instance = class_obj.from_dict(deepcopy(structure))
-      except TypeError as e:
-        error_message = e.args[0]
-        if "unexpected keyword argument" in error_message:
-          # this means the input structure has a field that the class doesn't expect
-          type_error = error_message[:error_message.find(".")]
-          field_error = error_message.split("\'")[1]
-          relevant_lexeme = None
-          for lexeme in definition.lexemes:
-            if field_error in lexeme.value:
-              relevant_lexeme = lexeme
-              break
-          if relevant_lexeme:
-            usr_message = f"Unexpected field for {type_error} definition: {field_error}\n   - {relevant_lexeme.source}, line {relevant_lexeme.location.line + 1}"
-            # look up the defining type causing the error
-            defining_type = self.get_definition_by_name(type_error)
-            if defining_type:
-              usr_message = f"{usr_message}\nThe schema '{type_error}' may contain the following fields:"
-              for field in defining_type.instance.fields:
-                usr_message += f"\n   - {field.name}"
-                if field.is_required:
-                  usr_message += " (required)"
-                if field.description:
-                  usr_message += f": {field.description.replace(linesep, ' ').strip()}"
-            else:
-              usr_message += f"\n   - {defining_type.lexemes[0].source}, line {defining_type.lexemes[0].location.line + 1}"
-            raise(LanguageError(usr_message))
-          else:
-            usr_message = f"Unexpected field for {type_error} definition: {field_error}"
-            raise(LanguageError(usr_message))
-        raise LanguageError(f"{e}\nCould not create instance of {defining_schema_name} with name {name} from structure: {structure}")
-    
-      definition.instance = instance
+      create_definition_instance(definition)
       result.append(definition)
       self.context_instance.definitions.add(definition)
       self.context_instance.fully_qualified_name_to_definition[f"{definition.package}.{definition.name}"] = definition
@@ -161,11 +439,21 @@ class LanguageContext(object):
   
   # TODO:  it's possible there could be multiple definitions with the same name, but different packages
   # so need to clean this up
-  def get_definition_by_name(self, name: str) -> Optional[Definition]:
+  # def get_definition_by_name(self, name: str) -> Optional[Definition]:
+  #   for definition in self.get_definitions():
+  #     if definition.name == name:
+  #       return definition
+  #   return None
+  
+  def get_definitions_by_name(self, name: str) -> list[Definition]:
+    result = []
+    search_name = name
+    if "." not in name:
+      search_name = f".{name}"
     for definition in self.get_definitions():
-      if definition.name == name:
-        return definition
-    return None
+      if definition.get_fully_qualified_name().endswith(search_name):
+        result.append(definition)
+    return result
   
   def get_definitions_by_root(self, root_key: str) -> list[Definition]:
     result = []
@@ -196,11 +484,10 @@ class LanguageContext(object):
     return self.get_definitions_by_root("primitive")
   
   def get_python_type_from_primitive(self, primitive_name: str) -> str:
-    primitive = self.get_definition_by_name(primitive_name)
-    if primitive:
-      return primitive.instance.python_type
-    else:
-      raise LanguageError(f"Could not find primitive: {primitive_name}")
+    primitives = self.get_definitions_by_name(primitive_name)
+    if len(primitives) != 1:
+      raise LanguageError(f"Could not find unique primitive type: {primitive_name} - discovered {[primitive.name for primitive in primitives]}")
+    return primitives[0].instance.python_type
     
   def is_extension_of(self, check_me: Definition, package: str, name: str) -> bool:
     definitions_of_type = self.get_definitions_of_type(package, name)

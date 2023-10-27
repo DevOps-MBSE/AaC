@@ -37,11 +37,12 @@ class TestLanguageContext(TestCase):
         self.assertIn("Primitive", definition_names)
         self.assertIn("Model", definition_names)
     
-    def test_get_definition_by_name(self):
+    def test_get_definitions_by_name(self):
         context = LanguageContext()
-        definition = context.get_definition_by_name("Schema")
-        self.assertEqual(definition.name, "Schema")
-        self.assertIsNotNone(definition.instance)
+        definitions = context.get_definitions_by_name("Schema")
+        self.assertEqual(len(definitions), 1)
+        self.assertEqual(definitions[0].name, "Schema")
+        self.assertIsNotNone(definitions[0].instance)
     
     def test_get_definitions_by_root(self):
         context = LanguageContext()
@@ -91,8 +92,8 @@ class TestLanguageContext(TestCase):
     
     def test_is_extension_of(self):
         context = LanguageContext()
-        definition = context.get_definition_by_name("Schema")
-        self.assertTrue(context.is_extension_of(definition, "aac.lang", "AacType"))
+        definition = context.get_definitions_by_name("Schema")
+        self.assertTrue(context.is_extension_of(definition[0], "aac.lang", "AacType"))
     
     def test_get_definitions_of_type(self):
         context = LanguageContext()
@@ -101,7 +102,7 @@ class TestLanguageContext(TestCase):
     
     def test_get_values_by_field_chain(self):
         context = LanguageContext()
-        test_values = ["schema.fields.name", "aacenum.enumerated_values", "primitive.python_type"]
+        test_values = ["schema.fields.name", "enum.values", "primitive.python_type"]
         for val in test_values:
             values = context.get_values_by_field_chain(val)
             self.assertGreater(len(values), 1)

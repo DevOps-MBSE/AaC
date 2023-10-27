@@ -4,7 +4,8 @@ import sys, yaml
 from click import Argument, Command, Option, ParamType, Parameter, Path, UNPROCESSED, group, secho, types
 
 from aac.execute.plugin_runner import AacCommand, AacCommandArgument, PluginRunner
-from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus, ExecutionMessage, OperationCancelled, LanguageError
+from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus, ExecutionMessage, OperationCancelled
+from aac.context.language_error import LanguageError
 from aac.context.language_context import LanguageContext
 from aac.in_out.parser._parser_error import ParserError
 

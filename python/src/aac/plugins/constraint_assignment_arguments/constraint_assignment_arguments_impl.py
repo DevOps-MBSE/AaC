@@ -8,25 +8,26 @@ from aac.execute.aac_execution_result import (
     ExecutionStatus,
     ExecutionMessage,
 )
-from aac.lang.schema import Schema
-from aac.lang.plugininputvalue import PluginInputValue
+# from aac.lang.schema import Schema
+# from aac.lang.plugininputvalue import PluginInputValue
 from aac.context.language_context import LanguageContext
 from aac.context.definition import Definition
 from aac.in_out.files.aac_file import AaCFile
 from aac.context.source_location import SourceLocation
 from typing import Any
-from aac.lang.schemaconstraintassignment import SchemaConstraintAssignment
-from aac.lang.primitiveconstraintassignment import PrimitiveConstraintAssignment
+# from aac.lang.schemaconstraintassignment import SchemaConstraintAssignment
+# from aac.lang.primitiveconstraintassignment import PrimitiveConstraintAssignment
 
 plugin_name = "Constraint assignment arguments"
 
 
 def check_arguments_against_constraint_definition(
-    instance: Any, definition: Definition, defining_schema: Schema
+    instance: Any, definition: Definition, defining_schema
 ) -> ExecutionResult:
     """Business logic for the Check arguments against constraint definition constraint."""
 
-    if not isinstance(instance, SchemaConstraintAssignment) and not isinstance(instance, PrimitiveConstraintAssignment):
+    context = LanguageContext()
+    if not context.is_aac_instance(instance, "aac.lang.SchemaConstraintAssignment") and not context.is_aac_instance(instance, "aac.lang.PrimitiveConstraintAssignment"):
         # the constraint failed
         error_msg = ExecutionMessage(
             f"The Check arguments against constraint definition constraint for {instance.name} failed because the instance is not a SchemaConstraintAssignment or PrimitiveConstraintAssignment.  You may only use this constraint on SchemaConstraintAssignment or PrimitiveConstraintAssignment definitions.  Received {type(instance)}.)",

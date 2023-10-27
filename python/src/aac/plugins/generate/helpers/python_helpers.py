@@ -1,5 +1,5 @@
 from aac.context.language_context import LanguageContext
-from aac.lang.aacenum import AacEnum
+# from aac.lang.enum import enum
 from aac import __version__
 from typing import Any
 
@@ -73,16 +73,16 @@ def schema_to_test_dict(name: str, omit_optional_fields: bool = False) -> dict:
     Generate test data for a schema to a dictionary based on its fields.
     """
     context: LanguageContext = LanguageContext()
-    schema_definition = context.get_definition_by_name(name)
-    if not schema_definition:
-        raise Exception(f"Could not find schema definition: {name}")
-
+    schema_definitions = context.get_definitions_by_name(name)
+    if len(schema_definitions) != 1:
+        raise Exception(f"Could not find unique schema definition: {name}")
+    schema_definition = schema_definitions[0]
     result: dict = {}
 
     # we need to avoid the case where a schema is defining an AaC type other than Schema
-    if schema_definition.get_root_key() == "aacenum":
+    if schema_definition.get_root_key() == "enum":
         # need to return a valid enum value
-        for value in schema_definition.instance.enumerated_values:
+        for value in schema_definition.instance.values:
             return value
     
     for field in schema_definition.instance.fields:

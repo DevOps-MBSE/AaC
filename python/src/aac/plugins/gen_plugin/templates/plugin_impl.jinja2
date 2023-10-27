@@ -4,8 +4,7 @@
 
 # There may be some unused imports depending on the definition of the plugin...but that's ok
 from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus, ExecutionMessage
-from aac.lang.schema import Schema
-from aac.lang.plugininputvalue import PluginInputValue
+
 from aac.context.language_context import LanguageContext
 from aac.context.definition import Definition
 from aac.context.source_location import SourceLocation
@@ -15,7 +14,7 @@ from typing import Any
 plugin_name = "{{plugin.name}}"
 
 {% for command in plugin.commands %}{% if command.run_before | length > 0 %}{% for run_before in command.run_before %}
-def before_{{get_python_name(command.name)}}_{{get_python_name(run_before.command)}}({% for entry in command.input %}{{ get_python_name(entry.name) }}: {{ get_python_type(entry.type) }}{% if not loop.last %}, {% endif %}{% endfor %}, run_{{get_python_name(run_before.command)}}) -> ExecutionResult:
+def before_{{get_python_name(command.name)}}_{{get_python_name(run_before.command)}}({% for entry in command.input %}{{ get_python_name(entry.name) }}{% if not loop.last %}, {% endif %}{% endfor %}, run_{{get_python_name(run_before.command)}}) -> ExecutionResult:
     """Run the {{run_before.plugin}} {{run_before.name}} command before the {{command.name}} command."""
 
     # TODO: configure and call the {{run_before.command}} before command using {{command.name}} command inputs
@@ -27,7 +26,7 @@ def before_{{get_python_name(command.name)}}_{{get_python_name(run_before.comman
     return ExecutionResult(plugin_name, "{{command.name}}", status, messages)
 {% endfor %}{% endif %}
 
-def {{get_python_name(command.name)}}({% for entry in command.input %}{{ get_python_name(entry.name) }}: {{ get_python_type(entry.type) }}{% if not loop.last %}, {% endif %}{% endfor %}) -> ExecutionResult:
+def {{get_python_name(command.name)}}({% for entry in command.input %}{{ get_python_name(entry.name) }}{% if not loop.last %}, {% endif %}{% endfor %}) -> ExecutionResult:
     """Business logic for the {{command.name}} command."""
     
     # TODO: implement plugin logic here
@@ -39,7 +38,7 @@ def {{get_python_name(command.name)}}({% for entry in command.input %}{{ get_pyt
     return ExecutionResult(plugin_name, "{{command.name}}", status, messages)
 
 {% if command.run_after | length > 0 %}{% for run_after in command.run_after %}
-def after_{{get_python_name(command.name)}}_{{get_python_name(run_after.command)}}({% for entry in command.input %}{{ get_python_name(entry.name) }}: {{ get_python_type(entry.type) }}{% if not loop.last %}, {% endif %}{% endfor %}, run_{{get_python_name(run_after.command)}}) -> ExecutionResult:
+def after_{{get_python_name(command.name)}}_{{get_python_name(run_after.command)}}({% for entry in command.input %}{{ get_python_name(entry.name) }}{% if not loop.last %}, {% endif %}{% endfor %}, run_{{get_python_name(run_after.command)}}) -> ExecutionResult:
     """Run the {{run_after.plugin}} {{run_after.command}} command after the {{command.name}} command."""
 
     # TODO: configure and call the {{run_after.command}} after command using {{command.name}} command inputs
@@ -66,7 +65,7 @@ def {{get_python_name(ctx_constraint.name)}}(context: LanguageContext) -> Execut
     {% endfor%}{% endif %}
 
 {% if plugin.schema_constraints | length > 0 %}{% for schema_constraint in plugin.schema_constraints%}
-def {{get_python_name(schema_constraint.name)}}(instance: Any, definition: Definition, defining_schema: Schema{% if schema_constraint.arguments | length > 0 %}, {% for entry in schema_constraint.arguments %}{{ get_python_name(entry.name) }}: {{ get_python_type(entry.type) }}{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}) -> ExecutionResult:
+def {{get_python_name(schema_constraint.name)}}(instance: Any, definition: Definition, defining_schema{% if schema_constraint.arguments | length > 0 %}, {% for entry in schema_constraint.arguments %}{{ get_python_name(entry.name) }}{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}) -> ExecutionResult:
     """ Business logic for the {{schema_constraint.name}} constraint. """
 
     # TODO: rewrite the code below to implement your constraint logic
@@ -80,7 +79,7 @@ def {{get_python_name(schema_constraint.name)}}(instance: Any, definition: Defin
     {% endfor%}{% endif %}
 
 {% if plugin.primitive_constraints | length > 0 %}{% for primitive_constraint in plugin.primitive_constraints%}
-def {{get_python_name(primitive_constraint.name)}}(value: str, type_declaration: str, source: AaCFile, location: SourceLocation{% if primitive_constraint.arguments | length > 0 %}, {% for entry in primitive_constraint.arguments %}{{ get_python_name(entry.name) }}: {{ get_python_type(entry.type) }}{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}) -> ExecutionResult:
+def {{get_python_name(primitive_constraint.name)}}(value: str, type_declaration: str, source: AaCFile, location: SourceLocation{% if primitive_constraint.arguments | length > 0 %}, {% for entry in primitive_constraint.arguments %}{{ get_python_name(entry.name) }}{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}) -> ExecutionResult:
     """ Business logic for the {{primitive_constraint.name}} constraint. """
 
     # TODO: rewrite the code below to implement your constraint logic

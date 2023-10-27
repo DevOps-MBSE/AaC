@@ -1,6 +1,6 @@
-aacenum:
+enum:
   name: MathFunction
-  enumerated_values:
+  values:
     - ADD
     - SUBTRACT
     - MULTIPLY

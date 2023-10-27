@@ -11,8 +11,8 @@ from aac.execute.aac_execution_result import (
     ExecutionStatus,
     ExecutionMessage,
 )
-from aac.lang.schema import Schema
-from aac.lang.plugininputvalue import PluginInputValue
+# from aac.lang.schema import Schema
+# from aac.lang.plugininputvalue import PluginInputValue
 from aac.execute import hookimpl
 from aac.context.language_context import LanguageContext
 from aac.context.definition import Definition
@@ -53,6 +53,8 @@ def run_gen_plugin(
     """Generate code and stubs for an AaC plugin.  Overwrites will backup existing files."""
 
     result = ExecutionResult(plugin_name, "gen-plugin", ExecutionStatus.SUCCESS, [])
+
+    print(f"DEBUG: run_gen_plugin called with {aac_plugin_file}")
 
     gen_plugin_check_result = before_gen_plugin_check(
         aac_plugin_file,
@@ -111,6 +113,8 @@ def run_gen_project(
     """Generate code and stubs for an AaC project.  Overwrites will backup existing files."""
 
     result = ExecutionResult(plugin_name, "gen-project", ExecutionStatus.SUCCESS, [])
+
+    print(f"DEBUG: enter run_gen_project")
 
     gen_project_check_result = before_gen_project_check(
         aac_project_file, output, no_prompt, force_overwrite, evaluate, run_check

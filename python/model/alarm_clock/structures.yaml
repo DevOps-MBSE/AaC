@@ -1,5 +1,6 @@
 schema:
   name: TimerAlert
+  package: alarm_clock
   root: timer_alert
   description: Data structure for timer alerts.
   fields:
@@ -12,6 +13,7 @@ schema:
 ---
 schema:
   name: Timestamp
+  package: alarm_clock
   fields:
     - name: hour
       type: int
@@ -30,6 +32,7 @@ schema:
 ---
 enum:
   name: TimezoneOffset
+  package: alarm_clock
   description: List of timezone offsets all values are -/+ from GMT
   values:
     - "-12:00"
@@ -75,19 +78,20 @@ enum:
 ---
 enum:
   name: AlarmNoise
+  package: alarm_clock
   description: List of available alarm noises
   values:
     - SONIC_BOOM
     - SIREN
     - KLAXON
     - DOG_BARKING
----
-timer_alert:
-  name: my_alert
-  triggeredTime:
-    hour: 06
-    minute: 30
-    second: 00
-    year: 2022
-    month: 01
-    day: 01
+# ---
+# timer_alert:
+#   name: my_alert
+#   triggeredTime:
+#     hour: 06
+#     minute: 30
+#     second: 00
+#     year: 2022
+#     month: 01
+#     day: 01

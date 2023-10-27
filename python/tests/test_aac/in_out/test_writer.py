@@ -19,9 +19,9 @@ model:
 """.strip()
         test_enum_name = "TestEnum"
         test_enum_yaml = """
-aacenum:
+enum:
   name: TestEnum
-  enumerated_values:
+  values:
   - v1
 """.strip()
 

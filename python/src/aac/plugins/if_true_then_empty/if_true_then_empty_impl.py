@@ -8,10 +8,10 @@ from aac.execute.aac_execution_result import (
     ExecutionStatus,
     ExecutionMessage,
 )
-from aac.lang.plugininputvalue import PluginInputValue
+# from aac.lang.plugininputvalue import PluginInputValue
 from aac.context.language_context import LanguageContext
 from aac.context.definition import Definition
-from aac.lang.schema import Schema
+# from aac.lang.schema import Schema
 from aac.context.source_location import SourceLocation
 from typing import Any
 
@@ -22,7 +22,7 @@ plugin_name = "If true then empty"
 def if_true_then_empty(
     instance: Any,
     definition: Definition,
-    defining_schema: Schema,
+    defining_schema,
     bool_field_name: str,
     empty_field_name: str,
 ) -> ExecutionResult:

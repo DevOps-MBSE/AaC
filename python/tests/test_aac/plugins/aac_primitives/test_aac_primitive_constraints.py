@@ -3,7 +3,7 @@ from typing import Tuple
 from click.testing import CliRunner
 from aac.execute.command_line import cli, initialize_cli
 from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus
-from aac.execute.aac_execution_result import LanguageError
+from aac.context.language_error import LanguageError
 
 
 from aac.plugins.aac_primitives.aac_primitive_constraints_impl import plugin_name

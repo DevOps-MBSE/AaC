@@ -10,8 +10,8 @@ from aac.execute.aac_execution_result import (
     ExecutionStatus,
     ExecutionMessage,
 )
-from aac.lang.schema import Schema
-from aac.lang.plugininputvalue import PluginInputValue
+# from aac.lang.schema import Schema
+# from aac.lang.plugininputvalue import PluginInputValue
 from aac.execute import hookimpl
 from aac.context.language_context import LanguageContext
 from aac.context.definition import Definition
@@ -34,7 +34,7 @@ constraint_assignment_arguments_aac_file_name = "constraint_assignment_arguments
 
 
 def run_check_arguments_against_constraint_definition(
-    instance: Any, definition: Definition, defining_schema: Schema, arguments: Any
+    instance: Any, definition: Definition, defining_schema, arguments: Any
 ) -> ExecutionResult:
     """Looks up the defined constraint name definition and ensures the
     arguments provided in the assignment match the arguments defined

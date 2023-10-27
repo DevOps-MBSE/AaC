@@ -8,6 +8,7 @@ import os
 import shutil
 import tempfile
 
+import traceback
 
 from aac.plugins.gen_plugin.gen_plugin_impl import (
     plugin_name,
@@ -47,7 +48,7 @@ class TestGenPlugin(TestCase):
 
             exit_code, output_message = self.run_gen_project_cli_command_with_args(proj_args)
 
-            self.assertEqual(0, exit_code)  # asserts the command ran successfully
+            self.assertEqual(0, exit_code, f"Expected success but failed with message: {output_message}")  # asserts the command ran successfully
             
             # now create an AaC plugin file in the project src directory
             package_src_path = os.path.join(temp_dir, "src", "happy")
@@ -84,7 +85,12 @@ class TestGenPlugin(TestCase):
         """Utility function to invoke the CLI command with the given arguments."""
         initialize_cli()
         runner = CliRunner()
+        print(f"DEBUG: invoking cli for command gen-project with args {args}")
         result = runner.invoke(cli, ["gen-project"] + args)
+        print(f"DEBUG: completed cli gen-project with result {result}")
+        if result.exception:
+            exc_type, exc_value, exc_traceback = result.exc_info
+            traceback.print_exception(exc_type, exc_value, exc_traceback)
         exit_code = result.exit_code
         std_out = str(result.stdout)
         output_message = std_out.strip().replace("\x1b[0m", "")
@@ -98,9 +104,10 @@ class TestGenPlugin(TestCase):
 
             args = [temp_aac_file_path, "--output", temp_dir, "--no-prompt"]
 
+            print(f"DEBUG: running gen-project with args: {args}")
             exit_code, output_message = self.run_gen_project_cli_command_with_args(args)
 
-            self.assertEqual(0, exit_code)  # asserts the command ran successfully
+            self.assertEqual(0, exit_code, f"Expected success but failed with message: {output_message}")  # asserts the command ran successfully
             self.assertIn("All AaC constraint checks were successful", output_message)  # asserts the command ran check successfully
             
             # make sure the files and directories were created

@@ -73,13 +73,6 @@ class ExecutionError(Exception):
 
 
 @attrs(slots=True)
-class LanguageError(Exception):
-    """A base class representing a language error condition."""
-
-    message: str = attrib(validator=validators.instance_of(str))
-
-
-@attrs(slots=True)
 class OperationCancelled(Exception):
     """A base class representing an cancelled plugin operation condition."""
 

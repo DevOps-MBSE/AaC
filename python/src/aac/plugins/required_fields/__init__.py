@@ -11,8 +11,8 @@ from aac.execute.aac_execution_result import (
     ExecutionStatus,
     ExecutionMessage,
 )
-from aac.lang.schema import Schema
-from aac.lang.plugininputvalue import PluginInputValue
+# from aac.lang.schema import Schema
+# from aac.lang.plugininputvalue import PluginInputValue
 from aac.execute import hookimpl
 from aac.context.language_context import LanguageContext
 from aac.context.definition import Definition
@@ -31,7 +31,7 @@ required_fields_aac_file_name = "required_fields.aac"
 
 
 def run_required_fields_are_present(
-    instance: Any, definition: Definition, defining_schema: Schema, arguments: Any
+    instance: Any, definition: Definition, defining_schema, arguments: Any
 ) -> ExecutionResult:
     """Check every field declared as required is present and populated."""
 
