@@ -8,10 +8,10 @@ plugin:
     - name: Mutually exclusive fields
       description: |
         Ensure that only one of the fields are defined at any time.
+      universal: false
       arguments:
         - name: fields
           description: |
             The list of field names that are mutually exclusive.
           type: string[]
           is_required: true
-          default: []
