@@ -1,11 +1,12 @@
+---
 # The Architecture-as-Code (AaC) core language definition.
 #   AaC is a self-defining language.  Each section below
 #   contains the building blocks to define MBSE products, 
 #   or tailor the AaC Model-Based System Engineering
 #   functionality to suit your needs.
----
+
 # Fountational language definitions upon with all other language constructs are based
----
+
 schema:
   name: AacType
   package: aac.lang
@@ -296,7 +297,7 @@ schema:
       is_required: true
 ---
 # Language Plugin Definition Types
----
+
 schema:
   name: Project
   package: aac.lang
@@ -636,7 +637,7 @@ enum:
     - DOC
 ---
 # Requirement Specifiction Types
----
+
 schema:
   name: RequirementSpecification
   package: aac.lang
@@ -763,7 +764,7 @@ schema:
       is_required: true
 ---
 # Core Behavioral Modeling Types
----
+
 schema:
   name: Model
   package: aac.lang
@@ -886,7 +887,7 @@ schema:
         A list of allocated requirements defining the expected behavior to be provided.
 ---
 # Test Specification types
----
+
 schema:
   name: Feature
   package: aac.lang
@@ -997,7 +998,6 @@ schema:
       is_required: true
 ---
 # Model Constraints
----
 
 schema:
   name: ContextConstraint
@@ -1133,7 +1133,7 @@ schema:
     - name: Check arguments against constraint definition
 ---
 # Use Case Definitions
----
+
 schema:
   name: UsecaseActor
   package: aac.lang

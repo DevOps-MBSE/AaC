@@ -20,7 +20,7 @@ def get_python_class_name(name: str) -> str:
         raise LanguageError(f"Invalid name for creation of python class name: '{name}', the first character must be a letter")
     result =  name.replace("-", " ").replace("_", " ").replace(" ", "")
     if not result.isalnum():
-        raise LanguageError(f"Invalid name for creation of python class name: '{name}', the name must be alphanumeric")
+        raise LanguageError(f"Invalid name for creation of python class name: '{name}', the name must be alphanumeric", None)
     return result
 
 def get_fully_qualified_name(package_name: str, class_name: str) -> str:

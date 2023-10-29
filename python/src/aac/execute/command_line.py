@@ -55,9 +55,10 @@ def handle_exceptions(plugin_name: str, func: Callable) -> Callable:
         try:
             return func(*args, **kwargs)
         except LanguageError as e:
-            return ExecutionResult(plugin_name, "check", ExecutionStatus.GENERAL_FAILURE, [ExecutionMessage(str(e), None, None)])
+            usr_msg = f"{e.message}{linesep}{e.location}"
+            return ExecutionResult(plugin_name, "exception", ExecutionStatus.GENERAL_FAILURE, [ExecutionMessage(usr_msg, None, None)])
         except OperationCancelled as e:
-            return ExecutionResult(plugin_name, "check", ExecutionStatus.OPERATION_CANCELLED, [ExecutionMessage(str(e), None, None)])
+            return ExecutionResult(plugin_name, "exception", ExecutionStatus.OPERATION_CANCELLED, [ExecutionMessage(str(e), None, None)])
         except ParserError as e:
             usr_msg = f"The AaC file '{e.source}' could not be parsed.{linesep}"
             if e.errors:
@@ -65,8 +66,14 @@ def handle_exceptions(plugin_name: str, func: Callable) -> Callable:
                 for err in e.errors:
                     usr_msg += f"  - {err}{linesep}"
             if e.yaml_error:
-                usr_msg += f"The following YAML errors were encountered:{linesep}  - {e.yaml_error}"
-            return ExecutionResult(plugin_name, "check", ExecutionStatus.PARSER_FAILURE, [ExecutionMessage(usr_msg, None, None)])
+                usr_msg += f"The following YAML errors were encountered:{linesep}"
+                exc = e.yaml_error
+                if hasattr(exc, 'problem_mark'):
+                    if exc.context != None:
+                        usr_msg += f'  parser says{linesep} {str(exc.problem_mark)} {linesep}{str(exc.problem)} {str(exc.context)}{linesep}Please correct data and retry.'
+                    else:
+                        usr_msg += f'  parser says{linesep}{str(exc.problem_mark)}{linesep}{str(exc.problem)}{linesep}Please correct data and retry.'
+            return ExecutionResult(plugin_name, "exception", ExecutionStatus.PARSER_FAILURE, [ExecutionMessage(usr_msg, None, None)])
 
     return wrapper
 
@@ -89,7 +96,14 @@ def to_click_command(plugin_name: str, command: AacCommand) -> Command:
     )
 
 def initialize_cli():
-    active_context = LanguageContext()
+    try:
+        active_context = LanguageContext()
+    except LanguageError as e:
+        if e.location:
+            secho(f"{e.message}{linesep}{e.location}", err=True, color=True)
+        else:
+            secho(f"{e.message}", err=True, color=True)
+        sys.exit(1)
 
     def get_commands() -> list[AacCommand]:
         result: list[AacCommand] = []
@@ -113,22 +127,12 @@ def initialize_cli():
                 ))
         return result
 
-    try:
-        runners: list[PluginRunner] = active_context.get_plugin_runners()
-        for runner in runners:
-            commands = [to_click_command(runner.get_plugin_name(), cmd) for cmd in get_commands()]
-            for command in commands:
-                cli.add_command(command)
-    except ParserError as error:
-        exc = error.yaml_error
-        print (f"Error while parsing YAML file: {error.source}")
-        if hasattr(exc, 'problem_mark'):
-            if exc.context != None:
-                print (f'  parser says{linesep} {str(exc.problem_mark)} {linesep}{str(exc.problem)} {str(exc.context)}{linesep}Please correct data and retry.')
-            else:
-                print (f'  parser says{linesep}{str(exc.problem_mark)}{linesep}{str(exc.problem)}{linesep}Please correct data and retry.')
-        else:
-            print (f"Something went wrong while parsing yaml file: {error.source}")
+    
+    runners: list[PluginRunner] = active_context.get_plugin_runners()
+    for runner in runners:
+        commands = [to_click_command(runner.get_plugin_name(), cmd) for cmd in get_commands()]
+        for command in commands:
+            cli.add_command(command)
 
 # This is the entry point for the CLI
 initialize_cli()

@@ -1,5 +1,5 @@
 import types
-from typing import Any, Optional, Type
+from typing import Any, Optional, Type, Tuple
 from enum import Enum, auto
 from os import linesep
 from os.path import join, dirname, sep
@@ -9,6 +9,7 @@ from aac.execute.plugin_manager import get_plugin_manager
 from aac.execute.plugin_runner import PluginRunner
 from aac.in_out.parser._parse_source import parse
 from aac.context.definition import Definition
+from aac.context.lexeme import Lexeme
 from aac.context.util import get_python_module_name, get_python_class_name
 
 AAC_LANG_FILE_NAME = "../../aac.aac"
@@ -114,6 +115,25 @@ class LanguageContext(object):
             result.append(definition)
       return result
     
+    def get_location_str(value: str, lexemes: list[Lexeme]) -> str:
+      lexeme = [lexeme for lexeme in lexemes if lexeme.value == value]
+      location_str = "Unable to identify source and location"  # this is the 'not found' case
+      if len(lexeme) == 1:  # this is the single match case
+        source_str = lexeme[0].source
+        line_str = lexeme[0].location.line + 1
+        location_str = f"File: {source_str}  Line: {line_str}"
+      elif len(lexeme) > 1:  # this is the ambiguous match case
+        # check to see if location source is the same for all matches
+        if all([lexeme[0].source == lexeme[i].source for i in range(1, len(lexeme))]):
+
+          source_str = lexeme[0].source
+          location_str = f"File: {source_str}  Possible Lines: {', '.join([str(lex.location.line+1) for lex in lexeme])}"
+        else: # if not, just list each possible location
+          location_str = "Unable to identify unique location - "
+          for lex in lexeme:
+            location_str += f"File: {lex.source}  Line: {lex.location.line+1}  "
+      return location_str
+    
     def get_inheritance_parents(definition: Definition) -> list[Type]:
       """
       Looks up the inheritance parent classes for the given definition and returns them as a list of python classes.
@@ -125,7 +145,12 @@ class LanguageContext(object):
           # I need to find the definition referenced by the extends
           parent_package = parent["package"]
           parent_name = parent["name"]
-          parent_fully_qualified_name = parent_fully_qualified_name = f"{get_python_module_name(parent_package)}.{get_python_class_name(parent_name)}"
+          parent_fully_qualified_name = ""
+          try:
+            parent_fully_qualified_name = f"{get_python_module_name(parent_package)}.{get_python_class_name(parent_name)}"
+          except LanguageError as e:
+            raise LanguageError(e.message, get_location_str(parent_name, definition.lexemes))
+        
           if parent_fully_qualified_name in self.context_instance.fully_qualified_name_to_class:
             inheritance_parents.append(self.context_instance.fully_qualified_name_to_class[parent_fully_qualified_name])
           else:
@@ -135,26 +160,20 @@ class LanguageContext(object):
               parent_definition = fully_qualified_name_to_definition[parent_fully_qualified_name]
 
             if not parent_definition:
-              raise LanguageError(f"Cannot find parent definition {parent_fully_qualified_name} for {definition.name}")
+              raise LanguageError(f"Cannot find parent definition {parent_fully_qualified_name} for {definition.name}", get_location_str(parent_name, definition.lexemes))
             
             if parent_definition.get_root_key() == "schema":
-              create_schema_class(parent_definition)
-              inheritance_parents.append(self.context_instance.fully_qualified_name_to_class[parent_fully_qualified_name])
-            elif parent_definition.get_root_key() == "enum":
-              create_enum_class(parent_definition)
-              inheritance_parents.append(self.context_instance.fully_qualified_name_to_class[parent_fully_qualified_name])
+              inheritance_parents.append(create_schema_class(parent_definition))
             else:
-              # TODO:  does this really need to be an error?  I can't think of an alternative right now, and it's generally consistent with coding language conventions.
-              # Would it even be possible for an AaC developer to create some new thing that doesn't use "schema" or "enum" to define base non-primitive types?
-              raise LanguageError(f"AaC extension is only supported for Schema and Enum.  Unable to create parent class with AaC root: {parent_definition.get_root_key()}")
+              # AaC only supports schema inheritance
+              raise LanguageError(f"AaC extension is only supported for schema.  Unable to create parent class with AaC root: {parent_definition.get_root_key()}", get_location_str(parent_name, definition.lexemes))
             
       return inheritance_parents
     
     def create_enum_class(enum_definition: Definition) -> Type:
 
-      # TODO:  since we're not generaing code any more, can we go back to 'enum' instead of 'enum'?
       if not enum_definition.get_root_key() == "enum":
-        raise LanguageError(f"Definition {enum_definition.name} is not an enum")
+        raise LanguageError(f"Definition {enum_definition.name} is not an enum", get_location_str(enum_definition.get_root_key(), enum_definition.lexemes))
       
       fully_qualified_name = enum_definition.get_fully_qualified_name()
       if fully_qualified_name in self.context_instance.fully_qualified_name_to_class:
@@ -169,7 +188,11 @@ class LanguageContext(object):
         for value in enum_definition.structure["enum"]["values"]:
           values[value] = auto()
       # create the enum class
-      instance_class = Enum(enum_definition.get_python_class_name(), values, module=enum_definition.get_python_module_name())
+      instance_class = None
+      try:
+        instance_class = Enum(enum_definition.get_python_class_name(), values, module=enum_definition.get_python_module_name())
+      except LanguageError as e:
+        raise LanguageError(e.message, get_location_str(enum_definition.name, enum_definition.lexemes))
       self.context_instance.fully_qualified_name_to_class[fully_qualified_name] = instance_class
       return instance_class
 
@@ -184,7 +207,7 @@ class LanguageContext(object):
         # this is an enum, so create the enum class
         return create_enum_class(schema_definition)
       elif schema_definition.get_root_key() != "schema":
-        raise LanguageError(f"Definition {schema_definition.name} is not a schema")
+        raise LanguageError(f"Definition {schema_definition.name} is not a schema", get_location_str(schema_definition.get_root_key(), schema_definition.lexemes))
       
       if fully_qualified_name in self.context_instance.fully_qualified_name_to_class:
         # we've already created the class, so nothing to do here
@@ -193,10 +216,16 @@ class LanguageContext(object):
       instance_class = None
       inheritance_parents = get_inheritance_parents(schema_definition)
       if len(inheritance_parents) == 0:
-        instance_class = type(schema_definition.get_python_class_name(), tuple([object]), {"__module__": schema_definition.get_python_module_name()})
+        try:
+          instance_class = type(schema_definition.get_python_class_name(), tuple([object]), {"__module__": schema_definition.get_python_module_name()})
+        except LanguageError as e:
+          raise LanguageError(e.message, get_location_str(schema_definition.name, schema_definition.lexemes))
       else:
         parent_classes = inheritance_parents  # the following causes a method resolution order (MRO) error when creating the type: [object] + inheritance_parents
-        instance_class = type(definition.get_python_class_name(), tuple(parent_classes), {"__module__": schema_definition.get_python_module_name()})
+        try:
+          instance_class = type(definition.get_python_class_name(), tuple(parent_classes), {"__module__": schema_definition.get_python_module_name()})
+        except LanguageError as e:
+          raise LanguageError(e.message, get_location_str(schema_definition.name, schema_definition.lexemes))
 
       # now add the fields to the class
       for field in schema_definition.structure["schema"]["fields"]:
@@ -220,9 +249,9 @@ class LanguageContext(object):
               line = lexeme.location.line
               break
           if len(potential_definitions) == 0:
-            raise LanguageError(sep.join([f"Could not find AaC definition for type {clean_field_type} while loading {schema_definition.name}", f"  File: {schema_definition.source.uri}  Line: {line}"]))
+            raise LanguageError(f"Could not find AaC definition for type {clean_field_type} while loading {schema_definition.name}", get_location_str(field_type, schema_definition.lexemes))
           else:
-            raise LanguageError(sep.join([f"Discovered multipe AaC definitions for type {clean_field_type} while loading {schema_definition.name}.  You may need to add a package name to differentiate.", f"  File: {schema_definition.source.uri}  Line: {line}", f"  Found candidate definitions: {[definition.get_fully_qualified_name() for definition in potential_definitions]}"]))
+            raise LanguageError(f"Discovered multipe AaC definitions for type {clean_field_type} while loading {schema_definition.name}.  You may need to add a package name to differentiate.", get_location_str(field_type, schema_definition.lexemes))
         
         parsed_definition = potential_definitions[0] 
         
@@ -246,7 +275,7 @@ class LanguageContext(object):
         setattr(result, field_name, field_value)
       return result
     
-    def create_field_instance(field_name: str, field_type: str, is_required: bool, field_value: Any) -> Any:
+    def create_field_instance(field_name: str, field_type: str, is_required: bool, field_value: Any, lexemes: list[Lexeme]) -> Any:
       """
       Creates a instance of the given type and value.
       """
@@ -261,9 +290,10 @@ class LanguageContext(object):
       # now get the defining definition from the clean_field_type
       defining_definitions = find_definitions_by_name(clean_field_type)
       if not defining_definitions or len(defining_definitions) == 0:
-        raise LanguageError(f"Could not find definition for '{clean_field_type}'.")
+        
+        raise LanguageError(f"Could not find definition for '{clean_field_type}'.", get_location_str(field_type, lexemes))
       elif len(defining_definitions) > 1:
-        raise LanguageError(f"Found multiple definitions for '{clean_field_type}'.")
+        raise LanguageError(f"Found multiple definitions for '{clean_field_type}'.", get_location_str(field_type, lexemes))
       defining_definition = defining_definitions[0]
       
       if defining_definition.get_root_key() == "primitive":
@@ -277,7 +307,7 @@ class LanguageContext(object):
           else:
             for item in field_value:
               if not isinstance(item, eval(python_type)):
-                raise LanguageError(f"Invalid value for field '{field_name}'.  Expected type '{python_type}', but found '{type(item)}'")
+                raise LanguageError(f"Invalid value for field '{field_name}'.  Expected type '{python_type}', but found '{type(item)}'", get_location_str(field_value, lexemes))
         else:
           if not field_value:
             if is_required:
@@ -285,7 +315,7 @@ class LanguageContext(object):
           else:
             if "Any" != python_type:
               if not isinstance(field_value, eval(python_type)):
-                raise LanguageError(f"Invalid value for field '{field_name}'.  Expected type '{python_type}', but found '{type(field_value)}'")
+                raise LanguageError(f"Invalid value for field '{field_name}'.  Expected type '{python_type}', but found '{type(field_value)}'", get_location_str(field_value, lexemes))
         return field_value
       elif defining_definition.get_root_key() == "enum":
         # this is an enum, so ensure the parsed value aligns with the type and return it
@@ -296,11 +326,11 @@ class LanguageContext(object):
           result = []
           for item in field_value:
             if not isinstance(item, str):
-              raise LanguageError(f"Invalid value for field '{field_name}'.  Expected type 'str', but found '{type(item)}'")
+              raise LanguageError(f"Invalid value for field '{field_name}'.  Expected type 'str', but found '{type(item)}'", get_location_str(field_name, lexemes))
             try:
               result.append(getattr(enum_class, item))
             except ValueError:
-              raise LanguageError(f"{item} is not a valid value for enum {defining_definition.name}")
+              raise LanguageError(f"{item} is not a valid value for enum {defining_definition.name}", get_location_str(item, lexemes))
           return result
         else:
           if not field_value:
@@ -309,8 +339,8 @@ class LanguageContext(object):
             return self.create_aac_enum(defining_definition.get_fully_qualified_name(), field_value)
             # return getattr(enum_class, field_value)
           except ValueError:
-            raise LanguageError(f"{field_value} is not a valid value for enum {defining_definition.name}")
-      else:
+            raise LanguageError(f"{field_value} is not a valid value for enum {defining_definition.name}", get_location_str(field_value, lexemes))
+      else:  # this isn't a primitive and isn't an enum, so it must be a schema
         field_fully_qualified_name = defining_definition.get_fully_qualified_name()
         
         instance_class = self.context_instance.fully_qualified_name_to_class[field_fully_qualified_name]
@@ -318,7 +348,7 @@ class LanguageContext(object):
           if defining_definition.get_root_key() == "schema":
             instance_class = create_schema_class(defining_definition)
           else:
-            raise LanguageError("figure out what to do here")
+            raise LanguageError(f"Unable to process AaC definition of type {field_fully_qualified_name} with root {defining_definition.get_root_key()}", get_location_str(field_name, lexemes))
         instance = None
         if is_list:
           instance = []
@@ -328,16 +358,16 @@ class LanguageContext(object):
           else:
             if not isinstance(field_value, list):
               if is_required:
-                raise LanguageError(f"Invalid parsed value for field '{field_name}'.  Expected type 'list', but found '{type(field_value)}'.  Value = {field_value}")
+                raise LanguageError(f"Invalid parsed value for field '{field_name}'.  Expected type 'list', but found '{type(field_value)}'.  Value = {field_value}", get_location_str(field_name, lexemes))
               else:
                 return instance
             for item in field_value:
               if not isinstance(item, dict):
-                raise LanguageError(f"Invalid parsed value for field '{field_name}'.  Expected type 'dict', but found '{type(item)}'. Value = {item}")
+                raise LanguageError(f"Invalid parsed value for field '{field_name}'.  Expected type 'dict', but found '{type(item)}'. Value = {item}", get_location_str(field_name, lexemes))
               # go through the fields and create instances for each
               subfields = {}
               if "fields" not in defining_definition.structure["schema"]:
-                raise LanguageError(f"Schema '{defining_definition.name}' does not contain any fields.")
+                raise LanguageError(f"Schema '{defining_definition.name}' does not contain any fields.", get_location_str(field_name, lexemes))
               for subfield in defining_definition.structure["schema"]["fields"]:
                 subfield_name = subfield["name"]
                 subfield_type = subfield["type"]
@@ -350,22 +380,31 @@ class LanguageContext(object):
                 else:
                   if "default_value" in subfield:
                     subfield_value = subfield["default_value"]
-                subfields[subfield_name] = create_field_instance(subfield_name, subfield_type, subfield_is_required, subfield_value)
+                # we need to eliminate previously covered lexemes, so go through the list until we find subfield_name then add it and everything else
+                found = False
+                sub_lexemes = []
+                for lex in lexemes:
+                  if lex.value == subfield_name:
+                    found = True
+                    sub_lexemes.append(lex)
+                  if found:
+                    sub_lexemes.append(lex)
+                subfields[subfield_name] = create_field_instance(subfield_name, subfield_type, subfield_is_required, subfield_value, sub_lexemes)
               instance.append(create_object_instance(instance_class, subfields))
         else:
           instance = None
           if not field_value:
             if is_required:
-              raise LanguageError(f"Missing required field {field_name}")
+              raise LanguageError(f"Missing required field {field_name}", get_location_str(field_name, lexemes))
             else:
               return instance
           if not isinstance(field_value, dict):
             # this is a complex type defined by a schema, with a field value so it should be a dict
-            raise LanguageError(f"Invalid parsed value for field '{field_name}'.  Expected type 'dict', but found '{type(field_value)}'.  Value = {field_value}")
+            raise LanguageError(f"Invalid parsed value for field '{field_name}'.  Expected type 'dict', but found '{type(field_value)}'.  Value = {field_value}", get_location_str(field_name, lexemes))
           
           subfields = {}
           if "fields" not in defining_definition.structure["schema"]:
-            raise LanguageError(f"Schema '{defining_definition.name}' does not contain any fields.")
+            raise LanguageError(f"Schema '{defining_definition.name}' does not contain any fields.", get_location_str(field_name, lexemes))
           for subfield in defining_definition.structure["schema"]["fields"]:
             subfield_name = subfield["name"]
             subfield_type = subfield["type"]
@@ -378,7 +417,16 @@ class LanguageContext(object):
             else:
               if "default_value" in subfield:
                 subfield_value = subfield.default_value
-            subfields[subfield_name] = create_field_instance(subfield_name, subfield_type, subfield_is_required, subfield_value)
+            # we need to eliminate previously covered lexemes, so go through the list until we find subfield_name then add it and everything else
+            found = False
+            sub_lexemes = []
+            for lex in lexemes:
+              if lex.value == subfield_name:
+                found = True
+                sub_lexemes.append(lex)
+              if found:
+                sub_lexemes.append(lex)
+            subfields[subfield_name] = create_field_instance(subfield_name, subfield_type, subfield_is_required, subfield_value, sub_lexemes)
           
           instance = create_object_instance(instance_class, subfields)
 
@@ -398,15 +446,15 @@ class LanguageContext(object):
               defining_definition = item
 
       if not defining_definition:
-        raise LanguageError(f"Could not find definition for {definition.name} with root {definition.get_root_key()}")
+        raise LanguageError(f"Could not find definition for {definition.name} with root {definition.get_root_key()}", get_location_str(definition.get_root_key(), definition.lexemes))
       
       if defining_definition.get_root_key() == "schema":
         # since schemas are how we define "all the things" the root key of the defining definition should be 'schema'
         create_schema_class(defining_definition)
       else:
-        raise LanguageError(f"Definition for root key '{defining_definition.get_root_key()}' is not a Schema.")
+        raise LanguageError(f"Definition for root key '{defining_definition.get_root_key()}' is not a Schema.", get_location_str(definition.get_root_key(), definition.lexemes))
 
-      instance = create_field_instance("root", defining_definition.name, True, definition.structure[definition.get_root_key()])
+      instance = create_field_instance("root", defining_definition.name, True, definition.structure[definition.get_root_key()], definition.lexemes)
 
       definition.instance = instance
       return instance
@@ -511,7 +559,7 @@ class LanguageContext(object):
     result = []
     # first make sure we can find the definition that defines the type
     if f"{package}.{name}" not in self.context_instance.fully_qualified_name_to_definition:
-      raise LanguageError(f"Could not find definition for {package}.{name}")
+      raise LanguageError(f"Could not find definition for {package}.{name}", None)
     # now get all the definitions that extend from the definition
     definition = self.context_instance.fully_qualified_name_to_definition[f"{package}.{name}"]
     result.append(definition)
