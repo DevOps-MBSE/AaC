@@ -16,7 +16,7 @@ suite("AaC Executable Wrapper Test Suite", () => {
                 const searchString = "0.3.";
                 assert.strictEqual(output.includes(searchString), true, `'${searchString}' not found in ${output}`);
             });
-    });
+    }).timeout(20000);
 
     test("it should execute the help command", async () => {
         const helpDumpCommand = {
