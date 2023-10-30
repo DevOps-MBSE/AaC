@@ -9,7 +9,7 @@ has_children: true
 
 ## VSCode Workspaces
 
-Because this repository houses both a Python and TypeScript project, we're using [VSCode Workspaces](https://code.visualstudio.com/docs/editor/workspaces) to separate and present two different projects and experiences. When you first open the project in VSCode, you will see the entirety of it, however, if you open say the Python workspace then the VSCode instance will reload and now the visible files, IDE configuration, and the configured tasks will now pertain only to the Python package. The same is true for the vscode_extension workspace and its TypeScript configuration.
+Historically this repository has housed various sub project,  but have since refactored into a multi-repo structure with only the main AaC capability in the main repository.  As such we'd previously setup [VSCode Workspaces](https://code.visualstudio.com/docs/editor/workspaces) to separate projects and experiences.  We opted to keep the python project in place during the refactor. When you first open the project in VSCode, you will see the entirety of it, however, if you open the Python workspace then the VSCode instance will reload and now the visible files, IDE configuration, and the configured tasks will now pertain only to the Python package. We'll maintain this flexibility for now in case we discover a need for another project within the repository.
 
 You can open a workspace in VSCode by:
 
@@ -17,18 +17,17 @@ You can open a workspace in VSCode by:
 2. When prompted, type `Open Workspace From File`
 3. When presented with a filepath, enter:
     - /path/to/workspace/AaC/.vscode/python.code-workspace
-    - /path/to/workspace/AaC/.vscode/vscode_extension.code-workspace
 4. Press the `Ok` button and watch the IDE switch workspaces.
 
 ---
 
 ## Gitpod Environment
 
-This project prioritizes supporting accessible, reproducible, and easy to use development environments which is why we support and recommend users use the already-curated [Gitpod](https://gitpod.io/new/#https://github.com/DevOps-MBSE/AaC) Architecture-as-Code development environment. The Gitpod environment handles all the setup and configuration necessary to begin developing AaC. You can immediately open a vscode workspace file and begin debugging the Python and Typescript applications.
+This project prioritizes supporting accessible, reproducible, and easy to use development environments which is why we support and recommend users use the already-curated [Gitpod](https://gitpod.io/new/#https://github.com/DevOps-MBSE/AaC) Architecture-as-Code development environment. The Gitpod environment handles all the setup and configuration necessary to begin developing AaC. You can immediately open a vscode workspace file and begin debugging the Python application.
 
 If it's your first time using Gitpod, you'll be prompted to make an account or use SSO provided by Gitlab and Github. Gitpod provides a free tier, so you're not required to pay before using it.
 
-Gitpod provides the ability to initialize the environment with shell commands and scripts. We leverage these init commands to handle any initialization for the AaC Python package and the AaC VSCode Extension (Typescript), such as installing dependencies and building the projects. You can find the init commands in the `.Gitpod.yml` file at the root of the repository.
+Gitpod provides the ability to initialize the environment with shell commands and scripts. We leverage these init commands to handle any initialization for the AaC Python package , such as installing dependencies and building the projects. You can find the init commands in the `.Gitpod.yml` file at the root of the repository.
 
 ## Non-Gitpod Environment
 
@@ -37,14 +36,6 @@ Gitpod provides the ability to initialize the environment with shell commands an
 There are some developmental and system requirements for developing with AaC.
 
 1. Python 3.9+ Installed
-2. Typescript Development Dependencies
-
-#### Linux Requirements
-
-Developing the VSCode extension in linux environments may require the installing of additional OS dependencies.
-
-- *libnss3-dev*
-- *libgbm-dev*
 
 ### Developing the AaC Python Package
 
@@ -180,28 +171,9 @@ Additionally, to get an HTML code coverage report, update the `tox` command to i
 
 #### VSCode Unit Test Support for Python
 
-The Python plugin for VSCode supports the `unittest` Python library, and not the `nose2` framework that we use. The impact is fairly minimal, but Python unit tests using the `nose2` parameterized test feature will not run correctly from within the VSCode IDE since it fails to recognize the `nose2` parameterized tests as parameterized tests causing them to fail.
+The Python plugin for VSCode supports the `unittest` Python library, and not the `nose2` framework that we use. The impact is fairly minimal, but Python unit tests using the `nose2` parameterized test feature will not run correctly from within the VSCode IDE since it fails to recognize the `nose2` parameterized tests as parameterized tests causes them to fail.
 
 To get around this, you can run all the tests from the terminal using the above `tox` commands.
-
-### Developing the AaC TypeScript VSCode Extension
-
-The TypeScript AaC VSCode Extension, its source code, and its configuration are all found in the `vscode_extension/` directory.
-
-#### Installing & Building the AaC VSCode Extension
-
-The TypeScript VSCode Extension can be installed by running:
-`bash` and `zsh` command:
-
-```bash
-yarn compile
-```
-
-#### Running the AaC VSCode Extension
-
-Assuming that the Typescript VSCode Extension workspace is currently open and active, the VSCode extension can be debugged in VSCode by opening an extension typescript file, hitting the `f5` key, and selecting "VSCode Extension Development" from the debug run configurations.
-
-Assuming all went well, VSCode will launch another instance of the IDE with the AaC Extension installed.
 
 ## AaC Profiling Developer Guide
 

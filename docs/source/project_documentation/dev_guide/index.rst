@@ -6,8 +6,7 @@ Developer Guide Documentation
 
    Getting Started <dev_guide_index>
    Documentation <docs>
+   Language API <./language_api/language_api_index>
    Plugin Developer Guide <plugin_dev_guide>
    AaC Constraint Checks <aac_constraints>
-   Validation Plugins for Developers <validation_plugins>
    Profiling <profiling>
-   Language API <./language_api/language_api_index>

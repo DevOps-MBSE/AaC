@@ -118,6 +118,17 @@ generator:
           output_path_uses_data_source_package: true
           output_file_prefix: test_
           output_file_extension: py
+    - name: AaC Plugin Unit Test Init Generation
+      data_source: plugin
+      templates:
+        - name: PluginUnitTestInit
+          description: Generates a Python unit test init for a plugin
+          template_file: ./templates/empty.jinja2
+          overwrite: OVERWRITE
+          output_target: TEST
+          output_path_uses_data_source_package: true
+          output_file_name: __init__
+          output_file_extension: py
     - name: AaC Plugin Command Feature File Generation
       data_source: plugin
       data_content: plugin.commands.acceptance

@@ -11,7 +11,7 @@ Because the AaC DSL is leveraging plain-text YAML as the underpinning of the DSL
 
 Constraint rules in AaC are defined with the `context_constraint`, `schema_constraint`, and `primitive_constraint` definitions, which are required to have a corresponding implementation, via an AaC plugin. This enables AaC's self-checking mechanism even though YAML is just a markup language.
 
-## Checking the AaC Language
+## Checking an AaC File
 The overall constraint mechanism follows this flow:
 1. A definition is identified as needing to be checked (i.e. you run `aac check <AaC_file_path>`)
 2. Certain "core" constraints must be automatically checked while parsing and loading the AaC definition.

@@ -5,5 +5,8 @@ Plugins Documentation
    :maxdepth: 1
 
    AaC Plugins <plugins_index>
-   Plant-UML Plugin <plant_uml>
-   Gen-Protobuf Plugin <gen_protobuf>
+   Version <version>
+   Check <check>
+   Print Definitions <print_defs>
+   Generate <generate>
+   Generate Plugin <generate_plugin>

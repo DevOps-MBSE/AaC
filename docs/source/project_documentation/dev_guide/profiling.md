@@ -27,15 +27,16 @@ import cProfile
 To enable this profiler you can add the following code to your plugin to profile against any performance or other issues that may be suspected:
 
 ```python
-# This is with using the `cProfile` profiler within a ContextManager Object.
+# This is with using the `cProfile` profiler to test the version plugin.
 
 import cProfile
 import pstats
 from pstats import SortKey
+from aac.plugins.version.version_impl import version
+
 return_value = None
 with cProfile.Profile() as pr:
-    with plugin_result(plugin_name, _validate) as result:
-        return_value = result
+    return_value = version()
 ps = pstats.Stats(pr).sort_stats(SortKey.CUMULATIVE) # Keep this outside the context manager scope to prevent pollution in the profiler.
 ps.print_stats(10) # Print the top 10 calls
 return return_value
@@ -48,7 +49,7 @@ Through the sort function, and filtering the sort you can see the heavy offender
 
 The output from this run will have something similar to the below:
 
-```shell
+```bash
 
 $ aac gen-design-doc ./model/alarm_clock/alarm_clock.yaml ../../../temp/
          4040214 function calls (3965997 primitive calls) in 1.129 seconds
