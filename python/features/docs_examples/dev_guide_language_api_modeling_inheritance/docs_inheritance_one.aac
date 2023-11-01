@@ -1,0 +1,23 @@
+schema:
+  name: Person
+  package: aac.example
+  modifiers:
+    - abstract
+  fields:
+    - name: name
+      type: string
+    - name: age
+      type: int
+---
+schema:
+  name: Employee
+  package: aac.example
+  modifiers:
+    - final
+  root: employee
+  extends:
+    - name: Person
+      package: aac.example
+  fields:
+    - name: id
+      type: string

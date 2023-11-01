@@ -105,8 +105,8 @@ AaC is also the name of the modular command line interface (CLI) that can parse 
 and produce artifacts from it. The CLI has an extensible command library that currently contains commands that
 can verify syntax and patterns, generate code and produce static reports.
 
-The entire AaC product is extensible so you can use only the features you want.  AaC is purposefully small.
-Additional functionality is achieved through installing plugins.
+The entire AaC product is extensible.  AaC is purposefully small.  Additional functionality is achieved through installing plugins.
+The plugin architecture allows you choice of functionallity so you can use only the features you want.  
 
 The Graphical User Interface
 ----------------------------

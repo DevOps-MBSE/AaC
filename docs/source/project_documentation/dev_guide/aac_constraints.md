@@ -219,7 +219,7 @@ class TestExclusivefields(TestCase):
         self.fail("Test not yet implemented.")
 ```
 
-Since this is not a universal constraint, you must declare it where appropriate.  For this example, the constraint is currently used in the `SchemaConstraint` declaration.
+Since this is not a universal constraint, you must declare it where appropriate.  There's not a current example of the "Mutually Exclusive" constraint in the current AaC baseline, so let's switch over to the "If true then empty" constraint to see how schema constraints are allocated.  In this example, the constraint is used to check the boolean value of the `universal` field and if true, ensure there are no values provided for the `arguments` field.  Everything described above for plugin-generation applies here as well.  What we really want to focus on is the assignment of the schema constraint, including the arguments provided for the constraint.
 
 ```yaml
 schema:

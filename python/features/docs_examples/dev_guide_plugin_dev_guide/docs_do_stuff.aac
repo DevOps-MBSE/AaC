@@ -1,0 +1,28 @@
+plugin:
+  name: My Plugin
+  package: aac_example.plugins.plugin_name
+  commands:
+    - name: do-stuff
+      inputs:
+        - name: aac-file
+          type: file
+          description: The path to the architecture file with the plugin definition.
+      acceptance:
+        - name: Success test
+          scenarios:
+            - name: Test do stuff command with valid input
+              given: 
+                - A path to an existing AaC file.
+              when:
+                - The AaC do-stuff command is run with the path to the file
+              then:
+                - The do-stuff command provides the output 'SUCCESS'
+        - name: Failure test
+          scenarios:
+            - name: Test do stuff command with valid input
+              given: 
+                - An path that does not point to an existing file.
+              when:
+                - The AaC do-stuff command is run on the file
+              then:
+                - The do-stuff command provides the output 'FAILURE'
