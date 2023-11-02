@@ -7,6 +7,7 @@ from aac.execute.aac_execution_result import (
     ExecutionResult,
     ExecutionStatus,
     ExecutionMessage,
+    MessageLevel,
 )
 # from aac.lang.plugininputvalue import PluginInputValue
 from aac.context.language_context import LanguageContext
@@ -32,7 +33,8 @@ def if_true_then_empty(
     if not isinstance(bool_field_value, bool):
         # the constraint failed
         error_msg = ExecutionMessage(
-            f"The If true then empty constraint for {instance.name} failed because {bool_field_name} is not a boolean.",
+            f"The If true then empty constraint for {instance.name} failed because {bool_field_name} is not a boolean.  Received {bool_field_value}.",
+            MessageLevel.ERROR,
             definition.source,
             None,
         )
@@ -46,6 +48,7 @@ def if_true_then_empty(
         # the constraint failed
         error_msg = ExecutionMessage(
             f"The If true then empty constraint for {instance.name} failed because {bool_field_name} is true and {empty_field_name} is not empty.",
+            MessageLevel.ERROR,
             definition.source,
             None,
         )

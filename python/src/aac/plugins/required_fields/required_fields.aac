@@ -1,9 +1,0 @@
-plugin:
-  name: Required Fields
-  package: aac.plugins.required_fields
-  description: An AaC plugin that enables validating all required fields are present in a definition.
-  schema_constraints:
-    - name: Required fields are present
-      description: Check every field declared as required is present and populated.
-      universal: true
-      

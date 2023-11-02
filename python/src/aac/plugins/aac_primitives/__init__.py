@@ -10,6 +10,7 @@ from aac.execute.aac_execution_result import (
     ExecutionResult,
     ExecutionStatus,
     ExecutionMessage,
+    MessageLevel,
 )
 from aac.execute import hookimpl
 from aac.context.language_context import LanguageContext

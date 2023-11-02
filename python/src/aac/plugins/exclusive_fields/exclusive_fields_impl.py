@@ -7,6 +7,7 @@ from aac.execute.aac_execution_result import (
     ExecutionResult,
     ExecutionStatus,
     ExecutionMessage,
+    MessageLevel
 )
 # from aac.lang.schema import Schema
 # from aac.lang.plugininputvalue import PluginInputValue
@@ -43,6 +44,7 @@ def mutually_exclusive_fields(
     if num_present == 0:
         error_msg = ExecutionMessage(
             f"None of the following fields were present: {fields}",
+            MessageLevel.ERROR,
             definition.source,
             None,
         )
@@ -51,6 +53,7 @@ def mutually_exclusive_fields(
     if num_present > 1:
         error_msg = ExecutionMessage(
             f"More than one of the following fields were present: {fields}",
+            MessageLevel.ERROR,
             definition.source,
             None,
         )

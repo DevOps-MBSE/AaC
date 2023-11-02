@@ -72,6 +72,7 @@ from aac.execute.aac_execution_result import (
     ExecutionResult,
     ExecutionStatus,
     ExecutionMessage,
+    MessageLevel,
 )
 
 from aac.context.language_context import LanguageContext
@@ -92,6 +93,7 @@ def root_key_names_are_unique(context: LanguageContext) -> ExecutionResult:
     messages: list[ExecutionMessage] = []
     error_msg = ExecutionMessage(
         "The Root key names are unique constraint for the Unique Root Keys plugin has not been implemented yet.",
+        MessageLevel.ERROR,
         None,
         None,
     )
@@ -167,6 +169,7 @@ from aac.execute.aac_execution_result import (
     ExecutionResult,
     ExecutionStatus,
     ExecutionMessage,
+    MessageLevel,
 )
 
 from aac.context.language_context import LanguageContext
@@ -189,6 +192,7 @@ def mutually_exclusive_fields(
     messages: list[ExecutionMessage] = []
     error_msg = ExecutionMessage(
         "The Mutually exclusive fields constraint for the Exclusive fields plugin has not been implemented yet.",
+        MessageLevel.ERROR,
         definition.source,
         None,
     )
@@ -312,6 +316,7 @@ from aac.execute.aac_execution_result import (
     ExecutionResult,
     ExecutionStatus,
     ExecutionMessage,
+    MessageLevel,
 )
 
 from aac.context.language_context import LanguageContext
@@ -334,6 +339,7 @@ def check_dataref(
     messages: list[ExecutionMessage] = []
     error_msg = ExecutionMessage(
         message="The Check dataref constraint for the AaC primitive constraints plugin has not been implemented yet.",
+        level=MessageLevel.ERROR,
         source=source,
         location=location,
     )

@@ -247,6 +247,7 @@ def do_stuff(aac_file: str) -> ExecutionResult:
     messages: list[ExecutionMessage] = []
     error_msg = ExecutionMessage(
         "The do-stuff command is not implemented.",
+        MessageLevel.ERROR,
         None,
         None,
     )
@@ -265,7 +266,7 @@ def do_stuff(aac_file: str) -> ExecutionResult:
     messages: list[ExecutionMessage] = []
     context = LanguageContext()
     definitions = context.parse_and_load(aac_file)
-    msg = ExecutionMessage(f"Definitions found in {aac_file}:  {[d.name for d in definitions]}", None, None)
+    msg = ExecutionMessage(f"Definitions found in {aac_file}:  {[d.name for d in definitions]}", MessageLevel.INFO, None, None)
     messages.append(msg)
 
     return ExecutionResult(plugin_name, "do-stuff", status, messages)

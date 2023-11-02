@@ -7,6 +7,7 @@ from aac.execute.aac_execution_result import (
     ExecutionResult,
     ExecutionStatus,
     ExecutionMessage,
+    MessageLevel,
 )
 # from aac.lang.schema import Schema
 # from aac.lang.plugininputvalue import PluginInputValue
@@ -26,11 +27,14 @@ def check_arguments_against_constraint_definition(
 ) -> ExecutionResult:
     """Business logic for the Check arguments against constraint definition constraint."""
 
+    print(f"Running {plugin_name} plugin for instance {instance.name} and definition {definition.name} with defining_schema {defining_schema}.\n\n{instance}")
+
     context = LanguageContext()
     if not context.is_aac_instance(instance, "aac.lang.SchemaConstraintAssignment") and not context.is_aac_instance(instance, "aac.lang.PrimitiveConstraintAssignment"):
         # the constraint failed
         error_msg = ExecutionMessage(
             f"The Check arguments against constraint definition constraint for {instance.name} failed because the instance is not a SchemaConstraintAssignment or PrimitiveConstraintAssignment.  You may only use this constraint on SchemaConstraintAssignment or PrimitiveConstraintAssignment definitions.  Received {type(instance)}.)",
+            MessageLevel.ERROR,
             definition.source,
             None,
         )
@@ -44,6 +48,7 @@ def check_arguments_against_constraint_definition(
     elif not isinstance(instance.arguments, list):
         error_msg = ExecutionMessage(
             f"The Check arguments against constraint definition constraint for {instance.name} failed because the assigned arguments were not parsed as a list of entries and cannot be evaluated.  Received {instance.arguments}",
+            MessageLevel.ERROR,
             definition.source,
             None,
         )
@@ -53,6 +58,7 @@ def check_arguments_against_constraint_definition(
             if not isinstance(arg, dict):
                 error_msg = ExecutionMessage(
                     f"The Check arguments against constraint definition constraint for {instance.name} failed because the assigned arguments were not parsed as a list of PluginInputValue entries and cannot be evaluated.  Received {instance.arguments}",
+                    MessageLevel.ERROR,
                     definition.source,
                     None,
                 )
@@ -75,6 +81,7 @@ def check_arguments_against_constraint_definition(
         # the constraint failed
         error_msg = ExecutionMessage(
             f"The Check arguments against constraint definition constraint for {instance.name} failed because the constraint definition could not be found.",
+            MessageLevel.ERROR,
             definition.source,
             None,
         )
@@ -86,6 +93,7 @@ def check_arguments_against_constraint_definition(
             # the constraint failed
             error_msg = ExecutionMessage(
                 f"The Check arguments against constraint definition constraint for {instance.name} failed because the constraint definition does not have arguments, but the constraint assignment does.  Assigned arguments are {constraint_args}.",
+                MessageLevel.ERROR,
                 definition.source,
                 None,
             )
@@ -100,6 +108,7 @@ def check_arguments_against_constraint_definition(
                 # the constraint failed
                 error_msg = ExecutionMessage(
                     f"The Check arguments against constraint definition constraint for {instance.name} failed because the constraint definition has a required argument named {field.name} that was not found in the constraint assignment.",
+                    MessageLevel.ERROR,
                     definition.source,
                     None,
                 )
@@ -111,6 +120,7 @@ def check_arguments_against_constraint_definition(
                 # the constraint failed
                 error_msg = ExecutionMessage(
                     f"The Check arguments against constraint definition constraint for {instance.name} failed because the constraint definition does not have an argument named {arg_name}, but the constraint assignment does.  Argument {arg_name} is not in defined argument names {defined_argument_names}.",
+                    MessageLevel.ERROR,
                     definition.source,
                     None,
                 )

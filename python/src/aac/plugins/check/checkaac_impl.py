@@ -5,7 +5,7 @@
 from typing import Callable, Any
 from aac.context.language_context import LanguageContext
 from aac.context.definition import Definition
-from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus, ExecutionMessage
+from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus, ExecutionMessage, MessageLevel
 from aac.context.language_error import LanguageError
 # from aac.lang.primitive import Primitive
 # from aac.lang.schema import Schema
@@ -40,7 +40,7 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult:
             constraint_args = constraint_assignment.arguments
             callback = all_constraints_by_name[constraint_name]
             # TODO: fix this location hack!
-            locations = [lexeme.location for lexeme in source_definition.lexemes if lexeme.value == value_to_check]
+            locations = [lexeme.location for lexeme in source_definition.lexemes if lexeme.value == field.name]
             location = None
             if len(locations) > 0:
                 location = locations[0]
@@ -174,8 +174,11 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult:
                     status = result.status_code
 
     # after goign through all the constraint results, if we're still success add a success message
+    if verbose:
+        for check_me in definitions_to_check:
+            messages.append(ExecutionMessage(f"Check {check_me.source.uri} - {check_me.name} was successful.", MessageLevel.DEBUG, None, None))
     if status == ExecutionStatus.SUCCESS:
-        happy_msg = ExecutionMessage(message="All AaC constraint checks were successful.", source=None, location=None)
+        happy_msg = ExecutionMessage(message="All AaC constraint checks were successful.", level=MessageLevel.INFO, source=None, location=None)
         messages.append(happy_msg)
 
     return ExecutionResult(

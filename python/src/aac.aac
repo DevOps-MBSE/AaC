@@ -278,7 +278,7 @@ schema:
         Indicates that the field must be present when used.
       default: "false"
     - name: default
-      type: string
+      type: any
       description: |
         The default value to use for the field if field is not provided.
 ---
@@ -1047,6 +1047,7 @@ schema:
         This is a convenience so that you don't have to directly assign the constraint to every schema.
         If not included or false, the constraint must be explicitly assigned to a schema.  But be aware
         that universal schema constraints cannot have input arguments.
+      default: false
     - name: arguments
       type: Field[]
       description: |

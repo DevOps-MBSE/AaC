@@ -7,6 +7,7 @@ from aac.execute.aac_execution_result import (
     ExecutionResult,
     ExecutionStatus,
     ExecutionMessage,
+    MessageLevel,
 )
 
 from aac.context.language_context import LanguageContext
@@ -35,6 +36,7 @@ def no_extension_for_final(
                     messages.append(
                         ExecutionMessage(
                             f"Cannot resolve unique tyep for extension {ext.name}.  Found {ext_definition}",
+                            MessageLevel.ERROR,
                             None,  # TODO:  figure out a better want to handle this...maybe a util function?
                             None
                         )
@@ -46,6 +48,7 @@ def no_extension_for_final(
                         messages.append(
                             ExecutionMessage(
                                 f"{definition.name} cannot extend {ext.name} because it is final.",
+                                MessageLevel.ERROR,
                                 None,  # TODO:  figure out a better want to handle this...maybe a util function?
                                 None
                             )

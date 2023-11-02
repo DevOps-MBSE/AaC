@@ -275,6 +275,23 @@ class LanguageContext(object):
         setattr(result, field_name, field_value)
       return result
     
+    def get_defined_fields(package: str, name: str) -> list[str]:
+      """
+      Returns a list of defined fields for the given definition.
+      """
+      result = []
+      defining_definition = None  
+      for definition in self.get_definitions() + parsed_definitions:
+        if definition.name == name and definition.package == package:
+          defining_definition = definition
+          break
+      if "extends" in defining_definition.structure[defining_definition.get_root_key()]:
+        for parent in defining_definition.structure[defining_definition.get_root_key()]["extends"]:
+          result.extend(get_defined_fields(parent["package"], parent["name"]))
+      if "fields" in defining_definition.structure[definition.get_root_key()]:
+        result.extend([field["name"] for field in definition.structure[definition.get_root_key()]["fields"]])
+      return result
+    
     def create_field_instance(field_name: str, field_type: str, is_required: bool, field_value: Any, lexemes: list[Lexeme]) -> Any:
       """
       Creates a instance of the given type and value.
@@ -368,6 +385,14 @@ class LanguageContext(object):
               subfields = {}
               if "fields" not in defining_definition.structure["schema"]:
                 raise LanguageError(f"Schema '{defining_definition.name}' does not contain any fields.", get_location_str(field_name, lexemes))
+              
+              # make sure there are no undefined fields
+              defined_field_names = get_defined_fields(defining_definition.package, defining_definition.name)
+              item_field_names = [field for field in item.keys()]
+              for item_field_name in item_field_names:
+                if item_field_name not in defined_field_names:
+                  raise LanguageError(f"Found undefined field name '{item_field_name}' when expecting {defined_field_names} as defined in {defining_definition.name}", get_location_str(item_field_name, lexemes))
+                
               for subfield in defining_definition.structure["schema"]["fields"]:
                 subfield_name = subfield["name"]
                 subfield_type = subfield["type"]
@@ -378,8 +403,20 @@ class LanguageContext(object):
                 if subfield_name in item:
                   subfield_value = item[subfield_name]
                 else:
-                  if "default_value" in subfield:
-                    subfield_value = subfield["default_value"]
+                  if "default" in subfield:
+                    # let's see if we need to cast the value
+                    subfield_default_str = subfield["default"]
+                    if isinstance(subfield_default_str, str):
+                      type_map = {
+                        'int': int,
+                        'number': float,
+                        'bool': lambda x: x.lower() in ("yes", "true", "t", "1"),
+                        'string': str
+                      }
+                      if subfield_type in type_map:
+                        subfield_value = type_map[subfield_type](subfield_default_str)
+                    else:
+                      subfield_value = subfield_default_str
                 # we need to eliminate previously covered lexemes, so go through the list until we find subfield_name then add it and everything else
                 found = False
                 sub_lexemes = []
@@ -402,6 +439,13 @@ class LanguageContext(object):
             # this is a complex type defined by a schema, with a field value so it should be a dict
             raise LanguageError(f"Invalid parsed value for field '{field_name}'.  Expected type 'dict', but found '{type(field_value)}'.  Value = {field_value}", get_location_str(field_name, lexemes))
           
+          # make sure there are no undefined fields
+          defined_field_names = get_defined_fields(defining_definition.package, defining_definition.name)
+          item_field_names = [field for field in field_value.keys()]
+          for item_field_name in item_field_names:
+            if item_field_name not in defined_field_names:
+              raise LanguageError(f"Found undefined field name '{item_field_name}' when expecting {defined_field_names} as defined in {defining_definition.name}", get_location_str(item_field_name, lexemes))
+          
           subfields = {}
           if "fields" not in defining_definition.structure["schema"]:
             raise LanguageError(f"Schema '{defining_definition.name}' does not contain any fields.", get_location_str(field_name, lexemes))
@@ -415,8 +459,20 @@ class LanguageContext(object):
             if subfield_name in field_value:
               subfield_value = field_value[subfield_name]
             else:
-              if "default_value" in subfield:
-                subfield_value = subfield.default_value
+              if "default" in subfield:
+                # let's see if we need to cast the value
+                subfield_default_str = subfield["default"]
+                if isinstance(subfield_default_str, str):
+                  type_map = {
+                    'int': int,
+                    'number': float,
+                    'bool': lambda x: x.lower() in ("yes", "true", "t", "1"),
+                    'string': str
+                  }
+                  if subfield_type in type_map:
+                    subfield_value = type_map[subfield_type](subfield_default_str)
+                else:
+                  subfield_value = subfield_default_str
             # we need to eliminate previously covered lexemes, so go through the list until we find subfield_name then add it and everything else
             found = False
             sub_lexemes = []

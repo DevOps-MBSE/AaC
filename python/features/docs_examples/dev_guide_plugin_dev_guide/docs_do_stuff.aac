@@ -3,7 +3,7 @@ plugin:
   package: aac_example.plugins.plugin_name
   commands:
     - name: do-stuff
-      inputs:
+      input:
         - name: aac-file
           type: file
           description: The path to the architecture file with the plugin definition.

@@ -18,10 +18,19 @@ class ExecutionStatus(Enum):
     OPERATION_CANCELLED = auto()
     GENERAL_FAILURE = auto()
 
+class MessageLevel(Enum):
+    """An enumeration that represents the level of a message."""
+
+    DEBUG = auto()
+    INFO = auto()
+    WARNING = auto()
+    ERROR = auto()
+
 @attrs(slots=True, auto_attribs=True)
 class ExecutionMessage:
     """Provides a message for the user."""
     message: str = attrib(validator=validators.instance_of(str))
+    level: MessageLevel = attrib(validator=validators.instance_of(MessageLevel))
     source: Optional[AaCFile] = attrib(validator=validators.optional(validators.instance_of(AaCFile)))
     location: Optional[SourceLocation] = attrib(validator=validators.optional(validators.instance_of(SourceLocation)))
 

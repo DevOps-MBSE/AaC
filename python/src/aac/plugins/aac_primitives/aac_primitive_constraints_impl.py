@@ -4,7 +4,7 @@
 
 from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus
 # from aac.lang.plugininputvalue import PluginInputValue
-from aac.execute.aac_execution_result import ExecutionResult, ExecutionMessage
+from aac.execute.aac_execution_result import ExecutionResult, ExecutionMessage, MessageLevel
 from aac.in_out.files.aac_file import AaCFile
 from aac.context.source_location import SourceLocation
 from aac.context.language_context import LanguageContext
@@ -26,7 +26,7 @@ def check_bool(
     
     if not isinstance(value, bool):
         status = ExecutionStatus.CONSTRAINT_FAILURE
-        error_msg = ExecutionMessage(message=f"{value} is not a valid bool value.", source=source, location=location)
+        error_msg = ExecutionMessage(message=f"{value} is not a valid bool value.", level=MessageLevel.ERROR, source=source, location=location)
         messages.append(error_msg)
 
     return ExecutionResult(plugin_name, "Check bool", status, messages)
@@ -44,7 +44,7 @@ def check_date(
         datetime.fromisoformat(str(value))
     except ValueError as error:
         status = ExecutionStatus.CONSTRAINT_FAILURE
-        error_msg = ExecutionMessage(message=f"Failed to parse the date time string '{value}' with error: '{error}'", source=source, location=location)
+        error_msg = ExecutionMessage(message=f"Failed to parse the date time string '{value}' with error: '{error}'", level=MessageLevel.ERROR, source=source, location=location)
         messages.append(error_msg)
 
     return ExecutionResult(plugin_name, "Check date", status, messages)
@@ -69,7 +69,7 @@ def check_file(
 
     if not isinstance(value, str):
         status = ExecutionStatus.CONSTRAINT_FAILURE
-        error_msg = ExecutionMessage(message=f"{value} is not a valid file path. Value should be string but received {type(value)}", source=source, location=location)
+        error_msg = ExecutionMessage(message=f"{value} is not a valid file path. Value should be string but received {type(value)}", level=MessageLevel.ERROR, source=source, location=location)
         messages.append(error_msg)
         return ExecutionResult(plugin_name, "Check file", status, messages)
 
@@ -98,12 +98,12 @@ def check_file(
             first = False
             if len(path_entry) != 2:
                 status = ExecutionStatus.CONSTRAINT_FAILURE
-                error_msg = ExecutionMessage(message=f"The value {value} has an invalid drive specification.", source=source, location=location)
+                error_msg = ExecutionMessage(message=f"The value {value} has an invalid drive specification.", level=MessageLevel.ERROR, source=source, location=location)
                 messages.append(error_msg)
                 return ExecutionResult(plugin_name, "Check file", status, messages)
             if path_entry[0] not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ":
                 status = ExecutionStatus.CONSTRAINT_FAILURE
-                error_msg = ExecutionMessage(message=f"The value {value} has an invalid drive specification.", source=source, location=location)
+                error_msg = ExecutionMessage(message=f"The value {value} has an invalid drive specification.", level=MessageLevel.ERROR, source=source, location=location)
                 messages.append(error_msg)
                 return ExecutionResult(plugin_name, "Check file", status, messages)
             continue
@@ -112,7 +112,7 @@ def check_file(
             for character in path_entry:
                 if character not in valid_path_characters:
                     status = ExecutionStatus.CONSTRAINT_FAILURE
-                    error_msg = ExecutionMessage(message=f"The value {value} is not a valid file path.  Invalid character '{character}'.", source=source, location=location)
+                    error_msg = ExecutionMessage(message=f"The value {value} is not a valid file path.  Invalid character '{character}'.", level=MessageLevel.ERROR, source=source, location=location)
                     messages.append(error_msg)
                     return ExecutionResult(plugin_name, "Check file", status, messages)
 
@@ -129,7 +129,7 @@ def check_string(
     
     if not isinstance(value, str):
         status = ExecutionStatus.CONSTRAINT_FAILURE
-        error_msg = ExecutionMessage(message=f"{value} is not a valid string value.", source=source, location=location)
+        error_msg = ExecutionMessage(message=f"{value} is not a valid string value.  Type declaration = {type_declaration}", level=MessageLevel.ERROR, source=source, location=location)
         messages.append(error_msg)
 
     return ExecutionResult(plugin_name, "Check string", status, messages)
@@ -151,12 +151,12 @@ def check_int(
     except Exception as error:
         is_invalid = True
         status = ExecutionStatus.CONSTRAINT_FAILURE
-        error_msg = ExecutionMessage(message=f"AaC int primitive constraint failed for value {value} with error:{linesep}{error}", source=source, location=location)
+        error_msg = ExecutionMessage(message=f"AaC int primitive constraint failed for value {value} with error:{linesep}{error}", level=MessageLevel.ERROR, source=source, location=location)
         messages.append(error_msg)
 
     if is_invalid:
         status = ExecutionStatus.CONSTRAINT_FAILURE
-        error_msg = ExecutionMessage(message=f"{value} is not a valid value for the primitive type int", source=source, location=location)
+        error_msg = ExecutionMessage(message=f"{value} is not a valid value for the primitive type int", level=MessageLevel.ERROR, source=source, location=location)
         messages.append(error_msg)
         
     return ExecutionResult(plugin_name, "Check int", status, messages)
@@ -182,12 +182,12 @@ def check_number(
     except Exception as error:
         is_invalid = True
         status = ExecutionStatus.CONSTRAINT_FAILURE
-        error_msg = ExecutionMessage(message=f"AaC int primitive constraint failed for value {value} with error:{linesep}{error}", source=source, location=location)
+        error_msg = ExecutionMessage(message=f"AaC int primitive constraint failed for value {value} with error:{linesep}{error}", level=MessageLevel.ERROR, source=source, location=location)
         messages.append(error_msg)
 
     if is_invalid:
         status = ExecutionStatus.CONSTRAINT_FAILURE
-        error_msg = ExecutionMessage(message=f"{value} is not a valid value for the primitive type int", source=source, location=location)
+        error_msg = ExecutionMessage(message=f"{value} is not a valid value for the primitive type int", level=MessageLevel.ERROR, source=source, location=location)
         messages.append(error_msg)
 
     return ExecutionResult(plugin_name, "Check number", status, messages)
@@ -208,14 +208,14 @@ def check_dataref(
     dataref_target = type_declaration[type_declaration.find("(")+1:type_declaration.find(")")]
     if not dataref_target:
         status = ExecutionStatus.CONSTRAINT_FAILURE
-        error_msg = ExecutionMessage(message=f"Dataref constraint '{type_declaration}' failed for value '{clean_value}' with error: No dataref target provided.", source=source, location=location)
+        error_msg = ExecutionMessage(message=f"Dataref constraint '{type_declaration}' failed for value '{clean_value}' with error: No dataref target provided.", level=MessageLevel.ERROR, source=source, location=location)
         messages.append(error_msg)
     
     context: LanguageContext = LanguageContext()
     found_values = context.get_values_by_field_chain(dataref_target)
     if clean_value not in found_values:
         status = ExecutionStatus.CONSTRAINT_FAILURE
-        error_msg = ExecutionMessage(message=f"Dataref constraint failed for value '{clean_value}': '{clean_value}' not found in '{dataref_target}' values '{found_values}'", source=source, location=location)
+        error_msg = ExecutionMessage(message=f"Dataref constraint failed for value '{clean_value}': '{clean_value}' not found in '{dataref_target}' values '{found_values}'", level=MessageLevel.ERROR, source=source, location=location)
         messages.append(error_msg)
 
     return ExecutionResult(plugin_name, "Check dataref", status, messages)
@@ -250,14 +250,14 @@ def check_typeref(
 
     if len(value_defining_type) != 1:
         status = ExecutionStatus.CONSTRAINT_FAILURE
-        error_msg = ExecutionMessage(message=f"Typeref constraint {type_declaration} failed for value {clean_value} with error: No unique defining schema found for value.", source=source, location=location)
+        error_msg = ExecutionMessage(message=f"Typeref constraint {type_declaration} failed for value {clean_value} with error: No unique defining schema found for value.", level=MessageLevel.ERROR, source=source, location=location)
         messages.append(error_msg)
     else: 
         value_root_key = value_defining_type[0].get_root_key()
         root_type_definition = context.get_defining_schema_for_root(value_root_key)
         if root_type_definition not in definitions_of_type:
             status = ExecutionStatus.CONSTRAINT_FAILURE
-            error_msg = ExecutionMessage(message=f"Typeref constraint {type_declaration} failed for value {clean_value} with error: Value {clean_value} is not a valid {qualified_type_name}.", source=source, location=location)
+            error_msg = ExecutionMessage(message=f"Typeref constraint {type_declaration} failed for value {clean_value} with error: Value {clean_value} is not a valid {qualified_type_name}.", level=MessageLevel.ERROR, source=source, location=location)
             messages.append(error_msg)
 
     return ExecutionResult(plugin_name, "Check typeref", status, messages)

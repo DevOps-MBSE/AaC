@@ -7,6 +7,7 @@ from aac.execute.aac_execution_result import (
     ExecutionResult,
     ExecutionStatus,
     ExecutionMessage,
+    MessageLevel,
 )
 from aac.context.language_error import LanguageError
 from aac.context.language_context import LanguageContext
@@ -54,6 +55,7 @@ def root_schema_has_name(
                 status = ExecutionStatus.GENERAL_FAILURE
                 error_msg = ExecutionMessage(
                 message=f"Root schema {instance.name} must have a field named 'name'",
+                    level=MessageLevel.ERROR,
                     source=definition.source,
                     location=None)
                 messages.append(error_msg)

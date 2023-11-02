@@ -5,7 +5,7 @@ from os import linesep
 from click import Argument, Command, Option, ParamType, Parameter, Path, UNPROCESSED, group, secho, types
 
 from aac.execute.plugin_runner import AacCommand, AacCommandArgument, PluginRunner
-from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus, ExecutionMessage, OperationCancelled
+from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus, ExecutionMessage, OperationCancelled, MessageLevel
 from aac.context.language_error import LanguageError
 from aac.context.language_context import LanguageContext
 from aac.in_out.parser._parser_error import ParserError
@@ -56,9 +56,9 @@ def handle_exceptions(plugin_name: str, func: Callable) -> Callable:
             return func(*args, **kwargs)
         except LanguageError as e:
             usr_msg = f"{e.message}{linesep}{e.location}"
-            return ExecutionResult(plugin_name, "exception", ExecutionStatus.GENERAL_FAILURE, [ExecutionMessage(usr_msg, None, None)])
+            return ExecutionResult(plugin_name, "exception", ExecutionStatus.GENERAL_FAILURE, [ExecutionMessage(usr_msg, MessageLevel.ERROR, None, None)])
         except OperationCancelled as e:
-            return ExecutionResult(plugin_name, "exception", ExecutionStatus.OPERATION_CANCELLED, [ExecutionMessage(str(e), None, None)])
+            return ExecutionResult(plugin_name, "exception", ExecutionStatus.OPERATION_CANCELLED, [ExecutionMessage(str(e), MessageLevel.ERROR, None, None)])
         except ParserError as e:
             usr_msg = f"The AaC file '{e.source}' could not be parsed.{linesep}"
             if e.errors:
@@ -73,7 +73,7 @@ def handle_exceptions(plugin_name: str, func: Callable) -> Callable:
                         usr_msg += f'  parser says{linesep} {str(exc.problem_mark)} {linesep}{str(exc.problem)} {str(exc.context)}{linesep}Please correct data and retry.'
                     else:
                         usr_msg += f'  parser says{linesep}{str(exc.problem_mark)}{linesep}{str(exc.problem)}{linesep}Please correct data and retry.'
-            return ExecutionResult(plugin_name, "exception", ExecutionStatus.PARSER_FAILURE, [ExecutionMessage(usr_msg, None, None)])
+            return ExecutionResult(plugin_name, "exception", ExecutionStatus.PARSER_FAILURE, [ExecutionMessage(usr_msg, MessageLevel.ERROR, None, None)])
 
     return wrapper
 

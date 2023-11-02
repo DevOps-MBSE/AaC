@@ -7,6 +7,7 @@ from aac.execute.aac_execution_result import (
     ExecutionResult,
     ExecutionStatus,
     ExecutionMessage,
+    MessageLevel,
 )
 # from aac.lang.schema import Schema
 # from aac.lang.plugininputvalue import PluginInputValue
@@ -27,11 +28,12 @@ def version() -> ExecutionResult:
 
     status = ExecutionStatus.SUCCESS
     messages: list[ExecutionMessage] = []
-    error_msg = ExecutionMessage(
+    version_msg = ExecutionMessage(
         f"{__version__}",
+        MessageLevel.INFO,
         None,
         None,
     )
-    messages.append(error_msg)
+    messages.append(version_msg)
 
     return ExecutionResult(plugin_name, "version", status, messages)
