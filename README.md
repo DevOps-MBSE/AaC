@@ -163,7 +163,7 @@ Users who would like more detailed documentation on leveraging AaC can find it i
 We have a [Github Template Repository](https://github.com/Coffee2Bits/AaC-User-Template-Repository) that's setup to allow users exploring AaC to immediately create and experiment with an AaC project in their own GitHub repository. The created repository is pre-populated with a simple example model and Github Action workflow.
 
 ## Developer Documentation
-Contributors, developers, or just generally interested parties who would like to understand the more technical underpinnings of AaC are welcome to read the project and developer documentation found in our Github pages [Developer Guide Documentation](hhttps://arch-as-code.org/project_documentation/dev_guide/index.html)
+Contributors, developers, or just generally interested parties who would like to understand the more technical underpinnings of AaC are welcome to read the project and developer documentation found in our Github pages [Developer Guide Documentation](https://arch-as-code.org/project_documentation/dev_guide/index.html)
 
 ## Driving Value with AaC Plugins
 A simple example of one of the plugins mentioned above is the Plant UML plugin in the /plugins/aac-plantuml directory
