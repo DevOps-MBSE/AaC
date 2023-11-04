@@ -243,9 +243,9 @@ def _get_enum_properties(enum_definition: Definition) -> dict[str, any]:
          A dictionary containing the template generation properties.
     """
     enum_name = enum_definition.name
-    enum_definition_fields = enum_definition.get_top_level_fields()
-    enum_values = enum_definition_fields.get(DEFINITION_FIELD_VALUES) or []
-    enum_description = enum_definition_fields.get(DEFINITION_FIELD_DESCRIPTION) or ""
+    enum_definition_fields = enum_definition.get_top_level_fields() ### TODO: POPO update ###
+    enum_values = enum_definition_fields.get(DEFINITION_FIELD_VALUES) or []     ### TODO: POPO update ###
+    enum_description = enum_definition_fields.get(DEFINITION_FIELD_DESCRIPTION) or ""   ### TODO: POPO update ###
     description_as_proto_comment = _convert_description_to_protobuf_comment(enum_description)
     definition_options = enum_definition_fields.get("protobuf_message_options") or []
 
