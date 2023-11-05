@@ -55,7 +55,7 @@ development_dependencies = [
 ]
 
 documentation_dependencies = [
-    "sphinx ~= 6.1.3",
+    "sphinx >= 6.1.3",
     "sphinxcontrib-applehelp ~= 1.0.2",
     "sphinxcontrib-devhelp ~= 1.0.2",
     "sphinxcontrib-htmlhelp ~= 2.0.0",

@@ -1,14 +1,32 @@
 # Basic Project Structure
 AaC is unopinionated about project structures, so they can be very flexible. However, we do suggest storing models in an organized project directory structure, such as maintaining all AaC files under a top, or near-top level directory `src/`. An example project might look like:
+
 ```
-src/system/system.yaml
-src/external/external_interface_messages.yaml
-src/external/external_actors.yaml
-src/service_one/service_one.yaml
-src/service_one/service_one_misc_definitions.yaml
-src/service_two/service_two.yaml
-...
+src
+├── system
+│   └── system.yaml
+├── external
+|   ├── external_actors.yaml
+│   └── external_interface_messages.yaml
+├── service_one
+|   ├── service_one.yaml
+│   └── service_one_misc.yaml
+└── service_two
+    └── service_two.yaml
+
+Because AaC does not require your models to be located within the same directory, you can house your model files however is necessary and logical for your project needs. An example of this might look like:
+
 ```
+system
+└── system.yaml
+external
+├── external_actors.yaml
+└── external_interface_messages.yaml
+service_one
+├── service_one.yaml
+└── service_one_misc.yaml
+service_two
+└── service_two.yaml
 
 ## Anatomy of an AaC file
 Since AaC leverages YAML for its DSL, there are very few restrictions on how to store and organize AaC files and AaC definitions. The main consideration is that every AaC definition must be defined in its own YAML document _or_ YAML file.
@@ -50,18 +68,43 @@ schema:
           type: string
 ```
 
-## Referencing AaC structures across files
+## Referencing AaC Structures Across Files
 Another consideration when deciding how to organize AaC definitions is which definitions reference each other. If `definition A` references `definition B`, then both definitions will need to be either declared in the same AaC file or `definition A` will need to define an `import` including the absolute or relative path to the file containing `definition B`.
 
 For this example, `schemaA` references `schemaB`, and both definitions are in separate files, as a result `schemaA` is importing the file containing `schemaB`.
 
 Additionally, while it's possible to have multiple `import` definitions in a file, good style would suggest using a single `import` list per file.
 
+An example of a relative path import is:
 _schemaA.yaml_
 ```yaml
 import:
   files:
     - ./schemaB.yaml
+---
+schema:
+  name: schemaA
+  fields:
+    - name: sub-datastructure
+      type: schemaB
+    - name: integer
+      type: int
+```
+_schemaB.yaml_
+```yaml
+schema:
+  name: schemaB
+  fields:
+    - name: string
+      type: string
+```
+
+An example of a an absolute path import is:
+_schemaA.yaml_
+```yaml
+import:
+  files:
+    - C:/src/external/external_actors/schemaB.yaml
 ---
 schema:
   name: schemaA

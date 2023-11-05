@@ -7,3 +7,5 @@ enum:
     - DIVIDE
     - POWER
     - SQUARE_ROOT
+  validation:
+    - name: Enum value is defined

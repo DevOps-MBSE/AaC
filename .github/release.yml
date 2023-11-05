@@ -1,0 +1,28 @@
+# .github/release.yml
+
+changelog:
+  categories:
+    - title: Added 💭
+      labels:
+        - added
+    - title: Changed 🛠
+      labels:
+        - changed
+    - title: Deprecated 💾
+      labels:
+        - deprecated
+    - title: Removed ✂️
+      labels:
+        - removed
+    - title: Fixed 🐛
+      labels:
+        - fixed
+    - title: Security 🔒
+      labels: 
+        - security
+    - title: Documentation ✏️📘
+      labels:
+        - documentation
+    - title: Other Changes 📈
+      labels:
+        - "*"

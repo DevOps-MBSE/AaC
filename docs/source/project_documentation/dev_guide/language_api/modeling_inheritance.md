@@ -150,47 +150,14 @@ Version `0.1.4` of AaC introduced changes to support inheritance for `schema` de
 
 ### Supporting Structure Changes
 The first change was to add an additional field to the `schema` definition named `inherits` that references other definition names:
-```yaml
-schema:
-  name: schema
-  fields:
-    - name: name
-      type: string
-      description: |
-        The name of the schema definition.
-    - name: inherits              # <-- New Inherits Field
-      type: DefinitionReference[] # <-- New DefinitionReference Structure
-      description: |
-        A list of Schema definition names that this definition inherits from.
-    - name: fields
-      type: Field[]
-      description: |
-        A list of fields that make up the definition.
-    - name: validation
-      type: ValidationReference[]
-      description: |
-        References and additional arguments for validations to apply to the definition.
-  validation:
-    - name: Root key is defined
-    - name: Required fields are present
-      arguments:
-        - name
-        - fields
-    - name: Unique definition names
+
+```{eval-rst}
+.. literalinclude:: ../../../../../python/src/aac/spec/spec.yaml
+    :language: yaml
+    :lines: 266-311
+    :emphasize-lines: 22-25
 ```
 
-New Definition Reference Structure to link to other definitions:
-```yaml
-schema:
-  name: DefinitionReference
-  fields:
-    - name: name
-      type: string
-  validation:
-    - name: Type references exist
-      arguments:
-        - name
-```
 Example data structure with inheritance from `python/model/flow/DataA.yaml`:
 ```yaml
 import:
@@ -248,19 +215,6 @@ While inheritance is not explicitly supported in version `0.1.3`, motivated user
 ### Recreate the Schema Changes
 The first step will be alter the `schema` definition to support inheritance as mentioned in the [supporting changes](#modeling-inheritance-in-013-or-earlier-versions) section above.
 
-Create the new `DefinitionReference` definition:
-```yaml
-schema:
-  name: DefinitionReference
-  fields:
-    - name: name
-      type: string
-  validation:
-    - name: Type references exist
-      arguments:
-        - name
-```
-
 Extend the schema structure to include the new `inherits` field:
 ```yaml
 ext:
@@ -269,7 +223,7 @@ ext:
    schemaExt:
       add:
         - name: inherits
-          type: DefinitionReference[]
+          type: reference[]
 ```
 
 ### Accessing the Inherited Fields

@@ -1,10 +1,3 @@
----
-layout: default
-title: Developer's Guide to AaC
-nav_order: 6
-has_children: true
----
-
 # Getting Started as a Developer
 
 ## VSCode Workspaces

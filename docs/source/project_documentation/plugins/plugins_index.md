@@ -1,11 +1,3 @@
----
-layout: default
-title: AaC Plugins
-nav_order: 4
-has_children: true
-permalink: project_documentation/plugins
----
-
 # AaC Plugins
 
 AaC provides a plugin system to allow users to extend the capabilities of AaC. Plugins are Python packages that are installed alongside AaC and are loaded at runtime. Plugins can provide new capabilities to AaC, such as new data definitions, new commands, and new constraints.

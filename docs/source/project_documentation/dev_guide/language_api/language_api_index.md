@@ -1,9 +1,3 @@
----
-layout: default
-title: AaC Python Language API
-parent: Developer's Guide to AaC
----
-
 # AaC Language API Topics
 
 | Topic | Status |

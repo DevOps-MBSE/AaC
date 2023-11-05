@@ -14,12 +14,12 @@ Users can define these extensions locally in their user-defined AaC files, or th
 
 Interface message structures provide structures for communication within your system or between system components. Using `schemas` one can define payloads exchanged with external systems, software applications, external actors, input for plugins, and intricate data inputs for validation purposes. Leveraging a `schema` definition as the `input` of a `model` definition's `behavior:input` or `behavior:output`, the `schema` acts as an interface message, documenting the data structure flowing into or out of a component within your modeled system. A useful way of documenting software application behavior inputs or outputs.
 
-In our Alarm Clock model example, the `behavior` entry defines the input and behavior of our Alarm Clock model. The `behavior` contains an `input` named `targetTimestamp`, which is a `schema`-defined data structure representing information needed to set the alarm.
+In our Alarm Clock model example, the `behavior` entry defines the input and behavior of our Alarm Clock model. The `behavior` contains an `input` named `targetTime`, which is a `schema`-defined data structure named `Timestamp` representing information needed to set the alarm.
 
 ```{eval-rst}
 .. literalinclude:: ../../../../python/model/alarm_clock/alarm_clock.yaml
     :language: yaml
-    :emphasize-lines: 16-17
+    :emphasize-lines: 11, 15-17
     :lines: 6-37
 ```
 
@@ -28,21 +28,20 @@ The `Timestamp` `schema` definition below outlines the fields required to define
 ```{eval-rst}
 .. literalinclude:: ../../../../python/model/alarm_clock/structures.yaml
     :language: yaml
-    :emphasize-lines: 2
-    :lines: 12-28
+    :lines: 13-29
 ```
 
 While this example is simplified and not representative of a software system, the same approach applies to defining user requests, events from message queues, Swift XML messages in financial applications, or any other input/output data structure within your modeled system.
 
 ### Crafting Custom Data Structures
 
-Given AaC's self-defining nature, users can employ the `schema` definition to craft their own data structures by using the `schema` root key. `Timestamp` serves as an example of a defined data structure with a `schema` root key that can be referenced by name, as demonstrated in the Alarm Clock model's `behavior`, or used as a component in more intricate data structures.
+Given AaC's self-defining nature, users can employ the `schema` definition to craft their own data structures by using the `schema` root key. `Timestamp` serves as an example of a defined data structure with a `schema` root key that can be referenced by `name`, as demonstrated in the Alarm Clock model's `behavior`, or used as a component in more intricate data structures.
 
 ```{eval-rst}
 .. literalinclude:: ../../../../python/model/alarm_clock/structures.yaml
     :language: yaml
     :emphasize-lines: 2
-    :lines: 12-28
+    :lines: 13-29
 ```
 
 #### Constructing Complex Data Structures via Composition
@@ -52,7 +51,7 @@ Each `schema` definition in AaC outlines a set of fields for the definition. The
 ```{eval-rst}
 .. literalinclude:: ../../../../python/model/alarm_clock/structures.yaml
     :language: yaml
-    :emphasize-lines: 8
+    :emphasize-lines: 9
     :lines: 1-10
 ```
 
@@ -72,6 +71,6 @@ With the root key defined, you can define instances of your custom data structur
 ```{eval-rst}
 .. literalinclude:: ../../../../python/model/alarm_clock/structures.yaml
     :language: yaml
-    :lines: 85-93
+    :lines: 89-97
     :emphasize-lines: 1
 ```

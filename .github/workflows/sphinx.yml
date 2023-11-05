@@ -6,6 +6,11 @@ on:
   # Manual runs
   workflow_dispatch:
 
+# Configuring starting working directory
+defaults:
+  run:
+    working-directory: ./python
+
 # Set token permissions
 permissions:
   contents: read
@@ -24,24 +29,29 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
-      - name: Checkout Repo
+      - name: Checkout Repository
         uses: actions/checkout@v3
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      - name: Install the AaC Documentation Dependencies
+        run: pip install aac -e .[docs]
 
       - name: Setup Pages
         uses: actions/configure-pages@v3
 
       - name: Build Documentation
-        uses: ammaraskar/sphinx-action@0.4
-        with:
-          pre-build-command: "pip install aac"
-          docs-folder: "docs/"
+        run: sphinx-build ../docs/source gen_docs
 
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v2
         with:
-          path: ./docs/docs/html
+          path: ../docs/gen_docs
 
       - name: Deploy to GitHub Pages
         id: deploy
