@@ -9,11 +9,7 @@ from aac.execute.aac_execution_result import (
     ExecutionMessage,
     MessageLevel,
 )
-# from aac.lang.plugininputvalue import PluginInputValue
-from aac.context.language_context import LanguageContext
 from aac.context.definition import Definition
-# from aac.lang.schema import Schema
-from aac.context.source_location import SourceLocation
 from typing import Any
 
 
@@ -38,11 +34,21 @@ def if_true_then_empty(
             definition.source,
             None,
         )
-        return ExecutionResult(plugin_name, "If true then empty", ExecutionStatus.GENERAL_FAILURE, [error_msg])
+        return ExecutionResult(
+            plugin_name,
+            "If true then empty",
+            ExecutionStatus.GENERAL_FAILURE,
+            [error_msg],
+        )
 
     empty_field_value = getattr(instance, empty_field_name, None)
 
-    is_empty_field_empty =  (empty_field_value is None or empty_field_value == "" or empty_field_value == [] or empty_field_value == {})
+    is_empty_field_empty = (
+        empty_field_value is None
+        or empty_field_value == ""
+        or empty_field_value == []
+        or empty_field_value == {}
+    )
 
     if bool_field_value and not is_empty_field_empty:
         # the constraint failed
@@ -52,7 +58,14 @@ def if_true_then_empty(
             definition.source,
             None,
         )
-        return ExecutionResult(plugin_name, "If true then empty", ExecutionStatus.GENERAL_FAILURE, [error_msg])
+        return ExecutionResult(
+            plugin_name,
+            "If true then empty",
+            ExecutionStatus.GENERAL_FAILURE,
+            [error_msg],
+        )
 
     # the constraint passed
-    return ExecutionResult(plugin_name, "If true then empty", ExecutionStatus.SUCCESS, [])
+    return ExecutionResult(
+        plugin_name, "If true then empty", ExecutionStatus.SUCCESS, []
+    )

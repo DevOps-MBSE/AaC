@@ -5,23 +5,14 @@
 from os.path import join, dirname
 from copy import deepcopy
 from typing import Any
-from aac.execute.plugin_runner import AacCommand
 from aac.execute.aac_execution_result import (
     ExecutionResult,
-    ExecutionStatus,
-    ExecutionMessage,
 )
 from aac.execute import hookimpl
 from aac.context.language_context import LanguageContext
 from aac.context.definition import Definition
-from aac.in_out.files.aac_file import AaCFile
 from aac.execute.plugin_runner import PluginRunner
-from aac.context.source_location import SourceLocation
-
-
 from aac.plugins.if_true_then_empty.if_true_then_empty_impl import plugin_name
-
-
 from aac.plugins.if_true_then_empty.if_true_then_empty_impl import if_true_then_empty
 
 

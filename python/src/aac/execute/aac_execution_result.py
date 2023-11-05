@@ -1,10 +1,12 @@
+"""Provides classes for representing the results of executing a plugin."""
 from enum import Enum, auto, unique
 from attr import attrib, attrs, validators, Factory
 from os import linesep
-from typing import Any, Optional
+from typing import Optional
 
 from aac.in_out.files.aac_file import AaCFile
 from aac.context.source_location import SourceLocation
+
 
 @unique
 class ExecutionStatus(Enum):
@@ -18,6 +20,7 @@ class ExecutionStatus(Enum):
     OPERATION_CANCELLED = auto()
     GENERAL_FAILURE = auto()
 
+
 class MessageLevel(Enum):
     """An enumeration that represents the level of a message."""
 
@@ -26,13 +29,20 @@ class MessageLevel(Enum):
     WARNING = auto()
     ERROR = auto()
 
+
 @attrs(slots=True, auto_attribs=True)
 class ExecutionMessage:
     """Provides a message for the user."""
+
     message: str = attrib(validator=validators.instance_of(str))
     level: MessageLevel = attrib(validator=validators.instance_of(MessageLevel))
-    source: Optional[AaCFile] = attrib(validator=validators.optional(validators.instance_of(AaCFile)))
-    location: Optional[SourceLocation] = attrib(validator=validators.optional(validators.instance_of(SourceLocation)))
+    source: Optional[AaCFile] = attrib(
+        validator=validators.optional(validators.instance_of(AaCFile))
+    )
+    location: Optional[SourceLocation] = attrib(
+        validator=validators.optional(validators.instance_of(SourceLocation))
+    )
+
 
 @attrs(slots=True, auto_attribs=True)
 class ExecutionResult:
@@ -46,8 +56,12 @@ class ExecutionResult:
 
     plugin_name: str = attrib(validator=validators.instance_of(str))
     plugin_command_name: str = attrib(validator=validators.instance_of(str))
-    status_code: ExecutionStatus = attrib(validator=validators.instance_of(ExecutionStatus))
-    messages: list[ExecutionMessage] = attrib(default=Factory(list), validator=validators.instance_of(list))
+    status_code: ExecutionStatus = attrib(
+        validator=validators.instance_of(ExecutionStatus)
+    )
+    messages: list[ExecutionMessage] = attrib(
+        default=Factory(list), validator=validators.instance_of(list)
+    )
 
     def add_message(self, message: ExecutionMessage) -> None:
         """Add a message to the list of messages."""
@@ -72,8 +86,8 @@ class ExecutionResult:
                     result += f" ({message.location.line}:{message.location.column}:{message.location.position}:{message.location.span})"
                 result += linesep
         return result
-    
-    
+
+
 @attrs(slots=True)
 class ExecutionError(Exception):
     """A base class representing a plugin error condition."""

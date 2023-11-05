@@ -1,11 +1,28 @@
 """The entry-point for the command line interface for the aac tool."""
 
-import sys, yaml
+import sys
 from os import linesep
-from click import Argument, Command, Option, ParamType, Parameter, Path, UNPROCESSED, group, secho, types
+from click import (
+    Argument,
+    Command,
+    Option,
+    ParamType,
+    Parameter,
+    Path,
+    UNPROCESSED,
+    group,
+    secho,
+    types,
+)
 
 from aac.execute.plugin_runner import AacCommand, AacCommandArgument, PluginRunner
-from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus, ExecutionMessage, OperationCancelled, MessageLevel
+from aac.execute.aac_execution_result import (
+    ExecutionResult,
+    ExecutionStatus,
+    ExecutionMessage,
+    OperationCancelled,
+    MessageLevel,
+)
 from aac.context.language_error import LanguageError
 from aac.context.language_context import LanguageContext
 from aac.in_out.parser._parser_error import ParserError
@@ -21,6 +38,7 @@ def cli():
 
 @cli.result_callback()
 def output_result(result: ExecutionResult):
+    """Output the result of the command."""
     error_occurred = not result.is_success()
     secho(result.get_messages_as_string(), err=error_occurred, color=True)
 
@@ -41,14 +59,23 @@ def to_click_type(type_name: str) -> ParamType:
 def to_click_parameter(argument: AacCommandArgument) -> Parameter:
     """Convert an AacCommandArgument to a Click Parameter."""
     names = [argument.name] if isinstance(argument.name, str) else argument.name
-    args = dict(type=to_click_type(argument.data_type), nargs=1, default=argument.default)
+    args = dict(
+        type=to_click_type(argument.data_type), nargs=1, default=argument.default
+    )
     return (
-        Option(names, help=argument.description, show_default=True, is_flag=argument.data_type == "bool", **args)
+        Option(
+            names,
+            help=argument.description,
+            show_default=True,
+            is_flag=argument.data_type == "bool",
+            **args,
+        )
         if argument.name[0].startswith("-")
         else Argument(names, **args)
     )
 
-def handle_exceptions(plugin_name: str, func: Callable) -> Callable:
+
+def handle_exceptions(plugin_name: str, func: Callable) -> Callable:  # noqa: C901
     """Decorator to catch and handle exceptions in a function."""
 
     def wrapper(*args, **kwargs):
@@ -56,9 +83,19 @@ def handle_exceptions(plugin_name: str, func: Callable) -> Callable:
             return func(*args, **kwargs)
         except LanguageError as e:
             usr_msg = f"{e.message}{linesep}{e.location}"
-            return ExecutionResult(plugin_name, "exception", ExecutionStatus.GENERAL_FAILURE, [ExecutionMessage(usr_msg, MessageLevel.ERROR, None, None)])
+            return ExecutionResult(
+                plugin_name,
+                "exception",
+                ExecutionStatus.GENERAL_FAILURE,
+                [ExecutionMessage(usr_msg, MessageLevel.ERROR, None, None)],
+            )
         except OperationCancelled as e:
-            return ExecutionResult(plugin_name, "exception", ExecutionStatus.OPERATION_CANCELLED, [ExecutionMessage(str(e), MessageLevel.ERROR, None, None)])
+            return ExecutionResult(
+                plugin_name,
+                "exception",
+                ExecutionStatus.OPERATION_CANCELLED,
+                [ExecutionMessage(str(e), MessageLevel.ERROR, None, None)],
+            )
         except ParserError as e:
             usr_msg = f"The AaC file '{e.source}' could not be parsed.{linesep}"
             if e.errors:
@@ -68,12 +105,17 @@ def handle_exceptions(plugin_name: str, func: Callable) -> Callable:
             if e.yaml_error:
                 usr_msg += f"The following YAML errors were encountered:{linesep}"
                 exc = e.yaml_error
-                if hasattr(exc, 'problem_mark'):
-                    if exc.context != None:
-                        usr_msg += f'  parser says{linesep} {str(exc.problem_mark)} {linesep}{str(exc.problem)} {str(exc.context)}{linesep}Please correct data and retry.'
+                if hasattr(exc, "problem_mark"):
+                    if exc.context is not None:
+                        usr_msg += f"  parser says{linesep} {str(exc.problem_mark)} {linesep}{str(exc.problem)} {str(exc.context)}{linesep}Please correct data and retry."
                     else:
-                        usr_msg += f'  parser says{linesep}{str(exc.problem_mark)}{linesep}{str(exc.problem)}{linesep}Please correct data and retry.'
-            return ExecutionResult(plugin_name, "exception", ExecutionStatus.PARSER_FAILURE, [ExecutionMessage(usr_msg, MessageLevel.ERROR, None, None)])
+                        usr_msg += f"  parser says{linesep}{str(exc.problem_mark)}{linesep}{str(exc.problem)}{linesep}Please correct data and retry."
+            return ExecutionResult(
+                plugin_name,
+                "exception",
+                ExecutionStatus.PARSER_FAILURE,
+                [ExecutionMessage(usr_msg, MessageLevel.ERROR, None, None)],
+            )
 
     return wrapper
 
@@ -92,10 +134,13 @@ def to_click_command(plugin_name: str, command: AacCommand) -> Command:
         callback=handle_exceptions(plugin_name, command.callback),
         params=[to_click_parameter(arg) for arg in command.arguments],
         short_help=command.description,
-        no_args_is_help=len([arg for arg in command.arguments if is_required_arg(arg)]) > 0,
+        no_args_is_help=len([arg for arg in command.arguments if is_required_arg(arg)])
+        > 0,
     )
 
+
 def initialize_cli():
+    """Initialize the CLI."""
     try:
         active_context = LanguageContext()
     except LanguageError as e:
@@ -114,25 +159,32 @@ def initialize_cli():
             for plugin_command in definition.instance.commands:
                 arguments: list[AacCommandArgument] = []
                 for input in plugin_command.input:
-                    arguments.append(AacCommandArgument(
-                        input.name, 
-                        input.description, 
-                        context.get_python_type_from_primitive(input.type), 
-                        input.default))
-                result.append(AacCommand(
-                    plugin_command.name,
-                    plugin_command.help_text,
-                    runner.command_to_callback[plugin_command.name],
-                    arguments,
-                ))
+                    arguments.append(
+                        AacCommandArgument(
+                            input.name,
+                            input.description,
+                            context.get_python_type_from_primitive(input.type),
+                            input.default,
+                        )
+                    )
+                result.append(
+                    AacCommand(
+                        plugin_command.name,
+                        plugin_command.help_text,
+                        runner.command_to_callback[plugin_command.name],
+                        arguments,
+                    )
+                )
         return result
 
-    
     runners: list[PluginRunner] = active_context.get_plugin_runners()
     for runner in runners:
-        commands = [to_click_command(runner.get_plugin_name(), cmd) for cmd in get_commands()]
+        commands = [
+            to_click_command(runner.get_plugin_name(), cmd) for cmd in get_commands()
+        ]
         for command in commands:
             cli.add_command(command)
+
 
 # This is the entry point for the CLI
 initialize_cli()

@@ -7,14 +7,9 @@ from aac.execute.aac_execution_result import (
     ExecutionResult,
     ExecutionStatus,
     ExecutionMessage,
-    MessageLevel
+    MessageLevel,
 )
-# from aac.lang.schema import Schema
-# from aac.lang.plugininputvalue import PluginInputValue
-from aac.context.language_context import LanguageContext
 from aac.context.definition import Definition
-from aac.in_out.files.aac_file import AaCFile
-from aac.context.source_location import SourceLocation
 from typing import Any
 
 
@@ -33,13 +28,16 @@ def mutually_exclusive_fields(
             field_value = getattr(instance, field)
             if field_value is None:  # handle primitives and schema defined types
                 continue
-            elif isinstance(field_value, list) and len(field_value) == 0:  # handle lists
+            elif (
+                isinstance(field_value, list) and len(field_value) == 0
+            ):  # handle lists
                 continue
-            elif isinstance(field_value, dict) and len(field_value) == 0:  # this is for the any type
+            elif (
+                isinstance(field_value, dict) and len(field_value) == 0
+            ):  # this is for the any type
                 continue
             else:
                 num_present += 1  # we found a real instance, so count it
-
 
     if num_present == 0:
         error_msg = ExecutionMessage(
@@ -48,7 +46,12 @@ def mutually_exclusive_fields(
             definition.source,
             None,
         )
-        return ExecutionResult(plugin_name, "Mutually exclusive fields", ExecutionStatus.GENERAL_FAILURE, [error_msg])
+        return ExecutionResult(
+            plugin_name,
+            "Mutually exclusive fields",
+            ExecutionStatus.GENERAL_FAILURE,
+            [error_msg],
+        )
 
     if num_present > 1:
         error_msg = ExecutionMessage(
@@ -57,7 +60,13 @@ def mutually_exclusive_fields(
             definition.source,
             None,
         )
-        return ExecutionResult(plugin_name, "Mutually exclusive fields", ExecutionStatus.GENERAL_FAILURE, [error_msg])
-            
+        return ExecutionResult(
+            plugin_name,
+            "Mutually exclusive fields",
+            ExecutionStatus.GENERAL_FAILURE,
+            [error_msg],
+        )
 
-    return ExecutionResult(plugin_name, "Mutually exclusive fields", ExecutionStatus.SUCCESS, [])
+    return ExecutionResult(
+        plugin_name, "Mutually exclusive fields", ExecutionStatus.SUCCESS, []
+    )

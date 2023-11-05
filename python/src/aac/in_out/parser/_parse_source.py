@@ -186,6 +186,7 @@ def _read_arch_file_content(arch_file: str) -> str:
 
     return content
 
+
 def get_definitions_by_root_key(root_key: str, definitions: list[Definition]) -> list[Definition]:
     """Return a subset of definitions with the given root key.
 

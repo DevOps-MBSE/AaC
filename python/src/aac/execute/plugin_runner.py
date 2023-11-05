@@ -15,14 +15,12 @@ class AacCommandArgument:
         name: One or more strings with the name of the command argument.
         description: A string with the command argument description.
         data_type: The data type of the command argument.
-        number_of_arguments: The number of entries that the argument can take. (default: 1)
         default: The default value for the current argument. (default: None)
     """
 
     name: Union[str, list[str]] = attrib(validator=validators.instance_of((list, str)))
     description: str = attrib(validator=validators.instance_of(str))
     data_type: str = attrib(validator=validators.instance_of(str))
-    # number_of_arguments: int = attrib(default=1, validator=validators.instance_of(int))
     default: Any = attrib(default=None)
 
 
@@ -44,7 +42,9 @@ class AacCommand:
     name: str = attrib(validator=validators.instance_of(str))
     description: str = attrib(validator=validators.instance_of(str))
     callback: Callable[..., Any] = attrib(validator=validators.is_callable())
-    arguments: list[AacCommandArgument] = attrib(default=Factory(list), validator=validators.instance_of(list))
+    arguments: list[AacCommandArgument] = attrib(
+        default=Factory(list), validator=validators.instance_of(list)
+    )
 
     def __hash__(self) -> int:
         """Return the hash of this AacCommand."""
@@ -67,22 +67,31 @@ class PluginRunner:
     """
 
     plugin_definition: Definition = attrib(validator=validators.instance_of(Definition))
-    command_to_callback: dict[str, Callable] = attrib(default={}, validator=validators.instance_of(dict))
-    constraint_to_callback: dict[str, Callable] = attrib(default={}, validator=validators.instance_of(dict))
-    
+    command_to_callback: dict[str, Callable] = attrib(
+        default={}, validator=validators.instance_of(dict)
+    )
+    constraint_to_callback: dict[str, Callable] = attrib(
+        default={}, validator=validators.instance_of(dict)
+    )
 
     # Add constraints here
 
-    def add_command_callback(self, command_name: str, command_callback: Callable) -> None:
+    def add_command_callback(
+        self, command_name: str, command_callback: Callable
+    ) -> None:
+        """Add a command callback to the plugin runner."""
         self.command_to_callback[command_name] = command_callback
 
-    def add_constraint_callback(self, constraint_name: str, constraint_callback: Callable) -> None:
+    def add_constraint_callback(
+        self, constraint_name: str, constraint_callback: Callable
+    ) -> None:
+        """Add a constraint callback to the plugin runner."""
         self.constraint_to_callback[constraint_name] = constraint_callback
 
     def get_constraint_callback(self, constraint_name: str) -> Callable:
+        """Return the callback for the given constraint name."""
         return self.constraint_to_callback[constraint_name]
 
     def get_plugin_name(self) -> str:
+        """Return the name of the plugin."""
         return self.plugin_definition.name
-
-    

@@ -9,16 +9,7 @@ from aac.execute.aac_execution_result import (
     ExecutionMessage,
     MessageLevel,
 )
-# from aac.lang.schema import Schema
-# from aac.lang.plugininputvalue import PluginInputValue
-from aac.context.language_context import LanguageContext
-from aac.context.definition import Definition
-from aac.in_out.files.aac_file import AaCFile
-from aac.context.source_location import SourceLocation
-from typing import Any
-
 from aac import __version__
-
 
 plugin_name = "Version"
 

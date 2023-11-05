@@ -9,28 +9,29 @@ from aac.execute.aac_execution_result import (
     ExecutionMessage,
     MessageLevel,
 )
-# from aac.lang.schema import Schema
-# from aac.lang.plugininputvalue import PluginInputValue
 from aac.context.language_context import LanguageContext
 from aac.context.definition import Definition
-from aac.in_out.files.aac_file import AaCFile
-from aac.context.source_location import SourceLocation
 from typing import Any
-# from aac.lang.schemaconstraintassignment import SchemaConstraintAssignment
-# from aac.lang.primitiveconstraintassignment import PrimitiveConstraintAssignment
+
 
 plugin_name = "Constraint assignment arguments"
 
 
-def check_arguments_against_constraint_definition(
+def check_arguments_against_constraint_definition(  # noqa: C901
     instance: Any, definition: Definition, defining_schema
 ) -> ExecutionResult:
     """Business logic for the Check arguments against constraint definition constraint."""
 
-    print(f"Running {plugin_name} plugin for instance {instance.name} and definition {definition.name} with defining_schema {defining_schema}.\n\n{instance}")
+    print(
+        f"Running {plugin_name} plugin for instance {instance.name} and definition {definition.name} with defining_schema {defining_schema}.\n\n{instance}"
+    )
 
     context = LanguageContext()
-    if not context.is_aac_instance(instance, "aac.lang.SchemaConstraintAssignment") and not context.is_aac_instance(instance, "aac.lang.PrimitiveConstraintAssignment"):
+    if not context.is_aac_instance(
+        instance, "aac.lang.SchemaConstraintAssignment"
+    ) and not context.is_aac_instance(
+        instance, "aac.lang.PrimitiveConstraintAssignment"
+    ):
         # the constraint failed
         error_msg = ExecutionMessage(
             f"The Check arguments against constraint definition constraint for {instance.name} failed because the instance is not a SchemaConstraintAssignment or PrimitiveConstraintAssignment.  You may only use this constraint on SchemaConstraintAssignment or PrimitiveConstraintAssignment definitions.  Received {type(instance)}.)",
@@ -38,8 +39,13 @@ def check_arguments_against_constraint_definition(
             definition.source,
             None,
         )
-        return ExecutionResult(plugin_name, "Check arguments against constraint definition", ExecutionStatus.GENERAL_FAILURE, [error_msg])
-    
+        return ExecutionResult(
+            plugin_name,
+            "Check arguments against constraint definition",
+            ExecutionStatus.GENERAL_FAILURE,
+            [error_msg],
+        )
+
     context: LanguageContext = LanguageContext()
     constraint_name = instance.name
     constraint_args: dict = {}
@@ -52,7 +58,12 @@ def check_arguments_against_constraint_definition(
             definition.source,
             None,
         )
-        return ExecutionResult(plugin_name, "Check arguments against constraint definition", ExecutionStatus.GENERAL_FAILURE, [error_msg])
+        return ExecutionResult(
+            plugin_name,
+            "Check arguments against constraint definition",
+            ExecutionStatus.GENERAL_FAILURE,
+            [error_msg],
+        )
     else:
         for arg in instance.arguments:
             if not isinstance(arg, dict):
@@ -62,9 +73,14 @@ def check_arguments_against_constraint_definition(
                     definition.source,
                     None,
                 )
-                return ExecutionResult(plugin_name, "Check arguments against constraint definition", ExecutionStatus.GENERAL_FAILURE, [error_msg])
+                return ExecutionResult(
+                    plugin_name,
+                    "Check arguments against constraint definition",
+                    ExecutionStatus.GENERAL_FAILURE,
+                    [error_msg],
+                )
             constraint_args[arg["name"]] = arg["value"]
-        
+
     constraint_definition = None
     for plugin in context.get_definitions_by_root("plugin"):
         for schema_constraint in plugin.instance.schema_constraints:
@@ -75,7 +91,7 @@ def check_arguments_against_constraint_definition(
             if primitive_constraint.name == constraint_name:
                 constraint_definition = primitive_constraint
                 break
-    
+
     # Make sure we found the constraint definition
     if constraint_definition is None:
         # the constraint failed
@@ -85,10 +101,18 @@ def check_arguments_against_constraint_definition(
             definition.source,
             None,
         )
-        return ExecutionResult(plugin_name, "Check arguments against constraint definition", ExecutionStatus.GENERAL_FAILURE, [error_msg])
-    
+        return ExecutionResult(
+            plugin_name,
+            "Check arguments against constraint definition",
+            ExecutionStatus.GENERAL_FAILURE,
+            [error_msg],
+        )
+
     # Make sure there are no arguments if the constraint definition has no arguments
-    if constraint_definition.arguments is None or len(constraint_definition.arguments) == 0:
+    if (
+        constraint_definition.arguments is None
+        or len(constraint_definition.arguments) == 0
+    ):
         if constraint_args is not None and constraint_args != {}:
             # the constraint failed
             error_msg = ExecutionMessage(
@@ -97,14 +121,21 @@ def check_arguments_against_constraint_definition(
                 definition.source,
                 None,
             )
-            return ExecutionResult(plugin_name, "Check arguments against constraint definition", ExecutionStatus.GENERAL_FAILURE, [error_msg])
+            return ExecutionResult(
+                plugin_name,
+                "Check arguments against constraint definition",
+                ExecutionStatus.GENERAL_FAILURE,
+                [error_msg],
+            )
 
     else:  # If there are arguments, then make sure they match the constraint definition
-        defined_argument_names = []  
+        defined_argument_names = []
         for field in constraint_definition.arguments:
-            # make sure required arguments are present 
+            # make sure required arguments are present
             defined_argument_names.append(field.name)
-            if field.is_required and (not constraint_args or field.name not in constraint_args):
+            if field.is_required and (
+                not constraint_args or field.name not in constraint_args
+            ):
                 # the constraint failed
                 error_msg = ExecutionMessage(
                     f"The Check arguments against constraint definition constraint for {instance.name} failed because the constraint definition has a required argument named {field.name} that was not found in the constraint assignment.",
@@ -112,8 +143,13 @@ def check_arguments_against_constraint_definition(
                     definition.source,
                     None,
                 )
-                return ExecutionResult(plugin_name, "Check arguments against constraint definition", ExecutionStatus.GENERAL_FAILURE, [error_msg])  
-            
+                return ExecutionResult(
+                    plugin_name,
+                    "Check arguments against constraint definition",
+                    ExecutionStatus.GENERAL_FAILURE,
+                    [error_msg],
+                )
+
         # make sure the arguments provided are defined in the constraint definition
         for arg_name in constraint_args:
             if arg_name not in defined_argument_names:
@@ -124,8 +160,16 @@ def check_arguments_against_constraint_definition(
                     definition.source,
                     None,
                 )
-                return ExecutionResult(plugin_name, "Check arguments against constraint definition", ExecutionStatus.GENERAL_FAILURE, [error_msg])
+                return ExecutionResult(
+                    plugin_name,
+                    "Check arguments against constraint definition",
+                    ExecutionStatus.GENERAL_FAILURE,
+                    [error_msg],
+                )
 
     return ExecutionResult(
-        plugin_name, "Check arguments against constraint definition", ExecutionStatus.SUCCESS, []
+        plugin_name,
+        "Check arguments against constraint definition",
+        ExecutionStatus.SUCCESS,
+        [],
     )

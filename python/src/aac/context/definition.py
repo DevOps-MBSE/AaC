@@ -1,3 +1,4 @@
+"""Definition class for Architecture-as-Code."""
 from attr import Factory, attrib, attrs, validators
 from typing import Any
 from uuid import UUID, uuid5, NAMESPACE_DNS
@@ -6,6 +7,7 @@ import yaml
 from aac.in_out.files.aac_file import AaCFile
 from aac.context.lexeme import Lexeme
 from aac.context.util import get_python_module_name, get_python_class_name, get_fully_qualified_name
+
 
 @attrs(hash=False, eq=False)
 class Definition:
@@ -57,33 +59,30 @@ class Definition:
             The root key for the definition.
         """
         return list(self.structure.keys())[0]
-    
+
     def is_import(self) -> bool:
         """Return True if the definition is an import definition."""
         return self.get_root_key() == "import"
-    
-    def get_python_module_name(self) -> str:
-        
-        if self.is_import():
-            return ""
-        
-        return get_python_module_name(self.package)
-        
-    def get_python_class_name(self) -> str:
 
+    def get_python_module_name(self) -> str:
+        """Return the python module name for the definition."""
         if self.is_import():
             return ""
-        
+        return get_python_module_name(self.package)
+
+    def get_python_class_name(self) -> str:
+        """Return the python class name for the definition."""
+        if self.is_import():
+            return ""
         return get_python_class_name(self.name)
-    
+
     def get_fully_qualified_name(self) -> str:
         """Return the fully qualified name of the definition."""
         if self.is_import():
             return ""
         # this is just the package and name joined with a dot
         return get_fully_qualified_name(self.package, self.name)
-    
+
     def to_yaml(self) -> str:
         """Return a yaml string based on the current state of the definition including extensions."""
         return yaml.dump(self.structure, sort_keys=False)
-    

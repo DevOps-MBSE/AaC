@@ -12,7 +12,6 @@ from aac.execute.aac_execution_result import (
 
 from aac.context.language_context import LanguageContext
 from aac.context.definition import Definition
-from aac.context.source_location import SourceLocation
 from typing import Any
 
 
@@ -37,20 +36,23 @@ def no_extension_for_final(
                         ExecutionMessage(
                             f"Cannot resolve unique tyep for extension {ext.name}.  Found {ext_definition}",
                             MessageLevel.ERROR,
-                            None,  # TODO:  figure out a better want to handle this...maybe a util function?
-                            None
+                            None,  # figure out a better want to handle this...maybe a util function?
+                            None,
                         )
                     )
                 else:
                     ext_definition = ext_definition[0]
-                    if ext_definition.instance.modifiers and "final" in ext_definition.instance.modifiers:
+                    if (
+                        ext_definition.instance.modifiers
+                        and "final" in ext_definition.instance.modifiers
+                    ):
                         status = ExecutionStatus.CONSTRAINT_FAILURE
                         messages.append(
                             ExecutionMessage(
                                 f"{definition.name} cannot extend {ext.name} because it is final.",
                                 MessageLevel.ERROR,
-                                None,  # TODO:  figure out a better want to handle this...maybe a util function?
-                                None
+                                None,  # figure out a better want to handle this...maybe a util function?
+                                None,
                             )
                         )
 

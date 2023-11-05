@@ -28,7 +28,7 @@ class Lexeme:
             and self.location == __o.location
             and is_same_file(self.source, __o.source)
         )
-    
+
     def __str__(self) -> str:
         """Return a string representation of this Lexeme."""
         return f"{self.value} at {self.location} in {self.source}"
