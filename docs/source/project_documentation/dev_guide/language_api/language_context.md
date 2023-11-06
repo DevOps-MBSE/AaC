@@ -1,9 +1,10 @@
 ---
 layout: default
 title: AaC Language Context
-parent: Developer's Guide to AaC
+parent: Language API
+nav_order: 3
+has_children: false
 ---
-
 # Using the AaC Language Context
 
 Starting with AaC version `0.4.0`, the `LanguageContext` is central to the AaC developer's experience.  It provides one place to navigate all the definitions of your AaC model, starting with obtaining your model.

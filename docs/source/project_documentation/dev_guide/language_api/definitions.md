@@ -1,3 +1,10 @@
+---
+layout: default
+parent: Language API
+title: AaC Definitions
+nav_order: 3
+has_children: false
+---
 # AaC Definitions
 
 AaC is a model-based system engineering (MBSE) tool that allows you to declare your models in text (YAML) rather than using a database like other MBSE tools.  This allows you to much more rigorous work in parallel with your collaborators with much better version control of your models.  In AaC, we refer to each portion of YAML you declare as a `Declaration`.  In short, a declaration is anything with a root YAML key, whether it is defined in a single file or aggregated with other YAML using the `---` YAML separator.

@@ -33,81 +33,50 @@ _AAC_COMPLETE=fish_source aac > ~/.config/fish/completions/aac-complete.fish
 ## The Help Command
 AaC has a help command for the CLI that can be invoked via `aac -h`. Successfully invoking the help command is an easy way to check if your installation of AaC is working. For each installed and active plugin, they will contribute to the comands visible in the help output text, similar to:
 ```
-usage: aac [-h]
-           {help-dump,start-lsp-io,start-lsp-tcp,print-spec,print-active-context,spec-validate,puml-component,puml-sequence,puml-object,gen-gherkin-behaviors,gen-design-doc,gen-protobuf,gen-plugin,gen-json,version,validate}
-           ...
+Usage: aac [OPTIONS] COMMAND [ARGS]...
 
-positional arguments:
-  {help-dump,start-lsp-io,start-lsp-tcp,print-spec,print-active-context,spec-validate,puml-component,puml-sequence,puml-object,gen-gherkin-behaviors,gen-design-doc,gen-protobuf,gen-plugin,gen-json,version,validate}
-    help-dump                 Produce a formatted string containing all commands, their arguments, and each of their descriptions.
-    start-lsp-io              Start the AaC Language Server Protocol (LSP) server in IO mode
-    start-lsp-tcp             Start the AaC Language Server Protocol (LSP) server in TCP mode
-    print-spec                Print the AaC model describing core AaC data types and enumerations.
-    print-active-context      Print the AaC active language context including data types and enumerations added by plugins.
-    ...
-    version                   Print the AaC package version.
-    validate                  Validate the AaC definition file.
+  The Architecture-as-Code (AaC) command line tool.
 
-optional arguments:
-  -h, --help                  show this help message and exit
+Options:
+  -h, --help  Show this message and exit.
+
+Commands:
+  check        Perform AaC file quality checks using defined constraints in
+               the AaC models.
+  clean        Remove backup and evaluation files from prior aac file
+               generation.
+  gen-plugin   Generate code and stubs for an AaC plugin.  Overwrites will
+               backup existing files.
+  gen-project  Generate code and stubs for an AaC project.  Overwrites will
+               backup existing files.
+  generate     Performs content generation based on user defined templates.
+  print-defs   Print YaML representation of AaC language definitions.
+  version      Print the AaC package version.
 ```
 
  Each plugin command that is listed can be further interrogated by using the help flag after the command name `aac <command> -h`, which will return all of the arguments for that particular command.
 
-For example, if I wanted to see what the options and arguments for the `puml-sequence` command it would look something like:
+For example, if I wanted to see what the options and arguments for the `gen-project` command it would look something like:
 ```shell
-$ aac puml-sequence -h
-usage: aac puml-sequence [-h] architecture_file output_directory
+$ aac gen-project -h
+Usage: aac gen-project [OPTIONS] AAC_PROJECT_FILE
 
-positional arguments:
-  architecture_file  Path to a yaml file containing an AaC usecase from which to generate a Plant UML sequence diagram.
-  output_directory   Output directory for the PlantUML (.puml) diagram file
-
-optional arguments:
-  -h, --help         show this help message and exit
+Options:
+  --output TEXT      The location to output generated plugin code.
+  --no-prompt        Informs gen-plugin to execute without asking the user to
+                     confirm output paths.
+  --force-overwrite  Informs generator to backup and overwrite all existing
+                     files regardless of template definition.
+  --evaluate         Informs generator to only write evaluation files with no
+                     impact to existing files.
+  -h, --help         Show this message and exit.
 ```
-
-*If you expect to see a command that's not present, it's likely that the plugin providing the command has not been installed correctly.*
 
 ## Built-In Commands
-While AaC primarily sources CLI commands from plugins, AaC has a couple foundational commands that will always be present regardless of which plugins you have enabled or installed.
+AaC sources CLI commands from plugins.  AaC provides a foundational set of commands that will always be present.
 
-### Version
-The version command provides an easy-to-access semantic version of the AaC python tool.
-
-Usage:
-```shell
-$ aac version
-version: success
-
-0.3.10
-```
-
-### Validate
-The validate command provides the ability to validate an AaC file or a definition therein.
-
-To validate an AaC file, and any files it may import, run the validate command with a single argument which is the path to the file you want to validate.
-```shell
-$ aac validate model/alarm_clock/alarm_clock.yaml
-validate: success
-
-model/alarm_clock/alarm_clock.yaml is valid.
-```
-
-Alternatively, if you only wanted to validate a single definition in a file, you can use a optional argument `--definition_name insert_name_here` to signal to the validation plugin that it should only validate the definition with the corresponding name in the file.
-```shell
-$ aac validate model/alarm_clock/alarm_clock.yaml --definition_name AlarmClock
-validate: success
-
-'AlarmClock' in model/alarm_clock/alarm_clock.yaml is valid.
-```
-
-If you attempt to selectively validate a single definition, but fail to choose the name of a definition in the file, the plugin will return some suggestions such as names of definitions in your target file or the actual file containing the definition you selected:
-```shell
-$ aac validate model/alarm_clock/alarm_clock.yaml --definition_name Primitives
-validate: plugin_failure
-
-'Primitives' was not found in the file.
-Definitions available in 'model/alarm_clock/alarm_clock.yaml' are ['AlarmClock', 'Clock', 'ClockTimer', 'ClockAlarm', 'TimerAlert', 'Timestamp', 'TimezoneOffset', 'AlarmNoise']
-Definition 'Primitives' can be found in '/workspace/AaC/python/src/aac/spec/spec.yaml'
-```
+- [check](../plugins/check):  Ensures your model is correctly defined per the AaC DSL
+- [version](../plugins/version): Get the version of the AaC package installed
+- [generate](../plugins/generate):  General purpose plugin for generating files from your model
+- [gen-plugin](../plugins/gen_plugin): Generate a new AaC plugin
+- [print-defs](../plugins/print_defs): Print the definitions of your model as YAML (useful for reference)

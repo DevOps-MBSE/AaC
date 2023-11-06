@@ -2,7 +2,7 @@
 Architecture-as-Code (AaC)
 ==========================
 
-Get started now by reading the `User Guide Documentation`_.
+Get started now by reading the `User Guide Documentation <./project_documentation/user_guide/index.html>`_.
 
 
 `View it on GitHub <https://github.com/DevOps-MBSE/AaC>`_ and walk through the code base.

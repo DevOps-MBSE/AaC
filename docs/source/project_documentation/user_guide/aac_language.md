@@ -9,7 +9,7 @@ At the core of the AaC language are the yaml entries that _define_ modeled syste
 In the following example model, the first key `model` indicates that this yaml entry will have model-specific fields, such as `components` and/or `behavior`.
 
 ```{eval-rst}
-.. literalinclude:: ../../../../python/model/alarm_clock/alarm_clock.yaml
+.. literalinclude:: ../../../../python/features/alarm_clock/alarm_clock.yaml
     :language: yaml
     :lines: 6-37
     :emphasize-lines: 1, 4, 11
@@ -17,7 +17,7 @@ In the following example model, the first key `model` indicates that this yaml e
 
 Unlike the `model` definition above which defines models and components of systems, the following `schema` definition is used to define a data structure.
 ```{eval-rst}
-.. literalinclude:: ../../../../python/model/alarm_clock/structures.yaml
+.. literalinclude:: ../../../../python/features/alarm_clock/structures.yaml
     :language: yaml
     :lines: 13-29
     :emphasize-lines: 1
@@ -37,8 +37,7 @@ The basic root keys can be located in the [base AaC DSL specification](https://g
 | schema | Used to define data structures |
 | model | Used to define a system, model, or component |
 | usecase | Used to define usecases, or interactions between models |
-| ext | Used to define extensions to `enum` or `schema` definitions |
-| validation | Used to define validation rules for AaC definitions |
+| plugin | Used to define plugins to provide AaC commands and constraints |
 
 
 ## Navigating the DSL
@@ -47,11 +46,9 @@ Because of the flexibility and extensibility of the AaC DSL, it may be difficult
 ### The Base DSL (Core Spec)
 Because the AaC DSL is self-defining and requires some foundational DSL structures, it has a special set of definitions that are always provided to the user, referred to as the "core specification" or "core spec".
 
-The core spec can be found in the AaC Python package, or [here](https://github.com/DevOps-MBSE/AaC/blob/main/python/src/aac/spec/spec.yaml).  The core spec defines a number of foundational aspects of the AaC DSL including which keys can be used as root keys and the structures of `schema`, `model`, `usecase`, `extension`, `validation`, and other basic language structures.
+The core spec can be found in the AaC Python package, or [here](https://github.com/DevOps-MBSE/AaC/blob/main/python/src/aac.aac).  The core spec defines a number of foundational aspects of the AaC DSL including which keys can be used as root keys and the structures of `schema`, `model`, `usecase`, `primitive`, `plugin` and other basic language structures.
 
-The core spec can also be retrieved from the AaC Python package via the `print-spec` command.
+The core spec can also be retrieved from the AaC Python package via the `print-defs` command.
 
 ### Extended DSL
-In order to support a fully-extensible tool and DSL, the AaC DSL incorporates definitions from a number of contextual sources including user AaC files, shared/library AaC files, and plugins. When you run AaC commands such as `validate`, the AaC package incorporates the superset of definitions from actively installed plugins, user-defined AaC files, and the core spec in order to create an extended DSL context. This is important because some plugins, such as the Generate Protobuf plugin, provide a set of [additional Protobuf primitive types](https://github.com/DevOps-MBSE/AaC/blob/a4a9b9734983fdfb5f5d3d855dc50b0f26e4ff42/python/src/aac/plugins/first_party/gen_protobuf/gen_protobuf.yaml#L30-L47) which allow users to define Protobuf-specific types for data structure fields.
-
-The extended DSL, referred to as the active context, can be retrieved from the AaC Python package via the `print-active-context` command. If you were to compare the output of the core spec and the active context commands it should be more readily apparent how the AaC DSL can be extended to suite the needs of user-feature developers and AaC users.
+In order to support a fully-extensible tool and DSL, the AaC DSL incorporates definitions from a number of contextual sources including user AaC files, shared/library AaC files, and plugins. When you run AaC commands such as `check`, the AaC package incorporates the superset of definitions from actively installed plugins, user-defined AaC files, and the core spec in order to create an extended DSL context. This is important because some plugins may provide modifications which allow users to define structures differently.

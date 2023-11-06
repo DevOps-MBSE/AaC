@@ -36,7 +36,7 @@ operations with complete traceability and configuration management throughout.  
 discover new ways to define, deliver, and evolve complex systems using Architecture-as-Code.
 
 AaC is a self-defining solution. At the heart of the AaC application is a definition of AaC itself.
-This model is used in validation of itself.  Core data types are purposefully simple and can be
+This model self-checks itself.  Core data types are purposefully simple and can be
 extended by a user.
 
 AaC is designed with extensibility in mind.  The built-in functionality is intentionally minimized.
@@ -93,7 +93,7 @@ model:
 
 Now you can run AaC against your model.
 ```bash
-aac validate EchoService.yaml
+aac check EchoService.yaml
 ```
 
 AaC has some core "root types" for you to work with.  You can see the root types of `schema` and `model` used in the example above.

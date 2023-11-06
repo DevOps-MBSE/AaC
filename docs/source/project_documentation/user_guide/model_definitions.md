@@ -27,7 +27,7 @@ To compose a system from individual `component`s, one specifies additional
 `models` in the system `model`'s `components` field.
 
 ```{eval-rst}
-.. literalinclude:: ../../../../python/model/alarm_clock/alarm_clock.yaml
+.. literalinclude:: ../../../../python/features/alarm_clock/alarm_clock.yaml
     :language: yaml
     :lines: 6-37
     :emphasize-lines: 4-10
@@ -44,7 +44,7 @@ Each `behavior` requires a `BehaviorType` which represents the mode of
 interaction for that behavior.
 
 ```{eval-rst}
-.. literalinclude:: ../../../../python/model/alarm_clock/alarm_clock.yaml
+.. literalinclude:: ../../../../python/features/alarm_clock/alarm_clock.yaml
     :language: yaml
     :lines: 6-37
     :emphasize-lines: 11-17
@@ -57,7 +57,7 @@ structure. Each `scenario` describes necessary pre-conditions (`given`),
 triggers (`when`), and post-conditions (`then`) for the behavior.
 
 ```{eval-rst}
-.. literalinclude:: ../../../../python/model/alarm_clock/alarm_clock.yaml
+.. literalinclude:: ../../../../python/features/alarm_clock/alarm_clock.yaml
     :language: yaml
     :lines: 6-37
     :emphasize-lines: 19-32

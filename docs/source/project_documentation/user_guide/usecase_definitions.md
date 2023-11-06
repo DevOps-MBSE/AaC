@@ -7,7 +7,7 @@ One of AaC's goals is to allow for a system to be modeled in a way that various 
 There is an example usecase within our alarm clock model example for setting the alarm time.
 
 ```{eval-rst}
-.. literalinclude:: ../../../../python/model/alarm_clock/usecase.yaml
+.. literalinclude:: ../../../../python/features/alarm_clock/usecase.yaml
     :language: yaml
     :lines: 6-24
 ```
@@ -24,7 +24,7 @@ Some questions that come up when evaluating the system for functional completene
 The `participants` of the `usecase` are included as a portion of the `usecase` definition, highlighted below.
 
 ```{eval-rst}
-.. literalinclude:: ../../../../python/model/alarm_clock/usecase.yaml
+.. literalinclude:: ../../../../python/features/alarm_clock/usecase.yaml
     :language: yaml
     :emphasize-lines: 4-10
     :lines: 6-24
@@ -43,7 +43,7 @@ The `timer` is for the alarm clock system to know when to trigger the `alarm`.
 The `steps` of the `usecase` are included as a portion of the `usecase` definition, highlighted below.
 
 ```{eval-rst}
-.. literalinclude:: ../../../../python/model/alarm_clock/usecase.yaml
+.. literalinclude:: ../../../../python/features/alarm_clock/usecase.yaml
     :language: yaml
     :emphasize-lines: 11-19
     :lines: 6-24
@@ -52,7 +52,7 @@ The `steps` of the `usecase` are included as a portion of the `usecase` definiti
 `steps` are actions that the system follows to accomplish the desired described behavior of the `usecase`. The number of steps varies based on how many interactions between the `participants` need to happen for the behavior to be accomplished. Each of the `steps` should involve only two `participants`. One participant (`source`) performing an `action` on another participant (`target`). Each action must be defined as a behavior in the `target`. For example, the model `AlarmClock` must have a behavior named `setAlarm` that can be invoked by the source `user`.
 
 ```{eval-rst}
-.. literalinclude:: ../../../../python/model/alarm_clock/usecase.yaml
+.. literalinclude:: ../../../../python/features/alarm_clock/usecase.yaml
     :language: yaml
     :emphasize-lines: 3-5
     :lines: 16-20

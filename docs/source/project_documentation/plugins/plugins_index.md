@@ -8,8 +8,8 @@ You can extend AaC with your own plugins as described in the [Developer Guide](.
 
 AaC comes with a number of built-in plugins that provide core capabilities. These plugins are installed as part of AaC and are loaded at runtime. The following plugins are currently available:
 
-- [Version](version): Gives you the installed version of AaC.
-- [Print Definitions](print_defs):  Prints the AaC definitions from the Language Context.  This is useful for debugging or may serve as a reminder of the definitions available.
-- [Check](check): Runs the AaC constraints against a provided model.
-- [Generate](generate):  Generic generation capability that can be used to generate any text file from a model.
-- [Generate Plugin](gen_plugin):  A custom AaC generator to support the extension of AaC through plugin development.
+- [Version](../plugins/version): Gives you the installed version of AaC.
+- [Print Definitions](../plugins/print_defs):  Prints the AaC definitions from the Language Context.  This is useful for debugging or may serve as a reminder of the definitions available.
+- [Check](../plugins/check): Runs the AaC constraints against a provided model.
+- [Generate](../plugins/generate):  Generic generation capability that can be used to generate any text file from a model.
+- [Generate Plugin](../plugins/gen_plugin):  A custom AaC generator to support the extension of AaC through plugin development.

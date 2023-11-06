@@ -25,7 +25,7 @@ The overall constraint mechanism follows this flow:
 6. When traversing the declaration structure of a definition, when primitive values are encountered they are checked against any defined primitive constraints for that primitive.
   a. Primitive constraints are declared within the primitive declaration, not at the point of usage.
 7. Once all of the parsed declarations are checked against declared constraints, any violations are reported as constraint errors.
-8. All constraint errors from all of the validation rules are collected and returned together
+8. All constraint errors from all of the contraint rules are collected and returned together
   a. If there are no errors, the user is provided a success message
   b. If there are errors, the definition fails the check.  There is an option on the `check` command to handle warnings as errors if desired.
 
