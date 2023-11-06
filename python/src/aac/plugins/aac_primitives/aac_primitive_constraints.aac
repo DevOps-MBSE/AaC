@@ -2,7 +2,7 @@ plugin:
   name: AaC primitive constraints
   package: aac.plugins.aac_primitives
   description: |
-    An AaC plugin that ensure boolean primitive values are correct.
+    An AaC plugin that ensures primitive values are correct.
   primitive_constraints:
     - name: Check bool
       description: Verify that a boolen value is True, False, or None.  None is considered False by python, so we allow None as a valid value.

@@ -10,7 +10,7 @@ from aac.context.definition import Definition
 from aac.context.lexeme import Lexeme
 from aac.context.util import get_python_module_name, get_python_class_name
 
-AAC_LANG_FILE_NAME = "../../aac.aac"
+AAC_LANG_FILE_NAME = "../aac.aac"
 AAC_LANG_FILE_PATH = join(dirname(__file__), AAC_LANG_FILE_NAME)
 
 
