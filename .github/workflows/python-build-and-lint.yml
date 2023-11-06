@@ -49,14 +49,3 @@ jobs:
           path: |
             python/docs/doc_artifacts/api
             python/docs/doc_artifacts/project_documentation
-
-      - name: Generate RESTful API Documentation
-        run: |
-          mkdir oasv3-spec
-          aac gen-openapi-spec oasv3-spec
-
-      - name: Upload RESTful API Documentation
-        uses: actions/upload-artifact@v3
-        with:
-          name: rest-api-documentation
-          path: python/oasv3-spec
