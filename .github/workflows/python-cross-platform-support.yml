@@ -91,16 +91,16 @@ jobs:
       - name: Get Package Version
         run: python -m aac version
 
-      - name: Check Core DSL
+      - name: Check AaC DSL
         if: matrix.os != 'windows-latest'
         run: |
-          spec_file=$(find $pythonLocation -name spec.yaml | head -n1)
+          spec_file=$(find $pythonLocation -name aac.aac | head -n1)
           python -m aac check $spec_file
 
-      - name: Check Core DSL
+      - name: Check AaC DSL
         if: matrix.os == 'windows-latest'
         run: |
-          $spec_file=$(gci -r -fi spec.yaml -Name "$Env:pythonLocation")
+          $spec_file=$(gci -r -fi aac.aac -Name "$Env:pythonLocation")
           python -m aac check "$Env:pythonLocation\$spec_file"
 
       - name: Print out Core Spec
