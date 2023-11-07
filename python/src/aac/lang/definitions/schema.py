@@ -42,7 +42,7 @@ def get_schema_defined_fields(source_definition: Definition, context: LanguageCo
 
     schema_definition_fields = []
     if schema_definition:
-        schema_definition_fields = schema_definition.get_top_level_fields()
+        schema_definition_fields = schema_definition.get_top_level_fields() ### TODO: POPO update ###
 
         if "fields" not in schema_definition_fields:
             logging.error(f"Definition schema '{schema_definition.name}' does not specify any defined fields.")
@@ -88,7 +88,7 @@ def get_definition_schema_components(source_definition: Definition, language_con
 
                 if not field_definition.is_enum():
                     _get_sub_definitions(
-                        field_definition, field_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS)
+                        field_definition, field_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS)  ### TODO: POPO update ###
                     )
 
     top_level_fields = list(get_schema_defined_fields(source_definition, language_context).values())
@@ -126,7 +126,7 @@ def get_schema_for_field(
         if field_type:
             if context.is_definition_type(field_type):
                 field_schema_definition = context.get_definition_by_name(field_type)
-                fields_to_traverse = field_schema_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS, {})
+                fields_to_traverse = field_schema_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS, {})    ### TODO: POPO update ###
                 traverse_fields_dict = _convert_fields_list_to_dict(fields_to_traverse)
 
                 if len(keys_to_traverse) > 0 and field_schema_definition:

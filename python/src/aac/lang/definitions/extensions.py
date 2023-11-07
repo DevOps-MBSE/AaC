@@ -27,7 +27,7 @@ def apply_extension_to_definition(extension_definition: Definition, target_defin
     Raises:
         LanguageError: Raised when there is an unrecoverable internal error when applying an extension
     """
-    target_definition_fields_dict = target_definition.get_top_level_fields()
+    target_definition_fields_dict = target_definition.get_top_level_fields()    ### TODO: POPO update ###
     extension_additional_content = _get_extension_additional_content_dict(extension_definition)
     extension_field_name = _get_extension_field_name(extension_definition)
 
@@ -67,7 +67,7 @@ def remove_extension_from_definition(extension_definition: Definition, target_de
     Raises:
         LanguageError: Raised when there is an unrecoverable internal error when removing an extension
     """
-    target_definition_fields = target_definition.get_top_level_fields()
+    target_definition_fields = target_definition.get_top_level_fields() ### TODO: POPO update ###
     extension_additional_content = _get_extension_additional_content_dict(extension_definition)
     extension_field_name = _get_extension_field_name(extension_definition)
     extension_target_field = target_definition_fields.get(extension_field_name)
@@ -122,7 +122,7 @@ def _remove_enum_extension_from_values(enum_to_remove: str, target_enum_values: 
 
 def _get_extension_additional_content_dict(extension_definition: Definition) -> dict:
     """Return the extension's additive information fields based on the extension's sub-type (enumExt/dataExt)."""
-    extension_definition_fields = extension_definition.get_top_level_fields()
+    extension_definition_fields = extension_definition.get_top_level_fields()   ### TODO: POPO update ###
     extension_type = get_extension_definition_type(extension_definition)
     return extension_definition_fields.get(extension_type)
 

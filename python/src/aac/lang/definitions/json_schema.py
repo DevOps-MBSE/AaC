@@ -50,7 +50,7 @@ def _get_definition_json_schema(definition_schema: Definition, language_context:
     """Return the json schema structure for the definition schema."""
 
     schema_object = {}
-    schema_structure_fields = definition_schema.get_top_level_fields().get(DEFINITION_FIELD_FIELDS, {})
+    schema_structure_fields = definition_schema.get_top_level_fields().get(DEFINITION_FIELD_FIELDS, {}) ### TODO: POPO update ###
     for field in schema_structure_fields:
         field_name = field.get(DEFINITION_FIELD_NAME)
         field_type = field.get(DEFINITION_FIELD_TYPE)
@@ -94,7 +94,7 @@ def _get_defined_type_field_json_schema(field_name: str, field_type: str, langua
     field_schema = language_context.get_definition_by_name(field_type)
 
     if field_schema is not None:
-        defined_fields = field_schema.get_top_level_fields().get("fields", {})
+        defined_fields = field_schema.get_top_level_fields().get("fields", {})  ### TODO: POPO update ###
         schema_sub_structures = {}
 
         for field in defined_fields:
@@ -186,7 +186,7 @@ def _get_enum_field_json_schema(field_name: str, field_type: str, language_conte
     enum_schema_segment = {}
 
     if enum_definition:
-        enum_values = enum_definition.get_top_level_fields().get("values", [])
+        enum_values = enum_definition.get_top_level_fields().get("values", [])  ### TODO: POPO update ###
         enum_schema_segment = {field_name: {"type": "string", "enum": enum_values}}
     else:
         logging.warn(f"There is no enum definition in the context named {field_type}")

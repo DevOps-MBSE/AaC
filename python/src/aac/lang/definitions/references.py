@@ -178,7 +178,7 @@ def _process_root(selector: str, selector_field: str, selector_value: str, defin
     if selector:
         # handle root level selector
         for definition in definitions:
-            if str(definition.get_top_level_fields()[selector_field]) == str(selector_value):
+            if str(definition.get_top_level_fields()[selector_field]) == str(selector_value):   ### TODO: POPO update ###
                 keepers.append(definition)
     else:
         # no root level selector, so just keep all definitions and move on
@@ -191,7 +191,7 @@ def _process_non_root(
 ) -> list[Definition]:
     keepers = []
     for definition in definitions:
-        top_level_fields = definition.get_top_level_fields()
+        top_level_fields = definition.get_top_level_fields()    ### TODO: POPO update ###
         dict_list = _drill_into_nested_dict(prefix[1:], top_level_fields)
 
         for def_dict in dict_list:

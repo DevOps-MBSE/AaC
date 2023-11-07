@@ -32,8 +32,8 @@ def get_substructures_by_type(
         if schema_definition.name == target_schema_definition.name:
             substructure_instances.append(definition_dict)
 
-        schema_defined_fields = schema_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS) or []
-        schema_defined_fields_dict = {field.get(DEFINITION_FIELD_NAME): field for field in schema_defined_fields}
+        schema_defined_fields = schema_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS) or [] ### TODO: POPO update ###
+        schema_defined_fields_dict = {field.get(DEFINITION_FIELD_NAME): field for field in schema_defined_fields}   ### TODO: POPO update ###
         field_names_to_traverse = set(schema_defined_fields_dict.keys()).intersection(set(definition_dict.keys()))
 
         for field_name in sorted(field_names_to_traverse):
@@ -57,7 +57,7 @@ def get_substructures_by_type(
                     _get_substructures(field_schema_definition, field)
 
     source_definition_root_key = source_definition.get_root_key()
-    source_definition_fields = source_definition.get_top_level_fields()
+    source_definition_fields = source_definition.get_top_level_fields() ### TODO: POPO update ###
 
     # Return the whole definition dictionary if the desired substructure is the root type.
     if source_definition_root_key == target_schema_definition.name:
@@ -92,7 +92,7 @@ def get_fields_by_enum_type(source_definition: Definition, target_enum_type: Def
 
     def _get_enum_fields(schema_definition: Definition, definition_dict: dict):
 
-        schema_defined_fields = schema_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS, [])
+        schema_defined_fields = schema_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS, [])   ### TODO: POPO update ###
         schema_defined_fields_dict = {field.get(DEFINITION_FIELD_NAME): field for field in schema_defined_fields}
         field_names_to_traverse = set(schema_defined_fields_dict.keys()).intersection(set(definition_dict.keys()))
 
@@ -120,7 +120,7 @@ def get_fields_by_enum_type(source_definition: Definition, target_enum_type: Def
                     field_dicts.append({field_name: definition_dict.get(field_name)})
 
     source_definition_root_key = source_definition.get_root_key()
-    source_definition_fields = source_definition.get_top_level_fields()
+    source_definition_fields = source_definition.get_top_level_fields() ### TODO: POPO update ###
 
     # Return the whole definition dictionary if the desired substructure is the root type.
     source_definition_schema = get_definition_schema(source_definition, context)
@@ -146,7 +146,7 @@ def strip_undefined_fields_from_definition(definition: Definition, context: Lang
     """
 
     def _strip_fields(definition_dict: dict, dict_schema: Definition):
-        defined_top_level_fields = dict_schema.get_top_level_fields().get(DEFINITION_FIELD_FIELDS, {})
+        defined_top_level_fields = dict_schema.get_top_level_fields().get(DEFINITION_FIELD_FIELDS, {})  ### TODO: POPO update ###
         defined_top_level_fields_dict = {field.get(DEFINITION_FIELD_NAME): field for field in defined_top_level_fields}
         definition_dict_field_names = list(definition_dict.keys())
 
@@ -170,6 +170,6 @@ def strip_undefined_fields_from_definition(definition: Definition, context: Lang
     if definition:
         stripped_definition = definition.copy()
         definition_schema = get_definition_schema(definition, context)
-        definition_structure = stripped_definition.get_top_level_fields()
+        definition_structure = stripped_definition.get_top_level_fields()   ### TODO: POPO update ###
         _strip_fields(definition_structure, definition_schema)
         return stripped_definition

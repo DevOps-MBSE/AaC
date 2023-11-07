@@ -27,7 +27,7 @@ def get_inherited_attributes(definition: Definition, language_context: LanguageC
             inherited_definition = language_context.get_definition_by_name(inherited_definition_name)
 
             if inherited_definition:
-                transitive_fields = inherited_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS)
+                transitive_fields = inherited_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS)    ### TODO: POPO update ###
                 transitive_validation = inherited_definition.get_validations()
                 transitive_parent_attributes[inherited_definition.name] = {
                     DEFINITION_FIELD_FIELDS: transitive_fields,
@@ -55,8 +55,8 @@ def apply_inherited_attributes_to_definition(definition: Definition, language_co
             attributes_to_apply = transitive_parent_attributes.get(definition_name, {})
             fields_to_apply = attributes_to_apply.get(DEFINITION_FIELD_FIELDS) or []
             validation_to_apply = attributes_to_apply.get(DEFINITION_FIELD_VALIDATION) or []
-            existing_fields = definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS) or []
-            existing_validation = definition.get_top_level_fields().get(DEFINITION_FIELD_VALIDATION) or []
+            existing_fields = definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS) or []  ### TODO: POPO update ###
+            existing_validation = definition.get_top_level_fields().get(DEFINITION_FIELD_VALIDATION) or []  ### TODO: POPO update ###
 
-            definition.get_top_level_fields()[DEFINITION_FIELD_FIELDS] = existing_fields + fields_to_apply
-            definition.get_top_level_fields()[DEFINITION_FIELD_VALIDATION] = existing_validation + validation_to_apply
+            definition.get_top_level_fields()[DEFINITION_FIELD_FIELDS] = existing_fields + fields_to_apply  ### TODO: POPO update ###
+            definition.get_top_level_fields()[DEFINITION_FIELD_VALIDATION] = existing_validation + validation_to_apply  ### TODO: POPO update ###
