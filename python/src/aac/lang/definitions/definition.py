@@ -50,7 +50,7 @@ class Definition:
     content: str = attrib(validator=validators.instance_of(str))
     source: AaCFile = attrib(validator=validators.instance_of(AaCFile))
     lexemes: list[Lexeme] = attrib(default=Factory(list), validator=validators.instance_of(list))
-    structure: dict = attrib(default=Factory(dict), validator=validators.instance_of(dict))
+    structure: dict = attrib(default=Factory(dict), validator=validators.instance_of(dict)) ### POPO update ###
     meta_structure: Optional[StructuralNode] = attrib(
         default=None, validator=validators.optional(validators.instance_of(StructuralNode))
     )
@@ -73,7 +73,7 @@ class Definition:
             equal = equal and self.structure == obj.structure
             return equal
 
-        return isinstance(obj, Definition) and is_equal()
+        return isinstance(obj, Definition) and is_equal()   ### POPO update ###
 
     def get_root_key(self) -> str:
         """Return the root key for the parsed definition."""
@@ -81,7 +81,7 @@ class Definition:
 
     # Get Field Functions
 
-    def get_top_level_fields(self) -> dict[str, dict]:
+    def get_top_level_fields(self) -> dict[str, dict]:  ### POPO update ###
         """
         Return a dictionary of the top-level fields that are populated in the definition where the key is the field name.
 
@@ -101,64 +101,64 @@ class Definition:
 
     def get_description(self) -> Optional[str]:
         """Return the description for the current definition, or None if it isn't defined."""
-        fields = self.get_top_level_fields()    ### TODO: POPO update ###
+        fields = self.get_top_level_fields()    ### POPO update ###
         description = fields.get(DEFINITION_FIELD_DESCRIPTION)
-        return str(description) if description else None
+        return str(description) if description else None    ### POPO update ###
 
     def get_root(self) -> Optional[str]:
         """Return the root for the current definition, or None if it isn't defined."""
-        fields = self.get_top_level_fields()    ### TODO: POPO update ###
+        fields = self.get_top_level_fields()    ### POPO update ###
         root = fields.get(DEFINITION_FIELD_ROOT)
         return str(root) if root else None
 
     def get_type(self) -> Optional[str]:
         """Return the string for the extension type field, or None if the field isn't defined."""
-        fields = self.get_top_level_fields()    ### TODO: POPO update ###
+        fields = self.get_top_level_fields()    ### POPO update ###
         type_field = fields.get(DEFINITION_FIELD_TYPE)
         return str(type_field) if type_field else None
 
     def get_validations(self) -> Optional[list[dict]]:
         """Return a list of validation entry dictionaries, or None if the field isn't defined."""
-        fields = self.get_top_level_fields()    ### TODO: POPO update ###
+        fields = self.get_top_level_fields()    ### POPO update ###
         return fields.get(DEFINITION_FIELD_VALIDATION)
 
     def get_inherits(self) -> Optional[list[str]]:
         """Return a list of Definition names that are inherited, or None if the field isn't defined."""
-        fields = self.get_top_level_fields()    ### TODO: POPO update ###
+        fields = self.get_top_level_fields()    ### POPO update ###
         return fields.get(DEFINITION_FIELD_INHERITS)
 
     def get_values(self) -> Optional[list[str]]:
         """Return a list of enum values, or None if there are no enum values defined."""
-        fields = self.get_top_level_fields()    ### TODO: POPO update ###
+        fields = self.get_top_level_fields()    ### POPO update ###
         return fields.get(DEFINITION_FIELD_VALUES)
 
     def get_fields(self) -> Optional[list[dict]]:
         """Return a list of field dictionaries, or None if there are no fields defined."""
-        fields = self.get_top_level_fields()    ### TODO: POPO update ###
+        fields = self.get_top_level_fields()    ### POPO update ###
         return fields.get(DEFINITION_FIELD_FIELDS)
 
     def get_imports(self) -> Optional[list[str]]:
         """Return a list of imported files, or None if the definition is not import."""
-        imports = self.get_top_level_fields()   ### TODO: POPO update ###
+        imports = self.get_top_level_fields()   ### POPO update ###
         return imports.get(DEFINITION_FIELD_FILES)
 
     # Type Test Functions
 
     def is_extension(self) -> bool:
         """Return true if the definition is an extension definition."""
-        return self.get_root_key() == ROOT_KEY_EXTENSION
+        return self.get_root_key() == ROOT_KEY_EXTENSION    ### POPO update ###
 
     def is_schema_extension(self) -> bool:
         """Return true if the definition is a schema extension definition."""
-        definition = self.get_top_level_fields()    ### TODO: POPO update ###
+        definition = self.get_top_level_fields()    ### POPO update ###
         return DEFINITION_FIELD_EXTENSION_SCHEMA in definition and isinstance(
             definition[DEFINITION_FIELD_EXTENSION_SCHEMA], dict
         )
 
     def is_enum_extension(self) -> bool:
         """Return true if the definition is an enum extension definition."""
-        definition = self.get_top_level_fields()    ### TODO: POPO update ###
-        return DEFINITION_FIELD_EXTENSION_ENUM in definition and isinstance(definition[DEFINITION_FIELD_EXTENSION_ENUM], dict)
+        definition = self.get_top_level_fields()    ### POPO update ###
+        return DEFINITION_FIELD_EXTENSION_ENUM in definition and isinstance(definition[DEFINITION_FIELD_EXTENSION_ENUM], dict)  ### POPO update ###
 
     def is_schema(self) -> bool:
         """Return true if the definition is a schema definition."""
@@ -180,7 +180,7 @@ class Definition:
 
     # Misc Functions
 
-    def copy(self) -> Definition:
+    def copy(self) -> Definition:   ### POPO update ###
         """Return a deep copy of the definition."""
         return copy.deepcopy(self)
 
