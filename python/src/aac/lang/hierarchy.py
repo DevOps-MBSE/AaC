@@ -8,7 +8,7 @@ from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.schema import get_definition_schema
 
 
-def get_definition_ancestry(definition: Definition, context: LanguageContext) -> list[Definition]:  #POPO update
+def get_definition_ancestry(definition: Definition, context: LanguageContext) -> list[Definition]:  # POPO update
     """
     Return an ordered list of ancestor definitions starting with the root definition and ending with the argument.
 
@@ -25,29 +25,29 @@ def get_definition_ancestry(definition: Definition, context: LanguageContext) ->
         A list of definitions that define the schema and the schema's parent schemas.
     """
 
-    ancestors_list: list[Definition] = []   #POPO update
+    ancestors_list: list[Definition] = []   # POPO update
 
     # If the definition key isn't defined, return an empty ancestor list.
-    if definition.get_root_key() not in context.get_root_keys():    #POPO update
+    if definition.get_root_key() not in context.get_root_keys():    # POPO update
         # I finally figured out why this is here.  It's because we're using Schema as a hack to hold a list of "Global Validator" declarations.
-        ancestors_list.append(get_root_definition_by_key(ROOT_KEY_SCHEMA, context))   #POPO update
-        logging.error(f"The definition '{definition.name}' does not have a defined root key '{definition.get_root_key()}'.")    #POPO update
+        ancestors_list.append(get_root_definition_by_key(ROOT_KEY_SCHEMA, context))   # POPO update
+        logging.error(f"The definition '{definition.name}' does not have a defined root key '{definition.get_root_key()}'.")    # POPO update
     else:
         found_self_defined_ancestor = False
-        ancestor_definition: Optional[Definition] = definition  #POPO update
+        ancestor_definition: Optional[Definition] = definition  # POPO update
 
         # Loop until we get to `Schema` defining itself.
-        while not found_self_defined_ancestor and ancestor_definition:  #POPO update
-            ancestor_root_schema = get_definition_schema(ancestor_definition, context)  #POPO update
-            found_self_defined_ancestor = ancestor_definition == ancestor_root_schema   #POPO update
-            ancestors_list.append(ancestor_definition)  #POPO update   
-            ancestor_definition = get_root_definition_by_key(ancestor_definition.get_root_key(), context)   #POPO update
+        while not found_self_defined_ancestor and ancestor_definition:  # POPO update
+            ancestor_root_schema = get_definition_schema(ancestor_definition, context)  # POPO update
+            found_self_defined_ancestor = ancestor_definition == ancestor_root_schema   # POPO update
+            ancestors_list.append(ancestor_definition)  # POPO update   
+            ancestor_definition = get_root_definition_by_key(ancestor_definition.get_root_key(), context)   # POPO update
 
     ancestors_list.reverse()
     return ancestors_list
 
 
-def get_root_definition_by_key(root_key: str, context: LanguageContext) -> Optional[Definition]:    #POPO update
+def get_root_definition_by_key(root_key: str, context: LanguageContext) -> Optional[Definition]:    # POPO update
     """
     Return the definition that defines the structure of the root key.
 
@@ -64,8 +64,8 @@ def get_root_definition_by_key(root_key: str, context: LanguageContext) -> Optio
     """
 
     if root_key in context.get_root_keys():
-        root_key_definition, *_ = [definition for definition in context.get_root_definitions() if root_key == definition.get_root()]    #POPO update
-        return root_key_definition  #POPO update
+        root_key_definition, *_ = [definition for definition in context.get_root_definitions() if root_key == definition.get_root()]    # POPO update
+        return root_key_definition  # POPO update
     else:
         logging.error(f"Failed to find root key.\nRoot Key to find: {root_key}\nAvailable Fields:{context.get_root_keys()}")
         return None

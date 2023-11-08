@@ -5,8 +5,8 @@ from aac.lang.definitions.definition import Definition
 
 
 def get_definition_type_references_from_list(
-    source_definition: Definition, definitions_to_search: list[Definition]  #POPO update
-) -> list[Definition]:  #POPO update
+    source_definition: Definition, definitions_to_search: list[Definition]  # POPO update
+) -> list[Definition]:  # POPO update
     """
     Return a subset of Definitions that reference the source_definition.
 
@@ -18,13 +18,13 @@ def get_definition_type_references_from_list(
         A list of Definitions that reference the source_definition
     """
 
-    def filter_definitions_by_reference(definition_to_filter: Definition) -> bool:  #POPO update
-        return f"type: {source_definition.name}" in definition_to_filter.to_yaml()  #POPO update
+    def filter_definitions_by_reference(definition_to_filter: Definition) -> bool:  # POPO update
+        return f"type: {source_definition.name}" in definition_to_filter.to_yaml()  # POPO update
 
-    return list(filter(filter_definitions_by_reference, definitions_to_search))   #POPO update
+    return list(filter(filter_definitions_by_reference, definitions_to_search))   # POPO update
 
 
-def get_enum_references_from_context(enum_definition: Definition, language_context: LanguageContext) -> list[Definition]:   #POPO update
+def get_enum_references_from_context(enum_definition: Definition, language_context: LanguageContext) -> list[Definition]:   # POPO update
     """
     Return a subset of Definitions that have a field with an enum value from the target enum definition.
 
@@ -50,16 +50,16 @@ def get_enum_references_from_context(enum_definition: Definition, language_conte
     Returns:
         A list of Definitions that leverage the target enum definition's values
     """
-    enum_reference_schema_definitions = get_definition_type_references_from_list(enum_definition, language_context.definitions)   #POPO update
-    root_definitions_type_to_key_dict = {root.name: root.get_root() for root in language_context.get_root_definitions()}    #POPO update
+    enum_reference_schema_definitions = get_definition_type_references_from_list(enum_definition, language_context.definitions)   # POPO update
+    root_definitions_type_to_key_dict = {root.name: root.get_root() for root in language_context.get_root_definitions()}    # POPO update
 
-    definitions_referencing_enum_value = []   #POPO update
-    for enum_reference in enum_reference_schema_definitions:    #POPO update
-        if enum_reference.name in root_definitions_type_to_key_dict.keys():   #POPO update
-            instances_of_referencing_root_key = language_context.get_definitions_by_root_key(root_definitions_type_to_key_dict.get(enum_reference.name))    #POPO update
-            definitions_referencing_enum_value.extend(instances_of_referencing_root_key)    #POPO update
+    definitions_referencing_enum_value = []   # POPO update
+    for enum_reference in enum_reference_schema_definitions:    # POPO update
+        if enum_reference.name in root_definitions_type_to_key_dict.keys():   # POPO update
+            instances_of_referencing_root_key = language_context.get_definitions_by_root_key(root_definitions_type_to_key_dict.get(enum_reference.name))    # POPO update
+            definitions_referencing_enum_value.extend(instances_of_referencing_root_key)    # POPO update
 
-    return definitions_referencing_enum_value   #POPO update
+    return definitions_referencing_enum_value   # POPO update
 
 
 def is_reference_format_valid(reference_field_value: str) -> bool:
@@ -111,7 +111,7 @@ def _no_disallowed_characters(segment: str) -> bool:
     return len(disallowed.intersection(segment)) == 0
 
 
-def get_reference_target_definitions(reference_field_value: str, language_context: LanguageContext) -> list[Definition]:    #POPO update
+def get_reference_target_definitions(reference_field_value: str, language_context: LanguageContext) -> list[Definition]:    # POPO update
     """
     Return a list containing the referenced definitions.
 
@@ -140,29 +140,29 @@ def get_reference_target_definitions(reference_field_value: str, language_contex
     root, _, _, _ = _get_reference_segment_content(segments[0])
 
     # recursively filter through the definitions by filtering out definitions using selectors
-    keepers = _process_segment([], segments, language_context.get_definitions_by_root_key(root), language_context)  #POPO update
+    keepers = _process_segment([], segments, language_context.get_definitions_by_root_key(root), language_context)  # POPO update
 
     return keepers
 
 
 def _process_segment(
-    prefix: list[str], segments: list[str], definitions: list[Definition], language_context: LanguageContext    #POPO update
-) -> list[Definition]:  #POPO update
+    prefix: list[str], segments: list[str], definitions: list[Definition], language_context: LanguageContext    # POPO update
+) -> list[Definition]:  # POPO update
     """This should process segments recursively."""
     if len(segments) == 0:
         # everything has been processed, so return what was found in the previous recursion
-        return definitions  #POPO update
+        return definitions  # POPO update
 
     keepers = []
     key, selector, selector_field, selector_value = _get_reference_segment_content(segments[0])
 
     if key in language_context.get_root_keys():
         # handle root key
-        keepers.extend(_process_root(selector, selector_field, selector_value, definitions))    #POPO update
+        keepers.extend(_process_root(selector, selector_field, selector_value, definitions))    # POPO update
 
     else:
         # handle non-root keys
-        keepers.extend(_process_non_root(key, prefix, selector, selector_field, selector_value, definitions))   #POPO update
+        keepers.extend(_process_non_root(key, prefix, selector, selector_field, selector_value, definitions))   # POPO update
 
     if len(keepers) == 0:
         return []
@@ -172,26 +172,26 @@ def _process_segment(
     return _process_segment(nxt_prefix, segments[1:], keepers, language_context)
 
 
-def _process_root(selector: str, selector_field: str, selector_value: str, definitions: list[Definition]) -> list[Definition]:  #POPO update
+def _process_root(selector: str, selector_field: str, selector_value: str, definitions: list[Definition]) -> list[Definition]:  # POPO update
     """Return definitions that match the root selector.  If no selector, return all definitions."""
     keepers = []
     if selector:
         # handle root level selector
-        for definition in definitions:  #POPO update
-            if str(definition.get_top_level_fields()[selector_field]) == str(selector_value):   #POPO update
-                keepers.append(definition)  #POPO update
+        for definition in definitions:  # POPO update
+            if str(definition.get_top_level_fields()[selector_field]) == str(selector_value):   # POPO update
+                keepers.append(definition)  # POPO update
     else:
         # no root level selector, so just keep all definitions and move on
-        keepers.extend(definitions)   #POPO update
+        keepers.extend(definitions)   # POPO update
     return keepers
 
 
 def _process_non_root(
-    key: str, prefix: list[str], selector: str, selector_field: str, selector_value: str, definitions: list[Definition]   #POPO update
-) -> list[Definition]:  #POPO update   
+    key: str, prefix: list[str], selector: str, selector_field: str, selector_value: str, definitions: list[Definition]   # POPO update
+) -> list[Definition]:  # POPO update   
     keepers = []
-    for definition in definitions:  #POPO update
-        top_level_fields = definition.get_top_level_fields()    #POPO update
+    for definition in definitions:  # POPO update
+        top_level_fields = definition.get_top_level_fields()    # POPO update
         dict_list = _drill_into_nested_dict(prefix[1:], top_level_fields)
 
         for def_dict in dict_list:
@@ -203,14 +203,14 @@ def _process_non_root(
                     if type(value_for_key) is list:
                         for item in value_for_key:
                             if str(item[selector_field]) == str(selector_value):  # casting these seems like a hack
-                                keepers.append(definition)  #POPO update
+                                keepers.append(definition)  # POPO update
                                 break
                     else:
                         if str(value_for_key[selector_field]) == str(selector_value):  # casting these seems like a hack
-                            keepers.append(definition)  #POPO update
+                            keepers.append(definition)  # POPO update
                 else:
                     # if there's no selector, keep the definition since it contains the segment key
-                    keepers.append(definition)  #POPO update
+                    keepers.append(definition)  # POPO update
     return keepers
 
 

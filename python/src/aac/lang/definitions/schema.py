@@ -42,7 +42,7 @@ def get_schema_defined_fields(source_definition: Definition, context: LanguageCo
 
     schema_definition_fields = []
     if schema_definition:
-        schema_definition_fields = schema_definition.get_top_level_fields()   #POPO update
+        schema_definition_fields = schema_definition.get_top_level_fields()   # POPO update
 
         if "fields" not in schema_definition_fields:
             logging.error(f"Definition schema '{schema_definition.name}' does not specify any defined fields.")
@@ -88,7 +88,7 @@ def get_definition_schema_components(source_definition: Definition, language_con
 
                 if not field_definition.is_enum():
                     _get_sub_definitions(
-                        field_definition, field_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS)  #POPO update
+                        field_definition, field_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS)  # POPO update
                     )
 
     top_level_fields = list(get_schema_defined_fields(source_definition, language_context).values())
@@ -113,46 +113,46 @@ def get_schema_for_field(
         The schema that defines the field structure, the enum definition defined for an enum field, or the primitives definition for primitive fields.
     """
     keys_to_traverse = field_keys.copy()
-    definition_to_return = None   #POPO update
+    definition_to_return = None   # POPO update
 
-    def _traverse_key(fields: dict) -> Optional[Definition]:    #POPO update
-        field_schema_definition = None  #POPO update
+    def _traverse_key(fields: dict) -> Optional[Definition]:    # POPO update
+        field_schema_definition = None  # POPO update
 
         key_to_traverse = keys_to_traverse.pop(0)
         field_to_traverse = fields.get(key_to_traverse, {})
 
-        field_type = str(field_to_traverse.get(DEFINITION_FIELD_TYPE, ""))  #POPO update
+        field_type = str(field_to_traverse.get(DEFINITION_FIELD_TYPE, ""))  # POPO update
 
         if field_type:
-            if context.is_definition_type(field_type):  #POPO update
-                field_schema_definition = context.get_definition_by_name(field_type)    #POPO update
-                fields_to_traverse = field_schema_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS, {})    #POPO update
+            if context.is_definition_type(field_type):  # POPO update
+                field_schema_definition = context.get_definition_by_name(field_type)    # POPO update
+                fields_to_traverse = field_schema_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS, {})    # POPO update
                 traverse_fields_dict = _convert_fields_list_to_dict(fields_to_traverse)
 
-                if len(keys_to_traverse) > 0 and field_schema_definition:   #POPO update
-                    field_schema_definition = _traverse_key(traverse_fields_dict)   #POPO update
+                if len(keys_to_traverse) > 0 and field_schema_definition:   # POPO update
+                    field_schema_definition = _traverse_key(traverse_fields_dict)   # POPO update
 
             elif context.is_primitive_type(field_type):
-                field_schema_definition = context.get_definition_by_name(DEFINITION_NAME_PRIMITIVES)    #POPO update
+                field_schema_definition = context.get_definition_by_name(DEFINITION_NAME_PRIMITIVES)    # POPO update
             else:
                 # Assumed to be enum as enums and primitives are the only terminal types
-                field_schema_definition = context.get_enum_definition_by_type(field_type)   #POPO update
+                field_schema_definition = context.get_enum_definition_by_type(field_type)   # POPO update
 
         else:
             # In the case of no field-type, we're assumed to be at a terminal value (enum or primitive value)
-            field_schema_definition = context.get_enum_definition_by_type(key_to_traverse)  #POPO update
+            field_schema_definition = context.get_enum_definition_by_type(key_to_traverse)  # POPO update
 
-        return field_schema_definition  #POPO update
+        return field_schema_definition  # POPO update
 
     if len(keys_to_traverse) > 1:
         keys_to_traverse.pop(0)  # Go ahead and pop the root key since we don't specifically need it.
-        definition_to_return = _traverse_key(get_schema_defined_fields(source_definition, context))   #POPO update
-    elif len(keys_to_traverse) > 0 and keys_to_traverse[0] == source_definition.get_root_key():   #POPO update
-        definition_to_return = get_definition_schema(source_definition, context)    #POPO update
+        definition_to_return = _traverse_key(get_schema_defined_fields(source_definition, context))   # POPO update
+    elif len(keys_to_traverse) > 0 and keys_to_traverse[0] == source_definition.get_root_key():   # POPO update
+        definition_to_return = get_definition_schema(source_definition, context)    # POPO update
 
-    return definition_to_return   #POPO update
+    return definition_to_return   # POPO update
 
 
 def _convert_fields_list_to_dict(fields: list[dict]) -> dict[str, dict]:
     """Converts the usual list of fields into a dictionary where the field name is the key."""
-    return {field.get(DEFINITION_FIELD_NAME): field for field in fields}    #POPO update
+    return {field.get(DEFINITION_FIELD_NAME): field for field in fields}    # POPO update
