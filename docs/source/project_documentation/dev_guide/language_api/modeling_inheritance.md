@@ -79,8 +79,8 @@ Because `0.1.3` and earlier versions don't automatically apply inherited fields 
 
 ```python
 active_context = get_active_context()
-data_a_definition = get_active_context().get_definition_by_name("DataA")
-inherited_definition_names = data_a_definition.get_top_level_fields().get("inherits") or []
+data_a_definition = get_active_context().get_definition_by_name("DataA")    ### TODO: POPO update ###
+inherited_definition_names = data_a_definition.get_top_level_fields().get("inherits") or []    ### TODO: POPO update ### 
 # above line returns {'inherits': ['DataMessage'], 'name': 'DataA', 'fields': [{'name': 'request', 'type': 'string'}]}
 #   or defaults to any empty list if the entry or `inherits` field is None.
 
