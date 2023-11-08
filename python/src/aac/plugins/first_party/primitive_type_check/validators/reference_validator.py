@@ -32,8 +32,8 @@ def validate_reference(
     finding = None
     if not language_context.get_definition_by_name(value_to_validate):
         finding_message = f"{value_to_validate} is not a valid reference to a definition."
-        lexeme = definition.get_lexeme_with_value(value_to_validate) ### POPO update ###
-        finding_location = FindingLocation.from_lexeme(REFERENCE_VALIDATION_NAME, lexeme) ### POPO update ###
+        lexeme = definition.get_lexeme_with_value(value_to_validate)    # POPO Update #
+        finding_location = FindingLocation.from_lexeme(REFERENCE_VALIDATION_NAME, lexeme)    # POPO Update #
         finding = ValidatorFinding(definition, FindingSeverity.ERROR, finding_message, finding_location)
 
     return finding

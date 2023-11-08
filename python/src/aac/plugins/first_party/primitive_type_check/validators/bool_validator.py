@@ -36,7 +36,7 @@ def validate_bool(definition: Definition, value_to_validate: Any, _: LanguageCon
     if is_invalid:
         lexeme, *_ = [lexeme for lexeme in definition.lexemes if lexeme.value.lower() == str(value_to_validate.lower())]
         finding_message = f"{value_to_validate} is not a valid value for boolean type {PRIMITIVE_TYPE_BOOL}."
-        finding_location = FindingLocation.from_lexeme(BOOL_VALIDATION_NAME, lexeme) ### POPO update ###
+        finding_location = FindingLocation.from_lexeme(BOOL_VALIDATION_NAME, lexeme)    # POPO Update #
         finding = ValidatorFinding(definition, FindingSeverity.ERROR, finding_message, finding_location)
 
     return finding
