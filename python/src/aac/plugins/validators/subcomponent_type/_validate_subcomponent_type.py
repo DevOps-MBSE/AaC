@@ -11,8 +11,8 @@ VALIDATION_NAME = "Subcomponents are models"
 
 
 def validate_subcomponent_types(
-    definition_under_test: Definition,  ### POPO update ###
-    target_schema_definition: Definition,   ### POPO update ###
+    definition_under_test: Definition,  # POPO update
+    target_schema_definition: Definition,   # POPO update
     language_context: LanguageContext,
     *validation_args,
 ) -> ValidatorResult:
@@ -36,18 +36,18 @@ def validate_subcomponent_types(
             component_type = component.get("type")
 
             if component_type:
-                definition = language_context.get_definition_by_name(component_type)    ### POPO update ###
+                definition = language_context.get_definition_by_name(component_type)    # POPO update
 
                 expected_type = "model"
-                actual_type = definition and definition.get_root_key()  ### POPO update ###
-                if definition and actual_type != expected_type: ### POPO update ###
+                actual_type = definition and definition.get_root_key()  # POPO update
+                if definition and actual_type != expected_type: # POPO update
                     incorrect_subcomponent_type = (
                         f"Expected '{expected_type}' as the subcomponent type but found '{component_type}' with type "
                         f"'{actual_type}' in: {dict_to_validate}"
                     )
-                    component_type_lexeme = definition_under_test.get_lexeme_with_value(component_type) ### POPO update ###
+                    component_type_lexeme = definition_under_test.get_lexeme_with_value(component_type) # POPO update
                     findings.add_error_finding(
-                        target_schema_definition, incorrect_subcomponent_type, PLUGIN_NAME, component_type_lexeme   ### POPO update ###
+                        target_schema_definition, incorrect_subcomponent_type, PLUGIN_NAME, component_type_lexeme   # POPO update
                     )
                     logging.debug(incorrect_subcomponent_type)
             else:
@@ -56,13 +56,13 @@ def validate_subcomponent_types(
                     f"Expected component '{component_name}' to have the field 'type', but was not present. Bad component:"
                     f"{component}"
                 )
-                component_name_lexeme = definition_under_test.get_lexeme_with_value(component_name) ### POPO update ###
+                component_name_lexeme = definition_under_test.get_lexeme_with_value(component_name) # POPO update
                 findings.add_error_finding(
-                    target_schema_definition, component_missing_type, PLUGIN_NAME, component_name_lexeme    ### POPO update ###
+                    target_schema_definition, component_missing_type, PLUGIN_NAME, component_name_lexeme    # POPO update
                 )
                 logging.debug(component_missing_type)
 
-    dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)    ### POPO update ###
+    dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)    # POPO update
     list(map(validate_model_subcomponents, dicts_to_test))
 
-    return ValidatorResult([definition_under_test], findings)   ### POPO update ###
+    return ValidatorResult([definition_under_test], findings)   # POPO update
