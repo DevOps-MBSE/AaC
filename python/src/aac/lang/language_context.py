@@ -22,12 +22,12 @@ from aac.lang.constants import (
     ROOT_KEY_EXTENSION,
     ROOT_KEY_SCHEMA,
 )
-from aac.lang.definitions.collections import get_definitions_by_root_key    ### POPO update ###
-from aac.lang.definitions.definition import Definition  ### POPO update ###
-from aac.lang.definitions.extensions import apply_extension_to_definition, remove_extension_from_definition ### POPO update ###   
-from aac.lang.definitions.type import remove_list_type_indicator    ### POPO update ###
+from aac.lang.definitions.collections import get_definitions_by_root_key
+from aac.lang.definitions.definition import Definition
+from aac.lang.definitions.extensions import apply_extension_to_definition, remove_extension_from_definition
+from aac.lang.definitions.type import remove_list_type_indicator
 from aac.lang.language_error import LanguageError
-from aac.plugins.contributions.contribution_points import DefinitionValidationContribution, PrimitiveValidationContribution ### POPO update ###
+from aac.plugins.contributions.contribution_points import DefinitionValidationContribution, PrimitiveValidationContribution
 from aac.plugins.plugin import Plugin
 from aac.plugins.plugin_manager import get_plugins
 
@@ -50,55 +50,55 @@ class LanguageContext:
 
     def __attrs_post_init__(self):
         """Post init hook for attrs classes."""
-        self.definitions_dictionary = {definition.uid: definition for definition in self.definitions}   ### POPO update ###
+        self.definitions_dictionary = {definition.uid: definition for definition in self.definitions}   #POPO update
 
-    definitions: list[Definition] = attrib(default=Factory(list), validator=validators.instance_of(list))   ### POPO update ###
+    definitions: list[Definition] = attrib(default=Factory(list), validator=validators.instance_of(list))   #POPO update
     plugins: list[Plugin] = attrib(default=Factory(list), validator=validators.instance_of(list))
     is_initialized: bool = attrib(default=False, validator=validators.instance_of(bool))
 
     # Private attribute - don't reference outside of this class.
-    definitions_dictionary: dict[UUID, Definition] = attrib(    ### POPO update ###
+    definitions_dictionary: dict[UUID, Definition] = attrib(    #POPO update
         init=False, default=Factory(dict), validator=validators.instance_of(dict)
     )
 
     # Definition Methods
 
-    def add_definition_to_context(self, definition: Definition) -> None:    ### POPO update ###
+    def add_definition_to_context(self, definition: Definition) -> None:    #POPO update
         """
         Add the Definition to the list of definitions in the LanguageContext.
 
         Args:
             definition: The Definition to add to the context.
         """
-        new_definition = definition.copy()  ### POPO update ###
+        new_definition = definition.copy()  #POPO update
 
-        if new_definition.uid not in self.definitions_dictionary:   ### POPO update ###
-            new_definition.source.is_loaded_in_context = True   ### POPO update ###
-            self.definitions_dictionary[new_definition.uid] = new_definition    ### POPO update ###
-            self.definitions.append(new_definition) ### POPO update ###
+        if new_definition.uid not in self.definitions_dictionary:   #POPO update
+            new_definition.source.is_loaded_in_context = True   #POPO update
+            self.definitions_dictionary[new_definition.uid] = new_definition    #POPO update
+            self.definitions.append(new_definition)   #POPO update
         else:
             logging.debug(
                 f"Did not add definition '{new_definition.name}' to the context because one already exists with the same name."
             )
 
-        if definition.get_inherits():   ### POPO update ###
+        if definition.get_inherits():   #POPO update
             # This import is located here because the inheritance module uses the language context for lookup,
             #   causing a circular dependency at initialization
-            from aac.lang.definitions.inheritance import apply_inherited_attributes_to_definition   ### POPO update ###
+            from aac.lang.definitions.inheritance import apply_inherited_attributes_to_definition   #POPO update
 
-            apply_inherited_attributes_to_definition(new_definition, self)  ### POPO update ###
+            apply_inherited_attributes_to_definition(new_definition, self)  #POPO update
 
-        if definition.is_extension():   ### POPO update ###
-            target_definition_name = definition.get_type() or MISSING_TYPE  ### POPO update ###
-            target_definition = self.get_definition_by_name(target_definition_name) ### POPO update ###
+        if definition.is_extension():   #POPO update
+            target_definition_name = definition.get_type() or MISSING_TYPE  #POPO update
+            target_definition = self.get_definition_by_name(target_definition_name)   #POPO update
 
-            if target_definition:   ### POPO update ###
-                apply_extension_to_definition(new_definition, target_definition)    ### POPO update ###
+            if target_definition:   #POPO update
+                apply_extension_to_definition(new_definition, target_definition)    #POPO update
 
             else:
-                logging.error(f"Failed to find the target definition '{target_definition_name}' in the context.")   ### POPO update ###
+                logging.error(f"Failed to find the target definition '{target_definition_name}' in the context.")   #POPO update
 
-    def add_definitions_to_context(self, definitions: list[Definition]) -> None:    ### POPO update ###
+    def add_definitions_to_context(self, definitions: list[Definition]) -> None:    #POPO update
         """
         Add the list of Definitions to the list of definitions in the LanguageContext, any extensions are added last.
 
@@ -106,38 +106,38 @@ class LanguageContext:
             definitions: The list of Definitions to add to the context.
         """
 
-        def simple_dependency_sort_for_definitions_with_inheritance(definitions: list[Definition]) -> list[Definition]: ### POPO update ###
+        def simple_dependency_sort_for_definitions_with_inheritance(definitions: list[Definition]) -> list[Definition]:   #POPO update
             """This is a simple attempt to resolve dependencies between definitions with inheritance. This is a temporary inadequacy."""
-            sorted_definitions: dict[str, Definition] = OrderedDict()   ### POPO update ###
+            sorted_definitions: dict[str, Definition] = OrderedDict()   #POPO update
 
-            for definition in definitions:  ### POPO update ###
-                sorted_definitions[definition.name] = definition    ### POPO update ###
+            for definition in definitions:  #POPO update
+                sorted_definitions[definition.name] = definition    #POPO update
 
-            for definition in definitions:  ### POPO update ###
-                inherited_definition_names = definition.get_inherits() or []    ### POPO update ###
-                for inherited_definition_name in inherited_definition_names:    ### POPO update ###
-                    if inherited_definition_name in sorted_definitions: ### POPO update ###
-                        sorted_definitions.move_to_end(definition.name) ### POPO update ###
+            for definition in definitions:  #POPO update
+                inherited_definition_names = definition.get_inherits() or []    #POPO update
+                for inherited_definition_name in inherited_definition_names:    #POPO update
+                    if inherited_definition_name in sorted_definitions:   #POPO update
+                        sorted_definitions.move_to_end(definition.name)   #POPO update
 
-            return list(sorted_definitions.values())    ### POPO update ###
+            return list(sorted_definitions.values())    #POPO update
 
-        extension_definitions = get_definitions_by_root_key(ROOT_KEY_EXTENSION, definitions)    ### POPO update ###
-        extension_definition_names = [definition.name for definition in extension_definitions]  ### POPO update ###
+        extension_definitions = get_definitions_by_root_key(ROOT_KEY_EXTENSION, definitions)    #POPO update
+        extension_definition_names = [definition.name for definition in extension_definitions]  #POPO update
 
-        schema_definitions = get_definitions_by_root_key(ROOT_KEY_SCHEMA, definitions)  ### POPO update ###
-        child_definitions = [definition for definition in schema_definitions if definition.get_inherits() is not None]  ### POPO update ###
-        sorted_child_definitions = simple_dependency_sort_for_definitions_with_inheritance(child_definitions)   ### POPO update ###
-        child_definition_names = [definition.name for definition in child_definitions]  ### POPO update ###
-        secondary_definitions = child_definition_names + extension_definition_names ### POPO update ###
+        schema_definitions = get_definitions_by_root_key(ROOT_KEY_SCHEMA, definitions)  #POPO update
+        child_definitions = [definition for definition in schema_definitions if definition.get_inherits() is not None]  #POPO update
+        sorted_child_definitions = simple_dependency_sort_for_definitions_with_inheritance(child_definitions)   #POPO update
+        child_definition_names = [definition.name for definition in child_definitions]  #POPO update
+        secondary_definitions = child_definition_names + extension_definition_names   #POPO update
 
-        initial_definitions = [definition for definition in definitions if definition.name not in secondary_definitions]    ### POPO update ###
+        initial_definitions = [definition for definition in definitions if definition.name not in secondary_definitions]    #POPO update
 
-        all_definitions = [*initial_definitions, *sorted_child_definitions, *extension_definitions] ### POPO update ###
+        all_definitions = [*initial_definitions, *sorted_child_definitions, *extension_definitions]   #POPO update
 
-        for definition in all_definitions:  ### POPO update ###
-            self.add_definition_to_context(definition)  ### POPO update ###
+        for definition in all_definitions:  #POPO update
+            self.add_definition_to_context(definition)  #POPO update
 
-    def add_definitions_from_uri(self, uri: str, names: Optional[list[str]] = None) -> None:    ### POPO update ###
+    def add_definitions_from_uri(self, uri: str, names: Optional[list[str]] = None) -> None:    #POPO update
         """
         Load the definitions from the provided file URI.
 
@@ -148,61 +148,61 @@ class LanguageContext:
         """
         if lexists(uri):
             try:
-                definitions = [definition for definition in parse(uri) if not names or definition.name in names]    ### POPO update ###
+                definitions = [definition for definition in parse(uri) if not names or definition.name in names]    #POPO update
             except ParserError as error:
                 raise ParserError(error.source, error.errors) from None
             else:
-                self.update_definitions_in_context(list(set(definitions).intersection(self.definitions)))   ### POPO update ###
-                self.add_definitions_to_context(list(set(definitions).difference(self.definitions)))    ### POPO update ###
+                self.update_definitions_in_context(list(set(definitions).intersection(self.definitions)))   #POPO update
+                self.add_definitions_to_context(list(set(definitions).difference(self.definitions)))    #POPO update
         else:
             logging.warn(f"Skipping {uri} as it could not be found.")
 
-    def remove_definition_from_context(self, definition: Definition) -> None:   ### POPO update ###
+    def remove_definition_from_context(self, definition: Definition) -> None:   #POPO update
         """
         Remove the Definition from the list of definitions in the LanguageContext.
 
         Args:
             definition (Definition): The Definition to remove from the context.
         """
-        if definition.uid in self.definitions_dictionary and self._is_definition_editable(definition):  ### POPO update ###
-            definition.source.is_loaded_in_context = False  ### POPO update ###
-            self.definitions_dictionary.pop(definition.uid) ### POPO update ###
-            self.definitions.remove(definition) ### POPO update ###
+        if definition.uid in self.definitions_dictionary and self._is_definition_editable(definition):  #POPO update
+            definition.source.is_loaded_in_context = False  #POPO update
+            self.definitions_dictionary.pop(definition.uid)   #POPO update
+            self.definitions.remove(definition)   #POPO update
         else:
-            definitions_in_context = self.get_defined_types()   ### POPO update ###
+            definitions_in_context = self.get_defined_types()   #POPO update
             logging.error(
-                f"Definition not present in context, can't be removed. '{definition.name}' not in '{definitions_in_context}'"   ### POPO update ###
+                f"Definition not present in context, can't be removed. '{definition.name}' not in '{definitions_in_context}'"   #POPO update
             )
 
-        if definition.is_extension():   ### POPO update ###
-            target_definition_name = definition.get_type() or MISSING_TYPE  ### POPO update ###
-            target_definition = self.get_definition_by_name(target_definition_name) ### POPO update ###
-            if target_definition:   ### POPO update ###
-                remove_extension_from_definition(definition, target_definition) ### POPO update ###
+        if definition.is_extension():   #POPO update
+            target_definition_name = definition.get_type() or MISSING_TYPE  #POPO update
+            target_definition = self.get_definition_by_name(target_definition_name)   #POPO update
+            if target_definition:   #POPO update
+                remove_extension_from_definition(definition, target_definition)   #POPO update
             else:
-                logging.error(f"Failed to find the target definition '{target_definition_name}' in the context.")   ### POPO update ###
+                logging.error(f"Failed to find the target definition '{target_definition_name}' in the context.")   #POPO update
 
-    def remove_definitions_from_context(self, definitions: list[Definition]) -> None:   ### POPO update ###
+    def remove_definitions_from_context(self, definitions: list[Definition]) -> None:   #POPO update
         """
         Remove the list of Definitions from the list of definitions in the LanguageContext, any extensions are removed last.
 
         Args:
             definitions (list[Definition]): The list of Definitions to remove from the context.
         """
-        extension_definitions = get_definitions_by_root_key(ROOT_KEY_EXTENSION, definitions)    ### POPO update ###
-        extension_definition_names = [definition.name for definition in extension_definitions]  ### POPO update ###
-        non_extension_definitions = [   ### POPO update ###
-            definition for definition in definitions if definition.name not in extension_definition_names   ### POPO update ###
+        extension_definitions = get_definitions_by_root_key(ROOT_KEY_EXTENSION, definitions)    #POPO update
+        extension_definition_names = [definition.name for definition in extension_definitions]  #POPO update
+        non_extension_definitions = [   #POPO update
+            definition for definition in definitions if definition.name not in extension_definition_names   #POPO update
         ]
 
-        for definition in non_extension_definitions:    ### POPO update ###
-            if definition not in extension_definitions: ### POPO update ###
-                self.remove_definition_from_context(definition) ### POPO update ###
+        for definition in non_extension_definitions:    #POPO update
+            if definition not in extension_definitions:   #POPO update
+                self.remove_definition_from_context(definition)   #POPO update
 
-        for extension_definition in extension_definitions:  ### POPO update ###
-            self.remove_definition_from_context(extension_definition)   ### POPO update ###
+        for extension_definition in extension_definitions:  #POPO update
+            self.remove_definition_from_context(extension_definition)   #POPO update
 
-    def update_definition_in_context(self, definition: Definition) -> None: ### POPO update ###
+    def update_definition_in_context(self, definition: Definition) -> None:   #POPO update
         """
         Update the Definition in the list of definitions in the LanguageContext, if it exists.
 
@@ -210,36 +210,36 @@ class LanguageContext:
             definition (Definition): The Definition to update in the context.
         """
 
-        if definition.uid in self.definitions_dictionary:   ### POPO update ###
-            old_definition = self.definitions_dictionary.get(definition.uid)    ### POPO update ###
+        if definition.uid in self.definitions_dictionary:   #POPO update
+            old_definition = self.definitions_dictionary.get(definition.uid)    #POPO update
 
-            self.remove_definition_from_context(old_definition) ### POPO update ###
-            self.add_definition_to_context(definition)  ### POPO update ###
-        elif definition.uid not in self.definitions_dictionary: ### POPO update ###
-            definitions_in_context = self.get_defined_types()   ### POPO update ###
-            missing_target_definition = f"Definition not present in context, can't be updated. '{definition.name}' with uid '{definition.uid}' not present in '{definitions_in_context}'"   ### POPO update ###
-            logging.error(missing_target_definition)    ### POPO update ###
-            raise LanguageError(missing_target_definition)  ### POPO update ###
+            self.remove_definition_from_context(old_definition)   #POPO update
+            self.add_definition_to_context(definition)  #POPO update
+        elif definition.uid not in self.definitions_dictionary:   #POPO update
+            definitions_in_context = self.get_defined_types()   #POPO update
+            missing_target_definition = f"Definition not present in context, can't be updated. '{definition.name}' with uid '{definition.uid}' not present in '{definitions_in_context}'"   #POPO update
+            logging.error(missing_target_definition)    #POPO update
+            raise LanguageError(missing_target_definition)  #POPO update
 
-    def update_definitions_in_context(self, definitions: list[Definition]) -> None: ### POPO update ###
+    def update_definitions_in_context(self, definitions: list[Definition]) -> None:   #POPO update
         """
         Update the list of Definitions in the list of definitions in the LanguageContext, any extensions are added last.
 
         Args:
             definitions (list[Definition]): The list of Definitions to update in the context.
         """
-        extension_definitions = get_definitions_by_root_key(ROOT_KEY_EXTENSION, definitions)    ### POPO update ###
-        extension_definition_names = [definition.name for definition in extension_definitions]  ### POPO update ###
-        non_extension_definitions = [   ### POPO update ###
-            definition for definition in definitions if definition.name not in extension_definition_names   ### POPO update ###
+        extension_definitions = get_definitions_by_root_key(ROOT_KEY_EXTENSION, definitions)    #POPO update
+        extension_definition_names = [definition.name for definition in extension_definitions]  #POPO update
+        non_extension_definitions = [   #POPO update
+            definition for definition in definitions if definition.name not in extension_definition_names   #POPO update
         ]
 
-        for definition in non_extension_definitions:    ### POPO update ###
-            if definition not in extension_definitions: ### POPO update ###
-                self.update_definition_in_context(definition)   ### POPO update ###
+        for definition in non_extension_definitions:    #POPO update
+            if definition not in extension_definitions:   #POPO update
+                self.update_definition_in_context(definition)   #POPO update
 
-        for extension_definition in extension_definitions:  ### POPO update ###
-            self.update_definition_in_context(extension_definition) ### POPO update ###
+        for extension_definition in extension_definitions:  #POPO update
+            self.update_definition_in_context(extension_definition)   #POPO update
 
     # Context-Specific Information Methods
 
@@ -254,9 +254,9 @@ class LanguageContext:
             from active plugins and user files, which may extend the set of root keys.
             See :py:func:`aac.spec.get_root_keys()` for the list of root keys provided by the unaltered core AaC DSL.
         """
-        return [str(definition.get_root()) for definition in self.definitions if definition.get_root()] ### POPO update ###
+        return [str(definition.get_root()) for definition in self.definitions if definition.get_root()]   #POPO update
 
-    def get_root_definitions(self) -> list[Definition]: ### POPO update ###
+    def get_root_definitions(self) -> list[Definition]:   #POPO update
         """
         Get the list of root definitions as defined in the LanguageContext.
 
@@ -267,9 +267,9 @@ class LanguageContext:
            from active plugins and user files, which may extend the set of root definitions.
 
         """
-        return [definition for definition in self.definitions if definition.get_root()] ### POPO update ###
+        return [definition for definition in self.definitions if definition.get_root()]   #POPO update
 
-    def get_primitives_definition(self) -> Definition:  ### POPO update ###
+    def get_primitives_definition(self) -> Definition:  #POPO update
         """
         Return the primitive type definition in the LanguageContext.
 
@@ -279,15 +279,15 @@ class LanguageContext:
         Raises:
             LanguageError - An error indicating the primitive key definition is not in the context.
         """
-        primitives_definition = self.get_definition_by_name(DEFINITION_NAME_PRIMITIVES) ### POPO update ###
-        if primitives_definition:   ### POPO update ###
-            return primitives_definition    ### POPO update ###
+        primitives_definition = self.get_definition_by_name(DEFINITION_NAME_PRIMITIVES)   #POPO update
+        if primitives_definition:   #POPO update
+            return primitives_definition    #POPO update
         else:
-            missing_primitives_definition_error_message = ( ### POPO update ###
+            missing_primitives_definition_error_message = (   #POPO update
                 f"The AaC DSL primitive types defining definition '{DEFINITION_NAME_PRIMITIVES}' is not in the context."
             )
-            logging.critical(missing_primitives_definition_error_message)   ### POPO update ###
-            raise LanguageError(missing_primitives_definition_error_message)    ### POPO update ###
+            logging.critical(missing_primitives_definition_error_message)   #POPO update
+            raise LanguageError(missing_primitives_definition_error_message)    #POPO update
 
     def get_primitive_types(self) -> list[str]:
         """
@@ -300,7 +300,7 @@ class LanguageContext:
             from active plugins and user files.
             See :py:func:`aac.spec.get_primitives()` for the list of root keys provided by the unaltered core AaC DSL.
         """
-        return deepcopy(self.get_primitives_definition().get_values()) or []    ### POPO update ###
+        return deepcopy(self.get_primitives_definition().get_values()) or []    #POPO update
 
     def get_enum_types(self) -> list[str]:
         """
@@ -312,8 +312,8 @@ class LanguageContext:
             These types may differ from those provided by the core spec since the LanguageContext applies definitions
             from active plugins and user files.
         """
-        enum_definitions = self.get_definitions_by_root_key(ROOT_KEY_ENUM)  ### POPO update ###
-        return [enum.name for enum in enum_definitions] ### POPO update ###
+        enum_definitions = self.get_definitions_by_root_key(ROOT_KEY_ENUM)  #POPO update
+        return [enum.name for enum in enum_definitions]   #POPO update
 
     def get_defined_types(self) -> list[str]:
         """
@@ -322,7 +322,7 @@ class LanguageContext:
         Returns:
             A list of strings, one entry for each definition name available in the LanguageContext.
         """
-        return [definition.name for definition in self.definitions] ### POPO update ###
+        return [definition.name for definition in self.definitions]   #POPO update
 
     def is_enum_type(self, type: str) -> bool:
         """
@@ -352,7 +352,7 @@ class LanguageContext:
         """
         return remove_list_type_indicator(type) in self.get_primitive_types()
 
-    def is_definition_type(self, type: str) -> bool:    ### POPO update ###
+    def is_definition_type(self, type: str) -> bool:    #POPO update
         """
         Returns a boolean indicating if the type is defined by another definition.
 
@@ -364,7 +364,7 @@ class LanguageContext:
         """
         return remove_list_type_indicator(type) in self.get_defined_types()
 
-    def get_definition_by_name(self, definition_name: str) -> Optional[Definition]: ### POPO update ###
+    def get_definition_by_name(self, definition_name: str) -> Optional[Definition]:   #POPO update
         """
         Return the definition corresponding to the argument, or None if not found.
 
@@ -374,27 +374,27 @@ class LanguageContext:
         Returns:
             The definition corresponding to the name, or None if not found.
         """
-        definition_to_return = None ### POPO update ###
-        if definition_name: ### POPO update ###
-            definition_name = remove_list_type_indicator(definition_name)   ### POPO update ###
-            definition_to_return = [    ### POPO update ###
-                definition for definition in tuple(self.definitions_dictionary.values()) if definition.name == definition_name  ### POPO update ###
+        definition_to_return = None   #POPO update
+        if definition_name:   #POPO update
+            definition_name = remove_list_type_indicator(definition_name)   #POPO update
+            definition_to_return = [    #POPO update
+                definition for definition in tuple(self.definitions_dictionary.values()) if definition.name == definition_name  #POPO update
             ]
 
-            if len(definition_to_return) > 0:   ### POPO update ###
-                if len(definition_to_return) > 1:   ### POPO update ###
+            if len(definition_to_return) > 0:   #POPO update
+                if len(definition_to_return) > 1:   #POPO update
                     logging.info(
-                        f"Multiple definitions found with the same name '{definition_name}' found in context. Returning the first one." ### POPO update ###
+                        f"Multiple definitions found with the same name '{definition_name}' found in context. Returning the first one."   #POPO update
                     )
-                return definition_to_return[0]  ### POPO update ###
+                return definition_to_return[0]  #POPO update
             else:
                 logging.info(
-                    f"Failed to find the definition named '{definition_name}' in the context of '{self.get_defined_types()}'."  ### POPO update ###
+                    f"Failed to find the definition named '{definition_name}' in the context of '{self.get_defined_types()}'."  #POPO update
                 )
         else:
-            logging.error(f"No definition name was provided to {self.get_definition_by_name.__name__}") ### POPO update ###
+            logging.error(f"No definition name was provided to {self.get_definition_by_name.__name__}")   #POPO update
 
-    def get_definition_by_uid(self, uid: UUID) -> Optional[Definition]: ### POPO update ###
+    def get_definition_by_uid(self, uid: UUID) -> Optional[Definition]:   #POPO update
         """
         Return the definition with the corresponding uid, or None if not found.
 
@@ -405,11 +405,11 @@ class LanguageContext:
             The definition corresponding to the uid, or None if not found.
         """
         if not uid:
-            logging.error(f"No definition uid was provided to {self.get_definition_by_uid.__name__}")   ### POPO update ###
+            logging.error(f"No definition uid was provided to {self.get_definition_by_uid.__name__}")   #POPO update
 
-        return self.definitions_dictionary.get(uid) ### POPO update ###
+        return self.definitions_dictionary.get(uid)   #POPO update
 
-    def get_definitions_by_root_key(self, root_key: str) -> list[Definition]:   ### POPO update ###
+    def get_definitions_by_root_key(self, root_key: str) -> list[Definition]:   #POPO update
         """Return a subset of definitions with the given root key.
 
         Args:
@@ -418,9 +418,9 @@ class LanguageContext:
         Returns:
             A list of definitions with the given root key.
         """
-        return [definition for definition in self.definitions if root_key == definition.get_root_key()] ### POPO update ###
+        return [definition for definition in self.definitions if root_key == definition.get_root_key()]   #POPO update
 
-    def get_enum_definition_by_type(self, type: str) -> Optional[Definition]:   ### POPO update ###
+    def get_enum_definition_by_type(self, type: str) -> Optional[Definition]:   #POPO update
         """
         Return the enum definition that defines the specified enumerated type.
 
@@ -432,25 +432,25 @@ class LanguageContext:
             definition that defines the specified type. If not, returns None.
         """
 
-        def is_type_defined_by_enum(enum: Definition) -> bool:  ### POPO update ###
+        def is_type_defined_by_enum(enum: Definition) -> bool:  #POPO update
             return type in (enum.get_values() or [])
 
-        enum_definitions = [enum for enum in self.get_definitions_by_root_key(ROOT_KEY_ENUM) if is_type_defined_by_enum(enum)]  ### POPO update ###
-        return enum_definitions[0] if enum_definitions else None    ### POPO update ###
+        enum_definitions = [enum for enum in self.get_definitions_by_root_key(ROOT_KEY_ENUM) if is_type_defined_by_enum(enum)]  #POPO update
+        return enum_definitions[0] if enum_definitions else None    #POPO update
 
     # Plugin Methods
 
     def activate_plugin(self, plugin: Plugin):
         """Activate the specified plugin in the language context."""
         self.plugins.append(plugin)
-        self.add_definitions_to_context(plugin.get_definitions())   ### POPO update ###
+        self.add_definitions_to_context(plugin.get_definitions())   #POPO update
 
     def activate_plugins(self, plugins: list[Plugin]):
         """Activate the specified plugins in the language context."""
         self.plugins.extend(plugins)
-        plugin_definition_lists = [plugin.get_definitions() for plugin in plugins]  ### POPO update ###
-        plugin_definitions = [definition for definition_list in plugin_definition_lists for definition in definition_list]  ### POPO update ###
-        self.add_definitions_to_context(plugin_definitions) ### POPO update ###
+        plugin_definition_lists = [plugin.get_definitions() for plugin in plugins]  #POPO update
+        plugin_definitions = [definition for definition_list in plugin_definition_lists for definition in definition_list]  #POPO update
+        self.add_definitions_to_context(plugin_definitions)   #POPO update
 
     def activate_plugin_by_name(self, plugin_name: str):
         """Activate the specified plugin in the language context."""
@@ -463,7 +463,7 @@ class LanguageContext:
     def deactivate_plugin(self, plugin: Plugin):
         """Deactivate the specified plugin in the language context."""
         self.plugins.remove(plugin)
-        self.remove_definitions_from_context(plugin.get_definitions())  ### POPO update ###
+        self.remove_definitions_from_context(plugin.get_definitions())  #POPO update
 
     def deactivate_plugins(self, plugins: list[Plugin]):
         """Deactivate the specified plugins in the language context."""
@@ -507,7 +507,7 @@ class LanguageContext:
         command_lists = [plugin.get_commands() for plugin in self.plugins if plugin.get_commands()]
         return [command for command_list in command_lists for command in command_list]
 
-    def get_plugin_definitions(self) -> list[Definition]:   ### POPO update ###
+    def get_plugin_definitions(self) -> list[Definition]:   #POPO update
         """
         Get a list of all the plugin-defined AaC definitions contributed by active plugins.
 
@@ -515,15 +515,15 @@ class LanguageContext:
             A list of definitions from all active plugins.
         """
 
-        def set_files_to_not_user_editable(definition): ### POPO update ###
-            definition.source.is_user_editable = False  ### POPO update ###
-            return definition   ### POPO update ###
+        def set_files_to_not_user_editable(definition):   #POPO update
+            definition.source.is_user_editable = False  #POPO update
+            return definition   #POPO update
 
-        definition_lists = [plugin.get_definitions() for plugin in self.plugins if plugin.get_definitions()]    ### POPO update ###
-        definitions_list = [definition for definition_list in definition_lists for definition in definition_list]   ### POPO update ###
-        return list(map(set_files_to_not_user_editable, definitions_list))  ### POPO update ###
+        definition_lists = [plugin.get_definitions() for plugin in self.plugins if plugin.get_definitions()]    #POPO update
+        definitions_list = [definition for definition_list in definition_lists for definition in definition_list]   #POPO update
+        return list(map(set_files_to_not_user_editable, definitions_list))  #POPO update
 
-    def get_definition_validations(self) -> list[DefinitionValidationContribution]: ### POPO update ###
+    def get_definition_validations(self) -> list[DefinitionValidationContribution]:   #POPO update
         """
         Get a list of validations and metadata in the context provided by active plugins.
 
@@ -531,7 +531,7 @@ class LanguageContext:
             A list of validator plugins that are currently registered.
         """
         validation_lists = [
-            plugin.get_definition_validations() for plugin in self.get_active_plugins() if plugin.get_definition_validations()  ### POPO update ###
+            plugin.get_definition_validations() for plugin in self.get_active_plugins() if plugin.get_definition_validations()  #POPO update
         ]
         return [validation for validation_list in validation_lists for validation in validation_list]
 
@@ -556,7 +556,7 @@ class LanguageContext:
         Returns:
             A list of all the files contributing definitions to the context.
         """
-        return list({definition.source for definition in self.definitions}) ### POPO update ###
+        return list({definition.source for definition in self.definitions})   #POPO update
 
     def update_architecture_file(self, file_uri: str) -> None:
         """
@@ -568,11 +568,11 @@ class LanguageContext:
             file_uri (str): The source file URI to update.
         """
         sanitized_file_uri = sanitize_filesystem_path(file_uri)
-        definitions_in_file = self.get_definitions_by_file_uri(sanitized_file_uri)  ### POPO update ###
+        definitions_in_file = self.get_definitions_by_file_uri(sanitized_file_uri)  #POPO update
 
-        if len(definitions_in_file) > 0:    ### POPO update ###
-            write_definitions_to_file(definitions_in_file, sanitized_file_uri)  ### POPO update ###
-            self.remove_definitions_from_context(definitions_in_file)   ### POPO update ###
+        if len(definitions_in_file) > 0:    #POPO update
+            write_definitions_to_file(definitions_in_file, sanitized_file_uri)  #POPO update
+            self.remove_definitions_from_context(definitions_in_file)   #POPO update
             try:
                 self.add_definitions_to_context(parse(sanitized_file_uri))
             except ParserError as error:
@@ -592,11 +592,11 @@ class LanguageContext:
         Returns:
             An optional AaCFile if it's present in the context, otherwise None.
         """
-        for definition in self.definitions: ### POPO update ###
-            if definition.source.uri == uri:    ### POPO update ###
-                return definition.source    ### POPO update ###
+        for definition in self.definitions:   #POPO update
+            if definition.source.uri == uri:    #POPO update
+                return definition.source    #POPO update
 
-    def get_definitions_by_file_uri(self, file_uri: str) -> list[Definition]:   ### POPO update ###
+    def get_definitions_by_file_uri(self, file_uri: str) -> list[Definition]:   #POPO update
         """
         Return a subset of definitions that are sourced from the target file URI.
 
@@ -606,7 +606,7 @@ class LanguageContext:
         Returns:
             A list of definitions belonging to the target file.
         """
-        return [definition for definition in self.definitions if str(file_uri) == str(definition.source.uri)]   ### POPO update ###
+        return [definition for definition in self.definitions if str(file_uri) == str(definition.source.uri)]   #POPO update
 
     def import_from_file(self, file_uri: str) -> None:
         """
@@ -661,14 +661,14 @@ class LanguageContext:
 
     # Private methods
 
-    def _is_definition_editable(self, definition: Definition) -> bool:  ### POPO update ###
+    def _is_definition_editable(self, definition: Definition) -> bool:  #POPO update
         """Returns true if the definition can be edited, otherwise false. No source also returns false."""
         is_editable = False
-        if definition.source:   ### POPO update ###
-            is_editable = definition.source.is_user_editable    ### POPO update ###
+        if definition.source:   #POPO update
+            is_editable = definition.source.is_user_editable    #POPO update
         else:
             logging.error(
-                f"Definition '{definition.name}' was not modified, because its source '{definition.source.uri or 'no-source'}' is not editable."    ### POPO update ###
+                f"Definition '{definition.name}' was not modified, because its source '{definition.source.uri or 'no-source'}' is not editable."    #POPO update
             )
 
         return is_editable
