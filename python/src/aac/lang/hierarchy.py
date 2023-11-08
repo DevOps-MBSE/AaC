@@ -40,7 +40,7 @@ def get_definition_ancestry(definition: Definition, context: LanguageContext) ->
         while not found_self_defined_ancestor and ancestor_definition:  # POPO update
             ancestor_root_schema = get_definition_schema(ancestor_definition, context)  # POPO update
             found_self_defined_ancestor = ancestor_definition == ancestor_root_schema   # POPO update
-            ancestors_list.append(ancestor_definition)  # POPO update   
+            ancestors_list.append(ancestor_definition)  # POPO update
             ancestor_definition = get_root_definition_by_key(ancestor_definition.get_root_key(), context)   # POPO update
 
     ancestors_list.reverse()

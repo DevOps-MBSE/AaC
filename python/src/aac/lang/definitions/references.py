@@ -188,7 +188,7 @@ def _process_root(selector: str, selector_field: str, selector_value: str, defin
 
 def _process_non_root(
     key: str, prefix: list[str], selector: str, selector_field: str, selector_value: str, definitions: list[Definition]   # POPO update
-) -> list[Definition]:  # POPO update   
+) -> list[Definition]:  # POPO update
     keepers = []
     for definition in definitions:  # POPO update
         top_level_fields = definition.get_top_level_fields()    # POPO update

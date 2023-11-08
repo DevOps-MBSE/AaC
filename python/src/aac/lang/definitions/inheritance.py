@@ -50,7 +50,7 @@ def apply_inherited_attributes_to_definition(definition: Definition, language_co
     """
     transitive_parent_attributes = get_inherited_attributes(definition, language_context)   # POPO update
 
-    if transitive_parent_attributes:    
+    if transitive_parent_attributes:
         for definition_name in transitive_parent_attributes:    # POPO update
             attributes_to_apply = transitive_parent_attributes.get(definition_name, {})   # POPO update
             fields_to_apply = attributes_to_apply.get(DEFINITION_FIELD_FIELDS) or []    # POPO update

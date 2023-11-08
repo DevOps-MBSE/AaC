@@ -102,7 +102,7 @@ def get_extension_definition_type(definition: Definition) -> str:   # POPO updat
 
 
 def _remove_schema_extension_from_fields(field_name_to_remove: str, target_definition_fields: list[dict]):  # POPO update
-    """Specifically remove the extension's field from the target definition's fields."""    
+    """Specifically remove the extension's field from the target definition's fields."""
     matching_fields = [field for field in target_definition_fields if field.get(DEFINITION_FIELD_NAME) == field_name_to_remove]   # POPO update
 
     if len(matching_fields) == 0:
@@ -222,4 +222,4 @@ def _get_required_fields_validation_for_definition(definition_fields: dict) -> d
 
 def _get_definition_validations(definition_fields: dict) -> list[dict]:   # POPO update
     """Return the list of validation definitions for the specified definition."""
-    return definition_fields.get("validation") or []    # POPO update   
+    return definition_fields.get("validation") or []  # POPO update
