@@ -34,8 +34,8 @@ def validate_number(definition: Definition, value_to_validate: Any, _: LanguageC
     finding = None
     if not isinstance(value_to_validate, (int, float)):
         finding_message = f"{value_to_validate} is not a valid value for the number type {PRIMITIVE_TYPE_NUMBER}."
-        lexeme = definition.get_lexeme_with_value(value_to_validate)
-        finding_location = FindingLocation.from_lexeme(NUMBER_VALIDATION_NAME, lexeme)
+        lexeme = definition.get_lexeme_with_value(value_to_validate) ### POPO update ###
+        finding_location = FindingLocation.from_lexeme(NUMBER_VALIDATION_NAME, lexeme) ### POPO update ###
         finding = ValidatorFinding(definition, FindingSeverity.ERROR, finding_message, finding_location)
 
     return finding
