@@ -126,7 +126,7 @@ class TestInterPluginReferences(ActiveContextTestCase):
         # Assert that the field in plugin b's definition sourced from plugin a is present.
         plugin_b_field_referencing_plugin_a, *_ = context_sourced_plugin_b_definition.get_fields()
         self.assertIsNotNone(plugin_b_field_referencing_plugin_a)
-        self.assertEqual(plugin_a_new_primitive_type, plugin_b_field_referencing_plugin_a.get(DEFINITION_FIELD_TYPE))   ### TODO: POPO update ###
+        self.assertEqual(plugin_a_new_primitive_type, plugin_b_field_referencing_plugin_a.get(DEFINITION_FIELD_TYPE))
 
         # Perform validation on the definitions to demonstrate that plugin b is invalid.
         with self.assertRaises(ValidationError) as error:

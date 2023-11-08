@@ -46,7 +46,7 @@ class TestLspServer(BaseLspTestCase, IsolatedAsyncioTestCase):
 
         self.assertEqual(
             new_schema_a_field_name,
-            self.active_context.get_definition_by_name(TEST_SCHEMA_A.name).get_fields()[0].get(DEFINITION_FIELD_NAME),  ### TODO: POPO update ###
+            self.active_context.get_definition_by_name(TEST_SCHEMA_A.name).get_fields()[0].get(DEFINITION_FIELD_NAME),
         )
         self.assertIsNotNone(self.active_context.get_definition_by_name(TEST_SCHEMA_C.name))
         self.assertIsNotNone(self.active_context.get_definition_by_name(TEST_SERVICE_TWO.name))

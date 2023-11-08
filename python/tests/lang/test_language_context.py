@@ -506,7 +506,7 @@ class TestLanguageContextFileMethods(ActiveContextTestCase):
             test_context.update_definition_in_context(schema_a_definition)
 
             # Update Schema B field type
-            schema_b_definition.get_fields()[0][DEFINITION_FIELD_TYPE] = PRIMITIVE_TYPE_DATE    ### TODO: POPO update ###
+            schema_b_definition.get_fields()[0][DEFINITION_FIELD_TYPE] = PRIMITIVE_TYPE_DATE
             test_context.update_definition_in_context(schema_a_definition)
 
             # Remove Service One
@@ -533,7 +533,7 @@ class TestLanguageContextFileMethods(ActiveContextTestCase):
             self.assertIsNotNone(updated_service_two_definition)
 
             self.assertIn(schema_a_updated_field, updated_schema_a_definition.get_fields())
-            self.assertEqual(PRIMITIVE_TYPE_DATE, updated_schema_b_definition.get_fields()[0].get(DEFINITION_FIELD_TYPE))   ### TODO: POPO update ###
+            self.assertEqual(PRIMITIVE_TYPE_DATE, updated_schema_b_definition.get_fields()[0].get(DEFINITION_FIELD_TYPE))
 
             # Assert Definition Order is Kept
             self.assertEqual(3, len(updated_definitions))

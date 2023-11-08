@@ -46,7 +46,7 @@ class TestExclusiveFieldsPlugin(ActiveContextTestCase):
         del test_definition.structure[ROOT_KEY_EXTENSION][DEFINITION_FIELD_EXTENSION_SCHEMA]
 
         ext_schema = get_definition_by_name(DEFINITION_NAME_EXTENSION, test_active_context.definitions)
-        ext_schema_args = ext_schema.get_validations()[0].get(DEFINITION_FIELD_ARGUMENTS)   ### TODO: POPO update ###
+        ext_schema_args = ext_schema.get_validations()[0].get(DEFINITION_FIELD_ARGUMENTS)
 
         expected_result = ValidatorResult([test_definition])
 
@@ -61,7 +61,7 @@ class TestExclusiveFieldsPlugin(ActiveContextTestCase):
         test_definition = create_schema_ext_definition("TestSchemaExt", ROOT_KEY_SCHEMA, fields=[test_field_entry])
 
         ext_schema = get_definition_by_name(DEFINITION_NAME_EXTENSION, test_active_context.definitions)
-        ext_schema_args = ext_schema.get_validations()[0].get(DEFINITION_FIELD_ARGUMENTS)   ### TODO: POPO update ###
+        ext_schema_args = ext_schema.get_validations()[0].get(DEFINITION_FIELD_ARGUMENTS)
 
         expected_result = ValidatorResult([test_definition])
 
@@ -83,7 +83,7 @@ class TestExclusiveFieldsPlugin(ActiveContextTestCase):
 
         ext_schema = get_definition_by_name(DEFINITION_NAME_EXTENSION, test_context.definitions)
         ext_schema_validations, *_ = ext_schema.get_validations()
-        ext_schema_args = ext_schema_validations.get(DEFINITION_FIELD_ARGUMENTS)    ### TODO: POPO update ###
+        ext_schema_args = ext_schema_validations.get(DEFINITION_FIELD_ARGUMENTS)
 
         expected_finding_location = SourceLocation(10, 2, 164, 7)
 

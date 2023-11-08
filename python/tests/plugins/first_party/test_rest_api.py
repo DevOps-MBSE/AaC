@@ -48,7 +48,7 @@ class TestAacRestApiCommandEndpoints(ActiveContextTestCase):
         response = self.test_client.get("/commands")
         actual_result = response.json()
 
-        actual_commands_dict = {command.get(DEFINITION_FIELD_NAME): command for command in actual_result} ### TODO: POPO update ###
+        actual_commands_dict = {command.get(DEFINITION_FIELD_NAME): command for command in actual_result} ### POPO update ###
 
         self.assertEqual(HTTPStatus.OK, response.status_code)
 
@@ -57,7 +57,7 @@ class TestAacRestApiCommandEndpoints(ActiveContextTestCase):
             self.assertIsNotNone(actual_command)
             self.assertEqual(command.description, actual_command.get("description"))
 
-            actual_command_arguments_dict = {arg.get(DEFINITION_FIELD_NAME): arg for arg in actual_command.get("arguments")} ### TODO: POPO update ###
+            actual_command_arguments_dict = {arg.get(DEFINITION_FIELD_NAME): arg for arg in actual_command.get("arguments")} ### POPO update ###
             for argument in command.arguments:
                 actual_argument = actual_command_arguments_dict.get(argument.name)
                 self.assertIsNotNone(actual_argument)
@@ -239,15 +239,15 @@ class TestAacRestApiDefinitionEndpoints(ActiveContextTestCase):
         actual_response = response.json()
 
         expected_definition_names = [definition.name for definition in active_context.definitions]
-        actual_definition_names = [model.get(DEFINITION_FIELD_NAME) for model in actual_response]   ### TODO: POPO update ###
+        actual_definition_names = [model.get(DEFINITION_FIELD_NAME) for model in actual_response]   ### POPO update ###
 
         self.assertEqual(HTTPStatus.OK, response.status_code)
         self.assertListEqual(expected_definition_names, actual_definition_names)
         for definition in active_context.definitions:
             response_definition = [
-                def_model for def_model in actual_response if def_model.get(DEFINITION_FIELD_NAME) == definition.name ### TODO: POPO update ###
+                def_model for def_model in actual_response if def_model.get(DEFINITION_FIELD_NAME) == definition.name ### POPO update ###
             ]
-            self.assertEqual(definition.name, response_definition[0].get(DEFINITION_FIELD_NAME))    ### TODO: POPO update ###
+            self.assertEqual(definition.name, response_definition[0].get(DEFINITION_FIELD_NAME))    ### POPO update ###
             self.assertEqual(definition.source.uri, response_definition[0].get("source_uri"))
 
     def test_get_definition_by_name(self):
@@ -259,7 +259,7 @@ class TestAacRestApiDefinitionEndpoints(ActiveContextTestCase):
             actual_response = response.json()
             expected_response = jsonable_encoder(to_definition_model(definition))
             self.assertEqual(HTTPStatus.OK, response.status_code)
-            self.assertEqual(expected_response.get(DEFINITION_FIELD_NAME), actual_response.get(DEFINITION_FIELD_NAME))  ### TODO: POPO update ###
+            self.assertEqual(expected_response.get(DEFINITION_FIELD_NAME), actual_response.get(DEFINITION_FIELD_NAME))  ### POPO update ###
             self.assertEqual(expected_response.get("source_uri"), actual_response.get("source_uri"))
             self.assertIsNone(actual_response.get("json_schema"))
             successfully_found_definitions.append(actual_response)
