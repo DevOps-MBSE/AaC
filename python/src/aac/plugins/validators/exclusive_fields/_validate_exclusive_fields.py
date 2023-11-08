@@ -11,7 +11,7 @@ VALIDATION_NAME = "Mutually exclusive fields"
 
 
 def validate_exclusive_fields(
-    definition_under_test: Definition, ### POPO update ###
+    definition_under_test: Definition,    # POPO Update #
     target_schema_definition: Definition,
     language_context: LanguageContext,
     *validation_args,
@@ -30,21 +30,21 @@ def validate_exclusive_fields(
     """
     findings = ValidatorFindings()
 
-    def validate_dict(dict_to_validate: dict) -> None: ### POPO update ###
-        present_exclusive_fields = set(validation_args).intersection(set(dict_to_validate.keys())) ### POPO update ###
+    def validate_dict(dict_to_validate: dict) -> None:    # POPO Update #
+        present_exclusive_fields = set(validation_args).intersection(set(dict_to_validate.keys()))    # POPO Update #
 
         if len(present_exclusive_fields) > 1:
             _, second, *_ = validation_args
             multiple_exclusive_fields = (
-                f"Multiple exclusive fields are defined '{present_exclusive_fields}' in: {dict_to_validate}" ### POPO update ###
+                f"Multiple exclusive fields are defined '{present_exclusive_fields}' in: {dict_to_validate}"    # POPO Update #
             )
-            second_exclusive_field_lexeme = definition_under_test.get_lexeme_with_value(second) ### POPO update ###
+            second_exclusive_field_lexeme = definition_under_test.get_lexeme_with_value(second)    # POPO Update #
             findings.add_error_finding(
-                definition_under_test, multiple_exclusive_fields, PLUGIN_NAME, second_exclusive_field_lexeme ### POPO update ###
+                definition_under_test, multiple_exclusive_fields, PLUGIN_NAME, second_exclusive_field_lexeme    # POPO Update #
             )
             logging.debug(multiple_exclusive_fields)
 
-    dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context) ### POPO update ###
+    dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)    # POPO Update #
     list(map(validate_dict, dicts_to_test))
 
-    return ValidatorResult([definition_under_test], findings) ### POPO update ###
+    return ValidatorResult([definition_under_test], findings)    # POPO Update #
