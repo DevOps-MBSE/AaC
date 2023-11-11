@@ -35,6 +35,7 @@ def validate_undefined_fields(
     def validate_dict(dict_to_validate: dict) -> None:
         # Due to a bug in how global validations are currently being applied, we need to look up the schema rather
         #   than rely on the schema provided by the validation system.
+        # POPO Update
         definition_schema = get_definition_schema(definition_under_test, language_context)
         defined_field_names = [field.get(DEFINITION_FIELD_NAME) for field in definition_schema.get_fields()]
 
@@ -47,6 +48,7 @@ def validate_undefined_fields(
                     definition_under_test, undefined_field_message, VALIDATION_NAME, definition_under_test.get_lexeme_with_value(field_name)
                 )
 
+    # POPO Update
     dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)
     list(map(validate_dict, dicts_to_test))
 

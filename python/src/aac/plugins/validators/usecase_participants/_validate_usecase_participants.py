@@ -36,6 +36,7 @@ def validate_usecase_participants(
     """
     findings = ValidatorFindings()
 
+    # POPO Update
     if definition_under_test.get_root_key() == ROOT_KEY_USECASE:
         findings.add_findings(_get_findings_from_invalid_step_endpoint(definition_under_test, DEFINITION_FIELD_SOURCE))
         findings.add_findings(_get_findings_from_invalid_step_endpoint(definition_under_test, DEFINITION_FIELD_TARGET))
@@ -49,6 +50,7 @@ def validate_usecase_participants(
 def _get_findings_from_invalid_step_endpoint(definition: Definition, endpoint_type: str) -> ValidatorFindings:
     findings = ValidatorFindings()
 
+    # POPO Update
     fields = definition.get_top_level_fields()
     participant_names = [field.get(DEFINITION_FIELD_NAME) for field in fields.get(DEFINITION_FIELD_PARTICIPANTS, [])]
     for step in fields.get(DEFINITION_FIELD_STEPS, []):

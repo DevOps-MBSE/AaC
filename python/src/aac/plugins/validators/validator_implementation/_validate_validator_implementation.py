@@ -31,6 +31,7 @@ def validate_validator_implementations(
     findings = ValidatorFindings()
 
     def validate_dict(dict_to_validate: dict) -> None:
+        # POPO Update
         validation_name = dict_to_validate.get(DEFINITION_FIELD_NAME, "")
         active_validations = {
             validation.name: validation
@@ -45,6 +46,7 @@ def validate_validator_implementations(
             )
             logging.debug(no_implementation_error_message)
 
+    # POPO Update
     dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)
     list(map(validate_dict, dicts_to_test))
 
