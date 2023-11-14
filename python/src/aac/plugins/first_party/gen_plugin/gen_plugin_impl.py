@@ -97,7 +97,7 @@ def _collect_all_plugin_definitions(architecture_file_path: str) -> list[Definit
         raise ParserError(error.source, error.errors) from None
     else:
         plugin, *_ = get_definitions_by_root_key(ROOT_KEY_PLUGIN, definitions)
-        definition_sources = plugin.get_top_level_fields().get(DEFINITION_FIELD_DEFINITION_SOURCES, [])    # POPO Update #
+        definition_sources = plugin.get_top_level_fields().get(DEFINITION_FIELD_DEFINITION_SOURCES, [])   # POPO Update
         definition_sources_definitions = [definition for path in definition_sources for definition in parse(get_definition_source_path(path))]
         plugin_definitions = definitions + definition_sources_definitions
 
@@ -201,7 +201,7 @@ def _prepare_and_generate_plugin_files(
     """
     template_properties = _gather_template_properties(definitions, architecture_file_path, plugin_type)
 
-    plugin_name = template_properties.get(ROOT_KEY_PLUGIN, {}).get(DEFINITION_FIELD_NAME)      # POPO Update #
+    plugin_name = template_properties.get(ROOT_KEY_PLUGIN, {}).get(DEFINITION_FIELD_NAME)     # POPO Update
     plugin_implementation_name = template_properties.get(ROOT_KEY_PLUGIN, {}).get("implementation_name")
     plugin_implementation_name = _convert_to_implementation_name(plugin_name)
 
@@ -337,37 +337,37 @@ def _gather_command_properties(plugin_definition: Definition) -> list[dict]:
         """Modify the input and output entries of a behavior definition to reduce complexity in the templates."""
         python_type = in_out_entry.get("python_type")
 
-        in_out_entry[DEFINITION_FIELD_NAME] = in_out_entry.get(DEFINITION_FIELD_NAME).removeprefix("--")       # POPO Update #
+        in_out_entry[DEFINITION_FIELD_NAME] = in_out_entry.get(DEFINITION_FIELD_NAME).removeprefix("--")      # POPO Update
 
         if python_type:
-            in_out_entry[DEFINITION_FIELD_TYPE] = python_type    # POPO Update #
-            in_out_entry["python_type_default"] = type(python_type)    # POPO Update #
+            in_out_entry[DEFINITION_FIELD_TYPE] = python_type   # POPO Update
+            in_out_entry["python_type_default"] = type(python_type)   # POPO Update
 
         return in_out_entry
 
     commands = []
 
-    for cmd in plugin_definition.get_top_level_fields().get(DEFINITION_FIELD_COMMANDS, []):        # POPO Update #
+    for cmd in plugin_definition.get_top_level_fields().get(DEFINITION_FIELD_COMMANDS, []):       # POPO Update
         command = {}
 
         # First line should end with a period. flake8(D400)
-        command_help_text = cmd.get(DEFINITION_FIELD_HELP_TEXT)    # POPO Update #
+        command_help_text = cmd.get(DEFINITION_FIELD_HELP_TEXT)   # POPO Update
         if not command_help_text.endswith("."):
             command_help_text = f"{command_help_text}."
 
-        command_input = cmd.get(DEFINITION_FIELD_INPUT)    # POPO Update #
+        command_input = cmd.get(DEFINITION_FIELD_INPUT)   # POPO Update
         if command_input:
             command[DEFINITION_FIELD_INPUT] = [modify_command_input_output_entry(i) for i in command_input]
 
-        command_output = cmd.get(DEFINITION_FIELD_OUTPUT)      # POPO Update #
+        command_output = cmd.get(DEFINITION_FIELD_OUTPUT)     # POPO Update
         if command_output:
             command[DEFINITION_FIELD_OUTPUT] = [modify_command_input_output_entry(o) for o in command_output]
 
-        command_name = cmd.get(DEFINITION_FIELD_NAME)      # POPO Update #
+        command_name = cmd.get(DEFINITION_FIELD_NAME)     # POPO Update
         command[DEFINITION_FIELD_NAME] = command_name
         command[DEFINITION_FIELD_HELP_TEXT] = command_help_text
-        command[DEFINITION_FIELD_DISPLAY] = cmd.get(DEFINITION_FIELD_NAME, command_name)       # POPO Update #
-        command[DEFINITION_FIELD_GROUP] = cmd.get(DEFINITION_FIELD_GROUP)      # POPO Update #
+        command[DEFINITION_FIELD_DISPLAY] = cmd.get(DEFINITION_FIELD_NAME, command_name)      # POPO Update
+        command[DEFINITION_FIELD_GROUP] = cmd.get(DEFINITION_FIELD_GROUP)     # POPO Update
         command["implementation_name"] = _convert_to_implementation_name(command_name)
         commands.append(command)
 

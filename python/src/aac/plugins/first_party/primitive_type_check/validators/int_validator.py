@@ -45,8 +45,8 @@ def validate_integer(definition: Definition, value_to_validate: Any, _: Language
     finding = None
     if is_invalid:
         finding_message = f"{value_to_validate} is not a valid value for the enum type {PRIMITIVE_TYPE_INT}"
-        lexeme = definition.get_lexeme_with_value(value_to_validate)    # POPO Update #
-        finding_location = FindingLocation.from_lexeme(INT_VALIDATION_NAME, lexeme)    # POPO Update #
+        lexeme = definition.get_lexeme_with_value(value_to_validate)   # POPO Update
+        finding_location = FindingLocation.from_lexeme(INT_VALIDATION_NAME, lexeme)   # POPO Update
         finding = ValidatorFinding(definition, FindingSeverity.ERROR, finding_message, finding_location)
 
     return finding
