@@ -33,37 +33,37 @@ def validate_references(
 
     def validate_dict(dict_to_validate: dict) -> None:
         for reference_to_validate in validation_args:
-            field_reference = dict_to_validate.get(reference_to_validate)  # POPO Update
+            field_reference = dict_to_validate.get(reference_to_validate)   # POPO Update
             if field_reference:
                 if language_context.is_primitive_type(field_reference) or language_context.is_definition_type(field_reference):
-                    logging.debug(f"Valid type reference. Type '{field_reference}' in content: {dict_to_validate}")  # POPO Update
+                    logging.debug(f"Valid type reference. Type '{field_reference}' in content: {dict_to_validate}")   # POPO Update
                 else:
                     undefined_reference_error_message = f"Undefined type '{field_reference}' referenced: {dict_to_validate}"
-                    reference_lexeme = definition_under_test.get_lexeme_with_value(field_reference)  # POPO Update
+                    reference_lexeme = definition_under_test.get_lexeme_with_value(field_reference)   # POPO Update
                     logging.debug(undefined_reference_error_message)
 
                     if reference_lexeme:
                         findings.add_error_finding(
-                            definition_under_test, undefined_reference_error_message, PLUGIN_NAME, reference_lexeme  # POPO Update
+                            definition_under_test, undefined_reference_error_message, PLUGIN_NAME, reference_lexeme   # POPO Update
                         )
                     else:
                         logging.debug(f"Value '{field_reference}' doesn't exist in definition. Likely an extension value.")
 
             else:
-                missing_field_in_dictionary = f"Missing field 'type' in validation content dictionary: {dict_to_validate}"  # POPO Update
+                missing_field_in_dictionary = f"Missing field 'type' in validation content dictionary: {dict_to_validate}"   # POPO Update
                 logging.debug(missing_field_in_dictionary)
-                name_lexeme = definition_under_test.get_lexeme_with_value(definition_under_test.name)  # POPO Update
+                name_lexeme = definition_under_test.get_lexeme_with_value(definition_under_test.name)   # POPO Update
 
                 if not name_lexeme:
-                    name_lexeme, *_ = definition_under_test.lexemes  # POPO Update
+                    name_lexeme, *_ = definition_under_test.lexemes   # POPO Update
                     name_lexeme = name_lexeme or Lexeme(
-                        SourceLocation(0, 0, 0, 0), definition_under_test.source.uri, definition_under_test.name  # POPO Update
+                        SourceLocation(0, 0, 0, 0), definition_under_test.source.uri, definition_under_test.name   # POPO Update
                     )
-                    logging.error(f"Definition '{definition_under_test.name}' is missing its name lexeme.")  # POPO Update
+                    logging.error(f"Definition '{definition_under_test.name}' is missing its name lexeme.")   # POPO Update
 
-                findings.add_error_finding(definition_under_test, missing_field_in_dictionary, PLUGIN_NAME, name_lexeme)  # POPO Update
+                findings.add_error_finding(definition_under_test, missing_field_in_dictionary, PLUGIN_NAME, name_lexeme)   # POPO Update
 
-    dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)  # POPO Update
+    dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)   # POPO Update
     list(map(validate_dict, dicts_to_test))
 
-    return ValidatorResult([definition_under_test], findings)  # POPO Update
+    return ValidatorResult([definition_under_test], findings)   # POPO Update

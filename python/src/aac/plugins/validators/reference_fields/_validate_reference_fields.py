@@ -33,15 +33,15 @@ def validate_reference_fields(
     findings = ValidatorFindings()
 
     reference_field_names = validation_args
-    schema_defined_fields_as_list = target_schema_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS) or []  # POPO update
-    schema_defined_fields_as_dict = {field.get(DEFINITION_FIELD_NAME): field for field in schema_defined_fields_as_list}  # POPO update
-    schema_defined_fields_as_list = target_schema_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS) or []  # POPO update
-    schema_defined_fields_as_dict = {field.get(DEFINITION_FIELD_NAME): field for field in schema_defined_fields_as_list}    # POPO update
+    schema_defined_fields_as_list = target_schema_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS) or []   # POPO Update
+    schema_defined_fields_as_dict = {field.get(DEFINITION_FIELD_NAME): field for field in schema_defined_fields_as_list}   # POPO Update
+    schema_defined_fields_as_list = target_schema_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS) or []   # POPO Update
+    schema_defined_fields_as_dict = {field.get(DEFINITION_FIELD_NAME): field for field in schema_defined_fields_as_list}     # POPO Update
 
     def validate_dict(dict_to_validate: dict) -> None:
         for reference_field_name in reference_field_names:
             field_value = dict_to_validate.get(reference_field_name)
-            field_type = schema_defined_fields_as_dict.get(reference_field_name, {}).get(DEFINITION_FIELD_TYPE)  # POPO update
+            field_type = schema_defined_fields_as_dict.get(reference_field_name, {}).get(DEFINITION_FIELD_TYPE)   # POPO Update
 
             # field type must be reference
             if field_type != PRIMITIVE_TYPE_REFERENCE:
