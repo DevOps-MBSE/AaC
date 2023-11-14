@@ -34,8 +34,8 @@ def validate_required_fields(
     findings = ValidatorFindings()
 
     required_field_names = validation_args
-    schema_defined_fields_as_list = target_schema_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS) or []  ### POPO update ###
-    schema_defined_fields_as_dict = {field.get(DEFINITION_FIELD_NAME): field for field in schema_defined_fields_as_list}    ### POPO update ###
+    schema_defined_fields_as_list = target_schema_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS) or []  # POPO update
+    schema_defined_fields_as_dict = {field.get(DEFINITION_FIELD_NAME): field for field in schema_defined_fields_as_list}    # POPO update
 
     def validate_dict(dict_to_validate: dict) -> None:
         for required_field_name in required_field_names:
