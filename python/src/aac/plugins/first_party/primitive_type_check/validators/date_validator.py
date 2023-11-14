@@ -39,8 +39,8 @@ def validate_date(definition: Definition, value_to_validate: Any, _: LanguageCon
     except ValueError as error:
         logging.debug(f"Failed to parse the date time string '{value_to_validate}' with error: '{error}'")
         finding_message = f"{value_to_validate} is not a valid ISO 8601 date for the {PRIMITIVE_TYPE_DATE} type."
-        lexeme = definition.get_lexeme_with_value(value_to_validate)
-        finding_location = FindingLocation.from_lexeme(DATE_VALIDATION_NAME, lexeme)
+        lexeme = definition.get_lexeme_with_value(value_to_validate)   # POPO Update
+        finding_location = FindingLocation.from_lexeme(DATE_VALIDATION_NAME, lexeme)   # POPO Update
         finding = ValidatorFinding(definition, FindingSeverity.ERROR, finding_message, finding_location)
 
     return finding
