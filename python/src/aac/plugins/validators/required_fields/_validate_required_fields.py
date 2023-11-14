@@ -1,10 +1,10 @@
 import logging
 from typing import Any
 
-from aac.lang.constants import DEFINITION_FIELD_FIELDS, DEFINITION_FIELD_NAME, DEFINITION_FIELD_TYPE    ### POPO update ###
-from aac.lang.definitions.definition import Definition  ### POPO update ###
-from aac.lang.definitions.structure import get_substructures_by_type    ### POPO update ###
-from aac.lang.definitions.type import is_array_type ### POPO update ###
+from aac.lang.constants import DEFINITION_FIELD_FIELDS, DEFINITION_FIELD_NAME, DEFINITION_FIELD_TYPE       # POPO Update
+from aac.lang.definitions.definition import Definition     # POPO Update
+from aac.lang.definitions.structure import get_substructures_by_type       # POPO Update
+from aac.lang.definitions.type import is_array_type    # POPO Update
 from aac.lang.language_context import LanguageContext
 from aac.plugins.validators import ValidatorFindings, ValidatorResult
 
@@ -14,8 +14,8 @@ VALIDATION_NAME = "Required fields are present"
 
 
 def validate_required_fields(
-    definition_under_test: Definition,  ### POPO update ###
-    target_schema_definition: Definition,   ### POPO update ###
+    definition_under_test: Definition,     # POPO Update
+    target_schema_definition: Definition,      # POPO Update
     language_context: LanguageContext,
     *validation_args,
 ) -> ValidatorResult:
@@ -34,32 +34,32 @@ def validate_required_fields(
     findings = ValidatorFindings()
 
     required_field_names = validation_args
-    schema_defined_fields_as_list = target_schema_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS) or []  ### POPO update ###
-    schema_defined_fields_as_dict = {field.get(DEFINITION_FIELD_NAME): field for field in schema_defined_fields_as_list}    ### POPO update ###
+    schema_defined_fields_as_list = target_schema_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS) or []     # POPO Update
+    schema_defined_fields_as_dict = {field.get(DEFINITION_FIELD_NAME): field for field in schema_defined_fields_as_list}       # POPO Update
 
     def validate_dict(dict_to_validate: dict) -> None:
         for required_field_name in required_field_names:
             field_value = dict_to_validate.get(required_field_name)
-            field_type = schema_defined_fields_as_dict.get(required_field_name, {}).get(DEFINITION_FIELD_TYPE)  ### POPO update ###
+            field_type = schema_defined_fields_as_dict.get(required_field_name, {}).get(DEFINITION_FIELD_TYPE)     # POPO Update
 
             if field_value is None:
-                missing_required_field = f"Required field '{required_field_name}' missing from: {dict_to_validate}" ### POPO update ###
-                required_field_lexeme = definition_under_test.get_lexeme_with_value(definition_under_test.get_root_key())   ### POPO update ###
-                findings.add_error_finding(definition_under_test, missing_required_field, PLUGIN_NAME, required_field_lexeme)   ### POPO update ###
+                missing_required_field = f"Required field '{required_field_name}' missing from: {dict_to_validate}"    # POPO Update
+                required_field_lexeme = definition_under_test.get_lexeme_with_value(definition_under_test.get_root_key())      # POPO Update
+                findings.add_error_finding(definition_under_test, missing_required_field, PLUGIN_NAME, required_field_lexeme)      # POPO Update
                 logging.debug(missing_required_field)
 
             elif not _is_field_populated(field_type, field_value):
                 unpopulated_required_field = f"Required field '{required_field_name}' is not populated in: {dict_to_validate}"
-                required_field_lexeme = definition_under_test.get_lexeme_with_value(definition_under_test.get_root_key())   ### POPO update ###
+                required_field_lexeme = definition_under_test.get_lexeme_with_value(definition_under_test.get_root_key())      # POPO Update
                 findings.add_error_finding(
-                    definition_under_test, unpopulated_required_field, PLUGIN_NAME, required_field_lexeme       ### POPO update ###
+                    definition_under_test, unpopulated_required_field, PLUGIN_NAME, required_field_lexeme          # POPO Update
                 )
                 logging.debug(unpopulated_required_field)
 
-    dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)    ### POPO update ###
-    list(map(validate_dict, dicts_to_test)) ### POPO update ###
+    dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)       # POPO Update
+    list(map(validate_dict, dicts_to_test))    # POPO Update
 
-    return ValidatorResult([definition_under_test], findings)   ### POPO update ###
+    return ValidatorResult([definition_under_test], findings)      # POPO Update
 
 
 def _is_field_populated(field_type: str, field_value: Any) -> bool:
