@@ -40,7 +40,7 @@ def validate_file(definition: Definition, value_to_validate: Any, _: LanguageCon
             f"The file path '{value_to_validate}' (evaluated to '{file_path_to_test}') does not exist or is not a file."
         )
         finding_location = FindingLocation.from_lexeme(
-            FILE_VALIDATION_NAME, definition.get_lexeme_with_value(str(value_to_validate)) ### POPO update ###
+            FILE_VALIDATION_NAME, definition.get_lexeme_with_value(str(value_to_validate))  # POPO Update
         )
         finding = ValidatorFinding(definition, FindingSeverity.WARNING, finding_message, finding_location)
 

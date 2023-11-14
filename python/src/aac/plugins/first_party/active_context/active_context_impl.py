@@ -56,7 +56,7 @@ def describe_definition(definition_name: str) -> PluginExecutionResult:
     """
 
     def get_definition_info() -> str:
-        definition = get_active_context().get_definition_by_name(definition_name) ### POPO update ###
+        definition = get_active_context().get_definition_by_name(definition_name)  # POPO Update
         if definition is None:
             raise PluginError(f"{definition_name} is not in the active context.")
 

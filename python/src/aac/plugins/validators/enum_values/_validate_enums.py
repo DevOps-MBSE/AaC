@@ -32,20 +32,20 @@ def validate_enums(
     def validate_dict(dict_to_validate: dict) -> None:
         # dict_to_validate is expected to be the enum field including the field name and value
 
-        enum_value, *_ = dict_to_validate.values() ### POPO update ###
+        enum_value, *_ = dict_to_validate.values()  # POPO Update
         defined_values = target_schema_definition.get_values()
 
         if enum_value not in defined_values:
-            undefined_enum_value = f"Undefined enum value '{enum_value}' referenced in: {definition_under_test.name}" ### POPO update ###
-            reference_lexeme = definition_under_test.get_lexeme_with_value(enum_value) ### POPO update ###
+            undefined_enum_value = f"Undefined enum value '{enum_value}' referenced in: {definition_under_test.name}"  # POPO Update
+            reference_lexeme = definition_under_test.get_lexeme_with_value(enum_value)  # POPO Update
             logging.debug(undefined_enum_value)
 
             if reference_lexeme:
-                findings.add_error_finding(definition_under_test, undefined_enum_value, PLUGIN_NAME, reference_lexeme) ### POPO update ###
+                findings.add_error_finding(definition_under_test, undefined_enum_value, PLUGIN_NAME, reference_lexeme)  # POPO Update
             else:
                 logging.debug(f"Value '{enum_value}' doesn't exist in definition.")
 
-    dicts_to_test = get_fields_by_enum_type(definition_under_test, target_schema_definition, language_context) ### POPO update ###
+    dicts_to_test = get_fields_by_enum_type(definition_under_test, target_schema_definition, language_context)  # POPO Update
     list(map(validate_dict, dicts_to_test))
 
-    return ValidatorResult([definition_under_test], findings) ### POPO update ###
+    return ValidatorResult([definition_under_test], findings)  # POPO Update
