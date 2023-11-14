@@ -1,8 +1,8 @@
 import logging
 
-from aac.lang.constants import DEFINITION_FIELD_FIELDS, DEFINITION_FIELD_NAME, DEFINITION_FIELD_TYPE, PRIMITIVE_TYPE_REFERENCE  
-from aac.lang.definitions.definition import Definition  
-from aac.lang.definitions.references import get_reference_target_definitions, is_reference_format_valid 
+from aac.lang.constants import DEFINITION_FIELD_FIELDS, DEFINITION_FIELD_NAME, DEFINITION_FIELD_TYPE, PRIMITIVE_TYPE_REFERENCE
+from aac.lang.definitions.definition import Definition
+from aac.lang.definitions.references import get_reference_target_definitions, is_reference_format_valid
 from aac.lang.definitions.structure import get_substructures_by_type
 from aac.lang.language_context import LanguageContext
 from aac.plugins.validators import FindingLocation, ValidatorFindings, ValidatorResult
@@ -83,6 +83,6 @@ def validate_reference_targets(
                 logging.debug(invalid_reference_target)
 
     dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)  # POPO update
-    list(map(validate_dict, dicts_to_test)) # POPO update
+    list(map(validate_dict, dicts_to_test))  # POPO update
 
     return ValidatorResult([definition_under_test], findings)   # POPO update
