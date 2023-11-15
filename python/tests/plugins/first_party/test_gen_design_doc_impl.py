@@ -47,7 +47,7 @@ class TestGenerateDesignDocumentPlugin(ActiveContextTestCase):
 
         usecase_participants = [create_field_entry("model1", "test model"), create_field_entry("model2", "test model")]
         usecase_steps = create_step_entry("move an object from one place to another", "model1", "model2", test_model_behavior[DEFINITION_FIELD_NAME])
-        test_model_usecase = create_usecase_definition("move an item", description="the user wants to move an object from one place to another", participants=usecase_participants, usecase=usecase_steps)
+        test_model_usecase = create_usecase_definition("move an item", description="the user wants to move an object from one place to another", participants=usecase_participants, steps=usecase_steps)
 
         test_model = DEFINITION_SEPARATOR.join([vector_schema, point_schema, test_model, test_model_usecase])
         
