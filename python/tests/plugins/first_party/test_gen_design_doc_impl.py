@@ -33,24 +33,24 @@ class TestGenerateDesignDocumentPlugin(ActiveContextTestCase):
         vector_validation = create_validation_entry("Required fields are present", ["i", "j"])
         point_validation = create_validation_entry("Required fields are present", ["x", "y", "z"])
 
-        vector_schema = create_schema_definition("Vector", fields=[i_field, j_field, direction_field], validations=vector_validation)
-        point_schema = create_schema_definition("Point", fields=[x_field, y_field, z_field], validations=point_validation)
+        vector_schema = create_schema_definition("Vector", fields=[i_field, j_field, direction_field], validations=[vector_validation])
+        point_schema = create_schema_definition("Point", fields=[x_field, y_field, z_field], validations=[point_validation])
 
         schema_input = [create_field_entry("alpha", "Point"), create_field_entry("beta", "Point")]
         schema_output = [create_field_entry("gamma", "number"), create_field_entry("delta", "Vector")]
 
         behavior_acceptance_scenario1 = create_scenario_entry("move from point alpha to point beta", given=["Point alpha is (1, 2, 3)", "Point beta is (2, 3, 4)", "I am at point alpha"], when=["I move from point alpha to point beta"], then=["I am at point beta", "publish gamma: the time it took me to finish", "publish delta: some vector"])
-        behavior_acceptance_scenario2 = create_scenario_entry("move from point beta back to point alpha", given=["Point alpha is (1, 2, 3)", "Point beta is (2, 3, 4)", "I am at point beta"], when=["I move from point beta to point alpha"], then=["I am at point alpha", "- publish gamma: the time it took me to finsh", "publish delta: some vector"])
+        behavior_acceptance_scenario2 = create_scenario_entry("move from point beta back to point alpha", given=["Point alpha is (1, 2, 3)", "Point beta is (2, 3, 4)", "I am at point beta"], when=["I move from point beta to point alpha"], then=["I am at point alpha", "- publish gamma: the time it took me to finish", "publish delta: some vector"])
 
-        test_model_behavior = create_behavior_entry("do something great", description="have the system do something great", input=[schema_input], output=schema_output, acceptance=[behavior_acceptance_scenario1, behavior_acceptance_scenario2]  )
-        test_model = create_model_definition("test model", description="a system to do things", behavior= test_model_behavior)
+        test_model_behavior = create_behavior_entry("do something great", description="have the system do something great", input=schema_input, output=schema_output, acceptance=[behavior_acceptance_scenario1, behavior_acceptance_scenario2]  )
+        test_model = create_model_definition("test model", description="a system to do things", behavior=[test_model_behavior])
 
         usecase_participants = [create_field_entry("model1", "test model"), create_field_entry("model2", "test model")]
         usecase_steps = create_step_entry("move an object from one place to another", "model1", "model2", test_model_behavior[DEFINITION_FIELD_NAME])
-        test_model_usecase = create_usecase_definition("move an item", description="the user wants to move an object from one place to another", participants=usecase_participants, steps=usecase_steps)
+        test_model_usecase = create_usecase_definition("move an item", description="the user wants to move an object from one place to another", participants=usecase_participants, steps=[usecase_steps])
 
-        test_model = DEFINITION_SEPARATOR.join([vector_schema, point_schema, test_model, test_model_usecase])
-        
+        test_model = DEFINITION_SEPARATOR.join([vector_schema.to_yaml(), point_schema.to_yaml(), test_model.to_yaml(), test_model_usecase.to_yaml()])
+
         with TemporaryAaCTestFile(test_model) as test_model_file:
             test_model_file_name, *_ = os.path.splitext(test_model_file.name)
             temp_dir = os.path.dirname(test_model_file.name)
@@ -67,10 +67,10 @@ class TestGenerateDesignDocumentPlugin(ActiveContextTestCase):
                 self.assert_use_case(markdown)
 
     def test_can_handle_names_with_dots(self):
-        
-        model_schema1 = create_schema_definition("Schema1",fields=[create_field_entry("data", "SibSchema.Schema1")])
+
+        model_schema1 = create_schema_definition("Schema1",fields=[create_field_entry("data", "SubSchema.Schema1")])
         model_schema2 = create_schema_definition("SubSchema.Schema1", fields=[create_field_entry("data", "string")])
-        test_model_2 = DEFINITION_SEPARATOR.join([model_schema1, model_schema2])
+        test_model_2 = DEFINITION_SEPARATOR.join([model_schema1.to_yaml(), model_schema2.to_yaml()])
         with TemporaryAaCTestFile(test_model_2) as test_yaml:
             temp_dir = os.path.dirname(test_yaml.name)
 
