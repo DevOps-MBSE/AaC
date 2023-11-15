@@ -6,6 +6,7 @@ Developer Guide Documentation
 
    Getting Started <dev_guide_index>
    Documentation <docs>
+   AaC Python Project Structure <project_structure>
    Plugin Developer Guide <plugin_dev_guide>
    AaC Validation <aac_validation>
    Validation Plugins for Developers <validation_plugins>
