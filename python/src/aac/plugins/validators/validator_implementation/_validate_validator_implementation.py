@@ -31,8 +31,7 @@ def validate_validator_implementations(
     findings = ValidatorFindings()
 
     def validate_dict(dict_to_validate: dict) -> None:
-        # POPO Update
-        validation_name = dict_to_validate.get(DEFINITION_FIELD_NAME, "")
+        validation_name = dict_to_validate.get(DEFINITION_FIELD_NAME, "")  # POPO Update
         active_validations = {
             validation.name: validation
             for validation in language_context.get_primitive_validations() + language_context.get_definition_validations()
@@ -46,8 +45,7 @@ def validate_validator_implementations(
             )
             logging.debug(no_implementation_error_message)
 
-    # POPO Update
-    dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)
+    dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)  # POPO Update
     list(map(validate_dict, dicts_to_test))
 
     return ValidatorResult([definition_under_test], findings)
