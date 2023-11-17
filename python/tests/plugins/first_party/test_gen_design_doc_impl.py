@@ -3,7 +3,7 @@ import os
 from aac.lang.constants import BEHAVIOR_TYPE_PUBLISH_SUBSCRIBE
 from aac.plugins.first_party.gen_design_doc.gen_design_doc_impl import gen_design_doc
 from aac.io.constants import DEFINITION_SEPARATOR
-from aac.lang.constants import DEFINITION_FIELD_NAME, PRIMITIVE_TYPE_STRING
+from aac.lang.constants import DEFINITION_FIELD_NAME
 
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.assertion import assert_plugin_success
@@ -42,7 +42,7 @@ class TestGenerateDesignDocumentPlugin(ActiveContextTestCase):
         behavior_acceptance_scenario1 = create_scenario_entry("move from point alpha to point beta", given=["Point alpha is (1, 2, 3)", "Point beta is (2, 3, 4)", "I am at point alpha"], when=["I move from point alpha to point beta"], then=["I am at point beta", "publish gamma: the time it took me to finish", "publish delta: some vector"])
         behavior_acceptance_scenario2 = create_scenario_entry("move from point beta back to point alpha", given=["Point alpha is (1, 2, 3)", "Point beta is (2, 3, 4)", "I am at point beta"], when=["I move from point beta to point alpha"], then=["I am at point alpha", "- publish gamma: the time it took me to finish", "publish delta: some vector"])
 
-        test_model_behavior = create_behavior_entry("do something great", description="have the system do something great", input=schema_input, output=schema_output, acceptance=[behavior_acceptance_scenario1, behavior_acceptance_scenario2]  )
+        test_model_behavior = create_behavior_entry("do something great", description="have the system do something great", input=schema_input, output=schema_output, acceptance=[behavior_acceptance_scenario1, behavior_acceptance_scenario2])
         test_model = create_model_definition("test model", description="a system to do things", behavior=[test_model_behavior])
 
         usecase_participants = [create_field_entry("model1", "test model"), create_field_entry("model2", "test model")]
@@ -68,7 +68,7 @@ class TestGenerateDesignDocumentPlugin(ActiveContextTestCase):
 
     def test_can_handle_names_with_dots(self):
 
-        model_schema1 = create_schema_definition("Schema1",fields=[create_field_entry("data", "SubSchema.Schema1")])
+        model_schema1 = create_schema_definition("Schema1", fields=[create_field_entry("data", "SubSchema.Schema1")])
         model_schema2 = create_schema_definition("SubSchema.Schema1", fields=[create_field_entry("data", "string")])
         test_model_2 = DEFINITION_SEPARATOR.join([model_schema1.to_yaml(), model_schema2.to_yaml()])
         with TemporaryAaCTestFile(test_model_2) as test_yaml:
