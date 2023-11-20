@@ -40,6 +40,7 @@ from tests.helpers.parsed_definitions import (
     create_model_definition,
 )
 
+
 class TestGenerateGherkinBehaviorsPlugin(ActiveContextTestCase):
     def test_gen_gherkin_get_commands_conforms_with_plugin_model(self):
         with resources.open_text(gen_gherkin_behaviors_module_name, "gen_gherkin_behaviors.yaml") as plugin_model_file:
