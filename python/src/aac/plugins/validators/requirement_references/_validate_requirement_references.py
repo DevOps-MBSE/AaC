@@ -15,8 +15,8 @@ SPEC_REF_ERRORS: Dict[str, str] = {}
 
 
 def validate_referenced_ids(
-    definition_under_test: Definition,
-    target_schema_definition: Definition,
+    definition_under_test: Definition,   # POPO Update
+    target_schema_definition: Definition,    # POPO Update
     language_context: LanguageContext,
     *validation_args,
 ) -> ValidatorResult:
@@ -36,17 +36,17 @@ def validate_referenced_ids(
 
     _get_all_requirement_ids(target_schema_definition, language_context)
 
-    for req_ref_dict in get_substructures_by_type(definition_under_test, target_schema_definition, language_context):
-        for req_dict in get_substructures_by_type(definition_under_test, target_schema_definition, language_context):
+    for req_ref_dict in get_substructures_by_type(definition_under_test, target_schema_definition, language_context):    # POPO Update
+        for req_dict in get_substructures_by_type(definition_under_test, target_schema_definition, language_context):    # POPO Update
             for id in req_dict["ids"]:
                 if id not in ALL_REQ_IDS:
                     err_msg = f"Referenced requirement '{id}' is not defined"
                     if err_msg in SPEC_REF_ERRORS.keys() and SPEC_REF_ERRORS[err_msg] == definition_under_test.source.uri:
                         pass  # this just prevents duplicate errors for the user
                     else:
-                        SPEC_REF_ERRORS[err_msg] = definition_under_test.source.uri
+                        SPEC_REF_ERRORS[err_msg] = definition_under_test.source.uri     # POPO Update
                         findings.add_error_finding(
-                            definition_under_test, err_msg, VALIDATION_NAME, definition_under_test.get_lexeme_with_value(id)
+                            definition_under_test, err_msg, VALIDATION_NAME, definition_under_test.get_lexeme_with_value(id)     # POPO Update
                         )
 
     return ValidatorResult([definition_under_test], findings)
@@ -54,9 +54,9 @@ def validate_referenced_ids(
 
 def _get_all_requirement_ids(target_schema_definition, language_context):
     if len(ALL_REQ_IDS) == 0:  # don't repeat this for every validator invocation
-        requirement_definition = language_context.get_definition_by_name("Requirement")
+        requirement_definition = language_context.get_definition_by_name("Requirement")  # POPO Update
 
         spec_roots = language_context.get_definitions_by_root_key("spec")
         for spec in spec_roots:
-            for req_dict in get_substructures_by_type(spec, requirement_definition, language_context):
-                ALL_REQ_IDS.add(req_dict["id"])
+            for req_dict in get_substructures_by_type(spec, requirement_definition, language_context):   # POPO Update
+                ALL_REQ_IDS.add(req_dict["id"])  # POPO Update
