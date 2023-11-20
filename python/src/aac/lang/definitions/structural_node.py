@@ -38,7 +38,7 @@ class StructuralNode:
         children (List[StructuralNode]): Reference the the node's children; empty if there are no children.
     """
     node_type: NodeType = attrib(validator=validators.instance_of(NodeType))
-    defining_definition: Optional[Definition] = attrib()  # Can't reference Definition here for validation without creating a circular dependency.
+    defining_definition: Optional[Definition] = attrib()  # Can't reference Definition here for validation without creating a circular dependency.  # POPO update
     token: Optional[Lexeme] = attrib(validator=validators.optional(validators.instance_of(Lexeme)))
     parent: Optional[StructuralNode] = attrib()
     children: list[StructuralNode] = attrib(validator=validators.instance_of(list))
@@ -48,7 +48,7 @@ class StructuralNode:
         if value is not None and not isinstance(value, StructuralNode):
             raise ValueError(f"{value} is not valid for {attribute.name}!")
 
-    def __init__(self, node_type: NodeType, defining_definition: Optional['Definition'] = None, token: Optional[Lexeme] = None, parent: Optional[StructuralNode] = None, children: list[StructuralNode] = []):
+    def __init__(self, node_type: NodeType, defining_definition: Optional['Definition'] = None, token: Optional[Lexeme] = None, parent: Optional[StructuralNode] = None, children: list[StructuralNode] = []):  # POPO update
         """
         Initialize a Structural Node object.
 
@@ -60,7 +60,7 @@ class StructuralNode:
             children (List[StructuralNode]): Reference the the node's children; empty if there are no children.
         """
         self.node_type = node_type
-        self.defining_definition = defining_definition
+        self.defining_definition = defining_definition  # POPO update
         self.token = token
         self.parent = parent
         self.children = children
