@@ -1,20 +1,11 @@
 # Validation Plugins for Developers
 
-## General Information surrounding Validation
+## Plugin-provided Validations
+AaC's approach to validation leverages the larger AaC plugin mechanism to provide a plug-and-play system for creating structural and primitive type validations (constraints) that are used to detect errors and possible issues in systems modeled with AaC.
 
-Any references to code within this document regarding the `validation` plugin can be found here in the AaC project:
-`AaC/python/src/validate/_validate.py`
-
-This validator plugin can be separated into the below sections.
-
-1. [Definition Validations](#definition-validations)
-2. [Primitive Validations](#primitive-validations)
+AaC makes use of two classes of plugin-provided validations: definition validations and primitive validations. The [definition validations](#definition-validations) are used to validate the structural parts of definitions such as required fields while [primitive validations](#primitive-validations) check that values in primitive fields adhere to the expectations of the data type such as checking that values listed as integers are, in fact, integers.
 
 There is also a section listing out the `validation` plugin for the implementation of a validator plugin for 1st and/or 3rd party plugins
-
-* [Implementation of a Validation Plugin for Definitions](#implementation-of-a-validation-plugin-for-definitions)
-
-It is also worthy to note that the way that the AaC DSL validates itself is through associating user-defined validation definitions with a corresponding python implementation which is used to programmatically test that the validation's constraints are met. The validation process is entirely data-driven, so with this implementation it can validate the data in the definition via the very constraints.that are defined as part of the definition.
 
 ## Definition Validations
 
@@ -32,7 +23,7 @@ This approach is also used for in the [Primitive Validations](#primitive-validat
 
 ## Primitive Validations
 
-Primitive Validations are handled by the below function:
+Primitive validations are handled after the structural validation by the below function:
 
 ```{eval-rst}
 .. literalinclude:: ../../../../python/src/aac/validate/_validate.py
@@ -109,6 +100,110 @@ Taking a look at the `implementation_file` (`_validate_required_fields.py`) and 
 
 ***NOTE***: Without the `implementation_file` the initial validator plugin will spit out an error saying that an implementation file is missing. This is needed for the validator plugin to function properly.
 
+## Implementation of a Validation Plugin for Primitive Types
+
+Examples of a primitive validator plugin can be found by refering the first-party provider for primitive validations [primitive-type-check](https://github.com/jondavid-black/AaC/tree/main/python/src/aac/plugins/first_party/primitive_type_check)
+
+Looking inside this directory, the structure of this plugin looks like other AaC plugins:
+
+```markdown
+.primitive_type_check
+├── __init__.py
+├── validators
+   ├── __init__.py
+   ├── bool_validator.py
+   ├── date_validator.py
+   ├── file_validator.py
+   ├── int_validator.py
+   └── num_validator.py
+└── primitive_type_check.yaml
+```
+
+Seeing the structure of this validator, there is an `init` module, there are a number of implementations in the `validators` package, and the `yaml` file used to describe the plugin.
+
+Taking a look at the bool validator we'll see the primitive validator interface:
+
+```python
+def validate_bool(definition: Definition, value_to_validate: Any) -> Optional[ValidatorFinding]:
+    """
+    Returns a Validation finding if the type isn't valid, otherwise None.
+    This function is intended to be used in the Validation apparatus, and for this result
+    to be collated with other finding into a larger ValidatorResult.
+    Arge:
+        definition (Definition): The definition that the value belongs to.
+        value_to_validate (Any): The value to be tested.
+    Returns:
+        A ValidatorFinding if the value is not a boolean or None.
+    """
+
+    is_invalid = not isinstance(value_to_validate, bool)
+    finding = None
+    if is_invalid:
+        lexeme, *_ = [lexeme for lexeme in definition.lexemes if lexeme.value.lower() == str(value_to_validate.lower())]
+        finding_message = f"{value_to_validate} is not a valid value for boolean type {PRIMITIVE_TYPE_BOOL}."
+        finding_location = FindingLocation.from_lexeme(BOOL_VALIDATION_NAME, lexeme)
+        finding = ValidatorFinding(definition, FindingSeverity.ERROR, finding_message, finding_location)
+
+    return finding
+```
+
+The yaml for the plugin looks like any other plugin definition file:
+
+```yaml
+model:
+  name: primitive-type-checking
+  description: |
+    Primitive Type Checking is an Architecture-as-Code plugin that provides
+    primitive type validations for the primitive enum types defined in the core specification.
+  behavior:
+    ...
+    - name: Validate Boolean Primitives
+      type: request-response
+      description:
+      input:
+        - name: input
+          type: ValidatorInput
+      output:
+        - name: results
+          type: ValidatorOutput
+      acceptance:
+        - scenario: Successfully Validate a Boolean Primitive Value
+          given:
+            - The ValidatorInput content consists of valid AaC definitions
+            - The ValidatorInput contains at least one definition field that is defined as being type `bool`
+            - The value in the primitive `bool` field is a valid boolean YAML value
+          when:
+            - The input is validated
+          then:
+            - The ValidatorOutput does not indicate any errors
+            - The ValidatorOutput does not indicate any warnings
+            - The ValidatorOutput indicates the primitive value under test is valid
+        - scenario: Fail to Validate an Integer Primitive Value Is a non-boolean String
+          given:
+            - The ValidatorInput content consists of AaC definitions
+            - The ValidatorInput contains at least one definition field that is defined as being type `bool`
+            - The value in the primitive `bool` field contains alphabetical letters or punctuation marks that don't represent a YAML boolean value
+          when:
+            - The input is validated
+          then:
+            - The ValidatorOutput indicates an error
+            - The ValidatorOutput indicates the primitive value under test is invalid
+    ...
+```
+
+Lastly, the `primitive-type-check` plugin uses the following `Plugin` method `plugin.register_primitive_validations(...)` to register its several primitive validators:
+```python
+@hookimpl
+def get_plugin() -> Plugin:
+    """
+    Returns information about the plugin.
+    Returns:
+        A collection of information about the plugin and what it contributes.
+    """
+    plugin = Plugin(plugin_name)
+    plugin.register_primitive_validations(_get_primitive_validations()) # <-- This function registers the primitive validators.
+    return plugin
+```
 
 ## Validation Interface & Validator Development Best Practices
 
