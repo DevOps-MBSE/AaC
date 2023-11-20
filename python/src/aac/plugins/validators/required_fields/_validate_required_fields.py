@@ -1,10 +1,10 @@
 import logging
 from typing import Any
 
-from aac.lang.constants import DEFINITION_FIELD_FIELDS, DEFINITION_FIELD_NAME, DEFINITION_FIELD_TYPE       # POPO Update
-from aac.lang.definitions.definition import Definition     # POPO Update
-from aac.lang.definitions.structure import get_substructures_by_type       # POPO Update
-from aac.lang.definitions.type import is_array_type    # POPO Update
+from aac.lang.constants import DEFINITION_FIELD_FIELDS, DEFINITION_FIELD_NAME, DEFINITION_FIELD_TYPE
+from aac.lang.definitions.definition import Definition
+from aac.lang.definitions.structure import get_substructures_by_type
+from aac.lang.definitions.type import is_array_type
 from aac.lang.language_context import LanguageContext
 from aac.plugins.validators import ValidatorFindings, ValidatorResult
 
