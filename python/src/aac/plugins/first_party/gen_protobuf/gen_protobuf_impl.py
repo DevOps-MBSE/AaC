@@ -113,7 +113,7 @@ def _get_model_behavior_input_output_definitions(model_definition: Definition) -
     model_interface_messages = []
     model_interface_messages += search_definition(model_definition, model_behavior_keys + [DEFINITION_FIELD_INPUT])
     model_interface_messages += search_definition(model_definition, model_behavior_keys + [DEFINITION_FIELD_OUTPUT])
-    model_interface_message_names = [field.get(DEFINITION_FIELD_TYPE) for field in model_interface_messages]
+    model_interface_message_names = [field.get(DEFINITION_FIELD_TYPE) for field in model_interface_messages]   # POPO Update
 
     active_context = get_active_context()
     interface_definitions = [active_context.get_definition_by_name(name) for name in model_interface_message_names]
@@ -126,7 +126,7 @@ def _get_embedded_data_structures(schema_definition: Definition, active_context:
 
     interface_message_substructures = {}
     definition_names_to_traverse = set(
-        [field.get(DEFINITION_FIELD_TYPE) for field in schema_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS)]
+        [field.get(DEFINITION_FIELD_TYPE) for field in schema_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS)]   # POPO Update
     )
 
     while len(definition_names_to_traverse) > 0:
@@ -141,7 +141,7 @@ def _get_embedded_data_structures(schema_definition: Definition, active_context:
             if target_definition.is_schema():
                 target_definition_field_types = [
                     field.get(DEFINITION_FIELD_TYPE)
-                    for field in target_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS)
+                    for field in target_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS)   # POPO Update
                 ]
 
                 # filter out already visited definitions
@@ -217,9 +217,9 @@ def _to_template_properties_dict(
 
     # Format the field strings
     for field in fields:
-        field[DEFINITION_FIELD_NAME] = _sanitize_string_to_snake_case(field.get(DEFINITION_FIELD_NAME))
+        field[DEFINITION_FIELD_NAME] = _sanitize_string_to_snake_case(field.get(DEFINITION_FIELD_NAME))   # POPO Update
         if field[DEFINITION_FIELD_TYPE] not in active_context.get_primitive_types():
-            field[DEFINITION_FIELD_TYPE] = _sanitize_string_to_pascal_case(field.get(DEFINITION_FIELD_TYPE))
+            field[DEFINITION_FIELD_TYPE] = _sanitize_string_to_pascal_case(field.get(DEFINITION_FIELD_TYPE))   # POPO Update
 
     return {
         "message_name": name,
@@ -243,9 +243,9 @@ def _get_enum_properties(enum_definition: Definition) -> dict[str, any]:
          A dictionary containing the template generation properties.
     """
     enum_name = enum_definition.name
-    enum_definition_fields = enum_definition.get_top_level_fields()
-    enum_values = enum_definition_fields.get(DEFINITION_FIELD_VALUES) or []
-    enum_description = enum_definition_fields.get(DEFINITION_FIELD_DESCRIPTION) or ""
+    enum_definition_fields = enum_definition.get_top_level_fields()   # POPO Update
+    enum_values = enum_definition_fields.get(DEFINITION_FIELD_VALUES) or []       # POPO Update
+    enum_description = enum_definition_fields.get(DEFINITION_FIELD_DESCRIPTION) or ""     # POPO Update
     description_as_proto_comment = _convert_description_to_protobuf_comment(enum_description)
     definition_options = enum_definition_fields.get("protobuf_message_options") or []
 
@@ -264,20 +264,20 @@ def _get_schema_properties(interface_structures: dict[str, Definition], data_def
          A dictionary containing the template generation properties.
     """
     active_context = get_active_context()
-    definition_fields = data_definition.get_top_level_fields()
-    structure_fields = definition_fields.get(DEFINITION_FIELD_FIELDS)
+    definition_fields = data_definition.get_top_level_fields()    # POPO Update
+    structure_fields = definition_fields.get(DEFINITION_FIELD_FIELDS)   # POPO Update
 
     definition_name = data_definition.name
-    definition_description = definition_fields.get(DEFINITION_FIELD_DESCRIPTION) or ""
+    definition_description = definition_fields.get(DEFINITION_FIELD_DESCRIPTION) or ""   # POPO Update
     definition_description_as_proto_comment = _convert_description_to_protobuf_comment(definition_description)
     definition_options = definition_fields.get("protobuf_message_options") or []
 
     message_fields = []
     message_imports = []
     for field in structure_fields:
-        proto_field_name = field.get(DEFINITION_FIELD_NAME)
-        proto_field_description = field.get(DEFINITION_FIELD_DESCRIPTION) or ""
-        proto_field_type = field.get(DEFINITION_FIELD_TYPE)
+        proto_field_name = field.get(DEFINITION_FIELD_NAME)   # POPO Update
+        proto_field_description = field.get(DEFINITION_FIELD_DESCRIPTION) or ""     # POPO Update
+        proto_field_type = field.get(DEFINITION_FIELD_TYPE)    # POPO Update
         sanitized_proto_field_type = remove_list_type_indicator(proto_field_type)
         description_as_proto_comment = _convert_description_to_protobuf_comment(proto_field_description, 1)
 

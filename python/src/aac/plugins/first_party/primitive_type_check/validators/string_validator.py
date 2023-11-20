@@ -32,6 +32,6 @@ def validate_string(definition: Definition, value_to_validate: Any, _: LanguageC
     """
     if not isinstance(value_to_validate, str):
         finding_message = f"{value_to_validate} is not a valid {PRIMITIVE_TYPE_STRING} value."
-        lexeme = definition.get_lexeme_with_value(value_to_validate) or definition.lexemes[0]
-        finding_location = FindingLocation.from_lexeme(STRING_VALIDATION_NAME, lexeme)
+        lexeme = definition.get_lexeme_with_value(value_to_validate) or definition.lexemes[0]   # POPO Update
+        finding_location = FindingLocation.from_lexeme(STRING_VALIDATION_NAME, lexeme)   # POPO Update
         return ValidatorFinding(definition, FindingSeverity.ERROR, finding_message, finding_location)

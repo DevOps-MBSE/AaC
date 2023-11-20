@@ -7,7 +7,7 @@ from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.type import remove_list_type_indicator
 
 
-def get_models_by_type(models: dict[str, dict], root_name: str) -> dict[str, dict]:
+def get_models_by_type(models: dict[str, dict], root_name: str) -> dict[str, dict]:   # POPO update
     """Gets subset of models of a specific root name.
 
     The aac.io.parser.parse() function returns a dict of all parsed types.  Sometimes it is
@@ -29,7 +29,7 @@ def get_models_by_type(models: dict[str, dict], root_name: str) -> dict[str, dic
     return ret_val
 
 
-def get_definitions_by_root_key(root_key: str, definitions: list[Definition]) -> list[Definition]:
+def get_definitions_by_root_key(root_key: str, definitions: list[Definition]) -> list[Definition]:  # POPO update
     """Return a subset of definitions with the given root key.
 
     The aac.io.parser.parse() function returns a dict of all parsed types.  Sometimes it is
@@ -44,13 +44,13 @@ def get_definitions_by_root_key(root_key: str, definitions: list[Definition]) ->
         A list of ParedDefinitions with the given root key AaC model definitions.
     """
 
-    def does_definition_root_match(definition: Definition) -> bool:
-        return root_key == definition.get_root_key()
+    def does_definition_root_match(definition: Definition) -> bool:   # POPO update
+        return root_key == definition.get_root_key()    # POPO update
 
-    return [definition for definition in definitions if does_definition_root_match(definition)]
+    return [definition for definition in definitions if does_definition_root_match(definition)]   # POPO update
 
 
-def get_definition_by_name(definition_name: str, definitions: list[Definition]) -> Optional[Definition]:
+def get_definition_by_name(definition_name: str, definitions: list[Definition]) -> Optional[Definition]:    # POPO update
     """Return a definition with a matching name from a list of definitions.
 
     Args:
@@ -61,23 +61,23 @@ def get_definition_by_name(definition_name: str, definitions: list[Definition]) 
         A Definition with the given name or None.
     """
 
-    def does_definition_name_match(parsed_definition: Definition) -> bool:
-        return remove_list_type_indicator(definition_name) == parsed_definition.name
+    def does_definition_name_match(parsed_definition: Definition) -> bool:  # POPO update
+        return remove_list_type_indicator(definition_name) == parsed_definition.name    # POPO update
 
-    matching_definitions = [definition for definition in definitions if does_definition_name_match(definition)]
+    matching_definitions = [definition for definition in definitions if does_definition_name_match(definition)]   # POPO update
     matching_definitions_count = len(matching_definitions)
 
     if matching_definitions_count < 1:
         logging.debug(f"Failed to find a definition with the name '{definition_name}'")
 
     elif matching_definitions_count > 1:
-        matching_definition_names = [definition.name for definition in matching_definitions]
+        matching_definition_names = [definition.name for definition in matching_definitions]    # POPO update
         logging.error(f"Found multiple definitions with the same name '{definition_name}'\n{matching_definition_names}'")
 
     return matching_definitions[0] if matching_definitions_count >= 1 else None
 
 
-def convert_parsed_definitions_to_dict_definition(definitions: list[Definition]) -> dict:
+def convert_parsed_definitions_to_dict_definition(definitions: list[Definition]) -> dict:   # POPO update
     """
     DEPRECATED: Returns a combined dict from the list of Definitions.
 
@@ -85,9 +85,9 @@ def convert_parsed_definitions_to_dict_definition(definitions: list[Definition])
     converted to utilize the Definition class instead of python dictionaries.
 
     """
-    return {definition.name: definition.structure for definition in definitions}
+    return {definition.name: definition.structure for definition in definitions}    # POPO update
 
 
-def get_definitions_as_yaml(definitions: list[Definition]) -> str:
+def get_definitions_as_yaml(definitions: list[Definition]) -> str:  # POPO update
     """Return all the definitions as a single YAML string."""
-    return "\n".join([definition.content for definition in definitions])
+    return "\n".join([definition.content for definition in definitions])    # POPO update
