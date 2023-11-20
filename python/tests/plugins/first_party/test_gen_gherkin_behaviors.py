@@ -5,7 +5,6 @@ from importlib import resources
 from nose2.tools import params
 from tempfile import TemporaryDirectory
 
-
 from aac.io import parser
 from aac.io.constants import YAML_DOCUMENT_SEPARATOR
 from aac.lang.active_context_lifecycle_manager import get_active_context
