@@ -57,6 +57,10 @@ For example, in our enum schema, we have a validation that is making sure there 
 
 ## Meanings of Validation Messages
 
+After validation occurs, a `ValidatorResult` object will return the results of the validation and compile the results into single message.  A `ValidatorResult` will contain a list of definitions that were validated, and a `ValidatorFindings` object which contains all `ValidatorFinding` objects returned by the validation.
+
+A `ValidatorFinding` is returned when the validator wants to provide feedback of some kind.  A failed validation or error message is one type of feedback that can be provided, but it does not have to be limited to that.  As such, a `FindingSeverity` object is included to inform how severe the finding is. 
+
 The messages that are returned by the `ValidatorResult` object are formatted according to the severity of the validation issues.
 However, the severity and cases for those severities can be outlined as such:
 
@@ -64,6 +68,8 @@ However, the severity and cases for those severities can be outlined as such:
 2. **Warnings**: These are warnings, the validation will not fail perse, but should be resolved to align the definition to the projects standard.
    1. The reason that warnings should be taken care of is that they can cause issues further down the line of development for your AaC Plugins.
 3. **Informational**: These are informational messages that are displayed as a general informative basis.
+
+A `FindingLocation` object will also be returned, which contains the source file and line number where the finding occurred. 
 
 ## Implementation of a Validation Plugin for Definitions
 
