@@ -1,20 +1,11 @@
 # Validation Plugins for Developers
 
-## General Information surrounding Validation
+## Plugin-provided Validations
+AaC's approach to validation leverages the larger AaC plugin mechanism to provide a plug-and-play system for creating structural and primitive type validations (constraints) that are used to detect errors and possible issues in systems modeled with AaC.
 
-Any references to code within this document regarding the `validation` plugin can be found here in the AaC project:
-`AaC/python/src/validate/_validate.py`
+AaC makes use of two classes of plugin-provided validations: definition validations and primitive validations. The [definition validations](#definition-validations) are used to validate the structural parts of definitions such as required fields while [primitive validations](#primitive-validations) check that values in primitive fields adhere to the expectations of the data type such as checking that values listed as integers are, in fact, integers.
 
-This validator plugin can be separated into the below sections.
-
-1. [Definition Validations](#definition-validations)
-2. [Primitive Validations](#primitive-validations)
-
-There is also a section listing out the `validation` plugin for the implementation of a validator plugin for 1st and/or 3rd party plugins
-
-* [Implementation of a Validation Plugin for Definitions](#implementation-of-a-validation-plugin-for-definitions)
-
-It is also worthy to note that the way that the AaC DSL validates itself is through associating user-defined validation definitions with a corresponding python implementation which is used to programmatically test that the validation's constraints are met. The validation process is entirely data-driven, so with this implementation it can validate the data in the definition via the very constraints.that are defined as part of the definition.
+There is also a section listing out the `validation` plugin for [implementation of a validation plugin for definitions](#implementation-of-a-validation-plugin-for-definitions) for 1st and/or 3rd party plugins.
 
 ## Definition Validations
 
@@ -32,7 +23,7 @@ This approach is also used for in the [Primitive Validations](#primitive-validat
 
 ## Primitive Validations
 
-Primitive Validations are handled by the below function:
+Primitive validations are handled after the structural validation by the below function:
 
 ```{eval-rst}
 .. literalinclude:: ../../../../python/src/aac/validate/_validate.py
@@ -115,6 +106,50 @@ Taking a look at the `implementation_file` (`_validate_required_fields.py`) and 
 
 ***NOTE***: Without the `implementation_file` the initial validator plugin will spit out an error saying that an implementation file is missing. This is needed for the validator plugin to function properly.
 
+## Implementation of a Validation Plugin for Primitive Types
+
+Examples of a primitive validator plugin can be found by refering the first-party provider for primitive validations [primitive-type-check](https://github.com/DevOps-MBSE/AaC/tree/main/python/src/aac/plugins/first_party/primitive_type_check)
+
+Looking inside this directory, the structure of this plugin looks like other AaC plugins:
+
+```markdown
+.primitive_type_check
+├── __init__.py
+├── validators
+   ├── __init__.py
+   ├── bool_validator.py
+   ├── date_validator.py
+   ├── file_validator.py
+   ├── int_validator.py
+   └── num_validator.py
+└── primitive_type_check.yaml
+```
+
+Seeing the structure of this validator, there is an `init` module, there are a number of implementations in the `validators` package, and the `yaml` file used to describe the plugin.
+
+Taking a look at the bool validator we'll see the primitive validator interface:
+
+```{eval-rst}
+.. literalinclude:: ../../../../python/src/aac/plugins/first_party/primitive_type_check/validators/bool_validator.py
+    :language: python
+    :pyobject: validate_bool
+```
+
+The yaml for the plugin looks like any other plugin definition file:
+
+```{eval-rst}
+.. literalinclude:: ../../../../python/src/aac/plugins/validators/required_fields/required_fields.yaml
+    :language: yaml
+    :lines: 1-61
+```
+
+Lastly, the `primitive-type-check` plugin uses the following `Plugin` method `plugin.register_primitive_validations(...)` to register its several primitive validators:
+
+```{eval-rst}
+.. literalinclude:: ../../../../python/src/aac/plugins/first_party/primitive_type_check/__init__.py
+    :language: python
+    :pyobject: get_plugin
+```
 
 ## Validation Interface & Validator Development Best Practices
 

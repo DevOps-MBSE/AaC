@@ -84,3 +84,11 @@ The above associates the command `command_name` with plugin `plugin_name`.
 One of the files generated from the `gen-plugin` command is a test file for the plugin implementation, which is generated with a stubbed test. This templated output is only a stub, and it will need to be further developed to provide results.
 
 After doing this the test can be executed either through VSCode or through terminal with the execution of `nose2` or `tox` commands.
+
+### Validation Plugins
+
+Validation is a self-validating mechanism included in AaC that allows users to define validation for their own user-defined structures.
+
+For more information on Validation in AaC, please view the page on [Validating the AaC language](aac_validation)
+
+For more information on creating Validation Plugins, please view the page [Validation Plugins for Developers](validation_plugins)
