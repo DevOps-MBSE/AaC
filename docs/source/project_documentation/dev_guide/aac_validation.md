@@ -1,7 +1,9 @@
 # What is Validation in the AaC Language?
 Because the AaC DSL is leveraging plain-text YAML as the underpinning of the DSL, there is little to no functionality to guide users in the correctness of their YAML AaC structures. AaC has implemented a self-validating language feature so that users can reference which rules are applied to which AaC DSL components, and so that users can define validation for their own user-defined structures. To this end, AaC employs a plugin-based validator system where plugins provide Python-based validator implementations that can be referenced and applied to definitions in the AaC DSL.
 
-Validation rules in AaC are defined with the `validation` definition, which are required to have a corresponding implementation, called a validator plugin. This enables AaC's self-validating mechanism even though YAML is just a markup language.
+Data structure, or `schema`, validation rules in AaC are defined with the `validation` definition, which require a corresponding implementation, called a validator plugin. The validator plugin is what enables AaC's self-validating mechanism even though YAML is just a markup language. Each data structure is decomposed into its smaller structures, and then the structural constraints (validations) are applied. It is worth keeping in mind that, currently, we make no guarantees regarding the order in which validations are applied. Additionally, AaC also provides the ability to validate primitive types. Primitive validations are distinct from schema validations, but they work in the same general way -- when definitions are validated, any fields with a 'Primitive' type (e.g. string, number, boolean, etc) are validated against the corresponding primitive type validator, if it exists. If no such primitive type validator exists, then the type is treated as a string having a valid value, regardless of the actual value.
+
+Adhereing to AaC's goal of extensibility, users are capable of building plugins that contribute both schema and primitive validations. To read more on how those are created, check out the page on [creating validation plugins](../validation_plugins/).
 
 ## Validating the AaC Language
 The overall validation mechanism follows this flow:
@@ -16,7 +18,8 @@ The overall validation mechanism follows this flow:
   a. If there are no errors, the definition successfully validates
   b. If there are errors, the definition fails validation
 
-## Validation Definitions
+## Schema Validation
+### Validation Definitions
 In order for users to document the self-validating constraints in the AaC DSL, they have to declare validation rules via `validation` definitions. These definitions also provide contextual information for the validation as well as behaviors and acceptance criteria -- something to leverage for automatically generating functional/integration tests in the future.
 
 
@@ -36,8 +39,10 @@ Each `validation` definition is required to have a corresponding a Python implem
     :emphasize-lines: 24-25
 ```
 
-## Validator Plugins
-Each validator plugin provides its validation function to the core package via pluggy hooks. Each validator plugin should provide one validation function with the following signature:
+### Definition Validator Plugins
+Each plugin can register multiple definition validators, each of which provides a validation function that's used to validate any corresponding definition structures. It's recommended that plugins have a small, narrow scope of responsibility by focusing on a single validation, but multiple validators can be registered. Definition validators are registered via the plugin function `plugin.register_definition_validations(...)`
+
+Each schema validator must implement a validation function with the following signature/interface:
 
 ```{eval-rst}
 .. literalinclude:: ../../../../python/src/aac/plugins/validators/exclusive_fields/_validate_exclusive_fields.py
@@ -52,3 +57,33 @@ The internal logic of the function is up to the user, but the plugins generally 
 3. If the definition under test doesn't meet the constraints of the validator, register and return an error message
 
 For more information on creating and utilizing validator plugins, please view the [Validation Plugins for Developers](validation_plugins).
+
+## Primitive Validation
+Primitive validation is AaC's way of enforcing constraints for 'Primitive' types such as `integer`, `number`, `file`, `date`, `string`, things that don't need a separate data structure to be represented effectively. All primitive types in the core AaC language have (or will have in coming releases) corresponding primitive validations in the first party plugin [`primitive-type-check`](https://github.com/jondavid-black/AaC/tree/main/python/src/aac/plugins/first_party/primitive_type_check)
+
+### Primitive Validator Plugins
+Each plugin can register multiple primitive validators, each of which provides a validation function that's used to validate a corresponding primitive type. Primitive validators are registered via the plugin function `plugin.register_primitive_validations(...)`.
+
+Each primitive validator should provide one validation function with the following signature:
+```python
+def validate_primitive(definition: Definition, value_to_validate: Any) -> Optional[ValidatorFinding]:
+    """
+    Returns a validator finding if the value under test isn't the expected primitive type.
+    This validator returns an error if the value is not compliant with the primitive type.
+    Args:
+    - definition: The definition of the value to validate.
+    - value_to_validate: The value to validate.
+    Returns:
+    - A validator finding for the given value.
+    """
+```
+## Validation Results
+
+### Validator Findings
+A ValidatorFinding is returned when the validator wants to provide feedback of some kind.  A failed validation or error message is one type of feedback that can be provided, but it does not have to be limited to that.  As such, a FindingSeverity object is included to inform how severe the finding is.  A FindingLocation object will also be returned, which contains the source file and line number where the finding occured. 
+
+### Validator Result
+After validation occurs, a ValidatorResult object will return the results of the validation, and compile the results into single message.  A ValidatorResult will contain a list of definitions that were validated, and a ValidatorFindings object wihich contains all ValidatorFinding objects returned by the validation. 
+
+
+
