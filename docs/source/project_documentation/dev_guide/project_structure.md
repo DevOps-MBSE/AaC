@@ -71,9 +71,9 @@ package.
 
 ### `validate` Package
 
-A core feature of AaC is it's extensibility and flexibility. As a result, a
+A core feature of AaC is its extensibility and flexibility. As a result, a
 plugin can contribute validations and the core AaC tool requires some way to
-find and run them for a given definition. The `validate` package is responsible
+find them to execute against a given definition. The `validate` package is responsible
 for validator discovery and application.
 
 [1]: https://click.palletsprojects.com/en/
