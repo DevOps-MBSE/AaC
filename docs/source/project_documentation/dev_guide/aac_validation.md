@@ -5,7 +5,7 @@ Data structure, or `schema`, validation rules in AaC are defined with the `valid
 
 Additionally, AaC also provides the ability to validate primitive types. Primitive validations are distinct from schema validations, but they work in the same general way -- when definitions are validated, any fields with a 'Primitive' type (e.g. string, number, boolean, etc) are validated against the corresponding primitive type validator, if it exists. If no such primitive type validator exists, then the type is treated as a string having a valid value, regardless of the actual value.
 
-Adhering to AaC's goal of extensibility, users are capable of building plugins that contribute both schema and primitive validations. To read more on how those are created, check out the page on [creating validation plugins](../validation_plugins/).
+Adhering to AaC's goal of extensibility, users are capable of building plugins that contribute both schema and primitive validations. To read more on how those are created, check out the page on [creating validation plugins](validation_plugins).
 
 ## Validating the AaC Language
 The overall validation mechanism follows this flow:
