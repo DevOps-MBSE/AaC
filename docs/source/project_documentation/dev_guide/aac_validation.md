@@ -52,6 +52,3 @@ The internal logic of the function is up to the user, but the plugins generally 
 3. If the definition under test doesn't meet the constraints of the validator, register and return an error message
 
 For more information on creating and utilizing validator plugins, please view the [Validation Plugins for Developers](validation_plugins).
-
-## Validation Results
-After validation occurs, a ValidatorResult object will return the results of the validation, and compile the results into single message.  A ValidatorResult will contain a list of definitions that were validated, and a ValidatorFindings object wihich contains all ValidatorFinding objects returned by the validation. 
