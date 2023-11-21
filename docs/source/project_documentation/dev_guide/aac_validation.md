@@ -67,15 +67,8 @@ Primitive validation is AaC's way of enforcing constraints for 'primitive' types
 Each plugin can register multiple primitive validators, each of which provides a validation function that's used to validate a corresponding primitive type. Primitive validators are registered via the plugin function `plugin.register_primitive_validations(...)`.
 
 Each primitive validator should provide one validation function with the following signature:
-```python
-def validate_primitive(definition: Definition, value_to_validate: Any) -> Optional[ValidatorFinding]:
-    """
-    Returns a validator finding if the value under test isn't the expected primitive type.
-    This validator returns an error if the value is not compliant with the primitive type.
-    Args:
-    - definition: The definition of the value to validate.
-    - value_to_validate: The value to validate.
-    Returns:
-    - A validator finding for the given value.
-    """
+```{eval-rst}
+.. literalinclude:: ../../../../python/src/aac/plugins/first_party/primitive_type_check/validators/bool_validator.py
+    :language: python
+    :pyobject: validate_bool
 ```

@@ -5,7 +5,7 @@ AaC's approach to validation leverages the larger AaC plugin mechanism to provid
 
 AaC makes use of two classes of plugin-provided validations: definition validations and primitive validations. The [definition validations](#definition-validations) are used to validate the structural parts of definitions such as required fields while [primitive validations](#primitive-validations) check that values in primitive fields adhere to the expectations of the data type such as checking that values listed as integers are, in fact, integers.
 
-There is also a section listing out the `validation` plugin for the implementation of a validator plugin for 1st and/or 3rd party plugins
+There is also a section listing out the `validation` plugin for [implementation of a validation plugin for definitions](#implementation-of-a-validation-plugin-for-definitions) for 1st and/or 3rd party plugins.
 
 ## Definition Validations
 
@@ -140,7 +140,7 @@ The yaml for the plugin looks like any other plugin definition file:
 Lastly, the `primitive-type-check` plugin uses the following `Plugin` method `plugin.register_primitive_validations(...)` to register its several primitive validators:
 
 ```{eval-rst}
-.. literalinclude:: ../../../../python\src\aac\plugins\first_party\primitive_type_check\__init__.py
+.. literalinclude:: ../../../../python/src/aac/plugins/first_party/primitive_type_check/__init__.py
     :language: python
     :pyobject: get_plugin
 ```
