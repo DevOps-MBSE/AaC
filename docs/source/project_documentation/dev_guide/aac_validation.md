@@ -54,9 +54,4 @@ The internal logic of the function is up to the user, but the plugins generally 
 For more information on creating and utilizing validator plugins, please view the [Validation Plugins for Developers](validation_plugins).
 
 ## Validation Results
-
-### Validator Findings
-A ValidatorFinding is returned when the validator wants to provide feedback of some kind.  A failed validation or error message is one type of feedback that can be provided, but it does not have to be limited to that.  As such, a FindingSeverity object is included to inform how severe the finding is.  A FindingLocation object will also be returned, which contains the source file and line number where the finding occured. 
-
-### Validator Result
 After validation occurs, a ValidatorResult object will return the results of the validation, and compile the results into single message.  A ValidatorResult will contain a list of definitions that were validated, and a ValidatorFindings object wihich contains all ValidatorFinding objects returned by the validation. 
