@@ -13,7 +13,7 @@ import logging
 import os
 
 
-__version__ = "0.3.17"
+__version__ = "0.3.19"
 __log_file_name__ = os.path.join(os.path.dirname(__file__), "aac.log")
 
 logging.basicConfig(
