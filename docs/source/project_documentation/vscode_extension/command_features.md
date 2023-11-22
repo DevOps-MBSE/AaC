@@ -17,7 +17,7 @@ Once you see this menu, you can execute any of the AaC commands available in the
 version of the `aac` tool installed on your system. For example, if I wanted to
 run the `gen-json` command, I'd select it from the list:
 
-![VSCode Output panel with command output](../../images/vscode_extension/example-command-output.png)
+![VSCode Output panel with command selection](../../images/vscode_extension/example-command-selection.png)
 
 Once you have picked a command to run, you will then be prompted for any
 arguments required by that command.
