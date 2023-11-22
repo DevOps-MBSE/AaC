@@ -84,8 +84,12 @@ async function getCommandArgUserInput(commandArguments: CommandArgument[]) {
             let fileUris: Uri[] | undefined = await window.showOpenDialog(dialogBoxOptions);
             argumentToPromptUserFor.userResponse = fileUris ? fileUris.map(uri => uri.path).join(",") : "";
         } else {
+            let promptTitle = argumentToPromptUserFor.name
+
+            argumentToPromptUserFor.optional ? promptTitle = promptTitle + "(Escape to skip)" : promptTitle = promptTitle
+
             const inputBoxOptions: InputBoxOptions = {
-                title: argumentToPromptUserFor.name,
+                title: promptTitle,
                 prompt: argumentToPromptUserFor.description,
             };
 
