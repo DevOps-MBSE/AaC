@@ -19,7 +19,7 @@ from aac.lang.definitions.definition import Definition
 from aac.lang.definitions.schema import get_definition_schema
 
 
-def get_definition_json_schema(definition: Definition, language_context: LanguageContext) -> dict:
+def get_definition_json_schema(definition: Definition, language_context: LanguageContext) -> dict:  # POPO update
     """
     Return a dictionary containing the JSON Schema for the definition; the definition's schema is converted to the JSON schema.
 
@@ -31,35 +31,35 @@ def get_definition_json_schema(definition: Definition, language_context: Languag
         a dictionary containing the definition as a JSON schema for the definition's content.
     """
 
-    definition_schema = get_definition_schema(definition, language_context)
+    definition_schema = get_definition_schema(definition, language_context)   # POPO update
 
     schema_dict = {}
-    if definition_schema is None:
-        logging.error(f"Failed to find the definition schema for {definition.name}")
+    if definition_schema is None:   # POPO update
+        logging.error(f"Failed to find the definition schema for {definition.name}")    # POPO update
     else:
         schema_dict = {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "type": "object",
-            "properties": _get_definition_json_schema(definition_schema, language_context),
+            "properties": _get_definition_json_schema(definition_schema, language_context),   # POPO update
         }
 
     return schema_dict
 
 
-def _get_definition_json_schema(definition_schema: Definition, language_context: LanguageContext) -> dict:
+def _get_definition_json_schema(definition_schema: Definition, language_context: LanguageContext) -> dict:  # POPO update
     """Return the json schema structure for the definition schema."""
 
     schema_object = {}
-    schema_structure_fields = definition_schema.get_top_level_fields().get(DEFINITION_FIELD_FIELDS, {})
+    schema_structure_fields = definition_schema.get_top_level_fields().get(DEFINITION_FIELD_FIELDS, {})   # POPO update
     for field in schema_structure_fields:
-        field_name = field.get(DEFINITION_FIELD_NAME)
-        field_type = field.get(DEFINITION_FIELD_TYPE)
+        field_name = field.get(DEFINITION_FIELD_NAME)   # POPO update
+        field_type = field.get(DEFINITION_FIELD_TYPE)   # POPO update
 
         if field_type is None:
-            logging.error(f"Field entry {field_name} is missing type declaration in schema {definition_schema.name}")
+            logging.error(f"Field entry {field_name} is missing type declaration in schema {definition_schema.name}")   # POPO update
         else:
-            if language_context.is_definition_type(field_type) or language_context.is_primitive_type(field_type):
-                field_json_schema = _get_definition_field_json_schema(field_name, field_type, language_context)
+            if language_context.is_definition_type(field_type) or language_context.is_primitive_type(field_type):   # POPO update
+                field_json_schema = _get_definition_field_json_schema(field_name, field_type, language_context)   # POPO update
                 schema_object.update(field_json_schema)
             else:
                 logging.warning(
@@ -69,7 +69,7 @@ def _get_definition_json_schema(definition_schema: Definition, language_context:
     return schema_object
 
 
-def _get_definition_field_json_schema(field_name: str, field_type: str, language_context: LanguageContext) -> dict:
+def _get_definition_field_json_schema(field_name: str, field_type: str, language_context: LanguageContext) -> dict:   # POPO update
     json_schema_fragment = {}
     if language_context.is_primitive_type(field_type):
         json_schema_fragment = _get_primitive_field_json_schema(field_name, field_type)
@@ -77,7 +77,7 @@ def _get_definition_field_json_schema(field_name: str, field_type: str, language
     elif language_context.is_enum_type(field_type):
         json_schema_fragment = _get_enum_field_json_schema(field_name, field_type, language_context)
 
-    elif language_context.is_definition_type(field_type):
+    elif language_context.is_definition_type(field_type):   # POPO update
         json_schema_fragment = _get_defined_type_field_json_schema(field_name, field_type, language_context)
 
     else:
@@ -91,10 +91,10 @@ def _get_defined_type_field_json_schema(field_name: str, field_type: str, langua
     is_field_structure_an_array = is_array_type(field_type)
 
     schema_object = {}
-    field_schema = language_context.get_definition_by_name(field_type)
+    field_schema = language_context.get_definition_by_name(field_type)  # POPO update
 
     if field_schema is not None:
-        defined_fields = field_schema.get_top_level_fields().get("fields", {})
+        defined_fields = field_schema.get_top_level_fields().get("fields", {})  # POPO update
         schema_sub_structures = {}
 
         for field in defined_fields:
@@ -182,11 +182,11 @@ def _get_enum_field_json_schema(field_name: str, field_type: str, language_conte
     }
     ```
     """
-    enum_definition = language_context.get_definition_by_name(field_type)
+    enum_definition = language_context.get_definition_by_name(field_type)   # POPO update
     enum_schema_segment = {}
 
-    if enum_definition:
-        enum_values = enum_definition.get_top_level_fields().get("values", [])
+    if enum_definition:   # POPO update
+        enum_values = enum_definition.get_top_level_fields().get("values", [])  # POPO update
         enum_schema_segment = {field_name: {"type": "string", "enum": enum_values}}
     else:
         logging.warn(f"There is no enum definition in the context named {field_type}")

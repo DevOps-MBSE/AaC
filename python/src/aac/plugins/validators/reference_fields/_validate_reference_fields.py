@@ -13,7 +13,7 @@ VALIDATION_NAME = "Reference format valid"
 
 
 def validate_reference_fields(
-    definition_under_test: Definition,
+    definition_under_test: Definition,       # POPO Update
     target_schema_definition: Definition,
     language_context: LanguageContext,
     *validation_args,
@@ -33,42 +33,42 @@ def validate_reference_fields(
     findings = ValidatorFindings()
 
     reference_field_names = validation_args
-    schema_defined_fields_as_list = target_schema_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS) or []
-    schema_defined_fields_as_dict = {field.get(DEFINITION_FIELD_NAME): field for field in schema_defined_fields_as_list}
+    schema_defined_fields_as_list = target_schema_definition.get_top_level_fields().get(DEFINITION_FIELD_FIELDS) or []   # POPO Update
+    schema_defined_fields_as_dict = {field.get(DEFINITION_FIELD_NAME): field for field in schema_defined_fields_as_list}     # POPO Update
 
     def validate_dict(dict_to_validate: dict) -> None:
         for reference_field_name in reference_field_names:
             field_value = dict_to_validate.get(reference_field_name)
-            field_type = schema_defined_fields_as_dict.get(reference_field_name, {}).get(DEFINITION_FIELD_TYPE)
+            field_type = schema_defined_fields_as_dict.get(reference_field_name, {}).get(DEFINITION_FIELD_TYPE)   # POPO Update
 
             # field type must be reference
             if field_type != PRIMITIVE_TYPE_REFERENCE:
                 non_reference_field = f"Reference format validation cannot be performed on non-reference field '{reference_field_name}'.  Type is '{field_type}'"
-                reference_field_name_lexeme = definition_under_test.get_lexeme_with_value(reference_field_name)
+                reference_field_name_lexeme = definition_under_test.get_lexeme_with_value(reference_field_name)       # POPO Update
                 findings.add_error_finding(
-                    definition_under_test, non_reference_field, PLUGIN_NAME, reference_field_name_lexeme
+                    definition_under_test, non_reference_field, PLUGIN_NAME, reference_field_name_lexeme       # POPO Update
                 )
                 logging.debug(non_reference_field)
 
             # field must not be empty
             elif field_value is None:
                 missing_reference_field = f"Reference field '{reference_field_name}' value is missing"
-                reference_field_name_lexeme = definition_under_test.get_lexeme_with_value(reference_field_name)
+                reference_field_name_lexeme = definition_under_test.get_lexeme_with_value(reference_field_name)       # POPO Update
                 findings.add_error_finding(
-                    definition_under_test, missing_reference_field, PLUGIN_NAME, reference_field_name_lexeme
+                    definition_under_test, missing_reference_field, PLUGIN_NAME, reference_field_name_lexeme       # POPO Update
                 )
                 logging.debug(missing_reference_field)
 
             # field must be contain a parsable reference value
             elif not is_reference_format_valid(field_value):
                 invalid_reference_format = f"Reference field '{reference_field_name}' is not properly formatted: {field_value}"
-                reference_field_name_lexeme = definition_under_test.get_lexeme_with_value(reference_field_name)
+                reference_field_name_lexeme = definition_under_test.get_lexeme_with_value(reference_field_name)       # POPO Update
                 findings.add_error_finding(
-                    definition_under_test, invalid_reference_format, PLUGIN_NAME, reference_field_name_lexeme
+                    definition_under_test, invalid_reference_format, PLUGIN_NAME, reference_field_name_lexeme       # POPO Update
                 )
                 logging.debug(invalid_reference_format)
 
-    dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)
+    dicts_to_test = get_substructures_by_type(definition_under_test, target_schema_definition, language_context)       # POPO Update
     list(map(validate_dict, dicts_to_test))
 
-    return ValidatorResult([definition_under_test], findings)
+    return ValidatorResult([definition_under_test], findings)       # POPO Update

@@ -38,7 +38,7 @@ def validate_usecase_actions(
     findings = ValidatorFindings()
 
     if definition_under_test.get_root_key() == ROOT_KEY_USECASE:
-        fields = definition_under_test.get_top_level_fields()
+        fields = definition_under_test.get_top_level_fields()  # POPO Update
         participants = fields.get(DEFINITION_FIELD_PARTICIPANTS, [])
         for step in fields.get(DEFINITION_FIELD_STEPS, []):
             action_name = step.get(DEFINITION_FIELD_ACTION)
