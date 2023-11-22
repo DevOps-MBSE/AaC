@@ -34,6 +34,7 @@ vscode:
     - samuelcolvin.jinjahtml
     - vscode.typescript
     - streetsidesoftware.code-spell-checker
+    - arch-as-code.aac
 
 image:
   file: .gitpod.Dockerfile
