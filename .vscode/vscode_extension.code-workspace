@@ -1,0 +1,15 @@
+{
+    "folders": [
+        {
+            "name": "AaC VSCode Extension",
+            "path": "../vscode_extension/"
+        }
+    ],
+    "settings": {
+        "npm.packageManager": "yarn"
+    },
+    "launch": {
+        "version": "0.2.0",
+        "configurations": []
+    }
+}
