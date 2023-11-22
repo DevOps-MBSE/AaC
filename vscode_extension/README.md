@@ -2,7 +2,7 @@
 
 Architecture-as-Code is a novel approach to Model-Based Systems Engineering (MBSE) that captures modeled systems in a YAML-based DSL. AaC's novel approach allows large development teams to overcome team silos that often arise from the use of expensive and proprietary MBSE modeling tools. Because AaC models are captured in YAML, they can be seen and edited by all team members, and the AaC tool is built with automation and CI/CD integration in mind.
 
-The AaC tool is a Python3 Package and can be found on PyPI under the name [aac](https://pypi.org/project/aac/). For more information on the AaC tool, check out the Github Repository [jondavid-black/AaC](https://github.com/jondavid-black/AaC).
+The AaC tool is a Python3 Package and can be found on PyPI under the name [aac](https://pypi.org/project/aac/). For more information on the AaC tool, check out the Github Repository [DevOps-MBSE/AaC](https://github.com/DevOps-MBSE/AaC).
 
 ## Features
 
@@ -77,7 +77,7 @@ aac rest-api --host <hostname|localhost> --port <8000>
 The AaC VSCode extension does not require configuration as long as the `aac`
 Python tool is in your system `PATH`. Nonetheless, there are configuration options
 available, so for detailed instructions on configuring the AaC VSCode Extension,
-refer to the [AaC VSCode Extension](https://jondavid-black.github.io/AaC/docs/vscode_extension) github page.
+refer to the [AaC VSCode Extension](https://arch-as-code.org/project_documentation/vscode_extension/vscode_extension_index.html) github page.
 
 ### Setting: Server Mode
 
@@ -110,7 +110,7 @@ already set as options in the VSCode extension.
 
 This plugin relies on the Python package [`aac`](https://pypi.org/project/aac/).
 In order to use this plugin, you must install `aac` locally. See the [AaC
-Repository](https://github.com/jondavid-black/AaC#using-aac-to-model-your-system)
+Repository](https://github.com/DevOps-MBSE/AaC#using-aac-to-model-your-system)
 for how to install the AaC package.
 
 Once the `aac` package is installed, verify that the installation is working
