@@ -56,7 +56,7 @@ def parse_yaml(source: str, content: str) -> list[dict]:
         If the model does not have (at least) a "name" field, a ParserError is raised.
     """
     try:
-        models = [model for model in load_all(content, Loader=SafeLoader) if model]
+        models = [model for model in load_all(content, Loader=SafeLoader) if model]  # POPO Update
         _error_if_not_yaml(source, content, models)
         _error_if_not_complete(source, content, models)
     except YAMLParserError as error:
@@ -72,7 +72,7 @@ def parse_yaml(source: str, content: str) -> list[dict]:
         logging.error(f"Content of error: {content}")
         raise ParserError(source, [f"Encountered the following error: {error}"]) from None
     else:
-        return models
+        return models  # POPO Update
 
 
 def _error_if_not_yaml(source, content, models):
@@ -80,10 +80,10 @@ def _error_if_not_yaml(source, content, models):
 
     def is_model(model):
         """Return True if the model is further parsable."""
-        return isinstance(model, dict)
+        return isinstance(model, dict)  # POPO Update
 
     # Iterate over each model and test if it is considered a valid model.
-    if not all(map(is_model, models)):
+    if not all(map(is_model, models)):  # POPO Update
         raise ParserError(source, ["Provided content was not YAML", content])
 
 
@@ -92,19 +92,19 @@ def _error_if_not_complete(source, content, models):
 
     def is_import(model):
         """Return True if the model is an import declaration."""
-        type, *_ = model.keys()
+        type, *_ = model.keys()  # POPO Update
         return type == "import"
 
     def assert_definition_has_name(model):
         """Throws a ParserError if the definition doesn't have a name property."""
-        type, *_ = model.keys()
-        has_name = model.get(type) and model.get(type).get("name")
+        type, *_ = model.keys()  # POPO UPdate
+        has_name = model.get(type) and model.get(type).get("name")  # POPO Update
         if not has_name:
             raise ParserError(source, [f"Definition is missing field 'name': {content}"])
 
     # Raise an error if any of the loaded YAML models are incomplete.
-    models_without_imports = list(filter(lambda m: not is_import(m), models))
-    all(map(assert_definition_has_name, models_without_imports))
+    models_without_imports = list(filter(lambda m: not is_import(m), models))  # POPO Update
+    all(map(assert_definition_has_name, models_without_imports))  # POPO Update
 
 
 def _yaml_error_messages(error_type, error, content) -> list[str]:

@@ -69,7 +69,7 @@ def _parse_file(arch_file: str) -> list[Definition]:
             parsed_files.add(file)
 
             if file_content:
-                parsed_definitions = _parse_str(file, file_content)
+                parsed_definitions = _parse_str(file, file_content)  # POPO Update
                 definitions_list.extend(parsed_definitions)
                 [parse_file_contents(imp_file) for imp_file in _get_files_to_import_from_definitions(file, parsed_definitions)]
 
@@ -110,7 +110,7 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
     doc_segment_tokens: list[DocumentStartToken] = [token for token in yaml_tokens if isinstance(token, DocumentStartToken)]
     doc_tokens = [*doc_start_token, *doc_segment_tokens, *doc_end_token]
 
-    yaml_dicts: list[dict] = deepcopy(YAML_CACHE.parse_string(model_content, source))
+    yaml_dicts: list[dict] = deepcopy(YAML_CACHE.parse_string(model_content, source))  # POPO Update
 
     source_files: dict[str, AaCFile] = {}
     definitions: list[Definition] = []
@@ -127,15 +127,15 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
         if yaml_text.strip():
             definition_lexemes = get_lexemes_for_definition(value_tokens, content_start_line, content_end_line)
 
-            if yaml_dicts:
+            if yaml_dicts:  # POPO Update
                 source_file = source_files.get(source)
                 if not source_file:
                     source_file = AaCFile(source, True, False)
                     source_files[source] = source_file
 
-                root_yaml = yaml_dicts.pop(0)
-                root_type, *_ = root_yaml.keys()
-                definition_name = root_yaml.get(root_type, {}).get(DEFINITION_FIELD_NAME, "")
+                root_yaml = yaml_dicts.pop(0)  # POPO Update
+                root_type, *_ = root_yaml.keys()  # POPO UPdate
+                definition_name = root_yaml.get(root_type, {}).get(DEFINITION_FIELD_NAME, "")  # POPO Update
 
                 new_definition = Definition(
                     name=definition_name,
@@ -196,9 +196,9 @@ def _get_files_to_import_from_definitions(source_file_path: str, definitions: li
     """
     import_paths = set()
 
-    import_definitions = get_definitions_by_root_key(ROOT_KEY_IMPORT, definitions)
-    for definition in import_definitions:
-        for import_path in definition.get_imports() or []:
+    import_definitions = get_definitions_by_root_key(ROOT_KEY_IMPORT, definitions)  # POPO Update
+    for definition in import_definitions:  # POPO Update
+        for import_path in definition.get_imports() or []:  # POPO Update
             arch_file_dir = path.dirname(path.realpath(source_file_path))
             parse_path = path.join(arch_file_dir, import_path.removeprefix(f".{path.sep}"))
             import_paths.add(sanitize_filesystem_path(parse_path))

@@ -43,7 +43,7 @@ class YamlLFUCache:
 
     def parse_string(self, string: str, source: str = STRING_YAML_SOURCE) -> list[dict]:
         """Parse the YAML string and return the YAML dictionaries."""
-        yaml_dicts = self._get_or_parse_string(source, string).yaml_structures
+        yaml_dicts = self._get_or_parse_string(source, string).yaml_structures  # POPO Update
         return yaml_dicts
 
     def parse_file(self, file_path: str) -> list[dict]:
@@ -52,9 +52,9 @@ class YamlLFUCache:
         file_cache_entry = self._get_file_content_cache_entry(file_path)
 
         if file_cache_entry:
-            yaml_dicts = file_cache_entry.yaml_structures
+            yaml_dicts = file_cache_entry.yaml_structures  # POPO Update
 
-        return yaml_dicts
+        return yaml_dicts  # POPO Update
 
     def scan_string(self, string: str, source: str = STRING_YAML_SOURCE) -> list[Token]:
         """Parse the YAML string and return the YAML tokens."""
@@ -109,7 +109,7 @@ class YamlLFUCache:
         cache_entry = self._get_entry(content_hash)
 
         if not cache_entry:
-            yaml_dicts = parse_yaml(content_source, content_string)
+            yaml_dicts = parse_yaml(content_source, content_string)  # POPO Update
             yaml_tokens = scan_yaml(content_source, content_string)
             cache_entry = CacheEntry(content_hash, yaml_dicts, yaml_tokens)
             self._put_entry(cache_entry.hash, cache_entry)
