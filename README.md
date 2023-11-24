@@ -73,7 +73,7 @@ model:
   description: This is a message mirror.
   behavior:
     - name: echo
-      type: request-response
+      type: REQUEST_RESPONSE
       description: This is the one thing it does.
       input:
         - name: inbound
@@ -130,7 +130,7 @@ model:
   description: This is a message mirror.
   behavior:
     - name: echo
-      type: request-response
+      type: REQUEST_RESPONSE
       description: This is the one thing it does.
       input:
         - name: inbound
@@ -141,11 +141,11 @@ model:
       acceptance:
         - scenario: onReceive
           given:
-          - The EchoService is running.
+           - The EchoService is running.
           when:
-          - The user sends a message to EchoService.
+            - The user sends a message to EchoService.
           then:
-          - The user receives the same message from EchoService.
+            - The user receives the same message from EchoService.
 ```
 
 Ok, so that's interesting, but what can you do with the AaC model once you've built it?
