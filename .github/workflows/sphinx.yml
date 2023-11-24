@@ -46,12 +46,12 @@ jobs:
         uses: actions/configure-pages@v3
 
       - name: Build Documentation
-        run: sphinx-build ../docs/source gen_docs
+        run: sphinx-build ../docs/source site_docs
 
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v2
         with:
-          path: ../docs/gen_docs
+          path: ../docs/site_docs
 
       - name: Deploy to GitHub Pages
         id: deploy
