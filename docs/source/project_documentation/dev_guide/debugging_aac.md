@@ -9,6 +9,8 @@ There are several ways to open the repository in Gitpod, the easiest is to click
 
 The [Gitpod Browser Extension](https://www.gitpod.io/docs/configure/user-settings/browser-extension) allows a user to simply click the new `Gitpod` button visible in the AaC repository.
 
+![Gitpod browser extension button](../../images/debugging/gitpod_browser_button.png)
+
 For more information check out the [Gitpod documentation](https://www.gitpod.io/docs/introduction/getting-started).
 
 ## Debugging the AaC Python Project
