@@ -30,10 +30,10 @@ def validate_used_definitions(
     """
     findings = ValidatorFindings()
 
-    # Check for additional references within the language context of the tested defintion
+    # Check for additional references within the language context of the tested definition
     referenced_definitions = get_definition_type_references_from_list(definition_under_test, language_context.definitions)
 
-    # Get lexme for contributing to findings messages
+    # Get lexeme for contributing to findings messages
     reference_lexeme = definition_under_test.get_lexeme_with_value(definition_under_test.name)
 
     if len(referenced_definitions) == 0:
