@@ -25,7 +25,7 @@ from aac.validate._validation_error import ValidationError
 
 
 @contextmanager
-def validated_definition(definition: Definition) -> Generator[ValidatorResult, None, None]:
+def validated_definition(definition: Definition, fail_on_warning: bool = False) -> Generator[ValidatorResult, None, None]:
     """
     Validate a single definition. Does not validate any other definitions in the context.
 
@@ -35,7 +35,7 @@ def validated_definition(definition: Definition) -> Generator[ValidatorResult, N
     Yields:
         A ValidationResults:py:class:`aac.validate.ValidationResult` indicating the result.
     """
-    yield _with_validation([definition], get_active_context(), False)
+    yield _with_validation([definition], get_active_context(), False, fail_on_warning)
 
 
 @contextmanager
@@ -53,7 +53,7 @@ def validated_definitions(definitions: list[Definition]) -> Generator[ValidatorR
 
 
 @contextmanager
-def validated_source(source: str) -> Generator[ValidatorResult, None, None]:
+def validated_source(source: str, fail_on_warning: Optional[bool] = False) -> Generator[ValidatorResult, None, None]:
     """
     Run validation on a string-based YAML definition or a YAML file.
 
@@ -64,7 +64,7 @@ def validated_source(source: str) -> Generator[ValidatorResult, None, None]:
         A ValidationResults:py:class:`aac.validate.ValidationResult` indicating the result.
     """
     try:
-        validation_result = _with_validation(parse(source), get_active_context())
+        validation_result = _with_validation(parse(source), get_active_context(), True, fail_on_warning)
     except ParserError as error:
         raise ParserError(error.source, error.errors) from None
     else:
@@ -72,12 +72,12 @@ def validated_source(source: str) -> Generator[ValidatorResult, None, None]:
 
 
 def _with_validation(
-    user_definitions: list[Definition], language_context: LanguageContext, validate_context: bool = True
+    user_definitions: list[Definition], language_context: LanguageContext, validate_context: bool = True, fail_on_warning: Optional[bool] = False
 ) -> ValidatorResult:
     try:
         result = _validate_definitions(user_definitions, language_context, validate_context)
 
-        if result.is_valid():
+        if result.is_valid(fail_on_warning):
             return result
         else:
             raise ValidationError(result.get_messages_as_string())

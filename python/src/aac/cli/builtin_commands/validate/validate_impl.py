@@ -16,26 +16,27 @@ from aac.validate import validated_source, validated_definition
 plugin_name = "Validate"
 
 
-def validate(architecture_file: str, definition_name: Optional[str] = None) -> PluginExecutionResult:
+def validate(architecture_file: str, definition_name: Optional[str] = None, fail_on_warning: Optional[bool] = False) -> PluginExecutionResult:
     """
     Validate the AaC definition file.
 
     Args:
         architecture_file (str): The path to the AaC file to be validated.
         definition_name (Optional[str]): The name of the definition in the file to validate.
+        fail_on_warning (Optional[bool]): When true, fails validation on warning
     """
 
     def _validate() -> str:
         if definition_name:
-            return _validate_definition_in_file(architecture_file, definition_name)
+            return _validate_definition_in_file(architecture_file, definition_name, fail_on_warning)
         else:
-            return _validate_context_and_file(architecture_file)
+            return _validate_context_and_file(architecture_file, fail_on_warning)
 
     with plugin_result(plugin_name, _validate) as result:
         return result
 
 
-def _validate_definition_in_file(file_path, definition_name) -> str:
+def _validate_definition_in_file(file_path, definition_name, fail_on_warning: Optional[bool] = False) -> str:
     success_message = f"'{definition_name}' in {file_path} is valid."
 
     try:
@@ -45,7 +46,7 @@ def _validate_definition_in_file(file_path, definition_name) -> str:
     else:
         definition_to_validate = get_definition_by_name(definition_name, definitions_in_file)
         if definition_to_validate:
-            with validated_definition(definition_to_validate) as result:
+            with validated_definition(definition_to_validate, fail_on_warning) as result:
                 return _get_validation_success_message(success_message, result)
         else:
             active_context = get_active_context()
@@ -68,9 +69,9 @@ def _validate_definition_in_file(file_path, definition_name) -> str:
             raise PluginError(missing_definition_error_message)
 
 
-def _validate_context_and_file(file_path) -> str:
+def _validate_context_and_file(file_path, fail_on_warning: Optional[bool] = False) -> str:
     success_message = f"{file_path} is valid."
-    with validated_source(file_path) as result:
+    with validated_source(file_path, fail_on_warning) as result:
         return _get_validation_success_message(success_message, result)
 
 

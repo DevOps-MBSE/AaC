@@ -4,6 +4,7 @@ from attr import Factory, attrib, attrs, validators
 from aac.lang.definitions.definition import Definition
 from aac.plugins.validators._validator_finding import ValidatorFinding
 from aac.plugins.validators._validator_findings import ValidatorFindings
+from typing import Optional
 
 
 @attrs(slots=True)
@@ -23,9 +24,16 @@ class ValidatorResult:
         default=Factory(ValidatorFindings), validator=validators.instance_of(ValidatorFindings)
     )
 
-    def is_valid(self) -> bool:
-        """Return True if there are no error messages on the validation result; False, otherwise."""
-        return len(self.findings.get_error_findings()) == 0
+    def is_valid(self, fail_on_warning: Optional[bool] = False) -> bool:
+        error_count = len(self.findings.get_error_findings())
+        warning_count = len(self.findings.get_warning_findings())
+        if (fail_on_warning):
+            # Return True if there are no warning or error messages on the validation result; False, otherwise.
+            result = (warning_count + error_count == 0)
+        else:
+            # Return True if there are no error messages on the validation result; False, otherwise.
+            result = (error_count == 0)
+        return result
 
     def get_messages_as_string(self) -> str:
         """Get all of the validator result messages as a single string."""
