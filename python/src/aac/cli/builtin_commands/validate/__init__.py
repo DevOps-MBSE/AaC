@@ -33,6 +33,11 @@ def _get_plugin_commands():
             This argument will cause only the definition provided by the argument to be validated.""",
             "str",
         ),
+        AacCommandArgument(
+            "--fail-on-warning",
+            """This argument will cause the validation to fail if any warnings are encountered. (optional)""",
+            "bool",
+        ),
     ]
 
     plugin_commands = [

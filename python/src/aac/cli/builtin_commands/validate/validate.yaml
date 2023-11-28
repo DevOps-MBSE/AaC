@@ -15,6 +15,10 @@ plugin:
           description: |
             The name of one definition to validate. (optional)
             This argument will cause only the definition provided by the argument to be validated.
+        - name: --fail-on-warning
+          type: bool
+          python_type: bool
+          description: This argument will cause the validation to fail if any warnings are encountered. (optional)
       acceptance:
         - scenario: The definitions are valid.
           given:
