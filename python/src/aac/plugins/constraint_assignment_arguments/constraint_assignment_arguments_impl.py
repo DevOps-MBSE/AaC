@@ -22,10 +22,6 @@ def check_arguments_against_constraint_definition(  # noqa: C901
 ) -> ExecutionResult:
     """Business logic for the Check arguments against constraint definition constraint."""
 
-    print(
-        f"Running {plugin_name} plugin for instance {instance.name} and definition {definition.name} with defining_schema {defining_schema}.\n\n{instance}"
-    )
-
     context = LanguageContext()
     if not context.is_aac_instance(
         instance, "aac.lang.SchemaConstraintAssignment"
