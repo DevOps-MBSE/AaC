@@ -39,7 +39,7 @@ We're going to discuss the use of `gen-plugin` below to help you build your cons
   - `.aac_evaluate` files for any user-editable output with an already existing file.  You can look at the changes here and incorporate into your content.
   - `.aac_backup` files for non-user editable output with an already existing file.  The backup contains the pre-existing content for your review.
 
-Once you're satisfied, run `aac clean <path_to_AaC_plugin_file> --code-output <src_path> --test-output <tests_path>` to remove any `.aac_evalute` and `.aac_backup` files.
+Once you're satisfied, run `aac clean <path_to_AaC_plugin_file> --code-output <src_path> --test-output <tests_path>` to remove any `.aac_evaluate` and `.aac_backup` files.
 
 Currently we are not generating documentation for plugins...so you're on your own for that.  Hopefully we'll get some content generation in place in the future to simplify plugin document content management.
 
