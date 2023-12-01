@@ -15,7 +15,7 @@ Constraint rules in AaC are defined with the `context_constraint`, `schema_const
 The overall constraint mechanism follows this flow:
 1. A definition is identified as needing to be checked (i.e. you run `aac check <AaC_file_path>`)
 2. Certain "core" constraints must be automatically checked while parsing and loading the AaC definition.
-  a. This includes items such as required fields being present, fields being recignized based on their defining schema, etc.
+  a. This includes items such as required fields being present, fields being recognized based on their defining schema, etc.
 3. Context constraints will be checked
   a. You can think of a context constraint as a "global" language constraint, or an "invariant".  These constraints evaluate the AaC `LanguageContext`.
 4. Each parsed definition will be checked against assigned schema constraints
