@@ -57,7 +57,7 @@ plugin:
       description: Check every definition to ensure there are no duplicate root keys defined in the AaC language.
 ```
 
-To implement the context constraint, run `aac gen-plugin <path-to-unique_root_keys.aac> --code-output <src-path> --test-output <tests-path>`.  Note that the package declaration will be used to establish sub-directories under your `--code-ouptut` and `--test-output` paths.  By default, the `gen-plugin` command will prompt you to confirm the target output paths prior to attempting to generate any files.
+To implement the context constraint, run `aac gen-plugin <path-to-unique_root_keys.aac> --code-output <src-path> --test-output <tests-path>`.  Note that the package declaration will be used to establish sub-directories under your `--code-output` and `--test-output` paths.  By default, the `gen-plugin` command will prompt you to confirm the target output paths prior to attempting to generate any files.
 
 The `gen-plugin` command will auto-generate all the AaC boilerplate code to integrate your new command into the AaC plugin framework and will provide you an implementation stub to populate.  It will also generate a unit test and feature files based on your declaration.  This particular example does not demonstrate the use of feature files.
 
