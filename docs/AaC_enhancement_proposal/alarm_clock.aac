@@ -1,0 +1,25 @@
+IMPORT: 
+   ./structures.aac, 
+   ../alarm_clock/structures.aac
+
+# ALARM_CLOCK: *A simple alarm clock*
+   - clock
+      + getTime() > currentTime
+   - timer
+      + setTime(targetTime)
+      + triggerTimer(currentTime) > timerAlert	
+   - alarm
+      + triggerAlarm(timerAlert) > alarmNoise
+
+
+GLOSSARY:
+
+   AlarmNoise : import : alarmNoise
+   Clock: A simple clock that keeps track of the current time : clock
+   ClockAlarm : A simple alarm that produces noise : alarm
+   ClockTimer : A simple timer that can be set to a target : timer
+   TimeStamp : primitive : currentTime, targetTime
+   TimerAlert : import : timerAlert
+  
+  
+   
