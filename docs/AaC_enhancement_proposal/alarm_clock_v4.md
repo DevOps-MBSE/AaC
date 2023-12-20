@@ -117,3 +117,9 @@ __Does:__
    - all_instances_unique
    - all_instances_defined
    - all_enum_values_defined
+
+
+   NOTES:
+   
+   Cameo
+   https://confluence.gws.sp.northgrum.com/display/GWSAD/Project+Onboarding
