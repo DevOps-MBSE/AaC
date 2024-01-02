@@ -1,4 +1,4 @@
-[![Main branch AaC Workflow](https://github.com/jondavid-black/AaC/actions/workflows/main-branch.yml/badge.svg)](https://github.com/jondavid-black/AaC/actions/workflows/main-branch.yml)
+[![Main branch AaC Workflow](https://github.com/DevOps-MBSE/AaC/actions/workflows/main-branch.yml/badge.svg)](https://github.com/DevOps-MBSE/AaC/actions/workflows/main-branch.yml)
 [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/from-referrer/)
 
 # Note to Contributors
@@ -73,7 +73,7 @@ model:
   description: This is a message mirror.
   behavior:
     - name: echo
-      type: request-response
+      type: REQUEST_RESPONSE
       description: This is the one thing it does.
       input:
         - name: inbound
@@ -130,7 +130,7 @@ model:
   description: This is a message mirror.
   behavior:
     - name: echo
-      type: request-response
+      type: REQUEST_RESPONSE
       description: This is the one thing it does.
       input:
         - name: inbound
@@ -141,11 +141,11 @@ model:
       acceptance:
         - scenario: onReceive
           given:
-          - The EchoService is running.
+           - The EchoService is running.
           when:
-          - The user sends a message to EchoService.
+            - The user sends a message to EchoService.
           then:
-          - The user receives the same message from EchoService.
+            - The user receives the same message from EchoService.
 ```
 
 Ok, so that's interesting, but what can you do with the AaC model once you've built it?
@@ -157,13 +157,13 @@ available to use the AaC model to auto-generate content for reviews, documentati
 development and deployment.
 
 ## User Documentation
-Users who would like more detailed documentation on leveraging AaC can find it in our Github pages [User Guide Documentation](https://jondavid-black.github.io/AaC/project_documentation/user_guide/index.html)
+Users who would like more detailed documentation on leveraging AaC can find it in our Github pages [User Guide Documentation](https://arch-as-code.org/project_documentation/user_guide/index.html)
 
 ## Example AaC Template Repository
 We have a [Github Template Repository](https://github.com/Coffee2Bits/AaC-User-Template-Repository) that's setup to allow users exploring AaC to immediately create and experiment with an AaC project in their own GitHub repository. The created repository is pre-populated with a simple example model and Github Action workflow.
 
 ## Developer Documentation
-Contributors, developers, or just generally interested parties who would like to understand the more technical underpinnings of AaC are welcome to read the project and developer documentation found in our Github pages [Developer Guide Documentation](https://jondavid-black.github.io/AaC/project_documentation/dev_guide/index.html)
+Contributors, developers, or just generally interested parties who would like to understand the more technical underpinnings of AaC are welcome to read the project and developer documentation found in our Github pages [Developer Guide Documentation](https://arch-as-code.org/project_documentation/dev_guide/index.html)
 
 ## Driving Value with AaC Plugins
 A simple example of one of the plugins mentioned above is the Plant UML plugin in the /plugins/aac-plantuml directory
