@@ -1,8 +1,7 @@
 schema:
   name: Person
   package: aac.example
-  modifiers:
-    - abstract
+  root: person
   fields:
     - name: name
       type: string
@@ -12,8 +11,6 @@ schema:
 schema:
   name: Employee
   package: aac.example
-  modifiers:
-    - final
   root: employee
   extends:
     - name: Person

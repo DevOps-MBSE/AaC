@@ -15,12 +15,13 @@ class Definition:
 
     Attributes:
         uid (UUID): A unique identifier for selecting the specific definition.
-        name (str): The name of the definition
-        package (str): The package of the definition
+        name (str): The name of the definition.
+        package (str): The package of the definition.
         content (str): The original source textual representation of the definition.
         source (AaCFile): The source document containing the definition.
         lexemes (list[Lexeme]): A list of lexemes for each item in the parsed definition.
         structure (dict): The dictionary representation of the definition.
+        instance (Any): A Python class instance of the definition.
     """
 
     uid: UUID = attrib(init=False, validator=validators.instance_of(UUID))

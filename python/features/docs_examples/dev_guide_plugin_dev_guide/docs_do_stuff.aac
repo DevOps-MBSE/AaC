@@ -10,19 +10,19 @@ plugin:
       acceptance:
         - name: Success test
           scenarios:
-            - name: Test do stuff command with valid input
+            - name: Test do-stuff command with valid input.
               given: 
                 - A path to an existing AaC file.
               when:
-                - The AaC do-stuff command is run with the path to the file
+                - The AaC do-stuff command is run with the path to the file.
               then:
-                - The do-stuff command provides the output 'SUCCESS'
+                - The do-stuff command provides the output 'SUCCESS'.
         - name: Failure test
           scenarios:
-            - name: Test do stuff command with valid input
+            - name: Test do-stuff command with valid input.
               given: 
                 - An path that does not point to an existing file.
               when:
-                - The AaC do-stuff command is run on the file
+                - The AaC do-stuff command is run on the file.
               then:
-                - The do-stuff command provides the output 'FAILURE'
+                - The do-stuff command provides the output 'FAILURE'.

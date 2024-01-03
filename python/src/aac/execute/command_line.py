@@ -82,12 +82,11 @@ def handle_exceptions(plugin_name: str, func: Callable) -> Callable:  # noqa: C9
         try:
             return func(*args, **kwargs)
         except LanguageError as e:
-            usr_msg = f"{e.message}{linesep}{e.location}"
             return ExecutionResult(
                 plugin_name,
                 "exception",
                 ExecutionStatus.GENERAL_FAILURE,
-                [ExecutionMessage(usr_msg, MessageLevel.ERROR, None, None)],
+                [ExecutionMessage(e.message, MessageLevel.ERROR, None, e.location)],
             )
         except OperationCancelled as e:
             return ExecutionResult(
@@ -107,9 +106,9 @@ def handle_exceptions(plugin_name: str, func: Callable) -> Callable:  # noqa: C9
                 exc = e.yaml_error
                 if hasattr(exc, "problem_mark"):
                     if exc.context is not None:
-                        usr_msg += f"  parser says{linesep} {str(exc.problem_mark)} {linesep}{str(exc.problem)} {str(exc.context)}{linesep}Please correct data and retry."
+                        usr_msg += f"  Parser Location: {str(exc.problem_mark)} - Problem: {str(exc.problem)} - Context: {str(exc.context)}{linesep}Please correct data and retry."
                     else:
-                        usr_msg += f"  parser says{linesep}{str(exc.problem_mark)}{linesep}{str(exc.problem)}{linesep}Please correct data and retry."
+                        usr_msg += f"  Parser Location: {str(exc.problem_mark)} - Problem: {str(exc.problem)}{linesep}Please correct data and retry."
             return ExecutionResult(
                 plugin_name,
                 "exception",

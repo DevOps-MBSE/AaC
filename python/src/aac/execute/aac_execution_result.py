@@ -10,7 +10,7 @@ from aac.context.source_location import SourceLocation
 
 @unique
 class ExecutionStatus(Enum):
-    """An enumeration that represents status codes for aac commands to return."""
+    """An enumeration that represents status codes for AaC commands to return."""
 
     SUCCESS = 0
     CONSTRAINT_FAILURE = auto()
@@ -49,7 +49,8 @@ class ExecutionResult:
     """Provides information regarding the results of the execution of a plugin.
 
     Attributes:
-        name (str): The name of the plugin whose results are included.
+        plugin_name (str): The name of the plugin whose results are included.
+        plugin_command_name (str): The name of the command which contributed to these results.
         status_code (ExecutionStatus): A status code for the plugin execution.
         messages (list[str]): A list of messages for the user.
     """
@@ -83,7 +84,7 @@ class ExecutionResult:
             if message.source is not None:
                 result += f"  Source: {message.source.uri}"
                 if message.location is not None:
-                    result += f" ({message.location.line}:{message.location.column}:{message.location.position}:{message.location.span})"
+                    result += f" (Ln {message.location.line}: Col {message.location.column}: Pos {message.location.position}: Spn {message.location.span})"
                 result += linesep
         return result
 

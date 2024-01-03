@@ -11,7 +11,7 @@ from aac.execute import PLUGIN_PROJECT_NAME, hookspecs
 
 def get_plugin_manager() -> PluginManager:
     """
-    Get the plugin manager and automatically registers first-party internal plugins.
+    Get the plugin manager and automatically register core plugins.
 
     Returns:
         The plugin manager.
@@ -34,7 +34,7 @@ def register_plugins_in_package(package: str) -> List[ModuleType]:
     """
     Register all the plugins in the specified package.
 
-    Note, this function depends on the ability to import package and it's direct child packages.
+    Note, this function depends on the ability to import package and its direct child packages.
 
     Args:
         package (str): The package in which to find plugins to be registered.

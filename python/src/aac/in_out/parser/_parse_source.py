@@ -12,14 +12,14 @@ from os import path, linesep
 from typing import Optional
 from yaml import Mark, Token, StreamStartToken, StreamEndToken, DocumentStartToken
 
-from aac.in_out.constants import DEFAULT_SOURCE_URI, YAML_DOCUMENT_EXTENSION, AAC_DOCUMENT_EXTENSION
-from aac.in_out.files.aac_file import AaCFile
-from aac.in_out.parser._cache_manager import get_cache
-from aac.in_out.paths import sanitize_filesystem_path
 from aac.context.constants import DEFINITION_FIELD_NAME, ROOT_KEY_IMPORT
 from aac.context.definition import Definition
 from aac.context.lexeme import Lexeme
 from aac.context.source_location import SourceLocation
+from aac.in_out.constants import DEFAULT_SOURCE_URI, YAML_DOCUMENT_EXTENSION, AAC_DOCUMENT_EXTENSION
+from aac.in_out.files.aac_file import AaCFile
+from aac.in_out.parser._cache_manager import get_cache
+from aac.in_out.paths import sanitize_filesystem_path
 
 
 YAML_CACHE = get_cache()
@@ -190,16 +190,16 @@ def _read_arch_file_content(arch_file: str) -> str:
 def get_definitions_by_root_key(root_key: str, definitions: list[Definition]) -> list[Definition]:
     """Return a subset of definitions with the given root key.
 
-    The aac.in_out.parser.parse() function returns a dict of all parsed types.  Sometimes it is
+    The aac.in_out.parser.parse() function returns a list of all parsed Definitions.  Sometimes it is
     useful to only work with certain roots (i.e. model or schema).  This utility
-    method allows a setup of parsed definitions to be "filtered" to a specific root key.
+    method allows the list of parsed definitions to be "filtered" to a specific root key.
 
     Args:
         root_key (str): The root key to filter on.
-        definitions (list[Definition]): The list of parsed definitions to search.
+        definitions (list[Definition]): The list of parsed definitions to filter.
 
     Returns:
-        A list of ParedDefinitions with the given root key AaC model definitions.
+        A list of parsed AaC model Definitions with the given root key.
     """
 
     def does_definition_root_match(definition: Definition) -> bool:
@@ -219,7 +219,7 @@ def _get_files_to_import_from_definitions(source_file_path: str, definitions: li
 
     import_definitions = get_definitions_by_root_key(ROOT_KEY_IMPORT, definitions)
     for definition in import_definitions:
-        for import_path in definition.structure["import"]["files"] or []:
+        for import_path in definition.structure[ROOT_KEY_IMPORT]["files"] or []:
             arch_file_dir = path.dirname(path.realpath(source_file_path))
             parse_path = path.join(arch_file_dir, import_path.removeprefix(f".{path.sep}"))
             import_paths.add(sanitize_filesystem_path(parse_path))

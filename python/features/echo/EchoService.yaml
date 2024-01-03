@@ -4,6 +4,7 @@ import:
 ---
 model:
   name: EchoService
+  package: echo
   description: This is a message mirror.
   behavior:
     - name: echo

@@ -825,8 +825,8 @@ schema:
       description: |
         An explanatory description for the component including what the
         component is modeling and any other relevant information.
-    - name: cardinallity
-      type: Cardinallity
+    - name: cardinality
+      type: Cardinality
       description: |
         The cardinality of the component within the model.
     - name: model
@@ -836,7 +836,7 @@ schema:
       is_required: true
 ---
 enum:
-  name: Cardinallity
+  name: Cardinality
   package: aac.lang
   description: |
     The cardinality of a relationship in a architecture model.

@@ -12,7 +12,7 @@ model:
   components:
     - name: svc1
       model: ServiceOne
-      cardinallity: ONE
+      cardinality: ONE
     - name: sub
       model: Subsystem
     - name: svc3

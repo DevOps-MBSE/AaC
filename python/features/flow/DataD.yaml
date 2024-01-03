@@ -6,8 +6,8 @@ schema:
   name: DataD
   package: flow
   extends:
-    - package: flow
-      name: DataMessage
+    - name: DataMessage
+      package: flow
   fields:
     - name: response
       type: string

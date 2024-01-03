@@ -2,12 +2,12 @@ import:
   files:
     - ./DataMessage.yaml
 ---
-schema:
-  extends:
-    - package: flow
-      name: DataMessage
+schema:  
   name: DataA
   package: flow
+  extends:
+    - name: DataMessage
+      package: flow
   fields:
     - name: request
       type: string

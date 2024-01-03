@@ -14,17 +14,20 @@ schema:
   package: aac.example
   modifiers:
     - final
+  root: employee
   extends:
     - name: Person
       package: aac.example
   fields:
     - name: id
       type: string
+---
 schema:
   name: Contractor
   package: aac.example
   modifiers:
     - final
+  root: contractor
   extends:
     - name: Person
       package: aac.example

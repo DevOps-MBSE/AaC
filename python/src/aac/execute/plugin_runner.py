@@ -33,8 +33,8 @@ class AacCommand:
     The callback is invoked if the user specifies the command.
 
     Attributes:
-        name: A string with the name of the command_description.
-        description: A string with the command description -- will be used to build the help command.
+        name: A string with the name of the command.
+        description: A string with the command description -- will be used to populate the help command.
         callback: A function that's executed when the user runs the AaC command.
         arguments: A list of AacCommandArgument containing argument information about the command. (default: [])
     """
@@ -54,16 +54,15 @@ class AacCommand:
 @attrs(hash=False)
 class PluginRunner:
     """
-    A class used to represent a command in AaC.
+    A class used to manage the plugin execution invocation in AaC.
 
-    The command name is added to the argument parser with help set to the command description.
-    The callback is invoked if the user specifies the command.
+    Each plugin may define a set of commands and constraints.  The plugin runner contains the plugin definition
+    and a mapping of command names to command callbacks and constraint names to constraint callbacks.
 
     Attributes:
-        name: A string with the name of the command_description.
-        description: A string with the command description -- will be used to build the help command.
-        callback: A function that's executed when the user runs the AaC command.
-        arguments: A list of AacCommandArgument containing argument information about the command. (default: [])
+        plugin_definition: The definition for the plugin.
+        command_to_callback: Dictionary mapping command names to command callbacks.
+        constraint_to_callback: Dictionary mapping constraint names to constraint callbacks.
     """
 
     plugin_definition: Definition = attrib(validator=validators.instance_of(Definition))

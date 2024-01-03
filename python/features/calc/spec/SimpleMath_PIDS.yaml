@@ -13,7 +13,7 @@ req_spec:
 req:
   name: Simple Math
   id: "SM-1"
-  shall:  When receiving a simple math request message, the calculator shall respond with the the result of the simple math function.
+  shall:  When receiving a simple math request message, the calculator shall respond with the result of the simple math function.
   parents:
     - "CALC-3"
   children:

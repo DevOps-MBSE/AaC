@@ -1,3 +1,7 @@
+import:
+  files:
+    - ../spec/Calculator_IRS.yaml
+---
 schema:
   name: MathResponse
   requirements:

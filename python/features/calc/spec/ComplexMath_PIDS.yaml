@@ -13,7 +13,7 @@ req_spec:
 req:
   name: Complex Math
   id: "CM-1"
-  shall:  When receiving a complex math request message, the calculator shall respond with the the result of the complex math function.
+  shall:  When receiving a complex math request message, the calculator shall respond with the result of the complex math function.
   parents:
     - "CALC-3"
   children:

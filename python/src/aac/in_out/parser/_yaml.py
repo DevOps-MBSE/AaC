@@ -59,14 +59,14 @@ def parse_yaml(source: str, content: str) -> list[dict]:
         models = [model for model in load_all(content, Loader=SafeLoader) if model]
         _error_if_not_yaml(source, content, models)
         _error_if_not_complete(source, content, models)
-    except YAMLParserError as exc:
-        error_messages = _yaml_error_messages("parser", exc, content)
+    except YAMLParserError as error:
+        error_messages = _yaml_error_messages("parser", error, content)
         _log_yaml_error(source, error_messages)
-        raise ParserError(source, error_messages, exc)
+        raise ParserError(source, error_messages, error)
     except YAMLScannerError as error:
         error_messages = _yaml_error_messages("scanner", error, content)
         _log_yaml_error(source, error_messages)
-        raise ParserError(source, error_messages)
+        raise ParserError(source, error_messages, error)
     except Exception as error:
         logging.error(f"Error: {error}. Encountered in: {source}")
         logging.error(f"Content of error: {content}")

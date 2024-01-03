@@ -6,8 +6,8 @@ schema:
   name: DataB
   package: flow
   extends:
-    - package: flow
-      name: DataMessage
+    - name: DataMessage
+      package: flow
   fields:
     - name: transformed_request
       type: string
