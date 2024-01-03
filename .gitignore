@@ -1,9 +1,6 @@
 # IDE/Editor files
-.vscode/
 .project
 .settings/
-
-./python/src_orig
 
 # Emacs temporary files
 .#*

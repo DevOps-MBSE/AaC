@@ -1,6 +1,6 @@
 # Check
 
-The check plugin evaluates an AaC model against the AaC constraints.  The check plugin will output any errors that are found.
+The `check` plugin evaluates an AaC model against the AaC constraints.  The `check` plugin will output any errors that are found.
 
 ## Check Command
 

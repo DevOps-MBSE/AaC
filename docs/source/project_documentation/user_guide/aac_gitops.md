@@ -9,8 +9,3 @@ Here is an example of the visual diff of changes made to an AaC model in a Githu
 
 ## Leveraging AaC in CI/CD pipelines
 Architecture-as-Code not only allows users to leverage the power of version-control tools like Git for systems modeling, but it also enables users to leverage Continuous Integration/Continuous Delivery pipelines.
-
-The [AaC-User-Template-Repository](https://github.com/Coffee2Bits/AaC-User-Template-Repository/actions/runs/2380729241) comes with a simple, prepared pipeline that automatically validates any changes to the AaC models and automatically generates a markdown document of the models, Protobuf3 messages for interfaces, and PlantUML diagrams.
-
-Here is a peek at the Github Action workflow used in the AaC-User-Template-Repository that validates, automatically generates artifacts based on the model, and uploads the generated artifacts as pipeline outputs.
-![AaC-User-Template-Repository pipeline](../../images/github/template_repo_actions_pipeline.png)

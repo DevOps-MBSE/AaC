@@ -1,6 +1,6 @@
 # Version
 
-The Version plugin provides the installed version of AaC.
+Provides the installed version of AaC.
 
 ## Version Command
 

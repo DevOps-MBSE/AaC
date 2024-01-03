@@ -9,4 +9,4 @@ Plugins Documentation
    Check <check>
    Print Definitions <print_defs>
    Generate <generate>
-   Generate Plugin <generate_plugin>
+   Generate Plugin <gen_plugin>

@@ -1,6 +1,6 @@
 # Print Definitions
 
-The print definitions plugin outputs all AaC definitions from the Language Context.  This is useful for debugging or may serve as a reminder of the definitions available.
+Prints all AaC definitions from the Language Context.  This is useful for debugging or may serve as a reminder of the definitions available.
 
 ## Print-Defs Command
 

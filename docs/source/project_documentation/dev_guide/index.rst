@@ -2,7 +2,7 @@ Developer Guide Documentation
 =============================
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 1
 
    Getting Started <dev_guide_index>
    Documentation <docs>

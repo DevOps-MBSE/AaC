@@ -1,8 +1,8 @@
 # Getting Started as a Developer
 
-## VSCode Workspaces
+## VSCode
 
-Historically this repository has housed various sub project,  but have since refactored into a multi-repo structure with only the main AaC capability in the main repository.  As such we'd previously setup [VSCode Workspaces](https://code.visualstudio.com/docs/editor/workspaces) to separate projects and experiences.  We opted to keep the python project in place during the refactor. When you first open the project in VSCode, you will see the entirety of it, however, if you open the Python workspace then the VSCode instance will reload and now the visible files, IDE configuration, and the configured tasks will now pertain only to the Python package. We'll maintain this flexibility for now in case we discover a need for another project within the repository.
+You may simple open the AaC folder in your VSCode editor and start working across the entire repository.  Historically this repository has housed various sub projects,  but have since refactored into a multi-repo structure with only the main AaC capability in the main repository.  As such we'd previously setup [VSCode Workspaces](https://code.visualstudio.com/docs/editor/workspaces) to separate projects and experiences.  We opted to keep the python project in place during the refactor. When you first open the project in VSCode, you will see the entirety of it, however, if you open the Python workspace then the VSCode instance will reload and now the visible files, IDE configuration, and the configured tasks will now pertain only to the Python package. We'll maintain this flexibility for now in case we discover a need for another project within the repository.
 
 You can open a workspace in VSCode by:
 
@@ -16,11 +16,11 @@ You can open a workspace in VSCode by:
 
 ## Gitpod Environment
 
-This project prioritizes supporting accessible, reproducible, and easy to use development environments which is why we support and recommend users use the already-curated [Gitpod](https://gitpod.io/new/#https://github.com/DevOps-MBSE/AaC) Architecture-as-Code development environment. The Gitpod environment handles all the setup and configuration necessary to begin developing AaC. You can immediately open a vscode workspace file and begin debugging the Python application.
+This project prioritizes accessible, reproducible, and easy to use development environments which is why we support and recommend users take advantage of the already-curated [Gitpod](https://gitpod.io/new/#https://github.com/DevOps-MBSE/AaC) Architecture-as-Code development environment. The Gitpod environment handles all the setup and configuration necessary to begin developing AaC. You can immediately open the project in VSCode and begin modifying and debugging the Python application.
 
-If it's your first time using Gitpod, you'll be prompted to make an account or use SSO provided by Gitlab and Github. Gitpod provides a free tier, so you're not required to pay before using it.
+If it's your first time using Gitpod, you'll be prompted to make an account or use SSO provided by GitLab and GitHub. Gitpod provides a free tier, so you're not required to pay before using it.
 
-Gitpod provides the ability to initialize the environment with shell commands and scripts. We leverage these init commands to handle any initialization for the AaC Python package , such as installing dependencies and building the projects. You can find the init commands in the `.Gitpod.yml` file at the root of the repository.
+Gitpod provides the ability to initialize the environment with shell commands and scripts. We leverage these init commands to handle any initialization for the AaC Python package, such as installing dependencies and building the project. You can find the init commands in the `.gitpod.yml` file at the root of the repository.
 
 ## Non-Gitpod Environment
 
@@ -164,7 +164,7 @@ Additionally, to get an HTML code coverage report, update the `tox` command to i
 
 #### VSCode Unit Test Support for Python
 
-The Python plugin for VSCode supports the `unittest` Python library, and not the `nose2` framework that we use. The impact is fairly minimal, but Python unit tests using the `nose2` parameterized test feature will not run correctly from within the VSCode IDE since it fails to recognize the `nose2` parameterized tests as parameterized tests causes them to fail.
+The Python plugin for VSCode supports the `unittest` Python library, and not the `nose2` framework that we use. The impact is fairly minimal, but Python unit tests using the `nose2` parameterized test feature will not run correctly from within the VSCode IDE since it fails to recognize the `nose2` parameterized tests as parameterized tests, which causes them to fail.
 
 To get around this, you can run all the tests from the terminal using the above `tox` commands.
 

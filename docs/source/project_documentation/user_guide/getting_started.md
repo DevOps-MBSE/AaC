@@ -19,7 +19,23 @@ Installed `aac` executable version information is available via  the `version` c
 aac version
 ```
 
-AaC user features, any command that you use, are managed and implemented via a plugin system. If you want to add or extend the features of the AaC package, all you need to do is install a plugin or build it yourself. This allows us to maintain a small footprint for each user feature while providing the ability for users to completely customize their tooling and environment to their needs.
+AaC user features, i.e. any command that you use, are managed and implemented via a plugin system. If you want to add or extend the features of the AaC package, all you need to do is install an appropriate additional plugin or build it yourself. This allows us to maintain a small footprint for each user feature while providing the ability for users to completely customize their tooling and environment to their needs.
+
+## Using Additional AaC Plugins
+Any additional AaC plugins are plugins built outside of the core AaC tool that are developed either by the core team or third-party developers. These external plugins have to be installed via pip in order to correctly register the plugin's command and functionality.
+
+### Installing Additional Plugins
+Installing additional plugins is easy with pip.
+
+To install an additional AaC Plugin on Linux, Windows, or macOS:
+```bash
+pip install aac-plugin
+```
+
+If the plugin provides new command functionality you will see the new command(s) details in the usage information. If the expected commands aren't showing up, then it's likely the plugin wasn't installed correctly.
+```bash
+aac --help
+```
 
 ## Built-in AaC Commands
 AaC includes a number of built-in plugins to provide you with the foundational modeling features out of the box. These plugins are always available to you and are installed with the AaC package.
@@ -56,7 +72,7 @@ _alarm_clock.yaml_
 ```{eval-rst}
 .. literalinclude:: ../../../../python/features/alarm_clock/alarm_clock.yaml
     :language: yaml
-    :lines: 6-15, 38-41, 49-52, 73-76
+    :lines: 6-15, 39-42, 49-52, 71-74
 ```
 
 ## Defining a Data Structure
@@ -66,7 +82,7 @@ _structures.yaml_
 ```{eval-rst}
 .. literalinclude:: ../../../../python/features/alarm_clock/structures.yaml
     :language: yaml
-    :lines: 13-29
+    :lines: 14-31
 ```
 
 Defining a data structure by itself isn't particularly useful, but we can reference this data structure in our models to define state or interfaces.
@@ -82,7 +98,7 @@ _alarm_clock.yaml_
 ```
 
 ## Defining Model Interfaces
-Data structures are also used when defining interfaces between models/components of your system. What these interfaces translate to is highly dependent upon your needs and which plugins you're using. For instance, the GenProtobuf plugin identifies the data structures defined in `model.behavior` fields and generates Protobuf3 equivalent messages of those data structures for use in software messaging/communication.
+Data structures are also used when defining interfaces between models/components of your system. What these interfaces translate to is highly dependent upon your needs and which plugins you're using.
 
 If we return to our alarm clock example, then we can define the interface to our alarm system. In this example we'll re-use the timestamp data structure for simplicity since it fairly represents the data that we'd expect a user to provide to an alarm clock:
 
@@ -90,7 +106,7 @@ _alarm_clock.yaml_
 ```{eval-rst}
 .. literalinclude:: ../../../../python/features/alarm_clock/alarm_clock.yaml
     :language: yaml
-    :lines: 6-22
+    :lines: 6-21
 ```
 
 ## Defining the Interactions Between Models

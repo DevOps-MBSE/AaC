@@ -1,6 +1,6 @@
 # Generate
 
-Plugin got general-purpose content generation and clean-up.
+Plugin providing general-purpose content generation and clean-up.
 
 ## Generate Command
 
@@ -30,7 +30,7 @@ The `--test-output` argument tells the generator the directory to put your gener
 
 #### Doc Output
 
-The `--doc-output` argument tells the generator the directory to put your generated documentation.  This is currently not used but may be in the future.
+The `--doc-output` argument tells the generator the directory to put your generated documentation.  _This is currently not used but may be in the future._
 
 #### No Prompt
 
@@ -79,15 +79,15 @@ The AaC file containing the model definition.
 
 #### Code Output
 
-The `--code-output` argument tells the cleaner where backup and evaluate content may be found.  This will be the root of the package directory structure.
+The `--code-output` argument tells the cleaner where code backup and evaluate content may be found.  This will be the root of the package directory structure.
 
 #### Test Output
 
-The `--test-output` argument tells the cleaner where backup and evaluate content may be found.  This will be the root of the test directory structure.
+The `--test-output` argument tells the cleaner where test backup and evaluate content may be found.  This will be the root of the test directory structure.
 
 #### Doc Output
 
-The `--doc-output` argument tells the cleaner where backup and evaluate content may be found.  This is currently not used but may be in the future.
+The `--doc-output` argument tells the cleaner where documentation backup and evaluate content may be found.  _This is currently not used but may be in the future._
 
 #### No Prompt
 

@@ -1,0 +1,58 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "AaC Version",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/python/src/aac/__main__.py",
+            "args": [
+                "version",
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "AaC Check AaC",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/python/src/aac/__main__.py",
+            "args": [
+                "check",
+                "${workspaceFolder}/python/src/aac.aac",
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "AaC Gen-Plugin",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/python/src/aac/__main__.py",
+            "args": [
+                "gen-plugin",
+                "${workspaceFolder}/python/src/aac/plugins/no_ext_for_final/no_ext_for_final.aac",
+                "--code-output",
+                "${workspaceFolder}/python/src",
+                "--test-output",
+                "${workspaceFolder}/python/tests",
+                "--no-prompt"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        
+    ]
+}
