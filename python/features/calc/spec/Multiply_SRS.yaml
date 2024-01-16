@@ -1,0 +1,19 @@
+import:
+  files:
+    - IntermediateMath_PIDS.yaml
+---
+req_spec:
+  name: Module Multiply SRS
+  description:  This is a representative Software Requirements Specification for a module called Multiply.
+  requirements:
+    - "MULT-1"
+---
+req:
+  name: Multiply
+  id: "MULT-1"
+  shall:  When receiving a multiply message, the calculator shall respond with the product of the provided values.
+  parents:
+    - "IM-1"
+  attributes:
+    - name: TADI
+      value: Test

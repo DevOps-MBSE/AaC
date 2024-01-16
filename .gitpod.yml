@@ -7,16 +7,6 @@ tasks:
       sphinx-build source gen_docs # Pre-build the docs so that when Gitpod opens the port it's ready to serve
     command: sphinx-autobuild source gen_docs
 
-  - name: VSCode Extension Environment
-    init: |
-      cd /workspace/AaC/vscode_extension/
-      yarn install
-      sleep 120 # Gitpod often takes a long time to install the python environment
-      source /workspace/AaC/python/venv/bin/activate
-      yarn generate:rest_api
-      yarn compile
-    command: cd /workspace/AaC/vscode_extension/; yarn watch
-
   - name: Python Virtual Environment
     init: |
       cd python/
@@ -32,7 +22,6 @@ vscode:
     - editorconfig.editorconfig
     - ms-python.python
     - samuelcolvin.jinjahtml
-    - vscode.typescript
     - streetsidesoftware.code-spell-checker
 
 image:

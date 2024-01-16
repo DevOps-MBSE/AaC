@@ -91,59 +91,20 @@ jobs:
       - name: Get Package Version
         run: python -m aac version
 
-      - name: Validate Core Spec
+      - name: Check AaC DSL
         if: matrix.os != 'windows-latest'
         run: |
-          spec_file=$(find $pythonLocation -name spec.yaml | head -n1)
-          python -m aac validate $spec_file
+          spec_file=$(find $pythonLocation -name aac.aac | head -n1)
+          python -m aac check $spec_file
 
-      - name: Validate Core Spec
+      - name: Check AaC DSL
         if: matrix.os == 'windows-latest'
         run: |
-          $spec_file=$(gci -r -fi spec.yaml -Name "$Env:pythonLocation")
-          python -m aac validate "$Env:pythonLocation\$spec_file"
+          $spec_file=$(gci -r -fi aac.aac -Name "$Env:pythonLocation")
+          python -m aac check "$Env:pythonLocation\$spec_file"
 
       - name: Print out Core Spec
-        run: python -m aac print-spec
-
-      - name: Print out active context
-        run: python -m aac print-active-context
-
-      - name: Validate Primitive Type Check Plugin
-        run: python -m aac validate src/aac/plugins/first_party/primitive_type_check/primitive_type_check.yaml
-
-      - name: Validate Example Model
-        run: python -m aac validate model/flow/System.yaml
-
-      - name: Validate Alarm Clock
-        run: python -m aac validate model/alarm_clock/alarm_clock.yaml
-
-      - name: Create PlantUML Component Diagram
-        run: python -m aac puml-object model/flow/System.yaml output/
-
-      - name: Test Gen-Plugin Third-Party Plugin
-        if: matrix.os != 'windows-latest'
-        run: |
-          mkdir -p model/third_party_test/
-          cp model/plugin/*.yaml model/third_party_test/
-          echo y | python -m aac gen-plugin model/third_party_test/plugin.yaml
-          cd model/third_party_test/
-          pip install .
-          aac activate-plugin "Test Plugin"
-          aac list-plugins --active | grep "Test Plugin"
-          aac deactivate-plugin "Test Plugin"
-          pip uninstall -y test-plugin
-        shell:
-          bash
-
-      - name: Test Gen-Plugin First-Party Plugin
-        run: |
-          mkdir -p src/aac/plugins/first_party/test_plugin/
-          cp model/plugin/*.yaml src/aac/plugins/first_party/test_plugin/
-          echo y | aac gen-plugin src/aac/plugins/first_party/test_plugin/plugin.yaml
-          pip install .
-        shell:
-          bash
+        run: python -m aac print-defs
 
       - name: Upload logs from failed runs
         if: ${{ failure() }}

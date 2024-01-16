@@ -1,0 +1,13 @@
+import:
+  files:
+    - ./DataMessage.yaml
+---
+schema:
+  name: DataB
+  package: flow
+  extends:
+    - name: DataMessage
+      package: flow
+  fields:
+    - name: transformed_request
+      type: string

@@ -1,0 +1,13 @@
+plugin:
+  name: Print AaC Definitions
+  package: aac.plugins.print_defs
+  description: |
+    An AaC plugin that provides the YAML representation of existing AaC language definitions.
+  commands:
+    - name: print-defs
+      help_text: |
+        Print YaML representation of AaC language definitions.
+      input:
+        - name: --core-only
+          type: bool
+          description: If true, exclude everything except core language definitions.

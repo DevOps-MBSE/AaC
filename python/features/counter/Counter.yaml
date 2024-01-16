@@ -1,0 +1,49 @@
+import:
+  files:
+    - ./EventCount.yaml
+    - ./Request.yaml
+    - ./Response.yaml
+---
+model:
+  name: Counter
+  description: This is service that counts events.
+  state:
+    - name: eventCount
+      type: EventCount
+  behavior:
+    - name: onRequest
+      description: This an event to be counted.
+      input:
+        - name: request
+          type: Request
+      output:
+        - name: response
+          type: Response
+      acceptance:
+        - name: Count an event.
+          scenarios: 
+            - name: Receive request and send back a response.
+              given:
+                - The Counter is running.
+              when:
+                - The user sends a request to Counter.
+              then:
+                - The user receives a response from Counter.
+                - The eventCount is incremented by 1.
+    - name: onEventCount
+      description: This provides the event count and will not be counted.
+      output:
+        - name: count
+          type: EventCount
+      acceptance:
+        - name: Test get event count
+          scenarios: 
+            - name: Provide the event count.
+              given:
+                - The Counter is running.
+                - The event count is 0.
+              when:
+                - The user sends a request to Counter.
+                - The user requests the event count.
+              then:
+                - The user receives event count of 1.

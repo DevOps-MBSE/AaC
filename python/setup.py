@@ -1,6 +1,7 @@
 import logging
 from setuptools import find_packages, setup
 from src.aac import __version__
+from os import linesep
 
 README_FILE_PATH = "../README.md"
 
@@ -8,7 +9,7 @@ try:
     with open(README_FILE_PATH, "r") as file_handler:
         readme_description = file_handler.read()
 except Exception as exception:
-    logging.error(f"Failed to open readme file {README_FILE_PATH} with error:\n {exception}")
+    logging.error(f"Failed to open readme file {README_FILE_PATH} with error:{linesep}  {exception}")
     readme_description = ""
 
 runtime_dependencies = [
@@ -23,6 +24,7 @@ runtime_dependencies = [
     "typing-extensions ~= 4.4.0",
     "pluggy ~= 1.0.0",
     "Jinja2 ~= 3.1.2",
+    "black >= 23.9.1",
     "MarkupSafe ~= 2.1.1",
     "pygls ~= 0.13.1",
     "fastapi ~= 0.89.0",
@@ -37,7 +39,6 @@ development_dependencies = [
     "wheel ~= 0.42.0",
     "pip-tools >= 6.9.0",
     "tomli < 2.0.0",
-    "black >= 22.3.0",
     "platformdirs >= 2.4",
     "coverage >= 6.0",
     "mccabe >= 0.6.1",
@@ -73,6 +74,7 @@ documentation_dependencies = [
 test_dependencies = [
     "tox >= 3.24",
     "nose2 >= 0.10.0",
+    "behave >= 1.2.6",
     "coverage >= 6.0",
     "flake8 >= 4.0",
     "flake8-docstrings >= 1.6.0",
@@ -100,7 +102,7 @@ setup(
     tests_require=test_dependencies,
     entry_points={
         "console_scripts": [
-            "aac=aac.cli.execute:cli",
+            "aac=aac.execute.command_line:cli",
         ]
     },
     extras_require={

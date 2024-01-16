@@ -1,8 +1,0 @@
-schema:
-  name: MathResponse
-  requirements:
-    ids:
-    - "CALC_IRS-3"
-  fields:
-    - name: result
-      type: number

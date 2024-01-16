@@ -1,0 +1,4 @@
+project:
+  name: My project
+  description: |
+    An AaC project definition used to test the gen-project command behavior.

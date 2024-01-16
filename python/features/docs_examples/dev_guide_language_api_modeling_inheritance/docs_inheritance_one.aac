@@ -1,0 +1,20 @@
+schema:
+  name: Person
+  package: aac.example
+  root: person
+  fields:
+    - name: name
+      type: string
+    - name: age
+      type: int
+---
+schema:
+  name: Employee
+  package: aac.example
+  root: employee
+  extends:
+    - name: Person
+      package: aac.example
+  fields:
+    - name: id
+      type: string

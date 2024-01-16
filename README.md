@@ -36,13 +36,13 @@ operations with complete traceability and configuration management throughout.  
 discover new ways to define, deliver, and evolve complex systems using Architecture-as-Code.
 
 AaC is a self-defining solution. At the heart of the AaC application is a definition of AaC itself.
-This model is used in validation of itself.  Core data types are purposefully simple and can be
+This model checks itself for correctness.  Core data types are purposefully simple and can be
 extended by a user.
 
 AaC is designed with extensibility in mind.  The built-in functionality is intentionally minimized.
 AaC uses a plug-in system to extend the base capability.  To further simplify this, AaC includes a
-built-in command to generate new plugins from an AaC model.  There is an example of this for
-Plant UML in the plugins folder of the repository and more info below.
+built-in command to generate new plugins from an AaC model.  There is are a few internal examples of this
+in the plugins folder of the repository and more info below.
 
 ## Using AaC to Model Your System
 AaC is written in Python to help make it more approachable for casual users and easily extensible for
@@ -93,7 +93,7 @@ model:
 
 Now you can run AaC against your model.
 ```bash
-aac validate EchoService.yaml
+aac check EchoService.yaml
 ```
 
 AaC has some core "root types" for you to work with.  You can see the root types of `schema` and `model` used in the example above.
@@ -102,7 +102,7 @@ The AaC core root types are:
 - enum: Allows you to model enumerated values (types with only specific values allowed).
 - model: Allows you to model the components of your system and their interfaces.  These can be abstract or concrete.
 - usecase: Allows you to model the behavior and interactions between your models.
-- ext: Allows you to easily extend the AaC DSL itself and tailor it to your needs.
+- plugin: Allows you to easily extend the AaC DSL itself and create tailored aac commands to your needs.
 
 Although you can use the yaml trick above when modelling your system, it would be better to keep things more
 structured and organized.  To help with this AaC allows you to define each item you model in a separate file and
@@ -159,38 +159,8 @@ development and deployment.
 ## User Documentation
 Users who would like more detailed documentation on leveraging AaC can find it in our Github pages [User Guide Documentation](https://arch-as-code.org/project_documentation/user_guide/index.html)
 
-## Example AaC Template Repository
-We have a [Github Template Repository](https://github.com/Coffee2Bits/AaC-User-Template-Repository) that's setup to allow users exploring AaC to immediately create and experiment with an AaC project in their own GitHub repository. The created repository is pre-populated with a simple example model and Github Action workflow.
-
 ## Developer Documentation
 Contributors, developers, or just generally interested parties who would like to understand the more technical underpinnings of AaC are welcome to read the project and developer documentation found in our Github pages [Developer Guide Documentation](https://arch-as-code.org/project_documentation/dev_guide/index.html)
 
-## Driving Value with AaC Plugins
-A simple example of one of the plugins mentioned above is the Plant UML plugin in the /plugins/aac-plantuml directory
-of this repository.  This plugin allows you to generate component diagrams, object diagrams, and sequence
-diagrams from the AaC model of your system.  You can test this yourself by using the models in the /model
-director of this repository.
-
-To build the Plant UML plugin, first we modeled the plugin behavior we wanted using AaC.  I'll walk you through building
-that plugin so you can build your own plugin for your own need.
-1) Model the Plugin behavior using AaC
-    - The /plugins/aac-plantuml/aac-plantuml.yaml file contains the specification of 3 desired behaviors.
-1) Generate the plugin boiler-plate code.
-    - Run aac gen-plugin aac-plantuml.yaml
-    - When prompted if you want to write files type "y" and hit enter.
-    - Everything you need for a plugin to work in the AaC tool has been generated except the business logic.
-    - Note:  Plugins have a pre-defined interface.  They have 2 arguments: path to the file being processes, and the
-       parsed_model which is a dict.  This key is the type name and the value is the model content for that type.
-1) Write the business logic for your plug-in.
-    - You can see the business logic in /plugins/aac-plantuml/aac_plantuml_impl.py.
-    - Note:  The other files in the directory are auto-generated and will be overwritten if you rerun gen-plugin.  Your
-       plugin impl file will not be overwritten, so keep your business logic here or in other non-generated files.
-1) Build your plugin.
-    - From your plugin directory run '''pip install -e .''' and your plugin will be built and installed locally.
-1) Test your plugin
-    - Run '''aac plugin-behavior-name model_file''' to see your plugin in action.
-1) If you wish you can now package and publish your plugin to PyPI for other AaC users to download and use.
-    - From your plugin directory run '''python -m build'''
-    - From your plugin directory run '''python -m twine upload dist/*'''
 
 We're also actively working on other functionality so keep an eye out for new updates.

@@ -1,0 +1,31 @@
+req_spec:
+  name: Calculator System Interface Requirements
+  description: This is a interface specification structure to test the spec plugin.
+  requirements:
+    - "CALC_IRS-1"
+    - "CALC_IRS-2"
+    - "CALC_IRS-3"
+---
+req:
+  name: Interface Function
+  id: "CALC_IRS-1"
+  shall:  The calculator request message shall include a math function to be performed.
+  attributes:
+    - name: TADI
+      value: Test
+---
+req:
+  name : Interface Input
+  id: "CALC_IRS-2"
+  shall:  The calculator request message shall include input values.
+  attributes:
+    - name: TADI
+      value: Test
+---
+req:
+  name: Interface Output
+  id: "CALC_IRS-3"
+  shall:  The calculator response message shall include a single output value.
+  attributes:
+    - name: TADI
+      value: Test

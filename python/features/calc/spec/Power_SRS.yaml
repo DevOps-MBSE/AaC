@@ -1,0 +1,19 @@
+import:
+  files:
+    - ComplexMath_PIDS.yaml
+---
+req_spec:
+  name: Module Power SRS
+  description:  This is a representative Software Requirements Specification for a module called Power.
+  requirements:
+    - "POW-1"
+---
+req:
+  name: Power
+  id: "POW-1"
+  shall:  When receiving a power message, the calculator shall respond with the value raised to the specified exponent.
+  parents:
+    - "CM-1"
+  attributes:
+    - name: TADI
+      value: Test

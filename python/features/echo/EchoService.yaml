@@ -1,0 +1,27 @@
+import:
+  files:
+    - ./Message.yaml
+---
+model:
+  name: EchoService
+  package: echo
+  description: This is a message mirror.
+  behavior:
+    - name: echo
+      description: This is the one thing it does.
+      input:
+        - name: request
+          type: Message
+      output:
+        - name: response
+          type: Message
+      acceptance:
+        - name: Normal operations
+          scenarios: 
+            - name: onReceive
+              given:
+                - The EchoService is running.
+              when:
+                - The user sends a message to EchoService.
+              then:
+                - The user receives the same message from EchoService.

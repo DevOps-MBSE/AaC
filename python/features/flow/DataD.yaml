@@ -1,0 +1,13 @@
+import:
+  files:
+    - ./DataMessage.yaml
+---
+schema:
+  name: DataD
+  package: flow
+  extends:
+    - name: DataMessage
+      package: flow
+  fields:
+    - name: response
+      type: string

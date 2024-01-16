@@ -2,7 +2,7 @@
 Architecture-as-Code (AaC)
 ==========================
 
-Get started now by reading the `User Guide Documentation`_.
+Get started now by reading the `User Guide Documentation <./project_documentation/user_guide/index.html>`_.
 
 
 `View it on GitHub <https://github.com/DevOps-MBSE/AaC>`_ and walk through the code base.
@@ -93,7 +93,7 @@ We know we are successful when we see:
 * rigorous configuration management of MBSE artifacts
 * reduced MBSE work / rework
 * upstream MBSE artifacts actively used by product development & delivery teams
-* implementation of automated quality assurance in pipelines for MBSE artifacts
+* implementation of automated quality assurance in pipelines using MBSE artifacts
 * and frequent delivery of complete system engineering, implementation, and test baselines with full traceability.
 
 We believe we can discover new ways to define, deliver, and evolve complex systems using Architecture-as-Code.
@@ -105,8 +105,8 @@ AaC is also the name of the modular command line interface (CLI) that can parse 
 and produce artifacts from it. The CLI has an extensible command library that currently contains commands that
 can verify syntax and patterns, generate code and produce static reports.
 
-The entire AaC product is extensible so you can use only the features you want.  AaC is purposefully small.
-Additional functionality is achieved through installing plugins.
+The entire AaC product is extensible.  AaC is purposefully small.  Additional functionality is achieved through installing plugins.
+The plugin architecture allows you choice of functionallity so you can use only the features you want.  
 
 The Graphical User Interface
 ----------------------------
@@ -119,8 +119,13 @@ AaC is Extensible
 
 AaC is designed with extensibility in mind.  The built-in functionality is intentionally minimized.
 AaC uses a plug-in system to extend the base capability.  To further simplify this, AaC includes a
-built-in command to generate new plugins from an AaC model.  There is an example of this for
-Plant UML in the plugins folder of the repository.
+built-in command to generate new plugins from an AaC plugin model.  Our own built-in plugins are developed
+using this methodology, so you can see examples in the GitHub repo.
+
+We have intentionally reduced the number of built-in plugins and transitioned them to separate repositories.
+We want users to have more control over what AaC functionallity they utilize (i.e. opt-in) rather than just-the-docs
+put a bunch of stuff in the default installation that you may not want or need.  As we evolve AaC, you can look for
+our extensions in the `DevOps-MBSE GitHub Organization <https://github.com/orgs/DevOps-MBSE/repositories>`_.
 
 About the project
 =================
