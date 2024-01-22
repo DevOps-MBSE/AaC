@@ -393,3 +393,5 @@ primitive:
 # Conclusion
 
 AaC attempts to provide you with the flexibility you need to create custom model capability for your engineering domain, and the constraint definition capbilties to support your unique needs.  We've focused on providing constraints that make sense in self-defining AaC itself with the hopes that these provide sound examples for you to use.  Over time, we will undoubtedly discover new constraints and provide them.  Feel free to use / reuse the core AaC constraints in your model declcarations as needed.
+
+For an overview of the core AaC constraints, view the [Constraint Types](constraint_types) page.
