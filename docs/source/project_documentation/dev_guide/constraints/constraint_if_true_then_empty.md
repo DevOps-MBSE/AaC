@@ -1,3 +1,3 @@
-# If true then empty
+# If True Then Empty
 
-If true then empty is a Schema Constraint that checks to ensure the empty_field_name is empty if bool_field_name is true.
+'If true then empty' is a Schema Constraint that checks to ensure the 'empty_field_name' is empty if 'bool_field_name' is true.

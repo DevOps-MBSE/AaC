@@ -12,7 +12,7 @@ schema:
       type: string
       is_required: true
 ```
-In this example, is_required is a Bool field.  If a value not interpretable as a Bool, then the Bool constraint will fail.
+In this example, 'is_required' is a Bool field.  If a value not interpretable as a Bool, then the 'bool' constraint will fail.
 
 ## Date
 Verify that a date value is interpretable as a date.  Date should be in Year-Day-month format.
@@ -41,14 +41,14 @@ Verify that a data reference value is interpretable and exists.
       type: dataref(modifier.name)[]
 ```
 
-In this example, the dataref constraint will fail if  modifier.name is not interpretable as a data reference
+In this example, the 'dataref' constraint will fail if 'modifier.name' is not interpretable as a data reference
 
 ## Typeref
-Verify that a type reference value is interpretable and exists. This constraint takes in two arguments; the first is the reference being checked, and the second is the type it is being checked against.
+Verify that a type reference value is interpretable and exists.
 
 ```yaml
   fields:
     - name: type
       type: typeref(aac.lang.AacType)
 ```
-In this example, the typeref constraint will fail if aac.lang.AacType is not interpretable as a type reference.
+In this example, the 'typeref' constraint will fail if 'aac.lang.AacType' is not interpretable as a type reference.
