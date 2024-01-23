@@ -42,4 +42,4 @@ one:
         - one
         - two
 ```
-This set of data would fail the `If True Then Empty` constraint, because beta is defined.
+This set of data would fail the `If True Then Empty` constraint, because `beta` is defined.
