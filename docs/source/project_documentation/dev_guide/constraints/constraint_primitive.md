@@ -17,11 +17,26 @@ In this example, 'is_required' is a Bool field.  If a value not interpretable as
 ## Date
 Verify that a date value is interpretable as a date.  Date should be in Year-Day-month format.
 
+```yaml
+date: 2023-22-1
+```
+The above example shows the correct format for dates.  If a date does not match that format, the 'date' constraint will fail.
+
 ## Directory
 Verify that a directory value is interpretable as a directory. Argument must be in valid directory format.
+```yaml
+dir: /absolute/path/to/dir
+dir: ./relative/path/to/dir
+```
+The above examples would pass the 'directory' constraint.
+
 
 ## File
 Verify that a file value is interpretable as a file.  Argument must be in valid directory format with a filename and extension.
+```yaml
+file: /absolute/path/to/file.txt
+```
+The above example would pass the 'file' constraint.
 
 ## String
 Verify that a string value is interpretable as a string. 
