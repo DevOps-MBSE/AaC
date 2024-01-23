@@ -1,6 +1,9 @@
 # Mutually Exclusive Fields
-'Mutually Exclusive Fields' is a Schema Constraint that. 
+`Mutually Exclusive Fields` is a Schema Constraint that. 
 It ensure only one of the fields are defined at any time.
+
+
+## Usage Example
 
 ```yaml
 schema:
@@ -24,21 +27,20 @@ schema:
                 - alpha
                 - beta
                 - gamma  
+```
+In the above example, only one of the fields (`alpha`, `beta`, and `gamma`) can be defined.
 
-"""
-
-GOOD_DATA_1 = """
+```yaml
 one:
-    name: GoodOne
+    name: good_data
     alpha: alpha
-"""
+```
+Here, `alpha` is the only one defined.  This would pass the `Mutaully Exclusive Fields` constraint.
 
-BAD_DATA_1 = """
+```yaml
 one:
-    name: bad
+    name: bad_data
     alpha: alpha
     beta: beta
-"""
 ```
-
-In the above example, only one of the fields(Alpha, Beta, Gamma) can be defined.  In the Good Data, alpha is the only one defined.  In the bad data, both alpha and beta are defined, which would fail the 'Mutaully Exclusive Fields' constraint.
+Here, both `alpha` and `beta` are defined, which would fail the `Mutaully Exclusive Fields` constraint.

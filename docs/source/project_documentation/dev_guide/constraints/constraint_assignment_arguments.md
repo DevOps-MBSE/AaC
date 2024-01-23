@@ -1,8 +1,10 @@
 # Check Arguments Against Constraint Definition
-'Check Arguments Against Constraint Definition' is a Schema Constraint. 
+`Check Arguments Against Constraint Definition` is a Schema Constraint. 
 It checks the argument by looking up the defined constraint name definition and ensuring the
 arguments provided in the assignment match the arguments defined in the constraint definition.
 
+
+## Usage Example
 ```yaml
 schema:
   name: PrimitiveConstraintAssignment
@@ -25,4 +27,4 @@ schema:
   constraints:
     - name: Check arguments against constraint definition
 ```
-In the above example, 'Check arguments against constraint definition' is used to ensure the 'arguments' field matches the primitive constraint it is being assigned to.  If the type is not interpretable by the primitive constraint, 'Check arguments against constraint definition' will fail.
+In the above example, `Check Arguments Against Constraint Definition` is used to ensure the `arguments` field matches the primitive constraint it is being assigned to.  If the type is not interpretable by the primitive constraint, `Check Arguments Against Constraint Definition` will fail.

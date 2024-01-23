@@ -9,4 +9,5 @@ Developer Guide Documentation
    Language API <./language_api/index>
    Plugin Developer Guide <plugin_dev_guide>
    AaC Constraint Checks <aac_constraints>
+   Constraint Types <constraints/constraint_types>
    Profiling <profiling>

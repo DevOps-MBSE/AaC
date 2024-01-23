@@ -1,9 +1,9 @@
 # If True Then Empty
 
-'If true then empty' is a Schema Constraint that checks to ensure the 'empty_field_name' is empty if 'bool_field_name' is true.
+`If True Then Empty` is a Schema Constraint that checks to ensure the `empty_field_name` is empty if `bool_field_name` is true.
 
+## Usage Example
 ```yaml
-TEST_SCHEMA = """
 schema:
     name: IfTrueEmptyTest
     package: test.if_true_then_empty
@@ -22,23 +22,24 @@ schema:
               value: alpha
             - name: empty_field_name
               value: beta
+```
+In the above example, if `alpha` is set to true, `beta` must be empty.
 
-"""
 
-GOOD_DATA_1 = """
+```yaml
 one:
-    name: GoodData1
+    name: good_data
     alpha: true
-"""
+```
+This set of data would pass the `If True Then Empty` constraint, because `beta` is not defined.
 
-BAD_DATA_1 = """
+
+```yaml
 one:
-    name: BadData1
+    name: bad_data
     alpha: true
     beta:
         - one
         - two
-"""
 ```
-
-In the above example, alpha is set to true.  To pass the If True Then Empty constraint, beta must be empty.  In the bad data example, beta is defined and would therefore fail the constraint.
+This set of data would fail the `If True Then Empty` constraint, because beta is defined.

@@ -1,5 +1,8 @@
 # Root Schema Has Name
-'Root schema has name' is a Schema constraint that checks every schema with a root key and ensure there is a field called name.
+`Root Schema Has Name` is a Schema constraint that checks every schema with a root key and ensures there is a field called name.
+
+
+## Usage Example
 
 ```yaml
 schema:
@@ -10,7 +13,7 @@ schema:
       type: string
 ```
 
-In the above example, 'test_schema' does not have a field called 'name', and would fail the 'Root Schema Has Name' constraint. To pass this constraint, a field called name would need to be added:
+In the above example, `test_schema` does not have a field called `name`, and would fail the `Root Schema Has Name` constraint. To pass this constraint, a field called `name` would need to be added.
 
 ```yaml
 schema:
@@ -22,4 +25,4 @@ schema:
     - name: test_field
       type: string
 ```
-In this example, a name field has been added, allowing it to pass the constraint.
+In this example, a `name` field has been added, allowing it to pass the constraint.
