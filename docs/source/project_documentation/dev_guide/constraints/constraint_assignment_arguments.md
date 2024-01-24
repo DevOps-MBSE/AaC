@@ -5,26 +5,10 @@ arguments provided in the assignment match the arguments defined in the constrai
 
 
 ## Usage Example
-```yaml
-schema:
-  name: PrimitiveConstraintAssignment
-  package: aac.lang
-  description: |
-    Assigns a primitive constraint to a primitive definition.
-  fields:
-    - name: name
-      type: dataref(plugin.primitive_constraints.name)
-      description: |
-        The name of the schema constraint definition.
-      is_required: true
-    - name: arguments
-      type: any
-      description: |
-        Arguments for the primitive constraint if applicable.  Using the any type
-        because the arguments are defined by the constraint definition.  The 
-        constraint_assignment_arguments constraint will cross reference arguments
-        provided here against the constraint definition.
-  constraints:
-    - name: Check arguments against constraint definition
+```{eval-rst}
+.. literalinclude:: ../../../../../python/src/aac/aac.aac
+    :language: yaml
+    :lines: 1115-1134
 ```
+
 In the above example, `Check Arguments Against Constraint Definition` is used to ensure the `arguments` field matches the primitive constraint it is being assigned to.  If the type is not interpretable by the primitive constraint, `Check Arguments Against Constraint Definition` will fail.
