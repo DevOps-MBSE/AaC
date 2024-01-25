@@ -1,0 +1,17 @@
+@startuml {{title}} Requirements Diagram
+
+{% for i, req in enumerate(requirements) %}
+object "<<{{req.type}}>>\n**{{req.title}}**" as {{req.name}} {
+    id = {{req.id}}
+    Text = {{req.text}}
+}
+{% endfor %}
+
+{% for i, req in enumerate(requirements) %}
+{% for r in req.connected %}
+{{req.name}} {{r.connector}} {{r.name}}{% if r.label %} : {{r.label}}{% endif %}
+{% endfor %}
+
+{% endfor %}
+
+@enduml
