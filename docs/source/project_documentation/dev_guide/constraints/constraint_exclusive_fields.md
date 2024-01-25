@@ -7,7 +7,9 @@ It ensure only one of the fields are defined at any time.
 ```{eval-rst}
 .. literalinclude:: ../../../../../python/tests/test_aac/plugins/exclusive_fields/test_exclusive_fields.py
     :language: yaml
-    :lines: 38-60
+    :lines: 39-59
+    :emphasize-lines: 9-14
+    :emphasize-lines: 19-21
 ```
 In the above example, only one of the fields (`alpha`, `beta`, and `gamma`) can be defined.
 
@@ -15,7 +17,8 @@ In the above example, only one of the fields (`alpha`, `beta`, and `gamma`) can 
 ```{eval-rst}
 .. literalinclude:: ../../../../../python/tests/test_aac/plugins/exclusive_fields/test_exclusive_fields.py
     :language: yaml
-    :lines: 63-66
+    :lines: 64-66
+    :emphasize-lines: 66
 ```
 Here, `alpha` is the only one defined.  This would pass the `Mutaully Exclusive Fields` constraint.
 
@@ -23,6 +26,7 @@ Here, `alpha` is the only one defined.  This would pass the `Mutaully Exclusive 
 ```{eval-rst}
 .. literalinclude:: ../../../../../python/tests/test_aac/plugins/exclusive_fields/test_exclusive_fields.py
     :language: yaml
-    :lines: 69-72
+    :lines: 82-85
+    :emphasize-lines: 3-4
 ```
 Here, both `alpha` and `beta` are defined, which would fail the `Mutaully Exclusive Fields` constraint.

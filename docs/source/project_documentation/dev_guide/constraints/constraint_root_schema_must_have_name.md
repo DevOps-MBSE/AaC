@@ -16,5 +16,6 @@ In the above example, `test_schema` does not have a field called `name`, and wou
 .. literalinclude:: ../../../../../python/tests/test_aac/plugins/root_schema_must_have_name/test_root_schema_must_have_name.py
     :language: yaml
     :lines: 35-42
+    :emphasize-lines: 5-6
 ```
 In this example, a `name` field has been added, allowing it to pass the constraint.

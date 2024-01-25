@@ -4,11 +4,11 @@
 Verify that a boolen value is True, False, or None.  None is considered False by python, so we allow None as a valid value.
 
 ### Example Usage
-```yaml
 ```{eval-rst}
 .. literalinclude:: ../../../../../python/src/aac/aac.aac
     :language: yaml
     :lines: 292-297
+    :emphasize-lines: 6
 ```
 In this example, `is_required` is a Bool field.  If a value not interpretable as a Bool, then the `bool` constraint will fail.
 
@@ -36,8 +36,11 @@ The above examples would pass the `directory` constraint.
 Verify that a file value is interpretable as a file.  Argument must be in valid directory format with a filename and extension.
 
 ### Example Usage
-```yaml
-file: /absolute/path/to/file.txt
+```{eval-rst}
+.. literalinclude:: ../../../../../python/src/aac/plugins/gen_plugin/gen_plugin_generator.aac
+    :language: yaml
+    :lines: 30-33
+    :emphasize-lines: 4
 ```
 The above example would pass the `file` constraint.
 
@@ -54,7 +57,6 @@ Verify that a number value is interpretable as a number.
 Verify that a data reference value is interpretable and exists.
 
 ### Example Usage
-```yaml
 ```{eval-rst}
 .. literalinclude:: ../../../../../python/src/aac/aac.aac
     :language: yaml
@@ -66,12 +68,6 @@ In this example, the `dataref` constraint will fail if `modifier.name` is not in
 Verify that a type reference value is interpretable and exists.
 
 ### Example Usage
-```yaml
-  fields:
-    - name: type
-      type: typeref(aac.lang.AacType)
-```
-```yaml
 ```{eval-rst}
 .. literalinclude:: ../../../../../python/src/aac/aac.aac
     :language: yaml

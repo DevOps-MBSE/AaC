@@ -7,14 +7,17 @@
 .. literalinclude:: ../../../../../python/tests/test_aac/plugins/unique_root_keys/test_unique_root_keys.py
     :language: yaml
     :lines: 49-63
+    :emphasize-lines: 4
+    :emphasize-lines: 12
 ```
 The above example would fail the `Root Key Names Are Unique` because the referenced root `one` has more than one definition of itself.
 
 
-```yaml
 ```{eval-rst}
 .. literalinclude:: ../../../../../python/tests/test_aac/plugins/unique_root_keys/test_unique_root_keys.py
     :language: yaml
     :lines: 31-45
+    :emphasize-lines: 4
+    :emphasize-lines: 12
 ```
 In this example, each referenced root has only one definition of itself, and so would pass this constraint.
