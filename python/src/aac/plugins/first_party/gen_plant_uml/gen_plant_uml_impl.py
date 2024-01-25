@@ -17,7 +17,60 @@ PLANT_UML_FILE_EXTENSION = ".puml"
 COMPONENT_STRING = "component"
 OBJECT_STRING = "object"
 SEQUENCE_STRING = "sequence"
+REQUIREMENTS_STRING = "requirements"
 FILE_NAME_CHARACTERS_TO_REPLACE = ".!@#$%^&*();,\\/?[]{}`~|'"
+
+
+def puml_requirements(architecture_file: str, output_directory: str) -> PluginExecutionResult:
+    """
+    Generate a requirements diagram from the requirements of a system modeled with AaC.
+
+    Args:
+        architecture_file (str): Path to an AaC file containing modeled requirements from which to generate a requirements diagram.
+        output_directory (str): Output directory for the PlantUML (.puml) diagram file.
+    """
+    architecture_file_path = os.path.abspath(architecture_file)
+
+    def get_connected_requirements(requirement_name: str, requirement_definition: Definition):
+        requirement_ids = {req.get_top_level_fields().get("id"): req for req in requirement_definition.get_top_level_fields().get("requirements", [])}
+        for req_id, req in requirement_ids.items():
+            pass
+
+
+    def find_all_requirement_references(requirement: Definition, definitions: list[Definition], connected_requirements: list[str]):
+        if not definitions:
+            return connected_requirements
+
+        first_requirement, *_ = definitions
+        if requirement == first_requirement:
+            connected = get_connected_requirements(requirement.get_top_level_fields().get("name"), first_requirement)
+
+    def generate_requirements_diagram(definitions: list[Definition]):
+        requirement_definitions = get_definitions_by_root_key("spec", definitions)
+
+        requirements = []
+        for i, requirement_definition in enumerate(requirement_definitions):
+            requirement = dict(
+                type="requirement",
+                title=requirement_definition.name,
+                name=f"req{i}",
+                id=f"R {i}",
+                text=requirement_definition.get_top_level_fields().get("shall"),
+                connected=find_all_requirement_references(requirement_definition, requirement_definitions, [])
+            )
+            requirements.append(requirement)
+
+        return requirements
+
+    with plugin_result(
+        plugin_name,
+        _generate_diagram_to_file,
+        architecture_file_path,
+        output_directory,
+        REQUIREMENTS_STRING,
+        generate_requirements_diagram,
+    ) as result:
+        return result
 
 
 def puml_component(architecture_file: str, output_directory: str) -> PluginExecutionResult:
