@@ -5,13 +5,10 @@ Verify that a boolen value is True, False, or None.  None is considered False by
 
 ### Example Usage
 ```yaml
-schema:
-  name: ExampleSchema
-  package: aac.lang
-  fields:
-    - name: name
-      type: string
-      is_required: true
+```{eval-rst}
+.. literalinclude:: ../../../../../python/src/aac/aac.aac
+    :language: yaml
+    :lines: 292-297
 ```
 In this example, `is_required` is a Bool field.  If a value not interpretable as a Bool, then the `bool` constraint will fail.
 
@@ -58,11 +55,11 @@ Verify that a data reference value is interpretable and exists.
 
 ### Example Usage
 ```yaml
- fields:
-    - name: modifiers
-      type: dataref(modifier.name)[]
+```{eval-rst}
+.. literalinclude:: ../../../../../python/src/aac/aac.aac
+    :language: yaml
+    :lines: 214-215
 ```
-
 In this example, the `dataref` constraint will fail if `modifier.name` is not interpretable as a data reference
 
 ## Typeref
@@ -73,5 +70,11 @@ Verify that a type reference value is interpretable and exists.
   fields:
     - name: type
       type: typeref(aac.lang.AacType)
+```
+```yaml
+```{eval-rst}
+.. literalinclude:: ../../../../../python/src/aac/aac.aac
+    :language: yaml
+    :lines: 262-263
 ```
 In this example, the `typeref` constraint will fail if `aac.lang.AacType` is not interpretable as a type reference.
