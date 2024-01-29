@@ -3,7 +3,10 @@
 {% for i, req in enumerate(requirements) %}
 object "<<{{req.type}}>>\n**{{req.title}}**" as {{req.name}} {
     id = {{req.id}}
-    Text = {{req.text}}
+    Text = {{req.shall}}
+    {% for attribute in requirements.attributes %}
+    {{attribute.name}} = {{attribute.value}}
+    {% endfor %}
 }
 {% endfor %}
 

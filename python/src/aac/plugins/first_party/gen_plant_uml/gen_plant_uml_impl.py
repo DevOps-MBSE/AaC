@@ -31,19 +31,32 @@ def puml_requirements(architecture_file: str, output_directory: str) -> PluginEx
     """
     architecture_file_path = os.path.abspath(architecture_file)
 
-    def get_connected_requirements(requirement_name: str, requirement_definition: Definition):
-        requirement_ids = {req.get_top_level_fields().get("id"): req for req in requirement_definition.get_top_level_fields().get("requirements", [])}
-        for req_id, req in requirement_ids.items():
-            pass
+    def in_heirarchy(req_id: str, req: dict[str, dict]) -> bool:
+        child_ids = req.get("child", {}).get("ids", [])
+        parent_ids = req.get("parent", {}).get("ids", [])
+        return req_id in child_ids + parent_ids
 
+    def get_requirements(requirement_id: str, requirement_structure: dict) -> list[str]:
+        return [req for req in requirement_structure.get("requirements", []) if in_heirarchy(requirement_id, req)]
+
+    def get_connected_requirements(requirement_id: str, requirement: Definition) -> list[str]:
+        fields = requirement.get_top_level_fields()
+        requirements = get_requirements(requirement_id, {"requirements": fields.get("requirements")})
+        for section in fields.get("sections", []):
+            requirements.extend(get_requirements(requirement_id, section))
+
+        return requirements
 
     def find_all_requirement_references(requirement: Definition, definitions: list[Definition], connected_requirements: list[str]):
         if not definitions:
             return connected_requirements
 
-        first_requirement, *_ = definitions
-        if requirement == first_requirement:
+        first_requirement, *other_requirements = definitions
+        if requirement != first_requirement:
             connected = get_connected_requirements(requirement.get_top_level_fields().get("name"), first_requirement)
+            connected_requirements.extend(connected)
+
+        return find_all_requirement_references(requirement, other_requirements, connected_requirements)
 
     def generate_requirements_diagram(definitions: list[Definition]):
         requirement_definitions = get_definitions_by_root_key("spec", definitions)
@@ -51,13 +64,19 @@ def puml_requirements(architecture_file: str, output_directory: str) -> PluginEx
         requirements = []
         for i, requirement_definition in enumerate(requirement_definitions):
             requirement = dict(
+                id=requirement_definition.get_top_level_fields().get("id"),
                 type="requirement",
                 title=requirement_definition.name,
                 name=f"req{i}",
-                id=f"R {i}",
                 text=requirement_definition.get_top_level_fields().get("shall"),
-                connected=find_all_requirement_references(requirement_definition, requirement_definitions, [])
+                attributes=requirement_definition.get_top_level_fields().get("attributes", []),
+                connected=find_all_requirement_references(requirement_definition, requirement_definitions, []),
             )
+
+            description = requirement_definition.get_top_level_fields().get("desription")
+            if description:
+                requirement["attributes"].append({"description": description})
+
             requirements.append(requirement)
 
         return requirements
@@ -245,6 +264,7 @@ def _generate_diagram_to_file(
     Returns:
         Result message string
     """
+    print(architecture_file_path)
     with validated_source(architecture_file_path) as result:
         get_active_context().add_definitions_to_context(result.definitions)
         full_output_path = os.path.join(output_directory, puml_type)
