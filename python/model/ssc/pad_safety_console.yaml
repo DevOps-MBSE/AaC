@@ -1,0 +1,254 @@
+spec:
+  name: Pad Safety Console General Requirements
+  requirements:
+    - id: 5.1.1
+      shall: |
+        Each launch control center, blockhouse, and firing room, as applicable,
+        shall provide for a Pad Safety Console (PSC).
+      attributes:
+        - name: type
+          value: safety
+        - name: test methodology
+          value: inspection
+    - id: 5.1.2
+      shall: |
+        Range User and Range Safety approvals
+      child:
+        ids:
+          - 5.1.2.1
+          - 5.1.2.2
+      attributes:
+        - name: type
+          value: safety
+        - name: test methodology
+          value: inspection
+    - id: 5.1.2.1
+      shall: |
+        The Range User (normally the launch vehicle provider) shall provide
+        an ER/WR PSC unless otherwise agreed to by Range Safety.
+    - id: 5.1.2.2
+      shall: |
+        Range Safety shall approve the design, operation, and maintenance of
+        the PSC.
+    - id: 5.1.3
+      shall: |
+        The Range User shall provide ample and satisfactory space to install and
+        operate the console.
+    - id: 5.1.4
+      shall: |
+        No SFP components shall be in the ground support equipment (GSE) or
+        firing room/launch control center/blockhouse system that will cause the
+        loss of a safety critical system control or monitor (as determined by
+        Range Safety) at the PSC.
+---
+spec:
+  name: Pad Safety Console Controls, Monitors, and Communication Lines
+  description: Requirements for the PSC Controls, Monitors, and Communication Lines.
+  requirements:
+    - id: 5.2.1
+      shall: |
+        The PSC shall be in a dedicated position to provide the Pad Safety
+        Supervisor/Pad Safety Officer sufficient information and communications
+        capability to convey safety status and conditions to the appropriate
+        authority (e.g., the launch complex control authority for day-to-day
+        operations and the Mission Flight Control Officer [MFCO] during a launch
+        operation).
+    - id: 5.2.2
+      shall: |
+        The minimum controls, monitors and communication lines required at the
+        launch complex PSC. These items are general in nature and may vary
+        depending on the launch facility and/or launch vehicle configuration.
+        The monitor circuit shall be designed so that the actual status of the
+        critical parameters can be monitored rather than the command
+        transmittal. It is important that this console does not have any flight
+        termination system (FTS) command transmittal functions.
+      child:
+        ids:
+          - 5.2.2.1
+          - 5.2.2.2
+          - 5.2.2.3
+          - 5.2.2.4
+          - 5.2.2.5
+          - 5.2.2.6
+          - 5.2.2.7
+          - 5.2.2.8
+          - 5.2.2.9
+          - 5.2.2.10
+          - 5.2.2.11
+          - 5.2.2.12
+          - 5.2.2.13
+    - id: 5.2.2.1
+      shall: |
+        The FTS safe and arm status for all FTS safe and arm devices shall be at
+        the launch complex PSC.
+    - id: 5.2.2.2
+      shall: |
+        The ignition safe and arm status for all solid rocket motor safe and arm
+        devices shall be at the launch complex PSC.
+    - id: 5.2.2.3
+      shall: |
+        An enable control switch and status for all solid rocket motor arming
+        devices shall be at the launch complex PSC.
+    - id: 5.2.2.4
+      shall: |
+        The launch vehicle liquid propulsion system inhibits and propellant tank
+        pressure status (psig) shall be at the launch complex PSC.
+    - id: 5.2.2.5
+      shall: |
+        The fire suppression system status shall be at the launch complex PSC.
+    - id: 5.2.2.6
+      shall: |
+        The launch complex warning beacon and horn control switch and status
+        shall be at the launch complex PSC.
+    - id: 5.2.2.7
+      shall: |
+        The emergency and normal electrical power status for critical locations
+        shall be at the launch complex PSC.
+    - id: 5.2.2.8
+      shall: |
+        The wind speed and direction readouts shall be at the launch complex
+        PSC.
+    - id: 5.2.2.9
+      shall: |
+        The Communications Control Panel shall be at the launch complex PSC.
+      child:
+        ids:
+          - 5.2.2.9.1
+          - 5.2.2.9.2
+          - 5.2.2.9.3
+          - 5.2.2.9.4
+          - 5.2.2.9.5
+          - 5.2.2.9.6
+          - 5.2.2.9.7
+          - 5.2.2.9.8
+          - 5.2.2.9.9
+          - 5.2.2.9.10
+          - 5.2.2.9.11
+          - 5.2.2.9.12
+          - 5.2.2.9.13
+    - id: 5.2.2.9.1
+      shall: |
+        The Communications Control Panel shall have at least one Class A dial line.
+    - id: 5.2.2.9.2
+      shall: |
+        The Communications Control Panel shall have audio-selector push buttons
+        for intercom net and direct lines in which four channels can be accessed
+        simultaneously.
+    - id: 5.2.2.9.3
+      shall: |
+        The Communications Control Panel shall have a direct line to the MFCO.
+    - id: 5.2.2.9.4
+      shall: |
+        The Communications Control Panel shall have a direct line to the Range Safety representative.
+    - id: 5.2.2.9.5
+      shall: |
+        The Communications Control Panel shall have a direct lines to Test
+        Conductor and Launch Control Officer.
+    - id: 5.2.2.9.6
+      shall: |
+        The Communications Control Panel shall have a direct line to primary
+        access control point for safety control areas.
+    - id: 5.2.2.9.7
+      shall: |
+        The Communications Control Panel shall have a direct line to facility
+        safety net.
+    - id: 5.2.2.9.8
+      shall: |
+        The Communications Control Panel shall have a direct line to Launch
+        Support Team Chief and fallback area.
+    - id: 5.2.2.9.9
+      shall: |
+        The Communications Control Panel shall have a access to facility public
+        address (PA) system with emergency override capability.
+    - id: 5.2.2.9.10
+      shall: |
+        The Communications Control Panel shall have radio frequency (RF) nets,
+        as required.
+    - id: 5.2.2.9.11
+      shall: |
+        The Communications Control Panel shall have a direct line to the Launch
+        Director.
+    - id: 5.2.2.9.12
+      shall: |
+        The Communications Control Panel shall have a direct line to the
+        Aerospace Surveillance Officer (ASO).
+    - id: 5.2.2.9.13
+      shall: |
+        The Communications Control Panel shall have particular communication
+        equipment as specified in applicable Range Safety Operations
+        Requirements (RSOR).
+    - id: 5.2.2.10
+      shall: |
+        The Master countdown status shall be at the launch complex PSC.
+    - id: 5.2.2.11
+      shall: |
+        The Holdfire (stop launch sequencer) control switch, for pad launches
+        only, active through T-0 (for ER only) shall be at the launch complex
+        PSC.
+    - id: 5.2.2.12
+      shall: |
+        The ignition firing line enable and disable control switch and status
+        shall be at the launch complex PSC.
+    - id: 5.2.2.13
+      shall: |
+        The holdfire status shall be at the launch complex PSC.
+---
+spec:
+  name: Pad Safety Console Color Television System
+  description: Requirements for the PSC color television system
+  requirements:
+    - id: 5.3.1
+      shall: |
+        A PSC color television system shall be provided to ensure the coverage
+        necessary to view all hazardous operations in the launch complex. Note:
+        various feeds (e.g., infrared camera) may be desired for monitoring
+        specific hazards.
+    - id: 5.3.2
+      shall: |
+        Control of the television system shall be available at the PSC.
+---
+spec:
+  name: Pad Safety Console Communication and Video Recording
+  description: Requirements for communication and video recording for the PSC
+  requirements:
+    - id: 5.4.1
+      shall: |
+        The PSC shall be capable of recording and playback of hazardous
+        operations.
+    - id: 5.4.2
+      shall: |
+        Communication and video recording requirements shall be coordinated with
+        the launch controller and test conductor before the start of an
+        operation.
+    - id: 5.4.3
+      shall: |
+        Designated recordings shall remain on file for 180 days.
+---
+spec:
+  name: Pad Safety Console Validation and Test Requirements
+  description: Requirements for validation of the PSC and required tests
+  requirements:
+    - id: 5.5.1
+      shall: |
+        At a minimum, a PSC validation and checkout test shall be performed.
+      child:
+        ids:
+          - 5.5.1.1
+          - 5.5.1.2
+          - 5.5.1.3
+    - id: 5.5.1.1
+      shall: |
+        The PSC validation and checkout test shall be performed to demonstrate
+        correct and reliable operation of PSC functions.
+    - id: 5.5.1.2
+      shall: |
+        The PSC validation and checkout test shall be performed to demonstrate
+        validity of PSC outside interfaces.
+    - id: 5.5.1.3
+      shall: |
+        The PSC validation and checkout test shall be performed to demonstrate
+        operating limits of the PSC.
+    - id: 5.5.2
+      shall: |
+        Test plans, procedures, and test results shall be reviewed and approved
+        by Range Safety.
