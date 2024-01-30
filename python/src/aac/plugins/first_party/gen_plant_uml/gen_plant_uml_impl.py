@@ -2,7 +2,7 @@
 
 import os
 
-from typing import Callable
+from typing import Callable, Optional
 
 from aac.lang.active_context_lifecycle_manager import get_active_context
 from aac.lang.definitions.collections import get_definitions_by_root_key
@@ -31,6 +31,13 @@ def puml_requirements(architecture_file: str, output_directory: str) -> PluginEx
     """
     architecture_file_path = os.path.abspath(architecture_file)
 
+    def get_requirement_type(attributes: list[dict]) -> str:
+        if not attributes:
+            attributes = [{"name": "type", "value": None}]
+
+        requirement_types = [attr.get("value") for attr in attributes if attr.get("name") == "type"]
+        return f"{requirement_types[0]}Requirement" if requirement_types else "requirement"
+
     def get_all_requirements(specification: Definition) -> list[dict]:
         requirements = [req for req in specification.get_top_level_fields().get("requirements", [])]
         for section in specification.get_top_level_fields().get("sections", []):
@@ -38,27 +45,23 @@ def puml_requirements(architecture_file: str, output_directory: str) -> PluginEx
 
         return requirements
 
-    def get_parent_requirements(requirement_id: str, other_requirement: dict) -> dict:
-        if requirement_id not in other_requirement.get("parent", {}).get("ids", []):
-            return {}
+    def get_requirement_ancestry(requirement_id: str, other_requirement: dict, direction: str, other_direction: str) -> Optional[dict]:
+        if requirement_id in other_requirement.get(direction, {}).get("ids", []):
+            other_requirement_id = other_requirement.get("id", "")
+            return {
+                direction: f"req{requirement_id.translate(requirement_id_translator)}",
+                other_direction: f"req{other_requirement_id.translate(requirement_id_translator)}",
+                # TODO: Handle different types of arrows
+                "arrow": "<..",
+                # TODO: Handle different types of labels
+                "label": "refine",
+            }
 
-        other_requirement_id = other_requirement.get("id")
-        return {
-            "parent": f"req{requirement_id}",
-            "connector": "<..",
-            "child": f"req{other_requirement_id}",
-        }
+    def get_child_requirements(requirement_id: str, other_requirement: dict) -> Optional[dict]:
+        return get_requirement_ancestry(requirement_id, other_requirement, "child", "parent")
 
-    def get_child_requirements(requirement_id: str, other_requirement: dict) -> dict:
-        if requirement_id not in other_requirement.get("child", {}).get("ids", []):
-            return {}
-
-        other_requirement_id = other_requirement.get("id")
-        return {
-            "parent": f"req{other_requirement_id}",
-            "connector": "<..",
-            "child": f"req{requirement_id}",
-        }
+    def get_parent_requirements(requirement_id: str, other_requirement: dict) -> Optional[dict]:
+        return get_requirement_ancestry(requirement_id, other_requirement, "parent", "child")
 
     def get_connected_requirements(requirement: dict, requirement_structures: list[dict], connected_requirements: list[dict]):
         if not requirement_structures:
@@ -66,9 +69,15 @@ def puml_requirements(architecture_file: str, output_directory: str) -> PluginEx
 
         first, *rest = requirement_structures
         if requirement != first:
-            requirement_id = requirement.get("id")
-            connected_requirements.extend(get_child_requirements(requirement_id, first))
-            connected_requirements.extend(get_parent_requirements(requirement_id, first))
+            requirement_id = requirement.get("id", "")
+
+            child = get_child_requirements(requirement_id, first)
+            if child:
+                connected_requirements.append(child)
+
+            parent = get_parent_requirements(requirement_id, first)
+            if parent:
+                connected_requirements.append(parent)
 
         return get_connected_requirements(requirement, rest, connected_requirements)
 
@@ -78,22 +87,25 @@ def puml_requirements(architecture_file: str, output_directory: str) -> PluginEx
 
         requirements = []
         for structure in requirement_structures:
-            requirement_id = structure.get('id')
+            requirement_id = structure.get("id", "")
+            attributes = structure.get("attributes", [])
             requirements.append({
-                "type": "requirement",
+                "type": get_requirement_type(attributes),
+                # TODO: Handle titles for requirements
                 "title": structure.get("name"),
-                "name": f"req{requirement_id}",
+                "name": f"req{requirement_id.translate(requirement_id_translator)}",
                 "id": requirement_id,
                 "shall": structure.get("shall"),
-                "attributes": structure.get("attributes"),
+                "attributes": attributes,
                 "connected": get_connected_requirements(structure, requirement_structures, []),
             })
 
-            aac_file_name = _extract_aac_file_name(architecture_file)
-            generated_file_name = _get_generated_file_name(aac_file_name, REQUIREMENTS_STRING, "", output_directory)
+        aac_file_name = _extract_aac_file_name(architecture_file)
+        generated_file_name = _get_generated_file_name(aac_file_name, REQUIREMENTS_STRING, "", output_directory)
 
         return [{"title": "", "filename": generated_file_name, "requirements": requirements}]
 
+    requirement_id_translator = str.maketrans({".": "_", "-": "_"})
     with plugin_result(
         plugin_name,
         _generate_diagram_to_file,
