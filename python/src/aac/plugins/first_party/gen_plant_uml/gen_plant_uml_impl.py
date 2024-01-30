@@ -33,7 +33,7 @@ def puml_requirements(architecture_file: str, output_directory: str) -> PluginEx
 
     def get_requirement_type(attributes: list[dict]) -> str:
         if not attributes:
-            attributes = [{"name": "type", "value": None}]
+            attributes = [{}]
 
         requirement_types = [attr.get("value") for attr in attributes if attr.get("name") == "type"]
         return f"{requirement_types[0]}Requirement" if requirement_types else "requirement"
@@ -52,9 +52,9 @@ def puml_requirements(architecture_file: str, output_directory: str) -> PluginEx
                 direction: f"req{requirement_id.translate(requirement_id_translator)}",
                 other_direction: f"req{other_requirement_id.translate(requirement_id_translator)}",
                 # TODO: Handle different types of arrows
-                "arrow": "<..",
-                # TODO: Handle different types of labels
-                "label": "refine",
+                "arrow": "+--",
+                # TODO: Handle different types of relationships
+                "relationship": "",
             }
 
     def get_child_requirements(requirement_id: str, other_requirement: dict) -> Optional[dict]:

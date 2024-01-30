@@ -8,13 +8,12 @@ object "<<{{req.type}}>>{% if req.title %}\n**{{req.title}}**{% endif %}" as {{r
     {{attribute.name}} = {{attribute.value}}
     {% endfor %}
 }
-{% endfor %}
 
-{% for req in requirements %}
 {% for r in req.connected %}
+{{r.parent}} {{r.arrow | safe}} {{r.child}}{% if r.relationship %} : <<{{r.relationship}}>>{% endif %}
 
-{{r.parent}} {{r.arrow | safe}} {{r.child}}{% if r.label %} : <<{{r.label}}>>{% endif %}
 {% endfor %}
+
 {% endfor %}
 
 @enduml
