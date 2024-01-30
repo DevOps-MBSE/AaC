@@ -31,55 +31,68 @@ def puml_requirements(architecture_file: str, output_directory: str) -> PluginEx
     """
     architecture_file_path = os.path.abspath(architecture_file)
 
-    def in_heirarchy(req_id: str, req: dict[str, dict]) -> bool:
-        child_ids = req.get("child", {}).get("ids", [])
-        parent_ids = req.get("parent", {}).get("ids", [])
-        return req_id in child_ids + parent_ids
-
-    def get_requirements(requirement_id: str, requirement_structure: dict) -> list[str]:
-        return [req for req in requirement_structure.get("requirements", []) if in_heirarchy(requirement_id, req)]
-
-    def get_connected_requirements(requirement_id: str, requirement: Definition) -> list[str]:
-        fields = requirement.get_top_level_fields()
-        requirements = get_requirements(requirement_id, {"requirements": fields.get("requirements")})
-        for section in fields.get("sections", []):
-            requirements.extend(get_requirements(requirement_id, section))
+    def get_all_requirements(specification: Definition) -> list[dict]:
+        requirements = [req for req in specification.get_top_level_fields().get("requirements", [])]
+        for section in specification.get_top_level_fields().get("sections", []):
+            requirements.extend(section.get("requirements", []))
 
         return requirements
 
-    def find_all_requirement_references(requirement: Definition, definitions: list[Definition], connected_requirements: list[str]):
-        if not definitions:
+    def get_parent_requirements(requirement_id: str, other_requirement: dict) -> dict:
+        if requirement_id not in other_requirement.get("parent", {}).get("ids", []):
+            return {}
+
+        other_requirement_id = other_requirement.get("id")
+        return {
+            "parent": f"req{requirement_id}",
+            "connector": "<..",
+            "child": f"req{other_requirement_id}",
+        }
+
+    def get_child_requirements(requirement_id: str, other_requirement: dict) -> dict:
+        if requirement_id not in other_requirement.get("child", {}).get("ids", []):
+            return {}
+
+        other_requirement_id = other_requirement.get("id")
+        return {
+            "parent": f"req{other_requirement_id}",
+            "connector": "<..",
+            "child": f"req{requirement_id}",
+        }
+
+    def get_connected_requirements(requirement: dict, requirement_structures: list[dict], connected_requirements: list[dict]):
+        if not requirement_structures:
             return connected_requirements
 
-        first_requirement, *other_requirements = definitions
-        if requirement != first_requirement:
-            connected = get_connected_requirements(requirement.get_top_level_fields().get("name"), first_requirement)
-            connected_requirements.extend(connected)
+        first, *rest = requirement_structures
+        if requirement != first:
+            requirement_id = requirement.get("id")
+            connected_requirements.extend(get_child_requirements(requirement_id, first))
+            connected_requirements.extend(get_parent_requirements(requirement_id, first))
 
-        return find_all_requirement_references(requirement, other_requirements, connected_requirements)
+        return get_connected_requirements(requirement, rest, connected_requirements)
 
     def generate_requirements_diagram(definitions: list[Definition]):
-        requirement_definitions = get_definitions_by_root_key("spec", definitions)
+        spec_definitions = get_definitions_by_root_key("spec", definitions)
+        requirement_structures = [req for spec in spec_definitions for req in get_all_requirements(spec)]
 
         requirements = []
-        for i, requirement_definition in enumerate(requirement_definitions):
-            requirement = dict(
-                id=requirement_definition.get_top_level_fields().get("id"),
-                type="requirement",
-                title=requirement_definition.name,
-                name=f"req{i}",
-                text=requirement_definition.get_top_level_fields().get("shall"),
-                attributes=requirement_definition.get_top_level_fields().get("attributes", []),
-                connected=find_all_requirement_references(requirement_definition, requirement_definitions, []),
-            )
+        for structure in requirement_structures:
+            requirement_id = structure.get('id')
+            requirements.append({
+                "type": "requirement",
+                "title": structure.get("name"),
+                "name": f"req{requirement_id}",
+                "id": requirement_id,
+                "shall": structure.get("shall"),
+                "attributes": structure.get("attributes"),
+                "connected": get_connected_requirements(structure, requirement_structures, []),
+            })
 
-            description = requirement_definition.get_top_level_fields().get("desription")
-            if description:
-                requirement["attributes"].append({"description": description})
+            aac_file_name = _extract_aac_file_name(architecture_file)
+            generated_file_name = _get_generated_file_name(aac_file_name, REQUIREMENTS_STRING, "", output_directory)
 
-            requirements.append(requirement)
-
-        return requirements
+        return [{"title": "", "filename": generated_file_name, "requirements": requirements}]
 
     with plugin_result(
         plugin_name,
@@ -264,7 +277,6 @@ def _generate_diagram_to_file(
     Returns:
         Result message string
     """
-    print(architecture_file_path)
     with validated_source(architecture_file_path) as result:
         get_active_context().add_definitions_to_context(result.definitions)
         full_output_path = os.path.join(output_directory, puml_type)
