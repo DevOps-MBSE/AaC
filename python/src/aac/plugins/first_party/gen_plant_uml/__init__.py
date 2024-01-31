@@ -2,7 +2,7 @@
 
 from aac.cli.aac_command import AacCommand, AacCommandArgument
 from aac.plugins import hookimpl
-from aac.plugins.first_party.gen_plant_uml.gen_plant_uml_impl import plugin_name, puml_component, puml_sequence, puml_object
+from aac.plugins.first_party.gen_plant_uml.gen_plant_uml_impl import plugin_name, puml_component, puml_requirements, puml_sequence, puml_object
 from aac.plugins.plugin import Plugin
 from aac.plugins._common import get_plugin_definitions_from_yaml
 
@@ -61,6 +61,19 @@ def _get_plugin_commands():
         ),
     ]
 
+    puml_requirements_arguments = [
+        AacCommandArgument(
+            "architecture-file",
+            "Path to an AaC file containing modeled requirements from which to generate a requirements diagram.",
+            "file",
+        ),
+        AacCommandArgument(
+            "output-directory",
+            "Output directory for the PlantUML (.puml) diagram file",
+            "directory",
+        ),
+    ]
+
     plugin_commands = [
         AacCommand(
             "puml-component",
@@ -79,6 +92,12 @@ def _get_plugin_commands():
             "Converts an AaC model to a Plant UML object diagram.",
             puml_object,
             puml_object_arguments,
+        ),
+        AacCommand(
+            "puml-requirements",
+            "Generate a requirements diagram from the requirements of a system modeled with AaC.",
+            puml_requirements,
+            puml_requirements_arguments,
         ),
     ]
 

@@ -6,7 +6,7 @@ import:
 ---
 spec:
   name:  Simple Math PIDS
-  description:  This is a representative Prime Item Development Specification for a subsystem called Add-Simple Math.
+  description:  This is a representative Prime Item Development Specification for a subsystem called Simple Math.
   requirements:
     - id: "SM-1"
       shall:  When receiving a simple math request message, the calculator shall respond with the the result of the simple math function.
@@ -19,3 +19,5 @@ spec:
       attributes:
         - name: TADI
           value: Test
+        - name: type
+          value: functional

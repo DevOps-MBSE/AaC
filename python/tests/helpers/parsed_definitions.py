@@ -1,4 +1,5 @@
 """This module contains helpers for creating Definitions for use with unit tests."""
+
 import yaml
 
 from aac.io.parser import parse, ParserError
@@ -322,13 +323,19 @@ def create_spec_section_entry(name: str, description: str = "", requirements: li
 def create_requirement_entry(
     id: str, shall: str, parent: list[str] = [], child: list[str] = [], attributes: list[dict] = []
 ) -> dict:
-    return {
+    definition_dict = {
         DEFINITION_FIELD_ID: id,
         DEFINITION_FIELD_SHALL: shall,
-        DEFINITION_FIELD_PARENT: parent,
-        DEFINITION_FIELD_CHILD: child,
         DEFINITION_FIELD_ATTRIBUTES: attributes,
     }
+
+    if parent:
+        definition_dict.update({DEFINITION_FIELD_PARENT: {DEFINITION_FIELD_IDS: parent}})
+
+    if child:
+        definition_dict.update({DEFINITION_FIELD_CHILD: {DEFINITION_FIELD_IDS: child}})
+
+    return definition_dict
 
 
 def create_requirement_attribute_entry(name: str, value: str) -> dict:

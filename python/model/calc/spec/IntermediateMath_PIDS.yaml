@@ -15,4 +15,4 @@ spec:
           - "CALC-3"
       attributes:
         - name: TADI
-          value: Tests
+          value: Test

@@ -1,0 +1,21 @@
+@startuml
+
+mainframe **req** [{{package | default('Package')}}] **{{title}}** [{{subtitle | default('Requirements')}}]
+
+{% for req in requirements %}
+object "<<{{req.type}}>>{% if req.title %}\n**{{req.title}}**{% endif %}" as {{req.name}} {
+    id = {{req.id}}
+    Text = {{req.shall}}
+    {% for attribute in req.attributes %}
+    {{attribute.name}} = {{attribute.value}}
+    {% endfor %}
+}
+
+{% for r in req.connected %}
+{{r.parent}} {{r.arrow | safe}} {{r.child}}{% if r.relationship %} : <<{{r.relationship}}>>{% endif %}
+
+{% endfor %}
+
+{% endfor %}
+
+@enduml
