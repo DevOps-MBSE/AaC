@@ -32,7 +32,7 @@ def generate_requirements_diagram(architecture_file: str, output_directory: str,
                 "title": None,
                 "name": f"req{requirement_id.translate(requirement_id_translator)}",
                 "id": requirement_id,
-                "shall": structure.get("shall"),
+                "shall": structure.get("shall", "").replace("\n", " "),
                 "attributes": attributes,
                 "connected": _get_connected_requirements(structure, requirement_structures, []),
             }
