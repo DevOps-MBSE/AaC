@@ -1,6 +1,26 @@
 spec:
-  name: Pad Safety Console General Requirements
+  name: Pad Safety Console
+  description: Top-level Requirements
   requirements:
+    - id: "5"
+      shall: |
+        Pad Safety Console
+      child:
+        ids:
+          - "5.1"
+          - "5.2"
+          - "5.3"
+          - "5.4"
+          - "5.5"
+    - id: "5.1"
+      shall: |
+        Pad Safety Console General Design Requirements
+      child:
+        ids:
+          - 5.1.1
+          - 5.1.2
+          - 5.1.3
+          - 5.1.4
     - id: 5.1.1
       shall: |
         Each launch control center, blockhouse, and firing room, as applicable,
@@ -40,11 +60,13 @@ spec:
         firing room/launch control center/blockhouse system that will cause the
         loss of a safety critical system control or monitor (as determined by
         Range Safety) at the PSC.
----
-spec:
-  name: Pad Safety Console Controls, Monitors, and Communication Lines
-  description: Requirements for the PSC Controls, Monitors, and Communication Lines.
-  requirements:
+    - id: "5.2"
+      shall: |
+        Pad Safety Console Controls, Monitors, and Communication Lines
+      child:
+        ids:
+          - 5.2.1
+          - 5.2.2
     - id: 5.2.1
       shall: |
         The PSC shall be in a dedicated position to provide the Pad Safety
@@ -192,11 +214,13 @@ spec:
     - id: 5.2.2.13
       shall: |
         The holdfire status shall be at the launch complex PSC.
----
-spec:
-  name: Pad Safety Console Color Television System
-  description: Requirements for the PSC color television system
-  requirements:
+    - id: "5.3"
+      shall: |
+        Pad Safety Console Color Television System
+      child:
+        ids:
+          - 5.3.1
+          - 5.3.2
     - id: 5.3.1
       shall: |
         A PSC color television system shall be provided to ensure the coverage
@@ -206,11 +230,14 @@ spec:
     - id: 5.3.2
       shall: |
         Control of the television system shall be available at the PSC.
----
-spec:
-  name: Pad Safety Console Communication and Video Recording
-  description: Requirements for communication and video recording for the PSC
-  requirements:
+    - id: "5.4"
+      shall: |
+        Pad Safety Console Communication and Video Recording
+      child:
+        ids:
+          - 5.4.1
+          - 5.4.2
+          - 5.4.3
     - id: 5.4.1
       shall: |
         The PSC shall be capable of recording and playback of hazardous
@@ -223,11 +250,13 @@ spec:
     - id: 5.4.3
       shall: |
         Designated recordings shall remain on file for 180 days.
----
-spec:
-  name: Pad Safety Console Validation and Test Requirements
-  description: Requirements for validation of the PSC and required tests
-  requirements:
+    - id: "5.5"
+      shall: |
+        Pad Safety Console Validation and Test Requirements
+      child:
+        ids:
+          - 5.5.1
+          - 5.5.2
     - id: 5.5.1
       shall: |
         At a minimum, a PSC validation and checkout test shall be performed.
