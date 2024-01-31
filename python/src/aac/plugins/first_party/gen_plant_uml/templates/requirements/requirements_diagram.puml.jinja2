@@ -1,4 +1,6 @@
-@startuml {{title}} Requirements Diagram
+@startuml
+
+mainframe **req** [{{package | default('Package')}}] **{{title}}** [{{subtitle | default('Requirements')}}]
 
 {% for req in requirements %}
 object "<<{{req.type}}>>{% if req.title %}\n**{{req.title}}**{% endif %}" as {{req.name}} {
