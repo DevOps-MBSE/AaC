@@ -38,10 +38,18 @@ def generate_requirements_diagram(architecture_file: str, output_directory: str,
             }
         )
 
+    spec_definition = spec_definitions[0]
     aac_file_name = extract_aac_file_name(architecture_file)
-    generated_file_name = get_generated_file_name(aac_file_name, REQUIREMENTS_STRING, "", output_directory)
-
-    return [{"title": "", "filename": generated_file_name, "requirements": requirements}]
+    generated_file_name = get_generated_file_name(aac_file_name, REQUIREMENTS_STRING, spec_definition.name, output_directory)
+    return [
+        {
+            "title": spec_definition.name,
+            "subtitle": spec_definition.get_description(),
+            "package": "Default",
+            "filename": generated_file_name,
+            "requirements": requirements,
+        }
+    ]
 
 
 def _get_requirement_type(attributes: list[dict]) -> str:
