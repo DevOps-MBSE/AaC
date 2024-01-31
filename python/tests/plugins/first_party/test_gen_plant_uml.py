@@ -3,7 +3,7 @@ import os
 from tempfile import TemporaryDirectory
 from typing import Callable
 
-from aac.io.constants import YAML_DOCUMENT_EXTENSION, YAML_DOCUMENT_SEPARATOR
+from aac.io.constants import YAML_DOCUMENT_EXTENSION
 from aac.lang.constants import BEHAVIOR_TYPE_REQUEST_RESPONSE
 from aac.plugins.first_party.gen_plant_uml.gen_plant_uml_impl import (
     COMPONENT_STRING,
