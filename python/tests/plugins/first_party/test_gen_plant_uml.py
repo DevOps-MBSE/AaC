@@ -9,12 +9,15 @@ from aac.plugins.first_party.gen_plant_uml.gen_plant_uml_impl import (
     COMPONENT_STRING,
     OBJECT_STRING,
     SEQUENCE_STRING,
-    PLANT_UML_FILE_EXTENSION,
-    FILE_NAME_CHARACTERS_TO_REPLACE,
     puml_component,
     puml_object,
     puml_sequence,
-    _get_generated_file_name,
+    puml_requirements,
+)
+from aac.plugins.first_party.gen_plant_uml.puml_helpers import (
+    PLANT_UML_FILE_EXTENSION,
+    FILE_NAME_CHARACTERS_TO_REPLACE,
+    get_generated_file_name,
     _get_formatted_definition_name,
 )
 
@@ -54,11 +57,11 @@ class TestGenPlantUml(ActiveContextTestCase):
         filename = _convert_aac_filepath_to_filename(file_name)
         for puml_type in puml_types:
             self.assertEqual(
-                _get_generated_file_name(filename, puml_type, definition_name, new_output_dir),
+                get_generated_file_name(filename, puml_type, definition_name, new_output_dir),
                 os.path.join(new_output_dir, puml_type, f"{file_name}_{formatted_definition_name}{PLANT_UML_FILE_EXTENSION}"),
             )
             self.assertEqual(
-                _get_generated_file_name(filename, puml_type, definition_name, new_relative_dir),
+                get_generated_file_name(filename, puml_type, definition_name, new_relative_dir),
                 os.path.join(
                     new_relative_dir, puml_type, f"{file_name}_{formatted_definition_name}{PLANT_UML_FILE_EXTENSION}"
                 ),
@@ -77,7 +80,7 @@ class TestGenPlantUml(ActiveContextTestCase):
 
             filename = _convert_aac_filepath_to_filename(plugin_yaml.name)
             expected_puml_file_paths = [
-                _get_generated_file_name(filename, COMPONENT_STRING, name, temp_directory)
+                get_generated_file_name(filename, COMPONENT_STRING, name, temp_directory)
                 for name in [TEST_PUML_SYSTEM_TYPE, TEST_PUML_SERVICE_ONE_TYPE, TEST_PUML_SERVICE_TWO_TYPE]
             ]
             temp_directory_files = os.listdir(full_output_dir)
@@ -87,6 +90,14 @@ class TestGenPlantUml(ActiveContextTestCase):
 
                 parts = os.path.splitext(basename)[0].replace("-", "").split("_")
                 check_generated_file_contents(path, self._get_checker_from_filepath(parts[-1], COMPONENT_STRING))
+
+    def test_puml_requirements_diagram_to_file(self):
+        with (
+            TemporaryDirectory() as dir,
+            TemporaryTestFile(TEST_PUML_ARCH_YAML, dir=dir, suffix=YAML_DOCUMENT_EXTENSION) as test_file,
+        ):
+            result = puml_requirements(test_file.name, dir)
+            assert_plugin_success(result)
 
     def test_puml_object_diagram_to_file(self):
         with (
@@ -100,7 +111,7 @@ class TestGenPlantUml(ActiveContextTestCase):
             assert_plugin_success(result)
 
             filename = _convert_aac_filepath_to_filename(plugin_yaml.name)
-            expected_puml_file_path = _get_generated_file_name(
+            expected_puml_file_path = get_generated_file_name(
                 filename, OBJECT_STRING, TEST_PUML_SERVICE_TWO_TYPE, temp_directory
             )
 
@@ -125,7 +136,7 @@ class TestGenPlantUml(ActiveContextTestCase):
 
             filename = _convert_aac_filepath_to_filename(plugin_yaml.name)
             expected_puml_file_paths = [
-                _get_generated_file_name(filename, SEQUENCE_STRING, name, temp_directory)
+                get_generated_file_name(filename, SEQUENCE_STRING, name, temp_directory)
                 for name in [TEST_PUML_USE_CASE_ONE_TITLE, TEST_PUML_USE_CASE_TWO_TITLE]
             ]
             temp_directory_files = os.listdir(full_output_dir)
