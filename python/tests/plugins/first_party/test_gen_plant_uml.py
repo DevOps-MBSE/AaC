@@ -3,7 +3,7 @@ import os
 from tempfile import TemporaryDirectory
 from typing import Callable
 
-from aac.io.constants import YAML_DOCUMENT_EXTENSION
+from aac.io.constants import YAML_DOCUMENT_EXTENSION, YAML_DOCUMENT_SEPARATOR
 from aac.lang.constants import BEHAVIOR_TYPE_REQUEST_RESPONSE
 from aac.plugins.first_party.gen_plant_uml.gen_plant_uml_impl import (
     COMPONENT_STRING,
@@ -24,6 +24,12 @@ from aac.plugins.first_party.gen_plant_uml.puml_helpers import (
 from tests.active_context_test_case import ActiveContextTestCase
 from tests.helpers.assertion import assert_plugin_success
 from tests.helpers.io import TemporaryTestFile
+from tests.helpers.parsed_definitions import (
+    create_requirement_attribute_entry,
+    create_requirement_entry,
+    create_spec_definition,
+    create_spec_section_entry,
+)
 from tests.helpers.plugins import check_generated_file_contents
 
 
@@ -92,9 +98,29 @@ class TestGenPlantUml(ActiveContextTestCase):
                 check_generated_file_contents(path, self._get_checker_from_filepath(parts[-1], COMPONENT_STRING))
 
     def test_puml_requirements_diagram_to_file(self):
+        def generate_test_attributes(num: int) -> list[dict]:
+            return [create_requirement_attribute_entry(f"attr{i}", f"value{i}") for i in range(num)]
+
+        requirements = [
+            create_requirement_entry(
+                f"R{i}",
+                f"The system shall do at least {i} things.",
+                child=[f"R{i}.{j}" for j in range(i) if i % 2 == 0],
+                attributes=generate_test_attributes(i),
+            )
+            for i in range(5)
+        ]
+        section_spec = create_spec_section_entry(
+            "Example2",
+            requirements=[
+                create_requirement_entry(f"R{i}.{j}", f"The system shall accept {j} things.") for i in [2, 4] for j in range(i)
+            ],
+        )
+        spec = create_spec_definition("Example1", requirements=requirements, sections=[section_spec])
+
         with (
             TemporaryDirectory() as dir,
-            TemporaryTestFile(TEST_PUML_ARCH_YAML, dir=dir, suffix=YAML_DOCUMENT_EXTENSION) as test_file,
+            TemporaryTestFile(spec.to_yaml(), dir=dir, suffix=YAML_DOCUMENT_EXTENSION) as test_file,
         ):
             result = puml_requirements(test_file.name, dir)
             assert_plugin_success(result)
