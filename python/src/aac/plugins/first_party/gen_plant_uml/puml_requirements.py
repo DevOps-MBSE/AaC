@@ -29,8 +29,7 @@ def generate_requirements_diagram(architecture_file: str, output_directory: str,
         requirements.append(
             {
                 "type": _get_requirement_type(attributes),
-                # TODO: Handle titles for requirements
-                "title": structure.get("name"),
+                "title": None,
                 "name": f"req{requirement_id.translate(requirement_id_translator)}",
                 "id": requirement_id,
                 "shall": structure.get("shall"),
@@ -69,9 +68,7 @@ def _get_requirement_ancestry(
         return {
             direction: f"req{requirement_id.translate(requirement_id_translator)}",
             other_direction: f"req{other_requirement_id.translate(requirement_id_translator)}",
-            # TODO: Handle different types of arrows
             "arrow": "+--",
-            # TODO: Handle different types of relationships
             "relationship": "",
         }
 
