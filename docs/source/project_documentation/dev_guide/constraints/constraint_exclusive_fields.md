@@ -1,6 +1,6 @@
 # Mutually Exclusive Fields
-`Mutually Exclusive Fields` is a Schema Constraint that. 
-It ensure only one of the fields are defined at any time.
+`Mutually Exclusive Fields` is a Schema Constraint. 
+It ensure that, out of a set of fields, only one field is defined at any time.
 
 
 ## Usage Example
@@ -8,8 +8,7 @@ It ensure only one of the fields are defined at any time.
 .. literalinclude:: ../../../../../python/tests/test_aac/plugins/exclusive_fields/test_exclusive_fields.py
     :language: yaml
     :lines: 39-59
-    :emphasize-lines: 9-14
-    :emphasize-lines: 19-21
+    :emphasize-lines: 9-14, 19-21
 ```
 In the above example, only one of the fields (`alpha`, `beta`, and `gamma`) can be defined.
 
