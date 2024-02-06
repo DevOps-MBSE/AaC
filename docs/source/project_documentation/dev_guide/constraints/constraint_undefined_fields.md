@@ -3,7 +3,7 @@ The `Undefined Fields` constraint is a schema constraint that checks that a fiel
 
 ## Usage Example
 ```{eval-rst}
-.. literalinclude:: ../../../../../python\features\alarm_clock\structures.yaml
+.. literalinclude:: ../../../../../python/features/alarm_clock/structures.yaml
     :language: yaml
     :lines: 1-12
 ```

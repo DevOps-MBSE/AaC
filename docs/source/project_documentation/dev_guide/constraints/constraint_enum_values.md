@@ -3,7 +3,7 @@
 
 ## Usage Example
 ```{eval-rst}
-.. literalinclude:: ../../../../../python\features\alarm_clock\structures.yaml
+.. literalinclude:: ../../../../../python/features/alarm_clock/structures.yaml
     :language: yaml
     :lines: 79-87
 ```
