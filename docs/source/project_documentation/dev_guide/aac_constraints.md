@@ -12,8 +12,8 @@ The overall constraint mechanism follows this flow:
 3. Context constraints will be checked
   a. You can think of a context constraint as a "global" language constraint, or an "invariant".  These constraints evaluate the AaC `LanguageContext`.
 4. Each parsed definition will be checked against assigned schema constraints
-  a. Generally, you will declare relevant schema constraints within the schema definition.  Schema constraints make be provided arguments.
-  b. In certain cases, you may need to define a `universal` schema constraint.  These are applied to all schema definitions without the need for an explicit declaration.  Universal schema constraints cannot be defined with arguments.
+a. Generally, you will declare relevant schema constraints within the schema definition.  Schema constraints may be provided arguments.
+b. In certain cases, you may need to define a `universal` schema constraint.  These are applied to all schema definitions without the need for an explicit declaration.  Universal schema constraints cannot be defined with arguments.
 5. As schemas are checked against constraints, all fields and sub-fields are evaluated individually throughout the declaration structure.
 6. When traversing the declaration structure of a definition, when primitive values are encountered they are checked against any defined primitive constraints for that primitive.
   a. Primitive constraints are declared within the primitive declaration, not at the point of usage.
@@ -204,7 +204,7 @@ Since this is not a universal constraint, you must declare it where appropriate.
     :emphasize-lines: 35-41
 ```
 
-You may now write the test and implementation for the constraint as needed.  Remember to add an empty `__init__.py` to your test director and run `aac clean` to remove any extra files if needed.
+You may now write the test and implementation for the constraint as needed.  Remember to add an empty `__init__.py` to your test directory and run `aac clean` to remove any extra files if needed.
 
 ### Primitive Constraints
 
@@ -227,7 +227,7 @@ Now that we have something to work with, we can define a primitive constraint.
     :emphasize-lines: 7-8
 ```
 
-Just as before, run `gen-plugin` to create unit test and implementaiton stubs.
+Just as before, run `gen-plugin` to create unit test and implementation stubs.
 
 Generated implementation stub:
 
@@ -296,7 +296,7 @@ class TestAaCprimitiveconstraints(TestCase):
 
 ```
 
-You may now create your primitive constraint test and implementation.  emember to add an empty `__init__.py` to your test director and run `aac clean` to remove any extra files if needed.
+You may now create your primitive constraint test and implementation.  Remember to add an empty `__init__.py` to your test directory and run `aac clean` to remove any extra files if needed.
 
 Finally, be sure to assign the primitive constraint you've created to your primitive declaration.
 
@@ -308,4 +308,4 @@ Finally, be sure to assign the primitive constraint you've created to your primi
 
 ## Conclusion
 
-AaC attempts to provide you with the flexibility you need to create custom model capability for your engineering domain, and the constraint definition capbilties to support your unique needs.  We've focused on providing constraints that make sense in self-defining AaC itself with the hopes that these provide sound examples for you to use.  Over time, we will undoubtedly discover new constraints and provide them.  Feel free to use / reuse the core AaC constraints in your model declcarations as needed.
+AaC attempts to provide the flexibility needed to create custom models for your engineering domain, and the constraint definition capabilities to support your unique needs. We've provided the constraints required to allow AaC to define and check itself. These constraints should provide sound examples for you to use when building your own constraints.  Over time, new constraints will be provided. Feel free to use / reuse the core AaC constraints in your model definitions as needed.
