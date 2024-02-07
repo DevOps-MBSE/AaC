@@ -1,17 +1,10 @@
----
-layout: default
-parent: Developer's Guide to AaC
-title: AaC Constraint Checks
-nav_order: 3
-has_children: false
----
-
-# What is Constraint Checking in the AaC Language?
+# AaC Constraints
+## What is Constraint Checking in the AaC Language?
 Because the AaC DSL is leveraging plain-text YAML as the underpinning of the DSL, there is little to no functionality to guide users in the correctness of their YAML AaC structures. AaC has implemented a self-checking language feature so that users can reference which rules are applied to which AaC DSL components, and so that users can define constraints for their own user-defined structures. To this end, AaC employs a plugin-based constraint system where plugins provide Python-based constraint implementations that can be referenced and applied to definitions in the AaC DSL.
 
 Constraint rules in AaC are defined with the `context_constraint`, `schema_constraint`, and `primitive_constraint` definitions, which are required to have a corresponding implementation, via an AaC plugin. This enables AaC's self-checking mechanism even though YAML is just a markup language.
 
-## Checking an AaC File
+### Checking an AaC File
 The overall constraint mechanism follows this flow:
 1. A definition is identified as needing to be checked (i.e. you run `aac check <AaC_file_path>`)
 2. Certain "core" constraints must be automatically checked while parsing and loading the AaC definition.
@@ -29,10 +22,10 @@ The overall constraint mechanism follows this flow:
   a. If there are no errors, the user is provided a success message
   b. If there are errors, the definition fails the check.  There is an option on the `check` command to handle warnings as errors if desired.
 
-# Constraint Definitions
+## Constraint Definitions
 In order for users to define the self-checking constraints in the AaC DSL, they have to declare constraint rules via the 3 types of constraint definitions. These definitions also provide contextual information for the constraint as well as behaviors and acceptance criteria -- something to leverage for automatically generating functional/integration tests in the future.
 
-## Generation File Safety
+### Generation File Safety
 
 We're going to discuss the use of `gen-plugin` below to help you build your constraints.  If you discover you need to update your plugin declaration, you can re-run `gen-plugin` without concern of losing any prior work.  If the output python files already exist, the generator will produce:
 
@@ -43,18 +36,12 @@ Once you're satisfied, run `aac clean <path_to_AaC_plugin_file> --code-output <s
 
 Currently we are not generating documentation for plugins...so you're on your own for that.  Hopefully we'll get some content generation in place in the future to simplify plugin document content management.
 
-## Context Constraints
+### Context Constraints
 Here is an example `context_constraint` definition:
 
-unique_root_keys.aac
-```yaml
-plugin:
-  name: Unique Root Keys
-  package: aac.plugins.unique_root_keys
-  description: An AaC plugin that enables validating all required fields are present in a definition.
-  context_constraints:
-    - name: Root key names are unique
-      description: Check every definition to ensure there are no duplicate root keys defined in the AaC language.
+```{eval-rst}
+.. literalinclude:: ../../../../python/src/aac/plugins/unique_root_keys/unique_root_keys.aac
+    :language: yaml
 ```
 
 To implement the context constraint, run `aac gen-plugin <path-to-unique_root_keys.aac> --code-output <src-path> --test-output <tests-path>`.  Note that the package declaration will be used to establish sub-directories under your `--code-output` and `--test-output` paths.  By default, the `gen-plugin` command will prompt you to confirm the target output paths prior to attempting to generate any files.
@@ -130,29 +117,13 @@ By default, your unit test is "disabled".  This is a short-term convenience to p
 
 Once your implementation and unit test is completed, run `tox` to ensure everything passes.
 
-## Schema Constraints
+### Schema Constraints
 
 Here's an example `schema_constraint` definition.
 
-exclusive_fields.aac
-```yaml
-plugin:
-  name: Exclusive fields
-  package: aac.plugins.exclusive_fields
-  description: |
-    This plugin allows you to specify a list of fields that are mutually exclusive.
-    If one of the fields is set, the others must not be present.
-  schema_constraints:
-    - name: Mutually exclusive fields
-      description: |
-        Ensure that only one of the fields are defined at any time.
-      universal: false
-      arguments:
-        - name: fields
-          description: |
-            The list of field names that are mutually exclusive.
-          type: string[]
-          is_required: true
+```{eval-rst}
+.. literalinclude:: ../../../../python/src/aac/plugins/exclusive_fields/exclusive_fields.aac
+    :language: yaml
 ```
 
 Just as in the context constraint example, we'll run `gen-plugin` to create the implementaiton and unit test stubs.  Note that this is not a universal schema constraint, so arguments are allowed in the declaraction.  If this were a universal constraint (i.e. `universal: true`), then gen-plugin would fail due to violation of the `If true then empty` constraint declared for `SchemaConstraint` in th AaC core language declaration.
@@ -225,81 +196,35 @@ class TestExclusivefields(TestCase):
 
 Since this is not a universal constraint, you must declare it where appropriate.  There's not a current example of the "Mutually Exclusive" constraint in the current AaC baseline, so let's switch over to the "If true then empty" constraint to see how schema constraints are allocated.  In this example, the constraint is used to check the boolean value of the `universal` field and if true, ensure there are no values provided for the `arguments` field.  Everything described above for plugin-generation applies here as well.  What we really want to focus on is the assignment of the schema constraint, including the arguments provided for the constraint.
 
-```yaml
-schema:
-  name: SchemaConstraint
-  package: aac.lang
-  description: |
-    The definition of a schema constraint plugin.  Schema constraints perform
-    checks against a defined structure within a model based on it's schema definition.
-    Defining a schema constraint allows for automted structural quality checks
-    by running the 'aac check' command against your model.
-  fields:
-    - name: name
-      type: string
-      description: |
-        The name of the schema constraint rule.
-      is_required: true
-    - name: description
-      type: string
-      description: |
-        A high level description of the schema constraint rule.
-    - name: universal
-      type: bool
-      description: |
-        Indicates that the constraint should be applied to all schemas without explicit assignment.
-        This is a convenience so that you don't have to directly assign the constraint to every schema.
-        If not included or false, the constraint must be explicitly assigned to a schema.  But be aware
-        that universal schema constraints cannot have input arguments.
-    - name: arguments
-      type: Field[]
-      description: |
-        List of arguments for the constraint.
-    - name: acceptance
-      type: Feature[]
-      description: |
-        A list of acceptance test features that describe the expected behavior of the schema constraint.
-  constraints:
-    - name: If true then empty
-      arguments:
-        - name: bool_field_name
-          value: universal
-        - name: empty_field_name
-          value: arguments
+
+```{eval-rst}
+.. literalinclude:: ../../../../python/src/aac/aac.aac
+    :language: yaml
+    :lines: 1025-1065
+    :emphasize-lines: 35-41
 ```
 
 You may now write the test and implementation for the constraint as needed.  Remember to add an empty `__init__.py` to your test director and run `aac clean` to remove any extra files if needed.
 
-## Primitive Constraints
+### Primitive Constraints
 
 Finally we have primitive constraints.  The core AaC DSL defines a handful of common primitives such as `int` and `string` for you to use, but also allows you to define custom primitives as needed for your model needs.  In order to show how this can be done, let's consider an AaC unique primitive: `dataref`.
 
 First you need to define your primitive without any declared constraints.
 
-```yaml
-primitive:
-  name: dataref
-  package: aac.lang
-  python_type: str
-  description:  |
-    A reference to another defined data item.  References are qualified and documented 
-    as 'reference(schema_root.field_name)' denoting the definition and field being referenced.
-    Do not confuse data references with type references.  A data reference can be thought of as
-    a pointer to a specific data item, while a type reference is a pointer to a definition.  Data
-    references do not comprehend type inheritance or polymorphism.
+```{eval-rst}
+.. literalinclude:: ../../../../python/src/aac/aac.aac
+    :language: yaml
+    :lines: 173-182
 ```
 
 Now that we have something to work with, we can define a primitive constraint.
 
-```yaml
-plugin:
-  name: AaC primitive constraints
-  package: aac.plugins.aac_primitives
-  description: |
-    An AaC plugin that ensure boolean primitive values are correct.
-  primitive_constraints:
-    - name: Check dataref
-      description: Verify that a data reference value is interpretable and exists.
+```{eval-rst}
+.. literalinclude:: ../../../../python/src/aac/plugins/aac_primitives/aac_primitive_constraints.aac
+    :language: yaml
+    :lines: 1-6, 21-22
+    :emphasize-lines: 7-8
 ```
 
 Just as before, run `gen-plugin` to create unit test and implementaiton stubs.
@@ -375,21 +300,12 @@ You may now create your primitive constraint test and implementation.  emember t
 
 Finally, be sure to assign the primitive constraint you've created to your primitive declaration.
 
-```yaml
-primitive:
-  name: dataref
-  package: aac.lang
-  python_type: str
-  description:  |
-    A reference to another defined data item.  References are qualified and documented 
-    as 'reference(schema_root.field_name)' denoting the definition and field being referenced.
-    Do not confuse data references with type references.  A data reference can be thought of as
-    a pointer to a specific data item, while a type reference is a pointer to a definition.  Data
-    references do not comprehend type inheritance or polymorphism.
-  constraints:
-    - name: Check dataref
+```{eval-rst}
+.. literalinclude:: ../../../../python/src/aac/aac.aac
+    :language: yaml
+    :lines: 173-184
 ```
 
-# Conclusion
+## Conclusion
 
 AaC attempts to provide you with the flexibility you need to create custom model capability for your engineering domain, and the constraint definition capbilties to support your unique needs.  We've focused on providing constraints that make sense in self-defining AaC itself with the hopes that these provide sound examples for you to use.  Over time, we will undoubtedly discover new constraints and provide them.  Feel free to use / reuse the core AaC constraints in your model declcarations as needed.

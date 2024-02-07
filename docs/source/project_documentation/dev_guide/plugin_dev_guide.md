@@ -95,115 +95,21 @@ Plugins are generated from a plugin definition.  Just as we model the AaC langua
 You have the flexibility to organize your plugins as you see fit, but it is recommended to create a `plugins` folder in your project and place your plugins in separate sub-folders to keep things organized.  This will also make the generated code more managable.  There is an expectation (or perhaps a constraint, depending on your perspective) related to file names.  Your plugin's code will be generated in a folder that aligns with the package and plugin name.  For example if your plugin has a package of "aac_example.my_plugin" and is named "My Plugin", then code will go into the `./src/aac_example/my_plugin` folder and will expect to find the plugin model named `my_plugin.aac` there. Note that the file name should be a "python-ized" version of the plugin name.  This means that spaces and dashes are replaced with underscores and the file extension is `.aac`.
 
 Example plugin model with all possible plugin elements (not all elements are required):
-```yaml
-plugin:
-  name: My plugin
-  package: happy
-  description: |
-    An AaC plugin definition used to test the gen-plugin command behavior.
-  commands:
-    - name: test-command
-      help_text: |
-        A test command used to test the gen-plugin command behavior.
-      run_before:
-        - plugin: CheckAaC
-          command: check
-      run_after:
-        - plugin: Generate
-          command: generate
-      input:
-        - name: aac-plugin-file
-          type: file
-          description: The path to the architecture file with the plugin definition.
-      acceptance:
-        - name: Command test
-          scenarios:
-            - name: Simple Command Test
-              given: 
-                - An AaC file containing schemas with no extra fields.
-              when:
-                - The AaC check command is run on the schema.
-              then:
-                - The check commands provides the output 'All AaC constraint checks were successful.'
-  context_constraints:
-    - name: The sky is blue
-      description: Ensures the sky is blue.
-      acceptance:
-        - name: Context test
-          scenarios:
-            - name: Simple Constraint Test
-              given: 
-                - An AaC file containing schemas with no extra fields.
-              when:
-                - The AaC check command is run on the schema.
-              then:
-                - The check commands provides the output 'All AaC constraint checks were successful.'
-  schema_constraints:
-    - name: Schemas have happy names
-      description: Check every schema declared provides positive vibes.
-      universal: true
-      acceptance:
-        - name: Schema test
-          scenarios:
-            - name: Simple Schema Test
-              given: 
-                - An AaC file containing schemas with no extra fields.
-              when:
-                - The AaC check command is run on the schema.
-              then:
-                - The check commands provides the output 'All AaC constraint checks were successful.'
-  primitive_constraints:
-    - name: Primitives have happy names
-      description: Check every primitive declared provides positive vibes.
-      acceptance:
-        - name: Primitive test
-          scenarios:
-            - name: Simple Primitive Test
-              given: 
-                - An AaC file containing schemas with no extra fields.
-              when:
-                - The AaC check command is run on the schema.
-              then:
-                - The check commands provides the output 'All AaC constraint checks were successful.'
-      
-     
+
+```{eval-rst}
+.. literalinclude:: ../../../../python/features/docs_examples/dev_guide_plugin_dev_guide/docs_all_possible.aac
+    :language: yaml
 ```
 
 #### Output of Gen-Plugin
 
-Let's assume we have a pluging with a package of "aac_example.plugins.plugin_name" and a name "My Plugin" with a definition that includes two acceptance tests.  This example focuses on command plugins.  More information on constraint plugins is available in the [AaC Constraint Checks](aac_constraints) documentation.  
+Let's assume we have a pluging with a package of "aac_example.plugins.plugin_name" and a name "My Plugin" with a definition that includes two acceptance tests.  This example focuses on command plugins.  More information on constraint plugins is available in the [AaC Constraint Checks](aac_constraints) documentation.
 
 Example plugin definition:
 
-```yaml
-plugin:
-  name: My Plugin
-  package: aac_example.plugins.plugin_name
-  commands:
-    - name: do-stuff
-      inputs:
-        - name: aac-file
-          type: file
-          description: The path to the architecture file with the plugin definition.
-      acceptance:
-        - name: Success test
-          scenarios:
-            - name: Test do stuff command with valid input
-              given: 
-                - A path to an existing AaC file.
-              when:
-                - The AaC do-stuff command is run with the path to the file
-              then:
-                - The do-stuff command provides the output 'SUCCESS'
-        - name: Failure test
-          scenarios:
-            - name: Test do stuff command with valid input
-              given: 
-                - An path that does not point to an existing file.
-              when:
-                - The AaC do-stuff command is run on the file
-              then:
-                - The do-stuff command provides the output 'FAILURE'
+```{eval-rst}
+.. literalinclude:: ../../../../python/features/docs_examples/dev_guide_plugin_dev_guide/docs_do_stuff.aac
+    :language: yaml
 ```
 
 The output of the Gen-Plugin command will be some corresponding plugin files that are templated from the AaC file that was passed in to `gen-plugin`.
