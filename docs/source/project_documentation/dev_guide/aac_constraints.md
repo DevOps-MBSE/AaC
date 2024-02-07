@@ -1,19 +1,19 @@
 # AaC Constraints
 ## What is Constraint Checking in the AaC Language?
-Because the AaC DSL is leveraging plain-text YAML as the underpinning of the DSL, there is little to no functionality to guide users in the correctness of their YAML AaC structures. AaC has implemented a self-checking language feature so that users can reference which rules are applied to which AaC DSL components, and so that users can define constraints for their own user-defined structures. To this end, AaC employs a plugin-based constraint system where plugins provide Python-based constraint implementations that can be referenced and applied to definitions in the AaC DSL.
+Because the AaC DSL is leveraging plain-text YAML, there is little to no YAML functionality to guide users in the correctness of their AaC structures. AaC makes use of a self-checking language feature so that users can reference which rules are applied to which AaC DSL components, and so that users can define constraints for their own user-defined structures. To this end, AaC employs a plugin-based constraint system where plugins provide Python-based constraint implementations that can be referenced and applied to definitions in the AaC DSL.
 
 Constraint rules in AaC are defined with the `context_constraint`, `schema_constraint`, and `primitive_constraint` definitions, which are required to have a corresponding implementation, via an AaC plugin. This enables AaC's self-checking mechanism even though YAML is just a markup language.
 
 ### Checking an AaC File
 The overall constraint mechanism follows this flow:
-1. A definition is identified as needing to be checked (i.e. you run `aac check <AaC_file_path>`)
+1. An AaC file needs to be checked (i.e. you run `aac check <AaC_file_path>`)
 2. Certain "core" constraints must be automatically checked while parsing and loading the AaC definition.
   a. This includes items such as required fields being present, fields being recognized based on their defining schema, etc.
 3. Context constraints will be checked
-  a. You can think of a context constraint as a "global" language constraint, or an "invariant".  These constraints evaluate the AaC `LanguageContext`.
+  a. A context constraint is a "global" language constraint, or an "invariant".  These constraints apply checks to the collection of definitions in the AaC `LanguageContext`.
 4. Each parsed definition will be checked against assigned schema constraints
-a. Generally, you will declare relevant schema constraints within the schema definition.  Schema constraints may be provided arguments.
-b. In certain cases, you may need to define a `universal` schema constraint.  These are applied to all schema definitions without the need for an explicit declaration.  Universal schema constraints cannot be defined with arguments.
+  a. Declare relevant schema constraints within the schema definition.  Schema constraints may accept arguments.
+  b. In certain cases, you may need to define a `universal` schema constraint.  These are applied to all schema definitions without the need for an explicit declaration.  Universal schema constraints cannot be defined with arguments.
 5. As schemas are checked against constraints, all fields and sub-fields are evaluated individually throughout the declaration structure.
 6. When traversing the declaration structure of a definition, when primitive values are encountered they are checked against any defined primitive constraints for that primitive.
   a. Primitive constraints are declared within the primitive declaration, not at the point of usage.

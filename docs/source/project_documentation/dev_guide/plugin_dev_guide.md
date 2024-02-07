@@ -200,7 +200,7 @@ After doing this the test can be executed either through VSCode or through termi
 
 ### Debugging the Plugin
 
-To debug the plugin in your VS Code editor, you will need to create a `launch.json` file in the `.vscode` folder.  The `launch.json` file should look like this:
+To debug the plugin in your VSCode editor, you will need to create a `launch.json` file in the `.vscode` folder.  The `launch.json` file should look like this:
 
 ```json
 {
@@ -222,4 +222,4 @@ To debug the plugin in your VS Code editor, you will need to create a `launch.js
 }
 ```
 
-You can now set breakpoints and use the VS Code testing framework to debug your plugin.
+You can now set breakpoints and use the VSCode testing framework to debug your plugin.
