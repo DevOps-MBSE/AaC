@@ -15,7 +15,7 @@ The overall constraint mechanism follows this flow:
   a. Declare relevant schema constraints within the schema definition.  Schema constraints may accept arguments.
   b. In certain cases, you may need to define a `universal` schema constraint.  These are applied to all schema definitions without the need for an explicit declaration.  Universal schema constraints cannot be defined with arguments.
 5. As schemas are checked against constraints, all fields and sub-fields are evaluated individually throughout the declaration structure.
-6. When traversing the declaration structure of a definition, when primitive values are encountered they are checked against any defined primitive constraints for that primitive.
+6. When traversing the declaration structure of a definition, if primitive values are encountered they are checked against any defined primitive constraints for that primitive.
   a. Primitive constraints are declared within the primitive declaration, not at the point of usage.
 7. Once all of the parsed declarations are checked against declared constraints, any violations are reported as constraint errors.
 8. All constraint errors from all of the constraint rules are collected and returned together.
