@@ -30,7 +30,7 @@ def check_arguments_against_constraint_definition(  # noqa: C901
     ):
         # the constraint failed
         error_msg = ExecutionMessage(
-            f"The Check arguments against constraint definition constraint for {instance.name} failed because the instance is not a SchemaConstraintAssignment or PrimitiveConstraintAssignment.  You may only use this constraint on SchemaConstraintAssignment or PrimitiveConstraintAssignment definitions.  Received {type(instance)}.)",
+            f"The Check arguments against constraint definition constraint for {instance.name} failed.  You may only use this constraint on SchemaConstraintAssignment or PrimitiveConstraintAssignment definitions.  Received {type(instance)}.)",
             MessageLevel.ERROR,
             definition.source,
             None,

@@ -204,7 +204,7 @@ Since this is not a universal constraint, you must declare it where appropriate.
     :emphasize-lines: 35-41
 ```
 
-You may now write the test and implementation for the constraint as needed.  Remember to add an empty `__init__.py` to your test directory and run `aac clean` to remove any extra files if needed.
+Now write the test and implementation for the constraint. Remember to run `aac clean` to remove any extra files, if needed.
 
 ### Primitive Constraints
 

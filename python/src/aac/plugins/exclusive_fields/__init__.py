@@ -12,8 +12,7 @@ from aac.execute import hookimpl
 from aac.context.language_context import LanguageContext
 from aac.context.definition import Definition
 from aac.execute.plugin_runner import PluginRunner
-from aac.plugins.exclusive_fields.exclusive_fields_impl import plugin_name
-from aac.plugins.exclusive_fields.exclusive_fields_impl import mutually_exclusive_fields
+from aac.plugins.exclusive_fields.exclusive_fields_impl import plugin_name, mutually_exclusive_fields
 
 exclusive_fields_aac_file_name = "exclusive_fields.aac"
 
