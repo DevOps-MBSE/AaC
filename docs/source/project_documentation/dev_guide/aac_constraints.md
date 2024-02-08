@@ -20,14 +20,14 @@ The overall constraint mechanism follows this flow:
 7. Once all of the parsed declarations are checked against declared constraints, any violations are reported as constraint errors.
 8. All constraint errors from all of the constraint rules are collected and returned together.
   a. If there are no errors, the user is provided a success message
-  b. If there are errors, the definition fails the check.  There is an option on the `check` command to handle warnings as errors if desired.
+  b. If there are errors, the AaC file fails the check.  There is an option on the `check` command to handle warnings as errors if desired.
 
 ## Constraint Definitions
-In order for users to define the self-checking constraints in the AaC DSL, they have to declare constraint rules via the 3 types of constraint definitions. These definitions also provide contextual information for the constraint as well as behaviors and acceptance criteria -- something to leverage for automatically generating functional/integration tests in the future.
+In order to define the constraints used by the AaC DSL to check the correctness of a definition, you must declare constraint rules via the 3 types of constraint definitions. These definitions also provide contextual information for the constraint as well as behaviors and acceptance criteria -- something to leverage for automatically generating functional/integration tests in the future.
 
 ### Generation File Safety
 
-We're going to discuss the use of `gen-plugin` below to help you build your constraints.  If you discover you need to update your plugin declaration, you can re-run `gen-plugin` without concern of losing any prior work.  If the output python files already exist, the generator will produce:
+If you need to update your plugin declaration, you can re-run `gen-plugin` without concern of losing any prior work.  If the output python files already exist, the generator will produce:
 
   - `.aac_evaluate` files for any user-editable output with an already existing file.  You can look at the changes here and incorporate into your content.
   - `.aac_backup` files for non-user editable output with an already existing file.  The backup contains the pre-existing content for your review.
@@ -46,7 +46,7 @@ Here is an example `context_constraint` definition:
 
 To implement the context constraint, run `aac gen-plugin <path-to-unique_root_keys.aac> --code-output <src-path> --test-output <tests-path>`.  Note that the package declaration will be used to establish sub-directories under your `--code-output` and `--test-output` paths.  By default, the `gen-plugin` command will prompt you to confirm the target output paths prior to attempting to generate any files.
 
-The `gen-plugin` command will auto-generate all the AaC boilerplate code to integrate your new command into the AaC plugin framework and will provide you an implementation stub to populate.  It will also generate a unit test and feature files based on your declaration.  This particular example does not demonstrate the use of feature files.
+The `gen-plugin` command will auto-generate all the boilerplate Python code to integrate your new command into the AaC plugin framework and will provide you an implementation stub to populate. It will also generate feature files and a unit test file based on your declaration. This particular example does not demonstrate the use of feature files.
 
 Generated implementation stub:
 ```python
@@ -111,11 +111,11 @@ class TestUniqueRootKeys(TestCase):
 
 ```
 
-To complete the implementation of your constraint, replace the body of the stubbed unit test and implementation with the desired behavior.  Use the provided `context` as your "item under evaluation" and return an `ExecutionResult` with the appropriate status and messages as shown in the generated example.
+To complete the implementation of a constraint, replace the body of the stubbed unit test and implementation with the desired behavior.  Use the provided `context` as the "item under evaluation" and return an `ExecutionResult` with the appropriate status and messages as shown in the generated example.
 
 By default, your unit test is "disabled".  This is a short-term convenience to prevent immediate breakage and will likely be changed in the future.  To enable your unit test, simply add an empty `__init__.py` file to your unit test folder for the plugin.
 
-Once your implementation and unit test is completed, run `tox` to ensure everything passes.
+Once the constraint implementation and unit test(s) are completed, run `tox` to ensure everything passes.
 
 ### Schema Constraints
 
@@ -126,7 +126,7 @@ Here's an example `schema_constraint` definition.
     :language: yaml
 ```
 
-Just as in the context constraint example, we'll run `gen-plugin` to create the implementaiton and unit test stubs.  Note that this is not a universal schema constraint, so arguments are allowed in the declaraction.  If this were a universal constraint (i.e. `universal: true`), then gen-plugin would fail due to violation of the `If true then empty` constraint declared for `SchemaConstraint` in th AaC core language declaration.
+Just as in the context constraint example, run `gen-plugin` to create the implementation and unit test stubs.  Note that this is not a universal schema constraint, so arguments are allowed in the declaration.  If this were a universal constraint (i.e. `universal: true`), then `gen-plugin` would fail due to violation of the `If true then empty` constraint declared for `SchemaConstraint` in th AaC core language definition.
 
 Generated implementation stub:
 
@@ -208,9 +208,9 @@ You may now write the test and implementation for the constraint as needed.  Rem
 
 ### Primitive Constraints
 
-Finally we have primitive constraints.  The core AaC DSL defines a handful of common primitives such as `int` and `string` for you to use, but also allows you to define custom primitives as needed for your model needs.  In order to show how this can be done, let's consider an AaC unique primitive: `dataref`.
+The core AaC DSL defines a handful of common primitives such as `int` and `string` for you to use, but also allows you to define custom primitives as needed for your modeling needs.  In order to show how this can be done, consider an AaC unique primitive: `dataref`.
 
-First you need to define your primitive without any declared constraints.
+First, define the `dataref` primitive without any declared constraints.
 
 ```{eval-rst}
 .. literalinclude:: ../../../../python/src/aac/aac.aac
@@ -231,7 +231,7 @@ Just as before, run `gen-plugin` to create unit test and implementation stubs.
 
 Generated implementation stub:
 
-```yaml
+```python
 """The AaC AaC primitive constraints plugin implementation module."""
 # NOTE: It is safe to edit this file.
 # This file is only initially generated by aac gen-plugin, and it won't be overwritten if the file already exists.
@@ -276,7 +276,7 @@ def check_dataref(
 
 Generated unit test stub:
 
-```yaml
+```python
 from unittest import TestCase
 from typing import Tuple
 from click.testing import CliRunner
