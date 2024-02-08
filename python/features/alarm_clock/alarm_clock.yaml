@@ -20,7 +20,7 @@ model:
         - name: targetTime
           type: Timestamp
       acceptance:
-        - name: Test Cases
+        - name: Modify Timer State
           scenarios:
             - name: Set timer
               given:

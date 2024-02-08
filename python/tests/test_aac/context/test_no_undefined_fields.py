@@ -5,7 +5,6 @@ from aac.context.language_error import LanguageError
 
 class TestNoUndefinedFields(TestCase):
     def test_no_extra_fields(self):
-        
         context = LanguageContext()
         with self.assertRaises(LanguageError):
             definitions = context.parse_and_load(BAD_EXTRA_FIELDS)

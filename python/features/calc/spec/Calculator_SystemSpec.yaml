@@ -6,7 +6,7 @@ import:
 ---
 req_spec:
   name: Calculator System Spec
-  description: This is a specification structure to test the spec plugin.
+  description: Requirements for an extendable calculator.
   requirements:
     - "CALC-1"
     - "CALC-2"

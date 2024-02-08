@@ -348,7 +348,7 @@ class LanguageContext(object):
                         )
                     else:
                         raise LanguageError(
-                            f"Discovered multipe AaC definitions for type {clean_field_type} while loading {schema_definition.name}.  You may need to add a package name to differentiate.",
+                            f"Discovered multiple AaC definitions for type {clean_field_type} while loading {schema_definition.name}.  You may need to add a package name to differentiate.",
                             get_location_str(field_type, schema_definition.lexemes),
                         )
 

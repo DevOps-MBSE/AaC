@@ -1,4 +1,4 @@
-from os.path import basename, sep, isfile, abspath
+from os.path import basename, sep, isfile
 from os import linesep
 from tempfile import TemporaryDirectory
 from typing import Optional
@@ -20,6 +20,7 @@ class TestParser(TestCase):
         with open(path, "w") as test_file:
             test_file.write(content)
         return path
+    
     def get_lexeme_values_for_definition(self, name: str, definitions: list[Definition]) -> list[str]:
         lexemes = [definition.lexemes for definition in definitions if definition.name == name][0]
         return [lexeme.value for lexeme in lexemes]
@@ -39,7 +40,6 @@ class TestParser(TestCase):
         self.assertEqual(cm.exception.source, filespec)
 
     def test_can_get_lexemes_from_parsed_architecture_file(self):
-
         with tempfile.TemporaryDirectory() as temp_dir:
             test_yaml = self.create_test_file(f"{temp_dir}/test.aac", TEST_MESSAGE_CONTENTS.strip())
             parsed_definitions = parse(test_yaml)

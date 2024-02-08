@@ -19,7 +19,7 @@ plugin:
                 - The do-stuff command provides the output 'SUCCESS'.
         - name: Failure test
           scenarios:
-            - name: Test do-stuff command with valid input.
+            - name: Test do-stuff command with invalid input.
               given: 
                 - An path that does not point to an existing file.
               when:

@@ -56,10 +56,6 @@ class TestLanguageContext(TestCase):
         definition = context.get_defining_schema_for_root("schema")
         self.assertEqual(definition.name, "Schema")
     
-    def test_register_plugin_runner(self):
-        # Not sure how to easily test this
-        return
-    
     def test_get_plugin_runners(self):
         context = LanguageContext()
         plugin_runners = context.get_plugin_runners()

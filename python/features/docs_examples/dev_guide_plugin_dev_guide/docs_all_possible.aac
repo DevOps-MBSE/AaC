@@ -1,6 +1,6 @@
 plugin:
   name: My plugin
-  package: happy
+  package: aac.example
   description: |
     An AaC plugin definition used to test the gen-plugin command behavior.
   commands:

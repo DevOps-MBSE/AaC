@@ -28,9 +28,9 @@ model:
         - name: response
           type: MathResponse
       acceptance:
-        - name: Test Message Handler
+        - name: Handle a math request
           scenarios: 
-            - name: on-request
+            - name: Request handler responds with a calculated value
               given:
                 - The MathMessageHandler is running
               when:
