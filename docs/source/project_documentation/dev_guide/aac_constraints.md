@@ -22,6 +22,8 @@ The overall constraint mechanism follows this flow:
   a. If there are no errors, the user is provided a success message
   b. If there are errors, the AaC file fails the check.  There is an option on the `check` command to handle warnings as errors if desired.
 
+![Constraint Check Flow Chart](../../images/graphs/constraint_flow.png)
+
 ## Constraint Definitions
 In order to define the constraints used by the AaC DSL to check the correctness of a definition, you must declare constraint rules via the 3 types of constraint definitions. These definitions also provide contextual information for the constraint as well as behaviors and acceptance criteria -- something to leverage for automatically generating functional/integration tests in the future.
 
