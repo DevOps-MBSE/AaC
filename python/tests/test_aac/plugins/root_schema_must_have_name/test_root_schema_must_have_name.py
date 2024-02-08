@@ -16,7 +16,7 @@ from aac.plugins.root_schema_must_have_name.root_schema_must_have_name_impl impo
 )
 
 
-class TestRootschemamusthavename(TestCase):
+class TestRootSchemaMustHaveName(TestCase):
 
     def test_root_schema_has_name(self):
        context = LanguageContext()

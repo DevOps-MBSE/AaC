@@ -4,7 +4,7 @@ from aac.context.language_context import LanguageContext
 from aac.plugins.if_true_then_empty.if_true_then_empty_impl import if_true_then_empty
 
 
-class TestIftruethenempty(TestCase):
+class TestIfTrueThenEmpty(TestCase):
     def test_if_true_then_empty(self):
         
         context = LanguageContext()

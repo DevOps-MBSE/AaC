@@ -20,7 +20,7 @@ from aac.plugins.aac_primitives.aac_primitive_constraints_impl import check_data
 from aac.plugins.aac_primitives.aac_primitive_constraints_impl import check_typeref
 
 
-class TestAaCprimitiveconstraints(TestCase):
+class TestAaCPrimitiveConstraints(TestCase):
 
     def test_check_bool(self):
         result = check_bool(True, "", None, None)

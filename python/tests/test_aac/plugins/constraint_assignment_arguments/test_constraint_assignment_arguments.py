@@ -16,7 +16,7 @@ from aac.plugins.constraint_assignment_arguments.constraint_assignment_arguments
 )
 
 
-class TestConstraintassignmentarguments(TestCase):
+class TestConstraintAssignmentArguments(TestCase):
     def test_check_arguments_against_constraint_definition(self):
         
         context = LanguageContext()
