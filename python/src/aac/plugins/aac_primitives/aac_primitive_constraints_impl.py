@@ -239,7 +239,7 @@ def check_number(
         is_invalid = True
         status = ExecutionStatus.CONSTRAINT_FAILURE
         error_msg = ExecutionMessage(
-            message=f"AaC int primitive constraint failed for value {value} with error:{linesep}{error}",
+            message=f"AaC number primitive constraint failed for value {value} with error:{linesep}{error}",
             level=MessageLevel.ERROR,
             source=source,
             location=location,
@@ -249,7 +249,7 @@ def check_number(
     if is_invalid:
         status = ExecutionStatus.CONSTRAINT_FAILURE
         error_msg = ExecutionMessage(
-            message=f"{value} is not a valid value for the primitive type int",
+            message=f"{value} is not a valid value for the primitive type number",
             level=MessageLevel.ERROR,
             source=source,
             location=location,

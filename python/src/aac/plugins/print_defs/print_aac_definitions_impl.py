@@ -20,7 +20,7 @@ plugin_name = "Print AaC Definitions"
 
 
 def print_defs(core_only: bool) -> ExecutionResult:
-    """Print the AaC package version."""
+    """Print YAML representation of AaC language definitions."""
 
     messages: list[str] = []
     context: LanguageContext = LanguageContext()
