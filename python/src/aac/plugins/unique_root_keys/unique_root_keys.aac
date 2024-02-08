@@ -1,7 +1,7 @@
 plugin:
   name: Unique Root Keys
   package: aac.plugins.unique_root_keys
-  description: An AaC plugin that enables validating all required fields are present in a definition.
+  description: An AaC plugin that checks there are no duplicate root keys defined in the AaC language.
   context_constraints:
     - name: Root key names are unique
       description: Check every definition to ensure there are no duplicate root keys defined in the AaC language.
