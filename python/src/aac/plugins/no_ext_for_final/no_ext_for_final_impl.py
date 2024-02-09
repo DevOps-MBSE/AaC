@@ -34,7 +34,7 @@ def no_extension_for_final(
                     status = ExecutionStatus.GENERAL_FAILURE
                     messages.append(
                         ExecutionMessage(
-                            f"Cannot resolve unique tyep for extension {ext.name}.  Found {ext_definition}",
+                            f"Cannot resolve unique type for extension {ext.name}.  Found {ext_definition}",
                             MessageLevel.ERROR,
                             None,  # figure out a better want to handle this...maybe a util function?
                             None,
