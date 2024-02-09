@@ -113,7 +113,7 @@ class TestUniqueRootKeys(TestCase):
 
 To complete the implementation of a constraint, replace the body of the stubbed unit test and implementation with the desired behavior.  Use the provided `context` as the "item under evaluation" and return an `ExecutionResult` with the appropriate status and messages as shown in the generated example.
 
-By default, your unit test is "disabled".  This is a short-term convenience to prevent immediate breakage and will likely be changed in the future.  To enable your unit test, simply add an empty `__init__.py` file to your unit test folder for the plugin.
+
 
 Once the constraint implementation and unit test(s) are completed, run `tox` to ensure everything passes.
 
@@ -194,7 +194,7 @@ class TestExclusivefields(TestCase):
         self.fail("Test not yet implemented.")
 ```
 
-Since this is not a universal constraint, you must declare it where appropriate.  There's not a current example of the "Mutually Exclusive" constraint in the current AaC baseline, so let's switch over to the "If true then empty" constraint to see how schema constraints are allocated.  In this example, the constraint is used to check the boolean value of the `universal` field and if true, ensure there are no values provided for the `arguments` field.  Everything described above for plugin-generation applies here as well.  What we really want to focus on is the assignment of the schema constraint, including the arguments provided for the constraint.
+Since this is not a context constraint (i.e. applicable globally across the AaC Language Context), you must declare it where appropriate.  There's not a current example of the "Mutually Exclusive" constraint in the current AaC baseline, so let's switch over to the "If true then empty" constraint to see how schema constraints are allocated.  In this example, the constraint is used to check the boolean value of the `universal` field and if true, ensure there are no values provided for the `arguments` field.  Everything described above for plugin-generation applies here as well.  What we really want to focus on is the assignment of the schema constraint, including the arguments provided for the constraint.
 
 
 ```{eval-rst}

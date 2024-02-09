@@ -180,7 +180,7 @@ class LanguageContext(object):
                         parent_fully_qualified_name = f"{get_python_module_name(parent_package)}.{get_python_class_name(parent_name)}"
                     except LanguageError as e:
                         raise LanguageError(
-                            e.message, get_location_str(parent_name, definition.lexemes)
+                            f"failed to establish parent fully qualified name from parent_package {parent_package} and parent_name {parent_name}: {e.message}", get_location_str(parent_name, definition.lexemes)
                         )
 
                     if (
@@ -258,7 +258,7 @@ class LanguageContext(object):
                 )
             except LanguageError as e:
                 raise LanguageError(
-                    e.message,
+                    f"Failed to create Enum instance_class for {enum_definition.name}: {e.message}",
                     get_location_str(enum_definition.name, enum_definition.lexemes),
                 )
             self.context_instance.fully_qualified_name_to_class[
@@ -304,7 +304,7 @@ class LanguageContext(object):
                     )
                 except LanguageError as e:
                     raise LanguageError(
-                        e.message,
+                        f"Failed to create instance_class for {schema_definition.name}: {e.message}",
                         get_location_str(
                             schema_definition.name, schema_definition.lexemes
                         ),
@@ -319,7 +319,7 @@ class LanguageContext(object):
                     )
                 except LanguageError as e:
                     raise LanguageError(
-                        e.message,
+                        f"Failed to create instance_class for {schema_definition.name}: {e.message}",
                         get_location_str(
                             schema_definition.name, schema_definition.lexemes
                         ),
@@ -893,4 +893,3 @@ class LanguageContext(object):
             [definition.structure for definition in candidate_values],
             search_term.split("."),
         )
-        return result
