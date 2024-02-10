@@ -31,7 +31,7 @@ def _get_fields(schema) -> list[str]:
                 fields.extend(_get_fields(parent_schema[0].instance))
             elif len(parent_schema) > 1:
                 raise LanguageError(
-                    f"Unable to identify unique definition for {ext.name}:  found {parent_schema} "
+                    f"Unable to identify unique definition for {ext.name}:  found {parent_schema} ", "Unknown location"
                 )
     return fields
 
@@ -54,7 +54,7 @@ def root_schema_has_name(
                 )
 
             # get the list of fields in the instance as well as the fields in the parent schema
-            fields = _get_fields(instance)
+            fields = _get_fields(instance)  # Could we get the location of the instance and pass it to the function?
             if "name" not in fields:
                 status = ExecutionStatus.GENERAL_FAILURE
                 error_msg = ExecutionMessage(

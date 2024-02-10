@@ -53,7 +53,8 @@ class LanguageContext(object):
         definitions = self.get_definitions_by_name(name)
         if len(definitions) != 1:
             raise LanguageError(
-                f"_get_aac_generated_class unable to identify unique definition for name '{name}'.  Found: {[definition.name for definition in definitions]}"
+                f"_get_aac_generated_class unable to identify unique definition for name '{name}'.  Found: {[definition.name for definition in definitions]}",
+                definitions[0].source.uri
             )
 
         aac_class = self.context_instance.fully_qualified_name_to_class[
@@ -61,7 +62,8 @@ class LanguageContext(object):
         ]
         if not aac_class:
             raise LanguageError(
-                f"_get_aac_generated_class unable to identify generated class for name '{name}' with fully_qualified_name '{definitions[0].get_fully_qualified_name()}'"
+                f"_get_aac_generated_class unable to identify generated class for name '{name}' with fully_qualified_name '{definitions[0].get_fully_qualified_name()}'",
+                definitions[0].source.uri
             )
 
         return aac_class
@@ -75,14 +77,15 @@ class LanguageContext(object):
         definitions = self.get_definitions_by_name(aac_type_name)
         if len(definitions) != 1:
             raise LanguageError(
-                f"Unable to identify unique definition for '{aac_type_name}'.  Found {[definition.name for definition in definitions]}"
+                f"Unable to identify unique definition for '{aac_type_name}'.  Found {[definition.name for definition in definitions]}",
+                definitions[0].source.uri
             )
         aac_class = self._get_aac_generated_class(aac_type_name)
         result = aac_class()
         field_names = [field.name for field in definitions[0].instance.fields]
         for attribute_name, attribute_value in attributes.items():
             if attribute_name not in field_names:
-                raise LanguageError(f"Found undefined field name '{attribute_name}'")
+                raise LanguageError(f"Found undefined field name '{attribute_name}'", definitions[0].source.uri)
             setattr(result, attribute_name, attribute_value)
         return result
 
@@ -91,14 +94,16 @@ class LanguageContext(object):
         definitions = self.get_definitions_by_name(aac_enum_name)
         if len(definitions) != 1:
             raise LanguageError(
-                f"Unable to identify unique definition for '{aac_enum_name}'.  Found {[definition.name for definition in definitions]}"
+                f"Unable to identify unique definition for '{aac_enum_name}'.  Found {[definition.name for definition in definitions]}",
+                definitions[0].source.uri
             )
         aac_class = self._get_aac_generated_class(aac_enum_name)
         try:
             return getattr(aac_class, value)
         except ValueError:
             raise LanguageError(
-                f"{value} is not a valid value for enum {aac_enum_name}"
+                f"{value} is not a valid value for enum {aac_enum_name}",
+                definitions[0].source.uri
             )
 
     def parse_and_load(self, arg: str) -> list[Definition]:
