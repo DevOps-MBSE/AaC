@@ -12,7 +12,7 @@ If this command is executable please continue with this guide for developing plu
 
 ## Generating an AaC Project (Gen-Project Command)
 
-AaC is a modular capability that embraces the concept of 3rd party plugins.  We recognize that your team will have unique needs and will want to tailor the AaC capability to your unique domain.  The first step in creating one or more custom plugins for your needs is to create a project.  We recommend you create a project in your Git repository manager and `clone` it to your local machine.  Create a project definition (i.e. `my_project.aac`) in the root folder.
+AaC is a modular system that embraces the concept that each team will have unique needs and will want to tailor the AaC capability to their unique domain.  The first step in creating one or more custom plugins is to create a project.  We recommend you create a project in your Git repository manager and `clone` it to your local machine.  Create a project definition (i.e. `my_project.aac`) in the root folder.
 
 Example project model:
 ```yaml
@@ -35,14 +35,15 @@ Usage: aac gen-project [OPTIONS] AAC_PROJECT_FILE
 
 Options:
   --output TEXT      The location to output generated plugin code.
-  --no-prompt        Informs gen-plugin to execute without asking the user to
+  --no-prompt        Instructs the generator to execute without asking the user to
                      confirm output paths.
-  --force-overwrite  Informs generator to backup and overwrite all existing
+  --force-overwrite  Instructs the generator to backup and overwrite all existing
                      files regardless of template definition.
-  --evaluate         Informs generator to only write evaluation files with no
+  --evaluate         Instructs the generator to only write evaluation files with no
                      impact to existing files.
   -h, --help         Show this message and exit.
 ```
+*Note:  AaC generation attempts to be non-distructive.  Each generation template definition recognized what output should be fully generated and what may be user modified.  If any file is being generated where an existing file already exists, the generator will create a backup of the original prior to writing the new file.  If a user modifiable file is to be generated but already exists, the new file will be created as an evaluation file for the user to consider without impacting the existing file.  Generator commends can adjust this behavior using `--force-overwrite` and `--evaluate` flags.*
 
 This will create a project structure that looks like this:
 
@@ -88,9 +89,9 @@ While the `gen-plugin` command will attempt to sort out directory paths for you 
 Plugins are generated from a plugin definition.  Just as we model the AaC language with AaC, we also model plugins with AaC.  A plugin allows you to create the following:
 
 - `commands`:  Commands are new command line interface (CLI) commands that can be executed by the user.  The `gen-project` and `gen-plugin` commands described here are examples of commands.
-- `context_constraints`:  Context constraints are constraints that are executed against the entire AaC model `LanguageContext`.  These constraints are executed after the AaC model is loaded and provide a way to check cross-cutting items within the model.
-- `schema_constraints`:  Schema constraints are constraints that are executed against each `schema` in the AaC model.  These constraints are executed after the AaC model is loaded and context constraints are run, providing a way to check each `schema` in the model.
-- `primitive_constraints`:  Primitive constraints are constraints that are executed against each `primitive` in the AaC model.  These constraints are executed after the AaC model is loaded and context constraints and schema constraints are run, providing a way to check each `primitive` in the model.
+- `context_constraints`:  Context constraints are constraints that are executed against the entire AaC `LanguageContext`.  These constraints are executed after the AaC content is loaded and provide a way to check cross-cutting items within the model.
+- `schema_constraints`:  Schema constraints are constraints that are executed against each `schema`.  These constraints are executed after the AaC content is loaded and context constraints are run, providing a way to check each `schema` in the system.
+- `primitive_constraints`:  Primitive constraints are constraints that are executed against each `primitive`.  These constraints are executed after the AaC content is loaded and context constraints and schema constraints are run, providing a way to check each `primitive` in the system.
 
 You have the flexibility to organize your plugins as you see fit. Our preference has been to create a `plugins/` folder in your project and place your plugins in separate sub-folders to keep things organized.  There is an expectation (or perhaps a constraint, depending on your perspective) related to file names.  Your plugin's code will be generated in a folder that aligns with the package and plugin name.  For example if your plugin has a package of `aac_example.my_plugin` and is named `My Plugin`, then code will go into the `./src/aac_example/my_plugin` folder and will expect to find the plugin model named `my_plugin.aac` there.
 
