@@ -893,3 +893,4 @@ class LanguageContext(object):
             [definition.structure for definition in candidate_values],
             search_term.split("."),
         )
+        return result
