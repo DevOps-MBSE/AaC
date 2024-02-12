@@ -33,7 +33,7 @@ The above examples would pass the `directory` constraint.
 
 
 ## File
-Verify that a file value is interpretable as a file.  Argument must be in valid directory format with a filename and extension.
+Verify that a file value is interpretable as a file.  Argument must be in valid file format with a filename and extension.
 
 ### Example Usage
 ```{eval-rst}
@@ -62,7 +62,7 @@ Verify that a data reference value is interpretable and exists.
     :language: yaml
     :lines: 221-222
 ```
-In this example, the `dataref` constraint will fail if `modifier.name` is not interpretable as a data reference
+In this example, the `dataref` constraint will fail if `modifier.name` is not interpretable as a data reference.
 
 ## Typeref
 Verify that a type reference value is interpretable and exists.

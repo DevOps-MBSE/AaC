@@ -1,5 +1,5 @@
 # Undefined Fields
-The `Undefined Fields` constraint is a schema constraint that checks that a field is defined by the schema when a value is assigned to it.
+The `Undefined Fields` constraint is a Schema Constraint that checks that a field is defined by the schema when a value is assigned to it.
 
 ## Usage Example
 ```{eval-rst}

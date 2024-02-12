@@ -1,5 +1,5 @@
 # Root Schema Has Name
-`Root Schema Has Name` is a Schema constraint that checks every schema with a root key and ensures there is a field called name.
+`Root Schema Has Name` is a Schema constraint that checks every schema with a root key and ensures there is a field called `name`.
 
 
 ## Usage Example
