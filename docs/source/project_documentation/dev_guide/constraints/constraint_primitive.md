@@ -1,7 +1,7 @@
 # Primitive Constraints
 
 ## Bool
-Verify that a boolen value is `True`, `False`, or `None`.  `None` is considered `False` by python, so we allow `None` as a valid value.
+Verify that a boolen value is `True`, `False`, or `None`.  `None` is considered `False` by Python, so we allow `None` as a valid value.
 
 ### Example Usage
 ```{eval-rst}
@@ -10,14 +10,14 @@ Verify that a boolen value is `True`, `False`, or `None`.  `None` is considered 
     :lines: 299-304
     :emphasize-lines: 6
 ```
-In this example, `is_required` is a Boolean field.  If a value not interpretable as a Boolean, then the `bool` constraint will fail.
+In this example, `is_required` is a Boolean field.  If the value is not interpretable as a Boolean, then the `bool` constraint will fail.
 
 ## Date
-Verify that a date value is interpretable as a date.  Date should be in Year-Month-Day (YYYY-MM-DD) format.
+Verify that a date value is interpretable as a date.  Date values should be in Year-Month-Day (YYYY-MM-DD) format.
 
 ### Example Usage
 ```yaml
-date: 2023-1-22
+date: 2023-01-22
 ```
 The above example shows the correct format for date values.  If a date value does not match that format, the `date` constraint will fail.
 
