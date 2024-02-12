@@ -128,7 +128,8 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult: 
             if len(field_definining_schema) != 1:
                 # Question: should we convert this to a Constraint Failure?
                 raise LanguageError(
-                    f"Could not find unique schema definition for field type {field.type} with name {field.name}"
+                    f"Could not find unique schema definition for field type {field.type} with name {field.name}",
+                    source_definition.source.uri
                 )
 
             if field_definining_schema[0].get_root_key() == "primitive":

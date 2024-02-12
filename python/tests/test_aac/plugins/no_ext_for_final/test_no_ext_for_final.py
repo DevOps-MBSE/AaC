@@ -12,7 +12,7 @@ from aac.plugins.no_ext_for_final.no_ext_for_final_impl import plugin_name
 from aac.plugins.no_ext_for_final.no_ext_for_final_impl import no_extension_for_final
 
 
-class TestNoExtforFinal(TestCase):
+class TestNoExtForFinal(TestCase):
     def test_no_extension_for_final(self):
         context = LanguageContext()
         schema_definition = context.get_definitions_by_name("aac.lang.Schema")

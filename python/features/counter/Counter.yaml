@@ -6,13 +6,13 @@ import:
 ---
 model:
   name: Counter
-  description: This is service that counts events.
+  description: A service that counts events.
   state:
     - name: eventCount
       type: EventCount
   behavior:
-    - name: onRequest
-      description: This an event to be counted.
+    - name: Receive a request
+      description: A request is received by the event counter and is tracked.
       input:
         - name: request
           type: Request
@@ -24,26 +24,26 @@ model:
           scenarios: 
             - name: Receive request and send back a response.
               given:
-                - The Counter is running.
+                - The Event Counter is running.
               when:
-                - The user sends a request to Counter.
+                - The user sends a request to Event Counter.
               then:
-                - The user receives a response from Counter.
+                - The user receives a response from Event Counter.
                 - The eventCount is incremented by 1.
-    - name: onEventCount
-      description: This provides the event count and will not be counted.
+    - name: Receive a non-tracked event
+      description: A request is received but will not be counted.
       output:
         - name: count
           type: EventCount
       acceptance:
-        - name: Test get event count
+        - name: Get the event count
           scenarios: 
             - name: Provide the event count.
               given:
-                - The Counter is running.
+                - The Event Counter is running.
                 - The event count is 0.
               when:
-                - The user sends a request to Counter.
+                - The user sends a request to Event Counter.
                 - The user requests the event count.
               then:
                 - The user receives event count of 1.

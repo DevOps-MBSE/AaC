@@ -29,10 +29,10 @@ employee:
 
 ## Inheritance Modifiers
 
-Just as in most programming languages, the AaC language provides some basic modifiers to control what you can and can't do with inheritance.
+Just as in most programming languages, the AaC language provides some basic modifiers to control what you can and can't do with inherited `schema` definitions.  
 
-- `abstract` - This allows you to declare your `schema` as an abstract type, meaning it cannot be "instantiated" directly in a declaration.  In AaC you can think of this as either being a root type or field in another `schema`.
-- `final` - This allows you to declare your `schema` as a final type, meaning it cannot be extended by another `schema`.  In AaC this means you cannot include the final schema in another `schema`'s `extends` field.
+- `abstract` - This attribute allows declaring a schema as an abstract type. This means it cannot be "instantiated" directly in a definition.  In AaC, this means the schema is either a root type or field in another `Schema`.
+- `final` - This allows declaring a schema as a final type, meaning it cannot be extended by another `Schema`.  In AaC this means the final schema cannot appear in another schema's extends field.
 
 To use these inheritance modifiers you simply add them to the `modifiers` field of the `schema`.  Let's update the previous example to see how this works.
 

@@ -1,5 +1,5 @@
 import unittest
-from aac.execute.plugin_runner import AacCommandArgument, AacCommand, PluginRunner
+from aac.execute.plugin_runner import AacCommandArgument, AacCommand
 
 class TestAacCommandArgument(unittest.TestCase):
     def test_init(self):

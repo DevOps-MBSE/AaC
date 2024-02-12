@@ -29,13 +29,13 @@ plugin:
           description: The location to output generated plugin documentation code.
         - name: --no-prompt
           type: bool
-          description: Informs gen-plugin to execute without asking the user to confirm output paths.
+          description: Instructs the generator to execute without asking the user to confirm output paths.
         - name: --force-overwrite
           type: bool
-          description: Informs generator to backup and overwrite all existing files regardless of template definition.
+          description: Instructs the generator to backup and overwrite all existing files regardless of template definition.
         - name: --evaluate
           type: bool
-          description: Informs generator to only write evaluation files with no impact to existing files.
+          description: Instructs the generator to only write evaluation files with no impact to existing files.
     - name: gen-project
       help_text: |
         Generate code and stubs for an AaC project.  Overwrites will backup existing files.
@@ -48,17 +48,17 @@ plugin:
       input:
         - name: aac-project-file
           type: file
-          description: The path to the architecture file with the plugin definition.
+          description: The path to the architecture file with the project definition.
         - name: --output
           type: directory
-          description: The location to output generated plugin code.
+          description: The location to output generated project code.
         - name: --no-prompt
           type: bool
-          description: Informs gen-plugin to execute without asking the user to confirm output paths.
+          description: Instructs the generator to execute without asking the user to confirm output paths.
         - name: --force-overwrite
           type: bool
-          description: Informs generator to backup and overwrite all existing files regardless of template definition.
+          description: Instructs the generator to backup and overwrite all existing files regardless of template definition.
         - name: --evaluate
           type: bool
-          description: Informs generator to only write evaluation files with no impact to existing files.
+          description: Infstructs the generator to only write evaluation files with no impact to existing files.
           

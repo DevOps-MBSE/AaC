@@ -13,7 +13,7 @@ from aac.plugins.exclusive_fields.exclusive_fields_impl import plugin_name
 from aac.plugins.exclusive_fields.exclusive_fields_impl import mutually_exclusive_fields
 
 
-class TestExclusivefields(TestCase):
+class TestExclusiveFields(TestCase):
     def test_mutually_exclusive_fields(self):
         
         context = LanguageContext()

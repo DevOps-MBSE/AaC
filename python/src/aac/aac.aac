@@ -1,16 +1,16 @@
 ---
 # The Architecture-as-Code (AaC) core language definition.
 #   AaC is a self-defining language.  Each section below
-#   contains the building blocks to define MBSE products, 
-#   or tailor the AaC Model-Based System Engineering
+#   contains the building blocks to define Model-Based
+#   System Engineering products, or tailor the AaC MBSE
 #   functionality to suit your needs.
 
-# Fountational language definitions upon with all other language constructs are based
+# Foundational language definitions upon which all other language constructs are based.
 
 schema:
   name: AacType
   package: aac.lang
-  modifiers: 
+  modifiers:
     - abstract
   description: |
     The base type for any data item defined in AaC.
@@ -54,7 +54,7 @@ schema:
 modifier:
   name: abstract
   description: |
-    Denotes that the schema is abstract and cannot be referenced unless in the 
+    Denotes that the schema is abstract and cannot be referenced unless in the
     'extends' field of another schema wishing to inherit from this schema.
 ---
 modifier:
@@ -66,13 +66,13 @@ modifier:
 schema:
   name: Enum
   package: aac.lang
-  extends: 
+  extends:
     - package: aac.lang
       name: AacType
   root: enum
   description: |
     A definition that represents an enumerated type of value.
-    
+
     An example of when to use an 'enum' is when you want to provide several
     different options for a single value.
   fields:
@@ -85,7 +85,7 @@ schema:
 schema:
   name: Primitive
   package: aac.lang
-  extends: 
+  extends:
     - package: aac.lang
       name: AacType
   root: primitive
@@ -94,7 +94,7 @@ schema:
   fields:
     - name: python_type
       type: string
-      description:  The type value to represend this primitive with while generating python code.
+      description:  The type value to represent this primitive with while generating python code.
       is_required: true
     - name: constraints
       type: PrimitiveConstraintAssignment[]
@@ -113,6 +113,8 @@ primitive:
 primitive:
   name: int
   package: aac.lang
+  description:  |
+    An integer value.
   python_type: int
   constraints:
     - name: Check int
@@ -120,6 +122,8 @@ primitive:
 primitive:
   name: number
   package: aac.lang
+  description:  |
+     A floating-point value.
   python_type: float
   constraints:
     - name: Check number
@@ -166,17 +170,20 @@ primitive:
   python_type: Any
   description:  |
     A catch-all primitive type that will accept any value.  It is recommended to avoid the use
-    of any as it can make it difficult to reason about your model.  Due to the broad applicability of the 
-    any primitive, it is not possible to provide a general purpose constraint checker. If you find a need to use
-    the any primitive, we recommend defining a custom constraint to check the value for your usage.
+    of any as it can make it difficult to reason about your model.
+
+    Due to the broad applicability of the any primitive, it is not possible to provide a general
+    purpose constraint checker. If you find a need to use the any primitive, we recommend
+    defining a custom constraint to check the value for your usage.
 ---
 primitive:
   name: dataref
   package: aac.lang
   python_type: str
   description:  |
-    A reference to another defined data item.  References are qualified and documented 
+    A reference to another defined data item.  References are qualified and documented
     as 'reference(schema_root.field_name)' denoting the definition and field being referenced.
+
     Do not confuse data references with type references.  A data reference can be thought of as
     a pointer to a specific data item, while a type reference is a pointer to a definition.  Data
     references do not comprehend type inheritance or polymorphism.
@@ -188,18 +195,18 @@ primitive:
   package: aac.lang
   python_type: str
   description:  |
-    A reference to another defined type.  Referenced type are typed and documented 
+    A reference to another defined type.  Reference types are typed and documented
     as 'typeref(package_name.type_name)' denoting the package and type being referenced.
     A typeref respects inheritance and will respect references using polymorphism.  For example,
     you can reference primitive type, enums, and schemas by using the typeref 'typeref(aac.lang.AacType)'.
-    Because Primitive, enum, and Schema all extend from AacType, any value provided for any of these
+    Because Primitive, Enum, and Schema all extend from AacType, any value provided for these
     types will be accepted by the typeref.
   constraints:
     - name: Check typeref
 ---
 schema:
   name: Schema
-  extends: 
+  extends:
     - package: aac.lang
       name: AacType
   package: aac.lang
@@ -336,7 +343,7 @@ schema:
     - name: version
       type: string
       description: |
-        The version nof the pypi project to import.
+        The version of the pypi project to import.
       is_required: true
 ---
 schema:
@@ -390,7 +397,7 @@ schema:
   fields:
     - name: name
       type: string
-      description: The name of the command.  This will be used by the CLI to invke the command.
+      description: The name of the command.  This will be used by the CLI to invoke the command.
       is_required: true
     - name: help_text
       type: string
@@ -401,7 +408,7 @@ schema:
       type: bool
       description: |
         Indicates that the command should be cached for future use.  This is useful
-        for commands that take may be used by other commands in the run_before or 
+        for commands that may be used by other commands in the run_before or
         run_after fields creating a command chain but only need to be executed once.
     - name: run_before
       type: PluginCommandReference[]
@@ -410,11 +417,11 @@ schema:
     - name: run_after
       type: PluginCommandReference[]
       description: |
-        A listing of plugin commands to run before this command.
+        A listing of plugin commands to run after this command.
     - name: input
       type: PluginInput[]
       description: |
-        The list of all the fields that are inputs to the component when the
+        The list of all the fields that are inputs to the plugin when the
         command is executed.
     - name: acceptance
       type: Feature[]
@@ -443,7 +450,7 @@ schema:
   name: PluginInput
   package: aac.lang
   description: |
-    Input for plugin execution control.  May be used for CLI inpurt of for constraint definition.
+    Input for plugin execution control.  May be used for CLI input or for constraint definition.
   fields:
     - name: name
       type: string
@@ -457,14 +464,14 @@ schema:
     - name: type
       type: typeref(aac.lang.Primitive)
       description: |
-        The command inputs are translaed to python function inputs.  Use AaC primitives to enable translation to python types for plugin generation.
+        The command inputs are translated to Python function inputs.  Use AaC primitives to enable translation to Python types for plugin generation.
       is_required: true
     - name: default
       type:  string
       description: |
         The default value to provide to a plugin, if desired.
 ---
-schema: 
+schema:
   name: PluginInputValue
   package: aac.lang
   description: |
@@ -548,8 +555,8 @@ schema:
     - name: template_file
       type: string
       description: |
-        The path to a jinja2 template file.  The template file path provided
-        should be relative to the AaC model referencing the template.  You must 
+        The path to a Jinja2 template file.  The template file path provided
+        should be relative to the AaC model referencing the template.  You must
         either provide a template_file or template_contents.
       is_required: true
     - name: overwrite
@@ -600,8 +607,8 @@ schema:
   package: aac.lang
   description: |
     A helper function to be made available to a Jinja2 template.  Helper functions
-    are defined as python functions and are made available to the template as
-    a python module.
+    are defined as Python functions and are made available to the template as
+    a Python module.
   fields:
     - name: name
       type: string
@@ -615,17 +622,17 @@ schema:
     - name: package
       type: string
       description: |
-        The python package to be made available to the template.
+        The Python package to be made available to the template.
       is_required: true
     - name: module
       type: string
       description: |
-        The python module name containing the function to be made available to the template.
+        The Python module name containing the function to be made available to the template.
       is_required: true
     - name: function
       type: string
       description: |
-        The python function to be made available to the template.
+        The Python function to be made available to the template.
       is_required: true
 ---
 enum:
@@ -644,7 +651,7 @@ schema:
   root: req_spec
   description: |
     A requirement specification definition to capture desired behavior or attributes of the system being modeled.
-    
+
     Within many contexts requirements remain the central element of any Model-Based System Engineering solution.
     AaC supports the definition, derivation, and trace of requirements throughout the model using the spec type and
     associated reference capabilities.
@@ -771,7 +778,7 @@ schema:
   root: model
   description: |
     A definition that represents a system and/or component model.
-    
+
     An example of when to use a 'model' is when you want to define the
     behavior for some component of the system.
   fields:
@@ -801,6 +808,7 @@ schema:
       type: Field[]
       description: |
         A list of data items representing internal state of the modeled entity.
+
         State is visible within the model but is not visible to other models.
         State may be visible between multiple instances of the modeled entity to
         support horizontal scaling.
@@ -869,7 +877,7 @@ schema:
     - name: input
       type: Field[]
       description: |
-        The list of all the fields that are inputs to the component when the
+        The list of all the fields that are inputs of the component when the
         behavior is performed.
     - name: output
       type: Field[]
@@ -891,18 +899,18 @@ schema:
 schema:
   name: Feature
   package: aac.lang
-  description: A test specification for a defined feature as described in the Gherkin syntax.
+  description: Test case(s) for a defined feature as described in the Gherkin syntax.
   fields:
     - name: name
       type: string
-      description:  The name of the feature to be tested
+      description:  The name of the feature to be tested.
       is_required: true
     - name: background
       type: Background
-      description: A common set of setup steps for all scenarios
+      description: A common set of setup steps for all scenarios.
     - name: scenarios
       type: Scenario[]
-      description: A set of test cases
+      description: A set of test cases.
       is_required: true
 ---
 schema:
@@ -941,7 +949,7 @@ schema:
     - name: given
       type: string[]
       description: |
-        A list of preconditions that must be true in order for the scenario to
+        A list of preconditions that must be true in order for the system to
         perform the expected action or provide the expected result.
     - name: when
       type: string[]
@@ -958,9 +966,9 @@ schema:
     - name: examples
       type: Example
       description: |
-        An list of data sets for use in the test scenario.  When using examples, include
+        A list of data sets for use in the test scenario.  When using examples, include
         a replaceable item in your given, when, then using angle brackets as described
-        in the Gherkin syntax (ex: <my_text_value).  Each example provided contains the
+        in the Gherkin syntax (ex: <my_text_value>).  Each example provided contains the
         collection of named values that will be substituted in for test execution.
 ---
 schema:
@@ -1005,7 +1013,7 @@ schema:
   description: |
     The definition of a global context constraint plugin.  Context constraints perform
     checks against a complete model rather than a specific schema or primitive.
-    Defining a context constraint allows for automted global quality checks
+    Defining a context constraint allows for automated global quality checks
     by running the 'aac check' command against your model.
   fields:
     - name: name
@@ -1027,8 +1035,8 @@ schema:
   package: aac.lang
   description: |
     The definition of a schema constraint plugin.  Schema constraints perform
-    checks against a defined structure within a model based on it's schema definition.
-    Defining a schema constraint allows for automted structural quality checks
+    checks against a defined structure within a model based on its schema definition.
+    Defining a schema constraint allows for automated structural quality checks
     by running the 'aac check' command against your model.
   fields:
     - name: name
@@ -1069,23 +1077,23 @@ schema:
   package: aac.lang
   description: |
     The definition of a primitive constraint plugin.  Plugin constraints perform
-    checks against individual values within a model based on it's primitive definition.
-    Defining a primitive constraint allows for automted value quality checks
+    checks against individual values within a model based on its primitive definition.
+    Defining a primitive constraint allows for automated value quality checks
     by running the 'aac check' command against your model.
   fields:
     - name: name
       type: string
       description: |
-        The name of the schema constraint rule.
+        The name of the primitive constraint rule.
       is_required: true
     - name: description
       type: string
       description: |
-        A high level description of the schema constraint rule.
+        A high level description of the primitive constraint rule.
     - name: arguments
       type: Field[]
       description: |
-        A list of arguments for the constraint.
+        List of arguments for the constraint.
     - name: acceptance
       type: Feature[]
       description: |
@@ -1105,8 +1113,8 @@ schema:
     - name: arguments
       type: any
       description: |
-        Arguments for the primitive constraint if applicable.  Using the any type
-        because the arguments are defined by the constraint definition.  The 
+        Arguments for the schema constraint if applicable.  Using the any type
+        because the arguments are defined by the constraint definition.  The
         constraint_assignment_arguments constraint will cross reference arguments
         provided here against the constraint definition.
   constraints:
@@ -1127,7 +1135,7 @@ schema:
       type: any
       description: |
         Arguments for the primitive constraint if applicable.  Using the any type
-        because the arguments are defined by the constraint definition.  The 
+        because the arguments are defined by the constraint definition.  The
         constraint_assignment_arguments constraint will cross reference arguments
         provided here against the constraint definition.
   constraints:
@@ -1139,7 +1147,7 @@ schema:
   name: UsecaseActor
   package: aac.lang
   description: |
-    Actors represent roles played by external human uisers, hardware, and other subjects.
+    Actors represent roles played by external human users, hardware, and other subjects.
     Actors may be linked to a model by populating the optional model field.  If not associated
     with a model, the actor is considered external to the system.
   root: actor
@@ -1172,8 +1180,8 @@ schema:
   package: aac.lang
   root: usecase
   description: |
-    A definition that represents a usecase for the system.
-    
+    A definition that represents a use case for the system.
+
     An example of when to use a 'usecase' is when you want to define how the
     system might be used in a particular instance.
   fields:
@@ -1194,15 +1202,15 @@ schema:
     - name: includes
       type: dataref(usecase.name)[]
       description: |
-        A list of usecases that this usecase uses.  The include (uses) relationship 
-        from usecase A to use case B indicates that an instance of the use case A 
+        A list of use cases that this use case uses.  The include (uses) relationship
+        from use case A to use case B indicates that an instance of the use case A
         will also contain the behavior as specified by B.
     - name: extends
       type: dataref(usecase.name)[]
       description: |
-        A list of use cases that this use case extends.  A relationship from an 
-        extending use case to an extended use case that specifies when the behavior 
-        defined in the extending use case can be inserted into the behavior defined 
+        A list of use cases that this use case extends.  A relationship from an
+        extending use case to an extended use case that specifies when the behavior
+        defined in the extending use case can be inserted into the behavior defined
         in the extended use case.
     - name: participants
       type: dataref(actor.name)[]
@@ -1214,7 +1222,7 @@ schema:
     - name: steps
       type: dataref(usecase_step.name)[]
       description: |
-        A list of steps taken in the use case. See 'Step'.
+        A list of steps taken in the use case. See 'UsecaseStep'.
 ---
 schema:
   name: UsecaseStep

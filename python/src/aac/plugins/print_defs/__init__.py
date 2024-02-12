@@ -16,7 +16,7 @@ print_aac_definitions_aac_file_name = "print_aac_definitions.aac"
 
 
 def run_print_defs(core_only) -> ExecutionResult:
-    """Print YaML representation of AaC language definitions."""
+    """Print YAML representation of AaC language definitions."""
 
     result = ExecutionResult(plugin_name, "print-defs", ExecutionStatus.SUCCESS, [])
 
