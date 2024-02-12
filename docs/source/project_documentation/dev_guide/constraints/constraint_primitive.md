@@ -39,13 +39,13 @@ Verify that a file value is interpretable as a file.  Argument must be in valid 
 ```{eval-rst}
 .. literalinclude:: ../../../../../python/src/aac/plugins/gen_plugin/gen_plugin_generator.aac
     :language: yaml
-    :lines: 30-33
+    :lines: 29-32
     :emphasize-lines: 4
 ```
 The above example would pass the `file` constraint.
 
 ## String
-Verify that a string value is interpretable as a string. 
+Verify that a string value is interpretable as a string.
 
 ## Int
 Verify that an integer value is interpretable as an integer.
@@ -60,7 +60,7 @@ Verify that a data reference value is interpretable and exists.
 ```{eval-rst}
 .. literalinclude:: ../../../../../python/src/aac/aac.aac
     :language: yaml
-    :lines: 214-215
+    :lines: 221-222
 ```
 In this example, the `dataref` constraint will fail if `modifier.name` is not interpretable as a data reference
 
@@ -71,6 +71,6 @@ Verify that a type reference value is interpretable and exists.
 ```{eval-rst}
 .. literalinclude:: ../../../../../python/src/aac/aac.aac
     :language: yaml
-    :lines: 262-263
+    :lines: 269-270
 ```
 In this example, the `typeref` constraint will fail if `aac.lang.AacType` is not interpretable as a type reference.

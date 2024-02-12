@@ -1,5 +1,5 @@
 # Check Arguments Against Constraint Definition
-`Check Arguments Against Constraint Definition` is a Schema Constraint. 
+`Check Arguments Against Constraint Definition` is a Schema Constraint.
 It checks the argument by looking up the defined constraint name definition and ensuring the
 arguments provided in the assignment match the arguments defined in the constraint definition.
 
@@ -8,7 +8,7 @@ arguments provided in the assignment match the arguments defined in the constrai
 ```{eval-rst}
 .. literalinclude:: ../../../../../python/src/aac/aac.aac
     :language: yaml
-    :lines: 1115-1134
+    :lines: 1123-1142
     :emphasize-lines: 12-13
 ```
 
