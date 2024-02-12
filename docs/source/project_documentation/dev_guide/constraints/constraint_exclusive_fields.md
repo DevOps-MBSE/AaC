@@ -1,6 +1,6 @@
 # Mutually Exclusive Fields
-`Mutually Exclusive Fields` is a Schema Constraint. 
-It ensure that, out of a set of fields, only one field is defined at any time.
+`Mutually Exclusive Fields` is a Schema Constraint.
+It ensures that, out of a set of fields, only one field is defined at any time.
 
 
 ## Usage Example

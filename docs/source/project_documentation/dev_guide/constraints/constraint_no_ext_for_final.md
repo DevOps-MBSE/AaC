@@ -1,5 +1,5 @@
 # No Extension For Final
-`No Extension For Final` is a Schema Constraint that checks every schema for extension entries that are marked with a final modifier.
+`No Extension For Final` is a Schema Constraint that checks every schema for extension entries that are marked with a `final` modifier.
 
 ## Usage Example
 ```{eval-rst}
@@ -9,4 +9,4 @@
     :emphasize-lines: 4-5, 15-17
 ```
 
-In the above example, `TestChild` is extending `TestSchema`.  `TestSchema` has the final modifier, meaning that any schema that extends it will fail the `No Extension For Final` constraint.
+In the above example, `TestChild` is extending `TestSchema`.  `TestSchema` has the `final` modifier, meaning that any schema that extends it will fail the `No Extension For Final` constraint.

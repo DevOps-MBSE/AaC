@@ -16,8 +16,8 @@ In the above example, if `alpha` is set to true, `beta` must be empty.
 ```{eval-rst}
 .. literalinclude:: ../../../../../python/tests/test_aac/plugins/if_true_then_empty/test_if_true_then_empty.py
     :language: yaml
-    :lines: 52-55
-    :emphasize-lines: 4
+    :lines: 52-54
+    :emphasize-lines: 3
 ```
 This set of data would pass the `If True Then Empty` constraint, because `beta` is not defined.
 
@@ -25,7 +25,7 @@ This set of data would pass the `If True Then Empty` constraint, because `beta` 
 ```{eval-rst}
 .. literalinclude:: ../../../../../python/tests/test_aac/plugins/if_true_then_empty/test_if_true_then_empty.py
     :language: yaml
-    :lines: 67-73
+    :lines: 67-72
     :emphasize-lines: 3-6
 ```
 This set of data would fail the `If True Then Empty` constraint, because `beta` is defined.
