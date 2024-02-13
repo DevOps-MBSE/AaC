@@ -106,7 +106,7 @@ and produce artifacts from it. The CLI has an extensible command library that cu
 can verify syntax and patterns, generate code and produce static reports.
 
 The entire AaC product is extensible.  AaC is purposefully small.  Additional functionality is achieved through installing plugins.
-The plugin architecture allows you choice of functionallity so you can use only the features you want.  
+The plugin architecture allows you choice of functionality so you can use only the features you want.
 
 The Graphical User Interface
 ----------------------------
@@ -123,7 +123,7 @@ built-in command to generate new plugins from an AaC plugin model.  Our own buil
 using this methodology, so you can see examples in the GitHub repo.
 
 We have intentionally reduced the number of built-in plugins and transitioned them to separate repositories.
-We want users to have more control over what AaC functionallity they utilize (i.e. opt-in) rather than just-the-docs
+We want users to have more control over what AaC functionallity they utilize (i.e. opt-in) rather than
 put a bunch of stuff in the default installation that you may not want or need.  As we evolve AaC, you can look for
 our extensions in the `DevOps-MBSE GitHub Organization <https://github.com/orgs/DevOps-MBSE/repositories>`_.
 
