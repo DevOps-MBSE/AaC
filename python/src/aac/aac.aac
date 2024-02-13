@@ -1170,6 +1170,7 @@ schema:
       type: dataref(model.name)
       description: |
         A model that participates in the use case.
+      is_required: true
     - name: requirements
       type: dataref(req.id)[]
       description: |
