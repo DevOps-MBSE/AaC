@@ -32,7 +32,14 @@ class MessageLevel(Enum):
 
 @attrs(slots=True, auto_attribs=True)
 class ExecutionMessage:
-    """Provides a message for the user."""
+    """Provides a message for the user.
+
+    Attributes:
+        message (str): The textual content of the message.
+        level (MessageLevel): value of MessageLevel.DEBUG, .INFO, .WARNING, or .ERROR
+        source: (AaCFile): The file from whence the message came.
+        location: (SourceLocation): The col, row info within the source file.
+    """
 
     message: str = attrib(validator=validators.instance_of(str))
     level: MessageLevel = attrib(validator=validators.instance_of(MessageLevel))
@@ -91,13 +98,21 @@ class ExecutionResult:
 
 @attrs(slots=True)
 class ExecutionError(Exception):
-    """A base class representing a plugin error condition."""
+    """A base class representing a plugin error condition.
+
+    Attributes:
+        message (str): a textual description of the reason for the exception.
+    """
 
     message: str = attrib(validator=validators.instance_of(str))
 
 
 @attrs(slots=True)
 class OperationCancelled(Exception):
-    """A base class representing an cancelled plugin operation condition."""
+    """A base class representing an cancelled plugin operation condition.
+
+    Attributes:
+        message (str): a textual description of the reason for cancellation.
+    """
 
     message: str = attrib(validator=validators.instance_of(str))
