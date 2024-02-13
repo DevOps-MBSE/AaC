@@ -30,7 +30,7 @@ schema:
       type: string
       description: |
         A brief description of the type.
-      is_required: false
+      is_required: true
 ---
 schema:
   name: Modifier
