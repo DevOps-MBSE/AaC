@@ -41,7 +41,7 @@ extended by a user.
 
 AaC is designed with extensibility in mind.  The built-in functionality is intentionally minimized.
 AaC uses a plug-in system to extend the base capability.  To further simplify this, AaC includes a
-built-in command to generate new plugins from an AaC model.  There is are a few internal examples of this
+built-in command to generate new plugins from an AaC model.  There are a few internal examples of this
 in the plugins folder of the repository and more info below.
 
 ## Using AaC to Model Your System
