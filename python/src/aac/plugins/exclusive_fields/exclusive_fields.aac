@@ -1,5 +1,5 @@
 plugin:
-  name: Exclusive fields
+  name: Exclusive Fields
   package: aac.plugins.exclusive_fields
   description: |
     This plugin allows you to specify a list of fields that are mutually exclusive.
