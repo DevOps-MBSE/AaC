@@ -2,7 +2,9 @@
 
 ## VSCode
 
-You may simple open the AaC folder in your VSCode editor and start working across the entire repository.  Historically this repository has housed various sub projects,  but have since refactored into a multi-repo structure with only the main AaC capability in the main repository.  As such we'd previously setup [VSCode Workspaces](https://code.visualstudio.com/docs/editor/workspaces) to separate projects and experiences.  We opted to keep the python project in place during the refactor. When you first open the project in VSCode, you will see the entirety of it, however, if you open the Python workspace then the VSCode instance will reload and now the visible files, IDE configuration, and the configured tasks will now pertain only to the Python package. We'll maintain this flexibility for now in case we discover a need for another project within the repository.
+You can open the AaC folder in your VSCode editor and start working across the entire repository.  Historically this repository has housed various sub projects, but have since refactored into a multi-repo structure with only the main AaC capability in the main repository.  As such we'd previously setup [VSCode Workspaces](https://code.visualstudio.com/docs/editor/workspaces) to separate projects and experiences.  We opted to keep the Python project in place during the refactor. 
+
+When you first open the project in VSCode, you will see the entirety of it, however, if you open the Python workspace then the VSCode instance will reload and now the visible files, IDE configuration, and the configured tasks will now pertain only to the Python package. We'll maintain this flexibility for now in case we discover a need for another project within the repository.
 
 You can open a workspace in VSCode by:
 
