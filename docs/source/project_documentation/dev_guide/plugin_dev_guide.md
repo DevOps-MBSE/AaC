@@ -47,7 +47,7 @@ Options:
 
 This will create a project structure that looks like this:
 
-```markdown
+```console
 ├── README.md
 ├── setup.py
 ├── docs
