@@ -6,7 +6,7 @@ import:
 ---
 req_spec:
   name:  Simple Math PIDS
-  description:  This is a representative Prime Item Development Specification for a subsystem called Add-Simple Math.
+  description:  This is a representative Prime Item Development Specification for a subsystem called Simple Math.
   requirements:
     - "SM-1"
 ---
