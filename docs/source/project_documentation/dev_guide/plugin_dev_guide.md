@@ -115,7 +115,7 @@ Example plugin definition:
     :language: yaml
 ```
 
-The output of the Gen-Plugin command will be some corresponding plugin files that are templated from the AaC file that was passed in to `gen-plugin`.
+The output of the `gen-plugin` command will be some corresponding plugin files that are templated from the AaC file that was passed in to `gen-plugin`.
 
 The generated files are:
 
