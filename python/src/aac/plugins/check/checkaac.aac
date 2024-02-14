@@ -1,5 +1,5 @@
 plugin:
-  name: CheckAaC
+  name: Check AaC
   package: aac.plugins.check
   description: |
     An AaC plugin that checks the quality of AaC file content based on defined constraints.
@@ -17,4 +17,3 @@ plugin:
         - name: --verbose
           type: bool
           description: Provide ouput for all constraints evaluated.
-    
