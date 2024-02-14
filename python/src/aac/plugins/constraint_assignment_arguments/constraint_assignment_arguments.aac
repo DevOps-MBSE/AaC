@@ -1,5 +1,5 @@
 plugin:
-  name: Constraint assignment arguments
+  name: Constraint Assignment Arguments
   package: aac.plugins.constraint_assignment_arguments
   description: |
     Ensures arguments provided in a constraint assignment align with the
