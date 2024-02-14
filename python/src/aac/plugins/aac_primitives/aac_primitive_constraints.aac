@@ -1,5 +1,5 @@
 plugin:
-  name: AaC primitive constraints
+  name: AaC Primitive Constraints
   package: aac.plugins.aac_primitives
   description: |
     An AaC plugin that ensures primitive values are correct.
@@ -22,4 +22,3 @@ plugin:
       description: Verify that a data reference value is interpretable and exists.
     - name: Check typeref
       description: Verify that a type reference value is interpretable and exists.
-      
