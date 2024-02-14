@@ -72,12 +72,12 @@ Options:
   --code-output TEXT  The location to output generated plugin code.
   --test-output TEXT  The location to output generated plugin test code.
   --doc-output TEXT   The location to output generated plugin documentation
-                      code.
-  --no-prompt         Informs gen-plugin to execute without asking the user to
+                      code. (unimplemented)
+  --no-prompt         Informs the generator to execute without asking the user to
                       confirm output paths.
-  --force-overwrite   Informs generator to backup and overwrite all existing
+  --force-overwrite   Informs the generator to backup and overwrite all existing
                       files regardless of template definition.
-  --evaluate          Informs generator to only write evaluation files with no
+  --evaluate          Informs the generator to only write evaluation files with no
                       impact to existing files.
   -h, --help          Show this message and exit.
 ```
