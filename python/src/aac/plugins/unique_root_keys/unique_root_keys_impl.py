@@ -22,16 +22,17 @@ def root_key_names_are_unique(context: LanguageContext) -> ExecutionResult:
     root_keys = []
     for definition in context.get_definitions():
         if definition.get_root_key() == "schema":
-            if definition.instance.root and definition.instance.root not in root_keys:
-                root_keys.append(definition.instance.root)
-            else:
-                status = ExecutionStatus.CONSTRAINT_FAILURE
-                error_msg = ExecutionMessage(
-                    message=f"Root key {definition.instance.root} is not unique.",
-                    level=MessageLevel.ERROR,
-                    source=None,
-                    location=None,
-                )
-                messages.append(error_msg)
+            if definition.instance.root:
+                if definition.instance.root not in root_keys:
+                    root_keys.append(definition.instance.root)
+                else:
+                    status = ExecutionStatus.CONSTRAINT_FAILURE
+                    error_msg = ExecutionMessage(
+                        message=f"Root key {definition.instance.root} is not unique.",
+                        level=MessageLevel.ERROR,
+                        source=None,
+                        location=None,
+                    )
+                    messages.append(error_msg)
 
     return ExecutionResult(plugin_name, "Root key names are unique", status, messages)

@@ -9,7 +9,7 @@ plugin:
       help_text: |
         Generate code and stubs for an AaC plugin.  Overwrites will backup existing files.
       run_before:
-        - plugin: CheckAaC
+        - plugin: Check AaC
           command: check
       run_after:
         - plugin: Generate
@@ -40,7 +40,7 @@ plugin:
       help_text: |
         Generate code and stubs for an AaC project.  Overwrites will backup existing files.
       run_before:
-        - plugin: CheckAaC
+        - plugin: Check AaC
           command: check
       run_after:
         - plugin: Generate

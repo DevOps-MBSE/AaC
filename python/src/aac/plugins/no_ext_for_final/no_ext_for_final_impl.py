@@ -15,7 +15,7 @@ from aac.context.definition import Definition
 from typing import Any
 
 
-plugin_name = "No Ext for Final"
+plugin_name = "No Extends for Final"
 
 
 def no_extension_for_final(

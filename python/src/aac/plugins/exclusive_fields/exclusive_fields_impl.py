@@ -13,7 +13,7 @@ from aac.context.definition import Definition
 from typing import Any
 
 
-plugin_name = "Exclusive fields"
+plugin_name = "Exclusive Fields"
 
 
 def mutually_exclusive_fields(

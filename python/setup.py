@@ -46,7 +46,7 @@ development_dependencies = [
     "mypy-extensions ~= 1.0.0",
     "pycodestyle >= 2.8.0",
     "pyflakes >= 2.4",
-    "build == 0.7.0",
+    "build >= 1.0.0",
     "twine == 3.4.2",
     "pipdeptree >= 2.2.0",
     "Pygments >= 2.5.1",
@@ -72,6 +72,7 @@ documentation_dependencies = [
 ]
 
 test_dependencies = [
+    "build>=1.0.0",
     "tox >= 3.24",
     "nose2 >= 0.10.0",
     "behave >= 1.2.6",

@@ -63,7 +63,7 @@ class TestGenPlugin(TestCase):
             plugin_args = [plugin_file_path, "--code-output", os.path.join(temp_dir, "src"), "--test-output", os.path.join(temp_dir, "tests"), "--no-prompt"]
 
             exit_code, output_message = self.run_gen_plugin_cli_command_with_args(plugin_args)
-
+            print(f"DEBUG: exit_code: {exit_code}, output_message: {output_message}")
             self.assertEqual(0, exit_code)  # asserts the command ran successfully
             self.assertIn("All AaC constraint checks were successful", output_message)  # asserts the command ran check successfully
 

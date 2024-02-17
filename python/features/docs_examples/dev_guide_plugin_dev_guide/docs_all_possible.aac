@@ -8,7 +8,7 @@ plugin:
       help_text: |
         A test command used to test the gen-plugin command behavior.
       run_before:
-        - plugin: CheckAaC
+        - plugin: Check AaC
           command: check
       run_after:
         - plugin: Generate

@@ -7,7 +7,7 @@ plugin:
     - name: generate
       help_text: Performs content generation based on user defined templates.
       run_before:
-        - plugin: CheckAaC
+        - plugin: Check AaC
           command: check
       input:
         - name: aac-file

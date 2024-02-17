@@ -16,7 +16,7 @@ from os import linesep
 from datetime import datetime
 
 
-plugin_name = "AaC primitive constraints"
+plugin_name = "AaC Primitive Constraints"
 
 
 def check_bool(

@@ -20,7 +20,7 @@ def before_gen_plugin_check(
     evaluate: bool,
     run_check,
 ) -> ExecutionResult:
-    """Run the CheckAaC command before the gen-plugin command."""
+    """Run the Check AaC command before the gen-plugin command."""
 
     return run_check(aac_plugin_file, False, False)
 
@@ -74,7 +74,7 @@ def before_gen_project_check(
     evaluate: bool,
     run_check,
 ) -> ExecutionResult:
-    """Run the CheckAaC command before the gen-project command."""
+    """Run the Check AaC command before the gen-project command."""
 
     return run_check(aac_project_file, False, False)
 
