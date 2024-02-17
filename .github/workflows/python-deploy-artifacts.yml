@@ -19,7 +19,7 @@ jobs:
 
   deploy_artifacts:
     name: Deploy Artifacts
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: build_deployment_artifacts
     steps:
       - name: Download Python Wheel
