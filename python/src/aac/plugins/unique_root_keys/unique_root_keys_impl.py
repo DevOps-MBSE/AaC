@@ -23,7 +23,7 @@ def root_key_names_are_unique(context: LanguageContext) -> ExecutionResult:
     for definition in context.get_definitions():
         if definition.get_root_key() == "schema":
             if definition.instance.root and definition.instance.root not in root_keys:
-                    root_keys.append(definition.instance.root)
+                root_keys.append(definition.instance.root)
             else:
                 status = ExecutionStatus.CONSTRAINT_FAILURE
                 error_msg = ExecutionMessage(
