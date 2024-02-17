@@ -189,6 +189,9 @@ def check_int(
 
     is_invalid = False
     try:
+        if isinstance(value, int):
+            return ExecutionResult(plugin_name, "Check int", status, messages)
+        
         type_casted_int = int(value)
         # assert that the conversion didn't alter the contents, like in the case of float -> int.
         is_invalid = str(type_casted_int) != str(value)
