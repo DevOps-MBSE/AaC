@@ -58,9 +58,7 @@ def run_clean(
 
 @hookimpl
 def register_plugin() -> None:
-    """
-    Registers the plugin with the AaC CLI.
-    """
+    """Registers the plugin with the AaC CLI."""
 
     active_context = LanguageContext()
     generate_aac_file = join(dirname(__file__), GEN_PLUGIN_AAC_FILE_NAME)

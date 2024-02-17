@@ -32,7 +32,7 @@ def print_defs(core_only: bool) -> ExecutionResult:
     else:
         definitions = context.get_definitions()
 
-    for definition in definitions:    
+    for definition in definitions:
         messages.append(yaml.dump(definition.structure))
         messages.append("---")
 
