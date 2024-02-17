@@ -41,8 +41,17 @@ from {{plugin.package}}.{{get_python_name(plugin.name)}}_impl import plugin_name
 {% endfor %}
 
 {% for command in plugin.commands %}
-def run_{{get_python_name(command.name)}}({% for entry in command.input %}{{ get_python_name(entry.name) }}{% if not loop.last %}, {% endif %}{% endfor %}) -> ExecutionResult:
-    """{{command.help_text}}"""
+def run_{{get_python_name(command.name)}}({% for entry in command.input %}{{ get_python_name(entry.name) }}: {{get_python_type(entry.type)}}{% if not loop.last %}, {% endif %}{% endfor %}) -> ExecutionResult:
+    """
+    {{command.help_text}}
+    
+    Args:
+        {% for entry in command.input %}{{get_python_name(entry.name)}} ({{get_python_type(entry.type)}}): {{entry.description}}
+        {% endfor %}
+        
+   Returns:
+        The results of the execution of the plugin command.
+    """
 
     {% if command.enable_cache %}
     cache_key = ({% for entry in command.input %}{{ get_python_name(entry.name) }}{% if not loop.last %}, {% endif %}{% endfor %})
@@ -80,14 +89,34 @@ def run_{{get_python_name(command.name)}}({% for entry in command.input %}{{ get
 
 {% for ctx_constraint in plugin.context_constraints %}
 def run_{{get_python_name(ctx_constraint.name)}}(context: LanguageContext) -> ExecutionResult:
-    """{{ctx_constraint.description}}"""
+    """
+    {{ctx_constraint.description}}
+    
+    Args:
+        context (LanguageContext): The context in which the constraint is being run.
+
+    Returns:
+        The results of the execution of the plugin context constraint.
+    
+    """
 
     return {{get_python_name(ctx_constraint.name)}}(context)
 {% endfor %}
 
 {% for schema_constraint in plugin.schema_constraints %}
-def run_{{get_python_name(schema_constraint.name)}}(instance: Any, definition: Definition, defining_schema, arguments: Any) -> ExecutionResult:
-    """{{schema_constraint.description}}"""
+def run_{{get_python_name(schema_constraint.name)}}(instance: Any, definition: Definition, defining_schema: Any, arguments: Any) -> ExecutionResult:
+    """
+    {{schema_constraint.description}}
+    
+    Args:
+        instance (Any): The instance to be checked.
+        definition (Definition): The definition of the instance.
+        defining_schema (Any): The schema that defines the instance.
+        arguments (Any): The arguments to be used in the constraint.
+
+    Returns:
+        The results of the execution of the plugin schema constraint.
+    """
     {% if schema_constraint.arguments | length > 0 %}
     argument_copy = deepcopy(arguments)
     args = {}
@@ -102,7 +131,20 @@ def run_{{get_python_name(schema_constraint.name)}}(instance: Any, definition: D
 
 {% for primitive_constraint in plugin.primitive_constraints %}
 def run_{{get_python_name(primitive_constraint.name)}}(value: str, type_declaration: str, arguments: Any, source: AaCFile, location: SourceLocation) -> ExecutionResult:
-    """{{primitive_constraint.description}}"""
+    """
+    {{primitive_constraint.description}}
+    
+    Args:
+        value (str): The value to be checked.
+        type_declaration (str): The type declaration of the value.
+        arguments (Any): The arguments to be used in the constraint.
+        source (AaCFile): The source file of the value.
+        location (SourceLocation): The location of the value in the source file.
+
+    Returns:
+        The results of the execution of the plugin primitive constraint.
+    
+    """
     {% if primitive_constraint.arguments | length > 0 %}
     argument_copy = deepcopy(arguments)
     args = {}
@@ -118,10 +160,7 @@ def run_{{get_python_name(primitive_constraint.name)}}(value: str, type_declarat
 @hookimpl
 def register_plugin() -> None:
     """
-    Returns information about the plugin.
-
-    Returns:
-        A collection of information about the plugin and what it contributes.
+    Registers information about the plugin for use in the CLI.
     """
     
     active_context = LanguageContext()

@@ -9,7 +9,7 @@ import shutil
 import tempfile
 
 
-from aac.plugins.check.checkaac_impl import plugin_name, check
+from aac.plugins.check.check_aac_impl import plugin_name, check
 
 
 class TestCheckAaC(TestCase):

@@ -35,7 +35,7 @@ usecase:
 usecase_step:
   name: The user sets the time on system
   source: user
-  target: alarm
+  target: alarm_clock
   action: setAlarm
 ---
 usecase_step:

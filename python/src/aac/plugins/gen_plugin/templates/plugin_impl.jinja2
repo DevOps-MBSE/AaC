@@ -14,8 +14,17 @@ from typing import Any
 plugin_name = "{{plugin.name}}"
 
 {% for command in plugin.commands %}{% if command.run_before | length > 0 %}{% for run_before in command.run_before %}
-def before_{{get_python_name(command.name)}}_{{get_python_name(run_before.command)}}({% for entry in command.input %}{{ get_python_name(entry.name) }}{% if not loop.last %}, {% endif %}{% endfor %}, run_{{get_python_name(run_before.command)}}) -> ExecutionResult:
-    """Run the {{run_before.plugin}} {{run_before.name}} command before the {{command.name}} command."""
+def before_{{get_python_name(command.name)}}_{{get_python_name(run_before.command)}}({% for entry in command.input %}{{ get_python_name(entry.name) }}: {{get_python_type(entry.type)}}{% if not loop.last %}, {% endif %}{% endfor %}, run_{{get_python_name(run_before.command)}}) -> ExecutionResult:
+    """
+    Run the {{run_before.plugin}} {{run_before.name}} command before the {{command.name}} command.
+    
+    Args:
+        {% for entry in command.input %}{{get_python_name(entry.name)}} ({{get_python_type(entry.type)}}): {{entry.description}}
+        {% endfor %}
+        
+   Returns:
+        The results of the execution of the {{run_before.name}} command.
+    """
 
     # TODO: configure and call the {{run_before.command}} before command using {{command.name}} command inputs
     status = ExecutionStatus.GENERAL_FAILURE
@@ -27,7 +36,7 @@ def before_{{get_python_name(command.name)}}_{{get_python_name(run_before.comman
 {% endfor %}{% endif %}
 
 def {{get_python_name(command.name)}}({% for entry in command.input %}{{ get_python_name(entry.name) }}{% if not loop.last %}, {% endif %}{% endfor %}) -> ExecutionResult:
-    """Business logic for the {{command.name}} command."""
+    """Business logic for allowing {{command.name}} command to perform {{command.help_text}}."""
     
     # TODO: implement plugin logic here
     status = ExecutionStatus.GENERAL_FAILURE

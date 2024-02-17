@@ -12,10 +12,10 @@ from aac.context.language_context import LanguageContext
 from aac.execute.plugin_runner import PluginRunner
 
 
-from aac.plugins.check.checkaac_impl import plugin_name, check
+from aac.plugins.check.check_aac_impl import plugin_name, check
 
 
-checkaac_aac_file_name = "checkaac.aac"
+checkaac_aac_file_name = "check_aac.aac"
 
 
 def run_check(aac_file, fail_on_warn, verbose) -> ExecutionResult:

@@ -51,7 +51,7 @@ def no_extension_for_final(
                             ExecutionMessage(
                                 f"{definition.name} cannot extend {ext.name} because it is final.",
                                 MessageLevel.ERROR,
-                                None,  # figure out a better want to handle this...maybe a util function?
+                                ext_definition.source,
                                 None,
                             )
                         )

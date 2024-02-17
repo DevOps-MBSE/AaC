@@ -32,13 +32,9 @@ def print_defs(core_only: bool) -> ExecutionResult:
     else:
         definitions = context.get_definitions()
 
-    first = True
-    for definition in definitions:
-        if first:
-            first = False
-        else:
-            messages.append("---")
+    for definition in definitions:    
         messages.append(yaml.dump(definition.structure))
+        messages.append("---")
 
     output_message = ExecutionMessage(
         linesep.join(messages), MessageLevel.INFO, None, None

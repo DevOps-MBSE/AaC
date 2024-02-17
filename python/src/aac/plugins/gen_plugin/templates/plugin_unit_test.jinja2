@@ -26,7 +26,7 @@ class Test{{plugin.name | replace(' ', '')}}(TestCase):
     {% for command in plugin.commands %}
     def test_{{get_python_name(command.name)}}(self):
         
-        # TODO: Write unit tests for {{get_python_name(command.name)}}
+        # TODO: Write success and failure unit tests for {{get_python_name(command.name)}}
         self.fail("Test not yet implemented.")
 
     def run_{{get_python_name(command.name)}}_cli_command_with_args(self, args: list[str]) -> Tuple[int, str]:
@@ -55,20 +55,20 @@ class Test{{plugin.name | replace(' ', '')}}(TestCase):
     {% for ctx_constraint in plugin.context_constraints %}
     def test_{{get_python_name(ctx_constraint.name)}}(self):
         
-        # TODO: Write tests for {{get_python_name(ctx_constraint.name)}}
+        # TODO: Write success and failure tests for {{get_python_name(ctx_constraint.name)}}
         self.fail("Test not yet implemented.")
     {% endfor %}
 
     {% for schema_constraint in plugin.schema_constraints %}
     def test_{{get_python_name(schema_constraint.name)}}(self):
         
-        # TODO: Write tests for {{get_python_name(schema_constraint.name)}}
+        # TODO: Write success and failure tests for {{get_python_name(schema_constraint.name)}}
         self.fail("Test not yet implemented.")
     {% endfor %}
 
     {% for primitive_constraint in plugin.primitive_constraints %}
     def test_{{get_python_name(primitive_constraint.name)}}(self):
         
-        # TODO: Write tests for {{get_python_name(primitive_constraint.name)}}
+        # TODO: Write success and failure tests for {{get_python_name(primitive_constraint.name)}}
         self.fail("Test not yet implemented.")
     {% endfor %}

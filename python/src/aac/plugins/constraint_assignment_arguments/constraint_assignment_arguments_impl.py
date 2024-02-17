@@ -42,7 +42,6 @@ def check_arguments_against_constraint_definition(  # noqa: C901
             [error_msg],
         )
 
-    context: LanguageContext = LanguageContext()
     constraint_name = instance.name
     constraint_args: dict = {}
     if instance.arguments is None:

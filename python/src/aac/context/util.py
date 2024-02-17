@@ -20,7 +20,7 @@ def get_python_module_name(package_name: str) -> str:
 def get_python_class_name(name: str) -> str:
     """Returns a Python class name from a given name, which may contain dashes and underscores."""
     if not name or name == "":
-        raise LanguageError(f"Invalid AaC package name: '{name}', the name must be alphanumeric", "Unknown location")
+        raise LanguageError(f"Invalid AaC package name: '{name}', the name must not be empty", "Unknown location")
     if not name[0].isalpha():
         raise LanguageError(f"Invalid AaC name: '{name}', the first character must be a letter", "Unknown location")
     result = name.replace("-", " ").replace("_", " ").replace(" ", "")

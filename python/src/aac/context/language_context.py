@@ -444,14 +444,14 @@ class LanguageContext(object):
                 if is_list:
                     if not field_value:
                         if is_required:
-                            raise LanguageError(f"Missing required field {field_name}.")
+                            raise LanguageError(message=f"Missing required field {field_name}.", location=None)
                         field_value = []
                     else:
                         for item in field_value:
                             if not isinstance(item, eval(python_type)):
                                 raise LanguageError(
-                                    f"Invalid value for field '{field_name}'.  Expected type '{python_type}', but found '{type(item)}'",
-                                    get_location_str(field_value, lexemes),
+                                    message=f"Invalid value for field '{field_name}'.  Expected type '{python_type}', but found '{type(item)}'",
+                                    location=get_location_str(field_value, lexemes),
                                 )
                 else:
                     if not field_value:
@@ -791,7 +791,7 @@ class LanguageContext(object):
             if definition.get_root_key() == "schema":
                 if definition.instance.root == root_key:
                     return definition
-        raise LanguageError(f"Could not find defining schema for root key: {root_key}")
+        raise LanguageError(message=f"Could not find defining schema for root key: {root_key}", location=None)
 
     def register_plugin_runner(self, runner: PluginRunner) -> None:
         """Register a plugin runner."""
@@ -813,7 +813,8 @@ class LanguageContext(object):
         primitives = self.get_definitions_by_name(primitive_name)
         if len(primitives) != 1:
             raise LanguageError(
-                f"Could not find unique primitive type: {primitive_name} - discovered {[primitive.name for primitive in primitives]}"
+                message=f"Could not find unique primitive type: {primitive_name} - discovered {[primitive.name for primitive in primitives]}",
+                location=None
             )
         return primitives[0].instance.python_type
 

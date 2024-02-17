@@ -17,7 +17,6 @@ class TestUniqueRootKeys(TestCase):
         context = LanguageContext()
         definitions = context.parse_and_load(GOOD_ROOTS)
         result = root_key_names_are_unique(context)
-        print(f"DEBUG: result: {result}")
         self.assertTrue(result.is_success())
         context.remove_definitions(definitions)
 

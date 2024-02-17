@@ -20,7 +20,7 @@ def run_generate(
     force_overwrite: bool,
     evaluate: bool,
 ) -> ExecutionResult:
-    """Run the AaC Gen-Plugin command."""
+    """Run the AaC generate command."""
 
     result = ExecutionResult(plugin_name, "generate", ExecutionStatus.SUCCESS, [])
     generate_result = generate(
@@ -44,7 +44,7 @@ def run_generate(
 def run_clean(
     aac_file: str, code_output: str, test_output: str, doc_output: str, no_prompt: bool
 ) -> ExecutionResult:
-    """Run the AaC Gen-Plugin command."""
+    """Run the AaC clean command."""
 
     result = ExecutionResult(plugin_name, "generate", ExecutionStatus.SUCCESS, [])
     generate_result = clean(aac_file, code_output, test_output, doc_output, no_prompt)
@@ -59,10 +59,7 @@ def run_clean(
 @hookimpl
 def register_plugin() -> None:
     """
-    Returns information about the plugin.
-
-    Returns:
-        A collection of information about the plugin and what it contributes.
+    Registers the plugin with the AaC CLI.
     """
 
     active_context = LanguageContext()
