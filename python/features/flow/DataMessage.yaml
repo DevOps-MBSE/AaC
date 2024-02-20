@@ -1,0 +1,16 @@
+schema:
+  name: DataMessage
+  package: flow
+  description: Provides metadata for flow system messages.
+  modifiers:
+    - abstract
+  fields:
+    - name: source
+      type: string
+      description: The originator of the message.
+    - name: destination
+      type: string
+      description: The destination of the message.
+    - name: content-length
+      type: int
+      description: The length of the content of the message in bytes.

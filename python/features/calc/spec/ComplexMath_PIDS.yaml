@@ -1,0 +1,24 @@
+import:
+  files:
+    - ./Calculator_SystemSpec.yaml
+    - ./SquareRoot_SRS.yaml
+    - ./Power_SRS.yaml
+---
+req_spec:
+  name: Complex Math PIDS
+  description:  This is a representative Prime Item Development Specification for a subsystem called Complex Math.
+  requirements:
+    - "CM-1"
+---
+req:
+  name: Complex Math
+  id: "CM-1"
+  shall:  When receiving a complex math request message, the calculator shall respond with the result of the complex math function.
+  parents:
+    - "CALC-3"
+  children:
+    - "SQRT-1"
+    - "POW-1"
+  attributes:
+    - name: TADI
+      value: Test

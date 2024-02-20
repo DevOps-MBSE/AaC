@@ -27,9 +27,9 @@ To compose a system from individual `component`s, one specifies additional
 `models` in the system `model`'s `components` field.
 
 ```{eval-rst}
-.. literalinclude:: ../../../../python/model/alarm_clock/alarm_clock.yaml
+.. literalinclude:: ../../../../python/features/alarm_clock/alarm_clock.yaml
     :language: yaml
-    :lines: 6-37
+    :lines: 6-38
     :emphasize-lines: 4-10
 ```
 
@@ -40,14 +40,12 @@ behaviors. These behaviors include a descrpition of `input`s, `output`s, and
 `scenario`s that show how the model interacts with different components in the
 system.
 
-Each `behavior` requires a `BehaviorType` which represents the mode of
-interaction for that behavior.
 
 ```{eval-rst}
-.. literalinclude:: ../../../../python/model/alarm_clock/alarm_clock.yaml
+.. literalinclude:: ../../../../python/features/alarm_clock/alarm_clock.yaml
     :language: yaml
-    :lines: 6-37
-    :emphasize-lines: 11-17
+    :lines: 6-38
+    :emphasize-lines: 11-16
 ```
 
 A `behavior` can also have any combination of `input`s and `output`s.
@@ -57,10 +55,10 @@ structure. Each `scenario` describes necessary pre-conditions (`given`),
 triggers (`when`), and post-conditions (`then`) for the behavior.
 
 ```{eval-rst}
-.. literalinclude:: ../../../../python/model/alarm_clock/alarm_clock.yaml
+.. literalinclude:: ../../../../python/features/alarm_clock/alarm_clock.yaml
     :language: yaml
-    :lines: 6-37
-    :emphasize-lines: 19-32
+    :lines: 6-38
+    :emphasize-lines: 19, 21, 23, 25, 28, 30, 32
 ```
 
 ### Defining System State In Models

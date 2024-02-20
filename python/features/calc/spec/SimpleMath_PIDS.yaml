@@ -1,0 +1,24 @@
+import:
+  files:
+    - ./Calculator_SystemSpec.yaml
+    - ./Add_SRS.yaml
+    - ./Subtract_SRS.yaml
+---
+req_spec:
+  name:  Simple Math PIDS
+  description:  This is a representative Prime Item Development Specification for a subsystem called Simple Math.
+  requirements:
+    - "SM-1"
+---
+req:
+  name: Simple Math
+  id: "SM-1"
+  shall:  When receiving a simple math request message, the calculator shall respond with the result of the simple math function.
+  parents:
+    - "CALC-3"
+  children:
+    - "ADD-1"
+    - "SUB-1"
+  attributes:
+    - name: TADI
+      value: Test

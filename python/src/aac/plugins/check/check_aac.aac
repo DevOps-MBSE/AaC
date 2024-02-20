@@ -1,0 +1,19 @@
+plugin:
+  name: Check AaC
+  package: aac.plugins.check
+  description: |
+    An AaC plugin that checks the quality of AaC file content based on defined constraints.
+  commands:
+    - name: check
+      help_text: |
+        Perform AaC file quality checks using defined constraints in the AaC models.
+      input:
+        - name: aac-file
+          type: file
+          description: The path to the architecture file you want to check against constraints.
+        - name: --fail-on-warn
+          type: bool
+          description: The check command will fail if encountering fail or warn constraint violations.
+        - name: --verbose
+          type: bool
+          description: Provide ouput for all constraints evaluated.

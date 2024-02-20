@@ -1,0 +1,83 @@
+import:
+  files:
+    - ./structures.yaml
+    - ../alarm_clock/structures.yaml
+---
+model:
+  name: AlarmClock
+  description: A simple alarm clock
+  components:
+    - name: clock
+      model: Clock
+    - name: timer
+      model: ClockTimer
+    - name: alarm
+      model: ClockAlarm
+  behavior:
+    - name: setAlarm
+      description: Set the alarm timer
+      input:
+        - name: targetTime
+          type: Timestamp
+      acceptance:
+        - name: Modify Timer State
+          scenarios:
+            - name: Set timer
+              given:
+                - The alarm timer is not set
+              when:
+                - The user sets the alarm timer
+              then:
+                - The alarm is triggered when the clock reaches the specified time
+            - name: Update timer
+              given:
+                - The alarm timer is set
+              when:
+                - The user sets the alarm timer
+              then:
+                - The alarm is triggered when the clock reaches the specified time
+---
+model:
+  name: Clock
+  description: A simple clock that keeps track of the current time
+  behavior:
+    - name: getTime
+      description: Get the current time
+      output:
+        - name: currentTime
+          type: Timestamp
+---
+model:
+  name: ClockTimer
+  description: A simple timer that can be set to a target time.
+  state:
+    - name: targetTime
+      type: Timestamp
+      description: The target timestamp indicating when to fire the alarm alert.
+  behavior:
+    - name: setTime
+      description: Set the target time for the timer
+      input:
+        - name: targetTime
+          type: Timestamp
+    - name: triggerTimer
+      description: Dispatch the TimerAlert when the current time matches the target time
+      input:
+        - name: currentTime
+          type: Timestamp
+      output:
+        - name: timerAlert
+          type: TimerAlert
+---
+model:
+  name: ClockAlarm
+  description: A simple alarm that produces noise.
+  behavior:
+    - name: triggerAlarm
+      description: Trigger the alarm noise when a TimerAlert is received.
+      input:
+        - name: timerAlert
+          type: TimerAlert
+      output:
+        - name: alarmNoise
+          type: AlarmNoise

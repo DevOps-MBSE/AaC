@@ -1,6 +1,7 @@
 import logging
 from setuptools import find_packages, setup
 from src.aac import __version__
+from os import linesep
 
 README_FILE_PATH = "../README.md"
 
@@ -8,7 +9,7 @@ try:
     with open(README_FILE_PATH, "r") as file_handler:
         readme_description = file_handler.read()
 except Exception as exception:
-    logging.error(f"Failed to open readme file {README_FILE_PATH} with error:\n {exception}")
+    logging.error(f"Failed to open readme file {README_FILE_PATH} with error:{linesep}  {exception}")
     readme_description = ""
 
 runtime_dependencies = [
@@ -20,12 +21,13 @@ runtime_dependencies = [
     "click ~= 8.1.3",
     "pathspec ~= 0.10.3",
     "regex ~= 2022.10.31",
-    "typing-extensions ~= 4.4.0",
+    "typing-extensions ~= 4.8.0",
     "pluggy ~= 1.0.0",
     "Jinja2 ~= 3.1.2",
+    "black >= 23.9.1",
     "MarkupSafe ~= 2.1.1",
     "pygls ~= 0.13.1",
-    "fastapi ~= 0.89.0",
+    "fastapi ~= 0.109.1",
     "starlette >= 0.22.0",
     "anyio < 5, ~= 3.6.2",
     "sniffio ~= 1.3.0",
@@ -37,7 +39,6 @@ development_dependencies = [
     "wheel ~= 0.42.0",
     "pip-tools >= 6.9.0",
     "tomli < 2.0.0",
-    "black >= 22.3.0",
     "platformdirs >= 2.4",
     "coverage >= 6.0",
     "mccabe >= 0.6.1",
@@ -45,7 +46,7 @@ development_dependencies = [
     "mypy-extensions ~= 1.0.0",
     "pycodestyle >= 2.8.0",
     "pyflakes >= 2.4",
-    "build == 0.7.0",
+    "build >= 1.0.0",
     "twine == 3.4.2",
     "pipdeptree >= 2.2.0",
     "Pygments >= 2.5.1",
@@ -71,8 +72,10 @@ documentation_dependencies = [
 ]
 
 test_dependencies = [
+    "build>=1.0.0",
     "tox >= 3.24",
     "nose2 >= 0.10.0",
+    "behave >= 1.2.6",
     "coverage >= 6.0",
     "flake8 >= 4.0",
     "flake8-docstrings >= 1.6.0",
@@ -94,13 +97,13 @@ setup(
     long_description_content_type="text/markdown",
     packages=find_packages(where="src", exclude="tests"),
     package_dir={"": "src"},
-    package_data={"": ["*.aac", "*.jinja2", "*.yaml"]},
+    package_data={"": ["**/*.aac", "**/*.jinja2", "*.yaml"]},
     install_requires=runtime_dependencies,
     setup_requires=development_dependencies,
     tests_require=test_dependencies,
     entry_points={
         "console_scripts": [
-            "aac=aac.cli.execute:cli",
+            "aac=aac.execute.command_line:cli",
         ]
     },
     extras_require={

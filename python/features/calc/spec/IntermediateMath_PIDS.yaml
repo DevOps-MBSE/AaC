@@ -1,0 +1,24 @@
+import:
+  files:
+    - ./Calculator_SystemSpec.yaml
+    - ./Multiply_SRS.yaml
+    - ./Divide_SRS.yaml
+---
+req_spec:
+  name: Intermediate Math PIDS
+  description:  This is a representative Prime Item Development Specification for a subsystem called Intermediate Math.
+  requirements:
+    - "IM-1"
+---
+req:
+  name: Intermediate Math
+  id: "IM-1"
+  shall:  When receiving a intermediate math request message, the calculator shall respond with the result of the intermediate math function.
+  parents:
+    - "CALC-3"
+  children:
+    - "MULT-1"
+    - "DIV-1"
+  attributes:
+    - name: TADI
+      value: Test

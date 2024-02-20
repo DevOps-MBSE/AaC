@@ -1,0 +1,13 @@
+import:
+  files:
+    - ./DataMessage.yaml
+---
+schema:
+  name: DataC
+  package: flow
+  extends:
+    - package: flow
+      name: DataMessage
+  fields:
+    - name: internal_state_change
+      type: string

@@ -6,10 +6,8 @@ Developer Guide Documentation
 
    Getting Started <dev_guide_index>
    Documentation <docs>
-   Python Project Structure <project_structure>
+   Language API <./language_api/index>
    Plugin Developer Guide <plugin_dev_guide>
-   AaC Validation <aac_validation>
-   Debugging AaC <debugging_aac>
-   Validation Plugins for Developers <validation_plugins>
+   AaC Constraint Checks <aac_constraints>
+   Constraint Types <constraints/constraint_types>
    Profiling <profiling>
-   Language API <./language_api/language_api_index>

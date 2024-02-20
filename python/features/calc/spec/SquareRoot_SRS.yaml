@@ -1,0 +1,20 @@
+import:
+  files:
+    - ComplexMath_PIDS.yaml
+---
+req_spec:
+  name: Module Square Root SRS
+  description:  This is a representative Software Requirements Specification for a module called Square Root.
+  requirements:
+    - "SQRT-1"
+---
+req:
+  name: Square Root
+  id: "SQRT-1"
+  shall:  When receiving a square root message, the calculator shall respond with the square root of the value.
+  parents:
+    - "CM-1"
+  attributes:
+    - name: TADI
+      value: Test
+      

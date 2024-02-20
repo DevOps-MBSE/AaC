@@ -1,0 +1,67 @@
+import:
+  files:
+    - ./mathmessagehandler.yaml
+    - ./mathlogger.yaml
+    - ../spec/Calculator_SystemSpec.yaml
+---
+model:
+  name: Calculator
+  description:  A simple calculator.
+  components:
+    - name: api
+      model: MathMessageHandler
+    - name: log
+      model: MathLogger
+  behavior:
+    - name: Perform simple math function (add or subtract)
+      description: Add or subtract numbers
+      requirements:
+        - "CALC-1"
+        - "CALC-2"
+        - "CALC-3"
+        - "CALC-4"
+      input:
+        - name: request
+          type: MathRequest
+      output:
+        - name: response
+          type: MathResponse
+      acceptance:
+        - name: Arithmetic tests
+          scenarios:
+          - name:  Add two numbers
+            given:
+              - The calculator system is running.
+            when:
+              - A math request is received with a function of add and values 1 and 2.
+            then:
+              - The request is logged.
+              - A response is provided with a result of 3 in less than 500 ms.
+              - The response is logged.
+          - name:  Subtract two numbers
+            given:
+              - The calculator system is running.
+            when:
+              - A math request is received with a function of subtract and values 2 and 1.
+            then:
+              - The request is logged.
+              - A math response is provided with a result of 1 in less than 500 ms.
+              - The response is logged.
+          - name:  Multiply two numbers
+            given:
+              - The calculator system is running.
+            when:
+              - A math request is received with a function of multiply and values 2 and 2.
+            then:
+              - The request is logged.
+              - A math response is provided with a result of 4 in less than 500 ms.
+              - The response is logged.
+          - name:  Divide two numbers
+            given:
+              - The calculator system is running.
+            when:
+              - A math request is received with a function of divide and values 8 and 2.
+            then:
+              - The request is logged.
+              - A math response is provided with a result of 4 in less than 500 ms.
+              - The response is logged.

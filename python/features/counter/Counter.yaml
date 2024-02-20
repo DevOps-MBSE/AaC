@@ -1,0 +1,49 @@
+import:
+  files:
+    - ./EventCount.yaml
+    - ./Request.yaml
+    - ./Response.yaml
+---
+model:
+  name: Counter
+  description: A service that counts events.
+  state:
+    - name: eventCount
+      type: EventCount
+  behavior:
+    - name: Receive a request
+      description: A request is received by the event counter and is tracked.
+      input:
+        - name: request
+          type: Request
+      output:
+        - name: response
+          type: Response
+      acceptance:
+        - name: Count an event.
+          scenarios: 
+            - name: Receive request and send back a response.
+              given:
+                - The Event Counter is running.
+              when:
+                - The user sends a request to Event Counter.
+              then:
+                - The user receives a response from Event Counter.
+                - The eventCount is incremented by 1.
+    - name: Receive a non-tracked event
+      description: A request is received but will not be counted.
+      output:
+        - name: count
+          type: EventCount
+      acceptance:
+        - name: Get the event count
+          scenarios: 
+            - name: Provide the event count.
+              given:
+                - The Event Counter is running.
+                - The event count is 0.
+              when:
+                - The user sends a request to Event Counter.
+                - The user requests the event count.
+              then:
+                - The user receives event count of 1.

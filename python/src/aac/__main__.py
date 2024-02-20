@@ -6,5 +6,5 @@ if sys.argv[0].endswith("__main__.py"):
 
 
 if __name__ == "__main__":
-    from aac.cli.execute import cli
+    from aac.execute.command_line import cli
     cli()

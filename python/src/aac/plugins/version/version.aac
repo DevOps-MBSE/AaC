@@ -1,0 +1,7 @@
+plugin:
+  name: Version
+  package: aac.plugins.version
+  description: An AaC plugin that outputs the Architecture-as-Code Python package version.
+  commands:
+    - name: version
+      help_text: Print the AaC package version.

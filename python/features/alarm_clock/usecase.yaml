@@ -1,0 +1,71 @@
+import:
+  files:
+    - ./alarm_clock.yaml
+---
+actor:
+  name: user
+---
+actor:
+  name: alarm_clock
+  model: AlarmClock
+---
+actor:
+  name: timer
+  model: ClockTimer
+---
+actor:
+  name: clock
+  model: Clock
+---
+actor:
+  name: alarm
+  model: ClockAlarm
+---
+usecase:
+  name: Set Alarm Time
+  description: The user sets the time for the alarm clock
+  participants:
+    - user
+    - alarm_clock
+    - timer
+  steps:
+    - The user sets the time on system
+    - The alarm clock stores the time in the timer
+---
+usecase_step:
+  name: The user sets the time on system
+  source: user
+  target: alarm_clock
+  action: setAlarm
+---
+usecase_step:
+  name: The alarm clock stores the time in the timer
+  source: alarm
+  target: timer
+  action: setTime
+---
+usecase:
+  name: Trigger Alarm
+  description: The alarm emits a noise at the user-specified time
+  participants:
+    - user
+    - alarm_clock
+    - timer
+    - clock
+    - alarm
+  steps:
+    - The clock emits the current time to the timer
+    - The timer emits an alarm notification to the alarm
+---
+usecase_step:
+  name: The clock emits the current time to the timer
+  source: clock
+  target: timer
+  action: setTime
+---
+usecase_step:
+  name: The timer emits an alarm notification to the alarm
+  source: timer
+  target: alarm
+  action: triggerAlarm
+

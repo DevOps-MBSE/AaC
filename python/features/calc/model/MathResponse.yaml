@@ -1,0 +1,11 @@
+import:
+  files:
+    - ../spec/Calculator_IRS.yaml
+---
+schema:
+  name: MathResponse
+  requirements:
+    - "CALC_IRS-3"
+  fields:
+    - name: result
+      type: number

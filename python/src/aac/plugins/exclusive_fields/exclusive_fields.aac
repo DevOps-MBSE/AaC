@@ -1,0 +1,17 @@
+plugin:
+  name: Exclusive Fields
+  package: aac.plugins.exclusive_fields
+  description: |
+    This plugin allows you to specify a list of fields that are mutually exclusive.
+    If one of the fields is set, the others must not be present.
+  schema_constraints:
+    - name: Mutually exclusive fields
+      description: |
+        Ensure that only one of the fields are defined at any time.
+      universal: false
+      arguments:
+        - name: fields
+          description: |
+            The list of field names that are mutually exclusive.
+          type: string[]
+          is_required: true

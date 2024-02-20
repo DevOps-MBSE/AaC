@@ -8,15 +8,15 @@ defaults:
 jobs:
   build_python_artifacts:
     name: Build Artifacts
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Set up Python 3.9
+      - name: Set up Python 3.11
         uses: actions/setup-python@v4
         with:
-          python-version: 3.9
+          python-version: 3.11
 
       - name: Install the AaC Package
         run: pip install aac -e .[all]
@@ -49,14 +49,3 @@ jobs:
           path: |
             python/docs/doc_artifacts/api
             python/docs/doc_artifacts/project_documentation
-
-      - name: Generate RESTful API Documentation
-        run: |
-          mkdir oasv3-spec
-          aac gen-openapi-spec oasv3-spec
-
-      - name: Upload RESTful API Documentation
-        uses: actions/upload-artifact@v3
-        with:
-          name: rest-api-documentation
-          path: python/oasv3-spec

@@ -1,0 +1,34 @@
+import:
+  files:
+    - ./DataA.yaml
+    - ./DataB.yaml
+---
+model:
+  name: ServiceOne
+  behavior:
+    - name: Process DataA Request
+      description: Process a DataA request and return a DataB response
+      input:
+        - name: in
+          type: DataA
+      output:
+        - name: out
+          type: DataB
+      acceptance:
+        - name: Test Case
+          scenarios: 
+            - name: Receive DataA request and return DataB response
+              given:
+                - ServiceOne is running
+              when:
+                - ServiceOne receives a DataA request
+              then:
+                - ServiceOne processes the request into a DataB response
+                - ServiceOne returns the DataB response
+            - name: Receive invalid request
+              given:
+                - ServiceOne is running
+              when:
+                - ServiceOne receives request that isn't a DataA request
+              then:
+                - ServiceOne returns an error response code
