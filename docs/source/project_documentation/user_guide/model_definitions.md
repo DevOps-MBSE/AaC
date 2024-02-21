@@ -71,7 +71,7 @@ Bellow is an example `External Model`.
     :language: yaml
     :lines: 1-3
 ```
-`External Model`s can be referenced, created and used the same as internal `model`s.
+`External Model`s can be referenced, created, and used the same as internal `model`s.
 
 ### Defining System State In Models
 
