@@ -11,7 +11,7 @@ represent external components or actors.
 
 It is recommended to include `behavior` definitions for each model to allow
 users and the AaC package to understand the component as part of the system.
-Some questions we can answer for models with defined `behaviors` are:
+Some questions we can answer for `model`s with defined `behavior`s are:
 
 1. What does the component do?
 1. What inputs does it expect?
@@ -23,8 +23,8 @@ Whether your system is a monolith or a collection of microservices, the `model`
 root key is used to represent how components fit together as part of the system
 and what those components do as part of the system.
 
-To compose a system from individual `components`, one specifies additional
-models in the system model's `components` field.
+To compose a system from individual `component`s, one specifies additional
+`model`s in the system `model`'s `component`s field.
 
 ```{eval-rst}
 .. literalinclude:: ../../../../python/features/alarm_clock/alarm_clock.yaml
@@ -35,9 +35,9 @@ models in the system model's `components` field.
 
 ### Defining System Behavior In Models
 
-Each model should define one, or more, `behaviors` that describe the component's
-behaviors. These behaviors include a description of `inputs`, `outputs`, and
-`scenarios` that show how the model interacts with different components in the
+Each `model` should define one, or more, `behavior`s that describe the component's
+behaviors. These behaviors include a description of `input`s, `output`s, and
+`scenario`s that show how the `model` interacts with different components in the
 system.
 
 
@@ -48,7 +48,7 @@ system.
     :emphasize-lines: 11-16
 ```
 
-A `behavior` can also have any combination of `inputs` and `outputs`.
+A `behavior` can also have any combination of `input`s and `output`s.
 
 Additionally, the action of every behavior is represented by the `scenario`
 structure. Each `scenario` describes necessary pre-conditions (`given`),
@@ -62,7 +62,7 @@ triggers (`when`), and post-conditions (`then`) for the behavior.
 ```
 ### External Models
 
-An `External Model` is a model that does not include an `Acceptance Scenario`.  These types of models are used to create simplified interfaces representing external components or actors.  A typical use case for `External Model` is to represent a user or external messenger that is not managed by `AaC`.  It allows you to quickly create models without having to fully implement them.
+An `External Model` is a `model` that does not include an `Acceptance Scenario`.  These types of `model`s are used to create simplified interfaces representing external components or actors.  A typical use case for `External Model` is to represent a user or external messenger that is not managed by `AaC`.  It allows you to quickly create `model`s without having to fully implement them.
 
 Bellow is an example `External Model`.
 
@@ -71,9 +71,9 @@ Bellow is an example `External Model`.
     :language: yaml
     :lines: 1-3
 ```
-`External Models` can be referenced, created and used the same as internal models.
+`External Model`s can be referenced, created and used the same as internal `model`s.
 
 ### Defining System State In Models
 
-*Pending an accurate model representation and sufficient implementation of state
-within models, this section will not be covered yet.*
+*Pending an accurate `model` representation and sufficient implementation of state
+within `model`s, this section will not be covered yet.*
