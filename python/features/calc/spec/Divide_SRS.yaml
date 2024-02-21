@@ -1,0 +1,19 @@
+import:
+  files:
+    - IntermediateMath_PIDS.yaml
+---
+req_spec:
+  name: Module Divide SRS
+  description:  This is a representative Software Requirements Specification for a module called Divide.
+  requirements:
+    - "DIV-1"
+---
+req:
+  name: Divide
+  id: "DIV-1"
+  shall:  When receiving a divide message, the calculator shall respond with the quotient of the provided values.
+  parents:
+    - "IM-1"
+  attributes:
+    - name: TADI
+      value: Test

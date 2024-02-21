@@ -8,11 +8,11 @@ defaults:
 jobs:
   python_tests:
     name: Python ${{ matrix.py_version }} Unit Tests
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     strategy:
       matrix:
-        py_version: ["3.9.0", "3.9.13", "3.10.5"]
+        py_version: ["3.11.7"]   # py_version: ["3.9.13", "3.10.5", "3.11.7"]
 
     steps:
     - name: Checkout Repository
@@ -27,16 +27,16 @@ jobs:
       run: pip install -e .[all]
 
     - name: Run Tox Tests
-      if: matrix.py_version != '3.9.13'
+      if: matrix.py_version != '3.11.7'
       run: tox -e $(echo py${{ matrix.py_version }} | awk -F "." '{print $1$2;}')
 
     - name: Run Tox Tests With Coverage
-      if: matrix.py_version == '3.9.13'
-      run: tox -e py39 -- --coverage-report html
+      if: matrix.py_version == '3.11.7'
+      run: tox -e py311 -- --coverage-report html
 
     - name: Upload Code Coverage Report
       uses: actions/upload-artifact@v3
-      if: matrix.py_version == '3.9.13'
+      if: matrix.py_version == '3.11.7'
       with:
         name: test-coverage-report
         path: python/html_code_coverage/

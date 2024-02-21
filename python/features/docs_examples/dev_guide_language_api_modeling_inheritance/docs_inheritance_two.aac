@@ -1,0 +1,48 @@
+schema:
+  name: Person
+  package: aac.example
+  modifiers:
+    - abstract
+  fields:
+    - name: name
+      type: string
+    - name: age
+      type: int
+---
+schema:
+  name: Employee
+  package: aac.example
+  modifiers:
+    - final
+  root: employee
+  extends:
+    - name: Person
+      package: aac.example
+  fields:
+    - name: id
+      type: string
+---
+schema:
+  name: Contractor
+  package: aac.example
+  modifiers:
+    - final
+  root: contractor
+  extends:
+    - name: Person
+      package: aac.example
+  fields:
+    - name: contractor_id
+      type: string
+    - name: supplier
+      type: string
+---
+schema:
+  name: Team
+  package: aac.example
+  root: team
+  fields:
+    - name: name
+      type: string
+    - name: members
+      type: typeref(aac.example.Person)

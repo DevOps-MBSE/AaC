@@ -1,0 +1,12 @@
+plugin:
+  name: Constraint Assignment Arguments
+  package: aac.plugins.constraint_assignment_arguments
+  description: |
+    Ensures arguments provided in a constraint assignment align with the
+    arguments defined in the constraint definition.
+  schema_constraints:
+    - name: Check arguments against constraint definition
+      description: |
+        Looks up the defined constraint name definition and ensures the
+        arguments provided in the assignment match the arguments defined
+        in the constraint definition.

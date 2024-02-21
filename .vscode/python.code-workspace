@@ -40,173 +40,66 @@
     },
     "launch": {
         "configurations": [{
-            "name": "Validate AaC",
+            "name": "AaC Check AaC",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
-                "validate",
-                "${workspaceFolder}/src/aac/spec/spec.yaml"
+                "check",
+                "${workspaceFolder}/src/aac.aac",
             ],
             "console": "integratedTerminal",
-            "justMyCode": false
+            "justMyCode": true
         }, {
             "name": "Validate EchoService",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
-                "validate",
-                "${workspaceFolder}/model/echo/EchoService.yaml"
+                "check",
+                "${workspaceFolder}/features/echo/EchoService.yaml"
             ],
             "console": "integratedTerminal",
             "justMyCode": false
         }, {
-            "name": "Validate Flow",
+            "name": "AaC Help",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
-                "validate",
-                "${workspaceFolder}/model/flow/System.yaml"
+                "-h",
             ],
             "console": "integratedTerminal",
             "justMyCode": false
         }, {
-            "name": "Validate AaC alarm-clock",
+            "name": "AaC Version",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
-                "validate",
-                "${workspaceFolder}/model/alarm_clock/alarm_clock.yaml"
+                "version",
             ],
             "console": "integratedTerminal",
             "justMyCode": false
         }, {
-            "name": "Gen-JSON Core AaC Spec",
+            "name": "Check Flow",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
-                "gen-json",
-                "${workspaceFolder}/src/aac/spec/spec.yaml"
+                "check",
+                "${workspaceFolder}/features/flow/System.yaml"
             ],
             "console": "integratedTerminal",
             "justMyCode": false
         }, {
-            "name": "Gen-JSON EchoService",
+            "name": "Check AaC alarm-clock",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/aac/__main__.py",
             "args": [
-                "gen-json",
-                "${workspaceFolder}/model/echo/EchoService.yaml"
-            ],
-            "console": "integratedTerminal",
-            "justMyCode": false
-        }, {
-            "name": "Gen-JSON Flow",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/src/aac/__main__.py",
-            "args": [
-                "gen-json",
-                "${workspaceFolder}/model/flow/System.yaml"
-            ],
-            "console": "integratedTerminal",
-            "justMyCode": false
-        }, {
-            "name": "Puml-component Flow",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/src/aac/__main__.py",
-            "args": [
-                "puml-component",
-                "${workspaceFolder}/model/flow/System.yaml",
-                "out"
-            ],
-            "console": "integratedTerminal",
-            "justMyCode": false
-        }, {
-            "name": "Puml-object Flow",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/src/aac/__main__.py",
-            "args": [
-                "puml-object",
-                "${workspaceFolder}/model/flow/System.yaml",
-                "out"
-            ],
-            "console": "integratedTerminal",
-            "justMyCode": false
-        }, {
-            "name": "Puml-sequence Flow",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/src/aac/__main__.py",
-            "args": [
-                "puml-object",
-                "${workspaceFolder}/model/flow/flow.yaml",
-                "out"
-            ],
-            "console": "integratedTerminal",
-            "justMyCode": false
-        }, {
-            "name": "Gen-Plugin PlantUML",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/src/aac/__main__.py",
-            "args": [
-                "gen-plugin",
-                "${workspaceFolder}/src/aac/plugins/gen_plant_uml/gen_plant_uml.yaml",
-            ],
-            "console": "integratedTerminal",
-            "justMyCode": false
-        }, {
-            "name": "Gen-Plugin Protobuf",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/src/aac/__main__.py",
-            "args": [
-                "gen-plugin",
-                "${workspaceFolder}/src/aac/plugins/gen_protobuf/gen_protobuf.yaml"
-            ],
-            "console": "integratedTerminal",
-            "justMyCode": false
-        }, {
-            "name": "Gen-Protobuf",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/src/aac/__main__.py",
-            "args": [
-                "gen-protobuf",
-                "${workspaceFolder}/model/protobuf_flow/System.aac",
-                "build/"
-            ],
-            "console": "integratedTerminal",
-            "justMyCode": false
-        }, {
-            "name": "Gen-System Design Document",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/src/aac/__main__.py",
-            "args": [
-                "gen-design-doc",
-                "${workspaceFolder}/model/flow/System.yaml",
-                "test"
-            ],
-            "console": "integratedTerminal",
-            "justMyCode": false
-        }, {
-            "name": "Gen-Gherkin Feature File",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/src/aac/__main__.py",
-            "args": [
-                "gen-gherkin-behaviors",
-                "${workspaceFolder}/model/flow/flow.yaml",
-                "test"
+                "check",
+                "${workspaceFolder}/features/alarm_clock/alarm_clock.yaml"
             ],
             "console": "integratedTerminal",
             "justMyCode": false
@@ -218,48 +111,7 @@
             "args": ["-c", "${workspaceFolder}/tox.ini"],
             "console": "integratedTerminal",
             "justMyCode": false
-        }, {
-            "name": "Start LSP Server IO",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/src/aac/__main__.py",
-            "args": [
-                "start-lsp-io"
-            ],
-            "console": "integratedTerminal",
-            "justMyCode": false
-        }, {
-            "name": "Start LSP Server TCP",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/src/aac/__main__.py",
-            "args": [
-                "start-lsp-tcp"
-            ],
-            "console": "integratedTerminal",
-            "justMyCode": false
-        }, {
-            "name": "Start RESTful API",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/src/aac/__main__.py",
-            "args": [
-                "rest-api"
-            ],
-            "console": "integratedTerminal",
-            "justMyCode": false
-        }, {
-            "name": "Generate RESTful API Spec",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/src/aac/__main__.py",
-            "args": [
-                "gen-openapi-spec",
-                "oasv3-spec"
-            ],
-            "console": "integratedTerminal",
-            "justMyCode": false
-        }],
+        },],
         "compounds": []
     }
 }

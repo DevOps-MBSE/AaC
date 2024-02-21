@@ -1,0 +1,175 @@
+generator:
+  name: Gen-Plugin Generator
+  description: A collection of code and test generation actions for AaC plugins.
+  sources:
+    - name: AaC Project Setup Generation
+      data_source: project
+      templates:
+        - name: ProjectSetup
+          description: Generates a Python project setup file.
+          template_file: ./templates/project_setup.jinja2
+          overwrite: SKIP
+          helper_functions:
+            - name: Get Python string
+              description: Converts a string to a Python suitable value.
+              package: aac.plugins.generate.helpers
+              module: python_helpers
+              function: get_python_name
+            - name: Get AaC version
+              description: Returns the version of AaC.
+              package: aac.plugins.generate.helpers
+              module: python_helpers
+              function: aac_version
+          output_target: CODE
+          output_path_uses_data_source_package: false
+          output_file_name: setup
+          output_file_extension: py
+    - name: AaC Project tox.ini Generation
+      data_source: project
+      templates:
+        - name: ProjectToxIni
+          description: Generates a Python project tox.ini file.
+          template_file: ./templates/project_tox.jinja2
+          overwrite: SKIP
+          output_target: CODE
+          output_path_uses_data_source_package: false
+          output_file_name: tox
+          output_file_extension: ini
+    - name: AaC Project README Generation
+      data_source: project
+      templates:
+        - name: ProjectReadme
+          description: Generates a Python project README.md file.
+          template_file: ./templates/project_readme.jinja2
+          overwrite: SKIP
+          output_target: CODE
+          output_path_uses_data_source_package: false
+          output_file_name: README
+          output_file_extension: md
+    - name: AaC Plugin Init Generation
+      data_source: plugin
+      templates:
+        - name: PluginInit
+          description: Generates a Python init file for a plugin.
+          template_file: ./templates/plugin_init.jinja2
+          overwrite: OVERWRITE
+          helper_functions:
+            - name: Get Python string
+              description: Converts a string to a Python suitable value.
+              package: aac.plugins.generate.helpers
+              module: python_helpers
+              function: get_python_name
+            - name: Get Python type
+              description: Converts a string to a Python type value.
+              package: aac.plugins.generate.helpers
+              module: python_helpers
+              function: get_python_type
+            - name: Get package from plugin name
+              description: Looks up the package name for a referenced plugin.
+              package: aac.plugins.generate.helpers
+              module: python_helpers
+              function: get_package_from_plugin
+            - name: Get Python primitive
+              description: Converts an AaC primitive to a Python type.
+              package: aac.plugins.generate.helpers
+              module: python_helpers
+              function: get_python_primitive
+          output_target: CODE
+          output_path_uses_data_source_package: true
+          output_file_name: __init__
+          output_file_extension: py
+    - name: AaC Plugin Impl Generation
+      data_source: plugin
+      templates:
+        - name: PluginImpl
+          description: Generates a Python implementation file for a plugin.
+          template_file: ./templates/plugin_impl.jinja2
+          overwrite: SKIP
+          helper_functions:
+            - name: Get Python string
+              description: Converts a string to a Python suitable value.
+              package: aac.plugins.generate.helpers
+              module: python_helpers
+              function: get_python_name
+            - name: Get Python type
+              description: Converts a string to a Python type value.
+              package: aac.plugins.generate.helpers
+              module: python_helpers
+              function: get_python_type
+          output_target: CODE
+          output_path_uses_data_source_package: true
+          output_file_suffix: _impl
+          output_file_extension: py
+    - name: AaC Plugin Unit Test Generation
+      data_source: plugin
+      templates:
+        - name: PluginUnitTest
+          description: Generates a Python unit test for a plugin.
+          template_file: ./templates/plugin_unit_test.jinja2
+          overwrite: SKIP
+          helper_functions:
+            - name: Get Python string
+              description: Converts a string to a Python suitable value.
+              package: aac.plugins.generate.helpers
+              module: python_helpers
+              function: get_python_name
+          output_target: TEST
+          output_path_uses_data_source_package: true
+          output_file_prefix: test_
+          output_file_extension: py
+    - name: AaC Plugin Unit Test Init Generation
+      data_source: plugin
+      templates:
+        - name: PluginUnitTestInit
+          description: Generates a Python unit test init for a plugin.
+          template_file: ./templates/empty.jinja2
+          overwrite: OVERWRITE
+          output_target: TEST
+          output_path_uses_data_source_package: true
+          output_file_name: __init__
+          output_file_extension: py
+    - name: AaC Plugin Command Feature File Generation
+      data_source: plugin
+      data_content: plugin.commands.acceptance
+      templates:
+        - name: FeatureFile
+          description: Generates a Feature file for a plugin command.
+          template_file: ./templates/feature_file.jinja2
+          overwrite: OVERWRITE
+          output_target: TEST
+          output_path_uses_data_source_package: true
+          output_file_extension: feature
+    - name: AaC Plugin Context Constraint Feature File Generation
+      data_source: plugin
+      data_content: plugin.context_constraints.acceptance
+      templates:
+        - name: FeatureFile
+          description: Generates a Feature file for a plugin context constraint.
+          template_file: ./templates/feature_file.jinja2
+          overwrite: OVERWRITE
+          output_target: TEST
+          output_path_uses_data_source_package: true
+          output_file_extension: feature
+    - name: AaC Plugin Schema Constraint Feature File Generation
+      data_source: plugin
+      data_content: plugin.schema_constraints.acceptance
+      templates:
+        - name: FeatureFile
+          description: Generates a Feature file for a plugin schema constraint.
+          template_file: ./templates/feature_file.jinja2
+          overwrite: OVERWRITE
+          output_target: TEST
+          output_path_uses_data_source_package: true
+          output_file_extension: feature
+    - name: AaC Plugin Primitive Constraint Feature File Generation
+      data_source: plugin
+      data_content: plugin.primitive_constraints.acceptance
+      templates:
+        - name: FeatureFile
+          description: Generates a Feature file for a plugin primitive constraint.
+          template_file: ./templates/feature_file.jinja2
+          overwrite: OVERWRITE
+          output_target: TEST
+          output_path_uses_data_source_package: true
+          output_file_extension: feature
+        

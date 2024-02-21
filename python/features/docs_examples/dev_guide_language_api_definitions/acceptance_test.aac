@@ -1,0 +1,16 @@
+schema:
+  name: AcceptanceTest
+  package: aac.example
+  root: acceptance_test
+  fields:
+    - name: name
+      type: string
+    - name: scenarios
+      type: AcceptanceTestScenario[]
+---
+schema:
+  name: AcceptanceTestScenario
+  package: aac.example
+  fields:
+    - name: name
+      type: string

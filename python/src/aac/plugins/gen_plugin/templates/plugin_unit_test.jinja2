@@ -1,0 +1,74 @@
+from unittest import TestCase
+from typing import Tuple
+from click.testing import CliRunner
+from aac.execute.command_line import cli, initialize_cli
+from aac.execute.aac_execution_result import ExecutionStatus
+
+{% set comma_joiner = joiner(", ") %}
+{% if plugin.commands | length > 0 %}
+from {{plugin.package}}.{{get_python_name(plugin.name)}}_impl import plugin_name, {% for command in plugin.commands %}{{comma_joiner()}}{{get_python_name(command.name)}}{% if command.run_before | length > 0 %}{% for before in command.run_before %}{{  comma_joiner() }}before_{{get_python_name(command.name)}}_{{get_python_name(before.command)}}{% endfor %}{% endif %}{% if command.run_after | length > 0 %}{% for after in command.run_after %}{{  comma_joiner() }}after_{{get_python_name(command.name)}}_{{get_python_name(after.command)}}{% endfor %}{% endif %}{% endfor %}
+{% else %}
+from {{plugin.package}}.{{get_python_name(plugin.name)}}_impl import plugin_name
+{% endif %}
+
+{% if plugin.context_constraints | length > 0 %}{% for ctx_constraint in plugin.context_constraints %}from {{plugin.package}}.{{get_python_name(plugin.name)}}_impl import {{get_python_name(ctx_constraint.name)}}
+{% endfor %}{% endif %}
+
+{% if plugin.schema_constraints | length > 0 %}{% for schema_constraint in plugin.schema_constraints %}from {{plugin.package}}.{{get_python_name(plugin.name)}}_impl import {{get_python_name(schema_constraint.name)}}
+{% endfor %}{% endif %}
+
+{% if plugin.primitive_constraints | length > 0 %}{% for primitive_constraint in plugin.primitive_constraints %}from {{plugin.package}}.{{get_python_name(plugin.name)}}_impl import {{get_python_name(primitive_constraint.name)}}
+{% endfor %}{% endif %}
+
+
+class Test{{plugin.name | replace(' ', '')}}(TestCase):
+
+    {% for command in plugin.commands %}
+    def test_{{get_python_name(command.name)}}(self):
+        
+        # TODO: Write success and failure unit tests for {{get_python_name(command.name)}}
+        self.fail("Test not yet implemented.")
+
+    def run_{{get_python_name(command.name)}}_cli_command_with_args(self, args: list[str]) -> Tuple[int, str]:
+        """Utility function to invoke the CLI command with the given arguments."""
+        initialize_cli()
+        runner = CliRunner()
+        result = runner.invoke(cli, ["{{command.name}}"] + args)
+        exit_code = result.exit_code
+        std_out = str(result.stdout)
+        output_message = std_out.strip().replace("\x1b[0m", "")
+        return exit_code, output_message
+
+    def test_cli_{{get_python_name(command.name)}}(self):
+        args = []
+        
+        # TODO: populate args list, or pass empty list for no args
+
+        exit_code, output_message = self.run_{{get_python_name(command.name)}}_cli_command_with_args(args)
+
+        # TODO:  perform assertions against the output message
+        self.assertEqual(0, exit_code)  # asserts the command ran successfully
+        self.assertTrue(len(output_message) > 0)  # asserts the command produced output
+        # TODO:  assert the output message is correct
+    {% endfor %}
+
+    {% for ctx_constraint in plugin.context_constraints %}
+    def test_{{get_python_name(ctx_constraint.name)}}(self):
+        
+        # TODO: Write success and failure tests for {{get_python_name(ctx_constraint.name)}}
+        self.fail("Test not yet implemented.")
+    {% endfor %}
+
+    {% for schema_constraint in plugin.schema_constraints %}
+    def test_{{get_python_name(schema_constraint.name)}}(self):
+        
+        # TODO: Write success and failure tests for {{get_python_name(schema_constraint.name)}}
+        self.fail("Test not yet implemented.")
+    {% endfor %}
+
+    {% for primitive_constraint in plugin.primitive_constraints %}
+    def test_{{get_python_name(primitive_constraint.name)}}(self):
+        
+        # TODO: Write success and failure tests for {{get_python_name(primitive_constraint.name)}}
+        self.fail("Test not yet implemented.")
+    {% endfor %}

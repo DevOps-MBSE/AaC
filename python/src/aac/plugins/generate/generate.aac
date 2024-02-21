@@ -1,0 +1,55 @@
+plugin:
+  name: Generate
+  package: aac.plugins.generate
+  description: |
+    An AaC plugin that generates content from an AaC file based on provided generator templates.
+  commands:
+    - name: generate
+      help_text: Performs content generation based on user defined templates.
+      run_before:
+        - plugin: Check AaC
+          command: check
+      input:
+        - name: aac-file
+          type: file
+          description: The path to the architecture file with the model content.
+        - name: generator-file
+          type: file
+          description: The path to the architecture file with the generator definition.
+        - name: --code-output
+          type: directory
+          description: The location to output generated code.
+        - name: --test-output
+          type: directory
+          description: The location to output generated test code.
+        - name: --doc-output
+          type: directory
+          description: The location to output generated documentation.
+        - name: --no-prompt
+          type: bool
+          description: Informs generator to execute without asking the user to confirm output paths.
+        - name: --force-overwrite
+          type: bool
+          description: Informs generator to backup and overwrite all existing files regardless of template definition.
+        - name: --evaluate
+          type: bool
+          description: Informs generator to only write evaluation files with no impact to existing files.
+    - name: clean
+      help_text: Remove backup and evaluation files from prior aac file generation.
+      input:
+        - name: aac-file
+          type: file
+          description: The path to the architecture file with the model content.
+        - name: --code-output
+          type: directory
+          description: The location to output generated code.
+        - name: --test-output
+          type: directory
+          description: The location to output generated test code.
+        - name: --doc-output
+          type: directory
+          description: The location to output generated documentation.
+        - name: --no-prompt
+          type: bool
+          description: Informs generator to execute without asking the user to confirm output paths.
+        

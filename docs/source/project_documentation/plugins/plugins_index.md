@@ -1,31 +1,15 @@
 # AaC Plugins
 
-## Built-In Plugins for Core Commands
+AaC provides a plugin system to allow users to extend the capabilities of AaC. Plugins are Python packages that are installed alongside AaC and are loaded at runtime. Plugins can provide new capabilities to AaC, such as new data definitions, new commands, and new constraints.
 
-AaC leverages a plugin architecture to implement the majority of its user features providing an extensible interface for the core development team and any other party interested in contributing to AaC. Built-in plugins that provide features like `Gen-Plugin` and `Gen-JSON` are maintained inside the repository and are shipped alongside the core AaC package. This support and maintenance by the core development team is why we classify these built-in plugins as "first-party".
+You can extend AaC with your own plugins as described in the [Developer Guide](../dev_guide/dev_guide_index.md).
 
-### JSON
+## Built-in Plugins
 
-AaC includes a built-in command to convert your AaC YAML model to JSON.
-```bash
-aac json <aac_model.yaml>
-```
+AaC comes with a number of built-in plugins that provide core capabilities. These plugins are installed as part of AaC and are loaded at runtime. The following plugins are currently available:
 
-### Plugin Generator
-
-AaC includes a built-in command to help you extend AaC by creating your own plugins. This is how we build all of our plugins.
-```bash
-aac gen-plugin <path/to/aac_plugin_model.yaml>
-```
-
-The plugin generator does support generating first-party and third-party plugins. The generator uses the path of AaC plugin file to identify if it is within an AaC repository, if the path contains "src/aac/plugins/" then the plugin is classified as being a first-party plugin. Otherwise, if the path doesn't contain "src/aac/plugins/" then the plugin is assumed to be third-party and is generated with an independent Python project skeleton.
-
-## Third Party Plugins
-
-AaC can be extended by anyone, wether they are part of our core team or not.  We recommend any plugin developer
-use the "aac-" prefix when building and publishing AaC plugins.  Search (PyPI)[https://pypi.org/] for additional 3rd party Plugins.
-
-## AaC Core Plugins
-
-AaC core plugins are built and published by our team but are not part of the AaC distribution.  We want AaC to be
-as useful as possible, but not bloated.  As we extend the functionality of AaC, expect to see more core plugins published.
+- [Version](../plugins/version): Gives you the installed version of AaC.
+- [Print Definitions](../plugins/print_defs):  Prints the AaC definitions from the Language Context.  This is useful for debugging or may serve as a reminder of the definitions available.
+- [Check](../plugins/check): Runs the AaC constraints against a provided model.
+- [Generate](../plugins/generate):  Generic generation capability that can be used to generate any text file from a model.
+- [Generate Plugin](../plugins/gen_plugin):  A custom AaC generator to support the extension of AaC through plugin development.

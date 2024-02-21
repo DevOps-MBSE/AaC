@@ -7,9 +7,9 @@ One of AaC's goals is to allow for a system to be modeled in a way that various 
 There is an example usecase within our alarm clock model example for setting the alarm time.
 
 ```{eval-rst}
-.. literalinclude:: ../../../../python/model/alarm_clock/usecase.yaml
+.. literalinclude:: ../../../../python/features/alarm_clock/usecase.yaml
     :language: yaml
-    :lines: 6-24
+    :lines: 26-35
 ```
 By incorporating the `usecase`s for various system behaviors, the alarm clock is able to be evaluated for functional completeness that cannot be seen in the alarm clock model alone.
 
@@ -24,10 +24,10 @@ Some questions that come up when evaluating the system for functional completene
 The `participants` of the `usecase` are included as a portion of the `usecase` definition, highlighted below.
 
 ```{eval-rst}
-.. literalinclude:: ../../../../python/model/alarm_clock/usecase.yaml
+.. literalinclude:: ../../../../python/features/alarm_clock/usecase.yaml
     :language: yaml
-    :emphasize-lines: 4-10
-    :lines: 6-24
+    :emphasize-lines: 4-7
+    :lines: 26-35
 ```
 
 `participants` are actors (who) can perform the action on the system and what part(s) of the system are necessary for the action to be accomplished. Therefore we see three participants in the above example: `user`, `alarm`, and `timer`.
@@ -38,22 +38,36 @@ The `alarm` is what the user wants to change within the alarm clock system.
 
 The `timer` is for the alarm clock system to know when to trigger the `alarm`.
 
+```{eval-rst}
+.. literalinclude:: ../../../../python/features/alarm_clock/usecase.yaml
+    :language: yaml
+    :emphasize-lines: 2, 6, 10
+    :lines: 6-16
+```
+
 ### Crafting Usecase Steps
 
 The `steps` of the `usecase` are included as a portion of the `usecase` definition, highlighted below.
 
 ```{eval-rst}
-.. literalinclude:: ../../../../python/model/alarm_clock/usecase.yaml
+.. literalinclude:: ../../../../python/features/alarm_clock/usecase.yaml
     :language: yaml
-    :emphasize-lines: 11-19
-    :lines: 6-24
+    :emphasize-lines: 8-10
+    :lines: 26-35
 ```
 
 `steps` are actions that the system follows to accomplish the desired described behavior of the `usecase`. The number of steps varies based on how many interactions between the `participants` need to happen for the behavior to be accomplished. Each of the `steps` should involve only two `participants`. One participant (`source`) performing an `action` on another participant (`target`). Each action must be defined as a behavior in the `target`. For example, the model `AlarmClock` must have a behavior named `setAlarm` that can be invoked by the source `user`.
 
 ```{eval-rst}
-.. literalinclude:: ../../../../python/model/alarm_clock/usecase.yaml
+.. literalinclude:: ../../../../python/features/alarm_clock/usecase.yaml
     :language: yaml
     :emphasize-lines: 3-5
-    :lines: 16-20
+    :lines: 37-47
+```
+
+```{eval-rst}
+.. literalinclude:: ../../../../python/features/alarm_clock/alarm_clock.yaml
+    :language: yaml
+    :emphasize-lines: 2
+    :lines: 16-21
 ```

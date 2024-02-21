@@ -1,0 +1,64 @@
+plugin:
+  name: Gen Plugin
+  package: aac.plugins.gen_plugin
+  description: |
+    An AaC plugin that generates opinionated plugin stubs for easier 
+    and quicker plugin development.
+  commands:
+    - name: gen-plugin
+      help_text: |
+        Generate code and stubs for an AaC plugin.  Overwrites will backup existing files.
+      run_before:
+        - plugin: Check AaC
+          command: check
+      run_after:
+        - plugin: Generate
+          command: generate
+      input:
+        - name: aac-plugin-file
+          type: file
+          description: The path to the architecture file with the plugin definition.
+        - name: --code-output
+          type: directory
+          description: The location to output generated plugin code.
+        - name: --test-output
+          type: directory
+          description: The location to output generated plugin test code.
+        - name: --doc-output
+          type: directory
+          description: The location to output generated plugin documentation code.
+        - name: --no-prompt
+          type: bool
+          description: Instructs the generator to execute without asking the user to confirm output paths.
+        - name: --force-overwrite
+          type: bool
+          description: Instructs the generator to backup and overwrite all existing files regardless of template definition.
+        - name: --evaluate
+          type: bool
+          description: Instructs the generator to only write evaluation files with no impact to existing files.
+    - name: gen-project
+      help_text: |
+        Generate code and stubs for an AaC project.  Overwrites will backup existing files.
+      run_before:
+        - plugin: Check AaC
+          command: check
+      run_after:
+        - plugin: Generate
+          command: generate
+      input:
+        - name: aac-project-file
+          type: file
+          description: The path to the architecture file with the project definition.
+        - name: --output
+          type: directory
+          description: The location to output generated project code.
+        - name: --no-prompt
+          type: bool
+          description: Instructs the generator to execute without asking the user to confirm output paths.
+        - name: --force-overwrite
+          type: bool
+          description: Instructs the generator to backup and overwrite all existing files regardless of template definition.
+        - name: --evaluate
+          type: bool
+          description: Infstructs the generator to only write evaluation files with no impact to existing files.
+          

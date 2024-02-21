@@ -1,0 +1,40 @@
+import:
+  files:
+    - ../spec/Add_SRS.yaml
+    - ../spec/Subtract_SRS.yaml
+    - ../spec/Multiply_SRS.yaml
+    - ../spec/Divide_SRS.yaml
+    - ../spec/Power_SRS.yaml
+    - ../spec/SquareRoot_SRS.yaml
+    - ./MathRequest.yaml
+    - ./MathResponse.yaml
+---
+model:
+  name: MathMessageHandler
+  description: Api handler for math functions.
+  behavior:
+    - name: api
+      requirements:
+        - "ADD-1"
+        - "SUB-1"
+        - "MULT-1"
+        - "DIV-1"
+        - "POW-1"
+        - "SQRT-1"
+      input:
+        - name: request
+          type: MathRequest
+      output:
+        - name: response
+          type: MathResponse
+      acceptance:
+        - name: Handle a math request
+          scenarios: 
+            - name: Request handler responds with a calculated value
+              given:
+                - The MathMessageHandler is running
+              when:
+                - The user makes a request with MathRequest
+              then:
+                - The MathRequest function is executed against the values and a result is calculated
+                - The user gets a MathResponse response with the calculated value

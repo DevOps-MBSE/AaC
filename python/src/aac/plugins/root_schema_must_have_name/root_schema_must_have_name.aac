@@ -1,0 +1,9 @@
+plugin:
+  name: Root schema must have name
+  package: aac.plugins.root_schema_must_have_name
+  description: An AaC plugin that ensures any schema with a root key includes a field called name.
+  schema_constraints:
+    - name: Root schema has name
+      description: Check every schema with a root key and ensure there is a field called name.
+      universal: true
+      

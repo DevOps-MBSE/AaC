@@ -1,0 +1,8 @@
+plugin:
+  name: No Extends for Final
+  package: aac.plugins.no_ext_for_final
+  description: An AaC plugin that ensures a schema doesn't extend a parent marked with a final modifier.
+  schema_constraints:
+    - name: No Extension for Final
+      description: Check every schema for extension entries that are marked with a final modifier.
+      universal: true
