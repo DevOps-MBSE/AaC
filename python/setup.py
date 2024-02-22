@@ -2,14 +2,14 @@ import logging
 from setuptools import find_packages, setup
 from src.aac import __version__
 from os import linesep
-import sys
+# import sys
 
-if sys.version_info >= (3, 11):
-    import tomllib
-else:
-    import tomli as tomllib
+# if sys.version_info >= (3, 11):
+#     import tomllib
+# else:
+#     import tomli as tomllib
 
-tomllib.loads("['This parses fine with Python 3.6+']")
+# tomllib.loads("['This parses fine with Python 3.6+']")
 
 README_FILE_PATH = "../README.md"
 
@@ -32,7 +32,7 @@ runtime_dependencies = [
     "typing-extensions ~= 4.8.0",
     "pluggy ~= 1.0.0",
     "Jinja2 ~= 3.1.2",
-    "black >= 23.9.1",
+    "black ~= 23.9.1",
     "MarkupSafe ~= 2.1.1",
     "pygls ~= 0.13.1",
     "fastapi ~= 0.109.1",
