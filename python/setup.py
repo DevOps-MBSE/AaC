@@ -24,7 +24,7 @@ runtime_dependencies = [
     "typing-extensions ~= 4.8.0",
     "pluggy ~= 1.0.0",
     "Jinja2 ~= 3.1.2",
-    "black == 23.9.1",
+    "black ~= 23.9.1",
     "MarkupSafe ~= 2.1.1",
     "pygls ~= 0.13.1",
     "fastapi ~= 0.109.1",
@@ -38,6 +38,7 @@ runtime_dependencies = [
 development_dependencies = [
     "wheel ~= 0.42.0",
     "pip-tools >= 6.9.0",
+    "tomli < 2.0.0",
     "platformdirs >= 2.4",
     "coverage >= 6.0",
     "mccabe >= 0.6.1",
