@@ -43,11 +43,10 @@ runtime_dependencies = [
     "requests >= 2.28.1",
 ]
 
-
 development_dependencies = [
     "wheel ~= 0.42.0",
     "pip-tools >= 6.9.0",
-    'tomli >= 1.1.0 ; python_version < "3.11"',
+    "tomli >= 1.1.0",
     "platformdirs >= 2.4",
     "coverage >= 6.0",
     "mccabe >= 0.6.1",
