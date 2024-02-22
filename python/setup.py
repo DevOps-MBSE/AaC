@@ -2,14 +2,6 @@ import logging
 from setuptools import find_packages, setup
 from src.aac import __version__
 from os import linesep
-# import sys
-
-# if sys.version_info >= (3, 11):
-#     import tomllib
-# else:
-#     import tomli as tomllib
-
-# tomllib.loads("['This parses fine with Python 3.6+']")
 
 README_FILE_PATH = "../README.md"
 
@@ -46,7 +38,6 @@ runtime_dependencies = [
 development_dependencies = [
     "wheel ~= 0.42.0",
     "pip-tools >= 6.9.0",
-    # "tomli >= 1.1.0",
     "platformdirs >= 2.4",
     "coverage >= 6.0",
     "mccabe >= 0.6.1",
