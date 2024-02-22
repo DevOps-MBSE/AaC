@@ -2,6 +2,14 @@ import logging
 from setuptools import find_packages, setup
 from src.aac import __version__
 from os import linesep
+import sys
+
+if sys.version_info >= (3, 11):
+    import tomllib
+else:
+    import tomli as tomllib
+
+tomllib.loads("['This parses fine with Python 3.6+']")
 
 README_FILE_PATH = "../README.md"
 
@@ -33,6 +41,7 @@ runtime_dependencies = [
     "sniffio ~= 1.3.0",
     "uvicorn ~= 0.20.0",
     "requests >= 2.28.1",
+    "tomli >= 1.1.0 ; python_version < '3.11'",
 ]
 
 development_dependencies = [
