@@ -46,6 +46,8 @@ runtime_dependencies = [
 development_dependencies = [
     "wheel ~= 0.42.0",
     "pip-tools >= 6.9.0",
+    "tomli < 2.0.0",
+    "tomli >= 1.1.0 ; python_version < '3.11'",
     "platformdirs >= 2.4",
     "coverage >= 6.0",
     "mccabe >= 0.6.1",
@@ -59,7 +61,6 @@ development_dependencies = [
     "Pygments >= 2.5.1",
     "types-PyYAML >= 6.0.9",
     "requests >= 2.27.0",
-    "tomli >= 1.1.0 ; python_version < '3.11'",
 ]
 
 documentation_dependencies = [
