@@ -24,7 +24,7 @@ root key is used to represent how components fit together as part of the system
 and what those components do as part of the system.
 
 To compose a system from individual `component`s, one specifies additional
-`model`s in the system `model`'s `component`s field.
+models in the system model's `components` field.
 
 ```{eval-rst}
 .. literalinclude:: ../../../../python/features/alarm_clock/alarm_clock.yaml
@@ -35,10 +35,9 @@ To compose a system from individual `component`s, one specifies additional
 
 ### Defining System Behavior In Models
 
-Each `model` should define one, or more, `behavior`s that describe the component's
+Each model should define one, or more, `behavior`s that describe the component's
 behaviors. These behaviors include a description of `input`s, `output`s, and
-`scenario`s that show how the `model` interacts with different components in the
-system.
+`scenario`s that show how the model interacts with different components in the
 
 
 ```{eval-rst}
@@ -62,7 +61,7 @@ triggers (`when`), and post-conditions (`then`) for the behavior.
 ```
 ### External Models
 
-An *External Model* is a `model` that does not include an *Acceptance Scenario*.  These types of `model`s are used to create simplified interfaces representing external components or actors.  A typical use case for External Model is to represent a user or external messenger that is not managed by AaC.  It allows you to quickly create `model`s without having to fully implement them.
+An *External Model* is a `model` that does not include an *Acceptance Scenario*.  These types of models are used to create simplified interfaces representing external components or actors.  A typical use case for an External Model is to represent a user or external messenger that is not managed by AaC.  It allows you to quickly create models without having to fully implement them.
 
 Bellow is an example External Model.
 
@@ -75,5 +74,5 @@ External Models can be referenced, created, and used the same as internal `model
 
 ### Defining System State In Models
 
-*Pending an accurate `model` representation and sufficient implementation of state
-within `model`s, this section will not be covered yet.*
+*Pending an accurate model representation and sufficient implementation of state
+within models, this section will not be covered yet.*
