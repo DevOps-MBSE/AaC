@@ -2,14 +2,14 @@ import logging
 from setuptools import find_packages, setup
 from src.aac import __version__
 from os import linesep
-# import sys
+import sys
 
-# if sys.version_info >= (3, 11):
-#     import tomllib
-# else:
-#     import tomli as tomllib
+if sys.version_info >= (3, 11):
+    import tomllib
+else:
+    import tomli as tomllib
 
-# tomllib.loads("['This parses fine with Python 3.6+']")
+tomllib.loads("['This parses fine with Python 3.6+']")
 
 README_FILE_PATH = "../README.md"
 
