@@ -1,0 +1,10 @@
+
+plugin:
+  name: Unique Requirement IDs
+  package: aac.plugins.unique_requirement_ids
+  description: An AaC plugin that enables validating the uniqueness of requirement IDs.
+  context_constraints:
+    - name: Requirement ID is unique
+      description: Check every requirement to ensure there are no duplication id values defined.
+
+
