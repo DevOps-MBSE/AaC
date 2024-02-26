@@ -16,8 +16,6 @@ from aac.context.definition import Definition
 from aac.context.source_location import SourceLocation
 from typing import Any
 
-import pdb; pdb.set_trace()
-
 
 plugin_name = "Unique Requirement IDs"
 

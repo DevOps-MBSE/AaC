@@ -36,7 +36,7 @@ To compose a system from individual `component`s, one specifies additional
 ### Defining System Behavior In Models
 
 Each model should define one, or more, `behavior`s that describe the component's
-behaviors. These behaviors include a descrpition of `input`s, `output`s, and
+behaviors. These behaviors include a description of `input`s, `output`s, and
 `scenario`s that show how the model interacts with different components in the
 system.
 

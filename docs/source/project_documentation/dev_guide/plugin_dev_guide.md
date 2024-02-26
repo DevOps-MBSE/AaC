@@ -43,7 +43,7 @@ Options:
                      impact to existing files.
   -h, --help         Show this message and exit.
 ```
-*Note:  AaC generation attempts to be non-distructive.  Each generation template definition recognized what output should be fully generated and what may be user modified.  If any file is being generated where an existing file already exists, the generator will create a backup of the original prior to writing the new file.  If a user modifiable file is to be generated but already exists, the new file will be created as an evaluation file for the user to consider without impacting the existing file.  Generator commends can adjust this behavior using `--force-overwrite` and `--evaluate` flags.*
+*Note:  AaC generation attempts to be non-destructive.  Each generation template definition recognized what output should be fully generated and what may be user modified.  If any file is being generated where an existing file already exists, the generator will create a backup of the original prior to writing the new file.  If a user modifiable file is to be generated but already exists, the new file will be created as an evaluation file for the user to consider without impacting the existing file.  Generator options can adjust this behavior using `--force-overwrite` and `--evaluate` flags.*
 
 This will create a project structure that looks like this:
 
