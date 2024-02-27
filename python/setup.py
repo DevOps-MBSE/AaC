@@ -2,6 +2,10 @@ import logging
 from setuptools import find_packages, setup
 from src.aac import __version__
 from os import linesep
+import sys
+
+
+tomllib.loads("['This parses fine with Python 3.6+']")
 
 README_FILE_PATH = "../README.md"
 
@@ -24,6 +28,7 @@ runtime_dependencies = [
     "typing-extensions ~= 4.8.0",
     "pluggy ~= 1.0.0",
     "Jinja2 ~= 3.1.2",
+    "tomli >= 1.1.0 ; python_version < '3.11'",
     "black >= 23.9.1",
     "MarkupSafe ~= 2.1.1",
     "pygls ~= 0.13.1",
@@ -85,6 +90,11 @@ test_dependencies = [
     "eradicate<3.0,>=2.0",
     "httpx >= 0.23.0",
 ]
+
+if sys.version_info >= (3, 11):
+    import tomllib
+else:
+    import tomli as tomllib
 
 setup(
     name="aac",
