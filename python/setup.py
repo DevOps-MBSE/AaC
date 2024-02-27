@@ -3,6 +3,10 @@ from setuptools import find_packages, setup
 from src.aac import __version__
 from os import linesep
 import sys
+if sys.version_info >= (3, 11):
+    import tomllib
+else:
+    import tomli as tomllib
 
 
 tomllib.loads("['This parses fine with Python 3.6+']")
@@ -90,11 +94,6 @@ test_dependencies = [
     "eradicate<3.0,>=2.0",
     "httpx >= 0.23.0",
 ]
-
-if sys.version_info >= (3, 11):
-    import tomllib
-else:
-    import tomli as tomllib
 
 setup(
     name="aac",
