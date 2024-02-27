@@ -27,16 +27,16 @@ jobs:
       run: pip install -e .[all]
 
     - name: Run Tox Tests
-      if: matrix.py_version != '3.11.7'
+      if: matrix.py_version != '3.9.7'
       run: tox -e $(echo py${{ matrix.py_version }} | awk -F "." '{print $1$2;}')
 
     - name: Run Tox Tests With Coverage
-      if: matrix.py_version == '3.11.7'
+      if: matrix.py_version == '3.9.7'
       run: tox -e py311 -- --coverage-report html
 
     - name: Upload Code Coverage Report
       uses: actions/upload-artifact@v3
-      if: matrix.py_version == '3.11.7'
+      if: matrix.py_version == '3.9.7'
       with:
         name: test-coverage-report
         path: python/html_code_coverage/
