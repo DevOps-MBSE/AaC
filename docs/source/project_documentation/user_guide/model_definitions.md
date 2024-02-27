@@ -24,7 +24,7 @@ root key is used to represent how components fit together as part of the system
 and what those components do as part of the system.
 
 To compose a system from individual `component`s, one specifies additional
-`models` in the system `model`'s `components` field.
+models in the system model's `components` field.
 
 ```{eval-rst}
 .. literalinclude:: ../../../../python/features/alarm_clock/alarm_clock.yaml
@@ -36,9 +36,8 @@ To compose a system from individual `component`s, one specifies additional
 ### Defining System Behavior In Models
 
 Each model should define one, or more, `behavior`s that describe the component's
-behaviors. These behaviors include a descrpition of `input`s, `output`s, and
+behaviors. These behaviors include a description of `input`s, `output`s, and
 `scenario`s that show how the model interacts with different components in the
-system.
 
 
 ```{eval-rst}
@@ -60,6 +59,18 @@ triggers (`when`), and post-conditions (`then`) for the behavior.
     :lines: 6-38
     :emphasize-lines: 19, 21, 23, 25, 28, 30, 32
 ```
+### External Models
+
+An *External Model* is a `model` that does not include an *Acceptance Scenario*.  These types of models are used to create simplified interfaces representing external components or actors.  A typical use case for an External Model is to represent a user or external messenger that is not managed by AaC.  It allows you to quickly create models without having to fully implement them.
+
+Bellow is an example External Model.
+
+```{eval-rst}
+.. literalinclude:: ../../../../python/features/alarm_clock/external.yaml
+    :language: yaml
+    :lines: 1-3
+```
+External Models can be referenced, created, and used the same as internal `model`s.
 
 ### Defining System State In Models
 
