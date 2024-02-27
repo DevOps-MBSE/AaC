@@ -3,9 +3,6 @@ from setuptools import find_packages, setup
 from src.aac import __version__
 from os import linesep
 
-
-tomllib.loads("['This parses fine with Python 3.6+']")
-
 README_FILE_PATH = "../README.md"
 
 try:
