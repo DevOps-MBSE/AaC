@@ -28,6 +28,7 @@ def run_version() -> ExecutionResult:
 
     return result
 
+print("initializing version plugin")
 
 @hookimpl
 def register_plugin() -> None:
@@ -37,6 +38,7 @@ def register_plugin() -> None:
     Returns:
         A collection of information about the plugin and what it contributes.
     """
+    print("registering version plugin")
 
     active_context = LanguageContext()
     version_aac_file = join(dirname(__file__), version_aac_file_name)
