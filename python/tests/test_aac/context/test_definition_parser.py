@@ -13,6 +13,7 @@ class TestDefinitionParser(TestCase):
         loaded_definitions = parser.load_definitions(context=context, parsed_definitions=definitions)
         self.assertTrue(loaded_definitions)
         self.assertEqual(len(loaded_definitions), 1)
+        self.assertEqual(loaded_definitions, definitions)
 
 
 
