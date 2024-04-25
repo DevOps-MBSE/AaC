@@ -7,7 +7,7 @@ from aac.execute.plugin_manager import get_plugin_manager
 from aac.execute.plugin_runner import PluginRunner
 from aac.context.definition import Definition
 from aac.in_out.parser._parse_source import parse
-from aac.context.load_definitions import load_definitions
+from aac.context.definition_parser import DefinitionParser
 
 AAC_LANG_FILE_NAME = "../aac.aac"
 AAC_LANG_FILE_PATH = join(dirname(__file__), AAC_LANG_FILE_NAME)
@@ -108,8 +108,9 @@ class LanguageContext(object):
     def parse_and_load(self, arg: str) -> list[Definition]:
         """Convenience function that parses a file or string and loads the definitions into the context."""
         parsed_definitions = parse(arg)
+        parser = DefinitionParser()
 
-        return load_definitions(self, parsed_definitions)
+        return parser.load_definitions(self, parsed_definitions)
 
     def remove_definitions(self, definitions: list[Definition]) -> None:
         """Remove the given definitions from the context."""
