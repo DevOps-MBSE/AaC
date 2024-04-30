@@ -12,7 +12,16 @@ class DefinitionParser():
     def load_definitions(  # noqa: C901
         self, context, parsed_definitions: list[Definition]
     ) -> list[Definition]:
-        """Loads the given definitions into the context and populates the instance with a python object."""
+        """
+        Loads the given definitions into the context and populates the instance with a python object.
+
+        Args:
+            context (LanguageContext): A passed in LanguageContext object.
+            parsed_definitions: (list[Definition]): The parsed contents of a definition file.
+
+        Returns:
+            The loaded definition file contents.
+        """
 
         # Maintainer note:  Yes, this function is a bit of a monster...sorry about that.
         # I wanted to keep all this stuff together because if it all works out this should be the
@@ -28,6 +37,15 @@ class DefinitionParser():
         fully_qualified_name_to_definition = {}
 
         def find_definitions_by_name(name: str) -> list[Definition]:
+            """
+            Method to find a definition by name.
+
+            Args:
+                name (str): The name of th definition being searched for.
+
+            Returns:
+                The definition with the given name.
+            """
             result = []
             for definition in context.get_definitions():
                 if definition.name == name:
@@ -40,6 +58,15 @@ class DefinitionParser():
             return result
 
         def get_location_str(value: str, lexemes: list[Lexeme]) -> str:
+            """
+            Method to find the file name and line number for a given value.
+
+            Args:
+                value (str): The value being searched for.
+                lexemes (list[Lexeme]): A list of definition Lexemes.
+
+            Returns: The file name and line number of the given value.
+            """
             lexeme = [lexeme for lexeme in lexemes if lexeme.value == value]
             location_str = (
                 "Unable to identify source and location"  # this is the 'not found' case
@@ -67,7 +94,14 @@ class DefinitionParser():
             return location_str
 
         def get_inheritance_parents(definition: Definition) -> list[Type]:
-            """Looks up the inheritance parent classes for the given definition and returns them as a list of python classes."""
+            """
+            Looks up the inheritance parent classes for the given definition and returns them as a list of python classes.
+
+            Args:
+                definition (Definition): The definition whose parent class is being searched for.
+
+            Returns: The parent class as a list of python classes.
+            """
             inheritance_parents = []
 
             if "extends" in definition.structure[definition.get_root_key()]:
@@ -279,7 +313,15 @@ class DefinitionParser():
             return result
 
         def get_defined_fields(package: str, name: str) -> list[str]:
-            """Returns a list of defined fields for the given definition."""
+            """
+            Returns a list of defined fields for the given definition.
+
+            Args:
+                package (str): The definition package.
+                name (str): The definition name.
+
+            Returns: A list of definition fields.
+            """
             result = []
             defining_definition = None
             for definition in context.get_definitions() + parsed_definitions:
@@ -312,7 +354,18 @@ class DefinitionParser():
             field_value: Any,
             lexemes: list[Lexeme],
         ) -> Any:
-            """Creates a instance of the given type and value."""
+            """
+            Creates a instance of the given type and value.
+
+            Args:
+                field_name (str): Name of the field.
+                field_type (str): Type of the field.
+                is_required (bool): Contents of the is_required field for the specified field.
+                field_value (Any): The value for the specified field.
+                lexemes (list[Lexeme]): A list of definition Lexemes.
+
+            Returns: The instance field value.
+            """
             is_list = False
             clean_field_type = field_type
             if field_type.endswith("[]"):
@@ -586,7 +639,14 @@ class DefinitionParser():
                 return instance
 
         def create_definition_instance(definition: Definition) -> Any:
-            """Populates the instance field of a given definition."""
+            """
+            Populates the instance field of a given definition.
+
+            Args:
+                definition (Definition): The given definition being populated.
+
+            Returns: The populated instance for the given definition.
+            """
             instance = None
 
             defining_definition = None
