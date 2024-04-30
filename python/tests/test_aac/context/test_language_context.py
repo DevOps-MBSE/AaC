@@ -36,33 +36,33 @@ class TestLanguageContext(TestCase):
         self.assertIn("Field", definition_names)
         self.assertIn("Primitive", definition_names)
         self.assertIn("Model", definition_names)
-    
+
     def test_get_definitions_by_name(self):
         context = LanguageContext()
         definitions = context.get_definitions_by_name("Schema")
         self.assertEqual(len(definitions), 1)
         self.assertEqual(definitions[0].name, "Schema")
         self.assertIsNotNone(definitions[0].instance)
-    
+
     def test_get_definitions_by_root(self):
         context = LanguageContext()
         definitions = context.get_definitions_by_root("schema")
         self.assertGreater(len(definitions), 1)
         definition_names = [definition.name for definition in definitions]
         self.assertIn("Schema", definition_names)
-    
+
     def test_get_defining_schema_for_root(self):
         context = LanguageContext()
         definition = context.get_defining_schema_for_root("schema")
         self.assertEqual(definition.name, "Schema")
-    
+
     def test_get_plugin_runners(self):
         context = LanguageContext()
         plugin_runners = context.get_plugin_runners()
         self.assertGreater(len(plugin_runners), 0)
         plugin_names = [runner.plugin_definition.name for runner in plugin_runners]
         self.assertIn("Version", plugin_names)
-    
+
     def test_get_primitives(self):
         context = LanguageContext()
         primitives = context.get_primitives()
@@ -78,24 +78,24 @@ class TestLanguageContext(TestCase):
         self.assertIn("directory", primitive_names)
         self.assertIn("dataref", primitive_names)
         self.assertIn("typeref", primitive_names)
-    
+
     def test_get_python_type_from_primitive(self):
         context = LanguageContext()
         self.assertEqual(context.get_python_type_from_primitive("string"), "str")
         self.assertEqual(context.get_python_type_from_primitive("int"), "int")
         self.assertEqual(context.get_python_type_from_primitive("bool"), "bool")
         self.assertEqual(context.get_python_type_from_primitive("number"), "float")
-    
+
     def test_is_extension_of(self):
         context = LanguageContext()
         definition = context.get_definitions_by_name("Schema")
         self.assertTrue(context.is_extension_of(definition[0], "aac.lang", "AacType"))
-    
+
     def test_get_definitions_of_type(self):
         context = LanguageContext()
         definitions = context.get_definitions_of_type("aac.lang", "AacType")
         self.assertGreater(len(definitions), 1)
-    
+
     def test_get_values_by_field_chain(self):
         context = LanguageContext()
         test_values = ["schema.fields.name", "enum.values", "primitive.python_type"]
