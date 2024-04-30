@@ -16,11 +16,11 @@ class DefinitionParser():
         Loads the given definitions into the context and populates the instance with a python object.
 
         Args:
-            context (LanguageContext): A passed in LanguageContext object.
+            context (LanguageContext): An instance of the active LanguageContext.
             parsed_definitions: (list[Definition]): The parsed contents of a definition file.
 
         Returns:
-            The loaded definition file contents.
+            The parsed definitions to load into the LanguageContext.
         """
 
         # Maintainer note:  Yes, this function is a bit of a monster...sorry about that.
@@ -41,7 +41,7 @@ class DefinitionParser():
             Method to find a definition by name.
 
             Args:
-                name (str): The name of th definition being searched for.
+                name (str): The name of the definition being searched for.
 
             Returns:
                 The definition with the given name.
@@ -57,17 +57,18 @@ class DefinitionParser():
                         result.append(definition)
             return result
 
-        def get_location_str(value: str, lexemes: list[Lexeme]) -> str:
+        def get_location_str(lexeme_value: str, lexemes: list[Lexeme]) -> str:
             """
-            Method to find the file name and line number for a given value.
+            Method to find the file name and line number for a requested Lexeme value.
 
             Args:
-                value (str): The value being searched for.
+                lexeme_value (str): The Lexeme to match.
                 lexemes (list[Lexeme]): A list of definition Lexemes.
 
-            Returns: The file name and line number of the given value.
+            Returns:
+                The file name and line number of the requested Lexeme value.
             """
-            lexeme = [lexeme for lexeme in lexemes if lexeme.value == value]
+            lexeme = [lexeme for lexeme in lexemes if lexeme.value == lexeme_value]
             location_str = (
                 "Unable to identify source and location"  # this is the 'not found' case
             )
@@ -95,12 +96,13 @@ class DefinitionParser():
 
         def get_inheritance_parents(definition: Definition) -> list[Type]:
             """
-            Looks up the inheritance parent classes for the given definition and returns them as a list of python classes.
+            Looks up the inheritance parent classes for the given definition and returns them as a list of Python classes.
 
             Args:
-                definition (Definition): The definition whose parent class is being searched for.
+                definition (Definition): The definition whose parent class(es) is being searched for.
 
-            Returns: The parent class as a list of python classes.
+            Returns:
+                The parent class(es) as a list of Python classes.
             """
             inheritance_parents = []
 
@@ -116,7 +118,7 @@ class DefinitionParser():
                         parent_fully_qualified_name = f"{get_python_module_name(parent_package)}.{get_python_class_name(parent_name)}"
                     except LanguageError as e:
                         raise LanguageError(
-                            f"failed to establish parent fully qualified name from parent_package {parent_package} and parent_name {parent_name}: {e.message}", get_location_str(parent_name, definition.lexemes)
+                            f"Failed to establish parent fully qualified name from parent_package {parent_package} and parent_name {parent_name}: {e.message}", get_location_str(parent_name, definition.lexemes)
                         )
 
                     if (
@@ -159,6 +161,15 @@ class DefinitionParser():
             return inheritance_parents
 
         def create_enum_class(enum_definition: Definition) -> Type:
+            """
+            Creates an enum class from a given enum definition.
+
+            Args:
+                enum_definition (Definition): An enum definition to convert to a class.
+
+            Returns:
+                The created class.
+            """
             if not enum_definition.get_root_key() == "enum":
                 raise LanguageError(
                     f"Definition {enum_definition.name} is not an enum",
@@ -203,6 +214,15 @@ class DefinitionParser():
             return instance_class
 
         def create_schema_class(schema_definition: Definition) -> Type:
+            """
+            Creates an schema class from a given schema definition.
+
+            Args:
+                schema_definition (Definition): An schema definition to convert to a class.
+
+            Returns:
+                The created class.
+            """
             instance_class = None
 
             fully_qualified_name = schema_definition.get_fully_qualified_name()
@@ -307,6 +327,16 @@ class DefinitionParser():
             return instance_class
 
         def create_object_instance(type_class: Type, fields: dict) -> Any:
+            """
+            Creates an instance object from the given fields.
+
+            Args:
+                type_class (Type): The class created from the field type.
+                fields (dict): given fields to create instances from.
+
+            Returns:
+                The created instance object.
+            """
             result = type_class()
             for field_name, field_value in fields.items():
                 setattr(result, field_name, field_value)
@@ -355,7 +385,7 @@ class DefinitionParser():
             lexemes: list[Lexeme],
         ) -> Any:
             """
-            Creates a instance of the given type and value.
+            Adds an entry to the instance attribute of a definition for the given field.
 
             Args:
                 field_name (str): Name of the field.
@@ -364,7 +394,8 @@ class DefinitionParser():
                 field_value (Any): The value for the specified field.
                 lexemes (list[Lexeme]): A list of definition Lexemes.
 
-            Returns: The instance field value.
+            Returns:
+                The instance field value.
             """
             is_list = False
             clean_field_type = field_type
@@ -645,7 +676,8 @@ class DefinitionParser():
             Args:
                 definition (Definition): The given definition being populated.
 
-            Returns: The populated instance for the given definition.
+            Returns:
+                The populated instance for the given definition.
             """
             instance = None
 
