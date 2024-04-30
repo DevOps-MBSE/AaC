@@ -1,6 +1,5 @@
 """The LanguageContext is a singleton that holds the current state of the AaC language, including all definitions and plugin runners."""
 from typing import Any, Type
-from enum import Enum, auto
 from os.path import join, dirname
 from aac.context.language_error import LanguageError
 from aac.execute.plugin_manager import get_plugin_manager

@@ -1,12 +1,14 @@
+"""Definition Parser class for AaC, contains a load_definition function that handles loading of definition files."""
 from typing import Any, Type
 from enum import Enum, auto
 from aac.context.language_error import LanguageError
-from aac.in_out.parser._parse_source import parse
 from aac.context.definition import Definition
 from aac.context.lexeme import Lexeme
 from aac.context.util import get_python_module_name, get_python_class_name
 
+
 class DefinitionParser():
+    """Definition Parser class, responsible for loading definition files."""
     def load_definitions(  # noqa: C901
         self, context, parsed_definitions: list[Definition]
     ) -> list[Definition]:
