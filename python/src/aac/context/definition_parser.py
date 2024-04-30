@@ -215,10 +215,10 @@ class DefinitionParser():
 
         def create_schema_class(schema_definition: Definition) -> Type:
             """
-            Creates an schema class from a given schema definition.
+            Creates a schema class from a given schema definition.
 
             Args:
-                schema_definition (Definition): An schema definition to convert to a class.
+                schema_definition (Definition): A schema definition to convert to a class.
 
             Returns:
                 The created class.
@@ -332,7 +332,7 @@ class DefinitionParser():
 
             Args:
                 type_class (Type): The class created from the field type.
-                fields (dict): given fields to create instances from.
+                fields (dict): Given fields to create instances from.
 
             Returns:
                 The created instance object.
