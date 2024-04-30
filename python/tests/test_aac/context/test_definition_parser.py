@@ -11,9 +11,11 @@ class TestDefinitionParser(TestCase):
         context = LanguageContext()
         definitions = parse(VALID_AAC_YAML_CONTENT)
         loaded_definitions = parser.load_definitions(context=context, parsed_definitions=definitions)
-        self.assertTrue(loaded_definitions)
+        self.assertIsNotNone(definitions[0].instance)
         self.assertEqual(len(loaded_definitions), 1)
+        self.assertEqual(definitions[0].name, "TestSchema")
         self.assertEqual(loaded_definitions, definitions)
+        self.assertEqual(len(definitions[0].instance.fields), 4)
 
 
 
