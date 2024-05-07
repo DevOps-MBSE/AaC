@@ -11,12 +11,6 @@ from aac.context.util import get_python_module_name, get_python_class_name
 class DefinitionParser():
     """Definition Parser class, responsible for loading definition files."""
 
-    primitive_name_to_py_type = {}
-    fully_qualified_name_to_definition = {}
-    schema_defs_by_root = {}
-    result: list[Definition] = []
-    context
-
     def find_definitions_by_name(self, name: str) -> list[Definition]:
         """
         Method to find a definition by name.
@@ -28,12 +22,12 @@ class DefinitionParser():
             The definition with the given name.
         """
         result = []
-        for definition in context.get_definitions():
+        for definition in self.context.get_definitions():
             if definition.name == name:
                 result.append(definition)
         # if we didn't find any definitions in the context, check the parsed definitions
         if len(result) == 0:
-            for definition in parsed_definitions:
+            for definition in self.parsed_definitions:
                 if definition.name == name:
                     result.append(definition)
         return result
@@ -104,10 +98,10 @@ class DefinitionParser():
 
                 if (
                     parent_fully_qualified_name
-                    in context.context_instance.fully_qualified_name_to_class
+                    in self.context.context_instance.fully_qualified_name_to_class
                 ):
                     inheritance_parents.append(
-                        context.context_instance.fully_qualified_name_to_class[
+                        self.context.context_instance.fully_qualified_name_to_class[
                             parent_fully_qualified_name
                         ]
                     )
@@ -116,9 +110,9 @@ class DefinitionParser():
                     parent_definition = None
                     if (
                         parent_fully_qualified_name
-                        in fully_qualified_name_to_definition
+                        in self.fully_qualified_name_to_definition
                     ):
-                        parent_definition = fully_qualified_name_to_definition[
+                        parent_definition = self.fully_qualified_name_to_definition[
                             parent_fully_qualified_name
                         ]
 
@@ -162,10 +156,10 @@ class DefinitionParser():
         fully_qualified_name = enum_definition.get_fully_qualified_name()
         if (
             fully_qualified_name
-            in context.context_instance.fully_qualified_name_to_class
+            in self.context.context_instance.fully_qualified_name_to_class
         ):
             # we've already created the class, so nothing to do here
-            return context.context_instance.fully_qualified_name_to_class[
+            return self.context.context_instance.fully_qualified_name_to_class[
                 fully_qualified_name
             ]
 
@@ -189,7 +183,7 @@ class DefinitionParser():
                 f"Failed to create Enum instance_class for {enum_definition.name}: {e.message}",
                 self.get_location_str(enum_definition.name, enum_definition.lexemes),
             )
-        context.context_instance.fully_qualified_name_to_class[
+        self.context.context_instance.fully_qualified_name_to_class[
             fully_qualified_name
         ] = instance_class
         return instance_class
@@ -209,7 +203,7 @@ class DefinitionParser():
         fully_qualified_name = schema_definition.get_fully_qualified_name()
         if schema_definition.get_root_key() == "primitive":
             # this is a primitive, so there's no structure to create...just return the python type
-            return eval(primitive_name_to_py_type[schema_definition.name])
+            return eval(self.primitive_name_to_py_typee[schema_definition.name])
         elif schema_definition.get_root_key() == "enum":
             # this is an enum, so create the enum class
             return self.create_enum_class(schema_definition)
@@ -223,10 +217,10 @@ class DefinitionParser():
 
         if (
             fully_qualified_name
-            in context.context_instance.fully_qualified_name_to_class
+            in self.context.context_instance.fully_qualified_name_to_class
         ):
             # we've already created the class, so nothing to do here
-            return context.context_instance.fully_qualified_name_to_class[
+            return self.context.context_instance.fully_qualified_name_to_class[
                 fully_qualified_name
             ]
 
@@ -250,7 +244,7 @@ class DefinitionParser():
             parent_classes = inheritance_parents  # the following causes a method resolution order (MRO) error when creating the type: [object] + inheritance_parents
             try:
                 instance_class = type(
-                    definition.get_python_class_name(),
+                    schema_definition.get_python_class_name(),
                     tuple(parent_classes),
                     {"__module__": schema_definition.get_python_module_name()},
                 )
@@ -276,7 +270,7 @@ class DefinitionParser():
                 clean_field_type = clean_field_type[: clean_field_type.find("(")]
 
             # let's make sure the type of the field is known, or create it if it's not
-            potential_definitions = find_definitions_by_name(clean_field_type)
+            potential_definitions = self.find_definitions_by_name(clean_field_type)
             if len(potential_definitions) != 1:
                 if len(potential_definitions) == 0:
                     raise LanguageError(
@@ -302,7 +296,7 @@ class DefinitionParser():
                 setattr(instance_class, field_name, None)
 
         # finally store the class in the context
-        context.context_instance.fully_qualified_name_to_class[
+        self.context.context_instance.fully_qualified_name_to_class[
             fully_qualified_name
         ] = instance_class
         return instance_class
@@ -335,7 +329,7 @@ class DefinitionParser():
         """
         result = []
         defining_definition = None
-        for definition in context.get_definitions() + parsed_definitions:
+        for definition in self.context.get_definitions() + self.parsed_definitions:
             if definition.name == name and definition.package == package:
                 defining_definition = definition
                 break
@@ -388,7 +382,7 @@ class DefinitionParser():
             clean_field_type = clean_field_type[: clean_field_type.find("(")]
 
         # now get the defining definition from the clean_field_type
-        defining_definitions = find_definitions_by_name(clean_field_type)
+        defining_definitions = self.find_definitions_by_name(clean_field_type)
         if not defining_definitions or len(defining_definitions) == 0:
             raise LanguageError(
                 f"Could not find definition for '{clean_field_type}'.",
@@ -430,7 +424,7 @@ class DefinitionParser():
             return field_value
         elif defining_definition.get_root_key() == "enum":
             # this is an enum, so ensure the parsed value aligns with the type and return it
-            enum_class = context.context_instance.fully_qualified_name_to_class[
+            enum_class = self.context.context_instance.fully_qualified_name_to_class[
                 defining_definition.get_fully_qualified_name()
             ]
             if not enum_class:
@@ -455,7 +449,7 @@ class DefinitionParser():
                 if not field_value:
                     return None
                 try:
-                    return context.create_aac_enum(
+                    return self.context.create_aac_enum(
                         defining_definition.get_fully_qualified_name(), field_value
                     )
                 except ValueError:
@@ -468,7 +462,7 @@ class DefinitionParser():
                 defining_definition.get_fully_qualified_name()
             )
 
-            instance_class = context.context_instance.fully_qualified_name_to_class[
+            instance_class = self.context.context_instance.fully_qualified_name_to_class[
                 field_fully_qualified_name
             ]
             if not instance_class:
@@ -664,7 +658,7 @@ class DefinitionParser():
         instance = None
 
         defining_definition = None
-        for item in context.get_definitions() + parsed_definitions:
+        for item in self.context.get_definitions() + self.parsed_definitions:
             if item.get_root_key() == "schema":
                 if "root" in item.structure["schema"]:
                     if (
@@ -719,31 +713,34 @@ class DefinitionParser():
         # only place where we have to deal with navigating the structure of the definitions and
         # not using the python objects.  In order for this to work, any changes in here should
         # avoid the use of he definition instance...other than actually creating it.
+        result = []
+        schema_defs_by_root = {}
         self.context = context
-        primitive_name_to_py_type = {
+        self.parsed_definitions = parsed_definitions
+        self.primitive_name_to_py_typee = {
             definition.name: definition.structure["primitive"]["python_type"]
-            for definition in parsed_definitions + context.get_definitions()
+            for definition in self.parsed_definitions + self.context.get_definitions()
             if definition.get_root_key() == "primitive"
         }
-        fully_qualified_name_to_definition = {
+        self.fully_qualified_name_to_definition = {
             definition.get_fully_qualified_name(): definition
-            for definition in parsed_definitions + context.get_definitions()
+            for definition in self.parsed_definitions + self.context.get_definitions()
             if "package" in definition.structure[definition.get_root_key()]
         }
 
 
-        for definition in context.get_definitions():
+        for definition in self.context.get_definitions():
             if definition.get_root_key() == "schema":
                 if definition.instance.root:
                     schema_defs_by_root[definition.instance.root] = definition
 
 
-        for definition in parsed_definitions:
+        for definition in self.parsed_definitions:
             # create and register the instance
             self.create_definition_instance(definition)
             result.append(definition)
-            context.context_instance.definitions.add(definition)
-            context.context_instance.fully_qualified_name_to_definition[
+            self.context.context_instance.definitions.add(definition)
+            self.context.context_instance.fully_qualified_name_to_definition[
                 f"{definition.package}.{definition.name}"
             ] = definition
 
