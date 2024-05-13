@@ -188,6 +188,44 @@ class DefinitionParser():
         ] = instance_class
         return instance_class
 
+    def add_field_to_class(self, field, instance_class):
+        field_name = field["name"]
+        field_type = field["type"]
+        is_list = False
+
+        clean_field_type = field_type
+        if field_type.endswith("[]"):
+            is_list = True
+            clean_field_type = field_type[:-2]
+        if "(" in clean_field_type:
+            clean_field_type = clean_field_type[: clean_field_type.find("(")]
+
+        # let's make sure the type of the field is known, or create it if it's not
+        potential_definitions = self.find_definitions_by_name(clean_field_type)
+        if len(potential_definitions) != 1:
+            if len(potential_definitions) == 0:
+                raise LanguageError(
+                    f"Could not find AaC definition for type {clean_field_type} while loading {schema_definition.name}",
+                    self.get_location_str(field_type, schema_definition.lexemes),
+                )
+            else:
+                raise LanguageError(
+                    f"Discovered multiple AaC definitions for type {clean_field_type} while loading {schema_definition.name}.  You may need to add a package name to differentiate.",
+                    self.get_location_str(field_type, schema_definition.lexemes),
+                )
+
+        parsed_definition = potential_definitions[0]
+
+        self.create_schema_class(parsed_definition)
+
+        # since python is dynamically typed, we really don't have to worry about setting a type when we create the field
+        # we just need to make sure a reasonable default value is used, so for us that means an empty list or None
+        # Question:  is there ever a case where we may need a dict value?
+        if is_list:
+            setattr(instance_class, field_name, [])
+        else:
+            setattr(instance_class, field_name, None)
+        return instance_class
     def create_schema_class(self, schema_definition: Definition) -> Type:
         """
         Creates a schema class from a given schema definition.
@@ -258,42 +296,43 @@ class DefinitionParser():
 
         # now add the fields to the class
         for field in schema_definition.structure["schema"]["fields"]:
-            field_name = field["name"]
-            field_type = field["type"]
-            is_list = False
+            instance_class = self.add_field_to_class(field, instance_class)
+            # field_name = field["name"]
+            # field_type = field["type"]
+            # is_list = False
 
-            clean_field_type = field_type
-            if field_type.endswith("[]"):
-                is_list = True
-                clean_field_type = field_type[:-2]
-            if "(" in clean_field_type:
-                clean_field_type = clean_field_type[: clean_field_type.find("(")]
+            # clean_field_type = field_type
+            # if field_type.endswith("[]"):
+            #     is_list = True
+            #     clean_field_type = field_type[:-2]
+            # if "(" in clean_field_type:
+            #     clean_field_type = clean_field_type[: clean_field_type.find("(")]
 
-            # let's make sure the type of the field is known, or create it if it's not
-            potential_definitions = self.find_definitions_by_name(clean_field_type)
-            if len(potential_definitions) != 1:
-                if len(potential_definitions) == 0:
-                    raise LanguageError(
-                        f"Could not find AaC definition for type {clean_field_type} while loading {schema_definition.name}",
-                        self.get_location_str(field_type, schema_definition.lexemes),
-                    )
-                else:
-                    raise LanguageError(
-                        f"Discovered multiple AaC definitions for type {clean_field_type} while loading {schema_definition.name}.  You may need to add a package name to differentiate.",
-                        self.get_location_str(field_type, schema_definition.lexemes),
-                    )
+            # # let's make sure the type of the field is known, or create it if it's not
+            # potential_definitions = self.find_definitions_by_name(clean_field_type)
+            # if len(potential_definitions) != 1:
+            #     if len(potential_definitions) == 0:
+            #         raise LanguageError(
+            #             f"Could not find AaC definition for type {clean_field_type} while loading {schema_definition.name}",
+            #             self.get_location_str(field_type, schema_definition.lexemes),
+            #         )
+            #     else:
+            #         raise LanguageError(
+            #             f"Discovered multiple AaC definitions for type {clean_field_type} while loading {schema_definition.name}.  You may need to add a package name to differentiate.",
+            #             self.get_location_str(field_type, schema_definition.lexemes),
+            #         )
 
-            parsed_definition = potential_definitions[0]
+            # parsed_definition = potential_definitions[0]
 
-            self.create_schema_class(parsed_definition)
+            # self.create_schema_class(parsed_definition)
 
-            # since python is dynamically typed, we really don't have to worry about setting a type when we create the field
-            # we just need to make sure a reasonable default value is used, so for us that means an empty list or None
-            # Question:  is there ever a case where we may need a dict value?
-            if is_list:
-                setattr(instance_class, field_name, [])
-            else:
-                setattr(instance_class, field_name, None)
+            # # since python is dynamically typed, we really don't have to worry about setting a type when we create the field
+            # # we just need to make sure a reasonable default value is used, so for us that means an empty list or None
+            # # Question:  is there ever a case where we may need a dict value?
+            # if is_list:
+            #     setattr(instance_class, field_name, [])
+            # else:
+            #     setattr(instance_class, field_name, None)
 
         # finally store the class in the context
         self.context.context_instance.fully_qualified_name_to_class[
@@ -352,6 +391,263 @@ class DefinitionParser():
             )
         return result
 
+    def primitive_check(self, is_list, field_value, is_required, lexemes, defining_definition):
+        python_type = defining_definition.structure["primitive"]["python_type"]
+        if is_list:
+            if not field_value:
+                if is_required:
+                    raise LanguageError(message=f"Missing required field {field_name}.", location=None)
+                field_value = []
+            else:
+                for item in field_value:
+                    if not isinstance(item, eval(python_type)):
+                        raise LanguageError(
+                            message=f"Invalid value for field '{field_name}'.  Expected type '{python_type}', but found '{type(item)}'",
+                            location=self.get_location_str(field_value, lexemes),
+                        )
+        else:
+            if not field_value:
+                if is_required:
+                    raise LanguageError(f"Missing required field {field_name}.")
+            else:
+                if "Any" != python_type:
+                    if not isinstance(field_value, eval(python_type)):
+                        raise LanguageError(
+                            f"Invalid value for field '{field_name}'.  Expected type '{python_type}', but found '{type(field_value)}'",
+                            self.get_location_str(field_value, lexemes),
+                        )
+        return field_value
+
+    def enum_check(self, is_list, field_value, lexemes, defining_definition):
+        enum_class = self.context.context_instance.fully_qualified_name_to_class[
+            defining_definition.get_fully_qualified_name()
+        ]
+        if not enum_class:
+            enum_class = self.create_enum_class(defining_definition)
+        if is_list:
+            result = []
+            for item in field_value:
+                if not isinstance(item, str):
+                    raise LanguageError(
+                        f"Invalid value for field '{field_name}'.  Expected type 'str', but found '{type(item)}'",
+                        self.get_location_str(field_name, lexemes),
+                    )
+                try:
+                    result.append(getattr(enum_class, item))
+                except ValueError:
+                    raise LanguageError(
+                        f"{item} is not a valid value for enum {defining_definition.name}",
+                        self.get_location_str(item, lexemes),
+                    )
+            return result
+        else:
+            if not field_value:
+                return None
+            try:
+                return self.context.create_aac_enum(
+                    defining_definition.get_fully_qualified_name(), field_value
+                )
+            except ValueError:
+                raise LanguageError(
+                    f"{field_value} is not a valid value for enum {defining_definition.name}",
+                    self.get_location_str(field_value, lexemes),
+                )
+
+    def field_instance_creator_simple(self, lexemes, field_value, defining_definition, instance, instance_class):
+        for item in field_value:
+            if not isinstance(item, dict):
+                raise LanguageError(
+                    f"Invalid parsed value for field '{field_name}'.  Expected type 'dict', but found '{type(item)}'. Value = {item}",
+                    self.get_location_str(field_name, lexemes),
+                )
+            # go through the fields and create instances for each
+            subfields = {}
+            if "fields" not in defining_definition.structure["schema"]:
+                raise LanguageError(
+                    f"Schema '{defining_definition.name}' does not contain any fields.",
+                    self.get_location_str(field_name, lexemes),
+                )
+
+            # make sure there are no undefined fields
+            defined_field_names = self.get_defined_fields(
+                defining_definition.package, defining_definition.name
+            )
+            item_field_names = [field for field in item.keys()]
+            for item_field_name in item_field_names:
+                if item_field_name not in defined_field_names:
+                    raise LanguageError(
+                        f"Found undefined field name '{item_field_name}' when expecting {defined_field_names} as defined in {defining_definition.name}",
+                        self.get_location_str(item_field_name, lexemes),
+                    )
+
+            for subfield in defining_definition.structure["schema"][
+                "fields"
+            ]:
+                subfield_name = subfield["name"]
+                subfield_type = subfield["type"]
+                subfield_is_required = False
+                if "is_required" in subfield:
+                    subfield_is_required = subfield["is_required"]
+                subfield_value = None
+                if subfield_name in item:
+                    subfield_value = item[subfield_name]
+                else:
+                    if "default" in subfield:
+                        # let's see if we need to cast the value
+                        subfield_default_str = subfield["default"]
+                        if isinstance(subfield_default_str, str):
+                            type_map = {
+                                "int": int,
+                                "number": float,
+                                "bool": lambda x: x.lower()
+                                in ("yes", "true", "t", "1"),
+                                "string": str,
+                            }
+                            if subfield_type in type_map:
+                                subfield_value = type_map[
+                                    subfield_type
+                                ](subfield_default_str)
+                        else:
+                            subfield_value = subfield_default_str
+                # we need to eliminate previously covered lexemes, so go through the list until we find subfield_name then add it and everything else
+                found = False
+                sub_lexemes = []
+                for lex in lexemes:
+                    if lex.value == subfield_name:
+                        found = True
+                        sub_lexemes.append(lex)
+                    if found:
+                        sub_lexemes.append(lex)
+                subfields[subfield_name] = self.create_field_instance(
+                    subfield_name,
+                    subfield_type,
+                    subfield_is_required,
+                    subfield_value,
+                    sub_lexemes,
+                )
+            instance.append(
+                self.create_object_instance(instance_class, subfields)
+            )
+        return instance
+
+    def field_instance_creator_complex(self, lexemes, field_value, defining_definition, instance, instance_class):
+        defined_field_names = self.get_defined_fields(
+            defining_definition.package, defining_definition.name
+        )
+        item_field_names = [field for field in field_value.keys()]
+        for item_field_name in item_field_names:
+            if item_field_name not in defined_field_names:
+                raise LanguageError(
+                    f"Found undefined field name '{item_field_name}' when expecting {defined_field_names} as defined in {defining_definition.name}",
+                    self.get_location_str(item_field_name, lexemes),
+                )
+
+        subfields = {}
+        if "fields" not in defining_definition.structure["schema"]:
+            raise LanguageError(
+                f"Schema '{defining_definition.name}' does not contain any fields.",
+                self.get_location_str(field_name, lexemes),
+            )
+        for subfield in defining_definition.structure["schema"]["fields"]:
+            subfield_name = subfield["name"]
+            subfield_type = subfield["type"]
+            subfield_is_required = False
+            if "is_required" in subfield:
+                subfield_is_required = subfield["is_required"]
+            subfield_value = None
+            if subfield_name in field_value:
+                subfield_value = field_value[subfield_name]
+            else:
+                if "default" in subfield:
+                    # let's see if we need to cast the value
+                    subfield_default_str = subfield["default"]
+                    if isinstance(subfield_default_str, str):
+                        type_map = {
+                            "int": int,
+                            "number": float,
+                            "bool": lambda x: x.lower()
+                            in ("yes", "true", "t", "1"),
+                            "string": str,
+                        }
+                        if subfield_type in type_map:
+                            subfield_value = type_map[subfield_type](
+                                subfield_default_str
+                            )
+                    else:
+                        subfield_value = subfield_default_str
+            # we need to eliminate previously covered lexemes, so go through the list until we find subfield_name then add it and everything else
+            found = False
+            sub_lexemes = []
+            for lex in lexemes:
+                if lex.value == subfield_name:
+                    found = True
+                    sub_lexemes.append(lex)
+                if found:
+                    sub_lexemes.append(lex)
+            subfields[subfield_name] = self.create_field_instance(
+                subfield_name,
+                subfield_type,
+                subfield_is_required,
+                subfield_value,
+                sub_lexemes,
+            )
+
+        instance = self.create_object_instance(instance_class, subfields)
+        return instance
+
+    def check_schema(self, is_list, field_value, is_required, lexemes, defining_definition):
+        field_fully_qualified_name = (
+                defining_definition.get_fully_qualified_name()
+            )
+        instance_class = self.context.context_instance.fully_qualified_name_to_class[
+            field_fully_qualified_name
+        ]
+        if not instance_class:
+            if defining_definition.get_root_key() == "schema":
+                instance_class = self.create_schema_class(defining_definition)
+            else:
+                raise LanguageError(
+                    f"Unable to process AaC definition of type {field_fully_qualified_name} with root {defining_definition.get_root_key()}",
+                    self.get_location_str(field_name, lexemes),
+                )
+        instance = None
+        if is_list:
+            instance = []
+            if not field_value:
+                if is_required:
+                    raise LanguageError(f"Missing required field {field_name}")
+            else:
+                if not isinstance(field_value, list):
+                    if is_required:
+                        raise LanguageError(
+                            f"Invalid parsed value for field '{field_name}'.  Expected type 'list', but found '{type(field_value)}'.  Value = {field_value}",
+                            self.get_location_str(field_name, lexemes),
+                        )
+                    else:
+                        return instance
+                instance = self.field_instance_creator_simple(lexemes, field_value, defining_definition, instance, instance_class)
+        else:
+            instance = None
+            if not field_value:
+                if is_required:
+                    raise LanguageError(
+                        f"Missing required field {field_name}",
+                        self.get_location_str(field_name, lexemes),
+                    )
+                else:
+                    return instance
+            if not isinstance(field_value, dict):
+                # this is a complex type defined by a schema, with a field value so it should be a dict
+                raise LanguageError(
+                    f"Invalid parsed value for field '{field_name}'.  Expected type 'dict', but found '{type(field_value)}'.  Value = {field_value}",
+                    self.get_location_str(field_name, lexemes),
+                )
+
+            # make sure there are no undefined fields
+            instance = self.field_instance_creator_complex(lexemes, field_value, defining_definition, instance, instance_class)
+
+        return instance
+
     def create_field_instance(
         self,
         field_name: str,
@@ -397,253 +693,15 @@ class DefinitionParser():
 
         if defining_definition.get_root_key() == "primitive":
             # this is a primitive, so ensure the parsed value aligns with the type and return it
-            python_type = defining_definition.structure["primitive"]["python_type"]
-            if is_list:
-                if not field_value:
-                    if is_required:
-                        raise LanguageError(message=f"Missing required field {field_name}.", location=None)
-                    field_value = []
-                else:
-                    for item in field_value:
-                        if not isinstance(item, eval(python_type)):
-                            raise LanguageError(
-                                message=f"Invalid value for field '{field_name}'.  Expected type '{python_type}', but found '{type(item)}'",
-                                location=self.get_location_str(field_value, lexemes),
-                            )
-            else:
-                if not field_value:
-                    if is_required:
-                        raise LanguageError(f"Missing required field {field_name}.")
-                else:
-                    if "Any" != python_type:
-                        if not isinstance(field_value, eval(python_type)):
-                            raise LanguageError(
-                                f"Invalid value for field '{field_name}'.  Expected type '{python_type}', but found '{type(field_value)}'",
-                                self.get_location_str(field_value, lexemes),
-                            )
-            return field_value
+            return self.primitive_check(is_list, field_value, is_required, lexemes, defining_definition)
+
         elif defining_definition.get_root_key() == "enum":
             # this is an enum, so ensure the parsed value aligns with the type and return it
-            enum_class = self.context.context_instance.fully_qualified_name_to_class[
-                defining_definition.get_fully_qualified_name()
-            ]
-            if not enum_class:
-                enum_class = self.create_enum_class(defining_definition)
-            if is_list:
-                result = []
-                for item in field_value:
-                    if not isinstance(item, str):
-                        raise LanguageError(
-                            f"Invalid value for field '{field_name}'.  Expected type 'str', but found '{type(item)}'",
-                            self.get_location_str(field_name, lexemes),
-                        )
-                    try:
-                        result.append(getattr(enum_class, item))
-                    except ValueError:
-                        raise LanguageError(
-                            f"{item} is not a valid value for enum {defining_definition.name}",
-                            self.get_location_str(item, lexemes),
-                        )
-                return result
-            else:
-                if not field_value:
-                    return None
-                try:
-                    return self.context.create_aac_enum(
-                        defining_definition.get_fully_qualified_name(), field_value
-                    )
-                except ValueError:
-                    raise LanguageError(
-                        f"{field_value} is not a valid value for enum {defining_definition.name}",
-                        self.get_location_str(field_value, lexemes),
-                    )
+            return self.enum_check(is_list, field_value, lexemes, defining_definition)
+
         else:  # this isn't a primitive and isn't an enum, so it must be a schema
-            field_fully_qualified_name = (
-                defining_definition.get_fully_qualified_name()
-            )
+            return self.check_schema(is_list, field_value, is_required, lexemes, defining_definition)
 
-            instance_class = self.context.context_instance.fully_qualified_name_to_class[
-                field_fully_qualified_name
-            ]
-            if not instance_class:
-                if defining_definition.get_root_key() == "schema":
-                    instance_class = self.create_schema_class(defining_definition)
-                else:
-                    raise LanguageError(
-                        f"Unable to process AaC definition of type {field_fully_qualified_name} with root {defining_definition.get_root_key()}",
-                        self.get_location_str(field_name, lexemes),
-                    )
-            instance = None
-            if is_list:
-                instance = []
-                if not field_value:
-                    if is_required:
-                        raise LanguageError(f"Missing required field {field_name}")
-                else:
-                    if not isinstance(field_value, list):
-                        if is_required:
-                            raise LanguageError(
-                                f"Invalid parsed value for field '{field_name}'.  Expected type 'list', but found '{type(field_value)}'.  Value = {field_value}",
-                                self.get_location_str(field_name, lexemes),
-                            )
-                        else:
-                            return instance
-                    for item in field_value:
-                        if not isinstance(item, dict):
-                            raise LanguageError(
-                                f"Invalid parsed value for field '{field_name}'.  Expected type 'dict', but found '{type(item)}'. Value = {item}",
-                                self.get_location_str(field_name, lexemes),
-                            )
-                        # go through the fields and create instances for each
-                        subfields = {}
-                        if "fields" not in defining_definition.structure["schema"]:
-                            raise LanguageError(
-                                f"Schema '{defining_definition.name}' does not contain any fields.",
-                                self.get_location_str(field_name, lexemes),
-                            )
-
-                        # make sure there are no undefined fields
-                        defined_field_names = self.get_defined_fields(
-                            defining_definition.package, defining_definition.name
-                        )
-                        item_field_names = [field for field in item.keys()]
-                        for item_field_name in item_field_names:
-                            if item_field_name not in defined_field_names:
-                                raise LanguageError(
-                                    f"Found undefined field name '{item_field_name}' when expecting {defined_field_names} as defined in {defining_definition.name}",
-                                    self.get_location_str(item_field_name, lexemes),
-                                )
-
-                        for subfield in defining_definition.structure["schema"][
-                            "fields"
-                        ]:
-                            subfield_name = subfield["name"]
-                            subfield_type = subfield["type"]
-                            subfield_is_required = False
-                            if "is_required" in subfield:
-                                subfield_is_required = subfield["is_required"]
-                            subfield_value = None
-                            if subfield_name in item:
-                                subfield_value = item[subfield_name]
-                            else:
-                                if "default" in subfield:
-                                    # let's see if we need to cast the value
-                                    subfield_default_str = subfield["default"]
-                                    if isinstance(subfield_default_str, str):
-                                        type_map = {
-                                            "int": int,
-                                            "number": float,
-                                            "bool": lambda x: x.lower()
-                                            in ("yes", "true", "t", "1"),
-                                            "string": str,
-                                        }
-                                        if subfield_type in type_map:
-                                            subfield_value = type_map[
-                                                subfield_type
-                                            ](subfield_default_str)
-                                    else:
-                                        subfield_value = subfield_default_str
-                            # we need to eliminate previously covered lexemes, so go through the list until we find subfield_name then add it and everything else
-                            found = False
-                            sub_lexemes = []
-                            for lex in lexemes:
-                                if lex.value == subfield_name:
-                                    found = True
-                                    sub_lexemes.append(lex)
-                                if found:
-                                    sub_lexemes.append(lex)
-                            subfields[subfield_name] = self.create_field_instance(
-                                subfield_name,
-                                subfield_type,
-                                subfield_is_required,
-                                subfield_value,
-                                sub_lexemes,
-                            )
-                        instance.append(
-                            self.create_object_instance(instance_class, subfields)
-                        )
-            else:
-                instance = None
-                if not field_value:
-                    if is_required:
-                        raise LanguageError(
-                            f"Missing required field {field_name}",
-                            self.get_location_str(field_name, lexemes),
-                        )
-                    else:
-                        return instance
-                if not isinstance(field_value, dict):
-                    # this is a complex type defined by a schema, with a field value so it should be a dict
-                    raise LanguageError(
-                        f"Invalid parsed value for field '{field_name}'.  Expected type 'dict', but found '{type(field_value)}'.  Value = {field_value}",
-                        self.get_location_str(field_name, lexemes),
-                    )
-
-                # make sure there are no undefined fields
-                defined_field_names = self.get_defined_fields(
-                    defining_definition.package, defining_definition.name
-                )
-                item_field_names = [field for field in field_value.keys()]
-                for item_field_name in item_field_names:
-                    if item_field_name not in defined_field_names:
-                        raise LanguageError(
-                            f"Found undefined field name '{item_field_name}' when expecting {defined_field_names} as defined in {defining_definition.name}",
-                            self.get_location_str(item_field_name, lexemes),
-                        )
-
-                subfields = {}
-                if "fields" not in defining_definition.structure["schema"]:
-                    raise LanguageError(
-                        f"Schema '{defining_definition.name}' does not contain any fields.",
-                        self.get_location_str(field_name, lexemes),
-                    )
-                for subfield in defining_definition.structure["schema"]["fields"]:
-                    subfield_name = subfield["name"]
-                    subfield_type = subfield["type"]
-                    subfield_is_required = False
-                    if "is_required" in subfield:
-                        subfield_is_required = subfield["is_required"]
-                    subfield_value = None
-                    if subfield_name in field_value:
-                        subfield_value = field_value[subfield_name]
-                    else:
-                        if "default" in subfield:
-                            # let's see if we need to cast the value
-                            subfield_default_str = subfield["default"]
-                            if isinstance(subfield_default_str, str):
-                                type_map = {
-                                    "int": int,
-                                    "number": float,
-                                    "bool": lambda x: x.lower()
-                                    in ("yes", "true", "t", "1"),
-                                    "string": str,
-                                }
-                                if subfield_type in type_map:
-                                    subfield_value = type_map[subfield_type](
-                                        subfield_default_str
-                                    )
-                            else:
-                                subfield_value = subfield_default_str
-                    # we need to eliminate previously covered lexemes, so go through the list until we find subfield_name then add it and everything else
-                    found = False
-                    sub_lexemes = []
-                    for lex in lexemes:
-                        if lex.value == subfield_name:
-                            found = True
-                            sub_lexemes.append(lex)
-                        if found:
-                            sub_lexemes.append(lex)
-                    subfields[subfield_name] = self.create_field_instance(
-                        subfield_name,
-                        subfield_type,
-                        subfield_is_required,
-                        subfield_value,
-                        sub_lexemes,
-                    )
-
-                instance = self.create_object_instance(instance_class, subfields)
-
-            return instance
 
     def create_definition_instance(self, definition: Definition) -> Any:
         """
