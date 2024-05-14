@@ -134,7 +134,7 @@ class DefinitionParser():
 
         return inheritance_parents
 
-    def create_enum_class(self, enum_definition: Definition) -> Type:
+    def create_enum_class(self, enum_definition: Definition) -> Enum:
         """
         Creates an enum class from a given enum definition.
 
@@ -144,12 +144,12 @@ class DefinitionParser():
         Returns:
             The created class.
         """
-        if not enum_definition.get_root_key() == "enum":
+        if enum_definition.get_root_key() != "enum":
             raise LanguageError(
                 f"Definition {enum_definition.name} is not an enum",
                 self.get_location_str(
                     enum_definition.get_root_key(), enum_definition.lexemes
-                ),
+                )
             )
 
         fully_qualified_name = enum_definition.get_fully_qualified_name()
