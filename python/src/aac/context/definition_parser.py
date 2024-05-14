@@ -257,14 +257,14 @@ class DefinitionParser():
             instance_class = type(
                 schema_definition.get_python_class_name(),
                 tuple(base_content),
-                    {"__module__": schema_definition.get_python_module_name()}
-                )
+                {"__module__": schema_definition.get_python_module_name()}
+            )
         except LanguageError as e:
             raise LanguageError(
                 f"Failed to create instance_class for {schema_definition.name}: {e.message}",
-                    self.get_location_str(
-                        schema_definition.name, schema_definition.lexemes
-                    )
+                self.get_location_str(
+                    schema_definition.name, schema_definition.lexemes
+                )
             )
         return instance_class
 
@@ -340,7 +340,8 @@ class DefinitionParser():
             package (str): The definition package.
             name (str): The definition name.
 
-        Returns: A list of definition fields.
+        Returns:
+            A list of definition fields.
         """
         result = []
         defining_definition = None
@@ -445,7 +446,7 @@ class DefinitionParser():
             return result
         else:
             if not field_value:
-                return None
+                return [None]
             try:
                 return self.context.create_aac_enum(
                     defining_definition.get_fully_qualified_name(), field_value
