@@ -237,47 +237,35 @@ class DefinitionParser():
             setattr(instance_class, field_name, None)
         return instance_class
 
-    def create_instance_class(self, inheritance_parents, schema_definition, instance_class) -> Type:
+    def create_instance_class(self, inheritance_parents: list, schema_definition: Definition) -> Type:
         """
         Method to create an instance class type for the given definition.
 
         Args:
             inheritance_parents (list[Type]): Types that this definition inherits from.
-            schema_definition (Definition): The definition being converted to an instance class
-            instance_class (Type): The instance class being created.
+            schema_definition (Definition): The definition being converted to an instance class.
 
         Returns:
             The created instance class.
         """
         if len(inheritance_parents) == 0:
-            try:
-                instance_class = type(
-                    schema_definition.get_python_class_name(),
-                    tuple([object]),
-                    {"__module__": schema_definition.get_python_module_name()},
-                )
-            except LanguageError as e:
-                raise LanguageError(
-                    f"Failed to create instance_class for {schema_definition.name}: {e.message}",
-                    self.get_location_str(
-                        schema_definition.name, schema_definition.lexemes
-                    ),
-                )
+            base_content = [object]
         else:
-            parent_classes = inheritance_parents  # the following causes a method resolution order (MRO) error when creating the type: [object] + inheritance_parents
-            try:
-                instance_class = type(
-                    schema_definition.get_python_class_name(),
-                    tuple(parent_classes),
-                    {"__module__": schema_definition.get_python_module_name()},
+            base_content = inheritance_parents
+
+        try:
+            instance_class = type(
+                schema_definition.get_python_class_name(),
+                tuple(base_content),
+                    {"__module__": schema_definition.get_python_module_name()}
                 )
-            except LanguageError as e:
-                raise LanguageError(
-                    f"Failed to create instance_class for {schema_definition.name}: {e.message}",
+        except LanguageError as e:
+            raise LanguageError(
+                f"Failed to create instance_class for {schema_definition.name}: {e.message}",
                     self.get_location_str(
                         schema_definition.name, schema_definition.lexemes
-                    ),
-                )
+                    )
+            )
         return instance_class
 
     def create_schema_class(self, schema_definition: Definition) -> Type:
@@ -290,11 +278,10 @@ class DefinitionParser():
         Returns:
             The created class.
         """
-        instance_class = None
 
         fully_qualified_name = schema_definition.get_fully_qualified_name()
         if schema_definition.get_root_key() == "primitive":
-            # this is a primitive, so there's no structure to create...just return the python type
+            # this is a primitive, so there's no structure to create, just return the python type
             return eval(self.primitive_name_to_py_typee[schema_definition.name])
         elif schema_definition.get_root_key() == "enum":
             # this is an enum, so create the enum class
@@ -304,7 +291,7 @@ class DefinitionParser():
                 f"Definition {schema_definition.name} is not a schema",
                 self.get_location_str(
                     schema_definition.get_root_key(), schema_definition.lexemes
-                ),
+                )
             )
 
         if (
@@ -316,9 +303,8 @@ class DefinitionParser():
                 fully_qualified_name
             ]
 
-        instance_class = None
         inheritance_parents = self.get_inheritance_parents(schema_definition)
-        instance_class = self.create_instance_class(inheritance_parents, schema_definition, instance_class)
+        instance_class = self.create_instance_class(inheritance_parents, schema_definition)
 
         # now add the fields to the class
         for field in schema_definition.structure["schema"]["fields"]:
