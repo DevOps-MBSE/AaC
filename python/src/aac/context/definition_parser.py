@@ -368,95 +368,6 @@ class DefinitionParser():
             )
         return result
 
-    def primitive_check(self, is_list: bool, field_value: Any, field_name: str, is_required: bool, lexemes: list, defining_definition: Definition) -> Any:
-        """
-        Method used to ensure primitive type field definitions have valid values.
-
-        Args:
-            is_list (bool): Boolean value determining if the field type is a list.
-            field_value (Any): Value stored in the field.
-            field_name (str): The name of the field.
-            is_required (bool): Boolean value determining if the field is required.
-            lexemes (List[Lexeme]): A list of definition Lexemes.
-            defining_definition (Definition): Definition containing the field being checked.
-
-        Returns:
-            The field value.
-        """
-        python_type = defining_definition.structure["primitive"]["python_type"]
-        if is_list:
-            if not field_value:
-                if is_required:
-                    raise LanguageError(message=f"Missing required field {field_name}.", location=None)
-                field_value = []
-            else:
-                for item in field_value:
-                    if not isinstance(item, eval(python_type)):
-                        raise LanguageError(
-                            message=f"Invalid value for field '{field_name}'.  Expected type '{python_type}', but found '{type(item)}'",
-                            location=self.get_location_str(field_value, lexemes),
-                        )
-        else:
-            if not field_value:
-                if is_required:
-                    raise LanguageError(f"Missing required field {field_name}.")
-            else:
-                if "Any" != python_type:
-                    if not isinstance(field_value, eval(python_type)):
-                        raise LanguageError(
-                            f"Invalid value for field '{field_name}'.  Expected type '{python_type}', but found '{type(field_value)}'",
-                            self.get_location_str(field_value, lexemes),
-                        )
-        return field_value
-
-    def enum_check(self, is_list: bool, field_value: Any, field_name: str, lexemes: list, defining_definition: Definition) -> list:
-        """
-        Method used to ensure enum type field definitions have valid values.
-
-        Args:
-            is_list (bool): Boolean value determining if the field type is a list.
-            field_value (Any): Value stored in the field.
-            field_name (str): The name of the field.
-            lexemes (List[Lexeme]): A list of definition Lexemes.
-            defining_definition (Definition): Definition containing the field being checked.
-
-        Returns:
-            The List of valid attributes
-        """
-        enum_class = self.context.context_instance.fully_qualified_name_to_class[
-            defining_definition.get_fully_qualified_name()
-        ]
-        if not enum_class:
-            enum_class = self.create_enum_class(defining_definition)
-        if is_list:
-            result = []
-            for item in field_value:
-                if not isinstance(item, str):
-                    raise LanguageError(
-                        f"Invalid value for field '{field_name}'.  Expected type 'str', but found '{type(item)}'",
-                        self.get_location_str(field_name, lexemes),
-                    )
-                try:
-                    result.append(getattr(enum_class, item))
-                except ValueError:
-                    raise LanguageError(
-                        f"{item} is not a valid value for enum {defining_definition.name}",
-                        self.get_location_str(item, lexemes),
-                    )
-            return result
-        else:
-            if not field_value:
-                return [None]
-            try:
-                return self.context.create_aac_enum(
-                    defining_definition.get_fully_qualified_name(), field_value
-                )
-            except ValueError:
-                raise LanguageError(
-                    f"{field_value} is not a valid value for enum {defining_definition.name}",
-                    self.get_location_str(field_value, lexemes),
-                )
-
     def populate_sub_fields(self, subfields: dict, defining_definition: Definition, item: dict, lexemes: list[Lexeme]) -> dict:
         """
         Method used to populate sub-fields in an instance class field.
@@ -651,7 +562,92 @@ class DefinitionParser():
             instance = self.field_instance_creator_not_list(lexemes, field_value, field_name, defining_definition, instance, instance_class)
         return instance
 
-    def check_schema(self, is_list, field_value, field_name: str, is_required, lexemes, defining_definition):
+    def primitive_field_value_check(self, is_list: bool, field_value: Any, field_name: str, is_required: bool, lexemes: list, defining_definition: Definition) -> Any:
+        """
+        Method used to ensure primitive type field definitions have valid values.
+
+        Args:
+            is_list (bool): Boolean value determining if the field type is a list.
+            field_value (Any): Value stored in the field.
+            field_name (str): The name of the field.
+            is_required (bool): Boolean value determining if the field is required.
+            lexemes (List[Lexeme]): A list of definition Lexemes.
+            defining_definition (Definition): Definition containing the field being checked.
+
+        Returns:
+            The content of the primitive type field value.
+        """
+        python_type = defining_definition.structure["primitive"]["python_type"]
+        if not field_value:
+            if is_required:
+                raise LanguageError(message=f"Missing required field {field_name}.", location=None)
+            if is_list:
+                field_value = []
+        elif is_list:
+            for item in field_value:
+                if not isinstance(item, eval(python_type)):
+                    raise LanguageError(
+                        message=f"Invalid value for field '{field_name}'.  Expected type '{python_type}', but found '{type(item)}'",
+                        location=self.get_location_str(field_value, lexemes),
+                    )
+        else:
+            if "Any" != python_type:
+                if not isinstance(field_value, eval(python_type)):
+                    raise LanguageError(
+                        f"Invalid value for field '{field_name}'.  Expected type '{python_type}', but found '{type(field_value)}'",
+                        self.get_location_str(field_value, lexemes),
+                        )
+        return field_value
+
+    def enum_field_value_check(self, is_list: bool, field_value: Any, field_name: str, lexemes: list, defining_definition: Definition) -> list:
+        """
+        Method used to ensure enum type field definitions have valid values.
+
+        Args:
+            is_list (bool): Boolean value determining if the field type is a list.
+            field_value (Any): Value stored in the field.
+            field_name (str): The name of the field.
+            lexemes (List[Lexeme]): A list of definition Lexemes.
+            defining_definition (Definition): Definition containing the field being checked.
+
+        Returns:
+            The list of valid enum field values.
+        """
+        enum_class = self.context.context_instance.fully_qualified_name_to_class[
+            defining_definition.get_fully_qualified_name()
+        ]
+        if not enum_class:
+            enum_class = self.create_enum_class(defining_definition)
+        if is_list:
+            result = []
+            for item in field_value:
+                if not isinstance(item, str):
+                    raise LanguageError(
+                        f"Invalid value for field '{field_name}'.  Expected type 'str', but found '{type(item)}'",
+                        self.get_location_str(field_name, lexemes),
+                    )
+                try:
+                    result.append(getattr(enum_class, item))
+                except ValueError:
+                    raise LanguageError(
+                        f"{item} is not a valid value for enum {defining_definition.name}",
+                        self.get_location_str(item, lexemes),
+                    )
+            return result
+        else:
+            if not field_value:
+                return [None]
+            try:
+                return self.context.create_aac_enum(
+                    defining_definition.get_fully_qualified_name(), field_value
+                )
+            except ValueError:
+                raise LanguageError(
+                    f"{field_value} is not a valid value for enum {defining_definition.name}",
+                    self.get_location_str(field_value, lexemes),
+                )
+
+    def schema_field_value_check(self, is_list, field_value, field_name: str, is_required, lexemes, defining_definition) -> list:
         """
         Method used to ensure schema type field definitions have valid values.
 
@@ -663,7 +659,7 @@ class DefinitionParser():
             defining_definition (Definition): Definition containing the field being checked.
 
         Returns:
-            The List of valid attributes
+            The List of valid schema defined field values.
         """
         field_fully_qualified_name = (
             defining_definition.get_fully_qualified_name()
@@ -728,14 +724,14 @@ class DefinitionParser():
 
         if defining_definition.get_root_key() == "primitive":
             # this is a primitive, so ensure the parsed value aligns with the type and return it
-            return self.primitive_check(is_list, field_value, field_name, is_required, lexemes, defining_definition)
+            return self.primitive_field_value_check(is_list, field_value, field_name, is_required, lexemes, defining_definition)
 
         elif defining_definition.get_root_key() == "enum":
             # this is an enum, so ensure the parsed value aligns with the type and return it
-            return self.enum_check(is_list, field_value, field_name, lexemes, defining_definition)
+            return self.enum_field_value_check(is_list, field_value, field_name, lexemes, defining_definition)
 
         else:  # this isn't a primitive and isn't an enum, so it must be a schema
-            return self.check_schema(is_list, field_value, field_name, is_required, lexemes, defining_definition)
+            return self.schema_field_value_check(is_list, field_value, field_name, is_required, lexemes, defining_definition)
 
     def create_definition_instance(self, definition: Definition) -> Any:
         """
