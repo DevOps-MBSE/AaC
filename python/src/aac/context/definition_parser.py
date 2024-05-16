@@ -596,7 +596,7 @@ class DefinitionParser():
                     raise LanguageError(
                         f"Invalid value for field '{field_name}'.  Expected type '{python_type}', but found '{type(field_value)}'",
                         self.get_location_str(field_value, lexemes),
-                        )
+                    )
         return field_value
 
     def enum_field_value_check(self, is_list: bool, field_value: Any, field_name: str, lexemes: list, defining_definition: Definition) -> list:
