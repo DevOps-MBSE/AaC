@@ -39,7 +39,6 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult: 
         defining_primitive,
     ):
         """Runs all the constraints for a given primitive."""
-
         # Check the value_to_check against the defining_primitive
         defining_primitive_instance = defining_primitive
         for constraint_assignment in defining_primitive_instance.constraints:
@@ -75,7 +74,6 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult: 
         context = LanguageContext()
         if not context.is_aac_instance(check_against, "aac.lang.Schema"):
             return
-
         # collact applicable constraints
         schema_constraints = []
         for runner in context.get_plugin_runners():
@@ -134,8 +132,15 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult: 
 
             if field_definining_schema[0].get_root_key() == "primitive":
                 # if the field is a primitive, run the primitive constraints
+
                 if is_list:
                     # if the field is a list, check each item in the list
+                    if type(getattr(check_me, field.name)) != list:
+                        raise LanguageError(
+                            f"Value of '{field.name}' was expected to be list, but was '{type(getattr(check_me, field.name))}'. File: '{source_definition.source.uri}'",
+                            # source_definition.source.uri
+                            None
+                        )
                     for item in getattr(check_me, field.name):
                         value_to_check = item
                         if value_to_check is not None:
