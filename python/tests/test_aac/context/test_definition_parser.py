@@ -19,15 +19,12 @@ class TestDefinitionParser(TestCase):
         self.assertEqual(loaded_definitions, context_definitions)
         self.assertEqual(len(context_definitions[0].instance.fields), len(loaded_definitions[0].instance.fields))
 
-
     def test_load_definitions_fail(self):
         parser = DefinitionParser()
         context = LanguageContext()
         with self.assertRaises(ParserError) as e:
             definitions = parse(INVALID_AAC_YAML_CONTENT)
             loaded_definitions = parser.load_definitions(context=context, parsed_definitions=definitions)
-
-
 
 VALID_AAC_YAML_CONTENT = """
 schema:

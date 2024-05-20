@@ -282,7 +282,7 @@ class DefinitionParser():
         fully_qualified_name = schema_definition.get_fully_qualified_name()
         if schema_definition.get_root_key() == "primitive":
             # this is a primitive, so there's no structure to create, just return the python type
-            return eval(self.primitive_name_to_py_typee[schema_definition.name])
+            return eval(self.primitive_name_to_py_type[schema_definition.name])
         elif schema_definition.get_root_key() == "enum":
             # this is an enum, so create the enum class
             return self.create_enum_class(schema_definition)
@@ -782,7 +782,7 @@ class DefinitionParser():
         return instance
 
     # Start the load_definition function code here
-    def load_definitions(  # noqa: C901
+    def load_definitions(
         self, context, parsed_definitions: list[Definition]
     ) -> list[Definition]:
         """
@@ -805,7 +805,7 @@ class DefinitionParser():
         schema_defs_by_root = {}
         self.context = context
         self.parsed_definitions = parsed_definitions
-        self.primitive_name_to_py_typee = {
+        self.primitive_name_to_py_type = {
             definition.name: definition.structure["primitive"]["python_type"]
             for definition in self.parsed_definitions + self.context.get_definitions()
             if definition.get_root_key() == "primitive"
