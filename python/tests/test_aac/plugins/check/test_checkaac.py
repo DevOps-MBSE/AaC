@@ -3,6 +3,7 @@ from typing import Tuple
 from click.testing import CliRunner
 from aac.execute.command_line import cli, initialize_cli
 from aac.execute.aac_execution_result import ExecutionStatus
+from aac.context.language_error import LanguageError
 
 import os
 import shutil
@@ -39,3 +40,16 @@ class TestCheckAaC(TestCase):
             exit_code, output_message = self.run_check_cli_command_with_args(check_args)
 
             self.assertEqual(0, exit_code, f"Expected success but failed with message: {output_message}")  # asserts the command ran successfully
+
+    def test_cli_check_bad_data(self):
+        """Test the CLI command for the check plugin."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            aac_file_path = os.path.join(os.path.dirname(__file__), "bad.aac")
+            temp_aac_file_path = os.path.join(temp_dir, "my_plugin.aac")
+            shutil.copy(aac_file_path, temp_aac_file_path)
+
+            check_args = [temp_aac_file_path]
+            # with self.assertRaises(LanguageError) as e:
+            exit_code, output_message = self.run_check_cli_command_with_args(check_args)
+            self.assertNotEqual(0, exit_code)
+            self.assertIn("was expected to be list, but was", output_message)
