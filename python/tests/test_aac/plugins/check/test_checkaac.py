@@ -49,7 +49,6 @@ class TestCheckAaC(TestCase):
             shutil.copy(aac_file_path, temp_aac_file_path)
 
             check_args = [temp_aac_file_path]
-            # with self.assertRaises(LanguageError) as e:
             exit_code, output_message = self.run_check_cli_command_with_args(check_args)
             self.assertNotEqual(0, exit_code)
             self.assertIn("was expected to be list, but was", output_message)
