@@ -4,7 +4,7 @@ plugin:
   description: |
     An AaC plugin definition used to test the gen-plugin command behavior.
   commands:
-    - name: test-command
+    - name: test-command-one
       help_text: |
         A test command used to test the gen-plugin command behavior.
       run_before:
@@ -27,9 +27,9 @@ plugin:
                 - The AaC check command is run on the schema.
               then:
                 - The check commands provides the output 'All AaC constraint checks were successful.'
-    - name: test-command_second_of_his_name
+    - name: test-command-two
       help_text: |
-        A test command, second of his name, used to test the gen-plugin command behavior.
+        A second test command used to test the gen-plugin command behavior.
       run_before:
         - plugin: Check AaC
           command: check
@@ -50,9 +50,9 @@ plugin:
                 - The AaC check command is run on the schema.
               then:
                 - The check commands provides the output 'All AaC constraint checks were successful.'
-    - name: test-command_third_of_his_name
+    - name: test-command-three
       help_text: |
-        A test command, third of his name, used to test the gen-plugin command behavior.
+        A third test command used to test the gen-plugin command behavior.
       run_before:
         - plugin: Check AaC
           command: check

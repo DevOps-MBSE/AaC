@@ -49,7 +49,7 @@ class TestGenPlugin(TestCase):
             exit_code, output_message = self.run_gen_project_cli_command_with_args(proj_args)
 
             self.assertEqual(0, exit_code, f"Expected success but failed with message: {output_message}")  # asserts the command ran successfully
-            
+
             # now create an AaC plugin file in the project src directory
             package_src_path = os.path.join(temp_dir, "src", "happy")
             os.mkdir(package_src_path)
@@ -74,6 +74,58 @@ class TestGenPlugin(TestCase):
             self.assertTrue(os.path.exists(os.path.join(package_tests_path, "my_plugin_context_test.feature")))
             self.assertTrue(os.path.exists(os.path.join(package_tests_path, "my_plugin_schema_test.feature")))
             self.assertTrue(os.path.exists(os.path.join(package_tests_path, "my_plugin_primitive_test.feature")))
+
+    def test_cli_gen_plugin_multiple_commands(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            aac_file_path = os.path.join(os.path.dirname(__file__), "my_project.aac")
+            temp_aac_file_path = os.path.join(temp_dir, "my_project.aac")
+            shutil.copy(aac_file_path, temp_aac_file_path)
+
+            proj_args = [temp_aac_file_path, "--output", temp_dir, "--no-prompt"]
+
+            exit_code, output_message = self.run_gen_project_cli_command_with_args(proj_args)
+
+            self.assertEqual(0, exit_code, f"Expected success but failed with message: {output_message}")  # asserts the command ran successfully
+
+            # now create an AaC plugin file in the project src directory
+            package_src_path = os.path.join(temp_dir, "src", "happy")
+            os.mkdir(package_src_path)
+            package_tests_path = os.path.join(temp_dir, "tests", "test_happy")
+            os.mkdir(package_tests_path)
+            plugin_file_path = os.path.join(package_src_path, "my_plugin.aac")
+
+            aac_plugin_path = os.path.join(os.path.dirname(__file__), "my_plugin.aac")
+            shutil.copy(aac_plugin_path, plugin_file_path)
+
+            plugin_args = [plugin_file_path, "--code-output", os.path.join(temp_dir, "src"), "--test-output", os.path.join(temp_dir, "tests"), "--no-prompt"]
+
+            exit_code, output_message = self.run_gen_plugin_cli_command_with_args(plugin_args)
+            self.assertEqual(0, exit_code)  # asserts the command ran successfully
+            self.assertIn("All AaC constraint checks were successful", output_message)  # asserts the command ran check successfully
+
+            self.assertTrue(os.path.exists(os.path.join(package_src_path, "my_plugin_impl.py")))
+            with open(os.path.join(package_src_path, "my_plugin_impl.py")) as impl_file:
+                impl_file_read = impl_file.read()
+                self.assertIn("def before_test_command_one_check", impl_file_read)
+                self.assertIn("def test_command_one", impl_file_read)
+                self.assertIn("def after_test_command_one_generate", impl_file_read)
+
+                self.assertIn("def before_test_command_two_check", impl_file_read)
+                self.assertIn("def test_command_two", impl_file_read)
+                self.assertIn("def after_test_command_two_generate", impl_file_read)
+
+                self.assertIn("def before_test_command_three_check", impl_file_read)
+                self.assertIn("def test_command_three", impl_file_read)
+                self.assertIn("def after_test_command_three_generate", impl_file_read)
+
+            self.assertTrue(os.path.exists(os.path.join(package_src_path, "__init__.py")))
+            with open(os.path.join(package_src_path, "__init__.py")) as init_file:
+                init_file_read = init_file.read()
+                self.assertIn("def run_test_command_one", init_file_read)
+
+                self.assertIn("def run_test_command_two", init_file_read)
+
+                self.assertIn("def run_test_command_three", init_file_read)
 
 
     def test_gen_project(self):
@@ -105,7 +157,7 @@ class TestGenPlugin(TestCase):
 
             self.assertEqual(0, exit_code, f"Expected success but failed with message: {output_message}")  # asserts the command ran successfully
             self.assertIn("All AaC constraint checks were successful", output_message)  # asserts the command ran check successfully
-            
+
             # make sure the files and directories were created
             self.assertTrue(os.path.exists(os.path.join(temp_dir, "setup.py")))
             self.assertTrue(os.path.exists(os.path.join(temp_dir, "tox.ini")))
