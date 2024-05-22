@@ -19,7 +19,7 @@ def before_{{get_python_name(command.name)}}_{{get_python_name(run_before.comman
     Run the {{run_before.plugin}} {{run_before.name}} command before the {{command.name}} command.
 
     Args:
-        {% for entry in command.input %}{{get_python_name(entry.name)}} ({{get_python_type(entry.type)}}): {{entry.description}}
+        {%- for entry in command.input -%}{{get_python_name(entry.name)}} ({{get_python_type(entry.type)}}): {{entry.description}}
         {% endfor %}
 
    Returns:
@@ -40,7 +40,7 @@ def {{get_python_name(command.name)}}({% for entry in command.input %}{{ get_pyt
     Business logic for allowing {{command.name}} command to perform {{command.help_text}}.
 
     Args:
-        {% for entry in command.input %}{{get_python_name(entry.name)}} ({{get_python_type(entry.type)}}): {{entry.description}}
+        {%- for entry in command.input -%}{{get_python_name(entry.name)}} ({{get_python_type(entry.type)}}): {{entry.description}}
         {% endfor %}
 
    Returns:
@@ -61,7 +61,7 @@ def after_{{get_python_name(command.name)}}_{{get_python_name(run_after.command)
     Run the {{run_after.plugin}} {{run_after.command}} command after the {{command.name}} command.
 
     Args:
-        {% for entry in command.input %}{{get_python_name(entry.name)}} ({{get_python_type(entry.type)}}): {{entry.description}}
+        {%- for entry in command.input -%}{{get_python_name(entry.name)}} ({{get_python_type(entry.type)}}): {{entry.description}}
         {% endfor %}
 
    Returns:
@@ -108,7 +108,7 @@ def {{get_python_name(schema_constraint.name)}}(instance: Any, definition: Defin
         instance (Any): The instance to be checked.
         definition (Definition): The definition of the instance.
         defining_schema (Any): The schema that defines the instance.
-        {% for entry in schema_constraint.arguments %}{{get_python_name(entry.name)}} ({{get_python_type(entry.type)}}): {{entry.description}}
+        {%- for entry in schema_constraint.arguments -%}{{get_python_name(entry.name)}} ({{get_python_type(entry.type)}}): {{entry.description}}
         {% endfor %}
 
    Returns:
@@ -135,7 +135,7 @@ def {{get_python_name(primitive_constraint.name)}}(value: str, type_declaration:
         type_declaration (str): The type declaration of the value.
         source (AaCFile): The source file of the value.
         location (SourceLocation): The location of the value in the source file.
-        {% for entry in primitive_constraint.arguments %}{{get_python_name(entry.name)}} ({{get_python_type(entry.type)}}): {{entry.description}}
+        {%- for entry in primitive_constraint.arguments -%}{{get_python_name(entry.name)}} ({{get_python_type(entry.type)}}): {{entry.description}}
         {% endfor %}
 
     Returns:
@@ -146,7 +146,7 @@ def {{get_python_name(primitive_constraint.name)}}(value: str, type_declaration:
     # the checker has provided you with source and location data for messages
     status = ExecutionStatus.GENERAL_FAILURE
     messages: list[ExecutionMessage] = []
-    error_msg = ExecutionMessage(message="The {{primitive_constraint.name}} constraint for the {{plugin.name}} plugin has not been implemented yet.", MessageLevel.ERROR, source=source, location=location)
+    error_msg = ExecutionMessage("The {{primitive_constraint.name}} constraint for the {{plugin.name}} plugin has not been implemented yet.", MessageLevel.ERROR, source=source, location=location)
     messages.append(error_msg)
 
     return ExecutionResult(plugin_name, "{{primitive_constraint.name}}", status, messages)
