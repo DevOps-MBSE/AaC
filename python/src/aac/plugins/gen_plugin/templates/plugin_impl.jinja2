@@ -19,8 +19,8 @@ def before_{{get_python_name(command.name)}}_{{get_python_name(run_before.comman
     Run the {{run_before.plugin}} {{run_before.name}} command before the {{command.name}} command.
 
     Args:
-        {%- for entry in command.input -%}{{get_python_name(entry.name)}} ({{get_python_type(entry.type)}}): {{entry.description}}
-        {% endfor %}
+        {% for entry in command.input %}{{get_python_name(entry.name)}} ({{get_python_type(entry.type)}}): {{entry.description}}
+        {%- endfor %}
 
    Returns:
         The results of the execution of the {{command.name}} command.
@@ -40,8 +40,8 @@ def {{get_python_name(command.name)}}({% for entry in command.input %}{{ get_pyt
     Business logic for allowing {{command.name}} command to perform {{command.help_text}}.
 
     Args:
-        {%- for entry in command.input -%}{{get_python_name(entry.name)}} ({{get_python_type(entry.type)}}): {{entry.description}}
-        {% endfor %}
+        {% for entry in command.input %}{{get_python_name(entry.name)}} ({{get_python_type(entry.type)}}): {{entry.description}}
+        {%- endfor %}
 
    Returns:
         The results of the execution of the {{command.name}} command.
@@ -61,8 +61,8 @@ def after_{{get_python_name(command.name)}}_{{get_python_name(run_after.command)
     Run the {{run_after.plugin}} {{run_after.command}} command after the {{command.name}} command.
 
     Args:
-        {%- for entry in command.input -%}{{get_python_name(entry.name)}} ({{get_python_type(entry.type)}}): {{entry.description}}
-        {% endfor %}
+        {% for entry in command.input %}{{get_python_name(entry.name)}} ({{get_python_type(entry.type)}}): {{entry.description}}
+        {%- endfor %}
 
    Returns:
         The results of the execution of the {{run_after.name}} command.
@@ -108,8 +108,8 @@ def {{get_python_name(schema_constraint.name)}}(instance: Any, definition: Defin
         instance (Any): The instance to be checked.
         definition (Definition): The definition of the instance.
         defining_schema (Any): The schema that defines the instance.
-        {%- for entry in schema_constraint.arguments -%}{{get_python_name(entry.name)}} ({{get_python_type(entry.type)}}): {{entry.description}}
-        {% endfor %}
+        {% for entry in schema_constraint.arguments %}{{get_python_name(entry.name)}} ({{get_python_type(entry.type)}}): {{entry.description}}
+        {%- endfor %}
 
    Returns:
         The results of the execution of the {{schema_constraint.name}} command.
@@ -135,8 +135,8 @@ def {{get_python_name(primitive_constraint.name)}}(value: str, type_declaration:
         type_declaration (str): The type declaration of the value.
         source (AaCFile): The source file of the value.
         location (SourceLocation): The location of the value in the source file.
-        {%- for entry in primitive_constraint.arguments -%}{{get_python_name(entry.name)}} ({{get_python_type(entry.type)}}): {{entry.description}}
-        {% endfor %}
+        {% for entry in primitive_constraint.arguments %}{{get_python_name(entry.name)}} ({{get_python_type(entry.type)}}): {{entry.description}}
+        {%- endfor %}
 
     Returns:
         The results of the execution of the {{primitive_constraint.name}} command.
