@@ -31,9 +31,10 @@ from {{plugin.package}}.{{get_python_name(plugin.name)}}_impl import plugin_name
 {% if plugin.primitive_constraints | length > 0 %}{% for primitive_constraint in plugin.primitive_constraints %}from {{plugin.package}}.{{get_python_name(plugin.name)}}_impl import {{get_python_name(primitive_constraint.name)}}
 {% endfor %}{% endif %}
 
+{%set command_list = []%}
 {% for command in plugin.commands%}
-{% if command.run_before | length > 0 %}{% for run_before in command.run_before %}from {{get_package_from_plugin(run_before.plugin)}} import run_{{get_python_name(run_before.command)}}{% endfor %}{% endif %}
-{% if command.run_after | length > 0 %}{% for run_after in command.run_after %}from {{get_package_from_plugin(run_after.plugin)}} import run_{{get_python_name(run_after.command)}}{% endfor %}{% endif %}
+{% if command.run_before | length > 0%}{% for run_before in command.run_before %}{%if (get_python_name(run_before.plugin), get_python_name(run_before.command)) not in command_list%}from {{get_package_from_plugin(run_before.plugin)}} import run_{{get_python_name(run_before.command)}}{% set command_list = command_list.append((get_python_name(run_before.plugin), get_python_name(run_before.command))) %}{% endif %}{% endfor %}{% endif %}
+{% if command.run_after | length > 0 %}{% for run_after in command.run_after %}{%if (get_python_name(run_after.plugin), get_python_name(run_after.command)) not in command_list%}from {{get_package_from_plugin(run_after.plugin)}} import run_{{get_python_name(run_after.command)}}{% set command_list = command_list.append((get_python_name(run_after.plugin), get_python_name(run_after.command)))%}{% endif %}{% endfor %}{% endif %}
 {% endfor %}
 {{get_python_name(plugin.name)}}_aac_file_name = "{{get_python_name(plugin.name)}}.aac"
 
