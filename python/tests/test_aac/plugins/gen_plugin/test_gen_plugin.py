@@ -126,6 +126,9 @@ class TestGenPlugin(TestCase):
                 self.assertIn("def run_test_command_two", init_file_read)
 
                 self.assertIn("def run_test_command_three", init_file_read)
+            self.assertTrue(os.path.exists(os.path.join(package_tests_path, "my_plugin_command_test.feature")))
+            self.assertTrue(os.path.exists(os.path.join(package_tests_path, "my_plugin_command_test_two.feature")))
+            self.assertTrue(os.path.exists(os.path.join(package_tests_path, "my_plugin_command_test_three.feature")))
 
 
     def test_gen_project(self):

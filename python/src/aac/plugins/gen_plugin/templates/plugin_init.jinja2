@@ -52,7 +52,7 @@ def run_{{get_python_name(command.name)}}({% for entry in command.input %}{{ get
         {% endfor %}
 
    Returns:
-        The results of the execution of the plugin command.
+        The results of the execution of the plugin {{command.name}} command.
     """
 
     {% if command.enable_cache %}
@@ -99,9 +99,7 @@ def run_{{get_python_name(ctx_constraint.name)}}(context: LanguageContext) -> Ex
 
     Returns:
         The results of the execution of the plugin context constraint.
-
     """
-
     return {{get_python_name(ctx_constraint.name)}}(context)
 {% endfor %}
 

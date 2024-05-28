@@ -41,9 +41,9 @@ plugin:
           type: file
           description: The path to the architecture file with the plugin definition.
       acceptance:
-        - name: Command test
+        - name: Command test two
           scenarios:
-            - name: Simple Command Test
+            - name: Simple Command Test Two
               given:
                 - An AaC file containing schemas with no extra fields.
               when:
@@ -64,9 +64,9 @@ plugin:
           type: file
           description: The path to the architecture file with the plugin definition.
       acceptance:
-        - name: Command test
+        - name: Command test three
           scenarios:
-            - name: Simple Command Test
+            - name: Simple Command Test Three
               given:
                 - An AaC file containing schemas with no extra fields.
               when:
