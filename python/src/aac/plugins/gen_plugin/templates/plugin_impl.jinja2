@@ -37,8 +37,7 @@ def before_{{get_python_name(command.name)}}_{{get_python_name(run_before.comman
 
 def {{get_python_name(command.name)}}({% for entry in command.input %}{{ get_python_name(entry.name) }}{% if not loop.last %}, {% endif %}{% endfor %}) -> ExecutionResult:
     """
-    Business logic for allowing {{command.name}} command to perform {{command.help_text}}.
-
+    Business logic for allowing {{command.name}} command to perform {{command.help_text}}
     Args:
         {% for entry in command.input %}{{get_python_name(entry.name)}} ({{get_python_type(entry.type)}}): {{entry.description}}
         {%- endfor %}
