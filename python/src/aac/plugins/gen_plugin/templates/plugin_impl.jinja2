@@ -23,7 +23,7 @@ def before_{{get_python_name(command.name)}}_{{get_python_name(run_before.comman
         {%- endfor %}
 
    Returns:
-        The results of the execution of the {{run_before.name}} command.
+        The results of the execution of the {{run_before.command}} command.
     """
 
     # TODO: configure and call the {{run_before.command}} command using {{command.name}} command inputs
@@ -64,7 +64,7 @@ def after_{{get_python_name(command.name)}}_{{get_python_name(run_after.command)
         {%- endfor %}
 
    Returns:
-        The results of the execution of the {{run_after.name}} command.
+        The results of the execution of the {{run_after.command}} command.
     """
 
     # TODO: configure and call the {{run_after.command}} command using {{command.name}} command inputs
@@ -108,7 +108,7 @@ def {{get_python_name(schema_constraint.name)}}(instance: Any, definition: Defin
         definition (Definition): The definition of the instance.
         defining_schema (Any): The schema that defines the instance.
         {% for entry in schema_constraint.arguments %}{{get_python_name(entry.name)}} ({{get_python_type(entry.type)}}): {{entry.description}}
-        {%- endfor %}
+        {% endfor %}
 
    Returns:
         The results of the execution of the {{schema_constraint.name}} command.
@@ -135,7 +135,7 @@ def {{get_python_name(primitive_constraint.name)}}(value: str, type_declaration:
         source (AaCFile): The source file of the value.
         location (SourceLocation): The location of the value in the source file.
         {% for entry in primitive_constraint.arguments %}{{get_python_name(entry.name)}} ({{get_python_type(entry.type)}}): {{entry.description}}
-        {%- endfor %}
+        {% endfor %}
 
     Returns:
         The results of the execution of the {{primitive_constraint.name}} command.
@@ -149,4 +149,4 @@ def {{get_python_name(primitive_constraint.name)}}(value: str, type_declaration:
     messages.append(error_msg)
 
     return ExecutionResult(plugin_name, "{{primitive_constraint.name}}", status, messages)
-    {% endfor%}{% endif %}
+    {% endfor %}{% endif %}
