@@ -10,39 +10,38 @@ from aac.context.definition import Definition
 from aac.context.language_context import LanguageContext
 from aac.context.source_location import SourceLocation
 from aac.execute import hookimpl
-from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus, ExecutionMessage
-from aac.execute.plugin_runner import AacCommand
+from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus
 from aac.execute.plugin_runner import PluginRunner
 from aac.in_out.files.aac_file import AaCFile
 
-{% set comma_joiner = joiner(", ") %}
+{%- set comma_joiner = joiner(", ") -%}
 {% if plugin.commands | length > 0 %}
-from {{plugin.package}}.{{get_python_name(plugin.name)}}_impl import plugin_name, {% for command in plugin.commands %}{{comma_joiner()}}{{get_python_name(command.name)}}{% if command.run_before | length > 0 %}{% for before in command.run_before %}{{  comma_joiner() }}before_{{get_python_name(command.name)}}_{{get_python_name(before.command)}}{% endfor %}{% endif %}{% if command.run_after | length > 0 %}{% for after in command.run_after %}{{  comma_joiner() }}after_{{get_python_name(command.name)}}_{{get_python_name(after.command)}}{% endfor %}{% endif %}{% endfor %}
-{% else %}
+from {{plugin.package}}.{{get_python_name(plugin.name)}}_impl import plugin_name, {%- for command in plugin.commands -%}{{comma_joiner()}}{{get_python_name(command.name)}}{% if command.run_before | length > 0 %}{%- for before in command.run_before -%}{{  comma_joiner() }}before_{{get_python_name(command.name)}}_{{get_python_name(before.command)}}{%- endfor -%}{%- endif %}{% if command.run_after | length > 0 %}{%- for after in command.run_after -%}{{  comma_joiner() }}after_{{get_python_name(command.name)}}_{{get_python_name(after.command)}}{%- endfor -%}{% endif -%}{%- endfor %}
+{%- else -%}
 from {{plugin.package}}.{{get_python_name(plugin.name)}}_impl import plugin_name
 {% endif %}
 
-{% if plugin.context_constraints | length > 0 %}{% for ctx_constraint in plugin.context_constraints %}from {{plugin.package}}.{{get_python_name(plugin.name)}}_impl import {{get_python_name(ctx_constraint.name)}}
-{% endfor %}{% endif %}
+{% if plugin.context_constraints | length > 0 %}{%- for ctx_constraint in plugin.context_constraints -%}from {{plugin.package}}.{{get_python_name(plugin.name)}}_impl import {{get_python_name(ctx_constraint.name)}}
+{%- endfor -%}{% endif %}
 
-{% if plugin.schema_constraints | length > 0 %}{% for schema_constraint in plugin.schema_constraints %}from {{plugin.package}}.{{get_python_name(plugin.name)}}_impl import {{get_python_name(schema_constraint.name)}}
-{% endfor %}{% endif %}
+{% if plugin.schema_constraints | length > 0 %}{%- for schema_constraint in plugin.schema_constraints -%}from {{plugin.package}}.{{get_python_name(plugin.name)}}_impl import {{get_python_name(schema_constraint.name)}}
+{%- endfor -%}{% endif %}
 
 {% if plugin.primitive_constraints | length > 0 %}{% for primitive_constraint in plugin.primitive_constraints %}from {{plugin.package}}.{{get_python_name(plugin.name)}}_impl import {{get_python_name(primitive_constraint.name)}}
-{% endfor %}{% endif %}
+{%- endfor -%}{% endif %}
 
 {%set command_list = []%}
-{% for command in plugin.commands%}
+{%- for command in plugin.commands -%}
 {% if command.run_before | length > 0%}{% for run_before in command.run_before %}{%if (get_python_name(run_before.plugin), get_python_name(run_before.command)) not in command_list%}from {{get_package_from_plugin(run_before.plugin)}} import run_{{get_python_name(run_before.command)}}{% set command_list = command_list.append((get_python_name(run_before.plugin), get_python_name(run_before.command))) %}{% endif %}{% endfor %}{% endif %}
 {% if command.run_after | length > 0 %}{% for run_after in command.run_after %}{%if (get_python_name(run_after.plugin), get_python_name(run_after.command)) not in command_list%}from {{get_package_from_plugin(run_after.plugin)}} import run_{{get_python_name(run_after.command)}}{% set command_list = command_list.append((get_python_name(run_after.plugin), get_python_name(run_after.command)))%}{% endif %}{% endfor %}{% endif %}
-{% endfor %}
+{%- endfor -%}
 {{get_python_name(plugin.name)}}_aac_file_name = "{{get_python_name(plugin.name)}}.aac"
 
-{% for command in plugin.commands %}
-{% if command.enable_cache %}{{get_python_name(command.name)}}_cache: dict[tuple, ExecutionResult] = {}{% endif %}
-{% endfor %}
+{%- for command in plugin.commands -%}
+{% if command.enable_cache %}{{get_python_name(command.name)}}_cache: dict[tuple, ExecutionResult] = {}{%- endif -%}
+{%- endfor -%}
 
-{% for command in plugin.commands %}
+{%- for command in plugin.commands %}
 def run_{{get_python_name(command.name)}}({% for entry in command.input %}{{ get_python_name(entry.name) }}: {{get_python_type(entry.type)}}{% if not loop.last %}, {% endif %}{% endfor %}) -> ExecutionResult:
     """
     {{command.help_text}}
