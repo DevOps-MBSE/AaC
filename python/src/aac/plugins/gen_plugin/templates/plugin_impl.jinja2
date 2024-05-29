@@ -16,7 +16,7 @@ plugin_name = "{{plugin.name}}"
 {% for command in plugin.commands %}{% if command.run_before | length > 0 %}{% for run_before in command.run_before %}
 def before_{{get_python_name(command.name)}}_{{get_python_name(run_before.command)}}({% for entry in command.input %}{{ get_python_name(entry.name) }}: {{get_python_type(entry.type)}}{% if not loop.last %}, {% endif %}{% endfor %}, run_{{get_python_name(run_before.command)}}) -> ExecutionResult:
     """
-    Run the {{run_before.plugin}} {{run_before.name}} command before the {{command.name}} command.
+    Run the {{run_before.plugin}} {{run_before.command}} command before the {{command.name}} command.
 
     Args:
         {% for entry in command.input %}{{get_python_name(entry.name)}} ({{get_python_type(entry.type)}}): {{entry.description}}
