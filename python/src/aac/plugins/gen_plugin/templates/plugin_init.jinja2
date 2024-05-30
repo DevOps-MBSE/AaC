@@ -141,7 +141,6 @@ def run_{{get_python_name(primitive_constraint.name)}}(value: str, type_declarat
 
     Returns:
         The results of the execution of the plugin primitive constraint.
-
     """
     {% if primitive_constraint.arguments | length > 0 %}
     argument_copy = deepcopy(arguments)
