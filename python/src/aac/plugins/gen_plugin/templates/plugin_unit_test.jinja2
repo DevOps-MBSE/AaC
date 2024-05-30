@@ -1,8 +1,9 @@
-from aac.execute.aac_execution_result import ExecutionStatus
-from aac.execute.command_line import cli, initialize_cli
 from click.testing import CliRunner
 from typing import Tuple
 from unittest import TestCase
+
+from aac.execute.aac_execution_result import ExecutionStatus
+from aac.execute.command_line import cli, initialize_cli
 
 {% set comma_joiner = joiner(", ") -%}
 {% if plugin.commands | length > 0 -%}
