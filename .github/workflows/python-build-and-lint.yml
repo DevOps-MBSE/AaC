@@ -52,7 +52,6 @@ jobs:
 
       - name: Build PDF
         run: |
-          pip install sphinx-simplepdf
           make -C ../docs/ simplepdf
 
       - name: Upload PDF
@@ -60,4 +59,4 @@ jobs:
         with:
           name: aac-documentation-pdf
           path: |
-            python/docs/docs/simplepdf/Architecture-as-Code.pdf
+            ./docs/docs/simplepdf/Architecture-as-Code.pdf
