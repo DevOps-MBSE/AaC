@@ -49,3 +49,8 @@ jobs:
           path: |
             python/docs/doc_artifacts/api
             python/docs/doc_artifacts/project_documentation
+
+      - name: Build PDF
+        run: |
+          pip install sphinx-simplepdf
+          make -C ../docs/ simplepdf
