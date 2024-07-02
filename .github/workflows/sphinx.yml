@@ -51,15 +51,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deploy
         uses: actions/deploy-pages@v2
-
-      - name: Build PDF
-        run: |
-          make -C ../docs/ simplepdf
-
-      - name: Upload PDF
-        uses: actions/upload-artifact@v3
-        with:
-          name: aac-documentation-pdf
-          path: |
-            docs/docs/simplepdf/Architecture-as-Code.pdf
-
