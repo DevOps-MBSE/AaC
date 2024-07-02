@@ -59,4 +59,4 @@ jobs:
         with:
           name: aac-documentation-pdf
           path: |
-            ./docs/docs/simplepdf/Architecture-as-Code.pdf
+            ../docs/docs/simplepdf/Architecture-as-Code.pdf
