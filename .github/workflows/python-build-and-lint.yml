@@ -49,3 +49,14 @@ jobs:
           path: |
             python/docs/doc_artifacts/api
             python/docs/doc_artifacts/project_documentation
+
+      - name: Build PDF
+        run: |
+          make -C ../docs/ simplepdf
+
+      - name: Upload PDF
+        uses: actions/upload-artifact@v3
+        with:
+          name: aac-documentation-pdf
+          path: |
+            docs/docs/simplepdf/Architecture-as-Code.pdf
