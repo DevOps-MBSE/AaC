@@ -7,7 +7,7 @@
 {{ plugin.description }}
 
 for command in plugin.commands
-## {{ command.name }}
+## {{ title(command.name) }}
 ```bash
 aac {{ command.name }} example_file.aac
 ```
@@ -25,8 +25,9 @@ for argument in command.input
 ## Help
 ```bash
 <!-- Include a terminal output of executing the help flag on the plugin command -->
+```
 
 ## Examples
-For viewing example input and output of executing this command, view [{{ title(argument)}}](associated example page)
+For viewing example input and output of executing this command, view [{{ title(argument)}}](command example page)
 <!-- Be sure to include basic execution, complex execution using any optional flags, and failures of command execution. -->
 // end command for loop
