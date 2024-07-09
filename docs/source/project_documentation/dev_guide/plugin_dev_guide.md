@@ -43,7 +43,7 @@ Options:
                      impact to existing files.
   -h, --help         Show this message and exit.
 ```
-*Note:  AaC generation attempts to be non-distructive.  Each generation template definition recognized what output should be fully generated and what may be user modified.  If any file is being generated where an existing file already exists, the generator will create a backup of the original prior to writing the new file.  If a user modifiable file is to be generated but already exists, the new file will be created as an evaluation file for the user to consider without impacting the existing file.  Generator commends can adjust this behavior using `--force-overwrite` and `--evaluate` flags.*
+*Note:  AaC generation attempts to be non-destructive.  Each generation template definition recognized what output should be fully generated and what may be user modified.  If any file is being generated where an existing file already exists, the generator will create a backup of the original prior to writing the new file.  If a user modifiable file is to be generated but already exists, the new file will be created as an evaluation file for the user to consider without impacting the existing file.  Generator commends can adjust this behavior using `--force-overwrite` and `--evaluate` flags.*
 
 This will create a project structure that looks like this:
 
@@ -55,6 +55,8 @@ This will create a project structure that looks like this:
 ├── tests
 └── tox.ini
 ```
+
+*Note: AaC is in the process of updating its build chain to utilize the new preferred Python project file, `pyproject.toml`, to handle the project configuration and declaration. The `gen-project` command will be updated to produce this file and other necessary project infrastructure changes. For more information on this, view the [Standalone Plugin documentation](#standalone-plugins).*
 
 ## Generating AaC Plugins (Gen-Plugin Command)
 
@@ -82,7 +84,35 @@ Options:
   -h, --help          Show this message and exit.
 ```
 
-While the `gen-plugin` command will attempt to sort out directory paths for you if not provided, it's often simplest to just provide `--code-output` and `--test-output` to ensure the generated code is placed where you want it.  Currently the `gen-plugin` command doesn't output documentation, but the option is in place for future use.
+While the `gen-plugin` command will attempt to sort out directory paths for you if not provided, it's often simplest to just provide `--code-output` and `--test-output` to ensure the generated code is placed where you want it.  Currently the `gen-plugin` command does not output documentation, but the functionality is currently under development. The `--doc-output` will create plugin documentation outlines that mirror current plugin documentation pages as seen in the [Plugins Guide](../plugins/plugins_index.md).
+
+#### Standalone Plugins
+If you are creating plugins external to the core Aac tool to provide additional functionality, commands, and constraints for your team's use, then there are some additional infrastructure changes that one must, currently, manually implement until we have been able to update both the `gen-project` and `gen-plugin` commands to make the appropriate changes for supporting standalone plugins utilizing the more recent build chain implementation.
+
+These changes include manually updating the currently generated `setup.py` to have the `entry_points` include the new plugin. Or, if manually implementing a `pyproject.toml` file to use the updated Python standard, ensure the `[project.entry-points."aac"]` is configured to include the new plugin. And ensure you set the package discovery of your project file.
+```pyproject.toml
+[tool.setuptools.packages.find]
+where = ["src"]
+exclude = ["tests"]
+```
+```setup.py
+packages=find_packages(where="src")
+```
+
+If you are using the `pyproject.toml` file, a `MANIFEST.in` will have to be included with the following content:
+```
+graft src
+graft tests
+
+include tox.ini
+include src/rest-api/rest_api.aac
+```
+
+And you will have to add the following lines to your `tox.ini` under the `[tox]` section:
+```
+isolated_build = True
+skipsdist = True
+```
 
 #### Input of Gen-Plugin
 
@@ -119,7 +149,7 @@ The output of the `gen-plugin` command will be some corresponding plugin files t
 
 The generated files are:
 
-```markdown
+```console
 └── src
 |   └── aac_example
 |       └── plugins
