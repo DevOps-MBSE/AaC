@@ -22,7 +22,7 @@ req:
 
 ---
 req:
-  name: Square Root of Zero
+  name: Negative Square Root
   id: "SQRT-2"
   shall:  When receiving a square root message with a negative value, the calculator shall respond with an error.
   parents:
