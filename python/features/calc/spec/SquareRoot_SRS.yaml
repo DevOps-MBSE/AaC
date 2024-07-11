@@ -8,6 +8,7 @@ req_spec:
   requirements:
     - "SQRT-1"
     - "SQRT-2"
+
 ---
 req:
   name: Square Root
@@ -21,7 +22,7 @@ req:
 
 ---
 req:
-  name: Square Root
+  name: Square Root of Zero
   id: "SQRT-2"
   shall:  When receiving a square root message with a negative value, the calculator shall respond with an error.
   parents:
