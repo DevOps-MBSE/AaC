@@ -7,11 +7,23 @@ req_spec:
   description:  This is a representative Software Requirements Specification for a module called Square Root.
   requirements:
     - "SQRT-1"
+    - "SQRT-2"
 ---
 req:
   name: Square Root
   id: "SQRT-1"
   shall:  When receiving a square root message, the calculator shall respond with the square root of the value.
+  parents:
+    - "CM-1"
+  attributes:
+    - name: TADI
+      value: Test
+
+---
+req:
+  name: Square Root
+  id: "SQRT-2"
+  shall:  When receiving a square root message with a negative value, the calculator shall respond with an error.
   parents:
     - "CM-1"
   attributes:
