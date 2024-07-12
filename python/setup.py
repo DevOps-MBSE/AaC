@@ -38,7 +38,7 @@ runtime_dependencies = [
 development_dependencies = [
     "wheel ~= 0.42.0",
     "pip-tools >= 6.9.0",
-    "tomli < 2.0.0",
+    "tomli >= 2.0.1; python_version < '3.11'",
     "platformdirs >= 2.4",
     "coverage >= 6.0",
     "mccabe >= 0.6.1",
@@ -55,7 +55,7 @@ development_dependencies = [
 ]
 
 documentation_dependencies = [
-    "sphinx >= 6.1.3",
+    "sphinx >= 7.3.7",
     "sphinxcontrib-applehelp ~= 1.0.2",
     "sphinxcontrib-devhelp ~= 1.0.2",
     "sphinxcontrib-htmlhelp ~= 2.0.0",
