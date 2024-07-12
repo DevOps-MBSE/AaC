@@ -18,6 +18,7 @@ req:
     - "CALC-3"
   children:
     - "SQRT-1"
+    - "SQRT-2"
     - "POW-1"
   attributes:
     - name: TADI

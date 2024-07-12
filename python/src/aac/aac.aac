@@ -946,6 +946,11 @@ schema:
       description: |
         Tags associated with the scenario. These could be used to group similar
         scenarios into categories like "front-end", "back-end", etc.
+    - name: requirements
+      type: dataref(req.id)[]
+      description: |
+        A list of requirements relevant to the scenario enabling direct trace
+        from requirement to acceptance test specification.
     - name: given
       type: string[]
       description: |
