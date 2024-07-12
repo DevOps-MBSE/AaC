@@ -38,3 +38,13 @@ model:
               then:
                 - The MathRequest function is executed against the values and a result is calculated
                 - The user gets a MathResponse response with the calculated value
+            - name: Request handler issues error for square root command with negative value
+              requirements:
+                - "SQRT-2"
+              given:
+                - The MathMessageHandler is running
+              when:
+                - The user makes a square root request with MathRequest
+              then:
+                - The user gets a MathResponse response with the error
+
