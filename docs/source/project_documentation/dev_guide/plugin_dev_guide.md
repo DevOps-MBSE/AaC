@@ -87,26 +87,19 @@ Options:
 While the `gen-plugin` command will attempt to sort out directory paths for you if not provided, it's often simplest to just provide `--code-output` and `--test-output` to ensure the generated code is placed where you want it.  Currently the `gen-plugin` command does not output documentation, but the functionality is currently under development. The `--doc-output` will create plugin documentation outlines that mirror current plugin documentation pages as seen in the [Plugins Guide](../plugins/plugins_index.md).
 
 #### Standalone Plugins
+
 If you are creating plugins external to the core AaC tool to provide additional functionality, commands, and/or constraints for your team's use, then there are some additional infrastructure changes that one must, currently, manually implement until we have been able to update both the `gen-project` and `gen-plugin` commands to make the appropriate changes for supporting standalone plugins utilizing the more recent build chain implementation.
 
 These changes include manually updating the currently generated `setup.py` to have the `entry_points` include the new plugin. Or, if manually implementing a `pyproject.toml` file to use the updated Python standard, ensure the `[project.entry-points."aac"]` is configured to include the new plugin. And ensure you set the package discovery of your project file.
 
-*pyproject.toml entry*
-```pyproject.toml
+##### `pyproject.toml` Configurations
+```python
 [project.entry-points."aac"]
 rest-api = "rest_api"
 
 [tool.setuptools.packages.find]
 where = ["src"]
 exclude = ["tests"]
-```
-*setup.py entry*
-```setup.py
-entry_points={
-    "aac": ["eval-req=aac_req_qa"],
-},
-
-packages=find_packages(where="src")
 ```
 
 If you are using the `pyproject.toml` file, a `MANIFEST.in` will have to be included with the following content:
@@ -122,6 +115,16 @@ And you will have to add the following lines to your `tox.ini` under the `[tox]`
 ```
 isolated_build = True
 skipsdist = True
+```
+
+##### `setup.py` Configurations
+
+```python
+entry_points={
+    "aac": ["eval-req=aac_req_qa"],
+},
+
+packages=find_packages(where="src")
 ```
 
 #### Input of Gen-Plugin
