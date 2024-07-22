@@ -18,13 +18,4 @@ The `--verbose` argument will output the results of all constraints evaluated, r
 
 ## Help
 
-```bash
-$ aac check -h
-Usage: aac check [OPTIONS] AAC_FILE
-
-Options:
-  --fail-on-warn  The check command will fail if encountering fail or warn
-                  constraint violations.
-  --verbose       Provide ouput for all constraints evaluated.
-  -h, --help      Show this message and exit.
-```
+![Check Command Help](../../images/examples/check-h.png)
