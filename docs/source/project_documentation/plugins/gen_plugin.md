@@ -4,9 +4,9 @@ The `gen-plugin` plugin generates the boilerplate integration code for your mode
 
 ## Gen-Plugin Command
 
-```bash
-aac gen-plugin my_plugin.aac
-```
+![Gen-Plugin Terminal Output](../../images/examples/gen-plugin-terminal-output.png)
+
+![Gen-Plugin File Output](../../images/examples/gen-plugin-file-output.png)
 
 ## Arguments
 
