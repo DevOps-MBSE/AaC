@@ -16,11 +16,4 @@ The `--core-only` argument will exclude everything except core language definiti
 
 ## Help
 
-```bash
-$ aac print-defs -h
-Usage: aac print-defs [OPTIONS]
-
-Options:
-  --core-only  If true, exclude everything except core language definitions.
-  -h, --help   Show this message and exit.
-```
+![Print-Defs Command Help](../../images/examples/print-defs-h.png)
