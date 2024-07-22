@@ -4,9 +4,7 @@ The `check` plugin evaluates an AaC model against the AaC constraints.  The `che
 
 ## Check Command
 
-```bash
-aac check my_model.aac
-```
+![Check Command Example](../../images/examples/check-output.PNG)
 
 ## Arguments
 
