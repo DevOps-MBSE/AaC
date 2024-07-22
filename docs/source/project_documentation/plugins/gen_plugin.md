@@ -40,31 +40,15 @@ The `--evaluate` argument tells the generator to only output `.aac_evaluate` fil
 
 ## Help
 
-```bash
-$ aac gen-plugin -h
-Usage: aac gen-plugin [OPTIONS] AAC_PLUGIN_FILE
-
-Options:
-  --code-output TEXT  The location to output generated plugin code.
-  --test-output TEXT  The location to output generated plugin test code.
-  --doc-output TEXT   The location to output generated plugin documentation
-                      code.
-  --no-prompt         Informs gen-plugin to execute without asking the user to
-                      confirm output paths.
-  --force-overwrite   Informs generator to backup and overwrite all existing
-                      files regardless of template definition.
-  --evaluate          Informs generator to only write evaluation files with no
-                      impact to existing files.
-  -h, --help          Show this message and exit.
-```
+![Gen-Plugin Command Help](../../images/examples/gen-plugin-h.png)
 
 ## Gen-Project Command
 
 Generate code and stubs for an AaC project.  Overwrites will backup existing files.
 
-```bash
-aac gen-plugin my_project.aac
-```
+![Gen-Project Terminal Output](../../images/examples/gen-project-terminal-output.png)
+
+![Gen-Project File Output](../../images/examples/gen-project-file-output.png)
 
 ## Arguments
 
@@ -90,16 +74,4 @@ The `--evaluate` argument tells the generator to only output `.aac_evaluate` fil
 
 ## Help
 
-```bash
-Usage: aac gen-project [OPTIONS] AAC_PROJECT_FILE
-
-Options:
-  --output TEXT      The location to output generated plugin code.
-  --no-prompt        Informs gen-plugin to execute without asking the user to
-                     confirm output paths.
-  --force-overwrite  Informs generator to backup and overwrite all existing
-                     files regardless of template definition.
-  --evaluate         Informs generator to only write evaluation files with no
-                     impact to existing files.
-  -h, --help         Show this message and exit.
-```
+![Gen-Project Command Help](../../images/examples/gen-project-h.png)
