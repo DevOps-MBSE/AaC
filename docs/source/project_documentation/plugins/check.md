@@ -6,6 +6,12 @@ The `check` plugin evaluates an AaC model against the AaC constraints.  The `che
 
 ![Check Command Example](../../images/examples/check-output.PNG)
 
+## Arguments
+
+### AaC File
+
+The AaC file containing the plugin definition.
+
 ## Optional Arguments
 
 ### Fail on Warn
