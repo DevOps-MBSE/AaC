@@ -52,7 +52,7 @@ The `--evaluate` argument tells the generator to only output `.aac_evaluate` fil
 
 ![Gen-Plugin Evaluate Terminal Output](../../images/examples/gen-plugin-evaluate-terminal.png)
 
-![Gen-Plugin Evaluate Directory Structure Output](../../images/examples/gen-plugin-evaluate-directory)
+![Gen-Plugin Evaluate Directory Structure Output](../../images/examples/gen-plugin-evaluate-output.png)
 
 ## Help
 
@@ -92,9 +92,9 @@ The `--force-overwrite` argument tells the generator to overwrite all files (whi
 
 The `--evaluate` argument tells the generator to only output `.aac_evaluate` files for all generated files, rather than overwriting them.
 
-![Evaluate Terminal Output](../../images/examples/gen-project-evaluate-directory.png)
+![Evaluate Terminal Output](../../images/examples/gen-project-evaluate-output-directory.png)
 
-![Evaluate Directory Structure Output](../../images/examples/gen-project-evaluate-terminal.png)
+![Evaluate Directory Structure Output](../../images/examples/gen-project-evaluate-output-terminal.png)
 
 ## Help
 

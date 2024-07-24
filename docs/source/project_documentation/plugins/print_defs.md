@@ -6,7 +6,7 @@ Prints all AaC definitions from the Language Context.  This is useful for debugg
 
 ![Print Defs Command](../../images/examples/print-defs-input-command.png)
 
-Inputting the above command will output the following to terminal:
+The following terminal output is only a small piece of the full output when the above command is given:
 
 ![Print Defs Output](../../images/examples/print-defs-output.png)
 
