@@ -14,6 +14,8 @@ The `gen-plugin` plugin generates the boilerplate integration code for your mode
 
 The AaC file containing the plugin definition.
 
+## Optional Arguments
+
 ### Code Output
 
 The `--code-output` argument tells the generator the directory to put your generated code.  This will be the root of the package directory structure.
@@ -66,11 +68,13 @@ Generate code and stubs for an AaC project.  Overwrites will backup existing fil
 
 ![Gen-Project File Output](../../images/examples/gen-project-file-output.png)
 
-## Optional Arguments
+## Arguments
 
 ### AaC Plugin FIle
 
 The AaC file containing the plugin definition.
+
+## Optional Arguments
 
 ### Output
 

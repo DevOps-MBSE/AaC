@@ -14,7 +14,7 @@ def generate_command(my_model: str, my_generator: str):
     run_generate(my_model, my_generator)
 ```
 
-### Optional Arguments
+### Arguments
 
 #### AaC File
 
@@ -23,6 +23,8 @@ The AaC file containing the model definition.
 #### Generator File
 
 The AaC file containing the generator definition(s).
+
+### Optional Arguments
 
 #### Code Output
 
@@ -63,6 +65,8 @@ The `clean` command will clean-up any `.aac_backup` and `.aac_evaluate` files th
 #### AaC Plugin File
 
 The AaC file containing the model definition.
+
+### Optional Arguments
 
 #### Code Output
 
