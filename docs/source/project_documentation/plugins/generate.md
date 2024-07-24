@@ -16,7 +16,7 @@ def generate_command(my_model: str, my_generator: str):
 
 ### Arguments
 
-#### AaC Plugin File
+#### AaC File
 
 The AaC file containing the model definition.
 
