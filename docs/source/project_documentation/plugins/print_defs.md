@@ -4,9 +4,11 @@ Prints all AaC definitions from the Language Context.  This is useful for debugg
 
 ## Print-Defs Command
 
-```bash
-aac print-defs
-```
+![Print Defs Command](../../images/examples/print-defs-input-command.png)
+
+Inputting the above command will output the following to terminal:
+
+![Print Defs Output](../../images/examples/print-defs-output.png)
 
 ## Arguments
 

@@ -16,6 +16,8 @@ The `--fail-on-warn` argument will cause the check command to return a failure i
 
 The `--verbose` argument will output the results of all constraints evaluated, regardless of the level.  This can be useful for debugging.
 
+![Check Command Verbose Output](../../images/examples/check-verbose-output.png)
+
 ## Help
 
 ![Check Command Help](../../images/examples/check-h.png)
