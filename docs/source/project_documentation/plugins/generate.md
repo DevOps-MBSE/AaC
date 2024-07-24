@@ -14,7 +14,7 @@ def generate_command(my_model: str, my_generator: str):
     run_generate(my_model, my_generator)
 ```
 
-### Arguments
+### Optional Arguments
 
 #### AaC File
 

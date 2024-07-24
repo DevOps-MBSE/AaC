@@ -10,7 +10,7 @@ The following terminal output is only a small piece of the full output when the 
 
 ![Print Defs Output](../../images/examples/print-defs-output.png)
 
-## Arguments
+## Optional Arguments
 
 ### Core Only
 

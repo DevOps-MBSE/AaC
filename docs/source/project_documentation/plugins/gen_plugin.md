@@ -66,7 +66,7 @@ Generate code and stubs for an AaC project.  Overwrites will backup existing fil
 
 ![Gen-Project File Output](../../images/examples/gen-project-file-output.png)
 
-## Arguments
+## Optional Arguments
 
 ### AaC Plugin FIle
 
