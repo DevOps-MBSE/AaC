@@ -10,7 +10,7 @@ The `check` plugin evaluates an AaC model against the AaC constraints.  The `che
 
 ### AaC File
 
-The AaC file containing the plugin definition.
+The AaC file containing the model definition(s) to evaluate for meeting constraints.
 
 ## Optional Arguments
 
