@@ -1,24 +1,30 @@
 # Generate
 
-Plugin providing general-purpose content generation and clean-up.
+Plugin providing content generation and clean-up.
 
 ## Generate Command
 
-The `generate` plugin provides a general-purpose content generation capability.  It can be used to generate any text file from a model.
+The `generate` plugin provides a content generation capability for use in user-defined plugins.  It can be used to generate any text file from a model.
+As of right now, it cannot be used cleanly from the command line, and must be called through the `run_generate()` function.
 
-```bash
-aac generate my_model.aac  my_generator.aac
+```python
+from aac.plugins.generate import run_generate
+
+def generate_command(my_model: str, my_generator: str):
+    run_generate(my_model, my_generator)
 ```
 
 ### Arguments
 
-#### AaC Plugin File
+#### AaC File
 
 The AaC file containing the model definition.
 
 #### Generator File
 
 The AaC file containing the generator definition(s).
+
+### Optional Arguments
 
 #### Code Output
 
@@ -46,36 +52,21 @@ The `--evaluate` argument tells the generator to only output `.aac_evaluate` fil
 
 ### Help
 
-```bash
-$ aac generate -h
-Usage: aac generate [OPTIONS] AAC_FILE GENERATOR_FILE
-
-Options:
-  --code-output TEXT  The location to output generated code.
-  --test-output TEXT  The location to output generated test code.
-  --doc-output TEXT   The location to output generated documentation.
-  --no-prompt         Informs generator to execute without asking the user to
-                      confirm output paths.
-  --force-overwrite   Informs generator to backup and overwrite all existing
-                      files regardless of template definition.
-  --evaluate          Informs generator to only write evaluation files with no
-                      impact to existing files.
-  -h, --help          Show this message and exit.
-```
+![Generate Command Help](../../images/examples/generate-h.png)
 
 ## Clean Command
 
 The `clean` command will clean-up any `.aac_backup` and `.aac_evaluate` files that may be "left over" from your plugin generation work.
 
-```bash
-aac clean my_model.aac
-```
+![Clean Command Output](../../images/examples/clean-output.png)
 
 ### Arguments
 
 #### AaC Plugin File
 
 The AaC file containing the model definition.
+
+### Optional Arguments
 
 #### Code Output
 
@@ -95,15 +86,4 @@ The `--no-prompt` argument tells the generator to not ask the user to confirm th
 
 ### Help
 
-```bash
-$ aac clean -h
-Usage: aac clean [OPTIONS] AAC_FILE
-
-Options:
-  --code-output TEXT  The location to output generated code.
-  --test-output TEXT  The location to output generated test code.
-  --doc-output TEXT   The location to output generated documentation.
-  --no-prompt         Informs generator to execute without asking the user to
-                      confirm output paths.
-  -h, --help          Show this message and exit.
-```
+![Clean Command Help](../../images/examples/clean-h.png)

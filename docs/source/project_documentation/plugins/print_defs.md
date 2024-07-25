@@ -4,11 +4,13 @@ Prints all AaC definitions from the Language Context.  This is useful for debugg
 
 ## Print-Defs Command
 
-```bash
-aac print-defs
-```
+![Print Defs Command](../../images/examples/print-defs-input-command.png)
 
-## Arguments
+The following terminal output is only a small piece of the full output when the above command is given:
+
+![Print Defs Output](../../images/examples/print-defs-output.png)
+
+## Optional Arguments
 
 ### Core Only
 
@@ -16,11 +18,4 @@ The `--core-only` argument will exclude everything except core language definiti
 
 ## Help
 
-```bash
-$ aac print-defs -h
-Usage: aac print-defs [OPTIONS]
-
-Options:
-  --core-only  If true, exclude everything except core language definitions.
-  -h, --help   Show this message and exit.
-```
+![Print-Defs Command Help](../../images/examples/print-defs-h.png)
