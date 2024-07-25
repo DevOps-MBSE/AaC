@@ -1,0 +1,71 @@
+schema:
+    name: Shape
+    package: aac.shapes
+    modifiers:
+        - abstract
+    fields:
+        - name: area
+          type: number
+        - name: perimeter
+          type: number
+---
+schema:
+    name: Triangle
+    package: aac.shapes
+    extends:
+        - name: Shape
+          package: aac.shapes
+    fields:
+        - name: side_one_length
+          type: number
+        - name: side_two_length
+          type: number
+        - name: side_three_length
+          type: number
+        - name: height
+          type: number
+---
+schema:
+    name: Circle
+    package: aac.shapes
+    extends:
+        - name: Shape
+          package: aac.shapes
+    fields:
+        - name: radius
+          type: number
+---
+schema:
+    name: Rectangle
+    package: aac.shapes
+    extends:
+        - name: Shape
+          package: aac.shapes
+    fields:
+        - name: length
+          type: number
+        - name: height
+          type: number
+---
+schema:
+    name: Square
+    package: aac.shapes
+    extends:
+        - name: Rectangle
+          package: aac.shapes
+    fields:
+        - name: length
+          type: number
+        - name: height
+          type: number
+    requirements:
+        - "SQR-1"
+---
+req:
+  name: Square Has Four Equal Sides
+  id: "SQR-1"
+  shall:  The length and height fields of this square shall be equal.
+  attributes:
+    - name: TADI
+      value: Test
+
