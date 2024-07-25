@@ -4,27 +4,41 @@ The `gen-plugin` plugin generates the boilerplate integration code for your mode
 
 ## Gen-Plugin Command
 
-```bash
-aac gen-plugin my_plugin.aac
-```
+![Gen-Plugin Terminal Output](../../images/examples/gen-plugin-terminal-output.png)
+
+![Gen-Plugin File Output](../../images/examples/gen-plugin-file-output.png)
 
 ## Arguments
 
 ### AaC Plugin FIle
 
 The AaC file containing the plugin definition.
+
+## Optional Arguments
 
 ### Code Output
 
 The `--code-output` argument tells the generator the directory to put your generated code.  This will be the root of the package directory structure.
 
+![Code Output Flag](../../images/examples/gen-plugin-code-output.png)
+
+![Code Output Flag Directory Structure](../../images/examples/gen-plugin-output-code.png)
+
 ### Test Output
 
 The `--test-output` argument tells the generator the directory to put your generated tests.  This will be the root of the test directory structure.
 
+![Test Output Flag](../../images/examples/gen-plugin-test-output.png)
+
+![Test Output Flag Directory Structure](../../images/examples/gen-plugin-output-test.png)
+
 ### Doc Output
 
 The `--doc-output` argument tells the generator the directory to put your generated documentation.  _This is currently not used but may be in the future._
+
+![Doc Output Flag](../../images/examples/gen-plugin-doc-output.png)
+
+![Doc Output Flag Directory Structure](../../images/examples/gen-plugin-output-doc.png)
 
 ### No Prompt
 
@@ -38,33 +52,21 @@ The `--force-overwrite` argument tells the generator to overwrite all files (whi
 
 The `--evaluate` argument tells the generator to only output `.aac_evaluate` files for all generated files, rather than overwriting them.
 
+![Gen-Plugin Evaluate Terminal Output](../../images/examples/gen-plugin-evaluate-terminal.png)
+
+![Gen-Plugin Evaluate Directory Structure Output](../../images/examples/gen-plugin-evaluate-output.png)
+
 ## Help
 
-```bash
-$ aac gen-plugin -h
-Usage: aac gen-plugin [OPTIONS] AAC_PLUGIN_FILE
-
-Options:
-  --code-output TEXT  The location to output generated plugin code.
-  --test-output TEXT  The location to output generated plugin test code.
-  --doc-output TEXT   The location to output generated plugin documentation
-                      code.
-  --no-prompt         Informs gen-plugin to execute without asking the user to
-                      confirm output paths.
-  --force-overwrite   Informs generator to backup and overwrite all existing
-                      files regardless of template definition.
-  --evaluate          Informs generator to only write evaluation files with no
-                      impact to existing files.
-  -h, --help          Show this message and exit.
-```
+![Gen-Plugin Command Help](../../images/examples/gen-plugin-h.png)
 
 ## Gen-Project Command
 
 Generate code and stubs for an AaC project.  Overwrites will backup existing files.
 
-```bash
-aac gen-plugin my_project.aac
-```
+![Gen-Project Terminal Output](../../images/examples/gen-project-terminal-output.png)
+
+![Gen-Project File Output](../../images/examples/gen-project-file-output.png)
 
 ## Arguments
 
@@ -72,9 +74,15 @@ aac gen-plugin my_project.aac
 
 The AaC file containing the plugin definition.
 
+## Optional Arguments
+
 ### Output
 
 The `--output` argument tells the generator the directory to put your generated project code.
+
+![Output Flag Terminal Output](../../images/examples/gen-project-output-flag-terminal.png)
+
+![Output Flag Directory Structure Output](../../images/examples/gen-project-output-flag-directory.png)
 
 ### No Prompt
 
@@ -88,18 +96,10 @@ The `--force-overwrite` argument tells the generator to overwrite all files (whi
 
 The `--evaluate` argument tells the generator to only output `.aac_evaluate` files for all generated files, rather than overwriting them.
 
+![Evaluate Terminal Output](../../images/examples/gen-project-evaluate-output-directory.png)
+
+![Evaluate Directory Structure Output](../../images/examples/gen-project-evaluate-output-terminal.png)
+
 ## Help
 
-```bash
-Usage: aac gen-project [OPTIONS] AAC_PROJECT_FILE
-
-Options:
-  --output TEXT      The location to output generated plugin code.
-  --no-prompt        Informs gen-plugin to execute without asking the user to
-                     confirm output paths.
-  --force-overwrite  Informs generator to backup and overwrite all existing
-                     files regardless of template definition.
-  --evaluate         Informs generator to only write evaluation files with no
-                     impact to existing files.
-  -h, --help         Show this message and exit.
-```
+![Gen-Project Command Help](../../images/examples/gen-project-h.png)
