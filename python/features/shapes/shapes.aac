@@ -51,8 +51,10 @@ schema:
     name: Square
     package: aac.shapes
     extends:
-        - name: Rectangle
+        - name: Shape
           package: aac.shapes
+    modifiers:
+        - final
     fields:
         - name: length
           type: number
@@ -76,4 +78,4 @@ schema:
         - name: name
           type: string
         - name: shapes
-          type: typeref(aac.shapes.Shape)
+          type: typeref(aac.shapes.Shape)[]

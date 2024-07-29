@@ -15,8 +15,8 @@ Example AaC Schema extension:
     :language: yaml
 ```
 
-We've defined a generic shape schema above.  All shapes have a perimeter and area value, so the generic shape schema also has a perimeter and area field.  Shapes which inherit from Shape will also inherit these fields.
-Bellow, we will define other schema's which inherit from shape:
+We've defined a generic `Shape` schema above.  All shapes have a perimeter and area value, so the generic `Shape` schema also has a perimeter and area field.  Shapes which inherit from `Shape` will also inherit these fields.
+Below, we will define other schemas which inherit from `Shape`:
 
 ```{eval-rst}
 .. literalinclude:: ../../../../../python/features/shapes/shapes.aac
@@ -24,7 +24,7 @@ Bellow, we will define other schema's which inherit from shape:
     :language: yaml
 ```
 
-Each individual shape schema has their own properties, but they are all shapes with a perimeter and area, and so inherit from shape.
+Each of the above schemas have their own properties that help distinguish them as their specific shape. But they all require a perimeter and area field as a valid shape, and so inherit from `Shape`.
 
 ## Inheritance Modifiers
 
@@ -42,7 +42,16 @@ To use these inheritance modifiers you simply add them to the `modifiers` field 
     :language: yaml
 ```
 
-As you can see, the shape schema has an `abstract` modifier.  This means that shape can no longer be instantiated on its own.  To make a shape, you must create or use a schema which inherits from shape.
+As you can see, the `Shape` schema has an `abstract` modifier.  This means that `Shape` can no longer be instantiated on its own.  To make a shape, you must create or use a schema which inherits from `Shape`.
+
+```{eval-rst}
+.. literalinclude:: ../../../../../python/features/shapes/shapes.aac
+    :lines: 51-64
+    :emphasize-lines: 6-7
+    :language: yaml
+```
+
+The above `square` schema inherits from Shape as well, but it has a `final` modifier.  This means that no other schema can inherit from Square.
 
 ### Using Inheritance
 
