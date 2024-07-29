@@ -68,4 +68,12 @@ req:
   attributes:
     - name: TADI
       value: Test
-
+---
+schema:
+    name: Pattern
+    package: aac.shapes
+    fields:
+        - name: name
+          type: string
+        - name: shapes
+          type: typeref(aac.shapes.Shape)
