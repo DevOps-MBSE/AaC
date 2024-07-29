@@ -51,14 +51,12 @@ schema:
     name: Square
     package: aac.shapes
     extends:
-        - name: Shape
+        - name: Rectangle
           package: aac.shapes
     modifiers:
         - final
     fields:
         - name: length
-          type: number
-        - name: height
           type: number
     requirements:
         - "SQR-1"

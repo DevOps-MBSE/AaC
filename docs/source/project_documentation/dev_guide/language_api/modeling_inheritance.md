@@ -51,7 +51,7 @@ As you can see, the `Shape` schema has an `abstract` modifier.  This means that 
     :language: yaml
 ```
 
-The above `square` schema inherits from Shape as well, but it has a `final` modifier.  This means that no other schema can inherit from Square.
+The above `Square` schema inherits from `Rectangle` as well via inheriting from `Rectangle`, but it has a `final` modifier.  This means that no other schema can inherit from `Square`.
 
 ### Using Inheritance
 
@@ -59,7 +59,8 @@ Now that we can define inheritance, how can we use it.  The intended use case is
 
 ```{eval-rst}
 .. literalinclude:: ../../../../../python/features/shapes/shapes.aac
-    :lines: 74-81
+    :lines: 72-79
+    :emphasize-lines: 7-8
     :language: yaml
 ```
 
