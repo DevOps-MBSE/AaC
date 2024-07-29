@@ -1,4 +1,4 @@
-name: Build and Deploy Sphinx Documentation
+name: Build and Deploy Documentation Site
 on:
   # Call from main workflow
   workflow_call:
@@ -9,7 +9,7 @@ on:
 # Configuring starting working directory
 defaults:
   run:
-    working-directory: ./python
+    working-directory: .
 
 # Set token permissions
 permissions:
@@ -32,22 +32,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Pages
-        uses: actions/configure-pages@v3
+        uses: actions/configure-pages@v5
 
-      - name: Build Documentation
-        uses: ammaraskar/sphinx-action@0.4
-        with:
-          pre-build-command: "pip install aac"
-          docs-folder: "docs/"
+      - name: Install the ${{ github.event.repository.name }} Package
+        run: |
+          cd ./python
+          pip install -e .[all]
 
-      - name: Upload Artifact
-        uses: actions/upload-pages-artifact@v2
+      - name: Build ${{ github.event.repository.name }} Documentation
+        run: |
+          cd ./docs
+          sphinx-build source doc_artifacts
+
+      - name: Upload ${{ github.event.repository.name }} Documentation Artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          path: ./docs/docs/html
+          path: ./docs/doc_artifacts
 
       - name: Deploy to GitHub Pages
         id: deploy
-        uses: actions/deploy-pages@v2
+        uses: actions/deploy-pages@v4

@@ -43,7 +43,7 @@ def generate(  # noqa: C901
     doc_out_dir = ""
     try:
         code_out_dir, test_out_dir, doc_out_dir = get_output_directories(
-            "AaC Gen-Plugin will generate code and tests in the following directories:",
+            "AaC will generate code and tests in the following directories:",
             aac_file,
             code_output,
             test_output,
