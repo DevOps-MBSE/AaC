@@ -59,7 +59,7 @@ Now that we can define inheritance, how can we use it.  The intended use case is
 
 ```{eval-rst}
 .. literalinclude:: ../../../../../python/features/shapes/shapes.aac
-    :lines: 72-79
+    :lines: 74-81
     :language: yaml
 ```
 
