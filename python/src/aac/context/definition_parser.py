@@ -824,6 +824,7 @@ class DefinitionParser():
         for definition in self.parsed_definitions:
             # create and register the instance
             self.create_definition_instance(definition)
+            definition.source.is_loaded_in_context = True
             result.append(definition)
             self.context.context_instance.definitions.add(definition)
             self.context.context_instance.fully_qualified_name_to_definition[
