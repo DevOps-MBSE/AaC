@@ -26,6 +26,7 @@ class TestDefinitionParser(TestCase):
         with self.assertRaises(ParserError) as e:
             definitions = parse(INVALID_AAC_YAML_CONTENT)
             loaded_definitions = parser.load_definitions(context=context, parsed_definitions=definitions)
+            self.assertFalse(definitions[0].source.is_loaded_in_context)
 
 VALID_AAC_YAML_CONTENT = """
 schema:
