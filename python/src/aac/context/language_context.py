@@ -115,6 +115,7 @@ class LanguageContext(object):
         """Remove the given definitions from the context."""
         for definition in definitions:
             self.context_instance.definitions.remove(definition)
+            definition.source.is_loaded_in_context = False
             del self.context_instance.fully_qualified_name_to_definition[
                 f"{definition.package}.{definition.name}"
             ]

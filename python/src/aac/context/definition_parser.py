@@ -829,5 +829,6 @@ class DefinitionParser():
             self.context.context_instance.fully_qualified_name_to_definition[
                 f"{definition.package}.{definition.name}"
             ] = definition
+            definition.source.is_loaded_in_context = True
 
         return result

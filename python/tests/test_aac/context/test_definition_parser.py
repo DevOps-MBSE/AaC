@@ -18,6 +18,7 @@ class TestDefinitionParser(TestCase):
         self.assertEqual(len(context_definitions), 1)
         self.assertEqual(loaded_definitions, context_definitions)
         self.assertEqual(len(context_definitions[0].instance.fields), len(loaded_definitions[0].instance.fields))
+        self.assertTrue(loaded_definitions[0].source.is_loaded_in_context)
 
     def test_load_definitions_fail(self):
         parser = DefinitionParser()
