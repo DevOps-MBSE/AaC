@@ -243,10 +243,12 @@ def get_output_directories(
                 f"The provided AaC Plugin file does not exist: {aac_plugin_file}"
             )
         code_out = path.dirname(aac_plugin_path)
-    if not test_out or len(test_out) == 0:
-        test_out = code_out.replace("src", "tests")
-    if not doc_out or len(doc_out) == 0:
-        doc_out = code_out.replace("src", "docs")
+
+    if not test_output or len(test_output) == 0:
+        test_out = path.dirname(path.abspath(aac_plugin_file))
+
+    if not doc_output or len(doc_output) == 0:
+        doc_out = path.dirname(path.abspath(aac_plugin_file))
 
     if not no_prompt:
         print(message)
