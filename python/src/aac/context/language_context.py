@@ -131,7 +131,7 @@ class LanguageContext(object):
         if "." not in name:
             search_name = f".{name}"
         for definition in self.get_definitions():
-            if definition.get_fully_qualified_name().endswith(search_name):
+            if definition.get_fully_qualified_name().endswith(search_name.replace(" ", "")):
                 result.append(definition)
         return result
 
