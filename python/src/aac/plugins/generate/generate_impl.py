@@ -9,6 +9,7 @@ from aac.execute.aac_execution_result import (
     OperationCancelled,
     ExecutionError,
     ExecutionMessage,
+    MessageLevel,
 )
 from jinja2 import Environment, FileSystemLoader, Template
 import black
@@ -52,7 +53,7 @@ def generate(  # noqa: C901
         )
     except OperationCancelled as e:
         result.status_code = ExecutionStatus.OPERATION_CANCELLED
-        result.add_message(ExecutionMessage(e.message, None, None))
+        result.add_message(ExecutionMessage(e.message, MessageLevel.INFO, None, None))
         return result
 
     # build out properties
@@ -243,10 +244,12 @@ def get_output_directories(
                 f"The provided AaC Plugin file does not exist: {aac_plugin_file}"
             )
         code_out = path.dirname(aac_plugin_path)
-    if not test_out or len(test_out) == 0:
-        test_out = code_out.replace("src", "tests")
-    if not doc_out or len(doc_out) == 0:
-        doc_out = code_out.replace("src", "docs")
+
+    if not test_output or len(test_output) == 0:
+        test_out = path.dirname(path.abspath(aac_plugin_file))
+
+    if not doc_output or len(doc_output) == 0:
+        doc_out = path.dirname(path.abspath(aac_plugin_file))
 
     if not no_prompt:
         print(message)

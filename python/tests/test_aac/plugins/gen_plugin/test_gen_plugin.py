@@ -75,6 +75,41 @@ class TestGenPlugin(TestCase):
             self.assertTrue(os.path.exists(os.path.join(package_tests_path, "my_plugin_schema_test.feature")))
             self.assertTrue(os.path.exists(os.path.join(package_tests_path, "my_plugin_primitive_test.feature")))
 
+    def test_cli_gen_plugin_with_incomplete_dirs(self):
+        # first we need a project to work in, so generate a temporary one
+         with tempfile.TemporaryDirectory() as temp_dir:
+            aac_file_path = os.path.join(os.path.dirname(__file__), "my_project.aac")
+            temp_aac_file_path = os.path.join(temp_dir, "my_project.aac")
+            shutil.copy(aac_file_path, temp_aac_file_path)
+
+            proj_args = [temp_aac_file_path, "--output", temp_dir, "--no-prompt"]
+
+            exit_code, output_message = self.run_gen_project_cli_command_with_args(proj_args)
+
+            self.assertEqual(0, exit_code, f"Expected success but failed with message: {output_message}")  # asserts the command ran successfully
+
+            # now create an AaC plugin file in the project src directory
+            package_src_path = os.path.join(temp_dir, "src", "happy")
+            os.mkdir(package_src_path)
+            plugin_file_path = os.path.join(temp_dir, "my_plugin.aac")
+
+            aac_plugin_path = os.path.join(os.path.dirname(__file__), "my_plugin.aac")
+            shutil.copy(aac_plugin_path, plugin_file_path)
+
+            plugin_args = [plugin_file_path, "--code-output", os.path.join(temp_dir, "src"), "--no-prompt"]
+
+            exit_code, output_message = self.run_gen_plugin_cli_command_with_args(plugin_args)
+            self.assertEqual(0, exit_code)  # asserts the command ran successfully
+            self.assertIn("All AaC constraint checks were successful", output_message)  # asserts the command ran check successfully
+
+            self.assertTrue(os.path.exists(os.path.join(package_src_path, "my_plugin_impl.py")))
+
+            package_tests_path = os.path.join(temp_dir, "test_happy") # making sure that tests get output to the correct location
+            self.assertTrue(os.path.exists(os.path.join(package_src_path, "__init__.py")))
+            self.assertTrue(os.path.exists(os.path.join(package_tests_path, "my_plugin_command_test.feature")))
+            self.assertTrue(os.path.exists(os.path.join(package_tests_path, "my_plugin_command_test_two.feature")))
+            self.assertTrue(os.path.exists(os.path.join(package_tests_path, "my_plugin_command_test_three.feature")))
+
     def test_cli_gen_plugin_multiple_commands(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             aac_file_path = os.path.join(os.path.dirname(__file__), "my_project.aac")
