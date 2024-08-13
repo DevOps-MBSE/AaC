@@ -9,6 +9,7 @@ from aac.execute.aac_execution_result import (
     OperationCancelled,
     ExecutionError,
     ExecutionMessage,
+    MessageLevel,
 )
 from jinja2 import Environment, FileSystemLoader, Template
 import black
@@ -52,7 +53,7 @@ def generate(  # noqa: C901
         )
     except OperationCancelled as e:
         result.status_code = ExecutionStatus.OPERATION_CANCELLED
-        result.add_message(ExecutionMessage(e.message, None, None))
+        result.add_message(ExecutionMessage(e.message, MessageLevel.ERROR, None, None))
         return result
 
     # build out properties
