@@ -53,7 +53,7 @@ def generate(  # noqa: C901
         )
     except OperationCancelled as e:
         result.status_code = ExecutionStatus.OPERATION_CANCELLED
-        result.add_message(ExecutionMessage(e.message, MessageLevel.ERROR, None, None))
+        result.add_message(ExecutionMessage(e.message, MessageLevel.INFO, None, None))
         return result
 
     # build out properties
