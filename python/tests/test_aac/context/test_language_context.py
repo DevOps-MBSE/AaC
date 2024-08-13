@@ -24,7 +24,7 @@ class TestLanguageContext(TestCase):
         definitions = context.parse_and_load(VALID_AAC_YAML_CONTENT)
         self.assertEqual(len(definitions), 1)
         self.assertIsNotNone(definitions[0].instance)
-        self.assertEqual(definitions[0].name, "TestSchema")
+        self.assertEqual(definitions[0].name, "Test Schema")
         self.assertEqual(len(definitions[0].instance.fields), 4)
 
     def test_get_definitions(self):
@@ -43,6 +43,9 @@ class TestLanguageContext(TestCase):
         self.assertEqual(len(definitions), 1)
         self.assertEqual(definitions[0].name, "Schema")
         self.assertIsNotNone(definitions[0].instance)
+
+        context.parse_and_load(VALID_AAC_YAML_CONTENT)
+        definitions = context.definitions = context.get_definitions_by_name("Test Schema")
 
     def test_get_definitions_by_root(self):
         context = LanguageContext()
@@ -105,7 +108,7 @@ class TestLanguageContext(TestCase):
 
 VALID_AAC_YAML_CONTENT = """
 schema:
-  name: TestSchema
+  name: Test Schema
   description: |
     This is a test schema.
   fields:
