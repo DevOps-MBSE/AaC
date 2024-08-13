@@ -24,7 +24,7 @@ class TestLanguageContext(TestCase):
         definitions = context.parse_and_load(VALID_AAC_YAML_CONTENT)
         self.assertEqual(len(definitions), 1)
         self.assertIsNotNone(definitions[0].instance)
-        self.assertEqual(definitions[0].name, "Test Schema")
+        self.assertEqual(definitions[0].name, "TestSchema")
         self.assertEqual(len(definitions[0].instance.fields), 4)
 
     def test_get_definitions(self):
@@ -44,8 +44,9 @@ class TestLanguageContext(TestCase):
         self.assertEqual(definitions[0].name, "Schema")
         self.assertIsNotNone(definitions[0].instance)
 
-        context.parse_and_load(VALID_AAC_YAML_CONTENT)
-        definitions = context.definitions = context.get_definitions_by_name("Test Schema")
+        context.parse_and_load(VALID_AAC_YAML_CONTENT_SPACE_IN_NAME)
+        definitions = context.get_definitions_by_name("Test Schema")
+        self.assertEqual(definitions[0].name, "TestSchema")
 
     def test_get_definitions_by_root(self):
         context = LanguageContext()
@@ -107,6 +108,30 @@ class TestLanguageContext(TestCase):
             self.assertGreater(len(values), 1)
 
 VALID_AAC_YAML_CONTENT = """
+schema:
+  name: TestSchema
+  description: |
+    This is a test schema.
+  fields:
+    - name: string_field
+      type: string
+      description: |
+        This is a test field.
+    - name: integer_field
+      type: integer
+      description: |
+        This is a test field.
+    - name: boolean_field
+      type: boolean
+      description: |
+        This is a test field.
+    - name: number_field
+      type: number
+      description: |
+        This is a test field.
+""".strip()
+
+VALID_AAC_YAML_CONTENT_SPACE_IN_NAME = """
 schema:
   name: Test Schema
   description: |
