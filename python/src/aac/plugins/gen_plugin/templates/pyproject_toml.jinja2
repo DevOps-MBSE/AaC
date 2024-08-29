@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "{{project.name}}"
+version = "0.0.1"
+authors = [
+	{ name="bunchw", email="asdfasdaf@email.com" },
+	{ name="lizzcondrey", email="asdfasdfd@mail.com" },
+]
+description = "{{ project.description }}"
+requires-python = ">= 3.9.13"
+readme = "README.md"
+license = {text = "MIT License"}
+keywords = ["SysML", "Architecture-as-Code", "System Engineering", "MBSE"]
+classifiers = [
+	"Programming Language :: Python :: 3",
+	"License :: OSI Approved :: MIT License",
+	"Operating System :: OS Independent",
+	"Topic :: Scientific/Engineering"
+]
+
+dependencies = [
+	"{{ aac_version() }}",
+]
