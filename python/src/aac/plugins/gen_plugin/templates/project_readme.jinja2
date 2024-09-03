@@ -29,7 +29,7 @@ A MANIFEST file with these lines was added:
    graft src
    graft tests
    include tox.ini
-   include src/{{ project.name }}/.aac
+   include src/{{ project.name }}/{{get_python_name(project.name)}}.aac
    ```
 
 ## TO BUILD FROM TERMINAL
