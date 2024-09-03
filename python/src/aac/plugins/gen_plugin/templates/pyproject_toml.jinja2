@@ -6,8 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "{{project.name}}"
 version = "0.0.1"
 authors = [
-	{ name="bunchw", email="asdfasdaf@email.com" },
-	{ name="lizzcondrey", email="asdfasdfd@mail.com" },
+	{ name="AaC Dev Team", email="asdfasdaf@email.com" },
 ]
 description = "{{ project.description }}"
 requires-python = ">= 3.9.13"
@@ -62,7 +61,7 @@ all = [
 ]
 
 [project.entry-points."aac"]
-{{project.name}} = "{{get_python_name(project.name)}}"
+{{get_python_name(project.name)}} = "{{get_python_name(project.name)}}"
 [project.urls]
 Homepage = "https://github.com/DevOps-MBSE/{{project.name}}"
 Issues = "https://github.com/DevOps-MBSE/{{project.name}}/issues"
