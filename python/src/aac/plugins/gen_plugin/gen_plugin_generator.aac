@@ -29,8 +29,14 @@ generator:
       templates:
         - name: ProjectManifestIn
           description: Generates a MANIFEST.in file.
-          template_file: manifest_in.jinja2
+          template_file: ./templates/manifest_in.jinja2
           overwrite: SKIP
+          helper_functions:
+            - name: Get Python string
+              description: Converts a string to a Python suitable value.
+              package: aac.plugins.generate.helpers
+              module: python_helpers
+              function: get_python_name
           output_target: CODE
           output_path_uses_data_source_package: false
           output_file_name: MANIFEST
