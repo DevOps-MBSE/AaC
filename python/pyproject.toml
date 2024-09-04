@@ -1,0 +1,121 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aac"
+version =  "0.4.18"
+authors = [
+    { name="bunchw", email="asdfasdaf@email.com" },
+    { name="lizzcondrey", email="asdfasdfd@mail.com" },
+]
+description = "A distinctly different take on Model-Based System Engineering (MBSE) that allows a system modeller to define a system in simple yaml. "
+requires-python = ">= 3.11"
+readme = "README.md"
+license = {text = "MIT License"}
+keywords = ["SysML", "Architecture-as-Code", "System Engineering", "MBSE"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering"
+]
+
+[project.optional-dependencies]
+runtime = [
+    "attrs ~= 22.2.0",
+    "pyrsistent ~= 0.19.3",
+    "PyYAML ~= 6.0.0",
+    "types-PyYAML ~= 6.0.12.2",
+    "six ~= 1.16.0",
+    "click ~= 8.1.3",
+    "pathspec ~= 0.10.3",
+    "regex ~= 2022.10.31",
+    "typing-extensions ~= 4.8.0",
+    "pluggy ~= 1.0.0",
+    "Jinja2 ~= 3.1.2",
+    "black >= 23.9.1",
+    "MarkupSafe ~= 2.1.1",
+    "pygls ~= 0.13.1",
+    "fastapi ~= 0.109.1",
+    "starlette >= 0.22.0",
+    "anyio < 5, ~= 3.6.2",
+    "sniffio ~= 1.3.0",
+    "uvicorn ~= 0.20.0",
+    "requests >= 2.28.1",
+]
+
+dev = [
+    "wheel ~= 0.42.0",
+    "pip-tools >= 6.9.0",
+    "tomli >= 2.0.1; python_version < '3.11'",
+    "platformdirs >= 2.4",
+    "coverage >= 6.0",
+    "mccabe >= 0.6.1",
+    "mypy ~= 1.1.0",
+    "mypy-extensions ~= 1.0.0",
+    "pycodestyle >= 2.8.0",
+    "pyflakes >= 2.4",
+    "build >= 1.0.0",
+    "twine == 3.4.2",
+    "pipdeptree >= 2.2.0",
+    "Pygments >= 2.5.1",
+    "types-PyYAML >= 6.0.9",
+    "requests >= 2.27.0",
+]
+
+doc = [
+    "sphinx >= 7.3.7",
+    "sphinxcontrib-applehelp ~= 1.0.2",
+    "sphinxcontrib-devhelp ~= 1.0.2",
+    "sphinxcontrib-htmlhelp ~= 2.0.0",
+    "sphinxcontrib-jsmath ~= 1.0.1",
+    "sphinxcontrib-qthelp ~= 1.0.3",
+    "sphinxcontrib-serializinghtml ~= 1.1.9",
+    "sphinx-copybutton ~= 0.5.2",
+    "sphinx_contributors ~= 0.2.7",
+    "sphinx-autobuild ~= 2021.3.14",
+    "sphinx-simplepdf ~= 1.6.0",
+    "furo ~= 2024.5.6",
+    "docutils ~= 0.19",
+    "myst-parser ~= 2.0.0",
+    "pytz ~= 2023.3"
+]
+
+test = [
+    "build>=1.0.0",
+    "tox >= 3.24",
+    "nose2 >= 0.10.0",
+    "behave >= 1.2.6",
+    "coverage >= 6.0",
+    "flake8 >= 4.0",
+    "flake8-docstrings >= 1.6.0",
+    "flake8-fixme >= 1.1.1",
+    "flake8-eradicate >= 1.5.0",
+    "flake8-assertive >= 1.3.0",
+    "eradicate<3.0,>=2.0",
+    "httpx >= 0.23.0",
+]
+
+all = [
+    "aac[runtime]",
+    "aac[dev]",
+    "aac[doc]",
+    "aac[test]"
+]
+
+[project.entry-points."console_scripts"]
+aac = "aac.execute.command_line:cli"
+
+[project.urls]
+Homepage = "https://github.com/DevOps-MBSE/AaC"
+Issues = "https://github.com/DevOps-MBSE/AaC/issues"
+
+[tool.setuptools]
+include-package-data = true
+package-dir = {"" = "src"}
+[tool.setuptools.packages.find]
+where = ["src"]
+exclude = ["tests"]
+[tool.setuptools.package-data]
+mypkg = ["**/*.aac", "**/*.jinja2", "*.yaml"]
