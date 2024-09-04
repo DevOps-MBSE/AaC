@@ -59,6 +59,12 @@ generator:
           description: Generates a Python project README.md file.
           template_file: ./templates/project_readme.jinja2
           overwrite: SKIP
+          helper_functions:
+            - name: Get Python string
+              description: Converts a string to a Python suitable value.
+              package: aac.plugins.generate.helpers
+              module: python_helpers
+              function: get_python_name
           output_target: CODE
           output_path_uses_data_source_package: false
           output_file_name: README
