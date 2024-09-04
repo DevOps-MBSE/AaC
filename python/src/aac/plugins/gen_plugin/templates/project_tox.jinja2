@@ -3,7 +3,7 @@
 
 [testenv]
 deps = .[test]
-commands = nose2 -c tox.ini {posargs}
+commands = py39: python -m unittest
 
 [flake8]
 extend-select = W504
@@ -38,3 +38,13 @@ precision = 2
 show_missing = True
 skip_empty = True
 sort = cover
+
+[html]
+directory = html_code_coverage
+skip_covered = True
+
+[tox]
+isolated_build = True
+skipsdist = True
+envlist =
+  py39
