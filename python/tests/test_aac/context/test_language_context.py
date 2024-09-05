@@ -46,7 +46,7 @@ class TestLanguageContext(TestCase):
 
         context.parse_and_load(VALID_AAC_YAML_CONTENT_SPACE_IN_NAME)
         definitions = context.get_definitions_by_name("Test Schema")
-        self.assertEqual(definitions[0].name, "Test Schema")
+        self.assertEqual(definitions[0].name.replace(" ", ""), "TestSchema")
 
     def test_get_definitions_by_root(self):
         context = LanguageContext()

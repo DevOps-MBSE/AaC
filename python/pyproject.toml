@@ -10,7 +10,7 @@ authors = [
     { name="lizzcondrey", email="asdfasdfd@mail.com" },
 ]
 description = "A distinctly different take on Model-Based System Engineering (MBSE) that allows a system modeller to define a system in simple yaml. "
-requires-python = ">= 3.11"
+requires-python = ">= 3.9.13"
 readme = "README.md"
 license = {text = "MIT License"}
 keywords = ["SysML", "Architecture-as-Code", "System Engineering", "MBSE"]
