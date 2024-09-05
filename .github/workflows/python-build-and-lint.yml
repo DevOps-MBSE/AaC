@@ -28,7 +28,7 @@ jobs:
         run: pipdeptree
 
       - name: Build distribution package
-        run: python setup.py bdist_wheel
+        run: python -m build
 
       - name: Upload Python Wheel
         uses: actions/upload-artifact@v3
