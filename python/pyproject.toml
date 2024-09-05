@@ -20,6 +20,9 @@ classifiers = [
     "Topic :: Scientific/Engineering"
 ]
 
+[tool.setuptools.dynamic]
+version = {attr = "aac.__version__"}
+
 [project.optional-dependencies]
 runtime = [
     "attrs ~= 22.2.0",
