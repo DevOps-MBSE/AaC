@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "aac"
-version =  "0.4.18"
+version =  "0.4.23"
 authors = [
     { name="bunchw", email="asdfasdaf@email.com" },
     { name="lizzcondrey", email="asdfasdfd@mail.com" },
