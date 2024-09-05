@@ -176,27 +176,37 @@ pip-compile command is used to add hashes to the requirements.txt file for enhan
 To coincide with these changes, some changes to tox.ini and the addition of a MANIFEST.ini file were also necessary.
 
 These lines were added to tox.ini:
+```
    isolated_build = True
    skipsdist = True
+```
 
 A MANIFEST file with these lines was added:
+```
    graft src
    graft tests
    include tox.ini
    include src/aac/aac.aac
+```
 
 ## TO BUILD FROM TERMINAL
 
+```
 cd python
 pip install -e .
+```
 
 ## TO TEST FROM TERMINAL
 
+```
 cd python
 pip install -e .
 python -m unittest
+```
 
 ## Generate a requirements.txt file populated with hashes
 
+```
 pip install pip-tools
 pip-compile --generate-hashes pyproject.toml
+```
