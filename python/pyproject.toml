@@ -4,10 +4,9 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "aac"
-version =  "0.4.23"
+version =  __version__
 authors = [
-    { name="bunchw", email="asdfasdaf@email.com" },
-    { name="lizzcondrey", email="asdfasdfd@mail.com" },
+    name="AaC Dev Team", email="asdfasdaf@email.com"
 ]
 description = "A distinctly different take on Model-Based System Engineering (MBSE) that allows a system modeller to define a system in simple yaml. "
 requires-python = ">= 3.9.13"
