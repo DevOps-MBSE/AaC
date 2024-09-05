@@ -14,7 +14,7 @@ class TestDefinitionParser(TestCase):
         context_definitions = parser.context.get_definitions_by_name(loaded_definitions[0].name)
         name = context_definitions[0].name
 
-        self.assertEqual(name.replace(" ", ""), loaded_definitions[0].name)
+        self.assertEqual(name, loaded_definitions[0].name)
         self.assertIsNotNone(context_definitions[0].instance)
         self.assertEqual(len(context_definitions), 1)
         self.assertEqual(loaded_definitions, context_definitions)
