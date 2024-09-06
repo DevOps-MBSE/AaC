@@ -107,7 +107,7 @@ all = [
 ]
 
 [project.entry-points."console_scripts"]
-aac = "aac.execute.command_line:cli"
+aac = "execute.command_line:cli"
 
 [project.urls]
 Homepage = "https://github.com/DevOps-MBSE/AaC"
