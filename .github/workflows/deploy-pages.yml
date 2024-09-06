@@ -37,6 +37,11 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
       - name: Install the ${{ github.event.repository.name }} Package
         run: |
           cd ./python
