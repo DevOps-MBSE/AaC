@@ -1,0 +1,5 @@
+graft src
+graft tests
+
+include tox.ini
+include src/aac/aac.aac

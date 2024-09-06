@@ -20,7 +20,7 @@ for /R "%cd%\install_scripts\" %%f in (*.bat) do COPY %%f "%install_dir%\."
 COPY "%cd%\README.md" "%install_dir%"
 cd "%install_dir%"
 
-python -m piptools compile "--generate-hashes" "%CD%\..\..\setup.py"
+python -m piptools compile "--generate-hashes" "%CD%\..\..\pyproject.toml"
 mv "%CD%\..\..\requirements.txt" "."
 python -m pip wheel "%CD%\..\.."
 python -m pip download --python-version 3.9 -r requirements.txt -d . --no-deps
