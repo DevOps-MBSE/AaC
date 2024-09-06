@@ -96,8 +96,6 @@ test = [
 ]
 
 all = [
-    "aac[runtime]",
-    "aac[dev]",
     "aac[doc]",
     "aac[test]"
 ]
