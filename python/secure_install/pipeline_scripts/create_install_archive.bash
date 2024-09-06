@@ -18,7 +18,7 @@ cp README.md $install_dir
 cd $install_dir
 
 pip wheel ../../
-pip-compile --generate-hashes ../../setup.py
+pip-compile --generate-hashes ../../pyproject.toml
 mv ../../requirements.txt .
 pip download --python-version 3.9 -r requirements.txt -d . --no-deps
 pip download --python-version 3.10 -r requirements.txt -d . --no-deps

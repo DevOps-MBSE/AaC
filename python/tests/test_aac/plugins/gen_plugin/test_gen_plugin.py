@@ -197,7 +197,7 @@ class TestGenPlugin(TestCase):
             self.assertIn("All AaC constraint checks were successful", output_message)  # asserts the command ran check successfully
 
             # make sure the files and directories were created
-            self.assertTrue(os.path.exists(os.path.join(temp_dir, "setup.py")))
+            self.assertTrue(os.path.exists(os.path.join(temp_dir, "pyproject.toml")))
             self.assertTrue(os.path.exists(os.path.join(temp_dir, "tox.ini")))
             self.assertTrue(os.path.exists(os.path.join(temp_dir, "README.md")))
             self.assertTrue(os.path.exists(os.path.join(temp_dir, "src")))

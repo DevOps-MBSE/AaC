@@ -45,8 +45,8 @@ class TestLanguageContext(TestCase):
         self.assertIsNotNone(definitions[0].instance)
 
         context.parse_and_load(VALID_AAC_YAML_CONTENT_SPACE_IN_NAME)
-        definitions = context.get_definitions_by_name("Test Schema")
-        self.assertEqual(definitions[0].name, "Test Schema")
+        definitions = context.get_definitions_by_name("Test Schema2")
+        self.assertEqual(definitions[0].name, "Test Schema2")
 
     def test_get_definitions_by_root(self):
         context = LanguageContext()
@@ -133,7 +133,7 @@ schema:
 
 VALID_AAC_YAML_CONTENT_SPACE_IN_NAME = """
 schema:
-  name: Test Schema
+  name: Test Schema2
   description: |
     This is a test schema.
   fields:
