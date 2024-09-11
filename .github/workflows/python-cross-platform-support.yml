@@ -69,7 +69,7 @@ jobs:
 
       - name: Checkout Repository # Checked-out repository is necessary to test the first party plugin generation.
         uses: actions/checkout@v4
-          
+
       - name: Download Secure Install
         uses: actions/download-artifact@v4
         with:
@@ -87,6 +87,22 @@ jobs:
         run: |
           cd (Get-ChildItem -Filter aac_secure_install_*)
           .\install_aac_air_gap.bat
+
+      - name: Get Package Version
+        run: python -m aac version
+
+      - name: Check AaC DSL
+        if: matrix.os != 'windows-latest'
+        run: |
+          spec_file=$(find $pythonLocation -name aac.aac | head -n1)
+          python -m aac check $spec_file
+      - name: Check AaC DSL
+        if: matrix.os == 'windows-latest'
+        run: |
+          $spec_file=$(gci -r -fi aac.aac -Name "$Env:pythonLocation")
+          python -m aac check "$Env:pythonLocation\$spec_file"
+      - name: Print out Core Spec
+        run: python -m aac print-defs
 
       - name: Test Plugin Commands
         run: echo "Replace with testing the package commands of this repo"
