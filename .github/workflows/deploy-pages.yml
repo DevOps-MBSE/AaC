@@ -1,0 +1,62 @@
+name: Build and Deploy Sphinx Documentation
+on:
+  # Call from main workflow
+  workflow_call:
+
+  # Manual runs
+  workflow_dispatch:
+
+# Configuring starting working directory
+defaults:
+  run:
+    working-directory: .
+
+# Set token permissions
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment, skip queued between in progress and latest.
+# But do NOT cancel in progress.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  #Single deploy job
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Install the ${{ github.event.repository.name }} Package
+        run: |
+          cd ./python
+          pip install -e .[all]
+
+      - name: Build ${{ github.event.repository.name }} Documentation
+        run: |
+          cd ./docs
+          sphinx-build source doc_artifacts
+
+      - name: Upload ${{ github.event.repository.name }} Documentation Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./docs/doc_artifacts
+
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4
