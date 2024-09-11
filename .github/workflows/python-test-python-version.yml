@@ -1,0 +1,55 @@
+on:
+  workflow_call:
+
+defaults:
+  run:
+    working-directory: ./python
+
+jobs:
+  python_tests:
+    name: Python ${{ matrix.py_version }} Unit Tests
+    runs-on: ubuntu-22.04
+
+    strategy:
+      matrix:
+        py_version: ["3.11.7"]   # py_version: ["3.9.13", "3.10.5", "3.11.7"]
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.py_version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.py_version }}
+
+    - name: Install ${{ github.event.repository.name }} Package
+      run: pip install -e .[all]
+
+    - name: Run Tox Tests
+      if: matrix.py_version != '3.11.7'
+      run: tox -e $(echo py${{ matrix.py_version }} | awk -F "." '{print $1$2;}')
+
+    - name: Run Tox Tests With Coverage
+      if: matrix.py_version == '3.11.7'
+      run: tox -e py311 -- --coverage-report html
+
+    - name: Get ${{ github.event.repository.name }} Package Version
+      id: package-version
+      run: |
+        VERSION=$(pip show ${{ github.event.repository.name }} | grep Version | cut -f 2 -d " ")
+        echo VERSION_STRING=$VERSION >> $GITHUB_OUTPUT
+
+    - name: Upload Code Coverage Report
+      uses: actions/upload-artifact@v4
+      if: matrix.py_version == '3.11.7'
+      with:
+        name: ${{ github.event.repository.name }}_${{steps.package-version.outputs.VERSION_STRING}}_test_coverage_report
+        path: python/html_code_coverage/
+
+    - name: Upload logs from failed runs
+      if: ${{ failure() }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ github.event.repository.name }}_${{steps.package-version.outputs.VERSION_STRING}}_failed_test_log
+        path: python/src/aac/aac.log
