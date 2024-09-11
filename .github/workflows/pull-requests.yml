@@ -1,0 +1,19 @@
+# This workflow is intended to run for ANY pull request
+name: Pull Request Workflow
+
+on:
+  pull_request:
+
+jobs:
+  build_python_artifacts:
+    name: Python Build
+    uses: ./.github/workflows/python-build-and-lint.yml
+
+  python_tests:
+    name: Python Unit Tests
+    needs: build_python_artifacts
+    uses: ./.github/workflows/python-test-python-version.yml
+
+  python_cross_platform:
+    name: Python Cross Platform Build & Test
+    uses: ./.github/workflows/python-cross-platform-support.yml
