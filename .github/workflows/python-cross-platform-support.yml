@@ -104,9 +104,6 @@ jobs:
       - name: Print out Core Spec
         run: python -m aac print-defs
 
-      - name: Test Plugin Commands
-        run: echo "Replace with testing the package commands of this repo"
-
       - name: Upload logs from failed runs
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
