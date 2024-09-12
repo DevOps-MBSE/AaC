@@ -16,14 +16,14 @@ jobs:
 
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Set up Python ${{ matrix.py_version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.py_version }}
 
-    - name: Install the AaC Package
+    - name: Install ${{ github.event.repository.name }} Package
       run: pip install -e .[all]
 
     - name: Run Tox Tests
@@ -34,16 +34,22 @@ jobs:
       if: matrix.py_version == '3.11.7'
       run: tox -e py311 -- --coverage-report html
 
+    - name: Get ${{ github.event.repository.name }} Package Version
+      id: package-version
+      run: |
+        VERSION=$(pip show ${{ github.event.repository.name }} | grep Version | cut -f 2 -d " ")
+        echo VERSION_STRING=$VERSION >> $GITHUB_OUTPUT
+
     - name: Upload Code Coverage Report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: matrix.py_version == '3.11.7'
       with:
-        name: test-coverage-report
+        name: ${{ github.event.repository.name }}_${{steps.package-version.outputs.VERSION_STRING}}_test_coverage_report
         path: python/html_code_coverage/
 
     - name: Upload logs from failed runs
       if: ${{ failure() }}
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
-        name: failed_test_log
+        name: ${{ github.event.repository.name }}_${{steps.package-version.outputs.VERSION_STRING}}_failed_test_log
         path: python/src/aac/aac.log

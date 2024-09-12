@@ -4,4 +4,4 @@ REM This script will install AaC and its dependencies via the wheel files.
 
 cd /D "%~dp0"
 
-python -m pip "install" "--require-hashes" "-r" "requirements.txt" "--no-index" "--find-links" "./"
+python -m pip "install" "--require-hashes" "--no-deps" "-r" "requirements.txt" "--no-index" "--find-links" "./"
