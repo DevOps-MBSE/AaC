@@ -16,15 +16,15 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python 3.11
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: 3.11
 
-      - name: Install the AaC Package
-        run: python -m pip install -e .[all]
+      - name: Install ${{ github.event.repository.name }} Package
+        run: pip install -e .[all]
 
       - name: Create Dependencies Package
         id: os_id
@@ -38,7 +38,7 @@ jobs:
           ./secure_install/pipeline_scripts/create_install_archive.bat
 
       - name: Upload Dependencies Package
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: secure_install_${{ matrix.os }}
           path: python/secure_install/aac_secure_install_*
@@ -63,15 +63,15 @@ jobs:
 
     steps:
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version:  ${{ matrix.py_version }}
 
       - name: Checkout Repository # Checked-out repository is necessary to test the first party plugin generation.
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Download Secure Install
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: secure_install_${{ matrix.os }}
           path: python/
@@ -96,19 +96,17 @@ jobs:
         run: |
           spec_file=$(find $pythonLocation -name aac.aac | head -n1)
           python -m aac check $spec_file
-
       - name: Check AaC DSL
         if: matrix.os == 'windows-latest'
         run: |
           $spec_file=$(gci -r -fi aac.aac -Name "$Env:pythonLocation")
           python -m aac check "$Env:pythonLocation\$spec_file"
-
       - name: Print out Core Spec
         run: python -m aac print-defs
 
       - name: Upload logs from failed runs
         if: ${{ failure() }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: failed_test_log
           path: ${{ env.pythonLocation }}/**/aac.log

@@ -1,4 +1,4 @@
-name: Build and Deploy Documentation Site
+name: Build and Deploy Sphinx Documentation
 on:
   # Call from main workflow
   workflow_call:
@@ -34,13 +34,13 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-
       - name: Set up Python 3.11
         uses: actions/setup-python@v4
         with:
           python-version: 3.11
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
 
       - name: Install the ${{ github.event.repository.name }} Package
         run: |

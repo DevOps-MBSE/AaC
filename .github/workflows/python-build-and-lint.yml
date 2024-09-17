@@ -1,6 +1,11 @@
 on:
   workflow_call:
 
+    outputs:
+      version-string:
+        description: "The package version"
+        value: ${{ jobs.build_python_artifacts.outputs.version-string}}
+
 defaults:
   run:
     working-directory: ./python
@@ -9,17 +14,19 @@ jobs:
   build_python_artifacts:
     name: Build Artifacts
     runs-on: ubuntu-22.04
+    outputs:
+      version-string: ${{ steps.package-version.outputs.VERSION_STRING}}
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python 3.11
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: 3.11
 
-      - name: Install the AaC Package
-        run: pip install aac -e .[all]
+      - name: Install ${{ github.event.repository.name }} Package
+        run: pip install -e .[all]
 
       - name: Lint with flake8
         run: flake8 .
@@ -30,10 +37,16 @@ jobs:
       - name: Build distribution package
         run: python -m build
 
+      - name: Get ${{ github.event.repository.name }} Package Version
+        id: package-version
+        run: |
+          VERSION=$(pip show ${{ github.event.repository.name }} | grep Version | cut -f 2 -d " ")
+          echo VERSION_STRING=$VERSION >> $GITHUB_OUTPUT
+
       - name: Upload Python Wheel
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: aac_wheel
+          name: ${{ github.event.repository.name }}_${{steps.package-version.outputs.VERSION_STRING}}_wheel
           path: python/dist/
 
       - name: Build Documentation
@@ -43,20 +56,20 @@ jobs:
           sphinx-build source doc_artifacts
 
       - name: Upload Documentation
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: aac-documentation
+          name: ${{ github.event.repository.name }}_${{steps.package-version.outputs.VERSION_STRING}}_documentation
           path: |
             python/docs/doc_artifacts/api
             python/docs/doc_artifacts/project_documentation
-
+      
       - name: Build PDF
         run: |
           make -C ../docs/ simplepdf
 
       - name: Upload PDF
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: aac-documentation-pdf
+          name: ${{ github.event.repository.name }}_${{steps.package-version.outputs.VERSION_STRING}}_documentation-pdf
           path: |
             docs/docs/simplepdf/Architecture-as-Code.pdf

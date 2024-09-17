@@ -21,15 +21,15 @@ jobs:
     name: Deploy Artifacts
     runs-on: ubuntu-22.04
     needs: build_deployment_artifacts
+    permissions:
+      # Important:  This permission is mandatory for trusted publishing
+      id-token: write
     steps:
       - name: Download Python Wheel
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
-          name: aac_wheel
-          path: python/dist/
+          name: ${{ github.event.repository.name }}_${{needs.build_deployment_artifacts.outputs.version-string}}_wheel
+          path: dist/
 
       - name: Publish distribution to PyPI
-        uses: pypa/gh-action-pypi-publish@master
-        with:
-          password: ${{ secrets.PYPI_API_TOKEN }}
-          packages_dir: python/dist/
+        uses: pypa/gh-action-pypi-publish@release/v1
