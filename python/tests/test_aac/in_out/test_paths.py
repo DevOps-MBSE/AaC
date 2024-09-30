@@ -5,7 +5,6 @@ from aac.in_out.paths import sanitize_filesystem_path
 
 WORKING_TEST_DIR = os.getcwd()
 
-
 def _get_working_directory_parent_directory(level_of_directories_up: int = 1) -> str:
     """Get the n-level parent directory from the WORKING_TEST_DIR. Useful for testing '../' in paths."""
     path_to_return = WORKING_TEST_DIR
@@ -17,7 +16,6 @@ def _get_working_directory_parent_directory(level_of_directories_up: int = 1) ->
             break
 
     return path_to_return
-
 
 class TestPaths(TestCase):
     @parameterized.expand([
