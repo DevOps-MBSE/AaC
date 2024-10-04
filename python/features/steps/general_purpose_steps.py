@@ -74,7 +74,7 @@ def check_model(context, model_file):
 
 
 @when('I check the "{model_file}" bad model')
-def check_model(context, model_file):
+def check_model_fail(context, model_file):
     """
     Run the check command on the given model.
 
@@ -102,6 +102,7 @@ def check_success(context):
         raise AssertionError(
             f"Model check failed with message: {context.output_message}"
         )
+
 
 @then("I should receive a message that the check was not successful")
 def check_failure(context):
