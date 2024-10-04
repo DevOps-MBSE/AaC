@@ -72,6 +72,7 @@ def check_model(context, model_file):
         raise AssertionError(f"Check cli command failed with message: {output_message}")
     context.output_message = output_message
 
+
 @when('I check the "{model_file}" model with verbose')
 def check_model_verbose(context, model_file):
     """
@@ -87,8 +88,9 @@ def check_model_verbose(context, model_file):
     if exit_code != 0:
         raise AssertionError(f"Check cli command failed with message: {output_message}")
     print(output_message)
-    assert ("alarm_clock was successful." in output_message) # only appears when using verbose
+    assert ("alarm_clock was successful." in output_message)  # only appears when using verbose
     context.output_message = output_message
+
 
 @when('I check the "{model_file}" bad model')
 def check_model_fail(context, model_file):
