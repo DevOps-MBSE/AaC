@@ -76,3 +76,10 @@ Feature: Check example models
         Given I have the "./flow/flow.yaml" model
         When I check the "./flow/flow.yaml" model
         Then I should receive a message that the check was successful
+
+# Shapes
+
+    Scenario:  Check the flow system model
+        Given I have the "./shapes/shapes.aac" model
+        When I check the "./shapes/shapes.aac" model
+        Then I should receive a message that the check was successful
