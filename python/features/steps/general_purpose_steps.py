@@ -73,6 +73,23 @@ def check_model(context, model_file):
     context.output_message = output_message
 
 
+@when('I check the "{model_file}" bad model')
+def check_model(context, model_file):
+    """
+    Run the check command on the given model.
+
+    Args:
+        context: Active context to check against.
+        model_file (str): Path to the model file being evaluated.
+    """
+    exit_code, output_message = run_cli_command_with_args(
+        "check", [get_model_file(context, model_file)]
+    )
+    if exit_code == 0:
+        raise AssertionError(f"Check cli command succeeded with message: {output_message}")
+    context.output_message = output_message
+
+
 @then("I should receive a message that the check was successful")
 def check_success(context):
     """
@@ -84,4 +101,17 @@ def check_success(context):
     if "All AaC constraint checks were successful." not in context.output_message:
         raise AssertionError(
             f"Model check failed with message: {context.output_message}"
+        )
+
+@then("I should receive a message that the check was not successful")
+def check_failure(context):
+    """
+    Ensure the check command was successful.
+
+    Args:
+        context: Active context to check against.
+    """
+    if "All AaC constraint checks were successful." in context.output_message:
+        raise AssertionError(
+            f"Model check succeeded with message: {context.output_message}"
         )
