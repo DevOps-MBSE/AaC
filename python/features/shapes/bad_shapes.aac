@@ -50,9 +50,6 @@ schema:
           type: number
     constraints:
         - name: Mutually exclusive fields
-          arguments:
-            - name: fields
-              value: height, width
         - name: Check arguments against constraint definition
 ---
 schema:
