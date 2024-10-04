@@ -46,6 +46,14 @@ schema:
           type: number
         - name: height
           type: number
+        - name: width
+          type: number
+    constraints:
+        - name: Mutually exclusive fields
+          arguments:
+            - name: fields
+              value: height, width
+        - name: Check arguments against constraint definition
 ---
 schema:
     name: Square
