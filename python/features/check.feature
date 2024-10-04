@@ -9,7 +9,7 @@ Feature: Check example models
 
     Scenario:  Check the alarm clock usecase
         Given I have the "./alarm_clock/usecase.yaml" model
-        When I check the "./alarm_clock/usecase.yaml" model
+        When I check the "./alarm_clock/usecase.yaml" model with verbose
         Then I should receive a message that the check was successful
 
 # Calculator

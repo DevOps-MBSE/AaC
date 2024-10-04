@@ -72,6 +72,23 @@ def check_model(context, model_file):
         raise AssertionError(f"Check cli command failed with message: {output_message}")
     context.output_message = output_message
 
+@when('I check the "{model_file}" model with verbose')
+def check_model_verbose(context, model_file):
+    """
+    Run the check command on the given model with verbose.
+
+    Args:
+        context: Active context to check against.
+        model_file (str): Path to the model file being evaluated.
+    """
+    exit_code, output_message = run_cli_command_with_args(
+        "check", [get_model_file(context, model_file), "--verbose"]
+    )
+    if exit_code != 0:
+        raise AssertionError(f"Check cli command failed with message: {output_message}")
+    print(output_message)
+    assert ("alarm_clock was successful." in output_message) # only appears when using verbose
+    context.output_message = output_message
 
 @when('I check the "{model_file}" bad model')
 def check_model_fail(context, model_file):
