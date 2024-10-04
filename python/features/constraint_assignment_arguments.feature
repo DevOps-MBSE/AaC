@@ -1,4 +1,4 @@
-Feature:  Constraint Assignment Arguments constraint
+Feature:  Constraint Assignment Arguments Constraint Evaluation
 
     Scenario:  Check the Shapes constraint spec
         Given I have the "./shapes/shapes.aac" model
