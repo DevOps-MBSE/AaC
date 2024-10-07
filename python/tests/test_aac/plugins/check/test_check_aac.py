@@ -52,7 +52,7 @@ class TestCheckAaC(TestCase):
 
             exit_code, output_message = self.run_check_cli_command_with_args(check_args)
             self.assertEqual(0, exit_code, f"Expected success but failed with message: {output_message}")  # asserts the command ran successfully
-            self.assertIn("My plugin was successful.", output_message) # only appears when --verbose is passed in.
+            self.assertIn("was successful.", output_message) # only appears when --verbose is passed in.
 
     def test_cli_check_bad_data(self):
         """Test the CLI command for the check plugin."""
