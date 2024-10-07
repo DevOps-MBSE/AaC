@@ -135,7 +135,8 @@ def check_failure(context):
             f"Model check succeeded with message: {context.output_message}"
         )
 
-@step("I should receive a list of successfully evaluated models")
+
+@then("I should receive a list of successfully evaluated models")
 def and_check(context):
     """
     Ensure the check command with verbose ran returned the list of models.
