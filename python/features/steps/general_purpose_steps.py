@@ -87,7 +87,6 @@ def check_model_verbose(context, model_file):
     )
     if exit_code != 0:
         raise AssertionError(f"Check cli command failed with message: {output_message}")
-    assert ("was successful." in output_message)  # only appears when using verbose
     context.output_message = output_message
 
 
@@ -144,4 +143,4 @@ def and_check(context):
     Args:
         context: Active context to check against
     """
-    assert ("was successful." in context.output_message)
+    assert ("was successful." in context.output_message) # only appears when using verbose
