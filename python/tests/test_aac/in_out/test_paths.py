@@ -32,7 +32,7 @@ def _get_working_directory_parent_directory(level_of_directories_up: int = 1) ->
     (f"{WORKING_TEST_DIR}/..%5c\/src/aac/test.py",              f"{_get_working_directory_parent_directory(1)}/src/aac/test.py"),
     (f"{WORKING_TEST_DIR}/%252e%252e%255c\/src/aac/test.py",    f"{_get_working_directory_parent_directory(1)}/src/aac/test.py"),
     (f"{WORKING_TEST_DIR}/..%255c\/src/aac/test.py",            f"{_get_working_directory_parent_directory(1)}/src/aac/test.py"),
-    pytest.param(f"{WORKING_TEST_DIR}/src/aac/AAA.py",          f"{WORKING_TEST_DIR}/src/aac/BBB.py", marks=pytest.mark.xfail) #this test is expect to fail and show as an 'xfailed'
+    pytest.param(f"{WORKING_TEST_DIR}/src/aac/AAA.py",          f"{WORKING_TEST_DIR}/src/aac/BBB.py", marks=pytest.mark.xfail) #this test is expected to fail and will show as an 'xfailed'
     ])
 def test_sequence(test_input, expected):
     assert sanitize_filesystem_path(test_input) == expected
