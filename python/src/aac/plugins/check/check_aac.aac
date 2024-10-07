@@ -16,4 +16,4 @@ plugin:
           description: The check command will fail if encountering fail or warn constraint violations.
         - name: --verbose
           type: bool
-          description: Provide ouput for all constraints evaluated.
+          description: Provide output for all constraints evaluated.
