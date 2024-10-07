@@ -11,6 +11,7 @@ Feature: Check example models
         Given I have the "./alarm_clock/usecase.yaml" model
         When I check the "./alarm_clock/usecase.yaml" model with verbose
         Then I should receive a message that the check was successful
+        And I should receive a list of successfully evaluated models
 
 # Calculator
 
@@ -21,15 +22,17 @@ Feature: Check example models
 
     Scenario:  Check the calculator model
         Given I have the "./calc/model/calculator.yaml" model
-        When I check the "./calc/model/calculator.yaml" model
+        When I check the "./calc/model/calculator.yaml" model with verbose
         Then I should receive a message that the check was successful
+        And I should receive a list of successfully evaluated models
 
 # Counter
 
     Scenario:  Check the counter model
         Given I have the "./counter/Counter.yaml" model
-        When I check the "./counter/Counter.yaml" model
+        When I check the "./counter/Counter.yaml" model with verbose
         Then I should receive a message that the check was successful
+        And I should receive a list of successfully evaluated models
 
 # Docs examples
 
@@ -40,8 +43,9 @@ Feature: Check example models
 
     Scenario:  Check the First Inheritance Example
         Given I have the "./docs_examples/dev_guide_language_api_modeling_inheritance/docs_inheritance_one.aac" model
-        When I check the "./docs_examples/dev_guide_language_api_modeling_inheritance/docs_inheritance_one.aac" model
+        When I check the "./docs_examples/dev_guide_language_api_modeling_inheritance/docs_inheritance_one.aac" model with verbose
         Then I should receive a message that the check was successful
+        And I should receive a list of successfully evaluated models
 
     Scenario:  Check the Second Inheritance Example
         Given I have the "./docs_examples/dev_guide_language_api_modeling_inheritance/docs_inheritance_two.aac" model
@@ -62,8 +66,9 @@ Feature: Check example models
 
     Scenario:  Check the echo model
         Given I have the "./echo/EchoService.yaml" model
-        When I check the "./echo/EchoService.yaml" model
+        When I check the "./echo/EchoService.yaml" model with verbose
         Then I should receive a message that the check was successful
+        And I should receive a list of successfully evaluated models
 
 # Flow
 
@@ -74,12 +79,14 @@ Feature: Check example models
 
     Scenario:  Check the flow usecase
         Given I have the "./flow/flow.yaml" model
-        When I check the "./flow/flow.yaml" model
+        When I check the "./flow/flow.yaml" model with verbose
         Then I should receive a message that the check was successful
+        And I should receive a list of successfully evaluated models
 
 # Shapes
 
     Scenario:  Check the flow system model
         Given I have the "./shapes/shapes.aac" model
-        When I check the "./shapes/shapes.aac" model
+        When I check the "./shapes/shapes.aac" model with verbose
         Then I should receive a message that the check was successful
+        And I should receive a list of successfully evaluated models

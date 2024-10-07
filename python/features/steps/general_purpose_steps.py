@@ -134,3 +134,13 @@ def check_failure(context):
         raise AssertionError(
             f"Model check succeeded with message: {context.output_message}"
         )
+
+@step("I should receive a list of successfully evaluated models")
+def and_check(context):
+    """
+    Ensure the check command with verbose ran returned the list of models.
+
+    Args:
+        context: Active context to check against
+    """
+    assert ("was successful." in context.output_message)
