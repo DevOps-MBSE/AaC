@@ -41,5 +41,5 @@ class TestPaths(TestCase):
         [f"{WORKING_TEST_DIR}/src/aac/AAA.py",                      f"{WORKING_TEST_DIR}/src/aac/BBB.py"], #Example of input for a fail-test
         ])
     def test_sequence_fail(self, test_path, expected_result):
-        self.assertNotEqual(sanitize_filesystem_path(test_path),expected_result) #Example of a fail-test assertNotEqual rather than AssertEqual
+        self.assertNotEqual(sanitize_filesystem_path(test_path),expected_result) #Example of a fail-test assertNotEqual rather than assertEqual
 
