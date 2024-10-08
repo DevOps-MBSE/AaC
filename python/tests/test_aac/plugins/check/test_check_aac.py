@@ -38,8 +38,21 @@ class TestCheckAaC(TestCase):
             check_args = [temp_aac_file_path]
 
             exit_code, output_message = self.run_check_cli_command_with_args(check_args)
-
             self.assertEqual(0, exit_code, f"Expected success but failed with message: {output_message}")  # asserts the command ran successfully
+            self.assertNotIn("My plugin was successful.", output_message) # only appears when --verbose is passed in.
+
+    def test_cli_check_verbose(self):
+        """Test the CLI command for the check plugin."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            aac_file_path = os.path.join(os.path.dirname(__file__), "good.aac")
+            temp_aac_file_path = os.path.join(temp_dir, "my_plugin.aac")
+            shutil.copy(aac_file_path, temp_aac_file_path)
+
+            check_args = [temp_aac_file_path, "--verbose"]
+
+            exit_code, output_message = self.run_check_cli_command_with_args(check_args)
+            self.assertEqual(0, exit_code, f"Expected success but failed with message: {output_message}")  # asserts the command ran successfully
+            self.assertIn("was successful.", output_message) # only appears when --verbose is passed in.
 
     def test_cli_check_bad_data(self):
         """Test the CLI command for the check plugin."""
