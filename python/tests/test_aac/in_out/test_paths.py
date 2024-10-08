@@ -18,6 +18,7 @@ def _get_working_directory_parent_directory(level_of_directories_up: int = 1) ->
     return path_to_return
 
 class TestPaths(TestCase):
+    #Success test block happy path cases
     @parameterized.expand([
         [f"{WORKING_TEST_DIR}/src/aac/test.py",                     f"{WORKING_TEST_DIR}/src/aac/test.py",],
         [f"{WORKING_TEST_DIR}/../src/aac/test.py",                  f"{os.path.dirname(WORKING_TEST_DIR)}/src/aac/test.py"],
@@ -37,6 +38,7 @@ class TestPaths(TestCase):
     def test_sequence_success(self, test_path, expected_result):
         self.assertEqual(sanitize_filesystem_path(test_path),expected_result)
 
+    #Expected fail test block for sad path cases
     @parameterized.expand([
         [f"{WORKING_TEST_DIR}/src/aac/AAA.py",                      f"{WORKING_TEST_DIR}/src/aac/BBB.py"], #Example of input for a fail-test
         ])
