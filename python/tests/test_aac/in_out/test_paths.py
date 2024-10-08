@@ -41,6 +41,11 @@ class TestPaths(TestCase):
     #Expected fail test block for sad path cases
     @parameterized.expand([
         [f"{WORKING_TEST_DIR}/src/aac/AAA.py",                      f"{WORKING_TEST_DIR}/src/aac/BBB.py"], #Example of input for a fail-test
+        [f"{WORKING_TEST_DIR}/src/aac/AAA.py",                      f""], #Empty directory
+        [f"{WORKING_TEST_DIR}/src/aac/AAA.py",                      f"{WORKING_TEST_DIR}/src/aac//AAA.py"], #Double forward slash test
+        [f" ",                                                      f""], #Space vs empty/null directory
+        [f" ",                                                      f" "], #Tab vs space directory
+        [f"{WORKING_TEST_DIR}/src/aac/AAA.py",                      f"{WORKING_TEST_DIR}/src/aac/AAA.py "], #Trailing space test
         ])
     def test_sequence_fail(self, test_path, expected_result):
         self.assertNotEqual(sanitize_filesystem_path(test_path),expected_result) #Example of a fail-test assertNotEqual rather than assertEqual
