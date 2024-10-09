@@ -48,5 +48,5 @@ class TestPaths(TestCase):
         [f"{WORKING_TEST_DIR}/src/aac/AAA.py",                      f"{WORKING_TEST_DIR}/src/aac/AAA.py "],  # Trailing space test
         ])
     def test_sequence_fail(self, test_path, expected_result):
-        self.assertNotEqual(sanitize_filesystem_path(test_path),expected_result)  # Example of a fail-test assertNotEqual rather than assertEqual
+        self.assertNotEqual(sanitize_filesystem_path(test_path), expected_result)  # Example of a fail-test assertNotEqual rather than assertEqual
 
