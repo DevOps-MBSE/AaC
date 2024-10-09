@@ -18,7 +18,7 @@ def _get_working_directory_parent_directory(level_of_directories_up: int = 1) ->
     return path_to_return
 
 class TestPaths(TestCase):
-    #Success test block happy path cases
+    # Success test block happy path cases
     @parameterized.expand([
         [f"{WORKING_TEST_DIR}/src/aac/test.py",                     f"{WORKING_TEST_DIR}/src/aac/test.py",],
         [f"{WORKING_TEST_DIR}/../src/aac/test.py",                  f"{os.path.dirname(WORKING_TEST_DIR)}/src/aac/test.py"],
@@ -38,15 +38,15 @@ class TestPaths(TestCase):
     def test_sequence_success(self, test_path, expected_result):
         self.assertEqual(sanitize_filesystem_path(test_path),expected_result)
 
-    #Expected fail test block for sad path cases
+    # Expected fail test block for sad path cases
     @parameterized.expand([
-        [f"{WORKING_TEST_DIR}/src/aac/AAA.py",                      f"{WORKING_TEST_DIR}/src/aac/BBB.py"], #Example of input for a fail-test
-        [f"{WORKING_TEST_DIR}/src/aac/AAA.py",                      f""], #Empty directory
-        [f"{WORKING_TEST_DIR}/src/aac/AAA.py",                      f"{WORKING_TEST_DIR}/src/aac//AAA.py"], #Double forward slash test
-        [f" ",                                                      f""], #Space vs empty/null directory
-        [f" ",                                                      f" "], #Tab vs space directory
-        [f"{WORKING_TEST_DIR}/src/aac/AAA.py",                      f"{WORKING_TEST_DIR}/src/aac/AAA.py "], #Trailing space test
+        [f"{WORKING_TEST_DIR}/src/aac/AAA.py",                      f"{WORKING_TEST_DIR}/src/aac/BBB.py"],  # Example of input for a fail-test
+        [f"{WORKING_TEST_DIR}/src/aac/AAA.py",                      f""],  # Empty directory
+        [f"{WORKING_TEST_DIR}/src/aac/AAA.py",                      f"{WORKING_TEST_DIR}/src/aac//AAA.py"],  # Double forward slash test
+        [f" ",                                                      f""],  # Space vs empty/null directory
+        [f" ",                                                      f" "],  # Tab vs space directory
+        [f"{WORKING_TEST_DIR}/src/aac/AAA.py",                      f"{WORKING_TEST_DIR}/src/aac/AAA.py "],  # Trailing space test
         ])
     def test_sequence_fail(self, test_path, expected_result):
-        self.assertNotEqual(sanitize_filesystem_path(test_path),expected_result) #Example of a fail-test assertNotEqual rather than assertEqual
+        self.assertNotEqual(sanitize_filesystem_path(test_path),expected_result)  # Example of a fail-test assertNotEqual rather than assertEqual
 
