@@ -36,7 +36,7 @@ class TestPaths(TestCase):
         [f"{WORKING_TEST_DIR}/..%255c\/src/aac/test.py",            f"{_get_working_directory_parent_directory(1)}/src/aac/test.py"],
     ])
     def test_sequence_success(self, test_path, expected_result):
-        self.assertEqual(sanitize_filesystem_path(test_path),expected_result)
+        self.assertEqual(sanitize_filesystem_path(test_path), expected_result)
 
     # Expected fail test block for sad path cases
     @parameterized.expand([
