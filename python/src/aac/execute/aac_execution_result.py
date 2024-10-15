@@ -87,12 +87,15 @@ class ExecutionResult:
         """Return the output messages as a combined string."""
         result = ""
         for message in self.messages:
-            result += message.message + linesep
-            if message.source is not None:
-                result += f"  Source: {message.source.uri}"
-                if message.location is not None:
-                    result += f" (Ln {message.location.line}: Col {message.location.column}: Pos {message.location.position}: Spn {message.location.span})"
-                result += linesep
+            if type(message) == ExecutionMessage:
+                result += message.message + linesep
+                if message.source is not None:
+                    result += f"  Source: {message.source.uri}"
+                    if message.location is not None:
+                        result += f" (Ln {message.location.line}: Col {message.location.column}: Pos {message.location.position}: Spn {message.location.span})"
+                    result += linesep
+            else:
+                result += message + linesep
         return result
 
 
