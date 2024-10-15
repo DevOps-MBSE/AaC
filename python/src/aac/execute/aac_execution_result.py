@@ -87,7 +87,7 @@ class ExecutionResult:
         """Return the output messages as a combined string."""
         result = ""
         for message in self.messages:
-            if type(message) == ExecutionMessage:
+            if type(message) is ExecutionMessage:
                 result += message.message + linesep
                 if message.source is not None:
                     result += f"  Source: {message.source.uri}"
