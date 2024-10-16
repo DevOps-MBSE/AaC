@@ -20,7 +20,6 @@ class TestExecutionResult(TestCase):
         messages = execution_result.get_messages_as_string()
         self.assertEqual(messages, "message 1\nmessage 2\nmessage 3\nmessage 4\n")
 
-
     def test_execution_result_message_levels(self):
         execution_result = ExecutionResult("name", "command_name", ExecutionStatus.SUCCESS, [])
         execution_result.add_messages([
@@ -57,6 +56,10 @@ class TestExecutionResult(TestCase):
         self.assertEqual(execution_plugin_failure.status_code, ExecutionStatus.PLUGIN_FAILURE)
         self.assertEqual(execution_operation_cancelled.status_code, ExecutionStatus.OPERATION_CANCELLED)
         self.assertEqual(execution_general_failure.status_code, ExecutionStatus.GENERAL_FAILURE)
+
+    def test_execution_result_invalid_status(self):
+        with self.assertRaises(AttributeError):
+            execution_result = ExecutionResult("name", "command_name", ExecutionStatus.general_failure, [])
 
     def test_execution_result_no_message(self):
         with self.assertRaises(TypeError):
