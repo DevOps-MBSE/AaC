@@ -1,4 +1,5 @@
-Feature:  Exclsuive Fields Evaluation
+Feature:  Exclusive Fields Evaluation
+
 
     Scenario:  Check the Shapes constraint spec
         Given I have the "./shapes/shapes.aac" model
