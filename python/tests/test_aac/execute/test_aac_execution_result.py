@@ -1,6 +1,7 @@
 from unittest import TestCase
 from aac.execute.aac_execution_result import ExecutionResult, ExecutionMessage, ExecutionStatus, MessageLevel
 
+
 class TestExecutionResult(TestCase):
 
     def test_execution_result_name(self):
@@ -15,7 +16,7 @@ class TestExecutionResult(TestCase):
             ExecutionMessage("message 2", MessageLevel.INFO, None, None),
             ExecutionMessage("message 3", MessageLevel.INFO, None, None),
             ExecutionMessage("message 4", MessageLevel.INFO, None, None)
-            ])
+        ])
 
         messages = execution_result.get_messages_as_string()
         self.assertEqual(messages, "message 1\nmessage 2\nmessage 3\nmessage 4\n")
@@ -27,7 +28,7 @@ class TestExecutionResult(TestCase):
             ExecutionMessage("message 2", MessageLevel.INFO, None, None),
             ExecutionMessage("message 3", MessageLevel.WARNING, None, None),
             ExecutionMessage("message 4", MessageLevel.ERROR, None, None)
-            ])
+        ])
         messages_list = execution_result.messages
         self.assertEqual(messages_list[0].level, MessageLevel.DEBUG)
         self.assertEqual(messages_list[1].level, MessageLevel.INFO)
@@ -64,19 +65,17 @@ class TestExecutionResult(TestCase):
 
     def test_execution_result_invalid_name(self):
         with self.assertRaises(TypeError):
-            execution_result = ExecutionResult(123, "command_name", ExecutionStatus.GENERAL_FAILURE, [])
+            execution_result = ExecutionResult(123, "command_name", ExecutionStatus.GENERAL_FAILURE, [])  # noqa: F841
         with self.assertRaises(TypeError):
-            execution_result = ExecutionResult("name", 456, ExecutionStatus.GENERAL_FAILURE, [])
+            execution_result = ExecutionResult("name", 456, ExecutionStatus.GENERAL_FAILURE, [])  # noqa: F841
 
     def test_execution_result_invalid_status(self):
         with self.assertRaises(AttributeError):
-            execution_result = ExecutionResult("name", "command_name", ExecutionStatus.general_failure, [])
+            execution_result = ExecutionResult("name", "command_name", ExecutionStatus.general_failure, [])  # noqa: F841
         with self.assertRaises(TypeError):
-            execution_result = ExecutionResult("name", "command_name", "general_failure", [])
+            execution_result = ExecutionResult("name", "command_name", "general_failure", [])  # noqa: F841
 
     def test_execution_result_no_message(self):
         with self.assertRaises(TypeError):
             execution_result = ExecutionResult("name", "command_name", ExecutionStatus.SUCCESS, [])
             execution_result.add_message("message")
-
-

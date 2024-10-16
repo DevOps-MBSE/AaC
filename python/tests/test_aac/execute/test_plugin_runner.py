@@ -1,10 +1,9 @@
 from os.path import join, dirname
-from typing import Callable
 from unittest import TestCase
 
-from aac.context.definition import Definition
 from aac.context.language_context import LanguageContext
 from aac.execute.plugin_runner import AacCommandArgument, AacCommand, PluginRunner
+
 
 class TestAacCommandArgument(TestCase):
     def test_init(self):
@@ -12,7 +11,7 @@ class TestAacCommandArgument(TestCase):
         self.assertEqual(arg.name, "test")
         self.assertEqual(arg.description, "test description")
         self.assertEqual(arg.data_type, "str")
-        self.assertEqual(arg.default, None)
+        self.assertIsNone(arg.default)
 
     def test_invalid_name(self):
         with self.assertRaises(TypeError):
@@ -26,10 +25,11 @@ class TestAacCommandArgument(TestCase):
         with self.assertRaises(TypeError):
             AacCommandArgument(name="test", description="test description", data_type=123)
 
+
 class TestAacCommand(TestCase):
     def test_init(self):
         arg = AacCommandArgument(name="test", description="test description", data_type="str")
-        callback = lambda: "Hello, World!"
+        callback = hello_world
         command = AacCommand(name="test_command", description="test command description", callback=callback, arguments=[arg])
 
         self.assertEqual(command.name, "test_command")
@@ -40,11 +40,11 @@ class TestAacCommand(TestCase):
 
     def test_invalid_name(self):
         with self.assertRaises(TypeError):
-            AacCommand(name=123, description="test description", callback=lambda: None, arguments=[])
+            AacCommand(name=123, description="test description", callback=none_return, arguments=[])
 
     def test_invalid_description(self):
         with self.assertRaises(TypeError):
-            AacCommand(name="test", description=123, callback=lambda: None, arguments=[])
+            AacCommand(name="test", description=123, callback=none_return, arguments=[])
 
     def test_invalid_callback(self):
         with self.assertRaises(TypeError):
@@ -52,18 +52,18 @@ class TestAacCommand(TestCase):
 
     def test_invalid_arguments(self):
         with self.assertRaises(TypeError):
-            AacCommand(name="test", description="test description", callback=lambda: None, arguments="not a list")
+            AacCommand(name="test", description="test description", callback=none_return, arguments="not a list")
+
 
 class TestPluginRunner(TestCase):
-
     def test_plugin_runner(self):
         aac_file_path = join(dirname(__file__), "my_plugin.aac")
         context = LanguageContext()
         definitions = context.parse_and_load(aac_file_path)
 
         plugin_runner = PluginRunner(definitions[0], {}, {})
-        plugin_runner.add_command_callback("command", lambda: "Command Callback")
-        plugin_runner.add_constraint_callback("constraint", lambda: "Constraint Callback")
+        plugin_runner.add_command_callback("command", command_callback)
+        plugin_runner.add_constraint_callback("constraint", constraint_callback)
 
         command = plugin_runner.get_command_callback("command")
         constraint = plugin_runner.get_constraint_callback("constraint")
@@ -77,7 +77,7 @@ class TestPluginRunner(TestCase):
             context = LanguageContext()
             definitions = context.parse_and_load(aac_file_path)
 
-            plugin_runner = PluginRunner(definitions[0], [], [])
+            plugin_runner = PluginRunner(definitions[0], [], [])  # noqa: F841
 
     def test_plugin_runner_no_callback(self):
         with self.assertRaises(TypeError):
@@ -97,5 +97,17 @@ class TestPluginRunner(TestCase):
             plugin_runner.add_constraint_callback("constraint", "Constraint Callback")
 
 
-if __name__ == "__main__":
-    unittest.main()
+def command_callback():
+    return "Command Callback"
+
+
+def constraint_callback():
+    return "Constraint Callback"
+
+
+def none_return():
+    return None
+
+
+def hello_world():
+    return "Hello, World!"
