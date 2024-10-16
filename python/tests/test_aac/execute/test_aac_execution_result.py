@@ -60,6 +60,8 @@ class TestExecutionResult(TestCase):
     def test_execution_result_invalid_status(self):
         with self.assertRaises(AttributeError):
             execution_result = ExecutionResult("name", "command_name", ExecutionStatus.general_failure, [])
+        with self.assertRaises(NameError):
+            execution_result = ExecutionResult("name", "command_name", general_failure, [])
 
     def test_execution_result_no_message(self):
         with self.assertRaises(TypeError):
