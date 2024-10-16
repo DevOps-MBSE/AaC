@@ -73,10 +73,15 @@ class ExecutionResult:
 
     def add_message(self, message: ExecutionMessage) -> None:
         """Add a message to the list of messages."""
+        if type(message) is not ExecutionMessage:
+            raise TypeError("Message should be of class ExecutionMessage")
         self.messages.append(message)
 
     def add_messages(self, messages: list[ExecutionMessage]) -> None:
         """Add messages to the list of messages."""
+        for message in messages:
+            if type(message) is not ExecutionMessage:
+                raise TypeError("Message should be of class ExecutionMessage")
         self.messages.extend(messages)
 
     def is_success(self) -> bool:
@@ -87,15 +92,12 @@ class ExecutionResult:
         """Return the output messages as a combined string."""
         result = ""
         for message in self.messages:
-            if type(message) is ExecutionMessage:
-                result += message.message + linesep
-                if message.source is not None:
-                    result += f"  Source: {message.source.uri}"
-                    if message.location is not None:
-                        result += f" (Ln {message.location.line}: Col {message.location.column}: Pos {message.location.position}: Spn {message.location.span})"
-                    result += linesep
-            else:
-                result += message + linesep
+            result += message.message + linesep
+            if message.source is not None:
+                result += f"  Source: {message.source.uri}"
+                if message.location is not None:
+                    result += f" (Ln {message.location.line}: Col {message.location.column}: Pos {message.location.position}: Spn {message.location.span})"
+                result += linesep
         return result
 
 
