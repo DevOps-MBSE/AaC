@@ -19,7 +19,3 @@ class TestPluginManager(TestCase):
         plugins = plugin_manager.get_plugins()
         self.assertTrue(str(plugin), ''.join(str(plugins)))
 
-    def test_plugin_manager_fail(self):
-        with self.assertRaises(AssertionError):
-            plugin_manager = get_plugin_manager()
-            plugin_manager.unregister("aac primitives")

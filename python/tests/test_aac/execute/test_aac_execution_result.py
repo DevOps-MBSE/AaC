@@ -40,7 +40,7 @@ class TestExecutionResult(TestCase):
         execution_result.status_code = ExecutionStatus.SUCCESS
         self.assertTrue(execution_result.is_success())
 
-    def test_status_enum(self):
+    def test_execution_result_status_enum(self):
         execution_success = ExecutionResult("name", "command_name", ExecutionStatus.SUCCESS, [])
         execution_constraint_failure = ExecutionResult("name", "command_name", ExecutionStatus.CONSTRAINT_FAILURE, [])
         execution_constraint_warning = ExecutionResult("name", "command_name", ExecutionStatus.CONSTRAINT_WARNING, [])
@@ -57,11 +57,17 @@ class TestExecutionResult(TestCase):
         self.assertEqual(execution_operation_cancelled.status_code, ExecutionStatus.OPERATION_CANCELLED)
         self.assertEqual(execution_general_failure.status_code, ExecutionStatus.GENERAL_FAILURE)
 
+    def test_execution_result_invalid_name(self):
+        with self.assertRaises(TypeError):
+            execution_result = ExecutionResult(123, "command_name", ExecutionStatus.GENERAL_FAILURE, [])
+        with self.assertRaises(TypeError):
+            execution_result = ExecutionResult("name", 456, ExecutionStatus.GENERAL_FAILURE, [])
+
     def test_execution_result_invalid_status(self):
         with self.assertRaises(AttributeError):
             execution_result = ExecutionResult("name", "command_name", ExecutionStatus.general_failure, [])
-        with self.assertRaises(NameError):
-            execution_result = ExecutionResult("name", "command_name", general_failure, [])
+        with self.assertRaises(TypeError):
+            execution_result = ExecutionResult("name", "command_name", "general_failure", [])
 
     def test_execution_result_no_message(self):
         with self.assertRaises(TypeError):
