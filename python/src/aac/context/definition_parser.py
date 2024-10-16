@@ -530,7 +530,10 @@ class DefinitionParser():
             instance = []
             if not field_value:
                 if is_required:
-                    raise LanguageError(f"Missing required field {field_name}")
+                    raise LanguageError(
+                        message=f"Missing required field {field_name}",
+                        location=None
+                    )
             else:
                 if not isinstance(field_value, list):
                     if is_required:
