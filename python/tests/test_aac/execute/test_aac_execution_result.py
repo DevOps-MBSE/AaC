@@ -62,6 +62,9 @@ class TestExecutionResult(TestCase):
         with self.assertRaises(TypeError):
             execution_result = ExecutionResult("name", "command_name", ExecutionStatus.SUCCESS, [])
             execution_result.add_message("message", "INFO", None, None)
+        with self.assertRaises(AttributeError):
+            execution_result = ExecutionResult("name", "command_name", ExecutionStatus.SUCCESS, [])
+            execution_result.add_message("message", MessageLevel.info, None, None)
 
     def test_execution_result_invalid_name(self):
         with self.assertRaises(TypeError):
