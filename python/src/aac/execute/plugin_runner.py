@@ -79,12 +79,16 @@ class PluginRunner:
         self, command_name: str, command_callback: Callable
     ) -> None:
         """Add a command callback to the plugin runner."""
+        if not callable(command_callback):
+            raise TypeError("Command Callback is not Callable")
         self.command_to_callback[command_name] = command_callback
 
     def add_constraint_callback(
         self, constraint_name: str, constraint_callback: Callable
     ) -> None:
         """Add a constraint callback to the plugin runner."""
+        if not callable(constraint_callback):
+            raise TypeError("Constraint Callback is not Callable")
         self.constraint_to_callback[constraint_name] = constraint_callback
 
     def get_command_callback(self, command_name: str) -> Callable:

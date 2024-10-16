@@ -1,4 +1,5 @@
 from os.path import join, dirname
+from typing import Callable
 from unittest import TestCase
 
 from aac.context.definition import Definition
@@ -69,6 +70,31 @@ class TestPluginRunner(TestCase):
         self.assertEqual("Command Callback", command())
         self.assertEqual("Constraint Callback", constraint())
         self.assertEqual("My plugin", plugin_runner.get_plugin_name())
+
+    def test_plugin_runner_list_instead_of_dict(self):
+        with self.assertRaises(TypeError):
+            aac_file_path = join(dirname(__file__), "my_plugin.aac")
+            context = LanguageContext()
+            definitions = context.parse_and_load(aac_file_path)
+
+            plugin_runner = PluginRunner(definitions[0], [], [])
+
+    def test_plugin_runner_no_callback(self):
+        with self.assertRaises(TypeError):
+            aac_file_path = join(dirname(__file__), "my_plugin.aac")
+            context = LanguageContext()
+            definitions = context.parse_and_load(aac_file_path)
+
+            plugin_runner = PluginRunner(definitions[0], {}, {})
+            plugin_runner.add_command_callback("command", "Command Callback")
+
+        with self.assertRaises(TypeError):
+            aac_file_path = join(dirname(__file__), "my_plugin.aac")
+            context = LanguageContext()
+            definitions = context.parse_and_load(aac_file_path)
+
+            plugin_runner = PluginRunner(definitions[0], {}, {})
+            plugin_runner.add_constraint_callback("constraint", "Constraint Callback")
 
 
 if __name__ == "__main__":
