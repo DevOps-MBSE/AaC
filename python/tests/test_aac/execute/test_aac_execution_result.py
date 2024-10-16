@@ -57,6 +57,11 @@ class TestExecutionResult(TestCase):
         self.assertEqual(execution_operation_cancelled.status_code, ExecutionStatus.OPERATION_CANCELLED)
         self.assertEqual(execution_general_failure.status_code, ExecutionStatus.GENERAL_FAILURE)
 
+    def test_execution_result_message_levels_invalid(self):
+        with self.assertRaises(TypeError):
+            execution_result = ExecutionResult("name", "command_name", ExecutionStatus.SUCCESS, [])
+            execution_result.add_message("message", "INFO", None, None)
+
     def test_execution_result_invalid_name(self):
         with self.assertRaises(TypeError):
             execution_result = ExecutionResult(123, "command_name", ExecutionStatus.GENERAL_FAILURE, [])
