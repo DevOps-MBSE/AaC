@@ -1,26 +1,45 @@
 from unittest import TestCase
 from aac.execute.aac_execution_result import ExecutionResult, ExecutionMessage, ExecutionStatus, MessageLevel
 
-class TestExecitionResult(TestCase):
+class TestExecutionResult(TestCase):
 
-    def test_execution_result(self):
-        execution_result = ExecutionResult("name", "command_name", ExecutionStatus.GENERAL_FAILURE, [])
+    def test_execution_result_name(self):
+        execution_result = ExecutionResult("name", "command_name", ExecutionStatus.SUCCESS, [])
+        self.assertEqual(execution_result.plugin_name, "name")
+        self.assertEqual(execution_result.plugin_command_name, "command_name")
+
+    def test_execution_result_messages(self):
+        execution_result = ExecutionResult("name", "command_name", ExecutionStatus.SUCCESS, [])
+        execution_result.add_messages([
+            ExecutionMessage("message 1", MessageLevel.INFO, None, None),
+            ExecutionMessage("message 2", MessageLevel.INFO, None, None),
+            ExecutionMessage("message 3", MessageLevel.INFO, None, None),
+            ExecutionMessage("message 4", MessageLevel.INFO, None, None)
+            ])
+
+        messages = execution_result.get_messages_as_string()
+        self.assertEqual(messages, "message 1\nmessage 2\nmessage 3\nmessage 4\n")
+
+
+    def test_execution_result_message_levels(self):
+        execution_result = ExecutionResult("name", "command_name", ExecutionStatus.SUCCESS, [])
         execution_result.add_messages([
             ExecutionMessage("message 1", MessageLevel.DEBUG, None, None),
             ExecutionMessage("message 2", MessageLevel.INFO, None, None),
             ExecutionMessage("message 3", MessageLevel.WARNING, None, None),
             ExecutionMessage("message 4", MessageLevel.ERROR, None, None)
             ])
-        execution_result.status_code = ExecutionStatus.SUCCESS
-
-        messages = execution_result.get_messages_as_string()
-        self.assertEqual(messages, "message 1\nmessage 2\nmessage 3\nmessage 4\n")
         messages_list = execution_result.messages
         self.assertEqual(messages_list[0].level, MessageLevel.DEBUG)
         self.assertEqual(messages_list[1].level, MessageLevel.INFO)
         self.assertEqual(messages_list[2].level, MessageLevel.WARNING)
         self.assertEqual(messages_list[3].level, MessageLevel.ERROR)
-        self.assertTrue(execution_result.is_success)
+
+    def test_execution_result_status_code(self):
+        execution_result = ExecutionResult("name", "command_name", ExecutionStatus.GENERAL_FAILURE, [])
+        self.assertFalse(execution_result.is_success())
+        execution_result.status_code = ExecutionStatus.SUCCESS
+        self.assertTrue(execution_result.is_success())
 
     def test_status_enum(self):
         execution_success = ExecutionResult("name", "command_name", ExecutionStatus.SUCCESS, [])
