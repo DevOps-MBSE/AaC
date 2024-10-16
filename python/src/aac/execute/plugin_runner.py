@@ -87,6 +87,10 @@ class PluginRunner:
         """Add a constraint callback to the plugin runner."""
         self.constraint_to_callback[constraint_name] = constraint_callback
 
+    def get_command_callback(self, command_name: str) -> Callable:
+        """Return the callback for the given constraint name."""
+        return self.command_to_callback[command_name]
+
     def get_constraint_callback(self, constraint_name: str) -> Callable:
         """Return the callback for the given constraint name."""
         return self.constraint_to_callback[constraint_name]
