@@ -73,10 +73,15 @@ class ExecutionResult:
 
     def add_message(self, message: ExecutionMessage) -> None:
         """Add a message to the list of messages."""
+        if type(message) is not ExecutionMessage:
+            raise TypeError("Message should be of class ExecutionMessage")
         self.messages.append(message)
 
     def add_messages(self, messages: list[ExecutionMessage]) -> None:
         """Add messages to the list of messages."""
+        for message in messages:
+            if type(message) is not ExecutionMessage:
+                raise TypeError("Message should be of class ExecutionMessage")
         self.messages.extend(messages)
 
     def is_success(self) -> bool:

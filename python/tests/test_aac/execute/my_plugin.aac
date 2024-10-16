@@ -1,0 +1,116 @@
+plugin:
+  name: My plugin
+  package: happy
+  description: |
+    An AaC plugin definition used to test the gen-plugin command behavior.
+  commands:
+    - name: test-command-one
+      help_text: |
+        A test command used to test the gen-plugin command behavior.
+      run_before:
+        - plugin: Check AaC
+          command: check
+      run_after:
+        - plugin: Generate
+          command: generate
+      input:
+        - name: aac-plugin-file
+          type: file
+          description: The path to the architecture file with the plugin definition.
+      acceptance:
+        - name: Command test
+          scenarios:
+            - name: Simple Command Test
+              given:
+                - An AaC file containing schemas with no extra fields.
+              when:
+                - The AaC check command is run on the schema.
+              then:
+                - The check commands provides the output 'All AaC constraint checks were successful.'
+    - name: test-command-two
+      help_text: |
+        A second test command used to test the gen-plugin command behavior.
+      run_before:
+        - plugin: Check AaC
+          command: check
+      run_after:
+        - plugin: Generate
+          command: generate
+      input:
+        - name: aac-plugin-file
+          type: file
+          description: The path to the architecture file with the plugin definition.
+      acceptance:
+        - name: Command test two
+          scenarios:
+            - name: Simple Command Test Two
+              given:
+                - An AaC file containing schemas with no extra fields.
+              when:
+                - The AaC check command is run on the schema.
+              then:
+                - The check commands provides the output 'All AaC constraint checks were successful.'
+    - name: test-command-three
+      help_text: |
+        A third test command used to test the gen-plugin command behavior.
+      run_before:
+        - plugin: Check AaC
+          command: check
+      run_after:
+        - plugin: Generate
+          command: generate
+      input:
+        - name: aac-plugin-file
+          type: file
+          description: The path to the architecture file with the plugin definition.
+      acceptance:
+        - name: Command test three
+          scenarios:
+            - name: Simple Command Test Three
+              given:
+                - An AaC file containing schemas with no extra fields.
+              when:
+                - The AaC check command is run on the schema.
+              then:
+                - The check commands provides the output 'All AaC constraint checks were successful.'
+  context_constraints:
+    - name: The sky is blue
+      description: Ensures the sky is blue.
+      acceptance:
+        - name: Context test
+          scenarios:
+            - name: Simple Constraint Test
+              given:
+                - An AaC file containing schemas with no extra fields.
+              when:
+                - The AaC check command is run on the schema.
+              then:
+                - The check commands provides the output 'All AaC constraint checks were successful.'
+  schema_constraints:
+    - name: Schemas have happy names
+      description: Check every schema declared provides positive vibes.
+      universal: true
+      acceptance:
+        - name: Schema test
+          scenarios:
+            - name: Simple Schema Test
+              given:
+                - An AaC file containing schemas with no extra fields.
+              when:
+                - The AaC check command is run on the schema.
+              then:
+                - The check commands provides the output 'All AaC constraint checks were successful.'
+  primitive_constraints:
+    - name: Primitives have happy names
+      description: Check every primitive declared provides positive vibes.
+      acceptance:
+        - name: Primitive test
+          scenarios:
+            - name: Simple Primitive Test
+              given:
+                - An AaC file containing schemas with no extra fields.
+              when:
+                - The AaC check command is run on the schema.
+              then:
+                - The check commands provides the output 'All AaC constraint checks were successful.'
+
