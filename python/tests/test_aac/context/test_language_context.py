@@ -1,6 +1,8 @@
 from unittest import TestCase
 
 from aac.context.language_context import LanguageContext
+from aac.context.language_error import LanguageError
+from aac.in_out.parser._parser_error import ParserError
 
 
 class TestLanguageContext(TestCase):
@@ -106,6 +108,54 @@ class TestLanguageContext(TestCase):
         for val in test_values:
             values = context.get_values_by_field_chain(val)
             self.assertGreater(len(values), 1)
+
+    def test_create_aac_object(self):
+        context = LanguageContext()
+        object = context.create_aac_object("Schema", {})
+        self.assertEqual(str(type(object)), "<class 'aac.lang.Schema'>")
+
+    def test_create_aac_object_incorrect_type(self):
+        with self.assertRaises(AttributeError):
+            context = LanguageContext()
+            object = context.create_aac_object("Schema", "Attribute")
+
+    # Something is going wrong with this method, it is failing to create the class. Putting a pin in it.
+    # def test_create_aac_enum(self):
+    #     context = LanguageContext()
+    #     enum = context.create_aac_enum("RequirementVerificationMethod", "TEST")
+
+    # def test_create_aac_enum_incorrect_type(self):
+    #   with self.assertRaises(AttributeError):
+    #       context = LanguageContext()
+    #       enum = context.create_aac_enum("RequirementVerificationMethod", 123)
+
+    def test_parse_and_load_non_definition(self):
+        with self.assertRaises(ParserError):
+            context = LanguageContext()
+            context.parse_and_load("definition")
+
+    def test_get_python_type_from_primitive(self):
+        context = LanguageContext()
+        with self.assertRaises(LanguageError):
+            context.get_python_type_from_primitive("type")
+
+    # Should this method return an error of some kind when it finds no definitions of a name?
+    def test_get_definitions_by_name_fail(self):
+        context = LanguageContext()
+        definitions = context.get_definitions_by_name("invalid name")
+        self.assertEqual(definitions, [])
+        with self.assertRaises(TypeError):
+            definitions = context.get_definitions_by_name(123)
+
+    # Should this method return an error of some kind when it finds no definitions of a root?
+    def test_get_definitions_by_root_fail(self):
+        context = LanguageContext()
+        definitions = context.get_definitions_by_root("invalid root")
+        self.assertEqual(definitions, [])
+        with self.assertRaises(TypeError):
+            definitions = context.get_definitions_by_name(123)
+
+
 
 VALID_AAC_YAML_CONTENT = """
 schema:
