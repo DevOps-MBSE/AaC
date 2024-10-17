@@ -117,7 +117,7 @@ class TestLanguageContext(TestCase):
     def test_create_aac_object_incorrect_type(self):
         with self.assertRaises(AttributeError):
             context = LanguageContext()
-            object = context.create_aac_object("Schema", "Attribute")
+            object = context.create_aac_object("Schema", "Attribute")  # noqa: F841
 
     # Something is going wrong with this method, it is failing to create the class. Putting a pin in it.
     # def test_create_aac_enum(self):
@@ -134,7 +134,7 @@ class TestLanguageContext(TestCase):
             context = LanguageContext()
             context.parse_and_load("definition")
 
-    def test_get_python_type_from_primitive(self):
+    def test_get_python_type_from_primitive_no_type(self):
         context = LanguageContext()
         with self.assertRaises(LanguageError):
             context.get_python_type_from_primitive("type")
@@ -154,7 +154,6 @@ class TestLanguageContext(TestCase):
         self.assertEqual(definitions, [])
         with self.assertRaises(TypeError):
             definitions = context.get_definitions_by_name(123)
-
 
 
 VALID_AAC_YAML_CONTENT = """

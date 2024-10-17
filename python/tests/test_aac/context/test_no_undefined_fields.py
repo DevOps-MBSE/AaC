@@ -26,7 +26,7 @@ schema:
         - name: name
           type: string
           is_required: true
-        - name: extra   
+        - name: extra
           type: string
 """
 
@@ -40,6 +40,6 @@ schema:
           type: string
           is_required: true
           not_defined_in_field: fail
-        - name: extra   
+        - name: extra
           type: string
 """

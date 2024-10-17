@@ -2,7 +2,6 @@ from unittest import TestCase
 
 from aac.context.definition import Definition
 from aac.context.language_context import LanguageContext
-from aac.in_out.files.aac_file import AaCFile
 
 
 class TestDefinition(TestCase):
@@ -41,13 +40,14 @@ class TestDefinition(TestCase):
                 structure=schema_definition.structure,
             )
         with self.assertRaises(TypeError):
-            definition = Definition(
+            definition = Definition(            # noqa: F841
                 name=schema_definition.name,
                 package=123,
                 content=schema_definition.content,
                 source=schema_definition.source,
                 structure=schema_definition.structure,
             )
+
 
 VALID_AAC_YAML_CONTENT = """
 schema:
@@ -72,4 +72,3 @@ schema:
       description: |
         This is a test field.
 """.strip()
-

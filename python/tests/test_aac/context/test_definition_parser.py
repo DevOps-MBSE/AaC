@@ -24,10 +24,11 @@ class TestDefinitionParser(TestCase):
     def test_load_definitions_fail(self):
         parser = DefinitionParser()
         context = LanguageContext()
-        with self.assertRaises(ParserError) as e:
+        with self.assertRaises(ParserError):
             definitions = parse(INVALID_AAC_YAML_CONTENT)
-            loaded_definitions = parser.load_definitions(context=context, parsed_definitions=definitions)
+            loaded_definitions = parser.load_definitions(context=context, parsed_definitions=definitions)  # noqa: F841
             self.assertFalse(definitions[0].source.is_loaded_in_context)
+
 
 VALID_AAC_YAML_CONTENT = """
 schema:
