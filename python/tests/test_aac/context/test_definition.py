@@ -20,6 +20,31 @@ class TestDefinition(TestCase):
         definition = context.get_definitions_by_name("abstract")
         self.assertEqual(definition[0].get_root_key(), "modifier")
 
+    def test_is_import(self):
+        context = LanguageContext()
+        definition = context.parse_and_load(IMPORT_DEFINITION)[0]
+        self.assertTrue(definition.is_import())
+        definition = context.get_definitions_by_name("Schema")[0]
+        self.assertFalse(definition.is_import())
+
+    def test_get_python_module_name(self):
+        context = LanguageContext()
+        definition = context.get_definitions_by_name("Schema")[0]
+        module_name = definition.get_python_module_name()
+        self.assertEqual(module_name, "aac.lang")
+
+    def test_get_python_class_name(self):
+        context = LanguageContext()
+        definition = context.parse_and_load(DEFINITION_VALID)[0]
+        class_name = definition.get_python_class_name()
+        self.assertEqual(class_name, "ModelName")
+
+    def test_get_fully_qualified_name(self):
+        context = LanguageContext()
+        definition = context.get_definitions_by_name("Schema")[0]
+        name = definition.get_fully_qualified_name()
+        self.assertEqual(name, "aac.lang.Schema")
+
     def test_to_yaml(self):
         context = LanguageContext()
         definition = context.get_definitions_by_name("Schema")
@@ -47,28 +72,35 @@ class TestDefinition(TestCase):
                 source=schema_definition.source,
                 structure=schema_definition.structure,
             )
+        with self.assertRaises(TypeError):
+            definition = Definition(            # noqa: F841
+                name=schema_definition.name,
+                package=schema_definition.package,
+                content=123,
+                source=schema_definition.source,
+                structure=schema_definition.structure,
+            )
+
+    def test_get_python_module_name_default(self):
+        context = LanguageContext()
+        definition = context.parse_and_load(DEFINITION_VALID)[0]
+        module_name = definition.get_python_module_name()
+        self.assertEqual(module_name, "default")
 
 
-VALID_AAC_YAML_CONTENT = """
-schema:
-  name: TestSchema
-  description: |
-    This is a test schema.
-  fields:
-    - name: string_field
-      type: string
-      description: |
-        This is a test field.
-    - name: integer_field
-      type: integer
-      description: |
-        This is a test field.
-    - name: boolean_field
-      type: boolean
-      description: |
-        This is a test field.
-    - name: number_field
-      type: number
-      description: |
-        This is a test field.
-""".strip()
+IMPORT_DEFINITION = """
+import:
+  files:
+    - ./structures.yaml
+    - ../alarm_clock/structures.yaml
+"""
+
+DEFINITION_VALID = """
+model:
+    name: Model Name
+"""
+
+DEFINITION_INVALID_ROOT_KEY = """
+notaroot:
+    name: notaroot
+"""

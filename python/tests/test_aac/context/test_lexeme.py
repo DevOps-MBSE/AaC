@@ -15,7 +15,7 @@ class TestLexeme(TestCase):
         self.assertEqual(lex_one, lex_two)
 
         string_value = str(lex_one)
-        self.assertIsInstance()(string_value, str)
+        self.assertIsInstance(string_value, str)
         self.assertGreater(len(string_value), 0)
 
     def test_lexeme_fail(self):

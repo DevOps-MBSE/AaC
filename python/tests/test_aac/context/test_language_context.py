@@ -21,6 +21,13 @@ class TestLanguageContext(TestCase):
         for definition in context.get_aac_core_definitions():
             self.assertIn(f"name: {definition.name}", aac_yaml)
 
+    def test_get_aac_core_definitions(self):
+        context = LanguageContext()
+        definitions = context.get_aac_core_definitions()
+        self.assertIn("Schema", str(definitions))
+        self.assertIn("Fields", str(definitions))
+        self.assertIn("Model", str(definitions))
+
     def test_parse_and_load(self):
         context = LanguageContext()
         definitions = context.parse_and_load(VALID_AAC_YAML_CONTENT)
