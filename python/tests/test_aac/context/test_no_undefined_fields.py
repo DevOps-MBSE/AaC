@@ -1,6 +1,7 @@
 from unittest import TestCase
 from aac.context.language_context import LanguageContext
 from aac.context.language_error import LanguageError
+from aac.in_out.parser._parser_error import ParserError
 
 
 class TestNoUndefinedFields(TestCase):
@@ -14,6 +15,12 @@ class TestNoUndefinedFields(TestCase):
             definitions = context.parse_and_load(BAD_EXTRA_SUB_FIELDS)
             context.remove_definitions(definitions)
 
+    def test_no_undefined_fields(self):
+        context = LanguageContext()
+        with self.assertRaises(ParserError):
+            definitions = context.parse_and_load(EMPTY_FIELDS)
+
+
 
 # we've got plenty of good cases in the default language definition, so just test the bad case
 BAD_EXTRA_FIELDS = """
@@ -26,7 +33,7 @@ schema:
         - name: name
           type: string
           is_required: true
-        - name: extra   
+        - name: extra
           type: string
 """
 
@@ -40,6 +47,12 @@ schema:
           type: string
           is_required: true
           not_defined_in_field: fail
-        - name: extra   
+        - name: extra
           type: string
+"""
+
+EMPTY_FIELDS = """
+schema:
+    name:
+    package:
 """
