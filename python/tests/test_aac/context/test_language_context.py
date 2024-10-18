@@ -42,6 +42,8 @@ class TestLanguageContext(TestCase):
     # def test_create_aac_enum(self):
     #     context = LanguageContext()
     #     enum = context.create_aac_enum("RequirementVerificationMethod", "TEST")
+    #     self.assertEqual(str(type(enum)), "aac.lang.RequirementVerificationMethod")
+    #     self.assertEqual(str(enum), "TEST")
 
     def test_parse_and_load(self):
         context = LanguageContext()
