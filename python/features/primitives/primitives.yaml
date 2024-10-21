@@ -1,0 +1,49 @@
+---
+schema:
+  name: Primitives
+  package: primitives
+  root: primitives
+  fields:
+    - name: name
+      type: string
+      is_required: True
+    - name: bool_field
+      type: bool
+      is_required: True
+    - name: date_field
+      type: date
+      is_required: True
+    - name: dir_field
+      type: directory
+      is_required: True
+    - name: file_field
+      type: file
+      is_required: True
+    - name: string_field
+      type: string
+      is_required: True
+    - name: int_field
+      type: int
+      is_required: True
+    - name: number_field
+      type: number
+      is_required: True
+    - name: dataref_field
+      type: dataref(primitives.date_field)
+      is_required: True
+    - name: typeref_field
+      type: typeref(aac.lang.AacType)
+      is_required: True
+---
+primitives:
+  name: primitives
+  bool_field: True
+  date_field: '2023-01-22'
+  dir_field: ../calc/model
+  file_field: ../calc/model/Calculator.yaml
+  string_field: String
+  int_field: 12345
+  number_field: 1234.5
+  dataref_field: '2023-01-22'
+  typeref_field: Schema
+---
