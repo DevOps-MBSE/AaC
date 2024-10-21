@@ -21,10 +21,16 @@ class TestSourceLocation(TestCase):
         lexemes = definition.lexemes
 
         self.assertEqual(lexemes[0].value, "schema")
-        self.assertEqual(lexemes[0].location.to_tuple(), (0, 0, 0, 6))
+        self.assertEqual(lexemes[0].location.line, 0)
+        self.assertEqual(lexemes[0].location.column, 0)
+        self.assertEqual(lexemes[0].location.position, 0)
+        self.assertEqual(lexemes[0].location.span, 6)
 
         self.assertEqual(lexemes[1].value, "name")
-        self.assertEqual(lexemes[1].location.to_tuple(), (1, 2, 10, 4))
+        self.assertEqual(lexemes[1].location.line, 1)
+        self.assertEqual(lexemes[1].location.column, 2)
+        self.assertEqual(lexemes[1].location.position, 10)
+        self.assertEqual(lexemes[1].location.span, 4)
 
     def test_source_location_incorrect_type(self):
         with self.assertRaises(TypeError):
