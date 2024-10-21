@@ -6,6 +6,17 @@ from aac.in_out.parser import parse, ParserError
 
 
 class TestDefinitionParser(TestCase):
+    def test_find_definitions_by_name(self):
+        context = LanguageContext()
+        definitions = context.get_definitions_by_name("Schema")
+        self.assertEqual(len(definitions), 1)
+        self.assertEqual(definitions[0].name, "Schema")
+        self.assertIsNotNone(definitions[0].instance)
+
+        context.parse_and_load(VALID_AAC_YAML_CONTENT_SPACE_IN_NAME)
+        definitions = context.get_definitions_by_name("Test Schema2")
+        self.assertEqual(definitions[0].name, "Test Schema2")
+
     def test_load_definitions_pass(self):
         parser = DefinitionParser()
         context = LanguageContext()
@@ -24,10 +35,11 @@ class TestDefinitionParser(TestCase):
     def test_load_definitions_fail(self):
         parser = DefinitionParser()
         context = LanguageContext()
-        with self.assertRaises(ParserError) as e:
+        with self.assertRaises(ParserError):
             definitions = parse(INVALID_AAC_YAML_CONTENT)
-            loaded_definitions = parser.load_definitions(context=context, parsed_definitions=definitions)
+            loaded_definitions = parser.load_definitions(context=context, parsed_definitions=definitions)  # noqa: F841
             self.assertFalse(definitions[0].source.is_loaded_in_context)
+
 
 VALID_AAC_YAML_CONTENT = """
 schema:
@@ -52,6 +64,31 @@ schema:
       description: |
         This is a test field.
 """.strip()
+
+VALID_AAC_YAML_CONTENT_SPACE_IN_NAME = """
+schema:
+  name: Test Schema2
+  description: |
+    This is a test schema.
+  fields:
+    - name: string_field
+      type: string
+      description: |
+        This is a test field.
+    - name: integer_field
+      type: integer
+      description: |
+        This is a test field.
+    - name: boolean_field
+      type: boolean
+      description: |
+        This is a test field.
+    - name: number_field
+      type: number
+      description: |
+        This is a test field.
+""".strip()
+
 
 INVALID_AAC_YAML_CONTENT = """
 schema:

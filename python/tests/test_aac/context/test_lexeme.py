@@ -15,5 +15,15 @@ class TestLexeme(TestCase):
         self.assertEqual(lex_one, lex_two)
 
         string_value = str(lex_one)
-        self.assertTrue(isinstance(string_value, str))
-        self.assertTrue(len(string_value) > 0)
+        self.assertIsInstance(string_value, str)
+        self.assertGreater(len(string_value), 0)
+
+    def test_lexeme_fail(self):
+        loc = SourceLocation(1, 2, 3, 4)
+        src = "my_source.aac"
+        value = "my_value"
+
+        lex_one = Lexeme(loc, src, value)
+        lex_two = Lexeme(loc, value, src)
+
+        self.assertNotEqual(lex_one, lex_two)
