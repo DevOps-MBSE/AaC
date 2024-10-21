@@ -1,0 +1,16 @@
+import:
+  files:
+    - ./primitives.yaml
+---
+primitives:
+  name: bad_primitives
+  bool_field: True
+  date_field: '2023-01-22'
+  dir_field: ../calc/model
+  file_field: ../calc/model/Calculator.yaml
+  string_field: String
+  int_field: 12345
+  number_field: 1234.5
+  dataref_field: '2023-01-22'
+  typeref_field: "schema"
+---
