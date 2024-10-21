@@ -26,10 +26,10 @@ class TestSourceLocation(TestCase):
         self.assertEqual(lexemes[1].value, "name")
         self.assertEqual(lexemes[1].location.to_tuple(), (1, 2, 10, 4))
 
-
     def test_source_location_incorrect_type(self):
         with self.assertRaises(TypeError):
             loc = SourceLocation("1", "2", "3", "4")  # noqa: F841
+
 
 VALID_AAC_YAML_CONTENT = """
 schema:
