@@ -4,23 +4,12 @@ from unittest.mock import patch
 from typing import Tuple
 from click.testing import CliRunner
 from aac.execute.command_line import cli, initialize_cli
-from aac.execute.aac_execution_result import ExecutionStatus
 
 import os
 import shutil
 import tempfile
 
 import traceback
-
-from aac.plugins.gen_plugin.gen_plugin_impl import (
-    plugin_name,
-    gen_plugin,
-    before_gen_plugin_check,
-    after_gen_plugin_generate,
-    gen_project,
-    before_gen_project_check,
-    after_gen_project_generate,
-)
 
 
 class TestGenPlugin(TestCase):
@@ -79,7 +68,7 @@ class TestGenPlugin(TestCase):
 
     def test_cli_gen_plugin_with_incomplete_dirs(self):
         # first we need a project to work in, so generate a temporary one
-         with tempfile.TemporaryDirectory() as temp_dir:
+        with tempfile.TemporaryDirectory() as temp_dir:
             aac_file_path = os.path.join(os.path.dirname(__file__), "my_project.aac")
             temp_aac_file_path = os.path.join(temp_dir, "my_project.aac")
             shutil.copy(aac_file_path, temp_aac_file_path)
@@ -106,7 +95,7 @@ class TestGenPlugin(TestCase):
 
             self.assertTrue(os.path.exists(os.path.join(package_src_path, "my_plugin_impl.py")))
 
-            package_tests_path = os.path.join(temp_dir, "test_happy") # making sure that tests get output to the correct location
+            package_tests_path = os.path.join(temp_dir, "test_happy")  # making sure that tests get output to the correct location
             self.assertTrue(os.path.exists(os.path.join(package_src_path, "__init__.py")))
             self.assertTrue(os.path.exists(os.path.join(package_tests_path, "my_plugin_command_test.feature")))
             self.assertTrue(os.path.exists(os.path.join(package_tests_path, "my_plugin_command_test_two.feature")))
@@ -181,8 +170,6 @@ class TestGenPlugin(TestCase):
             exit_code, output_message = self.run_gen_plugin_cli_command_with_args(proj_args)
             self.assertNotEqual(0, exit_code)
             self.assertIn("Definition is missing field 'name'", output_message)
-
-
 
     def test_gen_project(self):
         # I'm going to rely on the CLI testing for this one, but will leave there here in case we need it later
