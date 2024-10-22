@@ -168,8 +168,8 @@ class TestGenPlugin(TestCase):
             self.assertTrue(os.path.exists(os.path.join(package_tests_path, "my_plugin_command_test_three.feature")))
 
     # The following decorators are to stop std_out and std_err from clogging up the terminal with System errors.
-    @patch('sys.stdout', new_callable=StringIO)
-    @patch('sys.stderr', new_callable=StringIO)
+    @patch('sys.stdout', new_callable=StringIO)  # Suppress stdout
+    @patch('sys.stderr', new_callable=StringIO)  # Suppress stderr
     def test_cli_gen_plugin_failure(self, mock_stderr, mock_stdout):
         with tempfile.TemporaryDirectory() as temp_dir:
             aac_file_path = os.path.join(os.path.dirname(__file__), "my_plugin_bad.aac")
@@ -223,8 +223,8 @@ class TestGenPlugin(TestCase):
             self.assertTrue(os.path.exists(os.path.join(temp_dir, "docs")))
 
     # The following decorators are to stop std_out and std_err from clogging up the terminal with System errors.
-    @patch('sys.stdout', new_callable=StringIO)
-    @patch('sys.stderr', new_callable=StringIO)
+    @patch('sys.stdout', new_callable=StringIO)  # Suppress stdout
+    @patch('sys.stderr', new_callable=StringIO)  # Suppress stderr
     def test_cli_gen_project_failure(self, mock_stderr, mock_stdout):
         with tempfile.TemporaryDirectory() as temp_dir:
             aac_file_path = os.path.join(os.path.dirname(__file__), "my_project_bad.aac")
