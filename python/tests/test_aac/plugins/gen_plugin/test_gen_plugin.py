@@ -3,13 +3,12 @@ from unittest import TestCase
 from unittest.mock import patch
 from typing import Tuple
 from click.testing import CliRunner
+from os import path, mkdir
+from shutil import copy
+from tempfile import TemporaryDirectory
+from traceback import print_exception
+
 from aac.execute.command_line import cli, initialize_cli
-
-import os
-import shutil
-import tempfile
-
-import traceback
 
 
 class TestGenPlugin(TestCase):
@@ -30,10 +29,10 @@ class TestGenPlugin(TestCase):
 
     def test_cli_gen_plugin(self):
         # first we need a project to work in, so generate a temporary one
-        with tempfile.TemporaryDirectory() as temp_dir:
-            aac_file_path = os.path.join(os.path.dirname(__file__), "my_project.aac")
-            temp_aac_file_path = os.path.join(temp_dir, "my_project.aac")
-            shutil.copy(aac_file_path, temp_aac_file_path)
+        with TemporaryDirectory() as temp_dir:
+            aac_file_path = path.join(path.dirname(__file__), "my_project.aac")
+            temp_aac_file_path = path.join(temp_dir, "my_project.aac")
+            copy(aac_file_path, temp_aac_file_path)
 
             proj_args = [temp_aac_file_path, "--output", temp_dir, "--no-prompt"]
 
@@ -42,36 +41,36 @@ class TestGenPlugin(TestCase):
             self.assertEqual(0, exit_code, f"Expected success but failed with message: {output_message}")  # asserts the command ran successfully
 
             # now create an AaC plugin file in the project src directory
-            package_src_path = os.path.join(temp_dir, "src", "happy")
-            os.mkdir(package_src_path)
-            package_tests_path = os.path.join(temp_dir, "tests", "test_happy")
-            os.mkdir(package_tests_path)
-            plugin_file_path = os.path.join(package_src_path, "my_plugin.aac")
+            package_src_path = path.join(temp_dir, "src", "happy")
+            mkdir(package_src_path)
+            package_tests_path = path.join(temp_dir, "tests", "test_happy")
+            mkdir(package_tests_path)
+            plugin_file_path = path.join(package_src_path, "my_plugin.aac")
 
-            aac_plugin_path = os.path.join(os.path.dirname(__file__), "my_plugin.aac")
-            shutil.copy(aac_plugin_path, plugin_file_path)
+            aac_plugin_path = path.join(path.dirname(__file__), "my_plugin.aac")
+            copy(aac_plugin_path, plugin_file_path)
 
-            plugin_args = [plugin_file_path, "--code-output", os.path.join(temp_dir, "src"), "--test-output", os.path.join(temp_dir, "tests"), "--no-prompt"]
+            plugin_args = [plugin_file_path, "--code-output", path.join(temp_dir, "src"), "--test-output", path.join(temp_dir, "tests"), "--no-prompt"]
 
             exit_code, output_message = self.run_gen_plugin_cli_command_with_args(plugin_args)
             self.assertEqual(0, exit_code)  # asserts the command ran successfully
             self.assertIn("All AaC constraint checks were successful", output_message)  # asserts the command ran check successfully
 
             # make sure the files were created correctly
-            self.assertTrue(os.path.exists(os.path.join(package_src_path, "__init__.py")))
-            self.assertTrue(os.path.exists(os.path.join(package_src_path, "my_plugin_impl.py")))
-            self.assertTrue(os.path.exists(os.path.join(package_tests_path, "test_my_plugin.py")))
-            self.assertTrue(os.path.exists(os.path.join(package_tests_path, "my_plugin_command_test.feature")))
-            self.assertTrue(os.path.exists(os.path.join(package_tests_path, "my_plugin_context_test.feature")))
-            self.assertTrue(os.path.exists(os.path.join(package_tests_path, "my_plugin_schema_test.feature")))
-            self.assertTrue(os.path.exists(os.path.join(package_tests_path, "my_plugin_primitive_test.feature")))
+            self.assertTrue(path.exists(path.join(package_src_path, "__init__.py")))
+            self.assertTrue(path.exists(path.join(package_src_path, "my_plugin_impl.py")))
+            self.assertTrue(path.exists(path.join(package_tests_path, "test_my_plugin.py")))
+            self.assertTrue(path.exists(path.join(package_tests_path, "my_plugin_command_test.feature")))
+            self.assertTrue(path.exists(path.join(package_tests_path, "my_plugin_context_test.feature")))
+            self.assertTrue(path.exists(path.join(package_tests_path, "my_plugin_schema_test.feature")))
+            self.assertTrue(path.exists(path.join(package_tests_path, "my_plugin_primitive_test.feature")))
 
     def test_cli_gen_plugin_with_incomplete_dirs(self):
         # first we need a project to work in, so generate a temporary one
-        with tempfile.TemporaryDirectory() as temp_dir:
-            aac_file_path = os.path.join(os.path.dirname(__file__), "my_project.aac")
-            temp_aac_file_path = os.path.join(temp_dir, "my_project.aac")
-            shutil.copy(aac_file_path, temp_aac_file_path)
+        with TemporaryDirectory() as temp_dir:
+            aac_file_path = path.join(path.dirname(__file__), "my_project.aac")
+            temp_aac_file_path = path.join(temp_dir, "my_project.aac")
+            copy(aac_file_path, temp_aac_file_path)
 
             proj_args = [temp_aac_file_path, "--output", temp_dir, "--no-prompt"]
 
@@ -80,32 +79,32 @@ class TestGenPlugin(TestCase):
             self.assertEqual(0, exit_code, f"Expected success but failed with message: {output_message}")  # asserts the command ran successfully
 
             # now create an AaC plugin file in the project src directory
-            package_src_path = os.path.join(temp_dir, "src", "happy")
-            os.mkdir(package_src_path)
-            plugin_file_path = os.path.join(temp_dir, "my_plugin.aac")
+            package_src_path = path.join(temp_dir, "src", "happy")
+            mkdir(package_src_path)
+            plugin_file_path = path.join(temp_dir, "my_plugin.aac")
 
-            aac_plugin_path = os.path.join(os.path.dirname(__file__), "my_plugin.aac")
-            shutil.copy(aac_plugin_path, plugin_file_path)
+            aac_plugin_path = path.join(path.dirname(__file__), "my_plugin.aac")
+            copy(aac_plugin_path, plugin_file_path)
 
-            plugin_args = [plugin_file_path, "--code-output", os.path.join(temp_dir, "src"), "--no-prompt"]
+            plugin_args = [plugin_file_path, "--code-output", path.join(temp_dir, "src"), "--no-prompt"]
 
             exit_code, output_message = self.run_gen_plugin_cli_command_with_args(plugin_args)
             self.assertEqual(0, exit_code)  # asserts the command ran successfully
             self.assertIn("All AaC constraint checks were successful", output_message)  # asserts the command ran check successfully
 
-            self.assertTrue(os.path.exists(os.path.join(package_src_path, "my_plugin_impl.py")))
+            self.assertTrue(path.exists(path.join(package_src_path, "my_plugin_impl.py")))
 
-            package_tests_path = os.path.join(temp_dir, "test_happy")  # making sure that tests get output to the correct location
-            self.assertTrue(os.path.exists(os.path.join(package_src_path, "__init__.py")))
-            self.assertTrue(os.path.exists(os.path.join(package_tests_path, "my_plugin_command_test.feature")))
-            self.assertTrue(os.path.exists(os.path.join(package_tests_path, "my_plugin_command_test_two.feature")))
-            self.assertTrue(os.path.exists(os.path.join(package_tests_path, "my_plugin_command_test_three.feature")))
+            package_tests_path = path.join(temp_dir, "test_happy")  # making sure that tests get output to the correct location
+            self.assertTrue(path.exists(path.join(package_src_path, "__init__.py")))
+            self.assertTrue(path.exists(path.join(package_tests_path, "my_plugin_command_test.feature")))
+            self.assertTrue(path.exists(path.join(package_tests_path, "my_plugin_command_test_two.feature")))
+            self.assertTrue(path.exists(path.join(package_tests_path, "my_plugin_command_test_three.feature")))
 
     def test_cli_gen_plugin_multiple_commands(self):
-        with tempfile.TemporaryDirectory() as temp_dir:
-            aac_file_path = os.path.join(os.path.dirname(__file__), "my_project.aac")
-            temp_aac_file_path = os.path.join(temp_dir, "my_project.aac")
-            shutil.copy(aac_file_path, temp_aac_file_path)
+        with TemporaryDirectory() as temp_dir:
+            aac_file_path = path.join(path.dirname(__file__), "my_project.aac")
+            temp_aac_file_path = path.join(temp_dir, "my_project.aac")
+            copy(aac_file_path, temp_aac_file_path)
 
             proj_args = [temp_aac_file_path, "--output", temp_dir, "--no-prompt"]
 
@@ -114,23 +113,23 @@ class TestGenPlugin(TestCase):
             self.assertEqual(0, exit_code, f"Expected success but failed with message: {output_message}")  # asserts the command ran successfully
 
             # now create an AaC plugin file in the project src directory
-            package_src_path = os.path.join(temp_dir, "src", "happy")
-            os.mkdir(package_src_path)
-            package_tests_path = os.path.join(temp_dir, "tests", "test_happy")
-            os.mkdir(package_tests_path)
-            plugin_file_path = os.path.join(package_src_path, "my_plugin.aac")
+            package_src_path = path.join(temp_dir, "src", "happy")
+            mkdir(package_src_path)
+            package_tests_path = path.join(temp_dir, "tests", "test_happy")
+            mkdir(package_tests_path)
+            plugin_file_path = path.join(package_src_path, "my_plugin.aac")
 
-            aac_plugin_path = os.path.join(os.path.dirname(__file__), "my_plugin.aac")
-            shutil.copy(aac_plugin_path, plugin_file_path)
+            aac_plugin_path = path.join(path.dirname(__file__), "my_plugin.aac")
+            copy(aac_plugin_path, plugin_file_path)
 
-            plugin_args = [plugin_file_path, "--code-output", os.path.join(temp_dir, "src"), "--test-output", os.path.join(temp_dir, "tests"), "--no-prompt"]
+            plugin_args = [plugin_file_path, "--code-output", path.join(temp_dir, "src"), "--test-output", path.join(temp_dir, "tests"), "--no-prompt"]
 
             exit_code, output_message = self.run_gen_plugin_cli_command_with_args(plugin_args)
             self.assertEqual(0, exit_code)  # asserts the command ran successfully
             self.assertIn("All AaC constraint checks were successful", output_message)  # asserts the command ran check successfully
 
-            self.assertTrue(os.path.exists(os.path.join(package_src_path, "my_plugin_impl.py")))
-            with open(os.path.join(package_src_path, "my_plugin_impl.py")) as impl_file:
+            self.assertTrue(path.exists(path.join(package_src_path, "my_plugin_impl.py")))
+            with open(path.join(package_src_path, "my_plugin_impl.py")) as impl_file:
                 impl_file_read = impl_file.read()
                 self.assertIn("def before_test_command_one_check", impl_file_read)
                 self.assertIn("def test_command_one", impl_file_read)
@@ -144,26 +143,26 @@ class TestGenPlugin(TestCase):
                 self.assertIn("def test_command_three", impl_file_read)
                 self.assertIn("def after_test_command_three_generate", impl_file_read)
 
-            self.assertTrue(os.path.exists(os.path.join(package_src_path, "__init__.py")))
-            with open(os.path.join(package_src_path, "__init__.py")) as init_file:
+            self.assertTrue(path.exists(path.join(package_src_path, "__init__.py")))
+            with open(path.join(package_src_path, "__init__.py")) as init_file:
                 init_file_read = init_file.read()
                 self.assertIn("def run_test_command_one", init_file_read)
 
                 self.assertIn("def run_test_command_two", init_file_read)
 
                 self.assertIn("def run_test_command_three", init_file_read)
-            self.assertTrue(os.path.exists(os.path.join(package_tests_path, "my_plugin_command_test.feature")))
-            self.assertTrue(os.path.exists(os.path.join(package_tests_path, "my_plugin_command_test_two.feature")))
-            self.assertTrue(os.path.exists(os.path.join(package_tests_path, "my_plugin_command_test_three.feature")))
+            self.assertTrue(path.exists(path.join(package_tests_path, "my_plugin_command_test.feature")))
+            self.assertTrue(path.exists(path.join(package_tests_path, "my_plugin_command_test_two.feature")))
+            self.assertTrue(path.exists(path.join(package_tests_path, "my_plugin_command_test_three.feature")))
 
     # The following decorators are to stop std_out and std_err from clogging up the terminal with System errors.
     @patch('sys.stdout', new_callable=StringIO)  # Suppress stdout
     @patch('sys.stderr', new_callable=StringIO)  # Suppress stderr
     def test_cli_gen_plugin_failure(self, mock_stderr, mock_stdout):
-        with tempfile.TemporaryDirectory() as temp_dir:
-            aac_file_path = os.path.join(os.path.dirname(__file__), "my_plugin_bad.aac")
-            temp_aac_file_path = os.path.join(temp_dir, "my_plugin_bad.aac")
-            shutil.copy(aac_file_path, temp_aac_file_path)
+        with TemporaryDirectory() as temp_dir:
+            aac_file_path = path.join(path.dirname(__file__), "my_plugin_bad.aac")
+            temp_aac_file_path = path.join(temp_dir, "my_plugin_bad.aac")
+            copy(aac_file_path, temp_aac_file_path)
 
             proj_args = [temp_aac_file_path, "--code-output", temp_dir, "--no-prompt"]
 
@@ -182,17 +181,17 @@ class TestGenPlugin(TestCase):
         result = runner.invoke(cli, ["gen-project"] + args)
         if result.exception:
             exc_type, exc_value, exc_traceback = result.exc_info
-            traceback.print_exception(exc_type, exc_value, exc_traceback)
+            print_exception(exc_type, exc_value, exc_traceback)
         exit_code = result.exit_code
         std_out = str(result.stdout)
         output_message = std_out.strip().replace("\x1b[0m", "")
         return exit_code, output_message
 
     def test_cli_gen_project(self):
-        with tempfile.TemporaryDirectory() as temp_dir:
-            aac_file_path = os.path.join(os.path.dirname(__file__), "my_project.aac")
-            temp_aac_file_path = os.path.join(temp_dir, "my_project.aac")
-            shutil.copy(aac_file_path, temp_aac_file_path)
+        with TemporaryDirectory() as temp_dir:
+            aac_file_path = path.join(path.dirname(__file__), "my_project.aac")
+            temp_aac_file_path = path.join(temp_dir, "my_project.aac")
+            copy(aac_file_path, temp_aac_file_path)
 
             args = [temp_aac_file_path, "--output", temp_dir, "--no-prompt"]
 
@@ -202,21 +201,21 @@ class TestGenPlugin(TestCase):
             self.assertIn("All AaC constraint checks were successful", output_message)  # asserts the command ran check successfully
 
             # make sure the files and directories were created
-            self.assertTrue(os.path.exists(os.path.join(temp_dir, "pyproject.toml")))
-            self.assertTrue(os.path.exists(os.path.join(temp_dir, "tox.ini")))
-            self.assertTrue(os.path.exists(os.path.join(temp_dir, "README.md")))
-            self.assertTrue(os.path.exists(os.path.join(temp_dir, "src")))
-            self.assertTrue(os.path.exists(os.path.join(temp_dir, "tests")))
-            self.assertTrue(os.path.exists(os.path.join(temp_dir, "docs")))
+            self.assertTrue(path.exists(path.join(temp_dir, "pyproject.toml")))
+            self.assertTrue(path.exists(path.join(temp_dir, "tox.ini")))
+            self.assertTrue(path.exists(path.join(temp_dir, "README.md")))
+            self.assertTrue(path.exists(path.join(temp_dir, "src")))
+            self.assertTrue(path.exists(path.join(temp_dir, "tests")))
+            self.assertTrue(path.exists(path.join(temp_dir, "docs")))
 
     # The following decorators are to stop std_out and std_err from clogging up the terminal with System errors.
     @patch('sys.stdout', new_callable=StringIO)  # Suppress stdout
     @patch('sys.stderr', new_callable=StringIO)  # Suppress stderr
     def test_cli_gen_project_failure(self, mock_stderr, mock_stdout):
-        with tempfile.TemporaryDirectory() as temp_dir:
-            aac_file_path = os.path.join(os.path.dirname(__file__), "my_project_bad.aac")
-            temp_aac_file_path = os.path.join(temp_dir, "my_project_bad.aac")
-            shutil.copy(aac_file_path, temp_aac_file_path)
+        with TemporaryDirectory() as temp_dir:
+            aac_file_path = path.join(path.dirname(__file__), "my_project_bad.aac")
+            temp_aac_file_path = path.join(temp_dir, "my_project_bad.aac")
+            copy(aac_file_path, temp_aac_file_path)
 
             proj_args = [temp_aac_file_path, "--output", temp_dir, "--no-prompt"]
 
