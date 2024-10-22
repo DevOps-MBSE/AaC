@@ -3,7 +3,6 @@ from behave import given, when, then, use_step_matcher
 import os
 from aac.execute.command_line import cli, initialize_cli
 from click.testing import CliRunner
-from shutil import rmtree
 from typing import Tuple
 
 use_step_matcher("cfparse")
@@ -56,6 +55,7 @@ def given_model(context, model_file: str):
     if not os.path.exists(model_path):
         raise AssertionError(f"Model file {model_path} does not exist")
 
+
 @when('I check the "{model_file}" model')
 def check_model(context, model_file):
     """
@@ -106,6 +106,7 @@ def check_model_fail(context, model_file):
         raise AssertionError(f"Check cli command succeeded with message: {output_message}")
     context.output_message = output_message
 
+
 @then("I should receive a message that the check was successful")
 def check_success(context):
     """
@@ -143,4 +144,3 @@ def and_check(context):
         context: Active context to check against.
     """
     assert ("was successful." in context.output_message)  # only appears when using verbose
-

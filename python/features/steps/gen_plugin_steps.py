@@ -1,3 +1,4 @@
+"""General purpose steps for the behave gen-plugin tests."""""
 from behave import given, when, then, use_step_matcher
 import os
 from aac.execute.command_line import cli, initialize_cli
@@ -27,6 +28,7 @@ def run_cli_command_with_args(command_name: str, args: list[str]) -> Tuple[int, 
     output_message = std_out.strip().replace("\x1b[0m", "")
     return exit_code, output_message
 
+
 def get_plugin_file(context, path: str) -> str:
     """
     Utility function to get the full path to the given model file.
@@ -39,6 +41,7 @@ def get_plugin_file(context, path: str) -> str:
         Valid path for the requested model file as tracked within the context.
     """
     return os.path.sep.join([context.config.paths[0], path])
+
 
 @given('I have a valid "{plugin_file}"')
 def gen_plugin_valid_check(context, plugin_file):
@@ -55,6 +58,7 @@ def gen_plugin_valid_check(context, plugin_file):
         raise AssertionError(f"Check cli command failed with message: {output_message}")
     context.plugin_file_path = plugin_file_path
     context.output_message = output_message
+
 
 @when("gen-plugin is ran with the valid file")
 def run_gen_plugin(context):
@@ -83,6 +87,7 @@ def run_gen_plugin(context):
     context.exit_code = exit_code
     context.output_message = output_message
 
+
 @when("gen-project is ran with the valid file")
 def run_gen_project(context):
     """
@@ -97,12 +102,13 @@ def run_gen_project(context):
     os.makedirs(temp_dir)
 
     context.temp_dir = temp_dir
-    plugin_args = [context.plugin_file_path, "--output", temp_dir,  "--no-prompt"]
+    plugin_args = [context.plugin_file_path, "--output", temp_dir, "--no-prompt"]
     exit_code, output_message = run_cli_command_with_args(
         "gen-project", plugin_args)
 
     context.exit_code = exit_code
     context.output_message = output_message
+
 
 @then("I should receive generated plugin files in a temporary directory")
 def gen_plugin_results(context):
@@ -126,6 +132,7 @@ def gen_plugin_results(context):
     if os.path.exists(context.temp_dir):
         rmtree(context.temp_dir)
 
+
 @then("I should receive generated project files in a temporary directory")
 def gen_project_results(context):
     """
@@ -147,6 +154,7 @@ def gen_project_results(context):
 
     if os.path.exists(context.temp_dir):
         rmtree(context.temp_dir)
+
 
 @then("I should receive a message that the command was not successful")
 def command_not_successful(context):
