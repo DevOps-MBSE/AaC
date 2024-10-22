@@ -1,4 +1,6 @@
+from io import StringIO
 from unittest import TestCase
+from unittest.mock import patch
 from typing import Tuple
 from click.testing import CliRunner
 from aac.execute.command_line import cli, initialize_cli
@@ -165,6 +167,22 @@ class TestGenPlugin(TestCase):
             self.assertTrue(os.path.exists(os.path.join(package_tests_path, "my_plugin_command_test_two.feature")))
             self.assertTrue(os.path.exists(os.path.join(package_tests_path, "my_plugin_command_test_three.feature")))
 
+    # The following decorators are to stop std_out and std_err from clogging up the terminal with System errors.
+    @patch('sys.stdout', new_callable=StringIO)
+    @patch('sys.stderr', new_callable=StringIO)
+    def test_cli_gen_plugin_failure(self, mock_stderr, mock_stdout):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            aac_file_path = os.path.join(os.path.dirname(__file__), "my_plugin_bad.aac")
+            temp_aac_file_path = os.path.join(temp_dir, "my_plugin_bad.aac")
+            shutil.copy(aac_file_path, temp_aac_file_path)
+
+            proj_args = [temp_aac_file_path, "--code-output", temp_dir, "--no-prompt"]
+
+            exit_code, output_message = self.run_gen_plugin_cli_command_with_args(proj_args)
+            self.assertNotEqual(0, exit_code)
+            self.assertIn("Definition is missing field 'name'", output_message)
+
+
 
     def test_gen_project(self):
         # I'm going to rely on the CLI testing for this one, but will leave there here in case we need it later
@@ -203,3 +221,18 @@ class TestGenPlugin(TestCase):
             self.assertTrue(os.path.exists(os.path.join(temp_dir, "src")))
             self.assertTrue(os.path.exists(os.path.join(temp_dir, "tests")))
             self.assertTrue(os.path.exists(os.path.join(temp_dir, "docs")))
+
+    # The following decorators are to stop std_out and std_err from clogging up the terminal with System errors.
+    @patch('sys.stdout', new_callable=StringIO)
+    @patch('sys.stderr', new_callable=StringIO)
+    def test_cli_gen_project_failure(self, mock_stderr, mock_stdout):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            aac_file_path = os.path.join(os.path.dirname(__file__), "my_project_bad.aac")
+            temp_aac_file_path = os.path.join(temp_dir, "my_project_bad.aac")
+            shutil.copy(aac_file_path, temp_aac_file_path)
+
+            proj_args = [temp_aac_file_path, "--output", temp_dir, "--no-prompt"]
+
+            exit_code, output_message = self.run_gen_project_cli_command_with_args(proj_args)
+            self.assertNotEqual(0, exit_code)
+            self.assertIn("Definition is missing field 'name'", output_message)
