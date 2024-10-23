@@ -89,6 +89,13 @@ def run_gen_plugin(context):
 
 @when('ran again with "{plugin_file_overwrite}" using overwrite flag')
 def run_gen_plugin_overwrite(context, plugin_file_overwrite):
+    """
+    Run Gen-Plugin again using the overwrite flag.
+
+    Args:
+        context: Active context to check against.
+        plugin_file_overwrite: The file used to overwrite the already existing plugin
+    """
     src = os.path.join(context.src_dir, "aac_example/plugins/plugin_name")
     file = open(os.path.join(src, "my_plugin_impl.py"), "r")
     file_read = file.read()
@@ -108,7 +115,14 @@ def run_gen_plugin_overwrite(context, plugin_file_overwrite):
 
 
 @when('ran again with "{plugin_file_evaluate}" using evaluate flag')
-def run_gen_plugin_overwrite(context, plugin_file_evaluate):
+def run_gen_plugin_evaluate(context, plugin_file_evaluate):
+    """
+    Run Gen-Plugin again using the evaluate flag.
+
+    Args:
+        context: Active context to check against.
+        plugin_file_evaluate: The file used to check the evaluation flag
+    """
     src = os.path.join(context.src_dir, "aac_example/plugins/plugin_name")
     file = open(os.path.join(src, "my_plugin_impl.py"), "r")
     file_read = file.read()
