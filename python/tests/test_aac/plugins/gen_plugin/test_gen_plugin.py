@@ -89,7 +89,7 @@ class TestGenPlugin(TestCase):
             file = open(path.join(package_src_path, "my_plugin_impl.py"), "r")
             file_read = file.read()
             self.assertIn("test_command_one(aac_plugin_file: str)", file_read)
-            self.assertNotIn("test_command_one_evaluation(aac_plugin_file: str)", file_read)
+            self.assertNotIn("test_command_1_evaluation(aac_plugin_file: str)", file_read)
             file.close()
 
             aac_plugin_path = path.join(path.dirname(__file__), "my_plugin_eval.aac")
