@@ -77,7 +77,6 @@ def run_gen_plugin(context):
     context.src_dir = src_dir
     test_dir = os.path.join(temp_dir, "tests")
     os.makedirs(test_dir)
-
     context.test_dir = test_dir
     context.temp_dir = temp_dir
     plugin_args = [context.plugin_file_path, "--code-output", src_dir, "--test-output", test_dir, "--no-prompt"]
@@ -86,6 +85,46 @@ def run_gen_plugin(context):
 
     context.exit_code = exit_code
     context.output_message = output_message
+
+
+@when('ran again with "{plugin_file_overwrite}" using overwrite flag')
+def run_gen_plugin_overwrite(context, plugin_file_overwrite):
+    src = os.path.join(context.src_dir, "aac_example/plugins/plugin_name")
+    file = open(os.path.join(src, "my_plugin_impl.py"), "r")
+    file_read = file.read()
+    assert "do_stuff(aac_file: str)" in file_read
+    assert "doing_stuff(aac_file: str)" not in file_read
+    file.close()
+
+    plugin_file_path = get_plugin_file(context, plugin_file_overwrite)
+    plugin_args = [plugin_file_path, "--code-output", context.src_dir, "--test-output", context.test_dir, "--no-prompt", "--force-overwrite"]
+    exit_code, output_message = run_cli_command_with_args(
+        "gen-plugin", plugin_args)
+    file = open(os.path.join(src, "my_plugin_impl.py"), "r")
+    file_read = file.read()
+    assert "do_stuff(aac_file: str)" not in file_read
+    assert "doing_stuff_overwrite(aac_file: str)" in file_read
+    file.close()
+
+
+@when('ran again with "{plugin_file_evaluate}" using evaluate flag')
+def run_gen_plugin_overwrite(context, plugin_file_evaluate):
+    src = os.path.join(context.src_dir, "aac_example/plugins/plugin_name")
+    file = open(os.path.join(src, "my_plugin_impl.py"), "r")
+    file_read = file.read()
+    assert "do_stuff(aac_file: str)" in file_read
+    assert "doing_stuff(aac_file: str)" not in file_read
+    file.close()
+
+    plugin_file_path = get_plugin_file(context, plugin_file_evaluate)
+    plugin_args = [plugin_file_path, "--code-output", context.src_dir, "--test-output", context.test_dir, "--no-prompt", "--evaluate"]
+    exit_code, output_message = run_cli_command_with_args(
+        "gen-plugin", plugin_args)
+    file = open(os.path.join(src, "my_plugin_impl.py"), "r")
+    file_read = file.read()
+    assert "do_stuff(aac_file: str)" in file_read
+    assert "doing_stuff_overwrite(aac_file: str)" not in file_read
+    file.close()
 
 
 @when("gen-project is ran with the valid file")
