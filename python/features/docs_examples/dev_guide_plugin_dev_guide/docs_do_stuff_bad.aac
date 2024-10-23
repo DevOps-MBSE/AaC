@@ -1,0 +1,3 @@
+plugin:
+  name: My Plugin
+  package: aac_example.plugins.plugin_name

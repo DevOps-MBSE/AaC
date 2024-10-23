@@ -141,6 +141,6 @@ def and_check(context):
     Ensure the check command with verbose ran returned the list of models.
 
     Args:
-        context: Active context to check against
+        context: Active context to check against.
     """
     assert ("was successful." in context.output_message)  # only appears when using verbose

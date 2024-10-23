@@ -2,7 +2,7 @@ plugin:
   name: My Plugin
   package: aac_example.plugins.plugin_name
   commands:
-    - name: do-stuff
+    - name: doing-stuff-overwrite
       input:
         - name: aac-file
           type: file
