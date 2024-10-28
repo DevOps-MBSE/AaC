@@ -28,32 +28,32 @@ class TestPrintAaCDefinitions(TestCase):
         exit_code = result.exit_code
         std_out = str(result.stdout)
         output_message = std_out.strip().replace("\x1b[0m", "")
-        return exit_code, output_message, std_out
+        return exit_code, output_message
 
     def test_cli_print_defs_core_only(self):
         args = ["--core-only"]
 
-        exit_code, output_message, std_out = self.run_print_defs_cli_command_with_args(args)
+        exit_code, output_message = self.run_print_defs_cli_command_with_args(args)
         self.assertEqual(0, exit_code)  # asserts the command ran successfully
         self.assertTrue(len(output_message) > 0)  # asserts the command produced output
 
-        self.assertNotIn("name: Exclusive Fields", std_out)
-        self.assertNotIn("name: No Extends for Final", std_out)
-        self.assertIn("name: AacType", std_out)
-        self.assertIn("name: Modifier", std_out)
+        self.assertNotIn("name: Exclusive Fields", output_message)
+        self.assertNotIn("name: No Extends for Final", output_message)
+        self.assertIn("name: AacType", output_message)
+        self.assertIn("name: Modifier", output_message)
 
 
     def test_cli_print_defs(self):
         args = []
 
-        exit_code, output_message, std_out = self.run_print_defs_cli_command_with_args(args)
+        exit_code, output_message = self.run_print_defs_cli_command_with_args(args)
         self.assertEqual(0, exit_code)  # asserts the command ran successfully
         self.assertTrue(len(output_message) > 0)  # asserts the command produced output
 
-        self.assertIn("name: Exclusive Fields", std_out)
-        self.assertIn("name: No Extends for Final", std_out)
-        self.assertIn("name: AacType", std_out)
-        self.assertIn("name: Modifier", std_out)
+        self.assertIn("name: Exclusive Fields", output_message)
+        self.assertIn("name: No Extends for Final", output_message)
+        self.assertIn("name: AacType", output_message)
+        self.assertIn("name: Modifier", output_message)
 
 
 
