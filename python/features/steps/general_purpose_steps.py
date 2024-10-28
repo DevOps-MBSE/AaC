@@ -138,10 +138,19 @@ def print_defs(context):
     context.exit_code = exit_code
     context.output_message = output_message
     context.std_out = std_out
-    assert "name: Exclusive Fields" in std_out
-    assert "name: No Extends for Final" in std_out
-    assert "name: AacType" in std_out
-    assert "name: Modifier" in std_out
+
+@when('print-defs is called from terminal with the core_only flag')
+def print_defs(context):
+    """
+    Run the Print-Defs command
+
+    Args:
+        context: Active context to check against.
+    """
+    exit_code, output_message, std_out = run_cli_command_with_args_with_stdout("print-defs", ["--core-only"])
+    context.exit_code = exit_code
+    context.output_message = output_message
+    context.std_out = std_out
 
 @then("I should receive a message that the check was successful")
 def check_success(context):
@@ -194,5 +203,21 @@ def print_defs_result(context):
 
     assert "name: Exclusive Fields" in context.std_out
     assert "name: No Extends for Final" in context.std_out
+    assert "name: AacType" in context.std_out
+    assert "name: Modifier" in context.std_out
+
+@then('I should receive a list of core definitions to the terminal')
+def print_defs_result(context):
+    """
+    Ensure the definitions were returned correctly
+
+    Args:
+        context: Active context to check against.
+    """
+    assert context.exit_code == 0
+    assert len(context.output_message) > 1
+
+    assert "name: Exclusive Fields" not in context.std_out
+    assert "name: No Extends for Final" not in context.std_out
     assert "name: AacType" in context.std_out
     assert "name: Modifier" in context.std_out
