@@ -42,6 +42,26 @@ def run_cli_command_with_args(command_name: str, args: list[str]) -> Tuple[int, 
     return exit_code, output_message
 
 
+def run_cli_command_with_args_with_stdout(command_name: str, args: list[str]) -> Tuple[int, str, str]:
+    """
+    Utility function to invoke the CLI command with the given arguments.
+
+    Args:
+        command_name (str): CLI command to be executed.
+        args (list[str]): List of arguments associated with the CLI command.
+
+    Return:
+        Exit code and output message resulting from the execution of the CLI command.
+    """
+    initialize_cli()
+    runner = CliRunner()
+    result = runner.invoke(cli, [command_name] + args)
+    exit_code = result.exit_code
+    std_out = str(result.stdout)
+    output_message = std_out.strip().replace("\x1b[0m", "")
+    return exit_code, output_message, std_out
+
+
 @given('I have the "{model_file}" model')
 def given_model(context, model_file: str):
     """
@@ -106,6 +126,22 @@ def check_model_fail(context, model_file):
         raise AssertionError(f"Check cli command succeeded with message: {output_message}")
     context.output_message = output_message
 
+@when('print-defs is called from terminal')
+def print_defs(context):
+    """
+    Run the Print-Defs command
+
+    Args:
+        context: Active context to check against.
+    """
+    exit_code, output_message, std_out = run_cli_command_with_args_with_stdout("print-defs", [])
+    context.exit_code = exit_code
+    context.output_message = output_message
+    context.std_out = std_out
+    assert "name: Exclusive Fields" in std_out
+    assert "name: No Extends for Final" in std_out
+    assert "name: AacType" in std_out
+    assert "name: Modifier" in std_out
 
 @then("I should receive a message that the check was successful")
 def check_success(context):
@@ -144,3 +180,19 @@ def and_check(context):
         context: Active context to check against.
     """
     assert ("was successful." in context.output_message)  # only appears when using verbose
+
+@then('I should receive a list of definitions to the terminal')
+def print_defs_result(context):
+    """
+    Ensure the definitions were returned correctly
+
+    Args:
+        context: Active context to check against.
+    """
+    assert context.exit_code == 0
+    assert len(context.output_message) > 1
+
+    assert "name: Exclusive Fields" in context.std_out
+    assert "name: No Extends for Final" in context.std_out
+    assert "name: AacType" in context.std_out
+    assert "name: Modifier" in context.std_out
