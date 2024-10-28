@@ -126,31 +126,22 @@ def check_model_fail(context, model_file):
         raise AssertionError(f"Check cli command succeeded with message: {output_message}")
     context.output_message = output_message
 
-@when('print-defs is called from terminal')
-def print_defs(context):
+
+@when('"{command}" is called from terminal with the flag "{flags}"')
+def command_no_args(context, command, flags):
     """
-    Run the Print-Defs command
+    Runs a command with specified flags and no arguments.
 
     Args:
         context: Active context to check against.
+        command: Command being run.
+        flags: Specified Flags.
     """
-    exit_code, output_message, std_out = run_cli_command_with_args_with_stdout("print-defs", [])
+    flags_list = flags.split()
+    exit_code, output_message = run_cli_command_with_args(command, flags_list)
     context.exit_code = exit_code
     context.output_message = output_message
-    context.std_out = std_out
 
-@when('print-defs is called from terminal with the core_only flag')
-def print_defs(context):
-    """
-    Run the Print-Defs command
-
-    Args:
-        context: Active context to check against.
-    """
-    exit_code, output_message, std_out = run_cli_command_with_args_with_stdout("print-defs", ["--core-only"])
-    context.exit_code = exit_code
-    context.output_message = output_message
-    context.std_out = std_out
 
 @then("I should receive a message that the check was successful")
 def check_success(context):
@@ -190,10 +181,11 @@ def and_check(context):
     """
     assert ("was successful." in context.output_message)  # only appears when using verbose
 
+
 @then('I should receive a list of definitions to the terminal')
 def print_defs_result(context):
     """
-    Ensure the definitions were returned correctly
+    Ensure the definitions were returned correctly.
 
     Args:
         context: Active context to check against.
@@ -201,15 +193,16 @@ def print_defs_result(context):
     assert context.exit_code == 0
     assert len(context.output_message) > 1
 
-    assert "name: Exclusive Fields" in context.std_out
-    assert "name: No Extends for Final" in context.std_out
-    assert "name: AacType" in context.std_out
-    assert "name: Modifier" in context.std_out
+    assert "name: Exclusive Fields" in context.output_message
+    assert "name: No Extends for Final" in context.output_message
+    assert "name: AacType" in context.output_message
+    assert "name: Modifier" in context.output_message
+
 
 @then('I should receive a list of core definitions to the terminal')
-def print_defs_result(context):
+def print_defs_result_core_only(context):
     """
-    Ensure the definitions were returned correctly
+    Ensure the definitions were returned correctly.
 
     Args:
         context: Active context to check against.
@@ -217,7 +210,7 @@ def print_defs_result(context):
     assert context.exit_code == 0
     assert len(context.output_message) > 1
 
-    assert "name: Exclusive Fields" not in context.std_out
-    assert "name: No Extends for Final" not in context.std_out
-    assert "name: AacType" in context.std_out
-    assert "name: Modifier" in context.std_out
+    assert "name: Exclusive Fields" not in context.output_message
+    assert "name: No Extends for Final" not in context.output_message
+    assert "name: AacType" in context.output_message
+    assert "name: Modifier" in context.output_message
