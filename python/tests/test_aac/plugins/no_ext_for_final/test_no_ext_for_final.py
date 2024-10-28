@@ -1,14 +1,11 @@
 from unittest import TestCase
-#from typing import Tuple
-#from click.testing import CliRunner
-#from aac.execute.command_line import cli, initialize_cli
-#from aac.execute.aac_execution_result import ExecutionStatus
 from aac.context.language_context import LanguageContext
-#from aac.plugins.no_ext_for_final.no_ext_for_final_impl import plugin_name
 from aac.plugins.no_ext_for_final.no_ext_for_final_impl import no_extension_for_final
 
 
 class TestNoExtForFinal(TestCase):
+
+    #  Nominal (expected pass) test with a valid Schema definition
     def test_no_extension_for_final_nominal(self):
         context = LanguageContext()
         schema_definition = context.get_definitions_by_name("aac.lang.Schema")
@@ -23,22 +20,8 @@ class TestNoExtForFinal(TestCase):
         self.assertTrue(result.is_success())
         context.remove_definitions(definitions)
 
-        # definitions = context.parse_and_load(root_schema_with_bad_ext)
-        # result = no_extension_for_final(definitions[0].instance, definitions[0], schema_definition.instance)
-        # self.assertTrue(result.is_success())
-        # result = no_extension_for_final(definitions[1].instance, definitions[1], schema_definition.instance)
-        # self.assertFalse(result.is_success())
-        # context.remove_definitions(definitions)
 
-        # definitions = context.parse_and_load(root_schema_with_bad_ext2)
-        # result = no_extension_for_final(definitions[0].instance, definitions[0], schema_definition.instance)
-        # self.assertTrue(result.is_success())
-        # result = no_extension_for_final(definitions[1].instance, definitions[1], schema_definition.instance)
-        # self.assertFalse(result.is_success())
-        # context.remove_definitions(definitions)
-
-
-    #  Off-nominal (expected fail) test with a circular Schema definition
+    #  Off-nominal (expected fail) tests
     def test_no_extension_for_final_offnominal_1(self):
         context = LanguageContext()
         schema_definition = context.get_definitions_by_name("aac.lang.Schema")
@@ -46,6 +29,8 @@ class TestNoExtForFinal(TestCase):
             self.fail("Expected to find one and only one Schema definition")
         schema_definition = schema_definition[0]
 
+
+        #  Off-nominal (expected fail) test with a circular Schema definition
         definitions = context.parse_and_load(root_schema_with_bad_ext)
         result = no_extension_for_final(definitions[0].instance, definitions[0], schema_definition.instance)
         self.assertTrue(result.is_success())
@@ -53,12 +38,13 @@ class TestNoExtForFinal(TestCase):
         self.assertFalse(result.is_success())
         context.remove_definitions(definitions)
 
+
+        #  Off-nominal (expected fail) tests with a invalid Schema definition
         definitions = context.parse_and_load(root_schema_with_bad_ext2)
         result = no_extension_for_final(definitions[0].instance, definitions[0], schema_definition.instance)
         self.assertTrue(result.is_success())
         result = no_extension_for_final(definitions[1].instance, definitions[1], schema_definition.instance)
         self.assertFalse(result.is_success())
-        #context.remove_definitions(definitions)
 
 
 root_schema_with_good_ext = """
