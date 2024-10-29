@@ -40,9 +40,18 @@ class TestNoExtForFinal(TestCase):
         context.remove_definitions(definitions)
 
 
-        #  Off-nominal (expected fail) tests with a invalid schema definition
+        #  Off-nominal (expected fail) test with a invalid schema definition
         #  TestSchema defined twice
         definitions = context.parse_and_load(root_schema_with_bad_ext_duplicate)
+        result = no_extension_for_final(definitions[0].instance, definitions[0], schema_definition.instance)
+        self.assertTrue(result.is_success())
+        result = no_extension_for_final(definitions[1].instance, definitions[1], schema_definition.instance)
+        self.assertFalse(result.is_success())
+
+
+        #  Off-nominal (expected fail) test with a invalid schema definition
+        #  Specified parent to extend does not exist (TestDoesNotExist)
+        definitions = context.parse_and_load(root_schema_with_bad_ext_does_not_exist)
         result = no_extension_for_final(definitions[0].instance, definitions[0], schema_definition.instance)
         self.assertTrue(result.is_success())
         result = no_extension_for_final(definitions[1].instance, definitions[1], schema_definition.instance)
@@ -115,6 +124,29 @@ schema:
   package: test_aac.plugins.no_ext_for_final
   extends:
     - name: TestChild
+      package: test_aac.plugins.no_ext_for_final
+  fields:
+    - name: name
+      type: string
+    - name: test_field
+      type: string
+"""
+
+root_schema_with_bad_ext_does_not_exist = """
+schema:
+  name: TestParent
+  package: test_aac.plugins.no_ext_for_final
+  fields:
+    - name: name
+      type: string
+    - name: test_field
+      type: string
+---
+schema:
+  name: TestChild
+  package: test_aac.plugins.no_ext_for_final
+  extends:
+    - name: TestDoesNotExist
       package: test_aac.plugins.no_ext_for_final
   fields:
     - name: name
