@@ -41,7 +41,7 @@ def given_model(context, file: str):
         raise AssertionError(f"File path {file} does not exist")
 
 
-@when('I run the "{command}" command with no arguments or flags')
+@when('I run the "{command}" command with no arguments and with no flags')
 def command_no_args_no_flags(context, command):
     """
     Runs a command with specified flags and no arguments.
@@ -55,7 +55,7 @@ def command_no_args_no_flags(context, command):
     context.output_message = output_message
 
 
-@when('I run the "{command}" command with arguments "{args}" and no flags')
+@when('I run the "{command}" command with arguments "{args}" and with no flags')
 def command_args_no_flags(context, command, args):
     """
     Runs a command with specified flags and no arguments.
@@ -71,7 +71,7 @@ def command_args_no_flags(context, command, args):
     context.output_message = output_message
 
 
-@when('I run the "{command}" command with flags "{flags}" and no arguments')
+@when('I run the "{command}" command with no arguments and with flags "{flags}"')
 def command_flags_no_args(context, command, flags):
     """
     Runs a command with specified flags and no arguments.
@@ -88,7 +88,7 @@ def command_flags_no_args(context, command, flags):
     context.output_message = output_message
 
 
-@when('I run the "{command}" command with arguments "{args}" and flags "{flags}"')
+@when('I run the "{command}" command with arguments "{args}" and with flags "{flags}"')
 def command_args_flags(context, command, args, flags):
     """
     Runs a command with specified flags and no arguments.
