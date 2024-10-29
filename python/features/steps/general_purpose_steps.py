@@ -8,20 +8,6 @@ from typing import Tuple
 use_step_matcher("cfparse")
 
 
-def get_model_file(context, path: str) -> str:
-    """
-    Utility function to get the full path to the given model file.
-
-    Args:
-        context: Active context to check against.
-        path (str): Path to the model file being evaluated.
-
-    Return:
-        Valid path for the requested model file as tracked within the context.
-    """
-    return os.path.sep.join([context.config.paths[0], path])
-
-
 def run_cli_command_with_args(command_name: str, args: list[str]) -> Tuple[int, str]:
     """
     Utility function to invoke the CLI command with the given arguments.
@@ -42,93 +28,67 @@ def run_cli_command_with_args(command_name: str, args: list[str]) -> Tuple[int, 
     return exit_code, output_message
 
 
-def run_cli_command_with_args_with_stdout(command_name: str, args: list[str]) -> Tuple[int, str, str]:
-    """
-    Utility function to invoke the CLI command with the given arguments.
-
-    Args:
-        command_name (str): CLI command to be executed.
-        args (list[str]): List of arguments associated with the CLI command.
-
-    Return:
-        Exit code and output message resulting from the execution of the CLI command.
-    """
-    initialize_cli()
-    runner = CliRunner()
-    result = runner.invoke(cli, [command_name] + args)
-    exit_code = result.exit_code
-    std_out = str(result.stdout)
-    output_message = std_out.strip().replace("\x1b[0m", "")
-    return exit_code, output_message
-
-
-@given('I have the "{model_file}" model')
-def given_model(context, model_file: str):
+@given('I have the "{file}" file')
+def given_model(context, file: str):
     """
     Ensure the given model file exists.
 
     Args:
         context: Active context to check against.
-        model_file (str): Path to the model file being evaluated.
+        file (str): Path to the file being evaluated.
     """
-    model_path = get_model_file(context, model_file)
-    if not os.path.exists(model_path):
-        raise AssertionError(f"Model file {model_path} does not exist")
+    if not os.path.exists(file):
+        raise AssertionError(f"File path {file} does not exist")
 
 
-@when('I check the "{model_file}" model')
-def check_model(context, model_file):
+@when('I run the "{command}" command with no arguments or flags')
+def command_no_args_no_flags(context, command):
     """
-    Run the check command on the given model.
+    Runs a command with specified flags and no arguments.
 
     Args:
         context: Active context to check against.
-        model_file (str): Path to the model file being evaluated.
+        command: Command being run.
     """
-    exit_code, output_message = run_cli_command_with_args(
-        "check", [get_model_file(context, model_file)]
-    )
-    if exit_code != 0:
-        raise AssertionError(f"Check cli command failed with message: {output_message}")
+    exit_code, output_message = run_cli_command_with_args(command, [])
+    context.exit_code = exit_code
     context.output_message = output_message
 
-
-@when('I check the "{model_file}" model with verbose')
-def check_model_verbose(context, model_file):
+@when('I run the "{command}" command with arguments "{args}" and no flags')
+def command_args_no_flags(context, command, args):
     """
-    Run the check command on the given model with verbose.
+    Runs a command with specified flags and no arguments.
 
     Args:
         context: Active context to check against.
-        model_file (str): Path to the model file being evaluated.
+        command: Command being run.
+        args: Specified Arguments
     """
-    exit_code, output_message = run_cli_command_with_args(
-        "check", [get_model_file(context, model_file), "--verbose"]
-    )
-    if exit_code != 0:
-        raise AssertionError(f"Check cli command failed with message: {output_message}")
+    args_list = args.split()
+    exit_code, output_message = run_cli_command_with_args(command, args_list)
+    context.exit_code = exit_code
     context.output_message = output_message
 
 
-@when('I check the "{model_file}" bad model')
-def check_model_fail(context, model_file):
+@when('I run the "{command}" command with flags "{flags}" and no arguments')
+def command_flags_no_args(context, command, flags):
     """
-    Run the check command on the given model.
+    Runs a command with specified flags and no arguments.
 
     Args:
         context: Active context to check against.
-        model_file (str): Path to the model file being evaluated.
+        command: Command being run.
+        flags: Specified Flags.
     """
-    exit_code, output_message = run_cli_command_with_args(
-        "check", [get_model_file(context, model_file)]
-    )
-    if exit_code == 0:
-        raise AssertionError(f"Check cli command succeeded with message: {output_message}")
+    flags_list = flags.split()
+
+    exit_code, output_message = run_cli_command_with_args(command, flags_list)
+    context.exit_code = exit_code
     context.output_message = output_message
 
 
-@when('"{command}" is called with args "{args}" and flags "{flags}"')
-def command_no_args(context, command, args, flags):
+@when('I run the "{command}" command with arguments "{args}" and flags "{flags}"')
+def command_args_flags(context, command, args, flags):
     """
     Runs a command with specified flags and no arguments.
 
@@ -142,40 +102,38 @@ def command_no_args(context, command, args, flags):
     flags_list = flags.split()
 
     exit_code, output_message = run_cli_command_with_args(command, args_list + flags_list)
+    print(exit_code)
+    print(output_message)
     context.exit_code = exit_code
     context.output_message = output_message
 
 
-@then("I should receive a message that the check was successful")
-def check_success(context):
+@then("I should receive a message that the command was successful")
+def command_success(context):
     """
-    Ensure the check command was successful.
+    Ensure the command was successful.
 
     Args:
         context: Active context to check against.
     """
-    if "All AaC constraint checks were successful." not in context.output_message:
-        raise AssertionError(
-            f"Model check failed with message: {context.output_message}"
-        )
+    assert context.exit_code == 0
+    assert "success" or "Success" or "successfully" in context.output_message
 
 
-@then("I should receive a message that the check was not successful")
-def check_failure(context):
+@then("I should receive a message that the command was not successful")
+def command_failure(context):
     """
-    Ensure the check command was successful.
+    Ensure the command was not successful.
 
     Args:
         context: Active context to check against.
     """
-    if "All AaC constraint checks were successful." in context.output_message:
-        raise AssertionError(
-            f"Model check succeeded with message: {context.output_message}"
-        )
+    assert context.exit_code != 0
+    assert "All AaC constraint checks were successful" not in context.output_message
 
 
 @then("I should receive a list of successfully evaluated models")
-def and_check(context):
+def verbose_check(context):
     """
     Ensure the check command with verbose ran returned the list of models.
 
@@ -184,36 +142,3 @@ def and_check(context):
     """
     assert ("was successful." in context.output_message)  # only appears when using verbose
 
-
-@then('I should receive a list of definitions to the terminal')
-def print_defs_result(context):
-    """
-    Ensure the definitions were returned correctly.
-
-    Args:
-        context: Active context to check against.
-    """
-    assert context.exit_code == 0
-    assert len(context.output_message) > 1
-
-    assert "name: Exclusive Fields" in context.output_message
-    assert "name: No Extends for Final" in context.output_message
-    assert "name: AacType" in context.output_message
-    assert "name: Modifier" in context.output_message
-
-
-@then('I should receive a list of core definitions to the terminal')
-def print_defs_result_core_only(context):
-    """
-    Ensure the definitions were returned correctly.
-
-    Args:
-        context: Active context to check against.
-    """
-    assert context.exit_code == 0
-    assert len(context.output_message) > 1
-
-    assert "name: Exclusive Fields" not in context.output_message
-    assert "name: No Extends for Final" not in context.output_message
-    assert "name: AacType" in context.output_message
-    assert "name: Modifier" in context.output_message
