@@ -5,7 +5,7 @@ from aac.plugins.no_ext_for_final.no_ext_for_final_impl import no_extension_for_
 
 class TestNoExtForFinal(TestCase):
 
-    #  Nominal (expected pass) test with a valid Schema definition
+    #  Nominal (expected pass) test with a single valid Schema definition
     def test_no_extension_for_final_nominal(self):
         context = LanguageContext()
         schema_definition = context.get_definitions_by_name("aac.lang.Schema")
@@ -22,7 +22,7 @@ class TestNoExtForFinal(TestCase):
 
 
     #  Off-nominal (expected fail) tests
-    def test_no_extension_for_final_offnominal_1(self):
+    def test_no_extension_for_final_offnominal(self):
         context = LanguageContext()
         schema_definition = context.get_definitions_by_name("aac.lang.Schema")
         if len(schema_definition) != 1:
@@ -31,7 +31,8 @@ class TestNoExtForFinal(TestCase):
 
 
         #  Off-nominal (expected fail) test with a circular Schema definition
-        definitions = context.parse_and_load(root_schema_with_bad_ext)
+        #  TestSchema tries to extend TestSchema
+        definitions = context.parse_and_load(root_schema_with_bad_ext_circular)
         result = no_extension_for_final(definitions[0].instance, definitions[0], schema_definition.instance)
         self.assertTrue(result.is_success())
         result = no_extension_for_final(definitions[1].instance, definitions[1], schema_definition.instance)
@@ -40,11 +41,13 @@ class TestNoExtForFinal(TestCase):
 
 
         #  Off-nominal (expected fail) tests with a invalid Schema definition
-        definitions = context.parse_and_load(root_schema_with_bad_ext2)
+        #  TestSchema defined twice
+        definitions = context.parse_and_load(root_schema_with_bad_ext_duplicate)
         result = no_extension_for_final(definitions[0].instance, definitions[0], schema_definition.instance)
         self.assertTrue(result.is_success())
         result = no_extension_for_final(definitions[1].instance, definitions[1], schema_definition.instance)
         self.assertFalse(result.is_success())
+        #  context.remove_definitions(definitions) #  Intentionally commented out
 
 
 root_schema_with_good_ext = """
@@ -70,7 +73,7 @@ schema:
       type: string
 """
 
-root_schema_with_bad_ext = """
+root_schema_with_bad_ext_circular = """
 schema:
   name: TestSchema
   package: test_aac.plugins.no_ext_for_final
@@ -95,7 +98,7 @@ schema:
       type: string
 """
 
-root_schema_with_bad_ext2 = """
+root_schema_with_bad_ext_duplicate = """
 schema:
   name: TestSchema
   package: test_aac.plugins.no_ext_for_final
