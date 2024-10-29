@@ -30,7 +30,7 @@ class TestNoExtForFinal(TestCase):
         schema_definition = schema_definition[0]
 
 
-        #  Off-nominal (expected fail) test with a circular Schema definition
+        #  Off-nominal (expected fail) test with a circular schema definition
         #  TestSchema tries to extend TestSchema
         definitions = context.parse_and_load(root_schema_with_bad_ext_circular)
         result = no_extension_for_final(definitions[0].instance, definitions[0], schema_definition.instance)
@@ -40,7 +40,7 @@ class TestNoExtForFinal(TestCase):
         context.remove_definitions(definitions)
 
 
-        #  Off-nominal (expected fail) tests with a invalid Schema definition
+        #  Off-nominal (expected fail) tests with a invalid schema definition
         #  TestSchema defined twice
         definitions = context.parse_and_load(root_schema_with_bad_ext_duplicate)
         result = no_extension_for_final(definitions[0].instance, definitions[0], schema_definition.instance)
@@ -75,7 +75,7 @@ schema:
 
 root_schema_with_bad_ext_circular = """
 schema:
-  name: TestSchema
+  name: TestParent
   package: test_aac.plugins.no_ext_for_final
   modifiers:
     - final
@@ -89,7 +89,7 @@ schema:
   name: TestChild
   package: test_aac.plugins.no_ext_for_final
   extends:
-    - name: TestSchema
+    - name: TestParent
       package: test_aac.plugins.no_ext_for_final
   fields:
     - name: name
@@ -100,7 +100,7 @@ schema:
 
 root_schema_with_bad_ext_duplicate = """
 schema:
-  name: TestSchema
+  name: TestParent
   package: test_aac.plugins.no_ext_for_final
   modifiers:
     - final
@@ -111,10 +111,10 @@ schema:
       type: string
 ---
 schema:
-  name: TestSchema
+  name: TestParent
   package: test_aac.plugins.no_ext_for_final
   extends:
-    - name: TestParent
+    - name: TestChild
       package: test_aac.plugins.no_ext_for_final
   fields:
     - name: name
