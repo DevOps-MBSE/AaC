@@ -54,6 +54,7 @@ def command_no_args_no_flags(context, command):
     context.exit_code = exit_code
     context.output_message = output_message
 
+
 @when('I run the "{command}" command with arguments "{args}" and no flags')
 def command_args_no_flags(context, command, args):
     """
@@ -141,4 +142,3 @@ def verbose_check(context):
         context: Active context to check against.
     """
     assert ("was successful." in context.output_message)  # only appears when using verbose
-

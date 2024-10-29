@@ -1,4 +1,6 @@
-from behave import given, when, then, use_step_matcher
+"""General purpose steps for the behave print_defs tests."""""
+from behave import then
+
 
 @then('I should receive a list of definitions to the terminal')
 def print_defs_result(context):
