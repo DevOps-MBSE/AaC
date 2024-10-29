@@ -141,7 +141,7 @@ def command_no_args(context, command, args, flags):
     args_list = args.split()
     flags_list = flags.split()
 
-    exit_code, output_message = run_cli_command_with_args(command, args_list+flags_list)
+    exit_code, output_message = run_cli_command_with_args(command, args_list + flags_list)
     context.exit_code = exit_code
     context.output_message = output_message
 
