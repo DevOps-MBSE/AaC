@@ -1,11 +1,11 @@
 Feature:  Constraint Assignment Arguments Constraint Evaluation
 
     Scenario:  Check the Shapes constraint spec
-        Given I have the "./shapes/shapes.aac" model
-        When I check the "./shapes/shapes.aac" model
-        Then I should receive a message that the check was successful
+        Given I have the "./features/shapes/shapes.aac" file
+        When I run the "check" command with arguments "./features/shapes/shapes.aac" and with no flags
+        Then I should receive a message that the command was successful
 
     Scenario:  Check the Bad Shapes constraint spec
-        Given I have the "./shapes/bad_shapes.aac" model
-        When I check the "./shapes/bad_shapes.aac" bad model
-        Then I should receive a message that the check was not successful
+        Given I have the "./features/shapes/bad_shapes.aac" file
+        When I run the "check" command with arguments "./features/shapes/bad_shapes.aac" and with no flags
+        Then I should receive a message that the command was not successful

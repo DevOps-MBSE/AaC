@@ -29,20 +29,6 @@ def run_cli_command_with_args(command_name: str, args: list[str]) -> Tuple[int, 
     return exit_code, output_message
 
 
-def get_plugin_file(context, path: str) -> str:
-    """
-    Utility function to get the full path to the given model file.
-
-    Args:
-        context: Active context to check against.
-        path (str): Path to the model file being evaluated.
-
-    Return:
-        Valid path for the requested model file as tracked within the context.
-    """
-    return os.path.sep.join([context.config.paths[0], path])
-
-
 @given('I have a valid "{plugin_file}"')
 def gen_plugin_valid_check(context, plugin_file):
     """
@@ -52,11 +38,10 @@ def gen_plugin_valid_check(context, plugin_file):
         context: Active context to check against.
         plugin_file (str): Path to plugin file being used for generation.
     """
-    plugin_file_path = get_plugin_file(context, plugin_file)
-    exit_code, output_message = run_cli_command_with_args("check", [plugin_file_path])
+    exit_code, output_message = run_cli_command_with_args("check", [plugin_file])
     if exit_code != 0:
         raise AssertionError(f"Check cli command failed with message: {output_message}")
-    context.plugin_file_path = plugin_file_path
+    context.plugin_file_path = plugin_file
     context.output_message = output_message
 
 
@@ -103,8 +88,7 @@ def run_gen_plugin_overwrite(context, plugin_file_overwrite):
     assert "doing_stuff(aac_file: str)" not in file_read
     file.close()
 
-    plugin_file_path = get_plugin_file(context, plugin_file_overwrite)
-    plugin_args = [plugin_file_path, "--code-output", context.src_dir, "--test-output", context.test_dir, "--no-prompt", "--force-overwrite"]
+    plugin_args = [plugin_file_overwrite, "--code-output", context.src_dir, "--test-output", context.test_dir, "--no-prompt", "--force-overwrite"]
     exit_code, output_message = run_cli_command_with_args(
         "gen-plugin", plugin_args)
     file = open(os.path.join(src, "my_plugin_impl.py"), "r")
@@ -130,8 +114,7 @@ def run_gen_plugin_evaluate(context, plugin_file_evaluate):
     assert "doing_stuff(aac_file: str)" not in file_read
     file.close()
 
-    plugin_file_path = get_plugin_file(context, plugin_file_evaluate)
-    plugin_args = [plugin_file_path, "--code-output", context.src_dir, "--test-output", context.test_dir, "--no-prompt", "--evaluate"]
+    plugin_args = [plugin_file_evaluate, "--code-output", context.src_dir, "--test-output", context.test_dir, "--no-prompt", "--evaluate"]
     exit_code, output_message = run_cli_command_with_args(
         "gen-plugin", plugin_args)
     file = open(os.path.join(src, "my_plugin_impl.py"), "r")
@@ -209,7 +192,7 @@ def gen_project_results(context):
         rmtree(context.temp_dir)
 
 
-@then("I should receive a message that the command was not successful")
+@then("I should receive a message that the gen-plugin command was not successful")
 def command_not_successful(context):
     """
     Checks the output from the gen-project command.
