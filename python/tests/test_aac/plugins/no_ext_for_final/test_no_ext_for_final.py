@@ -56,7 +56,7 @@ class TestNoExtForFinal(TestCase):
         self.assertTrue(result.is_success())
         result = no_extension_for_final(definitions[1].instance, definitions[1], schema_definition.instance)
         self.assertFalse(result.is_success())
-        #  context.remove_definitions(definitions) #  Intentionally commented out
+        context.remove_definitions(definitions)
 
 
 root_schema_with_good_ext = """
