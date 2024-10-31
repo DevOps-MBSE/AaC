@@ -1,0 +1,16 @@
+schema:
+    name: Format
+    package: aac.lang
+    root: format
+    description: A definition that represents definable format.
+    fields:
+        - name: name
+          type: string
+          description: The name of the format.
+          is_required: true
+        - name: package
+          type: string
+          description: The package of the format.
+        - name: description
+          type: string
+          description: The description of the format
