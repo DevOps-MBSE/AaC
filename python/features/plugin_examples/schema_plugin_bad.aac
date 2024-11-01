@@ -1,0 +1,9 @@
+plugin:
+  name: plugin
+  package: aac.lang
+  schema_constraints:
+    - name: constraint name
+      universal: True
+      arguments:
+        - name: constraint_arguments
+          type: string
