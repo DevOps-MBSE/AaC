@@ -20,6 +20,8 @@ class TestUniqueRootKeys(TestCase):
         self.assertTrue(result.is_success())
         context.remove_definitions(definitions)
 
+    def test_root_key_names_are_unique_false(self):
+        context = LanguageContext()
         definitions = context.parse_and_load(BAD_ROOTS)
         result = root_key_names_are_unique(context)
         self.assertFalse(result.is_success())
