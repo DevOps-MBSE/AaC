@@ -2,7 +2,7 @@ schema:
     name: Triangle
     package: aac.shapes
     extends:
-        - name: Shape
+        - name: Triangle
           package: aac.shapes
     fields:
         - name: side_one_length
