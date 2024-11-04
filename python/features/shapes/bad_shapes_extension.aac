@@ -1,0 +1,15 @@
+schema:
+    name: Triangle
+    package: aac.shapes
+    extends:
+        - name: Shape
+          package: aac.shapes
+    fields:
+        - name: side_one_length
+          type: number
+        - name: side_two_length
+          type: number
+        - name: side_three_length
+          type: number
+        - name: height
+          type: number
