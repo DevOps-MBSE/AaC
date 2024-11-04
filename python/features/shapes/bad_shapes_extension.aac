@@ -2,7 +2,7 @@ schema:
     name: Shape
     package: aac.shapes
     modifiers:
-        - abstract
+        - final
     fields:
         - name: area
           type: number
@@ -10,7 +10,7 @@ schema:
           type: number
 ---
 schema:
-    name: Shape
+    name: Triangle
     package: aac.shapes
     extends:
         - name: Shape
