@@ -1,8 +1,19 @@
 schema:
-    name: Triangle
+    name: Shape
+    package: aac.shapes
+    modifiers:
+        - abstract
+    fields:
+        - name: area
+          type: number
+        - name: perimeter
+          type: number
+---
+schema:
+    name: Shape
     package: aac.shapes
     extends:
-        - name: Triangle
+        - name: Shape
           package: aac.shapes
     fields:
         - name: side_one_length
