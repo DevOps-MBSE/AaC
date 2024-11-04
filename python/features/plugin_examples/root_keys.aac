@@ -1,0 +1,16 @@
+schema:
+  name: Unique Root
+  package: test.root_keys
+  root: unique-root
+  fields:
+    - name: name
+      type: string
+---
+schema:
+  name: Unique Root two
+  package: test.root_keys
+  root: unique-root-two
+  fields:
+    - name: name
+      type: string
+---
