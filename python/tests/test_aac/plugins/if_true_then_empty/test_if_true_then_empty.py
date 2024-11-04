@@ -6,7 +6,7 @@ from aac.plugins.if_true_then_empty.if_true_then_empty_impl import if_true_then_
 
 class TestIfTrueThenEmpty(TestCase):
     def test_if_true_then_empty(self):
-        
+
         context = LanguageContext()
 
         test_schema = context.parse_and_load(TEST_SCHEMA)
@@ -16,6 +16,12 @@ class TestIfTrueThenEmpty(TestCase):
             result = if_true_then_empty(good_data[0].instance, test_schema[0], None, "alpha", "beta")
             self.assertTrue(result.is_success(), f"Expected success for {good_data[0].name}")
             context.remove_definitions(good_data)
+
+    def test_if_true_then_empty_fail(self):
+
+        context = LanguageContext()
+
+        test_schema = context.parse_and_load(TEST_SCHEMA)
 
         for bad in [BAD_DATA_1]:
             bad_data = context.parse_and_load(bad)
