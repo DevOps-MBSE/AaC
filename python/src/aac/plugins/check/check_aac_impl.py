@@ -184,15 +184,15 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult: 
     for plugin in context.get_definitions_by_root("plugin"):
         # we want to check contest constraints, but not the ones that are defined in the aac_file we're checking to avoid gen-plugin circular logic
         for context_constraint in plugin.instance.context_constraints:
-            if context_constraint.name in [
+            if context_constraint.name not in [
                 definition.name for definition in definitions_to_check
             ]:
-                continue
-            callback = all_constraints_by_name[context_constraint.name]
-            result: ExecutionResult = callback(context)
-            if context_constraint.name not in constraint_results:
-                constraint_results[context_constraint.name] = []
-            constraint_results[context_constraint.name].append(result)
+                if context_constraint.name in all_constraints_by_name.keys():
+                    callback = all_constraints_by_name[context_constraint.name]
+                    result: ExecutionResult = callback(context)
+                    if context_constraint.name not in constraint_results:
+                        constraint_results[context_constraint.name] = []
+                    constraint_results[context_constraint.name].append(result)
 
     for check_me in definitions_to_check:
         defining_schema = context.get_defining_schema_for_root(check_me.get_root_key())
