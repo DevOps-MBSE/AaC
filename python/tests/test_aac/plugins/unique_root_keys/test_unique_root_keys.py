@@ -25,6 +25,7 @@ class TestUniqueRootKeys(TestCase):
         definitions = context.parse_and_load(BAD_ROOTS)
         result = root_key_names_are_unique(context)
         self.assertFalse(result.is_success())
+        self.assertIn("is not unique", str(result.messages))
         context.remove_definitions(definitions)
 
 
