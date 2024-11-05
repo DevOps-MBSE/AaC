@@ -1,13 +1,5 @@
 from unittest import TestCase
-from typing import Tuple
-from click.testing import CliRunner
-from aac.execute.command_line import cli, initialize_cli
-from aac.execute.aac_execution_result import ExecutionStatus
 from aac.context.language_context import LanguageContext
-
-
-from aac.plugins.unique_root_keys.unique_root_keys_impl import plugin_name
-
 
 from aac.plugins.unique_root_keys.unique_root_keys_impl import root_key_names_are_unique
 
@@ -27,7 +19,6 @@ class TestUniqueRootKeys(TestCase):
         self.assertFalse(result.is_success())
         self.assertIn("is not unique", str(result.messages))
         context.remove_definitions(definitions)
-
 
 
 GOOD_ROOTS = """
