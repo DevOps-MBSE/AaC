@@ -5,7 +5,7 @@ from aac.execute.command_line import cli, initialize_cli
 from aac.execute.aac_execution_result import ExecutionStatus
 
 
-from aac.plugins.version.version_impl import plugin_name, version
+from aac.plugins.version.version_impl import version
 
 
 class TestVersion(TestCase):
@@ -22,7 +22,7 @@ class TestVersion(TestCase):
         version_values = message.message.split(".")
         self.assertEqual(len(version_values), 3, "Version should have 3 values separated by . to follow semantic versioning standards.")
         for value in version_values:
-            self.assertTrue(value.isdigit(), f"Each token of the version should be a digit.  Received {value}")
+            self.assertTrue(value.isdigit(), msg=f"Each token of the version should be a digit.  Received {value}")
 
     def run_version_cli_command_with_args(self, args: list[str]) -> Tuple[int, str]:
         """Utility function to invoke the CLI command with the given arguments."""
@@ -39,8 +39,8 @@ class TestVersion(TestCase):
         exit_code, output_message = self.run_version_cli_command_with_args(args)
 
         self.assertEqual(0, exit_code)  # asserts the command ran successfully
-        self.assertTrue(len(output_message) > 0)  # asserts the command produced output
+        self.assertGreater(len(output_message), 0)  # asserts the command produced output
         version_values = output_message.strip().split(".")
         self.assertEqual(len(version_values), 3, "Version should have 3 values separated by . to follow semantic versioning standards.")
         for value in version_values:
-            self.assertTrue(value.isdigit(), f"Each token of the version should be a digit.  Received {value}")
+            self.assertTrue(value.isdigit(), msg=f"Each token of the version should be a digit.  Received {value}")
