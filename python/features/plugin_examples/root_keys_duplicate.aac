@@ -1,15 +1,15 @@
 schema:
-  name: model-two
+  name: One
   package: test.root_keys
-  root: model
+  root: one
   fields:
     - name: name
       type: string
 ---
 schema:
-  name: schema-two
+  name: Two
   package: test.root_keys
-  root: schema
+  root: one
   fields:
     - name: name
       type: string

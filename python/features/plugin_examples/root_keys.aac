@@ -1,15 +1,15 @@
 schema:
-  name: Unique Root
+  name: One
   package: test.root_keys
-  root: unique-root
+  root: one
   fields:
     - name: name
       type: string
 ---
 schema:
-  name: Unique Root two
+  name: Two
   package: test.root_keys
-  root: unique-root-two
+  root: two
   fields:
     - name: name
       type: string

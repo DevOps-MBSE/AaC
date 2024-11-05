@@ -184,7 +184,7 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult: 
     for plugin in context.get_definitions_by_root("plugin"):
         # we want to check contest constraints, but not the ones that are defined in the aac_file we're checking to avoid gen-plugin circular logic
         for context_constraint in plugin.instance.context_constraints:
-            if context_constraint.name not in [
+            if context_constraint.name in [
                 definition.name for definition in definitions_to_check
             ]:
                 continue
