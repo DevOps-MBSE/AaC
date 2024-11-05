@@ -103,8 +103,6 @@ def command_args_flags(context, command, args, flags):
     flags_list = flags.split()
 
     exit_code, output_message = run_cli_command_with_args(command, args_list + flags_list)
-    print(exit_code)
-    print(output_message)
     context.exit_code = exit_code
     context.output_message = output_message
 

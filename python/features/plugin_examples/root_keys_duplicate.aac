@@ -1,0 +1,16 @@
+schema:
+  name: One
+  package: test.root_keys
+  root: one
+  fields:
+    - name: name
+      type: string
+---
+schema:
+  name: Two
+  package: test.root_keys
+  root: one
+  fields:
+    - name: name
+      type: string
+---
