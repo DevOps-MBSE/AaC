@@ -46,8 +46,8 @@ As you can see, the `Shape` schema has an `abstract` modifier.  This means that 
 
 ```{eval-rst}
 .. literalinclude:: ../../../../../python/features/shapes/shapes.aac
-    :lines: 51-64
-    :emphasize-lines: 6-7
+    :lines: 58-70
+    :emphasize-lines: 7-8
     :language: yaml
 ```
 
@@ -59,7 +59,7 @@ Now that we can define inheritance, how can we use it.  The intended use case is
 
 ```{eval-rst}
 .. literalinclude:: ../../../../../python/features/shapes/shapes.aac
-    :lines: 72-79
+    :lines: 80-87
     :emphasize-lines: 7-8
     :language: yaml
 ```
