@@ -6,6 +6,19 @@ In the AaC DSL, every definition has its structure defined by a `schema` definit
 
 Users can define these extensions locally in their user-defined AaC files, or they can leverage [plugins](../dev_guide/plugin_dev_guide.md) and [user libraries](./user_library.md) for common structures and functionalities shared across teams and repositories.
 
+## Required Fields
+
+Fields defined in a `schema` definition can be marked as required, meaning that any implementation of that schema **MUST** contain that field. This is accomplished by setting the `is_required` boolean field to `true`.
+
+In the definition below, `Enum`, the field `values` is marked as required.  An `Enum` **MUST** include at least one value in the `values` field to be a valid definition.
+
+```{eval-rst}
+.. literalinclude:: ../../../../python/src/aac/aac.aac
+    :language: yaml
+    :emphasize-lines: 14, 18
+    :lines: 66-83
+```
+
 ## Utilizing Schema Definitions
 
 `Schema` definitions serve multiple roles in the AaC DSL. Some examples are provided below for common use cases: crafting message interfaces, custom data structures, and defining new definition instance types.
@@ -72,3 +85,5 @@ AaC permits users to define new instances of custom data structures. In our Alar
     :lines: 1-12
     :emphasize-lines: 4
 ```
+
+
