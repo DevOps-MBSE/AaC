@@ -8,9 +8,9 @@ Users can define these extensions locally in their user-defined AaC files, or th
 
 ## Required Fields
 
-Fields defined in a `schema` definition can be marked as required, meaning that any implementation of that schema **MUST** contain that field. This is accomplished by setting the `is_required` boolean field to `true`. 
+Fields defined in a `schema` definition can be marked as required, meaning that any implementation of that schema **MUST** contain that field. This is accomplished by setting the `is_required` boolean field to `true`.
 
-In the definition below, `Enum`, the field `values` is marked as required.  An `Enum` MUST include at least one value in the `values` field to be a valid definition.
+In the definition below, `Enum`, the field `values` is marked as required.  An `Enum` **MUST** include at least one value in the `values` field to be a valid definition.
 
 ```{eval-rst}
 .. literalinclude:: ../../../../python/src/aac/aac.aac
