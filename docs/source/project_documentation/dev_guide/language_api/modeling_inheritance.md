@@ -66,3 +66,22 @@ Now that we can define inheritance, how can we use it.  The intended use case is
 
 The above pattern schema has a `shapes` field which takes in a number of shapes to create a pattern with.
 Since we cannot instantiate the `Shape` schema on its own, we must use a schema which extends `Shape`.  Since the field takes in any `Shape`, however, we can use any schema which extends `Shape`.
+
+## Required Fields
+
+If a definition is extending another definition with required fields, then the `is_required` property of the fields will not carry over.
+
+```{eval-rst}
+.. literalinclude:: ../../../../../python/src/aac/aac.aac
+    :language: yaml
+    :lines: 10-33
+    :emphasize-lines: 13, 19, 24
+```
+```{eval-rst}
+.. literalinclude:: ../../../../../python/src/aac/aac.aac
+    :language: yaml
+    :lines: 207-239
+    :emphasize-lines: 3-5
+```
+
+In the above example, `Schema` is an extension of `AaCType`.  So while a `Schema` definition can use the `name`, `description`, and `package` fields from `AaCType`, the `is_required` field does not carry over.  If you want an extension's field to be required, you will have to redefine the field.
