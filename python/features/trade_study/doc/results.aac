@@ -1,0 +1,43 @@
+import:
+  files:
+    - ../spec/cookie_trade_study_reqs.aac
+
+---
+model:
+  name: Result
+  description: |
+    A brief description of the trade study results and a recommendation for the perfect break room cookie.
+  behavior:
+    - name: Results Intro
+      description: |
+        Provide a brief introduction for the results. Heap praise and accolades onto the trade study team for all their hard work in performing the evaluation.  Thank the bosses for their leadership, guidance, and integrity throughout the process. 
+      acceptance:
+        - name: Result Setup
+          scenarios:
+            - name: Scoring Setup
+              requirements:
+                - GCD-014
+              given:
+                - The trade study file exists.
+              when:
+                - You read the trade study document.
+              then:
+                - There are praise and accolades for the trade study team for all their hard work and diligence. 
+                - Thank the bosses for their leadership.
+                - Thank the bosses for their guidance.
+                - Thank the bosses for their integrity throughout the process.
+                - Express excitement about having identified the perfect cookie for the break room.
+        - name: Winner
+          scenarios:
+            - name: Scoring Winner
+              requirements:
+                - GCD-014
+              given:
+                - The trade study file exists.
+              when:
+                - You read the trade study document.
+              then:
+                - There is one cookie identified as the winner.
+                - The winning cookie is one of the candidate cookies.
+                - The winning cookie is the one with the highest score.
+                - The highest scoring cookie is the oatmeal raisin cookie.

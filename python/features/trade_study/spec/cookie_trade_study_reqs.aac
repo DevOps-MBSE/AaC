@@ -1,0 +1,137 @@
+import:
+  files:
+    - ./trade_study_reqs.aac
+    - ./documentation_reqs.aac
+
+---
+req_spec:
+  name: The Great Cookie Debate
+  description: |
+    A trade study to determine which type of cookies should be provided in the break room.
+  requirements:
+    - GCD-001
+    - GCD-002
+    - GCD-003
+    - GCD-004
+    - GCD-005
+    - GCD-006
+    - GCD-007
+    - GCD-008
+    - GCD-009
+    - GCD-010
+    - GCD-011
+    - GCD-012
+    - GCD-013
+    - GCD-014
+
+---
+req:
+  name: Markdown File
+  id: GCD-001
+  shall:  The cookie trade study shall be documented using the markdown file format.
+  parents:
+    - DOC-002
+
+---
+req:
+  name: Change Log
+  id: GCD-002
+  shall: The cookie trade study shall include a change log table.
+  parents:
+    - DOC-001
+
+---
+req:
+  name: Proprietary Markings
+  id: GCD-003
+  shall:  The cookie trade study shall be marked proprietary.
+  parents:
+    - DOC-003
+
+---
+req:
+  name: No HTML
+  id: GCD-004
+  shall: The cookie trade study shall not include HTML content.
+  parents:
+    - DOC-004
+
+---
+req:
+  name: Describe the problem
+  id: GCD-005
+  shall: The cookie trade study shall describe the cookie selection debate for the break room.
+  parents:
+    - TS-001
+
+---
+req:
+  name: Objective
+  id: GCD-006
+  shall: The cookie trade study shall define the objective of identifying the perfect cookie for the break room that is available from the cookie vendor.
+  parents:
+    - TS-002
+
+---
+req:
+  name: Criteria
+  id: GCD-007
+  shall: The cookie trade study shall define a set of cookie evaluation criteria.;
+  parents:
+    - TS-003
+
+---
+req:
+  name: Scoring Thresholds
+  id: GCD-008
+  shall: The cookie trade study shall define scoring thresholds for each criteria.
+  parents:
+    - TS-004
+
+---
+req:
+  name: Weights
+  id: GCD-009
+  shall: The cookie trade study shall define weights for each criteria based on importance.
+  parents:
+    - TS-005
+    
+---
+req:
+  name: Candidates
+  id: GCD-010
+  shall: The cookie trade study shall define cookie candidates based on the cookie vendor catalog.
+  parents:
+    - TS-006
+
+---
+req:
+  name: Scoring
+  id: GCD-011
+  shall: The cookie trade study shall include a numeric score for each evaluation criteria for each candidate cookie.
+  parents:
+    - TS-007
+
+---
+req:
+  name: Totals
+  id: GCD-012
+  shall: The cookie trade study shall include a calculated total score for each candidate cookie.
+  parents:
+    - TS-008
+
+---
+req:
+  name: Failures
+  id: GCD-013
+  shall: The cookie trade study shall eliminate any cookies that do not pass a pass/fail evaluation criteria.
+  parents:
+    - TS-009
+
+---
+req:
+  name: Recommendation
+  id: GCD-014
+  shall: The cookie trade study shall recommend the remaining cookie with the highest total score.
+  parents:
+    - TS-010

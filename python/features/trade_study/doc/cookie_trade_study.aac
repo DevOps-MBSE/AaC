@@ -1,0 +1,56 @@
+import:
+  files:
+    - ../spec/cookie_trade_study_reqs.aac
+    - ./introduction.aac
+    - ./approach.aac
+    - ./evaluation.aac
+    - ./results.aac
+
+---
+model:
+  name: Cookie Trade Study
+  description: |
+    A trade study to finally put to rest which cookie should be provided in the break room.
+  components:
+    - name: intro
+      model: Introduction
+    - name: approach
+      model: EvaluationApproach
+    - name: evaluation
+      model: Evaluation
+    - name: result
+      model: Result
+  behavior:
+    - name: File Format
+      description: |
+        Produce the trade study content as a markdown file.
+      acceptance:
+        - name: File Format
+          scenarios:
+            - name: File Format
+              requirements:
+                - GCD-001
+                - GCD-004
+              given:
+                - The trade study file exists.
+              when:
+                - You read the trade study document.
+              then:
+                - You see that the content is compliant to markdown formatting.
+                - You do not find any HTML content in the document.
+    - name: Markings
+      description: |
+        Include a code block immediately after the main title heading that includes the company proprietary statement.
+      acceptance:
+        - name: Markings
+          scenarios:
+            - name: Markings
+              requirements:
+                - GCD-003
+              given:
+                - The trade study file exists.
+              when:
+                - You read the trade study document.
+              then:
+                - You see that the company proprietary markings are in a code block.
+                - You see that the markings code block immediately follows the main title heading.

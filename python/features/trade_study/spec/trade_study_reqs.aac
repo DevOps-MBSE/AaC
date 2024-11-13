@@ -1,0 +1,75 @@
+req_spec:
+  name: Trade Study Requirements
+  description: |
+    The organization's process requirements for performing a trade study.
+  requirements:
+    - TS-001
+    - TS-002
+    - TS-003
+    - TS-004
+    - TS-005
+    - TS-006
+    - TS-007
+    - TS-008
+    - TS-009
+    - TS-010
+
+---
+req:
+  name: Define the problem domain
+  id: TS-001
+  shall:  The trade study shall define the problem domain in terms internal teams will readily understand.
+
+---
+req:
+  name: Define the trade study objectives
+  id: TS-002
+  shall: The trade study shall define the objectives to be achieved in business terms.
+
+---
+req:
+  name: Define the evaluation criteria
+  id: TS-003
+  shall: The trade study shall define the evaluation criteria to be used in evaluating the solution space.
+
+---
+req: 
+  name: Define criteria scoring
+  id: TS-004
+  shall: The trade study shall establish scoring definitions for each evaluation criteria as either pass/fail or numeric from 0 to 10 with with unambiguous thresholds.
+
+---
+req:
+  name: Define criteria weights
+  id: TS-005
+  shall: The trade study shall define the weights to be applied to each evaluation criteria when assessing candidate solutions.
+
+---
+req:
+  name: Define solution candidates
+  id: TS-006
+  shall:  The trade study shall define potential candidate solutions.
+
+---
+req:
+  name: Score each candidate solution
+  id: TS-007
+  shall: The trade study shall score each candidate solution for each evaluation criteria.
+
+---
+req:
+  name: Establish total score
+  id: TS-008
+  shall:  The trade study shall establish total scores by summing the products of criteria scores and criteria weight. for each candidate solution.
+
+---
+req:
+  name: Failure elimination
+  id: TS-009
+  shall:  The trade study shall assign a total score of 0 if any solution was assigned a fail for a pass/fail evaluation criteria.
+
+---
+req:
+  name: Recommendation
+  id: TS-010
+  shall: The trade study shall recommend the candidate solution with the highest total score.

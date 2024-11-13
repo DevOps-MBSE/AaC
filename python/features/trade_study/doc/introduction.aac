@@ -1,0 +1,76 @@
+import:
+  files:
+    - ../spec/cookie_trade_study_reqs.aac
+
+---
+model:
+  name: Introduction
+  description: |
+    A brief description of the need to establish a quantitative, data-driven decision on which cookie to order from the cookie vendor to provide in the break room.  Explain that there's only room for one type of cookie on the small counter next to the espresso machine and the drinking water distillation and mineral infusion machine.
+  behavior:
+    - name: Change Log
+      description: |
+        A change log table with columns for version, date, description, and author.
+      acceptance:
+        - name: Change Log Table
+          scenarios:
+            - name: Correct Columns Present
+              requirements:
+                - GCD-002
+              given:
+                - The trade study file exists.
+              when:
+                - You read the trade study document.
+              then:
+                - There is a change table with a version column.
+                - There is a change table with a date column.
+                - There is a change table with a description column.
+                - There is a change table with a author column.
+
+            - name: Change Table Content
+              requirements:
+                - GCD-002
+              given:
+                - The trade study file exists.
+              when:
+                - You read the trade study document.
+              then:
+                - There is at least one row of data for the initial version.
+                - The initial row contains a date.
+                - The initial row contains a brief description.
+                - The initial row container an author.
+              
+    - name: Objective
+      description: |
+        Ensure there is a concise description of the great cookie debate objective.
+      acceptance:
+        - name: Objective Statement
+          scenarios:
+            - name: Trade Study Objective
+              requirements:
+                - GCD-006
+              given:
+                - The trade study file exists.
+              when:
+                - You read the trade study document.
+              then:
+                - There is a statement that the organization wants to find a cookie solution that brings joy to the team.
+                - There is a statement that the organization want to ensure compliance with government cookie regulations.
+                - There is a statement that the organization want to ensure compliance with industry cookie standards.
+
+    - name: Problem
+      description: |
+        Ensure there is a concise description of the great cookie debate problem.
+      acceptance:
+        - name: Problem Description
+          scenarios:
+            - name: Problem Description
+              requirements:
+                - GCD-005
+              given:
+                - The trade study file exists.
+              when:
+                - You read the trade study document.
+              then:
+                - There is a statement that the break room can only contain one type of cookie due to counter top limitations.
+                - There is a statement that the cookies must come from the cookie vendor.
