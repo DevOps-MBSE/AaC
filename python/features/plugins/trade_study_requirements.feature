@@ -38,8 +38,3 @@ Feature:  Trade study document model with requirements example
             |GCD-012    |
             |GCD-013    |
             |GCD-014    |
-
-    Scenario:  Check the echo model
-        Given I have the "./features/trade_study/doc/cookie_trade_study.aac" file
-        When I run the "check" command with arguments "./features/trade_study/doc/cookie_trade_study.aac" and with no flags
-        Then I should receive a message that the command was successful

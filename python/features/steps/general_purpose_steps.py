@@ -190,7 +190,6 @@ def check_req_id(context, req_id):
         context: Active context to check against.
         req_id: A list of req id values.
     """
-    print("DEBUG: running 'I should have requirement ids' step_impl for {req_id}")
     parsed_ids = []
     for definition in context.aac_loaded_definitions:
         if definition.get_root_key() == "req":
