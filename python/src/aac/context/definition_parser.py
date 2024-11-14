@@ -809,12 +809,10 @@ class DefinitionParser():
         self.context = context
         self.parsed_definitions = parsed_definitions
         self.primitive_name_to_py_type = {}
+        self.fully_qualified_name_to_definition = {}
         for definition in self.parsed_definitions + self.context.get_definitions():
             if definition.get_root_key() == "primitive":
                 self.primitive_name_to_py_type[definition.name] = definition.structure["primitive"]["python_type"]
-
-        self.fully_qualified_name_to_definition = {}
-        for definition in self.parsed_definitions + self.context.get_definitions():
             if "package" in definition.structure[definition.get_root_key()]:
                 fully_qualified_name = definition.get_fully_qualified_name()
 

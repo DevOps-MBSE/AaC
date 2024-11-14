@@ -115,14 +115,14 @@ def load_model(context, file_path):
 
     Args:
         context: Active context to check against.
-        model_file: Path of model file to load.
+        file_path: Path of model file to load.
     """
     try:
         aac_context = LanguageContext()
         definitions = aac_context.parse_and_load(file_path)
         context.aac_loaded_definitions = definitions
     except Exception as e:
-        raise AssertionError(f"Failed to load model file {model_file} with exception {e}")
+        raise AssertionError(f"Failed to load model file {file_path} with exception {e}")
 
 
 @then("I should receive a message that the command was successful")
@@ -180,6 +180,7 @@ def check_count_by_root_key(context, count, root_key):
             f"Found {len(items)} with root_key {root_key}, but expected {count}."
         )
 
+
 @then(u'I should have requirement id {req_id}')
 def check_req_id(context, req_id):
     """
@@ -187,7 +188,7 @@ def check_req_id(context, req_id):
 
     Args:
         context: Active context to check against.
-        req_id_list: A list of req id values.
+        req_id: A list of req id values.
     """
     print("DEBUG: running 'I should have requirement ids' step_impl for {req_id}")
     parsed_ids = []
