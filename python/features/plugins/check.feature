@@ -90,3 +90,11 @@ Feature: Check example models
         When I run the "check" command with arguments "./features/shapes/shapes.aac" and with flags "--verbose"
         Then I should receive a message that the command was successful
         And I should receive a list of successfully evaluated models
+
+# Trade study
+
+    Scenario: Check the trade study files
+        Given I have the "./features/trade_study/doc/cookie_trade_study.aac" file
+        When I run the "check" command with arguments "./features/shapes/shapes.aac" and with flags "--verbose"
+        Then I should receive a message that the command was successful
+        And I should receive a list of successfully evaluated models

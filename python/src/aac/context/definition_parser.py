@@ -808,16 +808,19 @@ class DefinitionParser():
         schema_defs_by_root = {}
         self.context = context
         self.parsed_definitions = parsed_definitions
-        self.primitive_name_to_py_type = {
-            definition.name: definition.structure["primitive"]["python_type"]
-            for definition in self.parsed_definitions + self.context.get_definitions()
-            if definition.get_root_key() == "primitive"
-        }
-        self.fully_qualified_name_to_definition = {
-            definition.get_fully_qualified_name(): definition
-            for definition in self.parsed_definitions + self.context.get_definitions()
-            if "package" in definition.structure[definition.get_root_key()]
-        }
+        self.primitive_name_to_py_type = {}
+        self.fully_qualified_name_to_definition = {}
+        for definition in self.parsed_definitions + self.context.get_definitions():
+            if definition.get_root_key() == "primitive":
+                self.primitive_name_to_py_type[definition.name] = definition.structure["primitive"]["python_type"]
+            if "package" in definition.structure[definition.get_root_key()]:
+                fully_qualified_name = definition.get_fully_qualified_name()
+
+                # This is so requirements specifically do not get overwritten.  Although other definition types may still get overwritten, so we may need to find a better solution eventually.
+                if definition.get_root_key() == "req":
+                    req_id = definition.structure["req"]["id"]
+                    fully_qualified_name = f"{fully_qualified_name}_{req_id}"
+                self.fully_qualified_name_to_definition[fully_qualified_name] = definition
 
         for definition in self.context.get_definitions():
             if definition.get_root_key() == "schema":
@@ -830,8 +833,13 @@ class DefinitionParser():
             definition.source.is_loaded_in_context = True
             result.append(definition)
             self.context.context_instance.definitions.add(definition)
-            self.context.context_instance.fully_qualified_name_to_definition[
-                f"{definition.package}.{definition.name}"
-            ] = definition
+            fully_qualified_name = f"{definition.package}.{definition.name}"
 
+            # This is so requirements specifically do not get overwritten.  Although other definition types may still get overwritten, so we may need to find a better solution eventually.
+            if definition.get_root_key() == "req":
+                req_id = definition.structure["req"]["id"]
+                fully_qualified_name = f"{fully_qualified_name}_{req_id}"
+            self.context.context_instance.fully_qualified_name_to_definition[
+                fully_qualified_name
+            ] = definition
         return result

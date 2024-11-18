@@ -1,0 +1,41 @@
+import:
+  files:
+    - ../spec/cookie_trade_study_reqs.aac
+
+---
+model:
+  name: Evaluation
+  description: |
+    A quantitative evaluation of the cookies against the criteria and scoring criteria.  The cookies to be evaluated are sugar cookies, oatmeal raisin cookies, peanut butter cookies, and chocolate chip cookies.
+  behavior:
+    - name: Scoring
+      description: |
+        There is a table for scoring.  The first colum of the table is for the cookie name.  The remaining columns are the evaluation criteria with a total column at the end.  There is a row in the scoring table for each cookie with a pass-fail or numerical score for the criteria.
+      acceptance:
+        - name: Scoring
+          scenarios:
+            - name: Scoring Setup.
+              requirements:
+                - GCD-011
+              given:
+                - The trade study file exists.
+              when:
+                - You read the trade study document.
+              then:
+                - There is a brief description describing the measurements used for scoring each criteria.
+                - There is a description of the measurement environment.
+                - There is a statement that all measurements were performed for all cookies in representative environments or there is a description of the variability in the environments and why this does not invalidate the trade study results.
+            - name: Scoring Results
+              requirements:
+                - GCD-011
+                - GCD-012
+                - GCD-013
+              given:
+                - The trade study file exists.
+              when:
+                - You read the trade study document.
+              then:
+                - There is a scoring table populated with scores for each candidate and criteria.
+                - Scores are totaled in the last column using a weighted sum algorithm.
+                - Candidates that fail a pass-fail criteria have a total score of 0.
+                - If any candidate fails a pass-fail criteria, there is a footnote after the table describing the failure.

@@ -1,0 +1,33 @@
+req_spec:
+  name:  Documentation Standards
+  description: |
+    Corporate standards for all internal documents.  External communications may violate these standards with authorization by the VP of communications.
+  requirements:
+    - DOC-001
+    - DOC-002
+    - DOC-003
+    - DOC-004
+
+---
+req:
+  name: Change Log
+  id: DOC-001
+  shall: The document shall include a change log table with the change date, author, author e-mail, and change description.
+
+---
+req:
+  name: File Format
+  id: DOC-002
+  shall: The document shall be in markdown file format.
+
+---
+req:
+  name: Markings
+  id: DOC-003
+  shall: The document shall include a code block containing corporate proprietary markings immediately after the first header.
+
+---
+req:
+  name: No HTML
+  id: DOC-004
+  shall: The document shall not include any html content.

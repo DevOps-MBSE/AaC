@@ -1,6 +1,7 @@
 """General purpose steps for the behave BDD tests."""""
 from behave import given, when, then, use_step_matcher
 import os
+from aac.context.language_context import LanguageContext
 from aac.execute.command_line import cli, initialize_cli
 from click.testing import CliRunner
 from typing import Tuple
@@ -107,6 +108,23 @@ def command_args_flags(context, command, args, flags):
     context.output_message = output_message
 
 
+@when(u'I load the "{file_path}" file')
+def load_model(context, file_path):
+    """
+    Load a model file and put it into the context.
+
+    Args:
+        context: Active context to check against.
+        file_path: Path of model file to load.
+    """
+    try:
+        aac_context = LanguageContext()
+        definitions = aac_context.parse_and_load(file_path)
+        context.aac_loaded_definitions = definitions
+    except Exception as e:
+        raise AssertionError(f"Failed to load model file {file_path} with exception {e}")
+
+
 @then("I should receive a message that the command was successful")
 def command_success(context):
     """
@@ -140,3 +158,41 @@ def verbose_check(context):
         context: Active context to check against.
     """
     assert ("was successful." in context.output_message)  # only appears when using verbose
+
+
+@then(u'I should have {count} total {root_key} definitions')
+def check_count_by_root_key(context, count, root_key):
+    """
+    Evaluate the number of root_key items parsed from a model.
+
+    Args:
+        context: Active context to check against.
+        count: The number of definitions loaded from the model.
+        root_key:  The root_key for the definitions of interest.
+    """
+    items = []
+    for definition in context.aac_loaded_definitions:
+        if definition.get_root_key() == root_key:
+            items.append(definition)
+
+    if len(items) != int(count):
+        raise AssertionError(
+            f"Found {len(items)} with root_key {root_key}, but expected {count}."
+        )
+
+
+@then(u'I should have requirement id {req_id}')
+def check_req_id(context, req_id):
+    """
+    Evaluate the expected req ids are present in the parsed items.
+
+    Args:
+        context: Active context to check against.
+        req_id: A list of req id values.
+    """
+    parsed_ids = []
+    for definition in context.aac_loaded_definitions:
+        if definition.get_root_key() == "req":
+            parsed_ids.append(definition.instance.id)
+    if req_id not in parsed_ids:
+        raise AssertionError(f"Expected id {req_id} not found in parsed req ids.")
