@@ -31,6 +31,8 @@ class DefinitionParser():
                     result.append(definition)
         return result
 
+# LEXEME_IMPROVEMENT: Method should return a source_location instead of a string. lexeme[index].location()
+# Change method name to get_source_location()
     def get_location_str(self, lexeme_value: str, lexemes: list[Lexeme]) -> str:
         """
         Method to find the file name and line number for a requested Lexeme value.
@@ -530,6 +532,7 @@ class DefinitionParser():
             instance = []
             if not field_value:
                 if is_required:
+                    # LEXEME_IMPROVEMENT: Replace None with a source location
                     raise LanguageError(
                         message=f"Missing required field {field_name}",
                         location=None
@@ -583,6 +586,7 @@ class DefinitionParser():
         python_type = defining_definition.structure["primitive"]["python_type"]
         if not field_value:
             if is_required:
+                # LEXEME_IMPROVEMENT: Replace None with a source location
                 raise LanguageError(message=f"Missing required field {field_name}.", location=None)
             if is_list:
                 field_value = []

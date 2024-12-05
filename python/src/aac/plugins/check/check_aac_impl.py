@@ -136,6 +136,7 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult: 
                 if is_list:
                     # if the field is a list, check each item in the list
                     if type(getattr(check_me, field.name)) != list:
+                        # LEXEME_IMPROVEMENT: Replace None with a source location
                         raise LanguageError(
                             f"Value of '{field.name}' was expected to be list, but was '{type(getattr(check_me, field.name))}'. File: '{source_definition.source.uri}'",
                             None
