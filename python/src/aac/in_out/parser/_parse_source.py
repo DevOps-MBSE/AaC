@@ -70,9 +70,11 @@ def _parse_file(arch_file: str) -> list[Definition]:
             if file_content:
                 parsed_definitions = _parse_str(file, file_content)
                 definitions_list.extend(parsed_definitions)
+                # print(_get_files_to_import_from_definitions(file, parsed_definitions))
                 [parse_file_contents(imp_file) for imp_file in _get_files_to_import_from_definitions(file, parsed_definitions)]
 
     parse_file_contents(arch_file)
+    # print(parsed_files)
     return definitions_list
 
 
@@ -109,7 +111,21 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
     doc_segment_tokens: list[DocumentStartToken] = [token for token in yaml_tokens if isinstance(token, DocumentStartToken)]
     doc_tokens = [*doc_start_token, *doc_segment_tokens, *doc_end_token]
 
+    # print("Yaml Tokens\n")
+    # print(yaml_tokens)
+    # print("Value Tokens\n")
+    # print(value_tokens)
+    # print("doc_start Tokens\n")
+    # print(doc_start_token)
+    # print("doc_end Tokens\n")
+    # print(doc_end_token)
+    # print("doc_segment Tokens\n")
+    # print(doc_segment_tokens)
+    # print("doc Tokens\n")
+    # print(doc_tokens)
+
     yaml_dicts: list[dict] = deepcopy(YAML_CACHE.parse_string(model_content, source))
+    # print(yaml_dicts)
 
     source_files: dict[str, AaCFile] = {}
     definitions: list[Definition] = []
@@ -125,6 +141,8 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
 
         if yaml_text.strip():
             definition_lexemes = get_lexemes_for_definition(value_tokens, content_start_line, content_end_line)
+            print("\n\n\nSTART:\n")
+            print(definition_lexemes)
 
             if yaml_dicts:
                 source_file = source_files.get(source)

@@ -531,8 +531,8 @@ class DefinitionParser():
             if not field_value:
                 if is_required:
                     raise LanguageError(
-                        message=f"Missing required field {field_name}",
-                        location=None
+                        f"Missing required field {field_name}",
+                        location="location",
                     )
             else:
                 if not isinstance(field_value, list):
@@ -597,8 +597,8 @@ class DefinitionParser():
             if "Any" != python_type:
                 if not isinstance(field_value, eval(python_type)):
                     raise LanguageError(
-                        f"Invalid value for field '{field_name}'.  Expected type '{python_type}', but found '{type(field_value)}'",
-                        self.get_location_str(field_value, lexemes),
+                        message=f"Invalid value for field '{field_name}'.  Expected type '{python_type}', but found '{type(field_value)}'",
+                        location=self.get_location_str(field_value, lexemes),
                     )
         return field_value
 
