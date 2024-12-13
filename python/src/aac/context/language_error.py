@@ -9,9 +9,22 @@ class LanguageError(Exception):
     message: str = attrib(validator=validators.instance_of(str))
     location: Optional[str] = attrib(validator=validators.optional(validators.instance_of(str)))
 
-    def __init__(self, message, location):
+    def __init__(self, message: str, location: str):
+        """
+        An init constructor for the Language Error Class.
+
+        Args:
+            message(str): The error message.
+            location(str): The source location of the error.
+        """
         self.message = message
         self.location = location
 
-    def __str__(self):
-        return (f"Error: {self.message}. Location: {self.location}")
+    def __str__(self) -> str:
+        """
+        Method for defining how Language Error looks when represented as a string.
+
+        Returns:
+            The Language Error represented as a string.
+        """
+        return f"Error: {self.message}. Location: {self.location}"
