@@ -137,8 +137,8 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult: 
                     # if the field is a list, check each item in the list
                     if type(getattr(check_me, field.name)) != list:
                         raise LanguageError(
-                            f"Value of '{field.name}' was expected to be list, but was '{type(getattr(check_me, field.name))}'. File: '{source_definition.source.uri}'",
-                            None
+                            f"Value of '{field.name}' was expected to be list, but was '{type(getattr(check_me, field.name))}'",
+                            f'{source_definition.source.uri}'
                         )
                     for item in getattr(check_me, field.name):
                         value_to_check = item

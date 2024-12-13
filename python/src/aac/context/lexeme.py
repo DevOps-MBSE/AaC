@@ -32,7 +32,7 @@ class Lexeme:
         self.location = location
         self.source = source
         self.value = value
-        
+
     def __eq__(self, __o) -> bool:
         """Return whether this Lexeme is the same as __o."""
         return (

@@ -7,7 +7,7 @@ from typing import Optional
 class LanguageError(Exception):
     """A base class representing a language error condition."""
     message: str = attrib(validator=validators.instance_of(str))
-    location: Optional[str] = attrib(validator=validators.optional(validators.instance_of(str)))
+    location: str = attrib(validator=validators.instance_of(str))
 
     def __init__(self, message: str, location: str):
         """
