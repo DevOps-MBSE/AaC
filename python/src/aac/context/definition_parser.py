@@ -43,6 +43,12 @@ class DefinitionParser():
             The file name and line number of the requested Lexeme value.
         """
         lexeme = [lexeme for lexeme in lexemes if lexeme.value == lexeme_value]
+        print(lexeme_value)
+        print(type(lexeme_value))
+        print(lexemes)
+        for lex in lexemes:
+            print(lex.value)
+            print(type(lex.value))
         location_str = (
             "Unable to identify source and location"  # this is the 'not found' case
         )
@@ -530,9 +536,11 @@ class DefinitionParser():
             instance = []
             if not field_value:
                 if is_required:
+                    # print(field_name)
+                    print(lexemes)
                     raise LanguageError(
-                        f"Missing required field {field_name}",
-                        location="location",
+                        message=f"Missing required field {field_name}",
+                        location=None
                     )
             else:
                 if not isinstance(field_value, list):

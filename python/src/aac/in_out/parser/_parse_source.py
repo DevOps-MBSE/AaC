@@ -141,8 +141,8 @@ def _parse_str(source: str, model_content: str) -> list[Definition]:
 
         if yaml_text.strip():
             definition_lexemes = get_lexemes_for_definition(value_tokens, content_start_line, content_end_line)
-            print("\n\n\nSTART:\n")
-            print(definition_lexemes)
+            # print("\n\n\nSTART:\n")
+            # print(definition_lexemes)
 
             if yaml_dicts:
                 source_file = source_files.get(source)
