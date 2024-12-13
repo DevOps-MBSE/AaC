@@ -4,7 +4,7 @@ from attr import attrib, attrs, validators
 
 @attrs(slots=True)
 class LanguageError(Exception):
-    """A base class representing a language error condition."""
+    """A base class representing a language error."""
     message: str = attrib(validator=validators.instance_of(str))
     location: str = attrib(validator=validators.instance_of(str))
 
@@ -13,8 +13,8 @@ class LanguageError(Exception):
         An init constructor for the Language Error Class.
 
         Args:
-            message(str): The error message.
-            location(str): The source location of the error.
+            message (str): The error message.
+            location (str): The source location of the error.
         """
         self.message = message
         self.location = location
