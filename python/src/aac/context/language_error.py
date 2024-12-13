@@ -1,6 +1,5 @@
 """An exception class representing a language error condition."""
 from attr import attrib, attrs, validators
-from typing import Optional
 
 
 @attrs(slots=True)
