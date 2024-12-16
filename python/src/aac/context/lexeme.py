@@ -20,6 +20,19 @@ class Lexeme:
     source: str = attrib(validator=validators.instance_of(str))
     value: str = attrib(validator=validators.instance_of(str))
 
+    def __init__(self, location: SourceLocation, source: str, value: str):
+        """
+        An init constructor for the Lexeme Class.
+
+        Args:
+            location (SourceLocation): The position in the source file.
+            source (str): The source file.
+            value (str): The value stored in the lexeme.
+        """
+        self.location = location
+        self.source = source
+        self.value = value
+
     def __eq__(self, __o) -> bool:
         """Return whether this Lexeme is the same as __o."""
         return (
