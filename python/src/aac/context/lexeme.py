@@ -22,7 +22,7 @@ class Lexeme:
 
     def __init__(self, location: SourceLocation, source: str, value: str):
         """
-        An init constructor for the Language Error Class.
+        An init constructor for the Lexeme Class.
 
         Args:
             location (SourceLocation): The position in the source file.
