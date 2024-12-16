@@ -8,9 +8,9 @@ class TestLanguageError(TestCase):
         try:
             raise LanguageError("message", "location")
         except LanguageError as e:
-            self.assertEqual(e.__str__(), "Error: message. Location: location")
+            self.assertEqual(str(e), "Error: message. Location: location")
 
         try:
             raise LanguageError(message="message", location="location")
         except LanguageError as e:
-            self.assertEqual(e.__str__(), "Error: message. Location: location")
+            self.assertEqual(str(e), "Error: message. Location: location")
