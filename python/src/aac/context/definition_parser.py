@@ -665,7 +665,7 @@ class DefinitionParser():
                     self.get_location_str(field_value, lexemes),
                 )
 
-    def schema_field_value_check(self, is_list, field_value, field_name: str, is_required, lexemes, defining_definition, definition) -> list:
+    def schema_field_value_check(self, is_list: bool, field_value: Any, field_name: str, is_required: bool, lexemes: list, defining_definition: Definition, definition: Definition) -> list:
         """
         Method used to ensure schema type field definitions have valid values.
 
