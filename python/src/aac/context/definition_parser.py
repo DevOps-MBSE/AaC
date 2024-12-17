@@ -716,6 +716,7 @@ class DefinitionParser():
             is_required (bool): Contents of the is_required field for the specified field.
             field_value (Any): The value for the specified field.
             lexemes (list[Lexeme]): A list of definition Lexemes.
+            definition (Definition): Definition containing the field instance being created
 
         Returns:
             The instance field value.
