@@ -40,6 +40,22 @@ class TestDefinitionParser(TestCase):
             loaded_definitions = parser.load_definitions(context=context, parsed_definitions=definitions)  # noqa: F841
             self.assertFalse(definitions[0].source.is_loaded_in_context)
 
+    def test_load_incomplete_definition(self):
+        parser = DefinitionParser()
+        context = LanguageContext()
+        with self.assertRaises(ParserError):
+            definitions = parse(SCHEMA_WITH_INCOMPLETE_FIELD)
+            loaded_definitions = parser.load_definitions(context=context, parsed_definitions=definitions)  # noqa: F841
+            self.assertFalse(definitions[0].source.is_loaded_in_context)
+
+    def test_load_bad_enum(self):
+        parser = DefinitionParser()
+        context = LanguageContext()
+        with self.assertRaises(ParserError):
+            definitions = parse(SCHEMA_WITH_BAD_ENUM)
+            loaded_definitions = parser.load_definitions(context=context, parsed_definitions=definitions)  # noqa: F841
+            self.assertFalse(definitions[0].source.is_loaded_in_context)
+
 
 VALID_AAC_YAML_CONTENT = """
 schema:
@@ -89,7 +105,6 @@ schema:
         This is a test field.
 """.strip()
 
-
 INVALID_AAC_YAML_CONTENT = """
 schema:
   description: |
@@ -112,3 +127,56 @@ schema:
       description: |
         This is a test field.
 """.strip()
+
+SCHEMA_WITH_INCOMPLETE_FIELD = """
+schema:
+  description: |
+    This is a test schema.
+  fields:
+    - name: string_field
+      type: string
+      description: |
+        This is a test field.
+    - name: integer_field
+      type: integer
+      description: |
+        This is a test field.
+    - name: boolean_field
+      type: boolean
+      description: |
+        This is a test field.
+    - name: number_field
+      type: number
+      description: |
+        This is a test field.
+    - name: not_used
+""".strip()
+
+SCHEMA_WITH_BAD_ENUM= """
+schema:
+  description: |
+    This is a test schema.
+  fields:
+    - name: string_field
+      type: string
+      description: |
+        This is a test field.
+    - name: integer_field
+      type: integer
+      description: |
+        This is a test field.
+    - name: boolean_field
+      type: boolean
+      description: |
+        This is a test field.
+    - name: number_field
+      type: number
+      description: |
+        This is a test field.
+   enum:
+    name: bad_enum
+    values:
+        - bad_value
+        - bad_value
+""".strip()
+
