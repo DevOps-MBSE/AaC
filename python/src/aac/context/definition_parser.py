@@ -546,7 +546,7 @@ class DefinitionParser():
                 if is_required:
                     raise LanguageError(
                         message=f"Missing required field {field_name}",
-                        location=get_location_str(definition.name, lexemes)
+                        location=self.get_location_str(definition.name, lexemes)
                     )
             else:
                 if not isinstance(field_value, list):
@@ -598,7 +598,7 @@ class DefinitionParser():
         python_type = defining_definition.structure["primitive"]["python_type"]
         if not field_value:
             if is_required:
-                raise LanguageError(message=f"Missing required field {field_name}.", location=get_location_str(definition.name, lexemes))
+                raise LanguageError(message=f"Missing required field {field_name}.", location=self.get_location_str(definition.name, lexemes))
             if is_list:
                 field_value = []
         elif is_list:
