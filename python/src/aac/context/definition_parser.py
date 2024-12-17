@@ -42,7 +42,16 @@ class DefinitionParser():
         Returns:
             The file name and line number of the requested Lexeme value.
         """
-        lexeme = [lexeme for lexeme in lexemes if lexeme.value == lexeme_value]
+        lexeme = []
+        for lex in lexemes:
+            # This is just a way to account for different variations of true and false.
+            if lexeme_value is True and (lex.value == "True" or lex.value == "true" or lex.value == "yes"):
+                lexeme.append(lex)
+            if lexeme_value is False and (lex.value == "False" or lex.value == "false"):
+                lexeme.append(lex)
+            # The normal found case.  lexeme_value is being cast as a string because all values are stored in lexemes as strings.
+            elif lex.value == str(lexeme_value):
+                lexeme.append(lex)
         location_str = (
             "Unable to identify source and location"  # this is the 'not found' case
         )
@@ -368,15 +377,16 @@ class DefinitionParser():
             )
         return result
 
-    def populate_sub_fields(self, subfields: dict, defining_definition: Definition, item: dict, lexemes: list[Lexeme]) -> dict:
+    def populate_sub_fields(self, subfields: dict, defining_definition: Definition, item: dict, lexemes: list[Lexeme], definition: Definition) -> dict:
         """
         Method used to populate sub-fields in an instance class field.
 
         Args:
             subfields (dict): dictionary containing relevant sub-fields.
-            defining_definition (Definition): The overall definition containing the field.
+            defining_definition (Definition): The definition of the field type.
             item (dict): The current field definition which contains sub-fields.
             lexemes (List[Lexeme]): A list of definition Lexemes.
+            definition (Definition): The overall definition containing the field.
 
         Returns:
             The populated dictionary of sub-fields.
@@ -425,10 +435,11 @@ class DefinitionParser():
                 subfield_is_required,
                 subfield_value,
                 sub_lexemes,
+                definition,
             )
         return subfields
 
-    def field_instance_creator_list(self, lexemes: list, field_value: Any, field_name: str, defining_definition: Definition, instance: list, instance_class: Type) -> list:
+    def field_instance_creator_list(self, lexemes: list, field_value: Any, field_name: str, defining_definition: Definition, instance: list, instance_class: Type, definition: Definition) -> list:
         """
         Method to create instance fields from list type fields.
 
@@ -436,9 +447,10 @@ class DefinitionParser():
             lexemes (List[Lexeme]): A list of definition Lexemes.
             field_value (Any): Value stored in the field.
             field_name (str): The name of the field.
-            defining_definition (Definition): Definition containing the field being checked.
+            defining_definition (Definition): Definition of the field type.
             instance (list[Any]: The instance that will contain the created field)
             instance_class (Type): The instance type class
+            definition (Definition): Definition containing the field being checked.
 
         Returns:
             The updated instance containing the created field.
@@ -468,14 +480,14 @@ class DefinitionParser():
                         f"Found undefined field name '{item_field_name}' when expecting {defined_field_names} as defined in {defining_definition.name}",
                         self.get_location_str(item_field_name, lexemes),
                     )
-            subfields = self.populate_sub_fields(subfields, defining_definition, item, lexemes)
+            subfields = self.populate_sub_fields(subfields, defining_definition, item, lexemes, definition)
 
             instance.append(
                 self.create_object_instance(instance_class, subfields)
             )
         return instance
 
-    def field_instance_creator_not_list(self, lexemes: list, field_value: Any, field_name: str, defining_definition: Definition, instance: list, instance_class: Type) -> list:
+    def field_instance_creator_not_list(self, lexemes: list, field_value: Any, field_name: str, defining_definition: Definition, instance: list, instance_class: Type, definition: Definition) -> list:
         """
         Method to create instance fields from non-list type fields.
 
@@ -483,9 +495,10 @@ class DefinitionParser():
             lexemes (List[Lexeme]): A list of definition Lexemes.
             field_value (Any): Value stored in the field.
             field_name (str): The name of the field.
-            defining_definition (Definition): Definition containing the field being checked.
-            instance (list[Any]: The instance that will contain the created field)
+            defining_definition (Definition): Definition of the field type.
+            instance (list[Any]): The instance that will contain the created field
             instance_class (Type): The instance type class
+            definition (Definition): Definition containing the field being checked.
 
         Returns:
             The updated instance containing the created field
@@ -507,11 +520,11 @@ class DefinitionParser():
                 f"Schema '{defining_definition.name}' does not contain any fields.",
                 self.get_location_str(field_name, lexemes),
             )
-        subfields = self.populate_sub_fields(subfields, defining_definition, field_value, lexemes)
+        subfields = self.populate_sub_fields(subfields, defining_definition, field_value, lexemes, definition)
         instance = self.create_object_instance(instance_class, subfields)
         return instance
 
-    def field_instance_check(self, is_list: bool, field_value: Any, field_name: str, is_required: bool, lexemes: list[Lexeme], defining_definition: Definition, instance_class: Type) -> list:
+    def field_instance_check(self, is_list: bool, field_value: Any, field_name: str, is_required: bool, lexemes: list[Lexeme], defining_definition: Definition, instance_class: Type, definition: Definition) -> list:
         """
         Method used to check if a field is a list, and to call the corresponding field instance creator method.
 
@@ -520,8 +533,9 @@ class DefinitionParser():
             field_value (Any): Value stored in the field.
             field_name (str): The name of the field.
             lexemes (List[Lexeme]): A list of definition Lexemes.
-            defining_definition (Definition): Definition containing the field being checked.
+            defining_definition (Definition): Definition of the field type.
             instance_class (Type): The class type of the instance being created.
+            definition (Definition): Definition containing the field being checked.
 
         Returns:
             The created instance list.
@@ -532,7 +546,7 @@ class DefinitionParser():
                 if is_required:
                     raise LanguageError(
                         message=f"Missing required field {field_name}",
-                        location=None
+                        location=get_location_str(definition.name, lexemes)
                     )
             else:
                 if not isinstance(field_value, list):
@@ -543,7 +557,7 @@ class DefinitionParser():
                         )
                     else:
                         return instance
-                instance = self.field_instance_creator_list(lexemes, field_value, field_name, defining_definition, instance, instance_class)
+                instance = self.field_instance_creator_list(lexemes, field_value, field_name, defining_definition, instance, instance_class, definition)
         else:
             instance = None
             if not field_value:
@@ -562,10 +576,10 @@ class DefinitionParser():
                 )
 
             # make sure there are no undefined fields
-            instance = self.field_instance_creator_not_list(lexemes, field_value, field_name, defining_definition, instance, instance_class)
+            instance = self.field_instance_creator_not_list(lexemes, field_value, field_name, defining_definition, instance, instance_class, definition)
         return instance
 
-    def primitive_field_value_check(self, is_list: bool, field_value: Any, field_name: str, is_required: bool, lexemes: list, defining_definition: Definition) -> Any:
+    def primitive_field_value_check(self, is_list: bool, field_value: Any, field_name: str, is_required: bool, lexemes: list, defining_definition: Definition, definition: Definition) -> Any:
         """
         Method used to ensure primitive type field definitions have valid values.
 
@@ -575,7 +589,8 @@ class DefinitionParser():
             field_name (str): The name of the field.
             is_required (bool): Boolean value determining if the field is required.
             lexemes (List[Lexeme]): A list of definition Lexemes.
-            defining_definition (Definition): Definition containing the field being checked.
+            defining_definition (Definition): Definition defining the field type.
+            definition (Definition): Definition containing the field being checked.
 
         Returns:
             The content of the primitive type field value.
@@ -583,7 +598,7 @@ class DefinitionParser():
         python_type = defining_definition.structure["primitive"]["python_type"]
         if not field_value:
             if is_required:
-                raise LanguageError(message=f"Missing required field {field_name}.", location=None)
+                raise LanguageError(message=f"Missing required field {field_name}.", location=get_location_str(definition.name, lexemes))
             if is_list:
                 field_value = []
         elif is_list:
@@ -650,7 +665,7 @@ class DefinitionParser():
                     self.get_location_str(field_value, lexemes),
                 )
 
-    def schema_field_value_check(self, is_list, field_value, field_name: str, is_required, lexemes, defining_definition) -> list:
+    def schema_field_value_check(self, is_list, field_value, field_name: str, is_required, lexemes, defining_definition, definition) -> list:
         """
         Method used to ensure schema type field definitions have valid values.
 
@@ -659,7 +674,8 @@ class DefinitionParser():
             field_value (Any): Value stored in the field.
             field_name (str): The name of the field.
             lexemes (List[Lexeme]): A list of definition Lexemes.
-            defining_definition (Definition): Definition containing the field being checked.
+            defining_definition (Definition): Definition of the field type.
+            definition (Definition): Definition containing the field being checked.
 
         Returns:
             The List of valid schema defined field values.
@@ -678,7 +694,7 @@ class DefinitionParser():
                     f"Unable to process AaC definition of type {field_fully_qualified_name} with root {defining_definition.get_root_key()}",
                     self.get_location_str(field_name, lexemes),
                 )
-        instance = self.field_instance_check(is_list, field_value, field_name, is_required, lexemes, defining_definition, instance_class)
+        instance = self.field_instance_check(is_list, field_value, field_name, is_required, lexemes, defining_definition, instance_class, definition)
 
         return instance
 
@@ -689,6 +705,7 @@ class DefinitionParser():
         is_required: bool,
         field_value: Any,
         lexemes: list[Lexeme],
+        definition: Definition
     ) -> Any:
         """
         Adds an entry to the instance attribute of a definition for the given field.
@@ -727,14 +744,14 @@ class DefinitionParser():
 
         if defining_definition.get_root_key() == "primitive":
             # this is a primitive, so ensure the parsed value aligns with the type and return it
-            return self.primitive_field_value_check(is_list, field_value, field_name, is_required, lexemes, defining_definition)
+            return self.primitive_field_value_check(is_list, field_value, field_name, is_required, lexemes, defining_definition, definition)
 
         elif defining_definition.get_root_key() == "enum":
             # this is an enum, so ensure the parsed value aligns with the type and return it
             return self.enum_field_value_check(is_list, field_value, field_name, lexemes, defining_definition)
 
         else:  # this isn't a primitive and isn't an enum, so it must be a schema
-            return self.schema_field_value_check(is_list, field_value, field_name, is_required, lexemes, defining_definition)
+            return self.schema_field_value_check(is_list, field_value, field_name, is_required, lexemes, defining_definition, definition)
 
     def create_definition_instance(self, definition: Definition) -> Any:
         """
@@ -779,6 +796,7 @@ class DefinitionParser():
             True,
             definition.structure[definition.get_root_key()],
             definition.lexemes,
+            definition,
         )
 
         definition.instance = instance
