@@ -12,7 +12,6 @@ from aac.execute.aac_execution_result import (
 
 from aac.context.language_context import LanguageContext
 from aac.context.definition import Definition
-from aac.in_out.files.aac_file import AaCFile
 from typing import Any
 
 
