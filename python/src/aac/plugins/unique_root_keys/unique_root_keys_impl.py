@@ -30,7 +30,7 @@ def root_key_names_are_unique(context: LanguageContext) -> ExecutionResult:
                     error_msg = ExecutionMessage(
                         message=f"Root key {definition.instance.root} is not unique.",
                         level=MessageLevel.ERROR,
-                        source=None,
+                        source=definition.source,
                         location=None,
                     )
                     messages.append(error_msg)

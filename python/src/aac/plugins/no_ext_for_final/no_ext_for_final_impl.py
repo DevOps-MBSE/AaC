@@ -12,6 +12,7 @@ from aac.execute.aac_execution_result import (
 
 from aac.context.language_context import LanguageContext
 from aac.context.definition import Definition
+from aac.in_out.files.aac_file import AaCFile
 from typing import Any
 
 
@@ -36,7 +37,7 @@ def no_extension_for_final(
                         ExecutionMessage(
                             f"Cannot resolve unique type for extension {ext.name}.  Found {ext_definition}",
                             MessageLevel.ERROR,
-                            None,  # figure out a better want to handle this...maybe a util function?
+                            definition.source,  # figure out a better want to handle this...maybe a util function?
                             None,
                         )
                     )

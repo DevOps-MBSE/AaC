@@ -220,7 +220,7 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult: 
                 if status != ExecutionStatus.CONSTRAINT_FAILURE:
                     status = result.status_code
 
-    # after goign through all the constraint results, if we're still success add a success message
+    # after going through all the constraint results, if we're still successful, add a success message
     if verbose:
         for check_me in definitions_to_check:
             messages.append(
