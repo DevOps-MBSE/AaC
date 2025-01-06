@@ -36,7 +36,7 @@ def no_extension_for_final(
                         ExecutionMessage(
                             f"Cannot resolve unique type for extension {ext.name}.  Found {ext_definition}",
                             MessageLevel.ERROR,
-                            definition.source,  # figure out a better want to handle this...maybe a util function?
+                            definition.source, 
                             None,
                         )
                     )
