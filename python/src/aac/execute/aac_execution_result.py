@@ -4,7 +4,6 @@ from attr import attrib, attrs, validators, Factory
 from os import linesep
 from typing import Optional
 
-from aac.in_out.files.aac_file import AaCFile
 from aac.context.source_location import SourceLocation
 
 
@@ -37,7 +36,7 @@ class ExecutionMessage:
     Attributes:
         message (str): The textual content of the message.
         level (MessageLevel): value of MessageLevel.DEBUG, .INFO, .WARNING, or .ERROR
-        source: (AaCFile): The file from whence the message came.
+        source: (str): The file from whence the message came.
         location: (SourceLocation): The col, row info within the source file.
     """
 
