@@ -32,7 +32,7 @@ def check_arguments_against_constraint_definition(  # noqa: C901
         error_msg = ExecutionMessage(
             f"The Check arguments against constraint definition constraint for {instance.name} failed.  You may only use this constraint on SchemaConstraintAssignment or PrimitiveConstraintAssignment definitions.  Received {type(instance)}.)",
             MessageLevel.ERROR,
-            definition.source,
+            definition.source.uri,
             None,
         )
         return ExecutionResult(
@@ -50,7 +50,7 @@ def check_arguments_against_constraint_definition(  # noqa: C901
         error_msg = ExecutionMessage(
             f"The Check arguments against constraint definition constraint for {instance.name} failed because the assigned arguments were not parsed as a list of entries and cannot be evaluated.  Received {instance.arguments}",
             MessageLevel.ERROR,
-            definition.source,
+            definition.source.uri,
             None,
         )
         return ExecutionResult(
@@ -65,7 +65,7 @@ def check_arguments_against_constraint_definition(  # noqa: C901
                 error_msg = ExecutionMessage(
                     f"The Check arguments against constraint definition constraint for {instance.name} failed because the assigned arguments were not parsed as a list of PluginInputValue entries and cannot be evaluated.  Received {instance.arguments}",
                     MessageLevel.ERROR,
-                    definition.source,
+                    definition.source.uri,
                     None,
                 )
                 return ExecutionResult(
@@ -93,7 +93,7 @@ def check_arguments_against_constraint_definition(  # noqa: C901
         error_msg = ExecutionMessage(
             f"The Check arguments against constraint definition constraint for {instance.name} failed because the constraint definition could not be found.",
             MessageLevel.ERROR,
-            definition.source,
+            definition.source.uri,
             None,
         )
         return ExecutionResult(
@@ -113,7 +113,7 @@ def check_arguments_against_constraint_definition(  # noqa: C901
             error_msg = ExecutionMessage(
                 f"The Check arguments against constraint definition constraint for {instance.name} failed because the constraint definition does not have arguments, but the constraint assignment does.  Assigned arguments are {constraint_args}.",
                 MessageLevel.ERROR,
-                definition.source,
+                definition.source.uri,
                 None,
             )
             return ExecutionResult(
@@ -135,7 +135,7 @@ def check_arguments_against_constraint_definition(  # noqa: C901
                 error_msg = ExecutionMessage(
                     f"The Check arguments against constraint definition constraint for {instance.name} failed because the constraint definition has a required argument named {field.name} that was not found in the constraint assignment.",
                     MessageLevel.ERROR,
-                    definition.source,
+                    definition.source.uri,
                     None,
                 )
                 return ExecutionResult(
@@ -152,7 +152,7 @@ def check_arguments_against_constraint_definition(  # noqa: C901
                 error_msg = ExecutionMessage(
                     f"The Check arguments against constraint definition constraint for {instance.name} failed because the constraint definition does not have an argument named {arg_name}, but the constraint assignment does.  Argument {arg_name} is not in defined argument names {defined_argument_names}.",
                     MessageLevel.ERROR,
-                    definition.source,
+                    definition.source.uri,
                     None,
                 )
                 return ExecutionResult(

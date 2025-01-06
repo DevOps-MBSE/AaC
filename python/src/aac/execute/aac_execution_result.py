@@ -43,8 +43,8 @@ class ExecutionMessage:
 
     message: str = attrib(validator=validators.instance_of(str))
     level: MessageLevel = attrib(validator=validators.instance_of(MessageLevel))
-    source: Optional[AaCFile] = attrib(
-        validator=validators.optional(validators.instance_of(AaCFile))
+    source: Optional[str] = attrib(
+        validator=validators.optional(validators.instance_of(str))
     )
     location: Optional[SourceLocation] = attrib(
         validator=validators.optional(validators.instance_of(SourceLocation))

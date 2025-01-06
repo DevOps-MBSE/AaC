@@ -87,7 +87,7 @@ def handle_exceptions(plugin_name: str, func: Callable) -> Callable:  # noqa: C9
                 plugin_name,
                 "exception",
                 ExecutionStatus.GENERAL_FAILURE,
-                [ExecutionMessage(e.message, MessageLevel.ERROR, AaCFile(e.location, True, True), None)],
+                [ExecutionMessage(e.message, MessageLevel.ERROR, None, None)],
             )
         except OperationCancelled as e:
             return ExecutionResult(

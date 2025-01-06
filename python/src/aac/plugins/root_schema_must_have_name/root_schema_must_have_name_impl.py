@@ -60,7 +60,7 @@ def root_schema_has_name(
                 error_msg = ExecutionMessage(
                     message=f"Root schema {instance.name} must have a field named 'name'",
                     level=MessageLevel.ERROR,
-                    source=definition.source,
+                    source=definition.source.uri,
                     location=None,
                 )
                 messages.append(error_msg)
