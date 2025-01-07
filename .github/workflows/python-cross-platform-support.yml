@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-20.04, ubuntu-latest, windows-2024, macos-13, macos-14] # Annoyingly, Github actions don't support anchors
+        os: [ubuntu-20.04, ubuntu-latest, windows-2022, macos-13, macos-14] # Annoyingly, Github actions don't support anchors
 
     steps:
       - name: Checkout Repository
