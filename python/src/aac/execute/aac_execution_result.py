@@ -93,7 +93,7 @@ class ExecutionResult:
         for message in self.messages:
             result += message.message + linesep
             if message.source is not None:
-                result += f"  Source: {message.source.uri}"
+                result += f"  Source: {message.source}"
                 if message.location is not None:
                     result += f" (Ln {message.location.line}: Col {message.location.column}: Pos {message.location.position}: Spn {message.location.span})"
                 result += linesep
