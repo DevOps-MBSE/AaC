@@ -28,10 +28,10 @@ def root_key_names_are_unique(context: LanguageContext) -> ExecutionResult:
                 else:
                     status = ExecutionStatus.CONSTRAINT_FAILURE
                     error_msg = ExecutionMessage(
-                        message=f"Root key {definition.instance.root} is not unique.",
-                        level=MessageLevel.ERROR,
-                        source=definition.source.uri,
-                        location=None,
+                        f"Root key {definition.instance.root} is not unique.",
+                        MessageLevel.ERROR,
+                        "No file to reference" if not definition.source else definition.source.uri,
+                        None,
                     )
                     messages.append(error_msg)
 
