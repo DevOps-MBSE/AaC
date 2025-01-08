@@ -43,21 +43,18 @@ Options:
                      impact to existing files.
   -h, --help         Show this message and exit.
 ```
-*Note:  AaC generation attempts to be non-destructive.  Each generation template definition recognizes what output should be fully generated and what may be user modified.  If any file is being generated where an existing file already exists, the generator will create a backup of the original prior to writing the new file.  If a user modifiable file is to be generated but already exists, the new file will be created as an evaluation file for the user to consider without impacting the existing file.  Generator commands can adjust this behavior using `--force-overwrite` and `--evaluate` flags.*
+> **NOTE**:  _AaC generation attempts to be non-destructive.  Each generation template definition recognizes what output should be fully generated and what may be user modified.  If any file is being generated where an existing file already exists, the generator will create a backup of the original prior to writing the new file.  If a user modifiable file is to be generated but already exists, the new file will be created as an evaluation file for the user to consider without impacting the existing file.  Generator commands can adjust this behavior using `--force-overwrite` and `--evaluate` flags._
 
 This will create a project structure that looks like this:
 
 ```console
 ├── README.md
-├── setup.py
+├── pyproject.toml
 ├── docs
 ├── src
 ├── tests
 └── tox.ini
 ```
-
-*Note: AaC is in the process of updating its build chain to utilize the new preferred Python project file, `pyproject.toml`, to handle the project configuration and declaration. The `gen-project` command will be updated to produce this file and other necessary project infrastructure changes. For more information on this, view the [Standalone Plugin documentation](#standalone-plugins).*
-
 ## Generating AaC Plugins (Gen-Plugin Command)
 
 AaC comes pre-packaged with a plugin called `Gen-Plugin` which will take an AaC architecture file describing a plugin to generate the necessary code stubs and directory structure for the user to begin implementing their new plugin.
@@ -86,47 +83,6 @@ Options:
 
 While the `gen-plugin` command will attempt to sort out directory paths for you if not provided, it's often simplest to just provide `--code-output` and `--test-output` to ensure the generated code is placed where you want it.  Currently the `gen-plugin` command does not output documentation, but the functionality is currently under development. The `--doc-output` will create plugin documentation outlines that mirror current plugin documentation pages as seen in the [Plugins Guide](../plugins/plugins_index.md).
 
-#### Standalone Plugins
-
-If you are creating plugins external to the core AaC tool to provide additional functionality, commands, and/or constraints for your team's use, then there are some additional infrastructure changes that one must, currently, manually implement until we have been able to update both the `gen-project` and `gen-plugin` commands to make the appropriate changes for supporting standalone plugins utilizing the more recent build chain implementation.
-
-These changes include manually updating the currently generated `setup.py` to have the `entry_points` include the new plugin. Or, if manually implementing a `pyproject.toml` file to use the updated Python standard, ensure the `[project.entry-points."aac"]` is configured to include the new plugin. And ensure you set the package discovery of your project file.
-
-##### `pyproject.toml` Configurations
-```python
-[project.entry-points."aac"]
-rest-api = "rest_api"
-
-[tool.setuptools.packages.find]
-where = ["src"]
-exclude = ["tests"]
-```
-
-If you are using the `pyproject.toml` file, a `MANIFEST.in` will have to be included with the following content:
-```
-graft src
-graft tests
-
-include tox.ini
-include src/rest-api/rest_api.aac
-```
-
-And you will have to add the following lines to your `tox.ini` under the `[tox]` section:
-```
-isolated_build = True
-skipsdist = True
-```
-
-##### `setup.py` Configurations
-
-```python
-entry_points={
-    "aac": ["eval-req=aac_req_qa"],
-},
-
-packages=find_packages(where="src")
-```
-
 #### Input of Gen-Plugin
 
 Plugins are generated from a plugin definition.  Just as we model the AaC language with AaC, we also model plugins with AaC.  A plugin allows you to create the following:
@@ -138,7 +94,7 @@ Plugins are generated from a plugin definition.  Just as we model the AaC langua
 
 You have the flexibility to organize your plugins as you see fit. Our preference has been to create a `plugins/` folder in your project and place your plugins in separate sub-folders to keep things organized.  There is an expectation (or perhaps a constraint, depending on your perspective) related to file names.  Your plugin's code will be generated in a folder that aligns with the package and plugin name.  For example if your plugin has a package of `aac_example.my_plugin` and is named `My Plugin`, then code will go into the `./src/aac_example/my_plugin` folder and will expect to find the plugin model named `my_plugin.aac` there.
 
-_Note that the file name should be a "Python-ized" version of the plugin name.  This means that spaces and dashes are replaced with underscores and the file extension is `.aac`._
+> **NOTE**: _The file name should be a "Python-ized" version of the plugin name.  This means that spaces and dashes are replaced with underscores and the file extension is `.aac`._
 
 Example plugin model with all possible plugin elements (not all elements are required):
 
@@ -226,13 +182,15 @@ The generated `tests/` folder files are:
 - `__init__.py`:  An empty init file that allows the tests to be run.  This file should not be edited by the user.  Rerunning `gen-plugin` **will** overwrite this file.
 - `test_plugin_name.py`: The unit test stub for the plugin implementation.  This file is where you will implement your plugin unit tests.  Rerunning `gen-plugin` **will not** overwrite this file.
 - `my_plugin_success_test.feature`: The acceptance test feature file for the plugin implementation for the success test feature.  Rerunning `gen-plugin` **will** overwrite this file.
-- `my_plugin_failure_test.feature`: The acceptance test feature file for the plugin implementation for the success test feature.  Rerunning `gen-plugin` **will** overwrite this file.
+- `my_plugin_failure_test.feature`: The acceptance test feature file for the plugin implementation for the failure test feature.  Rerunning `gen-plugin` **will** overwrite this file.
 
-AaC uses `behave` for acceptance tests.  While AaC does generate the feature files, it does not generate the acceptance test steps. To automate the acceptance tests, create a subfolder called `steps` and create a file called `my_plugin_steps.py`.  If you run `behave` from the plugin folder, it will find the feature files, recognize there are no steps defined, and output stubs for the step functions.  Just cut and paste these into your `my_plugin_steps.py` file and you're ready to implement acceptance test behaviors.
+AaC uses `behave` for acceptance tests.  While AaC does generate the feature files, it does not at this time generate the acceptance test steps. To automate the acceptance tests, create a subfolder called `steps` and create a file called `my_plugin_steps.py`.  If you run `behave` from the plugin folder, it will find the feature files, recognize there are no steps defined, and output stubs for the step functions.  Just cut and paste these into your `my_plugin_steps.py` file and you're ready to implement acceptance test behaviors.
+
+> **NOTE**: _We are in the process of evaluating generating similar stubbing for acceptance test steps and providing that as part of the autogenerated test artifacts for a plugin._
 
 Once these files have been generated, you are ready to run the `pip install` command to install the plugin.
-To install the plugin make sure that you are in the directory where the `setup.py` file is located, and run `pip install -e .`
->***Note***: Be sure to use `pip`'s `-e` flag so that the plugin won't have to be reinstalled when there are changes to the plugin.
+To install the plugin make sure that you are in the directory where the `pyproject.toml` file is located, and run `pip install -e .`
+> **NOTE**: _Be sure to use `pip`'s `-e` flag so that the plugin won't have to be reinstalled when there are changes to the plugin._
 
 Once the plugin is installed in the Python environment, when you run the `aac -h` command, the plugin that was just installed, should populate the available plugins/commands.
 
@@ -240,7 +198,7 @@ Once the plugin is installed in the Python environment, when you run the `aac -h
 
 One of the files generated from the `gen-plugin` command is a test file for the plugin implementation, which is generated with a stubbed test. This templated output is only a stub, and it will need to be further developed to provide results.
 
-After doing this the test can be executed either through VSCode or through terminal with the execution of `nose2` or `tox` commands.
+After doing this the test can be executed either through VSCode or through terminal with the execution of `tox`, `unittest`, or `pytest` commands.
 
 ### Debugging the Plugin
 
