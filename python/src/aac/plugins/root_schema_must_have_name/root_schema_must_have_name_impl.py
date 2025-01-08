@@ -30,7 +30,6 @@ def _get_fields(schema) -> list[str]:
             if len(parent_schema) == 1:
                 fields.extend(_get_fields(parent_schema[0].instance))
             elif len(parent_schema) > 1:
-                print("HERE111")
                 raise LanguageError(
                     f"Unable to identify unique definition for {ext.name}:  found {parent_schema} ", "Unknown location"
                 )
@@ -41,7 +40,6 @@ def root_schema_has_name(
     instance: Any, definition: Definition, defining_schema
 ) -> ExecutionResult:
     """Business logic for the Root schema has name constraint."""
-    print("HERE333")
 
     status = ExecutionStatus.SUCCESS
     messages: list[ExecutionMessage] = []
@@ -59,7 +57,6 @@ def root_schema_has_name(
             fields = _get_fields(instance)  # Could we get the location of the instance and pass it to the function?
             if "name" not in fields:
                 status = ExecutionStatus.GENERAL_FAILURE
-                print("HERE222")
                 error_msg = ExecutionMessage(
                     message=f"Root schema {instance.name} must have a field named 'name'",
                     level=MessageLevel.ERROR,
