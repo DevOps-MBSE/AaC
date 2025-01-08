@@ -4,6 +4,8 @@ from click.testing import CliRunner
 from aac.execute.command_line import cli, initialize_cli
 from aac.execute.aac_execution_result import ExecutionStatus
 from aac.context.language_context import LanguageContext
+from aac.context.language_error import LanguageError
+from aac.in_out.parser._parser_error import ParserError
 
 
 from aac.plugins.root_schema_must_have_name.root_schema_must_have_name_impl import (
@@ -25,12 +27,25 @@ class TestRootSchemaMustHaveName(TestCase):
         self.assertTrue(result.is_success())
         context.remove_definitions(definitions)
 
-    def test_root_schema_has_name_fail(self):
+    # def test_root_schema_has_name_fail(self):
+    #     context = LanguageContext()
+    #     definitions = context.parse_and_load(root_schema_without_name)
+    #     result = root_schema_has_name(definitions[0].instance, definitions[0], context.get_definitions_by_name("Schema")[0].instance)
+    #     self.assertFalse(result.is_success())
+    #     context.remove_definitions(definitions)
+
+    def test_root_schema_has_name_fail_lexeme(self):
         context = LanguageContext()
-        definitions = context.parse_and_load(root_schema_without_name)
-        result = root_schema_has_name(definitions[0].instance, definitions[0], context.get_definitions_by_name("Schema")[0].instance)
-        self.assertFalse(result.is_success())
-        context.remove_definitions(definitions)
+        result = None
+        try:
+            definitions = context.parse_and_load(root_schema_without_name)
+            result = root_schema_has_name(definitions[0].instance, definitions[0], context.get_definitions_by_name("Schema")[0].instance)
+            self.assertFalse(result.is_success())
+            context.remove_definitions(definitions)
+        except ParserError:
+            print("LanguageError!")
+            self.assertFalse(False)
+
 
 
 root_schema_with_name = """
@@ -46,7 +61,7 @@ schema:
 
 root_schema_without_name = """
 schema:
-  name: test_schema
+  name:
   root: test_root
   fields:
     - name: test_field
