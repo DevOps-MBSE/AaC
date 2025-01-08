@@ -161,7 +161,14 @@ class DefinitionParser():
                 )
             )
 
-        fully_qualified_name = enum_definition.get_fully_qualified_name()
+        try:
+            fully_qualified_name = enum_definition.get_fully_qualified_name()
+        except LanguageError as e:
+            raise LanguageError(
+                f"Failed to create Enum instance_class for {enum_definition.name}: {e.message}",
+                self.get_location_str(enum_definition.name, enum_definition.lexemes),
+            )
+
         if (
             fully_qualified_name
             in self.context.context_instance.fully_qualified_name_to_class
@@ -287,8 +294,14 @@ class DefinitionParser():
         Returns:
             The created class.
         """
+        try:
+            fully_qualified_name = schema_definition.get_fully_qualified_name()
+        except LanguageError as e:
+            raise LanguageError(
+                f"Failed to create schema instance_class for {schema_definition.name}: {e.message}",
+                self.get_location_str(schema_definition.name, schema_definition.lexemes),
+            )
 
-        fully_qualified_name = schema_definition.get_fully_qualified_name()
         if schema_definition.get_root_key() == "primitive":
             # this is a primitive, so there's no structure to create, just return the python type
             return eval(self.primitive_name_to_py_type[schema_definition.name])
@@ -631,9 +644,15 @@ class DefinitionParser():
         Returns:
             The list of valid enum field values.
         """
-        enum_class = self.context.context_instance.fully_qualified_name_to_class[
-            defining_definition.get_fully_qualified_name()
-        ]
+        try:
+            enum_class = self.context.context_instance.fully_qualified_name_to_class[
+                defining_definition.get_fully_qualified_name()
+            ]
+        except LanguageError as e:
+            raise LanguageError(
+                f"Failed to create Enum instance_class for {defining_definition.name}: {e.message}",
+                self.get_location_str(defining_definition.name, defining_definition.lexemes),
+            )
         if not enum_class:
             enum_class = self.create_enum_class(defining_definition)
         if is_list:
@@ -680,9 +699,15 @@ class DefinitionParser():
         Returns:
             The List of valid schema defined field values.
         """
-        field_fully_qualified_name = (
-            defining_definition.get_fully_qualified_name()
-        )
+        try:
+            field_fully_qualified_name = (
+                defining_definition.get_fully_qualified_name()
+            )
+        except LanguageError as e:
+            raise LanguageError(
+                f"Failed to create schema instance_class for {defining_definition.name}: {e.message}",
+                self.get_location_str(defining_definition.name, defining_definition.lexemes),
+            )
         instance_class = self.context.context_instance.fully_qualified_name_to_class[
             field_fully_qualified_name
         ]
@@ -833,7 +858,13 @@ class DefinitionParser():
             if definition.get_root_key() == "primitive":
                 self.primitive_name_to_py_type[definition.name] = definition.structure["primitive"]["python_type"]
             if "package" in definition.structure[definition.get_root_key()]:
-                fully_qualified_name = definition.get_fully_qualified_name()
+                try:
+                    fully_qualified_name = definition.get_fully_qualified_name()
+                except LanguageError as e:
+                    raise LanguageError(
+                        f"Failed to create Enum instance_class for {definition.name}: {e.message}",
+                        self.get_location_str(definition.name, definition.lexemes),
+                    )
 
                 # This is so requirements specifically do not get overwritten.  Although other definition types may still get overwritten, so we may need to find a better solution eventually.
                 if definition.get_root_key() == "req":
