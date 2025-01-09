@@ -30,7 +30,7 @@ def root_key_names_are_unique(context: LanguageContext) -> ExecutionResult:
                     error_msg = ExecutionMessage(
                         f"Root key {definition.instance.root} is not unique.",
                         MessageLevel.ERROR,
-                        "No file to reference" if not definition.source else definition.source.uri,
+                        "No file to reference" if not definition.source or definition.source.uri == "<string>" else definition.source.uri,
                         None,
                     )
                     messages.append(error_msg)

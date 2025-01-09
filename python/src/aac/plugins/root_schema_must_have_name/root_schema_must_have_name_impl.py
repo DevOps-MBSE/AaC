@@ -60,7 +60,7 @@ def root_schema_has_name(
                 error_msg = ExecutionMessage(
                     f"Root schema {instance.name} must have a field named 'name'",
                     MessageLevel.ERROR,
-                    "No file to reference" if not definition.source else definition.source.uri,
+                    "No file to reference" if not definition.source or definition.source.uri == "<string>" else definition.source.uri,
                     None,
                 )
                 messages.append(error_msg)

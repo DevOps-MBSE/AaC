@@ -31,7 +31,7 @@ def if_true_then_empty(
         error_msg = ExecutionMessage(
             f"The If true then empty constraint for {instance.name} failed because {bool_field_name} is not a boolean.  Received {bool_field_value}.",
             MessageLevel.ERROR,
-            "No file to reference" if not definition.source else definition.source.uri,
+            "No file to reference" if not definition.source or definition.source.uri == "<string>" else definition.source.uri,
             None,
         )
         return ExecutionResult(
@@ -55,7 +55,7 @@ def if_true_then_empty(
         error_msg = ExecutionMessage(
             f"The If true then empty constraint for {instance.name} failed because {bool_field_name} is true and {empty_field_name} is not empty.",
             MessageLevel.ERROR,
-            "No file to reference" if not definition.source else definition.source.uri,
+            "No file to reference" if not definition.source or definition.source.uri == "<string>" else definition.source.uri,
             None,
         )
         return ExecutionResult(

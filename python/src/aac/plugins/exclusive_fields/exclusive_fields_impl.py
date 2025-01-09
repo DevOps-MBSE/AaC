@@ -43,7 +43,7 @@ def mutually_exclusive_fields(
         error_msg = ExecutionMessage(
             f"None of the following fields were present: {fields}",
             MessageLevel.ERROR,
-            "No file to reference" if not definition.source else definition.source.uri,
+            "No file to reference" if not definition.source or definition.source.uri == "<string>" else definition.source.uri,
             None,
         )
         return ExecutionResult(
@@ -57,7 +57,7 @@ def mutually_exclusive_fields(
         error_msg = ExecutionMessage(
             f"More than one of the following fields were present: {fields}",
             MessageLevel.ERROR,
-            "No file to reference" if not definition.source else definition.source.uri,
+            "No file to reference" if not definition.source or definition.source.uri == "<string>" else definition.source.uri,
             None,
         )
         return ExecutionResult(
