@@ -630,6 +630,36 @@ class DefinitionParser():
                     )
         return field_value
 
+    def enum_field_list_check(self, field_value: Any, field_name: str, lexemes: list, defining_definition: Definition, enum_class: str) -> list:
+        """
+        Method used to ensure each item in a list of enum fields have valid values.
+
+        Args:
+            field_value (Any): Value stored in the field.
+            field_name (str): The name of the field.
+            lexemes (List[Lexeme]): A list of definition Lexemes.
+            defining_definition (Definition): Definition containing the field being checked.
+            enum_class (str): The name of the enums defining definition
+
+        Returns:
+            The list of valid enum field values.
+        """
+        result = []
+        for item in field_value:
+            if not isinstance(item, str):
+                raise LanguageError(
+                    f"Invalid value for field '{field_name}'.  Expected type 'str', but found '{type(item)}'",
+                    self.get_location_str(field_name, lexemes),
+                )
+            try:
+                result.append(getattr(enum_class, item))
+            except ValueError:
+                raise LanguageError(
+                    f"{item} is not a valid value for enum {defining_definition.name}",
+                    self.get_location_str(item, lexemes),
+                )
+        return result
+
     def enum_field_value_check(self, is_list: bool, field_value: Any, field_name: str, lexemes: list, defining_definition: Definition) -> list:
         """
         Method used to ensure enum type field definitions have valid values.
@@ -656,21 +686,7 @@ class DefinitionParser():
         if not enum_class:
             enum_class = self.create_enum_class(defining_definition)
         if is_list:
-            result = []
-            for item in field_value:
-                if not isinstance(item, str):
-                    raise LanguageError(
-                        f"Invalid value for field '{field_name}'.  Expected type 'str', but found '{type(item)}'",
-                        self.get_location_str(field_name, lexemes),
-                    )
-                try:
-                    result.append(getattr(enum_class, item))
-                except ValueError:
-                    raise LanguageError(
-                        f"{item} is not a valid value for enum {defining_definition.name}",
-                        self.get_location_str(item, lexemes),
-                    )
-            return result
+            return self.enum_field_list_check(field_value, field_name, lexemes, defining_definition, enum_class)
         else:
             if not field_value:
                 return [None]
@@ -828,6 +844,31 @@ class DefinitionParser():
         definition.instance = instance
         return instance
 
+    def instantiate_definitions(self) -> list:
+        """
+        Method to instantiate the list of parsed definitions.
+
+        Returns:
+            A list of instantiated definitions.
+        """
+        result = []
+        for definition in self.parsed_definitions:
+            # create and register the instance
+            self.create_definition_instance(definition)
+            definition.source.is_loaded_in_context = True
+            result.append(definition)
+            self.context.context_instance.definitions.add(definition)
+            fully_qualified_name = f"{definition.package}.{definition.name}"
+
+            # This is so requirements specifically do not get overwritten.  Although other definition types may still get overwritten, so we may need to find a better solution eventually.
+            if definition.get_root_key() == "req":
+                req_id = definition.structure["req"]["id"]
+                fully_qualified_name = f"{fully_qualified_name}_{req_id}"
+            self.context.context_instance.fully_qualified_name_to_definition[
+                fully_qualified_name
+            ] = definition
+        return result
+
     # Start the load_definition function code here
     def load_definitions(
         self, context, parsed_definitions: list[Definition]
@@ -848,7 +889,6 @@ class DefinitionParser():
         # only place where we have to deal with navigating the structure of the definitions and
         # not using the python objects.  In order for this to work, any changes in here should
         # avoid the use of he definition instance...other than actually creating it.
-        result = []
         schema_defs_by_root = {}
         self.context = context
         self.parsed_definitions = parsed_definitions
@@ -877,19 +917,4 @@ class DefinitionParser():
                 if definition.instance.root:
                     schema_defs_by_root[definition.instance.root] = definition
 
-        for definition in self.parsed_definitions:
-            # create and register the instance
-            self.create_definition_instance(definition)
-            definition.source.is_loaded_in_context = True
-            result.append(definition)
-            self.context.context_instance.definitions.add(definition)
-            fully_qualified_name = f"{definition.package}.{definition.name}"
-
-            # This is so requirements specifically do not get overwritten.  Although other definition types may still get overwritten, so we may need to find a better solution eventually.
-            if definition.get_root_key() == "req":
-                req_id = definition.structure["req"]["id"]
-                fully_qualified_name = f"{fully_qualified_name}_{req_id}"
-            self.context.context_instance.fully_qualified_name_to_definition[
-                fully_qualified_name
-            ] = definition
-        return result
+        return self.instantiate_definitions()
