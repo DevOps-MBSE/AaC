@@ -32,7 +32,7 @@ def check_bool(
         error_msg = ExecutionMessage(
             message=f"{value} is not a valid bool value.",
             level=MessageLevel.ERROR,
-            source=("No file to reference" if not source or source == "<string>" else source.uri),
+            source=("No file to reference" if not source or source.uri == "<string>" else source.uri),
             location=location,
         )
         messages.append(error_msg)
@@ -55,7 +55,7 @@ def check_date(
         error_msg = ExecutionMessage(
             message=f"Failed to parse the date time string '{value}' with error: '{error}'",
             level=MessageLevel.ERROR,
-            source=("No file to reference" if not source or source == "<string>" else source.uri),
+            source=("No file to reference" if not source or source.uri == "<string>" else source.uri),
             location=location,
         )
         messages.append(error_msg)
@@ -85,7 +85,7 @@ def check_file(  # noqa: C901
         error_msg = ExecutionMessage(
             message=f"{value} is not a valid file path. Value should be string but received {type(value)}",
             level=MessageLevel.ERROR,
-            source=("No file to reference" if not source or source == "<string>" else source.uri),
+            source=("No file to reference" if not source or source.uri == "<string>" else source.uri),
             location=location,
         )
         messages.append(error_msg)
@@ -121,7 +121,7 @@ def check_file(  # noqa: C901
                 error_msg = ExecutionMessage(
                     message=f"The value {value} has an invalid drive specification.",
                     level=MessageLevel.ERROR,
-                    source=("No file to reference" if not source or source == "<string>" else source.uri),
+                    source=("No file to reference" if not source or source.uri == "<string>" else source.uri),
                     location=location,
                 )
                 messages.append(error_msg)
@@ -134,7 +134,7 @@ def check_file(  # noqa: C901
                 error_msg = ExecutionMessage(
                     message=f"The value {value} has an invalid drive specification.",
                     level=MessageLevel.ERROR,
-                    source=("No file to reference" if not source or source == "<string>" else source.uri),
+                    source=("No file to reference" if not source or source.uri == "<string>" else source.uri),
                     location=location,
                 )
                 messages.append(error_msg)
@@ -148,7 +148,7 @@ def check_file(  # noqa: C901
                     error_msg = ExecutionMessage(
                         message=f"The value {value} is not a valid file path.  Invalid character '{character}'.",
                         level=MessageLevel.ERROR,
-                        source=("No file to reference" if not source or source == "<string>" else source.uri),
+                        source=("No file to reference" if not source or source.uri == "<string>" else source.uri),
                         location=location,
                     )
                     messages.append(error_msg)
@@ -171,7 +171,7 @@ def check_string(
         error_msg = ExecutionMessage(
             message=f"{value} is not a valid string value.  Type declaration = {type_declaration}",
             level=MessageLevel.ERROR,
-            source=("No file to reference" if not source or source == "<string>" else source.uri),
+            source=("No file to reference" if not source or source.uri == "<string>" else source.uri),
             location=location,
         )
         messages.append(error_msg)
@@ -200,7 +200,7 @@ def check_int(
         error_msg = ExecutionMessage(
             message=f"AaC int primitive constraint failed for value {value} with error:{linesep}{error}",
             level=MessageLevel.ERROR,
-            source=("No file to reference" if not source or source == "<string>" else source.uri),
+            source=("No file to reference" if not source or source.uri == "<string>" else source.uri),
             location=location,
         )
         messages.append(error_msg)
@@ -210,7 +210,7 @@ def check_int(
         error_msg = ExecutionMessage(
             message=f"{value} is not a valid value for the primitive type int",
             level=MessageLevel.ERROR,
-            source=("No file to reference" if not source or source == "<string>" else source.uri),
+            source=("No file to reference" if not source or source.uri == "<string>" else source.uri),
             location=location,
         )
         messages.append(error_msg)
@@ -243,7 +243,7 @@ def check_number(
         error_msg = ExecutionMessage(
             message=f"AaC number primitive constraint failed for value {value} with error:{linesep}{error}",
             level=MessageLevel.ERROR,
-            source=("No file to reference" if not source or source == "<string>" else source.uri),
+            source=("No file to reference" if not source or source.uri == "<string>" else source.uri),
             location=location,
         )
         messages.append(error_msg)
@@ -253,7 +253,7 @@ def check_number(
         error_msg = ExecutionMessage(
             message=f"{value} is not a valid value for the primitive type number",
             level=MessageLevel.ERROR,
-            source=("No file to reference" if not source or source == "<string>" else source.uri),
+            source=("No file to reference" if not source or source.uri == "<string>" else source.uri),
             location=location,
         )
         messages.append(error_msg)
@@ -282,7 +282,7 @@ def check_dataref(
         error_msg = ExecutionMessage(
             message=f"Dataref constraint '{type_declaration}' failed for value '{clean_value}' with error: No dataref target provided.",
             level=MessageLevel.ERROR,
-            source=("No file to reference" if not source or source == "<string>" else source.uri),
+            source=("No file to reference" if not source or source.uri == "<string>" else source.uri),
             location=location,
         )
         messages.append(error_msg)
@@ -294,7 +294,7 @@ def check_dataref(
         error_msg = ExecutionMessage(
             message=f"Dataref constraint failed for value '{clean_value}': '{clean_value}' not found in '{dataref_target}' values '{found_values}'",
             level=MessageLevel.ERROR,
-            source=("No file to reference" if not source or source == "<string>" else source.uri),
+            source=("No file to reference" if not source or source.uri == "<string>" else source.uri),
             location=location,
         )
         messages.append(error_msg)
@@ -338,7 +338,7 @@ def check_typeref(
         error_msg = ExecutionMessage(
             message=f"Typeref constraint {type_declaration} failed for value {clean_value} with error: No unique defining schema found for value.",
             level=MessageLevel.ERROR,
-            source=("No file to reference" if not source or source == "<string>" else source.uri),
+            source=("No file to reference" if not source or source.uri == "<string>" else source.uri),
             location=location,
         )
         messages.append(error_msg)
@@ -350,7 +350,7 @@ def check_typeref(
             error_msg = ExecutionMessage(
                 message=f"Typeref constraint {type_declaration} failed for value {clean_value} with error: Value {clean_value} is not a valid {qualified_type_name}.",
                 level=MessageLevel.ERROR,
-                source=("No file to reference" if not source or source == "<string>" else source.uri),
+                source=("No file to reference" if not source or source.uri == "<string>" else source.uri),
                 location=location,
             )
             messages.append(error_msg)
