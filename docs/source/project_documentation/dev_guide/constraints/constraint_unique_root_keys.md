@@ -3,19 +3,18 @@
 
 
 ## Usage Example
+The below example would fail the `Root Key Names Are Unique` because the referenced root `one` has more than one definition of itself.
 ```{eval-rst}
 .. literalinclude:: ../../../../../python/tests/test_aac/plugins/unique_root_keys/test_unique_root_keys.py
     :language: yaml
-    :lines: 49-63
+    :lines: 43-57
     :emphasize-lines: 4, 12
 ```
-The above example would fail the `Root Key Names Are Unique` because the referenced root `one` has more than one definition of itself.
 
-
+In this example, each referenced root has only one definition of itself, and so would pass this constraint.
 ```{eval-rst}
 .. literalinclude:: ../../../../../python/tests/test_aac/plugins/unique_root_keys/test_unique_root_keys.py
     :language: yaml
-    :lines: 31-45
-    :emphasize-lines: 4, 12 
+    :lines: 25-39
+    :emphasize-lines: 4, 12
 ```
-In this example, each referenced root has only one definition of itself, and so would pass this constraint.
