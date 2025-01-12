@@ -14,9 +14,7 @@ from aac.context.language_context import LanguageContext
 from aac.context.definition import Definition
 from typing import Any
 
-
 plugin_name = "Root schema must have name"
-
 
 def _get_fields(schema) -> list[str]:
     """Returns a list of the fields in the parent schema."""
@@ -46,6 +44,7 @@ def root_schema_has_name(
 
     context = LanguageContext()
     if context.is_aac_instance(instance, "aac.lang.Schema"):
+
         if instance.root:
             # we have one special case for 'import' which is a root without a name, so allow that
             if instance.root == "import":
@@ -64,5 +63,4 @@ def root_schema_has_name(
                     location=None,
                 )
                 messages.append(error_msg)
-
     return ExecutionResult(plugin_name, "Root schema has name", status, messages)
