@@ -64,5 +64,5 @@ def root_schema_has_name(
                     location=None,
                 )
                 messages.append(error_msg)
-    
+
     return ExecutionResult(plugin_name, "Root schema has name", status, messages)
