@@ -1,6 +1,7 @@
 from unittest import TestCase
 
 from aac.context.language_context import LanguageContext
+from aac.context.language_error import LanguageError
 from aac.context.definition_parser import DefinitionParser
 from aac.in_out.parser import parse, ParserError
 
@@ -55,6 +56,16 @@ class TestDefinitionParser(TestCase):
             definitions = parse(SCHEMA_WITH_BAD_ENUM)
             loaded_definitions = parser.load_definitions(context=context, parsed_definitions=definitions)  # noqa: F841
             self.assertFalse(definitions[0].source.is_loaded_in_context)
+
+    def test_load_empty_name(self):
+        parser = DefinitionParser()
+        context = LanguageContext()
+        definition = parse(VALID_AAC_YAML_CONTENT)
+        definition[0].name = "1schema_test"
+        try:
+            loaded_definition = parser.load_definitions(context=context, parsed_definitions=definition)
+        except LanguageError as e:
+            self.assertNotEqual(e.location, "Unknown location")
 
 
 VALID_AAC_YAML_CONTENT = """
@@ -179,4 +190,3 @@ schema:
         - bad_value
         - bad_value
 """.strip()
-
