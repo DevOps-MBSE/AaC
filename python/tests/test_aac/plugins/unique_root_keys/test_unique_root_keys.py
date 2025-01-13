@@ -18,6 +18,7 @@ class TestUniqueRootKeys(TestCase):
         result = root_key_names_are_unique(context)
         self.assertFalse(result.is_success())
         self.assertIn("is not unique", str(result.messages))
+        self.assertEqual(result.messages[0].source, "No file to reference")
         context.remove_definitions(definitions)
 
 

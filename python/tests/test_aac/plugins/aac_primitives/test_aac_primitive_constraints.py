@@ -29,7 +29,8 @@ class TestAaCPrimitiveConstraints(TestCase):
         self.assertEqual(result.status_code, ExecutionStatus.SUCCESS, "Check bool should return success for a valid bool value of 'false'")
         result = check_bool("Not_A_Bool", "", None, None)
         self.assertEqual(result.status_code, ExecutionStatus.CONSTRAINT_FAILURE, "Check bool should return a constraint failure for a non-bool value of 'Not_A_Bool'")
-
+        self.assertEqual(result.messages[0].source, "No file to reference")
+        
     def test_check_date(self):
         # Test valid date
         result = check_date("2022-01-01", "", None, None)
@@ -38,14 +39,17 @@ class TestAaCPrimitiveConstraints(TestCase):
         # Test invalid date format
         result = check_date("01-01-2022", "", None, None)
         self.assertEqual(result.status_code, ExecutionStatus.CONSTRAINT_FAILURE, f"{plugin_name}: Check date should return a constraint failure for an invalid date format of '01-01-2022'")
+        self.assertEqual(result.messages[0].source, "No file to reference")
 
         # Test invalid date value
         result = check_date("2022-02-31", "", None, None)
         self.assertEqual(result.status_code, ExecutionStatus.CONSTRAINT_FAILURE, f"{plugin_name}: Check date should return a constraint failure for an invalid date value of '2022-02-31'")
+        self.assertEqual(result.messages[0].source, "No file to reference")
 
         # Test invalid date type
         result = check_date(123, "", None, None)
         self.assertEqual(result.status_code, ExecutionStatus.CONSTRAINT_FAILURE, f"{plugin_name}: Check date should return a constraint failure for an invalid date type of '123'")
+        self.assertEqual(result.messages[0].source, "No file to reference")
 
     def test_check_directory(self):
         # Test valid directory
@@ -55,10 +59,12 @@ class TestAaCPrimitiveConstraints(TestCase):
         # Test invalid directory path
         result = check_directory("/path/with+/bad\characters|in/directory", "", None, None)
         self.assertEqual(result.status_code, ExecutionStatus.CONSTRAINT_FAILURE, f"{plugin_name}: Check directory should return a constraint failure for a nonexistent directory path of '/path/with+/bad\characters|in/directory'")
+        self.assertEqual(result.messages[0].source, "No file to reference")
 
         # Test invalid directory type
         result = check_directory(123, "", None, None)
         self.assertEqual(result.status_code, ExecutionStatus.CONSTRAINT_FAILURE, f"{plugin_name}: Check directory should return a constraint failure for an invalid directory type of '123'")
+        self.assertEqual(result.messages[0].source, "No file to reference")
 
     def test_check_file(self):
         # Test valid linux directory and file name
@@ -88,14 +94,17 @@ class TestAaCPrimitiveConstraints(TestCase):
         # Test invalid directory path
         result = check_file("/path/with+/bad\characters|in/directory/my_file.txt", "", None, None)
         self.assertEqual(result.status_code, ExecutionStatus.CONSTRAINT_FAILURE, f"{plugin_name}: Check file should return a constraint failure for a nonexistent directory path of '/path/with+/bad\characters|in/directory/my_file.txt'")
+        self.assertEqual(result.messages[0].source, "No file to reference")
 
         # Test invalid directory path
         result = check_file("/path/with/bad/characters/in/file/name/m+y|f*ile.txt", "", None, None)
         self.assertEqual(result.status_code, ExecutionStatus.CONSTRAINT_FAILURE, f"{plugin_name}: Check file should return a constraint failure for a nonexistent directory path of '/path/with/bad/characters/in/file/name/m+y|f*ile.txt'")
+        self.assertEqual(result.messages[0].source, "No file to reference")
 
         # Test invalid directory type
         result = check_directory(123, "", None, None)
         self.assertEqual(result.status_code, ExecutionStatus.CONSTRAINT_FAILURE, f"{plugin_name}: Check file should return a constraint failure for an invalid directory type of '123'")
+        self.assertEqual(result.messages[0].source, "No file to reference")
 
     def test_check_string(self):
         # Test valid string
@@ -105,6 +114,7 @@ class TestAaCPrimitiveConstraints(TestCase):
         # Test invalid string type
         result = check_string(123, "", None, None)
         self.assertEqual(result.status_code, ExecutionStatus.CONSTRAINT_FAILURE, f"{plugin_name}: Check string should return a constraint failure for an invalid string type of '123'")
+        self.assertEqual(result.messages[0].source, "No file to reference")
 
     def test_check_int(self):
         # Test valid integer
@@ -118,6 +128,7 @@ class TestAaCPrimitiveConstraints(TestCase):
         # Test invalid integer value
         result = check_int("abc", "", None, None)
         self.assertEqual(result.status_code, ExecutionStatus.CONSTRAINT_FAILURE, f"{plugin_name}: Check int should return a constraint failure for an invalid integer value of 'abc'")
+        self.assertEqual(result.messages[0].source, "No file to reference")
 
     def test_check_number(self):
         # Test valid integer
@@ -139,10 +150,12 @@ class TestAaCPrimitiveConstraints(TestCase):
         # Test invalid number value
         result = check_number("abc", "", None, None)
         self.assertEqual(result.status_code, ExecutionStatus.CONSTRAINT_FAILURE, f"{plugin_name}: Check number should return a constraint failure for an invalid number value of 'abc'")
+        self.assertEqual(result.messages[0].source, "No file to reference")
 
         # Test invalid number type
         result = check_number([1, 2, 3], "", None, None)
         self.assertEqual(result.status_code, ExecutionStatus.CONSTRAINT_FAILURE, f"{plugin_name}: Check number should return a constraint failure for an invalid number type of '[1, 2, 3]'")
+        self.assertEqual(result.messages[0].source, "No file to reference")
 
     def test_check_dataref(self):
         # Test valid dataref
@@ -152,14 +165,17 @@ class TestAaCPrimitiveConstraints(TestCase):
         # Test invalid dataref, bad field chain
         result = check_dataref("description", "dataref(schema.not_a_thing.name)", None, None)
         self.assertEqual(result.status_code, ExecutionStatus.CONSTRAINT_FAILURE, f"{plugin_name}: Check dataref should return a constraint failure for an invalid dataref field chain of 'schema.not_a_thing.name'")
+        self.assertEqual(result.messages[0].source, "No file to reference")
 
         # Test invalid dataref, bad target value
         result = check_dataref("not_a_field_name_that_exists", "dataref(schema.fields.name)", None, None)
         self.assertEqual(result.status_code, ExecutionStatus.CONSTRAINT_FAILURE, f"{plugin_name}: Check dataref should return a constraint failure for an invalid dataref target value of 'not_a_field_name_that_exists'")
+        self.assertEqual(result.messages[0].source, "No file to reference")
 
         # Test invalid dataref type
         result = check_dataref(123, "", None, None)
         self.assertEqual(result.status_code, ExecutionStatus.CONSTRAINT_FAILURE, f"{plugin_name}: Check dataref should return a constraint failure for an invalid dataref type of '123'")
+        self.assertEqual(result.messages[0].source, "No file to reference")
 
     def test_check_typeref(self):
          # Test valid typeref
@@ -169,8 +185,9 @@ class TestAaCPrimitiveConstraints(TestCase):
         # Test invalid typeref value
         result = check_typeref("Not_A_Thing", "typeref(aac.lang.AacType)", None, None)
         self.assertEqual(result.status_code, ExecutionStatus.CONSTRAINT_FAILURE, f"{plugin_name}: Check typeref should return a constraint failure for a invalid valid typeref value of 'Not_A_Thing' for type 'aac.lang.AacType'")
+        self.assertEqual(result.messages[0].source, "No file to reference")
 
         # Test invalid typeref target type
         with self.assertRaises(LanguageError, msg=f"{plugin_name}: Check typeref should return a constraint failure for a invalid valid typeref type 'not.a.valid.type'"):
             result = check_typeref("Schema", "typeref(not.a.valid.type)", None, None)
-        
+

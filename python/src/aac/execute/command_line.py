@@ -25,7 +25,6 @@ from aac.execute.aac_execution_result import (
 )
 from aac.context.language_error import LanguageError
 from aac.context.language_context import LanguageContext
-from aac.in_out.files.aac_file import AaCFile
 from aac.in_out.parser._parser_error import ParserError
 
 from typing import Callable
@@ -87,7 +86,7 @@ def handle_exceptions(plugin_name: str, func: Callable) -> Callable:  # noqa: C9
                 plugin_name,
                 "exception",
                 ExecutionStatus.GENERAL_FAILURE,
-                [ExecutionMessage(e.message, MessageLevel.ERROR, AaCFile(e.location, True, True), None)],
+                [ExecutionMessage(e.message, MessageLevel.ERROR, e.location, None)],
             )
         except OperationCancelled as e:
             return ExecutionResult(
