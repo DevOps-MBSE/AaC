@@ -4,7 +4,6 @@ from attr import attrib, attrs, validators, Factory
 from os import linesep
 from typing import Optional
 
-from aac.in_out.files.aac_file import AaCFile
 from aac.context.source_location import SourceLocation
 
 
@@ -37,14 +36,14 @@ class ExecutionMessage:
     Attributes:
         message (str): The textual content of the message.
         level (MessageLevel): value of MessageLevel.DEBUG, .INFO, .WARNING, or .ERROR
-        source: (AaCFile): The file from whence the message came.
+        source: (str): The file from whence the message came.
         location: (SourceLocation): The col, row info within the source file.
     """
 
     message: str = attrib(validator=validators.instance_of(str))
     level: MessageLevel = attrib(validator=validators.instance_of(MessageLevel))
-    source: Optional[AaCFile] = attrib(
-        validator=validators.optional(validators.instance_of(AaCFile))
+    source: Optional[str] = attrib(
+        validator=validators.optional(validators.instance_of(str))
     )
     location: Optional[SourceLocation] = attrib(
         validator=validators.optional(validators.instance_of(SourceLocation))
@@ -94,7 +93,7 @@ class ExecutionResult:
         for message in self.messages:
             result += message.message + linesep
             if message.source is not None:
-                result += f"  Source: {message.source.uri}"
+                result += f"  Source: {message.source}"
                 if message.location is not None:
                     result += f" (Ln {message.location.line}: Col {message.location.column}: Pos {message.location.position}: Spn {message.location.span})"
                 result += linesep

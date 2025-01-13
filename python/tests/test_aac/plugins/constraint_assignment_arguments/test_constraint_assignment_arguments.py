@@ -47,7 +47,7 @@ class TestConstraintAssignmentArguments(TestCase):
 
         self.assertTrue(not result.is_success(), f"Expected failure with message: {result.messages}")
         self.assertEqual(result.messages[0].message, "The Check arguments against constraint definition constraint for Mutually exclusive fields failed because the constraint definition has a required argument named fields that was not found in the constraint assignment.")
-
+        self.assertEqual(result.messages[0].source, "No file to reference")
 
 BAD_DATA = """
 schema:

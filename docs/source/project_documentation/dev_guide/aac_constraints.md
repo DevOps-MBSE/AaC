@@ -163,7 +163,7 @@ def mutually_exclusive_fields(
     error_msg = ExecutionMessage(
         "The Mutually exclusive fields constraint for the Exclusive fields plugin has not been implemented yet.",
         MessageLevel.ERROR,
-        definition.source,
+        definition.source.uri,
         None,
     )
     messages.append(error_msg)
@@ -262,7 +262,7 @@ def check_dataref(
     error_msg = ExecutionMessage(
         message="The Check dataref constraint for the AaC primitive constraints plugin has not been implemented yet.",
         level=MessageLevel.ERROR,
-        source=source,
+        source=source.uri,
         location=location,
     )
     messages.append(error_msg)

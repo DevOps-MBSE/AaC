@@ -21,6 +21,7 @@ class TestRootSchemaMustHaveName(TestCase):
         definitions = context.parse_and_load(root_schema_without_name)
         result = root_schema_has_name(definitions[0].instance, definitions[0], context.get_definitions_by_name("Schema")[0].instance)
         self.assertFalse(result.is_success())
+        self.assertEqual(result.messages[0].source, "No file to reference")
         context.remove_definitions(definitions)
 
 
