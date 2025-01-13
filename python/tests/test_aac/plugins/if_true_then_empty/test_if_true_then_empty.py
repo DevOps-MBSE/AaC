@@ -27,6 +27,7 @@ class TestIfTrueThenEmpty(TestCase):
             bad_data = context.parse_and_load(bad)
             result = if_true_then_empty(bad_data[0].instance, test_schema[0], None, "alpha", "beta")
             self.assertFalse(result.is_success(), f"Expected failure for {bad_data[0].name}")
+            self.assertEqual(result.messages[0].source, "No file to reference")
             context.remove_definitions(bad_data)
 
         context.remove_definitions(test_schema)

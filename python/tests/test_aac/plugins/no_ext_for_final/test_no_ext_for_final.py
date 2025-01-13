@@ -37,6 +37,7 @@ class TestNoExtForFinal(TestCase):
         self.assertTrue(result.is_success())
         result = no_extension_for_final(definitions[1].instance, definitions[1], schema_definition.instance)
         self.assertFalse(result.is_success())
+        self.assertEqual(result.messages[0].source, "No file to reference")
         context.remove_definitions(definitions)
 
 
