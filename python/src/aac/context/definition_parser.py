@@ -844,30 +844,29 @@ class DefinitionParser():
         definition.instance = instance
         return instance
 
-    def instantiate_definitions(self) -> list:
+    def set_qualified_name(self, definition: Definition):
         """
         Method to instantiate the list of parsed definitions.
 
         Returns:
             A list of instantiated definitions.
         """
-        result = []
-        for definition in self.parsed_definitions:
-            # create and register the instance
-            self.create_definition_instance(definition)
-            definition.source.is_loaded_in_context = True
-            result.append(definition)
-            self.context.context_instance.definitions.add(definition)
-            fully_qualified_name = f"{definition.package}.{definition.name}"
+        if definition.get_root_key() == "primitive":
+            self.primitive_name_to_py_type[definition.name] = definition.structure["primitive"]["python_type"]
+        if "package" in definition.structure[definition.get_root_key()]:
+            try:
+                fully_qualified_name = definition.get_fully_qualified_name()
+            except LanguageError as e:
+                raise LanguageError(
+                    f"Failed to create Enum instance_class for {definition.name}: {e.message}",
+                    self.get_location_str(definition.name, definition.lexemes),
+                )
 
             # This is so requirements specifically do not get overwritten.  Although other definition types may still get overwritten, so we may need to find a better solution eventually.
             if definition.get_root_key() == "req":
                 req_id = definition.structure["req"]["id"]
                 fully_qualified_name = f"{fully_qualified_name}_{req_id}"
-            self.context.context_instance.fully_qualified_name_to_definition[
-                fully_qualified_name
-            ] = definition
-        return result
+            self.fully_qualified_name_to_definition[fully_qualified_name] = definition
 
     # Start the load_definition function code here
     def load_definitions(
@@ -895,26 +894,26 @@ class DefinitionParser():
         self.primitive_name_to_py_type = {}
         self.fully_qualified_name_to_definition = {}
         for definition in self.parsed_definitions + self.context.get_definitions():
-            if definition.get_root_key() == "primitive":
-                self.primitive_name_to_py_type[definition.name] = definition.structure["primitive"]["python_type"]
-            if "package" in definition.structure[definition.get_root_key()]:
-                try:
-                    fully_qualified_name = definition.get_fully_qualified_name()
-                except LanguageError as e:
-                    raise LanguageError(
-                        f"Failed to create Enum instance_class for {definition.name}: {e.message}",
-                        self.get_location_str(definition.name, definition.lexemes),
-                    )
-
-                # This is so requirements specifically do not get overwritten.  Although other definition types may still get overwritten, so we may need to find a better solution eventually.
-                if definition.get_root_key() == "req":
-                    req_id = definition.structure["req"]["id"]
-                    fully_qualified_name = f"{fully_qualified_name}_{req_id}"
-                self.fully_qualified_name_to_definition[fully_qualified_name] = definition
-
+            self.set_qualified_name(definition)
         for definition in self.context.get_definitions():
             if definition.get_root_key() == "schema":
                 if definition.instance.root:
                     schema_defs_by_root[definition.instance.root] = definition
 
-        return self.instantiate_definitions()
+        result = []
+        for definition in self.parsed_definitions:
+            # create and register the instance
+            self.create_definition_instance(definition)
+            definition.source.is_loaded_in_context = True
+            result.append(definition)
+            self.context.context_instance.definitions.add(definition)
+            fully_qualified_name = f"{definition.package}.{definition.name}"
+
+            # This is so requirements specifically do not get overwritten.  Although other definition types may still get overwritten, so we may need to find a better solution eventually.
+            if definition.get_root_key() == "req":
+                req_id = definition.structure["req"]["id"]
+                fully_qualified_name = f"{fully_qualified_name}_{req_id}"
+            self.context.context_instance.fully_qualified_name_to_definition[
+                fully_qualified_name
+            ] = definition
+        return result
