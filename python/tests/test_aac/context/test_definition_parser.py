@@ -66,7 +66,6 @@ class TestDefinitionParser(TestCase):
             loaded_definition = parser.load_definitions(context=context, parsed_definitions=definition)
         except LanguageError as e:
             self.assertNotEqual(e.location, "Unknown location")
-        # self.assertTrue(False)
 
 
 VALID_AAC_YAML_CONTENT = """

@@ -165,7 +165,7 @@ class DefinitionParser():
             fully_qualified_name = enum_definition.get_fully_qualified_name()
         except LanguageError as e:
             raise LanguageError(
-                f"Failed to create Enum instance_class for {enum_definition.name}: {e.message}",
+                f"Failed to create python class name for definition {enum_definition.name}: {e.message}",
                 self.get_location_str(enum_definition.name, enum_definition.lexemes),
             )
 
@@ -298,7 +298,7 @@ class DefinitionParser():
             fully_qualified_name = schema_definition.get_fully_qualified_name()
         except LanguageError as e:
             raise LanguageError(
-                f"Failed to create schema instance_class for {schema_definition.name}: {e.message}",
+                f"Failed to create python class name for definition {schema_definition.name}: {e.message}",
                 self.get_location_str(schema_definition.name, schema_definition.lexemes),
             )
 
@@ -721,7 +721,7 @@ class DefinitionParser():
             )
         except LanguageError as e:
             raise LanguageError(
-                f"Failed to create schema instance_class for {defining_definition.name}: {e.message}",
+                f"Failed to create python class name for definition {defining_definition.name}: {e.message}",
                 self.get_location_str(defining_definition.name, defining_definition.lexemes),
             )
         instance_class = self.context.context_instance.fully_qualified_name_to_class[
@@ -846,10 +846,10 @@ class DefinitionParser():
 
     def set_qualified_name(self, definition: Definition):
         """
-        Method to instantiate the list of parsed definitions.
+        Method to set the fully qualified name for a definition.
 
-        Returns:
-            A list of instantiated definitions.
+        Args:
+            definition (Definition): The definition whose python class name will be set.
         """
         if definition.get_root_key() == "primitive":
             self.primitive_name_to_py_type[definition.name] = definition.structure["primitive"]["python_type"]
@@ -858,7 +858,7 @@ class DefinitionParser():
                 fully_qualified_name = definition.get_fully_qualified_name()
             except LanguageError as e:
                 raise LanguageError(
-                    f"Failed to create Enum instance_class for {definition.name}: {e.message}",
+                    f"Failed to create python class name for the definition {definition.name}: {e.message}",
                     self.get_location_str(definition.name, definition.lexemes),
                 )
 
