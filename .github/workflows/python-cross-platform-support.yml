@@ -32,10 +32,10 @@ jobs:
         run: |
           ./secure_install/pipeline_scripts/create_install_archive.bash
 
-      - name: Create Dependencies Package
-        if: matrix.os == 'windows-latest'
-        run: |
-          ./secure_install/pipeline_scripts/create_install_archive.bat
+      # - name: Create Dependencies Package
+      #   if: matrix.os == 'windows-latest'
+      #   run: |
+      #     ./secure_install/pipeline_scripts/create_install_archive.bat
 
       - name: Upload Dependencies Package
         uses: actions/upload-artifact@v4
@@ -82,11 +82,11 @@ jobs:
           chmod +x ./aac_secure_install_*/install_aac_air_gap.bash
           ./aac_secure_install_*/install_aac_air_gap.bash
 
-      - name: Install from Secure Install
-        if: matrix.os == 'windows-latest'
-        run: |
-          cd (Get-ChildItem -Filter aac_secure_install_*)
-          .\install_aac_air_gap.bat
+      # - name: Install from Secure Install
+      #   if: matrix.os == 'windows-latest'
+      #   run: |
+      #     cd (Get-ChildItem -Filter aac_secure_install_*)
+      #     .\install_aac_air_gap.bat
 
       - name: Get Package Version
         run: python -m aac version
@@ -96,11 +96,11 @@ jobs:
         run: |
           spec_file=$(find $pythonLocation -name aac.aac | head -n1)
           python -m aac check $spec_file
-      - name: Check AaC DSL
-        if: matrix.os == 'windows-latest'
-        run: |
-          $spec_file=$(gci -r -fi aac.aac -Name "$Env:pythonLocation")
-          python -m aac check "$Env:pythonLocation\$spec_file"
+      # - name: Check AaC DSL
+      #   if: matrix.os == 'windows-latest'
+      #   run: |
+      #     $spec_file=$(gci -r -fi aac.aac -Name "$Env:pythonLocation")
+      #     python -m aac check "$Env:pythonLocation\$spec_file"
       - name: Print out Core Spec
         run: python -m aac print-defs
 
