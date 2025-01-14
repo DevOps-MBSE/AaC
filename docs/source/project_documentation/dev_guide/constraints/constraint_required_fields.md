@@ -8,9 +8,10 @@
     :lines: 17-33
     :emphasize-lines: 6, 12, 17
 ```
-In the above example, the fields `name` and `package` are required, and the field `description` is not required.  If `name` or `package` are not defined, it will fail the `Required Fields` constraint.
+In the above example, the fields `name`, `package`, and `description` are required.  If any of these fields are not defined in a definition, it will fail the `Required Fields` constraint.
 
-This constraint does not check required fields of parent definitions
+
+> **NOTE**: _This constraint does not check for required fields of parent definitions._
 
 ```{eval-rst}
 .. literalinclude:: ../../../../../python/src/aac/aac.aac

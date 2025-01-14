@@ -20,7 +20,6 @@ class TestNoExtForFinal(TestCase):
         self.assertTrue(result.is_success())
         context.remove_definitions(definitions)
 
-
     #  Off-nominal (expected fail) tests
     def test_no_extension_for_final_offnominal(self):
         context = LanguageContext()
@@ -28,7 +27,6 @@ class TestNoExtForFinal(TestCase):
         if len(schema_definition) != 1:
             self.fail("Expected to find one and only one Schema definition")
         schema_definition = schema_definition[0]
-
 
         #  Off-nominal (expected fail) test with a circular schema definition
         #  TestSchema tries to extend TestSchema
@@ -40,7 +38,6 @@ class TestNoExtForFinal(TestCase):
         self.assertEqual(result.messages[0].source, "No file to reference")
         context.remove_definitions(definitions)
 
-
         #  Off-nominal (expected fail) test with a invalid schema definition
         #  TestSchema defined twice
         definitions = context.parse_and_load(root_schema_with_bad_ext_duplicate)
@@ -48,7 +45,6 @@ class TestNoExtForFinal(TestCase):
         self.assertTrue(result.is_success())
         result = no_extension_for_final(definitions[1].instance, definitions[1], schema_definition.instance)
         self.assertFalse(result.is_success())
-
 
         #  Off-nominal (expected fail) test with a invalid schema definition
         #  Specified parent to extend does not exist (TestDoesNotExist)

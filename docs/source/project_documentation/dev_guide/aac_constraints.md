@@ -99,9 +99,7 @@ from click.testing import CliRunner
 from aac.execute.command_line import cli, initialize_cli
 from aac.execute.aac_execution_result import ExecutionStatus
 
-
 from aac.plugins.unique_root_keys.unique_root_keys_impl import plugin_name
-
 
 from aac.plugins.unique_root_keys.unique_root_keys_impl import root_key_names_are_unique
 
@@ -114,7 +112,6 @@ class TestUniqueRootKeys(TestCase):
 ```
 
 To complete the implementation of a constraint, replace the body of the stubbed unit test and implementation with the desired behavior.  Use the provided `context` as the "item under evaluation" and return an `ExecutionResult` with the appropriate status and messages as shown in the generated example.
-
 
 
 Once the constraint implementation and unit test(s) are completed, run `tox` to ensure everything passes.
@@ -183,9 +180,7 @@ from click.testing import CliRunner
 from aac.execute.command_line import cli, initialize_cli
 from aac.execute.aac_execution_result import ExecutionStatus
 
-
 from aac.plugins.exclusive_fields.exclusive_fields_impl import plugin_name
-
 
 from aac.plugins.exclusive_fields.exclusive_fields_impl import mutually_exclusive_fields
 
@@ -284,7 +279,6 @@ from typing import Tuple
 from click.testing import CliRunner
 from aac.execute.command_line import cli, initialize_cli
 from aac.execute.aac_execution_result import ExecutionStatus
-
 
 from aac.plugins.aac_primitives.aac_primitive_constraints_impl import plugin_name
 

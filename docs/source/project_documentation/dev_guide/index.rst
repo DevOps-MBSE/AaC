@@ -6,7 +6,7 @@ Developer Guide Documentation
 
    Getting Started <dev_guide_index>
    Documentation <docs>
-   Language API <./language_api/index>
+   Language API <language_api/index>
    Plugin Developer Guide <plugin_dev_guide>
    AaC Constraint Checks <aac_constraints>
    Constraint Types <constraints/constraint_types>
