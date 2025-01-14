@@ -59,7 +59,7 @@ In this example, the we use two schemas to create a non-unique definition for `A
 .. literalinclude:: ../../../../../python/tests/test_aac/plugins/root_schema_must_have_name/test_root_schema_must_have_name.py
     :language: yaml
     :lines: 174-210, 213-222
-    :emphasize-lines: 4-5,40-41
+    :emphasize-lines: 4-5,39-40
 ```
 
 > ** NOTE ** _The `Unknown Location` and `No file to reference` are valid location returns for the error situations encountered in this constraint._
