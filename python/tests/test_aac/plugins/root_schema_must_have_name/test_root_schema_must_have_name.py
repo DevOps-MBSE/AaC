@@ -29,150 +29,101 @@ class TestRootSchemaMustHaveName(TestCase):
     #  This test starts with a normal properly formed schema
     #  It then takes the result from parse_and_load and specifically removes the 'name'
     #  It then calls root_schema_has_name which will not find the name it is looking for
-    #  and return an ExecutionStatus.GENERAL_FAILURE from root_schema_has_name
+    #  and return an ExecutionStatus.GENERAL_FAILURE from root_schema_has_name and a specific error_msg (see line 61)
     def test_root_schema_has_name_fail(self):
         context = LanguageContext()
-        try:
-            # Obtain the definitions for a properly formed schema
-            # This prevents any ParserErrors or LanguageErrors from being generated within parse_and_load
-            definitions = context.parse_and_load(root_schema_with_name)
 
-            # Now modify the fields to remove the 'name' field
-            # Most of this 'try' is copied from root_schema_has_name::_get_fields
-            try:
-                schema = definitions[0].instance
-                instance_fields = list[str]
-                context: LanguageContext = LanguageContext()
-                instance_fields: list[str] = []
+        # Obtain the definitions for a properly formed schema
+        # This prevents any ParserErrors or LanguageErrors from being generated within parse_and_load
+        definitions = context.parse_and_load(root_schema_with_name)
 
-                for field in schema.fields:
-                    if field.name != 'name':
-                        # Copy the field over except
-                        # skip if it is 'name' to trigger the check in root_schema_has_name
-                        instance_fields.append(field)
+        # Now modify the fields to remove the 'name' field
+        # Most of this code is copied from root_schema_has_name::_get_fields
+        schema = definitions[0].instance
+        instance_fields = list[str]
+        context: LanguageContext = LanguageContext()
+        instance_fields: list[str] = []
 
-                if schema.extends:
-                    for ext in schema.extends:
-                        parent_schema = context.get_definitions_by_name(ext.name)
-                        if len(parent_schema) == 1:
-                            definitions[0].instance.fields.extend(_get_fields(parent_schema[0].instance))
-                ## Set fields to the modified list without a 'name' field
-                definitions[0].instance.fields = instance_fields
-            except:
-                traceback.print_exc()
+        for field in schema.fields:
+            if field.name != 'name':
+                # Copy the field over except
+                # skip if it is 'name' to trigger the check in root_schema_has_name
+                instance_fields.append(field)
 
-            result = root_schema_has_name(definitions[0].instance, definitions[0], context.get_definitions_by_name("Schema")[0].instance)
-            index = result.get_messages_as_string().find("must have a field named 'name'") # this is the message from line 61 of root_schema_has_name
-            if index != -1:
-                # Name message located
-                self.assertFalse(result.is_success())
-            else:
-                # Name message missing
-                self.assertFalse(True)
-            context.remove_definitions(definitions)
-        except AttributeError as ae:
-            self.assertFalse(True)
-        except ParserError as pe:
-            self.assertFalse(True)
-        except LanguageError as le:
-            self.assertFalse(True)
-        except:
-            self.assertFalse(True)
+        if schema.extends:
+            for ext in schema.extends:
+                parent_schema = context.get_definitions_by_name(ext.name)
+                if len(parent_schema) == 1:
+                    definitions[0].instance.fields.extend(_get_fields(parent_schema[0].instance))
+        ## Set fields to the modified list without a 'name' field
+        definitions[0].instance.fields = instance_fields
+
+        result = root_schema_has_name(definitions[0].instance, definitions[0], context.get_definitions_by_name("Schema")[0].instance)
+        index = result.get_messages_as_string().find("must have a field named 'name'") # this is the message from line 61 of root_schema_has_name
+        if index != -1:
+            # Name message located
+            self.assertFalse(result.is_success())
+        else:
+            # Name message missing
+            self.assertFalse(True,"Error handling has been modified. Test FAILED.")
+        context.remove_definitions(definitions)
 
 
     #  This test starts with a normal properly formed schema
     #  It then adds a second schema to the context with a name-collision
     #  It then calls root_schema_has_name which will find a non-unique definition and trigger a LanguageError in root_schema_has_name::_get_fields
     def test_root_schema_has_name(self):
-        try:
+        with self.assertRaises(LanguageError):
+
             context = LanguageContext()
             definitions = context.parse_and_load(root_schema_with_extends)
             context.parse_and_load(schema_root_with_different_package)
 
             result = root_schema_has_name(definitions[0].instance, definitions[0], context.get_definitions_by_name("Schema")[0].instance)
-            self.assertFalse(result.is_success())
             context.remove_definitions(definitions)
-        except AttributeError as ae:
-            self.assertFalse(True)
-        except ParserError as pe:
-            self.assertFalse(True)
-        except LanguageError as le:
-            self.assertFalse(False)
-        except:
-            self.assertFalse(True)
-
 
     #  This test should trigger a LanguageError exception from the parse_and_load call
-    #  So the only pass here is the self.assertFalse(False) in the LanguageError catch block
+    #  So the only pass here is throwing a LanguageError
     def test_root_schema_has_name_language_error1(self):
+        with self.assertRaises(LanguageError):
 
-        context = LanguageContext()
-        result = None
-        try:
+            context = LanguageContext()
             definitions = context.parse_and_load(root_schema_without_name_language_error1)
             result = root_schema_has_name(definitions[0].instance, definitions[0], context.get_definitions_by_name("Schema")[0].instance)
-            self.assertFalse(True)
             context.remove_definitions(definitions)
-        except ParserError as pe:
-            self.assertFalse(True)
-        except LanguageError as le:
-            self.assertFalse(False)
-        except:
-            self.assertFalse(True)
 
 
     #  This test should trigger a LanguageError exception from the parse_and_load call
-    #  So the only pass here is the self.assertFalse(False) in the LanguageError catch block
+    #  So the only pass here is throwing a LanguageError
     def test_root_schema_has_name_language_error2(self):
-        context = LanguageContext()
-        result = None
-        try:
+        with self.assertRaises(LanguageError):
+
+            context = LanguageContext()
             definitions = context.parse_and_load(root_schema_without_name_language_error2)
             result = root_schema_has_name(definitions[0].instance, definitions[0], context.get_definitions_by_name("Schema")[0].instance)
-            self.assertFalse(True)
             context.remove_definitions(definitions)
-        except ParserError as pe:
-            self.assertFalse(True)
-        except LanguageError as le:
-            self.assertFalse(False)
-        except:
-            self.assertFalse(True)
 
 
     #  This test should trigger a ParserError exception from the parse_and_load call
-    #  So the only pass here is the self.assertFalse(False) in the ParserError catch block
+    #  So the only pass here is throwing a ParserError
     def test_root_schema_has_name_parser_error3(self):
-        context = LanguageContext()
-        result = None
-        try:
+        with self.assertRaises(ParserError):
+
+            context = LanguageContext()
             definitions = context.parse_and_load(root_schema_without_name_parser_error3)
             result = root_schema_has_name(definitions[0].instance, definitions[0], context.get_definitions_by_name("Schema")[0].instance)
-            self.assertFalse(True)
             context.remove_definitions(definitions)
-        except ParserError as pe:
-            self.assertFalse(False)
-        except LanguageError as le:
-            self.assertFalse(True)
-        except:
-            self.assertFalse(True)
 
 
     #  This test should trigger a ParserError exception from the parse_and_load call
     #  So the only pass here is the self.assertFalse(False) in the ParserError catch block
     def test_root_schema_has_name_parser_error4(self):
-        context = LanguageContext()
-        result = None
-        try:
+        with self.assertRaises(ParserError):
+
+            context = LanguageContext()
             definitions = context.parse_and_load(root_schema_without_name_parser_error4)
             result = root_schema_has_name(definitions[0].instance, definitions[0], context.get_definitions_by_name("Schema")[0].instance)
-            self.assertFalse(True)
             context.remove_definitions(definitions)
-        except ParserError as pe:
-            self.assertFalse(False)
-        except LanguageError as le:
-            self.assertFalse(True)
-        except:
-            self.assertFalse(True)
 
 root_schema_with_name = """
 schema:
