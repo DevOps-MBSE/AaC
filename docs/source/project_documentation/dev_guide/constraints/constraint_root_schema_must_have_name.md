@@ -49,7 +49,7 @@ In this example, the schema `name` field is missing, triggering a `ParserError` 
     :lines: 166-170
 ```
 
-In this example, the we use two schemas to create a non-unique definition for `AacType` , triggering a `LanguageError` in `root_schema_must_have_name`.
+In this example, we use two schemas to create a non-unique definition for `AacType` , triggering a `LanguageError` in `root_schema_must_have_name`.
 ```{eval-rst}
 .. literalinclude:: ../../../../../python/tests/test_aac/plugins/root_schema_must_have_name/test_root_schema_must_have_name.py
     :language: yaml
