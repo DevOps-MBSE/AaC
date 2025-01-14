@@ -18,3 +18,5 @@ In this example, a `name` field has been added, allowing it to pass the constrai
     :lines: 37-44
     :emphasize-lines: 5-6
 ```
+
+> ** NOTE ** _The `Unknown Location` and `No file to reference` are valid location returns for the error situations encountered in this constraint._
