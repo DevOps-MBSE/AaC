@@ -24,15 +24,21 @@ def _get_fields(schema) -> list[str]:
     fields: list[str] = []
     for field in schema.fields:
         fields.append(field.name)
+    print("0")
     if schema.extends:
+        print("1")
         for ext in schema.extends:
+            print("2")
             parent_schema = context.get_definitions_by_name(ext.name)
             if len(parent_schema) == 1:
+                print("3")
                 fields.extend(_get_fields(parent_schema[0].instance))
             elif len(parent_schema) > 1:
+                print(">>>>>>>>>>>>4<<<<<<<<<<<<<<<")
                 raise LanguageError(
                     f"Unable to identify unique definition for {ext.name}:  found {parent_schema} ", "Unknown location"
                 )
+    print("5")
     return fields
 
 
@@ -40,7 +46,7 @@ def root_schema_has_name(
     instance: Any, definition: Definition, defining_schema
 ) -> ExecutionResult:
     """Business logic for the Root schema has name constraint."""
-
+    print(definition)
     status = ExecutionStatus.SUCCESS
     messages: list[ExecutionMessage] = []
 
