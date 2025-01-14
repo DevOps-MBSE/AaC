@@ -29,6 +29,8 @@ After the Python workspace has been opened, select the VSCode debug icon in the 
 
 ## Debugging the AaC VSCode Project
 
+> **NOTE**: _This portion of guidance is currently no longer applicable as we have paused support for the VSCode Extension at this time._
+
 The AaC Python VSCode Extension project can be run in debug mode via its pre-configured VSCode project in the `.vscode/vscode_extension.code-workspace` file. Open the VSCode extension project in VSCode by opening the VSCode command prompt via the `F1` button, or `function + F1` (on MacOS), and then typing 'open' or 'open workspace' to see the `File: Open Workspace from File...`  command option.
 
 ![File: Open Workspace from File... option](../../images/debugging/command_workspace.png)

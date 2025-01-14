@@ -7,6 +7,7 @@ import yaml
 from aac.in_out.files.aac_file import AaCFile
 from aac.context.lexeme import Lexeme
 from aac.context.util import get_python_module_name, get_python_class_name, get_fully_qualified_name
+from aac.context.language_error import LanguageError
 
 
 @attrs(hash=False, eq=False)
@@ -82,7 +83,10 @@ class Definition:
         if self.is_import():
             return ""
         # this is just the package and name joined with a dot
-        return get_fully_qualified_name(self.package, self.name)
+        try:
+            return get_fully_qualified_name(self.package, self.name)
+        except LanguageError as e:
+            raise LanguageError(e.message, "No file to reference" if not self.source or self.source.uri == "<string>" else self.source.uri)
 
     def to_yaml(self) -> str:
         """Return a yaml string based on the current state of the definition including extensions."""

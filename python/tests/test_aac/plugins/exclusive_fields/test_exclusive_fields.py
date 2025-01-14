@@ -21,6 +21,7 @@ class TestExclusiveFields(TestCase):
             bad = context.parse_and_load(bad_def)
             result = mutually_exclusive_fields(bad[0].instance, one_definition[0], None, ["alpha", "beta", "gamma"])
             self.assertFalse(result.is_success(), msg=f"Expected failure for {bad[0].name}")
+            self.assertEqual(result.messages[0].source, "No file to reference")
             context.remove_definitions(bad)
 
         context.remove_definitions(one_definition)

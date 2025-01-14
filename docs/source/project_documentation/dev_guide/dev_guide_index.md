@@ -2,7 +2,7 @@
 
 ## VSCode
 
-You can open the AaC folder in your VSCode editor and start working across the entire repository.  Historically this repository has housed various sub projects, but have since refactored into a multi-repo structure with only the main AaC capability in the main repository.  As such we'd previously setup [VSCode Workspaces](https://code.visualstudio.com/docs/editor/workspaces) to separate projects and experiences.  We opted to keep the Python project in place during the refactor. 
+You can open the AaC folder in your VSCode editor and start working across the entire repository.  Historically this repository has housed various sub projects, but have since refactored into a multi-repo structure with only the main AaC capability in the main repository.  As such we'd previously setup [VSCode Workspaces](https://code.visualstudio.com/docs/editor/workspaces) to separate projects and experiences.  We opted to keep the Python project in place during the refactor.
 
 When you first open the project in VSCode, you will see the entirety of it, however, if you open the Python workspace then the VSCode instance will reload and now the visible files, IDE configuration, and the configured tasks will now pertain only to the Python package. We'll maintain this flexibility for now in case we discover a need for another project within the repository.
 
@@ -164,12 +164,6 @@ flake8 ./path/to/file.py
 
 Additionally, to get an HTML code coverage report, update the `tox` command to include the following flags: `tox -- --coverage-report html`
 
-#### VSCode Unit Test Support for Python
-
-The Python plugin for VSCode supports the `unittest` Python library, and not the `nose2` framework that we use. The impact is fairly minimal, but Python unit tests using the `nose2` parameterized test feature will not run correctly from within the VSCode IDE since it fails to recognize the `nose2` parameterized tests as parameterized tests, which causes them to fail.
-
-To get around this, you can run all the tests from the terminal using the above `tox` commands.
-
 ## AaC Profiling Developer Guide
 
 ### Profiling in AaC
@@ -178,7 +172,7 @@ The type of profiling that is being described for the AaC Python Package is betw
 is a set of statistics that help to determine which portions of code are being run often and for how long. This can help to identify the flow of execution. Using the output data from these profilers can be imported into `pstats`
 for reporting.
 
-Documentation on the Setup and Justifications between the `cProfile` and `Profile` can be located here -> [Profiling in AaC Setup](profiling)
+Documentation on the Setup and Justifications between the `cProfile` and `Profile` can be located here at [Profiling in AaC Setup](profiling)
 
 ## Development of Plugins
 
