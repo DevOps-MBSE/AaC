@@ -15,7 +15,7 @@ from aac.plugins.check.check_aac_impl import plugin_name, check
 
 class TestCheckAaC(TestCase):
     def test_check(self):
-        # Let's just test via CLIf for now
+        # Let's just test via CLI for now
         pass
 
     def run_check_cli_command_with_args(self, args: list[str]) -> Tuple[int, str]:
