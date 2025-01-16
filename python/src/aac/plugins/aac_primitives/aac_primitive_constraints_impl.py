@@ -11,6 +11,7 @@ from aac.execute.aac_execution_result import (
 from aac.in_out.files.aac_file import AaCFile
 from aac.context.source_location import SourceLocation
 from aac.context.language_context import LanguageContext
+from aac.context.language_error import LanguageError
 
 from os import linesep
 from datetime import datetime
@@ -344,7 +345,10 @@ def check_typeref(
         messages.append(error_msg)
     else:
         value_root_key = value_defining_type[0].get_root_key()
-        root_type_definition = context.get_defining_schema_for_root(value_root_key)
+        try:
+            root_type_definition = context.get_defining_schema_for_root(value_root_key)
+        except LanguageError as e:
+            raise LanguageError(e.message, value_defining_type[0].source.uri)
         if root_type_definition not in definitions_of_type:
             status = ExecutionStatus.CONSTRAINT_FAILURE
             error_msg = ExecutionMessage(

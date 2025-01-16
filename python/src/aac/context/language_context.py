@@ -149,7 +149,7 @@ class LanguageContext(object):
             if definition.get_root_key() == "schema":
                 if definition.instance.root == root_key:
                     return definition
-        raise LanguageError(message=f"Could not find defining schema for root key: {root_key}", location="None")
+        raise LanguageError(message=f"Could not find defining schema for root key: {root_key}", location="No file to reference")
 
     def register_plugin_runner(self, runner: PluginRunner) -> None:
         """Register a plugin runner."""
@@ -172,7 +172,7 @@ class LanguageContext(object):
         if len(primitives) != 1:
             raise LanguageError(
                 message=f"Could not find unique primitive type: {primitive_name} - discovered {[primitive.name for primitive in primitives]}",
-                location="None"
+                location="No file to reference"
             )
         return primitives[0].instance.python_type
 
@@ -204,7 +204,7 @@ class LanguageContext(object):
             f"{package}.{name}"
             not in self.context_instance.fully_qualified_name_to_definition
         ):
-            raise LanguageError(f"Could not find definition for {package}.{name}", "None")
+            raise LanguageError(f"Could not find definition for {package}.{name}", "No file to reference")
         # now get all the definitions that extend from the definition
         definition = self.context_instance.fully_qualified_name_to_definition[
             f"{package}.{name}"
