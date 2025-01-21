@@ -331,7 +331,10 @@ def check_typeref(
     package_name = ".".join(parts[:-1])
     type_name = parts[-1]
 
-    definitions_of_type = context.get_definitions_of_type(package_name, type_name)
+    try:
+        definitions_of_type = context.get_definitions_of_type(package_name, type_name)
+    except LanguageError as e:
+        raise LanguageError(e.message, source.uri)
     value_defining_type = context.get_definitions_by_name(clean_value)
 
     if len(value_defining_type) != 1:
