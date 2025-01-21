@@ -30,7 +30,7 @@ class TestAaCPrimitiveConstraints(TestCase):
         result = check_bool("Not_A_Bool", "", None, None)
         self.assertEqual(result.status_code, ExecutionStatus.CONSTRAINT_FAILURE, "Check bool should return a constraint failure for a non-bool value of 'Not_A_Bool'")
         self.assertEqual(result.messages[0].source, "No file to reference")
-        
+
     def test_check_date(self):
         # Test valid date
         result = check_date("2022-01-01", "", None, None)
@@ -188,6 +188,8 @@ class TestAaCPrimitiveConstraints(TestCase):
         self.assertEqual(result.messages[0].source, "No file to reference")
 
         # Test invalid typeref target type
-        with self.assertRaises(LanguageError, msg=f"{plugin_name}: Check typeref should return a constraint failure for a invalid valid typeref type 'not.a.valid.type'"):
+        try:
             result = check_typeref("Schema", "typeref(not.a.valid.type)", None, None)
-
+        except LanguageError as e:
+            self.assertEqual(e.message,"Could not find definition for not.a.valid.type")
+            self.assertEqual(e.location, "No file to reference")
