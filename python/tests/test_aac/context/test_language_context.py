@@ -198,26 +198,19 @@ class TestLanguageContext(TestCase):
         #     context = LanguageContext()
         #     definitions = context.get_defining_schema_for_root("Schema")
         context = LanguageContext()
-        fail = False
-        try:
+        with self.assertRaises(LanguageError) as e:
             definitions = context.get_defining_schema_for_root("not_valid_root")
-        except LanguageError as e:
-            fail = True
-            self.assertEqual(e.message, "Could not find defining schema for root key: not_valid_root")
-            self.assertEqual(e.location, "No file to reference")
-        self.assertTrue(fail)
+        self.assertEqual(e.exception.message, "Could not find defining schema for root key: not_valid_root")
+        self.assertEqual(e.exception.location, "No file to reference")
+
 
 
     def test_get_python_type_from_primitive_fail(self):
         context = LanguageContext()
-        fail = False
-        try:
+        with self.assertRaises(LanguageError) as e:
             context.get_python_type_from_primitive("not_a_type")
-        except LanguageError as e:
-            fail = True
-            self.assertEqual(e.message, "Could not find unique primitive type: not_a_type - discovered []")
-            self.assertEqual(e.location, "No file to reference")
-        self.assertTrue(fail)
+        self.assertEqual(e.exception.message, "Could not find unique primitive type: not_a_type - discovered []")
+        self.assertEqual(e.exception.location, "No file to reference")
 
     def test_is_extension_of_fail(self):
         context = LanguageContext()
@@ -226,14 +219,10 @@ class TestLanguageContext(TestCase):
 
     def test_get_definitions_of_type_fail(self):
         context = LanguageContext()
-        fail = False
-        try:
+        with self.assertRaises(LanguageError) as e:
             context.get_definitions_of_type("not", "a_type")
-        except LanguageError as e:
-            fail = True
-            self.assertEqual(e.message, "Could not find definition for not.a_type")
-            self.assertEqual(e.location, "No file to reference")
-        self.assertTrue(fail)
+        self.assertEqual(e.exception.message, "Could not find definition for not.a_type")
+        self.assertEqual(e.exception.location, "No file to reference")
 
     def test_get_values_by_field_chain(self):
         context = LanguageContext()

@@ -188,8 +188,7 @@ class TestAaCPrimitiveConstraints(TestCase):
         self.assertEqual(result.messages[0].source, "No file to reference")
 
         # Test invalid typeref target type
-        try:
+        with self.assertRaises(LanguageError) as e:
             result = check_typeref("Schema", "typeref(not.a.valid.type)", None, None)
-        except LanguageError as e:
-            self.assertEqual(e.message,"Could not find definition for not.a.valid.type")
-            self.assertEqual(e.location, "No file to reference")
+        self.assertEqual(e.exception.message,"Could not find definition for not.a.valid.type")
+        self.assertEqual(e.exception.location, "No file to reference")
