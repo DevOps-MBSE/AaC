@@ -194,16 +194,11 @@ class TestLanguageContext(TestCase):
             definitions = context.get_definitions_by_name(123)
 
     def test_get_defining_schema_for_root_fail(self):
-        # with self.assertRaises(LanguageError):
-        #     context = LanguageContext()
-        #     definitions = context.get_defining_schema_for_root("Schema")
         context = LanguageContext()
         with self.assertRaises(LanguageError) as e:
             definitions = context.get_defining_schema_for_root("not_valid_root")
         self.assertEqual(e.exception.message, "Could not find defining schema for root key: not_valid_root")
         self.assertEqual(e.exception.location, "No file to reference")
-
-
 
     def test_get_python_type_from_primitive_fail(self):
         context = LanguageContext()
