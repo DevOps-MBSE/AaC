@@ -144,7 +144,15 @@ class LanguageContext(object):
         return result
 
     def get_defining_schema_for_root(self, root_key: str) -> Definition:
-        """Get the defining schema for a given root key."""
+        """
+        Get the defining schema for a given root key.
+
+        Args:
+            root_key (str): The root key for the schema definition.
+
+        Returns:
+            The definition of the root schema.
+        """
         for definition in self.get_definitions():
             if definition.get_root_key() == "schema":
                 if definition.instance.root == root_key:
@@ -167,7 +175,15 @@ class LanguageContext(object):
         return self.get_definitions_by_root("primitive")
 
     def get_python_type_from_primitive(self, primitive_name: str) -> str:
-        """Get the python type from a primitive name."""
+        """
+        Get the python type from a primitive name.
+
+        Args:
+            primitive_name (str): name of the primitive type.
+
+        Returns:
+            The python name of the primitive type.
+        """
         primitives = self.get_definitions_by_name(primitive_name)
         if len(primitives) != 1:
             raise LanguageError(
@@ -197,7 +213,15 @@ class LanguageContext(object):
         return result
 
     def get_definitions_of_type(self, package: str, name: str) -> list[Definition]:
-        """Search the language context to find definitions that match a given package and name."""
+        """
+        Search the language context to find definitions that match a given package and name.
+
+        Args:
+            package (str): The package name of the type.
+            name (str): The name of the type.
+
+        Returns: A list of definitions of the specified type.
+        """
         result = []
         # first make sure we can find the definition that defines the type
         if (
