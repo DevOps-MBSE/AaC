@@ -35,16 +35,31 @@ class LanguageContext(object):
         return cls.context_instance
 
     def get_aac_core_file_path(self) -> str:
-        """Function to return the AaC language file path."""
+        """
+        Function to return the AaC language file path.
+
+        Returns:
+            The filepath to the core AaC definitions file as a string.
+        """
         return AAC_LANG_FILE_PATH
 
     def get_aac_core_as_yaml(self) -> str:
-        """Function to return the AaC language as a yaml string."""
+        """
+        Function to return the AaC language as a yaml string.
+
+        Returns:
+            The core AaC definitions file as a string in YAML format.
+        """
         with open(AAC_LANG_FILE_PATH) as aac_file:
             return aac_file.read()
 
     def get_aac_core_definitions(self) -> list[Definition]:
-        """Function to return the definitions for the AaC language."""
+        """
+        Function to return the definitions for the AaC language.
+
+        Returns:
+            A list of definitions in the core AaC definitions file.
+        """
         return self.parse_and_load(AAC_LANG_FILE_PATH)
 
     def _get_aac_generated_class(self, name: str) -> Type:
@@ -71,7 +86,19 @@ class LanguageContext(object):
         return isinstance(obj, self._get_aac_generated_class(name))
 
     def create_aac_object(self, aac_type_name: str, attributes: dict) -> Any:
-        """Function to create a python instance of an AaC class and attributes."""
+        """
+        Function to create a python instance of an AaC class and attributes.
+
+        Args:
+            aac_type_name (str): The name of the AaC class.
+            attributes (dict): A dictionary of attributes for the AaC class.
+
+        Returns:
+            An instance of the AaC class.
+
+        Raises:
+            LanguageError: When a unique definition for the AaC type is not found, an error message detailing the issue is generated.
+        """
         definitions = self.get_definitions_by_name(aac_type_name)
         if len(definitions) != 1:
             raise LanguageError(
@@ -88,7 +115,19 @@ class LanguageContext(object):
         return result
 
     def create_aac_enum(self, aac_enum_name: str, value: str) -> Any:
-        """Function to create a python instance of an AaC enum class and value."""
+        """
+        Function to create a python instance of an AaC enum class and value.
+
+        Args:
+            aac_enum_name (str): The name of the AaC Enum class.
+            value (str): The value for the enum.
+
+        Returns:
+            An instance of the Enum class set to the specified value.
+
+        Raises:
+            LanguageError: When a unique definition for the AaC Enum is not found, an error message detailing the issue is generated.
+        """
         definitions = self.get_definitions_by_name(aac_enum_name)
         if len(definitions) != 1:
             raise LanguageError(
@@ -105,14 +144,27 @@ class LanguageContext(object):
             )
 
     def parse_and_load(self, arg: str) -> list[Definition]:
-        """Convenience function that parses a file or string and loads the definitions into the context."""
+        """
+        Convenience function that parses a file or string and loads the definitions into the context.
+
+        Args:
+            arg (str): An AaC definition file.  Can be a string in YAML format or a filepath.
+
+        Returns:
+            A list of definition objects which have been loaded into the Language Context.
+        """
         parsed_definitions = parse(arg)
         parser = DefinitionParser()
 
         return parser.load_definitions(self, parsed_definitions)
 
     def remove_definitions(self, definitions: list[Definition]) -> None:
-        """Remove the given definitions from the context."""
+        """
+        Remove the given definitions from the context.
+
+        Args:
+            definitions (list[Definition]): A list of Definitions to be removed from the Language Context.
+        """
         for definition in definitions:
             definition.source.is_loaded_in_context = False
             self.context_instance.definitions.remove(definition)
@@ -121,11 +173,24 @@ class LanguageContext(object):
             ]
 
     def get_definitions(self) -> list[Definition]:
-        """Get all the definitions."""
+        """
+        Get all the definitions.
+
+        Returns:
+            A list of all Definitions currently loaded into the Language Context.
+        """
         return list(self.context_instance.fully_qualified_name_to_definition.values())
 
     def get_definitions_by_name(self, name: str) -> list[Definition]:
-        """Get all the definitions with a given name."""
+        """
+        Get all the definitions with a given name.
+
+        Args:
+            name (str): The name of the definition(s).
+
+        Returns:
+            A list of definitions with the given name.
+        """
         result = []
         search_name = name
         if "." not in name:
@@ -136,7 +201,15 @@ class LanguageContext(object):
         return result
 
     def get_definitions_by_root(self, root_key: str) -> list[Definition]:
-        """Get all the definitions with a given root key."""
+        """
+        Get all the definitions with a given root key.
+
+        Args:
+            root_key (str): A root key to search for.
+
+        Returns:
+            A list of definitions with the given root.
+        """
         result = []
         for definition in self.get_definitions():
             if definition.get_root_key() == root_key:
@@ -152,6 +225,9 @@ class LanguageContext(object):
 
         Returns:
             The definition of the root schema.
+
+        Raises:
+            LanguageError: When no definition is found for the defining schema, an error message detailing the issue is generated.
         """
         for definition in self.get_definitions():
             if definition.get_root_key() == "schema":
@@ -160,18 +236,33 @@ class LanguageContext(object):
         raise LanguageError(message=f"Could not find defining schema for root key: {root_key}", location="No file to reference")
 
     def register_plugin_runner(self, runner: PluginRunner) -> None:
-        """Register a plugin runner."""
+        """
+        Register a plugin runner.
+
+        Args:
+            runner (PluginRunner): A plugin runner to be registered.
+        """
         if runner.get_plugin_name() not in self.context_instance.plugin_runners:
             self.context_instance.plugin_runners[runner.get_plugin_name()] = runner
         else:
             print(f"Plugin {runner.get_plugin_name()} already registered.")
 
     def get_plugin_runners(self) -> list[PluginRunner]:
-        """Get all the plugin runners."""
+        """
+        Get all the plugin runners.
+
+        Returns:
+            A list of all registered plugin runners.
+        """
         return list(self.context_instance.plugin_runners.values())
 
     def get_primitives(self) -> list[Definition]:
-        """Get all the primitive definitions."""
+        """
+        Get all the primitive definitions.
+
+        Returns:
+            A list of all primitive definitions.
+        """
         return self.get_definitions_by_root("primitive")
 
     def get_python_type_from_primitive(self, primitive_name: str) -> str:
@@ -183,6 +274,9 @@ class LanguageContext(object):
 
         Returns:
             The python name of the primitive type.
+
+        Raises:
+            LanguageError: When no primitive type is found with the given name, an error message detailing the issue is generated.
         """
         primitives = self.get_definitions_by_name(primitive_name)
         if len(primitives) != 1:
@@ -193,7 +287,17 @@ class LanguageContext(object):
         return primitives[0].instance.python_type
 
     def is_extension_of(self, check_me: Definition, package: str, name: str) -> bool:
-        """Check to see if a given definition extends from a given package and name."""
+        """
+        Check to see if a given definition extends from a given package and name.
+
+        Args:
+            check_me (Definition): The definition to be checked if it is an extension.
+            package (str): The package name of the definitions to be checked against.
+            name (str): The name of the definitions to be checked against.
+
+        Returns:
+            A boolean value which equals True if the given definition is an extension, and equals False if it is not.
+        """
         definitions_of_type = self.get_definitions_of_type(package, name)
         return check_me in definitions_of_type
 
@@ -220,7 +324,11 @@ class LanguageContext(object):
             package (str): The package name of the type.
             name (str): The name of the type.
 
-        Returns: A list of definitions of the specified type.
+        Returns:
+            A list of definitions of the specified type.
+
+        Raises:
+            LanguageError: When no definition is found with the given name, an error message detailing the issue is generated.
         """
         result = []
         # first make sure we can find the definition that defines the type
@@ -273,7 +381,15 @@ class LanguageContext(object):
         return values_found
 
     def get_values_by_field_chain(self, search_term: str) -> list:
-        """Find values from the language context using a dot notation field chain."""
+        """
+        Find values from the language context using a dot notation field chain.
+
+        Args:
+            search_term (str): A dot notation field chain. (i.e. root.definition.field)
+
+        Returns:
+            A list of values from the specified fields.
+        """
         result: list = []
         root_key = search_term.split(".")[0]
         candidate_values = self.get_definitions_by_root(root_key)
