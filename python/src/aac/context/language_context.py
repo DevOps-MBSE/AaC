@@ -241,11 +241,16 @@ class LanguageContext(object):
         Raises:
             LanguageError: When no definition is found for the defining schema, an error message detailing the issue is generated.
         """
+        current_definition: Definition = None
         for definition in self.get_definitions():
+            current_definition = definition
             if definition.get_root_key() == "schema":
                 if definition.instance.root == root_key:
                     return definition
-        raise LanguageError(message=f"Could not find defining schema for root key: {root_key}", location="No file to reference")
+        raise LanguageError(
+            message=f"Could not find defining schema for root key: {root_key}",
+            location="No file to reference" if not current_definition.source or current_definition.source.uri == "<string>" else current_definition.source.uri
+        )
 
     def register_plugin_runner(self, runner: PluginRunner) -> None:
         """
@@ -291,9 +296,14 @@ class LanguageContext(object):
             LanguageError: When no primitive type is found with the given name, an error message detailing the issue is generated.
         """
         primitives = self.get_definitions_by_name(primitive_name)
-        if len(primitives) != 1:
+        if len(primitives) > 1:
             raise LanguageError(
                 message=f"Could not find unique primitive type: {primitive_name} - discovered {[primitive.name for primitive in primitives]}",
+                location="No file to reference" if not primitives[0].source or primitives[0].source.uri == "<string>" else primitives[0].source.uri
+            )
+        if len(primitives) < 1:
+            raise LanguageError(
+                message=f"Could not find primitive type: {primitive_name}",
                 location="No file to reference"
             )
         return primitives[0].instance.python_type

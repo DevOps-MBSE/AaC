@@ -204,7 +204,7 @@ class TestLanguageContext(TestCase):
         context = LanguageContext()
         with self.assertRaises(LanguageError) as e:
             context.get_python_type_from_primitive("not_a_type")
-        self.assertEqual(e.exception.message, "Could not find unique primitive type: not_a_type - discovered []")
+        self.assertEqual(e.exception.message, "Could not find primitive type: not_a_type")
         self.assertEqual(e.exception.location, "No file to reference")
 
     def test_is_extension_of_fail(self):
