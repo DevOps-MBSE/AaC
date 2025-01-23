@@ -45,7 +45,7 @@ class LanguageContext(object):
 
     def get_aac_core_as_yaml(self) -> str:
         """
-        Function to return the AaC language as a yaml string.
+        Function to return the AaC language as a YAML string.
 
         Returns:
             The core AaC definitions file as a string in YAML format.
@@ -81,20 +81,29 @@ class LanguageContext(object):
 
         return aac_class
 
-    def is_aac_instance(self, obj: Any, name: str):
-        """Function to determine if an object is an instance of an AaC class."""
+    def is_aac_instance(self, obj: Any, name: str) -> bool:
+        """
+        Function to determine if an object is an instance of an AaC class.
+
+        Args:
+            obj (Any): Object to check.
+        Function to create a Python object representation of an AaC class and its attributes.
+
+        Returns:
+            A boolean which equals true if the object is an instance of the specified class.
+        """
         return isinstance(obj, self._get_aac_generated_class(name))
 
     def create_aac_object(self, aac_type_name: str, attributes: dict) -> Any:
         """
-        Function to create a python instance of an AaC class and attributes.
+        Function to create a Python object representation of an AaC class and its attributes.
 
         Args:
             aac_type_name (str): The name of the AaC class.
             attributes (dict): A dictionary of attributes for the AaC class.
 
         Returns:
-            An instance of the AaC class.
+            A Python object representing the AaC class.
 
         Raises:
             LanguageError: When a unique definition for the AaC type is not found, an error message detailing the issue is generated.
@@ -116,14 +125,14 @@ class LanguageContext(object):
 
     def create_aac_enum(self, aac_enum_name: str, value: str) -> Any:
         """
-        Function to create a python instance of an AaC enum class and value.
+        Function to create a Python enum for an AaC enum class and value.
 
         Args:
             aac_enum_name (str): The name of the AaC Enum class.
             value (str): The value for the enum.
 
         Returns:
-            An instance of the Enum class set to the specified value.
+            A Python enum set to the specified value.
 
         Raises:
             LanguageError: When a unique definition for the AaC Enum is not found, an error message detailing the issue is generated.
@@ -208,7 +217,7 @@ class LanguageContext(object):
             root_key (str): A root key to search for.
 
         Returns:
-            A list of definitions with the given root.
+           A list of definitions with the given root key.
         """
         result = []
         for definition in self.get_definitions():
@@ -267,13 +276,13 @@ class LanguageContext(object):
 
     def get_python_type_from_primitive(self, primitive_name: str) -> str:
         """
-        Get the python type from a primitive name.
+        Get the Python type from a primitive name.
 
         Args:
             primitive_name (str): name of the primitive type.
 
         Returns:
-            The python name of the primitive type.
+            The Python type equivalent to the declared primitive type.
 
         Raises:
             LanguageError: When no primitive type is found with the given name, an error message detailing the issue is generated.
@@ -325,10 +334,10 @@ class LanguageContext(object):
             name (str): The name of the type.
 
         Returns:
-            A list of definitions of the specified type.
+            A list of definitions of the specified type within the specified package.
 
         Raises:
-            LanguageError: When no definition is found with the given name, an error message detailing the issue is generated.
+            LanguageError: When no definition is found with the given name within the given package, an error message detailing the issue is generated.
         """
         result = []
         # first make sure we can find the definition that defines the type

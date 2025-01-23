@@ -334,7 +334,7 @@ def check_typeref(
     try:
         definitions_of_type = context.get_definitions_of_type(package_name, type_name)
     except LanguageError as e:
-        raise LanguageError(e.message, source.uri)
+        raise LanguageError(e.message, "No file to reference" if not source or source.uri == "<string>" else source.uri)
     value_defining_type = context.get_definitions_by_name(clean_value)
 
     if len(value_defining_type) != 1:
