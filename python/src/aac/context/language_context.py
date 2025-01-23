@@ -141,10 +141,15 @@ class LanguageContext(object):
             LanguageError: When a unique definition for the AaC Enum is not found, an error message detailing the issue is generated.
         """
         definitions = self.get_definitions_by_name(aac_enum_name)
-        if len(definitions) != 1:
+        if len(definitions) > 1:
             raise LanguageError(
                 f"Unable to identify unique definition for '{aac_enum_name}'.  Found {[definition.name for definition in definitions]}",
                 "No file to reference" if not definitions[0].source or definitions[0].source.uri == "<string>" else definitions[0].source.uri
+            )
+        if len(definitions) < 1:
+            raise LanguageError(
+                f"Unable to identify definition for '{aac_enum_name}'",
+                "No file to reference"
             )
         aac_class = self._get_aac_generated_class(aac_enum_name)
         try:
