@@ -86,7 +86,7 @@ class Definition:
         try:
             return get_fully_qualified_name(self.package, self.name)
         except LanguageError as e:
-            raise LanguageError(e.message, "No file to reference" if not self.source or self.source.uri == "<string>" else self.source.uri)
+            raise LanguageError(e.message, self.source.uri)
 
     def to_yaml(self) -> str:
         """Return a yaml string based on the current state of the definition including extensions."""

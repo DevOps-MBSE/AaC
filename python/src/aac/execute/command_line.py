@@ -23,11 +23,12 @@ from aac.execute.aac_execution_result import (
     OperationCancelled,
     MessageLevel,
 )
+from aac.context.definition import Definition
 from aac.context.language_error import LanguageError
 from aac.context.language_context import LanguageContext
 from aac.in_out.parser._parser_error import ParserError
 
-from typing import Callable
+from typing import Callable, Any
 
 
 @group(context_settings=dict(help_option_names=["-h", "--help"]))
@@ -138,6 +139,34 @@ def to_click_command(plugin_name: str, command: AacCommand) -> Command:
     )
 
 
+def get_command_arguments(plugin_command: Any, definition: Definition):
+    """
+    Function to get a list of arguments for a plugin command.
+
+    Args:
+        plugin_command (Any): The plugin command with arguments.
+        definition (Definition): The plugin definition.
+
+    Returns:
+        arguments (list[AacCommandArgument]): A list of command arguments.
+    """
+    context = LanguageContext()
+    arguments: list[AacCommandArgument] = []
+    for input in plugin_command.input:
+        try:
+            arguments.append(
+                AacCommandArgument(
+                    input.name,
+                    input.description,
+                    context.get_python_type_from_primitive(input.type),
+                    input.default,
+                )
+            )
+        except LanguageError as e:
+            raise LanguageError(e.message, definition.source.uri)
+    return arguments
+
+
 def initialize_cli():
     """Initialize the CLI."""
     try:
@@ -156,16 +185,8 @@ def initialize_cli():
         for runner in context.get_plugin_runners():
             definition = runner.plugin_definition
             for plugin_command in definition.instance.commands:
-                arguments: list[AacCommandArgument] = []
-                for input in plugin_command.input:
-                    arguments.append(
-                        AacCommandArgument(
-                            input.name,
-                            input.description,
-                            context.get_python_type_from_primitive(input.type),
-                            input.default,
-                        )
-                    )
+                arguments: list[AacCommandArgument] = get_command_arguments(plugin_command, definition)
+
                 result.append(
                     AacCommand(
                         plugin_command.name,
