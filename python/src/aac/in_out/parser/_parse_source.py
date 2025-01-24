@@ -9,7 +9,6 @@ import logging
 
 from copy import deepcopy
 from os import path, linesep
-from typing import Optional
 from yaml import Mark, Token, StreamStartToken, StreamEndToken, DocumentStartToken
 
 from aac.context.constants import DEFINITION_FIELD_NAME, ROOT_KEY_IMPORT
