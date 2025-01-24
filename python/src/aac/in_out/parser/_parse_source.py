@@ -25,7 +25,7 @@ from aac.in_out.paths import sanitize_filesystem_path
 YAML_CACHE = get_cache()
 
 
-def parse(source: str, source_uri: Optional[str] = None) -> list[Definition]:
+def parse(source: str, source_uri: str = DEFAULT_SOURCE_URI) -> list[Definition]:
     """
     Parse the Architecture-as-Code (AaC) definition(s) from the provided source.
 
@@ -46,7 +46,7 @@ def parse(source: str, source_uri: Optional[str] = None) -> list[Definition]:
         if path.isfile(sanitized_source):
             is_file = True
 
-    return _parse_file(sanitized_source) if is_file else _parse_str(source_uri or DEFAULT_SOURCE_URI, source)
+    return _parse_file(sanitized_source) if is_file else _parse_str(source_uri, source)
 
 
 def _parse_file(arch_file: str) -> list[Definition]:

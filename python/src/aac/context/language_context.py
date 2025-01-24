@@ -67,7 +67,7 @@ class LanguageContext(object):
         if len(definitions) != 1:
             raise LanguageError(
                 f"_get_aac_generated_class unable to identify unique definition for name '{name}'.  Found: {[definition.name for definition in definitions]}",
-                "No file to reference" if not definitions[0].source or definitions[0].source.uri == "<string>" else definitions[0].source.uri
+                definitions[0].source.uri
             )
 
         aac_class = self.context_instance.fully_qualified_name_to_class[
@@ -76,7 +76,7 @@ class LanguageContext(object):
         if not aac_class:
             raise LanguageError(
                 f"_get_aac_generated_class unable to identify generated class for name '{name}' with fully_qualified_name '{definitions[0].get_fully_qualified_name()}'",
-                "No file to reference" if not definitions[0].source or definitions[0].source.uri == "<string>" else definitions[0].source.uri
+                definitions[0].source.uri
             )
 
         return aac_class
@@ -112,7 +112,7 @@ class LanguageContext(object):
         if len(definitions) != 1:
             raise LanguageError(
                 f"Unable to identify unique definition for '{aac_type_name}'.  Found {[definition.name for definition in definitions]}",
-                "No file to reference" if not definitions[0].source or definitions[0].source.uri == "<string>" else definitions[0].source.uri
+                definitions[0].source.uri
             )
         aac_class = self._get_aac_generated_class(aac_type_name)
         result = aac_class()
@@ -121,7 +121,7 @@ class LanguageContext(object):
             if attribute_name not in field_names:
                 raise LanguageError(
                     f"Found undefined field name '{attribute_name}'",
-                    "No file to reference" if not definitions[0].source or definitions[0].source.uri == "<string>" else definitions[0].source.uri
+                    definitions[0].source.uri
                 )
             setattr(result, attribute_name, attribute_value)
         return result
@@ -144,7 +144,7 @@ class LanguageContext(object):
         if len(definitions) > 1:
             raise LanguageError(
                 f"Unable to identify unique definition for '{aac_enum_name}'.  Found {[definition.name for definition in definitions]}",
-                "No file to reference" if not definitions[0].source or definitions[0].source.uri == "<string>" else definitions[0].source.uri
+                definitions[0].source.uri
             )
         if len(definitions) < 1:
             raise LanguageError(
@@ -157,7 +157,7 @@ class LanguageContext(object):
         except ValueError:
             raise LanguageError(
                 f"{value} is not a valid value for enum {aac_enum_name}",
-                "No file to reference" if not definitions[0].source or definitions[0].source.uri == "<string>" else definitions[0].source.uri
+                definitions[0].source.uri
             )
 
     def parse_and_load(self, arg: str) -> list[Definition]:
@@ -254,7 +254,7 @@ class LanguageContext(object):
                     return definition
         raise LanguageError(
             message=f"Could not find defining schema for root key: {root_key}",
-            location="No file to reference" if not current_definition.source or current_definition.source.uri == "<string>" else current_definition.source.uri
+            location=current_definition.source.uri
         )
 
     def register_plugin_runner(self, runner: PluginRunner) -> None:
@@ -304,7 +304,7 @@ class LanguageContext(object):
         if len(primitives) > 1:
             raise LanguageError(
                 message=f"Could not find unique primitive type: {primitive_name} - discovered {[primitive.name for primitive in primitives]}",
-                location="No file to reference" if not primitives[0].source or primitives[0].source.uri == "<string>" else primitives[0].source.uri
+                location=primitives[0].source.uri
             )
         if len(primitives) < 1:
             raise LanguageError(
