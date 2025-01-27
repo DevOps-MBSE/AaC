@@ -36,7 +36,7 @@ def no_extension_for_final(
                         ExecutionMessage(
                             f"Cannot resolve unique type for extension {ext.name}.  Found {ext_definition}",
                             MessageLevel.ERROR,
-                            "No file to reference" if not definition.source or definition.source.uri == "<string>" else definition.source.uri,
+                            definition.source.uri,
                             None,
                         )
                     )
@@ -51,7 +51,7 @@ def no_extension_for_final(
                             ExecutionMessage(
                                 f"{definition.name} cannot extend {ext.name} because it is final.",
                                 MessageLevel.ERROR,
-                                "No file to reference" if not ext_definition.source or ext_definition.source.uri == "<string>" else ext_definition.source.uri,
+                                ext_definition.source.uri,
                                 None,
                             )
                         )

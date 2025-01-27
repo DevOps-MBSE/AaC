@@ -210,8 +210,10 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult: 
                     constraint_results[context_constraint.name].append(result)
 
     for check_me in definitions_to_check:
-        defining_schema = context.get_defining_schema_for_root(check_me.get_root_key())
-        print("Calling check_schema_constraint from line 214")
+        try:
+            defining_schema = context.get_defining_schema_for_root(check_me.get_root_key())
+        except LanguageError as e:
+            raise LanguageError(e.message, check_me.source.uri)
         check_schema_constraint(check_me, check_me.instance, defining_schema.instance)
 
     # loop through all the constraint results and see if any of them failed
