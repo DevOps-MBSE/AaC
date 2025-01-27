@@ -23,6 +23,8 @@ plugin:
             - name: Simple Command Test
               given:
                 - A1 An AaC file containing schemas with no extra fields.
+                - A2 A2 A2 A2
+                A3 A3
               when:
                 - A2 The AaC check command is run on the schema.
               then:

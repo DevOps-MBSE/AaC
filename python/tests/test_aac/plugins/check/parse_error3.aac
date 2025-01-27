@@ -67,4 +67,3 @@ plugin:
                 - D2 The AaC check command is run on the schema.
               then:
                 - D3 The check commands provides the output 'All AaC constraint checks were successful.'
-
