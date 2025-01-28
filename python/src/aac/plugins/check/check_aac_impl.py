@@ -282,4 +282,3 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult: 
         )
 
     return ExecutionResult(plugin_name, "check", status, messages)
-
