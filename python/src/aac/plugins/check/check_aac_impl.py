@@ -17,7 +17,17 @@ plugin_name = "Check AaC"
 
 
 def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult:  # noqa: C901
-    """Business logic for the check command."""
+    """Business logic for the check command.
+
+    Args:
+        aac_file (str):         The AaC file being processed
+        fail_on_warn (bool):    Flag to fail when warnings are discovered
+        verbose (bool):         Flag for verbose mode. When true add success messages as encountered.
+
+    Returns:
+        ExecutionResult:        Method result containing: plugin_name ("Check AaC"), "check", status, message
+                                including results from lower level helper methods
+    """
 
     constraint_results: dict[str, list[ExecutionResult]] = {}
 
@@ -38,7 +48,18 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult: 
         primitive_declaration: str,
         defining_primitive,
     ):
-        """Runs all the constraints for a given primitive."""
+        """Helper method that runs all the constraints for a given primitive.
+
+        Args:
+            field:                          The field being checked
+            source_definition (Definition): Source of the check_me field that we are evaluating
+            value_to_check (Any):           The field value being checked
+            primitive_declaration (str):    The declaration of the primitive
+            defining_primitive:             The defining primitive constraints
+
+        Returns:
+            (at check level) ExecutionResult: The result of the checks in this helper method
+        """
         # Check the value_to_check against the defining_primitive
         defining_primitive_instance = defining_primitive
         for constraint_assignment in defining_primitive_instance.constraints:
@@ -69,7 +90,16 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult: 
     def check_schema_constraint(
         source_definition: Definition, check_me: Any, check_against
     ):
-        """Runs all the constraints for a given schema."""
+        """Helper method that runs all the constraints for a given schema.
+
+        Args:
+            source_definition (Definition): Source of the check_me field that we are evaluating
+            check_me (Any):                 The field being checked
+            check_against:                  The schema we are comparing the check_me field against
+
+        Returns:
+            (at check level) ExecutionResult: The result of the checks in this helper method
+        """
 
         # make sure we've got a schema
         context = LanguageContext()
@@ -140,7 +170,7 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult: 
                     if type(getattr(check_me, field.name)) != list:
                         raise LanguageError(
                             f"Value of '{field.name}' was expected to be list, but was '{type(getattr(check_me, field.name))}'",
-                            f'{source_definition.source.uri}'
+                            source_definition.source.uri
                         )
 
                     for item in getattr(check_me, field.name):
@@ -237,7 +267,7 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult: 
                     f"Check {check_me.source.uri} - {check_me.name} was successful.",
                     level=MessageLevel.DEBUG,
                     source=None,
-                    location=None,
+                    location=check_me.source.uri,
                 )
             )
     if status == ExecutionStatus.SUCCESS:
@@ -245,9 +275,10 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult: 
             ExecutionMessage(
                 message="All AaC constraint checks were successful.",
                 level=MessageLevel.INFO,
-                source=None,
+                source=aac_file,
                 location=None,
             )
         )
 
     return ExecutionResult(plugin_name, "check", status, messages)
+
