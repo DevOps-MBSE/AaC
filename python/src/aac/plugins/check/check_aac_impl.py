@@ -60,6 +60,7 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult: 
         Returns:
             (at check level) ExecutionResult: The result of the checks in this helper method
         """
+
         # Check the value_to_check against the defining_primitive
         defining_primitive_instance = defining_primitive
         for constraint_assignment in defining_primitive_instance.constraints:
@@ -266,8 +267,8 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult: 
                 ExecutionMessage(
                     f"Check {check_me.source.uri} - {check_me.name} was successful.",
                     level=MessageLevel.DEBUG,
-                    source=None,
-                    location=check_me.source.uri,
+                    source=check_me.source.uri,
+                    location=None,
                 )
             )
     if status == ExecutionStatus.SUCCESS:
