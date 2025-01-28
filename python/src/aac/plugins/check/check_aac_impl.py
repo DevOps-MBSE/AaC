@@ -70,7 +70,7 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult: 
         source_definition: Definition, check_me: Any, check_against
     ):
         """Runs all the constraints for a given schema."""
-        print("Enter check_aac::check_schema_constraint")
+
         # make sure we've got a schema
         context = LanguageContext()
         if not context.is_aac_instance(check_against, "aac.lang.Schema"):
@@ -123,8 +123,6 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult: 
 
             # get the definition that defines the field
             field_defining_schema = context.get_definitions_by_name(type_name)
-            # print("field_defining_schema:")
-            #print(field_defining_schema)
 
             if len(field_defining_schema) != 1:
                 # Question: should we convert this to a Constraint Failure?
@@ -135,27 +133,20 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult: 
 
             if field_defining_schema[0].get_root_key() == "primitive":
                 # if the field is a primitive, run the primitive constraints
-                print("primitives")
+
                 if is_list:
                     # if the field is a list, check each item in the list
-                    #print(check_me)
-                    print("   field.name:"+field.name)
 
                     if type(getattr(check_me, field.name)) != list:
                         raise LanguageError(
                             f"Value of '{field.name}' was expected to be list, but was '{type(getattr(check_me, field.name))}'",
                             f'{source_definition.source.uri}'
                         )
-                    print("   getattr:   "+str(getattr(check_me, field.name)))
+
                     for item in getattr(check_me, field.name):
                         value_to_check = item
                         if value_to_check is not None:
-                            print("      field.name: " + str(field.name))
-                            # print(field.name)
-                            print("      item:       " + str(item))
-                            # print(item)
-                            print("      field type: " + str(field.type[:-2]))
-                            # print(field.type[:-2])
+
                             check_primitive_constraint(
                                 field,
                                 source_definition,
@@ -178,12 +169,12 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult: 
                 if is_list:
                     # if the field is a list, check each item in the list
                     for item in getattr(check_me, field.name):
-                        print("Calling check_schema_constraint from line 181")
+
                         check_schema_constraint(
                             source_definition, item, field_defining_schema[0].instance
                         )
                 else:
-                    print("Calling check_schema_constraint from line 186")
+
                     check_schema_constraint(
                         source_definition,
                         getattr(check_me, field.name),
