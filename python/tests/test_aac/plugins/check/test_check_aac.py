@@ -58,7 +58,7 @@ class TestCheckAaC(TestCase):
             self.assertEqual(0, exit_code, f"Expected success but failed with message: {output_message}")  # asserts the command ran successfully
             self.assertIn("was successful.", output_message)  # only appears when --verbose is passed in.
 
-    # Test input triggers a LanguageError in check_aac_impl.py ~line 139
+    # Test input triggers a LanguageError in check_aac_impl.py ~line 141
     # Value of 'parent_specs' was expected to be list, but was '<class 'str'>'
     def test_cli_check_bad_data(self):
         """Test check_aac_impl.py and trigger a LanguageError."""
