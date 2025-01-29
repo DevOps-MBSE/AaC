@@ -27,6 +27,9 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult: 
     Returns:
         ExecutionResult:        Method result containing: plugin_name ("Check AaC"), "check", status, message
                                 including results from lower level helper methods
+
+    Raises:
+        LanguageError: Passed up LanguageError from get_defining_schema_for_root
     """
 
     constraint_results: dict[str, list[ExecutionResult]] = {}
@@ -100,6 +103,10 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult: 
 
         Returns:
             (at check level) ExecutionResult: The result of the checks in this helper method
+
+        Raises:
+            LanguageError: If unique schema definition for field type not found for field name
+            LanguageError: If value of field name was something other than a list
         """
 
         # make sure we've got a schema

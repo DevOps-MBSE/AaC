@@ -41,7 +41,7 @@ class TestCheckAaC(TestCase):
 
             exit_code, output_message = self.run_check_cli_command_with_args(check_args)
             self.assertEqual(0, exit_code, f"Expected success but failed with message: {output_message}")  # asserts the command ran successfully
-            self.assertNotIn("My plugin was successful.", output_message)  # only appears when --verbose is passed in.
+            self.assertIn("my_plugin.aac", output_message)
 
     # Happy path test with verbose flag
     # Test input passes all tests in parsing and check_aac_impl.py
@@ -87,7 +87,7 @@ class TestCheckAaC(TestCase):
             exit_code, output_message = self.run_check_cli_command_with_args(check_args)
             # Assert for return code 3 (fail)
             self.assertEqual(3, exit_code, f"Expected to fail but ran successfully with message: {output_message}")
-            self.assertNotIn("My plugin was successful.", output_message)  # only appears when --verbose is passed in.
+            self.assertIn("my_plugin.aac", output_message)
 
     # Test input missing required 'when' field primitive
     # output msg: Missing required field when.
