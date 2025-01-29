@@ -220,6 +220,10 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult: 
                     )
 
     # now that the helper functions are in place, let's run the constraints on the aac_file
+
+    # FIX ME: This call to parse_and_load can throw LanguageError and ParserError exceptions which are not being handled here
+    # FIX ME: They should be handled, their messages added to the message list being constructed in this method (complete with source and location info)
+    # FIX ME: so they can be passed along. This was discovered during the expansion of test_check_aac.py and those tests would need to be updated.
     definitions_to_check = context.parse_and_load(aac_file)
 
     # First run all context constraint checks
