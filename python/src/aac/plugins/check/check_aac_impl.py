@@ -17,7 +17,20 @@ plugin_name = "Check AaC"
 
 
 def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult:  # noqa: C901
-    """Business logic for the check command."""
+    """Business logic for the check command.
+
+    Args:
+        aac_file (str):         The AaC file being processed
+        fail_on_warn (bool):    Flag to fail when warnings are discovered
+        verbose (bool):         Flag for verbose mode. When true add success messages as encountered.
+
+    Returns:
+        ExecutionResult:        Method result containing: plugin_name ("Check AaC"), "check", status, message
+                                including results from lower level helper methods
+
+    Raises:
+        LanguageError: Passed up LanguageError from get_defining_schema_for_root
+    """
 
     constraint_results: dict[str, list[ExecutionResult]] = {}
 
@@ -29,7 +42,7 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult: 
         for name, callback in runner.constraint_to_callback.items():
             all_constraints_by_name[name] = callback
 
-    # we'll need to resurse our way through the schema to check all the constraints
+    # we'll need to recurse our way through the schema to check all the constraints
     # so we'll create a couple functions to help us navigate the way
     def check_primitive_constraint(
         field,
@@ -38,7 +51,19 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult: 
         primitive_declaration: str,
         defining_primitive,
     ):
-        """Runs all the constraints for a given primitive."""
+        """Helper method that runs all the constraints for a given primitive.
+
+        Args:
+            field:                          The field being checked
+            source_definition (Definition): Source of the check_me field that we are evaluating
+            value_to_check (Any):           The field value being checked
+            primitive_declaration (str):    The declaration of the primitive
+            defining_primitive:             The defining primitive constraints
+
+        Returns:
+            (at check level) ExecutionResult: The result of the checks in this helper method
+        """
+
         # Check the value_to_check against the defining_primitive
         defining_primitive_instance = defining_primitive
         for constraint_assignment in defining_primitive_instance.constraints:
@@ -69,12 +94,26 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult: 
     def check_schema_constraint(
         source_definition: Definition, check_me: Any, check_against
     ):
-        """Runs all the constraints for a given schema."""
+        """Helper method that runs all the constraints for a given schema.
+
+        Args:
+            source_definition (Definition): Source of the check_me field that we are evaluating
+            check_me (Any):                 The field being checked
+            check_against:                  The schema we are comparing the check_me field against
+
+        Returns:
+            (at check level) ExecutionResult: The result of the checks in this helper method
+
+        Raises:
+            LanguageError: If unique schema definition for field type not found for field name
+            LanguageError: If value of field name was something other than a list
+        """
+
         # make sure we've got a schema
         context = LanguageContext()
         if not context.is_aac_instance(check_against, "aac.lang.Schema"):
             return
-        # collact applicable constraints
+        # collect applicable constraints
         schema_constraints = []
         for runner in context.get_plugin_runners():
             plugin = runner.plugin_definition.instance
@@ -116,39 +155,42 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult: 
             if field.type.endswith("[]"):
                 type_name = field.type[: -2]
                 is_list = True
-            # if type name has parameters in perens, remove them
+            # if type name has parameters in parens, remove them
             if type_name.find("(") > -1:
                 type_name = type_name[: type_name.find("(")]
 
             # get the definition that defines the field
-            field_definining_schema = context.get_definitions_by_name(type_name)
+            field_defining_schema = context.get_definitions_by_name(type_name)
 
-            if len(field_definining_schema) != 1:
+            if len(field_defining_schema) != 1:
                 # Question: should we convert this to a Constraint Failure?
                 raise LanguageError(
                     f"Could not find unique schema definition for field type {field.type} with name {field.name}",
                     source_definition.source.uri
                 )
 
-            if field_definining_schema[0].get_root_key() == "primitive":
+            if field_defining_schema[0].get_root_key() == "primitive":
                 # if the field is a primitive, run the primitive constraints
 
                 if is_list:
                     # if the field is a list, check each item in the list
+
                     if type(getattr(check_me, field.name)) != list:
                         raise LanguageError(
                             f"Value of '{field.name}' was expected to be list, but was '{type(getattr(check_me, field.name))}'",
-                            f'{source_definition.source.uri}'
+                            source_definition.source.uri
                         )
+
                     for item in getattr(check_me, field.name):
                         value_to_check = item
                         if value_to_check is not None:
+
                             check_primitive_constraint(
                                 field,
                                 source_definition,
                                 item,
                                 field.type[:-2],
-                                field_definining_schema[0].instance,
+                                field_defining_schema[0].instance,
                             )
                 else:
                     value_to_check = getattr(check_me, field.name)
@@ -158,24 +200,30 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult: 
                             source_definition,
                             value_to_check,
                             field.type,
-                            field_definining_schema[0].instance,
+                            field_defining_schema[0].instance,
                         )
             else:
                 # if the field is a schema, run the schema constraints
                 if is_list:
                     # if the field is a list, check each item in the list
                     for item in getattr(check_me, field.name):
+
                         check_schema_constraint(
-                            source_definition, item, field_definining_schema[0].instance
+                            source_definition, item, field_defining_schema[0].instance
                         )
                 else:
+
                     check_schema_constraint(
                         source_definition,
                         getattr(check_me, field.name),
-                        field_definining_schema[0].instance,
+                        field_defining_schema[0].instance,
                     )
 
     # now that the helper functions are in place, let's run the constraints on the aac_file
+
+    # FIX ME: This call to parse_and_load can throw LanguageError and ParserError exceptions which are not being handled here
+    # FIX ME: They should be handled, their messages added to the message list being constructed in this method (complete with source and location info)
+    # FIX ME: so they can be passed along. This was discovered during the expansion of test_check_aac.py and those tests would need to be updated.
     definitions_to_check = context.parse_and_load(aac_file)
 
     # First run all context constraint checks
@@ -229,18 +277,19 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult: 
             messages.append(
                 ExecutionMessage(
                     f"Check {check_me.source.uri} - {check_me.name} was successful.",
-                    MessageLevel.DEBUG,
-                    None,
-                    None,
+                    level=MessageLevel.DEBUG,
+                    source=check_me.source.uri,
+                    location=None,
                 )
             )
     if status == ExecutionStatus.SUCCESS:
-        happy_msg = ExecutionMessage(
-            message="All AaC constraint checks were successful.",
-            level=MessageLevel.INFO,
-            source=None,
-            location=None,
+        messages.append(
+            ExecutionMessage(
+                message="All AaC constraint checks were successful.",
+                level=MessageLevel.INFO,
+                source=aac_file,
+                location=None,
+            )
         )
-        messages.append(happy_msg)
 
     return ExecutionResult(plugin_name, "check", status, messages)

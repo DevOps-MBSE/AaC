@@ -23,7 +23,7 @@ plugin:
             - name: Simple Command Test
               given:
                 - A1 An AaC file containing schemas with no extra fields.
-              given:
+              stranger:
                 - A11 An AaC file containing schemas with no extra fields.
               when:
                 - A2 The AaC check command is run on the schema.
@@ -69,4 +69,3 @@ plugin:
                 - D2 The AaC check command is run on the schema.
               then:
                 - D3 The check commands provides the output 'All AaC constraint checks were successful.'
-

@@ -20,7 +20,10 @@ plugin:
       acceptance:
         - name: Command test
           scenarios:
-            - name: Simple Command Test
+            - name:
+                - Simple
+                - Command
+                - Test
               given:
                 - A1 An AaC file containing schemas with no extra fields.
               given:
