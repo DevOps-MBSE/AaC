@@ -62,7 +62,21 @@ def generate(  # noqa: C901
     parsed_definitions = parse(
         aac_file
     )  # we only want to parse, not load, to avoid chicken and egg issues
-    generator_definitions = context.parse_and_load(generator_file)
+    generator_definitions = None
+    try:
+        generator_definitions = context.parse_and_load(generator_file)
+    except NameError as ne:
+        print("*************Caught a NAMEERROR from parse_and_load")
+        print(traceback.format_exc())
+        return
+    except AttributeError as ae:
+        print("*************Caught a ATTRIBUTEERROR from parse_and_load")
+        print(traceback.format_exc())
+        return
+    except Exception as ex:
+        print("*************Caught an exception from parse_and_load")
+        print(traceback.format_exc())
+        return
 
     # go through each generator in the parsed_definitions
     for definition in generator_definitions:
@@ -139,7 +153,7 @@ def generate(  # noqa: C901
                         if template.output_file_extension == "py":
                             output = black.format_str(jinja_output, mode=black.Mode())
 
-                        # write output to files to the traget in the template, respecting the overwrite indicator
+                        # write output to files to the target in the template, respecting the overwrite indicator
                         root_out_dir = code_out_dir
                         if template.output_target == context.create_aac_enum(
                             "aac.lang.GeneratorOutputTarget", "TEST"
@@ -150,6 +164,7 @@ def generate(  # noqa: C901
                         ):
                             root_out_dir = doc_out_dir
                         file_name = source_data_def.name
+                        print(">>>>>>>>>>>file_name: "+file_name)
                         if source.data_content:
                             name_extension = f"{source_data_structure['name'].replace(' ', '_').replace('-', '_')}"
                             file_name = f"{file_name}_{name_extension}"

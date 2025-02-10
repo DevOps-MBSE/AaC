@@ -195,3 +195,19 @@ generator:
           output_target: TEST
           output_path_uses_data_source_package: true
           output_file_extension: feature
+    - name: AaC Plugin Documentation Generation
+      data_source: plugin
+      templates:
+        - name: ProjectDocumentation
+          description: Generates documentation for a plugin.
+          template_file: ./templates/plugin_documentation.jinja2
+          overwrite: OVERWRITE
+          helper_functions:
+            - name: Get Python string
+              description: Converts a string to a Python suitable value.
+              package: aac.plugins.generate.helpers
+              module: python_helpers
+              function: get_python_name
+          output_target: DOC
+          output_path_uses_data_source_package: false
+          output_file_extension: md

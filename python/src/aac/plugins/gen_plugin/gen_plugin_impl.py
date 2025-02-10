@@ -36,7 +36,7 @@ def gen_plugin(
 ) -> ExecutionResult:
     """Gen-plugin command entry point."""
 
-    # There really isn't any specific behvior here, but we need to return a result
+    # There really isn't any specific behavior here, but we need to return a result
     return ExecutionResult(plugin_name, "gen-plugin", ExecutionStatus.SUCCESS, [])
 
 
@@ -88,7 +88,7 @@ def gen_project(
 ) -> ExecutionResult:
     """Gen-project command entry."""
 
-    # There really isn't any specific behvior here, but we need to return a result
+    # There really isn't any specific behavior here, but we need to return a result
     return ExecutionResult(plugin_name, "gen-project", ExecutionStatus.SUCCESS, [])
 
 
