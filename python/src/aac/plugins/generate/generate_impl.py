@@ -152,7 +152,6 @@ def generate(  # noqa: C901
                         ):
                             root_out_dir = doc_out_dir
                         file_name = source_data_def.name
-
                         if source.data_content:
                             name_extension = f"{source_data_structure['name'].replace(' ', '_').replace('-', '_')}"
                             file_name = f"{file_name}_{name_extension}"
