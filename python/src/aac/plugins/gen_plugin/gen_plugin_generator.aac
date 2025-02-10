@@ -198,7 +198,7 @@ generator:
     - name: AaC Plugin Documentation Generation
       data_source: plugin
       templates:
-        - name: ProjectDocumentation
+        - name: PluginDocumentation
           description: Generates documentation for a plugin.
           template_file: ./templates/plugin_documentation.jinja2
           overwrite: OVERWRITE

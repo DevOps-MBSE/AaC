@@ -85,22 +85,36 @@ class TestGenPlugin(TestCase):
 
             aac_plugin_path = path.join(path.dirname(__file__), "my_plugin.aac")
             copy(aac_plugin_path, plugin_file_path)
-            plugin_args = [plugin_file_path, "--code-output", path.join(temp_dir, "src"), "--test-output", path.join(temp_dir, "tests"), "--no-prompt"]
+            plugin_args = [plugin_file_path, "--code-output", path.join(temp_dir, "src"), "--test-output", path.join(temp_dir, "tests"), "--doc-output", path.join(temp_dir, "docs"), "--no-prompt"]
             exit_code, output_message = self.run_gen_plugin_cli_command_with_args(plugin_args)
             file = open(path.join(package_src_path, "my_plugin_impl.py"), "r")
             file_read = file.read()
             self.assertIn("test_command_one(aac_plugin_file: str)", file_read)
             self.assertNotIn("test_command_1_evaluation(aac_plugin_file: str)", file_read)
             file.close()
+            # Check for documentation generation
+            doc_path = path.join(temp_dir, "docs")
+            file = open(path.join(doc_path, "my_plugin.md"), "r")
+            file_read = file.read()
+            self.assertIn("test-command-one", file_read)
+            self.assertNotIn("test-command-1-evaluation", file_read)
+            file.close()
 
             aac_plugin_path = path.join(path.dirname(__file__), "my_plugin_eval.aac")
             copy(aac_plugin_path, plugin_file_path)
-            plugin_args = [plugin_file_path, "--code-output", path.join(temp_dir, "src"), "--test-output", path.join(temp_dir, "tests"), "--no-prompt", "--force-overwrite"]
+            plugin_args = [plugin_file_path, "--code-output", path.join(temp_dir, "src"), "--test-output", path.join(temp_dir, "tests"), "--doc-output", path.join(temp_dir, "docs"), "--no-prompt",  "--force-overwrite"]
             exit_code, output_message = self.run_gen_plugin_cli_command_with_args(plugin_args)
             file = open(path.join(package_src_path, "my_plugin_impl.py"), "r")
             file_read = file.read()
             self.assertIn("test_command_1_evaluation(aac_plugin_file: str)", file_read)
             self.assertNotIn("test_command_one(aac_plugin_file: str)", file_read)
+            file.close()
+            # Check for documentation generation
+            doc_path = path.join(temp_dir, "docs")
+            file = open(path.join(doc_path, "my_plugin.md"), "r") # Note that the name stays as my_plugin because it comes from the name found within my_plugin_eval.aac
+            file_read = file.read()
+            self.assertIn("test-command-1-evaluation", file_read)
+            self.assertNotIn("test-command-one", file_read)
             file.close()
 
 
@@ -123,22 +137,36 @@ class TestGenPlugin(TestCase):
 
             aac_plugin_path = path.join(path.dirname(__file__), "my_plugin.aac")
             copy(aac_plugin_path, plugin_file_path)
-            plugin_args = [plugin_file_path, "--code-output", path.join(temp_dir, "src"), "--test-output", path.join(temp_dir, "tests"), "--no-prompt"]
+            plugin_args = [plugin_file_path, "--code-output", path.join(temp_dir, "src"), "--test-output", path.join(temp_dir, "tests"), "--doc-output", path.join(temp_dir, "docs"), "--no-prompt"]
             exit_code, output_message = self.run_gen_plugin_cli_command_with_args(plugin_args)
             file = open(path.join(package_src_path, "my_plugin_impl.py"), "r")
             file_read = file.read()
             self.assertIn("test_command_one(aac_plugin_file: str)", file_read)
             self.assertNotIn("test_command_one_evaluation(aac_plugin_file: str)", file_read)
             file.close()
+            # Check for documentation generation
+            doc_path = path.join(temp_dir, "docs")
+            file = open(path.join(doc_path, "my_plugin.md"), "r")
+            file_read = file.read()
+            self.assertIn("test-command-one", file_read)
+            self.assertNotIn("test-command-1-evaluation", file_read)
+            file.close()
 
             aac_plugin_path = path.join(path.dirname(__file__), "my_plugin_eval.aac")
             copy(aac_plugin_path, plugin_file_path)
-            plugin_args = [plugin_file_path, "--code-output", path.join(temp_dir, "src"), "--test-output", path.join(temp_dir, "tests"), "--no-prompt", "--evaluate"]
+            plugin_args = [plugin_file_path, "--code-output", path.join(temp_dir, "src"), "--test-output", path.join(temp_dir, "tests"), "--doc-output", path.join(temp_dir, "docs"), "--no-prompt", "--evaluate"]
             exit_code, output_message = self.run_gen_plugin_cli_command_with_args(plugin_args)
             file = open(path.join(package_src_path, "my_plugin_impl.py"), "r")
             file_read = file.read()
             self.assertNotIn("test_command_1_evaluation(aac_plugin_file: str)", file_read)
             self.assertIn("test_command_one(aac_plugin_file: str)", file_read)
+            file.close()
+            # Check for documentation generation
+            doc_path = path.join(temp_dir, "docs")
+            file = open(path.join(doc_path, "my_plugin.md"), "r") # Note that the name stays as my_plugin because it comes from the name found within my_plugin_eval.aac
+            file_read = file.read()
+            self.assertIn("test-command-one", file_read)
+            self.assertNotIn("test-command-1-evaluation", file_read)
             file.close()
 
 
