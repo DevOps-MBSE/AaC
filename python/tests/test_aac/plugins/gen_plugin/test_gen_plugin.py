@@ -81,7 +81,7 @@ class TestGenPlugin(TestCase):
             file_content = file.read()
             self.assertIn("Given An AaC file containing schemas with no extra fields.", file_content)
             self.assertIn("When The AaC check command is run on the schema.", file_content)
-            self.assertIn("Then The check commands provides the output 'All AaC constraint checks were successful.", file_content)
+            self.assertIn("Then The check commands provides the output 'All AaC constraint checks were successful.'", file_content)
             file.close()
 
 
