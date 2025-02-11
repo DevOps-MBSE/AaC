@@ -103,7 +103,6 @@ class TestGenPlugin(TestCase):
             # Confirm no generated .aac_backup files
             testPath = path.join(package_src_path, "my_plugin_impl.py.aac_backup")
             testPath = pl.Path(testPath)
-            # file = open(testPath, "r")
             self.assertNotEqual((str(testPath), testPath.is_file()), (str(testPath), True))
 
             aac_plugin_path = path.join(path.dirname(__file__), "my_plugin_eval.aac")
