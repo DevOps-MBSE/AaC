@@ -67,6 +67,26 @@ class TestGenPlugin(TestCase):
             self.assertTrue(path.exists(path.join(package_tests_path, "my_plugin_primitive_test.feature")))
             self.assertTrue(path.exists(path.join(package_doc_path, "my_plugin.md")))
 
+            # Ensure feature files were generated with a Given, When, and Then.
+            files = listdir(package_tests_path)
+            feature_files = list(filter(lambda x: ".feature" in x, files))
+            for feature_file in feature_files:
+                f = open(path.join(package_tests_path, feature_file), "r")
+                file_content = f.read()
+                self.assertIn("Given", file_content)
+                self.assertIn("When", file_content)
+                self.assertIn("Then", file_content)
+                f.close()
+
+            # Ensure the feature file steps were assigned to the correct keyword.
+            file = open(path.join(package_tests_path, "my_plugin_command_test.feature"), "r")
+            file_content = file.read()
+            self.assertIn("Given An AaC file containing schemas with no extra fields.", file_content)
+            self.assertIn("When The AaC check command is run on the schema.", file_content)
+            self.assertIn("Then The check commands provides the output 'All AaC constraint checks were successful.'", file_content)
+            file.close()
+
+
     def test_cli_gen_plugin_overwrite(self):
         # first we need a project to work in, so generate a temporary one
         with TemporaryDirectory() as temp_dir:
