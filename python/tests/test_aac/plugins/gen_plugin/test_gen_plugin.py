@@ -7,6 +7,7 @@ from os import path, mkdir, listdir
 from shutil import copy
 from tempfile import TemporaryDirectory
 from traceback import print_exception
+import pathlib as pl
 
 from aac.execute.command_line import cli, initialize_cli
 
@@ -99,6 +100,11 @@ class TestGenPlugin(TestCase):
             self.assertIn("test-command-one", file_read)
             self.assertNotIn("test-command-1-evaluation", file_read)
             file.close()
+            # Confirm no generated .aac_backup files
+            testPath = path.join(package_src_path, "my_plugin_impl.py.aac_backup")
+            testPath = pl.Path(testPath)
+            # file = open(testPath, "r")
+            self.assertNotEqual((str(testPath), testPath.is_file()), (str(testPath), True))
 
             aac_plugin_path = path.join(path.dirname(__file__), "my_plugin_eval.aac")
             copy(aac_plugin_path, plugin_file_path)
@@ -116,6 +122,11 @@ class TestGenPlugin(TestCase):
             self.assertIn("test-command-1-evaluation", file_read)
             self.assertNotIn("test-command-one", file_read)
             file.close()
+            # Check for generated .aac_backup files
+            testPath = path.join(package_src_path, "my_plugin_impl.py.aac_backup")
+            testPath = pl.Path(testPath)
+            # file = open(testPath, "r")
+            self.assertEqual((str(testPath), testPath.is_file()), (str(testPath), True))
 
 
     def test_cli_gen_plugin_evaluate(self):
