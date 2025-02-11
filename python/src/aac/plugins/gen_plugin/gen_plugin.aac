@@ -2,7 +2,7 @@ plugin:
   name: Gen Plugin
   package: aac.plugins.gen_plugin
   description: |
-    An AaC plugin that generates opinionated plugin stubs for easier 
+    An AaC plugin that generates opinionated plugin stubs for easier
     and quicker plugin development.
   commands:
     - name: gen-plugin
@@ -60,5 +60,4 @@ plugin:
           description: Instructs the generator to backup and overwrite all existing files regardless of template definition.
         - name: --evaluate
           type: bool
-          description: Infstructs the generator to only write evaluation files with no impact to existing files.
-          
+          description: Instructs the generator to only write evaluation files with no impact to existing files.
