@@ -11,7 +11,7 @@ Feature: {{ name }}
   {% endif %}
       {% for given in scenario.given %}{% if loop.index == 1 %}Given {{ given }}{% else %}And {{ given }}{% endif %}
       {% endfor %}{% for when in scenario.when %}{% if loop.index == 1 %}When {{ when }}{% else %}And {{ when }}{% endif %}
-      {% endfor %}{% for then in scenario.when %}{% if loop.index == 1 %}Then {{ then }}{% else %}And {{ then }}{% endif %}
+      {% endfor %}{% for then in scenario.then %}{% if loop.index == 1 %}Then {{ then }}{% else %}And {{ then }}{% endif %}
       {% endfor %}
     {% if scenario.examples %}{% set comma_joiner = joiner("| ") %}
     Examples: {{ scenario.examples.name }}
@@ -20,5 +20,4 @@ Feature: {{ name }}
        | {{comma_joiner()}}{{value.value}}
        {% endfor %}
     {% endif %}
-  
   {% endfor %}
