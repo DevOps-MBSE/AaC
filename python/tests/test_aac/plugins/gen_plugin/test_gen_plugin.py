@@ -7,7 +7,6 @@ from os import path, mkdir, listdir
 from shutil import copy
 from tempfile import TemporaryDirectory
 from traceback import print_exception
-import pathlib as pl
 
 from aac.execute.command_line import cli, initialize_cli
 
@@ -101,9 +100,7 @@ class TestGenPlugin(TestCase):
             self.assertNotIn("test-command-1-evaluation", file_read)
             file.close()
             # Confirm no generated .aac_backup files
-            testPath = path.join(package_src_path, "my_plugin_impl.py.aac_backup")
-            testPath = pl.Path(testPath)
-            self.assertNotEqual((str(testPath), testPath.is_file()), (str(testPath), True))
+            self.assertFalse(path.exists(path.join(package_src_path, "my_plugin_impl.py.aac_backup")))
 
             aac_plugin_path = path.join(path.dirname(__file__), "my_plugin_eval.aac")
             copy(aac_plugin_path, plugin_file_path)
@@ -122,10 +119,7 @@ class TestGenPlugin(TestCase):
             self.assertNotIn("test-command-one", file_read)
             file.close()
             # Check for generated .aac_backup files
-            testPath = path.join(package_src_path, "my_plugin_impl.py.aac_backup")
-            testPath = pl.Path(testPath)
-            self.assertEqual((str(testPath), testPath.is_file()), (str(testPath), True))
-
+            self.assertTrue(path.exists(path.join(package_src_path, "my_plugin_impl.py.aac_backup")))
 
     def test_cli_gen_plugin_evaluate(self):
         # first we need a project to work in, so generate a temporary one
@@ -153,9 +147,7 @@ class TestGenPlugin(TestCase):
             self.assertNotIn("test_command_one_evaluation(aac_plugin_file: str)", file_read)
             file.close()
             # Confirm no generated .aac_evaluate files
-            testPath = path.join(package_src_path, "my_plugin_impl.py.aac_evaluate")
-            testPath = pl.Path(testPath)
-            self.assertNotEqual((str(testPath), testPath.is_file()), (str(testPath), True))
+            self.assertFalse(path.exists(path.join(package_src_path, "my_plugin_impl.py.aac_evaluate")))
 
             aac_plugin_path = path.join(path.dirname(__file__), "my_plugin_eval.aac")
             copy(aac_plugin_path, plugin_file_path)
@@ -173,11 +165,8 @@ class TestGenPlugin(TestCase):
             self.assertIn("test-command-one", file_read)
             self.assertNotIn("test-command-1-evaluation", file_read)
             file.close()
-            # Confirm .aac_evaluate file has been created
-            testPath = path.join(package_src_path, "my_plugin_impl.py.aac_evaluate")
-            testPath = pl.Path(testPath)
-            self.assertEqual((str(testPath), testPath.is_file()), (str(testPath), True))
-
+            # Check .aac_evaluate file has been created
+            self.assertTrue(path.exists(path.join(package_src_path, "my_plugin_impl.py.aac_evaluate")))
 
     def test_cli_gen_plugin_with_incomplete_dirs(self):
         # first we need a project to work in, so generate a temporary one
