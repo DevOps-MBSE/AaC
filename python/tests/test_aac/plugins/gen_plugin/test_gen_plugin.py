@@ -346,3 +346,60 @@ class TestGenPlugin(TestCase):
             exit_code, output_message = self.run_gen_project_cli_command_with_args(proj_args)
             self.assertNotEqual(0, exit_code)
             self.assertIn("Definition is missing field 'name'", output_message)
+
+    # There is a special case where documentation needs to be generated for optional arguments
+    # This tests for that special case and the expected hard-coded header of "Optional Arguments"
+    # The other tests in this file account for the nominal cases
+    def test_cli_gen_plugin_optional_args_documentation(self):
+        # first we need a project to work in, so generate a temporary one
+        with TemporaryDirectory() as temp_dir:
+            # now create an AaC plugin file in the project src directory
+            aac_file_path = path.join(path.dirname(__file__), "gen_plugin_optional_args.aac")
+            temp_aac_file_path = path.join(temp_dir, "gen_plugin_optional_args.aac")
+            copy(aac_file_path, temp_aac_file_path)
+
+            proj_args = [temp_aac_file_path, "--output", temp_dir, "--no-prompt"]
+            exit_code, output_message = self.run_gen_project_cli_command_with_args(proj_args)
+
+            package_src_path = path.join(temp_dir, "src", "happy")
+            mkdir(package_src_path)
+            package_doc_path = path.join(temp_dir, "docs")
+            plugin_file_path = path.join(package_src_path, "gen_plugin_optional_args.aac")
+
+            aac_plugin_path = path.join(path.dirname(__file__), "gen_plugin_optional_args.aac")
+            copy(aac_plugin_path, plugin_file_path)
+            plugin_args = [plugin_file_path, "--code-output", path.join(temp_dir, "src"), "--test-output", path.join(temp_dir, "tests"), "--doc-output", package_doc_path, "--no-prompt"]
+            exit_code, output_message = self.run_gen_plugin_cli_command_with_args(plugin_args)
+            file = open(path.join(package_doc_path, "gen_plugin.md"), "r")
+            file_read = file.read()
+            self.assertIn("Optional Arguments", file_read) # Optional header to test for
+            self.assertIn("--doc-output", file_read) # Optional argument from gen_plugin_optional_args.aac
+            file.close()
+
+    # There is a special case where documentation needs to be generated but the plugin has no arguments
+    # This tests for that special case and the expected hard-coded language of "There are no arguments for the..."
+    # The other tests in this file account for the nominal cases
+    def test_cli_gen_plugin_no_args_documentation(self):
+        # first we need a project to work in, so generate a temporary one
+        with TemporaryDirectory() as temp_dir:
+            # now create an AaC plugin file in the project src directory
+            aac_file_path = path.join(path.dirname(__file__), "version_no_args.aac")
+            temp_aac_file_path = path.join(temp_dir, "version_no_args.aac")
+            copy(aac_file_path, temp_aac_file_path)
+
+            proj_args = [temp_aac_file_path, "--output", temp_dir, "--no-prompt"]
+            exit_code, output_message = self.run_gen_project_cli_command_with_args(proj_args)
+
+            package_src_path = path.join(temp_dir, "src", "happy")
+            mkdir(package_src_path)
+            package_doc_path = path.join(temp_dir, "docs")
+            plugin_file_path = path.join(package_src_path, "version_no_args.aac")
+
+            aac_plugin_path = path.join(path.dirname(__file__), "version_no_args.aac")
+            copy(aac_plugin_path, plugin_file_path)
+            plugin_args = [plugin_file_path, "--code-output", path.join(temp_dir, "src"), "--test-output", path.join(temp_dir, "tests"), "--doc-output", package_doc_path, "--no-prompt"]
+            exit_code, output_message = self.run_gen_plugin_cli_command_with_args(plugin_args)
+            file = open(path.join(package_doc_path, "version.md"), "r")
+            file_read = file.read()
+            self.assertIn("There are no arguments for the", file_read)
+            file.close()
