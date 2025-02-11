@@ -22,13 +22,16 @@
 {%- endif %}
     {{input.name}} {{"("}}{{input.type}}{{")"}}
         {{ input.description -}}
-
 {%- endif -%}
 {%- endfor -%}
-{% if optionals[0] is defined %} {# Check that this is defined before popping. This covers cases with no Optional Arguments #}
-{% set temp = optionals.pop(0) %} {# Pop the optional arguments flag so we can be ready for the next command if there is one #}
+{%- if optionals[0] is defined -%} {# Check that this is defined before popping. This covers cases with no Optional Arguments #}
+{%- set temp = optionals.pop(0) -%} {# Pop the optional arguments flag so we can be ready for the next command if there is one #}
 {%- endif -%}
-{% endif %}
+{% else %} {# account for plugins with no arguments #}
+### Arguments
+    There are no arguments for the {{ command.name }} command
+{%- endif %}
+
 {{"<Insert command screenshot here>"}}
 {% endfor %}
 {%- endif %}
