@@ -34,7 +34,7 @@ The `--test-output` argument tells the generator the directory to put your gener
 
 ### Doc Output
 
-The `--doc-output` argument tells the generator the directory to put your generated documentation.  _This is currently not used but may be in the future._
+The `--doc-output` argument tells the generator the directory to put your generated documentation.
 
 ![Doc Output Flag](../../images/examples/gen-plugin-doc-output.png)
 

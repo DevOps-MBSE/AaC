@@ -62,6 +62,8 @@ def generate(  # noqa: C901
     parsed_definitions = parse(
         aac_file
     )  # we only want to parse, not load, to avoid chicken and egg issues
+
+    # TO DO Consider surrounding this call to parse_and_load with a try except block to catch and handle the various exceptions that can be thrown
     generator_definitions = context.parse_and_load(generator_file)
 
     # go through each generator in the parsed_definitions
@@ -139,7 +141,7 @@ def generate(  # noqa: C901
                         if template.output_file_extension == "py":
                             output = black.format_str(jinja_output, mode=black.Mode())
 
-                        # write output to files to the traget in the template, respecting the overwrite indicator
+                        # write output to files to the target in the template, respecting the overwrite indicator
                         root_out_dir = code_out_dir
                         if template.output_target == context.create_aac_enum(
                             "aac.lang.GeneratorOutputTarget", "TEST"
