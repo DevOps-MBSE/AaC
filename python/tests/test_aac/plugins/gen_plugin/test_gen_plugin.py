@@ -125,7 +125,6 @@ class TestGenPlugin(TestCase):
             # Check for generated .aac_backup files
             testPath = path.join(package_src_path, "my_plugin_impl.py.aac_backup")
             testPath = pl.Path(testPath)
-            # file = open(testPath, "r")
             self.assertEqual((str(testPath), testPath.is_file()), (str(testPath), True))
 
 
@@ -145,7 +144,6 @@ class TestGenPlugin(TestCase):
             package_tests_path = path.join(temp_dir, "tests", "test_happy")
             mkdir(package_tests_path)
             plugin_file_path = path.join(package_src_path, "my_plugin.aac")
-
             aac_plugin_path = path.join(path.dirname(__file__), "my_plugin.aac")
             copy(aac_plugin_path, plugin_file_path)
             plugin_args = [plugin_file_path, "--code-output", path.join(temp_dir, "src"), "--test-output", path.join(temp_dir, "tests"), "--doc-output", path.join(temp_dir, "docs"), "--no-prompt"]
@@ -155,13 +153,10 @@ class TestGenPlugin(TestCase):
             self.assertIn("test_command_one(aac_plugin_file: str)", file_read)
             self.assertNotIn("test_command_one_evaluation(aac_plugin_file: str)", file_read)
             file.close()
-            # Check for documentation generation
-            doc_path = path.join(temp_dir, "docs")
-            file = open(path.join(doc_path, "my_plugin.md"), "r")
-            file_read = file.read()
-            self.assertIn("test-command-one", file_read)
-            self.assertNotIn("test-command-1-evaluation", file_read)
-            file.close()
+            # Confirm no generated .aac_evaluate files
+            testPath = path.join(package_src_path, "my_plugin_impl.py.aac_evaluate")
+            testPath = pl.Path(testPath)
+            self.assertNotEqual((str(testPath), testPath.is_file()), (str(testPath), True))
 
             aac_plugin_path = path.join(path.dirname(__file__), "my_plugin_eval.aac")
             copy(aac_plugin_path, plugin_file_path)
@@ -179,6 +174,10 @@ class TestGenPlugin(TestCase):
             self.assertIn("test-command-one", file_read)
             self.assertNotIn("test-command-1-evaluation", file_read)
             file.close()
+            # Confirm .aac_evaluate file has been created
+            testPath = path.join(package_src_path, "my_plugin_impl.py.aac_evaluate")
+            testPath = pl.Path(testPath)
+            self.assertEqual((str(testPath), testPath.is_file()), (str(testPath), True))
 
 
     def test_cli_gen_plugin_with_incomplete_dirs(self):
