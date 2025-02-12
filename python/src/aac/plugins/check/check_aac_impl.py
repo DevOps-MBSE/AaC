@@ -134,37 +134,7 @@ def _check_against_defined_schema_constraints(schema_constraints, source_definit
         constraint_results[constraint_name].append(result)
 
 
-def check_schema_constraint(
-    source_definition: Definition, check_me: Any, check_against
-):
-    """Helper method that runs all the constraints for a given schema.
-
-    Args:
-        source_definition (Definition): Source of the check_me field that we are evaluating
-        check_me (Any):                 The field being checked
-        check_against:                  The schema we are comparing the check_me field against
-
-    Returns:
-        (at check level) ExecutionResult: The result of the checks in this helper method
-
-    Raises:
-        LanguageError: If unique schema definition for field type not found for field name
-        LanguageError: If value of field name was something other than a list
-    """
-
-    # make sure we've got a schema
-    context = LanguageContext()
-    if not context.is_aac_instance(check_against, "aac.lang.Schema"):
-        return
-    # collect applicable constraints
-    schema_constraints = _collect_constraints(context)
-    if check_against.constraints:
-        for constraint_assignment in check_against.constraints:
-            schema_constraints.append(constraint_assignment)
-
-    # Check the check_me against constraints in the defining_schema
-    _check_against_defined_schema_constraints(schema_constraints, source_definition, check_me, check_against)
-
+def _check_field_against_constraint(source_definition, check_me, check_against):
     # loop through the fields on the check_against schema
     for field in check_against.fields:
         # only check the field if it is present
@@ -216,6 +186,56 @@ def check_schema_constraint(
                     getattr(check_me, field.name),
                     field_defining_schema[0].instance,
                 )
+
+
+def check_schema_constraint(
+    source_definition: Definition, check_me: Any, check_against
+):
+    """Helper method that runs all the constraints for a given schema.
+
+    Args:
+        source_definition (Definition): Source of the check_me field that we are evaluating
+        check_me (Any):                 The field being checked
+        check_against:                  The schema we are comparing the check_me field against
+
+    Returns:
+        (at check level) ExecutionResult: The result of the checks in this helper method
+
+    Raises:
+        LanguageError: If unique schema definition for field type not found for field name
+        LanguageError: If value of field name was something other than a list
+    """
+
+    # make sure we've got a schema
+    context = LanguageContext()
+    if not context.is_aac_instance(check_against, "aac.lang.Schema"):
+        return
+    # collect applicable constraints
+    schema_constraints = _collect_constraints(context)
+    if check_against.constraints:
+        for constraint_assignment in check_against.constraints:
+            schema_constraints.append(constraint_assignment)
+
+    # Check the check_me against constraints in the defining_schema
+    _check_against_defined_schema_constraints(schema_constraints, source_definition, check_me, check_against)
+
+    # loop through the fields on the check_against schema
+    _check_field_against_constraint(source_definition, check_me, check_against)
+
+
+def _run_context_constraints(context, definitions_to_check):
+    for plugin in context.get_definitions_by_root("plugin"):
+        # we want to check contest constraints, but not the ones that are defined in the aac_file we're checking to avoid gen-plugin circular logic
+        for context_constraint in plugin.instance.context_constraints:
+            if context_constraint.name not in [
+                definition.name for definition in definitions_to_check
+            ]:
+                if context_constraint.name in all_constraints_by_name.keys():
+                    callback = all_constraints_by_name[context_constraint.name]
+                    result: ExecutionResult = callback(context)
+                    if context_constraint.name not in constraint_results:
+                        constraint_results[context_constraint.name] = []
+                    constraint_results[context_constraint.name].append(result)
 
 
 def _check_constraint_results(verbose: bool, fail_on_warn: bool) -> (ExecutionStatus, list):
@@ -271,18 +291,7 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult:
     # First run all context constraint checks
     # Context constraints are "language constraints" and are not tied to a specific schema
     # You can think of these as "invariants", so they must always be satisfied
-    for plugin in context.get_definitions_by_root("plugin"):
-        # we want to check contest constraints, but not the ones that are defined in the aac_file we're checking to avoid gen-plugin circular logic
-        for context_constraint in plugin.instance.context_constraints:
-            if context_constraint.name not in [
-                definition.name for definition in definitions_to_check
-            ]:
-                if context_constraint.name in all_constraints_by_name.keys():
-                    callback = all_constraints_by_name[context_constraint.name]
-                    result: ExecutionResult = callback(context)
-                    if context_constraint.name not in constraint_results:
-                        constraint_results[context_constraint.name] = []
-                    constraint_results[context_constraint.name].append(result)
+    _run_context_constraints(context, definitions_to_check)
 
     for check_me in definitions_to_check:
         try:
