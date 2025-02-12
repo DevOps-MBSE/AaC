@@ -15,8 +15,205 @@ from aac.context.language_error import LanguageError
 
 plugin_name = "Check AaC"
 
+constraint_results: dict[str, list[ExecutionResult]] = {}
 
-def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult:  # noqa: C901
+context: LanguageContext = LanguageContext()
+
+# collect all constraints for easy access
+all_constraints_by_name: dict[str, Callable] = {}
+
+
+# Helper functions
+def check_primitive_constraint(
+    field,
+    source_definition: Definition,
+    value_to_check: Any,
+    primitive_declaration: str,
+    defining_primitive,
+):
+    """Helper method that runs all the constraints for a given primitive.
+
+    Args:
+        field:                          The field being checked
+        source_definition (Definition): Source of the check_me field that we are evaluating
+        value_to_check (Any):           The field value being checked
+        primitive_declaration (str):    The declaration of the primitive
+        defining_primitive:             The defining primitive constraints
+
+    Returns:
+        (at check level) ExecutionResult: The result of the checks in this helper method
+    """
+
+    # Check the value_to_check against the defining_primitive
+    defining_primitive_instance = defining_primitive
+    for constraint_assignment in defining_primitive_instance.constraints:
+        constraint_name = constraint_assignment.name
+        constraint_args = constraint_assignment.arguments
+        callback = all_constraints_by_name[constraint_name]
+        # This location code feels like a hack!  Is there a better way?
+        locations = [
+            lexeme.location
+            for lexeme in source_definition.lexemes
+            if lexeme.value == field.name
+        ]
+        location = None
+        if len(locations) > 0:
+            location = locations[0]
+
+        result: ExecutionResult = callback(
+            value_to_check,
+            primitive_declaration,
+            constraint_args,
+            source_definition.source,
+            location,
+        )
+        if constraint_name not in constraint_results:
+            constraint_results[constraint_name] = []
+        constraint_results[constraint_name].append(result)
+
+def _run_primitive_constraint_list(check_me: Any, field, source_definition: Definition, field_defining_schema: Definition) -> List:
+
+    if type(getattr(check_me, field.name)) != list:
+        raise LanguageError(
+            f"Value of '{field.name}' was expected to be list, but was '{type(getattr(check_me, field.name))}'",
+            source_definition.source.uri
+        )
+
+    for item in getattr(check_me, field.name):
+        value_to_check = item
+        if value_to_check is not None:
+
+            check_primitive_constraint(
+                field,
+                source_definition,
+                item,
+                field.type[:-2],
+                field_defining_schema[0].instance,
+            )
+
+
+def _run_primitive_constraint_not_list(check_me: Any, field, source_definition: Definition, field_defining_schema: Definition) -> List:
+    value_to_check = getattr(check_me, field.name)
+    if value_to_check is not None:
+        check_primitive_constraint(
+            field,
+            source_definition,
+            value_to_check,
+            field.type,
+            field_defining_schema[0].instance,
+        )
+
+def _collect_constraints(context):
+    schema_constraints = []
+    for runner in context.get_plugin_runners():
+        plugin = runner.plugin_definition.instance
+        for constraint in plugin.schema_constraints:
+            if constraint.universal:
+                schema_constraints.append(
+                    context.create_aac_object(
+                        "SchemaConstraintAssignment",
+                        {"name": constraint.name, "arguments": []},
+                    )
+                )
+    return schema_constraints
+
+def _check_against_defined_schema_constraints(schema_constraints, source_definition, check_me, check_against):
+    for constraint_assignment in schema_constraints:
+        constraint_name = constraint_assignment.name
+        constraint_args = constraint_assignment.arguments
+        callback = all_constraints_by_name[constraint_name]
+        result: ExecutionResult = callback(
+            check_me, source_definition, check_against, constraint_args
+        )
+
+        if constraint_name not in constraint_results:
+            constraint_results[constraint_name] = []
+        constraint_results[constraint_name].append(result)
+
+def check_schema_constraint(
+    source_definition: Definition, check_me: Any, check_against
+):
+    """Helper method that runs all the constraints for a given schema.
+
+    Args:
+        source_definition (Definition): Source of the check_me field that we are evaluating
+        check_me (Any):                 The field being checked
+        check_against:                  The schema we are comparing the check_me field against
+
+    Returns:
+        (at check level) ExecutionResult: The result of the checks in this helper method
+
+    Raises:
+        LanguageError: If unique schema definition for field type not found for field name
+        LanguageError: If value of field name was something other than a list
+    """
+
+    # make sure we've got a schema
+    context = LanguageContext()
+    if not context.is_aac_instance(check_against, "aac.lang.Schema"):
+        return
+    # collect applicable constraints
+    schema_constraints = _collect_constraints(context)
+    if check_against.constraints:
+        for constraint_assignment in check_against.constraints:
+            schema_constraints.append(constraint_assignment)
+
+    # Check the check_me against constraints in the defining_schema
+    _check_against_defined_schema_constraints(schema_constraints, source_definition, check_me, check_against)
+
+    # loop through the fields on the check_against schema
+    for field in check_against.fields:
+        # only check the field if it is present
+        if not hasattr(check_me, field.name):
+            continue
+
+        # get the name of the schema that defines the field, special handling for arrays and references
+        type_name = field.type
+        is_list = False
+        # if type name ends with "[]", remove the brackets and set is_list to True
+        if field.type.endswith("[]"):
+            type_name = field.type[: -2]
+            is_list = True
+        # if type name has parameters in parens, remove them
+        if type_name.find("(") > -1:
+            type_name = type_name[: type_name.find("(")]
+
+        # get the definition that defines the field
+        field_defining_schema = context.get_definitions_by_name(type_name)
+
+        if len(field_defining_schema) != 1:
+            # Question: should we convert this to a Constraint Failure?
+            raise LanguageError(
+                f"Could not find unique schema definition for field type {field.type} with name {field.name}",
+                source_definition.source.uri
+            )
+
+        if field_defining_schema[0].get_root_key() == "primitive":
+            # if the field is a primitive, run the primitive constraints
+
+            if is_list:
+                _run_primitive_constraint_list(check_me, field, source_definition, field_defining_schema)
+            else:
+                _run_primitive_constraint_not_list(check_me, field, source_definition, field_defining_schema)
+
+        else:
+            # if the field is a schema, run the schema constraints
+            if is_list:
+                # if the field is a list, check each item in the list
+                for item in getattr(check_me, field.name):
+
+                    check_schema_constraint(
+                        source_definition, item, field_defining_schema[0].instance
+                    )
+            else:
+
+                check_schema_constraint(
+                    source_definition,
+                    getattr(check_me, field.name),
+                    field_defining_schema[0].instance,
+                )
+
+def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult:
     """Business logic for the check command.
 
     Args:
@@ -31,193 +228,10 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult: 
     Raises:
         LanguageError: Passed up LanguageError from get_defining_schema_for_root
     """
-
-    constraint_results: dict[str, list[ExecutionResult]] = {}
-
-    context: LanguageContext = LanguageContext()
-
-    # collect all constraints for easy access
-    all_constraints_by_name: dict[str, Callable] = {}
     for runner in context.get_plugin_runners():
         for name, callback in runner.constraint_to_callback.items():
             all_constraints_by_name[name] = callback
 
-    # we'll need to recurse our way through the schema to check all the constraints
-    # so we'll create a couple functions to help us navigate the way
-    def check_primitive_constraint(
-        field,
-        source_definition: Definition,
-        value_to_check: Any,
-        primitive_declaration: str,
-        defining_primitive,
-    ):
-        """Helper method that runs all the constraints for a given primitive.
-
-        Args:
-            field:                          The field being checked
-            source_definition (Definition): Source of the check_me field that we are evaluating
-            value_to_check (Any):           The field value being checked
-            primitive_declaration (str):    The declaration of the primitive
-            defining_primitive:             The defining primitive constraints
-
-        Returns:
-            (at check level) ExecutionResult: The result of the checks in this helper method
-        """
-
-        # Check the value_to_check against the defining_primitive
-        defining_primitive_instance = defining_primitive
-        for constraint_assignment in defining_primitive_instance.constraints:
-            constraint_name = constraint_assignment.name
-            constraint_args = constraint_assignment.arguments
-            callback = all_constraints_by_name[constraint_name]
-            # This location code feels like a hack!  Is there a better way?
-            locations = [
-                lexeme.location
-                for lexeme in source_definition.lexemes
-                if lexeme.value == field.name
-            ]
-            location = None
-            if len(locations) > 0:
-                location = locations[0]
-
-            result: ExecutionResult = callback(
-                value_to_check,
-                primitive_declaration,
-                constraint_args,
-                source_definition.source,
-                location,
-            )
-            if constraint_name not in constraint_results:
-                constraint_results[constraint_name] = []
-            constraint_results[constraint_name].append(result)
-
-    def check_schema_constraint(
-        source_definition: Definition, check_me: Any, check_against
-    ):
-        """Helper method that runs all the constraints for a given schema.
-
-        Args:
-            source_definition (Definition): Source of the check_me field that we are evaluating
-            check_me (Any):                 The field being checked
-            check_against:                  The schema we are comparing the check_me field against
-
-        Returns:
-            (at check level) ExecutionResult: The result of the checks in this helper method
-
-        Raises:
-            LanguageError: If unique schema definition for field type not found for field name
-            LanguageError: If value of field name was something other than a list
-        """
-
-        # make sure we've got a schema
-        context = LanguageContext()
-        if not context.is_aac_instance(check_against, "aac.lang.Schema"):
-            return
-        # collect applicable constraints
-        schema_constraints = []
-        for runner in context.get_plugin_runners():
-            plugin = runner.plugin_definition.instance
-            for constraint in plugin.schema_constraints:
-                if constraint.universal:
-                    schema_constraints.append(
-                        context.create_aac_object(
-                            "SchemaConstraintAssignment",
-                            {"name": constraint.name, "arguments": []},
-                        )
-                    )
-        if check_against.constraints:
-            for constraint_assignment in check_against.constraints:
-                schema_constraints.append(constraint_assignment)
-
-        # Check the check_me against constraints in the defining_schema
-        for constraint_assignment in schema_constraints:
-            constraint_name = constraint_assignment.name
-            constraint_args = constraint_assignment.arguments
-            callback = all_constraints_by_name[constraint_name]
-            result: ExecutionResult = callback(
-                check_me, source_definition, check_against, constraint_args
-            )
-
-            if constraint_name not in constraint_results:
-                constraint_results[constraint_name] = []
-            constraint_results[constraint_name].append(result)
-
-        # loop through the fields on the check_against schema
-        for field in check_against.fields:
-            # only check the field if it is present
-            if not hasattr(check_me, field.name):
-                continue
-
-            # get the name of the schema that defines the field, special handling for arrays and references
-            type_name = field.type
-            is_list = False
-            # if type name ends with "[]", remove the brackets and set is_list to True
-            if field.type.endswith("[]"):
-                type_name = field.type[: -2]
-                is_list = True
-            # if type name has parameters in parens, remove them
-            if type_name.find("(") > -1:
-                type_name = type_name[: type_name.find("(")]
-
-            # get the definition that defines the field
-            field_defining_schema = context.get_definitions_by_name(type_name)
-
-            if len(field_defining_schema) != 1:
-                # Question: should we convert this to a Constraint Failure?
-                raise LanguageError(
-                    f"Could not find unique schema definition for field type {field.type} with name {field.name}",
-                    source_definition.source.uri
-                )
-
-            if field_defining_schema[0].get_root_key() == "primitive":
-                # if the field is a primitive, run the primitive constraints
-
-                if is_list:
-                    # if the field is a list, check each item in the list
-
-                    if type(getattr(check_me, field.name)) != list:
-                        raise LanguageError(
-                            f"Value of '{field.name}' was expected to be list, but was '{type(getattr(check_me, field.name))}'",
-                            source_definition.source.uri
-                        )
-
-                    for item in getattr(check_me, field.name):
-                        value_to_check = item
-                        if value_to_check is not None:
-
-                            check_primitive_constraint(
-                                field,
-                                source_definition,
-                                item,
-                                field.type[:-2],
-                                field_defining_schema[0].instance,
-                            )
-                else:
-                    value_to_check = getattr(check_me, field.name)
-                    if value_to_check is not None:
-                        check_primitive_constraint(
-                            field,
-                            source_definition,
-                            value_to_check,
-                            field.type,
-                            field_defining_schema[0].instance,
-                        )
-            else:
-                # if the field is a schema, run the schema constraints
-                if is_list:
-                    # if the field is a list, check each item in the list
-                    for item in getattr(check_me, field.name):
-
-                        check_schema_constraint(
-                            source_definition, item, field_defining_schema[0].instance
-                        )
-                else:
-
-                    check_schema_constraint(
-                        source_definition,
-                        getattr(check_me, field.name),
-                        field_defining_schema[0].instance,
-                    )
 
     # now that the helper functions are in place, let's run the constraints on the aac_file
 
