@@ -71,7 +71,8 @@ def check_primitive_constraint(
             constraint_results[constraint_name] = []
         constraint_results[constraint_name].append(result)
 
-def _run_primitive_constraint_list(check_me: Any, field, source_definition: Definition, field_defining_schema: Definition) -> List:
+
+def _run_primitive_constraint_list(check_me: Any, field, source_definition: Definition, field_defining_schema: Definition) -> list:
 
     if type(getattr(check_me, field.name)) != list:
         raise LanguageError(
@@ -92,7 +93,7 @@ def _run_primitive_constraint_list(check_me: Any, field, source_definition: Defi
             )
 
 
-def _run_primitive_constraint_not_list(check_me: Any, field, source_definition: Definition, field_defining_schema: Definition) -> List:
+def _run_primitive_constraint_not_list(check_me: Any, field, source_definition: Definition, field_defining_schema: Definition) -> list:
     value_to_check = getattr(check_me, field.name)
     if value_to_check is not None:
         check_primitive_constraint(
@@ -102,6 +103,7 @@ def _run_primitive_constraint_not_list(check_me: Any, field, source_definition: 
             field.type,
             field_defining_schema[0].instance,
         )
+
 
 def _collect_constraints(context):
     schema_constraints = []
@@ -117,6 +119,7 @@ def _collect_constraints(context):
                 )
     return schema_constraints
 
+
 def _check_against_defined_schema_constraints(schema_constraints, source_definition, check_me, check_against):
     for constraint_assignment in schema_constraints:
         constraint_name = constraint_assignment.name
@@ -129,6 +132,7 @@ def _check_against_defined_schema_constraints(schema_constraints, source_definit
         if constraint_name not in constraint_results:
             constraint_results[constraint_name] = []
         constraint_results[constraint_name].append(result)
+
 
 def check_schema_constraint(
     source_definition: Definition, check_me: Any, check_against
@@ -213,6 +217,31 @@ def check_schema_constraint(
                     field_defining_schema[0].instance,
                 )
 
+
+def _check_constraint_results(verbose: bool, fail_on_warn: bool) -> (ExecutionStatus, list):
+    status = ExecutionStatus.SUCCESS
+    messages = []
+    for name, results in constraint_results.items():
+        for result in results:
+            if result.is_success():
+                # if the result is a success, add the messages to the list if we're in verbose mode
+                # because these should only be info messages
+                if verbose:
+                    messages.extend(result.messages)
+            elif result.status_code == ExecutionStatus.CONSTRAINT_WARNING:
+                # if the result is a warning, add the messages to the list and fail the check if fail_on_warn is true
+                if fail_on_warn:
+                    status = ExecutionStatus.CONSTRAINT_FAILURE
+                messages.extend(result.messages)
+            else:
+                # Any failure (including a constraint failure) is handled the same way
+                messages.extend(result.messages)
+                # don't change the status if already a failure
+                if status != ExecutionStatus.CONSTRAINT_FAILURE:
+                    status = result.status_code
+    return status, messages
+
+
 def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult:
     """Business logic for the check command.
 
@@ -231,7 +260,6 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult:
     for runner in context.get_plugin_runners():
         for name, callback in runner.constraint_to_callback.items():
             all_constraints_by_name[name] = callback
-
 
     # now that the helper functions are in place, let's run the constraints on the aac_file
 
@@ -264,26 +292,7 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult:
         check_schema_constraint(check_me, check_me.instance, defining_schema.instance)
 
     # loop through all the constraint results and see if any of them failed
-    messages = []
-    status = ExecutionStatus.SUCCESS
-    for name, results in constraint_results.items():
-        for result in results:
-            if result.is_success():
-                # if the result is a success, add the messages to the list if we're in verbose mode
-                # because these should only be info messages
-                if verbose:
-                    messages.extend(result.messages)
-            elif result.status_code == ExecutionStatus.CONSTRAINT_WARNING:
-                # if the result is a warning, add the messages to the list and fail the check if fail_on_warn is true
-                if fail_on_warn:
-                    status = ExecutionStatus.CONSTRAINT_FAILURE
-                messages.extend(result.messages)
-            else:
-                # Any failure (including a constraint failure) is handled the same way
-                messages.extend(result.messages)
-                # don't change the status if already a failure
-                if status != ExecutionStatus.CONSTRAINT_FAILURE:
-                    status = result.status_code
+    status, messages = _check_constraint_results(verbose, fail_on_warn)
 
     # after going through all the constraint results, if we're still successful, add a success message
     if verbose:
