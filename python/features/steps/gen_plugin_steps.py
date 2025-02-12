@@ -167,6 +167,7 @@ def gen_plugin_results(context):
     assert (os.path.exists(os.path.join(tests, "test_my_plugin.py")))
     assert (os.path.exists(os.path.join(tests, "my_plugin_success_test.feature")))
     assert (os.path.exists(os.path.join(tests, "my_plugin_failure_test.feature")))
+    assert (os.path.exists(os.path.join(context.doc_dir, "my_plugin.md")))
 
     if os.path.exists(context.temp_dir):
         rmtree(context.temp_dir)
