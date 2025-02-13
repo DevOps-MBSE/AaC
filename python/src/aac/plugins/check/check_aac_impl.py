@@ -214,6 +214,7 @@ def _check_against_defined_schema_constraints(
         constraint_results[constraint_name].append(result)
     return constraint_results
 
+
 def _check_field_against_constraint(
     source_definition: Definition,
     check_me: Any,
