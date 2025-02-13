@@ -415,7 +415,8 @@ def _collect_all_constraints_by_name() -> dict[str, Callable]:
 
 def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult:
     """
-    Business logic for the check command.
+    Checks relevant constraints for given definition(s).  Runs context constraints (global constraints), then runs schema constraints (specifically assigned constraints).
+    Primitive constraints are ran as a part of schema constraints.
 
     Args:
         aac_file (str):         The AaC file being processed
@@ -454,6 +455,7 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult:
             defining_schema = context.get_defining_schema_for_root(check_me.get_root_key())
         except LanguageError as e:
             raise LanguageError(e.message, check_me.source.uri)
+        # We now check the schema constraints.  The primitive constraints are also called as a part of the schema constraints check.
         constraint_results = check_schema_constraint(check_me, check_me.instance, defining_schema.instance, all_constraints_by_name, constraint_results)
 
     # loop through all the constraint results and see if any of them failed
