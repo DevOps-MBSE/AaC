@@ -415,8 +415,7 @@ def _collect_all_constraints_by_name() -> dict[str, Callable]:
 
 def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult:
     """
-    Checks relevant constraints for given definition(s).  Runs context constraints (global constraints), then runs schema constraints (specifically assigned constraints).
-    Primitive constraints are ran as a part of schema constraints.
+    Checks relevant constraints for given definition(s).  Runs context constraints (global constraints), then runs schema constraints (specifically assigned constraints). Primitive constraints are ran as a part of schema constraints.
 
     Args:
         aac_file (str):         The AaC file being processed
