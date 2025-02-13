@@ -27,7 +27,8 @@ def check_primitive_constraint(
     all_constraints_by_name: (dict[str, Callable]),
     constraint_results: dict[str, list[ExecutionResult]]
 ) -> dict[str, list[ExecutionResult]]:
-    """Helper method that runs all the constraints for a given primitive.
+    """
+    Helper method that runs all the constraints for a given primitive.
 
     Args:
         field (Any):                                                  The field being checked
@@ -37,7 +38,6 @@ def check_primitive_constraint(
         defining_primitive:                                     The defining primitive constraints
         all_constraints_by_name (dict[str, Callable]):          A dictionary of all constraint names and function calls.
         constraint_results (dict[str, list[ExecutionResult]]):  A dictionary of constraint results.
-
 
     Returns:
         dict[str, list[ExecutionResult]]: An updated dictionary of constraint results.
