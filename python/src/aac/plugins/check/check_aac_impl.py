@@ -19,7 +19,7 @@ plugin_name = "Check AaC"
 # we'll need to recurse our way through the schema to check all the constraints
 # so we'll create a couple functions to help us navigate the way
 def check_primitive_constraint(
-    field,
+    field: Any,
     source_definition: Definition,
     value_to_check: Any,
     primitive_declaration: str,
@@ -30,7 +30,7 @@ def check_primitive_constraint(
     """Helper method that runs all the constraints for a given primitive.
 
     Args:
-        field:                                                  The field being checked
+        field (Any):                                                  The field being checked
         source_definition (Definition):                         Source of the check_me field that we are evaluating
         value_to_check (Any):                                   The field value being checked
         primitive_declaration (str):                            The declaration of the primitive
@@ -74,18 +74,18 @@ def check_primitive_constraint(
 
 def _run_primitive_constraint_list(
     check_me: Any,
-    field,
+    field: Any,
     source_definition: Definition,
     field_defining_schema: Definition,
-    all_constraints_by_name,
-    constraint_results
+    all_constraints_by_name: dict[str, Callable],
+    constraint_results: dict[str, list[ExecutionResult]]
 ) -> dict[str, list[ExecutionResult]]:
     """
     Helper method that runs primitive constraints on list values.
 
     Args:
         check_me (Any):                                         The field value being checked
-        field:                                                  The field being checked
+        field (Any):                                            The field being checked
         source_definition (Definition):                         Source of the check_me field that we are evaluating
         field_defining_schema: (Definition):                    The definition in which the primitive is declared
         all_constraints_by_name (dict[str, Callable]):          A dictionary of all constraint names and function calls.
@@ -118,17 +118,18 @@ def _run_primitive_constraint_list(
 
 def _run_primitive_constraint_not_list(
     check_me: Any,
-    field, source_definition: Definition,
+    field: Any,
+    source_definition: Definition,
     field_defining_schema: Definition,
-    all_constraints_by_name,
-    constraint_results
+    all_constraints_by_name: (dict[str, Callable]),
+    constraint_results: dict[str, list[ExecutionResult]]
 ) -> dict[str, list[ExecutionResult]]:
     """
     Helper method that runs primitive constraints on non-list values.
 
     Args:
         check_me (Any):                                         The field value being checked
-        field:                                                  The field being checked
+        field (Any):                                            The field being checked
         source_definition (Definition):                         Source of the check_me field that we are evaluating
         field_defining_schema: (Definition):                    The definition in which the primitive is declared
         all_constraints_by_name (dict[str, Callable]):          A dictionary of all constraint names and function calls.
@@ -151,12 +152,12 @@ def _run_primitive_constraint_not_list(
     return constraint_results
 
 
-def _collect_schema_constraints(check_against) -> list:
+def _collect_schema_constraints(check_against: Definition) -> list:
     """
     Collects applicable constraints for the current schema.
 
     Args:
-        check_against: The Constraint we are checking against
+        check_against (Definition): The Constraint we are checking against
 
     Returns:
         list: A list of collected schema constraints.
@@ -183,7 +184,7 @@ def _check_against_defined_schema_constraints(
     schema_constraints: list,
     source_definition: Definition,
     check_me: Any,
-    check_against,
+    check_against: Definition,
     all_constraints_by_name: dict[str, Callable],
     constraint_results: dict[str, list[ExecutionResult]]
 ) -> dict[str, list[ExecutionResult]]:
@@ -194,7 +195,7 @@ def _check_against_defined_schema_constraints(
         schema_constraints (list):                              A list of collected schema constraints to check the value against.
         source_definition (Definition):                         Source of the check_me field that we are evaluating
         check_me (Any):                                         The field value being checked
-        check_against:                                          The schema we are comparing the check_me field against
+        check_against (Any):                                    The schema we are comparing the check_me field against
         all_constraints_by_name (dict[str, Callable]):          A dictionary of all constraint names and function calls.
         constraint_results (dict[str, list[ExecutionResult]]):  A dictionary of constraint results.
 
@@ -218,7 +219,7 @@ def _check_against_defined_schema_constraints(
 def _check_field_against_constraint(
     source_definition: Definition,
     check_me: Any,
-    check_against,
+    check_against: Definition,
     all_constraints_by_name: dict[str, Callable],
     constraint_results: dict[str, list[ExecutionResult]]
 ) -> dict[str, list[ExecutionResult]]:
@@ -228,7 +229,7 @@ def _check_field_against_constraint(
     Args:
         source_definition (Definition):                         Source of the check_me field that we are evaluating
         check_me (Any):                                         The field value being checked
-        check_against:                                          The schema we are comparing the check_me field against
+        check_against (Definition):                             The schema we are comparing the check_me field against
         all_constraints_by_name (dict[str, Callable]):          A dictionary of all constraint names and function calls.
         constraint_results (dict[str, list[ExecutionResult]]):  A dictionary of constraint results.
 
@@ -296,7 +297,7 @@ def _check_field_against_constraint(
 def check_schema_constraint(
     source_definition: Definition,
     check_me: Any,
-    check_against,
+    check_against: Definition,
     all_constraints_by_name: dict[str, Callable],
     constraint_results: dict[str, list[ExecutionResult]]
 ) -> dict[str, list[ExecutionResult]]:
@@ -306,7 +307,7 @@ def check_schema_constraint(
     Args:
         source_definition (Definition):                         Source of the check_me field that we are evaluating
         check_me (Any):                                         The field being checked
-        check_against:                                          The schema we are comparing the check_me field against
+        check_against (Definition):                             The schema we are comparing the check_me field against
         all_constraints_by_name (dict[str, Callable]):          A dictionary of all constraint names and function calls.
         constraint_results (dict[str, list[ExecutionResult]]):  A dictionary of constraint results.
 
@@ -332,16 +333,16 @@ def check_schema_constraint(
 
 
 def check_context_constraint(
-    context_constraint,
+    context_constraint: Definition,
     definitions_to_check: list[Definition],
     all_constraints_by_name: dict[str, Callable],
     constraint_results: dict[str, list[ExecutionResult]]
 ) -> dict[str, list[ExecutionResult]]:
     """
-    Helper method that runs all the constraints for a given schema.
+    Helper method that runs context constraints against a given schema.
 
     Args:
-        context_constraint:                                     The constraint being checked against.
+        context_constraint (Definition):                        The constraint being checked against.
         definitions_to_check (list[Definition]):                A list of definitions to check against the constraint.
         all_constraints_by_name (dict[str, Callable]):          A dictionary of all constraint names and function calls.
         constraint_results (dict[str, list[ExecutionResult]]):  A dictionary of constraint results.
@@ -363,6 +364,17 @@ def check_context_constraint(
 
 
 def _check_constraint_results(constraint_results: dict[str, list[ExecutionResult]], verbose: bool, fail_on_warn: bool) -> (ExecutionStatus, list):
+    """
+    Loops through constraint results and checks for any failures.
+
+    Args:
+        constraint_results (dict[str, list[ExecutionResult]]):  A dictionary of constraint results.
+        fail_on_warn (bool):                                    Flag to fail when warnings are discovered
+        verbose (bool):                                         Flag for verbose mode. When true add success messages as encountered.
+
+    Returns:
+        ExecutionStatus, list: Constraint success status and list of messages.
+    """
     status = ExecutionStatus.SUCCESS
     messages = []
     for name, results in constraint_results.items():
@@ -402,7 +414,8 @@ def _collect_all_constraints_by_name() -> dict[str, Callable]:
 
 
 def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult:
-    """Business logic for the check command.
+    """
+    Business logic for the check command.
 
     Args:
         aac_file (str):         The AaC file being processed
@@ -424,10 +437,6 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult:
     # collect all constraints for easy access
     all_constraints_by_name = _collect_all_constraints_by_name()
 
-    # # we'll need to recurse our way through the schema to check all the constraints
-
-    # now that the helper functions are in place, let's run the constraints on the aac_file
-
     # FIX ME: This call to parse_and_load can throw LanguageError and ParserError exceptions which are not being handled here
     # FIX ME: They should be handled, their messages added to the message list being constructed in this method (complete with source and location info)
     # FIX ME: so they can be passed along. This was discovered during the expansion of test_check_aac.py and those tests would need to be updated.
@@ -437,7 +446,7 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult:
     # Context constraints are "language constraints" and are not tied to a specific schema
     # You can think of these as "invariants", so they must always be satisfied
     for plugin in context.get_definitions_by_root("plugin"):
-        # we want to check contest constraints, but not the ones that are defined in the aac_file we're checking to avoid gen-plugin circular logic
+        # we want to check context constraints, but not the ones that are defined in the aac_file we're checking to avoid gen-plugin circular logic
         for context_constraint in plugin.instance.context_constraints:
             constraint_results = check_context_constraint(context_constraint, definitions_to_check, all_constraints_by_name, constraint_results)
     for check_me in definitions_to_check:
