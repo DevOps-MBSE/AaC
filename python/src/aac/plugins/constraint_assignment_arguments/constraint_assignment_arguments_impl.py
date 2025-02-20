@@ -67,13 +67,14 @@ def _process_constraint_arguments(instance: Any, constraint_args: Any, definitio
 
 def _find_constraint_definition(context: LanguageContext, constraint_name: str) -> list:  # From check_aac_impl.py
     """
-    Collects applicable constraints for the current schema.
+    Determines the appropriate schema or primitive constraint based on the name
 
     Args:
-        check_against (Definition): The Constraint we are checking against
+        context (LanguageContext): The context in use
+        constraint_name (str): The constraint name for which we are searching
 
     Returns:
-        list: A list of collected schema constraints.
+        list: A list size 0 (empty because match not found) or 1 (the matched schema or primitive constraint).
     """
     constraint_definition = []
     for plugin in context.get_definitions_by_root("plugin"):
@@ -91,7 +92,17 @@ def _find_constraint_definition(context: LanguageContext, constraint_name: str) 
 def check_arguments_against_constraint_definition(
     instance: Any, definition: Definition, defining_schema
 ) -> ExecutionResult:
-    """Business logic for the Check arguments against constraint definition constraint."""
+    """
+    Business logic for the Check arguments against constraint definition constraint.
+
+    Args:
+        instance (Any): The SchemaConstraintAssignment or PrimitiveConstraintAssignment we are processing
+        definition (Definition): The schema constraint definition
+        defining_schema: NOT USED
+
+    Returns:
+        ExecutionResult: An ExecutionResult with an error message if there was a problem.
+    """
 
     context = LanguageContext()
     if not context.is_aac_instance(
