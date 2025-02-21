@@ -28,7 +28,7 @@ def _process_constraint_arguments(instance: Any, constraint_args: Any, definitio
         context: The context in use
 
     Returns:
-        ExecutionResult: An ExecutionResult with an error message if there was a problem.
+        ExecutionResult: An ExecutionResult with an ExecutionMessage error message if there was a problem.
     """
 
     if instance.arguments is None:
@@ -101,7 +101,7 @@ def check_arguments_against_constraint_definition(
         defining_schema: NOT USED
 
     Returns:
-        ExecutionResult: An ExecutionResult with an error message if there was a problem.
+        ExecutionResult: An ExecutionResult with an ExecutionMessage error message if there was a problem.
     """
 
     context = LanguageContext()
