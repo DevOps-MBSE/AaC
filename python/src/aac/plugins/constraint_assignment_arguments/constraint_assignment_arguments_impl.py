@@ -67,7 +67,7 @@ def _process_constraint_arguments(instance: Any, constraint_args: Any, definitio
 
 def _find_constraint_definition(context: LanguageContext, constraint_name: str) -> list:  # From check_aac_impl.py
     """
-    Determines the appropriate schema or primitive constraint based on the name
+    Determines the appropriate schema or primitive constraint based on the name.
 
     Args:
         context (LanguageContext): The context in use
