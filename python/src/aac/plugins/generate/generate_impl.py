@@ -139,6 +139,9 @@ def generate_content(
         test_out_dir (str): Output path for generated test files.
         doc_out_dir (str): Output path for generated doc files.
         source_data_def (Definition): The definition of the source aac data.
+
+    Raises:
+        LanguageError: When the content of the data source file is invalid.
     """
     source_data_structures = []
     if not source.data_content:
