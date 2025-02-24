@@ -2,7 +2,7 @@
 
 from os import path, makedirs, walk, remove
 import importlib
-from typing import Callable
+from typing import Callable, Any
 from aac.execute.aac_execution_result import (
     ExecutionResult,
     ExecutionStatus,
@@ -24,7 +24,216 @@ from aac.plugins.generate.helpers.python_helpers import (
 plugin_name = "Generate"
 
 
-def generate(  # noqa: C901
+def output_to_jinja_template(
+    evaluate: bool,
+    force_overwrite: bool,
+    source: Any,
+    template: Any,
+    jinja_template: Template,
+    code_out_dir: str,
+    test_out_dir: str,
+    doc_out_dir: str,
+    source_data_structure: dict,
+    source_data_def: Definition
+):
+    """
+    Outputs generation data to a jinja2 template file.
+
+    Args:
+        evaluate (bool): Command argument from the generate command.  If true, generate only writes evaluation files with no impact to existing files.
+        force_overwrite (bool): Command argument from the generate command.  If true, forces generate to overwrite any already existing files.
+        source (Any): An instance of the source generator file definition.
+        template (Any): An instance of the generator template definition.
+        jinja_template (Template): Jinja2 template file.
+        code_out_dir (str): Output path for generated code files.
+        test_out_dir (str): Output path for generated test files.
+        doc_out_dir (str): Output path for generated doc files.
+        source_data_structure (dict): A dictionary containing the source data structure.
+        source_data_def (Definition): The definition of the source aac data.
+    """
+    context = LanguageContext()
+    source_data_package = source_data_def.package
+    jinja_output = jinja_template.render(source_data_structure)
+    output = black.format_str(jinja_output, mode=black.Mode()) if template.output_file_extension == "py" else jinja_output
+
+    # write output to files to the target in the template, respecting the overwrite indicator
+    root_out_dir = code_out_dir
+    if template.output_target == context.create_aac_enum(
+        "aac.lang.GeneratorOutputTarget", "TEST"
+    ):
+        root_out_dir = test_out_dir
+    elif template.output_target == context.create_aac_enum(
+        "aac.lang.GeneratorOutputTarget", "DOC"
+    ):
+        root_out_dir = doc_out_dir
+    file_name = source_data_def.name
+    if source.data_content:
+        name_extension = f"{source_data_structure['name'].replace(' ', '_').replace('-', '_')}"
+        file_name = f"{file_name}_{name_extension}"
+    output_file_path = get_output_file_path(
+        root_out_dir, template, source_data_package, file_name
+    )
+    # make sure the directory exists
+    output_dir = path.dirname(output_file_path)
+    if not path.exists(output_dir):
+        makedirs(output_dir)
+
+    if evaluate:
+        # write contents to an aac_evaluate file for user review
+        evaluate_file_path = f"{output_file_path}.aac_evaluate"
+        with open(evaluate_file_path, "w") as output_file:
+            output_file.write(output)
+            output_file.close()
+    else:
+        # write contents to output_file_path
+        if force_overwrite or template.overwrite in [
+            context.create_aac_enum(
+                "aac.lang.OverwriteOption", "OVERWRITE"
+            )
+        ]:
+            if path.exists(output_file_path):
+                backup_file(output_file_path)
+            with open(output_file_path, "w") as output_file:
+                output_file.write(output)
+                output_file.close()
+        elif template.overwrite in [
+            context.create_aac_enum(
+                "aac.lang.OverwriteOption", "SKIP"
+            )
+        ]:
+            # this is for the skip option, so only write if file doesn't exist
+            if not path.exists(output_file_path):
+                with open(output_file_path, "w") as output_file:
+                    output_file.write(output)
+                    output_file.close()
+            else:
+                evaluate_file_path = (
+                    f"{output_file_path}.aac_evaluate"
+                )
+                with open(evaluate_file_path, "w") as output_file:
+                    output_file.write(output)
+                    output_file.close()
+
+
+def generate_content(
+    evaluate: bool,
+    force_overwrite: bool,
+    source: Any,
+    template: Any,
+    jinja_template: Template,
+    code_out_dir: str,
+    test_out_dir: str,
+    doc_out_dir: str,
+    source_data_def: Definition
+):
+    """
+    Generates file content for use by the jinja template.
+
+    Args:
+        evaluate (bool): Command argument from the generate command.  If true, generate only writes evaluation files with no impact to existing files.
+        force_overwrite (bool): Command argument from the generate command.  If true, forces generate to overwrite any already existing files.
+        source (Any): An instance of the source generator file definition.
+        template (Any): An instance of the generator template definition.
+        jinja_template (Template): Jinja2 template file.
+        code_out_dir (str): Output path for generated code files.
+        test_out_dir (str): Output path for generated test files.
+        doc_out_dir (str): Output path for generated doc files.
+        source_data_def (Definition): The definition of the source aac data.
+
+    Raises:
+        ExecutionError: When the content of the data source file is invalid.
+    """
+    source_data_structures = []
+    if not source.data_content:
+        # we'll just use the root structure
+        source_data_structures = [source_data_def.structure]
+    else:
+        # we've got to navigate the structure to get the right data
+        content_split = source.data_content.split(".")
+        if content_split[0] != source_data_def.get_root_key():
+            raise ExecutionError(
+                f"Invalid data_content for generator source {source.name}. The data_content must be the root key of the data source."
+            )
+        else:
+            source_data_structures = [source_data_def.structure]
+            for field_name in content_split:
+                new_source_data_structures = []
+                for structure in source_data_structures:
+                    if field_name not in structure:
+                        # it is possible that fields are optional and may not be present, so continue if not present
+                        continue
+                    field_value = structure[field_name]
+                    if isinstance(field_value, list):
+                        new_source_data_structures.extend(field_value)
+                    elif isinstance(field_value, dict):
+                        new_source_data_structures.append(field_value)
+                    else:
+                        raise ExecutionError(
+                            f"Invalid data_content {source.data_content} for generator source {source.name}. The data_content must be a field chain in the data source that represents a structure of data, not a primitive."
+                        )
+                source_data_structures = new_source_data_structures
+    for source_data_structure in source_data_structures:
+        output_to_jinja_template(evaluate, force_overwrite, source, template, jinja_template, code_out_dir, test_out_dir, doc_out_dir, source_data_structure, source_data_def)
+
+
+def generate_data_from_source(
+    evaluate: bool,
+    force_overwrite: bool,
+    source: Any,
+    parsed_definitions: list[Definition],
+    code_out_dir: str,
+    test_out_dir: str,
+    doc_out_dir: str,
+    generator_file: str
+):
+    """
+    Extracts data from a generator source and uses it to generate content.
+
+    Args:
+        evaluate (bool): Command argument from the generate command.  If true, generate only writes evaluation files with no impact to existing files.
+        force_overwrite (bool): Command argument from the generate command.  If true, forces generate to overwrite any already existing files.
+        source (Any): An instance of the source generator file definition.
+        parsed_definitions (list[Definition]): List of parsed definitions to be used in file generation.
+        code_out_dir (str): Output path for generated code files.
+        test_out_dir (str): Output path for generated test files.
+        doc_out_dir (str): Output path for generated doc files.
+        generator_file (str): AaC generator file.
+
+    """
+    source_data_definitions: list[Definition] = []
+    for parsed_definition in parsed_definitions:
+        if parsed_definition.get_root_key() == source.data_source:
+            source_data_definitions.append(parsed_definition)
+
+    if not source_data_definitions or len(source_data_definitions) == 0:
+        # no data for this particular generator
+        return
+
+    # go through each generator template
+    for template in source.templates:
+        # figure out how to load func_dict into the jinja2 environment
+        helper_functions: dict[str, Callable] = {}
+        for helper in template.helper_functions:
+            helper_functions[helper.function] = get_callable(
+                helper.package, helper.module, helper.function
+            )
+
+        # generate code using the template and source
+        template_abs_path = path.abspath(
+            path.join(path.dirname(generator_file), template.template_file)
+        )
+        jinja_template = None
+        if len(helper_functions) > 0:
+            jinja_template = load_template(template_abs_path, helper_functions)
+        else:
+            jinja_template = load_template(template_abs_path)
+
+        # loop over the parsed definitions and generate content for each
+        for source_data_def in source_data_definitions:
+            generate_content(evaluate, force_overwrite, source, template, jinja_template, code_out_dir, test_out_dir, doc_out_dir, source_data_def)
+
+
+def generate(
     aac_file: str,
     generator_file: str,
     code_output: str,
@@ -34,7 +243,22 @@ def generate(  # noqa: C901
     force_overwrite: bool,
     evaluate: bool,
 ) -> ExecutionResult:
-    """Generate content from your AaC architecture."""
+    """
+    Generate content from your AaC architecture.
+
+    Args:
+        aac_file (str):  Content to be used for generation.
+        generator_file (str): AaC generator file.
+        code_out_dir (str): Output path for generated code files.
+        test_out_dir (str): Output path for generated test files.
+        doc_out_dir (str): Output path for generated doc files.
+        no_prompt (bool): Command argument.  If true, generates files with no prompt.  Primarily used for testing or by other plugins.
+        force_overwrite (bool): Command argument.  If true, forces generate to overwrite any already existing files.
+        evaluate (bool): Command argument.  If true, generate only writes evaluation files with no impact to existing files.
+
+    Returns:
+        ExecutionResult: The result of executing the generate command.
+    """
 
     result = ExecutionResult(plugin_name, "generate", ExecutionStatus.SUCCESS, [])
 
@@ -75,130 +299,7 @@ def generate(  # noqa: C901
         # go through each generator source and get data from parsed_definitions based on from_source
 
         for source in generator.sources:
-            source_data_definitions: list[Definition] = []
-            for parsed_definition in parsed_definitions:
-                if parsed_definition.get_root_key() == source.data_source:
-                    source_data_definitions.append(parsed_definition)
-
-            if not source_data_definitions or len(source_data_definitions) == 0:
-                # no data for this particular generator
-                continue
-
-            # go through each generator template
-            for template in source.templates:
-                # figure out how to load func_dict into the jinja2 environment
-                helper_functions: dict[str, Callable] = {}
-                for helper in template.helper_functions:
-                    helper_functions[helper.function] = get_callable(
-                        helper.package, helper.module, helper.function
-                    )
-
-                # generate code using the template and source
-                template_abs_path = path.abspath(
-                    path.join(path.dirname(generator_file), template.template_file)
-                )
-                jinja_template = None
-                if len(helper_functions) > 0:
-                    jinja_template = load_template(template_abs_path, helper_functions)
-                else:
-                    jinja_template = load_template(template_abs_path)
-
-                # loop over the parsed definitions and generate content for each
-                for source_data_def in source_data_definitions:
-                    source_data_structures = []
-                    source_data_package = source_data_def.package
-                    if not source.data_content:
-                        # we'll just use the root structure
-                        source_data_structures = [source_data_def.structure]
-                    else:
-                        # we've got to navigate the structure to get the right data
-                        content_split = source.data_content.split(".")
-                        if content_split[0] != source_data_def.get_root_key():
-                            raise ExecutionError(
-                                f"Invalid data_content for generator source {source.name}. The data_content must be the root key of the data source."
-                            )
-                        else:
-                            source_data_structures = [source_data_def.structure]
-                            for field_name in content_split:
-                                new_source_data_structures = []
-                                for structure in source_data_structures:
-                                    if field_name not in structure:
-                                        # it is possible that fields are optional and may not be present, so continue if not present
-                                        continue
-                                    field_value = structure[field_name]
-                                    if isinstance(field_value, list):
-                                        new_source_data_structures.extend(field_value)
-                                    elif isinstance(field_value, dict):
-                                        new_source_data_structures.append(field_value)
-                                    else:
-                                        raise ExecutionError(
-                                            f"Invalid data_content {source.data_content} for generator source {source.name}. The data_content must be a field chain in the data source that represents a structure of data, not a primitive."
-                                        )
-                                source_data_structures = new_source_data_structures
-                    for source_data_structure in source_data_structures:
-                        jinja_output = jinja_template.render(source_data_structure)
-                        output = jinja_output
-                        if template.output_file_extension == "py":
-                            output = black.format_str(jinja_output, mode=black.Mode())
-
-                        # write output to files to the target in the template, respecting the overwrite indicator
-                        root_out_dir = code_out_dir
-                        if template.output_target == context.create_aac_enum(
-                            "aac.lang.GeneratorOutputTarget", "TEST"
-                        ):
-                            root_out_dir = test_out_dir
-                        elif template.output_target == context.create_aac_enum(
-                            "aac.lang.GeneratorOutputTarget", "DOC"
-                        ):
-                            root_out_dir = doc_out_dir
-                        file_name = source_data_def.name
-                        if source.data_content:
-                            name_extension = f"{source_data_structure['name'].replace(' ', '_').replace('-', '_')}"
-                            file_name = f"{file_name}_{name_extension}"
-                        output_file_path = get_output_file_path(
-                            root_out_dir, template, source_data_package, file_name
-                        )
-                        # make sure the directory exists
-                        output_dir = path.dirname(output_file_path)
-                        if not path.exists(output_dir):
-                            makedirs(output_dir)
-
-                        if evaluate:
-                            # write contents to an aac_evaluate file for user review
-                            evaluate_file_path = f"{output_file_path}.aac_evaluate"
-                            with open(evaluate_file_path, "w") as output_file:
-                                output_file.write(output)
-                                output_file.close()
-                        else:
-                            # write contents to output_file_path
-                            if force_overwrite or template.overwrite in [
-                                context.create_aac_enum(
-                                    "aac.lang.OverwriteOption", "OVERWRITE"
-                                )
-                            ]:
-                                if path.exists(output_file_path):
-                                    backup_file(output_file_path)
-                                with open(output_file_path, "w") as output_file:
-                                    output_file.write(output)
-                                    output_file.close()
-                            elif template.overwrite in [
-                                context.create_aac_enum(
-                                    "aac.lang.OverwriteOption", "SKIP"
-                                )
-                            ]:
-                                # this is for the skip option, so only write if file doesn't exist
-                                if not path.exists(output_file_path):
-                                    with open(output_file_path, "w") as output_file:
-                                        output_file.write(output)
-                                        output_file.close()
-                                else:
-                                    evaluate_file_path = (
-                                        f"{output_file_path}.aac_evaluate"
-                                    )
-                                    with open(evaluate_file_path, "w") as output_file:
-                                        output_file.write(output)
-                                        output_file.close()
-
+            generate_data_from_source(evaluate, force_overwrite, source, parsed_definitions, code_out_dir, test_out_dir, doc_out_dir, generator_file)
     return result
 
 
