@@ -141,7 +141,7 @@ def generate_content(
         source_data_def (Definition): The definition of the source aac data.
 
     Raises:
-        LanguageError: When the content of the data source file is invalid.
+        ExecutionError: When the content of the data source file is invalid.
     """
     source_data_structures = []
     if not source.data_content:
