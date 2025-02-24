@@ -22,10 +22,10 @@ def _process_constraint_arguments(instance: Any, constraint_args: Any, definitio
         Process the constraint arguments.
 
     Args:
-        instance: The constraint we are processing
-        constraint_args: Arguments for this constraint
-        definition: The schema constraint
-        context: The context in use
+        instance (Any): The SchemaConstraintAssignment or PrimitiveConstraintAssignment we are processing
+        constraint_args (Any): A dictionary (dict) of arguments for this constraint
+        definition (Definition): The schema constraint
+        context (LanguageContext): The context in use
 
     Returns:
         ExecutionResult: An ExecutionResult with an ExecutionMessage error message if there was a problem.
