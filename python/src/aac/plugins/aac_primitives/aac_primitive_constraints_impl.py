@@ -110,8 +110,7 @@ def check_file(
     # So here's a brute force approach.
     path_entries = []
     find_items(value, path_entries)
-    valid_path_characters = (
-        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.")
+
 
     first = True
     for path_entry in path_entries:
@@ -131,10 +130,7 @@ def check_file(
                 )
                 messages.append(error_msg)
                 return ExecutionResult(plugin_name, "Check file", status, messages)
-            if (
-                path_entry[0]
-                not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-            ):
+            if (not path_entry[0].isalpha()):
                 status = ExecutionStatus.CONSTRAINT_FAILURE
                 error_msg = ExecutionMessage(
                     message=f"The value {value} has an invalid drive specification.",
@@ -147,6 +143,8 @@ def check_file(
             continue
         else:
             # this needs to be a valid directory or file name
+            valid_path_characters = (
+        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.")
             for character in path_entry:
                 if character not in valid_path_characters:
                     status = ExecutionStatus.CONSTRAINT_FAILURE
