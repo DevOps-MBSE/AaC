@@ -17,33 +17,20 @@ from typing import Any
 plugin_name = "Constraint Assignment Arguments"
 
 
-def check_arguments_against_constraint_definition(  # noqa: C901
-    instance: Any, definition: Definition, defining_schema
-) -> ExecutionResult:
-    """Business logic for the Check arguments against constraint definition constraint."""
+def _process_constraint_arguments(instance: Any, constraint_args: Any, definition: Definition, context: LanguageContext) -> ExecutionResult:
+    """
+        Process the constraint arguments.
 
-    context = LanguageContext()
-    if not context.is_aac_instance(
-        instance, "aac.lang.SchemaConstraintAssignment"
-    ) and not context.is_aac_instance(
-        instance, "aac.lang.PrimitiveConstraintAssignment"
-    ):
-        # the constraint failed
-        error_msg = ExecutionMessage(
-            f"The Check arguments against constraint definition constraint for {instance.name} failed.  You may only use this constraint on SchemaConstraintAssignment or PrimitiveConstraintAssignment definitions.  Received {type(instance)}.)",
-            MessageLevel.ERROR,
-            (definition.source.uri),
-            None,
-        )
-        return ExecutionResult(
-            plugin_name,
-            "Check arguments against constraint definition",
-            ExecutionStatus.GENERAL_FAILURE,
-            [error_msg],
-        )
+    Args:
+        instance (Any): The SchemaConstraintAssignment or PrimitiveConstraintAssignment we are processing
+        constraint_args (Any): A dictionary (dict) of arguments for this constraint
+        definition (Definition): The schema constraint
+        context (LanguageContext): The context in use
 
-    constraint_name = instance.name
-    constraint_args: dict = {}
+    Returns:
+        ExecutionResult: An ExecutionResult with an ExecutionMessage error message if there was a problem.
+    """
+
     if instance.arguments is None:
         constraint_args = {}
     elif not isinstance(instance.arguments, list):
@@ -75,8 +62,21 @@ def check_arguments_against_constraint_definition(  # noqa: C901
                     [error_msg],
                 )
             constraint_args[arg["name"]] = arg["value"]
+    return None
 
-    constraint_definition = None
+
+def _find_constraint_definition(context: LanguageContext, constraint_name: str) -> list:  # From check_aac_impl.py
+    """
+    Determines the appropriate schema or primitive constraint based on the name.
+
+    Args:
+        context (LanguageContext): The context in use
+        constraint_name (str): The constraint name for which we are searching
+
+    Returns:
+        list: A list size 0 (empty because match not found) or 1 (the matched schema or primitive constraint).
+    """
+    constraint_definition = []
     for plugin in context.get_definitions_by_root("plugin"):
         for schema_constraint in plugin.instance.schema_constraints:
             if schema_constraint.name == constraint_name:
@@ -86,6 +86,53 @@ def check_arguments_against_constraint_definition(  # noqa: C901
             if primitive_constraint.name == constraint_name:
                 constraint_definition = primitive_constraint
                 break
+    return constraint_definition
+
+
+def check_arguments_against_constraint_definition(
+    instance: Any, definition: Definition, defining_schema
+) -> ExecutionResult:
+    """
+    Business logic for the Check arguments against constraint definition constraint.
+
+    Args:
+        instance (Any): The SchemaConstraintAssignment or PrimitiveConstraintAssignment we are processing
+        definition (Definition): The schema constraint definition
+        defining_schema: NOT USED
+
+    Returns:
+        ExecutionResult: An ExecutionResult with an ExecutionMessage error message if there was a problem.
+    """
+
+    context = LanguageContext()
+    if not context.is_aac_instance(
+        instance, "aac.lang.SchemaConstraintAssignment"
+    ) and not context.is_aac_instance(
+        instance, "aac.lang.PrimitiveConstraintAssignment"
+    ):
+        # the constraint failed
+        error_msg = ExecutionMessage(
+            f"The Check arguments against constraint definition constraint for {instance.name} failed.  You may only use this constraint on SchemaConstraintAssignment or PrimitiveConstraintAssignment definitions.  Received {type(instance)}.)",
+            MessageLevel.ERROR,
+            (definition.source.uri),
+            None,
+        )
+        return ExecutionResult(
+            plugin_name,
+            "Check arguments against constraint definition",
+            ExecutionStatus.GENERAL_FAILURE,
+            [error_msg],
+        )
+
+    constraint_name = instance.name
+    constraint_args: dict = {}
+
+    exec_result = _process_constraint_arguments(instance, constraint_args, definition, context)
+    if (exec_result is not None):
+        return exec_result  # This is the ExecutionResult from _process_constraint_arguments so send it we have one
+
+    constraint_definition = None
+    constraint_definition = _find_constraint_definition(context, constraint_name)
 
     # Make sure we found the constraint definition
     if constraint_definition is None:
