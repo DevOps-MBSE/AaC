@@ -73,7 +73,21 @@ def check_directory(
     return check_file(value, type_declaration, source, location)
 
 
-def check_file(  # noqa: C901
+def find_items(value: str, path_entries: list):
+    """Business logic for the Check directory constraint."""
+    valid_separators = ["/", "\\"]
+    item = ""
+    for character in value:
+        if character in valid_separators:
+            if item != "":
+                path_entries.append(item)
+                item = ""
+        else:
+            item += character
+    path_entries.append(item)
+
+
+def check_file(
     value: str, type_declaration: str, source: AaCFile, location: SourceLocation
 ) -> ExecutionResult:
     """Business logic for the Check file constraint."""
@@ -94,20 +108,10 @@ def check_file(  # noqa: C901
 
     # I tried to do this with a regex but got frustrated and gave up.  For some reason, the complex regex the AI generated for me would just run forever when matching.
     # So here's a brute force approach.
-    valid_separators = ["/", "\\"]
-    item = ""
     path_entries = []
+    find_items(value, path_entries)
     valid_path_characters = (
-        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_."
-    )
-    for character in value:
-        if character in valid_separators:
-            if item != "":
-                path_entries.append(item)
-                item = ""
-        else:
-            item += character
-    path_entries.append(item)
+        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.")
 
     first = True
     for path_entry in path_entries:
