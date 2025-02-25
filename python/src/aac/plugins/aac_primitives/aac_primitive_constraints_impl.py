@@ -23,7 +23,18 @@ plugin_name = "AaC Primitive Constraints"
 def check_bool(
     value: str, type_declaration: str, source: AaCFile, location: SourceLocation
 ) -> ExecutionResult:
-    """Business logic for the Check bool constraint."""
+    """
+    Business logic for the Check bool constraint.
+
+    Args:
+        value (str): The value being checked.
+        type_declaration (str): The type of the passed in value.
+        source (AaCFile): The source file of the definition.
+        location (SourceLocation): line and column location within the source file.
+
+    Returns:
+        ExecutionResult: The result of executing this constraint.
+    """
 
     status = ExecutionStatus.SUCCESS
     messages: list[ExecutionMessage] = []
@@ -44,7 +55,18 @@ def check_bool(
 def check_date(
     value: str, type_declaration: str, source: AaCFile, location: SourceLocation
 ) -> ExecutionResult:
-    """Business logic for the Check date constraint."""
+    """
+    Business logic for the Check date constraint.
+
+    Args:
+        value (str): The value being checked.
+        type_declaration (str): The type of the passed in value.
+        source (AaCFile): The source file of the definition.
+        location (SourceLocation): line and column location within the source file.
+
+    Returns:
+        ExecutionResult: The result of executing this constraint.
+    """
 
     status = ExecutionStatus.SUCCESS
     messages: list[ExecutionMessage] = []
@@ -67,14 +89,34 @@ def check_date(
 def check_directory(
     value: str, type_declaration: str, source: AaCFile, location: SourceLocation
 ) -> ExecutionResult:
-    """Business logic for the Check directory constraint."""
+    """
+    Business logic for the Check directory constraint.
+
+    Args:
+        value (str): The filepath being checked.
+        type_declaration (str): The type of the passed in value.
+        source (AaCFile): The source file of the definition.
+        location (SourceLocation): line and column location within the source file.
+
+    Returns:
+        ExecutionResult: The result of executing this constraint.
+    """
 
     # I think this should work fine
     return check_file(value, type_declaration, source, location)
 
 
-def find_items(value: str, path_entries: list):
-    """Business logic for the Check directory constraint."""
+def _find_items(value: str) -> list:
+    """
+    Helper function that finds the path entries for the check_file constraint.
+
+    Args:
+        value (str): A file path being checked by check_file
+
+    Returns:
+        list: A list of path entries.
+    """
+    path_entries = []
     valid_separators = ["/", "\\"]
     item = ""
     for character in value:
@@ -85,12 +127,24 @@ def find_items(value: str, path_entries: list):
         else:
             item += character
     path_entries.append(item)
+    return path_entries
 
 
 def check_file(
     value: str, type_declaration: str, source: AaCFile, location: SourceLocation
 ) -> ExecutionResult:
-    """Business logic for the Check file constraint."""
+    """
+    Business logic for the Check file constraint.
+
+    Args:
+        value (str): The filepath being checked.
+        type_declaration (str): The type of the passed in value.
+        source (AaCFile): The source file of the definition.
+        location (SourceLocation): line and column location within the source file.
+
+    Returns:
+        ExecutionResult: The result of executing this constraint.
+    """
 
     status = ExecutionStatus.SUCCESS
     messages: list[ExecutionMessage] = []
@@ -108,9 +162,7 @@ def check_file(
 
     # I tried to do this with a regex but got frustrated and gave up.  For some reason, the complex regex the AI generated for me would just run forever when matching.
     # So here's a brute force approach.
-    path_entries = []
-    find_items(value, path_entries)
-
+    path_entries = _find_items(value)
 
     first = True
     for path_entry in path_entries:
@@ -144,7 +196,7 @@ def check_file(
         else:
             # this needs to be a valid directory or file name
             valid_path_characters = (
-        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.")
+                "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.")
             for character in path_entry:
                 if character not in valid_path_characters:
                     status = ExecutionStatus.CONSTRAINT_FAILURE
@@ -164,7 +216,18 @@ def check_file(
 def check_string(
     value: str, type_declaration: str, source: AaCFile, location: SourceLocation
 ) -> ExecutionResult:
-    """Business logic for the Check string constraint."""
+    """
+    Business logic for the Check string constraint.
+
+    Args:
+        value (str): The value being checked.
+        type_declaration (str): The type of the passed in value.
+        source (AaCFile): The source file of the definition.
+        location (SourceLocation): line and column location within the source file.
+
+    Returns:
+        ExecutionResult: The result of executing this constraint.
+    """
 
     status = ExecutionStatus.SUCCESS
     messages: list[ExecutionMessage] = []
@@ -185,7 +248,18 @@ def check_string(
 def check_int(
     value: str, type_declaration: str, source: AaCFile, location: SourceLocation
 ) -> ExecutionResult:
-    """Business logic for the Check int constraint."""
+    """
+    Business logic for the Check int constraint.
+
+    Args:
+        value (str): The value being checked.
+        type_declaration (str): The type of the passed in value.
+        source (AaCFile): The source file of the definition.
+        location (SourceLocation): line and column location within the source file.
+
+    Returns:
+        ExecutionResult: The result of executing this constraint.
+    """
 
     status = ExecutionStatus.SUCCESS
     messages: list[ExecutionMessage] = []
@@ -224,7 +298,18 @@ def check_int(
 def check_number(
     value: str, type_declaration: str, source: AaCFile, location: SourceLocation
 ) -> ExecutionResult:
-    """Business logic for the Check number constraint."""
+    """
+    Business logic for the Check number constraint.
+
+    Args:
+        value (str): The value being checked.
+        type_declaration (str): The type of the passed in value.
+        source (AaCFile): The source file of the definition.
+        location (SourceLocation): line and column location within the source file.
+
+    Returns:
+        ExecutionResult: The result of executing this constraint.
+    """
 
     status = ExecutionStatus.SUCCESS
     messages: list[ExecutionMessage] = []
@@ -267,7 +352,18 @@ def check_number(
 def check_dataref(
     value: str, type_declaration: str, source: AaCFile, location: SourceLocation
 ) -> ExecutionResult:
-    """Business logic for the Check dataref constraint."""
+    """
+    Business logic for the Check dataref constraint.
+
+    Args:
+        value (str): The value being checked.
+        type_declaration (str): The type of the passed in value.
+        source (AaCFile): The source file of the definition.
+        location (SourceLocation): line and column location within the source file.
+
+    Returns:
+        ExecutionResult: The result of executing this constraint.
+    """
 
     status = ExecutionStatus.SUCCESS
     messages: list[ExecutionMessage] = []
@@ -308,7 +404,18 @@ def check_dataref(
 def check_typeref(
     value: str, type_declaration: str, source: AaCFile, location: SourceLocation
 ) -> ExecutionResult:
-    """Business logic for the Check typeref constraint."""
+    """
+    Business logic for the Check typeref constraint.
+
+    Args:
+        value (str): The value being checked.
+        type_declaration (str): The type of the passed in value.
+        source (AaCFile): The source file of the definition.
+        location (SourceLocation): line and column location within the source file.
+
+    Returns:
+        ExecutionResult: The result of executing this constraint.
+    """
     if not type_declaration.startswith("typeref"):
         raise Exception(
             f"Invalid typeref constraint: '{value}' for declaration '{type_declaration}' for source '{source.uri}' at location '{location}'"
