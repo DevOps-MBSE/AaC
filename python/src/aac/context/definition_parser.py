@@ -2,6 +2,7 @@
 from typing import Any, Type
 from enum import Enum, auto
 from aac.context.language_error import LanguageError
+from aac.in_out.parser._parser_error import ParserError
 from aac.context.definition import Definition
 from aac.context.lexeme import Lexeme
 from aac.context.util import get_python_module_name, get_python_class_name
@@ -493,6 +494,12 @@ class DefinitionParser():
                         f"Found undefined field name '{item_field_name}' when expecting {defined_field_names} as defined in {defining_definition.name}",
                         self.get_location_str(item_field_name, lexemes),
                     )
+                if (item[item_field_name] == None):
+                    raise ParserError(
+                        self.get_location_str(item_field_name, lexemes),
+                        [f"Missing value for field {item_field_name}.  Field defined in {defining_definition.name}"]
+                    )
+
             subfields = self.populate_sub_fields(subfields, defining_definition, item, lexemes, definition)
 
             instance.append(
@@ -526,6 +533,11 @@ class DefinitionParser():
                     f"Found undefined field name '{item_field_name}' when expecting {defined_field_names} as defined in {defining_definition.name}",
                     self.get_location_str(item_field_name, lexemes),
                 )
+            if (field_value[item_field_name] == None):
+                raise ParserError(
+                    self.get_location_str(item_field_name, lexemes),
+                    [f"Missing value for field {item_field_name}.  Field defined in {defining_definition.name}"]
+            )
 
         subfields = {}
         if "fields" not in defining_definition.structure["schema"]:
