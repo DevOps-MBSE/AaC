@@ -105,7 +105,7 @@ def _write_parser_exception_message(e: ParserError) -> str:
         e (ParserError):  The ParserError exception encountered by handle_exceptions.
 
     Returns:
-        str: The error message.
+        usr_msg (str): The error message.
     """
     usr_msg = f"The AaC file '{e.source}' could not be parsed.{linesep}"
     if e.errors:
@@ -169,7 +169,7 @@ def to_click_command(plugin_name: str, command: AacCommand) -> Command:
     Convert an AacCommand to a Click Command.
 
     Args:
-        plugin_name (str): Name of the plugin the command belongs to..
+        plugin_name (str): Name of the plugin the command belongs to.
         command (AacCommand): The plugin command function being converted to a Click Command.
 
     Returns:
@@ -192,7 +192,7 @@ def to_click_command(plugin_name: str, command: AacCommand) -> Command:
     )
 
 
-def get_command_arguments(plugin_command: Any, definition: Definition):
+def get_command_arguments(plugin_command: Any, definition: Definition) -> list[AacCommandArgument]:
     """
     Function to get a list of arguments for a plugin command.
 
