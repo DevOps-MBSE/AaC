@@ -494,10 +494,10 @@ class DefinitionParser():
                         f"Found undefined field name '{item_field_name}' when expecting {defined_field_names} as defined in {defining_definition.name}",
                         self.get_location_str(item_field_name, lexemes),
                     )
-                if (item[item_field_name] == None):
+                if item[item_field_name] is None:
                     raise ParserError(
                         self.get_location_str(item_field_name, lexemes),
-                        [f"Missing value for field {item_field_name}."]
+                        [f"Missing value for field: {item_field_name}."]
                     )
 
             subfields = self.populate_sub_fields(subfields, defining_definition, item, lexemes, definition)
@@ -533,11 +533,11 @@ class DefinitionParser():
                     f"Found undefined field name '{item_field_name}' when expecting {defined_field_names} as defined in {defining_definition.name}",
                     self.get_location_str(item_field_name, lexemes),
                 )
-            if (field_value[item_field_name] == None):
+            if (field_value[item_field_name] is None):
                 raise ParserError(
                     self.get_location_str(item_field_name, lexemes),
-                    [f"Missing value for field {item_field_name}."]
-            )
+                    [f"Missing value for field: {item_field_name}."]
+                )
 
         subfields = {}
         if "fields" not in defining_definition.structure["schema"]:

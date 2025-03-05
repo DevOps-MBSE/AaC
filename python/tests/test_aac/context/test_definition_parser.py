@@ -72,7 +72,7 @@ class TestDefinitionParser(TestCase):
         try:
             loaded_definition = context.parse_and_load(SCHEMA_WITH_EMPTY_FIELD_VALUE_NOT_LIST)
         except ParserError as e:
-            self.assertIn("Missing value for field type.", e.errors)
+            self.assertIn("Missing value for field: type.", e.errors)
 
 
     def test_empty_field_value_list(self):
@@ -80,7 +80,7 @@ class TestDefinitionParser(TestCase):
         try:
             loaded_definition = context.parse_and_load(SCHEMA_WITH_EMPTY_FIELD_VALUE_LIST)
         except ParserError as e:
-            self.assertIn("Missing value for field fields.", e.errors)
+            self.assertIn("Missing value for field: fields.", e.errors)
 
 
 VALID_AAC_YAML_CONTENT = """
