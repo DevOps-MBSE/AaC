@@ -67,6 +67,21 @@ class TestDefinitionParser(TestCase):
         except LanguageError as e:
             self.assertNotEqual(e.location, "Unknown location")
 
+    def test_empty_field_value_not_list(self):
+        context = LanguageContext()
+        try:
+            loaded_definition = context.parse_and_load(SCHEMA_WITH_EMPTY_FIELD_VALUE_NOT_LIST)
+        except ParserError as e:
+            self.assertIn("Missing value for field type.", e.errors)
+
+
+    def test_empty_field_value_list(self):
+        context = LanguageContext()
+        try:
+            loaded_definition = context.parse_and_load(SCHEMA_WITH_EMPTY_FIELD_VALUE_LIST)
+        except ParserError as e:
+            self.assertIn("Missing value for field fields.", e.errors)
+
 
 VALID_AAC_YAML_CONTENT = """
 schema:
@@ -189,4 +204,36 @@ schema:
     values:
         - bad_value
         - bad_value
+""".strip()
+
+SCHEMA_WITH_EMPTY_FIELD_VALUE_NOT_LIST= """
+schema:
+  name: TestSchema
+  description: |
+    This is a test schema.
+  fields:
+    - name: string_field
+      type: string
+      description: |
+        This is a test field.
+    - name: integer_field
+      type:
+      description: |
+        This is a test field.
+    - name: boolean_field
+      type: boolean
+      description: |
+        This is a test field.
+    - name: number_field
+      type: number
+      description: |
+        This is a test field.
+""".strip()
+
+SCHEMA_WITH_EMPTY_FIELD_VALUE_LIST= """
+schema:
+  name: TestSchema
+  description: |
+    This is a test schema.
+  fields:
 """.strip()

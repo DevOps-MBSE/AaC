@@ -497,7 +497,7 @@ class DefinitionParser():
                 if (item[item_field_name] == None):
                     raise ParserError(
                         self.get_location_str(item_field_name, lexemes),
-                        [f"Missing value for field {item_field_name}.  Field defined in {defining_definition.name}"]
+                        [f"Missing value for field {item_field_name}."]
                     )
 
             subfields = self.populate_sub_fields(subfields, defining_definition, item, lexemes, definition)
@@ -536,7 +536,7 @@ class DefinitionParser():
             if (field_value[item_field_name] == None):
                 raise ParserError(
                     self.get_location_str(item_field_name, lexemes),
-                    [f"Missing value for field {item_field_name}.  Field defined in {defining_definition.name}"]
+                    [f"Missing value for field {item_field_name}."]
             )
 
         subfields = {}
