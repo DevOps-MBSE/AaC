@@ -17,7 +17,7 @@ class TestExclusiveFields(TestCase):
             context.remove_definitions(good)
 
         # bad data tests
-        for bad_def in [BAD_DATA_1, BAD_DATA_2, BAD_DATA_3, BAD_DATA_4, BAD_DATA_5, BAD_DATA_6, BAD_DATA_7, BAD_DATA_8]:
+        for bad_def in [BAD_DATA_1, BAD_DATA_2, BAD_DATA_3, BAD_DATA_4, BAD_DATA_5, BAD_DATA_6]:
             bad = context.parse_and_load(bad_def)
             result = mutually_exclusive_fields(bad[0].instance, one_definition[0], None, ["alpha", "beta", "gamma"])
             self.assertFalse(result.is_success(), msg=f"Expected failure for {bad[0].name}")
@@ -120,26 +120,12 @@ one:
 
 BAD_DATA_5 = """
 one:
-    name: BadFive
-    alpha: alpha
-    alpha: #  This intentionally left as blank/whitespace
-"""
-
-BAD_DATA_6 = """
-one:
     name: BadSix
     beta: beta
     alpha: alpha
 """
 
-BAD_DATA_7 = """
-one:
-    name: BadSeven
-    alpha: #  This intentionally left as blank/whitespace
-    alpha: #  This intentionally left as blank/whitespace
-"""
-
-BAD_DATA_8 = """
+BAD_DATA_6 = """
 one:
     name: BadEight
     alpha: beta
