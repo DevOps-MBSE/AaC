@@ -436,7 +436,19 @@ def load_template(
 
 
 def backup_file(file_path: str) -> str:
-    """Backs up a file by appending .aac_backup to the file name."""
+    """
+    Backs up a file by appending .aac_backup to the file name.
+
+    Args:
+        file_path (str): The file being backed up.
+
+    Returns:
+        The file path to the backup file.
+
+    Exceptions:
+        IOError: Exception raised when the file path cannot be parsed.
+        Exception: Generic exception raised when an unexpected error is encountered.
+    """
     backup_file_path = f"{file_path}.aac_backup"
     try:
         with open(file_path, "r") as input_file:
