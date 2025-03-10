@@ -175,7 +175,9 @@ def _read_arch_file_content(arch_file: str) -> str:
                 content = file.read()
         except IOError as error:
             logging.error(f"Failed to parse {arch_file} with error {error}")
-
+        except Exception as error:
+            # Catch-all for any unknown and unexpected errors with opening and reading files.
+            print(f"Unexpected error when opening {arch_file} with {error}")
         if not content:
             logging.error(f"Failed to parse {arch_file}, it's an empty file.")
     else:
