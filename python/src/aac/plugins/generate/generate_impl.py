@@ -17,6 +17,7 @@ import black
 from aac.context.language_context import LanguageContext
 from aac.context.definition import Definition
 from aac.in_out.parser._parse_source import parse
+from aac.in_out.paths import sanitize_filesystem_path
 from aac.plugins.generate.helpers.python_helpers import (
     get_path_from_package,
     get_python_name,
@@ -379,6 +380,10 @@ def get_output_directories(
         else:
             raise OperationCancelled("User cancelled operation.")
 
+    code_out = sanitize_filesystem_path(code_out)
+    test_out = sanitize_filesystem_path(test_out)
+    doc_out = sanitize_filesystem_path(doc_out)
+
     return (code_out, test_out, doc_out)
 
 
@@ -411,7 +416,7 @@ def get_output_file_path(
         file_name = f"{file_name}{generator_template.output_file_suffix}"
     file_name = f"{file_name}.{generator_template.output_file_extension}"
     result = path.join(result, file_name)
-    return path.abspath(result)
+    return sanitize_filesystem_path(path.abspath(result))
 
 
 def get_callable(package_name: str, file_name: str, function_name: str) -> Callable:
@@ -442,4 +447,4 @@ def backup_file(file_path: str) -> str:
     except Exception as error:
         # Catch-all for any unknown and unexpected errors with opening and reading files.
         logging.error(f"Unexpected error when opening {file_path} with {error}")
-    return backup_file_path
+    return sanitize_filesystem_path(backup_file_path)
