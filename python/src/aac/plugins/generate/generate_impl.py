@@ -1,5 +1,6 @@
 """AaC Plugin implementation module for the Version plugin."""
 
+import logging
 from os import path, makedirs, walk, remove
 import importlib
 from typing import Callable, Any
@@ -437,8 +438,8 @@ def backup_file(file_path: str) -> str:
             with open(backup_file_path, "w") as backup_file:
                 backup_file.write(input_file.read())
     except IOError as error:
-        print(f"Failed to parse {file_path} with error {error}")
+        logging.error(f"Failed to parse {file_path} with error {error}")
     except Exception as error:
         # Catch-all for any unknown and unexpected errors with opening and reading files.
-        print(f"Unexpected error when opening {file_path} with {error}")
+        logging.error(f"Unexpected error when opening {file_path} with {error}")
     return backup_file_path
