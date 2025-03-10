@@ -446,15 +446,17 @@ def find_definitions_to_check(aac_file: str) -> ExecutionResult:
     except ParserError as pe:
         status = ExecutionStatus.PARSER_FAILURE
 
-        error_msg = str(pe.errors)
-        indexBegin = error_msg.find("Encountered error at line, column:")
-        indexEnd = error_msg.find("'", indexBegin)
+        # Construct error message, we should have at least 2 entries in the list
+        # but let's make sure first. If we only have one entry then use that.
+        error_message = ""
+        if len(pe.errors) > 1:
+            error_message = str(pe.errors[0]) + str(pe.errors[1])
+        elif len(pe.errors) == 1:
+            error_message = str(pe.errors[0])
 
-        print(error_msg)
-        errorLocation = error_msg[indexBegin:indexEnd]
         messages.append(
             ExecutionMessage(
-                message="ParserError from parse_and_load." + str(pe.errors),
+                message="ParserError from parse_and_load. " + error_message,
                 level=MessageLevel.DEBUG,
                 source=aac_file,
                 location=None,  # Included in the message above
