@@ -82,6 +82,7 @@ class TestRootSchemaMustHaveName(TestCase):
             result = root_schema_has_name(definitions[0].instance, definitions[0], context.get_definitions_by_name("Schema")[0].instance)
             context.remove_definitions(definitions)
 
+
     #  This test should trigger a LanguageError exception from the parse_and_load call
     #  So the only pass here is throwing a LanguageError
     def test_root_schema_has_name_language_error1(self):
@@ -93,35 +94,24 @@ class TestRootSchemaMustHaveName(TestCase):
             context.remove_definitions(definitions)
 
 
-    #  This test should trigger a LanguageError exception from the parse_and_load call
-    #  So the only pass here is throwing a LanguageError
-    def test_root_schema_has_name_language_error2(self):
-        with self.assertRaises(LanguageError):
-
-            context = LanguageContext()
-            definitions = context.parse_and_load(root_schema_without_name_language_error2)
-            result = root_schema_has_name(definitions[0].instance, definitions[0], context.get_definitions_by_name("Schema")[0].instance)
-            context.remove_definitions(definitions)
-
-
     #  This test should trigger a ParserError exception from the parse_and_load call
     #  So the only pass here is throwing a ParserError
-    def test_root_schema_has_name_parser_error3(self):
+    def test_root_schema_has_name_parser_error1(self):
         with self.assertRaises(ParserError):
 
             context = LanguageContext()
-            definitions = context.parse_and_load(root_schema_without_name_parser_error3)
+            definitions = context.parse_and_load(root_schema_without_name_parser_error1)
             result = root_schema_has_name(definitions[0].instance, definitions[0], context.get_definitions_by_name("Schema")[0].instance)
             context.remove_definitions(definitions)
 
 
     #  This test should trigger a ParserError exception from the parse_and_load call
     #  So the only pass here is the self.assertFalse(False) in the ParserError catch block
-    def test_root_schema_has_name_parser_error4(self):
+    def test_root_schema_has_name_parser_error2(self):
         with self.assertRaises(ParserError):
 
             context = LanguageContext()
-            definitions = context.parse_and_load(root_schema_without_name_parser_error4)
+            definitions = context.parse_and_load(root_schema_without_name_parser_error2)
             result = root_schema_has_name(definitions[0].instance, definitions[0], context.get_definitions_by_name("Schema")[0].instance)
             context.remove_definitions(definitions)
 
@@ -141,19 +131,10 @@ schema:
   name: test_name
   root: test_root
   fields:
-    - name:
       type: string
 """
 
-root_schema_without_name_language_error2 = """
-schema:
-  name: test_name
-  root: test_root
-  fields:
-      type: string
-"""
-
-root_schema_without_name_parser_error3 = """
+root_schema_without_name_parser_error1 = """
 schema:
   name:
   root: test_root
@@ -162,7 +143,7 @@ schema:
       type: string
 """
 
-root_schema_without_name_parser_error4 = """
+root_schema_without_name_parser_error2 = """
 schema:
   root: test_root
   fields:
