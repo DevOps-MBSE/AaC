@@ -97,8 +97,8 @@ class TestCheckAaC(TestCase):
             # Assert for return code 3 (fail)
             self.assertEqual(3, exit_code, f"Expected to fail but ran successfully with message: {output_message}")
             self.assertNotIn("My plugin was successful.", output_message)  # only appears when --verbose is passed in.
-            self.assertIn("my_plugin.aac", output_message)
-            self.assertIn("invalid YAML", output_message)
+            self.assertIn("Encountered an invalid YAML with the following scanner error", output_message)
+            print(output_message)
 
     # Test input missing required 'when' field primitive
     # output msg: Missing required field when.
@@ -112,10 +112,10 @@ class TestCheckAaC(TestCase):
             check_args = [temp_aac_file_path]
 
             exit_code, output_message = self.run_check_cli_command_with_args(check_args)
-            # Assert for return code 6 (missing required field)
-            self.assertEqual(6, exit_code, f"Expected to fail but ran successfully with message: {output_message}")
+            # Assert for return code 1 (missing required field)
+            self.assertEqual(1, exit_code, f"Expected to fail but ran successfully with message: {output_message}")
             self.assertNotIn("My plugin was successful.", output_message)  # only appears when --verbose is passed in.
-            self.assertIn("Missing required field when.", output_message)
+            self.assertIn("LanguageError from parse_and_load: Missing required field when.", output_message)
 
 
     # Test input with an unknown primitive "stranger" which triggers a ParserError
@@ -132,10 +132,10 @@ class TestCheckAaC(TestCase):
             check_args = [temp_aac_file_path]
 
             exit_code, output_message = self.run_check_cli_command_with_args(check_args)
-            # Assert for return code 6 (unexpected primitive)
-            self.assertEqual(6, exit_code, f"Expected to fail but ran successfully with message: {output_message}")
+            # Assert for return code 1 (unexpected primitive)
+            self.assertEqual(1, exit_code, f"Expected to fail but ran successfully with message: {output_message}")
             self.assertNotIn("My plugin was successful.", output_message)  # only appears when --verbose is passed in.
-            self.assertIn("my_plugin.aac", output_message)
+            self.assertIn("LanguageError from parse_and_load: Found undefined field name 'stranger'", output_message)
 
     # Test input with an an invalid value
     # output msg: Invalid value for field 'name'.  Expected type 'str', but found '<class 'list'>'
@@ -149,10 +149,10 @@ class TestCheckAaC(TestCase):
             check_args = [temp_aac_file_path]
 
             exit_code, output_message = self.run_check_cli_command_with_args(check_args)
-            # Assert for return code 6 (invalid value)
-            self.assertEqual(6, exit_code, f"Expected to fail but ran successfully with message: {output_message}")
+            # Assert for return code 1 (invalid value)
+            self.assertEqual(1, exit_code, f"Expected to fail but ran successfully with message: {output_message}")
             self.assertNotIn("My plugin was successful.", output_message)  # only appears when --verbose is passed in.
-            self.assertIn("Invalid value for field", output_message)
+            self.assertIn("LanguageError from parse_and_load: Invalid value for field 'name'", output_message)
 
     # Test input with an an undefined field name "whatzit"
     # output msg: Found undefined field name 'whatzit' when expecting ['name', 'description', 'sections', 'parent_specs', 'child_specs', 'requirements'] as defined in RequirementSpecification
@@ -166,7 +166,7 @@ class TestCheckAaC(TestCase):
             check_args = [temp_aac_file_path]
 
             exit_code, output_message = self.run_check_cli_command_with_args(check_args)
-            # Assert for return code 6 (undefined field name)
-            self.assertEqual(6, exit_code, f"Expected to fail but ran successfully with message: {output_message}")
+            # Assert for return code 1 (undefined field name)
+            self.assertEqual(1, exit_code, f"Expected to fail but ran successfully with message: {output_message}")
             self.assertNotIn("My plugin was successful.", output_message)  # only appears when --verbose is passed in.
-            self.assertIn("my_plugin.aac", output_message)
+            self.assertIn("LanguageError from parse_and_load: Found undefined field name 'whatzit'", output_message)
