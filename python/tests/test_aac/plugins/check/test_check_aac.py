@@ -26,7 +26,6 @@ class TestCheckAaC(TestCase):
         exit_code = result.exit_code
         std_out = str(result.stdout)
         output_message = std_out.strip().replace("\x1b[0m", "")
-        # print(output_message)
         return exit_code, output_message
 
     # Happy path test without verbose flag
@@ -110,7 +109,6 @@ class TestCheckAaC(TestCase):
             self.assertEqual(1, exit_code, f"Expected to fail but ran successfully with message: {output_message}")
             self.assertNotIn("My plugin was successful.", output_message)  # only appears when --verbose is passed in.
             self.assertIn("LanguageError from parse_and_load: Missing required field when.", output_message)
-
 
     # Test input with an unknown primitive "stranger" which triggers a ParserError
     # output msg: Found undefined field name 'stranger' when expecting ['name', 'tags', 'requirements', 'given', 'when', 'then', 'examples'] as defined in Scenario
