@@ -26,6 +26,25 @@ from aac.plugins.generate.helpers.python_helpers import (
 plugin_name = "Generate"
 
 
+def _write_to_file(file_path: str, content: str):
+    """
+    Opens, writes to, and closes a file.
+
+    Args:
+        file_path (str): File path to be written to.
+        content (str): Content to be written to file.
+    """
+    try:
+        with open(file_path, "w") as output_file:
+            output_file.write(content)
+            output_file.close()
+    except IOError as error:
+        logging.error(f"Failed to parse {file_path} with error {error}")
+    except Exception as error:
+        # Catch-all for any unknown and unexpected errors with opening and reading files.
+        logging.error(f"Unexpected error when opening {file_path} with {error}")
+
+
 def output_to_jinja_template(
     evaluate: bool,
     force_overwrite: bool,
@@ -82,10 +101,7 @@ def output_to_jinja_template(
 
     if evaluate:
         # write contents to an aac_evaluate file for user review
-        evaluate_file_path = f"{output_file_path}.aac_evaluate"
-        with open(evaluate_file_path, "w") as output_file:
-            output_file.write(output)
-            output_file.close()
+        _write_to_file(f"{output_file_path}.aac_evaluate", output)
     else:
         # write contents to output_file_path
         if force_overwrite or template.overwrite in [
@@ -95,9 +111,7 @@ def output_to_jinja_template(
         ]:
             if path.exists(output_file_path):
                 backup_file(output_file_path)
-            with open(output_file_path, "w") as output_file:
-                output_file.write(output)
-                output_file.close()
+            _write_to_file(output_file_path, output)
         elif template.overwrite in [
             context.create_aac_enum(
                 "aac.lang.OverwriteOption", "SKIP"
@@ -105,16 +119,12 @@ def output_to_jinja_template(
         ]:
             # this is for the skip option, so only write if file doesn't exist
             if not path.exists(output_file_path):
-                with open(output_file_path, "w") as output_file:
-                    output_file.write(output)
-                    output_file.close()
+                _write_to_file(output_file_path, output)
             else:
                 evaluate_file_path = (
                     f"{output_file_path}.aac_evaluate"
                 )
-                with open(evaluate_file_path, "w") as output_file:
-                    output_file.write(output)
-                    output_file.close()
+                _write_to_file(evaluate_file_path, output)
 
 
 def generate_content(
