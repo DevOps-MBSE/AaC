@@ -274,6 +274,9 @@ def generate(
 
     Returns:
         ExecutionResult: The result of executing the generate command.
+
+    Raises:
+        OperationCancelled: When the operation is canceled by the user.
     """
 
     result = ExecutionResult(plugin_name, "generate", ExecutionStatus.SUCCESS, [])
@@ -378,6 +381,10 @@ def get_output_directories(
 
     Returns:
         tuple[str, str, str]: A tuple containing the three output paths.
+
+    Raises:
+        ExecutionError: When the content of the data source file is invalid.
+        OperationCancelled: When the operation is canceled by the user.
     """
     code_out: str = code_output
     test_out: str = test_output
