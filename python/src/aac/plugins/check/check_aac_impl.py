@@ -416,7 +416,7 @@ def _collect_all_constraints_by_name() -> dict[str, Callable]:
 
 def find_definitions_to_check(aac_file: str) -> (list[Definition], ExecutionStatus):
     """
-    Lower level helper method to call collect the definitions to check by calling parse_and_load and handling any LanguageError or ParserErrors returned from parse_and_load.
+    Lower level helper method to collect the definitions to check by calling parse_and_load and handling any LanguageError or ParserErrors returned from parse_and_load.
 
     Args:
         aac_file (str):         The AaC file being processed
@@ -439,7 +439,7 @@ def find_definitions_to_check(aac_file: str) -> (list[Definition], ExecutionStat
                 message="LanguageError from parse_and_load: " + le.message + " at location: " + le.location,
                 level=MessageLevel.DEBUG,
                 source=aac_file,
-                location=None,  # Included in the message above
+                location=None,  # Included in the message above. Their type/format is not easily compatible with the SourceLocation needed here.
             )
         )
         return (None, ExecutionResult(plugin_name, "check", status, messages))
@@ -459,7 +459,7 @@ def find_definitions_to_check(aac_file: str) -> (list[Definition], ExecutionStat
                 message="ParserError from parse_and_load. " + error_message,
                 level=MessageLevel.DEBUG,
                 source=aac_file,
-                location=None,  # Included in the message above
+                location=None,  # Included in the message above. Their type/format is not easily compatible with the SourceLocation needed here.
             )
         )
         return (None, ExecutionResult(plugin_name, "check", status, messages))
@@ -492,13 +492,13 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult:
 
     messages = []
 
-    definitions_to_check, executionResult = find_definitions_to_check(aac_file)
+    definitions_to_check, returnedExecutionResult = find_definitions_to_check(aac_file)
 
-    # Check if we got an executionResult back from find_definitions_to_check
+    # Check if we got an returnedExecutionResult back from find_definitions_to_check
     # If we did, we received an exception from parse_and_load, so go ahead
-    # and return that now
-    if executionResult is not None:
-        return executionResult
+    # and return the returnedExecutionResult now
+    if returnedExecutionResult is not None:
+        return returnedExecutionResult
 
     # First run all context constraint checks
     # Context constraints are "language constraints" and are not tied to a specific schema
