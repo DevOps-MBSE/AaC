@@ -493,13 +493,13 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult:
     messages = []
 
     # collect all the definitions to check
-    definitions_to_check, returnedExecutionResult = find_definitions_to_check(aac_file)
+    definitions_to_check, returned_execution_result = find_definitions_to_check(aac_file)
 
-    # Check if we received a returnedExecutionResult back from find_definitions_to_check
+    # Check if we received a returned_execution_result back from find_definitions_to_check
     # If we did, then we received an exception from parse_and_load, so go ahead
-    # and return the returnedExecutionResult now
-    if returnedExecutionResult is not None:
-        return returnedExecutionResult
+    # and return the returned_execution_result now
+    if returned_execution_result is not None:
+        return returned_execution_result
 
     # First run all context constraint checks
     # Context constraints are "language constraints" and are not tied to a specific schema
