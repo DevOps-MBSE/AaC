@@ -33,6 +33,10 @@ def _write_to_file(file_path: str, content: str):
     Args:
         file_path (str): File path to be written to.
         content (str): Content to be written to file.
+
+    Exceptions:
+        IOError: Exception raised when the file path cannot be parsed.
+        Exception: Generic exception raised when an unexpected error is encountered.
     """
     try:
         with open(file_path, "w") as output_file:
@@ -436,8 +440,8 @@ def get_output_file_path(
     Args:
         root_output_directory (str): Root directory of the output path.
         generator_template: Template for the aac generator file.
-        source_package (str): Output directory path.
-        source_name (str): Name of the Python type.
+        source_package (str): Package containing the definition source.
+        source_name (str): Name of the definition.
 
     Returns:
         str: Output file path for a generator template.
