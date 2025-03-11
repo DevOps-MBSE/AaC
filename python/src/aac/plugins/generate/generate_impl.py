@@ -532,6 +532,8 @@ def backup_file(file_path: str) -> str:
         with open(file_path, "r") as input_file:
             with open(backup_file_path, "w") as backup_file:
                 backup_file.write(input_file.read())
+                backup_file.close()
+            input_file.close()
     except IOError as error:
         logging.error(f"Failed to parse {file_path} with error {error}")
     except Exception as error:
