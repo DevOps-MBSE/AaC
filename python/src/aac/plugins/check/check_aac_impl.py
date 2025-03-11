@@ -492,10 +492,11 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult:
 
     messages = []
 
+    # collect all the definitions to check
     definitions_to_check, returnedExecutionResult = find_definitions_to_check(aac_file)
 
-    # Check if we got an returnedExecutionResult back from find_definitions_to_check
-    # If we did, we received an exception from parse_and_load, so go ahead
+    # Check if we received a returnedExecutionResult back from find_definitions_to_check
+    # If we did, then we received an exception from parse_and_load, so go ahead
     # and return the returnedExecutionResult now
     if returnedExecutionResult is not None:
         return returnedExecutionResult
