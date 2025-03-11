@@ -318,7 +318,17 @@ def generate(
 def clean(
     aac_file: str, code_output: str, test_output: str, doc_output: str, no_prompt: bool
 ) -> ExecutionResult:
-    """Clean up generated code, tests, and docs."""
+    """
+    Args:
+        aac_file (str):  Content used for generating the target files.
+        code_out_dir (str): Output path for target code files.
+        test_out_dir (str): Output path for target test files.
+        doc_out_dir (str): Output path for target doc files.
+        no_prompt (bool): Command argument.  If true, executes with no prompt.  Primarily used for testing or by other plugins.
+
+    Returns:
+        ExecutionResult: The result of executing the clean command.
+    """
     # setup directories
     code_out_dir, test_out_dir, doc_out_dir = get_output_directories(
         "AaC will delete backup and eval files in the following directories:",
@@ -347,7 +357,20 @@ def get_output_directories(
     doc_output: str,
     no_prompt: bool,
 ) -> tuple[str, str, str]:
-    """Returns the output directories for code, tests, and docs."""
+    """
+    Returns the output directories for code, tests, and docs.
+
+    Args:
+        message (str): Output message.
+        aac_plugin_file (str):  Content to be used for generation.
+        code_output (str): Output path for generated code files.
+        test_output (str): Output path for generated test files.
+        doc_output (str): Output path for generated doc files.
+        no_prompt (bool): Command argument.  If true, generates files with no prompt.  Primarily used for testing or by other plugins.
+
+    Returns:
+        tuple[str, str, str]: A tuple containing the three output paths.
+    """
     code_out: str = code_output
     test_out: str = test_output
     doc_out: str = doc_output
@@ -403,7 +426,18 @@ def get_output_file_path(
     source_package: str,
     source_name: str,
 ) -> str:
-    """Returns the output file path for a generator template."""
+    """
+    Returns the output file path for a generator template.
+
+    Args:
+        root_output_directory (str): Root directory of the output path.
+        generator_template: Template for the aac generator file.
+        source_package (str): Output directory path.
+        source_name (str): Name of the Python type.
+
+    Returns:
+        str: Output file path for a generator template.
+    """
     result = root_output_directory
     if generator_template.output_path_uses_data_source_package and source_package:
         context = LanguageContext()
@@ -430,7 +464,17 @@ def get_output_file_path(
 
 
 def get_callable(package_name: str, file_name: str, function_name: str) -> Callable:
-    """Returns a callable function from a package, file, and function name."""
+    """
+    Returns a callable function from a package, file, and function name.
+
+    Args:
+        package_name (str): Package name where the function resides.
+        file_name (str): File name where the function resides.
+        function_name (str): Name of the Function.
+
+    Returns:
+        Callable: Callable form of the function.
+    """
     module = importlib.import_module(f"{package_name}.{file_name}")
     return getattr(module, function_name)
 
@@ -438,7 +482,16 @@ def get_callable(package_name: str, file_name: str, function_name: str) -> Calla
 def load_template(
     template_abs_path: str, helper_functions: dict[str, Callable] = {}
 ) -> Template:
-    """Load a jinja2 template from a file."""
+    """
+    Load a jinja2 template from a file.
+
+    Args:
+        template_abs_path (str): Absolute Path of the Jinja2 Template.
+        helper_functions (dict[str, Callable]): Helper Functions for the template.
+
+    Returns:
+        template (Template): Jinja2 Template object.
+    """
     env = Environment(loader=FileSystemLoader("/"))
     env.globals.update(helper_functions)
     template = env.get_template(template_abs_path)
