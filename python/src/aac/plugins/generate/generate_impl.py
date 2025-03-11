@@ -319,6 +319,8 @@ def clean(
     aac_file: str, code_output: str, test_output: str, doc_output: str, no_prompt: bool
 ) -> ExecutionResult:
     """
+    Clean up generated code, tests, and docs.
+
     Args:
         aac_file (str):  Content used for generating the target files.
         code_out_dir (str): Output path for target code files.
@@ -329,7 +331,9 @@ def clean(
     Returns:
         ExecutionResult: The result of executing the clean command.
     """
+
     # setup directories
+
     code_out_dir, test_out_dir, doc_out_dir = get_output_directories(
         "AaC will delete backup and eval files in the following directories:",
         aac_file,
