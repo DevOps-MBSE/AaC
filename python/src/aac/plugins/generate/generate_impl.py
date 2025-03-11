@@ -1,5 +1,6 @@
 """AaC Plugin implementation module for the Version plugin."""
 
+import logging
 from os import path, makedirs, walk, remove
 import importlib
 from typing import Callable, Any
@@ -16,12 +17,36 @@ import black
 from aac.context.language_context import LanguageContext
 from aac.context.definition import Definition
 from aac.in_out.parser._parse_source import parse
+from aac.in_out.paths import sanitize_filesystem_path
 from aac.plugins.generate.helpers.python_helpers import (
     get_path_from_package,
     get_python_name,
 )
 
 plugin_name = "Generate"
+
+
+def _write_to_file(file_path: str, content: str):
+    """
+    Opens, writes to, and closes a file.
+
+    Args:
+        file_path (str): File path to be written to.
+        content (str): Content to be written to file.
+
+    Exceptions:
+        IOError: Exception raised when the file path cannot be parsed.
+        Exception: Generic exception raised when an unexpected error is encountered.
+    """
+    try:
+        with open(file_path, "w") as output_file:
+            output_file.write(content)
+            output_file.close()
+    except IOError as error:
+        logging.error(f"Failed to parse {file_path} with error {error}")
+    except Exception as error:
+        # Catch-all for any unknown and unexpected errors with opening and reading files.
+        logging.error(f"Unexpected error when opening {file_path} with {error}")
 
 
 def output_to_jinja_template(
@@ -80,10 +105,7 @@ def output_to_jinja_template(
 
     if evaluate:
         # write contents to an aac_evaluate file for user review
-        evaluate_file_path = f"{output_file_path}.aac_evaluate"
-        with open(evaluate_file_path, "w") as output_file:
-            output_file.write(output)
-            output_file.close()
+        _write_to_file(f"{output_file_path}.aac_evaluate", output)
     else:
         # write contents to output_file_path
         if force_overwrite or template.overwrite in [
@@ -93,9 +115,7 @@ def output_to_jinja_template(
         ]:
             if path.exists(output_file_path):
                 backup_file(output_file_path)
-            with open(output_file_path, "w") as output_file:
-                output_file.write(output)
-                output_file.close()
+            _write_to_file(output_file_path, output)
         elif template.overwrite in [
             context.create_aac_enum(
                 "aac.lang.OverwriteOption", "SKIP"
@@ -103,16 +123,12 @@ def output_to_jinja_template(
         ]:
             # this is for the skip option, so only write if file doesn't exist
             if not path.exists(output_file_path):
-                with open(output_file_path, "w") as output_file:
-                    output_file.write(output)
-                    output_file.close()
+                _write_to_file(output_file_path, output)
             else:
                 evaluate_file_path = (
                     f"{output_file_path}.aac_evaluate"
                 )
-                with open(evaluate_file_path, "w") as output_file:
-                    output_file.write(output)
-                    output_file.close()
+                _write_to_file(evaluate_file_path, output)
 
 
 def generate_content(
@@ -258,6 +274,9 @@ def generate(
 
     Returns:
         ExecutionResult: The result of executing the generate command.
+
+    Raises:
+        OperationCancelled: When the operation is canceled by the user.
     """
 
     result = ExecutionResult(plugin_name, "generate", ExecutionStatus.SUCCESS, [])
@@ -306,8 +325,22 @@ def generate(
 def clean(
     aac_file: str, code_output: str, test_output: str, doc_output: str, no_prompt: bool
 ) -> ExecutionResult:
-    """Clean up generated code, tests, and docs."""
+    """
+    Clean up generated code, tests, and docs.
+
+    Args:
+        aac_file (str):  Content used for generating the target files.
+        code_out_dir (str): Output path for target code files.
+        test_out_dir (str): Output path for target test files.
+        doc_out_dir (str): Output path for target doc files.
+        no_prompt (bool): Command argument.  If true, executes with no prompt.  Primarily used for testing or by other plugins.
+
+    Returns:
+        ExecutionResult: The result of executing the clean command.
+    """
+
     # setup directories
+
     code_out_dir, test_out_dir, doc_out_dir = get_output_directories(
         "AaC will delete backup and eval files in the following directories:",
         aac_file,
@@ -335,7 +368,24 @@ def get_output_directories(
     doc_output: str,
     no_prompt: bool,
 ) -> tuple[str, str, str]:
-    """Returns the output directories for code, tests, and docs."""
+    """
+    Returns the output directories for code, tests, and docs.
+
+    Args:
+        message (str): Output message.
+        aac_plugin_file (str):  Content to be used for generation.
+        code_output (str): Output path for generated code files.
+        test_output (str): Output path for generated test files.
+        doc_output (str): Output path for generated doc files.
+        no_prompt (bool): Command argument.  If true, generates files with no prompt.  Primarily used for testing or by other plugins.
+
+    Returns:
+        tuple[str, str, str]: A tuple containing the three output paths.
+
+    Raises:
+        ExecutionError: When the content of the data source file is invalid.
+        OperationCancelled: When the operation is canceled by the user.
+    """
     code_out: str = code_output
     test_out: str = test_output
     doc_out: str = doc_output
@@ -378,6 +428,10 @@ def get_output_directories(
         else:
             raise OperationCancelled("User cancelled operation.")
 
+    code_out = sanitize_filesystem_path(code_out)
+    test_out = sanitize_filesystem_path(test_out)
+    doc_out = sanitize_filesystem_path(doc_out)
+
     return (code_out, test_out, doc_out)
 
 
@@ -387,7 +441,18 @@ def get_output_file_path(
     source_package: str,
     source_name: str,
 ) -> str:
-    """Returns the output file path for a generator template."""
+    """
+    Returns the output file path for a generator template.
+
+    Args:
+        root_output_directory (str): Root directory of the output path.
+        generator_template: Template for the aac generator file.
+        source_package (str): Package containing the definition source.
+        source_name (str): Name of the definition.
+
+    Returns:
+        str: Output file path for a generator template.
+    """
     result = root_output_directory
     if generator_template.output_path_uses_data_source_package and source_package:
         context = LanguageContext()
@@ -410,11 +475,21 @@ def get_output_file_path(
         file_name = f"{file_name}{generator_template.output_file_suffix}"
     file_name = f"{file_name}.{generator_template.output_file_extension}"
     result = path.join(result, file_name)
-    return path.abspath(result)
+    return sanitize_filesystem_path(path.abspath(result))
 
 
 def get_callable(package_name: str, file_name: str, function_name: str) -> Callable:
-    """Returns a callable function from a package, file, and function name."""
+    """
+    Returns a callable function from a package, file, and function name.
+
+    Args:
+        package_name (str): Package name where the function resides.
+        file_name (str): File name where the function resides.
+        function_name (str): Name of the Function.
+
+    Returns:
+        Callable: Callable form of the function.
+    """
     module = importlib.import_module(f"{package_name}.{file_name}")
     return getattr(module, function_name)
 
@@ -422,7 +497,16 @@ def get_callable(package_name: str, file_name: str, function_name: str) -> Calla
 def load_template(
     template_abs_path: str, helper_functions: dict[str, Callable] = {}
 ) -> Template:
-    """Load a jinja2 template from a file."""
+    """
+    Load a jinja2 template from a file.
+
+    Args:
+        template_abs_path (str): Absolute Path of the Jinja2 Template.
+        helper_functions (dict[str, Callable]): Helper Functions for the template.
+
+    Returns:
+        template (Template): Jinja2 Template object.
+    """
     env = Environment(loader=FileSystemLoader("/"))
     env.globals.update(helper_functions)
     template = env.get_template(template_abs_path)
@@ -430,9 +514,29 @@ def load_template(
 
 
 def backup_file(file_path: str) -> str:
-    """Backs up a file by appending .aac_backup to the file name."""
+    """
+    Backs up a file by appending .aac_backup to the file name.
+
+    Args:
+        file_path (str): The file being backed up.
+
+    Returns:
+        The file path to the backup file.
+
+    Exceptions:
+        IOError: Exception raised when the file path cannot be parsed.
+        Exception: Generic exception raised when an unexpected error is encountered.
+    """
     backup_file_path = f"{file_path}.aac_backup"
-    with open(file_path, "r") as input_file:
-        with open(backup_file_path, "w") as backup_file:
-            backup_file.write(input_file.read())
-    return backup_file_path
+    try:
+        with open(file_path, "r") as input_file:
+            with open(backup_file_path, "w") as backup_file:
+                backup_file.write(input_file.read())
+                backup_file.close()
+            input_file.close()
+    except IOError as error:
+        logging.error(f"Failed to parse {file_path} with error {error}")
+    except Exception as error:
+        # Catch-all for any unknown and unexpected errors with opening and reading files.
+        logging.error(f"Unexpected error when opening {file_path} with {error}")
+    return sanitize_filesystem_path(backup_file_path)

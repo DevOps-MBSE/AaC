@@ -164,6 +164,9 @@ def _read_arch_file_content(arch_file: str) -> str:
 
     Returns:
         The contents of the file as a string.
+    Exceptions:
+        IOError: Exception raised when the file path cannot be parsed.
+        Exception: Generic exception raised when an unexpected error is encountered.
     """
     content = ""
     acceptable_file_extensions = [YAML_DOCUMENT_EXTENSION, AAC_DOCUMENT_EXTENSION]
@@ -175,7 +178,9 @@ def _read_arch_file_content(arch_file: str) -> str:
                 content = file.read()
         except IOError as error:
             logging.error(f"Failed to parse {arch_file} with error {error}")
-
+        except Exception as error:
+            # Catch-all for any unknown and unexpected errors with opening and reading files.
+            logging.error(f"Unexpected error when opening {arch_file} with {error}")
         if not content:
             logging.error(f"Failed to parse {arch_file}, it's an empty file.")
     else:
