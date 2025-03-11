@@ -414,7 +414,7 @@ def _collect_all_constraints_by_name() -> dict[str, Callable]:
     return all_constraints_by_name
 
 
-def find_definitions_to_check(aac_file: str) -> ExecutionResult:
+def find_definitions_to_check(aac_file: str) -> (list, ExecutionStatus):
     """
     Lower level helper method to call collect the definitions to check by calling parse_and_load and handling any LanguageError or ParserErrors returned from parse_and_load.
 
@@ -422,7 +422,7 @@ def find_definitions_to_check(aac_file: str) -> ExecutionResult:
         aac_file (str):         The AaC file being processed
 
     Returns:
-        definitions_to_check:   The list of definitions to check
+        definitions_to_check[]: The list of definitions to check
         ExecutionResult:        Method result containing: plugin_name ("Check AaC"), "check", status, message
                                 including results from lower level helper methods
     """
