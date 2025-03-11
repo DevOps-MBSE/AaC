@@ -10,8 +10,6 @@ import tempfile
 
 class TestCheckAaC(TestCase):
     """Class to test the Check AaC plugin."""
-    # FIX ME: Several tests in this class should be updated when the LanguageError and ParserError exceptions thrown by the check_aac_impl.py call to
-    # FIX ME: parse_and_load are handled properly.
 
     # some default test
     def test_check(self):
@@ -64,8 +62,6 @@ class TestCheckAaC(TestCase):
 
     # Test input triggers a LanguageError in check_aac_impl.py ~line 171
     # Value of 'parent_specs' was expected to be list, but was '<class 'str'>'
-    # This test should be looking for a LanguageError or message content from a LanguageError but the exceptions from context.parse_and_load(aac_file)
-    # in check_aac_imply.py are not being caught and handled gracefully.
     def test_cli_check_bad_data(self):
         """Test check_aac_impl.py and trigger a LanguageError."""
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -82,8 +78,6 @@ class TestCheckAaC(TestCase):
 
     # Test input improper YAML
     # output msg: The AaC file '/tmp/{random-temp-name}/my_plugin.aac' could not be parsed.
-    # This test should be looking for a ParserError or message content from a ParserError but the exceptions from context.parse_and_load(aac_file)
-    # in check_aac_imply.py are not being caught and handled gracefully.
     def test_parse_Error(self):
         """Test check_aac_impl.py with improper YAML."""
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -94,11 +88,10 @@ class TestCheckAaC(TestCase):
             check_args = [temp_aac_file_path]
 
             exit_code, output_message = self.run_check_cli_command_with_args(check_args)
-            # Assert for return code 3 (fail)
+            # Assert for return code 3 (3 is the value for PARSER_FAILURE which is the status set upon receiving a ParserError)
             self.assertEqual(3, exit_code, f"Expected to fail but ran successfully with message: {output_message}")
             self.assertNotIn("My plugin was successful.", output_message)  # only appears when --verbose is passed in.
-            self.assertIn("my_plugin.aac", output_message)
-            self.assertIn("invalid YAML", output_message)
+            self.assertIn("Encountered an invalid YAML with the following scanner error", output_message)
 
     # Test input missing required 'when' field primitive
     # output msg: Missing required field when.
@@ -112,16 +105,13 @@ class TestCheckAaC(TestCase):
             check_args = [temp_aac_file_path]
 
             exit_code, output_message = self.run_check_cli_command_with_args(check_args)
-            # Assert for return code 6 (missing required field)
-            self.assertEqual(6, exit_code, f"Expected to fail but ran successfully with message: {output_message}")
+            # Assert for return code 1 (1 is the value for CONSTRAINT_FAILURE which is the status set upon receiving a LanguageError)
+            self.assertEqual(1, exit_code, f"Expected to fail but ran successfully with message: {output_message}")
             self.assertNotIn("My plugin was successful.", output_message)  # only appears when --verbose is passed in.
-            self.assertIn("Missing required field when.", output_message)
-
+            self.assertIn("LanguageError from parse_and_load: Missing required field when.", output_message)
 
     # Test input with an unknown primitive "stranger" which triggers a ParserError
     # output msg: Found undefined field name 'stranger' when expecting ['name', 'tags', 'requirements', 'given', 'when', 'then', 'examples'] as defined in Scenario
-    # This test should be looking for a ParserError or message content from a ParserError but the exceptions from context.parse_and_load(aac_file)
-    # in check_aac_imply.py are not being caught and handled gracefully.
     def test_unknown_primitive(self):
         """Test check_aac_impl.py with an unknown primitive resulting in a ParserError."""
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -132,10 +122,10 @@ class TestCheckAaC(TestCase):
             check_args = [temp_aac_file_path]
 
             exit_code, output_message = self.run_check_cli_command_with_args(check_args)
-            # Assert for return code 6 (unexpected primitive)
-            self.assertEqual(6, exit_code, f"Expected to fail but ran successfully with message: {output_message}")
+            # Assert for return code 1 (1 is the value for CONSTRAINT_FAILURE which is the status set upon receiving a LanguageError)
+            self.assertEqual(1, exit_code, f"Expected to fail but ran successfully with message: {output_message}")
             self.assertNotIn("My plugin was successful.", output_message)  # only appears when --verbose is passed in.
-            self.assertIn("my_plugin.aac", output_message)
+            self.assertIn("LanguageError from parse_and_load: Found undefined field name 'stranger'", output_message)
 
     # Test input with an an invalid value
     # output msg: Invalid value for field 'name'.  Expected type 'str', but found '<class 'list'>'
@@ -149,10 +139,10 @@ class TestCheckAaC(TestCase):
             check_args = [temp_aac_file_path]
 
             exit_code, output_message = self.run_check_cli_command_with_args(check_args)
-            # Assert for return code 6 (invalid value)
-            self.assertEqual(6, exit_code, f"Expected to fail but ran successfully with message: {output_message}")
+            # Assert for return code 1 (invalid value)
+            self.assertEqual(1, exit_code, f"Expected to fail but ran successfully with message: {output_message}")
             self.assertNotIn("My plugin was successful.", output_message)  # only appears when --verbose is passed in.
-            self.assertIn("Invalid value for field", output_message)
+            self.assertIn("LanguageError from parse_and_load: Invalid value for field 'name'", output_message)
 
     # Test input with an an undefined field name "whatzit"
     # output msg: Found undefined field name 'whatzit' when expecting ['name', 'description', 'sections', 'parent_specs', 'child_specs', 'requirements'] as defined in RequirementSpecification
@@ -166,7 +156,7 @@ class TestCheckAaC(TestCase):
             check_args = [temp_aac_file_path]
 
             exit_code, output_message = self.run_check_cli_command_with_args(check_args)
-            # Assert for return code 6 (undefined field name)
-            self.assertEqual(6, exit_code, f"Expected to fail but ran successfully with message: {output_message}")
+            # Assert for return code 1 (1 is the value for CONSTRAINT_FAILURE which is the status set upon receiving a LanguageError)
+            self.assertEqual(1, exit_code, f"Expected to fail but ran successfully with message: {output_message}")
             self.assertNotIn("My plugin was successful.", output_message)  # only appears when --verbose is passed in.
-            self.assertIn("my_plugin.aac", output_message)
+            self.assertIn("LanguageError from parse_and_load: Found undefined field name 'whatzit'", output_message)

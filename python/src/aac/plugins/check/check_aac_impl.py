@@ -12,6 +12,7 @@ from aac.execute.aac_execution_result import (
     MessageLevel,
 )
 from aac.context.language_error import LanguageError
+from aac.in_out.parser._parser_error import ParserError
 
 plugin_name = "Check AaC"
 
@@ -413,6 +414,58 @@ def _collect_all_constraints_by_name() -> dict[str, Callable]:
     return all_constraints_by_name
 
 
+def find_definitions_to_check(aac_file: str) -> (list[Definition], ExecutionStatus):
+    """
+    Lower level helper method to collect the definitions to check by calling parse_and_load and handling any LanguageError or ParserErrors returned from parse_and_load.
+
+    Args:
+        aac_file (str):         The AaC file being processed
+
+    Returns:
+        list[Definition]:       The list of definitions to check
+        ExecutionResult:        Method result containing: plugin_name ("Check AaC"), "check", status, message
+                                including results from lower level helper methods
+    """
+
+    context: LanguageContext = LanguageContext()
+    messages = []
+    definitions_to_check = []
+    try:
+        definitions_to_check = context.parse_and_load(aac_file)
+    except LanguageError as le:
+        status = ExecutionStatus.CONSTRAINT_FAILURE
+        messages.append(
+            ExecutionMessage(
+                message="LanguageError from parse_and_load: " + le.message + " at location: " + le.location,
+                level=MessageLevel.DEBUG,
+                source=aac_file,
+                location=None,  # Included in the message above. Their type/format is not easily compatible with the SourceLocation needed here.
+            )
+        )
+        return (None, ExecutionResult(plugin_name, "check", status, messages))
+    except ParserError as pe:
+        status = ExecutionStatus.PARSER_FAILURE
+
+        # Construct error message, we should have at least 2 entries in the list
+        # but let's make sure first. If we only have one entry then use that.
+        error_message = ""
+        if len(pe.errors) > 1:
+            error_message = str(pe.errors[0]) + str(pe.errors[1])
+        elif len(pe.errors) == 1:
+            error_message = str(pe.errors[0])
+
+        messages.append(
+            ExecutionMessage(
+                message="ParserError from parse_and_load. " + error_message,
+                level=MessageLevel.DEBUG,
+                source=aac_file,
+                location=None,  # Included in the message above. Their type/format is not easily compatible with the SourceLocation needed here.
+            )
+        )
+        return (None, ExecutionResult(plugin_name, "check", status, messages))
+    return (definitions_to_check, None)
+
+
 def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult:
     """
     Checks relevant constraints for given definition(s).  Runs context constraints (global constraints), then runs schema constraints (specifically assigned constraints). Primitive constraints are ran as a part of schema constraints.
@@ -437,10 +490,16 @@ def check(aac_file: str, fail_on_warn: bool, verbose: bool) -> ExecutionResult:
     # collect all constraints for easy access
     all_constraints_by_name = _collect_all_constraints_by_name()
 
-    # FIX ME: This call to parse_and_load can throw LanguageError and ParserError exceptions which are not being handled here
-    # FIX ME: They should be handled, their messages added to the message list being constructed in this method (complete with source and location info)
-    # FIX ME: so they can be passed along. This was discovered during the expansion of test_check_aac.py and those tests would need to be updated.
-    definitions_to_check = context.parse_and_load(aac_file)
+    messages = []
+
+    # collect all the definitions to check
+    definitions_to_check, returned_execution_result = find_definitions_to_check(aac_file)
+
+    # Check if we received a returned_execution_result back from find_definitions_to_check
+    # If we did, then we received an exception from parse_and_load, so go ahead
+    # and return the returned_execution_result now
+    if returned_execution_result is not None:
+        return returned_execution_result
 
     # First run all context constraint checks
     # Context constraints are "language constraints" and are not tied to a specific schema
