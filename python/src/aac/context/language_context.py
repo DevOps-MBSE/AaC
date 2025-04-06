@@ -169,8 +169,17 @@ class LanguageContext(object):
 
         Returns:
             A list of definition objects which have been loaded into the Language Context.
+
+        Raises:
+            JSW
+            LanguageError: parse()->_parse_file()->_read_arch_file_content()
+            see /src/aac/plugins/check/check_aac_impl.py line 435
+            ParserError: parse()->_parse_file()->_read_arch_file_content()
+             see /src/aac/plugins/check/check_aac_impl.py line 446
+            IOError: Exception from _read_arch_file_content
+            Exception: Generic exception from _read_arch_file_content
         """
-        parsed_definitions = parse(arg)
+        parsed_definitions = parse(arg) ## OK
         parser = DefinitionParser()
 
         return parser.load_definitions(self, parsed_definitions)

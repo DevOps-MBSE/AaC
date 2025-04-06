@@ -893,6 +893,10 @@ class DefinitionParser():
 
         Returns:
             The parsed definitions to load into the LanguageContext.
+
+        Raises:
+            JSW
+            LanguageError: From set_qualified_name (line 913), create_definition_instance (line 922)
         """
 
         # Maintainer note:  Yes, this function is a bit of a monster...sorry about that.

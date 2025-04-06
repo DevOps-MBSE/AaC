@@ -15,6 +15,7 @@ from aac.execute.aac_execution_result import (
 from jinja2 import Environment, FileSystemLoader, Template
 import black
 from aac.context.language_context import LanguageContext
+from aac.context.language_error import LanguageError
 from aac.context.definition import Definition
 from aac.in_out.parser._parse_source import parse
 from aac.in_out.paths import sanitize_filesystem_path
@@ -22,6 +23,8 @@ from aac.plugins.generate.helpers.python_helpers import (
     get_path_from_package,
     get_python_name,
 )
+from aac.in_out.parser._parser_error import ParserError
+
 
 plugin_name = "Generate"
 
@@ -249,6 +252,26 @@ def generate_data_from_source(
             generate_content(evaluate, force_overwrite, source, template, jinja_template, code_out_dir, test_out_dir, doc_out_dir, source_data_def)
 
 
+def process_parser_error(pe: ParserError) -> str:
+    """
+    Process the message(s) from ParserError in a way which accounts for one or two entries.
+
+    Args:
+        pe (ParserError):  The ParserError instance to have messages extracted.
+
+    Returns:
+        str: The result constructed error_message string.
+    """
+    # Construct error message, we should have at least 2 entries in the list
+    # but let's make sure first. If we only have one entry then use that.
+    error_message = ""
+    if len(pe.errors) > 1:
+        error_message = str(pe.errors[0]) + str(pe.errors[1])
+    elif len(pe.errors) == 1:
+        error_message = str(pe.errors[0])
+    return error_message
+
+
 def generate(
     aac_file: str,
     generator_file: str,
@@ -306,8 +329,34 @@ def generate(
         aac_file
     )  # we only want to parse, not load, to avoid chicken and egg issues
 
+    # JSW
     # TO DO Consider surrounding this call to parse_and_load with a try except block to catch and handle the various exceptions that can be thrown
-    generator_definitions = context.parse_and_load(generator_file)
+    messages = []
+    try:
+        generator_definitions = context.parse_and_load(generator_file)
+    except LanguageError as le:
+        status = ExecutionStatus.CONSTRAINT_FAILURE
+        messages.append(
+            ExecutionMessage(
+                message="LanguageError from parse_and_load: " + le.message + " at location: " + le.location,
+                level=MessageLevel.DEBUG,
+                source=aac_file,
+                location=None,  # Included in the message above. Their type/format is not easily compatible with the SourceLocation needed here.
+            )
+        )
+        return (None, ExecutionResult(plugin_name, "check", status, messages))
+    except ParserError as pe:
+        status = ExecutionStatus.PARSER_FAILURE
+
+        messages.append(
+            ExecutionMessage(
+                message="ParserError from parse_and_load. " + process_parser_error(pe),
+                level=MessageLevel.DEBUG,
+                source=aac_file,
+                location=None,  # Included in the message above. Their type/format is not easily compatible with the SourceLocation needed here.
+            )
+        )
+        return (None, ExecutionResult(plugin_name, "check", status, messages))
 
     # go through each generator in the parsed_definitions
     for definition in generator_definitions:
@@ -316,7 +365,6 @@ def generate(
         generator = definition.instance
 
         # go through each generator source and get data from parsed_definitions based on from_source
-
         for source in generator.sources:
             generate_data_from_source(evaluate, force_overwrite, source, parsed_definitions, code_out_dir, test_out_dir, doc_out_dir, generator_file)
     return result
