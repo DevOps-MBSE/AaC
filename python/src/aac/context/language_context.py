@@ -171,7 +171,6 @@ class LanguageContext(object):
             A list of definition objects which have been loaded into the Language Context.
 
         Raises:
-            JSW
             LanguageError: parse()->_parse_file()->_read_arch_file_content()
             see /src/aac/plugins/check/check_aac_impl.py line 435
             ParserError: parse()->_parse_file()->_read_arch_file_content()
