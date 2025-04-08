@@ -423,8 +423,7 @@ def find_definitions_to_check(aac_file: str) -> (list[Definition], ExecutionStat
 
     Returns:
         list[Definition]:       The list of definitions to check
-        ExecutionResult:        Method result containing: plugin_name ("Check AaC"), "check", status, message
-                                including results from lower level helper methods
+        ExecutionResult:        Method result containing: plugin_name ("Check AaC"), "check", status, message including results from lower level helper methods
     """
 
     context: LanguageContext = LanguageContext()

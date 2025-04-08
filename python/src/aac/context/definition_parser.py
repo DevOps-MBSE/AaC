@@ -893,6 +893,9 @@ class DefinitionParser():
 
         Returns:
             The parsed definitions to load into the LanguageContext.
+
+        Raises:
+            LanguageError: From set_qualified_name and create_definition_instance
         """
 
         # Maintainer note:  Yes, this function is a bit of a monster...sorry about that.

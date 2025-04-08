@@ -169,6 +169,12 @@ class LanguageContext(object):
 
         Returns:
             A list of definition objects which have been loaded into the Language Context.
+
+        Raises:
+            LanguageError: parse()->_parse_file()->_read_arch_file_content()
+            ParserError: parse()->_parse_file()->_read_arch_file_content()
+            IOError: Exception from _read_arch_file_content
+            Exception: Generic exception from _read_arch_file_content
         """
         parsed_definitions = parse(arg)
         parser = DefinitionParser()
