@@ -355,19 +355,7 @@ def generate(
             )
         )
         return (None, ExecutionResult(plugin_name, "check", status, messages))
-    except IOError as ie:
-        status = ExecutionStatus.GENERAL_FAILURE
-
-        messages.append(
-            ExecutionMessage(
-                message="IOError from parse_and_load. " + ie.message,
-                level=MessageLevel.DEBUG,
-                source=aac_file,
-                location=None,  # Included in the message above. Their type/format is not easily compatible with the SourceLocation needed here.
-            )
-        )
-        return (None, ExecutionResult(plugin_name, "check", status, messages))
-    except Exception as ex:
+    except Exception as ex:  # Also catching IOError but we don't do anything special handling for IOError so handle it here
         status = ExecutionStatus.GENERAL_FAILURE
 
         messages.append(
