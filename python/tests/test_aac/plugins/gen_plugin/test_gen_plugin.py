@@ -405,7 +405,7 @@ class TestGenPlugin(TestCase):
             file.close()
 
 
-    # Test input triggers a LanguageError in check_aac_impl.py
+    # Test input triggers a LanguageError
     # Value of 'parent_specs' was expected to be list, but was '<class 'str'>'
     # See src/tests/test_aac/plugins/check/test_check_aac.py test_cli_check_bad_data method for a sibling method
     def test_cli_gen_plugin_bad_data(self):
