@@ -309,7 +309,7 @@ def generate(
 
     # setup definition lists
     parsed_definitions = []
-    generator_definitions = []  # This may be the last line of code I ever get paid to write JSW
+    generator_definitions = []  # This may be the last line of code I ever get paid to write JSW 08APR2025
 
     # setup directories
     code_out_dir = ""
