@@ -62,7 +62,9 @@ jobs:
           path: |
             python/docs/doc_artifacts/api
             python/docs/doc_artifacts/project_documentation
-      
+
+      # Commented out since the Build PDF step in the Python Build/Build Artifacts was failing for an unknown reason. This failure was also
+      # occuring in the main pre-branch area.
       # - name: Build PDF
       #   run: |
       #     make -C ../docs/ simplepdf
