@@ -348,7 +348,7 @@ def generate(
                 location=None,  # Included in the message above. Their type/format is not easily compatible with the SourceLocation needed here.
             )
         )
-        return (None, ExecutionResult(plugin_name, "check", status, messages))
+        return (None, ExecutionResult(plugin_name, "generate", status, messages))
     except ParserError as pe:
         status = ExecutionStatus.PARSER_FAILURE
 
@@ -360,7 +360,7 @@ def generate(
                 location=None,  # Included in the message above. Their type/format is not easily compatible with the SourceLocation needed here.
             )
         )
-        return (None, ExecutionResult(plugin_name, "check", status, messages))
+        return (None, ExecutionResult(plugin_name, "generate", status, messages))
     except Exception as ex:  # Also catching IOError but we don't do anything special handling for IOError so handle it here
         status = ExecutionStatus.GENERAL_FAILURE
 
@@ -372,7 +372,7 @@ def generate(
                 location=None,  # Included in the message above. Their type/format is not easily compatible with the SourceLocation needed here.
             )
         )
-        return (None, ExecutionResult(plugin_name, "check", status, messages))
+        return (None, ExecutionResult(plugin_name, "generate", status, messages))
 
     # go through each generator in the parsed_definitions
     for definition in generator_definitions:
