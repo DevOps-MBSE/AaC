@@ -1,0 +1,4 @@
+req_spec:
+  name: "req4_2_2"
+  description: "MSPSP Preparation. Requirements for preparing an MSPSP can be found in Attachment 2 of this volume. SSCMAN91_710_3 27 DECEMBER 2_22_13"
+  parent_specs: "SSCMAN91_710_3_27_DECEMBER_2_22_13"
