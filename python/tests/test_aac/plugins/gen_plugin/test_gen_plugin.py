@@ -403,3 +403,82 @@ class TestGenPlugin(TestCase):
             file_read = file.read()
             self.assertIn("There are no arguments for the", file_read)
             file.close()
+
+
+    # Test input triggers a LanguageError in check_aac_impl.py ~line 171
+    # Value of 'parent_specs' was expected to be list, but was '<class 'str'>'
+    # See src/tests/test_aac/plugins/check/test_check_aac.py test_cli_check_bad_data method for a sibling method
+    def test_cli_gen_plugin_bad_data(self):
+        # first we need a project to work in, so generate a temporary one
+        with TemporaryDirectory() as temp_dir:
+            aac_file_path = path.join(path.dirname(__file__), "bad.aac")
+            temp_aac_file_path = path.join(temp_dir, "bad.aac")
+            copy(aac_file_path, temp_aac_file_path)
+
+            proj_args = [temp_aac_file_path, "--output", temp_dir, "--no-prompt"]
+
+            exit_code, output_message = self.run_gen_project_cli_command_with_args(proj_args)
+
+            self.assertEqual(6, exit_code, f"Expected to fail but ran successfully with message: {output_message}")
+            self.assertNotIn("My plugin was successful.", output_message)  # only appears when --verbose is passed in.
+            self.assertIn("Value of 'parent_specs' was expected to be list, but was", output_message)
+
+
+    # Test input with an an invalid value
+    # output msg: Invalid value for field 'name'.  Expected type 'str', but found '<class 'list'>'
+    # See src/tests/test_aac/plugins/check/test_check_aac.py for a sibling method
+    def test_cli_gen_plugin_invalid_value(self):
+        # first we need a project to work in, so generate a temporary one
+        with TemporaryDirectory() as temp_dir:
+            aac_file_path = path.join(path.dirname(__file__), "invalid_value.aac")
+            temp_aac_file_path = path.join(temp_dir, "invalid_value.aac")
+            copy(aac_file_path, temp_aac_file_path)
+
+            proj_args = [temp_aac_file_path, "--output", temp_dir, "--no-prompt"]
+
+            exit_code, output_message = self.run_gen_project_cli_command_with_args(proj_args)
+
+            # Assert for return code 1 (1 is the value for CONSTRAINT_FAILURE which is the status set upon receiving a LanguageError)
+            self.assertEqual(1, exit_code, f"Expected to fail but ran successfully with message: {output_message}")
+            self.assertNotIn("My plugin was successful.", output_message)  # only appears when --verbose is passed in.
+            self.assertIn("LanguageError from parse_and_load: Invalid value for field 'name'.", output_message)
+
+
+    # Test input missing required 'when' field primitive
+    # output msg: Missing required field when.
+    # See src/tests/test_aac/plugins/check/test_check_aac.py for a sibling method
+    def test_cli_gen_plugin_missing_required_field(self):
+        # first we need a project to work in, so generate a temporary one
+        with TemporaryDirectory() as temp_dir:
+            aac_file_path = path.join(path.dirname(__file__), "missing_required_field.aac")
+            temp_aac_file_path = path.join(temp_dir, "missing_required_field.aac")
+            copy(aac_file_path, temp_aac_file_path)
+
+            proj_args = [temp_aac_file_path, "--output", temp_dir, "--no-prompt"]
+
+            exit_code, output_message = self.run_gen_project_cli_command_with_args(proj_args)
+
+            # Assert for return code 1 (1 is the value for CONSTRAINT_FAILURE which is the status set upon receiving a LanguageError)
+            self.assertEqual(1, exit_code, f"Expected to fail but ran successfully with message: {output_message}")
+            self.assertNotIn("My plugin was successful.", output_message)  # only appears when --verbose is passed in.
+            self.assertIn("LanguageError from parse_and_load: Missing required field", output_message)
+
+
+    # Test input improper YAML
+    # output msg: The AaC file '/tmp/{random-temp-name}/my_plugin.aac' could not be parsed.
+    # See src/tests/test_aac/plugins/check/test_check_aac.py for a sibling method
+    def test_cli_gen_plugin_parse_error(self):
+        # first we need a project to work in, so generate a temporary one
+        with TemporaryDirectory() as temp_dir:
+            aac_file_path = path.join(path.dirname(__file__), "parse_error.aac")
+            temp_aac_file_path = path.join(temp_dir, "parse_error.aac")
+            copy(aac_file_path, temp_aac_file_path)
+
+            proj_args = [temp_aac_file_path, "--output", temp_dir, "--no-prompt"]
+
+            exit_code, output_message = self.run_gen_project_cli_command_with_args(proj_args)
+
+            # Assert for return code 3 (3 is the value for PARSER_FAILURE which is the status set upon receiving a ParserError)
+            self.assertEqual(3, exit_code, f"Expected to fail but ran successfully with message: {output_message}")
+            self.assertNotIn("My plugin was successful.", output_message)  # only appears when --verbose is passed in.
+            self.assertIn("ParserError from parse_and_load. Encountered an invalid YAML", output_message)

@@ -329,8 +329,6 @@ def generate(
         aac_file
     )  # we only want to parse, not load, to avoid chicken and egg issues
 
-    # JSW
-    # TO DO Consider surrounding this call to parse_and_load with a try except block to catch and handle the various exceptions that can be thrown
     messages = []
     try:
         generator_definitions = context.parse_and_load(generator_file)
@@ -351,6 +349,30 @@ def generate(
         messages.append(
             ExecutionMessage(
                 message="ParserError from parse_and_load. " + process_parser_error(pe),
+                level=MessageLevel.DEBUG,
+                source=aac_file,
+                location=None,  # Included in the message above. Their type/format is not easily compatible with the SourceLocation needed here.
+            )
+        )
+        return (None, ExecutionResult(plugin_name, "check", status, messages))
+    except IOError as ie:
+        status = ExecutionStatus.GENERAL_FAILURE
+
+        messages.append(
+            ExecutionMessage(
+                message="IOError from parse_and_load. " + ie.message,
+                level=MessageLevel.DEBUG,
+                source=aac_file,
+                location=None,  # Included in the message above. Their type/format is not easily compatible with the SourceLocation needed here.
+            )
+        )
+        return (None, ExecutionResult(plugin_name, "check", status, messages))
+    except Exception as ex:
+        status = ExecutionStatus.GENERAL_FAILURE
+
+        messages.append(
+            ExecutionMessage(
+                message="Exception from parse_and_load. " + ex.message,
                 level=MessageLevel.DEBUG,
                 source=aac_file,
                 location=None,  # Included in the message above. Their type/format is not easily compatible with the SourceLocation needed here.
