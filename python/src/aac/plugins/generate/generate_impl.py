@@ -304,6 +304,13 @@ def generate(
 
     result = ExecutionResult(plugin_name, "generate", ExecutionStatus.SUCCESS, [])
 
+    # setup return messages
+    messages = []
+
+    # setup definition lists
+    parsed_definitions = []
+    generator_definitions = []  # This may be the last line of code I ever get paid to write JSW
+
     # setup directories
     code_out_dir = ""
     test_out_dir = ""
@@ -325,13 +332,12 @@ def generate(
     # build out properties
     # the templates need data from the plugin model to generate code
     context = LanguageContext()
-    parsed_definitions = parse(
-        aac_file
-    )  # we only want to parse, not load, to avoid chicken and egg issues
 
-    messages = []
     try:
-        generator_definitions = context.parse_and_load(generator_file)
+        parsed_definitions = parse(
+            aac_file
+        )  # we only want to parse, not load, to avoid chicken and egg issues
+        generator_definitions = context.parse_and_load(generator_file)  # Now we want to parse and load for real
     except LanguageError as le:
         status = ExecutionStatus.CONSTRAINT_FAILURE
         messages.append(

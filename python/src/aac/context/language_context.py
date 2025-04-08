@@ -178,7 +178,7 @@ class LanguageContext(object):
             IOError: Exception from _read_arch_file_content
             Exception: Generic exception from _read_arch_file_content
         """
-        parsed_definitions = parse(arg) ## OK
+        parsed_definitions = parse(arg)
         parser = DefinitionParser()
 
         return parser.load_definitions(self, parsed_definitions)
